@@ -1,23 +1,10 @@
 import { useHistory, useParams as useRouterParams } from "react-router";
-import {
-  Box,
-  CircularProgress,
-  Chip,
-  Typography,
-  Link,
-  Checkbox,
-  Stack,
-} from "@mui/material";
-import { ImageRounded } from "@mui/icons-material";
-import { useGetContentModelFieldsQuery } from "../../../../../../shell/services/instance";
+import { Box, Typography, Link, Checkbox } from "@mui/material";
 import {
   DataGridPro,
   GridRenderCellParams,
-  GRID_CHECKBOX_SELECTION_COL_DEF,
   useGridApiRef,
   GridInitialState,
-  GridComparatorFn,
-  GridPinnedColumns,
 } from "@mui/x-data-grid-pro";
 import {
   memo,
@@ -41,12 +28,12 @@ import { currencies } from "../../../../../../shell/components/FieldTypeCurrency
 import { Currency } from "../../../../../../shell/components/FieldTypeCurrency/currencies";
 import { ImageCell } from "./TableCells/ImageCell";
 import { SingleRelationshipCell } from "./TableCells/SingleRelationshipCell";
-import { useParams } from "../../../../../../shell/hooks/useParams";
 import { TableSortContext } from "./TableSortProvider";
 
 type ItemListTableProps = {
   loading: boolean;
   rows: ContentItem[];
+  fields: ContentModelField[];
   noRowsOverlay: () => JSX.Element;
 };
 
@@ -80,6 +67,7 @@ const METADATA_COLUMNS = [
     width: 240,
     filterable: true,
     renderCell: (params: GridRenderCellParams) => <UserCell params={params} />,
+    type: "createdBy",
   },
   {
     field: "createdOn",
@@ -265,7 +253,7 @@ const fieldTypeColumnConfigMap = {
 } as const;
 
 export const ItemListTable = memo(
-  ({ loading, rows, noRowsOverlay }: ItemListTableProps) => {
+  ({ loading, rows, fields, noRowsOverlay }: ItemListTableProps) => {
     const { modelZUID } = useRouterParams<{ modelZUID: string }>();
     const apiRef = useGridApiRef();
     const [initialState, setInitialState] = useState<GridInitialState>();
@@ -316,6 +304,7 @@ export const ItemListTable = memo(
           width: 64,
           sortable: true,
           filterable: false,
+          type: "version",
           renderCell: (params: GridRenderCellParams) => (
             <VersionCell params={params} />
           ),

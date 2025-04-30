@@ -38,6 +38,10 @@ import { fetchItems } from "../../../../../../shell/store/content";
 import { TableSortContext } from "./TableSortProvider";
 import { fetchFields } from "../../../../../../shell/store/fields";
 import { debounce } from "lodash";
+import {
+  ContentHeaderSkeleton,
+  ItemListFiltersSkeleton,
+} from "./SkeletonLoader";
 
 const dateFormatter = new Intl.DateTimeFormat("en-US", {
   year: "numeric",
@@ -80,7 +84,9 @@ export const ItemList = () => {
     useGetContentModelQuery(modelZUID);
   const { data: fields, isFetching: isFieldsFetching } =
     useGetContentModelFieldsQuery(modelZUID);
-  const { data: languages } = useGetLangsQuery({});
+  const { data: languages, isLoading: isLanguagesLoading } = useGetLangsQuery(
+    {}
+  );
   const activeLangId =
     languages?.find((lang) => lang.code === activeLanguageCode)?.ID || 1;
   const allItems = useSelector((state: AppState) => state.content);
@@ -94,7 +100,11 @@ export const ItemList = () => {
 
   const allFields = useSelector((state: AppState) => state.fields);
   const user = useSelector((state: AppState) => state.user);
-  const { data: users, isFetching: isUsersFetching } = useGetUsersQuery();
+  const {
+    data: users,
+    isFetching: isUsersFetching,
+    isLoading: isUsersLoading,
+  } = useGetUsersQuery();
   const [processedItems, setProcessedItems] = useState([]);
   const [isModelItemsFetching, setIsModelItemsFetching] = useState(true);
   const [sortModel] = useContext(TableSortContext);
@@ -112,6 +122,7 @@ export const ItemList = () => {
     };
   }, [params]);
   const userFilter = params.get("user");
+  const usersAndLanguagesLoaded = !isUsersLoading && !isLanguagesLoading;
 
   const fieldMap = useMemo(() => {
     if (!fields?.length) return new Map<string, any>();
@@ -274,8 +285,8 @@ export const ItemList = () => {
     });
   }, [items, fields, users, isFieldsFetching, isUsersFetching, fieldMap]);
 
-  /* 
-    We debounce the processed items compute since certain fields can call for items to be fetched if they are not in memory 
+  /*
+    We debounce the processed items compute since certain fields can call for items to be fetched if they are not in memory
     and we don't want to trigger a heavy computation on every item fetched in parallel. This reduces initial load time.
   */
   const debouncedCompute = useMemo(() => {
@@ -583,26 +594,32 @@ export const ItemList = () => {
           <UpdateListActions items={items as ContentItem[]} />
         ) : (
           <>
-            <Box flex={1}>
-              <ContentBreadcrumbs />
-              <Typography
-                variant="h3"
-                mt={0.25}
-                fontWeight={700}
-                sx={{
-                  display: "-webkit-box",
-                  "-webkit-line-clamp": "2",
-                  "-webkit-box-orient": "vertical",
-                  wordBreak: "break-word",
-                  wordWrap: "break-word",
-                  hyphens: "auto",
-                  overflow: "hidden",
-                }}
-              >
-                {model?.label}
-              </Typography>
-            </Box>
-            <ItemListActions ref={searchRef} />
+            {!usersAndLanguagesLoaded ? (
+              <ContentHeaderSkeleton />
+            ) : (
+              <>
+                <Box flex={1}>
+                  <ContentBreadcrumbs />
+                  <Typography
+                    variant="h3"
+                    mt={0.25}
+                    fontWeight={700}
+                    sx={{
+                      display: "-webkit-box",
+                      "-webkit-line-clamp": "2",
+                      "-webkit-box-orient": "vertical",
+                      wordBreak: "break-word",
+                      wordWrap: "break-word",
+                      hyphens: "auto",
+                      overflow: "hidden",
+                    }}
+                  >
+                    {model?.label}
+                  </Typography>
+                </Box>
+                <ItemListActions ref={searchRef} />
+              </>
+            )}
           </>
         )}
       </Box>
@@ -619,10 +636,19 @@ export const ItemList = () => {
           <ItemListEmpty />
         ) : (
           <>
-            <ItemListFilters />
+            {isModelItemsFetching ? (
+              <ItemListFiltersSkeleton />
+            ) : (
+              <ItemListFilters />
+            )}
             <ItemListTable
               key={modelZUID}
-              loading={isFieldsFetching || isUsersFetching}
+              loading={
+                isFieldsFetching ||
+                isUsersFetching ||
+                isModelItemsFetching ||
+                isModelFetching
+              }
               rows={sortedAndFilteredItems}
               noRowsOverlay={() => {
                 if (search && !isModelItemsFetching) {
