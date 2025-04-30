@@ -66,7 +66,11 @@ export function Actions(props) {
       <WorkflowRequest itemTitle={metaTitle} fields={props.fields} />
 
       {props.set.type !== "dataset" && props.set.type !== "block" && domain && (
-        <WidgetQuickShare url={liveURL} metaLinkText={metaLinkText} />
+        <WidgetQuickShare
+          url={liveURL}
+          metaLinkText={metaLinkText}
+          isLoadingItem={props.isLoadingItem}
+        />
       )}
 
       {canPublish && (
