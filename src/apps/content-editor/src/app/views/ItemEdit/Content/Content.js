@@ -178,6 +178,7 @@ export default function Content(props) {
                 set={{
                   type: props.model?.type,
                 }}
+                isLoadingItem={isLoadingItem}
               />
             </Box>
           )}

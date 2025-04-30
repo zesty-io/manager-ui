@@ -32,7 +32,11 @@ export function Actions(props) {
 
   return (
     <Fragment>
-      <ContentInfo modelZUID={props.modelZUID} itemZUID={props.itemZUID} />
+      <ContentInfo
+        isLoadingItem={props.isLoadingItem}
+        modelZUID={props.modelZUID}
+        itemZUID={props.itemZUID}
+      />
       <ContentLinks item={props.item} />
 
       {/* <Release item={props.item} /> */}
