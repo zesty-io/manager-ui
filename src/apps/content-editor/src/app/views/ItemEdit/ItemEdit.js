@@ -17,7 +17,7 @@ import {
 import useIsMounted from "ismounted";
 import { useDispatch, useSelector } from "react-redux";
 import { createSelector } from "@reduxjs/toolkit";
-import { cloneDeep, has } from "lodash";
+import { cloneDeep } from "lodash";
 
 import { notify } from "shell/store/notifications";
 import { fetchAuditTrailDrafting } from "shell/store/logs";
@@ -31,7 +31,6 @@ import {
   unlock,
 } from "shell/store/content";
 import { selectLang } from "shell/store/user";
-import { WithLoader } from "@zesty-io/core/WithLoader";
 import { PendingEditsModal } from "../../components/PendingEditsModal";
 import { LockedItem } from "../../components/LockedItem";
 import { Content } from "./Content";
@@ -43,8 +42,6 @@ import { PublishState } from "./PublishState.tsx";
 import Analytics from "../Analytics";
 import { ApiDetails } from "../../../../../schema/src/app/components/ModelApi/ApiDetails";
 import { ApiCardList } from "../../../../../schema/src/app/components/ModelApi/ApiCardList";
-import { theme } from "@zesty-io/material";
-import { ThemeProvider } from "@mui/material/styles";
 import { Box } from "@mui/material";
 import { ItemEditHeader } from "./components/ItemEditHeader";
 import {
@@ -57,10 +54,7 @@ import { FreestyleWrapper } from "./FreestyleWrapper";
 import { Meta } from "./Meta";
 import { FieldError } from "../../components/Editor/FieldError";
 import { AIGeneratorProvider } from "../../../../../../shell/components/withAi/AIGeneratorProvider";
-import {
-  fetchItemPublishings,
-  fetchItems,
-} from "../../../../../../shell/store/content";
+import { fetchItemPublishings } from "../../../../../../shell/store/content";
 
 const selectItemHeadTags = createSelector(
   (state) => state.headTags,
@@ -481,12 +475,6 @@ export default function ItemEdit() {
       {notFound ? (
         <NotFound message={notFound} />
       ) : (
-        // <WithLoader
-        //   condition={!loading && item && Object.keys(item).length}
-        //   message={
-        //     model?.label ? `Loading ${model.label} Content` : "Loading Content"
-        //   }
-        // >
         <>
           {isLocked && (
             <Box sx={{ zIndex: (theme) => theme.zIndex.modal + 1 }}>
@@ -675,7 +663,6 @@ export default function ItemEdit() {
             </Box>
           </DuoModeContext.Provider>
         </>
-        // </WithLoader>
       )}
     </Fragment>
   );
