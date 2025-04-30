@@ -58,7 +58,7 @@ export const WidgetListed = memo(function WidgetListed(props) {
           },
         }}
       >
-        {props.isLoadingItem || true ? (
+        {props.isLoadingItem ? (
           <Stack gap={1.5}>
             <Stack direction="row" justifyContent="space-between">
               <Skeleton variant="rounded" width={192} height={20} />
