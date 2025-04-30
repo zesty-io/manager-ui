@@ -21,8 +21,8 @@ export function Actions(props) {
   const domain = useDomain();
 
   const { publishing } = props.item || {};
-  const { listed, sort } = props.item ? props.item.meta : {};
-  const { path, metaTitle, metaLinkText } = props.item ? props.item.web : {};
+  const { listed, sort } = props.item?.meta || {};
+  const { path = "", metaTitle = "", metaLinkText = "" } = props.item?.web || {};
   const liveURL = domain ? `${domain}${path}` : "";
 
   return (
