@@ -57,7 +57,9 @@ export const ConfirmPublishesModal = ({
         <Typography variant="body2" color="text.secondary" mt={1}>
           This will make the the following {items.length} content{" "}
           {pluralizeWord("item", items.length)} immediately available on all of
-          your platforms. You can always unpublish this item later if needed.
+          your platforms. You can always unpublish{" "}
+          {items.length > 1 ? "these" : "this"}{" "}
+          {pluralizeWord("item", items.length)} later if needed.
         </Typography>
       </DialogTitle>
       <DialogContent>
