@@ -6,7 +6,6 @@ import {
   useGetContentModelQuery,
   useGetLangsQuery,
 } from "../../../../../../shell/services/instance";
-import { theme } from "@zesty-io/material";
 import { ItemListEmpty } from "./ItemListEmpty";
 import { ItemListActions } from "./ItemListActions";
 import {
@@ -19,7 +18,6 @@ import {
 } from "react";
 import { SearchRounded, RestartAltRounded } from "@mui/icons-material";
 import noSearchResults from "../../../../../../../public/images/noSearchResults.svg";
-import { ItemListFilters } from "./ItemListFilters";
 import { useParams } from "../../../../../../shell/hooks/useParams";
 import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "../../../../../../shell/store/types";
@@ -38,10 +36,7 @@ import { fetchItems } from "../../../../../../shell/store/content";
 import { TableSortContext } from "./TableSortProvider";
 import { fetchFields } from "../../../../../../shell/store/fields";
 import { debounce } from "lodash";
-import {
-  ContentHeaderSkeleton,
-  ItemListFiltersSkeleton,
-} from "./SkeletonLoader";
+import { SkeletonContentHeader } from "./SkeletonLoader";
 
 const dateFormatter = new Intl.DateTimeFormat("en-US", {
   year: "numeric",
@@ -122,7 +117,6 @@ export const ItemList = () => {
     };
   }, [params]);
   const userFilter = params.get("user");
-  const usersAndLanguagesLoaded = !isUsersLoading && !isLanguagesLoading;
 
   const fieldMap = useMemo(() => {
     if (!fields?.length) return new Map<string, any>();
@@ -594,8 +588,8 @@ export const ItemList = () => {
           <UpdateListActions items={items as ContentItem[]} />
         ) : (
           <>
-            {!usersAndLanguagesLoaded ? (
-              <ContentHeaderSkeleton />
+            {isUsersLoading || isLanguagesLoading || isModelFetching ? (
+              <SkeletonContentHeader />
             ) : (
               <>
                 <Box flex={1}>
@@ -636,11 +630,6 @@ export const ItemList = () => {
           <ItemListEmpty />
         ) : (
           <>
-            {isModelItemsFetching ? (
-              <ItemListFiltersSkeleton />
-            ) : (
-              <ItemListFilters />
-            )}
             <ItemListTable
               key={modelZUID}
               loading={
@@ -650,6 +639,7 @@ export const ItemList = () => {
                 isModelFetching
               }
               rows={sortedAndFilteredItems}
+              fields={fields}
               noRowsOverlay={() => {
                 if (search && !isModelItemsFetching) {
                   return (

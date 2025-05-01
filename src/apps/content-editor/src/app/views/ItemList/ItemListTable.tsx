@@ -304,10 +304,10 @@ export const ItemListTable = memo(
           width: 64,
           sortable: true,
           filterable: false,
-          type: "version",
           renderCell: (params: GridRenderCellParams) => (
             <VersionCell params={params} />
           ),
+          type: "version",
         },
       ];
       if (fields) {
@@ -336,6 +336,7 @@ export const ItemListTable = memo(
                 field?.settings?.options?.[1] !== "Yes" && {
                   width: 280,
                 }),
+              type: field.datatype,
             })),
         ];
       }
