@@ -57,6 +57,7 @@ export default function Content(props) {
           overflowY: "scroll",
           maxWidth: showDuoMode ? 640 : "unset",
           width: showDuoMode ? "100%" : "unset",
+          minWidth: showDuoMode || showSidebar ? 640 : "unset",
         }}
         pr={3}
         pl={4}
