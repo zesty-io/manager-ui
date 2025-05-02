@@ -1,14 +1,18 @@
 import { Typography, Stack, Button, Box } from "@mui/material";
 import { AddRounded } from "@mui/icons-material";
 import { useParams, useHistory } from "react-router";
+import { useSelector } from "react-redux";
 
 import fieldsLoading from "../../../../../../public/images/fields-loading.png";
+import { AppState } from "../../../../../shell/store/types";
 
 export const NoFields = () => {
   const history = useHistory();
   const { modelZUID } = useParams<{
     modelZUID: string;
   }>();
+  const { products } = useSelector((state: AppState) => state.products);
+  const model = useSelector((state: AppState) => state.models[modelZUID]);
 
   return (
     <Stack
@@ -23,21 +27,26 @@ export const NoFields = () => {
             Add Fields to Your Model
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            This model (Articles) doesn't have any fields yet. To define the
-            structure of your content items, go to your model and add fields.
+            This model ({model?.label}) doesn't have any fields yet. To define
+            the structure of your content items,{" "}
+            {products?.includes("schema")
+              ? "go to your model and add fields."
+              : "please contact your Administrator to add fields to this model."}
           </Typography>
         </Box>
-        <Button
-          variant="contained"
-          startIcon={<AddRounded />}
-          size="small"
-          sx={{ width: "fit-content" }}
-          onClick={() => {
-            history.push(`/schema/${modelZUID}/fields?addNewField=true`);
-          }}
-        >
-          Add Fields in Schema
-        </Button>
+        {products?.includes("schema") && (
+          <Button
+            variant="contained"
+            startIcon={<AddRounded />}
+            size="small"
+            sx={{ width: "fit-content" }}
+            onClick={() => {
+              history.push(`/schema/${modelZUID}/fields?addNewField=true`);
+            }}
+          >
+            Add Fields in Schema
+          </Button>
+        )}
       </Stack>
       <Box
         component="img"
