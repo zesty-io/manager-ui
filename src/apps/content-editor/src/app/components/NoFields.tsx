@@ -33,7 +33,7 @@ export const NoFields = () => {
           size="small"
           sx={{ width: "fit-content" }}
           onClick={() => {
-            history.push(`/schema/${modelZUID}`);
+            history.push(`/schema/${modelZUID}/fields?addNewField=true`);
           }}
         >
           Add Fields in Schema
