@@ -237,15 +237,9 @@ export const ItemList = () => {
         const value = data[key] as string;
 
         switch (fieldType) {
-          case "images": {
-            const parts = value?.split(",") || [];
-            const firstPart = parts[0];
-            clonedItem.data[key] = firstPart?.startsWith("3-")
-              ? // @ts-ignore
-                `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${firstPart}/getimage/?w=68&h=auto&type=fit`
-              : firstPart;
+          case "images":
+            clonedItem.data[key] = value?.split(",")?.[0];
             break;
-          }
           case "internal_link":
           case "one_to_one":
             clonedItem.data[key] = resolveFieldRelationshipTitle(

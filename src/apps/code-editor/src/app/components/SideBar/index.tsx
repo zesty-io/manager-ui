@@ -1,91 +1,194 @@
-import { memo, useState, useEffect, useRef, useCallback } from "react";
-import { Stack, Typography, Box, Divider } from "@mui/material";
-import { AppSideBar } from "../../../../../../shell/components/AppSidebar";
-import CreateFile from "./CreateFile";
-import { FileNodeProps } from "./constants";
-import FileNav from "./FileNav";
+import { useState, useRef, useCallback, useMemo, FC } from "react";
+import {
+  Stack,
+  Typography,
+  Box,
+  IconButton,
+  CircularProgress,
+} from "@mui/material";
+import FileCopyIcon from "@mui/icons-material/FileCopy";
+import {
+  AppSideBar,
+  SubMenu,
+} from "../../../../../../shell/components/AppSidebar";
 import { ResizableContainer } from "../../../../../../shell/components/ResizeableContainer";
-import OrderFiles from "./OrderFiles";
 
-interface NavCode {
-  raw?: FileNodeProps[];
-  tree?: FileNodeProps[];
-  stylesheetsTree?: FileNodeProps[];
-  scriptsTree?: FileNodeProps[];
-}
+import FileNav from "./FileNav";
+import OrderFiles from "./OrderFiles";
+import { FileNodeProps } from "../constants";
+import { useDispatch, useSelector } from "react-redux";
+import { AppState } from "../../../../../../shell/store/types";
+import { TreeItem } from "../../../../../../shell/components/NavTree";
+import { fetchFiles, publishFile } from "../../../store/files";
+import { fetchAuditTrail } from "../../../store/auditTrail";
+import CloudUploadRoundedIcon from "@mui/icons-material/CloudUploadRounded";
+import { usePermission } from "../../../../../../shell/hooks/use-permissions";
 
 type NavType = "view" | "script" | "stylesheet" | "file";
 
 interface SideBarProps {
-  navCode: NavCode;
-  dispatch: (action: any) => void;
+  isLoading?: boolean;
+  openCreateFileDialog: (type: string, nav: NavType) => void;
 }
 
-const filterTreeData = (
-  treeData: FileNodeProps[],
-  keyword: string
-): FileNodeProps[] => {
-  return treeData
-    .map((item: FileNodeProps) => {
-      const isDir = item?.type === "directory";
-      const searchString =
-        `${item?.ZUID}\n${item?.fileName}\n${item?.label}\n${item?.path}\n${item?.contentModelZUID}\n${item?.contentModelType}`
-          ?.toLowerCase()
-          ?.trim();
-      const isFound: boolean = searchString.includes(keyword);
-      if (!isDir && !isFound) return null;
-      const itemChildren = filterTreeData(item?.children, keyword);
-      if (isDir && !itemChildren?.length && !isFound) return null;
-      return {
-        ...item,
-        children: itemChildren || [],
-      };
-    })
-    .filter(Boolean);
+export type TreeDataProps = {
+  tree: TreeItem[];
+  dir: string[];
 };
 
-export const SideBar = memo(function SideBar({
-  navCode,
-  dispatch,
-}: SideBarProps) {
-  const sideBarChildrenContainerRef = useRef(null);
+const SUB_MENUS: SubMenu[] = [
+  {
+    name: "All Files",
+    icon: FileCopyIcon,
+    path: "/code",
+  },
+];
 
-  const [htmlFiles, setHtmlFiles] = useState([]);
-  const [cssFiles, setCssFiles] = useState([]);
-  const [jsFiles, setJsFiles] = useState([]);
+const byLabel = (a: FileNodeProps, b: FileNodeProps) =>
+  a.label.toLowerCase().localeCompare(b.label.toLowerCase());
+const byOrder = (a: FileNodeProps, b: FileNodeProps) =>
+  (a.sort ?? 0) - (b.sort ?? 0);
 
+const ActionsButton = ({
+  ZUID,
+  status,
+  fileType,
+}: {
+  ZUID: string;
+  status: string;
+  fileType: string;
+}) => {
+  const dispatch: Awaited<any> = useDispatch();
+  const [isLoading, setIsLoading] = useState(false);
+  return (
+    <IconButton
+      key="publish"
+      color="inherit"
+      size="xsmall"
+      sx={{
+        transform: "translateX(5px)",
+      }}
+      onClick={() => {
+        setIsLoading(true);
+        dispatch(publishFile(ZUID, status))
+          .then(() => {
+            dispatch(fetchFiles(fileType));
+            dispatch(fetchAuditTrail(ZUID));
+          })
+          .finally(() => {
+            setIsLoading(false);
+          });
+      }}
+    >
+      {isLoading ? (
+        <CircularProgress size="16px" />
+      ) : (
+        <CloudUploadRoundedIcon
+          sx={{
+            fontSize: 16,
+            color: (theme) => `${theme.palette.grey[500]}!important`,
+          }}
+        />
+      )}
+    </IconButton>
+  );
+};
+
+export type TreeItemProps = {
+  tree: FileNodeProps[];
+  dir: string[];
+};
+
+const createTreeData = (
+  tree: FileNodeProps[],
+  group: string,
+  canPublish: boolean
+): TreeDataProps => {
+  const dirList: string[] = [];
+  const createTreeItemData = (treeItem: FileNodeProps): TreeItem => {
+    const {
+      path,
+      icon,
+      label,
+      type,
+      isLive,
+      version,
+      publishedVersion,
+      children,
+      ...treeData
+    } = treeItem;
+    const isDir: boolean = type === "directory";
+    const itemLocation: string = `/code/file/${group}`;
+    const itemPath: string = path?.trim()?.replace(/^\/+/, "");
+
+    const filePath: string = isDir
+      ? `${itemLocation}/${itemPath}`
+      : `/${itemPath}`;
+
+    if (isDir) dirList.push(filePath);
+
+    const actions =
+      canPublish &&
+      !treeItem.isLive &&
+      treeItem?.version > treeItem?.publishedVersion
+        ? [
+            <ActionsButton
+              key="publish"
+              ZUID={treeItem?.ZUID}
+              status={treeItem?.status}
+              fileType={group}
+            />,
+          ]
+        : [];
+
+    return {
+      icon: treeItem?.icon,
+      path: filePath,
+      label: treeItem?.label,
+      children: treeItem?.children?.map((child) => createTreeItemData(child)),
+      actions: actions,
+      nodeData: { ...treeData, navSource: "code", isDir },
+      ...treeData,
+    };
+  };
+  const treeData = tree
+    ?.sort(group === "views" ? byLabel : byOrder)
+    ?.map((item) => createTreeItemData(item));
+  return { tree: treeData, dir: dirList };
+};
+
+export const SideBar: FC<SideBarProps> = ({
+  isLoading,
+  openCreateFileDialog,
+}) => {
+  const canPublish = usePermission("PUBLISH");
   const [keyword, setKeyword] = useState("");
   const [fileType, setFileType] = useState("");
-  const [navType, setNavType] = useState<NavType | null>(null);
-  const [isCreateFileOpen, setIsCreateFileOpen] = useState(false);
   const [isOrderFilesOpen, setIsOrderFilesOpen] = useState(false);
 
-  const openCreateFileDialog = useCallback(
-    (type?: string, nav?: NavType) => {
-      setFileType(type);
-      setNavType(nav);
-      setIsCreateFileOpen(true);
-    },
-    [dispatch]
-  );
+  const navCode = useSelector((state: AppState) => state?.navCode);
 
-  const openOrderFilesDialog = useCallback(
-    (fileType?: string, nav?: NavType) => {
-      setFileType(fileType);
-      setIsOrderFilesOpen(true);
-    },
-    [dispatch]
-  );
+  const { views, styleSheets, scripts } = useMemo(() => {
+    return {
+      views: createTreeData(navCode.tree, "views", canPublish),
+      styleSheets: createTreeData(
+        navCode.stylesheetsTree,
+        "stylesheets",
+        canPublish
+      ),
+      scripts: createTreeData(navCode.scriptsTree, "scripts", canPublish),
+    };
+  }, [navCode]);
 
-  useEffect(() => {
-    if (!navCode) return;
-    const parsedHtmlFiles = filterTreeData(navCode?.tree, keyword);
-    const parsedCssFiles = filterTreeData(navCode?.stylesheetsTree, keyword);
-    const parsedJsFiles = filterTreeData(navCode?.scriptsTree, keyword);
-    setHtmlFiles([...parsedHtmlFiles]?.sort((a, b) => byLabel(a, b)));
-    setCssFiles([...parsedCssFiles]?.sort((a, b) => byOrder(a, b)));
-    setJsFiles([...parsedJsFiles]?.sort((a, b) => byOrder(a, b)));
-  }, [navCode, keyword]);
+  const openOrderFilesDialog = useCallback((type?: string) => {
+    setFileType(type);
+    setIsOrderFilesOpen(true);
+  }, []);
+
+  const closeOrderFilesDialog = useCallback(() => {
+    setFileType("");
+    setIsOrderFilesOpen(false);
+  }, []);
 
   return (
     <>
@@ -99,111 +202,103 @@ export const SideBar = memo(function SideBar({
           data-cy="codeNav"
           mode="dark"
           headerTitle="Code"
-          searchPlaceholder="Filter Models"
-          ref={sideBarChildrenContainerRef}
-          onAddClick={() => openCreateFileDialog("snippet", "file")}
-          onFilterChange={(keyword) => setKeyword(keyword)}
+          searchPlaceholder="Filter Files"
+          subMenus={SUB_MENUS}
+          onAddClick={() => openCreateFileDialog?.("snippet", "file")}
+          onFilterChange={setKeyword}
           titleButtonTooltip="Create File"
           hideSubMenuOnSearch={false}
         >
-          {htmlFiles?.length + cssFiles?.length + jsFiles?.length < 1 ? (
-            <Stack
-              gap={1.5}
-              alignItems="center"
-              justifyContent="center"
-              p={1.5}
-            >
-              <img
-                src="/noSearchResults.svg"
-                alt="No search results"
-                width="70px"
-                height="64px"
-              />
-              <Typography color="text.secondary" variant="body2" align="center">
-                No results available for "{keyword}"
-              </Typography>
-            </Stack>
-          ) : (
-            <Box
-              sx={{
-                overflowX: "hidden",
-                overflowY: "auto",
-                width: "100%",
-                height: "calc(100vh - 36px - 113px)",
-                position: "relative",
-              }}
-            >
-              <FileNav
-                id="html"
-                group="views"
-                header="VIEWS"
-                toolTip="Views are template files that can render HTML or various other MIME types."
-                tree={htmlFiles}
-                createFile={() => openCreateFileDialog("snippet", "view")}
-                orderFiles={() => openOrderFilesDialog("snippet", "view")}
-              />
-
-              <Divider sx={{ my: 1, border: "none" }} />
-              <FileNav
-                id="css"
-                group="stylesheets"
-                header="SITE.CSS"
-                toolTip="Site.css is a dynamically created file from the instance stylesheet files"
-                tree={cssFiles}
-                createFile={() =>
-                  openCreateFileDialog("text/css", "stylesheet")
-                }
-                orderFiles={() =>
-                  openOrderFilesDialog("text/css", "stylesheet")
-                }
-              />
-
-              <Divider sx={{ my: 1, border: "none" }} />
-              <FileNav
-                id="js"
-                group="scripts"
-                header="SITE.JS"
-                toolTip="Site.js is a dynamically created file from the instance JavaScript files"
-                tree={jsFiles}
-                createFile={() =>
-                  openCreateFileDialog("text/javascript", "script")
-                }
-                orderFiles={() =>
-                  openOrderFilesDialog("text/javascript", "script")
-                }
-              />
-            </Box>
-          )}
+          <Box
+            sx={{
+              overflow: "hidden auto",
+              width: "100%",
+              height: "calc(100vh - 185px)", // Adjusted height calculation
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "flex-start",
+              alignItems: "flex-start",
+              rowGap: 2,
+              position: "relative",
+              "& + .no-results-container": {
+                display: "none",
+              },
+              "&:empty": {
+                display: "none",
+                "& + .no-results-container": {
+                  display: "block",
+                },
+              },
+            }}
+          >
+            <FileNav
+              id="html"
+              group="views"
+              header="VIEWS"
+              toolTip="Views are template files that can render HTML or various other MIME types."
+              tree={views?.tree}
+              dirList={views?.dir}
+              createFile={() => openCreateFileDialog?.("snippet", "view")}
+              orderFiles={() => openOrderFilesDialog("snippet")}
+              searchTerm={keyword}
+              isLoading={isLoading}
+            />
+            <FileNav
+              id="css"
+              group="stylesheets"
+              header="SITE.CSS"
+              toolTip="Site.css is a dynamically created file from the instance stylesheet files"
+              tree={styleSheets?.tree}
+              dirList={styleSheets?.dir}
+              createFile={() =>
+                openCreateFileDialog?.("text/css", "stylesheet")
+              }
+              orderFiles={() => openOrderFilesDialog("text/css")}
+              searchTerm={keyword}
+              isLoading={isLoading}
+            />
+            <FileNav
+              id="js"
+              group="scripts"
+              header="SITE.JS"
+              toolTip="Site.js is a dynamically created file from the instance JavaScript files"
+              tree={scripts?.tree}
+              dirList={scripts?.dir}
+              createFile={() =>
+                openCreateFileDialog?.("text/javascript", "script")
+              }
+              orderFiles={() => openOrderFilesDialog("text/javascript")}
+              searchTerm={keyword}
+              isLoading={isLoading}
+            />
+          </Box>
+          <Box className="no-results-container">
+            <NoResults keyword={keyword} />
+          </Box>
         </AppSideBar>
       </ResizableContainer>
-      <CreateFile
-        open={isCreateFileOpen}
-        onClose={() => {
-          setFileType(null);
-          setNavType(null);
-          setIsCreateFileOpen(false);
-        }}
-        defaultType={fileType}
-        title={`Create ${navType}`}
-      />
       <OrderFiles
         type={fileType}
         isOpen={isOrderFilesOpen}
-        onClose={() => {
-          setFileType(null);
-          setIsOrderFilesOpen(false);
-        }}
+        onClose={closeOrderFilesDialog}
       />
     </>
   );
-});
-
-const byLabel = (a: FileNodeProps, b: FileNodeProps) => {
-  return a.label.toLowerCase().localeCompare(b.label.toLowerCase());
 };
 
-const byOrder = (a: FileNodeProps, b: FileNodeProps) => {
-  return (a.sort ?? 0) - (b.sort ?? 0);
-};
+const NoResults = ({ keyword }: { keyword: string }) => (
+  <Stack gap={1.5} alignItems="center" justifyContent="center" p={1.5}>
+    <img
+      src="/noSearchResults.svg"
+      alt="No search results"
+      width="70"
+      height="64"
+      loading="lazy"
+    />
+    <Typography color="text.secondary" variant="body2" align="center">
+      {keyword ? `No results for "${keyword}"` : "No files found"}
+    </Typography>
+  </Stack>
+);
 
 export default SideBar;

@@ -101,8 +101,11 @@ export const ContentNav = () => {
 
   const { data: currentUserRoles, isError: currentUserRolesError } =
     useGetCurrentUserRolesQuery();
-  const { data: rawNavData, isError: navItemsError } =
-    useGetContentNavItemsQuery(null, { refetchOnMountOrArgChange: true });
+  const {
+    data: rawNavData,
+    isError: navItemsError,
+    isLoading: isLoadingNavData,
+  } = useGetContentNavItemsQuery(null, { refetchOnMountOrArgChange: true });
   const { data: contentItem } = useGetContentItemQuery(
     location.pathname.split("/")[3],
     { skip: !location.pathname.split("/")[3] }
@@ -481,6 +484,7 @@ export const ContentNav = () => {
         onAddClick={() => setIsCreateContentDialogOpen(true)}
         onFilterChange={(keyword) => setKeyword(keyword)}
         titleButtonTooltip="Create Content"
+        isLoading={isLoadingNavData}
       >
         {noMatchedItems ? (
           <Stack gap={1.5} alignItems="center" justifyContent="center" p={1.5}>
@@ -571,6 +575,7 @@ export const ContentNav = () => {
                 </Stack>
               }
               ErrorComponent={<NavError navName="models" />}
+              isLoading={isLoadingNavData}
             />
             <NavTree
               id="dataset_nav"
@@ -628,6 +633,7 @@ export const ContentNav = () => {
                 </Stack>
               }
               ErrorComponent={<NavError navName="datasets" />}
+              isLoading={isLoadingNavData}
             />
             <Accordion
               elevation={0}
@@ -700,6 +706,7 @@ export const ContentNav = () => {
 
                     setClosedNavItems(path);
                   }}
+                  isLoading={isLoadingNavData}
                 />
               </AccordionDetails>
             </Accordion>

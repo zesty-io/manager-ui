@@ -14,6 +14,7 @@ import { DeleteRounded } from "@mui/icons-material";
 import { useRef } from "react";
 import { ContentItem } from "../../../../../../shell/services/types";
 import { DialogContentItem } from "./DialogContentItem";
+import pluralizeWord from "../../../../../../utility/pluralizeWord";
 
 type ConfirmDeletesModalProps = {
   items: ContentItem[];
@@ -49,9 +50,10 @@ export const ConfirmDeletesDialog = ({
         </Stack>
         <Box>Delete {items.length} Items:</Box>
         <Typography variant="body2" color="text.secondary" mt={1}>
-          Deleting these {items.length} items will remove it from all locations
-          throughout your site and make it unavailable to API requests. This
-          cannot be undone.
+          Deleting {items.length > 1 ? "these" : "this"} {items.length}{" "}
+          {pluralizeWord("item", items.length)} will remove it from all
+          locations throughout your site and make it unavailable to API
+          requests. This cannot be undone.
         </Typography>
       </DialogTitle>
       <DialogContent>

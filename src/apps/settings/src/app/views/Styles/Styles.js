@@ -1,34 +1,35 @@
 import { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import SaveIcon from "@mui/icons-material/Save";
-
 import { FieldTypeColor, FieldTypeText } from "@zesty-io/material";
 import { FieldTypeImage } from "@zesty-io/core/FieldTypeImage";
 import {
-  Button,
-  CircularProgress,
-  FormControl,
-  FormLabel,
   Select,
   MenuItem,
-  FormHelperText,
   Dialog,
   IconButton,
+  Typography,
 } from "@mui/material";
 
 import { MediaApp } from "../../../../../media/src/app";
-import { notify } from "shell/store/notifications";
-import { saveStyleVariable } from "shell/store/settings";
+
 import CloseIcon from "@mui/icons-material/Close";
 
-import styles from "./Styles.less";
-import { useMetaKey } from "../../../../../../shell/hooks/useMetaKey";
 import { MemoryRouter } from "react-router";
+import { TopBar } from "../../components/TopBar";
+import { FieldWrapper, MainWrapper } from "../../components/Containers";
+import Box from "@mui/material/Box";
+import { Tooltip } from "@mui/material";
+import { notify } from "../../../../../../shell/store/notifications";
+import { saveStyleVariable } from "../../../../../../shell/store/settings";
 
-export default connect((state) => {
+export default connect((state, props) => {
+  const category = state.settings.catStyles?.find(
+    (cat) => String(cat.value) === String(props.match.params.category)
+  );
   return {
     styles: state.settings.styles,
     fontsInstalled: state.settings.fontsInstalled,
+    category,
   };
 })(function Styles(props) {
   const [saving, setSaving] = useState(false);
@@ -37,8 +38,6 @@ export default connect((state) => {
   const [dirtyFields, setDirtyFields] = useState([]);
   const [fonts, setFonts] = useState([]);
   const [imageModal, setImageModal] = useState();
-
-  const helperText = useMetaKey("s", saveSettings);
   // Set Fields and Field Values from store/URL
   useEffect(() => {
     const category = props.match.params.category
@@ -58,6 +57,7 @@ export default connect((state) => {
     });
     setFields(fieldsByCategory);
     setFieldValues(newState);
+    setDirtyFields([]);
   }, [props.styles, props.match]);
 
   // Set Font Options from installed fonts
@@ -102,7 +102,7 @@ export default connect((state) => {
     setDirtyFields([...dirtyFields, name]);
   }
 
-  function saveSettings() {
+  function saveSettings(callback) {
     setSaving(true);
 
     const requests = fields
@@ -130,15 +130,17 @@ export default connect((state) => {
       .then(() => {
         setSaving(false);
         setDirtyFields([]);
+        callback && callback();
         props.dispatch(
           notify({
             kind: "success",
-            message: "Settings Saved",
+            message: `${props?.category?.label} Settings Saved`,
           })
         );
       })
       .catch((err) => {
         setSaving(false);
+        callback && callback();
         props.dispatch(
           notify({
             kind: "warn",
@@ -188,81 +190,82 @@ export default connect((state) => {
             key={field.ZUID}
             value={fieldValues[field.referenceName]}
             name={field.referenceName}
-            helperText={field.description}
             onChange={(evt) => setValue(evt.target.value, field.referenceName)}
-            label={field.name}
+            fullWidth
+            {...(!field?.description ? { helperText: field?.description } : {})}
           />
         );
       case "dropdown":
         return (
-          <FormControl fullWidth size="small">
-            <FormLabel>{field.name}</FormLabel>
-            <Select
-              key={field.ZUID}
-              name={field.referenceName}
-              variant="outlined"
-              displayEmpty
-              value={fieldValues[field.referenceName]}
-              onChange={(e) => setValue(e.target.value, field.name)}
-            >
-              <MenuItem value="">- None -</MenuItem>
-              {Object.keys(field?.options).map((option, idx) => (
-                <MenuItem key={idx} value={option}>
-                  {field.options[option]}
-                </MenuItem>
-              ))}
-            </Select>
-            <FormHelperText>{field.description}</FormHelperText>
-          </FormControl>
+          <Select
+            key={field.ZUID}
+            name={field.referenceName}
+            variant="outlined"
+            displayEmpty
+            value={fieldValues[field.referenceName]}
+            onChange={(e) => setValue(e.target.value, field.name)}
+            size="small"
+            fullWidth
+          >
+            <MenuItem value="">- None -</MenuItem>
+            {Object.keys(field?.options).map((option, idx) => (
+              <MenuItem key={idx} value={option}>
+                {field.options[option]}
+              </MenuItem>
+            ))}
+          </Select>
         );
       case "font_picker":
         return (
-          <div key={field.ZUID}>
-            <span style={{ fontSize: "1.5rem" }}>{field.keyFriendly}</span>
-            <div className={styles.fontPicker}>
-              <Select
-                fullWidth
-                name={field.referenceName}
-                onChange={(evt) =>
-                  setValue(evt.target.value, field.referenceName)
-                }
-                className={[styles.selectFont]}
-                // if default value is a font-family stack with ',' then show "Select"
-                defaultValue={
-                  field.value !== null && field.value.includes(",")
-                    ? "inherit"
-                    : field.value
-                }
-                size="small"
-              >
-                <MenuItem value="inherit">Select</MenuItem>
-                {fonts.map((option, index) => (
-                  <MenuItem
-                    key={index}
-                    value={
-                      option.weight
-                        ? `${option.family}:${option.weight}`
-                        : option.family
-                    }
-                  >
-                    {option.family}
-                  </MenuItem>
-                ))}
-              </Select>
-              <div className={styles.Preview}>
-                <span
-                  style={{
-                    fontSize: "1.4rem",
-                    fontFamily: parseFamily(fieldValues[field.referenceName]),
-                    fontStyle: parseStyle(fieldValues[field.referenceName]),
-                    fontWeight: parseWeight(fieldValues[field.referenceName]),
-                  }}
+          <Box
+            display="flex"
+            flexDirection="column"
+            justifyContent="flex-start"
+            width="100%"
+          >
+            <Select
+              fullWidth
+              name={field.referenceName}
+              onChange={(evt) =>
+                setValue(evt.target.value, field.referenceName)
+              }
+              // if default value is a font-family stack with ',' then show "Select"
+              defaultValue={
+                field.value !== null && field.value.includes(",")
+                  ? "inherit"
+                  : field.value
+              }
+              size="small"
+            >
+              <MenuItem value="inherit">Select</MenuItem>
+              {fonts.map((option, index) => (
+                <MenuItem
+                  key={index}
+                  value={
+                    option.weight
+                      ? `${option.family}:${option.weight}`
+                      : option.family
+                  }
                 >
-                  This is a text example
-                </span>
-              </div>
-            </div>
-          </div>
+                  {option.family}
+                </MenuItem>
+              ))}
+            </Select>
+            <Box width="100%" mt="8px">
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                style={{
+                  fontSize: "1.4rem",
+                  fontFamily: parseFamily(fieldValues[field.referenceName]),
+                  fontStyle: parseStyle(fieldValues[field.referenceName]),
+                  fontWeight: parseWeight(fieldValues[field.referenceName]),
+                }}
+              >
+                This is a text example
+              </Typography>
+            </Box>
+          </Box>
         );
       case "image":
         const images = (fieldValues[field.referenceName] || "")
@@ -273,7 +276,6 @@ export default connect((state) => {
             <FieldTypeImage
               key={field.ZUID}
               name={field.referenceName}
-              label={field.name}
               description={field.description}
               limit="1"
               images={
@@ -288,6 +290,8 @@ export default connect((state) => {
               mediaBrowser={(opts) => {
                 setImageModal(opts);
               }}
+              fullWidth
+              size="small"
             />
             {imageModal && (
               <MemoryRouter>
@@ -330,14 +334,15 @@ export default connect((state) => {
         return (
           <FieldTypeText
             key={field.ZUID}
-            label={field.name}
             name={field.referenceName}
             value={fieldValues[field.referenceName]}
             onChange={(evt) => {
               setValue(evt.target.value, field.referenceName);
             }}
-            helperText={field.tips}
+            // helperText={field.tips}
             maxLength={640}
+            fullWidth
+            size="small"
           />
         );
     }
@@ -345,22 +350,95 @@ export default connect((state) => {
 
   return (
     <>
-      {fields.map((field) => (
-        <div key={field.ZUID} className={styles.variableContainer}>
-          <div className={styles.variable}>{renderField(field)}</div>
-          <div className={styles.reference}>@{field.referenceName}</div>
-        </div>
-      ))}
-      <Button
-        variant="contained"
-        color="success"
-        id="SaveSettings"
-        onClick={saveSettings}
-        disabled={saving || dirtyFields.length === 0}
-        startIcon={saving ? <CircularProgress size="20px" /> : <SaveIcon />}
+      <TopBar
+        title={props?.category?.label}
+        onSave={saveSettings}
+        isNotSaved={dirtyFields.length > 0}
+        isLoading={saving}
+        matchPath={props.match.path}
+      />
+      <Box
+        px="32px"
+        py="16px"
+        sx={{
+          width: "100%",
+          height: "calc(100% - 84px)",
+          overflowY: "auto",
+          overflowX: "hidden",
+          margin: "0",
+          display: "block",
+          maxHeight: "calc(100% - 84px)",
+          position: "relative",
+          boxSizing: "border-box",
+        }}
       >
-        Save Settings {helperText}
-      </Button>
+        <MainWrapper fullWidth rowGap={3}>
+          {fields.map((field) => (
+            <Box
+              key={field.ZUID}
+              display="flex"
+              flexDirection="row"
+              justifyContent="space-between"
+              alignItems="center"
+              width="100%"
+              // border="1px solid red"
+            >
+              <FieldWrapper label={field.name}>
+                <Box
+                  width="100%"
+                  sx={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "flex-start",
+                    position: "relative",
+                    boxSizing: "border-box",
+                    columnGap: 2,
+                    // border: "1px solid green",
+                  }}
+                >
+                  <Box
+                    maxWidth="640px"
+                    minWidth="350px"
+                    flexGrow={1}
+                    flexShrink={1}
+                  >
+                    {renderField(field)}
+                  </Box>
+
+                  {!field.referenceName ? null : (
+                    <Box
+                      sx={{
+                        border: "1px solid",
+                        borderColor: "grey.300",
+                        borderRadius: "8px",
+                        width: "280px",
+                        maxWidth: "280px",
+                        // width: "fit-content",
+                        boxSizing: "border-box",
+
+                        flexGrow: 1,
+
+                        flexShrink: 0,
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "flex-start",
+                        alignItems: "center",
+                        px: "12px",
+                        py: "6.5px",
+                      }}
+                    >
+                      <Typography variant="body2" color="text.secondary" noWrap>
+                        @{field.referenceName}
+                      </Typography>
+                    </Box>
+                  )}
+                </Box>
+              </FieldWrapper>
+            </Box>
+          ))}
+        </MainWrapper>
+      </Box>
     </>
   );
 });

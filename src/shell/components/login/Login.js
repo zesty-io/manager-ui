@@ -1,7 +1,6 @@
 import { memo, useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { alpha } from "@mui/material/styles";
-import Button from "@mui/material/Button";
 import Link from "@mui/material/Link";
 import {
   login,
@@ -27,6 +26,7 @@ import VisibilityOffRoundedIcon from "@mui/icons-material/VisibilityOffRounded";
 import LoginRoundedIcon from "@mui/icons-material/LoginRounded";
 import { LoadingButton } from "@mui/lab";
 import { SSOButton, SSOButtonGroup } from "@zesty-io/material";
+import zestyLogo from "../../../../public/images/zestyLogo.svg";
 
 export default connect((state) => {
   return {
@@ -86,210 +86,218 @@ export default connect((state) => {
     }, [isAuthenticated]);
 
     return (
-      <Paper
-        elevation={0}
-        sx={{
-          boxSizing: "border-box",
-          width: "400px",
-          p: 4,
-          borderRadius: "8px",
-        }}
+      <Box
+        width="100vw"
+        height="100vh"
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
       >
-        {twoFactor ? (
-          <Box display="flex" flexDirection="column" gap={2.5}>
-            <Box>
-              <Typography variant="h4" fontWeight={600} sx={{ mb: "2px" }}>
-                Enter Your 2FA OTP
-              </Typography>
-              <Typography
-                variant="body3"
-                color="text.secondary"
-                component="div"
-              >
-                You will receive this code on your phone.
-              </Typography>
-            </Box>
-            {!!error && (
-              <Alert
-                severity="error"
-                onClose={() => setError("")}
-                sx={{
-                  "&.MuiAlert-standardError": {
-                    backgroundColor: (theme) =>
-                      alpha(theme.palette.error.main, 0.1),
-                  },
-                  "& .MuiAlert-icon": {
-                    color: "error.main",
-                  },
-                }}
-              >
-                {error}
-              </Alert>
-            )}
-            <Box component="form" onSubmit={handleTwoFactor}>
-              <InputLabel>Code</InputLabel>
-              <TextField
-                name="token"
-                type="text"
-                placeholder="XXXXXXX"
-                fullWidth
-                error={!!error}
-                autoComplete="off"
-              />
-              <LoadingButton
-                size="large"
-                type="submit"
-                startIcon={<LoginRoundedIcon />}
-                variant="contained"
-                fullWidth
-                sx={{ mt: 2.5 }}
-                loading={loading}
-              >
-                Continue
-              </LoadingButton>
-            </Box>
-          </Box>
-        ) : (
-          <Box display="flex" flexDirection="column" gap={2}>
-            <Box>
-              <Typography variant="h4" fontWeight={700} sx={{ mb: "2px" }}>
-                Hi, Welcome Back!
-              </Typography>
-              <Typography
-                variant="body3"
-                color="text.secondary"
-                component="div"
-              >
-                Start empowering the world with content again
-              </Typography>
-            </Box>
-            <SSOButtonGroup
-              authServiceUrl={CONFIG.SERVICE_AUTH}
-              onSuccess={() => {
-                setIsAuthenticated(true);
-              }}
-              onError={(err) => {
-                setError(err);
-              }}
-            >
-              <SSOButton service="google" />
-              <SSOButton service="azure" />
-              <SSOButton service="github" />
-            </SSOButtonGroup>
-            <Box
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              gap={4}
-            >
-              <Divider sx={{ flex: "1", borderColor: "border" }} />
-              <Typography variant="body2" color="text.secondary">
-                OR
-              </Typography>
-              <Divider sx={{ flex: "1", borderColor: "border" }} />
-            </Box>
-            {!!error && (
-              <Alert
-                severity="error"
-                onClose={() => setError("")}
-                sx={{
-                  "&.MuiAlert-standardError": {
-                    backgroundColor: (theme) =>
-                      alpha(theme.palette.error.main, 0.1),
-                  },
-                  "& .MuiAlert-icon": {
-                    color: "error.main",
-                  },
-                }}
-              >
-                {error}
-              </Alert>
-            )}
-            <Box
-              component="form"
-              onSubmit={handleLogin}
-              display="flex"
-              flexDirection="column"
-              gap={2}
-            >
+        <Paper
+          elevation={8}
+          sx={{
+            boxSizing: "border-box",
+            width: "400px",
+            p: 4,
+            borderRadius: "8px",
+          }}
+        >
+          {twoFactor ? (
+            <Box display="flex" flexDirection="column" gap={2.5}>
               <Box>
-                <InputLabel>Email Address</InputLabel>
-                <TextField
-                  name="email"
-                  type="email"
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <AlternateEmailRoundedIcon
-                          sx={{ width: "20px", height: "20px" }}
-                        />
-                      </InputAdornment>
-                    ),
-                  }}
-                  autoFocus
-                  fullWidth
-                  autoComplete="on"
-                  error={!!error}
-                />
-              </Box>
-              <Box>
-                <InputLabel>Password</InputLabel>
-                <TextField
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  sx={{ mb: 1 }}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <PasswordRoundedIcon
-                          sx={{ width: "20px", height: "20px" }}
-                        />
-                      </InputAdornment>
-                    ),
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton
-                          size="small"
-                          onClick={() => setShowPassword(!showPassword)}
-                        >
-                          {showPassword ? (
-                            <VisibilityOffRoundedIcon
-                              sx={{ width: "20px", height: "20px" }}
-                            />
-                          ) : (
-                            <VisibilityRoundedIcon
-                              sx={{ width: "20px", height: "20px" }}
-                            />
-                          )}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
-                  fullWidth
-                  autoComplete="on"
-                  error={!!error}
-                />
-                <Link
-                  variant="caption"
-                  href="https://www.zesty.io/login/forgot-password/"
-                  target="_blank"
+                <Typography variant="h4" fontWeight={600} sx={{ mb: "2px" }}>
+                  Enter Your 2FA OTP
+                </Typography>
+                <Typography
+                  variant="body3"
+                  color="text.secondary"
+                  component="div"
                 >
-                  Forgot Password?
-                </Link>
+                  You will receive this code on your phone.
+                </Typography>
               </Box>
-              <LoadingButton
-                size="large"
-                type="submit"
-                startIcon={<LoginRoundedIcon />}
-                variant="contained"
-                loading={loading}
-              >
-                Resume Session
-              </LoadingButton>
+              {!!error && (
+                <Alert
+                  severity="error"
+                  onClose={() => setError("")}
+                  sx={{
+                    "&.MuiAlert-standardError": {
+                      backgroundColor: (theme) =>
+                        alpha(theme.palette.error.main, 0.1),
+                    },
+                    "& .MuiAlert-icon": {
+                      color: "error.main",
+                    },
+                  }}
+                >
+                  {error}
+                </Alert>
+              )}
+              <Box component="form" onSubmit={handleTwoFactor}>
+                <InputLabel>Code</InputLabel>
+                <TextField
+                  name="token"
+                  type="text"
+                  placeholder="XXXXXXX"
+                  fullWidth
+                  error={!!error}
+                  autoComplete="off"
+                />
+                <LoadingButton
+                  size="large"
+                  type="submit"
+                  startIcon={<LoginRoundedIcon />}
+                  variant="contained"
+                  fullWidth
+                  sx={{ mt: 2.5 }}
+                  loading={loading}
+                >
+                  Continue
+                </LoadingButton>
+              </Box>
             </Box>
-          </Box>
-        )}
-      </Paper>
+          ) : (
+            <Box display="flex" flexDirection="column" gap={2}>
+              <Box>
+                <Typography variant="h4" fontWeight={700} sx={{ mb: "2px" }}>
+                  Hi, Welcome Back!
+                </Typography>
+                <Typography
+                  variant="body3"
+                  color="text.secondary"
+                  component="div"
+                >
+                  Start empowering the world with content again
+                </Typography>
+              </Box>
+              <SSOButtonGroup
+                authServiceUrl={CONFIG.SERVICE_AUTH}
+                onSuccess={() => {
+                  setIsAuthenticated(true);
+                }}
+                onError={(err) => {
+                  setError(err);
+                }}
+              >
+                <SSOButton service="google" />
+                <SSOButton service="azure" />
+                <SSOButton service="github" />
+              </SSOButtonGroup>
+              <Box
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                gap={4}
+              >
+                <Divider sx={{ flex: "1", borderColor: "border" }} />
+                <Typography variant="body2" color="text.secondary">
+                  OR
+                </Typography>
+                <Divider sx={{ flex: "1", borderColor: "border" }} />
+              </Box>
+              {!!error && (
+                <Alert
+                  severity="error"
+                  onClose={() => setError("")}
+                  sx={{
+                    "&.MuiAlert-standardError": {
+                      backgroundColor: (theme) =>
+                        alpha(theme.palette.error.main, 0.1),
+                    },
+                    "& .MuiAlert-icon": {
+                      color: "error.main",
+                    },
+                  }}
+                >
+                  {error}
+                </Alert>
+              )}
+              <Box
+                component="form"
+                onSubmit={handleLogin}
+                display="flex"
+                flexDirection="column"
+                gap={2}
+              >
+                <Box>
+                  <InputLabel>Email Address</InputLabel>
+                  <TextField
+                    name="email"
+                    type="email"
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <AlternateEmailRoundedIcon
+                            sx={{ width: "20px", height: "20px" }}
+                          />
+                        </InputAdornment>
+                      ),
+                    }}
+                    autoFocus
+                    fullWidth
+                    autoComplete="on"
+                    error={!!error}
+                  />
+                </Box>
+                <Box>
+                  <InputLabel>Password</InputLabel>
+                  <TextField
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    sx={{ mb: 1 }}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <PasswordRoundedIcon
+                            sx={{ width: "20px", height: "20px" }}
+                          />
+                        </InputAdornment>
+                      ),
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            size="small"
+                            onClick={() => setShowPassword(!showPassword)}
+                          >
+                            {showPassword ? (
+                              <VisibilityOffRoundedIcon
+                                sx={{ width: "20px", height: "20px" }}
+                              />
+                            ) : (
+                              <VisibilityRoundedIcon
+                                sx={{ width: "20px", height: "20px" }}
+                              />
+                            )}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                    fullWidth
+                    autoComplete="on"
+                    error={!!error}
+                  />
+                  <Link
+                    variant="caption"
+                    href="https://www.zesty.io/login/forgot-password/"
+                    target="_blank"
+                  >
+                    Forgot Password?
+                  </Link>
+                </Box>
+                <LoadingButton
+                  size="large"
+                  type="submit"
+                  startIcon={<LoginRoundedIcon />}
+                  variant="contained"
+                  loading={loading}
+                >
+                  Resume Session
+                </LoadingButton>
+              </Box>
+            </Box>
+          )}
+        </Paper>
+      </Box>
     );
   })
 );

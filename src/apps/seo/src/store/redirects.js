@@ -115,11 +115,11 @@ export function removeRedirect(zuid) {
     dispatch({
       type: "REDIRECT_REMOVE",
     });
-    request(`${CONFIG.API_INSTANCE}/web/redirects/${zuid}`, {
+    return request(`${CONFIG.API_INSTANCE}/web/redirects/${zuid}`, {
       method: "DELETE",
     })
       .then((json) => {
-        if (!json.error) {
+        if (json.status === 200) {
           dispatch({
             type: "REDIRECT_REMOVE_SUCCESS",
             zuid,
@@ -132,6 +132,7 @@ export function removeRedirect(zuid) {
             })
           );
         }
+        return json;
       })
       .catch((err) => {
         dispatch(

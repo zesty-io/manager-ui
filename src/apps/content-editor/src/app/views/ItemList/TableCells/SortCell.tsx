@@ -17,9 +17,15 @@ export const SortCell = ({ params }: { params: GridRenderCellParams }) => {
         (params.value?.toString() || "0")
       }
       onChange={(evt) => {
-        handleChange(parseInt(evt.target.value));
+        handleChange(parseInt(evt.target.value) || 0);
       }}
-      height={40}
+      onClick={(e) => e.stopPropagation()}
+      InputProps={{
+        sx: {
+          height: 40,
+          minWidth: "fit-content",
+        },
+      }}
     />
   );
 };
