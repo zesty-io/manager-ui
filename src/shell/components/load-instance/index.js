@@ -15,7 +15,7 @@ import { fetchLangauges } from "shell/store/languages";
 import { fetchItemPublishings } from "shell/store/content";
 import { fetchFiles } from "../../../apps/code-editor/src/store/files";
 import { fetchSettings } from "shell/store/settings";
-
+import { NoInstancePermission } from "./NoInstancePermission";
 import { useGetCurrentUserRolesQuery } from "../../services/accounts";
 
 export default connect((state) => {
@@ -31,6 +31,7 @@ export default connect((state) => {
 })(
   memo(function LoadInstance(props) {
     const [error, setError] = useState("");
+    const [noPermission, setNoPermission] = useState(false);
     const { refetch: refetchCurrentUserRoles } = useGetCurrentUserRolesQuery();
 
     useEffect(() => {
@@ -42,7 +43,7 @@ export default connect((state) => {
         .dispatch(fetchInstance())
         .then((res) => {
           if (res.status !== 200) {
-            setError("You do not have permission to access this instance");
+            setNoPermission(true);
           } else {
             document.title = `Manager - ${res.data?.name} - Zesty`;
             CONFIG.URL_PREVIEW_FULL = `${CONFIG.URL_PREVIEW_PROTOCOL}${res.data?.randomHashID}${CONFIG.URL_PREVIEW}`;
@@ -114,6 +115,10 @@ export default connect((state) => {
       }
       //Check if pendo is running correctly open browser console and run pendo.validateInstall()
     }, [props.user, props.instance, props.role]);
+
+    if (noPermission || true) {
+      return <NoInstancePermission />;
+    }
 
     if (error) {
       return (
