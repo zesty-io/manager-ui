@@ -39,6 +39,7 @@ export default connect((state) => {
         return;
       }
 
+      props.dispatch(fetchUser(props.user.ZUID));
       props
         .dispatch(fetchInstance())
         .then((res) => {
@@ -50,10 +51,7 @@ export default connect((state) => {
 
             // All other API calls should only be made if user has access to this instance
             // this prevents a slew of unnecessary 403 errors
-            Promise.all([
-              props.dispatch(fetchUser(props.user.ZUID)),
-              props.dispatch(fetchUserRole()),
-            ]).then(() => {
+            props.dispatch(fetchUserRole()).then(() => {
               props.dispatch(fetchProducts());
             });
 

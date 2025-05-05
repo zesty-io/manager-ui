@@ -7,7 +7,6 @@ import { logout } from "../../store/auth";
 
 export const NoInstancePermission = () => {
   const dispatch = useDispatch();
-  // FIXME: This is always undefined since we don't have the logged in user details if they log in and have no instance permission.
   const user = useSelector((state: AppState) => state.user);
 
   return (
