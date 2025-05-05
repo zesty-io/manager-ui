@@ -116,7 +116,7 @@ export default connect((state) => {
       //Check if pendo is running correctly open browser console and run pendo.validateInstall()
     }, [props.user, props.instance, props.role]);
 
-    if (noPermission || true) {
+    if (noPermission) {
       return <NoInstancePermission />;
     }
 
