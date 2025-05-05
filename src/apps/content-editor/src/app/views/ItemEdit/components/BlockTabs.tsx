@@ -239,10 +239,13 @@ const BlockVariantCard = ({ block }: { block: ContentItem }) => {
       }
       disableGutters
       sx={{
-        display: "flex",
+        display: "grid",
+        position: "relative",
+        overflow: "hidden",
+        gridTemplateColumns: "187px 1fr",
         px: 2,
         py: 1.75,
-        gap: 1.5,
+        gap: "0px 12px",
         "&.Mui-selected": {
           "&:first-of-type": {
             borderBottomColor: "primary.main",
@@ -285,11 +288,23 @@ const BlockVariantCard = ({ block }: { block: ContentItem }) => {
 
       <Box
         sx={{
-          minWidth: 0,
-          maxWidth: 458,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "flex-start",
+          overflow: "hidden",
         }}
       >
-        <Typography noWrap variant="body1" fontWeight={700}>
+        <Typography
+          noWrap
+          variant="body1"
+          fontWeight={700}
+          sx={{
+            width: "100%",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+        >
           {block?.web?.metaTitle}
         </Typography>
         <Typography
