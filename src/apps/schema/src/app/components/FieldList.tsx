@@ -29,6 +29,7 @@ import { NoResults } from "./NoResults";
 import { ContentModelField } from "../../../../../shell/services/types";
 import { FieldEmptyState } from "./FieldEmptyState";
 import { SEO_FIELDS, SYSTEM_FIELDS, SystemField } from "./configs";
+import { useParams as useSearchParams } from "../../../../../shell/hooks/useParams";
 
 type Params = {
   id: string;
@@ -40,6 +41,8 @@ interface Props {
 export const FieldList = ({ onNewFieldModalClick }: Props) => {
   const params = useParams<Params>();
   const { id } = params;
+  const [searchParams] = useSearchParams();
+
   const [search, setSearch] = useState("");
   const { data: models } = useGetContentModelsQuery();
   const {
@@ -78,6 +81,12 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
       setDeactivatedFields([...fields.filter((field) => field?.deletedAt)]);
     }
   }, [fields]);
+
+  useEffect(() => {
+    if (searchParams.get("addNewField") === "true") {
+      onNewFieldModalClick(null);
+    }
+  }, [searchParams]);
 
   const sortedFields = useMemo(() => {
     if (draggedIndex === null || hoveredIndex === null) {
