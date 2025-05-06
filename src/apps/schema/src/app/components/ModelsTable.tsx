@@ -12,7 +12,7 @@ import {
 import { ContentModel, ModelType } from "../../../../../shell/services/types";
 import moment from "moment-timezone";
 import { useMemo, useState, useReducer } from "react";
-import AutoSizer from "react-virtualized-auto-sizer";
+import AutoSizer, { Size } from "react-virtualized-auto-sizer";
 import { useHistory } from "react-router";
 import { NoResults } from "./NoResults";
 import { modelIconMap, modelNameMap } from "../utils";
@@ -216,7 +216,7 @@ export const ModelsTable = ({ search, onEmptySearch }: Props) => {
     >
       <Filters activeFilters={activeFilters} onChange={setActiveFilters} />
       <AutoSizer>
-        {({ width, height }) => (
+        {({ width, height }: Size) => (
           <DataGridPro
             style={{
               width,

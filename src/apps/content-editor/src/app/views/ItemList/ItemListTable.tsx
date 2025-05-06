@@ -368,7 +368,7 @@ export const ItemListTable = memo(
 
     return (
       <AutoSizer>
-        {({ width, height }) => (
+        {({ width, height }: Size) => (
           <DataGridPro
             apiRef={apiRef}
             loading={loading}

@@ -1,6 +1,6 @@
 import { FC, useCallback } from "react";
 import Stack from "@mui/material/Stack";
-import { FixedSizeList } from "react-window";
+import { FixedSizeList, ListChildComponentProps } from "react-window";
 import AutoSizer, { Size } from "react-virtualized-auto-sizer";
 
 import {
@@ -29,7 +29,7 @@ export const SearchPageList: FC<SearchPageList> = ({
     ? new Array(10) // arbitrary length array of junk data
     : backendResults;
   const Row = useCallback(
-    ({ index, style }) => {
+    ({ index, style }: ListChildComponentProps) => {
       if (!loading) {
         const result = backendResults[index];
 

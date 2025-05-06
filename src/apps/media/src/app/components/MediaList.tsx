@@ -36,7 +36,7 @@ import CheckIcon from "@mui/icons-material/Check";
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 import ReportGmailerrorredIcon from "@mui/icons-material/ReportGmailerrorred";
 import FontDownloadRoundedIcon from "@mui/icons-material/FontDownloadRounded";
-import AutoSizer from "react-virtualized-auto-sizer";
+import AutoSizer, { Size } from "react-virtualized-auto-sizer";
 
 // file icons import
 import wordImg from "../../../../../../public/images/wordImg.png";
@@ -766,7 +766,7 @@ export const MediaList: FC<Props> = ({ files, groups }) => {
     <Box component="main" sx={{ height: "100%", width: "100%", px: 4 }}>
       {files && (
         <AutoSizer>
-          {({ width, height }) => (
+          {({ width, height }: Size) => (
             <DataGridPro
               sx={{
                 backgroundColor: "common.white",

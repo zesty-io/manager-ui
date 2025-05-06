@@ -14,7 +14,7 @@ import {
   useGetUsageQuery,
   useGetRequestsQuery,
 } from "../../../../../shell/services/metrics";
-import AutoSizer from "react-virtualized-auto-sizer";
+import AutoSizer, { Size } from "react-virtualized-auto-sizer";
 import { DataGridPro } from "@mui/x-data-grid-pro";
 import { File, Bin } from "../../../../../shell/services/types";
 import fileBroken from "../../../../../../public/images/fileBroken.jpg";
@@ -728,7 +728,7 @@ export const InsightsTable: FC<Props> = ({ files, loading }) => {
     <Box component="main" sx={{ height: "100%", width: "100%", px: 4 }}>
       {files && (
         <AutoSizer>
-          {({ width, height }) => (
+          {({ width, height }: Size) => (
             <DataGridPro
               sx={{
                 backgroundColor: "common.white",

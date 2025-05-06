@@ -21,7 +21,7 @@ import {
 } from "@mui/x-data-grid-pro";
 import { debounce } from "lodash";
 import { useDispatch, useSelector } from "react-redux";
-import AutoSizer from "react-virtualized-auto-sizer";
+import AutoSizer, { Size } from "react-virtualized-auto-sizer";
 
 import { FieldSelectorFilters, STATUS_FILTER } from "./FieldSelectorFilters";
 import {
@@ -595,7 +595,7 @@ export const FieldSelectorDialog = ({
             }}
           >
             <AutoSizer>
-              {({ width, height }) => (
+              {({ width, height }: Size) => (
                 <DataGridPro
                   style={{
                     width: width,
