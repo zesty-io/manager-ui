@@ -4,6 +4,7 @@ import {
   InstalledApp,
   ModelType,
   ContentItemWithDirtyAndPublishing,
+  Products,
 } from "../services/types";
 /*
   TODO
@@ -31,7 +32,7 @@ export type AppState = {
   releases: any;
   releaseMembers: any;
   userRole: any;
-  products: any;
+  products: { products: Products[]; isLoadingProducts: boolean };
   instance: any;
   instances: any;
   languages: any;
