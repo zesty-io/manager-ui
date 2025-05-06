@@ -105,6 +105,8 @@ export const VersionItem = memo(
       useUnmount(() => saveLabelChanges());
 
       const filteredStatusLabels = useMemo(() => {
+        if (!statusLabels?.length) return [];
+
         const sortedStatusLabels = [...statusLabels]?.sort(
           (a, b) => a.sort - b.sort
         );
