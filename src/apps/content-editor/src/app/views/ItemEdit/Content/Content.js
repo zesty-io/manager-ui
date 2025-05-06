@@ -5,16 +5,40 @@ import { theme } from "@zesty-io/material";
 import { StartRounded, DesktopMacRounded } from "@mui/icons-material";
 import { Actions } from "./Actions";
 import { useLocalStorage } from "react-use";
-import { useContext } from "react";
+import { useContext, useMemo } from "react";
 import { DuoModeContext } from "../../../../../../../shell/contexts/duoModeContext";
 import { FieldError } from "../../../components/Editor/FieldError";
 import { BlockTabs } from "../components/BlockTabs";
+import { useGetContentModelFieldsQuery } from "../../../../../../../shell/services/instance";
+import { NoFields } from "../../../components/NoFields";
 
 export default function Content(props) {
   const [showSidebar, setShowSidebar] = useLocalStorage(
     "zesty:content:sidebarOpen",
     false
   );
+  const { data: fields } = useGetContentModelFieldsQuery(props.modelZUID, {
+    skip: !props.modelZUID,
+  });
+
+  const hasFields = useMemo(() => {
+    if (!fields) return false;
+
+    const validFields = fields.filter(
+      (field) =>
+        !field.deletedAt &&
+        ![
+          "og_image",
+          "og_title",
+          "og_description",
+          "tc_title",
+          "tc_description",
+          "tc_image",
+        ].includes(field.name)
+    );
+
+    return !!validFields.length;
+  }, [fields]);
 
   const {
     value: showDuoModeContextValue,
@@ -27,6 +51,14 @@ export default function Content(props) {
   const isFocusMode = !showDuoMode && !showSidebar;
 
   const showDuoMode = props?.model?.type === "block" || showDuoModeContextValue;
+
+  if (!hasFields) {
+    return (
+      <Stack height="100%" mx={3} justifyContent="center">
+        <NoFields />
+      </Stack>
+    );
+  }
 
   return (
     <Box
@@ -57,6 +89,7 @@ export default function Content(props) {
           overflowY: "scroll",
           maxWidth: showDuoMode ? 640 : "unset",
           width: showDuoMode ? "100%" : "unset",
+          minWidth: showDuoMode || showSidebar ? 640 : "unset",
         }}
         pr={3}
         pl={4}
