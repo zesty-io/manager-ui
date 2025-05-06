@@ -141,7 +141,7 @@ export const SchedulePublish = ({
                 <Typography variant="h5" display="inline" fontWeight={700}>
                   {item?.scheduling?.isScheduled
                     ? "Unschedule Publish:"
-                    : "Schedule Content Item Publish:"}
+                    : "Schedule Publish:"}
                   &nbsp;
                 </Typography>
                 <Typography variant="h5" display="inline">
@@ -242,7 +242,7 @@ export const SchedulePublish = ({
               }}
               loading={isLoading}
             >
-              Schedule v{item?.web?.version} for Publish
+              Schedule Publish
             </LoadingButton>
           )}
         </DialogActions>
