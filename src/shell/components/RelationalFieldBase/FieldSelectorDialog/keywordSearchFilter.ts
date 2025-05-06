@@ -16,8 +16,8 @@ export const keywordSearchFilterOperator: GridFilterOperator = {
       // Check title
       const title = row.title;
       const titleMatch =
-        title?.primary?.toLowerCase().includes(searchValue) ||
-        title?.secondary?.toLowerCase().includes(searchValue) ||
+        (title?.primary?.toString()?.toLowerCase().includes(searchValue) ||
+          title?.secondary?.toString()?.toLowerCase().includes(searchValue)) ||
         false;
 
       // Check version
