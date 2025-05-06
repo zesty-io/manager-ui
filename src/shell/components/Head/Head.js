@@ -88,24 +88,24 @@ export default connect((state, props) => {
           >
             Create Head Tag
           </Button>
-          <h1>
+          <h3>
             <Notice>
               Head tags are not versioned. Once saved they will take effect when
               the page(s) are next cached. Caching occurs on publish or every 24
               hours.
             </Notice>
-          </h1>
+          </h3>
         </div>
-
-        {legacyHeadTags?.length && (
-          <Box sx={{ mx: 2 }} component="h1">
-            <Notice>
-              This instance has legacy head tags. If you want to edit or delete
-              these, please contact support.
-            </Notice>
-          </Box>
-        )}
-
+        <div className={styles.Notice}>
+          {legacyHeadTags?.length && (
+            <Box sx={{ mx: 2 }} component="h3">
+              <Notice>
+                This instance has legacy head tags. If you want to edit or
+                delete these, please contact support.
+              </Notice>
+            </Box>
+          )}
+        </div>
         {props.tags.length ? (
           props.tags
             .sort((a, b) => (a.sort > b.sort ? 1 : -1))

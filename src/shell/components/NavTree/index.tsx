@@ -96,9 +96,7 @@ export const NavTree: FC<Readonly<Props>> = ({
       ) : (
         <SimpleTreeView
           data-cy={id}
-          {...(isCodeApp
-            ? { defaultExpandedItems: expandedItems }
-            : { expandedItems: expandedItems })}
+          expandedItems={expandedItems}
           selectedItems={[selected]}
           slots={{
             collapseIcon: ArrowDropDownRoundedIcon,
