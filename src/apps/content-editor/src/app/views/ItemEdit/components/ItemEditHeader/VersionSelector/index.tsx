@@ -267,7 +267,7 @@ export const VersionSelector = memo(
           }}
         >
           <AutoSizer>
-            {({ height, width }) => {
+            {({ height, width }: { height: number; width: number }) => {
               return (
                 <VariableSizeList
                   ref={listRef}
