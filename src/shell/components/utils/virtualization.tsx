@@ -53,9 +53,9 @@ export const ListboxComponent = React.forwardRef<
   React.HTMLAttributes<HTMLElement>
 >(function ListboxComponent(props, ref) {
   const { children, ...other } = props;
-  const itemData: React.ReactChild[] = [];
-  (children as React.ReactChild[]).forEach(
-    (item: React.ReactChild & { children?: React.ReactChild[] }) => {
+  const itemData: React.ReactNode[] = [];
+  (children as React.ReactNode[]).forEach(
+    (item: React.ReactNode & { children?: React.ReactNode[] }) => {
       itemData.push(item);
       itemData.push(...(item.children || []));
     }
@@ -68,7 +68,7 @@ export const ListboxComponent = React.forwardRef<
   const itemCount = itemData.length;
   const itemSize = smUp ? 36 : 48;
 
-  const getChildSize = (child: React.ReactChild) => {
+  const getChildSize = (child: React.ReactNode) => {
     if (child.hasOwnProperty("group")) {
       return 48;
     }

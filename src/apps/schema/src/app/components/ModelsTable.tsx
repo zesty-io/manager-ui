@@ -3,7 +3,6 @@ import {
   DataGridPro,
   GridRenderCellParams,
   GridSortModel,
-  GridValueFormatterParams,
 } from "@mui/x-data-grid-pro";
 import {
   useGetContentModelFieldsQuery,
@@ -13,6 +12,7 @@ import {
 import { ContentModel, ModelType } from "../../../../../shell/services/types";
 import moment from "moment-timezone";
 import { useMemo, useState, useReducer } from "react";
+import AutoSizer, { Size } from "react-virtualized-auto-sizer";
 import { useHistory } from "react-router";
 import { NoResults } from "./NoResults";
 import { modelIconMap, modelNameMap } from "../utils";
@@ -26,10 +26,23 @@ import {
 const FieldsCell = ({ ZUID }: any) => {
   const { data, isLoading } = useGetContentModelFieldsQuery(ZUID);
   if (isLoading) {
-    return <Skeleton variant="rectangular" width="100%" />;
+    return (
+      <Box display="flex" height="100%" alignItems="center">
+        <Skeleton variant="rectangular" width="100%" />
+      </Box>
+    );
   }
 
-  return <Typography variant="body2">{data?.length}</Typography>;
+  return (
+    <Box
+      display="flex"
+      flexDirection="column"
+      height="100%"
+      justifyContent="center"
+    >
+      <Typography variant="body2">{data?.length}</Typography>
+    </Box>
+  );
 };
 
 const ContentItemsCell = ({ ZUID }: any) => {
@@ -37,10 +50,23 @@ const ContentItemsCell = ({ ZUID }: any) => {
     modelZUID: ZUID,
   });
   if (isLoading) {
-    return <Skeleton variant="rectangular" width="100%" />;
+    return (
+      <Box display="flex" height="100%" alignItems="center">
+        <Skeleton variant="rectangular" width="100%" />
+      </Box>
+    );
   }
 
-  return <Typography variant="body2">{data?.length}</Typography>;
+  return (
+    <Box
+      display="flex"
+      flexDirection="column"
+      height="100%"
+      justifyContent="center"
+    >
+      <Typography variant="body2">{data?.length}</Typography>
+    </Box>
+  );
 };
 
 export type ModelFilter = {
@@ -120,13 +146,18 @@ export const ModelsTable = ({ search, onEmptySearch }: Props) => {
   };
 
   const columns = [
-    { field: "id", headerName: "Id", hide: true },
     {
       field: "label",
       headerName: "Name",
       flex: 1,
       renderCell: ({ row }: GridRenderCellParams) => (
-        <Box display="flex" gap={2} width="100%">
+        <Box
+          display="flex"
+          gap={2}
+          width="100%"
+          height="100%"
+          alignItems="center"
+        >
           <SvgIcon
             fontSize="small"
             color="action"
@@ -142,15 +173,14 @@ export const ModelsTable = ({ search, onEmptySearch }: Props) => {
       field: "type",
       headerName: "Model Type",
       width: 152,
-      valueFormatter: (params: GridValueFormatterParams) =>
-        modelNameMap[params.value as keyof typeof modelNameMap],
+      valueFormatter: (value: any) =>
+        modelNameMap[value as keyof typeof modelNameMap],
     },
     {
       field: "updatedAt",
       headerName: "Updated",
       width: 120,
-      valueFormatter: (params: GridValueFormatterParams) =>
-        moment(params.value).fromNow(),
+      valueFormatter: (value: any) => moment(value).fromNow(),
     },
     {
       field: "fields",
@@ -185,43 +215,52 @@ export const ModelsTable = ({ search, onEmptySearch }: Props) => {
       flexDirection="column"
     >
       <Filters activeFilters={activeFilters} onChange={setActiveFilters} />
-      <DataGridPro
-        // @ts-expect-error - missing types for headerAlign and align on DataGridPro
-        columns={columns}
-        rows={
-          filteredModels?.map((model) => ({ ...model, id: model.ZUID })) || []
-        }
-        loading={isFetching}
-        hideFooter
-        rowHeight={52}
-        disableSelectionOnClick
-        disableColumnResize
-        disableColumnFilter
-        disableColumnMenu
-        onRowClick={(params) => handleRowClick(params.row)}
-        sortModel={sortModel}
-        onSortModelChange={(model) => {
-          if (!model.length) {
-            setSortModel([
-              {
-                ...sortModel[0],
-                sort: "asc",
+      <AutoSizer>
+        {({ width, height }: Size) => (
+          <DataGridPro
+            style={{
+              width,
+              height: height - 40,
+            }}
+            // @ts-expect-error - missing types for headerAlign and align on DataGridPro
+            columns={columns}
+            rows={
+              filteredModels?.map((model) => ({ ...model, id: model.ZUID })) ||
+              []
+            }
+            loading={isFetching}
+            hideFooter
+            rowHeight={52}
+            disableSelectionOnClick
+            disableColumnResize
+            disableColumnFilter
+            disableColumnMenu
+            onRowClick={(params) => handleRowClick(params.row)}
+            sortModel={sortModel}
+            onSortModelChange={(model) => {
+              if (!model.length) {
+                setSortModel([
+                  {
+                    ...sortModel[0],
+                    sort: "asc",
+                  },
+                ]);
+              } else {
+                setSortModel(model);
+              }
+            }}
+            sx={{
+              ".MuiDataGrid-row": {
+                cursor: "pointer",
+                backgroundColor: "background.paper",
               },
-            ]);
-          } else {
-            setSortModel(model);
-          }
-        }}
-        sx={{
-          ".MuiDataGrid-row": {
-            cursor: "pointer",
-            backgroundColor: "background.paper",
-          },
-          "& .MuiDataGrid-columnHeaders": {
-            backgroundColor: "grey.100",
-          },
-        }}
-      />
+              "& .MuiDataGrid-columnHeaders": {
+                backgroundColor: "grey.100",
+              },
+            }}
+          />
+        )}
+      </AutoSizer>
       {!filteredModels?.length && !isFetching && search && (
         <Box sx={{ mt: 10 }}>
           <NoResults

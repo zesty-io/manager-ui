@@ -4,6 +4,7 @@ import {
   DialogActions,
   DialogTitle,
   Typography,
+  Box,
 } from "@mui/material";
 import { ContentCopyRounded } from "@mui/icons-material";
 import { useHistory, useParams } from "react-router";
@@ -15,7 +16,6 @@ import {
   useGetContentModelFieldsQuery,
   useGetContentModelsQuery,
 } from "../../../../../../../../shell/services/instance";
-import { Box } from "@mui/system";
 import { LoadingButton } from "@mui/lab";
 
 type DuplicateItemProps = {

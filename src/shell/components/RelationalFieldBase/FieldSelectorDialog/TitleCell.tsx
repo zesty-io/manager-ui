@@ -6,7 +6,13 @@ type TitleCellProps = {
 };
 export const TitleCell = ({ primaryText, secondaryText }: TitleCellProps) => {
   return (
-    <Box width="100%">
+    <Box
+      width="100%"
+      display="flex"
+      flexDirection="column"
+      justifyContent="center"
+      height="100%"
+    >
       <Typography
         color="text.primary"
         fontWeight={600}

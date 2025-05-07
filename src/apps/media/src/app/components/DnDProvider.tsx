@@ -12,8 +12,8 @@ import {
   useGetBinQuery,
   useGetGroupDataQuery,
 } from "../../../../../shell/services/mediaManager";
-import { SxProps } from "@mui/system";
 import { DropArea } from "./DropArea";
+import { SxProps } from "@mui/material";
 
 interface Props {
   children: React.ReactNode;

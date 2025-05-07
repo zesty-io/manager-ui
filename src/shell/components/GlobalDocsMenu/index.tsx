@@ -89,7 +89,7 @@ export const GlobalDocsMenu: FC<GlobalDocsMenuProps> = ({
       </Stack>
       <Grid container px={2}>
         {MAIN_DOC_ITEMS.map((docItem, index) => (
-          <Grid item xs={4} key={index} height={106}>
+          <Grid size={4} key={index} height={106}>
             <ListItemButton
               sx={{
                 display: "flex",

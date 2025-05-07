@@ -11,7 +11,7 @@ import {
   Link,
   Menu,
 } from "@mui/material";
-import { keyframes } from "@mui/system";
+import { keyframes } from "@emotion/react";
 import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRounded";
 import ImageRoundedIcon from "@mui/icons-material/ImageRounded";
 import RemoveRedEyeRoundedIcon from "@mui/icons-material/RemoveRedEyeRounded";

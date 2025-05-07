@@ -19,7 +19,7 @@ import GridViewRoundedIcon from "@mui/icons-material/GridViewRounded";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import { cloneDeep } from "lodash";
 import { FixedSizeList } from "react-window";
-import AutoSizer from "react-virtualized-auto-sizer";
+import AutoSizer, { Size } from "react-virtualized-auto-sizer";
 import ManageSearchRoundedIcon from "@mui/icons-material/ManageSearchRounded";
 
 import { AppState } from "../../../../../store/types";
@@ -253,7 +253,7 @@ export const InstancesList = () => {
             }}
           >
             <AutoSizer>
-              {({ height, width }) => (
+              {({ height, width }: Size) => (
                 <FixedSizeList
                   height={height}
                   width={width}
