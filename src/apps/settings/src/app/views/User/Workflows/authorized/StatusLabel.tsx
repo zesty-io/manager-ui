@@ -15,13 +15,13 @@ import {
   ListItemIcon,
   Skeleton,
   alpha,
+  ClickAwayListener,
 } from "@mui/material";
 import Brightness1Icon from "@mui/icons-material/Brightness1";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
 import PauseCircleOutlineRoundedIcon from "@mui/icons-material/PauseCircleOutlineRounded";
 import DragIndicatorRoundedIcon from "@mui/icons-material/DragIndicatorRounded";
-import { ClickAwayListener } from "@mui/base/ClickAwayListener";
 import { useFormDialogContext } from "./forms-dialogs";
 import { StatusLabel as StatusLabelTypes } from "../../../../../../../../shell/services/types";
 
