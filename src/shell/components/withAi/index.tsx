@@ -3,7 +3,7 @@ import { Popover, Button, alpha } from "@mui/material";
 import { Brain } from "@zesty-io/material";
 import { ComponentType, useState } from "react";
 import { useSelector } from "react-redux";
-import { keyframes } from "@mui/system";
+import { keyframes } from "@emotion/react";
 import moment from "moment-timezone";
 
 import { AppState } from "../../store/types";

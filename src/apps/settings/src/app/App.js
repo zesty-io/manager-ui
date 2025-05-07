@@ -54,8 +54,7 @@ export default connect((state) => {
       }}
     >
       <Grid
-        item
-        xs={"auto"}
+        size={"auto"}
         sx={{
           position: "relative",
           height: "100%",
@@ -77,8 +76,7 @@ export default connect((state) => {
         </ResizableContainer>
       </Grid>
       <Grid
-        item
-        xs
+        size="grow"
         sx={{
           position: "relative",
           height: "100%",

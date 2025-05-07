@@ -9,7 +9,7 @@ export const VersionCell = ({ params }: { params: GridRenderCellParams }) => {
     : params.row?.meta?.publishedByUserName;
 
   return (
-    <Stack spacing={0.25}>
+    <Stack spacing={0.25} height="100%" justifyContent="center">
       {params.row?.meta?.version !== params.row?.publishing?.version && (
         <Tooltip
           placement="bottom-start"

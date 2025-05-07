@@ -23,12 +23,12 @@ describe("Media Folders", () => {
 
     cy.intercept("POST", "/groups");
 
-    cy.get(".MuiTreeView-root", options)
+    cy.get(".MuiSimpleTreeView-root", options)
       .contains(NEW_TEST_FOLDER)
       .should("exist");
   });
   it("Hides and shows folder", () => {
-    cy.get(".MuiTreeView-root").contains(NEW_TEST_FOLDER).click();
+    cy.get(".MuiSimpleTreeView-root").contains(NEW_TEST_FOLDER).click();
 
     cy.get("[aria-label='Open folder menu']", options).click(forceClick);
 
@@ -37,13 +37,13 @@ describe("Media Folders", () => {
     cy.wait(500);
 
     // Non hidden tree
-    cy.get(".MuiTreeView-root", options)
+    cy.get(".MuiSimpleTreeView-root", options)
       .first()
       .contains(NEW_TEST_FOLDER, options)
       .should("not.exist");
 
     // Hidden Tree
-    cy.get(".MuiTreeView-root")
+    cy.get(".MuiSimpleTreeView-root")
       .next()
       .contains(NEW_TEST_FOLDER)
       .should("exist");
@@ -55,13 +55,13 @@ describe("Media Folders", () => {
     cy.wait(500);
 
     // Non hidden tree
-    cy.get(".MuiTreeView-root", options)
+    cy.get(".MuiSimpleTreeView-root", options)
       .first()
       .contains(NEW_TEST_FOLDER)
       .should("exist");
   });
   it("Navigates folders via breadcrumbs", () => {
-    cy.get(".MuiTreeView-root")
+    cy.get(".MuiSimpleTreeView-root")
       .contains(NEW_TEST_FOLDER, options)
       .click(forceClick);
 
@@ -69,7 +69,7 @@ describe("Media Folders", () => {
     cy.location("pathname").should("eq", "/media/folder/1-6c9618c-r26pt");
   });
   it("Renames folder", () => {
-    cy.get(".MuiTreeView-root")
+    cy.get(".MuiSimpleTreeView-root")
       .contains(NEW_TEST_FOLDER, options)
       .click(forceClick);
 
@@ -88,11 +88,11 @@ describe("Media Folders", () => {
 
     cy.intercept("PUT", "/groups");
 
-    cy.get(".MuiTreeView-root").should("be.visible");
+    cy.get(".MuiSimpleTreeView-root").should("be.visible");
     cy.contains("p", "CYPRESS TEST NEW FOLDER EDITED", options).should("exist");
   });
   it("Deletes folder", () => {
-    cy.get(".MuiTreeView-root")
+    cy.get(".MuiSimpleTreeView-root")
       .contains("CYPRESS TEST NEW FOLDER EDITED")
       .click(forceClick);
 
@@ -104,7 +104,7 @@ describe("Media Folders", () => {
 
     cy.intercept("DELETE", "/groups");
 
-    cy.get(".MuiTreeView-root")
+    cy.get(".MuiSimpleTreeView-root")
       .contains("CYPRESS TEST NEW FOLDER EDITED")
       .should("not.exist");
   });
