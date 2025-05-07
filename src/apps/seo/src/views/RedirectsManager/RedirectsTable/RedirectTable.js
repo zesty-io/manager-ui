@@ -59,7 +59,6 @@ export default function RedirectTable(props) {
 
   const columns = useMemo(
     () => [
-      { field: "id", headerName: "Id", hide: true },
       {
         field: "path",
         minWidth: 206,

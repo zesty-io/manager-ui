@@ -6,7 +6,7 @@ type UserCellProps = { params: GridRenderCellParams };
 export const UserCell = ({ params }: UserCellProps) => {
   if (!params?.row?.meta?.createdByUserName) return <></>;
   return (
-    <Stack direction="row" gap={1.5} alignItems="center">
+    <Stack direction="row" gap={1.5} alignItems="center" height="100%">
       <Avatar
         alt={params?.row?.meta?.createdByUserName}
         src={`https://www.gravatar.com/avatar/${MD5(

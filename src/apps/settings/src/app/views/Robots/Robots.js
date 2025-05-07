@@ -10,8 +10,7 @@ import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
 import { TopBar } from "../../components/TopBar";
 import { FieldWrapper, MainWrapper } from "../../components/Containers";
-import { Typography, Box } from "@mui/material";
-import { Alert } from "@mui/lab";
+import { Typography, Box, Alert } from "@mui/material";
 
 export default connect((state) => {
   return {

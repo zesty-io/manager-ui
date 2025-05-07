@@ -50,7 +50,7 @@ export const NavTreeItem: FC<Props> = React.memo(
     return (
       <TreeItem
         ref={itemTreeRef}
-        nodeId={nodeId}
+        itemId={nodeId}
         label={
           <Stack
             direction="row"
