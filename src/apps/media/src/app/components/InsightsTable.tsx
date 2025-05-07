@@ -14,7 +14,8 @@ import {
   useGetUsageQuery,
   useGetRequestsQuery,
 } from "../../../../../shell/services/metrics";
-import { DataGridPro, GridValueGetterParams } from "@mui/x-data-grid-pro";
+import AutoSizer, { Size } from "react-virtualized-auto-sizer";
+import { DataGridPro } from "@mui/x-data-grid-pro";
 import { File, Bin } from "../../../../../shell/services/types";
 import fileBroken from "../../../../../../public/images/fileBroken.jpg";
 import { useHistory, useLocation } from "react-router-dom";
@@ -122,6 +123,7 @@ const FilenameColumn = ({ params }: any) => {
           <Box
             sx={{
               height: "52px",
+              minWidth: "52px",
               width: "52px",
               overflow: "hidden",
               backgroundColor: "grey.100",
@@ -682,9 +684,11 @@ export const InsightsTable: FC<Props> = ({ files, loading }) => {
       width: 140,
       renderCell: (params: any) => {
         return (
-          <Typography variant="body2">
-            {numberFormatter.format(params.row.ThroughtputGB)} GB
-          </Typography>
+          <Box display="flex" alignItems="center" height="100%">
+            <Typography variant="body2">
+              {numberFormatter.format(params.row.ThroughtputGB)} GB
+            </Typography>
+          </Box>
         );
       },
     },
@@ -714,7 +718,7 @@ export const InsightsTable: FC<Props> = ({ files, loading }) => {
     {
       field: "action",
       headerName: "",
-      width: 64,
+      width: 72,
       sortable: false,
       renderCell: (params: any) => <ActionColumn params={params} />,
     },
@@ -723,30 +727,38 @@ export const InsightsTable: FC<Props> = ({ files, loading }) => {
   return (
     <Box component="main" sx={{ height: "100%", width: "100%", px: 4 }}>
       {files && (
-        <DataGridPro
-          sx={{
-            backgroundColor: "common.white",
-            ".MuiDataGrid-row": {
-              cursor: "pointer",
-            },
-            border: "none",
-          }}
-          columns={columns}
-          rows={files}
-          rowHeight={52}
-          hideFooter
-          disableColumnFilter
-          disableColumnMenu
-          loading={loading}
-          onRowClick={(params: any) => {
-            const locationParams = new URLSearchParams(location.search);
-            locationParams.set("fileId", params.row.id);
-            history.replace({
-              pathname: location.pathname,
-              search: locationParams.toString(),
-            });
-          }}
-        />
+        <AutoSizer>
+          {({ width, height }: Size) => (
+            <DataGridPro
+              sx={{
+                backgroundColor: "common.white",
+                ".MuiDataGrid-row": {
+                  cursor: "pointer",
+                },
+                border: "none",
+              }}
+              style={{
+                width: width,
+                height,
+              }}
+              columns={columns}
+              rows={files}
+              rowHeight={52}
+              hideFooter
+              disableColumnFilter
+              disableColumnMenu
+              loading={loading}
+              onRowClick={(params: any) => {
+                const locationParams = new URLSearchParams(location.search);
+                locationParams.set("fileId", params.row.id);
+                history.replace({
+                  pathname: location.pathname,
+                  search: locationParams.toString(),
+                });
+              }}
+            />
+          )}
+        </AutoSizer>
       )}
     </Box>
   );

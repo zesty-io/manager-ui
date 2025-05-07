@@ -35,8 +35,8 @@ describe("Analytics dashboard", () => {
   });
   it("Applies selected date filter to url params", () => {
     cy.url().should("include", "datePreset=last_14_days");
-    cy.getBySelector("date_default").click();
-    cy.contains("Last 7 days").click();
+    cy.getBySelector("date_default").click({ force: true });
+    cy.contains("Last 7 days").click({ force: true });
     cy.url().should("include", "datePreset=last_7_days");
   });
 });

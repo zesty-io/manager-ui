@@ -19,7 +19,7 @@ import {
 import { Brain } from "@zesty-io/material";
 import { useParams, useLocation } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
-import { keyframes } from "@mui/system";
+import { keyframes } from "@emotion/react";
 import { EditRounded } from "@mui/icons-material";
 
 import { cloneDeep } from "lodash";

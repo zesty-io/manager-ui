@@ -1,16 +1,12 @@
 import moment from "moment";
-import {
-  DataGridPro,
-  GridAutoSizer,
-  GridRenderCellParams,
-} from "@mui/x-data-grid-pro";
+import { DataGridPro, GridRenderCellParams } from "@mui/x-data-grid-pro";
 import {
   useGetAuditsQuery,
   useGetContentItemQuery,
   useGetContentModelQuery,
 } from "../../../../shell/services/instance";
 import { useSelector } from "react-redux";
-import { Typography, Skeleton, Tooltip } from "@mui/material";
+import { Typography, Skeleton, Tooltip, Box } from "@mui/material";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import CodeIcon from "@mui/icons-material/Code";
 import { Database } from "@zesty-io/material";
@@ -65,11 +61,15 @@ const NameCell = ({ affectedZUID, resourceType }: any) => {
   }, [resourceType, contentItem, contentModel, fileData]);
 
   if (isLoading) {
-    return <Skeleton variant="rectangular" width="100%" />;
+    return (
+      <Box display="flex" height="100%" alignItems="center">
+        <Skeleton variant="rectangular" width="100%" />
+      </Box>
+    );
   }
 
   return (
-    <>
+    <Box display="flex" height="100%" alignItems="center">
       {iconMap[resourceType as keyof typeof iconMap]}
       <Typography variant="body2" component="span" sx={{ ml: 2 }} noWrap>
         {name ? (
@@ -87,7 +87,7 @@ const NameCell = ({ affectedZUID, resourceType }: any) => {
           })`
         )}
       </Typography>
-    </>
+    </Box>
   );
 };
 
@@ -103,13 +103,24 @@ const VersionCell = ({ affectedZUID, resourceType }: any) => {
     resourceType === "code" ? fileData?.version : data?.meta?.version;
 
   if (isLoading) {
-    return <Skeleton variant="rectangular" width="100%" />;
+    return (
+      <Box display="flex" height="100%" alignItems="center">
+        <Skeleton variant="rectangular" width="100%" />
+      </Box>
+    );
   }
 
   return (
-    <Typography variant="body2" color="text.secondary">
-      {version ? `v${version}` : ""}
-    </Typography>
+    <Box
+      display="flex"
+      flexDirection="column"
+      height="100%"
+      justifyContent="center"
+    >
+      <Typography variant="body2" color="text.secondary">
+        {version ? `v${version}` : ""}
+      </Typography>
+    </Box>
   );
 };
 
@@ -126,7 +137,6 @@ export const ResourceTable = ({ dateRange }: Props) => {
   };
 
   const columns = [
-    { field: "id", headerName: "Id", hide: true },
     {
       field: "name",
       headerName: "Name",

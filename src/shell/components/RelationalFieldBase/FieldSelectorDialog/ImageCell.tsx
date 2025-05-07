@@ -36,16 +36,18 @@ export const ImageCell = ({ imageFieldName, itemZUID }: ImageCellProps) => {
 
   if (!imageURL || imageError) {
     return (
-      <Stack
-        width={40}
-        height={40}
-        borderRadius={1}
-        bgcolor="grey.200"
-        alignItems="center"
-        justifyContent="center"
-      >
-        <ImageRounded color="action" fontSize="small" />
-      </Stack>
+      <Box height="100%" display="flex" alignItems="center">
+        <Stack
+          width={40}
+          height={40}
+          borderRadius={1}
+          bgcolor="grey.200"
+          alignItems="center"
+          justifyContent="center"
+        >
+          <ImageRounded color="action" fontSize="small" />
+        </Stack>
+      </Box>
     );
   }
 
