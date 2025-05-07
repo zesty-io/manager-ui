@@ -12,9 +12,9 @@ import CssBaseline from "@mui/material/CssBaseline";
 
 import "chart.js/auto";
 
-import { LicenseInfo } from "@mui/x-license-pro";
+import { LicenseInfo } from "@mui/x-license";
 LicenseInfo.setLicenseKey(
-  "e9268055e7858ccf7d7bc5d078217f7eTz00ODIyOCxFPTE2OTA3Mzk5NDkxNjgsUz1wcm8sTE09c3Vic2NyaXB0aW9uLEtWPTI="
+  "4a9d79ec086e87806b702c7bc5c6e644Tz0xMTIyNDIsRT0xNzc3NTkzNTk5MDAwLFM9cHJvLExNPXBlcnBldHVhbCxQVj1RMy0yMDI0LEtWPTI="
 );
 
 import idb from "utility/idb";

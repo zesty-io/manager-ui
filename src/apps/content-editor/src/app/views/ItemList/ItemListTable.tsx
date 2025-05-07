@@ -27,6 +27,7 @@ import {
   useState,
   useContext,
 } from "react";
+import AutoSizer, { Size } from "react-virtualized-auto-sizer";
 import { ContentItem } from "../../../../../../shell/services/types";
 import { useStagedChanges } from "./StagedChangesContext";
 import { OneToManyCell } from "./TableCells/OneToManyCell";
@@ -85,7 +86,7 @@ const METADATA_COLUMNS = [
     headerName: "Date Created",
     width: 200,
     filterable: true,
-    valueGetter: (params: any) => params.row?.meta?.createdAt,
+    valueGetter: (params: any, row: any) => row?.meta?.createdAt,
   },
 
   {
@@ -93,21 +94,21 @@ const METADATA_COLUMNS = [
     headerName: "Last Saved",
     width: 200,
     filterable: true,
-    valueGetter: (params: any) => params.row?.web?.updatedAt,
+    valueGetter: (params: any, row: any) => row?.web?.updatedAt,
   },
   {
     field: "lastPublished",
     headerName: "Last Published",
     width: 200,
     filterable: true,
-    valueGetter: (params: any) => params.row?.publishing?.publishAt,
+    valueGetter: (params: any, row: any) => row?.publishing?.publishAt,
   },
   {
     field: "zuid",
     headerName: "ZUID",
     width: 200,
     filterable: true,
-    valueGetter: (params: any) => params.row?.meta?.ZUID,
+    valueGetter: (params: any, row: any) => row?.meta?.ZUID,
   },
 ];
 const fieldTypeColumnConfigMap = {
@@ -117,17 +118,17 @@ const fieldTypeColumnConfigMap = {
   },
   wysiwyg_basic: {
     width: 360,
-    valueFormatter: (params: any) => getHtmlText(params.value),
+    valueFormatter: (value: any) => getHtmlText(value),
     filterable: true,
   },
   wysiwyg_advanced: {
     width: 360,
-    valueFormatter: (params: any) => getHtmlText(params.value),
+    valueFormatter: (value: any) => getHtmlText(value),
     filterable: true,
   },
   article_writer: {
     width: 360,
-    valueFormatter: (params: any) => getHtmlText(params.value),
+    valueFormatter: (value: any) => getHtmlText(value),
     filterable: true,
   },
   markdown: {
@@ -157,24 +158,23 @@ const fieldTypeColumnConfigMap = {
   },
   number: {
     width: 160,
-    filterable: true,
-    valueFormatter: (params: any) => {
-      if (!params.value) return null;
-      return new Intl.NumberFormat("en-US").format(params.value);
+    valueFormatter: (value: any) => {
+      if (!value) return null;
+      return new Intl.NumberFormat("en-US").format(value);
     },
+    filterable: true,
     align: "right",
   },
   currency: {
     width: 160,
-    valueFormatter: (params: any) => {
-      if (params.value?.value === undefined || params.value?.value === null)
-        return "";
+    valueFormatter: (value: any) => {
+      if (value?.value === undefined || value?.value === null) return "";
 
       return `${
-        CURRENCY_OBJECT[params.value?.currency]?.symbol_native
+        CURRENCY_OBJECT[value?.currency]?.symbol_native
       } ${new Intl.NumberFormat("en-US", {
         minimumFractionDigits: 2,
-      }).format(params.value.value)}`;
+      }).format(value.value)}`;
     },
     align: "right",
   },
@@ -239,7 +239,7 @@ const fieldTypeColumnConfigMap = {
     filterable: true,
     renderCell: (params: GridRenderCellParams) => {
       return (
-        <Box display="flex" alignItems="center" gap={1.5}>
+        <Box display="flex" alignItems="center" gap={1.5} height="100%">
           <Box
             sx={{
               width: 32,
@@ -272,9 +272,8 @@ export const ItemListTable = memo(
     const history = useHistory();
     const { stagedChanges } = useStagedChanges();
     const [selectedItems, setSelectedItems] = useSelectedItems();
-    const [params, setParams] = useParams();
     const [sortModel, setSortModel] = useContext(TableSortContext);
-    const [pinnedColumns, setPinnedColumns] = useState<GridPinnedColumns>({});
+    const [pinnedColumns, setPinnedColumns] = useState({});
 
     const { data: fields } = useGetContentModelFieldsQuery(modelZUID);
 
@@ -314,7 +313,7 @@ export const ItemListTable = memo(
         {
           field: "version",
           headerName: "Vers.",
-          width: 59,
+          width: 64,
           sortable: true,
           filterable: false,
           renderCell: (params: GridRenderCellParams) => (
@@ -331,15 +330,15 @@ export const ItemListTable = memo(
               field: field.name,
               headerName: field.label,
               filterable: false,
-              valueGetter: (params: any) => {
+              valueGetter: (params: any, row: any) => {
                 if (field.datatype === "currency") {
                   return {
-                    value: params.row.data[field.name],
+                    value: row.data[field.name],
                     currency: field.settings?.currency || "USD",
                   };
                 }
 
-                return params.row.data[field.name];
+                return row.data[field.name];
               },
               ...fieldTypeColumnConfigMap[field.datatype],
               // if field is yes_no but it has custom options increase the width
@@ -353,6 +352,7 @@ export const ItemListTable = memo(
       }
       return [...result, ...METADATA_COLUMNS];
     }, [fields]);
+
     if (!initialState) {
       return (
         <Box
@@ -367,137 +367,148 @@ export const ItemListTable = memo(
     }
 
     return (
-      <DataGridPro
-        apiRef={apiRef}
-        loading={loading}
-        rows={rows}
-        columns={columns}
-        pinnedColumns={pinnedColumns}
-        onPinnedColumnsChange={(newPinnedColumns) =>
-          setPinnedColumns(newPinnedColumns)
-        }
-        rowHeight={54}
-        hideFooter
-        onRowClick={(row) => {
-          if (selectedItems.length) {
-            if (selectedItems.includes(row.id)) {
-              setSelectedItems(
-                selectedItems.filter((id: string) => id !== row.id)
-              );
-            } else {
-              setSelectedItems([...selectedItems, row.id]);
+      <AutoSizer>
+        {({ width, height }: Size) => (
+          <DataGridPro
+            apiRef={apiRef}
+            loading={loading}
+            rows={rows}
+            columns={columns}
+            style={{
+              width,
+              height: height - 60,
+            }}
+            pinnedColumns={pinnedColumns}
+            onPinnedColumnsChange={(newPinnedColumns) =>
+              setPinnedColumns(newPinnedColumns)
             }
-          } else {
-            if (typeof row.id === "string" && row.id?.startsWith("new")) {
-              history.push(`/content/${modelZUID}/new`);
-            } else {
-              history.push(`/content/${modelZUID}/${row.id}`);
-            }
-          }
-        }}
-        components={{
-          NoRowsOverlay: noRowsOverlay,
-          BaseCheckbox: (props) => (
-            <Checkbox
-              disabled={stagedChanges && Object.keys(stagedChanges)?.length}
-              {...props}
-            />
-          ),
-        }}
-        componentsProps={{
-          baseTooltip: {
-            placement: "top-start",
-            slotProps: {
-              popper: {
-                modifiers: [
-                  {
-                    name: "offset",
-                    options: {
-                      offset: [0, -30],
-                    },
+            rowHeight={54}
+            hideFooter
+            onRowClick={(row) => {
+              if (selectedItems.length) {
+                if (selectedItems.includes(row.id)) {
+                  setSelectedItems(
+                    selectedItems.filter((id: string) => id !== row.id)
+                  );
+                } else {
+                  setSelectedItems([...selectedItems, row.id]);
+                }
+              } else {
+                if (typeof row.id === "string" && row.id?.startsWith("new")) {
+                  history.push(`/content/${modelZUID}/new`);
+                } else {
+                  history.push(`/content/${modelZUID}/${row.id}`);
+                }
+              }
+            }}
+            slots={{
+              noRowsOverlay: noRowsOverlay,
+              baseCheckbox: (props: any) => (
+                <Checkbox
+                  disabled={stagedChanges && Object.keys(stagedChanges)?.length}
+                  {...props}
+                />
+              ),
+            }}
+            slotProps={{
+              baseTooltip: {
+                placement: "top-start",
+                slotProps: {
+                  popper: {
+                    modifiers: [
+                      {
+                        name: "offset",
+                        options: {
+                          offset: [0, -30],
+                        },
+                      },
+                    ],
                   },
-                ],
+                },
               },
-            },
-          },
-        }}
-        getRowClassName={(params) => {
-          // if included in staged changes, highlight the row
-          if (stagedChanges?.[params.id]) {
-            return "Mui-selected";
-          }
-        }}
-        checkboxSelection
-        disableSelectionOnClick
-        initialState={initialState}
-        sortingOrder={["desc", "asc", null]}
-        sortModel={sortModel}
-        sortingMode="server"
-        onSortModelChange={(newSortModel) => {
-          if (!Object.entries(newSortModel)?.length) {
-            setSortModel([
-              {
-                field: "lastSaved",
-                sort: "desc",
+            }}
+            getRowClassName={(params) => {
+              // if included in staged changes, highlight the row
+              if (stagedChanges?.[params.id]) {
+                return "Mui-selected";
+              }
+            }}
+            checkboxSelection
+            disableRowSelectionOnClick
+            initialState={initialState}
+            sortingOrder={["desc", "asc", null]}
+            sortModel={sortModel}
+            sortingMode="server"
+            onSortModelChange={(newSortModel) => {
+              if (!Object.entries(newSortModel)?.length) {
+                setSortModel([
+                  {
+                    field: "lastSaved",
+                    sort: "desc",
+                  },
+                ]);
+              } else {
+                setSortModel(newSortModel);
+              }
+            }}
+            onRowSelectionModelChange={(newSelection: any) =>
+              setSelectedItems(newSelection)
+            }
+            rowSelectionModel={
+              stagedChanges && Object.keys(stagedChanges)?.length
+                ? []
+                : selectedItems
+            }
+            isRowSelectable={(params) =>
+              params.row?.meta?.version &&
+              !(stagedChanges && Object.keys(stagedChanges)?.length)
+            }
+            sx={{
+              backgroundColor: "common.white",
+              ".MuiDataGrid-row": {
+                cursor: "pointer",
               },
-            ]);
-          } else {
-            setSortModel(newSortModel);
-          }
-        }}
-        onSelectionModelChange={(newSelection) =>
-          setSelectedItems(newSelection)
-        }
-        selectionModel={
-          stagedChanges && Object.keys(stagedChanges)?.length
-            ? []
-            : selectedItems
-        }
-        isRowSelectable={(params) =>
-          params.row?.meta?.version &&
-          !(stagedChanges && Object.keys(stagedChanges)?.length)
-        }
-        sx={{
-          backgroundColor: "common.white",
-          ".MuiDataGrid-row": {
-            cursor: "pointer",
-          },
-          border: "none",
-          "& .MuiDataGrid-columnHeaderCheckbox": {
-            padding: 0,
-          },
-          " & .MuiDataGrid-columnSeparator": {
-            visibility: "visible",
-          },
-          "& .MuiDataGrid-pinnedColumnHeaders": {
-            backgroundColor: "inherit",
-          },
-          ".MuiDataGrid-columnHeader": {
-            "&:hover .MuiDataGrid-columnSeparator": {
-              visibility: "visible",
-            },
-          },
-          ".MuiDataGrid-columnSeparator": {
-            visibility: "hidden",
-          },
-          "& .MuiDataGrid-cell:focus-within": {
-            outline: "none",
-          },
-          "& .MuiDataGrid-columnHeader:focus-within": {
-            outline: "none",
-          },
-          "& .MuiDataGrid-cell:has([data-cy='sortCell'])": {
-            padding: 0,
-          },
-          "& .MuiDataGrid-row.Mui-selected": {
-            borderBottom: (theme) => `2px solid ${theme.palette.primary.main}`,
-          },
-          // Makes sure that the custom overlay is interactive
-          "& [data-cy='NoResults']": {
-            pointerEvents: "all",
-          },
-        }}
-      />
+              border: "none",
+              "& .MuiDataGrid-columnHeaderCheckbox": {
+                padding: 0,
+              },
+              " & .MuiDataGrid-columnSeparator": {
+                visibility: "visible",
+              },
+              "& .MuiDataGrid-pinnedColumnHeaders": {
+                backgroundColor: "inherit",
+              },
+              ".MuiDataGrid-columnHeader": {
+                "&:hover .MuiDataGrid-columnSeparator": {
+                  visibility: "visible",
+                },
+              },
+              ".MuiDataGrid-columnSeparator": {
+                visibility: "hidden",
+              },
+              "& .MuiDataGrid-cell:focus-within": {
+                outline: "none",
+              },
+              "& .MuiDataGrid-columnHeader:focus-within": {
+                outline: "none",
+              },
+              "& .MuiDataGrid-cell:has([data-cy='sortCell'])": {
+                padding: 0,
+              },
+              "& .MuiDataGrid-row.Mui-selected": {
+                " .MuiDataGrid-cell": {
+                  borderBottom: (theme) =>
+                    `1px solid ${theme.palette.primary.main}`,
+                },
+              },
+              // Makes sure that the custom overlay is interactive
+              "& [data-cy='NoResults']": {
+                pointerEvents: "all",
+              },
+            }}
+          />
+        )}
+      </AutoSizer>
     );
   }
 );

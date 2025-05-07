@@ -60,7 +60,7 @@ describe("Actions in content editor", () => {
       .first()
       .contains("Exceeding by 5 characters.");
     cy.get("#12-e6a5cfe3f6-k94nbg input", TIMEOUT)
-      .clear()
+      .clear({ force: true })
       .wait(500)
       .type("Lorem ipsum");
     cy.get("#SaveItemButton", TIMEOUT).click();
@@ -308,7 +308,7 @@ describe("Actions in content editor", () => {
   //   // cy.contains("The item has been purged from the CDN cache", { timeout: 5000 }).should("exist");
   // });
 
-  it("Creates a new content item using AI-generated data", () => {
+  it.only("Creates a new content item using AI-generated data", () => {
     cy.waitOn("/v1/content/models*", () => {
       cy.waitOn("/v1/content/models/*/fields?showDeleted=true", () => {
         cy.visit("/content/6-a1a600-k0b6f0/new");

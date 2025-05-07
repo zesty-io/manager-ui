@@ -5,6 +5,7 @@ import {
   DialogTitle,
   Typography,
   Stack,
+  Box,
 } from "@mui/material";
 import { DeleteRounded } from "@mui/icons-material";
 import { useHistory, useParams } from "react-router";
@@ -15,7 +16,6 @@ import {
   useDeleteContentItemMutation,
   useGetContentModelFieldsQuery,
 } from "../../../../../../../../shell/services/instance";
-import { Box } from "@mui/system";
 import { LoadingButton } from "@mui/lab";
 
 type DuplicateItemProps = {

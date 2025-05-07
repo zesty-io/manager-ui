@@ -946,7 +946,7 @@ export const FieldForm = ({
               );
             })}
             {isUpdateField && (
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <LoadingButton
                   data-cy="DeactivateReactivateFieldUpdateModal"
                   variant="outlined"

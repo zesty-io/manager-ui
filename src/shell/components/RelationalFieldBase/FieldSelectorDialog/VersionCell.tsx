@@ -14,7 +14,7 @@ export const VersionCell = ({
   scheduleData,
 }: VersionCellProps) => {
   return (
-    <Stack gap={0.25}>
+    <Stack gap={0.25} justifyContent={"center"} height="100%">
       {itemData?.meta?.version > (publishData?.version || 0) && (
         <VersionChip
           type="draft"

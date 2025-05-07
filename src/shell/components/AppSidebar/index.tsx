@@ -267,7 +267,6 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
                         <ListItem
                           key={menu.name}
                           disablePadding
-                          selected={menu.disableActive ? false : isActive}
                           sx={{
                             color: "grey.400",
                             borderLeft:
@@ -278,11 +277,16 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
                           }}
                         >
                           <ListItemButton
+                            selected={menu.disableActive ? false : isActive}
                             sx={{
                               height: 36,
                               pl: isActive ? 1.25 : 1.5,
                               pr: 1.5,
                               py: 0.75,
+                              "&.Mui-selected .MuiSvgIcon-root, &.Mui-selected .MuiListItemText-primary":
+                                {
+                                  color: "primary.main",
+                                },
                             }}
                             onClick={() => {
                               if (menu.onClick) {

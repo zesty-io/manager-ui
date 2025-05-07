@@ -1,7 +1,6 @@
-import { Box, Typography } from "@mui/material";
+import { Box, SxProps, Typography } from "@mui/material";
 import FileCopyRoundedIcon from "@mui/icons-material/FileCopyRounded";
 import { GroupData, Bin } from "../../../../../shell/services/types";
-import { SxProps } from "@mui/system";
 
 interface Props {
   currentGroup: GroupData;

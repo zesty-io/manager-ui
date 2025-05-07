@@ -49,7 +49,7 @@ const FileRowItem: FC<FileProps & { isLast: boolean }> = ({
       }}
     >
       <Grid container>
-        <Grid item xs={8} display="flex" alignItems="center" gap={1.5}>
+        <Grid size={8} display="flex" alignItems="center" gap={1.5}>
           {Icon && (
             <Icon
               sx={{
@@ -72,7 +72,7 @@ const FileRowItem: FC<FileProps & { isLast: boolean }> = ({
             {fileName}
           </Typography>
         </Grid>
-        <Grid item xs={4}>
+        <Grid size={4}>
           <Typography variant="body1" color="common.white">
             {moment(lastSaved).fromNow()}
           </Typography>
@@ -95,12 +95,12 @@ const FileListHeader = () => (
     }}
   >
     <Grid container>
-      <Grid item xs={8}>
+      <Grid size={8}>
         <Typography variant="h6" fontWeight={700} color="common.white">
           File Name
         </Typography>
       </Grid>
-      <Grid item xs={4}>
+      <Grid size={4}>
         <Typography variant="h6" fontWeight={700} color="common.white">
           Last Saved
         </Typography>

@@ -2,7 +2,7 @@ import { useMemo, FC, CSSProperties } from "react";
 import { FixedSizeList as List } from "react-window";
 import moment from "moment";
 import { Typography, Skeleton, Box } from "@mui/material";
-import AutoSizer from "react-virtualized-auto-sizer";
+import AutoSizer, { Size } from "react-virtualized-auto-sizer";
 
 import { ActionTimelineItem } from "./ActionTimelineItem";
 import { TimelineItem } from "./ActionTimelineItem/TimelineItem";
@@ -92,7 +92,7 @@ export const ActionsTimeline: FC<ActionsTimelineProps> = ({
   return (
     <Box data-cy="resource_list" flex={1}>
       <AutoSizer>
-        {({ height, width }) => (
+        {({ height, width }: Size) => (
           <List
             height={height}
             itemCount={showSkeletons ? 10 : actionsWithHeaders.length}
