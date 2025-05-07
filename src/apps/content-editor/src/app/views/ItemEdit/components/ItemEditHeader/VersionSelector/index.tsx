@@ -266,30 +266,24 @@ export const VersionSelector = memo(
             },
           }}
         >
-          <AutoSizer>
-            {({ height, width }: { height: number; width: number }) => {
-              return (
-                <VariableSizeList
-                  ref={listRef}
-                  height={height}
-                  width={width}
-                  itemCount={mappedVersions?.length}
-                  itemData={
-                    {
-                      versions: mappedVersions,
-                      activeVersion,
-                      handleLoadVersion,
-                      setRowHeight,
-                    } as any
-                  }
-                  itemSize={getRowHeight}
-                  innerElementType={MenuList}
-                >
-                  {Row}
-                </VariableSizeList>
-              );
-            }}
-          </AutoSizer>
+          <VariableSizeList
+            ref={listRef}
+            height={listHeight}
+            width={379}
+            itemCount={mappedVersions?.length}
+            itemData={
+              {
+                versions: mappedVersions,
+                activeVersion,
+                handleLoadVersion,
+                setRowHeight,
+              } as any
+            }
+            itemSize={getRowHeight}
+            innerElementType={MenuList}
+          >
+            {Row}
+          </VariableSizeList>
         </Popover>
       </>
     );
