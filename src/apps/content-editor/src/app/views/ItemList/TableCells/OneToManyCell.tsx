@@ -60,7 +60,7 @@ export const OneToManyCell = ({ items }: OneToManyCellProps) => {
 
   return (
     <>
-      <Box display="flex" gap={0.5}>
+      <Box display="flex" gap={0.5} alignItems="center" height="100%">
         {items
           ?.slice(0, lastValidIndex + 1)
           ?.map((id: string, index: number) => {

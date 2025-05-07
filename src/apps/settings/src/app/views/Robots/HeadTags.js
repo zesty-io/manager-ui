@@ -1,5 +1,5 @@
 import { TopBar } from "../../components/TopBar";
-import { Box } from "@mui/system";
+import { Box } from "@mui/material";
 import { MainWrapper } from "../../components/Containers";
 import { Head } from "../../../../../../shell/components/Head";
 

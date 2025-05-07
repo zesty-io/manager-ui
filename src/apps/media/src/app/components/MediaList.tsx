@@ -13,7 +13,7 @@ import {
   useGetUsageQuery,
   useGetRequestsQuery,
 } from "../../../../../shell/services/metrics";
-import { DataGridPro, GridValueGetterParams } from "@mui/x-data-grid-pro";
+import { DataGridPro } from "@mui/x-data-grid-pro";
 import { File, Bin, Group } from "../../../../../shell/services/types";
 import FolderIcon from "@mui/icons-material/Folder";
 import fileBroken from "../../../../../../public/images/fileBroken.jpg";
@@ -36,6 +36,7 @@ import CheckIcon from "@mui/icons-material/Check";
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 import ReportGmailerrorredIcon from "@mui/icons-material/ReportGmailerrorred";
 import FontDownloadRoundedIcon from "@mui/icons-material/FontDownloadRounded";
+import AutoSizer, { Size } from "react-virtualized-auto-sizer";
 
 // file icons import
 import wordImg from "../../../../../../public/images/wordImg.png";
@@ -722,10 +723,12 @@ export const MediaList: FC<Props> = ({ files, groups }) => {
       sortable: false,
       renderCell: (params: any) => {
         return (
-          <Typography variant="body2">
-            {params.row.created_at &&
-              moment(params.row.created_at).format("MMMM Do YYYY")}
-          </Typography>
+          <Box display="flex" height="100%" alignItems="center">
+            <Typography variant="body2">
+              {params.row.created_at &&
+                moment(params.row.created_at).format("MMMM Do YYYY")}
+            </Typography>
+          </Box>
         );
       },
     },
@@ -753,7 +756,7 @@ export const MediaList: FC<Props> = ({ files, groups }) => {
     {
       field: "action",
       headerName: "",
-      width: 64,
+      width: 72,
       sortable: false,
       renderCell: (params: any) => <ActionColumn params={params} />,
     },
@@ -762,33 +765,41 @@ export const MediaList: FC<Props> = ({ files, groups }) => {
   return (
     <Box component="main" sx={{ height: "100%", width: "100%", px: 4 }}>
       {files && (
-        <DataGridPro
-          sx={{
-            backgroundColor: "common.white",
-            ".MuiDataGrid-row": {
-              cursor: "pointer",
-            },
-            border: "none",
-          }}
-          columns={columns}
-          rows={items}
-          rowHeight={52}
-          hideFooter
-          disableColumnFilter
-          disableColumnMenu
-          onRowClick={(params: any) => {
-            if (params.row.type === "folder") {
-              history.replace(`/media/folder/${params.row.id}`);
-            } else {
-              const locationParams = new URLSearchParams(location.search);
-              locationParams.set("fileId", params.row.id);
-              history.replace({
-                pathname: location.pathname,
-                search: locationParams.toString(),
-              });
-            }
-          }}
-        />
+        <AutoSizer>
+          {({ width, height }: Size) => (
+            <DataGridPro
+              sx={{
+                backgroundColor: "common.white",
+                ".MuiDataGrid-row": {
+                  cursor: "pointer",
+                },
+                border: "none",
+              }}
+              style={{
+                width: width,
+                height: height,
+              }}
+              columns={columns}
+              rows={items}
+              rowHeight={52}
+              hideFooter
+              disableColumnFilter
+              disableColumnMenu
+              onRowClick={(params: any) => {
+                if (params.row.type === "folder") {
+                  history.replace(`/media/folder/${params.row.id}`);
+                } else {
+                  const locationParams = new URLSearchParams(location.search);
+                  locationParams.set("fileId", params.row.id);
+                  history.replace({
+                    pathname: location.pathname,
+                    search: locationParams.toString(),
+                  });
+                }
+              }}
+            />
+          )}
+        </AutoSizer>
       )}
     </Box>
   );
