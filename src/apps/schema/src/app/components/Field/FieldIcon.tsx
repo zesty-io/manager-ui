@@ -16,8 +16,7 @@ import KeyboardArrowDownRounded from "@mui/icons-material/KeyboardArrowDownRound
 import ColorLensRounded from "@mui/icons-material/ColorLensRounded";
 import FormatListNumberedRounded from "@mui/icons-material/FormatListNumberedRounded";
 import { Markdown, OneToOne, Block } from "@zesty-io/material";
-import { Box } from "@mui/system";
-import { SvgIcon } from "@mui/material";
+import { Box, SvgIcon } from "@mui/material";
 
 type Icons = {
   [key: string]: {

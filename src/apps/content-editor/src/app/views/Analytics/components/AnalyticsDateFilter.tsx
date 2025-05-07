@@ -5,7 +5,7 @@ import {
   DateFilter,
   DateRangeFilterValue,
 } from "../../../../../../../shell/components/Filters";
-import { Skeleton } from "@mui/lab";
+import { Skeleton } from "@mui/material";
 
 type Props = {
   showSkeleton?: boolean;

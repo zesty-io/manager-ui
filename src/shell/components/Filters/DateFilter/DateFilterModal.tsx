@@ -7,9 +7,12 @@ import {
   DialogContent,
   IconButton,
 } from "@mui/material";
-import { DateCalendar, LocalizationProvider } from "@mui/x-date-pickers-pro";
+import {
+  DateCalendar,
+  DateView,
+  LocalizationProvider,
+} from "@mui/x-date-pickers-pro";
 import { AdapterDateFns } from "@mui/x-date-pickers-pro/AdapterDateFns";
-import { CalendarPickerView } from "@mui/x-date-pickers";
 import CloseIcon from "@mui/icons-material/Close";
 
 import { DateFilterModalType } from "./types";
@@ -30,7 +33,7 @@ export const DateFilterModal: FC<DateFilterModalProps> = ({
   onClose,
   date,
 }) => {
-  const [calendarView, setCalendarView] = useState<CalendarPickerView | "">("");
+  const [calendarView, setCalendarView] = useState<DateView | "">("");
 
   return (
     <Dialog open onClose={onClose}>

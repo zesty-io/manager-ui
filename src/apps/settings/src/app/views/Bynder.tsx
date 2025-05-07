@@ -27,8 +27,12 @@ export const Bynder = () => {
   const [createInstanceSetting] = useCreateInstanceSettingsMutation();
   const [updateInstanceSetting] = useUpdateInstanceSettingMutation();
   const { data: rawInstanceSettings } = useGetInstanceSettingsQuery();
-  const [tokenInterval, setTokenInterval] = useState<NodeJS.Timer>();
-  const [portalUrlInterval, setPortalUrlInterval] = useState<NodeJS.Timer>();
+  const [tokenInterval, setTokenInterval] = useState<
+    NodeJS.Timeout | undefined
+  >();
+  const [portalUrlInterval, setPortalUrlInterval] = useState<
+    NodeJS.Timeout | undefined
+  >();
 
   const [testValue, setTestValue] = useState(1);
 
