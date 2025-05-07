@@ -68,7 +68,7 @@ export const ItemListActions = forwardRef((props, ref) => {
   const debouncedSetParams = useCallback(
     debounce((value) => {
       setParams(value, "search");
-      dispatch(searchItems({ modelZUID, search: value }));
+      dispatch(searchItems(value));
     }, 500),
     [setParams, dispatch, searchItems]
   );
