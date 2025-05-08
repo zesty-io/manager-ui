@@ -142,3 +142,36 @@ Content edit view that displays deactivated field: /content/6-000-0000/7-000-000
 Comment in content edit view: /content/6-000-0000/7-000-0000/comment/12-000-0000/24-000-0000
 Comment in content edit view that displays deleted replies: /content/6-000-0000/7-000-0000/comment/12-000-0000/24-000-0000?showDeleted=true
 ```
+
+## Github Ticket Filing Guidelines
+
+To keep our issue tracking process efficient and ensure clarity, please follow these guidelines when creating and logging GitHub tickets.
+
+### Creating Tickets
+
+**Issue Naming:**
+
+- Use the format: `[APP NAME] - [DESCRIPTION OF THE ISSUE]`
+- Example: `Content - Laggy Horizontal Scrolling`
+- _See screenshot for examples on how to format the issue title_
+
+![Image](https://github.com/user-attachments/assets/2f707ef4-d441-4cb3-a8a4-f8c7217c2631)
+
+Clearly define the issue by supplying the following relevant information:
+
+- A clear and concise description of the issue
+- Screenshots and/or video recordings
+- Reproduction steps
+
+### Logging Tickets
+
+Moving forward, all bugs and enhancements impacting Manager UI and Accounts UI must be logged in the [Product Roadmap Board](https://github.com/orgs/zesty-io/projects/150). This applies whether you discovered an issue yourself or it is reported by a customer.
+
+- **Straightforward bug fixes:** Add to the `Design Complete` column. Make sure to sort the issues by priority, issues with higher priority goes on top of the list.
+- **Complex bugs/enhancements/feature requests requiring input/design:** Add to the `Being Designed` column.
+
+_See the attached screenshot for reference._
+
+![Image](https://github.com/user-attachments/assets/e7659d11-31ed-45a3-965f-0aa7694f1d0f)
+
+For anything requiring immediate attention, please notify the engineering team and the relevant stakeholders on Slack (`#product`), and they will address it as soon as possible.
