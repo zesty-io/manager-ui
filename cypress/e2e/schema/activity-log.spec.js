@@ -6,6 +6,8 @@ describe("Schema: Activity Log Tab", () => {
   it("Sets default date url params", () => {
     cy.visit("/schema/6-ce80dbfe90-ptjpm6/activity-log");
 
+    cy.wait(3000);
+
     cy.location("search").should("equal", `?from=2023-02-15&to=${now}`);
   });
 
