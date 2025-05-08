@@ -143,7 +143,7 @@ Comment in content edit view: /content/6-000-0000/7-000-0000/comment/12-000-0000
 Comment in content edit view that displays deleted replies: /content/6-000-0000/7-000-0000/comment/12-000-0000/24-000-0000?showDeleted=true
 ```
 
-## Github Ticket Filing Guidelines
+## GitHub Ticket Filing Guidelines
 
 To keep our issue tracking process efficient and ensure clarity, please follow these guidelines when creating and logging GitHub tickets.
 
