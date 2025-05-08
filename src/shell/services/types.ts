@@ -324,6 +324,7 @@ export interface User {
   updatedAt: string;
   verifiedEmails: string | null;
   websiteCreator: boolean;
+  selected_lang?: string;
 }
 
 export interface SystemRole {
