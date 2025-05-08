@@ -4,6 +4,7 @@ import {
   InstalledApp,
   ModelType,
   ContentItemWithDirtyAndPublishing,
+  User,
   Products,
 } from "../services/types";
 /*
@@ -27,7 +28,7 @@ export type AppState = {
     valid: boolean;
     sessionEnding: boolean;
   };
-  user: any;
+  user: User;
   users: any;
   releases: any;
   releaseMembers: any;
