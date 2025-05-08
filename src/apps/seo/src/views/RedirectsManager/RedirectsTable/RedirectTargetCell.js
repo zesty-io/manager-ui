@@ -12,7 +12,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 export const RedirectTargetCell = (props) => {
   const dispatch = useDispatch();
   const [loaded, setLoaded] = useState(false);
-  const CellWrapper = props?.wrapper ?? Box;
   // Only select content from store if targetType is "page" and select specific object instead of whole store
   const contentItem =
     props.targetType === "page"
@@ -40,41 +39,40 @@ export const RedirectTargetCell = (props) => {
                 textOverflow: "ellipsis",
                 overflow: "hidden",
                 textDecoration: "none",
+                color: "info.main",
               }}
             >
-              <CellWrapper color="info.dark" type="link">
-                <InsertLinkRoundedIcon />
-                <Typography variant="body2">{contentItem.web.path}</Typography>
-              </CellWrapper>
+              <Typography variant="body2" color="info.main">
+                {contentItem.web.path}
+              </Typography>
             </Link>
           ) : loaded ? (
-            <CellWrapper>
-              <BlockRoundedIcon fontSize="small" />
-              <Typography variant="body2">Redirect Target has been</Typography>
-            </CellWrapper>
+            <Typography variant="body2" color="info.main">
+              Redirect Target has been
+            </Typography>
           ) : (
-            <Typography variant="body2">Loading...</Typography>
+            <Typography variant="body2" color="info.main">
+              Loading...
+            </Typography>
           )}
         </>
       ) : props.targetType === "external" ? (
         <MuiLink
           underline="none"
-          color="secondary"
+          color="info"
           href={props.target}
           target="_blank"
           title="Redirect URL"
           sx={{ textOverflow: "ellipsis", overflow: "hidden" }}
         >
-          <CellWrapper color="primary.main" type="link">
-            <OpenInNewRoundedIcon fontSize="small" />
-            <Typography variant="body2">{props.target}</Typography>
-          </CellWrapper>
+          <Typography variant="body2" color="info.main">
+            {props.target}
+          </Typography>
         </MuiLink>
       ) : (
-        <CellWrapper>
-          <FontAwesomeIcon icon={faAsterisk} />
-          <Typography variant="body2">{props.target}</Typography>
-        </CellWrapper>
+        <Typography variant="body2" color="info.main">
+          {props.target}
+        </Typography>
       )}
     </>
   );

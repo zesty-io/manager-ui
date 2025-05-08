@@ -15,7 +15,6 @@ import { removeRedirect } from "../../../store/redirects";
 import { notify } from "../../../../../../shell/store/notifications";
 import { DialogContent } from "@mui/material";
 import { RedirectTargetCell } from "./RedirectTargetCell";
-import { CellWrapper } from "./RedirectTable";
 
 interface DeleteDialogProps {
   open: boolean;
@@ -197,11 +196,7 @@ export const DeleteDialog = memo(function DeleteDialog(
               overflow="hidden"
               textOverflow="ellipsis"
             >
-              <RedirectTargetCell
-                wrapper={CellWrapper}
-                target={target}
-                targetType={type}
-              />
+              <RedirectTargetCell target={target} targetType={type} />
             </Typography>
           </Box>
         </Box>

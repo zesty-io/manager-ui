@@ -10,48 +10,13 @@ import DescriptionRoundedIcon from "@mui/icons-material/DescriptionRounded";
 import { RedirectCreator } from "./RedirectCreator";
 import { RedirectTargetCell } from "./RedirectTargetCell";
 import { DeleteDialog } from "./DeleteDialog";
-
-export const CellWrapper = ({ color = "", children, type = "text" }) => {
-  return (
-    <Box
-      sx={{
-        display: "flex",
-        alignItems: "center",
-        gap: 0.75,
-        position: "relative",
-        overflow: "hidden",
-        "& svg, & span": {
-          color: color || "action.active",
-          flexGrow: 0,
-        },
-        "& .MuiTypography-root": (theme) => ({
-          ...theme.typography.body2,
-          color: color || "text.primary",
-          whiteSpace: "nowrap",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          flexGrow: 1,
-        }),
-        "&:hover": {
-          ...(type !== "text" && {
-            textDecorationLine: "underline",
-            color: color,
-          }),
-        },
-      }}
-    >
-      {children}
-    </Box>
-  );
-};
+import HiveIcon from "@mui/icons-material/Hive";
+import AutoSizer from "react-virtualized-auto-sizer";
 
 export default function RedirectTable(props) {
   const [deleteDialogIsOpen, setDeleteDialogIsOpen] = useState(false);
   const [deleteRedirect, setDeleteRedirect] = useState(null);
-  const [pinnedColumns, setPinnedColumns] = useState({
-    left: [],
-    right: ["actions"],
-  });
+
   const handleRemoveRedirect = useCallback((item) => {
     setDeleteRedirect(item);
     setDeleteDialogIsOpen(true);
@@ -62,105 +27,89 @@ export default function RedirectTable(props) {
       {
         field: "path",
         minWidth: 206,
+        flex: 1,
         renderHeader: () => (
-          <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-            <Typography variant="body2" fontWeight={600} color="text.primary">
-              Incoming Path
-            </Typography>
-            <Tooltip title="File Path Only" placement="top">
-              <InfoIcon fontSize="small" sx={{ color: "action.disabled" }} />
-            </Tooltip>
-          </Box>
+          <Typography variant="body2" fontWeight={600} color="text.primary">
+            Incoming Path
+          </Typography>
         ),
         renderCell: ({ value }) => (
-          <Box
-            sx={{
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-            }}
-          >
+          <Typography variant="body2" color="text.primary">
             {value}
-          </Box>
+          </Typography>
         ),
       },
       {
         field: "code",
-        width: 185,
-        minWidth: 185,
+        width: 120,
+        minWidth: 120,
         renderHeader: () => (
-          <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-            <Typography variant="body2" fontWeight={600} color="text.primary">
-              HTTP Code
-            </Typography>
-            <Tooltip
-              title={
-                <>
-                  301: Moved Permanently <br />
-                  302: Temporarily Moved
-                </>
-              }
-              placement="top"
-            >
-              <InfoIcon fontSize="small" sx={{ color: "action.disabled" }} />
-            </Tooltip>
-          </Box>
+          <Typography variant="body2" fontWeight={600} color="text.primary">
+            HTTP Code
+          </Typography>
         ),
         renderCell: ({ value }) => {
           return (
-            <CellWrapper>
-              <Typography variant="body2" fontWeight={600} color="text.primary">
-                {value}
-              </Typography>
-              <ArrowForwardRoundedIcon fontSize="small" />
-            </CellWrapper>
+            <Typography
+              variant="body2"
+              color="text.primary"
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "flex-start",
+                alignItems: "center",
+                columnGap: "12px",
+                lineHeight: "100%",
+              }}
+            >
+              {value}
+              <ArrowForwardRoundedIcon fontSize="small" color="action" />
+            </Typography>
           );
         },
       },
       {
         field: "targetType",
-        width: 200,
-        minWidth: 200,
+        width: 120,
+        minWidth: 120,
         renderHeader: () => {
           return (
-            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-              <Typography variant="body2" fontWeight={600} color="text.primary">
-                Redirect Type
-              </Typography>
-              <Tooltip
-                title={
-                  <>
-                    Internal E.g. /about <br />
-                    External E.g. https://zesty.org/ <br />
-                    Wildcard E.g. /blog/*/*/
-                  </>
-                }
-                placement="top"
-              >
-                <InfoIcon fontSize="small" sx={{ color: "action.disabled" }} />
-              </Tooltip>
-            </Box>
+            <Typography variant="body2" fontWeight={600} color="text.primary">
+              Type
+            </Typography>
           );
         },
         renderCell: ({ value }) => {
           return (
-            <CellWrapper>
+            <Typography
+              variant="body2"
+              color="text.primary"
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "flex-start",
+                alignItems: "center",
+                columnGap: "12px",
+                lineHeight: "100%",
+              }}
+            >
               {value === "external" ? (
                 <>
-                  <OpenInNewRoundedIcon fontSize="small" />
+                  <OpenInNewRoundedIcon fontSize="small" color="action" />
                   External&nbsp;
                 </>
               ) : value === "path" ? (
                 <>
-                  <InsertDriveFileRoundedIcon fontSize="small" />
+                  <HiveIcon fontSize="small" color="action" />
                   Wildcard&nbsp;
                 </>
               ) : (
                 <>
-                  <DescriptionRoundedIcon fontSize="small" />
+                  <DescriptionRoundedIcon fontSize="small" color="action" />
                   Internal&nbsp;
                 </>
               )}
-            </CellWrapper>
+            </Typography>
           );
         },
       },
@@ -170,13 +119,13 @@ export default function RedirectTable(props) {
         flex: 1,
         headerName: (
           <Typography variant="body2" fontWeight={600} color="text.primary">
-            Redirect Target
+            Target
           </Typography>
         ),
 
         renderCell: ({ value, row }) => (
           <RedirectTargetCell
-            wrapper={CellWrapper}
+            // wrapper={CellWrapper}
             target={value}
             targetType={row.targetType}
           />
@@ -185,9 +134,9 @@ export default function RedirectTable(props) {
       {
         field: "actions",
         type: "actions",
-        width: 40,
-        minWidth: 40,
-        maxWidth: 40,
+        width: 54,
+        minWidth: 54,
+        maxWidth: 54,
         resizable: false,
         getActions: ({ row }) => [
           <GridActionsCellItem
@@ -227,7 +176,7 @@ export default function RedirectTable(props) {
       display="flex"
       flexDirection="column"
       height="100%"
-      justifyContent="space-between"
+      justifyContent="flex-start"
       alignItems="stretch"
       width="100%"
       position="relative"
@@ -238,37 +187,59 @@ export default function RedirectTable(props) {
         siteZuid={props.siteZuid}
         dispatch={props.dispatch}
       />
+      <Box width="100%" height="100%">
+        <AutoSizer>
+          {({ width, height }) => (
+            <DataGridPro
+              columns={columns}
+              rows={rows}
+              rowHeight={60}
+              style={{
+                width: width,
+                height: height,
+              }}
+              checkboxSelection
+              sx={{
+                bgcolor: "background.paper",
+                color: "text.primary",
+                fontSize: "typography.body2.fontSize",
+                "& .MuiDataGrid-cell, & .MuiDataGrid-columnHeader": {
+                  outline: "none!important",
+                },
+                "& .MuiDataGrid-pinnedColumnHeaders": {
+                  bgcolor: "transparent",
+                },
 
-      <DataGridPro
-        columns={columns}
-        rows={rows}
-        rowHeight={60}
-        sx={{
-          bgcolor: "background.paper",
-          color: "text.primary",
-          fontSize: "typography.body2.fontSize",
-          "& .MuiDataGrid-cell, & .MuiDataGrid-columnHeader": {
-            outline: "none!important",
-          },
-          "& .MuiDataGrid-pinnedColumnHeaders": {
-            bgcolor: "transparent",
-          },
-
-          "& .MuiDataGrid-columnHeader:hover": {
-            "& .MuiDataGrid-columnSeparator": {
-              visibility: "visible",
-            },
-          },
-        }}
-        hideFooter
-        pinnedColumns={pinnedColumns}
-        onPinnedColumnsChange={(e) => {
-          setPinnedColumns({
-            left: e?.left,
-            right: [...e?.right?.filter((col) => col !== "actions"), "actions"],
-          });
-        }}
-      />
+                "& .MuiDataGrid-columnHeader:hover": {
+                  "& .MuiDataGrid-columnSeparator": {
+                    visibility: "visible",
+                  },
+                },
+                "& .MuiDataGrid-cell": {
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "flex-start",
+                  alignItems: "center",
+                },
+                "& .MuiDataGrid-container--top [role=row]": {
+                  backgroundColor: "grey.100",
+                },
+                "& .MuiDataGrid-columnHeaderCheckbox, & .MuiDataGrid-cellCheckbox":
+                  {
+                    padding: "0 0 0 6px",
+                  },
+                "& .MuiDataGrid-cell:has([data-cy='sortCell'])": {
+                  padding: 0,
+                },
+                "& .MuiCheckbox-root": {
+                  color: "action.active",
+                },
+              }}
+              hideFooter
+            />
+          )}
+        </AutoSizer>
+      </Box>
       <DeleteDialog
         open={deleteDialogIsOpen}
         onClose={() => setDeleteDialogIsOpen(false)}
