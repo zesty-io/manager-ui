@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { WithLoader } from "@zesty-io/core/WithLoader";
 import RedirectsTable from "./RedirectsTable";
 import RedirectImportTable from "./RedirectImportTable";
 import { fetchRedirects } from "../../store/redirects";

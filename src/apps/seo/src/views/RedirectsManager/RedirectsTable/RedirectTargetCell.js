@@ -3,11 +3,6 @@ import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { searchItems } from "shell/store/content";
 import { Box, Link as MuiLink, Typography } from "@mui/material";
-import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
-import InsertLinkRoundedIcon from "@mui/icons-material/InsertLinkRounded";
-import BlockRoundedIcon from "@mui/icons-material/BlockRounded";
-import { faAsterisk } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export const RedirectTargetCell = (props) => {
   const dispatch = useDispatch();

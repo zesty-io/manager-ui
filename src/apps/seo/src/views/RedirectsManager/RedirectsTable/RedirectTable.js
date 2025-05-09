@@ -1,11 +1,9 @@
 import { useMemo, useCallback, useState } from "react";
 import { DataGridPro, GridActionsCellItem } from "@mui/x-data-grid-pro";
-import { Box, Tooltip, Typography } from "@mui/material";
-import InfoIcon from "@mui/icons-material/InfoOutlined";
+import { Box, Typography } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
-import InsertDriveFileRoundedIcon from "@mui/icons-material/InsertDriveFileRounded";
 import DescriptionRoundedIcon from "@mui/icons-material/DescriptionRounded";
 import { RedirectCreator } from "./RedirectCreator";
 import { RedirectTargetCell } from "./RedirectTargetCell";
@@ -124,11 +122,7 @@ export default function RedirectTable(props) {
         ),
 
         renderCell: ({ value, row }) => (
-          <RedirectTargetCell
-            // wrapper={CellWrapper}
-            target={value}
-            targetType={row.targetType}
-          />
+          <RedirectTargetCell target={value} targetType={row.targetType} />
         ),
       },
       {
