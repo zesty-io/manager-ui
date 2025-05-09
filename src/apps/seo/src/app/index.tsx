@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import { Box } from "@mui/material";
 
 import { RedirectsManager } from "../views/RedirectsManager";
+import RedirectsContextProvider from "./components/RedirectsContextProvider";
 
 export default connect((state) => state)(
   class HealthApp extends Component {
@@ -22,7 +23,9 @@ export default connect((state) => state)(
         >
           <Switch>
             <Route exact path="/redirects">
-              <RedirectsManager {...this.props} />
+              <RedirectsContextProvider>
+                <RedirectsManager {...this.props} />
+              </RedirectsContextProvider>
             </Route>
           </Switch>
         </Box>
