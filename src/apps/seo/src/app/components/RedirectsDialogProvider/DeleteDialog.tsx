@@ -1,4 +1,4 @@
-import { memo, useState } from "react";
+import { memo } from "react";
 import LoadingButton from "@mui/lab/LoadingButton";
 import {
   Button,
@@ -11,12 +11,13 @@ import {
 } from "@mui/material";
 import { DeleteRounded } from "@mui/icons-material";
 import { useDispatch } from "react-redux";
-import { removeRedirect } from "../../../store/redirects";
 import { notify } from "../../../../../../shell/store/notifications";
 import { DialogContent } from "@mui/material";
-import { RedirectTargetCell } from "./RedirectTargetCell";
 
-interface DeleteDialogProps {
+import { useDeleteRedirectMutation } from "../../../../../../shell/services/instance";
+import { RedirectTargetCell } from "../../../views/RedirectsManager/RedirectsTable/RedirectTargetCell";
+
+export type DeleteDialogProps = {
   open: boolean;
   onClose: () => void;
   ZUID: string;
@@ -24,33 +25,33 @@ interface DeleteDialogProps {
   type: string;
   target: string;
   code: number;
-}
+};
 
 export const DeleteDialog = memo(function DeleteDialog(
   props: DeleteDialogProps
 ) {
   const { open, onClose, ZUID, path, type, target, code } = props;
 
-  const [deleting, setDeleting] = useState(false);
+  const [deleteRedirect, { isLoading: isDeleting }] =
+    useDeleteRedirectMutation();
+
   const dispatch = useDispatch();
 
   const handleDeleteFile = () => {
     if (!ZUID) return;
 
-    setDeleting(true);
-    Promise.resolve(dispatch(removeRedirect(ZUID)))
+    deleteRedirect({ ZUID })
       .then((res: any) => {
-        if (res.status === 200) {
+        if (!res?.error) {
           dispatch(
             notify({
-              kind: "error",
-              message: `Redirect Delete: ${path}`,
+              kind: "success",
+              message: `Redirect Deleted: ${path}`,
             })
           );
         }
       })
       .finally(() => {
-        setDeleting(false);
         onClose();
       });
   };
@@ -210,7 +211,7 @@ export const DeleteDialog = memo(function DeleteDialog(
           variant="contained"
           color="error"
           onClick={handleDeleteFile}
-          loading={deleting}
+          loading={isDeleting}
         >
           Delete Forever
         </LoadingButton>

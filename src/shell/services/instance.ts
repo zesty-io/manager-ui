@@ -23,6 +23,8 @@ import {
   Data,
   StyleCategory,
   GroupItem,
+  Redirects,
+  RedirectRequest,
 } from "./types";
 import { batchApiRequests } from "../../utility/batchApiRequests";
 
@@ -53,6 +55,7 @@ export const instanceApi = createApi({
     "ContentItems",
     "ItemPublishings",
     "Groups",
+    "Redirects",
   ],
   endpoints: (builder) => ({
     // https://www.zesty.io/docs/instances/api-reference/content/models/items/publishings/#Get-All-Item-Publishings
@@ -716,6 +719,26 @@ export const instanceApi = createApi({
       },
       invalidatesTags: ["ContentModels", "WebViews", "ContentModelFields"],
     }),
+    getRedirects: builder.query<Redirects[], void>({
+      query: () => `/web/redirects`,
+      transformResponse: getResponseData,
+      providesTags: ["Redirects"],
+    }),
+    createRedirect: builder.mutation<Redirects[], RedirectRequest>({
+      query: (body) => ({
+        url: `/web/redirects`,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["Redirects"],
+    }),
+    deleteRedirect: builder.mutation<Redirects[], { ZUID: string }>({
+      query: ({ ZUID }) => ({
+        url: `/web/redirects/${ZUID}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Redirects"],
+    }),
   }),
 });
 
@@ -770,4 +793,8 @@ export const {
   useGetGroupByZUIDQuery,
   useCreateGroupMutation,
   useCreateStarterBlockModelMutation,
+  useCreateRedirectMutation,
+  useGetRedirectsQuery,
+  useDeleteRedirectMutation,
+  useLazySearchContentQuery,
 } = instanceApi;

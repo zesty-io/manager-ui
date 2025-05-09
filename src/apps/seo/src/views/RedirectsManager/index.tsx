@@ -1,32 +1,30 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import RedirectsTable from "./RedirectsTable";
 import RedirectImportTable from "./RedirectImportTable";
-import { fetchRedirects } from "../../store/redirects";
 import { Box } from "@mui/material";
 import RedirectActions from "./RedirectActions";
 import { LoadingQuote } from "../../../../../shell/components/LoadingQuote";
+import { useDispatch } from "react-redux";
+import { notify } from "../../../../../shell/store/notifications";
+import { useGetRedirectsQuery } from "../../../../../shell/services/instance";
 
-export default function RedirectManager(props) {
-  const [loading, setLoading] = useState(true);
+const RedirectsManager = (props: any) => {
+  const dispatch = useDispatch();
+
+  const { data: redirects, isLoading, isError } = useGetRedirectsQuery();
 
   useEffect(() => {
-    props
-      .dispatch(fetchRedirects())
-      .then(() => {
-        setLoading(false);
-      })
-      .catch((err) => {
-        props.dispatch(
-          notify({
-            kind: "warn",
-            message: "Failed to load redirects data",
-          })
-        );
-        setLoading(false);
-      });
-  }, []);
+    if (isError && !isLoading) {
+      dispatch(
+        notify({
+          kind: "warn",
+          message: "Failed to load redirects data",
+        })
+      );
+    }
+  }, [isError, isLoading]);
 
-  if (loading) {
+  if (isLoading) {
     return <LoadingQuote />;
   }
 
@@ -43,10 +41,7 @@ export default function RedirectManager(props) {
           backgroundColor: "background.paper",
         }}
       >
-        <RedirectActions
-          dispatch={props.dispatch}
-          redirectsTotal={Object.keys(props.redirects).length}
-        />
+        <RedirectActions redirectsTotal={Object.keys(redirects).length} />
       </Box>
 
       <Box
@@ -55,16 +50,21 @@ export default function RedirectManager(props) {
         justifyContent="center"
         alignItems="center"
         px={4}
-        pt={2}
+        pt="60px"
         boxSizing="border-box"
         position="relative"
+        sx={{
+          height: `calc(100% - 68px - 40px)`,
+        }}
       >
         {Object.keys(props.imports).length ? (
           <RedirectImportTable {...props} />
         ) : (
-          <RedirectsTable {...props} />
+          <RedirectsTable redirects={redirects} isLoading={isLoading} />
         )}
       </Box>
     </>
   );
-}
+};
+
+export default RedirectsManager;

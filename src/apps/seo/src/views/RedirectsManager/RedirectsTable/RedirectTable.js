@@ -1,24 +1,22 @@
-import { useMemo, useCallback, useState } from "react";
+import { useMemo, useState } from "react";
 import { DataGridPro, GridActionsCellItem } from "@mui/x-data-grid-pro";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, MenuItem, ListItemText } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
 import DescriptionRoundedIcon from "@mui/icons-material/DescriptionRounded";
-import { RedirectCreator } from "./RedirectCreator";
 import { RedirectTargetCell } from "./RedirectTargetCell";
-import { DeleteDialog } from "./DeleteDialog";
 import HiveIcon from "@mui/icons-material/Hive";
 import AutoSizer from "react-virtualized-auto-sizer";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ModeEditIcon from "@mui/icons-material/ModeEdit";
+import Menu from "@mui/material/Menu";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import { useRedirectsDialog } from "../../../app/components/RedirectsDialogProvider";
 
 export default function RedirectTable(props) {
-  const [deleteDialogIsOpen, setDeleteDialogIsOpen] = useState(false);
-  const [deleteRedirect, setDeleteRedirect] = useState(null);
-
-  const handleRemoveRedirect = useCallback((item) => {
-    setDeleteRedirect(item);
-    setDeleteDialogIsOpen(true);
-  }, []);
+  const [selectedRow, setSelectedRow] = useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
 
   const columns = useMemo(
     () => [
@@ -134,10 +132,13 @@ export default function RedirectTable(props) {
         resizable: false,
         getActions: ({ row }) => [
           <GridActionsCellItem
-            icon={<DeleteIcon />}
+            icon={<MoreHorizIcon />}
             color="action.secondary"
-            label="Delete"
-            onClick={() => handleRemoveRedirect(row)}
+            label="More options"
+            onClick={(event) => {
+              setSelectedRow(row);
+              setAnchorEl(event.currentTarget);
+            }}
           />,
         ],
       },
@@ -176,11 +177,6 @@ export default function RedirectTable(props) {
       position="relative"
       rowGap="24px"
     >
-      <RedirectCreator
-        options={props.paths}
-        siteZuid={props.siteZuid}
-        dispatch={props.dispatch}
-      />
       <Box width="100%" height="100%">
         <AutoSizer>
           {({ width, height }) => (
@@ -234,15 +230,55 @@ export default function RedirectTable(props) {
           )}
         </AutoSizer>
       </Box>
-      <DeleteDialog
-        open={deleteDialogIsOpen}
-        onClose={() => setDeleteDialogIsOpen(false)}
-        ZUID={deleteRedirect?.ZUID}
-        path={deleteRedirect?.path}
-        type={deleteRedirect?.targetType}
-        target={deleteRedirect?.target}
-        code={deleteRedirect?.code}
+      <MoreOptions
+        anchorEl={anchorEl}
+        onClose={() => setAnchorEl(null)}
+        data={selectedRow}
       />
     </Box>
+  );
+}
+
+function MoreOptions({ anchorEl, onClose, data }) {
+  const open = Boolean(anchorEl);
+
+  const { openDeleteDialog } = useRedirectsDialog();
+
+  const handleDelete = () => {
+    openDeleteDialog({
+      ...data,
+      type: data?.targetType,
+    });
+    onClose();
+  };
+
+  return (
+    <Menu
+      id="RedirectsItemOptions"
+      anchorEl={anchorEl}
+      open={open}
+      onClose={onClose}
+      anchorOrigin={{
+        vertical: "top",
+        horizontal: "left",
+      }}
+      transformOrigin={{
+        vertical: "top",
+        horizontal: "right",
+      }}
+    >
+      <MenuItem onClick={onClose}>
+        <ListItemIcon>
+          <ModeEditIcon fontSize="small" />
+        </ListItemIcon>
+        <ListItemText>Edit</ListItemText>
+      </MenuItem>
+      <MenuItem onClick={handleDelete}>
+        <ListItemIcon>
+          <DeleteIcon fontSize="small" />
+        </ListItemIcon>
+        <ListItemText>Delete</ListItemText>
+      </MenuItem>
+    </Menu>
   );
 }

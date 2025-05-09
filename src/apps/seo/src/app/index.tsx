@@ -1,10 +1,10 @@
 import { Component } from "react";
-import { Switch, Route, Link } from "react-router-dom";
+import { Switch, Route } from "react-router-dom";
 import { connect } from "react-redux";
 import { Box } from "@mui/material";
 
-import { RedirectsManager } from "../views/RedirectsManager";
-import RedirectsContextProvider from "./components/RedirectsContextProvider";
+import RedirectsManager from "../views/RedirectsManager";
+import RedirectsDialogContextProvider from "./components/RedirectsDialogProvider";
 
 export default connect((state) => state)(
   class HealthApp extends Component {
@@ -23,9 +23,9 @@ export default connect((state) => state)(
         >
           <Switch>
             <Route exact path="/redirects">
-              <RedirectsContextProvider>
+              <RedirectsDialogContextProvider>
                 <RedirectsManager {...this.props} />
-              </RedirectsContextProvider>
+              </RedirectsDialogContextProvider>
             </Route>
           </Switch>
         </Box>
