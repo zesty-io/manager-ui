@@ -271,13 +271,13 @@ function MoreOptions({ anchorEl, onClose, data }) {
         <ListItemIcon>
           <ModeEditIcon fontSize="small" />
         </ListItemIcon>
-        <ListItemText>Edit</ListItemText>
+        <ListItemText>Edit Redirect</ListItemText>
       </MenuItem>
       <MenuItem onClick={handleDelete}>
         <ListItemIcon>
           <DeleteIcon fontSize="small" />
         </ListItemIcon>
-        <ListItemText>Delete</ListItemText>
+        <ListItemText>Delete Redirect</ListItemText>
       </MenuItem>
     </Menu>
   );

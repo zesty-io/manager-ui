@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import RedirectsTable from "./RedirectsTable";
 import RedirectImportTable from "./RedirectImportTable";
 import { Box } from "@mui/material";
