@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import RedirectsTable from "./RedirectsTable";
 import RedirectImportTable from "./RedirectImportTable";
 import { Box } from "@mui/material";
@@ -7,6 +7,7 @@ import { LoadingQuote } from "../../../../../shell/components/LoadingQuote";
 import { useDispatch } from "react-redux";
 import { notify } from "../../../../../shell/store/notifications";
 import { useGetRedirectsQuery } from "../../../../../shell/services/instance";
+import RedirectsTableContextProvider from "./RedirectsTable/TableSortFilterProvider";
 
 const RedirectsManager = (props: any) => {
   const dispatch = useDispatch();
@@ -47,25 +48,27 @@ const RedirectsManager = (props: any) => {
       <Box
         flexGrow={1}
         display="flex"
+        flexDirection="column"
         justifyContent="center"
-        alignItems="center"
+        alignItems="flex-start"
         px={4}
-        pt="60px"
         boxSizing="border-box"
         position="relative"
         sx={{
           height: `calc(100% - 68px - 40px)`,
         }}
       >
-        {Object.keys(props.imports).length ? (
-          <RedirectImportTable {...props} />
-        ) : (
-          <RedirectsTable
-            redirects={redirects}
-            isLoading={isLoading}
-            redirectsFilter={props?.redirectsFilter || ""}
-          />
-        )}
+        <RedirectsTableContextProvider>
+          {Object.keys(props.imports).length ? (
+            <RedirectImportTable {...props} />
+          ) : (
+            <RedirectsTable
+              redirects={redirects}
+              isLoading={isLoading}
+              redirectsFilter={props?.redirectsFilter || ""}
+            />
+          )}
+        </RedirectsTableContextProvider>
       </Box>
     </>
   );

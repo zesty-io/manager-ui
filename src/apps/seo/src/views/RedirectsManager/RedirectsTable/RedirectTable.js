@@ -13,10 +13,13 @@ import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import Menu from "@mui/material/Menu";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { useRedirectsDialog } from "../../../app/components/RedirectsDialogProvider";
+import { SortFilters } from "./SortFilters";
+import { useRedirectsTableFilters } from "./TableSortFilterProvider";
 
 export default function RedirectTable(props) {
   const [selectedRow, setSelectedRow] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
+  const { sortBy, httpCodeFilter, typeFilter } = useRedirectsTableFilters();
 
   const columns = useMemo(
     () => [
@@ -147,100 +150,136 @@ export default function RedirectTable(props) {
     []
   );
 
-  const rows = useMemo(
-    () =>
-      // case insensitive search on path, code, target, and ZUID
-      Object.values(props.redirects)
-        .filter((redirect) => {
-          const normalizedFilter = props?.redirectsFilter?.toLowerCase() || "";
-          return (
-            redirect.path.toLowerCase().includes(normalizedFilter) ||
-            String(redirect.code).toLowerCase().includes(normalizedFilter) ||
-            redirect.ZUID.toLowerCase().includes(normalizedFilter) ||
-            redirect.target.toLowerCase().includes(normalizedFilter)
-          );
-        })
-        .sort(
-          (a, b) =>
-            new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-        )
-        .map((redirect) => ({
-          ...redirect,
-          id: redirect.ZUID,
-        })),
-    [props.redirects, props.redirectsFilter, props?.isLoading]
-  );
+  const rows = useMemo(() => {
+    return Object.values(props.redirects)
+      .filter((redirect) => {
+        const normalizedFilter = props?.redirectsFilter?.toLowerCase() || "";
+        const matchesSearch =
+          redirect.path.toLowerCase().includes(normalizedFilter) ||
+          String(redirect.code).toLowerCase().includes(normalizedFilter) ||
+          redirect.ZUID.toLowerCase().includes(normalizedFilter) ||
+          redirect.target.toLowerCase().includes(normalizedFilter);
+
+        const matchesHttpCode =
+          httpCodeFilter === "all" || String(redirect.code) === httpCodeFilter;
+
+        const matchesType =
+          typeFilter === "all" || redirect.targetType === typeFilter;
+
+        return matchesSearch && matchesHttpCode && matchesType;
+      })
+      .sort((a, b) => {
+        switch (sortBy) {
+          case "createdAt":
+            return (
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+            );
+          case "path":
+            return a.path.localeCompare(b.path);
+          case "code":
+            return a.code - b.code;
+          case "targetType":
+            return a.targetType.localeCompare(b.targetType);
+          case "target":
+            return a.target.localeCompare(b.target);
+          default:
+            return 0;
+        }
+      })
+      .map((redirect) => ({
+        ...redirect,
+        id: redirect.ZUID,
+      }));
+  }, [
+    props.redirects,
+    props.redirectsFilter,
+    props?.isLoading,
+    sortBy,
+    httpCodeFilter,
+    typeFilter,
+  ]);
+
+  useEffect(() => {
+    console.debug("rows: ", rows);
+  }, [rows]);
 
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      height="100%"
-      justifyContent="flex-start"
-      alignItems="stretch"
-      width="100%"
-      position="relative"
-      rowGap="24px"
-    >
-      <Box width="100%" height="100%">
-        <AutoSizer>
-          {({ width, height }) => (
-            <DataGridPro
-              columns={columns}
-              rows={rows}
-              rowHeight={60}
-              style={{
-                width: width,
-                height: height,
-              }}
-              checkboxSelection
-              sx={{
-                bgcolor: "background.paper",
-                color: "text.primary",
-                fontSize: "typography.body2.fontSize",
-                "& .MuiDataGrid-cell, & .MuiDataGrid-columnHeader": {
-                  outline: "none!important",
-                },
-                "& .MuiDataGrid-pinnedColumnHeaders": {
-                  bgcolor: "transparent",
-                },
-
-                "& .MuiDataGrid-columnHeader:hover": {
-                  "& .MuiDataGrid-columnSeparator": {
-                    visibility: "visible",
-                  },
-                },
-                "& .MuiDataGrid-cell": {
-                  display: "flex",
-                  flexDirection: "row",
-                  justifyContent: "flex-start",
-                  alignItems: "center",
-                },
-                "& .MuiDataGrid-container--top [role=row]": {
-                  backgroundColor: "grey.100",
-                },
-                "& .MuiDataGrid-columnHeaderCheckbox, & .MuiDataGrid-cellCheckbox":
-                  {
-                    padding: "0 0 0 6px",
-                  },
-                "& .MuiDataGrid-cell:has([data-cy='sortCell'])": {
-                  padding: 0,
-                },
-                "& .MuiCheckbox-root": {
-                  color: "action.active",
-                },
-              }}
-              hideFooter
-            />
-          )}
-        </AutoSizer>
+    <>
+      <Box display="flex" flexDirection="row" alignItems="center">
+        <SortFilters />
       </Box>
-      <MoreOptions
-        anchorEl={anchorEl}
-        onClose={() => setAnchorEl(null)}
-        data={selectedRow}
-      />
-    </Box>
+
+      <Box
+        display="flex"
+        flexDirection="column"
+        height="100%"
+        justifyContent="flex-start"
+        alignItems="stretch"
+        width="100%"
+        position="relative"
+        rowGap="16px"
+        boder="1px solid red"
+      >
+        <Box width="100%" height="100%">
+          <AutoSizer>
+            {({ width, height }) => (
+              <DataGridPro
+                columns={columns}
+                rows={rows}
+                rowHeight={60}
+                style={{
+                  width: width,
+                  height: height,
+                }}
+                checkboxSelection
+                sx={{
+                  bgcolor: "background.paper",
+                  color: "text.primary",
+                  fontSize: "typography.body2.fontSize",
+                  "& .MuiDataGrid-cell, & .MuiDataGrid-columnHeader": {
+                    outline: "none!important",
+                  },
+                  "& .MuiDataGrid-pinnedColumnHeaders": {
+                    bgcolor: "transparent",
+                  },
+
+                  "& .MuiDataGrid-columnHeader:hover": {
+                    "& .MuiDataGrid-columnSeparator": {
+                      visibility: "visible",
+                    },
+                  },
+                  "& .MuiDataGrid-cell": {
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "flex-start",
+                    alignItems: "center",
+                  },
+                  "& .MuiDataGrid-container--top [role=row]": {
+                    backgroundColor: "grey.100",
+                  },
+                  "& .MuiDataGrid-columnHeaderCheckbox, & .MuiDataGrid-cellCheckbox":
+                    {
+                      padding: "0 0 0 6px",
+                    },
+                  "& .MuiDataGrid-cell:has([data-cy='sortCell'])": {
+                    padding: 0,
+                  },
+                  "& .MuiCheckbox-root": {
+                    color: "action.active",
+                  },
+                }}
+                hideFooter
+              />
+            )}
+          </AutoSizer>
+        </Box>
+        <MoreOptions
+          anchorEl={anchorEl}
+          onClose={() => setAnchorEl(null)}
+          data={selectedRow}
+        />
+      </Box>
+    </>
   );
 }
 
