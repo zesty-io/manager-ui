@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { DataGridPro, GridActionsCellItem } from "@mui/x-data-grid-pro";
 import { Box, Typography, MenuItem, ListItemText } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -132,6 +132,7 @@ export default function RedirectTable(props) {
         resizable: false,
         getActions: ({ row }) => [
           <GridActionsCellItem
+            data-cy="RedirectsTableActionButton"
             icon={<MoreHorizIcon />}
             color="action.secondary"
             label="More options"
@@ -151,7 +152,7 @@ export default function RedirectTable(props) {
       // case insensitive search on path, code, target, and ZUID
       Object.values(props.redirects)
         .filter((redirect) => {
-          const normalizedFilter = props.redirectsFilter?.toLowerCase() || "";
+          const normalizedFilter = props?.redirectsFilter?.toLowerCase() || "";
           return (
             redirect.path.toLowerCase().includes(normalizedFilter) ||
             String(redirect.code).toLowerCase().includes(normalizedFilter) ||
@@ -159,11 +160,15 @@ export default function RedirectTable(props) {
             redirect.target.toLowerCase().includes(normalizedFilter)
           );
         })
+        .sort(
+          (a, b) =>
+            new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+        )
         .map((redirect) => ({
           ...redirect,
           id: redirect.ZUID,
         })),
-    [props.redirects, props.redirectsFilter]
+    [props.redirects, props.redirectsFilter, props?.isLoading]
   );
 
   return (
@@ -242,9 +247,10 @@ export default function RedirectTable(props) {
 function MoreOptions({ anchorEl, onClose, data }) {
   const open = Boolean(anchorEl);
 
-  const { openDeleteDialog } = useRedirectsDialog();
+  const { openDeleteDialog, openCreateForm } = useRedirectsDialog();
 
   const handleDelete = () => {
+    onClose();
     openDeleteDialog({
       ...data,
       type: data?.targetType,
@@ -252,9 +258,20 @@ function MoreOptions({ anchorEl, onClose, data }) {
     onClose();
   };
 
+  const handleEdit = () => {
+    onClose();
+    openCreateForm({
+      ZUID: data?.ZUID,
+      targetType: data?.targetType,
+      code: data?.code,
+      target: data?.target,
+      path: data?.path,
+    });
+  };
+
   return (
     <Menu
-      id="RedirectsItemOptions"
+      data-cy="RedirectsItemOptions"
       anchorEl={anchorEl}
       open={open}
       onClose={onClose}
@@ -267,13 +284,13 @@ function MoreOptions({ anchorEl, onClose, data }) {
         horizontal: "right",
       }}
     >
-      <MenuItem onClick={onClose}>
+      <MenuItem onClick={handleEdit} data-cy="RedirectsItemOptionsEdit">
         <ListItemIcon>
           <ModeEditIcon fontSize="small" />
         </ListItemIcon>
         <ListItemText>Edit Redirect</ListItemText>
       </MenuItem>
-      <MenuItem onClick={handleDelete}>
+      <MenuItem onClick={handleDelete} data-cy="RedirectsItemOptionsDelete">
         <ListItemIcon>
           <DeleteIcon fontSize="small" />
         </ListItemIcon>

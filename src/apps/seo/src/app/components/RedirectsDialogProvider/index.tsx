@@ -5,15 +5,27 @@ import {
   useState,
   useCallback,
 } from "react";
-import { useCreateRedirectMutation } from "../../../../../../shell/services/instance";
+import {
+  useCreateRedirectMutation,
+  useUpdateRedirectMutation,
+} from "../../../../../../shell/services/instance";
 import {
   RedirectsCodes,
   RedirectsTargetType,
 } from "../../../../../../shell/services/types";
 import { CreateRedirectErrors, parseRedirectError } from "./constants";
 import CreateForm from "./CreateRedirects/CreateForm";
+
 import { DeleteDialog, DeleteDialogProps } from "./DeleteDialog";
 import ErrorDialog from "./ErrorDialog";
+
+export type CreateFormDefaultValues = {
+  ZUID: string;
+  code: RedirectsCodes;
+  target: string;
+  targetType: RedirectsTargetType;
+  path: string;
+};
 
 const RedirectsDialogContext = createContext(null);
 
@@ -28,8 +40,13 @@ const RedirectsDialogContextProvider = ({
   const [createRedirectErrors, setCreateRedirectErrors] =
     useState<CreateRedirectErrors>();
   const [deleteData, setDeleteData] = useState<DeleteDialogProps>(null);
+  const [createFormDefaultValues, setCreateFormDefaultValues] =
+    useState<CreateFormDefaultValues | null>(null);
 
-  const openCreateForm = () => setCreateFormOpen(true);
+  const openCreateForm = (data: CreateFormDefaultValues = null) => {
+    setCreateFormDefaultValues(data);
+    setCreateFormOpen(true);
+  };
   const closeCreateForm = () => setCreateFormOpen(false);
 
   const openErrorDialog = (errors: CreateRedirectErrors) => {
@@ -47,73 +64,124 @@ const RedirectsDialogContextProvider = ({
   const [createRedirect, { isLoading: isCreatingRedirect }] =
     useCreateRedirectMutation();
 
-  const sendCreateRedirectRequests = useCallback(
-    async ({
-      paths,
-      target,
+  const [updateRedirect, { isLoading: isUpdatingRedirect }] =
+    useUpdateRedirectMutation();
+
+  const sendRedirectRequest = async ({
+    paths,
+    target,
+    targetType,
+    code,
+    ZUID,
+  }: {
+    paths: string[];
+    target: string;
+    targetType: RedirectsTargetType;
+    code: RedirectsCodes;
+    ZUID?: string | null;
+  }) => {
+    const request = async ({
+      path,
       targetType,
       code,
+      target,
     }: {
-      paths: string[];
-      target: string;
+      path: string;
       targetType: RedirectsTargetType;
       code: RedirectsCodes;
+      target: string;
     }) => {
-      const request = async ({
-        path,
+      const responseData = {
+        status: "success",
+        message: "",
+        data: {},
+      };
+      try {
+        let reqData = {
+          path,
+          targetType,
+          code,
+          target,
+        };
+        let response: any = undefined;
+        if (!!ZUID) {
+          response = await updateRedirect({ ZUID: ZUID, body: reqData });
+        } else {
+          response = await createRedirect(reqData);
+        }
+
+        if (!!response?.error) {
+          throw new Error(response?.error?.data?.error);
+        }
+      } catch (error) {
+        responseData.status = "error";
+        responseData.message = parseRedirectError(error?.message);
+        responseData.data = {
+          path,
+          targetType,
+          code,
+          target,
+        };
+      }
+      return responseData;
+    };
+    const redirectRequests = [...new Set(paths)]?.map((path) => {
+      return request({
+        path: path,
+        targetType: targetType,
+        code: code,
+        target: target,
+      });
+    });
+
+    const redirectsResponses: Awaited<any> = await Promise.allSettled(
+      redirectRequests
+    );
+    return redirectsResponses.map((item: any) => ({
+      status: item?.value.status,
+      message: item?.value?.message,
+      path: item?.value?.data?.path,
+    }));
+  };
+
+  const createRedirectRequest = useCallback(
+    async ({
+      paths,
+      targetType,
+      code,
+      target,
+    }: {
+      paths: string[];
+      targetType: RedirectsTargetType;
+      code: RedirectsCodes;
+      target: string;
+    }) => {
+      return sendRedirectRequest({ paths, targetType, code, target });
+    },
+    []
+  );
+
+  const updateRedirectRequest = useCallback(
+    async ({
+      path,
+      targetType,
+      code,
+      target,
+      ZUID,
+    }: {
+      path: string;
+      targetType: RedirectsTargetType;
+      code: RedirectsCodes;
+      target: string;
+      ZUID: string;
+    }) => {
+      return sendRedirectRequest({
+        paths: [path],
         targetType,
         code,
         target,
-      }: {
-        path: string;
-        targetType: RedirectsTargetType;
-        code: RedirectsCodes;
-        target: string;
-      }) => {
-        const responseData = {
-          status: "success",
-          message: "",
-          data: {},
-        };
-        try {
-          const response: any = await createRedirect({
-            path,
-            targetType,
-            code,
-            target,
-          });
-          if (!!response?.error) {
-            throw new Error(response?.error?.data?.error);
-          }
-        } catch (error) {
-          responseData.status = "error";
-          responseData.message = parseRedirectError(error?.message);
-          responseData.data = {
-            path,
-            targetType,
-            code,
-            target,
-          };
-        }
-        return responseData;
-      };
-      const redirectRequests = [...new Set(paths)]?.map((path) => {
-        return request({
-          path: path,
-          targetType: targetType,
-          code: code,
-          target: target,
-        });
+        ZUID,
       });
-
-      const redirectsResponses: Awaited<any> = await Promise.allSettled(
-        redirectRequests
-      );
-      return redirectsResponses.map((item: any) => ({
-        status: item?.value.status,
-        message: item?.value?.message,
-        path: item?.value?.data?.path,
-      }));
     },
     []
   );
@@ -125,15 +193,20 @@ const RedirectsDialogContextProvider = ({
         closeCreateForm,
         openErrorDialog,
         closeErrorDialog,
-        createRedirects: sendCreateRedirectRequests,
-        isCreatingRedirect,
+        isLoading: isUpdatingRedirect || isCreatingRedirect,
+        createRedirects: createRedirectRequest,
+        updateRedirect: updateRedirectRequest,
         openDeleteDialog,
         closeDeleteDialog,
       }}
     >
       {children}
 
-      <CreateForm open={createFormOpen} onClose={closeCreateForm} />
+      <CreateForm
+        open={createFormOpen}
+        onClose={closeCreateForm}
+        defaultValues={createFormDefaultValues}
+      />
       <ErrorDialog
         open={errorDialogOpen}
         onClose={closeErrorDialog}

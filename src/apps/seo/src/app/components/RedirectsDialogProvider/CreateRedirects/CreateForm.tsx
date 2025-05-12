@@ -24,31 +24,36 @@ import AddIcon from "@mui/icons-material/Add";
 import { IconButton } from "@zesty-io/material";
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteIcon from "@mui/icons-material/Delete";
-import PathInputField from "./PathInputField";
+import PathField from "./PathField";
 import {
   ContentItemProps,
+  CreateRedirectFormSkeleton,
+  FORM_LABELS,
   HTTP_CODE_OPTIONS,
   TARGET_OPTIONS,
   TOOL_TIPS,
   validateUrl,
 } from "../constants";
-import { useRedirectsDialog } from "..";
+import { CreateFormDefaultValues, useRedirectsDialog } from "..";
 import {
   useGetAllPublishingsQuery,
   useGetLangsQuery,
+  useSearchContentQuery,
 } from "../../../../../../../shell/services/instance";
 import {
+  Language,
   Publishing,
   RedirectsCodes,
   RedirectsTargetType,
 } from "../../../../../../../shell/services/types";
-import TargetInputField from "./TargetInputField";
 import { notify } from "../../../../../../../shell/store/notifications";
 import InfoIcon from "@mui/icons-material/Info";
+import SearchField from "./SearchField";
 
 type CreateFormProps = {
   open: boolean;
   onClose: () => void;
+  defaultValues?: CreateFormDefaultValues | null;
 };
 type PathProps = {
   id: number;
@@ -57,27 +62,42 @@ type PathProps = {
 
 export type PublishingsMap = Record<string, Publishing>;
 
-const CreateForm: FC<CreateFormProps> = ({ open, onClose }) => {
+const CreateForm: FC<CreateFormProps> = ({
+  open,
+  onClose,
+  defaultValues = null,
+}) => {
   const dispatch = useDispatch();
   const lastPathRef = useRef(null);
   const [paths, setPaths] = useState<PathProps[]>([
     { id: new Date().getTime() + 1000, path: "" },
   ]);
-  const [redirectCode, setRedirectCode] = useState<RedirectsCodes>(301);
-  const [redirectTarget, setRedirectTarget] = useState<ContentItemProps>(null);
-  const [redirectTargetPath, setRedirectTargetPath] = useState<string>("");
-  const [redirectType, setRedirectType] = useState<RedirectsTargetType>("page");
+  const [code, setCode] = useState<RedirectsCodes>(301);
+  const [targetInternal, setTargetInternal] = useState<ContentItemProps>(null);
+  const [targetPath, setTargetPath] = useState<string>("");
+  const [targetType, setTargetType] = useState<RedirectsTargetType>("page");
   const [submitType, setSubmitType] = useState<"single" | "multiple">("single");
-  const targetPath =
-    redirectType === "page" ? redirectTarget?.id : redirectTargetPath;
-  const [invalidTargetPath, setInvalidTargetPath] = useState<boolean>(false);
+  const target = targetType === "page" ? targetInternal?.ZUID : targetPath;
+  const [invalidTarget, setInvalidTarget] = useState<boolean>(false);
+
+  const isEdit = !!defaultValues;
+  const actionType = !!defaultValues ? "edit" : "create";
 
   const {
     openErrorDialog,
     closeCreateForm,
+    isLoading: isRedirectsLoading,
     createRedirects,
-    isCreatingRedirect,
+    updateRedirect,
   } = useRedirectsDialog();
+
+  const { data: contentItems, isLoading: isLoadingContentItems } =
+    useSearchContentQuery({
+      query: "",
+      order: "created",
+      dir: "desc",
+      limit: 10000,
+    });
 
   const { data: publishings, isLoading: isLoadingPublishings } =
     useGetAllPublishingsQuery();
@@ -85,29 +105,30 @@ const CreateForm: FC<CreateFormProps> = ({ open, onClose }) => {
     {}
   );
 
-  const isLoading = !!isLoadingPublishings || !!isLoadingLanguages;
+  const isLoading =
+    !!isLoadingPublishings || !!isLoadingLanguages || !!isLoadingContentItems;
   const isDisabled =
     !paths?.map((item) => item?.path?.trim())?.filter(Boolean)?.length ||
-    !targetPath ||
-    !redirectCode ||
-    !redirectType ||
-    invalidTargetPath;
+    !target ||
+    !code ||
+    !targetType ||
+    invalidTarget;
 
   const urlValidation = (url: string) => {
     const isValidUrl = validateUrl(url);
-    setInvalidTargetPath(!isValidUrl);
+    setInvalidTarget(!isValidUrl);
     return isValidUrl;
   };
   const resetForm = () => {
     setPaths([{ id: new Date().getTime() + 1000, path: "" }]);
-    setRedirectCode(301);
-    setRedirectType("page");
-    setRedirectTarget(null);
-    setRedirectTargetPath("");
+    setCode(301);
+    setTargetType("page");
+    setTargetInternal(null);
+    setTargetPath("");
   };
 
   const publishingMap: PublishingsMap = useMemo(() => {
-    if (isLoading) return {};
+    if (isLoadingPublishings) return {};
     return [...publishings]
       ?.sort((a, b) => a.version - b.version)
       .reduce((acc: PublishingsMap, item: Publishing) => {
@@ -122,7 +143,48 @@ const CreateForm: FC<CreateFormProps> = ({ open, onClose }) => {
 
         return acc;
       }, {});
-  }, [publishings, languages, isLoading]);
+  }, [publishings, isLoadingPublishings]);
+
+  const languageMap = useMemo(() => {
+    if (isLoadingLanguages) return {};
+    return [...languages].reduce(
+      (acc: Record<string, Language>, item: Language) => {
+        acc[item.ID] = item;
+
+        return acc;
+      },
+      {}
+    );
+  }, [languages, isLoadingLanguages]);
+
+  const options = useMemo(() => {
+    if (isLoading) return [];
+
+    const parseContentItems = contentItems
+      ?.filter((result) => result?.web?.path !== null)
+      ?.map((item) => {
+        const publishData = publishingMap?.[item?.meta?.ZUID];
+
+        const langCode = languageMap?.[item?.meta?.langID]?.code;
+
+        return {
+          ZUID: item?.meta?.ZUID,
+          label:
+            item?.web?.metaTitle || item?.web?.metaLinkText || item?.web?.path,
+          path: item?.web?.path,
+          publishAt: item?.publishAt || publishData?.publishAt || null,
+          langCode: langCode || "en",
+          isPublished:
+            !!publishData &&
+            publishData?.versionZUID === item?.web?.versionZUID,
+        };
+      })
+      .sort(
+        (a, b) =>
+          new Date(b.publishAt).getTime() - new Date(a.publishAt).getTime()
+      );
+    return parseContentItems as ContentItemProps[];
+  }, [contentItems, publishingMap, languageMap, isLoading]);
 
   const handleSubmit = useCallback(
     async (submitType: "multiple" | "single") => {
@@ -132,15 +194,25 @@ const CreateForm: FC<CreateFormProps> = ({ open, onClose }) => {
         .filter(Boolean);
 
       const requestData = {
-        targetType: redirectType,
-        code: redirectCode,
-        target: targetPath,
+        targetType: targetType,
+        code: code,
+        target: target,
       };
 
-      const response = await createRedirects({
-        ...requestData,
-        paths: redirectsPaths,
-      });
+      let response = null;
+
+      if (!!isEdit) {
+        response = await updateRedirect({
+          ...requestData,
+          ZUID: defaultValues?.ZUID,
+          path: redirectsPaths[0],
+        });
+      } else {
+        response = await createRedirects({
+          ...requestData,
+          paths: redirectsPaths,
+        });
+      }
 
       resetForm();
 
@@ -157,115 +229,145 @@ const CreateForm: FC<CreateFormProps> = ({ open, onClose }) => {
         dispatch(
           notify({
             kind: "success",
-            message: `${redirectsPaths?.length} Redirect${
-              redirectsPaths?.length > 1 ? "s" : ""
-            } Created`,
+
+            message: !isEdit
+              ? `${redirectsPaths?.length} Redirect${
+                  redirectsPaths?.length > 1 ? "s" : ""
+                } Created`
+              : `Redirect Saved: ${redirectsPaths[0]}`,
           })
         );
       }
 
       const resubmitData = {
         ...requestData,
+        ...(isEdit ? { ZUID: defaultValues?.ZUID } : {}),
         errors: errorPaths,
       };
 
       if (!!errorPaths?.length) openErrorDialog(resubmitData);
     },
-    [paths, redirectType, targetPath, redirectCode]
+    [paths, targetType, target, code, isEdit]
   );
 
   useEffect(() => {
-    if (redirectType !== "external") setInvalidTargetPath(false);
-  }, [redirectType]);
+    if (targetType !== "external") setInvalidTarget(false);
+  }, [targetType]);
+
+  useEffect(() => {
+    if (!open || isLoading) return;
+    setPaths([
+      {
+        id: new Date().getTime() + 1000,
+        path: defaultValues?.path || "",
+      },
+    ]);
+    setCode(defaultValues?.code || 301);
+    setTargetType(defaultValues?.targetType || "page");
+
+    if (defaultValues?.targetType === "page") {
+      const foundValue = !!defaultValues?.target
+        ? options?.find((item) => item?.ZUID === defaultValues?.target)
+        : null;
+      setTargetInternal(foundValue);
+    } else {
+      setTargetPath(defaultValues?.target || "");
+    }
+
+    return () => {
+      resetForm();
+    };
+  }, [open, defaultValues, options, isLoading]);
 
   return (
-    <>
-      <Dialog
-        data-cy="CreateRedirectDialog"
-        open={open}
-        fullWidth
-        maxWidth={false}
-        onClose={onClose}
-        slotProps={{
-          paper: {
-            sx: {
-              width: "640px",
-              minHeight: "680px",
-              height: "`calc(100vh - 100px)`",
-              position: "fixed",
-              top: "50px",
-              bottom: "50px",
-              m: 0,
-            },
+    <Dialog
+      data-cy="RedirectsCreateDialog"
+      open={open}
+      fullWidth
+      maxWidth={false}
+      onClose={onClose}
+      slotProps={{
+        paper: {
+          sx: {
+            width: "640px",
+            minHeight: "680px",
+            height: "`calc(100vh - 100px)`",
+            position: "fixed",
+            top: "50px",
+            bottom: "50px",
+            m: 0,
           },
-        }}
+        },
+      }}
+    >
+      <DialogTitle
+        sx={{ p: "20px", borderBottom: "1px solid", borderColor: "grey.100" }}
       >
-        <DialogTitle
-          sx={{ p: "20px", borderBottom: "1px solid", borderColor: "grey.100" }}
+        <Stack
+          display="flex"
+          flexDirection="row"
+          justifyContent="flex-start"
+          alignItems="center"
+          columnGap="12px"
+          overflow="hidden"
+          textOverflow="ellipsis"
         >
-          <Stack
+          <Box
             display="flex"
-            flexDirection="row"
-            justifyContent="flex-start"
+            justifyContent="center"
             alignItems="center"
-            columnGap="12px"
-            overflow="hidden"
-            textOverflow="ellipsis"
+            height="28px"
+            width="28px"
+            sx={{ color: "action.active" }}
           >
-            <Box
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-              height="28px"
-              width="28px"
-              sx={{ color: "action.active" }}
-            >
-              <ShuffleIcon
-                color="inherit"
-                sx={{ width: "28px", height: "28px" }}
-              />
-            </Box>
-            <Box
-              display="flex"
-              flexDirection="column"
-              justifyContent="flex-start"
-              alignItems="flex-start"
-              flexGrow={1}
-            >
-              <Typography
-                variant="h5"
-                fontWeight={700}
-                flexGrow={0}
-                flexShrink={0}
-              >
-                Create Redirect
-              </Typography>
-              <Typography
-                variant="body3"
-                fontWeight={600}
-                color="text.secondary"
-                noWrap
-                flexGrow={0}
-              >
-                Your new redirects will go live immediately after they're
-                created.
-              </Typography>
-            </Box>
-          </Stack>
-          <IconButton
-            size="small"
-            onClick={onClose}
-            sx={{
-              position: "absolute",
-              top: "20px",
-              right: "20px",
-              color: "action.active",
-            }}
+            <ShuffleIcon
+              color="inherit"
+              sx={{ width: "28px", height: "28px" }}
+            />
+          </Box>
+          <Box
+            display="flex"
+            flexDirection="column"
+            justifyContent="flex-start"
+            alignItems="flex-start"
+            flexGrow={1}
           >
-            <CloseIcon fontSize="small" />
-          </IconButton>
-        </DialogTitle>
-        <DialogContent sx={{ bgcolor: "grey.50" }}>
+            <Typography
+              variant="h5"
+              fontWeight={700}
+              flexGrow={0}
+              flexShrink={0}
+            >
+              {FORM_LABELS[actionType]?.header}
+            </Typography>
+            <Typography
+              variant="body3"
+              fontWeight={600}
+              color="text.secondary"
+              noWrap
+              flexGrow={0}
+            >
+              {FORM_LABELS[actionType]?.subHeader}
+            </Typography>
+          </Box>
+        </Stack>
+        <IconButton
+          size="small"
+          onClick={onClose}
+          sx={{
+            position: "absolute",
+            top: "20px",
+            right: "20px",
+            color: "action.active",
+          }}
+        >
+          <CloseIcon fontSize="small" />
+        </IconButton>
+      </DialogTitle>
+      <DialogContent sx={{ bgcolor: "grey.50" }}>
+        {isLoading ? (
+          <CreateRedirectFormSkeleton />
+        ) : (
           <Box
             sx={{
               pt: "20px",
@@ -288,12 +390,12 @@ const CreateForm: FC<CreateFormProps> = ({ open, onClose }) => {
             >
               <FieldWrapper label="Incoming Path" tooltip="File Path Only">
                 <Typography variant="body2" color="text.secondary">
-                  Incoming paths are case-insensitive and trailing slashes are
-                  automatically handled
+                  {FORM_LABELS[actionType]?.incomingPath}
                 </Typography>
 
                 <Box
                   width="100%"
+                  data-cy="RedirectsPathsContainer"
                   sx={{
                     display: "flex",
                     flexDirection: "column",
@@ -310,7 +412,8 @@ const CreateForm: FC<CreateFormProps> = ({ open, onClose }) => {
                       alignItems="center"
                       width="100%"
                     >
-                      <PathInputField
+                      <PathField
+                        testId="RedirectsFieldPath"
                         key={path.id}
                         id={path.id}
                         value={path.path}
@@ -362,32 +465,36 @@ const CreateForm: FC<CreateFormProps> = ({ open, onClose }) => {
                 </Box>
               </FieldWrapper>
 
-              <Box>
-                <Button
-                  size="small"
-                  variant="outlined"
-                  color="primary"
-                  startIcon={<AddIcon />}
-                  onClick={() => {
-                    setPaths((prev) => [
-                      ...prev,
-                      { id: new Date().getTime() + 1000, path: "" },
-                    ]);
-                  }}
-                >
-                  Add Path
-                </Button>
-              </Box>
+              {!isEdit && (
+                <Box>
+                  <Button
+                    data-cy="RedirectsFormDialogAddPathButton"
+                    size="small"
+                    variant="outlined"
+                    color="primary"
+                    startIcon={<AddIcon />}
+                    onClick={() => {
+                      setPaths((prev) => [
+                        ...prev,
+                        { id: new Date().getTime() + 1000, path: "" },
+                      ]);
+                    }}
+                  >
+                    Add Path
+                  </Button>
+                </Box>
+              )}
             </Box>
 
             <FieldWrapper label="HTTP Code" tooltip={TOOL_TIPS.code}>
               <TextField
+                data-cy="RedirectsCodeSelector"
                 select
                 defaultValue={301}
                 size="small"
                 fullWidth
-                value={redirectCode}
-                onChange={(e: any) => setRedirectCode(e.target.value)}
+                value={code}
+                onChange={(e: any) => setCode(e.target.value)}
               >
                 {HTTP_CODE_OPTIONS.map((option) => (
                   <MenuItem key={option.value} value={option.value}>
@@ -399,12 +506,17 @@ const CreateForm: FC<CreateFormProps> = ({ open, onClose }) => {
 
             <FieldWrapper label="Type" tooltip={TOOL_TIPS.targetType}>
               <TextField
+                data-cy="RedirectsTypeSelector"
                 select
                 defaultValue="page"
                 size="small"
                 fullWidth
-                value={redirectType}
-                onChange={(e: any) => setRedirectType(e.target.value)}
+                value={targetType}
+                onChange={(e: any) => {
+                  setTargetPath("");
+                  setTargetInternal(null);
+                  setTargetType(e.target.value);
+                }}
               >
                 {TARGET_OPTIONS.map((option) => (
                   <MenuItem key={option.value} value={option.value}>
@@ -414,76 +526,75 @@ const CreateForm: FC<CreateFormProps> = ({ open, onClose }) => {
               </TextField>
             </FieldWrapper>
             <FieldWrapper label="Redirect Target" tooltip="File Path Only">
-              {redirectType === "page" ? (
-                <TargetInputField
-                  publishings={publishingMap}
-                  languages={languages}
-                  isLoading={isLoading}
-                  value={redirectTarget}
-                  onChange={setRedirectTarget}
+              {targetType === "page" ? (
+                <SearchField
+                  options={options}
+                  loading={isLoading}
+                  value={targetInternal}
+                  onChange={setTargetInternal}
                 />
               ) : (
-                <PathInputField
+                <PathField
+                  testId="RedirectsExternalFieldPath"
                   placeHolder="Enter URL (e.g. https://www.google.com/)"
-                  value={redirectTargetPath}
+                  value={targetPath}
                   onChange={(e) => {
-                    setRedirectTargetPath(e);
+                    setTargetPath(e);
                   }}
-                  prefix={redirectType === "external" ? "" : "/"}
-                  validation={
-                    redirectType === "external" ? urlValidation : null
-                  }
+                  validation={targetType === "external" ? urlValidation : null}
                 />
               )}
             </FieldWrapper>
           </Box>
-        </DialogContent>
-        <DialogActions
-          sx={{
-            p: "20px",
-            borderTop: "1px solid",
-            borderColor: "grey.100",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
+        )}
+      </DialogContent>
+      <DialogActions
+        sx={{
+          p: "20px",
+          borderTop: "1px solid",
+          borderColor: "grey.100",
+          display: "flex",
+          justifyContent: isEdit ? "flex-end" : "space-between",
+          alignItems: "center",
+        }}
+      >
+        <Button
+          size="medium"
+          variant="outlined"
+          color="inherit"
+          onClick={onClose}
         >
-          <Button
-            size="medium"
-            variant="outlined"
-            color="inherit"
-            onClick={onClose}
-          >
-            Cancel
-          </Button>
-          <Stack direction="row" justifyContent="space-between" gap="16px">
+          Cancel
+        </Button>
+        <Stack direction="row" justifyContent="space-between" gap="16px">
+          {!isEdit && (
             <LoadingButton
-              data-cy="DeleteContentItemConfirmButton"
+              data-cy="RedirectsCreateAddAnotherButton"
               variant="outlined"
               color="primary"
               startIcon={<AddIcon />}
               size="medium"
               disabled={isDisabled}
-              loading={submitType === "multiple" && isCreatingRedirect}
+              loading={submitType === "multiple" && isRedirectsLoading}
               onClick={() => handleSubmit("multiple")}
             >
               Create Another Redirect
             </LoadingButton>
-            <LoadingButton
-              data-cy="RedirectsCreateButton"
-              variant="contained"
-              color="primary"
-              size="medium"
-              disabled={isDisabled}
-              loading={submitType === "single" && isCreatingRedirect}
-              onClick={() => handleSubmit("single")}
-            >
-              Create Redirect
-            </LoadingButton>
-          </Stack>
-        </DialogActions>
-      </Dialog>
-    </>
+          )}
+          <LoadingButton
+            data-cy="RedirectsCreateButton"
+            variant="contained"
+            color="primary"
+            size="medium"
+            disabled={isDisabled}
+            loading={submitType === "single" && isRedirectsLoading}
+            onClick={() => handleSubmit("single")}
+          >
+            {isEdit ? "Save" : "Create Redirect"}
+          </LoadingButton>
+        </Stack>
+      </DialogActions>
+    </Dialog>
   );
 };
 

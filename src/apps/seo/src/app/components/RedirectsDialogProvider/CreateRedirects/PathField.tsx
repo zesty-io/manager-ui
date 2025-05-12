@@ -1,8 +1,9 @@
 import { FC, useCallback, Ref, useMemo } from "react";
 import { TextField } from "@mui/material";
 import Typography from "@mui/material/Typography";
+import { TARGET_ERRORS } from "../constants";
 
-type UrlInputFieldProps = {
+type PathFieldProps = {
   id?: number;
   name?: string;
   value?: string;
@@ -10,11 +11,12 @@ type UrlInputFieldProps = {
   prefix?: string;
   autoFocus?: boolean;
   inputRef?: Ref<any>;
+  testId: string;
   onChange?: (value: string) => void;
   validation?: (value: string) => boolean;
 };
 
-const PathInputField: FC<UrlInputFieldProps> = ({
+const PathField: FC<PathFieldProps> = ({
   id,
   name,
   value = "",
@@ -22,6 +24,7 @@ const PathInputField: FC<UrlInputFieldProps> = ({
   prefix = "",
   autoFocus = false,
   inputRef,
+  testId,
   onChange,
   validation,
 }) => {
@@ -37,7 +40,7 @@ const PathInputField: FC<UrlInputFieldProps> = ({
 
       if (!data) return;
       data = data.replace(/ /g, "-").replace(/\s+/g, "");
-      const allowedChars = /^[a-zA-Z0-9\-_.~&=/?:#]+$/;
+      const allowedChars = /^[a-zA-Z0-9\-_.~&=/?:#\*]+$/;
       if (!allowedChars.test(data)) {
         event.preventDefault();
         return;
@@ -65,7 +68,7 @@ const PathInputField: FC<UrlInputFieldProps> = ({
   return (
     <>
       <TextField
-        {...(!!name ? { name } : {})}
+        data-cy={testId}
         inputRef={inputRef}
         size="small"
         fullWidth
@@ -77,6 +80,7 @@ const PathInputField: FC<UrlInputFieldProps> = ({
       />
       {!isValid && (
         <Typography
+          data-cy="RedirectsPathFieldError"
           variant="body2"
           color="warning.dark"
           mt="4px"
@@ -85,11 +89,11 @@ const PathInputField: FC<UrlInputFieldProps> = ({
           noWrap={false}
           sx={{ wordWrap: "normal" }}
         >
-          Invalid URL. Please enter a valid URL.
+          {TARGET_ERRORS.invalidUrl}
         </Typography>
       )}
     </>
   );
 };
 
-export default PathInputField;
+export default PathField;

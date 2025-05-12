@@ -60,7 +60,11 @@ const RedirectsManager = (props: any) => {
         {Object.keys(props.imports).length ? (
           <RedirectImportTable {...props} />
         ) : (
-          <RedirectsTable redirects={redirects} isLoading={isLoading} />
+          <RedirectsTable
+            redirects={redirects}
+            isLoading={isLoading}
+            redirectsFilter={props?.redirectsFilter || ""}
+          />
         )}
       </Box>
     </>

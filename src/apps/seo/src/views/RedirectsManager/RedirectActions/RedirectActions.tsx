@@ -42,10 +42,11 @@ export default function RedirectActions(props: RedirectActionsProps) {
         />
 
         <Button
+          data-cy="RedirectActionCreateButton"
           variant="contained"
           color="primary"
           size="small"
-          onClick={() => openCreateForm({ defaultValues: null })}
+          onClick={() => openCreateForm()}
           startIcon={<AddIcon />}
         >
           Create

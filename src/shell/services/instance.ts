@@ -739,6 +739,17 @@ export const instanceApi = createApi({
       }),
       invalidatesTags: ["Redirects"],
     }),
+    updateRedirect: builder.mutation<
+      Redirects[],
+      { ZUID: string; body: RedirectRequest }
+    >({
+      query: ({ ZUID, body }) => ({
+        url: `/web/redirects/${ZUID}`,
+        method: "PUT",
+        body: { ...body, query_string: null },
+      }),
+      invalidatesTags: ["Redirects"],
+    }),
   }),
 });
 
@@ -797,4 +808,5 @@ export const {
   useGetRedirectsQuery,
   useDeleteRedirectMutation,
   useLazySearchContentQuery,
+  useUpdateRedirectMutation,
 } = instanceApi;

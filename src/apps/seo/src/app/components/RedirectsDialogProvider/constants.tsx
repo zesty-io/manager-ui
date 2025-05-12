@@ -1,5 +1,5 @@
-import { Box, Skeleton } from "@mui/material";
-import Typography from "@mui/material/Typography";
+import { Box, Skeleton, Typography } from "@mui/material";
+
 import {
   RedirectsCodes,
   RedirectsTargetType,
@@ -62,22 +62,27 @@ export const TOOL_TIPS = {
   ),
 };
 
-export const REDIRECT_TARGET_ERRORS = {
-  unpublished:
-    "This item isn't published yet. Any incoming paths will lead to your 404 page until it goes live.",
+export const FORM_LABELS = {
+  create: {
+    header: "Create Redirect",
+    subHeader:
+      "Your new redirects will go live immediately after they're created.",
+    incomingPath:
+      "Incoming paths are case-insensitive and trailing slashes are automatically handled",
+  },
+  edit: {
+    header: "Edit Redirect",
+    subHeader: "Changes you make will be immediately go live on saving",
+    incomingPath:
+      "Trailing slashes and casing variations in paths are automatically handled in WebEngine.",
+  },
 };
 
-export const LOADING_DATA = [
-  ...Array.from({ length: 3 }).map((_, index) => ({
-    id: `loading-${index}`,
-    itemZUID: "",
-    label: "",
-    path: "",
-    publishAt: "",
-    langCode: "",
-    isPublished: false,
-  })),
-];
+export const TARGET_ERRORS = {
+  unpublished:
+    "This item isn't published yet. Any incoming paths will lead to your 404 page until it goes live.",
+  invalidUrl: "Invalid URL. Please enter a valid URL.",
+};
 
 export const validateUrl = (url: string) => {
   const validProtocols = ["http://", "https://"];
@@ -94,11 +99,59 @@ export const validateUrl = (url: string) => {
   }
 };
 
+export type PathProps = {
+  id: number;
+  path: string;
+};
+
+export type ErrorPathProps = {
+  error: string;
+  path: string;
+};
+
+export type ContentItemProps = {
+  ZUID: string;
+  label?: string;
+  path: string;
+  publishAt?: string;
+  langCode?: string;
+  isPublished?: boolean;
+  isLoading?: boolean;
+  isListItem?: boolean;
+  onDelete?: () => void;
+};
+
+export type CreateRedirectErrors = {
+  errors: { error: string; path: string }[];
+  code: RedirectsCodes;
+  target: string;
+  targetType: RedirectsTargetType;
+  ZUID?: string;
+};
+
+export type CreateRedirectDefaultValues = {
+  data?: {
+    paths: string[];
+    code: RedirectsCodes;
+    target: ContentItemProps;
+    targetType: RedirectsTargetType;
+  };
+  isEdit?: boolean;
+};
+
+export const parseRedirectError = (error: string): string => {
+  if (error?.toLowerCase()?.includes("already exists")) return "Already exists";
+  if (error?.toLowerCase()?.includes("validation error: redirect item"))
+    return "Not Published";
+  return "Error";
+};
+
 export const ListOptionSkeleton = ({ count = 4 }: { count: number }) => {
   return (
     <>
       {Array.from({ length: count }).map((_, index) => (
         <Box
+          data-cy="RedirectsTargetListLoadingSkeleton"
           key={index}
           display="flex"
           flexDirection="row"
@@ -135,49 +188,116 @@ export const ListOptionSkeleton = ({ count = 4 }: { count: number }) => {
   );
 };
 
-export type PathProps = {
-  id: number;
-  path: string;
-};
+export const CreateRedirectFormSkeleton = () => {
+  return (
+    <Box
+      width="100%"
+      height="100%"
+      display="flex"
+      flexDirection="column"
+      justifyContent="flex-start"
+      alignItems="flex-start"
+      rowGap="20px"
+      py={2.25}
+    >
+      <Box
+        display="flex"
+        flexDirection="column"
+        justifyContent="flex-start"
+        alignItems="flex-start"
+        sx={{
+          rowGap: 1,
+          width: "100%",
+        }}
+      >
+        <Skeleton variant="rounded" width="100px" height="12px" />
+        <Skeleton variant="rounded" width="90%" height="12px" />
+        <Box
+          sx={{
+            display: "flex",
+            flexDiretion: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            width: "100%",
+            columnGap: 2,
+          }}
+        >
+          <Skeleton
+            variant="rounded"
+            width="100px"
+            height="36px"
+            sx={{ flexGrow: 1 }}
+          />
+          <Skeleton variant="circular" width="25px" height="25px" />
+        </Box>
+      </Box>
 
-export type ErrorPathProps = {
-  error: string;
-  path: string;
-};
-
-export type ContentItemProps = {
-  id: string;
-  itemZUID?: string;
-  label?: string;
-  path: string;
-  publishAt?: string;
-  langCode?: string;
-  isPublished?: boolean;
-  isLoading?: boolean;
-  isListItem?: boolean;
-  onDelete?: () => void;
-};
-
-export type CreateRedirectErrors = {
-  errors: { error: string; path: string }[];
-  code: RedirectsCodes;
-  target: string;
-  targetType: RedirectsTargetType;
-};
-
-export type CreateRedirectDefaultValues = {
-  data?: {
-    paths: string[];
-    code: RedirectsCodes;
-    target: ContentItemProps;
-    targetType: RedirectsTargetType;
-  };
-  isEdit?: boolean;
-};
-
-export const parseRedirectError = (error: string): string => {
-  if (error?.toLowerCase()?.includes("already exists")) return "Already exists";
-  if (error?.toLowerCase()?.includes("validation error: redirect item"))
-    return "Not Published";
-  return "Error";
+      <Box
+        display="flex"
+        flexDirection="column"
+        justifyContent="flex-start"
+        alignItems="flex-start"
+        sx={{
+          rowGap: 0.5,
+          width: "100%",
+        }}
+      >
+        <Skeleton variant="rounded" width="125px" height="36px" />
+      </Box>
+      <Box
+        display="flex"
+        flexDirection="column"
+        justifyContent="flex-start"
+        alignItems="flex-start"
+        sx={{
+          rowGap: 1,
+          width: "100%",
+        }}
+      >
+        <Skeleton
+          variant="rounded"
+          width="91px"
+          height="12px"
+          sx={{ flexGrow: 1 }}
+        />
+        <Skeleton variant="rounded" width="100%" height="36px" />
+      </Box>
+      <Box
+        display="flex"
+        flexDirection="column"
+        justifyContent="flex-start"
+        alignItems="flex-start"
+        sx={{
+          rowGap: 1,
+          width: "100%",
+        }}
+      >
+        <Skeleton
+          variant="rounded"
+          width="48px"
+          height="12px"
+          sx={{ flexGrow: 1 }}
+        />
+        <Skeleton variant="rounded" width="100%" height="36px" />
+      </Box>
+      <Box
+        display="flex"
+        flexDirection="column"
+        justifyContent="flex-start"
+        alignItems="flex-start"
+        sx={{
+          rowGap: 1,
+          width: "100%",
+        }}
+      >
+        <Skeleton
+          variant="rounded"
+          width="115px"
+          height="12px"
+          sx={{ flexGrow: 1 }}
+        />
+        <Skeleton variant="rounded" width="100%" height="36px" />
+      </Box>
+    </Box>
+  );
 };

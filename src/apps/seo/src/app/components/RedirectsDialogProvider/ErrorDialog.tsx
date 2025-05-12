@@ -28,40 +28,47 @@ export const ErrorDialog: FC<ErrorDialogProps> = ({ open, onClose, data }) => {
 
   const [errorPaths, setErrorPaths] = useState<ErrorPathProps[]>([]);
 
-  const { createRedirects, closeErrorDialog, isCreatingRedirect } =
+  const { createRedirects, updateRedirect, closeErrorDialog, isLoading } =
     useRedirectsDialog();
 
-  const handleResubmit = useCallback(() => {
+  const handleResubmit = useCallback(async () => {
+    const isEdit = !!data?.ZUID;
     const paths = errorPaths?.map((error) => error?.path?.trim());
-    createRedirects({
-      paths: paths,
-      target: data?.target,
-      targetType: data?.targetType,
-      code: data?.code,
-    }).then((res: any) => {
-      const errorPathRes = res
-        ?.filter((item: any) => item?.status === "error")
-        .map((item: any) => item?.path?.trim());
 
-      if (!errorPathRes?.length) {
-        dispatch(
-          notify({
-            kind: "success",
-            message: `${paths?.length} Redirect${
-              paths?.length > 1 ? "s" : ""
-            } Created`,
-          })
-        );
-        closeErrorDialog();
-        return;
-      }
+    let response = null;
 
-      const updatedErrorPaths = errorPaths?.filter((error) =>
-        errorPathRes?.includes(error?.path?.trim())
+    if (isEdit) {
+      response = await updateRedirect({ ...data, path: paths[0] });
+    } else {
+      response = await createRedirects({
+        paths: paths,
+        target: data?.target,
+        targetType: data?.targetType,
+        code: data?.code,
+      });
+    }
+    const errorPathRes = response
+      ?.filter((item: any) => item?.status === "error")
+      .map((item: any) => item?.path?.trim());
+
+    if (!errorPathRes?.length) {
+      dispatch(
+        notify({
+          kind: "success",
+          message: !isEdit
+            ? `${paths?.length} Redirect${paths?.length > 1 ? "s" : ""} Created`
+            : `Redirect Saved: ${paths[0]}`,
+        })
       );
+      closeErrorDialog();
+      return;
+    }
 
-      setErrorPaths(updatedErrorPaths);
-    });
+    const updatedErrorPaths = errorPaths?.filter((error) =>
+      errorPathRes?.includes(error?.path?.trim())
+    );
+
+    setErrorPaths(updatedErrorPaths);
   }, [data, errorPaths]);
 
   useEffect(() => {
@@ -77,6 +84,7 @@ export const ErrorDialog: FC<ErrorDialogProps> = ({ open, onClose, data }) => {
   return (
     <>
       <Dialog
+        data-cy="RedirectsErrorDialog"
         open={open}
         fullWidth
         maxWidth={false}
@@ -122,6 +130,7 @@ export const ErrorDialog: FC<ErrorDialogProps> = ({ open, onClose, data }) => {
         </DialogTitle>
         <DialogContent>
           <Box
+            data-cy="RedirectsErrorDialogListContainer"
             sx={{
               display: "flex",
               flexDirection: "column",
@@ -132,6 +141,7 @@ export const ErrorDialog: FC<ErrorDialogProps> = ({ open, onClose, data }) => {
           >
             {errorPaths?.map((error) => (
               <Box
+                className="RedirectsErrorListItem"
                 key={error?.path}
                 display="flex"
                 flexDirection="row"
@@ -155,17 +165,17 @@ export const ErrorDialog: FC<ErrorDialogProps> = ({ open, onClose, data }) => {
         </DialogContent>
         <DialogActions sx={{ p: "20px" }}>
           <LoadingButton
-            data-cy="RedirectsTryAgainButton"
+            data-cy="RedirectsErrorDialogTryAgainButton"
             variant="text"
             color="inherit"
             size="medium"
-            loading={isCreatingRedirect}
+            loading={isLoading}
             onClick={handleResubmit}
           >
             Try Again
           </LoadingButton>
           <Button
-            data-cy="DeleteContentItemConfirmButton"
+            data-cy="RedirectsErrorDialogDoneButton"
             variant="contained"
             color="primary"
             size="medium"
