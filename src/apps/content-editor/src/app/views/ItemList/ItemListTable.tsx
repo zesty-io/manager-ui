@@ -278,11 +278,15 @@ export const ItemListTable = memo(
     const { data: fields } = useGetContentModelFieldsQuery(modelZUID);
 
     const saveSnapshot = useCallback(() => {
-      if (apiRef?.current?.exportState && localStorage) {
+      if (apiRef?.current && localStorage) {
         const currentState = apiRef.current.exportState();
+        const fullState = {
+          ...currentState,
+          pinnedColumns: apiRef.current.getPinnedColumns(),
+        };
         localStorage.setItem(
           `${modelZUID}-dataGridState`,
-          JSON.stringify(currentState)
+          JSON.stringify(fullState)
         );
       }
     }, [apiRef, modelZUID]);
@@ -293,12 +297,18 @@ export const ItemListTable = memo(
         `${modelZUID}-dataGridState`
       );
 
-      setInitialState(
-        stateFromLocalStorage ? JSON.parse(stateFromLocalStorage) : {}
-      );
-      setPinnedColumns({
-        left: ["__check__", "version", fields?.[0]?.name],
-      });
+      if (stateFromLocalStorage) {
+        const parsedState = JSON.parse(stateFromLocalStorage);
+        setInitialState(parsedState);
+        if (parsedState.pinnedColumns) {
+          setPinnedColumns(parsedState.pinnedColumns);
+        }
+      } else {
+        setInitialState({});
+        setPinnedColumns({
+          left: ["__check__", "version", fields?.[0]?.name],
+        });
+      }
 
       window.addEventListener("beforeunload", saveSnapshot);
 
