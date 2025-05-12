@@ -13,9 +13,13 @@ import {
   useMemo,
   useState,
   useContext,
+  useEffect,
 } from "react";
 import AutoSizer, { Size } from "react-virtualized-auto-sizer";
-import { ContentItem } from "../../../../../../shell/services/types";
+import {
+  ContentItem,
+  ContentModelField,
+} from "../../../../../../shell/services/types";
 import { useStagedChanges } from "./StagedChangesContext";
 import { OneToManyCell } from "./TableCells/OneToManyCell";
 import { UserCell } from "./TableCells/UserCell";
@@ -29,6 +33,12 @@ import { Currency } from "../../../../../../shell/components/FieldTypeCurrency/c
 import { ImageCell } from "./TableCells/ImageCell";
 import { SingleRelationshipCell } from "./TableCells/SingleRelationshipCell";
 import { TableSortContext } from "./TableSortProvider";
+import {
+  FIELD_SKELETON_MAP,
+  gridLoadingStyles,
+  SkeletonLoadingOverlay,
+} from "./Loader";
+import { Skeleton } from "@mui/material";
 
 type ItemListTableProps = {
   loading: boolean;
@@ -67,7 +77,6 @@ const METADATA_COLUMNS = [
     width: 240,
     filterable: true,
     renderCell: (params: GridRenderCellParams) => <UserCell params={params} />,
-    type: "createdBy",
   },
   {
     field: "createdOn",
@@ -263,8 +272,6 @@ export const ItemListTable = memo(
     const [sortModel, setSortModel] = useContext(TableSortContext);
     const [pinnedColumns, setPinnedColumns] = useState({});
 
-    const { data: fields } = useGetContentModelFieldsQuery(modelZUID);
-
     const saveSnapshot = useCallback(() => {
       if (apiRef?.current?.exportState && localStorage) {
         const currentState = apiRef.current.exportState();
@@ -297,6 +304,12 @@ export const ItemListTable = memo(
     }, [saveSnapshot, fields, modelZUID]);
 
     const columns = useMemo(() => {
+      const stateFromLocalStorage = localStorage?.getItem(
+        `${modelZUID}-dataGridState`
+      );
+      const colDimensions = stateFromLocalStorage
+        ? JSON.parse(stateFromLocalStorage)?.columns?.dimensions
+        : null;
       let result: any[] = [
         {
           field: "version",
@@ -307,7 +320,6 @@ export const ItemListTable = memo(
           renderCell: (params: GridRenderCellParams) => (
             <VersionCell params={params} />
           ),
-          type: "version",
         },
       ];
       if (fields) {
@@ -336,25 +348,26 @@ export const ItemListTable = memo(
                 field?.settings?.options?.[1] !== "Yes" && {
                   width: 280,
                 }),
-              type: field.datatype,
             })),
         ];
       }
-      return [...result, ...METADATA_COLUMNS];
-    }, [fields]);
-
-    if (!initialState) {
-      return (
-        <Box
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          height="100%"
-        >
-          <CircularProgress />
-        </Box>
-      );
-    }
+      result = [
+        ...result,
+        ...METADATA_COLUMNS?.map((column) => ({
+          ...column,
+          flex: loading && !fields ? 1 : 0,
+        })),
+      ];
+      return result.map((column) => {
+        const { headerName, ...other } = column;
+        return {
+          ...other,
+          width: colDimensions?.[column.field]?.width || column.width,
+          renderHeader: () =>
+            loading ? FIELD_SKELETON_MAP.header : headerName,
+        };
+      });
+    }, [fields, loading]);
 
     return (
       <AutoSizer>
@@ -362,7 +375,7 @@ export const ItemListTable = memo(
           <DataGridPro
             apiRef={apiRef}
             loading={loading}
-            rows={rows}
+            rows={loading ? [] : rows}
             columns={columns}
             style={{
               width,
@@ -393,12 +406,19 @@ export const ItemListTable = memo(
             }}
             slots={{
               noRowsOverlay: noRowsOverlay,
-              baseCheckbox: (props: any) => (
-                <Checkbox
-                  disabled={stagedChanges && Object.keys(stagedChanges)?.length}
-                  {...props}
-                />
-              ),
+              baseCheckbox: (props: any) =>
+                loading ? (
+                  <Skeleton variant="rounded" width="18px" height="18px" />
+                ) : (
+                  <Checkbox
+                    disabled={
+                      stagedChanges && Object.keys(stagedChanges)?.length
+                    }
+                    {...props}
+                  />
+                ),
+
+              loadingOverlay: () => <SkeletonLoadingOverlay fields={fields} />,
             }}
             slotProps={{
               baseTooltip: {
@@ -453,6 +473,7 @@ export const ItemListTable = memo(
               params.row?.meta?.version &&
               !(stagedChanges && Object.keys(stagedChanges)?.length)
             }
+            onColumnWidthChange={saveSnapshot}
             sx={{
               backgroundColor: "common.white",
               ".MuiDataGrid-row": {
@@ -495,6 +516,7 @@ export const ItemListTable = memo(
               "& [data-cy='NoResults']": {
                 pointerEvents: "all",
               },
+              ...(loading ? gridLoadingStyles : {}),
             }}
           />
         )}

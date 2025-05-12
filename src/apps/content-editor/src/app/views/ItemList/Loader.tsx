@@ -2,12 +2,25 @@ import {
   useGridApiContext,
   gridColumnsTotalWidthSelector,
   gridColumnPositionsSelector,
-  gridDensityRowHeightSelector,
 } from "@mui/x-data-grid-pro";
-import { ReactNode, useMemo } from "react";
+import { Fragment, ReactNode, useMemo } from "react";
 import { Box, Skeleton } from "@mui/material";
 import ImageRoundedIcon from "@mui/icons-material/ImageRounded";
 import Typography from "@mui/material/Typography";
+import { ContentModelField } from "../../../../../../shell/services/types";
+
+export const gridLoadingStyles = {
+  pointerEvents: "none",
+  "& .MuiDataGrid-virtualScroller": {
+    overflow: "hidden",
+  },
+  "& .MuiDataGrid-columnHeader .MuiDataGrid-iconButtonContainer": {
+    visibility: "hidden!important",
+  },
+  "& .MuiDataGrid-columnSeparator": {
+    visibility: "hidden!important",
+  },
+};
 
 const CellWrapper = ({
   align = "left",
@@ -165,8 +178,14 @@ export const FIELD_SKELETON_MAP: Record<string, JSX.Element> = {
       alignItems="center"
       justifyContent="flex-start"
       position="absolute"
+      pr={2}
     >
-      <Skeleton height={12} width="70%" />
+      <Skeleton
+        variant="rounded"
+        height="12px"
+        width="calc(100% - 16px)"
+        sx={{ maxWidth: "180px" }}
+      />
     </Box>
   ),
   default: (
@@ -181,14 +200,19 @@ export const FIELD_SKELETON_MAP: Record<string, JSX.Element> = {
   ),
 };
 
-export const SkeletonLoadingOverlay = () => {
+export const SkeletonLoadingOverlay = ({
+  fields,
+}: {
+  fields?: ContentModelField[];
+}) => {
   const apiRef = useGridApiContext();
 
   const dimensions = apiRef.current?.getRootDimensions();
   const viewportHeight = dimensions?.viewportInnerSize.height ?? 0;
-
-  const rowHeight = gridDensityRowHeightSelector(apiRef);
-  const skeletonRowsCount = Math.ceil(viewportHeight / rowHeight);
+  const rowHeight = apiRef.current.state.dimensions.rowHeight;
+  const skeletonRowsCount = Math.ceil(
+    viewportHeight / apiRef.current.state.dimensions.rowHeight
+  );
 
   const totalWidth = gridColumnsTotalWidthSelector(apiRef);
   const positions = gridColumnPositionsSelector(apiRef);
@@ -197,6 +221,23 @@ export const SkeletonLoadingOverlay = () => {
     [totalWidth, positions]
   );
   const columns = apiRef.current.getVisibleColumns().slice(0, inViewportCount);
+
+  const COL_TYPE_MAP = useMemo(() => {
+    const typesMap = fields?.reduce((acc, field) => {
+      acc[field.name] = field.datatype;
+      return acc;
+    }, {} as Record<string, string>);
+    return {
+      ...typesMap,
+      createdBy: "createdBy",
+      createdOn: "text",
+      lastSaved: "text",
+      lastPublished: "text",
+      zuid: "text",
+      version: "version",
+      __check__: "checkboxSelection",
+    };
+  }, [fields]);
 
   const children = useMemo(() => {
     const array: ReactNode[] = [];
@@ -217,7 +258,11 @@ export const SkeletonLoadingOverlay = () => {
               borderColor: "border",
             }}
           >
-            {FIELD_SKELETON_MAP[column.type] || FIELD_SKELETON_MAP.default}
+            {FIELD_SKELETON_MAP[
+              COL_TYPE_MAP[
+                column.field as keyof typeof COL_TYPE_MAP
+              ] as keyof typeof FIELD_SKELETON_MAP
+            ] || FIELD_SKELETON_MAP.default}
           </Box>
         );
       }
@@ -299,9 +344,8 @@ export const SkeletonContentHeader = () => {
             /
           </Typography>
           {[...new Array(2)].map((_, i) => (
-            <>
+            <Fragment key={`skeleton-path-${i}`}>
               <Box
-                key={`skeleton-path-${i}`}
                 display="flex"
                 flexDirection="row"
                 justifyContent="flex-start"
@@ -319,7 +363,7 @@ export const SkeletonContentHeader = () => {
               >
                 /
               </Typography>
-            </>
+            </Fragment>
           ))}
         </Box>
         <Box
