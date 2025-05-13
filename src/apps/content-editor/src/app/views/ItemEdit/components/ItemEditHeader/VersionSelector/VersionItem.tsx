@@ -30,6 +30,7 @@ import { useSelector } from "react-redux";
 import { useDebounce, useUnmount } from "react-use";
 import { useHistory, useParams } from "react-router";
 import { areEqual } from "react-window";
+import { isEqual } from "lodash";
 
 import {
   useGetWorkflowStatusLabelsQuery,
@@ -143,7 +144,11 @@ export const VersionItem = memo(
       };
 
       const saveLabelChanges = () => {
-        if (activeLabels.length !== data?.labels?.length) {
+        const labelsBeforeUpdate = data?.labels
+          ?.map((label) => label?.ZUID)
+          ?.filter((label) => !!label);
+
+        if (!isEqual(labelsBeforeUpdate, activeLabels)) {
           updateItemWorkflowStatus({
             modelZUID,
             itemZUID,
