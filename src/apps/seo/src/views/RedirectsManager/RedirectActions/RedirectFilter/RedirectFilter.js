@@ -3,9 +3,11 @@ import { useState } from "react";
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
+import { useRedirectsTable } from "../../RedirectsTable/RedirectsTableContextProvider";
 
 export function RedirectFilter(props) {
   const [filter, setFilter] = useState("");
+  const { searchFilter, setSearchFilter } = useRedirectsTable();
 
   const handleFilter = (val) => {
     props.dispatch({
@@ -13,6 +15,7 @@ export function RedirectFilter(props) {
       filter: val,
     });
     setFilter(val);
+    setSearchFilter(val);
   };
 
   return (
@@ -21,7 +24,7 @@ export function RedirectFilter(props) {
       type="search"
       variant="outlined"
       size="small"
-      value={filter}
+      value={searchFilter}
       InputProps={{
         sx: {
           backgroundColor: "grey.50",

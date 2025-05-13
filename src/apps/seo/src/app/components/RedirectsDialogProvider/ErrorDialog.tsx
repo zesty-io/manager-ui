@@ -118,6 +118,7 @@ export const ErrorDialog: FC<ErrorDialogProps> = ({ open, onClose, data }) => {
             fontWeight={700}
             flexGrow={0}
             flexShrink={0}
+            data-cy="RedirectsErrorDialogHeader"
           >
             {`${errorPaths?.length} Redirect${
               errorPaths?.length > 1 ? "s" : ""

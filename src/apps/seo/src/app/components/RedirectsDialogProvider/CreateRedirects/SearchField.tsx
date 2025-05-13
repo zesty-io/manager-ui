@@ -90,7 +90,6 @@ function renderRow(props: ListChildComponentProps) {
     ...style,
     top: (style.top as number) + LISTBOX_PADDING,
   };
-  const isLoading = dataSet[3];
   const { item, ...optionProps } = dataSet[0];
 
   return (
@@ -100,7 +99,6 @@ function renderRow(props: ListChildComponentProps) {
       ZUID={dataSet[1]?.ZUID}
       langCode={dataSet[1]?.langCode}
       isPublished={dataSet[1]?.isPublished}
-      isLoading={isLoading}
       style={inlineStyle}
       {...optionProps}
     />

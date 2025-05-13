@@ -16,7 +16,7 @@ import {
 import { CreateRedirectErrors, parseRedirectError } from "./constants";
 import CreateForm from "./CreateRedirects/CreateForm";
 
-import { DeleteDialog, DeleteDialogProps } from "./DeleteDialog";
+import { DeleteDialog, DeleteRedirectsProps } from "./DeleteDialog";
 import ErrorDialog from "./ErrorDialog";
 
 export type CreateFormDefaultValues = {
@@ -39,7 +39,9 @@ const RedirectsDialogContextProvider = ({
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
   const [createRedirectErrors, setCreateRedirectErrors] =
     useState<CreateRedirectErrors>();
-  const [deleteData, setDeleteData] = useState<DeleteDialogProps>(null);
+  const [deleteRedirects, setDeleteRedirects] = useState<
+    DeleteRedirectsProps[]
+  >([]);
   const [createFormDefaultValues, setCreateFormDefaultValues] =
     useState<CreateFormDefaultValues | null>(null);
 
@@ -55,8 +57,8 @@ const RedirectsDialogContextProvider = ({
   };
   const closeErrorDialog = () => setErrorDialogOpen(false);
 
-  const openDeleteDialog = (data: DeleteDialogProps) => {
-    setDeleteData(data);
+  const openDeleteDialog = (data: DeleteRedirectsProps[]) => {
+    setDeleteRedirects(data);
     setDeleteDialogOpen(true);
   };
   const closeDeleteDialog = () => setDeleteDialogOpen(false);
@@ -215,11 +217,7 @@ const RedirectsDialogContextProvider = ({
       <DeleteDialog
         open={deleteDialogOpen}
         onClose={closeDeleteDialog}
-        ZUID={deleteData?.ZUID}
-        path={deleteData?.path}
-        type={deleteData?.type}
-        target={deleteData?.target}
-        code={deleteData?.code}
+        redirects={deleteRedirects}
       />
     </RedirectsDialogContext.Provider>
   );

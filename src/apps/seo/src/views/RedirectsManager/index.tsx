@@ -1,34 +1,9 @@
-import { useEffect } from "react";
-import RedirectsTable from "./RedirectsTable";
 import RedirectImportTable from "./RedirectImportTable";
 import { Box } from "@mui/material";
+import RedirectsTable from "./RedirectsTable";
 import RedirectActions from "./RedirectActions";
-import { LoadingQuote } from "../../../../../shell/components/LoadingQuote";
-import { useDispatch } from "react-redux";
-import { notify } from "../../../../../shell/store/notifications";
-import { useGetRedirectsQuery } from "../../../../../shell/services/instance";
-import RedirectsTableContextProvider from "./RedirectsTable/TableSortFilterProvider";
 
 const RedirectsManager = (props: any) => {
-  const dispatch = useDispatch();
-
-  const { data: redirects, isLoading, isError } = useGetRedirectsQuery();
-
-  useEffect(() => {
-    if (isError && !isLoading) {
-      dispatch(
-        notify({
-          kind: "warn",
-          message: "Failed to load redirects data",
-        })
-      );
-    }
-  }, [isError, isLoading]);
-
-  if (isLoading) {
-    return <LoadingQuote />;
-  }
-
   return (
     <>
       <Box
@@ -42,7 +17,7 @@ const RedirectsManager = (props: any) => {
           backgroundColor: "background.paper",
         }}
       >
-        <RedirectActions redirectsTotal={Object.keys(redirects).length} />
+        <RedirectActions />
       </Box>
 
       <Box
@@ -58,17 +33,11 @@ const RedirectsManager = (props: any) => {
           height: `calc(100% - 68px - 40px)`,
         }}
       >
-        <RedirectsTableContextProvider>
-          {Object.keys(props.imports).length ? (
-            <RedirectImportTable {...props} />
-          ) : (
-            <RedirectsTable
-              redirects={redirects}
-              isLoading={isLoading}
-              redirectsFilter={props?.redirectsFilter || ""}
-            />
-          )}
-        </RedirectsTableContextProvider>
+        {Object.keys(props.imports).length ? (
+          <RedirectImportTable {...props} />
+        ) : (
+          <RedirectsTable />
+        )}
       </Box>
     </>
   );

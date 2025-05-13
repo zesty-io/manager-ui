@@ -48,6 +48,39 @@ const TEST_REDIRECTS_DATA = [
   },
 ];
 
+const TEST_DELETE_DATA = [
+  {
+    path: "delete/1/---test",
+    code: 301,
+    targetType: "external",
+    target: "https://www.zesty.io",
+  },
+  {
+    path: "delete/2/---test",
+    code: 301,
+    targetType: "external",
+    target: "https://www.zesty.io",
+  },
+  {
+    path: "delete/3/---test",
+    code: 301,
+    targetType: "external",
+    target: "https://www.zesty.io",
+  },
+  {
+    path: "delete/4/---test",
+    code: 301,
+    targetType: "external",
+    target: "https://www.zesty.io",
+  },
+  {
+    path: "delete/5/---test",
+    code: 301,
+    targetType: "external",
+    target: "https://www.zesty.io",
+  },
+];
+
 describe("Redirects", () => {
   before(() => {
     deleteRedirectsTestData();
@@ -81,8 +114,15 @@ describe("Redirects", () => {
         })
         .click();
 
+      cy.intercept("/v1/web/redirects").as("getRedirects");
       cy.getElement('[data-cy="RedirectsCreateButton"]').click();
-      cy.contains("2 Redirects Created", { ...options, matchCase: false });
+      cy.wait("@getRedirects");
+
+      cy.getElement('[data-cy="toast"]').should(
+        "contain",
+        "2 Redirects Created",
+        { matchCase: false }
+      );
     });
     it("External", () => {
       cy.visit("/redirects");
@@ -103,8 +143,15 @@ describe("Redirects", () => {
         TEST_REDIRECTS_DATA[3]?.target
       );
 
+      cy.intercept("/v1/web/redirects").as("getRedirects");
       cy.getElement('[data-cy="RedirectsCreateButton"]').click();
-      cy.contains("1 Redirect Created", { ...options, matchCase: false });
+      cy.wait("@getRedirects");
+
+      cy.getElement('[data-cy="toast"]').should(
+        "contain",
+        "1 Redirect Created",
+        { matchCase: false }
+      );
     });
 
     it("Wildcard", () => {
@@ -129,8 +176,15 @@ describe("Redirects", () => {
         TEST_REDIRECTS_DATA[4]?.target
       );
 
+      cy.intercept("/v1/web/redirects").as("getRedirects");
       cy.getElement('[data-cy="RedirectsCreateButton"]').click();
-      cy.contains("1 Redirect Created", { ...options, matchCase: false });
+      cy.wait("@getRedirects");
+
+      cy.getElement('[data-cy="toast"]').should(
+        "contain",
+        "1 Redirect Created",
+        { matchCase: false }
+      );
     });
   });
 
@@ -153,8 +207,15 @@ describe("Redirects", () => {
         })
         .click();
 
+      cy.intercept("/v1/web/redirects").as("getRedirects");
       cy.getElement('[data-cy="RedirectsCreateAddAnotherButton"]').click();
-      cy.contains("1 Redirect Created", { ...options, matchCase: false });
+      cy.wait("@getRedirects");
+
+      cy.getElement('[data-cy="toast"]').should(
+        "contain",
+        "1 Redirect Created",
+        { matchCase: false }
+      );
 
       cy.getElement('[data-cy="RedirectsFieldPath"]:eq(0) input').should(
         "be.empty"
@@ -193,25 +254,34 @@ describe("Redirects", () => {
         })
         .click();
 
+      cy.intercept("/v1/web/redirects").as("getRedirects");
       cy.getElement('[data-cy="RedirectsCreateButton"]').click();
+      cy.wait("@getRedirects");
 
       cy.getElement('[data-cy="RedirectsErrorDialog"]').should("be.visible");
 
-      cy.contains("3 Redirects couldn't be created", {
-        ...options,
-        matchCase: false,
-      });
+      cy.getElement('[data-cy="RedirectsErrorDialogHeader"]').should(
+        "contain",
+        "3 Redirects couldn't be created",
+        { matchCase: false }
+      );
+
       cy.getElement(
         '[data-cy="RedirectsErrorDialogListContainer"] > .RedirectsErrorListItem'
       ).should("have.length", 3);
     });
+
     it("Try Again", () => {
       cy.wrap(deleteRedirectsTestData()).then((res) => {
+        cy.intercept("/v1/web/redirects").as("getRedirects");
         cy.getElement('[data-cy="RedirectsErrorDialogTryAgainButton"]').click();
-        cy.contains("3 Redirects couldn't be created", {
-          ...options,
-          matchCase: false,
-        });
+        cy.wait("@getRedirects");
+
+        cy.getElement('[data-cy="toast"]').should(
+          "contain",
+          "3 Redirects Created",
+          { matchCase: false }
+        );
       });
     });
 
@@ -223,21 +293,29 @@ describe("Redirects", () => {
         matchCase: false,
       }).click(forceClick);
       cy.getElement('[data-cy="RedirectsExternalFieldPath"] input').type(
-        "invalid url"
+        "invalid url test url"
       );
-      cy.contains(TARGET_PATH_ERRORS.invalidUrl, { matchCase: false });
+      cy.getElement('[data-cy="RedirectsPathFieldError"]').should(
+        "contain",
+        TARGET_PATH_ERRORS.invalidUrl,
+        { matchCase: false }
+      );
     });
   });
 
   describe("Update Redirect", () => {
     it("Success", () => {
       cy.visit("/redirects");
-      cy.contains(`/${TEST_REDIRECTS_DATA[0]?.path}`, { matchCase: false })
+
+      cy.getElement(".MuiDataGrid-cell")
+        .contains(`/${TEST_REDIRECTS_DATA[0]?.path}`, { matchCase: false })
         .parents(".MuiDataGrid-row")
-        .find('[data-cy="RedirectsTableActionButton"]')
+        .find(".MuiDataGrid-cell .MuiDataGrid-actionsCell .MuiIconButton-root")
         .click();
 
-      cy.getElement('[data-cy="RedirectsItemOptionsEdit"]').click();
+      cy.getElement(".MuiDataGrid-menu")
+        .contains("Edit Redirect", { matchCase: false })
+        .click();
 
       cy.getElement('[data-cy="RedirectsFieldPath"]:eq(0) input')
         .clear()
@@ -246,9 +324,107 @@ describe("Redirects", () => {
       cy.getElement('[data-cy="RedirectsCodeSelector"]').click();
 
       cy.getElement('[data-cy="RedirectsCreateButton"]').click(forceClick);
-      cy.contains(`Redirect Saved: /${TEST_REDIRECTS_DATA[3]?.path}`, {
-        matchCase: false,
-      });
+      cy.getElement('[data-cy="toast"]').should(
+        "contain",
+        `Redirect Saved: /${TEST_REDIRECTS_DATA[3]?.path}`,
+        { matchCase: false }
+      );
+    });
+  });
+
+  describe("Delete Redirect/s", () => {
+    before(() => {
+      createDeleteRedirectsTestData();
+    });
+
+    it("Actions Menu", () => {
+      cy.visit("/redirects");
+      cy.getElement(".MuiDataGrid-cell")
+        .contains(`/${TEST_DELETE_DATA[0]?.path}`, { matchCase: false })
+        .parents(".MuiDataGrid-row")
+        .find(".MuiDataGrid-cell .MuiDataGrid-actionsCell .MuiIconButton-root")
+        .click();
+
+      cy.getElement(".MuiDataGrid-menu")
+        .contains("Delete Redirect", { matchCase: false })
+        .click();
+
+      cy.intercept("/v1/web/redirects/*").as("deleteRedirect");
+      cy.intercept("/v1/web/redirects").as("getRedirects");
+      cy.getElement('[data-cy="DeleteContentItemConfirmButton"]').click();
+      cy.wait(["@deleteRedirect", "@getRedirects"]);
+
+      cy.getElement('[data-cy="toast"]').should(
+        "contain",
+        "1 Redirect Deleted",
+        { matchCase: false }
+      );
+    });
+    it("Single Selection", () => {
+      cy.visit("/redirects");
+      cy.getElement(".MuiDataGrid-cell")
+        .contains(`/${TEST_DELETE_DATA[1]?.path}`, { matchCase: false })
+        .parents(".MuiDataGrid-row")
+        .find(".MuiDataGrid-cell:eq(0) .MuiCheckbox-root input")
+        .check();
+      cy.getElement('[data-cy="RedirectActionDeleteButton"]').click();
+      cy.getElement('[data-cy="RedirectsDeleteDialog"]').should("exist");
+      cy.getElement('[data-cy="RedirectsDeleteDialogHeader"]').should(
+        "contain",
+        "Delete 1 Redirect",
+        { matchCase: false }
+      );
+
+      cy.intercept("/v1/web/redirects/*", "DELETE").as("deleteRedirect");
+      cy.intercept("/v1/web/redirects").as("getRedirects");
+      cy.getElement('[data-cy="DeleteContentItemConfirmButton"]').click();
+      cy.wait(["@deleteRedirect", "@getRedirects"]);
+
+      cy.getElement('[data-cy="toast"]').should(
+        "contain",
+        "1 Redirect Deleted",
+        { matchCase: false }
+      );
+    });
+
+    it("Multiple", () => {
+      cy.visit("/redirects");
+      cy.getElement(".MuiDataGrid-cell")
+        .contains(`/${TEST_DELETE_DATA[2]?.path}`, { matchCase: false })
+        .parents(".MuiDataGrid-row")
+        .find(".MuiDataGrid-cell:eq(0) .MuiCheckbox-root input")
+        .check();
+
+      cy.getElement(".MuiDataGrid-cell")
+        .contains(`/${TEST_DELETE_DATA[3]?.path}`, { matchCase: false })
+        .parents(".MuiDataGrid-row")
+        .find(".MuiDataGrid-cell:eq(0) .MuiCheckbox-root input")
+        .check();
+
+      cy.getElement(".MuiDataGrid-cell")
+        .contains(`/${TEST_DELETE_DATA[4]?.path}`, { matchCase: false })
+        .parents(".MuiDataGrid-row")
+        .find(".MuiDataGrid-cell:eq(0) .MuiCheckbox-root input")
+        .check();
+
+      cy.getElement('[data-cy="RedirectActionDeleteButton"]').click();
+      cy.getElement('[data-cy="RedirectsDeleteDialog"]').should("exist");
+      cy.getElement('[data-cy="RedirectsDeleteDialogHeader"]').should(
+        "contain",
+        "Delete 3 Redirects",
+        { matchCase: false }
+      );
+
+      cy.intercept("/v1/web/redirects/*", "DELETE").as("deleteRedirect");
+      cy.intercept("/v1/web/redirects").as("getRedirects");
+      cy.getElement('[data-cy="DeleteContentItemConfirmButton"]').click();
+      cy.wait(["@deleteRedirect", "@getRedirects"]);
+
+      cy.getElement('[data-cy="toast"]').should(
+        "contain",
+        "3 Redirects Deleted",
+        { matchCase: false }
+      );
     });
   });
 });
@@ -257,7 +433,9 @@ function deleteRedirectsTestData() {
   cy.apiRequest({
     url: `${API_ENDPOINTS.devInstance}/web/redirects`,
   }).then(({ status, data }) => {
-    const testRedirects = TEST_REDIRECTS_DATA?.map((item) => `/${item?.path}`);
+    const testRedirects = [...TEST_REDIRECTS_DATA, ...TEST_DELETE_DATA]?.map(
+      (item) => `/${item?.path}`
+    );
     const forDeleteZuids = data
       ?.filter((item) => testRedirects?.includes(item?.path))
       .map((del) => del?.ZUID);
@@ -269,6 +447,20 @@ function deleteRedirectsTestData() {
       });
     });
   });
+}
+
+function createDeleteRedirectsTestData() {
+  for (let index = 0; index < TEST_DELETE_DATA?.length; index++) {
+    const reqPath = TEST_DELETE_DATA[index];
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/redirects`,
+      method: "POST",
+      body: {
+        ...reqPath,
+        path: `/${reqPath.path}`,
+      },
+    });
+  }
 }
 
 Cypress.Commands.add("getElement", (selector) => {
