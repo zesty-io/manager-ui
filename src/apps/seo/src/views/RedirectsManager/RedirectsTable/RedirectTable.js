@@ -1,5 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
-import { DataGridPro, GridActionsCellItem } from "@mui/x-data-grid-pro";
+import { useCallback, useLayoutEffect, useMemo, useState } from "react";
+import {
+  DataGridPro,
+  GRID_CHECKBOX_SELECTION_COL_DEF,
+  useGridApiRef,
+  GridActionsCellItem,
+} from "@mui/x-data-grid-pro";
 import { Box, Typography, MenuItem, ListItemText } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
@@ -15,11 +20,16 @@ import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { useRedirectsDialog } from "../../../app/components/RedirectsDialogProvider";
 import { SortFilters } from "./SortFilters";
 import { useRedirectsTableFilters } from "./TableSortFilterProvider";
+import { SearchRounded } from "@mui/icons-material";
 
-export default function RedirectTable(props) {
+const RedirectTable = (props) => {
+  const { redirects, redirectsFilter, isLoading } = props;
+  const apiRef = useGridApiRef();
   const [selectedRow, setSelectedRow] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const { sortBy, httpCodeFilter, typeFilter } = useRedirectsTableFilters();
+  const [initialState, setInitialState] = useState();
+  const [pinnedColumns, setPinnedColumns] = useState({});
 
   const columns = useMemo(
     () => [
@@ -27,11 +37,7 @@ export default function RedirectTable(props) {
         field: "path",
         minWidth: 206,
         flex: 1,
-        renderHeader: () => (
-          <Typography variant="body2" fontWeight={600} color="text.primary">
-            Incoming Path
-          </Typography>
-        ),
+        headerName: "Incoming Path",
         renderCell: ({ value }) => (
           <Typography variant="body2" color="text.primary">
             {value}
@@ -42,11 +48,7 @@ export default function RedirectTable(props) {
         field: "code",
         width: 120,
         minWidth: 120,
-        renderHeader: () => (
-          <Typography variant="body2" fontWeight={600} color="text.primary">
-            HTTP Code
-          </Typography>
-        ),
+        headerName: "HTTP Code",
         renderCell: ({ value }) => {
           return (
             <Typography
@@ -71,13 +73,7 @@ export default function RedirectTable(props) {
         field: "targetType",
         width: 120,
         minWidth: 120,
-        renderHeader: () => {
-          return (
-            <Typography variant="body2" fontWeight={600} color="text.primary">
-              Type
-            </Typography>
-          );
-        },
+        headerName: "Type",
         renderCell: ({ value }) => {
           return (
             <Typography
@@ -116,12 +112,7 @@ export default function RedirectTable(props) {
         field: "target",
         minWidth: 190,
         flex: 1,
-        headerName: (
-          <Typography variant="body2" fontWeight={600} color="text.primary">
-            Target
-          </Typography>
-        ),
-
+        headerName: "Target",
         renderCell: ({ value, row }) => (
           <RedirectTargetCell target={value} targetType={row.targetType} />
         ),
@@ -135,7 +126,7 @@ export default function RedirectTable(props) {
         resizable: false,
         getActions: ({ row }) => [
           <GridActionsCellItem
-            data-cy="RedirectsTableActionButton"
+            showInMenu
             icon={<MoreHorizIcon />}
             color="action.secondary"
             label="More options"
@@ -151,9 +142,10 @@ export default function RedirectTable(props) {
   );
 
   const rows = useMemo(() => {
-    return Object.values(props.redirects)
+    if (isLoading) return [];
+    return Object.values(redirects)
       .filter((redirect) => {
-        const normalizedFilter = props?.redirectsFilter?.toLowerCase() || "";
+        const normalizedFilter = redirectsFilter?.toLowerCase() || "";
         const matchesSearch =
           redirect.path.toLowerCase().includes(normalizedFilter) ||
           String(redirect.code).toLowerCase().includes(normalizedFilter) ||
@@ -161,10 +153,9 @@ export default function RedirectTable(props) {
           redirect.target.toLowerCase().includes(normalizedFilter);
 
         const matchesHttpCode =
-          httpCodeFilter === "all" || String(redirect.code) === httpCodeFilter;
-
+          httpCodeFilter === null || String(redirect.code) === httpCodeFilter;
         const matchesType =
-          typeFilter === "all" || redirect.targetType === typeFilter;
+          typeFilter === null || redirect.targetType === typeFilter;
 
         return matchesSearch && matchesHttpCode && matchesType;
       })
@@ -191,17 +182,54 @@ export default function RedirectTable(props) {
         id: redirect.ZUID,
       }));
   }, [
-    props.redirects,
-    props.redirectsFilter,
-    props?.isLoading,
+    redirects,
+    redirectsFilter,
+    isLoading,
     sortBy,
     httpCodeFilter,
     typeFilter,
   ]);
 
-  useEffect(() => {
-    console.debug("rows: ", rows);
-  }, [rows]);
+  const saveSnapshot = useCallback(() => {
+    if (apiRef?.current && localStorage) {
+      const currentState = apiRef.current.exportState();
+      const fullState = {
+        ...currentState,
+        pinnedColumns: apiRef.current.getPinnedColumns(),
+      };
+      localStorage.setItem(
+        `zesty:redirects:dataGridState`,
+        JSON.stringify(fullState)
+      );
+    }
+  }, [apiRef]);
+
+  useLayoutEffect(() => {
+    if (!columns) return;
+    const stateFromLocalStorage = localStorage?.getItem(
+      `zesty:redirects:dataGridState`
+    );
+
+    if (stateFromLocalStorage) {
+      const parsedState = JSON.parse(stateFromLocalStorage);
+      setInitialState(parsedState);
+      if (parsedState.pinnedColumns) {
+        setPinnedColumns(parsedState.pinnedColumns);
+      }
+    } else {
+      setInitialState({});
+      setPinnedColumns({
+        left: [GRID_CHECKBOX_SELECTION_COL_DEF.field],
+      });
+    }
+
+    window.addEventListener("beforeunload", saveSnapshot);
+
+    return () => {
+      window.removeEventListener("beforeunload", saveSnapshot);
+      saveSnapshot();
+    };
+  }, [saveSnapshot, columns, GRID_CHECKBOX_SELECTION_COL_DEF]);
 
   return (
     <>
@@ -210,23 +238,31 @@ export default function RedirectTable(props) {
       </Box>
 
       <Box
-        display="flex"
-        flexDirection="column"
-        height="100%"
-        justifyContent="flex-start"
-        alignItems="stretch"
-        width="100%"
-        position="relative"
-        rowGap="16px"
-        boder="1px solid red"
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          height: "100%",
+          justifyContent: "flex-start",
+          alignItems: "stretch",
+          width: "100%",
+          position: "relative",
+          rowGap: "16px",
+        }}
       >
         <Box width="100%" height="100%">
           <AutoSizer>
             {({ width, height }) => (
               <DataGridPro
+                apiRef={apiRef}
                 columns={columns}
                 rows={rows}
                 rowHeight={60}
+                pinnedColumns={pinnedColumns}
+                onPinnedColumnsChange={(newPinnedColumns) =>
+                  setPinnedColumns(newPinnedColumns)
+                }
+                onColumnWidthChange={saveSnapshot}
+                initialState={initialState}
                 style={{
                   width: width,
                   height: height,
@@ -281,7 +317,7 @@ export default function RedirectTable(props) {
       </Box>
     </>
   );
-}
+};
 
 function MoreOptions({ anchorEl, onClose, data }) {
   const open = Boolean(anchorEl);
@@ -338,3 +374,5 @@ function MoreOptions({ anchorEl, onClose, data }) {
     </Menu>
   );
 }
+
+export default RedirectTable;

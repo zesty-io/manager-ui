@@ -59,11 +59,11 @@ export const SortFilters = () => {
       case "sort":
         return `Sort: ${SORT_OPTIONS[sortBy as keyof typeof SORT_OPTIONS]}`;
       case "code":
-        return httpCodeFilter === "all"
+        return httpCodeFilter === null
           ? "HTTP Code"
           : HTTP_CODE_FILTERS[httpCodeFilter as keyof typeof HTTP_CODE_FILTERS];
       case "type":
-        return typeFilter === "all"
+        return typeFilter === null
           ? "Type"
           : TYPE_FILTERS[typeFilter as keyof typeof TYPE_FILTERS];
       default:
@@ -112,11 +112,11 @@ export const SortFilters = () => {
 
       <FilterButton
         filterId="httpCode"
-        isFilterActive={httpCodeFilter !== "all"}
+        isFilterActive={httpCodeFilter !== null}
         buttonText={getButtonText("code")}
         onOpenMenu={(e) => handleOpenMenu(e, "code")}
         onRemoveFilter={() => {
-          setHttpCodeFilter("all");
+          setHttpCodeFilter(null);
         }}
       />
       <Menu
@@ -149,11 +149,11 @@ export const SortFilters = () => {
 
       <FilterButton
         filterId="targetType"
-        isFilterActive={typeFilter !== "all"}
+        isFilterActive={typeFilter !== null}
         buttonText={getButtonText("type")}
         onOpenMenu={(e) => handleOpenMenu(e, "type")}
         onRemoveFilter={() => {
-          setTypeFilter("all");
+          setTypeFilter(null);
         }}
       />
       <Menu

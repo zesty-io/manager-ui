@@ -8,8 +8,8 @@ const RedirectsTableContextProvider = ({
   children: ReactNode;
 }) => {
   const [sortBy, setSortBy] = useState("createdAt");
-  const [httpCodeFilter, setHttpCodeFilter] = useState("all");
-  const [typeFilter, setTypeFilter] = useState("all");
+  const [httpCodeFilter, setHttpCodeFilter] = useState(null);
+  const [typeFilter, setTypeFilter] = useState(null);
 
   return (
     <RedirectsTableContext.Provider
