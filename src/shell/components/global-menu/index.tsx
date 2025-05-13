@@ -18,8 +18,7 @@ import RecentActorsIcon from "@mui/icons-material/RecentActors";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import SettingsIcon from "@mui/icons-material/Settings";
 import ExtensionIcon from "@mui/icons-material/Extension";
-import ShuffleRoundedIcon from "@mui/icons-material/ShuffleRounded";
-import { Database, Block } from "@zesty-io/material";
+import { Database, Block, ShuffleVariant } from "@zesty-io/material";
 
 import { AppState } from "../../store/types";
 import { Products } from "../../services/types";
@@ -44,7 +43,7 @@ export default memo(function GlobalMenu() {
     code: CodeIcon,
     leads: RecentActorsIcon,
     reports: BarChartIcon,
-    redirects: ShuffleRoundedIcon,
+    redirects: ShuffleVariant,
     settings: SettingsIcon,
     release: RocketLaunchIcon,
     apps: ExtensionIcon,

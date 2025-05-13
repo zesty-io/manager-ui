@@ -117,11 +117,12 @@ export function RedirectCreator(props) {
             setType(newValue || null);
           }}
           disableClearable
-          defaultValue="page"
-          value={type} // Pass the full object as the value
+          value={type}
           options={optionTypes}
-          getOptionLabel={(option) => option.label}
-          getOptionSelected={(option, value) => option.value === value.value}
+          getOptionLabel={(option) => option?.label || ""}
+          isOptionEqualToValue={(option, value) =>
+            option?.value === value?.value
+          }
           renderInput={(params) => (
             <TextField {...params} size="small" placeholder="Type" />
           )}
@@ -173,8 +174,7 @@ export function RedirectCreator(props) {
           disabled={!from.length || !from.startsWith("/")}
           startIcon={<AddIcon />}
           fullWidth
-          boxSizing="border-box"
-          sx={{ whiteSpace: "nowrap" }}
+          sx={{ whiteSpace: "nowrap", boxSizing: "border-box" }}
         >
           Create Redirect
         </LoadingButton>
