@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { WithLoader } from "@zesty-io/core/WithLoader";
 import RedirectsTable from "./RedirectsTable";
 import RedirectImportTable from "./RedirectImportTable";
 import { fetchRedirects } from "../../store/redirects";
@@ -56,7 +55,7 @@ export default function RedirectManager(props) {
         justifyContent="center"
         alignItems="center"
         px={4}
-        py={2}
+        pt={2}
         boxSizing="border-box"
         position="relative"
       >
