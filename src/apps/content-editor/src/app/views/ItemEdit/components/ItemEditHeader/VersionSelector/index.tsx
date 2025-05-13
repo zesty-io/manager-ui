@@ -99,7 +99,7 @@ export const VersionSelector = memo(
           const workflowStatusData = itemWorkflowStatus.find(
             (status) => status.itemVersion === v.meta?.version
           );
-          const labelZUIDs = workflowStatusData?.labelZUIDs;
+          const labelZUIDs = workflowStatusData?.labelZUIDs || [];
           itemWorkflowZUID = workflowStatusData?.ZUID;
 
           labels = labelZUIDs?.map((labelZUID) =>
