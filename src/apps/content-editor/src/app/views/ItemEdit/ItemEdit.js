@@ -61,6 +61,7 @@ import {
   fetchItemPublishings,
   fetchItems,
 } from "../../../../../../shell/store/content";
+import { Redirects } from "../Redirects";
 
 const selectItemHeadTags = createSelector(
   (state) => state.headTags,
@@ -667,6 +668,11 @@ export default function ItemEdit() {
                   exact
                   path="/content/:modelZUID/:itemZUID/freestyle"
                   render={() => <FreestyleWrapper />}
+                />
+                <Route
+                  exact
+                  path="/content/:modelZUID/:itemZUID/redirects"
+                  render={() => <Redirects />}
                 />
               </Switch>
             </Box>
