@@ -188,7 +188,7 @@ const SearchField: React.FC<SearchFieldProps> = ({
   const filterOptions = createFilterOptions({
     matchFrom: "any",
     stringify: (option: any) =>
-      `${option?.label}\n${option?.path}\n${option?.id}`,
+      `${option?.label}\n${option?.path}\n${option?.ZUID}`,
   });
 
   return (
