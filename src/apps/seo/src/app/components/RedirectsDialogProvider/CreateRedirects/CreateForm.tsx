@@ -18,7 +18,13 @@ import {
   Box,
 } from "@mui/material";
 import { useDispatch } from "react-redux";
-import { DialogContent, TextField, MenuItem, Tooltip } from "@mui/material";
+import {
+  DialogContent,
+  TextField,
+  MenuItem,
+  Tooltip,
+  Skeleton,
+} from "@mui/material";
 import ShuffleIcon from "@mui/icons-material/Shuffle";
 import AddIcon from "@mui/icons-material/Add";
 import { IconButton } from "@zesty-io/material";
@@ -27,20 +33,20 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import PathField from "./PathField";
 import {
   ContentItemProps,
-  CreateRedirectFormSkeleton,
   FORM_LABELS,
   HTTP_CODE_OPTIONS,
   TARGET_OPTIONS,
   TOOL_TIPS,
-  validateUrl,
 } from "../constants";
 import { CreateFormDefaultValues, useRedirectsDialog } from "..";
 import {
   useGetAllPublishingsQuery,
+  useGetContentModelsQuery,
   useGetLangsQuery,
   useSearchContentQuery,
 } from "../../../../../../../shell/services/instance";
 import {
+  ContentModel,
   Language,
   Publishing,
   RedirectsCodes,
@@ -61,6 +67,21 @@ type PathProps = {
 };
 
 export type PublishingsMap = Record<string, Publishing>;
+
+export const validateUrl = (url: string) => {
+  const validProtocols = ["http://", "https://"];
+
+  const hasValidProtocol = validProtocols.some((protocol) =>
+    url.startsWith(protocol)
+  );
+  if (!hasValidProtocol) return false;
+  try {
+    new URL(url);
+    return true;
+  } catch (_) {
+    return false;
+  }
+};
 
 const CreateForm: FC<CreateFormProps> = ({
   open,
@@ -104,9 +125,15 @@ const CreateForm: FC<CreateFormProps> = ({
   const { data: languages, isLoading: isLoadingLanguages } = useGetLangsQuery(
     {}
   );
+  const { data: models, isLoading: isLoadingModels } =
+    useGetContentModelsQuery();
 
   const isLoading =
-    !!isLoadingPublishings || !!isLoadingLanguages || !!isLoadingContentItems;
+    !!isLoadingPublishings ||
+    !!isLoadingLanguages ||
+    !!isLoadingContentItems ||
+    !!isLoadingModels;
+
   const isDisabled =
     !paths?.map((item) => item?.path?.trim())?.filter(Boolean)?.length ||
     !target ||
@@ -156,16 +183,31 @@ const CreateForm: FC<CreateFormProps> = ({
     );
   }, [languages, isLoadingLanguages]);
 
+  const modelsMap = useMemo(() => {
+    if (isLoadingModels) return {};
+    return [...(models || [])].reduce(
+      (acc: Record<string, ContentModel>, item: ContentModel) => {
+        acc[item.ZUID] = item;
+        return acc;
+      },
+      {}
+    );
+  }, [models, isLoadingModels]);
+
   const options = useMemo(() => {
     if (isLoading) return [];
 
     const parseContentItems = contentItems
-      ?.filter((result) => result?.web?.path !== null)
+      ?.filter(
+        (result) =>
+          result?.web?.path !== null &&
+          ["templateset", "pageset"].includes(
+            modelsMap?.[result?.meta?.contentModelZUID]?.type
+          )
+      )
       ?.map((item) => {
         const publishData = publishingMap?.[item?.meta?.ZUID];
-
         const langCode = languageMap?.[item?.meta?.langID]?.code;
-
         return {
           ZUID: item?.meta?.ZUID,
           label:
@@ -176,6 +218,7 @@ const CreateForm: FC<CreateFormProps> = ({
           isPublished:
             !!publishData &&
             publishData?.versionZUID === item?.web?.versionZUID,
+          type: modelsMap?.[item?.meta?.contentModelZUID]?.type,
         };
       })
       .sort(
@@ -183,7 +226,7 @@ const CreateForm: FC<CreateFormProps> = ({
           new Date(b.publishAt).getTime() - new Date(a.publishAt).getTime()
       );
     return parseContentItems as ContentItemProps[];
-  }, [contentItems, publishingMap, languageMap, isLoading]);
+  }, [contentItems, publishingMap, languageMap, modelsMap, isLoading]);
 
   const handleSubmit = async (submitType: "multiple" | "single") => {
     setSubmitType(submitType);
@@ -652,6 +695,120 @@ export const FieldWrapper: FC<FieldWrapperProps> = ({
         )}
       </Stack>
       {children}
+    </Box>
+  );
+};
+
+export const CreateRedirectFormSkeleton = () => {
+  return (
+    <Box
+      width="100%"
+      height="100%"
+      display="flex"
+      flexDirection="column"
+      justifyContent="flex-start"
+      alignItems="flex-start"
+      rowGap="20px"
+      py={2.25}
+    >
+      <Box
+        display="flex"
+        flexDirection="column"
+        justifyContent="flex-start"
+        alignItems="flex-start"
+        sx={{
+          rowGap: 1,
+          width: "100%",
+        }}
+      >
+        <Skeleton variant="rounded" width="100px" height="12px" />
+        <Skeleton variant="rounded" width="90%" height="12px" />
+        <Box
+          sx={{
+            display: "flex",
+            flexDiretion: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            width: "100%",
+            columnGap: 2,
+          }}
+        >
+          <Skeleton
+            variant="rounded"
+            width="100px"
+            height="36px"
+            sx={{ flexGrow: 1 }}
+          />
+          <Skeleton variant="circular" width="25px" height="25px" />
+        </Box>
+      </Box>
+
+      <Box
+        display="flex"
+        flexDirection="column"
+        justifyContent="flex-start"
+        alignItems="flex-start"
+        sx={{
+          rowGap: 0.5,
+          width: "100%",
+        }}
+      >
+        <Skeleton variant="rounded" width="125px" height="36px" />
+      </Box>
+      <Box
+        display="flex"
+        flexDirection="column"
+        justifyContent="flex-start"
+        alignItems="flex-start"
+        sx={{
+          rowGap: 1,
+          width: "100%",
+        }}
+      >
+        <Skeleton
+          variant="rounded"
+          width="91px"
+          height="12px"
+          sx={{ flexGrow: 1 }}
+        />
+        <Skeleton variant="rounded" width="100%" height="36px" />
+      </Box>
+      <Box
+        display="flex"
+        flexDirection="column"
+        justifyContent="flex-start"
+        alignItems="flex-start"
+        sx={{
+          rowGap: 1,
+          width: "100%",
+        }}
+      >
+        <Skeleton
+          variant="rounded"
+          width="48px"
+          height="12px"
+          sx={{ flexGrow: 1 }}
+        />
+        <Skeleton variant="rounded" width="100%" height="36px" />
+      </Box>
+      <Box
+        display="flex"
+        flexDirection="column"
+        justifyContent="flex-start"
+        alignItems="flex-start"
+        sx={{
+          rowGap: 1,
+          width: "100%",
+        }}
+      >
+        <Skeleton
+          variant="rounded"
+          width="115px"
+          height="12px"
+          sx={{ flexGrow: 1 }}
+        />
+        <Skeleton variant="rounded" width="100%" height="36px" />
+      </Box>
     </Box>
   );
 };

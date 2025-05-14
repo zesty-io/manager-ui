@@ -13,7 +13,7 @@ import {
   RedirectsCodes,
   RedirectsTargetType,
 } from "../../../../../../shell/services/types";
-import { CreateRedirectErrors, parseRedirectError } from "./constants";
+import { CreateRedirectErrors } from "./constants";
 import CreateForm from "./CreateRedirects/CreateForm";
 
 import { DeleteDialog, DeleteRedirectsProps } from "./DeleteDialog";
@@ -25,6 +25,13 @@ export type CreateFormDefaultValues = {
   target: string;
   targetType: RedirectsTargetType;
   path: string;
+};
+
+export const parseRedirectError = (error: string): string => {
+  if (error?.toLowerCase()?.includes("already exists")) return "Already exists";
+  if (error?.toLowerCase()?.includes("validation error: redirect item"))
+    return "Not Published";
+  return "Error";
 };
 
 const RedirectsDialogContext = createContext(null);

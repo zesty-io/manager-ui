@@ -26,6 +26,12 @@ import { TableSortFilters } from "./TableSortFilters";
 import { useRedirectsTable } from "./RedirectsTableContextProvider";
 import { Redirects } from "../../../../../../shell/services/types";
 
+const TARGET_TYPES_MAP = {
+  page: "internal",
+  path: "wildcard",
+  external: "external",
+} as const;
+
 const RedirectsTable = () => {
   const apiRef = useGridApiRef<GridApi>();
   const { openDeleteDialog, openCreateForm } = useRedirectsDialog();
@@ -181,6 +187,10 @@ const RedirectsTable = () => {
         const matchesSearch =
           redirect.path.toLowerCase().includes(normalizedFilter) ||
           String(redirect.code).toLowerCase().includes(normalizedFilter) ||
+          redirect.targetType.toLowerCase().includes(normalizedFilter) ||
+          TARGET_TYPES_MAP[redirect.targetType]
+            .toLowerCase()
+            .includes(normalizedFilter) ||
           redirect.ZUID.toLowerCase().includes(normalizedFilter) ||
           redirect.target.toLowerCase().includes(normalizedFilter);
 

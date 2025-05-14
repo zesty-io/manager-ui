@@ -3,16 +3,13 @@ import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import { VariableSizeList, ListChildComponentProps } from "react-window";
 import Typography from "@mui/material/Typography";
-import { Box, Paper, createFilterOptions } from "@mui/material";
+import { Box, Paper, createFilterOptions, Skeleton } from "@mui/material";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 
 import SearchIcon from "@mui/icons-material/Search";
-import {
-  ContentItemProps,
-  ListOptionSkeleton,
-  TARGET_ERRORS,
-} from "../constants";
+import { ContentItemProps, TARGET_ERRORS } from "../constants";
 import { InputAdornment } from "@mui/material";
+import DescriptionIcon from "@mui/icons-material/Description";
 
 const LISTBOX_PADDING = 8;
 
@@ -23,17 +20,14 @@ const ListOption: React.FC<ContentItemProps> = ({
   ZUID,
   langCode,
   isPublished,
-  isListItem = true,
+  type,
   onDelete = () => {},
   ...props
 }) => {
   return (
     <Box
       key={ZUID}
-      {...(!isListItem
-        ? { elevation: 0, variant: "outlined", sx: { borderColor: "border" } }
-        : {})}
-      component={isListItem ? "li" : Paper}
+      component="li"
       {...props}
       display="flex"
       flexDirection="row"
@@ -44,7 +38,11 @@ const ListOption: React.FC<ContentItemProps> = ({
       px="16px"
       py="8px"
     >
-      <FormatListBulletedIcon fontSize="small" color="action" />
+      {type === "pageset" ? (
+        <DescriptionIcon fontSize="small" color="action" />
+      ) : (
+        <FormatListBulletedIcon fontSize="small" color="action" />
+      )}
       <Box
         display="flex"
         flexDirection="column"
@@ -99,6 +97,7 @@ function renderRow(props: ListChildComponentProps) {
       ZUID={dataSet[1]?.ZUID}
       langCode={dataSet[1]?.langCode}
       isPublished={dataSet[1]?.isPublished}
+      type={dataSet[1]?.type}
       style={inlineStyle}
       {...optionProps}
     />
@@ -322,6 +321,48 @@ const SearchField: React.FC<SearchFieldProps> = ({
           {TARGET_ERRORS.unpublished}
         </Typography>
       )}
+    </>
+  );
+};
+
+export const ListOptionSkeleton = ({ count = 4 }: { count: number }) => {
+  return (
+    <>
+      {Array.from({ length: count }).map((_, index) => (
+        <Box
+          data-cy="RedirectsTargetListLoadingSkeleton"
+          key={index}
+          display="flex"
+          flexDirection="row"
+          justifyContent="space-between"
+          alignItems="center"
+          width="100%"
+          columnGap="12px"
+          py="8px"
+        >
+          <Skeleton
+            variant="circular"
+            sx={{
+              width: "24px",
+              height: "24px",
+              flexShrink: 0,
+            }}
+          />
+
+          <Box
+            display="flex"
+            flexDirection="column"
+            justifyContent="cennter"
+            alignItems="flex-start"
+            width="100%"
+            flexGrow={1}
+            rowGap="10px"
+          >
+            <Skeleton width="45%" height="12px" variant="rounded" />
+            <Skeleton width="90%" height="12px" variant="rounded" />
+          </Box>
+        </Box>
+      ))}
     </>
   );
 };
