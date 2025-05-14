@@ -23,6 +23,7 @@ import {
   Data,
   StyleCategory,
   GroupItem,
+  Redirects,
 } from "./types";
 import { batchApiRequests } from "../../utility/batchApiRequests";
 
@@ -53,6 +54,7 @@ export const instanceApi = createApi({
     "ContentItems",
     "ItemPublishings",
     "Groups",
+    "Redirects",
   ],
   endpoints: (builder) => ({
     // https://www.zesty.io/docs/instances/api-reference/content/models/items/publishings/#Get-All-Item-Publishings
@@ -716,6 +718,11 @@ export const instanceApi = createApi({
       },
       invalidatesTags: ["ContentModels", "WebViews", "ContentModelFields"],
     }),
+    getRedirects: builder.query<Redirects[], void>({
+      query: () => `/web/redirects`,
+      transformResponse: getResponseData,
+      providesTags: ["Redirects"],
+    }),
   }),
 });
 
@@ -770,4 +777,5 @@ export const {
   useGetGroupByZUIDQuery,
   useCreateGroupMutation,
   useCreateStarterBlockModelMutation,
+  useGetRedirectsQuery,
 } = instanceApi;
