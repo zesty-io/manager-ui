@@ -299,7 +299,6 @@ const RedirectsTable = () => {
                 onColumnWidthChange={saveSnapshot}
                 rowSelectionModel={selectedRedirects}
                 onRowSelectionModelChange={(selection: GridRowId[]) => {
-                  console.debug("selection: ", selection);
                   setSelectedRedirects(selection);
                 }}
                 initialState={initialState}

@@ -42,29 +42,33 @@ export const DeleteDialog: FC<DeleteDialogProps> = ({
       ? `Deleting this redirect for these incoming path`
       : `Deleting these ${redirects?.length} redirects for these incoming paths`;
 
-  const handleDeleteRedirects = () => {
-    let inProgressCount = redirects?.length;
-    redirects?.forEach((redirect) => {
+  const handleDeleteRedirects = async () => {
+    const requests = [...(redirects || [])]?.map((redirect) =>
       deleteRedirect({ ZUID: redirect?.ZUID })
-        .then((res: any) => {
-          inProgressCount--;
-        })
-        .finally(() => {
-          if (inProgressCount === 0) {
-            onClose();
-            dispatch(
-              notify({
-                kind: "error",
-                message: `${redirects?.length} Redirect${
-                  redirects?.length > 1 ? "s" : ""
-                } Deleted`,
-              })
-            );
-          }
-        });
-    });
+    );
+    Promise.allSettled(requests)
+      .then((res) => {
+        onClose();
+      })
+      .catch(() => {
+        dispatch(
+          notify({
+            kind: "error",
+            message: `Error deleting redirects`,
+          })
+        );
+      })
+      .finally(() => {
+        dispatch(
+          notify({
+            kind: "error",
+            message: `${redirects?.length} Redirect${
+              redirects?.length > 1 ? "s" : ""
+            } Deleted`,
+          })
+        );
+      });
   };
-
   return (
     <Dialog open={open} fullWidth maxWidth="xs" onClose={onClose}>
       <DialogTitle>

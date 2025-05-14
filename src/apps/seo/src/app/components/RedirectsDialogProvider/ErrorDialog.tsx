@@ -38,7 +38,13 @@ export const ErrorDialog: FC<ErrorDialogProps> = ({ open, onClose, data }) => {
     let response = null;
 
     if (isEdit) {
-      response = await updateRedirect({ ...data, path: paths[0] });
+      response = await updateRedirect({
+        path: paths[0],
+        targetType: data?.targetType,
+        code: data?.code,
+        target: data?.target,
+        ZUID: data?.ZUID,
+      });
     } else {
       response = await createRedirects({
         paths: paths,

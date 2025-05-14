@@ -15,7 +15,6 @@ import {
 } from "../../../../../../shell/services/types";
 import { CreateRedirectErrors } from "./constants";
 import CreateForm from "./CreateRedirects/CreateForm";
-
 import { DeleteDialog, DeleteRedirectsProps } from "./DeleteDialog";
 import ErrorDialog from "./ErrorDialog";
 
@@ -34,7 +33,32 @@ export const parseRedirectError = (error: string): string => {
   return "Error";
 };
 
-const RedirectsDialogContext = createContext(null);
+type RedirectsDialogContextType = {
+  openCreateForm: (data?: CreateFormDefaultValues | null) => void;
+  closeCreateForm: () => void;
+  openErrorDialog: (errors: CreateRedirectErrors) => void;
+  closeErrorDialog: () => void;
+  isLoading: boolean;
+  createRedirects: (params: {
+    paths: string[];
+    targetType: RedirectsTargetType;
+    code: RedirectsCodes;
+    target: string;
+  }) => Promise<any>;
+  updateRedirect: (params: {
+    path: string;
+    targetType: RedirectsTargetType;
+    code: RedirectsCodes;
+    target: string;
+    ZUID: string;
+  }) => Promise<any>;
+  openDeleteDialog: (data: DeleteRedirectsProps[]) => void;
+  closeDeleteDialog: () => void;
+};
+
+const RedirectsDialogContext = createContext<RedirectsDialogContextType | null>(
+  null
+);
 
 const RedirectsDialogContextProvider = ({
   children,
@@ -52,7 +76,7 @@ const RedirectsDialogContextProvider = ({
   const [createFormDefaultValues, setCreateFormDefaultValues] =
     useState<CreateFormDefaultValues | null>(null);
 
-  const openCreateForm = (data: CreateFormDefaultValues = null) => {
+  const openCreateForm = (data: CreateFormDefaultValues | null = null) => {
     setCreateFormDefaultValues(data);
     setCreateFormOpen(true);
   };
@@ -72,7 +96,6 @@ const RedirectsDialogContextProvider = ({
 
   const [createRedirect, { isLoading: isCreatingRedirect }] =
     useCreateRedirectMutation();
-
   const [updateRedirect, { isLoading: isUpdatingRedirect }] =
     useUpdateRedirectMutation();
 
@@ -106,20 +129,20 @@ const RedirectsDialogContextProvider = ({
         data: {},
       };
       try {
-        let reqData = {
+        const reqData = {
           path,
           targetType,
           code,
           target,
         };
-        let response: any = undefined;
-        if (!!ZUID) {
-          response = await updateRedirect({ ZUID: ZUID, body: reqData });
+        let response: any;
+        if (ZUID) {
+          response = await updateRedirect({ ZUID, body: reqData });
         } else {
           response = await createRedirect(reqData);
         }
 
-        if (!!response?.error) {
+        if (response?.error) {
           throw new Error(response?.error?.data?.error);
         }
       } catch (error) {
@@ -134,18 +157,12 @@ const RedirectsDialogContextProvider = ({
       }
       return responseData;
     };
-    const redirectRequests = [...new Set(paths)]?.map((path) => {
-      return request({
-        path: path,
-        targetType: targetType,
-        code: code,
-        target: target,
-      });
-    });
 
-    const redirectsResponses: Awaited<any> = await Promise.allSettled(
-      redirectRequests
+    const redirectRequests = [...new Set(paths)]?.map((path) =>
+      request({ path, targetType, code, target })
     );
+
+    const redirectsResponses = await Promise.allSettled(redirectRequests);
     return redirectsResponses.map((item: any) => ({
       status: item?.value.status,
       message: item?.value?.message,
@@ -211,21 +228,27 @@ const RedirectsDialogContextProvider = ({
     >
       {children}
 
-      <CreateForm
-        open={createFormOpen}
-        onClose={closeCreateForm}
-        defaultValues={createFormDefaultValues}
-      />
-      <ErrorDialog
-        open={errorDialogOpen}
-        onClose={closeErrorDialog}
-        data={createRedirectErrors}
-      />
-      <DeleteDialog
-        open={deleteDialogOpen}
-        onClose={closeDeleteDialog}
-        redirects={deleteRedirects}
-      />
+      {createFormOpen && (
+        <CreateForm
+          open={createFormOpen}
+          onClose={closeCreateForm}
+          defaultValues={createFormDefaultValues}
+        />
+      )}
+      {errorDialogOpen && (
+        <ErrorDialog
+          open={errorDialogOpen}
+          onClose={closeErrorDialog}
+          data={createRedirectErrors}
+        />
+      )}
+      {deleteDialogOpen && (
+        <DeleteDialog
+          open={deleteDialogOpen}
+          onClose={closeDeleteDialog}
+          redirects={deleteRedirects}
+        />
+      )}
     </RedirectsDialogContext.Provider>
   );
 };

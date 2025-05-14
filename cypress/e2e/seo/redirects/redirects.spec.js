@@ -38,7 +38,7 @@ const TEST_REDIRECTS_DATA = [
     path: "xxx/---test",
     code: 301,
     targetType: "external",
-    target: "https://www.zesty.io",
+    target: "https://www.zesty.io/about-us",
   },
   {
     path: "zzz/---test",
@@ -325,8 +325,26 @@ describe("Redirects", () => {
         .clear()
         .wait(500)
         .type(`${TEST_REDIRECTS_DATA[3]?.path}`);
+
       cy.getElement('[data-cy="RedirectsCodeSelector"]').click();
 
+      cy.getElement(".MuiMenu-root .MuiMenuItem-root")
+        .contains("302 - Temporary Redirect", { matchCase: false })
+        .click();
+
+      cy.getElement('[data-cy="RedirectsTypeSelector"]').click();
+
+      cy.getElement(".MuiMenu-root .MuiMenuItem-root")
+        .contains("External - link to an external webpage", {
+          matchCase: false,
+        })
+        .click();
+
+      cy.getElement('[data-cy="RedirectsExternalFieldPath"] input').type(
+        TEST_REDIRECTS_DATA[3]?.target
+      );
+
+      cy.getElement('[data-cy="RedirectsCreateButton"]').should("be.enabled");
       cy.getElement('[data-cy="RedirectsCreateButton"]').click(forceClick);
       cy.getElement('[data-cy="toast"]').should(
         "contain",

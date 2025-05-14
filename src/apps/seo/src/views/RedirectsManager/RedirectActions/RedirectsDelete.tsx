@@ -1,26 +1,26 @@
-import { FC, useCallback } from "react";
+import { FC } from "react";
 import { Box, Typography, Button } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useRedirectsTable } from "../../RedirectsTable/RedirectsTableContextProvider";
 import LoadingButton from "@mui/lab/LoadingButton";
 import ClearIcon from "@mui/icons-material/Clear";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
-import { useRedirectsDialog } from "../../../../app/components/RedirectsDialogProvider";
+import { useRedirectsDialog } from "../../../app/components/RedirectsDialogProvider";
+import { useRedirectsTable } from "../RedirectsTable/RedirectsTableContextProvider";
+
 type RedirectsDeleteProps = {};
 
 const RedirectsDelete: FC<RedirectsDeleteProps> = () => {
-  const { openDeleteDialog, openCreateForm } = useRedirectsDialog();
+  const { openDeleteDialog } = useRedirectsDialog();
   const { selectedRedirects, setSelectedRedirects, redirects } =
     useRedirectsTable();
 
-  const handleDelete = useCallback(() => {
+  const handleDelete = () => {
     const deleteData = selectedRedirects.map((ZUID: any) => ({
       ZUID,
       path: redirects.find((row: any) => row.ZUID === ZUID)?.path,
     }));
-
     openDeleteDialog(deleteData);
-  }, [selectedRedirects]);
+  };
 
   return (
     <Box
