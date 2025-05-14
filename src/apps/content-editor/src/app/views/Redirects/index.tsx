@@ -1,6 +1,11 @@
-import { useMemo } from "react";
-import { Typography, Box, Stack, Link } from "@mui/material";
-import { MoreHoriz, ArrowForwardRounded } from "@mui/icons-material";
+import { useMemo, useState, MouseEvent } from "react";
+import { Typography, Box, Stack, Link, Menu, MenuItem } from "@mui/material";
+import {
+  MoreHoriz,
+  ArrowForwardRounded,
+  EditRounded,
+  DeleteRounded,
+} from "@mui/icons-material";
 import {
   DataGridPro,
   GridActionsCellItem,
@@ -16,6 +21,7 @@ import { Link as RouterLink } from "react-router-dom";
 import { useDomain } from "../../../../../../shell/hooks/use-domain";
 
 export const Redirects = () => {
+  const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLElement>(null);
   const domain = useDomain();
   const { itemZUID } = useParams<{
     itemZUID: string;
@@ -75,7 +81,24 @@ export const Redirects = () => {
       type: "actions",
       width: 52,
       getActions: (params: GridRowParams) => [
-        <GridActionsCellItem icon={<MoreHoriz />} label="More" />,
+        <GridActionsCellItem
+          icon={<EditRounded />}
+          label="Edit Redirect"
+          onClick={() => console.log("Edit")}
+          showInMenu
+          sx={{
+            width: 240,
+          }}
+        />,
+        <GridActionsCellItem
+          icon={<DeleteRounded />}
+          label="Delete Redirect"
+          onClick={() => console.log("Delete")}
+          showInMenu
+          sx={{
+            width: 240,
+          }}
+        />,
       ],
     },
   ];
@@ -105,6 +128,9 @@ export const Redirects = () => {
         hideFooter
         disableRowSelectionOnClick
         loading={isLoadingRedirects}
+        slots={{
+          moreActionsIcon: MoreHoriz,
+        }}
       />
     </Stack>
   );
