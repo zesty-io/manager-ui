@@ -129,8 +129,8 @@ const CreateForm: FC<CreateFormProps> = ({
 
   const publishingMap: PublishingsMap = useMemo(() => {
     if (isLoadingPublishings) return {};
-    return [...publishings]
-      ?.sort((a, b) => a.version - b.version)
+    return [...(publishings || [])]
+      .sort((a, b) => a.version - b.version)
       .reduce((acc: PublishingsMap, item: Publishing) => {
         const current = acc[item?.itemZUID];
         if (!current) {
@@ -147,10 +147,9 @@ const CreateForm: FC<CreateFormProps> = ({
 
   const languageMap = useMemo(() => {
     if (isLoadingLanguages) return {};
-    return [...languages].reduce(
+    return [...(languages || [])].reduce(
       (acc: Record<string, Language>, item: Language) => {
         acc[item.ID] = item;
-
         return acc;
       },
       {}
@@ -186,69 +185,66 @@ const CreateForm: FC<CreateFormProps> = ({
     return parseContentItems as ContentItemProps[];
   }, [contentItems, publishingMap, languageMap, isLoading]);
 
-  const handleSubmit = useCallback(
-    async (submitType: "multiple" | "single") => {
-      setSubmitType(submitType);
-      const redirectsPaths: string[] = paths
-        ?.map((iPath) => iPath?.path?.trim())
-        .filter(Boolean);
+  const handleSubmit = async (submitType: "multiple" | "single") => {
+    setSubmitType(submitType);
+    const redirectsPaths: string[] = paths
+      ?.map((iPath) => iPath?.path?.trim())
+      .filter(Boolean);
 
-      const requestData = {
-        targetType: targetType,
-        code: code,
-        target: target,
-      };
+    const requestData = {
+      targetType: targetType,
+      code: code,
+      target: target,
+    };
 
-      let response = null;
+    let response = null;
 
-      if (!!isEdit) {
-        response = await updateRedirect({
-          ...requestData,
-          ZUID: defaultValues?.ZUID,
-          path: redirectsPaths[0],
-        });
-      } else {
-        response = await createRedirects({
-          ...requestData,
-          paths: redirectsPaths,
-        });
-      }
+    if (!!isEdit) {
+      response = await updateRedirect({
+        ...requestData,
+        ZUID: defaultValues?.ZUID,
+        path: redirectsPaths[0],
+      });
+    } else {
+      response = await createRedirects({
+        ...requestData,
+        paths: redirectsPaths,
+      });
+    }
 
-      resetForm();
+    resetForm();
 
-      const errorPaths = response
-        ?.filter((item: any) => item?.status === "error")
-        .map((item: any) => ({
-          error: item?.message,
-          path: item?.path,
-        }));
+    const errorPaths = response
+      ?.filter((item: any) => item?.status === "error")
+      .map((item: any) => ({
+        error: item?.message,
+        path: item?.path,
+      }));
 
-      if (submitType !== "multiple" || !!errorPaths?.length) closeCreateForm();
+    if (submitType !== "multiple" || !!errorPaths?.length) closeCreateForm();
 
-      if (!errorPaths?.length) {
-        dispatch(
-          notify({
-            kind: "success",
+    if (!errorPaths?.length) {
+      dispatch(
+        notify({
+          kind: "success",
 
-            message: !isEdit
-              ? `${redirectsPaths?.length} Redirect${
-                  redirectsPaths?.length > 1 ? "s" : ""
-                } Created`
-              : `Redirect Saved: ${redirectsPaths[0]}`,
-          })
-        );
-      }
-
+          message: !isEdit
+            ? `${redirectsPaths?.length} Redirect${
+                redirectsPaths?.length > 1 ? "s" : ""
+              } Created`
+            : `Redirect Saved: ${redirectsPaths[0]}`,
+        })
+      );
+    } else {
       const resubmitData = {
         ...requestData,
         ...(isEdit ? { ZUID: defaultValues?.ZUID } : {}),
         errors: errorPaths,
       };
 
-      if (!!errorPaths?.length) openErrorDialog(resubmitData);
-    },
-    [paths, targetType, target, code, isEdit]
-  );
+      openErrorDialog(resubmitData);
+    }
+  };
 
   useEffect(() => {
     if (targetType !== "external") setInvalidTarget(false);
