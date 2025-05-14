@@ -86,6 +86,10 @@ describe("Redirects", () => {
     deleteRedirectsTestData();
   });
 
+  after(() => {
+    deleteRedirectsTestData();
+  });
+
   describe("Create Redirects", () => {
     it("Multiple", () => {
       cy.visit("/redirects");

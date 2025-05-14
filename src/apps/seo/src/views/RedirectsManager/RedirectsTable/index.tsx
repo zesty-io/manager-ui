@@ -148,7 +148,7 @@ const RedirectsTable = () => {
             icon={<ModeEditIcon fontSize="small" />}
             color="action.secondary"
             label="Edit Redirect"
-            onClick={(event: React.MouseEvent<HTMLElement>) => {
+            onClick={() => {
               openCreateForm({
                 ZUID: row?.ZUID,
                 targetType: row?.targetType,
@@ -163,7 +163,9 @@ const RedirectsTable = () => {
             icon={<DeleteIcon fontSize="small" />}
             color="action.secondary"
             label="Delete Redirect"
-            onClick={() => handleDelete(row)}
+            onClick={() =>
+              openDeleteDialog([{ ZUID: row.ZUID, path: row.path }])
+            }
           />,
         ],
       },
@@ -253,10 +255,6 @@ const RedirectsTable = () => {
       saveSnapshot();
     };
   }, [saveSnapshot, columns, GRID_CHECKBOX_SELECTION_COL_DEF]);
-
-  const handleDelete = useCallback((row) => {
-    openDeleteDialog([{ ZUID: row.ZUID, path: row.path }]);
-  }, []);
 
   return (
     <>
