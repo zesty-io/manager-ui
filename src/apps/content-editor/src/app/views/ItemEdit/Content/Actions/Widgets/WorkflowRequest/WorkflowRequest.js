@@ -195,7 +195,7 @@ ${
               Select fields for review
             </Typography>
             <Box component="ul">
-              {fields.map((field) => (
+              {fields?.map((field) => (
                 <Box component="li" key={field.ZUID} sx={{ listStyle: "none" }}>
                   <FormGroup>
                     <FormControlLabel

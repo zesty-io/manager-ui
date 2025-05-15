@@ -1,20 +1,24 @@
 ---
 name: Feature request
-about: Suggest an idea for this project
-title: ''
-labels: ''
-assignees: ''
-
+about: Request for a new feature for this project.
+title: "[APP NAME] - [DESCRIPTION OF THE FEATURE REQUEST]"
+labels: '["feature"]'
+assignees: ""
+type: "Feature"
 ---
 
-**Is your feature request related to a problem? Please describe.**
+## Problem
+
 A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
 
-**Describe the solution you'd like**
+## Solution
+
 A clear and concise description of what you want to happen.
 
-**Describe alternatives you've considered**
-A clear and concise description of any alternative solutions or features you've considered.
+## Design
 
-**Additional context**
-Add any other context or screenshots about the feature request here.
+A link to the UI design related to the feature request.
+
+## Additional notes
+
+Add any other context about the feature request here.

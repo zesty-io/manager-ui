@@ -6,6 +6,9 @@ import ManageAccountsRoundedIcon from "@mui/icons-material/ManageAccountsRounded
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
 import CardContent from "@mui/material/CardContent";
+import Skeleton from "@mui/material/Skeleton";
+import Stack from "@mui/material/Stack";
+import Box from "@mui/material/Box";
 
 import { unpublish } from "shell/store/content";
 import { useHistory, useLocation } from "react-router";
@@ -59,40 +62,54 @@ export const Unpublish = memo(function Unpublish(props) {
           },
         }}
       >
-        <Typography
-          variant="body2"
-          color="text.secondary"
-          sx={{
-            fontSize: "14px",
-            lineHeight: "20px",
-            maxWidth: "595px",
-          }}
-        >
-          By unpublishing this content it will no longer be served if the URL is
-          requested. The URL will return a 404 not found response.
-        </Typography>
-        <LoadingButton
-          disableElevation
-          variant="contained"
-          id="UnpublishItemButton"
-          onClick={handleUnpublish}
-          disabled={!isPublished}
-          loading={loading}
-          loadingPosition="start"
-          startIcon={<ManageAccountsRoundedIcon />}
-          sx={{
-            backgroundColor: "#F2F4F7",
-            color: "text.secondary",
-            mt: 1.5,
+        {props.isLoadingItem ? (
+          <Box>
+            <Stack gap={1.25} mb={2.75}>
+              <Skeleton variant="rounded" width="100%" height={20} />
+              <Skeleton variant="rounded" width={259} height={20} />
+              <Skeleton variant="rounded" width={259} height={20} />
+              <Skeleton variant="rounded" width={200} height={20} />
+            </Stack>
+            <Skeleton variant="rounded" width={137} height={32} />
+          </Box>
+        ) : (
+          <>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{
+                fontSize: "14px",
+                lineHeight: "20px",
+                maxWidth: "595px",
+              }}
+            >
+              By unpublishing this content it will no longer be served if the
+              URL is requested. The URL will return a 404 not found response.
+            </Typography>
+            <LoadingButton
+              disableElevation
+              variant="contained"
+              id="UnpublishItemButton"
+              onClick={handleUnpublish}
+              disabled={!isPublished}
+              loading={loading}
+              loadingPosition="start"
+              startIcon={<ManageAccountsRoundedIcon />}
+              sx={{
+                backgroundColor: "#F2F4F7",
+                color: "text.secondary",
+                mt: 1.5,
 
-            "&:hover": {
-              backgroundColor: "#E4E7EC",
-              color: "text.secondary",
-            },
-          }}
-        >
-          Manage Publish State
-        </LoadingButton>
+                "&:hover": {
+                  backgroundColor: "#E4E7EC",
+                  color: "text.secondary",
+                },
+              }}
+            >
+              Manage Publish State
+            </LoadingButton>
+          </>
+        )}
       </CardContent>
     </Card>
   );

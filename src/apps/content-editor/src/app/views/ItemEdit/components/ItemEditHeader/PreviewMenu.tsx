@@ -39,7 +39,10 @@ export const PreviewMenu = () => {
       (setting: any) => setting.key === "preview_lock_password" && setting.value
     )
   );
-  const pathPart = item.web.pathPart !== "zesty_home" ? item.web.path : "";
+  const pathPart =
+    item && Object.keys(item.web).length && item.web.pathPart !== "zesty_home"
+      ? item.web.path
+      : "";
   const prodUrl = domain + pathPart;
 
   // @ts-expect-error Config not typed

@@ -1,38 +1,39 @@
 ---
 name: Bug report
 about: Create a report to help us improve
-title: ''
-labels: ''
-assignees: ''
-
+title: "[APP NAME] - [DESCRIPTION OF THE ISSUE]"
+labels: '["bug"]'
+assignees: ""
+type: "Bug"
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+## Problem
 
-**To Reproduce**
+A concise but detailed explanation of the issue. When possible, attach:
+
+- Slack conversation link
+- Direct link of the instance where this happened
+
+## Screenshots
+
+If applicable, add the following:
+
+- Video demo
+- Annotated screenshot
+
+## Steps to reproduce
+
 Steps to reproduce the behavior:
+
 1. Go to '...'
 2. Click on '....'
 3. Scroll down to '....'
 4. See error
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+## Expected behavior
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+A proposed fix or expected behavior (if applicable).
 
-**Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
+## Additional notes
 
-**Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Browser [e.g. stock browser, safari]
- - Version [e.g. 22]
-
-**Additional context**
 Add any other context about the problem here.
