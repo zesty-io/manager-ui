@@ -31,7 +31,7 @@ export function InstantUrl(props) {
             color="secondary"
             target="_blank"
             title="Instant API"
-            href={`${CONFIG.URL_PREVIEW_FULL}/-/instant/${props.item.meta.ZUID}.json`}
+            href={`${CONFIG.URL_PREVIEW_FULL}/-/instant/${props.item?.meta?.ZUID}.json`}
             sx={{
               color: "info.dark",
             }}
@@ -40,7 +40,7 @@ export function InstantUrl(props) {
               icon={faBolt}
               style={{ color: "#0BA5EC", marginRight: "8px" }}
             />
-            {`/-/instant/${props.item.meta.ZUID}.json`}
+            {`/-/instant/${props.item?.meta?.ZUID}.json`}
           </Link>
         </ListItem>
       )}

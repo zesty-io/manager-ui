@@ -10,6 +10,7 @@ import {
   ListItemIcon,
   Stack,
   List,
+  Skeleton,
 } from "@mui/material";
 import {
   useCreateItemPublishingMutation,
@@ -65,12 +66,14 @@ type ItemEditHeaderActionsProps = {
   saving: boolean;
   onSave: () => void;
   hasError: boolean;
+  isLoadingItem?: boolean;
 };
 
 export const ItemEditHeaderActions = ({
   saving,
   onSave,
   hasError,
+  isLoadingItem,
 }: ItemEditHeaderActionsProps) => {
   const { modelZUID, itemZUID } = useParams<{
     modelZUID: string;
@@ -100,11 +103,12 @@ export const ItemEditHeaderActions = ({
   const model = useSelector(
     (state: AppState) => state.models[modelZUID]
   ) as ContentModel;
-  const { data: fields } = useGetContentModelFieldsQuery(modelZUID, {
-    skip: !modelZUID,
-  });
-  const { data: users } = useGetUsersQuery();
-  const { data: itemAudit } = useGetAuditsQuery({
+  const { data: fields, isLoading: isLoadingFields } =
+    useGetContentModelFieldsQuery(modelZUID, {
+      skip: !modelZUID,
+    });
+  const { data: users, isLoading: isLoadingUsers } = useGetUsersQuery();
+  const { data: itemAudit, isLoading: isLoadingAudit } = useGetAuditsQuery({
     affectedZUID: itemZUID,
   });
   const [createPublishing] = useCreateItemPublishingMutation();
@@ -139,7 +143,7 @@ export const ItemEditHeaderActions = ({
   });
 
   const unpublishedRelatedItems = useMemo(() => {
-    if (!fields || !item.data || !items) return [];
+    if (!fields || !item || !item.data || !items) return [];
 
     const relatedFieldZUIDs = Object.entries(item.data)?.reduce(
       (
@@ -323,6 +327,23 @@ export const ItemEditHeaderActions = ({
       setPublishAfterSave(false);
     }
   }, [hasError, saving]);
+
+  if (
+    (isLoadingItem &&
+      (!item ||
+        !Object.keys(item.web).length ||
+        !Object.keys(item.meta).length)) ||
+    isLoadingFields ||
+    isLoadingUsers ||
+    isLoadingAudit
+  ) {
+    return (
+      <Stack direction="row" gap={1} height="100%">
+        <Skeleton variant="rounded" width={91} height="100%" />
+        <Skeleton variant="rounded" width={142} height="100%" />
+      </Stack>
+    );
+  }
 
   return (
     <>

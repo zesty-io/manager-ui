@@ -4,11 +4,10 @@ import Stack from "@mui/material/Stack";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import ToggleButton from "@mui/material/ToggleButton";
 import FormLabel from "@mui/material/FormLabel";
-
+import Skeleton from "@mui/material/Skeleton";
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
 import CardContent from "@mui/material/CardContent";
-import CodeIcon from "@mui/icons-material/Code";
 import { FieldTypeSort } from "@zesty-io/material";
 
 import Tooltip from "@mui/material/Tooltip";
@@ -59,61 +58,77 @@ export const WidgetListed = memo(function WidgetListed(props) {
           },
         }}
       >
-        <FormLabel sx={{ color: "text.primary" }}>
-          <Stack
-            direction="row"
-            alignItems="center"
-            sx={{
-              mb: 1,
-            }}
-          >
-            <Tooltip
-              title="Determines if this item will be available in Parsley loops. A common example of this is listing a blog post as an entry on an article listing page."
-              arrow
-              placement="top-start"
-            >
-              <InfoIcon fontSize="small" />
-            </Tooltip>
-            &nbsp;Available in Loops
-          </Stack>
-        </FormLabel>
-        <ToggleButtonGroup
-          color="primary"
-          size="small"
-          value={props.listed}
-          exclusive
-          onChange={(evt, value) => toggleHandler(value)}
-          sx={{ mb: 1 }}
-        >
-          <ToggleButton value={false}>No </ToggleButton>
-          <ToggleButton value={true}>Yes </ToggleButton>
-        </ToggleButtonGroup>
+        {props.isLoadingItem ? (
+          <Stack gap={1.5}>
+            <Stack direction="row" justifyContent="space-between">
+              <Skeleton variant="rounded" width={192} height={20} />
+              <Skeleton variant="rounded" width={60} height={20} />
+            </Stack>
+            <Stack gap={0.5}>
+              <Skeleton variant="rounded" width={192} height={20} />
 
-        <FieldTypeSort
-          sx={{ maxWidth: "200px" }}
-          name="sort"
-          label={
-            <span style={{ color: "#101828", marginBottom: "8px" }}>
-              <Tooltip
-                title="Automated Navigation Order controls the output of the automated parsley {{navigation}} and {{sectionlinks}}. It can also be used in an each loop like: {{each items as items sort by z.sort}} calls."
-                arrow
-                placement="top-start"
+              <Skeleton variant="rounded" width="100%" height={40} />
+            </Stack>
+          </Stack>
+        ) : (
+          <>
+            <FormLabel sx={{ color: "text.primary" }}>
+              <Stack
+                direction="row"
+                alignItems="center"
+                sx={{
+                  mb: 1,
+                }}
               >
-                <InfoIcon fontSize="small" />
-              </Tooltip>
-              &nbsp;Automated Navigation Order
-            </span>
-          }
-          value={props.sort ? props.sort.toString() : "0"}
-          onChange={(evt) => {
-            props.dispatch({
-              type: "SET_ITEM_META",
-              itemZUID: props.itemZUID,
-              key: "sort",
-              value: parseInt(evt.target.value),
-            });
-          }}
-        />
+                <Tooltip
+                  title="Determines if this item will be available in Parsley loops. A common example of this is listing a blog post as an entry on an article listing page."
+                  arrow
+                  placement="top-start"
+                >
+                  <InfoIcon fontSize="small" />
+                </Tooltip>
+                &nbsp;Available in Loops
+              </Stack>
+            </FormLabel>
+            <ToggleButtonGroup
+              color="primary"
+              size="small"
+              value={props.listed}
+              exclusive
+              onChange={(evt, value) => toggleHandler(value)}
+              sx={{ mb: 1 }}
+            >
+              <ToggleButton value={false}>No </ToggleButton>
+              <ToggleButton value={true}>Yes </ToggleButton>
+            </ToggleButtonGroup>
+
+            <FieldTypeSort
+              sx={{ maxWidth: "200px" }}
+              name="sort"
+              label={
+                <span style={{ color: "#101828", marginBottom: "8px" }}>
+                  <Tooltip
+                    title="Automated Navigation Order controls the output of the automated parsley {{navigation}} and {{sectionlinks}}. It can also be used in an each loop like: {{each items as items sort by z.sort}} calls."
+                    arrow
+                    placement="top-start"
+                  >
+                    <InfoIcon fontSize="small" />
+                  </Tooltip>
+                  &nbsp;Automated Navigation Order
+                </span>
+              }
+              value={props.sort ? props.sort.toString() : "0"}
+              onChange={(evt) => {
+                props.dispatch({
+                  type: "SET_ITEM_META",
+                  itemZUID: props.itemZUID,
+                  key: "sort",
+                  value: parseInt(evt.target.value),
+                });
+              }}
+            />
+          </>
+        )}
       </CardContent>
     </Card>
   );

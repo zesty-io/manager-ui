@@ -1,4 +1,12 @@
-import { Button, Menu, MenuItem, Box, Tooltip } from "@mui/material";
+import {
+  Button,
+  Menu,
+  MenuItem,
+  Box,
+  Tooltip,
+  Skeleton,
+  Stack,
+} from "@mui/material";
 import {
   useGetContentItemVersionsQuery,
   useGetItemPublishingsQuery,
@@ -37,7 +45,9 @@ export const LanguageSelector = () => {
     modelZUID,
     itemZUID,
   });
-  const { data: languages } = useGetLangsQuery({});
+  const { data: languages, isLoading: isLoadingLanguages } = useGetLangsQuery(
+    {}
+  );
 
   const item = useSelector(
     (state: AppState) => state.content[itemZUID] as ContentItem
@@ -61,6 +71,15 @@ export const LanguageSelector = () => {
   ) || {
     code: "en-US",
   };
+
+  if (isLoadingLanguages) {
+    return (
+      <Stack direction="row" gap={0.5}>
+        <Skeleton variant="rounded" width={69} height={20} />
+        <KeyboardArrowDownRounded fontSize="small" color="action" />
+      </Stack>
+    );
+  }
 
   return (
     <>
