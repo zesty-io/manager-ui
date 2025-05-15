@@ -19,7 +19,7 @@ import {
 import { Brain } from "@zesty-io/material";
 import { useParams, useLocation } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
-import { keyframes } from "@mui/system";
+import { keyframes } from "@emotion/react";
 import { EditRounded } from "@mui/icons-material";
 
 import { cloneDeep } from "lodash";
@@ -118,10 +118,11 @@ export const Meta = forwardRef(
       skip: !modelZUID,
     });
     const { data: fields } = useGetContentModelFieldsQuery(modelZUID);
-    const { meta, data, web } = useSelector(
-      (state: AppState) =>
-        state.content[isCreateItemPage ? `new:${modelZUID}` : itemZUID]
-    );
+    const { meta, data, web } =
+      useSelector(
+        (state: AppState) =>
+          state.content[isCreateItemPage ? `new:${modelZUID}` : itemZUID]
+      ) || {};
     const [flowType, setFlowType] =
       useState<typeof FlowType[keyof typeof FlowType]>(null);
     const metaDescriptionButtonRef = useRef(null);

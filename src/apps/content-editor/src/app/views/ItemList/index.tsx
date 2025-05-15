@@ -427,7 +427,11 @@ export const ItemList = () => {
           : a.meta?.ZUID?.localeCompare(b.meta?.ZUID);
       } else if (fields?.find((field) => field.name === sort)) {
         const dataType = fields?.find((field) => field.name === sort)?.datatype;
-        if (typeof a.data[sort] === "number" || dataType === "sort") {
+        if (
+          typeof a.data[sort] === "number" ||
+          dataType === "sort" ||
+          dataType === "number"
+        ) {
           if (a.data[sort] == null) return 1;
           if (b.data[sort] == null) return -1;
 
@@ -471,8 +475,12 @@ export const ItemList = () => {
           dataType === "images" ? b.data[sort]?.filename : b.data[sort] || "";
 
         return sortOrder === "asc"
-          ? bValue?.trim()?.localeCompare(aValue?.trim())
-          : aValue?.trim()?.localeCompare(bValue?.trim());
+          ? String(bValue ?? "")
+              .trim()
+              .localeCompare(String(aValue ?? "").trim())
+          : String(aValue ?? "")
+              .trim()
+              .localeCompare(String(bValue ?? "").trim());
       } else {
         return sortOrder === "asc"
           ? new Date(a.meta.updatedAt).getTime() -

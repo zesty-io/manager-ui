@@ -1,29 +1,18 @@
 import { memo } from "react";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
-import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
-
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
 import CardContent from "@mui/material/CardContent";
-import ShareIcon from "@mui/icons-material/Share";
-import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
-import Typography from "@mui/material/Typography";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import Button from "@mui/material/Button";
+import Skeleton from "@mui/material/Skeleton";
 import Link from "@mui/material/Link";
-
-import styles from "./WidgetQuickShare.less";
 import {
   faFacebookSquare,
   faLinkedinIn,
   faRedditSquare,
   faTwitterSquare,
 } from "@fortawesome/free-brands-svg-icons";
+
 export const WidgetQuickShare = memo(function WidgetQuickShare(props) {
   const handleOpen = (evt, url) => {
     window.open(
@@ -71,124 +60,135 @@ export const WidgetQuickShare = memo(function WidgetQuickShare(props) {
           },
         }}
       >
-        <Stack
-          gap={1.5}
-          sx={{
-            fontSize: "14px",
-            fontWeight: 500,
-            lineHeight: "20px",
-            letteSpacing: "0px",
-          }}
-        >
-          <Link
-            onClick={(evt) =>
-              handleOpen(
-                evt,
-                `https://twitter.com/share?url=${encodeURIComponent(
-                  props.url
-                )}&text=${encodeURIComponent(props.metaLinkText)}`
-              )
-            }
-            underline="none"
+        {props.isLoadingItem ? (
+          <Stack gap={1.5}>
+            {[...Array(4)].map((_, index) => (
+              <Stack key={index} gap={1} direction="row">
+                <Skeleton variant="circular" width={20} height={20} />
+                <Skeleton variant="rounded" width={84} height={20} />
+              </Stack>
+            ))}
+          </Stack>
+        ) : (
+          <Stack
+            gap={1.5}
             sx={{
-              cursor: "pointer",
-              color: "info.dark",
-              width: "fit-content",
+              fontSize: "14px",
+              fontWeight: 500,
+              lineHeight: "20px",
+              letteSpacing: "0px",
             }}
           >
-            <FontAwesomeIcon
-              icon={faTwitterSquare}
-              style={{
-                color: "#0BA5EC",
-                marginRight: "8px",
-                width: "16px",
-                height: "16px",
+            <Link
+              onClick={(evt) =>
+                handleOpen(
+                  evt,
+                  `https://twitter.com/share?url=${encodeURIComponent(
+                    props.url
+                  )}&text=${encodeURIComponent(props.metaLinkText)}`
+                )
+              }
+              underline="none"
+              sx={{
+                cursor: "pointer",
+                color: "info.dark",
+                width: "fit-content",
               }}
-            />
-            Twitter
-          </Link>
-          <Link
-            onClick={(evt) =>
-              handleOpen(
-                evt,
-                `http://www.facebook.com/sharer.php?u=${encodeURIComponent(
-                  props.url
-                )}&t=${encodeURIComponent(props.metaLinkText)}`
-              )
-            }
-            underline="none"
-            sx={{
-              cursor: "pointer",
-              color: "info.dark",
-              width: "fit-content",
-            }}
-          >
-            <FontAwesomeIcon
-              icon={faFacebookSquare}
-              style={{
-                color: "#0BA5EC",
-                marginRight: "8px",
-                width: "16px",
-                height: "16px",
+            >
+              <FontAwesomeIcon
+                icon={faTwitterSquare}
+                style={{
+                  color: "#0BA5EC",
+                  marginRight: "8px",
+                  width: "16px",
+                  height: "16px",
+                }}
+              />
+              Twitter
+            </Link>
+            <Link
+              onClick={(evt) =>
+                handleOpen(
+                  evt,
+                  `http://www.facebook.com/sharer.php?u=${encodeURIComponent(
+                    props.url
+                  )}&t=${encodeURIComponent(props.metaLinkText)}`
+                )
+              }
+              underline="none"
+              sx={{
+                cursor: "pointer",
+                color: "info.dark",
+                width: "fit-content",
               }}
-            />
-            Facebook
-          </Link>
-          <Link
-            onClick={(evt) =>
-              handleOpen(
-                evt,
-                `http://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(
-                  props.url
-                )}`
-              )
-            }
-            underline="none"
-            sx={{
-              cursor: "pointer",
-              color: "info.dark",
-              width: "fit-content",
-            }}
-          >
-            <FontAwesomeIcon
-              icon={faLinkedinIn}
-              style={{
-                color: "#0BA5EC",
-                marginRight: "8px",
-                width: "16px",
-                height: "16px",
+            >
+              <FontAwesomeIcon
+                icon={faFacebookSquare}
+                style={{
+                  color: "#0BA5EC",
+                  marginRight: "8px",
+                  width: "16px",
+                  height: "16px",
+                }}
+              />
+              Facebook
+            </Link>
+            <Link
+              onClick={(evt) =>
+                handleOpen(
+                  evt,
+                  `http://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(
+                    props.url
+                  )}`
+                )
+              }
+              underline="none"
+              sx={{
+                cursor: "pointer",
+                color: "info.dark",
+                width: "fit-content",
               }}
-            />
-            Linkedin
-          </Link>
-          <Link
-            onClick={(evt) =>
-              handleOpen(
-                evt,
-                `http://reddit.com/submit?url=${encodeURIComponent(
-                  props.url
-                )}&title=${encodeURIComponent(props.metaLinkText)}`
-              )
-            }
-            underline="none"
-            sx={{
-              cursor: "pointer",
-              color: "info.dark",
-              width: "fit-content",
-            }}
-          >
-            <FontAwesomeIcon
-              icon={faRedditSquare}
-              style={{
-                color: "#0BA5EC",
-                marginRight: "8px",
-                width: "16px",
-                height: "16px",
+            >
+              <FontAwesomeIcon
+                icon={faLinkedinIn}
+                style={{
+                  color: "#0BA5EC",
+                  marginRight: "8px",
+                  width: "16px",
+                  height: "16px",
+                }}
+              />
+              Linkedin
+            </Link>
+            <Link
+              onClick={(evt) =>
+                handleOpen(
+                  evt,
+                  `http://reddit.com/submit?url=${encodeURIComponent(
+                    props.url
+                  )}&title=${encodeURIComponent(props.metaLinkText)}`
+                )
+              }
+              underline="none"
+              sx={{
+                cursor: "pointer",
+                color: "info.dark",
+                width: "fit-content",
               }}
-            />
-            Reddit
-          </Link>
-        </Stack>
+            >
+              <FontAwesomeIcon
+                icon={faRedditSquare}
+                style={{
+                  color: "#0BA5EC",
+                  marginRight: "8px",
+                  width: "16px",
+                  height: "16px",
+                }}
+              />
+              Reddit
+            </Link>
+          </Stack>
+        )}
       </CardContent>
     </Card>
   );

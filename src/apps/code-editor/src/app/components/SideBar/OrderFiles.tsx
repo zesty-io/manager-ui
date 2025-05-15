@@ -93,7 +93,7 @@ const Dropzone = (props: any) => {
     >
       {children.map((child, index) => {
         if (isValidElement(child)) {
-          return cloneElement(child, {
+          return cloneElement(child as React.ReactElement<any>, {
             index,
             onOver,
             setSourceIndex,

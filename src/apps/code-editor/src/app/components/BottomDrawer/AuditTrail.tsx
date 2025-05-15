@@ -1,7 +1,6 @@
 import moment from "moment";
 import HistoryIcon from "@mui/icons-material/History";
-import { Alert } from "@mui/lab";
-import { List } from "@mui/material";
+import { Alert, List } from "@mui/material";
 import { FileCard, FileCardListItem } from "./FileCard";
 
 export type LogEntry = {

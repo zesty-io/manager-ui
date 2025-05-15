@@ -11,6 +11,7 @@ import {
   TextField,
   InputAdornment,
   IconButton,
+  Skeleton,
 } from "@mui/material";
 import { useFilePath } from "../../../../../../../../../../shell/hooks/useFilePath";
 import { Link } from "react-router-dom";
@@ -70,77 +71,91 @@ export const ContentInfo = (props) => {
           },
         }}
       >
-        <Stack gap={1.5}>
-          <Box>
-            <Stack direction="row" alignItems="center" gap={1} pb={0.5}>
-              <Typography
-                sx={{
-                  fontWeight: 600,
-                  fontSize: "14px",
-                  lineHeight: "20px",
-                }}
-              >
-                ZUID
-              </Typography>
-              <Tooltip
-                title="Content items are always accessed relative to their model, so a model ZUID is required for each call."
-                sx={{
-                  fontSize: "12px",
-                  color: "#10182866",
-                }}
-              >
-                <InfoRoundedIcon size="inherit" color="inherit" />
-              </Tooltip>
-            </Stack>
-            <TextField
-              disabled
-              value={props.itemZUID || ""}
-              size="small"
-              fullWidth
-              inputProps={{
-                sx: {
-                  ":read-only": {
-                    textFillColor: "#101828",
-                  },
-                },
-              }}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      size="small"
-                      onClick={() => handleCopyClick(props.itemZUID || "")}
-                    >
-                      {isCopied === props.itemZUID ? (
-                        <CheckIcon color="action" />
-                      ) : (
-                        <ContentCopyRoundedIcon color="action" />
-                      )}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
-          </Box>
-          <Stack width="fit-content" sx={{ color: "#475467" }}>
-            <Button
-              component={Link}
-              to={`/schema/${props.modelZUID}`}
-              color="inherit"
-              startIcon={<Database sx={{ color: "#10182866" }} />}
-            >
-              Edit Model
-            </Button>
-            <Button
-              component={Link}
-              to={codePath}
-              color="inherit"
-              startIcon={<CodeRoundedIcon sx={{ fill: "#10182866" }} />}
-            >
-              Edit Code
-            </Button>
+        {props.isLoadingItem ? (
+          <Stack gap={1.5}>
+            <Box>
+              <Stack direction="row" justifyContent="space-between" pb={0.5}>
+                <Skeleton variant="rounded" width={192} height={20} />
+                <Skeleton variant="circular" width={20} height={20} />
+              </Stack>
+              <Skeleton variant="rounded" width="100%" height={40} />
+            </Box>
+            <Skeleton variant="rounded" width={109} height={32} />
+            <Skeleton variant="rounded" width={109} height={32} />
           </Stack>
-        </Stack>
+        ) : (
+          <Stack gap={1.5}>
+            <Box>
+              <Stack direction="row" alignItems="center" gap={1} pb={0.5}>
+                <Typography
+                  sx={{
+                    fontWeight: 600,
+                    fontSize: "14px",
+                    lineHeight: "20px",
+                  }}
+                >
+                  ZUID
+                </Typography>
+                <Tooltip
+                  title="Content items are always accessed relative to their model, so a model ZUID is required for each call."
+                  sx={{
+                    fontSize: "12px",
+                    color: "#10182866",
+                  }}
+                >
+                  <InfoRoundedIcon size="inherit" color="inherit" />
+                </Tooltip>
+              </Stack>
+              <TextField
+                disabled
+                value={props.itemZUID || ""}
+                size="small"
+                fullWidth
+                inputProps={{
+                  sx: {
+                    ":read-only": {
+                      textFillColor: "#101828",
+                    },
+                  },
+                }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        size="small"
+                        onClick={() => handleCopyClick(props.itemZUID || "")}
+                      >
+                        {isCopied === props.itemZUID ? (
+                          <CheckIcon color="action" />
+                        ) : (
+                          <ContentCopyRoundedIcon color="action" />
+                        )}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </Box>
+            <Stack width="fit-content" sx={{ color: "#475467" }}>
+              <Button
+                component={Link}
+                to={`/schema/${props.modelZUID}`}
+                color="inherit"
+                startIcon={<Database sx={{ color: "#10182866" }} />}
+              >
+                Edit Model
+              </Button>
+              <Button
+                component={Link}
+                to={codePath}
+                color="inherit"
+                startIcon={<CodeRoundedIcon sx={{ fill: "#10182866" }} />}
+              >
+                Edit Code
+              </Button>
+            </Stack>
+          </Stack>
+        )}
       </CardContent>
     </Card>
   );
