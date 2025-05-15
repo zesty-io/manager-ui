@@ -489,17 +489,15 @@ export default function ItemEdit() {
           {isLocked && (
             <Box sx={{ zIndex: (theme) => theme.zIndex.modal + 1 }}>
               <LockedItem
-                timestamp={lockState.timestamp}
-                userFirstName={lockState.firstName}
-                userLastName={lockState.lastName}
-                userEmail={lockState.email}
+                viewTimestamp={lockState.timestamp}
+                currentViewerFirstName={lockState.firstName}
+                currentViewerLastName={lockState.lastName}
                 itemName={item?.web?.metaLinkText}
-                handleUnlock={forceUnlock}
-                handleCancel={(evt) => {
+                onUnlock={forceUnlock}
+                onCancel={(evt) => {
                   evt.stopPropagation();
                   history.goBack();
                 }}
-                isLocked={isLocked}
               />
             </Box>
           )}
