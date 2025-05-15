@@ -197,7 +197,9 @@ export const AuthorizedUserPage = () => {
               />
             }
             label={
-              <Typography variant="subtitle2">Show Deactivated</Typography>
+              <Typography variant="subtitle2" color="text.secondary">
+                Show Deactivated
+              </Typography>
             }
           />
         </FormGroup>
