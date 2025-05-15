@@ -26,7 +26,6 @@ const ListOption: React.FC<ContentItemProps & { isListItem?: boolean }> = ({
   return (
     <Box
       key={ZUID}
-      component={isListItem ? "li" : "div"}
       {...props}
       display="flex"
       flexDirection="row"
@@ -94,6 +93,7 @@ const ListboxComponent = React.forwardRef<
   return (
     <div
       ref={ref}
+      data-cy="RedirectsTargetOptionsContainer"
       style={{ width: "100%", height: `${rowHeight * 6}px` }}
       {...other}
     >
@@ -105,8 +105,9 @@ const ListboxComponent = React.forwardRef<
             itemCount={items.length}
             itemSize={rowHeight}
             overscanCount={5}
+            innerElementType="ul"
           >
-            {({ index, style }) => <div style={style}>{items[index]}</div>}
+            {({ index, style }) => <li style={style}>{items[index]}</li>}
           </ListBox>
         )}
       </AutoSizer>
