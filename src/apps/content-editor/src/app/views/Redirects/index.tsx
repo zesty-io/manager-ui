@@ -1,5 +1,5 @@
-import { useMemo, useState, MouseEvent } from "react";
-import { Typography, Box, Stack, Link, Menu, MenuItem } from "@mui/material";
+import { useMemo, useState } from "react";
+import { Typography, Stack, Link } from "@mui/material";
 import {
   MoreHoriz,
   ArrowForwardRounded,
@@ -16,12 +16,20 @@ import {
 import { useGetRedirectsQuery } from "../../../../../../shell/services/instance";
 import { useSelector } from "react-redux";
 import { AppState } from "../../../../../../shell/store/types";
-import { useParams } from "react-router";
-import { Link as RouterLink } from "react-router-dom";
+import { Redirect, useParams } from "react-router";
 import { useDomain } from "../../../../../../shell/hooks/use-domain";
+import { DeleteRedirectModal } from "./DeleteRedirectModal";
+import { Redirects as RedirectsType } from "../../../../../../shell/services/types";
 
+export type RedirectRowType = {
+  httpCode: number;
+  incomingPath: string;
+  targetPath: string;
+  id: string;
+};
 export const Redirects = () => {
-  const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLElement>(null);
+  const [redirectToDelete, setRedirectToDelete] =
+    useState<RedirectsType | null>(null);
   const domain = useDomain();
   const { itemZUID } = useParams<{
     itemZUID: string;
@@ -33,9 +41,11 @@ export const Redirects = () => {
   const redirectsHere = useMemo(() => {
     if (!redirects?.length || !web?.path) return [];
 
+    // We get wildcard and internal redirects
     return redirects.filter(
       (redirect) =>
-        redirect.targetType === "path" && redirect.target === web.path
+        (redirect.targetType === "path" && redirect.target === web.path) ||
+        (redirect.targetType === "page" && redirect.target === itemZUID)
     );
   }, [redirects, web]);
 
@@ -63,15 +73,14 @@ export const Redirects = () => {
       headerName: "Target Path",
       flex: 1,
       renderCell: (params) => {
-        console.log(params);
         return (
           <Link
             variant="body2"
-            href={`${domain}${params.row.targetPath}`}
+            href={`${domain}${web?.path}`}
             target="_blank"
             rel="noopener noreferrer"
           >
-            {params.row.targetPath}
+            {web?.path}
           </Link>
         );
       },
@@ -93,7 +102,15 @@ export const Redirects = () => {
         <GridActionsCellItem
           icon={<DeleteRounded />}
           label="Delete Redirect"
-          onClick={() => console.log("Delete")}
+          onClick={() => {
+            const matchedRedirect = redirectsHere.find(
+              (redirect) => redirect.ZUID === params.row.id
+            );
+
+            if (!matchedRedirect) return;
+
+            setRedirectToDelete(matchedRedirect);
+          }}
           showInMenu
           sx={{
             width: 240,
@@ -115,23 +132,32 @@ export const Redirects = () => {
   }, [redirectsHere]);
 
   return (
-    <Stack height="100%" my={2} mx={4}>
-      <Typography variant="h5" fontWeight={700} color="text.primary" mb={0.5}>
-        Incoming Redirects
-      </Typography>
-      <Typography variant="body2" color="text.secondary" mb={1.5}>
-        Manage redirects that point to this content item
-      </Typography>
-      <DataGridPro
-        columns={columns}
-        rows={rows}
-        hideFooter
-        disableRowSelectionOnClick
-        loading={isLoadingRedirects}
-        slots={{
-          moreActionsIcon: MoreHoriz,
-        }}
-      />
-    </Stack>
+    <>
+      <Stack height="100%" my={2} mx={4}>
+        <Typography variant="h5" fontWeight={700} color="text.primary" mb={0.5}>
+          Incoming Redirects
+        </Typography>
+        <Typography variant="body2" color="text.secondary" mb={1.5}>
+          Manage redirects that point to this content item
+        </Typography>
+        <DataGridPro
+          columns={columns}
+          rows={rows}
+          hideFooter
+          disableRowSelectionOnClick
+          loading={isLoadingRedirects}
+          slots={{
+            moreActionsIcon: MoreHoriz,
+          }}
+        />
+      </Stack>
+      {!!redirectToDelete && (
+        <DeleteRedirectModal
+          data={redirectToDelete}
+          targetPath={web?.path}
+          onClose={() => setRedirectToDelete(null)}
+        />
+      )}
+    </>
   );
 };

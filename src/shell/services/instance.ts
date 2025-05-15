@@ -723,6 +723,13 @@ export const instanceApi = createApi({
       transformResponse: getResponseData,
       providesTags: ["Redirects"],
     }),
+    deleteRedirect: builder.mutation<Redirects[], { ZUID: string }>({
+      query: ({ ZUID }) => ({
+        url: `/web/redirects/${ZUID}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Redirects"],
+    }),
   }),
 });
 
@@ -778,4 +785,5 @@ export const {
   useCreateGroupMutation,
   useCreateStarterBlockModelMutation,
   useGetRedirectsQuery,
+  useDeleteRedirectMutation,
 } = instanceApi;
