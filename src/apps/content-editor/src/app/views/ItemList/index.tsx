@@ -4,6 +4,7 @@ import { Box, Button, Typography } from "@mui/material";
 import {
   useGetContentModelFieldsQuery,
   useGetContentModelQuery,
+  useGetContentNavItemsQuery,
   useGetLangsQuery,
 } from "../../../../../../shell/services/instance";
 import { ItemListEmpty } from "./ItemListEmpty";
@@ -80,7 +81,7 @@ export const ItemList = () => {
     useGetContentModelQuery(modelZUID);
   const { data: fields, isFetching: isFieldsFetching } =
     useGetContentModelFieldsQuery(modelZUID);
-  const { data: languages } = useGetLangsQuery({});
+  const { data: languages, isLoading: isLangsLoading } = useGetLangsQuery({});
   const activeLangId =
     languages?.find((lang) => lang.code === activeLanguageCode)?.ID || 1;
   const allItems = useSelector((state: AppState) => state.content);
@@ -576,35 +577,40 @@ export const ItemList = () => {
           justifyContent: "space-between",
           alignItems: "start",
           gap: 4,
+          minHeight: "106px",
         }}
       >
         {(stagedChanges && Object.keys(stagedChanges)?.length) ||
         selectedItems?.length ? (
           <UpdateListActions items={items as ContentItem[]} />
-        ) : isModelFetching ? (
-          <SkeletonContentHeader />
         ) : (
           <>
-            <Box flex={1}>
-              <ContentBreadcrumbs />
-              <Typography
-                variant="h3"
-                mt={0.25}
-                fontWeight={700}
-                sx={{
-                  display: "-webkit-box",
-                  "-webkit-line-clamp": "2",
-                  "-webkit-box-orient": "vertical",
-                  wordBreak: "break-word",
-                  wordWrap: "break-word",
-                  hyphens: "auto",
-                  overflow: "hidden",
-                }}
-              >
-                {model?.label}
-              </Typography>
-            </Box>
-            <ItemListActions ref={searchRef} />
+            {isUsersFetching || isLangsLoading ? (
+              <SkeletonContentHeader />
+            ) : (
+              <>
+                <Box flex={1}>
+                  <ContentBreadcrumbs />
+                  <Typography
+                    variant="h3"
+                    mt={0.25}
+                    fontWeight={700}
+                    sx={{
+                      display: "-webkit-box",
+                      "-webkit-line-clamp": "2",
+                      "-webkit-box-orient": "vertical",
+                      wordBreak: "break-word",
+                      wordWrap: "break-word",
+                      hyphens: "auto",
+                      overflow: "hidden",
+                    }}
+                  >
+                    {model?.label}
+                  </Typography>
+                </Box>
+                <ItemListActions ref={searchRef} />
+              </>
+            )}
           </>
         )}
       </Box>
@@ -628,11 +634,9 @@ export const ItemList = () => {
             )}
             <ItemListTable
               key={modelZUID}
-              loading={
-                isFieldsFetching || isUsersFetching || isModelItemsFetching
-              }
+              loading={isFieldsFetching || isUsersFetching}
               rows={sortedAndFilteredItems}
-              fields={fields}
+              fields={isFieldsFetching ? [] : fields}
               noRowsOverlay={() => {
                 if (search && !isModelItemsFetching) {
                   return (

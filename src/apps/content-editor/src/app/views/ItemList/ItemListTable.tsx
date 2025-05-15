@@ -13,7 +13,6 @@ import {
   useMemo,
   useState,
   useContext,
-  useEffect,
 } from "react";
 import AutoSizer, { Size } from "react-virtualized-auto-sizer";
 import {
@@ -34,9 +33,9 @@ import { ImageCell } from "./TableCells/ImageCell";
 import { SingleRelationshipCell } from "./TableCells/SingleRelationshipCell";
 import { TableSortContext } from "./TableSortProvider";
 import {
+  DataGridSkeletonCell,
   FIELD_SKELETON_MAP,
   gridLoadingStyles,
-  SkeletonLoadingOverlay,
 } from "./Loader";
 import { Skeleton } from "@mui/material";
 
@@ -304,12 +303,11 @@ export const ItemListTable = memo(
     }, [saveSnapshot, fields, modelZUID]);
 
     const columns = useMemo(() => {
-      const stateFromLocalStorage = localStorage?.getItem(
-        `${modelZUID}-dataGridState`
-      );
-      const colDimensions = stateFromLocalStorage
-        ? JSON.parse(stateFromLocalStorage)?.columns?.dimensions
+      const gridState = localStorage?.getItem(`${modelZUID}-dataGridState`);
+      const colDimensions = gridState
+        ? JSON.parse(gridState)?.columns?.dimensions
         : null;
+
       let result: any[] = [
         {
           field: "version",
@@ -317,6 +315,7 @@ export const ItemListTable = memo(
           width: 64,
           sortable: true,
           filterable: false,
+          cellClassName: "version",
           renderCell: (params: GridRenderCellParams) => (
             <VersionCell params={params} />
           ),
@@ -331,6 +330,7 @@ export const ItemListTable = memo(
               field: field.name,
               headerName: field.label,
               filterable: false,
+              cellClassName: field?.datatype,
               valueGetter: (params: any, row: any) => {
                 if (field.datatype === "currency") {
                   return {
@@ -355,7 +355,8 @@ export const ItemListTable = memo(
         ...result,
         ...METADATA_COLUMNS?.map((column) => ({
           ...column,
-          flex: loading && !fields ? 1 : 0,
+          cellClassName: column.field,
+          flex: !fields?.length ? 1 : 0,
         })),
       ];
       return result.map((column) => {
@@ -417,8 +418,7 @@ export const ItemListTable = memo(
                     {...props}
                   />
                 ),
-
-              loadingOverlay: () => <SkeletonLoadingOverlay fields={fields} />,
+              skeletonCell: DataGridSkeletonCell,
             }}
             slotProps={{
               baseTooltip: {
@@ -435,6 +435,10 @@ export const ItemListTable = memo(
                     ],
                   },
                 },
+              },
+              loadingOverlay: {
+                variant: "skeleton",
+                noRowsVariant: "skeleton",
               },
             }}
             getRowClassName={(params) => {
@@ -515,6 +519,10 @@ export const ItemListTable = memo(
               // Makes sure that the custom overlay is interactive
               "& [data-cy='NoResults']": {
                 pointerEvents: "all",
+              },
+              "& .MuiDataGrid-row.MuiDataGrid-rowSkeleton": {
+                borderBottom: "1px solid",
+                borderColor: "border",
               },
               ...(loading ? gridLoadingStyles : {}),
             }}

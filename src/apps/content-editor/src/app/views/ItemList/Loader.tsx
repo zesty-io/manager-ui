@@ -22,97 +22,57 @@ export const gridLoadingStyles = {
   },
 };
 
-const CellWrapper = ({
-  align = "left",
-  direction = "row",
-  gap = 0,
-  children,
-}: {
-  align?: "left" | "center" | "right";
-  direction?: "row" | "column";
-  gap?: number | string;
-  children: ReactNode;
-}) => {
-  const justify = direction === "column" ? "center" : align;
-  const alignment = direction === "column" ? align : "center";
-  return (
-    <Box
-      width="100%"
-      height="100%"
-      display="flex"
-      flexDirection={direction}
-      alignItems={alignment}
-      justifyContent={justify}
-      gap={gap}
-      boxSizing="border-box"
-    >
-      {children}
-    </Box>
-  );
-};
-
 export const FIELD_SKELETON_MAP: Record<string, JSX.Element> = {
-  checkboxSelection: (
-    <CellWrapper align="center">
-      <Skeleton variant="rounded" width="18px" height="18px" />
-    </CellWrapper>
-  ),
+  checkboxSelection: <Skeleton variant="rounded" width="18px" height="18px" />,
+  __check__: <Skeleton variant="rounded" width="18px" height="18px" />,
   images: (
-    <CellWrapper>
-      <Box
-        display="flex"
-        flexDirection="column"
-        alignItems="center"
-        justifyContent="center"
+    <Box
+      display="flex"
+      flexDirection="column"
+      alignItems="center"
+      justifyContent="center"
+      height="100%"
+      width="100%"
+      sx={{
+        position: "relative",
+      }}
+    >
+      <Skeleton
         height="100%"
         width="100%"
-        sx={{
-          position: "relative",
-        }}
-      >
-        <Skeleton
-          height="100%"
-          width="100%"
-          variant="rectangular"
-          sx={{ position: "absolute", top: 0, left: 0 }}
-        />
-        <ImageRoundedIcon
-          fontSize="small"
-          sx={{ color: "text.disabled", opacity: 0.2 }}
-        />
-      </Box>
-    </CellWrapper>
+        variant="rectangular"
+        sx={{ position: "absolute", top: 0, left: 0 }}
+      />
+      <ImageRoundedIcon
+        fontSize="small"
+        sx={{ color: "text.disabled", opacity: 0.2 }}
+      />
+    </Box>
   ),
-  one_to_one: (
-    <CellWrapper>
-      <Skeleton variant="rounded" width="55px" height="18px" />
-    </CellWrapper>
-  ),
+  one_to_one: <Skeleton variant="rounded" width="55px" height="18px" />,
   one_to_many: (
-    <CellWrapper>
+    <Box display="flex" flexDirection="row" columnGap="4px">
       <Skeleton variant="rounded" width="55px" height="18px" />
       <Skeleton variant="rounded" width="55px" height="18px" />
       <Skeleton variant="rounded" width="55px" height="18px" />
-    </CellWrapper>
+    </Box>
   ),
   version: (
-    <CellWrapper direction="column" gap="2px">
+    <Box display="flex" flexDirection="column" gap="2px">
       <Skeleton variant="rounded" width="36px" height="20px" />
       <Skeleton variant="rounded" width="36px" height="20px" />
-    </CellWrapper>
+    </Box>
   ),
-  link: (
-    <CellWrapper>
-      <Skeleton variant="rounded" width="140px" height="12px" />
-    </CellWrapper>
-  ),
-  internal_link: (
-    <CellWrapper>
-      <Skeleton variant="rounded" width="90px" height="24px" />
-    </CellWrapper>
-  ),
+  link: <Skeleton variant="rounded" width="140px" height="12px" />,
+  internal_link: <Skeleton variant="rounded" width="90px" height="24px" />,
   color: (
-    <CellWrapper gap="12px">
+    <Box
+      display="flex"
+      flexDirection="row"
+      justifyContent="flex-start"
+      alignItems="center"
+      gap="12px"
+    >
       <Skeleton
         variant="rounded"
         width="32px"
@@ -122,44 +82,32 @@ export const FIELD_SKELETON_MAP: Record<string, JSX.Element> = {
         }}
       />
       <Skeleton variant="rounded" width="62px" height="12px" />
-    </CellWrapper>
+    </Box>
   ),
   yes_no: (
-    <CellWrapper>
-      <Skeleton
-        variant="rounded"
-        width="96px"
-        height="32px"
-        sx={{
-          borderRadius: "4px",
-        }}
-      />
-    </CellWrapper>
+    <Skeleton
+      variant="rounded"
+      width="96px"
+      height="32px"
+      sx={{
+        borderRadius: "4px",
+      }}
+    />
   ),
   sort: (
-    <CellWrapper>
-      <Skeleton
-        variant="rounded"
-        width="112px"
-        height="40px"
-        sx={{
-          borderRadius: "8px",
-        }}
-      />
-    </CellWrapper>
+    <Skeleton
+      variant="rounded"
+      width="112px"
+      height="40px"
+      sx={{
+        borderRadius: "8px",
+      }}
+    />
   ),
-  number: (
-    <CellWrapper align="right">
-      <Skeleton variant="rounded" width="62px" height="12px" />
-    </CellWrapper>
-  ),
-  dropdown: (
-    <CellWrapper>
-      <Skeleton variant="rounded" width="117px" height="24px" />
-    </CellWrapper>
-  ),
+  number: <Skeleton variant="rounded" width="62px" height="12px" />,
+  dropdown: <Skeleton variant="rounded" width="117px" height="24px" />,
   createdBy: (
-    <CellWrapper gap="12px">
+    <Box display="flex" flexDirection="row" alignItems="center" gap="12px">
       <Skeleton
         variant="circular"
         width="32px"
@@ -167,7 +115,7 @@ export const FIELD_SKELETON_MAP: Record<string, JSX.Element> = {
         sx={{ minWidth: "32px" }}
       />
       <Skeleton variant="rounded" width="80px" height="12px" />
-    </CellWrapper>
+    </Box>
   ),
   header: (
     <Box
@@ -184,107 +132,18 @@ export const FIELD_SKELETON_MAP: Record<string, JSX.Element> = {
         variant="rounded"
         height="12px"
         width="calc(100% - 16px)"
-        sx={{ maxWidth: "180px" }}
+        sx={{ maxWidth: "200px" }}
       />
     </Box>
   ),
   default: (
-    <CellWrapper gap="12px">
-      <Skeleton
-        width="100%"
-        height="12px"
-        variant="rounded"
-        sx={{ maxWidth: "240px" }}
-      />
-    </CellWrapper>
+    <Skeleton
+      width="100%"
+      height="12px"
+      variant="rounded"
+      sx={{ maxWidth: "240px" }}
+    />
   ),
-};
-
-export const SkeletonLoadingOverlay = ({
-  fields,
-}: {
-  fields?: ContentModelField[];
-}) => {
-  const apiRef = useGridApiContext();
-
-  const dimensions = apiRef.current?.getRootDimensions();
-  const viewportHeight = dimensions?.viewportInnerSize.height ?? 0;
-  const rowHeight = apiRef.current.state.dimensions.rowHeight;
-  const skeletonRowsCount = Math.ceil(
-    viewportHeight / apiRef.current.state.dimensions.rowHeight
-  );
-
-  const totalWidth = gridColumnsTotalWidthSelector(apiRef);
-  const positions = gridColumnPositionsSelector(apiRef);
-  const inViewportCount = useMemo(
-    () => positions.filter((value) => value <= totalWidth).length,
-    [totalWidth, positions]
-  );
-  const columns = apiRef.current.getVisibleColumns().slice(0, inViewportCount);
-
-  const COL_TYPE_MAP = useMemo(() => {
-    const typesMap = fields?.reduce((acc, field) => {
-      acc[field.name] = field.datatype;
-      return acc;
-    }, {} as Record<string, string>);
-    return {
-      ...typesMap,
-      createdBy: "createdBy",
-      createdOn: "text",
-      lastSaved: "text",
-      lastPublished: "text",
-      zuid: "text",
-      version: "version",
-      __check__: "checkboxSelection",
-    };
-  }, [fields]);
-
-  const children = useMemo(() => {
-    const array: ReactNode[] = [];
-
-    for (let i = 0; i < skeletonRowsCount; i += 1) {
-      for (const column of columns) {
-        array.push(
-          <Box
-            className="skeleton-row"
-            key={`col-${column.field}-${i}`}
-            width={column.computedWidth}
-            px={column?.field === "__check__" ? 0 : 2}
-            sx={{
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-              borderBottom: "1px solid",
-              borderColor: "border",
-            }}
-          >
-            {FIELD_SKELETON_MAP[
-              COL_TYPE_MAP[
-                column.field as keyof typeof COL_TYPE_MAP
-              ] as keyof typeof FIELD_SKELETON_MAP
-            ] || FIELD_SKELETON_MAP.default}
-          </Box>
-        );
-      }
-      array.push(<Box key={`fill-${i}`} />);
-    }
-    return array;
-  }, [skeletonRowsCount, columns]);
-
-  return (
-    <Box
-      sx={{
-        display: "grid",
-
-        gridTemplateColumns: `${columns
-          .map(({ computedWidth }) => `${computedWidth}px`)
-          .join(" ")} 1fr`,
-        gridAutoRows: `${rowHeight}px`,
-      }}
-    >
-      {children}
-    </Box>
-  );
 };
 
 export const SkeletonHeaderLabel = () => (
@@ -414,11 +273,40 @@ export const SkeletonItemListFilters = () => {
       columnGap="12px"
       py={2}
     >
-      <Skeleton variant="rounded" width="152px" height="28px" />
-      <Skeleton variant="rounded" width="85px" height="28px" />
-      <Skeleton variant="rounded" width="117px" height="28px" />
-      <Skeleton variant="rounded" width="121px" height="28px" />
-      <Skeleton variant="rounded" width="108px" height="28px" />
+      <Skeleton variant="rounded" width="152px" height="26px" />
+      <Skeleton variant="rounded" width="85px" height="26px" />
+      <Skeleton variant="rounded" width="117px" height="26px" />
+      <Skeleton variant="rounded" width="121px" height="26px" />
+      <Skeleton variant="rounded" width="108px" height="26px" />
+    </Box>
+  );
+};
+
+export const DataGridSkeletonCell = (props: any) => {
+  const { width, field, align, className, style, empty } = props;
+  const apiRef = useGridApiContext();
+  const columns = apiRef.current.state.columns.lookup;
+  const dataType = columns[field]?.cellClassName;
+  const computedWidth = columns[field]?.computedWidth;
+  const rowHeight = apiRef.current.state.dimensions.rowHeight;
+
+  if (empty) return null;
+  return (
+    <Box
+      height={rowHeight}
+      display="flex"
+      justifyContent={align === "left" ? "flex-start" : "flex-end"}
+      alignItems="center"
+      width={computedWidth || width}
+      px={2}
+      className={className}
+      style={{
+        ...style,
+      }}
+    >
+      {field === "__check__"
+        ? FIELD_SKELETON_MAP.checkboxSelection
+        : FIELD_SKELETON_MAP[dataType as any] || FIELD_SKELETON_MAP.default}
     </Box>
   );
 };
