@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { FC } from "react";
 import LoadingButton from "@mui/lab/LoadingButton";
 import {
   Button,
@@ -15,44 +15,58 @@ import { notify } from "../../../../../../shell/store/notifications";
 import { DialogContent } from "@mui/material";
 
 import { useDeleteRedirectMutation } from "../../../../../../shell/services/instance";
-import { RedirectTargetCell } from "../../../views/RedirectsManager/RedirectsTable/RedirectTargetCell";
+
+export type DeleteRedirectsProps = {
+  ZUID: string;
+  path: string;
+};
 
 export type DeleteDialogProps = {
   open: boolean;
   onClose: () => void;
-  ZUID: string;
-  path: string;
-  type: string;
-  target: string;
-  code: number;
+  redirects: DeleteRedirectsProps[];
 };
 
-export const DeleteDialog = memo(function DeleteDialog(
-  props: DeleteDialogProps
-) {
-  const { open, onClose, ZUID, path, type, target, code } = props;
-
+export const DeleteDialog: FC<DeleteDialogProps> = ({
+  open,
+  onClose,
+  redirects,
+}) => {
   const [deleteRedirect, { isLoading: isDeleting }] =
     useDeleteRedirectMutation();
 
   const dispatch = useDispatch();
 
-  const handleDeleteFile = () => {
-    if (!ZUID) return;
+  const descriptionPart =
+    redirects?.length < 2
+      ? `Deleting this redirect for these incoming path`
+      : `Deleting these ${redirects?.length} redirects for these incoming paths`;
 
-    deleteRedirect({ ZUID })
-      .then((res: any) => {
-        if (!res?.error) {
-          dispatch(
-            notify({
-              kind: "success",
-              message: `Redirect Deleted: ${path}`,
-            })
-          );
-        }
+  const handleDeleteRedirects = async () => {
+    const requests = [...(redirects || [])]?.map((redirect) =>
+      deleteRedirect({ ZUID: redirect?.ZUID })
+    );
+    Promise.allSettled(requests)
+      .then((res) => {
+        onClose();
+      })
+      .catch(() => {
+        dispatch(
+          notify({
+            kind: "error",
+            message: `Error deleting redirects`,
+          })
+        );
       })
       .finally(() => {
-        onClose();
+        dispatch(
+          notify({
+            kind: "error",
+            message: `${redirects?.length} Redirect${
+              redirects?.length > 1 ? "s" : ""
+            } Deleted`,
+          })
+        );
       });
   };
   return (
@@ -82,127 +96,62 @@ export const DeleteDialog = memo(function DeleteDialog(
           textOverflow="ellipsis"
         >
           <Typography
+            data-cy="RedirectsDeleteDialogHeader"
             variant="inherit"
             fontWeight={700}
             flexGrow={0}
             flexShrink={0}
           >
-            Delete Redirect:
-          </Typography>
-          <Typography variant="inherit" fontWeight={600} noWrap flexGrow={0}>
-            {`${path}`}
+            {`Delete ${redirects?.length} Redirect${
+              redirects?.length > 1 ? "s" : ""
+            }`}
           </Typography>
         </Stack>
         <Typography variant="body2" color="text.secondary" sx={{ mt: "8px" }}>
-          Deleting this redirect will remove it immediately from your site. This
-          cannot be undone.
+          {`${descriptionPart} will remove it immediately from your site. This action cannot be undone.`}
         </Typography>
       </DialogTitle>
-      <DialogContent>
-        <Typography
-          variant="body2"
-          color="text.primary"
-          mb="10px"
-          fontWeight={700}
-        >
-          More details
-        </Typography>
+      <DialogContent sx={{ p: 0 }} data-cy="RedirectsDeleteDialog">
         <Box
           display="flex"
           flexDirection="column"
-          sx={{
-            border: "1px solid",
-            borderColor: "grey.100",
-            borderRadius: "8px",
-          }}
+          justifyContent="flex-start"
+          alignItems="flex-start"
+          rowGap="20px"
+          py={0}
+          px="20px"
         >
-          <Box
-            display="flex"
-            flexDirection="row"
-            justifyContent="space-between"
-            alignItems="center"
-            px="16px"
-            py="14px"
-          >
-            <Typography
-              variant="body2"
-              color="text.primary"
-              width="160px"
-              flexGrow={0}
-              flexShrink={0}
-              fontWeight={700}
-            >
-              HTTP Code
-            </Typography>
-            <Typography variant="body2" color="text.primary" flexGrow={1}>
-              {code}
-            </Typography>
-          </Box>
-
-          <Box
-            display="flex"
-            flexDirection="row"
-            justifyContent="space-between"
-            alignItems="center"
-            px="16px"
-            py="14px"
-            borderTop="1px solid"
-            borderBottom="1px solid"
-            borderColor="grey.100"
-          >
-            <Typography
-              variant="body2"
-              color="text.primary"
-              width="160px"
-              flexGrow={0}
-              flexShrink={0}
-              fontWeight={700}
-            >
-              Redirect Type
-            </Typography>
-            <Typography variant="body2" color="text.primary" flexGrow={1}>
-              {type === "page"
-                ? "Internal"
-                : type === "path"
-                ? "Wildcard"
-                : type}
-            </Typography>
-          </Box>
-
-          <Box
-            display="flex"
-            flexDirection="row"
-            justifyContent="space-between"
-            alignItems="center"
-            px="16px"
-            py="14px"
-          >
-            <Typography
-              variant="body2"
-              color="text.primary"
-              width="160px"
-              flexGrow={0}
-              flexShrink={0}
-              fontWeight={700}
-            >
-              Redirect Target
-            </Typography>
-            <Typography
-              variant="body2"
-              color="info.main"
-              flexGrow={1}
+          {redirects?.map((redirect, index) => (
+            <Box
+              key={redirect?.ZUID}
               display="flex"
-              alignItems="center"
-              gap="4px"
-              overflow="hidden"
-              textOverflow="ellipsis"
+              flexDirection="row"
+              justifyContent="flex-start"
+              alignItems="baseline"
+              columnGap="5px"
             >
-              <RedirectTargetCell target={target} targetType={type} />
-            </Typography>
-          </Box>
+              <Typography
+                variant="body2"
+                color="info.dark"
+                width="20px"
+                flexGrow={0}
+                flexShrink={0}
+              >
+                {`${index + 1}.`}
+              </Typography>
+              <Typography
+                variant="body2"
+                color="info.dark"
+                flexGrow={1}
+                flexShrink={1}
+              >
+                {redirect?.path}
+              </Typography>
+            </Box>
+          ))}
         </Box>
       </DialogContent>
-      <DialogActions>
+      <DialogActions sx={{ p: "20px" }}>
         <Button variant="text" color="inherit" onClick={onClose}>
           Cancel
         </Button>
@@ -210,12 +159,12 @@ export const DeleteDialog = memo(function DeleteDialog(
           data-cy="DeleteContentItemConfirmButton"
           variant="contained"
           color="error"
-          onClick={handleDeleteFile}
+          onClick={handleDeleteRedirects}
           loading={isDeleting}
         >
-          Delete Forever
+          Delete Redirects ({redirects?.length})
         </LoadingButton>
       </DialogActions>
     </Dialog>
   );
-});
+};

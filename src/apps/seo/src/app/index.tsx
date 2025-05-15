@@ -5,6 +5,7 @@ import { Box } from "@mui/material";
 
 import RedirectsManager from "../views/RedirectsManager";
 import RedirectsDialogContextProvider from "./components/RedirectsDialogProvider";
+import RedirectsTableContextProvider from "../views/RedirectsManager/RedirectsTable/RedirectsTableContextProvider";
 
 export default connect((state) => state)(
   class HealthApp extends Component {
@@ -23,9 +24,11 @@ export default connect((state) => state)(
         >
           <Switch>
             <Route exact path="/redirects">
-              <RedirectsDialogContextProvider>
-                <RedirectsManager {...this.props} />
-              </RedirectsDialogContextProvider>
+              <RedirectsTableContextProvider>
+                <RedirectsDialogContextProvider>
+                  <RedirectsManager {...this.props} />
+                </RedirectsDialogContextProvider>
+              </RedirectsTableContextProvider>
             </Route>
           </Switch>
         </Box>

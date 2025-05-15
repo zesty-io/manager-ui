@@ -1,12 +1,4 @@
-import {
-  useState,
-  FC,
-  useRef,
-  useCallback,
-  useMemo,
-  ReactNode,
-  useEffect,
-} from "react";
+import { useState, FC, useRef, useMemo, ReactNode, useEffect } from "react";
 import LoadingButton from "@mui/lab/LoadingButton";
 import {
   Button,
@@ -27,20 +19,20 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import PathField from "./PathField";
 import {
   ContentItemProps,
-  CreateRedirectFormSkeleton,
   FORM_LABELS,
   HTTP_CODE_OPTIONS,
   TARGET_OPTIONS,
   TOOL_TIPS,
-  validateUrl,
 } from "../constants";
 import { CreateFormDefaultValues, useRedirectsDialog } from "..";
 import {
   useGetAllPublishingsQuery,
+  useGetContentModelsQuery,
   useGetLangsQuery,
   useSearchContentQuery,
 } from "../../../../../../../shell/services/instance";
 import {
+  ContentModel,
   Language,
   Publishing,
   RedirectsCodes,
@@ -61,6 +53,21 @@ type PathProps = {
 };
 
 export type PublishingsMap = Record<string, Publishing>;
+
+export const validateUrl = (url: string) => {
+  const validProtocols = ["http://", "https://"];
+
+  const hasValidProtocol = validProtocols.some((protocol) =>
+    url.startsWith(protocol)
+  );
+  if (!hasValidProtocol) return false;
+  try {
+    new URL(url);
+    return true;
+  } catch (_) {
+    return false;
+  }
+};
 
 const CreateForm: FC<CreateFormProps> = ({
   open,
@@ -104,9 +111,15 @@ const CreateForm: FC<CreateFormProps> = ({
   const { data: languages, isLoading: isLoadingLanguages } = useGetLangsQuery(
     {}
   );
+  const { data: models, isLoading: isLoadingModels } =
+    useGetContentModelsQuery();
 
   const isLoading =
-    !!isLoadingPublishings || !!isLoadingLanguages || !!isLoadingContentItems;
+    !!isLoadingPublishings ||
+    !!isLoadingLanguages ||
+    !!isLoadingContentItems ||
+    !!isLoadingModels;
+
   const isDisabled =
     !paths?.map((item) => item?.path?.trim())?.filter(Boolean)?.length ||
     !target ||
@@ -156,16 +169,31 @@ const CreateForm: FC<CreateFormProps> = ({
     );
   }, [languages, isLoadingLanguages]);
 
+  const modelsMap = useMemo(() => {
+    if (isLoadingModels) return {};
+    return [...(models || [])].reduce(
+      (acc: Record<string, ContentModel>, item: ContentModel) => {
+        acc[item.ZUID] = item;
+        return acc;
+      },
+      {}
+    );
+  }, [models, isLoadingModels]);
+
   const options = useMemo(() => {
     if (isLoading) return [];
 
     const parseContentItems = contentItems
-      ?.filter((result) => result?.web?.path !== null)
+      ?.filter(
+        (result) =>
+          result?.web?.path !== null &&
+          ["templateset", "pageset"].includes(
+            modelsMap?.[result?.meta?.contentModelZUID]?.type
+          )
+      )
       ?.map((item) => {
         const publishData = publishingMap?.[item?.meta?.ZUID];
-
         const langCode = languageMap?.[item?.meta?.langID]?.code;
-
         return {
           ZUID: item?.meta?.ZUID,
           label:
@@ -176,6 +204,7 @@ const CreateForm: FC<CreateFormProps> = ({
           isPublished:
             !!publishData &&
             publishData?.versionZUID === item?.web?.versionZUID,
+          type: modelsMap?.[item?.meta?.contentModelZUID]?.type,
         };
       })
       .sort(
@@ -183,7 +212,7 @@ const CreateForm: FC<CreateFormProps> = ({
           new Date(b.publishAt).getTime() - new Date(a.publishAt).getTime()
       );
     return parseContentItems as ContentItemProps[];
-  }, [contentItems, publishingMap, languageMap, isLoading]);
+  }, [contentItems, publishingMap, languageMap, modelsMap, isLoading]);
 
   const handleSubmit = async (submitType: "multiple" | "single") => {
     setSubmitType(submitType);
@@ -227,7 +256,6 @@ const CreateForm: FC<CreateFormProps> = ({
       dispatch(
         notify({
           kind: "success",
-
           message: !isEdit
             ? `${redirectsPaths?.length} Redirect${
                 redirectsPaths?.length > 1 ? "s" : ""
@@ -251,7 +279,8 @@ const CreateForm: FC<CreateFormProps> = ({
   }, [targetType]);
 
   useEffect(() => {
-    if (!open || isLoading) return;
+    if (!open) return;
+    resetForm();
     setPaths([
       {
         id: new Date().getTime() + 1000,
@@ -260,20 +289,9 @@ const CreateForm: FC<CreateFormProps> = ({
     ]);
     setCode(defaultValues?.code || 301);
     setTargetType(defaultValues?.targetType || "page");
-
-    if (defaultValues?.targetType === "page") {
-      const foundValue = !!defaultValues?.target
-        ? options?.find((item) => item?.ZUID === defaultValues?.target)
-        : null;
-      setTargetInternal(foundValue);
-    } else {
-      setTargetPath(defaultValues?.target || "");
-    }
-
-    return () => {
-      resetForm();
-    };
-  }, [open, defaultValues, options, isLoading]);
+    setTargetInternal(null);
+    setTargetPath(defaultValues?.target || "");
+  }, [open, defaultValues]);
 
   return (
     <Dialog
@@ -361,188 +379,181 @@ const CreateForm: FC<CreateFormProps> = ({
         </IconButton>
       </DialogTitle>
       <DialogContent sx={{ bgcolor: "grey.50" }}>
-        {isLoading ? (
-          <CreateRedirectFormSkeleton />
-        ) : (
+        <Box
+          sx={{
+            pt: "20px",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "flex-start",
+            alignItems: "flex-start",
+            rowGap: "20px",
+          }}
+        >
           <Box
+            width="100%"
             sx={{
-              pt: "20px",
               display: "flex",
               flexDirection: "column",
               justifyContent: "flex-start",
               alignItems: "flex-start",
-              rowGap: "20px",
+              rowGap: "16px",
             }}
           >
-            <Box
-              width="100%"
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "flex-start",
-                alignItems: "flex-start",
-                rowGap: "16px",
-              }}
-            >
-              <FieldWrapper label="Incoming Path" tooltip="File Path Only">
-                <Typography variant="body2" color="text.secondary">
-                  {FORM_LABELS[actionType]?.incomingPath}
-                </Typography>
+            <FieldWrapper label="Incoming Path" tooltip="File Path Only">
+              <Typography variant="body2" color="text.secondary">
+                {FORM_LABELS[actionType]?.incomingPath}
+              </Typography>
 
-                <Box
-                  width="100%"
-                  data-cy="RedirectsPathsContainer"
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "flex-start",
-                    alignItems: "stretch",
-                    rowGap: "4px",
-                  }}
-                >
-                  {paths.map((path) => (
-                    <Stack
-                      key={path.id}
-                      direction="row"
-                      gap="10px"
-                      alignItems="center"
-                      width="100%"
-                    >
-                      <PathField
-                        testId="RedirectsFieldPath"
-                        key={path.id}
-                        id={path.id}
-                        value={path.path}
-                        placeHolder="/Enter URL path to redirect from"
-                        inputRef={paths?.length < 2 ? lastPathRef : null}
-                        autoFocus
-                        prefix="/"
-                        onChange={(value: any) => {
-                          setPaths((prev) =>
-                            prev.map((item) =>
-                              item.id === path.id
-                                ? { ...item, path: value }
-                                : item
-                            )
-                          );
-                        }}
-                      />
-
-                      <IconButton
-                        size="small"
-                        onClick={(e) => {
-                          if (paths?.length < 2) {
-                            setPaths((prev) =>
-                              prev.map((item) =>
-                                item.id === path.id
-                                  ? { ...item, path: "" }
-                                  : item
-                              )
-                            );
-                            if (!!lastPathRef?.current) {
-                              lastPathRef.current.focus();
-                            }
-                          } else {
-                            setPaths((prev) =>
-                              prev.filter(
-                                (prevPath) => prevPath.id !== path?.id
-                              )
-                            );
-                          }
-                        }}
-                        sx={{
-                          color: "action.active",
-                        }}
-                      >
-                        <DeleteIcon fontSize="small" />
-                      </IconButton>
-                    </Stack>
-                  ))}
-                </Box>
-              </FieldWrapper>
-
-              {!isEdit && (
-                <Box>
-                  <Button
-                    data-cy="RedirectsFormDialogAddPathButton"
-                    size="small"
-                    variant="outlined"
-                    color="primary"
-                    startIcon={<AddIcon />}
-                    onClick={() => {
-                      setPaths((prev) => [
-                        ...prev,
-                        { id: new Date().getTime() + 1000, path: "" },
-                      ]);
-                    }}
-                  >
-                    Add Path
-                  </Button>
-                </Box>
-              )}
-            </Box>
-
-            <FieldWrapper label="HTTP Code" tooltip={TOOL_TIPS.code}>
-              <TextField
-                data-cy="RedirectsCodeSelector"
-                select
-                defaultValue={301}
-                size="small"
-                fullWidth
-                value={code}
-                onChange={(e: any) => setCode(e.target.value)}
-              >
-                {HTTP_CODE_OPTIONS.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </FieldWrapper>
-
-            <FieldWrapper label="Type" tooltip={TOOL_TIPS.targetType}>
-              <TextField
-                data-cy="RedirectsTypeSelector"
-                select
-                defaultValue="page"
-                size="small"
-                fullWidth
-                value={targetType}
-                onChange={(e: any) => {
-                  setTargetPath("");
-                  setTargetInternal(null);
-                  setTargetType(e.target.value);
+              <Box
+                width="100%"
+                data-cy="RedirectsPathsContainer"
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "flex-start",
+                  alignItems: "stretch",
+                  rowGap: "4px",
                 }}
               >
-                {TARGET_OPTIONS.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
-                    {option.label}
-                  </MenuItem>
+                {paths.map((path) => (
+                  <Stack
+                    key={path.id}
+                    direction="row"
+                    gap="10px"
+                    alignItems="center"
+                    width="100%"
+                  >
+                    <PathField
+                      testId="RedirectsFieldPath"
+                      key={path.id}
+                      id={path.id}
+                      value={path.path}
+                      placeHolder="/Enter URL path to redirect from"
+                      inputRef={paths?.length < 2 ? lastPathRef : null}
+                      autoFocus
+                      prefix="/"
+                      onChange={(value: any) => {
+                        setPaths((prev) =>
+                          prev.map((item) =>
+                            item.id === path.id
+                              ? { ...item, path: value }
+                              : item
+                          )
+                        );
+                      }}
+                    />
+
+                    <IconButton
+                      size="small"
+                      onClick={(e) => {
+                        if (paths?.length < 2) {
+                          setPaths((prev) =>
+                            prev.map((item) =>
+                              item.id === path.id ? { ...item, path: "" } : item
+                            )
+                          );
+                          if (!!lastPathRef?.current) {
+                            lastPathRef.current.focus();
+                          }
+                        } else {
+                          setPaths((prev) =>
+                            prev.filter((prevPath) => prevPath.id !== path?.id)
+                          );
+                        }
+                      }}
+                      sx={{
+                        color: "action.active",
+                      }}
+                    >
+                      <DeleteIcon fontSize="small" />
+                    </IconButton>
+                  </Stack>
                 ))}
-              </TextField>
+              </Box>
             </FieldWrapper>
-            <FieldWrapper label="Redirect Target" tooltip="File Path Only">
-              {targetType === "page" ? (
-                <SearchField
-                  options={options}
-                  loading={isLoading}
-                  value={targetInternal}
-                  onChange={setTargetInternal}
-                />
-              ) : (
-                <PathField
-                  testId="RedirectsExternalFieldPath"
-                  placeHolder="Enter URL (e.g. https://www.google.com/)"
-                  value={targetPath}
-                  onChange={(e) => {
-                    setTargetPath(e);
+
+            {!isEdit && (
+              <Box>
+                <Button
+                  data-cy="RedirectsFormDialogAddPathButton"
+                  size="small"
+                  variant="outlined"
+                  color="primary"
+                  startIcon={<AddIcon />}
+                  onClick={() => {
+                    setPaths((prev) => [
+                      ...prev,
+                      { id: new Date().getTime() + 1000, path: "" },
+                    ]);
                   }}
-                  validation={targetType === "external" ? urlValidation : null}
-                />
-              )}
-            </FieldWrapper>
+                >
+                  Add Path
+                </Button>
+              </Box>
+            )}
           </Box>
-        )}
+
+          <FieldWrapper label="HTTP Code" tooltip={TOOL_TIPS.code}>
+            <TextField
+              data-cy="RedirectsCodeSelector"
+              select
+              defaultValue={301}
+              size="small"
+              fullWidth
+              value={code}
+              onChange={(e: any) => setCode(e.target.value)}
+            >
+              {HTTP_CODE_OPTIONS.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </TextField>
+          </FieldWrapper>
+
+          <FieldWrapper label="Type" tooltip={TOOL_TIPS.targetType}>
+            <TextField
+              data-cy="RedirectsTypeSelector"
+              select
+              defaultValue="page"
+              size="small"
+              fullWidth
+              value={targetType}
+              onChange={(e: any) => {
+                setTargetPath("");
+                setTargetInternal(null);
+                setTargetType(e.target.value);
+              }}
+            >
+              {TARGET_OPTIONS.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </TextField>
+          </FieldWrapper>
+          <FieldWrapper label="Redirect Target" tooltip="File Path Only">
+            {targetType === "page" ? (
+              <SearchField
+                options={options}
+                loading={isLoading}
+                value={targetInternal}
+                defaultValue={targetPath}
+                onChange={setTargetInternal}
+              />
+            ) : (
+              <PathField
+                testId="RedirectsExternalFieldPath"
+                placeHolder="Enter URL (e.g. https://www.google.com/)"
+                value={targetPath}
+                onChange={(e) => {
+                  setTargetPath(e);
+                }}
+                validation={targetType === "external" ? urlValidation : null}
+              />
+            )}
+          </FieldWrapper>
+        </Box>
       </DialogContent>
       <DialogActions
         sx={{
