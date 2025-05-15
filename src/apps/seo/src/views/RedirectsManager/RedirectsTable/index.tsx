@@ -4,8 +4,14 @@ import {
   GRID_CHECKBOX_SELECTION_COL_DEF,
   useGridApiRef,
   GridActionsCellItem,
+  GridApi,
+  GridColDef,
+  GridRenderCellParams,
+  GridPinnedColumnFields,
+  GridValidRowModel,
+  GridRowId,
 } from "@mui/x-data-grid-pro";
-import { Box, Typography, MenuItem, ListItemText } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
@@ -13,32 +19,46 @@ import DescriptionRoundedIcon from "@mui/icons-material/DescriptionRounded";
 import { RedirectTargetCell } from "./RedirectTargetCell";
 import HiveIcon from "@mui/icons-material/Hive";
 import AutoSizer from "react-virtualized-auto-sizer";
-import ListItemIcon from "@mui/material/ListItemIcon";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
-import Menu from "@mui/material/Menu";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { useRedirectsDialog } from "../../../app/components/RedirectsDialogProvider";
-import { SortFilters } from "./SortFilters";
-import { useRedirectsTableFilters } from "./TableSortFilterProvider";
-import { SearchRounded } from "@mui/icons-material";
+import { TableSortFilters } from "./TableSortFilters";
+import { useRedirectsTable } from "./RedirectsTableContextProvider";
+import { Redirects } from "../../../../../../shell/services/types";
 
-const RedirectTable = (props) => {
-  const { redirects, redirectsFilter, isLoading } = props;
-  const apiRef = useGridApiRef();
-  const [selectedRow, setSelectedRow] = useState(null);
-  const [anchorEl, setAnchorEl] = useState(null);
-  const { sortBy, httpCodeFilter, typeFilter } = useRedirectsTableFilters();
-  const [initialState, setInitialState] = useState();
-  const [pinnedColumns, setPinnedColumns] = useState({});
+const TARGET_TYPES_MAP = {
+  page: "internal",
+  path: "wildcard",
+  external: "external",
+} as const;
 
-  const columns = useMemo(
+const RedirectsTable = () => {
+  const apiRef = useGridApiRef<GridApi>();
+  const { openDeleteDialog, openCreateForm } = useRedirectsDialog();
+  const {
+    redirects,
+    isLoading,
+    sortBy,
+    httpCodeFilter,
+    typeFilter,
+    selectedRedirects,
+    setSelectedRedirects,
+    searchFilter,
+  } = useRedirectsTable();
+
+  const [initialState, setInitialState] = useState<any>();
+  const [pinnedColumns, setPinnedColumns] = useState<GridPinnedColumnFields>({
+    left: [GRID_CHECKBOX_SELECTION_COL_DEF.field],
+  });
+
+  const columns: GridColDef[] = useMemo(
     () => [
       {
         field: "path",
         minWidth: 206,
         flex: 1,
         headerName: "Incoming Path",
-        renderCell: ({ value }) => (
+        renderCell: ({ value }: GridRenderCellParams<GridValidRowModel>) => (
           <Typography variant="body2" color="text.primary">
             {value}
           </Typography>
@@ -49,7 +69,7 @@ const RedirectTable = (props) => {
         width: 120,
         minWidth: 120,
         headerName: "HTTP Code",
-        renderCell: ({ value }) => {
+        renderCell: ({ value }: GridRenderCellParams<GridValidRowModel>) => {
           return (
             <Typography
               variant="body2"
@@ -74,7 +94,7 @@ const RedirectTable = (props) => {
         width: 120,
         minWidth: 120,
         headerName: "Type",
-        renderCell: ({ value }) => {
+        renderCell: ({ value }: GridRenderCellParams<GridValidRowModel>) => {
           return (
             <Typography
               variant="body2"
@@ -113,7 +133,10 @@ const RedirectTable = (props) => {
         minWidth: 190,
         flex: 1,
         headerName: "Target",
-        renderCell: ({ value, row }) => (
+        renderCell: ({
+          value,
+          row,
+        }: GridRenderCellParams<GridValidRowModel>) => (
           <RedirectTargetCell target={value} targetType={row.targetType} />
         ),
       },
@@ -124,16 +147,31 @@ const RedirectTable = (props) => {
         minWidth: 54,
         maxWidth: 54,
         resizable: false,
-        getActions: ({ row }) => [
+
+        getActions: ({ row }: { row: Redirects }) => [
           <GridActionsCellItem
             showInMenu
-            icon={<MoreHorizIcon />}
+            icon={<ModeEditIcon fontSize="small" />}
             color="action.secondary"
-            label="More options"
-            onClick={(event) => {
-              setSelectedRow(row);
-              setAnchorEl(event.currentTarget);
+            label="Edit Redirect"
+            onClick={() => {
+              openCreateForm({
+                ZUID: row?.ZUID,
+                targetType: row?.targetType,
+                code: row?.code,
+                target: row?.target,
+                path: row?.path,
+              });
             }}
+          />,
+          <GridActionsCellItem
+            showInMenu
+            icon={<DeleteIcon fontSize="small" />}
+            color="action.secondary"
+            label="Delete Redirect"
+            onClick={() =>
+              openDeleteDialog([{ ZUID: row.ZUID, path: row.path }])
+            }
           />,
         ],
       },
@@ -145,10 +183,14 @@ const RedirectTable = (props) => {
     if (isLoading) return [];
     return Object.values(redirects)
       .filter((redirect) => {
-        const normalizedFilter = redirectsFilter?.toLowerCase() || "";
+        const normalizedFilter = searchFilter?.toLowerCase() || "";
         const matchesSearch =
           redirect.path.toLowerCase().includes(normalizedFilter) ||
           String(redirect.code).toLowerCase().includes(normalizedFilter) ||
+          redirect.targetType.toLowerCase().includes(normalizedFilter) ||
+          TARGET_TYPES_MAP[redirect.targetType]
+            .toLowerCase()
+            .includes(normalizedFilter) ||
           redirect.ZUID.toLowerCase().includes(normalizedFilter) ||
           redirect.target.toLowerCase().includes(normalizedFilter);
 
@@ -181,14 +223,7 @@ const RedirectTable = (props) => {
         ...redirect,
         id: redirect.ZUID,
       }));
-  }, [
-    redirects,
-    redirectsFilter,
-    isLoading,
-    sortBy,
-    httpCodeFilter,
-    typeFilter,
-  ]);
+  }, [redirects, searchFilter, isLoading, sortBy, httpCodeFilter, typeFilter]);
 
   const saveSnapshot = useCallback(() => {
     if (apiRef?.current && localStorage) {
@@ -234,7 +269,7 @@ const RedirectTable = (props) => {
   return (
     <>
       <Box display="flex" flexDirection="row" alignItems="center">
-        <SortFilters />
+        <TableSortFilters />
       </Box>
 
       <Box
@@ -251,7 +286,7 @@ const RedirectTable = (props) => {
       >
         <Box width="100%" height="100%">
           <AutoSizer>
-            {({ width, height }) => (
+            {({ width, height }: { width: number; height: number }) => (
               <DataGridPro
                 apiRef={apiRef}
                 columns={columns}
@@ -262,12 +297,20 @@ const RedirectTable = (props) => {
                   setPinnedColumns(newPinnedColumns)
                 }
                 onColumnWidthChange={saveSnapshot}
+                rowSelectionModel={selectedRedirects}
+                onRowSelectionModelChange={(selection: GridRowId[]) => {
+                  setSelectedRedirects(selection);
+                }}
                 initialState={initialState}
                 style={{
                   width: width,
                   height: height,
                 }}
                 checkboxSelection
+                disableRowSelectionOnClick
+                slots={{
+                  moreActionsIcon: MoreHorizIcon,
+                }}
                 sx={{
                   bgcolor: "background.paper",
                   color: "text.primary",
@@ -309,70 +352,9 @@ const RedirectTable = (props) => {
             )}
           </AutoSizer>
         </Box>
-        <MoreOptions
-          anchorEl={anchorEl}
-          onClose={() => setAnchorEl(null)}
-          data={selectedRow}
-        />
       </Box>
     </>
   );
 };
 
-function MoreOptions({ anchorEl, onClose, data }) {
-  const open = Boolean(anchorEl);
-
-  const { openDeleteDialog, openCreateForm } = useRedirectsDialog();
-
-  const handleDelete = () => {
-    onClose();
-    openDeleteDialog({
-      ...data,
-      type: data?.targetType,
-    });
-    onClose();
-  };
-
-  const handleEdit = () => {
-    onClose();
-    openCreateForm({
-      ZUID: data?.ZUID,
-      targetType: data?.targetType,
-      code: data?.code,
-      target: data?.target,
-      path: data?.path,
-    });
-  };
-
-  return (
-    <Menu
-      data-cy="RedirectsItemOptions"
-      anchorEl={anchorEl}
-      open={open}
-      onClose={onClose}
-      anchorOrigin={{
-        vertical: "top",
-        horizontal: "left",
-      }}
-      transformOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-    >
-      <MenuItem onClick={handleEdit} data-cy="RedirectsItemOptionsEdit">
-        <ListItemIcon>
-          <ModeEditIcon fontSize="small" />
-        </ListItemIcon>
-        <ListItemText>Edit Redirect</ListItemText>
-      </MenuItem>
-      <MenuItem onClick={handleDelete} data-cy="RedirectsItemOptionsDelete">
-        <ListItemIcon>
-          <DeleteIcon fontSize="small" />
-        </ListItemIcon>
-        <ListItemText>Delete Redirect</ListItemText>
-      </MenuItem>
-    </Menu>
-  );
-}
-
-export default RedirectTable;
+export default RedirectsTable;

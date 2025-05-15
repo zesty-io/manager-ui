@@ -38,7 +38,13 @@ export const ErrorDialog: FC<ErrorDialogProps> = ({ open, onClose, data }) => {
     let response = null;
 
     if (isEdit) {
-      response = await updateRedirect({ ...data, path: paths[0] });
+      response = await updateRedirect({
+        path: paths[0],
+        targetType: data?.targetType,
+        code: data?.code,
+        target: data?.target,
+        ZUID: data?.ZUID,
+      });
     } else {
       response = await createRedirects({
         paths: paths,
@@ -118,6 +124,7 @@ export const ErrorDialog: FC<ErrorDialogProps> = ({ open, onClose, data }) => {
             fontWeight={700}
             flexGrow={0}
             flexShrink={0}
+            data-cy="RedirectsErrorDialogHeader"
           >
             {`${errorPaths?.length} Redirect${
               errorPaths?.length > 1 ? "s" : ""

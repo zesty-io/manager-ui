@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Box, Menu, MenuItem } from "@mui/material";
 import { FilterButton } from "../../../../../../shell/components/Filters";
-import { useRedirectsTableFilters } from "./TableSortFilterProvider";
+import { useRedirectsTable } from "./RedirectsTableContextProvider";
 
 const SORT_OPTIONS = {
   createdAt: "Date Created",
@@ -22,7 +22,7 @@ const TYPE_FILTERS = {
   internal: "Internal - linked to an item in this instance",
 } as const;
 
-export const SortFilters = () => {
+export const TableSortFilters = () => {
   const [anchorEl, setAnchorEl] = useState({
     currentTarget: null,
     id: "",
@@ -35,7 +35,7 @@ export const SortFilters = () => {
     setSortBy,
     setHttpCodeFilter,
     setTypeFilter,
-  } = useRedirectsTableFilters();
+  } = useRedirectsTable();
 
   const handleOpenMenu = (
     event: React.MouseEvent<HTMLButtonElement>,

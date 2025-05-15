@@ -84,21 +84,6 @@ export const TARGET_ERRORS = {
   invalidUrl: "Invalid URL. Please enter a valid URL.",
 };
 
-export const validateUrl = (url: string) => {
-  const validProtocols = ["http://", "https://"];
-
-  const hasValidProtocol = validProtocols.some((protocol) =>
-    url.startsWith(protocol)
-  );
-  if (!hasValidProtocol) return false;
-  try {
-    new URL(url);
-    return true;
-  } catch (_) {
-    return false;
-  }
-};
-
 export type PathProps = {
   id: number;
   path: string;
@@ -117,7 +102,7 @@ export type ContentItemProps = {
   langCode?: string;
   isPublished?: boolean;
   isLoading?: boolean;
-  isListItem?: boolean;
+  type?: string;
   onDelete?: () => void;
 };
 
@@ -137,167 +122,4 @@ export type CreateRedirectDefaultValues = {
     targetType: RedirectsTargetType;
   };
   isEdit?: boolean;
-};
-
-export const parseRedirectError = (error: string): string => {
-  if (error?.toLowerCase()?.includes("already exists")) return "Already exists";
-  if (error?.toLowerCase()?.includes("validation error: redirect item"))
-    return "Not Published";
-  return "Error";
-};
-
-export const ListOptionSkeleton = ({ count = 4 }: { count: number }) => {
-  return (
-    <>
-      {Array.from({ length: count }).map((_, index) => (
-        <Box
-          data-cy="RedirectsTargetListLoadingSkeleton"
-          key={index}
-          display="flex"
-          flexDirection="row"
-          justifyContent="space-between"
-          alignItems="center"
-          width="100%"
-          columnGap="12px"
-          py="8px"
-        >
-          <Skeleton
-            variant="circular"
-            sx={{
-              width: "24px",
-              height: "24px",
-              flexShrink: 0,
-            }}
-          />
-
-          <Box
-            display="flex"
-            flexDirection="column"
-            justifyContent="cennter"
-            alignItems="flex-start"
-            width="100%"
-            flexGrow={1}
-            rowGap="10px"
-          >
-            <Skeleton width="45%" height="12px" variant="rounded" />
-            <Skeleton width="90%" height="12px" variant="rounded" />
-          </Box>
-        </Box>
-      ))}
-    </>
-  );
-};
-
-export const CreateRedirectFormSkeleton = () => {
-  return (
-    <Box
-      width="100%"
-      height="100%"
-      display="flex"
-      flexDirection="column"
-      justifyContent="flex-start"
-      alignItems="flex-start"
-      rowGap="20px"
-      py={2.25}
-    >
-      <Box
-        display="flex"
-        flexDirection="column"
-        justifyContent="flex-start"
-        alignItems="flex-start"
-        sx={{
-          rowGap: 1,
-          width: "100%",
-        }}
-      >
-        <Skeleton variant="rounded" width="100px" height="12px" />
-        <Skeleton variant="rounded" width="90%" height="12px" />
-        <Box
-          sx={{
-            display: "flex",
-            flexDiretion: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-            width: "100%",
-            columnGap: 2,
-          }}
-        >
-          <Skeleton
-            variant="rounded"
-            width="100px"
-            height="36px"
-            sx={{ flexGrow: 1 }}
-          />
-          <Skeleton variant="circular" width="25px" height="25px" />
-        </Box>
-      </Box>
-
-      <Box
-        display="flex"
-        flexDirection="column"
-        justifyContent="flex-start"
-        alignItems="flex-start"
-        sx={{
-          rowGap: 0.5,
-          width: "100%",
-        }}
-      >
-        <Skeleton variant="rounded" width="125px" height="36px" />
-      </Box>
-      <Box
-        display="flex"
-        flexDirection="column"
-        justifyContent="flex-start"
-        alignItems="flex-start"
-        sx={{
-          rowGap: 1,
-          width: "100%",
-        }}
-      >
-        <Skeleton
-          variant="rounded"
-          width="91px"
-          height="12px"
-          sx={{ flexGrow: 1 }}
-        />
-        <Skeleton variant="rounded" width="100%" height="36px" />
-      </Box>
-      <Box
-        display="flex"
-        flexDirection="column"
-        justifyContent="flex-start"
-        alignItems="flex-start"
-        sx={{
-          rowGap: 1,
-          width: "100%",
-        }}
-      >
-        <Skeleton
-          variant="rounded"
-          width="48px"
-          height="12px"
-          sx={{ flexGrow: 1 }}
-        />
-        <Skeleton variant="rounded" width="100%" height="36px" />
-      </Box>
-      <Box
-        display="flex"
-        flexDirection="column"
-        justifyContent="flex-start"
-        alignItems="flex-start"
-        sx={{
-          rowGap: 1,
-          width: "100%",
-        }}
-      >
-        <Skeleton
-          variant="rounded"
-          width="115px"
-          height="12px"
-          sx={{ flexGrow: 1 }}
-        />
-        <Skeleton variant="rounded" width="100%" height="36px" />
-      </Box>
-    </Box>
-  );
 };
