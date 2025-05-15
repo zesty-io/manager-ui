@@ -2,15 +2,14 @@ import { memo, useState, useEffect } from "react";
 import { connect } from "react-redux";
 import moment from "moment-timezone";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUserCheck } from "@fortawesome/free-solid-svg-icons";
-
-import Card from "@mui/material/Card";
-import CardHeader from "@mui/material/CardHeader";
-import CardContent from "@mui/material/CardContent";
-import PersonIcon from "@mui/icons-material/Person";
-import Stack from "@mui/material/Stack";
-import Typography from "@mui/material/Typography";
+import {
+  Card,
+  CardHeader,
+  CardContent,
+  Stack,
+  Typography,
+  Skeleton,
+} from "@mui/material";
 
 import { fetchAuditTrailPublish } from "shell/store/logs";
 import cx from "classnames";
@@ -28,11 +27,13 @@ export default connect((state) => {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
+      if (!props.itemZUID) return;
+
       setLoading(true);
       props.dispatch(fetchAuditTrailPublish(props.itemZUID)).finally(() => {
         setLoading(false);
       });
-    }, []);
+    }, [props.itemZUID]);
 
     const logs =
       props.logs[props.itemZUID] &&
@@ -78,16 +79,19 @@ export default connect((state) => {
           }}
         >
           {loading ? (
-            <Typography
-              sx={{
-                fontWeight: 500,
-                fontSize: "14px",
-                lineHeight: "20px",
-                color: "#101828",
-              }}
-            >
-              Loading Logs
-            </Typography>
+            <Stack gap={1.5}>
+              {[...Array(4)].map((_, index) => (
+                <Stack
+                  key={index}
+                  direction="row"
+                  justifyContent="space-between"
+                >
+                  <Skeleton variant="rounded" width={192} height={20} />
+                  <Skeleton variant="rounded" width={60} height={20} />
+                </Stack>
+              ))}
+              <Skeleton variant="rounded" width={84} height={20} />
+            </Stack>
           ) : (
             <>
               <Stack gap={1.5}>
