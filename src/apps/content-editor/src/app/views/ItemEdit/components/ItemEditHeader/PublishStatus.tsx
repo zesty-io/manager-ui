@@ -15,10 +15,11 @@ export const PublishStatus = ({ currentVersion }: PublishStatusProps) => {
     modelZUID: string;
     itemZUID: string;
   }>();
-  const { data: itemPublishings } = useGetItemPublishingsQuery({
-    modelZUID,
-    itemZUID,
-  });
+  const { data: itemPublishings, isFetching: isFetchingPublishStatus } =
+    useGetItemPublishingsQuery({
+      modelZUID,
+      itemZUID,
+    });
   const { data: users } = useGetUsersQuery();
 
   const activePublishing = itemPublishings?.find(
@@ -38,6 +39,10 @@ export const PublishStatus = ({ currentVersion }: PublishStatusProps) => {
       return `${user.firstName} ${user.lastName}`;
     }
   };
+
+  if (isFetchingPublishStatus) {
+    return <></>;
+  }
 
   return (
     <Stack direction="row" gap={1.25} justifyContent="end">

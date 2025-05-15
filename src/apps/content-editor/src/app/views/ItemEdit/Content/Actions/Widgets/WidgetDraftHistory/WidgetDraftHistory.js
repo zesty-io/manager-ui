@@ -1,15 +1,19 @@
 import { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import moment from "moment-timezone";
-import PersonIcon from "@mui/icons-material/Person";
-import { Card, CardHeader, CardContent, Link } from "@mui/material";
+import {
+  Card,
+  CardHeader,
+  CardContent,
+  Stack,
+  Skeleton,
+  Typography,
+} from "@mui/material";
 import { fetchAuditTrailDrafting } from "shell/store/logs";
 import cx from "classnames";
 import SharedWidgetStyles from "../SharedWidget.less";
 import { AppLink } from "@zesty-io/core";
 import styles from "./WidgetDraftHistory.less";
-import Stack from "@mui/material/Stack";
-import Typography from "@mui/material/Typography";
 
 export default connect((state, props) => {
   return {
@@ -23,11 +27,13 @@ export default connect((state, props) => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    if (!props.itemZUID) return;
+
     setLoading(true);
     props.dispatch(fetchAuditTrailDrafting(props.itemZUID)).finally(() => {
       setLoading(false);
     });
-  }, []);
+  }, [props.itemZUID]);
 
   return (
     <Card
@@ -69,16 +75,15 @@ export default connect((state, props) => {
         }}
       >
         {loading ? (
-          <Typography
-            sx={{
-              fontWeight: 500,
-              fontSize: "14px",
-              lineHeight: "20px",
-              color: "#101828",
-            }}
-          >
-            Loading Logs
-          </Typography>
+          <Stack gap={1.5}>
+            {[...Array(4)].map((_, index) => (
+              <Stack key={index} direction="row" justifyContent="space-between">
+                <Skeleton variant="rounded" width={192} height={20} />
+                <Skeleton variant="rounded" width={60} height={20} />
+              </Stack>
+            ))}
+            <Skeleton variant="rounded" width={84} height={20} />
+          </Stack>
         ) : props.logs.length ? (
           <>
             <Stack gap={1.5} className="logs">

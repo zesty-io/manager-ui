@@ -1,25 +1,14 @@
-import React, {
-  memo,
-  useCallback,
-  useEffect,
-  useMemo,
-  useReducer,
-  useState,
-} from "react";
-import { useDispatch, useSelector } from "react-redux";
-import cx from "classnames";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { useDispatch } from "react-redux";
 import { AppLink } from "@zesty-io/core/AppLink";
-import { ThemeProvider } from "@mui/material";
-import { theme } from "@zesty-io/material";
 import { unescape } from "lodash";
-import { Breadcrumbs } from "shell/components/global-tabs/components/Breadcrumbs";
 import { Field } from "./Field";
-import { FieldError } from "./FieldError";
 
 import styles from "./Editor.less";
 import { cloneDeep } from "lodash";
 import { useGetContentModelFieldsQuery } from "../../../../../../shell/services/instance";
 import { DYNAMIC_META_FIELD_NAMES } from "../../views/ItemEdit/Meta";
+import { FieldsLoader } from "./FieldsLoader";
 
 export const MaxLengths = {
   text: 150,
@@ -42,10 +31,12 @@ export default memo(function Editor({
   modelZUID,
   onUpdateFieldErrors,
   fieldErrors,
+  isLoadingItem,
 }) {
   const dispatch = useDispatch();
   const isNewItem = itemZUID.slice(0, 3) === "new";
-  const { data: fields } = useGetContentModelFieldsQuery(modelZUID);
+  const { data: fields, isFetching: isFetchingFields } =
+    useGetContentModelFieldsQuery(modelZUID);
   const [isLoaded, setIsLoaded] = useState(false);
   const [prevFirstContentFieldValue, setPrevFirstContentFieldValue] =
     useState(null);
@@ -385,6 +376,10 @@ export default memo(function Editor({
       setIsLoaded(true);
     }
   }, [isNewItem, setIsLoaded, applyDefaultValuesToItemData]);
+
+  if (isFetchingFields || isLoadingItem) {
+    return <FieldsLoader />;
+  }
 
   if (!isLoaded) return null;
 
