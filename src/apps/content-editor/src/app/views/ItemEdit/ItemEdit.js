@@ -59,6 +59,7 @@ import {
   fetchItems,
 } from "../../../../../../shell/store/content";
 import { Redirects } from "../Redirects";
+import RedirectsDialogContextProvider from "../../../../../seo/src/app/components/RedirectsDialogProvider";
 
 const selectItemHeadTags = createSelector(
   (state) => state.headTags,
@@ -664,7 +665,11 @@ export default function ItemEdit() {
                 <Route
                   exact
                   path="/content/:modelZUID/:itemZUID/redirects"
-                  render={() => <Redirects />}
+                  render={() => (
+                    <RedirectsDialogContextProvider>
+                      <Redirects />
+                    </RedirectsDialogContextProvider>
+                  )}
                 />
               </Switch>
             </Box>

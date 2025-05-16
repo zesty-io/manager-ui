@@ -16,10 +16,11 @@ import {
 import { useGetRedirectsQuery } from "../../../../../../shell/services/instance";
 import { useSelector } from "react-redux";
 import { AppState } from "../../../../../../shell/store/types";
-import { Redirect, useParams } from "react-router";
+import { useParams } from "react-router";
 import { useDomain } from "../../../../../../shell/hooks/use-domain";
 import { DeleteRedirectModal } from "./DeleteRedirectModal";
 import { Redirects as RedirectsType } from "../../../../../../shell/services/types";
+import { useRedirectsDialog } from "../../../../../seo/src/app/components/RedirectsDialogProvider";
 
 export type RedirectRowType = {
   httpCode: number;
@@ -31,6 +32,7 @@ export const Redirects = () => {
   const [redirectToDelete, setRedirectToDelete] =
     useState<RedirectsType | null>(null);
   const domain = useDomain();
+  const { openDeleteDialog, openCreateForm } = useRedirectsDialog();
   const { itemZUID } = useParams<{
     itemZUID: string;
   }>();
@@ -48,6 +50,32 @@ export const Redirects = () => {
         (redirect.targetType === "page" && redirect.target === itemZUID)
     );
   }, [redirects, web]);
+
+  const handleAction = (zuid: string, action: "edit" | "delete") => {
+    const matchedRedirect = redirectsHere.find(
+      (redirect) => redirect.ZUID === zuid
+    );
+
+    if (!matchedRedirect) return;
+
+    switch (action) {
+      case "edit":
+        openCreateForm({
+          ZUID: matchedRedirect?.ZUID,
+          targetType: matchedRedirect?.targetType,
+          code: matchedRedirect?.code,
+          target: matchedRedirect?.target,
+          path: matchedRedirect?.path,
+        });
+        break;
+      case "delete":
+        setRedirectToDelete(matchedRedirect);
+        break;
+
+      default:
+        break;
+    }
+  };
 
   const columns: GridColDef[] = [
     {
@@ -93,7 +121,7 @@ export const Redirects = () => {
         <GridActionsCellItem
           icon={<EditRounded />}
           label="Edit Redirect"
-          onClick={() => console.log("Edit")}
+          onClick={() => handleAction(params.row.id, "edit")}
           showInMenu
           sx={{
             width: 240,
@@ -102,15 +130,7 @@ export const Redirects = () => {
         <GridActionsCellItem
           icon={<DeleteRounded />}
           label="Delete Redirect"
-          onClick={() => {
-            const matchedRedirect = redirectsHere.find(
-              (redirect) => redirect.ZUID === params.row.id
-            );
-
-            if (!matchedRedirect) return;
-
-            setRedirectToDelete(matchedRedirect);
-          }}
+          onClick={() => handleAction(params.row.id, "delete")}
           showInMenu
           sx={{
             width: 240,
@@ -151,6 +171,7 @@ export const Redirects = () => {
           }}
         />
       </Stack>
+      {/* TODO: Use george's delete flow */}
       {!!redirectToDelete && (
         <DeleteRedirectModal
           data={redirectToDelete}

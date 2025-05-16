@@ -56,7 +56,7 @@ export const DeleteRedirectModal = ({
     }
   }, [isRedirectDeleted]);
 
-  const onHandleDelete = () => {
+  const handleDelete = () => {
     deleteRedirect({ ZUID: data.ZUID });
   };
 
@@ -170,7 +170,7 @@ export const DeleteRedirectModal = ({
         <LoadingButton
           variant="contained"
           color="error"
-          onClick={onHandleDelete}
+          onClick={handleDelete}
           loading={isDeletingRedirect}
         >
           Delete Forever
