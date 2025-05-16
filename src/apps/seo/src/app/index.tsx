@@ -1,9 +1,11 @@
 import { Component } from "react";
-import { Switch, Route, Link } from "react-router-dom";
+import { Switch, Route } from "react-router-dom";
 import { connect } from "react-redux";
 import { Box } from "@mui/material";
 
-import { RedirectsManager } from "../views/RedirectsManager";
+import RedirectsManager from "../views/RedirectsManager";
+import RedirectsDialogContextProvider from "./components/RedirectsDialogProvider";
+import RedirectsTableContextProvider from "../views/RedirectsManager/RedirectsTable/RedirectsTableContextProvider";
 
 export default connect((state) => state)(
   class HealthApp extends Component {
@@ -22,7 +24,11 @@ export default connect((state) => state)(
         >
           <Switch>
             <Route exact path="/redirects">
-              <RedirectsManager {...this.props} />
+              <RedirectsTableContextProvider>
+                <RedirectsDialogContextProvider>
+                  <RedirectsManager {...this.props} />
+                </RedirectsDialogContextProvider>
+              </RedirectsTableContextProvider>
             </Route>
           </Switch>
         </Box>

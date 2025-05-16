@@ -24,6 +24,7 @@ import {
   StyleCategory,
   GroupItem,
   Redirects,
+  RedirectRequest,
 } from "./types";
 import { batchApiRequests } from "../../utility/batchApiRequests";
 
@@ -723,10 +724,29 @@ export const instanceApi = createApi({
       transformResponse: getResponseData,
       providesTags: ["Redirects"],
     }),
+    createRedirect: builder.mutation<Redirects[], RedirectRequest>({
+      query: (body) => ({
+        url: `/web/redirects`,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["Redirects"],
+    }),
     deleteRedirect: builder.mutation<Redirects[], { ZUID: string }>({
       query: ({ ZUID }) => ({
         url: `/web/redirects/${ZUID}`,
         method: "DELETE",
+      }),
+      invalidatesTags: ["Redirects"],
+    }),
+    updateRedirect: builder.mutation<
+      Redirects[],
+      { ZUID: string; body: RedirectRequest }
+    >({
+      query: ({ ZUID, body }) => ({
+        url: `/web/redirects/${ZUID}`,
+        method: "PUT",
+        body: { ...body, query_string: null },
       }),
       invalidatesTags: ["Redirects"],
     }),
@@ -784,6 +804,9 @@ export const {
   useGetGroupByZUIDQuery,
   useCreateGroupMutation,
   useCreateStarterBlockModelMutation,
+  useCreateRedirectMutation,
   useGetRedirectsQuery,
   useDeleteRedirectMutation,
+  useLazySearchContentQuery,
+  useUpdateRedirectMutation,
 } = instanceApi;
