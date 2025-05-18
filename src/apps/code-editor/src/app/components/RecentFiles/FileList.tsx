@@ -31,7 +31,6 @@ const FileRowItem: FC<FileProps & { isLast: boolean }> = ({
 }) => {
   return (
     <Box
-      data-cy="AllFilesRow"
       component={path ? Link : "div"}
       to={path || undefined}
       px={2}
@@ -49,7 +48,7 @@ const FileRowItem: FC<FileProps & { isLast: boolean }> = ({
         },
       }}
     >
-      <Grid container width="100%">
+      <Grid container>
         <Grid size={8} display="flex" alignItems="center" gap={1.5}>
           {Icon && (
             <Icon
@@ -85,8 +84,7 @@ const FileRowItem: FC<FileProps & { isLast: boolean }> = ({
 
 const FileListHeader = () => (
   <Box
-    pl={2}
-    pr={3.75}
+    px={2}
     width="100%"
     height={56}
     display="flex"
@@ -96,7 +94,7 @@ const FileListHeader = () => (
       borderColor: "grey.700",
     }}
   >
-    <Grid container width="100%">
+    <Grid container>
       <Grid size={8}>
         <Typography variant="h6" fontWeight={700} color="common.white">
           File Name
@@ -157,7 +155,7 @@ export const FileList: FC<FileListProps> = ({
     >
       <FileListHeader />
 
-      <Box height="calc(100% - 56px)" overflow="auto" data-cy="AllFilesTable">
+      <Box height="calc(100% - 56px)" overflow="auto">
         {filteredFiles.length > 0 ? (
           filteredFiles.map((file, index) => (
             <FileRowItem
@@ -168,7 +166,6 @@ export const FileList: FC<FileListProps> = ({
           ))
         ) : (
           <Box
-            data-cy="NoResultsContainer"
             height="100%"
             width="100%"
             sx={{

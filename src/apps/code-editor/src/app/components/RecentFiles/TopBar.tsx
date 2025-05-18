@@ -31,13 +31,7 @@ export const TopBar: FC<TopBarProps> = ({
       justifyContent="space-between"
       alignItems="center"
     >
-      <Typography
-        data-cy="AllFilesHeader"
-        variant="h3"
-        fontWeight={700}
-        color="common.white"
-        noWrap
-      >
+      <Typography variant="h3" fontWeight={700} color="common.white" noWrap>
         All Files
       </Typography>
 
@@ -49,7 +43,6 @@ export const TopBar: FC<TopBarProps> = ({
         columnGap={1}
       >
         <TextField
-          data-cy="AllFilesSearchInput"
           inputRef={searchInputRef}
           placeholder="Search Files"
           size="small"
@@ -82,7 +75,6 @@ export const TopBar: FC<TopBarProps> = ({
           onChange={(e) => setSearchKeyword(e.target.value)}
         />
         <Button
-          data-cy="AllFilesCreateButton"
           variant="contained"
           size="small"
           color="primary"
