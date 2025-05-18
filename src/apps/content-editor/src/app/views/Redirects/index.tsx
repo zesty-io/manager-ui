@@ -32,7 +32,7 @@ export const Redirects = () => {
   const [redirectToDelete, setRedirectToDelete] =
     useState<RedirectsType | null>(null);
   const domain = useDomain();
-  const { openDeleteDialog, openCreateForm } = useRedirectsDialog();
+  const { openCreateForm } = useRedirectsDialog();
   const { itemZUID } = useParams<{
     itemZUID: string;
   }>();
@@ -171,7 +171,6 @@ export const Redirects = () => {
           }}
         />
       </Stack>
-      {/* TODO: Use george's delete flow */}
       {!!redirectToDelete && (
         <DeleteRedirectModal
           data={redirectToDelete}
