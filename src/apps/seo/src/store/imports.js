@@ -185,7 +185,7 @@ export function CSVImporter(evt) {
  * `from`, `target`, `code`. With the first
  * row a list column headers
  */
-function CSVToArray(csv) {
+export function CSVToArray(csv) {
   const rows = parse(csv, {
     skip_empty_lines: true,
   });
@@ -230,7 +230,7 @@ function CSVToArray(csv) {
  * @param  {object} redirects
  * @return {object}           Redirect imports marked if they can be imported
  */
-function compareKeys(imports, redirects) {
+export function compareKeys(imports, redirects) {
   return Object.keys(imports).reduce((acc, path) => {
     acc[path] = { ...imports[path] };
 
@@ -249,14 +249,14 @@ function compareKeys(imports, redirects) {
  * @param  {object} paths   System page paths
  * @return {object}         Redirect imports keyed by path
  */
-function findTargetPages(imports) {
+export function findTargetPages(imports) {
   return Object.keys(imports).reduce((acc, path) => {
     acc[path] = { ...imports[path] };
     return acc;
   }, {});
 }
 
-function parseXML(xml, dispatch) {
+export function parseXML(xml, dispatch) {
   const urlset = xml.children[0];
 
   if (urlset.nodeName !== "urlset") {

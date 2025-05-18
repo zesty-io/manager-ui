@@ -12,6 +12,7 @@ import { createRedirect } from "../../../store/redirects";
 import { cancelImports } from "../../../store/imports";
 
 import styles from "./RedirectImportTable.less";
+import { Box } from "@mui/material";
 
 function RedirectImportTable(props) {
   const handleCancelImport = () => {
@@ -35,51 +36,73 @@ function RedirectImportTable(props) {
     });
   };
   return (
-    <section className={styles.RedirectImportTable}>
-      <div className={styles.Actions}>
-        <div className={styles.RedirectButtons}>
-          <Button
-            variant="contained"
-            onClick={handleAddAllRedirects}
-            startIcon={<AddIcon />}
-            sx={{ mr: 2 }}
-          >
-            Add All Redirects
-          </Button>
-
-          <Button
-            variant="contained"
-            onClick={handleCancelImport}
-            startIcon={<CloseIcon />}
-          >
-            Close Import
-          </Button>
-        </div>
-      </div>
-      <div className={styles.Header}>
-        <span className={cx(styles.Cell, styles.subheadline)}>From</span>
-        <span className={cx(styles.Cell, styles.subheadline)}>Code</span>
-        <span className={cx(styles.Cell, styles.subheadline)}>Type</span>
-        <span className={cx(styles.Cell, styles.subheadline)}>To</span>
-      </div>
-      <main className={styles.TableBody}>
-        {Object.keys(props.imports).map((key) => {
-          if (props.imports[key].canImport) {
-            return (
-              <RedirectImportTableRow
-                key={key}
-                paths={props.paths}
-                dispatch={props.dispatch}
-                siteZuid={props.siteZuid}
-                {...props.imports[key]}
-              />
-            );
-          } else {
-            return <ImportTableRowDisabled key={key} {...props.imports[key]} />;
-          }
-        })}
-      </main>
-    </section>
+    <>
+      <Box
+        width="100%"
+        display="flex"
+        flexDirection="row"
+        justifyContent="flex-end"
+        alignItems="center"
+        gap={2}
+        pt={4}
+        pb={1.75}
+        px={4}
+        height="84px"
+        bgcolor="background.paper"
+        borderBottom="2px solid"
+        borderColor="border"
+      >
+        <Button
+          variant="outlined"
+          color="inherit"
+          onClick={handleCancelImport}
+          startIcon={<CloseIcon color="action" />}
+          size="small"
+        >
+          Close Import
+        </Button>
+        <Button
+          variant="contained"
+          onClick={handleAddAllRedirects}
+          startIcon={<AddIcon />}
+          color="primary"
+          size="small"
+        >
+          Add All Redirects
+        </Button>
+      </Box>
+      <Box height="calc(100% - 84px)" overflow="hidden">
+        <section className={styles.RedirectImportTable}>
+          <Box width="100%" px={3}>
+            <div className={styles.Header}>
+              <span className={cx(styles.Cell, styles.subheadline)}>From</span>
+              <span className={cx(styles.Cell, styles.subheadline)}>Code</span>
+              <span className={cx(styles.Cell, styles.subheadline)}>Type</span>
+              <span className={cx(styles.Cell, styles.subheadline)}>To</span>
+            </div>
+          </Box>
+          <Box width="100%" height="calc(100% - 60px)" overflow="auto" px={4}>
+            {Object.keys(props.imports).map((key) => {
+              if (props.imports[key].canImport) {
+                return (
+                  <RedirectImportTableRow
+                    key={key}
+                    paths={props.paths}
+                    dispatch={props.dispatch}
+                    siteZuid={props.siteZuid}
+                    {...props.imports[key]}
+                  />
+                );
+              } else {
+                return (
+                  <ImportTableRowDisabled key={key} {...props.imports[key]} />
+                );
+              }
+            })}
+          </Box>
+        </section>
+      </Box>
+    </>
   );
 }
 

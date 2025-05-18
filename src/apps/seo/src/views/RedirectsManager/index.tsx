@@ -6,39 +6,43 @@ import RedirectActions from "./RedirectActions";
 const RedirectsManager = (props: any) => {
   return (
     <>
-      <Box
-        display="flex"
-        justifyContent="space-between"
-        px={4}
-        pt={4}
-        pb={1.75}
-        sx={{
-          borderBottom: (theme) => `2px solid ${theme.palette.border}`,
-          backgroundColor: "background.paper",
-        }}
-      >
-        <RedirectActions />
-      </Box>
-
-      <Box
-        flexGrow={1}
-        display="flex"
-        flexDirection="column"
-        justifyContent="center"
-        alignItems="flex-start"
-        px={4}
-        boxSizing="border-box"
-        position="relative"
-        sx={{
-          height: `calc(100% - 68px - 40px)`,
-        }}
-      >
-        {Object.keys(props.imports).length ? (
+      {Object.keys(props.imports).length ? (
+        <Box sx={{ overflow: "hidden", height: "100%" }}>
           <RedirectImportTable {...props} />
-        ) : (
-          <RedirectsTable />
-        )}
-      </Box>
+        </Box>
+      ) : (
+        <>
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            px={4}
+            pt={4}
+            pb={1.75}
+            sx={{
+              borderBottom: (theme) => `2px solid ${theme.palette.border}`,
+              backgroundColor: "background.paper",
+            }}
+          >
+            <RedirectActions />
+          </Box>
+          <Box
+            flexGrow={1}
+            display="flex"
+            flexDirection="column"
+            justifyContent="center"
+            alignItems="flex-start"
+            px={4}
+            boxSizing="border-box"
+            position="relative"
+            sx={{
+              height: `calc(100% - 68px - 40px)`,
+              overflow: "auto",
+            }}
+          >
+            <RedirectsTable />
+          </Box>
+        </>
+      )}
     </>
   );
 };
