@@ -7,7 +7,6 @@ import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
 import TextField from "@mui/material/TextField";
 import RedirectsImport from "./RedirectsImport";
-import { ChangeEvent } from "react";
 
 export default function RedirectActions() {
   const { openCreateForm } = useRedirectsDialog();
@@ -58,18 +57,17 @@ export default function RedirectActions() {
                   </InputAdornment>
                 ),
               }}
-              onChange={(evt: ChangeEvent<HTMLInputElement>) => {
+              onChange={(evt: React.ChangeEvent<HTMLInputElement>) => {
                 const term = evt.target.value.trim();
                 setSearchFilter(term);
               }}
               sx={{
                 width: "240px",
                 "& .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "border",
+                  border: 0,
                 },
               }}
             />
-
             <RedirectsImport />
             <Button
               data-cy="RedirectActionCreateButton"

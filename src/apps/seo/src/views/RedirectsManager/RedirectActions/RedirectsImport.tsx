@@ -1,15 +1,7 @@
 import { FC, useEffect, useRef, useState } from "react";
 import FileUploadRoundedIcon from "@mui/icons-material/FileUploadRounded";
 import Button from "@mui/material/Button";
-import { Redirects } from "../../../../../../shell/services/types";
-import { Dispatch } from "@reduxjs/toolkit";
-import {
-  compareKeys,
-  CSVToArray,
-  findTargetPages,
-  IMPORT_REDIRECTS,
-  parseXML,
-} from "../../../store/imports";
+import { importCSVFile, IMPORT_REDIRECTS } from "../../../store/imports";
 import { useRedirectsTable } from "../RedirectsTable/RedirectsTableContextProvider";
 import { useDispatch } from "react-redux";
 import {
@@ -23,58 +15,6 @@ import {
 } from "@mui/material";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import LoadingButton from "@mui/lab/LoadingButton";
-
-const readFileAsText = async (file: File): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = (event) => resolve(event.target?.result as string);
-    reader.onerror = () => reject(new Error("Failed to read file"));
-    reader.readAsText(file);
-  });
-};
-
-const validateFile = async (
-  file: File,
-  redirects: Redirects[],
-  dispatch: Dispatch
-) => {
-  const CSV_REGEXP = /.*\.csv$/;
-  // Basic file type validation
-
-  try {
-    if (
-      file.type !== "text/csv" &&
-      file.type !== "text/xml" &&
-      !file.name.match(CSV_REGEXP) // workaround for Windows CSV which have no MIME type
-    )
-      return {
-        status: "error",
-        data: "Invalid file selected",
-      };
-
-    const content = await readFileAsText(file);
-    let targets = {};
-    if (file.type === "text/csv" || file.name.match(CSV_REGEXP)) {
-      const [columns, imports] = CSVToArray(content);
-      targets = compareKeys(imports, redirects);
-    } else if (file.type === "text/xml") {
-      const parser = new DOMParser();
-      const xml = parser.parseFromString(content, "text/xml");
-      targets = parseXML(xml, dispatch);
-    }
-    targets = findTargetPages(targets);
-
-    return {
-      status: "success",
-      targets: targets,
-    };
-  } catch (error) {
-    return {
-      status: "error",
-      message: error.message,
-    };
-  }
-};
 
 const RedirectsImport: FC = () => {
   const dispatch = useDispatch();
@@ -93,7 +33,7 @@ const RedirectsImport: FC = () => {
     if (!files?.length) return;
     setIsLoading(true);
     const file = files[0];
-    const importRes = await validateFile(file, redirects, dispatch);
+    const importRes = await importCSVFile(file, redirects, dispatch);
 
     if (importRes.status === "error") {
       dispatch({

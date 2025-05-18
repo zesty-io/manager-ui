@@ -118,7 +118,6 @@ function RedirectImportTableRow(props) {
           size="small"
           variant="outlined"
           color="primary"
-          fullWidth
         />
         {/* )} */}
         {props.targetType === "path" && (
@@ -129,8 +128,6 @@ function RedirectImportTableRow(props) {
             size="small"
             variant="outlined"
             color="primary"
-            fullWidth
-            sx={{ ml: 1 }}
           />
         )}
       </span>
@@ -140,7 +137,6 @@ function RedirectImportTableRow(props) {
           variant="contained"
           onClick={handleAddRedirect}
           startIcon={<AddIcon />}
-          size="small"
         >
           Redirect
         </Button>
