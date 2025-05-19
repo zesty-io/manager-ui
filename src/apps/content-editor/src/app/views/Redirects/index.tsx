@@ -119,6 +119,7 @@ export const Redirects = () => {
       width: 52,
       getActions: (params: GridRowParams) => [
         <GridActionsCellItem
+          data-cy="EditRedirect"
           icon={<EditRounded />}
           label="Edit Redirect"
           onClick={() => handleAction(params.row.id, "edit")}
@@ -128,6 +129,7 @@ export const Redirects = () => {
           }}
         />,
         <GridActionsCellItem
+          data-cy="DeleteRedirect"
           icon={<DeleteRounded />}
           label="Delete Redirect"
           onClick={() => handleAction(params.row.id, "delete")}

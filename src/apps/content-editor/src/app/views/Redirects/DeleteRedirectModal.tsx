@@ -168,6 +168,7 @@ export const DeleteRedirectModal = ({
           Cancel
         </Button>
         <LoadingButton
+          data-cy="ConfirmDeleteRedirect"
           variant="contained"
           color="error"
           onClick={handleDelete}
