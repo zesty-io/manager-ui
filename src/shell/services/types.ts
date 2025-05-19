@@ -592,3 +592,26 @@ export type GroupItem = {
   createdAt: string;
   updatedAt: string;
 };
+
+export type RedirectsCodes = 301 | 302;
+export type RedirectsTargetType = "page" | "external" | "path";
+
+export type RedirectRequest = {
+  path: string;
+  targetType: RedirectsTargetType;
+  target: string;
+  code: RedirectsCodes;
+};
+
+export type Redirects = {
+  ZUID: string;
+  path: string;
+  targetType: RedirectsTargetType;
+  target: string;
+  code: RedirectsCodes;
+  query_string: string | null;
+  createdByUserZUID: string;
+  updatedByUserZUID: string;
+  createdAt: string;
+  updatedAt: string;
+};
