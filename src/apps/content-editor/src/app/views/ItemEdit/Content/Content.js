@@ -24,9 +24,10 @@ export default function Content(props) {
     "zesty:content:sidebarOpen",
     false
   );
-  const { data: fields } = useGetContentModelFieldsQuery(props.modelZUID, {
-    skip: !props.modelZUID,
-  });
+  const { data: fields, isFetching: isFetchingFields } =
+    useGetContentModelFieldsQuery(props.modelZUID, {
+      skip: !props.modelZUID,
+    });
 
   const hasFields = useMemo(() => {
     if (!fields) return false;
@@ -64,7 +65,7 @@ export default function Content(props) {
       !Object.keys(props.item?.web).length ||
       !Object.keys(props.item?.meta).length);
 
-  if (!hasFields) {
+  if (!hasFields && !isFetchingFields) {
     return (
       <Stack height="100%" mx={3} justifyContent="center">
         <NoFields />
