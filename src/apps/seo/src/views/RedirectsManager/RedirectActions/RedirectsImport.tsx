@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef, useState } from "react";
+import { FC, useCallback, useEffect, useRef, useState } from "react";
 import FileUploadRoundedIcon from "@mui/icons-material/FileUploadRounded";
 import Button from "@mui/material/Button";
 import { importCSVFile, IMPORT_REDIRECTS } from "../../../store/imports";
@@ -14,50 +14,56 @@ import {
   Link,
 } from "@mui/material";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
-import LoadingButton from "@mui/lab/LoadingButton";
 
 const RedirectsImport: FC = () => {
   const dispatch = useDispatch();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [files, setFiles] = useState<FileList | null>(null);
-  const [isOpen, setIsOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { redirects } = useRedirectsTable();
 
   const clearFiles = () => {
     setFiles(null);
-    fileInputRef.current!.value = "";
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
-  const importFiles = async (files: FileList | null) => {
+  const handleFileImport = useCallback(async () => {
     if (!files?.length) return;
-    setIsLoading(true);
-    const file = files[0];
-    const importRes = await importCSVFile(file, redirects, dispatch);
 
-    if (importRes.status === "error") {
-      dispatch({
-        type: IMPORT_REDIRECTS,
-        redirects: [],
-      });
+    try {
+      const file = files[0];
+      const importRes = await importCSVFile(file, redirects, dispatch);
 
-      setIsOpen(true);
-    } else {
-      setTimeout(() => {
-        dispatch({
-          type: IMPORT_REDIRECTS,
-          redirects: importRes?.targets,
-        });
-      }, 250);
+      if (importRes.status === "error") {
+        dispatch({ type: IMPORT_REDIRECTS, redirects: [] });
+        setIsDialogOpen(true);
+        return;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      dispatch({ type: IMPORT_REDIRECTS, redirects: importRes.targets });
+      clearFiles();
+      setIsDialogOpen(false);
+    } catch (error) {
+      console.error("Import failed:", error);
+      dispatch({ type: IMPORT_REDIRECTS, redirects: [] });
+      setIsDialogOpen(true);
     }
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 500);
+  }, [files, redirects, dispatch]);
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setFiles(event.target.files);
+  };
+
+  const handleRetry = () => {
+    clearFiles();
+    fileInputRef.current?.click();
   };
 
   useEffect(() => {
-    importFiles(files);
-  }, [files]);
+    handleFileImport();
+  }, [handleFileImport]);
 
   return (
     <>
@@ -75,35 +81,26 @@ const RedirectsImport: FC = () => {
           ref={fileInputRef}
           hidden
           type="file"
-          onChange={(event) => setFiles(event.target.files)}
+          accept=".csv,.xml,text/csv,text/xml"
+          onChange={handleFileChange}
         />
       </Button>
 
       <ImportErrorDialog
-        open={isOpen}
-        onClose={() => setIsOpen(false)}
-        onRetry={() => importFiles(files)}
+        open={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        onRetry={handleRetry}
         clearFiles={clearFiles}
-        isLoading={isLoading}
       />
     </>
   );
 };
 
-export type ImportErrorDialogProps = {
-  open: boolean;
-  onClose: () => void;
-  onRetry: () => void;
-  clearFiles: () => void;
-  isLoading: boolean;
-};
-
-export const ImportErrorDialog: FC<ImportErrorDialogProps> = ({
+const ImportErrorDialog: FC<ImportErrorDialogProps> = ({
   open,
   onClose,
   onRetry,
   clearFiles,
-  isLoading,
 }) => {
   const handleCancel = () => {
     clearFiles();
@@ -140,8 +137,6 @@ export const ImportErrorDialog: FC<ImportErrorDialogProps> = ({
             data-cy="RedirectsImportErrorDialogHeader"
             variant="inherit"
             fontWeight={700}
-            flexGrow={0}
-            flexShrink={0}
           >
             File Import Failed
           </Typography>
@@ -152,6 +147,7 @@ export const ImportErrorDialog: FC<ImportErrorDialogProps> = ({
           <Link
             href="https://docs.zesty.io/docs/redirects#mass-redirect"
             target="_blank"
+            rel="noopener noreferrer"
             sx={{
               color: "info.main",
               textDecoration: "underline",
@@ -167,18 +163,24 @@ export const ImportErrorDialog: FC<ImportErrorDialogProps> = ({
         <Button variant="text" color="inherit" onClick={handleCancel}>
           Cancel
         </Button>
-        <LoadingButton
+        <Button
           data-cy="RedirectsImportRetryButton"
           variant="contained"
           color="primary"
           onClick={onRetry}
-          loading={isLoading}
         >
           Try Again
-        </LoadingButton>
+        </Button>
       </DialogActions>
     </Dialog>
   );
+};
+
+export type ImportErrorDialogProps = {
+  open: boolean;
+  onClose: () => void;
+  onRetry: () => void;
+  clearFiles: () => void;
 };
 
 export default RedirectsImport;
