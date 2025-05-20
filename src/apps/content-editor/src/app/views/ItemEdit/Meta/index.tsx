@@ -51,6 +51,9 @@ import { OGDescription } from "./settings/OGDescription";
 import { TCTitle } from "./settings/TCTitle";
 import { TCDescription } from "./settings/TCDescription";
 import { TCImage } from "./settings/TCImage";
+import RedirectsTableContextProvider from "../../../../../../seo/src/views/RedirectsManager/RedirectsTable/RedirectsTableContextProvider";
+import RedirectsDialogContextProvider from "../../../../../../seo/src/app/components/RedirectsDialogProvider";
+import IncomingRedirects from "./IncomingRedirects";
 
 const rotateAnimation = keyframes`
 	0% {
@@ -124,7 +127,7 @@ export const Meta = forwardRef(
           state.content[isCreateItemPage ? `new:${modelZUID}` : itemZUID]
       ) || {};
     const [flowType, setFlowType] =
-      useState<typeof FlowType[keyof typeof FlowType]>(null);
+      useState<(typeof FlowType)[keyof typeof FlowType]>(null);
     const metaDescriptionButtonRef = useRef(null);
     const metaTitleButtonRef = useRef(null);
 
@@ -568,20 +571,30 @@ export const Meta = forwardRef(
                   Define the URL of your web page
                 </Typography>
               </Box>
-              <ItemParent onChange={handleOnChange} />
-              <ItemRoute
-                onChange={handleOnChange}
-                error={errors?.pathPart}
-                onUpdateErrors={(name, error) => {
-                  onUpdateSEOErrors({
-                    ...errors,
-                    [name]: {
-                      ...errors?.[name],
-                      ...error,
-                    },
-                  });
-                }}
-              />
+              <RedirectsTableContextProvider>
+                <RedirectsDialogContextProvider>
+                  <ItemParent onChange={handleOnChange} />
+                  <ItemRoute
+                    currentPath={web?.path}
+                    onChange={handleOnChange}
+                    error={errors?.pathPart}
+                    onUpdateErrors={(name, error) => {
+                      onUpdateSEOErrors({
+                        ...errors,
+                        [name]: {
+                          ...errors?.[name],
+                          ...error,
+                        },
+                      });
+                    }}
+                  />
+                  <IncomingRedirects
+                    modelZUID={modelZUID}
+                    target={meta?.ZUID}
+                    urlPath={web?.path}
+                  />
+                </RedirectsDialogContextProvider>
+              </RedirectsTableContextProvider>
             </Stack>
           )}
           <Stack gap={3} pb={2.5}>
