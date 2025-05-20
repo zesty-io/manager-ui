@@ -20,6 +20,7 @@ export const NoFields = () => {
       alignItems="center"
       justifyContent="space-between"
       width="100%"
+      columnGap={4}
     >
       <Stack gap={3}>
         <Box maxWidth={540}>

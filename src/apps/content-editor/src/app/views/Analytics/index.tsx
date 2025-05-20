@@ -63,7 +63,7 @@ const Analytics = ({ item }: Props) => {
           )}
         </>
       ) : (
-        <Box px={4} height="100%">
+        <Box px={3} height="100%">
           <AuthView validateAuth={validateAuth} isDashboard={!item} />
         </Box>
       )}
