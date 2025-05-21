@@ -1,5 +1,5 @@
-import { FC, useEffect, useMemo } from "react";
-import { Box, Typography } from "@mui/material";
+import { FC, useMemo } from "react";
+import { Box, Typography, Button } from "@mui/material";
 import {
   GridColDef,
   GridActionsCellItem,
@@ -9,29 +9,18 @@ import { Redirects } from "../../../../../../../../shell/services/types";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { DataGridPro, GridRenderCellParams } from "@mui/x-data-grid-pro";
-import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
+import AddIcon from "@mui/icons-material/Add";
 import { useRedirectsDialog } from "../../../../../../../seo/src/app/components/RedirectsDialogProvider";
 import { useRedirectsTable } from "../../../../../../../seo/src/views/RedirectsManager/RedirectsTable/RedirectsTableContextProvider";
+import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 
 type IncomingRedirectsProps = {
-  modelZUID: string;
-  target: string | number;
+  targetZUID: string;
   urlPath: string;
 };
 
-const DEFAULT_COLUMN_PROPS = {
-  resizable: false,
-  disableReorder: true,
-  filterable: false,
-  hideable: false,
-  hideSortIcons: true,
-  disableColumnMenu: true,
-  sortable: false,
-};
-
 const IncomingRedirects: FC<IncomingRedirectsProps> = ({
-  modelZUID,
-  target,
+  targetZUID,
   urlPath,
 }) => {
   const { openDeleteDialog, openCreateForm } = useRedirectsDialog();
@@ -42,13 +31,11 @@ const IncomingRedirects: FC<IncomingRedirectsProps> = ({
       field: "path",
       headerName: "Incoming Path",
       flex: 1,
-      ...DEFAULT_COLUMN_PROPS,
     },
     {
       field: "code",
       headerName: "HTTP Code",
-      width: 150,
-      ...DEFAULT_COLUMN_PROPS,
+      width: 160,
       renderCell: ({ value }: GridRenderCellParams<GridValidRowModel>) => {
         return (
           <Typography
@@ -85,13 +72,16 @@ const IncomingRedirects: FC<IncomingRedirectsProps> = ({
           color="action.secondary"
           label="Edit Redirect"
           onClick={() => {
-            openCreateForm({
-              ZUID: row?.ZUID,
-              targetType: row?.targetType,
-              code: row?.code,
-              target: row?.target,
-              path: row?.path,
-            });
+            openCreateForm(
+              {
+                ZUID: row?.ZUID,
+                targetType: row?.targetType,
+                code: row?.code,
+                target: row?.target,
+                path: row?.path,
+              },
+              true
+            );
           }}
         />,
         <GridActionsCellItem
@@ -108,7 +98,7 @@ const IncomingRedirects: FC<IncomingRedirectsProps> = ({
   const rows = useMemo(() => {
     if (isLoading) return [];
     const filtered = redirects
-      ?.filter((item) => item.target === target)
+      ?.filter((item) => item.target === targetZUID)
       .map((item) => ({
         id: item?.ZUID,
         ZUID: item?.ZUID,
@@ -121,27 +111,89 @@ const IncomingRedirects: FC<IncomingRedirectsProps> = ({
       }));
 
     return filtered;
-  }, [isLoading, redirects, target, urlPath]);
+  }, [isLoading, redirects, targetZUID, urlPath]);
 
   return (
-    <Box width="100%">
-      <DataGridPro
-        loading={isLoading}
-        columns={columns}
-        rows={rows}
-        disableRowSelectionOnClick
-        columnHeaderHeight={52}
-        rowHeight={52}
-        hideFooter
-        sx={{
-          bgcolor: "background.paper",
-          color: "text.primary",
-          "& .MuiDataGrid-cell, & .MuiDataGrid-columnHeader": {
-            outline: "none!important",
-          },
-        }}
-      />
-    </Box>
+    <>
+      {!!rows?.length ? (
+        <Box
+          width="100%"
+          display="flex"
+          flexDirection="column"
+          justifyContent="flex-start"
+          alignItems="flex-start"
+        >
+          <Typography
+            variant="h5"
+            color="text.primary"
+            fontWeight={700}
+            width="100%"
+          >
+            Incoming Redirects
+          </Typography>
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            fontWeight={400}
+            width="100%"
+          >
+            Manage redirects that point to this content item
+          </Typography>
+          <Box width="100%" py="12px">
+            <DataGridPro
+              loading={isLoading}
+              columns={columns}
+              rows={rows}
+              disableRowSelectionOnClick
+              columnHeaderHeight={52}
+              rowHeight={52}
+              hideFooter
+              keepColumnPositionIfDraggedOutside
+              slotProps={{
+                basePopper: {
+                  modifiers: [
+                    {
+                      name: "offset",
+                      options: {
+                        offset: [-35, -32],
+                      },
+                    },
+                  ],
+                },
+              }}
+              sx={{
+                bgcolor: "background.paper",
+                color: "text.primary",
+                "& .MuiDataGrid-cell, & .MuiDataGrid-columnHeader": {
+                  outline: "none!important",
+                },
+                "& .MuiDataGrid-columnSeparator": {
+                  visibility: "visible",
+                },
+                "& .MuiDataGrid-pinnedColumnHeaders": {
+                  backgroundColor: "inherit",
+                },
+                "& .MuiDataGrid-columnHeader": {
+                  "&:hover .MuiDataGrid-columnSeparator": {
+                    visibility: "visible",
+                  },
+                },
+              }}
+            />
+          </Box>
+          <Button
+            variant="outlined"
+            color="primary"
+            startIcon={<AddIcon />}
+            onClick={() => {
+              openCreateForm({ target: targetZUID }, true);
+            }}
+          >
+            Add Incoming Path
+          </Button>
+        </Box>
+      ) : null}
+    </>
   );
 };
 

@@ -10,23 +10,82 @@ import {
 } from "@mui/material";
 
 import { DialogContent } from "@mui/material";
-import { Redirects } from "../../../../../../../../shell/services/types";
 import { ShuffleVariant } from "@zesty-io/material";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import {
+  RedirectsCodes,
+  RedirectsTargetType,
+} from "../../../../../../shell/services/types";
+import { useRedirectsDialog } from ".";
+import { useDispatch } from "react-redux";
+import { notify } from "../../../../../../shell/store/notifications";
 
-export type RedirectChangeDialogProps = {
+export type ChangeRedirectProps = {
+  targetType: RedirectsTargetType;
+  target: string;
+  path: string;
+  code: RedirectsCodes;
+};
+
+export type ChangeDialogProps = {
   open: boolean;
   onClose: () => void;
-  redirect?: Redirects & { urlPath: string };
+  redirect?: ChangeRedirectProps | null;
   newPath?: string;
 };
 
-export const RedirectChangeDialog: FC<RedirectChangeDialogProps> = ({
+export const ChangeDialog: FC<ChangeDialogProps> = ({
   open,
   onClose,
   redirect,
   newPath,
 }) => {
+  const dispatch = useDispatch();
+  const {
+    openErrorDialog,
+    closeCreateForm,
+    isLoading: isRedirectsLoading,
+    createRedirects,
+    closeChangeDialog,
+  } = useRedirectsDialog();
+
+  const handleCreateRedirect = async () => {
+    const requestData = {
+      targetType: "page" as RedirectsTargetType,
+      target: redirect?.target,
+      paths: [newPath],
+      code: redirect?.code as RedirectsCodes,
+    };
+
+    const changeResponse = await createRedirects(requestData);
+
+    const errorPaths = changeResponse
+      ?.filter((item: any) => item?.status === "error")
+      .map((item: any) => ({
+        error: item?.message,
+        path: item?.path,
+      }));
+
+    if (!!errorPaths?.length) closeCreateForm();
+
+    if (!errorPaths?.length) {
+      dispatch(
+        notify({
+          kind: "success",
+          message: `1 Redirect Created`,
+        })
+      );
+    } else {
+      const resubmitData = {
+        ...requestData,
+        errors: errorPaths,
+      };
+
+      openErrorDialog(resubmitData);
+    }
+    closeChangeDialog();
+  };
+
   return (
     <Dialog open={open} fullWidth maxWidth="xs" onClose={onClose}>
       <DialogTitle>
@@ -84,7 +143,7 @@ export const RedirectChangeDialog: FC<RedirectChangeDialogProps> = ({
               OLD PATH
             </Typography>
             <Typography variant="body2" color="info.dark">
-              {redirect?.urlPath}
+              {redirect?.path}
             </Typography>
             <Box display="flex" flexDirection="row" width="100%" my={1}>
               <ArrowDownwardIcon color="action" fontSize="small" />
@@ -111,6 +170,8 @@ export const RedirectChangeDialog: FC<RedirectChangeDialogProps> = ({
           data-cy="DeleteContentItemConfirmButton"
           variant="contained"
           color="primary"
+          onClick={handleCreateRedirect}
+          loading={isRedirectsLoading}
         >
           Create Redirect
         </LoadingButton>
@@ -119,4 +180,4 @@ export const RedirectChangeDialog: FC<RedirectChangeDialogProps> = ({
   );
 };
 
-export default RedirectChangeDialog;
+export default ChangeDialog;

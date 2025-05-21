@@ -20,19 +20,15 @@ import { ContentItemWithDirtyAndPublishing } from "../../../../../../../../shell
 import { useDomain } from "../../../../../../../../shell/hooks/use-domain";
 import { Error } from "../../../../components/Editor/Field/FieldShell";
 import { hasErrors } from "./util";
-import RedirectChangeDialog from "../IncomingRedirects/RedirectChangeDialog";
-import { useRedirectsTable } from "../../../../../../../seo/src/views/RedirectsManager/RedirectsTable/RedirectsTableContextProvider";
 
 const TextFieldWithCursorPosition = withCursorPosition(TextField);
 
 type ItemRouteProps = {
-  currentPath: string | null;
   onChange: (value: string, name: string) => void;
   error: Error;
   onUpdateErrors: (name: string, error: Error) => void;
 };
 export const ItemRoute = ({
-  currentPath,
   onChange,
   error,
   onUpdateErrors,
@@ -50,25 +46,8 @@ export const ItemRoute = ({
   const [pathPart, setPathPart] = useState(item?.web?.pathPart);
   const [isLoading, setIsLoading] = useState(false);
   const [isUnique, setIsUnique] = useState(true);
-  const [newPath, setNewPath] = useState(currentPath || "");
-  const [isOpenUpdateRedirectDialog, setIsOpenUpdateRedirectDialog] =
-    useState(false);
 
-  const [hasUpdated, setHasUpdated] = useState(false);
-
-  const { redirects, isLoading: isLoadingRedirects } = useRedirectsTable();
-  const redirect = {
-    ...redirects?.find((red) => red?.target === item?.meta?.ZUID),
-    urlPath: currentPath,
-  };
   const parent = items[item?.web?.parentZUID];
-  const isDirty = item?.dirty;
-
-  useEffect(() => {
-    if (isDirty && hasUpdated) {
-      setIsOpenUpdateRedirectDialog(true);
-    }
-  }, [isDirty, hasUpdated]);
 
   const validate = useCallback(
     debounce((path) => {
@@ -78,8 +57,7 @@ export const ItemRoute = ({
       }
 
       const fullPath = parent ? `${parent.web?.path}${path}/` : `/${path}/`;
-      setHasUpdated(fullPath !== currentPath);
-      setNewPath(fullPath);
+
       setIsLoading(true);
 
       return (
@@ -128,7 +106,7 @@ export const ItemRoute = ({
           .finally(() => setIsLoading(false))
       );
     }, 1000),
-    [parent, currentPath]
+    [parent]
   );
 
   const handleInputChange = (evt: ChangeEvent<HTMLInputElement>) => {
@@ -156,50 +134,42 @@ export const ItemRoute = ({
   }, [item?.web]);
 
   return (
-    <>
-      <Box id="pathPart">
-        <FieldShell
-          settings={{
-            label: "URL Path Part",
-            required: true,
+    <Box id="pathPart">
+      <FieldShell
+        settings={{
+          label: "URL Path Part",
+          required: true,
+        }}
+        customTooltip="Also known as a URL slug, it is the last part of the URL address that serves as a unique identifier of the page. They must be unique within your instance, lowercased, and cannot contain non alphanumeric characters. This helps ensure you create SEO friendly structured and crawlabale URLs."
+        withInteractiveTooltip={false}
+        errors={error}
+      >
+        <TextFieldWithCursorPosition
+          type="text"
+          name="pathPart"
+          value={pathPart}
+          onChange={handleInputChange}
+          variant="outlined"
+          color="primary"
+          fullWidth
+          InputProps={{
+            startAdornment: (
+              <Adornment isLoading={isLoading} isUnique={isUnique} />
+            ),
           }}
-          customTooltip="Also known as a URL slug, it is the last part of the URL address that serves as a unique identifier of the page. They must be unique within your instance, lowercased, and cannot contain non alphanumeric characters. This helps ensure you create SEO friendly structured and crawlabale URLs."
-          withInteractiveTooltip={false}
-          errors={error}
-        >
-          <TextFieldWithCursorPosition
-            type="text"
-            name="pathPart"
-            value={pathPart}
-            onChange={handleInputChange}
-            variant="outlined"
-            color="primary"
-            fullWidth
-            InputProps={{
-              startAdornment: (
-                <Adornment isLoading={isLoading} isUnique={isUnique} />
-              ),
-            }}
-            helperText={
-              !!pathPart &&
-              isUnique && (
-                <Typography variant="body2" color="info.dark">
-                  {domain}
-                  {parent ? parent.web?.path + pathPart : `/${pathPart}`}
-                </Typography>
-              )
-            }
-            error={hasErrors(error)}
-          />
-        </FieldShell>
-      </Box>
-      <RedirectChangeDialog
-        redirect={redirect}
-        open={isOpenUpdateRedirectDialog}
-        onClose={() => setIsOpenUpdateRedirectDialog(false)}
-        newPath={newPath}
-      />
-    </>
+          helperText={
+            !!pathPart &&
+            isUnique && (
+              <Typography variant="body2" color="info.dark">
+                {domain}
+                {parent ? parent.web?.path + pathPart : `/${pathPart}`}
+              </Typography>
+            )
+          }
+          error={hasErrors(error)}
+        />
+      </FieldShell>
+    </Box>
   );
 };
 

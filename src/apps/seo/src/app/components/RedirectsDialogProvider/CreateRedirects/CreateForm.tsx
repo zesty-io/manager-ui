@@ -46,6 +46,7 @@ type CreateFormProps = {
   open: boolean;
   onClose: () => void;
   defaultValues?: CreateFormDefaultValues | null;
+  isInternal?: boolean;
 };
 type PathProps = {
   id: number;
@@ -73,6 +74,7 @@ const CreateForm: FC<CreateFormProps> = ({
   open,
   onClose,
   defaultValues = null,
+  isInternal = false,
 }) => {
   const dispatch = useDispatch();
   const lastPathRef = useRef(null);
@@ -87,8 +89,8 @@ const CreateForm: FC<CreateFormProps> = ({
   const target = targetType === "page" ? targetInternal?.ZUID : targetPath;
   const [invalidTarget, setInvalidTarget] = useState<boolean>(false);
 
-  const isEdit = !!defaultValues;
-  const actionType = !!defaultValues ? "edit" : "create";
+  const isEdit = !!defaultValues?.ZUID;
+  const actionType = !!isEdit ? "edit" : "create";
 
   const {
     openErrorDialog,
@@ -524,6 +526,13 @@ const CreateForm: FC<CreateFormProps> = ({
                 setTargetInternal(null);
                 setTargetType(e.target.value);
               }}
+              slotProps={{
+                root: {},
+                input: {
+                  readOnly: isInternal,
+                  disabled: isInternal,
+                },
+              }}
             >
               {TARGET_OPTIONS.map((option) => (
                 <MenuItem key={option.value} value={option.value}>
@@ -540,6 +549,7 @@ const CreateForm: FC<CreateFormProps> = ({
                 value={targetInternal}
                 defaultValue={targetPath}
                 onChange={setTargetInternal}
+                readOnly={isInternal}
               />
             ) : (
               <PathField

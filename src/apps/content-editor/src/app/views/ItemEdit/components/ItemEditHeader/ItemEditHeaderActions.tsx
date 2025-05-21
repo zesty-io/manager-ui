@@ -14,9 +14,9 @@ import {
 } from "@mui/material";
 import {
   useCreateItemPublishingMutation,
-  useCreateItemsPublishingMutation,
   useDeleteItemPublishingMutation,
   useGetAuditsQuery,
+  useGetContentItemVersionsQuery,
   useGetContentModelFieldsQuery,
   useGetItemPublishingsQuery,
 } from "../../../../../../../../shell/services/instance";
@@ -46,14 +46,16 @@ import { formatDate } from "../../../../../../../../utility/formatDate";
 import { UnpublishDialog } from "./UnpublishDialog";
 import { usePermission } from "../../../../../../../../shell/hooks/use-permissions";
 import {
-  ContentItem,
   ContentItemWithDirtyAndPublishing,
   ContentModel,
+  RedirectsCodes,
+  RedirectsTargetType,
 } from "../../../../../../../../shell/services/types";
 import { SchedulePublish } from "../../../../../../../../shell/components/SchedulePublish";
 import { ConfirmPublishModal } from "../../../../../../../../shell/components/ConfirmPublishModal";
 import { UnpublishedRelatedItem } from "./UnpublishedRelatedItem";
 import { uniqBy } from "lodash";
+import { useRedirectsDialog } from "../../../../../../../seo/src/app/components/RedirectsDialogProvider";
 
 const ITEM_STATES = {
   dirty: "dirty",
@@ -79,6 +81,7 @@ export const ItemEditHeaderActions = ({
     modelZUID: string;
     itemZUID: string;
   }>();
+  const { openChangeDialog } = useRedirectsDialog();
   const dispatch = useDispatch();
   const canPublish = usePermission("PUBLISH", itemZUID);
   const canUpdate = usePermission("UPDATE", itemZUID);
@@ -95,6 +98,7 @@ export const ItemEditHeaderActions = ({
     ContentItemWithDirtyAndPublishing[]
   >([]);
   const [isPublishing, setIsPublishing] = useState(false);
+  const [isCheckingUrlPathChange, setIsCheckingUrlPathChange] = useState(false);
   const item = useSelector(
     (state: AppState) =>
       state.content[itemZUID] as ContentItemWithDirtyAndPublishing
@@ -121,9 +125,68 @@ export const ItemEditHeaderActions = ({
     modelZUID,
     itemZUID,
   });
+
+  const {
+    data: itemVersions,
+    isFetching: isFetchingVersions,
+    isLoading: isLoadingVersions,
+    refetch: refetchVersions,
+  } = useGetContentItemVersionsQuery({
+    modelZUID,
+    itemZUID,
+  });
+
   const activePublishing = itemPublishings?.find(
     (itemPublishing) => itemPublishing._active
   );
+
+  useEffect(() => {
+    if (
+      isLoadingVersions ||
+      isFetchingVersions ||
+      isFetching ||
+      !isCheckingUrlPathChange
+    )
+      return;
+    const publishedItemVersions = itemVersions
+      ?.filter((ver) => !!ver?.publishAt)
+      ?.map((ver) => ({
+        ZUID: ver?.meta?.ZUID,
+        publishedAt: ver?.publishAt,
+        path: ver?.web?.path,
+        version: ver?.web?.version,
+        isActive: ver?.web?.versionZUID === activePublishing?.versionZUID,
+      }))
+      .sort((a, b) => {
+        return (
+          new Date(b?.publishedAt).getTime() -
+          new Date(a?.publishedAt).getTime()
+        );
+      });
+
+    if (publishedItemVersions?.length < 2) return;
+    const activeVersion = publishedItemVersions[0];
+    const previousVersion = publishedItemVersions[1];
+    const pathHasChanged =
+      activeVersion?.path?.trim() !== previousVersion?.path?.trim();
+    if (pathHasChanged) {
+      const redirect = {
+        targetType: "page" as RedirectsTargetType,
+        target: item?.meta?.ZUID,
+        path: previousVersion?.path,
+        code: 301 as RedirectsCodes,
+      };
+      openChangeDialog(redirect, activeVersion?.path);
+    }
+    setIsCheckingUrlPathChange(false);
+  }, [
+    itemVersions,
+    isLoadingVersions,
+    isFetchingVersions,
+    isFetching,
+    activePublishing,
+    isCheckingUrlPathChange,
+  ]);
 
   const saveShortcut = useMetaKey("s", () => {
     if (!canUpdate) return;
@@ -280,7 +343,9 @@ export const ItemEditHeaderActions = ({
 
       // Retain non rtk-query fetch of item publishing for legacy code
       dispatch(fetchItemPublishings());
+      refetchVersions();
     } finally {
+      setIsCheckingUrlPathChange(true);
       setIsPublishing(false);
       setIsConfirmPublishModalOpen(false);
     }

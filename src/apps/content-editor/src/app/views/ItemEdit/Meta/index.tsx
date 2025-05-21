@@ -52,7 +52,6 @@ import { TCTitle } from "./settings/TCTitle";
 import { TCDescription } from "./settings/TCDescription";
 import { TCImage } from "./settings/TCImage";
 import RedirectsTableContextProvider from "../../../../../../seo/src/views/RedirectsManager/RedirectsTable/RedirectsTableContextProvider";
-import RedirectsDialogContextProvider from "../../../../../../seo/src/app/components/RedirectsDialogProvider";
 import IncomingRedirects from "./IncomingRedirects";
 
 const rotateAnimation = keyframes`
@@ -571,29 +570,25 @@ export const Meta = forwardRef(
                   Define the URL of your web page
                 </Typography>
               </Box>
+              <ItemParent onChange={handleOnChange} />
+              <ItemRoute
+                onChange={handleOnChange}
+                error={errors?.pathPart}
+                onUpdateErrors={(name, error) => {
+                  onUpdateSEOErrors({
+                    ...errors,
+                    [name]: {
+                      ...errors?.[name],
+                      ...error,
+                    },
+                  });
+                }}
+              />
               <RedirectsTableContextProvider>
-                <RedirectsDialogContextProvider>
-                  <ItemParent onChange={handleOnChange} />
-                  <ItemRoute
-                    currentPath={web?.path}
-                    onChange={handleOnChange}
-                    error={errors?.pathPart}
-                    onUpdateErrors={(name, error) => {
-                      onUpdateSEOErrors({
-                        ...errors,
-                        [name]: {
-                          ...errors?.[name],
-                          ...error,
-                        },
-                      });
-                    }}
-                  />
-                  <IncomingRedirects
-                    modelZUID={modelZUID}
-                    target={meta?.ZUID}
-                    urlPath={web?.path}
-                  />
-                </RedirectsDialogContextProvider>
+                <IncomingRedirects
+                  targetZUID={meta?.ZUID}
+                  urlPath={web?.path}
+                />
               </RedirectsTableContextProvider>
             </Stack>
           )}
