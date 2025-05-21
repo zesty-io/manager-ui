@@ -17,10 +17,7 @@ import { useDispatch } from "react-redux";
 import { useDomain } from "../../../../../../shell/hooks/use-domain";
 import { useDeleteRedirectMutation } from "../../../../../../shell/services/instance";
 import { notify } from "../../../../../../shell/store/notifications";
-import {
-  Redirects,
-  RedirectsTargetType,
-} from "../../../../../../shell/services/types";
+import { RedirectsTargetType } from "../../../../../../shell/services/types";
 
 const HTTP_CODE_OPTIONS = {
   301: "301 - Permanent Redirect",
@@ -29,12 +26,18 @@ const HTTP_CODE_OPTIONS = {
 
 type DeleteRedirectModalProps = {
   targetPath: string;
-  data: Redirects;
+  incomingPath: string;
+  ZUID: string;
+  httpCode: number;
+  targetType: RedirectsTargetType;
   onClose: () => void;
 };
 export const DeleteRedirectModal = ({
   targetPath,
-  data,
+  incomingPath,
+  ZUID,
+  httpCode,
+  targetType,
   onClose,
 }: DeleteRedirectModalProps) => {
   const domain = useDomain();
@@ -49,7 +52,7 @@ export const DeleteRedirectModal = ({
       onClose();
       dispatch(
         notify({
-          message: `Redirect Deleted: ${data.path}`,
+          message: `Redirect Deleted: ${incomingPath}`,
           kind: "error",
         })
       );
@@ -57,7 +60,7 @@ export const DeleteRedirectModal = ({
   }, [isRedirectDeleted]);
 
   const handleDelete = () => {
-    deleteRedirect({ ZUID: data.ZUID });
+    deleteRedirect({ ZUID });
   };
 
   return (
@@ -93,7 +96,7 @@ export const DeleteRedirectModal = ({
                 Delete Redirect:&nbsp;
               </Typography>
               <Typography variant="h5" display="inline">
-                {data.path}
+                {incomingPath}
               </Typography>
             </Box>
             <Typography variant="body2" color="text.secondary">
@@ -117,7 +120,7 @@ export const DeleteRedirectModal = ({
               HTTP Code
             </Typography>
             <Typography variant="body2" sx={{ flex: 1 }}>
-              {HTTP_CODE_OPTIONS[data.code as keyof typeof HTTP_CODE_OPTIONS]}
+              {HTTP_CODE_OPTIONS[httpCode as keyof typeof HTTP_CODE_OPTIONS]}
             </Typography>
           </Stack>
           <Stack
@@ -136,7 +139,7 @@ export const DeleteRedirectModal = ({
             >
               Redirect Type
             </Typography>
-            <RedirectType type={data.targetType} />
+            <RedirectType type={targetType} />
           </Stack>
           <Stack direction="row" height={54} alignItems="center" px={2}>
             <Typography

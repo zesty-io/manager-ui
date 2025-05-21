@@ -19,9 +19,16 @@ import { AppState } from "../../../../../../shell/store/types";
 import { useParams } from "react-router";
 import { useDomain } from "../../../../../../shell/hooks/use-domain";
 import { DeleteRedirectModal } from "./DeleteRedirectModal";
-import { Redirects as RedirectsType } from "../../../../../../shell/services/types";
+import { RedirectsTargetType } from "../../../../../../shell/services/types";
 import { useRedirectsDialog } from "../../../../../seo/src/app/components/RedirectsDialogProvider";
 
+type Row = {
+  id: string;
+  incomingPath: string;
+  httpCode: number;
+  targetPath: string;
+  targetType: RedirectsTargetType;
+};
 export type RedirectRowType = {
   httpCode: number;
   incomingPath: string;
@@ -29,8 +36,7 @@ export type RedirectRowType = {
   id: string;
 };
 export const Redirects = () => {
-  const [redirectToDelete, setRedirectToDelete] =
-    useState<RedirectsType | null>(null);
+  const [redirectToDelete, setRedirectToDelete] = useState<Row | null>(null);
   const domain = useDomain();
   const { openCreateForm } = useRedirectsDialog();
   const { itemZUID } = useParams<{
@@ -50,32 +56,6 @@ export const Redirects = () => {
         (redirect.targetType === "page" && redirect.target === itemZUID)
     );
   }, [redirects, web]);
-
-  const handleAction = (zuid: string, action: "edit" | "delete") => {
-    const matchedRedirect = redirectsHere.find(
-      (redirect) => redirect.ZUID === zuid
-    );
-
-    if (!matchedRedirect) return;
-
-    switch (action) {
-      case "edit":
-        openCreateForm({
-          ZUID: matchedRedirect?.ZUID,
-          targetType: matchedRedirect?.targetType,
-          code: matchedRedirect?.code,
-          target: matchedRedirect?.target,
-          path: matchedRedirect?.path,
-        });
-        break;
-      case "delete":
-        setRedirectToDelete(matchedRedirect);
-        break;
-
-      default:
-        break;
-    }
-  };
 
   const columns: GridColDef[] = [
     {
@@ -122,7 +102,15 @@ export const Redirects = () => {
           data-cy="EditRedirect"
           icon={<EditRounded />}
           label="Edit Redirect"
-          onClick={() => handleAction(params.row.id, "edit")}
+          onClick={() => {
+            openCreateForm({
+              ZUID: params.row?.id,
+              targetType: params.row?.targetType,
+              code: params.row?.httpCode,
+              target: params.row?.targetPath,
+              path: params.row?.incomingPath,
+            });
+          }}
           showInMenu
           sx={{
             width: 240,
@@ -132,7 +120,7 @@ export const Redirects = () => {
           data-cy="DeleteRedirect"
           icon={<DeleteRounded />}
           label="Delete Redirect"
-          onClick={() => handleAction(params.row.id, "delete")}
+          onClick={() => setRedirectToDelete(params.row)}
           showInMenu
           sx={{
             width: 240,
@@ -150,6 +138,7 @@ export const Redirects = () => {
       incomingPath: redirect.path,
       httpCode: redirect.code,
       targetPath: redirect.target,
+      targetType: redirect.targetType,
     }));
   }, [redirectsHere]);
 
@@ -175,7 +164,10 @@ export const Redirects = () => {
       </Stack>
       {!!redirectToDelete && (
         <DeleteRedirectModal
-          data={redirectToDelete}
+          ZUID={redirectToDelete.id}
+          incomingPath={redirectToDelete.incomingPath}
+          httpCode={redirectToDelete.httpCode}
+          targetType={redirectToDelete.targetType}
           targetPath={web?.path}
           onClose={() => setRedirectToDelete(null)}
         />
