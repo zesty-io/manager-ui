@@ -36,7 +36,7 @@ import { LockedItem } from "../../components/LockedItem";
 import { Content } from "./Content";
 import { ItemHead } from "./ItemHead";
 
-import { NotFound } from "../NotFound";
+import NotFound from "../NotFound";
 
 import { PublishState } from "./PublishState.tsx";
 import Analytics from "../Analytics";
@@ -98,8 +98,11 @@ export default function ItemEdit() {
   const [fieldErrors, setFieldErrors] = useState({});
   const [SEOErrors, setSEOErrors] = useState({});
   // const [hasSEOErrors, setHasSEOErrors] = useState(false);
-  const { data: fields, isError: fieldsLoadingError } =
-    useGetContentModelFieldsQuery(modelZUID);
+  const {
+    data: fields,
+    isError: fieldsLoadingError,
+    isLoading: isLoadingFields,
+  } = useGetContentModelFieldsQuery(modelZUID);
   const [showDuoModeLS, setShowDuoModeLS] = useLocalStorage(
     "zesty:content:duoModeOpen",
     true
@@ -164,7 +167,8 @@ export default function ItemEdit() {
   }, [location.pathname]);
 
   useEffect(() => {
-    if (fieldsLoadingError) {
+    if (loading || isLoadingFields) return;
+    if (fieldsLoadingError && !!model) {
       dispatch(
         notify({
           message: "Failed to load fields",
@@ -172,7 +176,7 @@ export default function ItemEdit() {
         })
       );
     }
-  }, [fieldsLoadingError]);
+  }, [fieldsLoadingError, model, isLoadingFields, loading]);
 
   const hasErrors = useMemo(() => {
     const hasErrors = Object.values(fieldErrors)
@@ -472,8 +476,8 @@ export default function ItemEdit() {
 
   return (
     <Fragment>
-      {notFound ? (
-        <NotFound message={notFound} />
+      {!isLoadingFields && !loading && notFound ? (
+        <NotFound />
       ) : (
         <>
           {isLocked && (
@@ -520,7 +524,7 @@ export default function ItemEdit() {
                 onSave={() => save().catch((err) => console.error(err))}
                 saving={saving}
                 hasError={Object.keys(fieldErrors)?.length}
-                isLoadingItem={loading}
+                isLoadingItem={loading || isLoadingFields}
               />
               <Switch>
                 <Route
@@ -637,7 +641,7 @@ export default function ItemEdit() {
                             save().catch((err) => console.error(err))
                           }
                           dispatch={dispatch}
-                          loading={loading}
+                          loading={loading || isLoadingFields}
                           saving={saving}
                           saveClicked={saveClicked}
                           onUpdateFieldErrors={(errors) => {
