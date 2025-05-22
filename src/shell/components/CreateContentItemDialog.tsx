@@ -149,7 +149,11 @@ export const CreateContentItemDialog = ({
         />
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="inherit">
+        <Button
+          data-cy="discard_new_content_item_btn"
+          onClick={onClose}
+          color="inherit"
+        >
           Discard
         </Button>
         <Button
