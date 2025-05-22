@@ -36,62 +36,29 @@ export const DialogContentItem = ({ item }: DialogContentItemProps) => {
     bins?.map((bin) => bin.id),
     { skip: !bins?.length }
   );
+
+  const imageFields = useMemo(() => {
+    if (!fields?.length) return [];
+
+    return fields?.filter((field) => field.datatype === "images");
+  }, [fields]);
+
   const heroImage = useMemo(() => {
-    let image = (
-      item?.data?.[
-        fields?.find((field) => field.datatype === "images")?.name
-      ] as string
-    )?.split(",")?.[0];
+    if (!imageFields?.length || !item?.data) return null;
+
+    let image = String(item.data[imageFields[0]?.name])?.split(",")?.[0];
+
     if (image?.startsWith("3-")) {
       image = files?.find((file) => file.id === image)?.thumbnail;
     }
 
     return image;
-  }, [fields, item, files]);
+  }, [imageFields, item, files]);
 
   return (
     <List disablePadding>
-      <ListItem dense disableGutters divider>
-        {!!heroImage ? (
-          <ListItemAvatar>
-            <Avatar
-              sx={{
-                width: 40,
-                height: 40,
-                borderRadius: 1,
-                backgroundColor: (theme) => theme.palette.grey[100],
-              }}
-              src={heroImage}
-              imgProps={{
-                style: {
-                  objectFit: "contain",
-                },
-              }}
-            >
-              <Typography variant="body2" color="text.secondary">
-                NA
-              </Typography>
-            </Avatar>
-          </ListItemAvatar>
-        ) : (
-          <Stack
-            sx={{
-              backgroundColor: "grey.100",
-              width: 40,
-              height: 40,
-              minWidth: 40,
-              minHeight: 40,
-              alignItems: "center",
-              justifyContent: "center",
-              overflow: "hidden",
-              mr: 2,
-              my: 0.5,
-              borderRadius: 1,
-            }}
-          >
-            <ImageRounded fontSize="small" color="action" />
-          </Stack>
-        )}
+      <ListItem dense disableGutters divider sx={{ minHeight: 49 }}>
+        {!!imageFields?.length && <HeroImage imageURL={heroImage} />}
         <ListItemText
           primaryTypographyProps={{
             variant: "body2",
@@ -106,8 +73,59 @@ export const DialogContentItem = ({ item }: DialogContentItemProps) => {
             item?.web?.metaTitle || item?.web?.metaLinkText || item?.meta?.ZUID
           }
           secondary={item?.web?.metaDescription}
+          sx={{ ml: !imageFields?.length ? 2 : 0 }}
         />
       </ListItem>
     </List>
+  );
+};
+
+type HeroImageProps = {
+  imageURL: string;
+};
+const HeroImage = ({ imageURL }: HeroImageProps) => {
+  if (imageURL) {
+    return (
+      <ListItemAvatar>
+        <Avatar
+          sx={{
+            width: 40,
+            height: 40,
+            borderRadius: 1,
+            backgroundColor: (theme) => theme.palette.grey[100],
+          }}
+          src={imageURL}
+          imgProps={{
+            style: {
+              objectFit: "contain",
+            },
+          }}
+        >
+          <Typography variant="body2" color="text.secondary">
+            NA
+          </Typography>
+        </Avatar>
+      </ListItemAvatar>
+    );
+  }
+
+  return (
+    <Stack
+      sx={{
+        backgroundColor: "grey.100",
+        width: 40,
+        height: 40,
+        minWidth: 40,
+        minHeight: 40,
+        alignItems: "center",
+        justifyContent: "center",
+        overflow: "hidden",
+        mr: 2,
+        my: 0.5,
+        borderRadius: 1,
+      }}
+    >
+      <ImageRounded fontSize="small" color="action" />
+    </Stack>
   );
 };
