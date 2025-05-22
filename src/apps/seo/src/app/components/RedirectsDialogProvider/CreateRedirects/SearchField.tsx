@@ -121,6 +121,7 @@ type SearchFieldProps = {
   value: ContentItemProps;
   defaultValue?: string;
   onChange: (value: ContentItemProps) => void;
+  readOnly?: boolean;
 };
 
 const SearchField: React.FC<SearchFieldProps> = ({
@@ -129,6 +130,7 @@ const SearchField: React.FC<SearchFieldProps> = ({
   value,
   defaultValue,
   onChange,
+  readOnly = false,
 }) => {
   const textInputRef = React.useRef(null);
   const [open, setOpen] = React.useState(false);
@@ -166,7 +168,9 @@ const SearchField: React.FC<SearchFieldProps> = ({
       ) : (
         <Autocomplete
           data-cy="RedirectsSearchFieldInput"
-          open={open}
+          readOnly={readOnly}
+          disabled={readOnly}
+          open={readOnly ? false : open}
           onOpen={() => setOpen(true)}
           onClose={() => setOpen(false)}
           limitTags={1}

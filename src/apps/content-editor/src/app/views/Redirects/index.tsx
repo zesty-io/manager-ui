@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Typography, Stack, Link } from "@mui/material";
+import { Typography, Stack, Link, Box, Button } from "@mui/material";
 import {
   MoreHoriz,
   ArrowForwardRounded,
@@ -21,6 +21,10 @@ import { useDomain } from "../../../../../../shell/hooks/use-domain";
 import { DeleteRedirectModal } from "./DeleteRedirectModal";
 import { RedirectsTargetType } from "../../../../../../shell/services/types";
 import { useRedirectsDialog } from "../../../../../seo/src/app/components/RedirectsDialogProvider";
+import AddIcon from "@mui/icons-material/Add";
+import AutoSizer from "react-virtualized-auto-sizer";
+
+const BOTTOM_SECTION_HEIGHT = 70;
 
 type Row = {
   id: string;
@@ -96,20 +100,23 @@ export const Redirects = () => {
     {
       field: "actions",
       type: "actions",
-      width: 52,
+      width: 56,
       getActions: (params: GridRowParams) => [
         <GridActionsCellItem
           data-cy="EditRedirect"
           icon={<EditRounded />}
           label="Edit Redirect"
           onClick={() => {
-            openCreateForm({
-              ZUID: params.row?.id,
-              targetType: params.row?.targetType,
-              code: params.row?.httpCode,
-              target: params.row?.targetPath,
-              path: params.row?.incomingPath,
-            });
+            openCreateForm(
+              {
+                ZUID: params.row?.id,
+                targetType: params.row?.targetType,
+                code: params.row?.httpCode,
+                target: params.row?.targetPath,
+                path: params.row?.incomingPath,
+              },
+              true
+            );
           }}
           showInMenu
           sx={{
@@ -133,35 +140,101 @@ export const Redirects = () => {
   const rows = useMemo(() => {
     if (!redirectsHere?.length) return [];
 
-    return redirectsHere.map((redirect) => ({
-      id: redirect.ZUID,
-      incomingPath: redirect.path,
-      httpCode: redirect.code,
-      targetPath: redirect.target,
-      targetType: redirect.targetType,
-    }));
+    return redirectsHere
+      .map((redirect) => ({
+        id: redirect.ZUID,
+        incomingPath: redirect.path,
+        httpCode: redirect.code,
+        targetPath: redirect.target,
+        targetType: redirect.targetType,
+        createdAt: redirect.createdAt,
+      }))
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
   }, [redirectsHere]);
 
   return (
     <>
-      <Stack height="100%" my={2} mx={4}>
-        <Typography variant="h5" fontWeight={700} color="text.primary" mb={0.5}>
-          Incoming Redirects
-        </Typography>
-        <Typography variant="body2" color="text.secondary" mb={1.5}>
-          Manage redirects that point to this content item
-        </Typography>
-        <DataGridPro
-          columns={columns}
-          rows={rows}
-          hideFooter
-          disableRowSelectionOnClick
-          loading={isLoadingRedirects}
-          slots={{
-            moreActionsIcon: MoreHoriz,
+      <Box
+        height="100%"
+        width="100%"
+        display="flex"
+        flexDirection="column"
+        justifyContent="flex-start"
+        alignItems="flex-start"
+        boxSizing="border-box"
+        rowGap={2}
+        py={2}
+        px={4}
+      >
+        <Box width="100%" flexGrow={0}>
+          <Typography variant="h5" fontWeight={700} color="text.primary">
+            Incoming Redirects
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Manage redirects that point to this content item
+          </Typography>
+        </Box>
+        <Box
+          width="100%"
+          height="100%"
+          flexGrow={1}
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "flex-start",
           }}
-        />
-      </Stack>
+        >
+          <AutoSizer>
+            {({ height, width }: { height: number; width: number }) => {
+              const containerHeight = height - BOTTOM_SECTION_HEIGHT;
+              const tableHeight = (rows.length + 1) * 52;
+              return (
+                <>
+                  <DataGridPro
+                    data-cy="ContentRedirectsTable"
+                    rowHeight={52}
+                    columns={columns}
+                    rows={rows}
+                    hideFooter
+                    disableRowSelectionOnClick
+                    loading={isLoadingRedirects}
+                    scrollbarSize={0}
+                    slots={{
+                      moreActionsIcon: MoreHoriz,
+                    }}
+                    sx={{
+                      height: Math.min(containerHeight, tableHeight) + 6,
+                      minHeight: 104,
+                      width: width,
+                    }}
+                  />
+                  <Box
+                    width={width}
+                    flexGrow={0}
+                    py={2}
+                    height={BOTTOM_SECTION_HEIGHT}
+                  >
+                    <Button
+                      data-cy="AddIncomingPathButton"
+                      variant="outlined"
+                      color="primary"
+                      startIcon={<AddIcon />}
+                      onClick={() => {
+                        openCreateForm({ target: itemZUID }, true);
+                      }}
+                    >
+                      Add Incoming Redirect
+                    </Button>
+                  </Box>
+                </>
+              );
+            }}
+          </AutoSizer>
+        </Box>
+      </Box>
       {!!redirectToDelete && (
         <DeleteRedirectModal
           ZUID={redirectToDelete.id}

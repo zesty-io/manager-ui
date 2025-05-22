@@ -40,12 +40,14 @@ import {
 } from "../../../../../../../shell/services/types";
 import { notify } from "../../../../../../../shell/store/notifications";
 import InfoIcon from "@mui/icons-material/Info";
+import NotInterestedIcon from "@mui/icons-material/NotInterested";
 import SearchField from "./SearchField";
 
 type CreateFormProps = {
   open: boolean;
   onClose: () => void;
   defaultValues?: CreateFormDefaultValues | null;
+  isInternal?: boolean;
 };
 type PathProps = {
   id: number;
@@ -73,6 +75,7 @@ const CreateForm: FC<CreateFormProps> = ({
   open,
   onClose,
   defaultValues = null,
+  isInternal = false,
 }) => {
   const dispatch = useDispatch();
   const lastPathRef = useRef(null);
@@ -87,8 +90,8 @@ const CreateForm: FC<CreateFormProps> = ({
   const target = targetType === "page" ? targetInternal?.ZUID : targetPath;
   const [invalidTarget, setInvalidTarget] = useState<boolean>(false);
 
-  const isEdit = !!defaultValues;
-  const actionType = !!defaultValues ? "edit" : "create";
+  const isEdit = !!defaultValues?.ZUID;
+  const actionType = !!isEdit ? "edit" : "create";
 
   const {
     openErrorDialog,
@@ -511,7 +514,12 @@ const CreateForm: FC<CreateFormProps> = ({
             </TextField>
           </FieldWrapper>
 
-          <FieldWrapper label="Type" tooltip={TOOL_TIPS.targetType}>
+          <FieldWrapper
+            label="Type"
+            tooltip={TOOL_TIPS.targetType}
+            disabledTooltip="This value cannot be modified"
+            readOnly={isInternal}
+          >
             <TextField
               data-cy="RedirectsTypeSelector"
               select
@@ -524,6 +532,12 @@ const CreateForm: FC<CreateFormProps> = ({
                 setTargetInternal(null);
                 setTargetType(e.target.value);
               }}
+              slotProps={{
+                input: {
+                  readOnly: isInternal,
+                  disabled: isInternal,
+                },
+              }}
             >
               {TARGET_OPTIONS.map((option) => (
                 <MenuItem key={option.value} value={option.value}>
@@ -532,7 +546,12 @@ const CreateForm: FC<CreateFormProps> = ({
               ))}
             </TextField>
           </FieldWrapper>
-          <FieldWrapper label="Redirect Target" tooltip="File Path Only">
+          <FieldWrapper
+            label="Redirect Target"
+            tooltip="File Path Only"
+            disabledTooltip="This value cannot be modified"
+            readOnly={isInternal}
+          >
             {targetType === "page" ? (
               <SearchField
                 options={options}
@@ -540,6 +559,7 @@ const CreateForm: FC<CreateFormProps> = ({
                 value={targetInternal}
                 defaultValue={targetPath}
                 onChange={setTargetInternal}
+                readOnly={isInternal}
               />
             ) : (
               <PathField
@@ -608,14 +628,44 @@ const CreateForm: FC<CreateFormProps> = ({
 type FieldWrapperProps = {
   label: string;
   tooltip?: string | ReactNode;
+  disabledTooltip?: string | ReactNode;
+  readOnly?: boolean;
   children: ReactNode;
 };
 
 export const FieldWrapper: FC<FieldWrapperProps> = ({
   label,
   tooltip,
+  disabledTooltip,
+  readOnly = false,
   children,
 }: FieldWrapperProps) => {
+  const withDisabledTooltip =
+    !!disabledTooltip && readOnly ? (
+      <Tooltip
+        title={
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: "8px",
+            }}
+          >
+            <NotInterestedIcon color="error" fontSize="small" />
+            {disabledTooltip}
+          </Box>
+        }
+        placement="top"
+        followCursor
+      >
+        <Box width="100%">{children}</Box>
+      </Tooltip>
+    ) : (
+      <>{children}</>
+    );
+
   return (
     <Box
       width="100%"
@@ -662,7 +712,7 @@ export const FieldWrapper: FC<FieldWrapperProps> = ({
           </Tooltip>
         )}
       </Stack>
-      {children}
+      {withDisabledTooltip}
     </Box>
   );
 };
