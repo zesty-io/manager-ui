@@ -399,7 +399,7 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
         data-cy="status-label-form"
       >
         <Box display="flex" flexDirection="column" gap={3} p={2.5}>
-          <FormInputFieldWrapper label="Name" error={formErrors?.name} required>
+          <FormInputFieldWrapper label="Name" error={formErrors?.name}>
             <OutlinedInput
               name="name"
               defaultValue={values?.name || ""}
@@ -410,7 +410,6 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
           <FormInputFieldWrapper
             label="Description (optional)"
             description="Describe what this status means in the context of your workflows"
-            required
           >
             <OutlinedInput
               name="description"
