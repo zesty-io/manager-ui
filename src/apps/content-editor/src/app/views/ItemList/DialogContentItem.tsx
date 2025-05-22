@@ -102,7 +102,9 @@ export const DialogContentItem = ({ item }: DialogContentItemProps) => {
           secondaryTypographyProps={{
             noWrap: true,
           }}
-          primary={item?.web?.metaTitle}
+          primary={
+            item?.web?.metaTitle || item?.web?.metaLinkText || item?.meta?.ZUID
+          }
           secondary={item?.web?.metaDescription}
         />
       </ListItem>
