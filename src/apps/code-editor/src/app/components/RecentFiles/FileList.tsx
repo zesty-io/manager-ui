@@ -31,6 +31,7 @@ const FileRowItem: FC<FileProps & { isLast: boolean }> = ({
 }) => {
   return (
     <Box
+      data-cy="AllFilesRow"
       component={path ? Link : "div"}
       to={path || undefined}
       px={2}
@@ -156,7 +157,7 @@ export const FileList: FC<FileListProps> = ({
     >
       <FileListHeader />
 
-      <Box height="calc(100% - 56px)" overflow="auto">
+      <Box height="calc(100% - 56px)" overflow="auto" data-cy="AllFilesTable">
         {filteredFiles.length > 0 ? (
           filteredFiles.map((file, index) => (
             <FileRowItem
@@ -167,6 +168,7 @@ export const FileList: FC<FileListProps> = ({
           ))
         ) : (
           <Box
+            data-cy="NoResultsContainer"
             height="100%"
             width="100%"
             sx={{

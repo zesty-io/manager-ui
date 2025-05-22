@@ -23,7 +23,7 @@ const ExternalLink = ({ href, text, target = "_blank" }: ExternalLinkProps) => {
 
 export const DevResources = () => {
   return (
-    <Box>
+    <Box data-cy="AllFilesDevResources">
       <Typography variant="h5" mb="20px" color="common.white">
         Developer Resources
       </Typography>
