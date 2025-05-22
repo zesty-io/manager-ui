@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { Typography, Stack, Link, Box, Button } from "@mui/material";
+import { useEffect, useMemo, useState } from "react";
+import { Typography, Stack, Link, Box, Button, Skeleton } from "@mui/material";
 import {
   MoreHoriz,
   ArrowForwardRounded,
@@ -23,10 +23,25 @@ import { RedirectsTargetType } from "../../../../../../shell/services/types";
 import { useRedirectsDialog } from "../../../../../seo/src/app/components/RedirectsDialogProvider";
 import AddIcon from "@mui/icons-material/Add";
 import AutoSizer from "react-virtualized-auto-sizer";
-import RedirectContentItemModal from "./RedirectContentItemModal";
-import ShuffleRoundedIcon from "@mui/icons-material/ShuffleRounded";
+import ContentRedirects from "./ContentRedirects";
+import { useTargetListOptions } from "../../../../../seo/src/app/components/RedirectsDialogProvider/useTargetListOptions";
+import StopRoundedIcon from "@mui/icons-material/StopRounded";
 
-const BOTTOM_SECTION_HEIGHT = 190;
+const ADD_SECTION_HEIGHT = 70;
+const CONTENT_REDIRECTS_HEIGHT = 200;
+
+const idMap: Record<number, string> = {
+  1: "incomingPath",
+  2: "httpCode",
+  3: "targetPath",
+};
+
+const LOADING_ROWS = Array.from({ length: 3 }).map((_, index) => ({
+  id: idMap[index + 1],
+  incomingPath: "...",
+  httpCode: 301,
+  targetPath: "...",
+}));
 
 type Row = {
   id: string;
@@ -43,8 +58,6 @@ export type RedirectRowType = {
 };
 export const Redirects = () => {
   const [redirectToDelete, setRedirectToDelete] = useState<Row | null>(null);
-  const [openRedirectContentModal, setOpenRedirectContentModal] =
-    useState(false);
   const domain = useDomain();
   const { openCreateForm } = useRedirectsDialog();
   const { itemZUID } = useParams<{
@@ -52,7 +65,10 @@ export const Redirects = () => {
   }>();
   const { data: redirects, isLoading: isLoadingRedirects } =
     useGetRedirectsQuery();
+  const { options, isLoading: isLoadingOptions } = useTargetListOptions();
   const { web } = useSelector((state: AppState) => state.content[itemZUID]);
+
+  const isLoading = isLoadingRedirects || isLoadingOptions;
 
   const redirectsHere = useMemo(() => {
     if (!redirects?.length || !web?.path) return [];
@@ -68,14 +84,23 @@ export const Redirects = () => {
   const columns: GridColDef[] = [
     {
       field: "incomingPath",
-      headerName: "Incoming Path",
+      renderHeader: () =>
+        isLoading ? <Skeleton width="200px" height={24} /> : "Incoming Path",
       flex: 1,
+      renderCell: (params) => {
+        if (isLoading) return <Skeleton width="100%" height={24} />;
+        return (
+          <Typography variant="body2">{params.row.incomingPath}</Typography>
+        );
+      },
     },
     {
       field: "httpCode",
-      headerName: "HTTP Code",
-      width: 120,
+      renderHeader: () =>
+        isLoading ? <Skeleton width="150px" height={24} /> : "HTTP Code",
+      width: 150,
       renderCell: (params) => {
+        if (isLoading) return <Skeleton width="100%" height={24} />;
         return (
           <Stack direction="row" alignItems="center" gap={1.5} height="100%">
             <Typography variant="body2">{params.row.httpCode}</Typography>
@@ -86,9 +111,11 @@ export const Redirects = () => {
     },
     {
       field: "targetPath",
-      headerName: "Target Path",
+      renderHeader: () =>
+        isLoading ? <Skeleton width="186px" height={24} /> : "Target Path",
       flex: 1,
       renderCell: (params) => {
+        if (isLoading) return <Skeleton width="100%" height={24} />;
         return (
           <Link
             variant="body2"
@@ -159,23 +186,26 @@ export const Redirects = () => {
       );
   }, [redirectsHere]);
 
+  useEffect(() => {
+    console.debug("LOADING_ROWS:", LOADING_ROWS);
+  }, [LOADING_ROWS]);
+
   return (
     <>
       <Box
         height="100%"
-        maxHeight="100%"
+        minHeight="510px"
         width="100%"
-        display="block"
-        // flexDirection="column"
-        // justifyContent="flex-start"
-        // alignItems="flex-start"
+        display="flex"
+        flexDirection="column"
+        justifyContent="flex-start"
+        alignItems="flex-start"
         boxSizing="border-box"
-        // rowGap={2}
+        rowGap={2}
         py={2}
         px={4}
-        overflow="auto"
       >
-        <Box width="100%">
+        <Box width="100%" flexGrow={0}>
           <Typography variant="h5" fontWeight={700} color="text.primary">
             Incoming Redirects
           </Typography>
@@ -183,34 +213,20 @@ export const Redirects = () => {
             Manage redirects that point to this content item
           </Typography>
         </Box>
-        <div style={{ display: "flex", flexDirection: "column" }}>
-          <DataGridPro
-            data-cy="ContentRedirectsTable"
-            rowHeight={52}
-            columns={columns}
-            rows={rows}
-            hideFooter
-            disableRowSelectionOnClick
-            loading={isLoadingRedirects}
-            scrollbarSize={0}
-            slots={{
-              moreActionsIcon: MoreHoriz,
-            }}
-          />
-        </div>
-        {/* <Box
+        <Box
           width="100%"
-          height="fit-content"
+          height="100%"
           flexGrow={1}
           sx={{
             display: "flex",
             flexDirection: "column",
             justifyContent: "flex-start",
           }}
-        > */}
-        {/* <AutoSizer>
+        >
+          <AutoSizer>
             {({ height, width }: { height: number; width: number }) => {
-              const containerHeight = height - BOTTOM_SECTION_HEIGHT;
+              const containerHeight =
+                height - ADD_SECTION_HEIGHT - CONTENT_REDIRECTS_HEIGHT;
               const tableHeight = (rows.length + 1) * 52;
               return (
                 <>
@@ -218,118 +234,87 @@ export const Redirects = () => {
                     data-cy="ContentRedirectsTable"
                     rowHeight={52}
                     columns={columns}
-                    rows={rows}
+                    rows={isLoading ? (LOADING_ROWS as any) : rows}
                     hideFooter
                     disableRowSelectionOnClick
-                    loading={isLoadingRedirects}
+                    // loading={isLoading}
                     scrollbarSize={0}
                     slots={{
-                      moreActionsIcon: MoreHoriz,
+                      moreActionsIcon: () =>
+                        isLoading ? (
+                          <Skeleton variant="rounded" height={18} width={18} />
+                        ) : (
+                          <MoreHoriz />
+                        ),
                     }}
                     sx={{
-                      height: Math.min(containerHeight, tableHeight) + 6,
-                      minHeight: 104,
+                      height: isLoading
+                        ? 214
+                        : Math.min(containerHeight, tableHeight) + 6,
+                      minHeight: 214,
                       width: width,
+                      "& .MuiDataGrid-row": {
+                        "& .MuiDataGrid-cell": {
+                          outline: "none!important",
+                          display: "flex",
+                          flexDirection: "row",
+                          justifyContent: "flex-start",
+                          alignItems: "center",
+                        },
+                        '& .MuiDataGrid-cell[data-field="actions"]': {
+                          position: "absolute!important",
+                          right: "5px",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        },
+                      },
                     }}
                   />
                   <Box
                     width={width}
                     flexGrow={0}
                     py={2}
-                    height={BOTTOM_SECTION_HEIGHT}
-                    display="flex"
-                    flexDirection="column"
-                    alignItems="flex-start"
-                    rowGap={1}
+                    height={ADD_SECTION_HEIGHT}
                   >
-                    <Button
-                      data-cy="AddIncomingPathButton"
-                      variant="outlined"
-                      color="primary"
-                      startIcon={<AddIcon />}
-                      onClick={() => {
-                        openCreateForm({ target: itemZUID }, true);
-                      }}
-                    >
-                      Add Incoming Redirect
-                    </Button>
-
-                    <Typography
-                      variant="h5"
-                      fontWeight={700}
-                      color="text.primary"
-                    >
-                      Redirect this Content Item
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Once your redirect your content item, it will be
-                      unpublished and users won't be able to access this
-                      <br /> content item at its current URL. They'll be
-                      automatically sent to the destination URL you provide.
-                    </Typography>
-                    <Button
-                      data-cy="RedirectContentItemButton"
-                      variant="outlined"
-                      color="primary"
-                      startIcon={<ShuffleRoundedIcon />}
-                      onClick={() => setOpenRedirectContentModal(true)}
-                    >
-                      Redirect this Content Item
-                    </Button>
+                    {isLoading ? (
+                      <Skeleton
+                        variant="rounded"
+                        height={38}
+                        width={224}
+                        sx={{ mb: 1 }}
+                      />
+                    ) : (
+                      <Button
+                        data-cy="AddIncomingPathButton"
+                        variant="outlined"
+                        color="primary"
+                        startIcon={<AddIcon />}
+                        onClick={() => {
+                          openCreateForm({ target: itemZUID }, true);
+                        }}
+                      >
+                        Add Incoming Redirect
+                      </Button>
+                    )}
+                  </Box>
+                  <Box
+                    width={width}
+                    flexGrow={0}
+                    // py={2}
+                    height={CONTENT_REDIRECTS_HEIGHT}
+                  >
+                    <ContentRedirects
+                      itemZUID={itemZUID}
+                      isLoading={isLoading}
+                      options={options}
+                      redirects={redirects}
+                    />
                   </Box>
                 </>
               );
             }}
-          </AutoSizer> */}
-        {/* </Box> */}
-        <Box
-          width="100%"
-          py={2}
-          // height={BOTTOM_SECTION_HEIGHT}
-          display="flex"
-          flexDirection="column"
-          alignItems="flex-start"
-          rowGap={1}
-        >
-          <Button
-            data-cy="AddIncomingPathButton"
-            variant="outlined"
-            color="primary"
-            startIcon={<AddIcon />}
-            onClick={() => {
-              openCreateForm({ target: itemZUID }, true);
-            }}
-          >
-            Add Incoming Redirect
-          </Button>
-        </Box>
-        <Box
-          width="100%"
-          flexGrow={0}
-          // height={BOTTOM_SECTION_HEIGHT}
-          display="flex"
-          flexDirection="column"
-          alignItems="flex-start"
-          rowGap="12px"
-        >
-          <Typography variant="h5" fontWeight={700} color="text.primary">
-            Redirect this Content Item
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Once your redirect your content item, it will be unpublished and
-            users won't be able to access this
-            <br /> content item at its current URL. They'll be automatically
-            sent to the destination URL you provide.
-          </Typography>
-          <Button
-            data-cy="RedirectContentItemButton"
-            variant="outlined"
-            color="primary"
-            startIcon={<ShuffleRoundedIcon />}
-            onClick={() => setOpenRedirectContentModal(true)}
-          >
-            Redirect this Content Item
-          </Button>
+          </AutoSizer>
         </Box>
       </Box>
       {!!redirectToDelete && (
@@ -342,11 +327,6 @@ export const Redirects = () => {
           onClose={() => setRedirectToDelete(null)}
         />
       )}
-
-      <RedirectContentItemModal
-        open={openRedirectContentModal}
-        onClose={() => setOpenRedirectContentModal(false)}
-      />
     </>
   );
 };
