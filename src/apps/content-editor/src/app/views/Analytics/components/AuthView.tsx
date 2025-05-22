@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
 import { AppState } from "../../../../../../../shell/store/types";
 import { useEffect, useState } from "react";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Typography, Container } from "@mui/material";
 import googleAnalyticsIcon from "../../../../../../../../public/images/googleAnalyticsIcon.svg";
 import contentAnalytics from "../../../../../../../../public/images/contentAnalytics.svg";
 import contentAnalyticsDashboard from "../../../../../../../../public/images/contentAnalyticsDashboard.svg";
@@ -57,7 +57,13 @@ export const AuthView = ({ validateAuth, isDashboard }: Props) => {
   }, []);
 
   return (
-    <>
+    <Container
+      maxWidth="lg"
+      disableGutters
+      sx={{
+        height: "calc(100vh - 40px)",
+      }}
+    >
       <Box display="flex" gap={4} alignItems="center" height="100%">
         <Box flex={1}>
           <img src={googleAnalyticsIcon} alt="googleAnalyticsIcon" />
@@ -87,7 +93,7 @@ export const AuthView = ({ validateAuth, isDashboard }: Props) => {
             </Button>
           </Box>
         </Box>
-        <Box flex={1}>
+        <Box flex={0}>
           <img
             src={isDashboard ? contentAnalyticsDashboard : contentAnalytics}
             alt="contentAnalytics"
@@ -141,6 +147,6 @@ export const AuthView = ({ validateAuth, isDashboard }: Props) => {
           }
         />
       )}
-    </>
+    </Container>
   );
 };
