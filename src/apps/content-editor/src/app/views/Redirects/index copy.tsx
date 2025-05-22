@@ -163,19 +163,17 @@ export const Redirects = () => {
     <>
       <Box
         height="100%"
-        maxHeight="100%"
         width="100%"
-        display="block"
-        // flexDirection="column"
-        // justifyContent="flex-start"
-        // alignItems="flex-start"
+        display="flex"
+        flexDirection="column"
+        justifyContent="flex-start"
+        alignItems="flex-start"
         boxSizing="border-box"
-        // rowGap={2}
+        rowGap={2}
         py={2}
         px={4}
-        overflow="auto"
       >
-        <Box width="100%">
+        <Box width="100%" flexGrow={0}>
           <Typography variant="h5" fontWeight={700} color="text.primary">
             Incoming Redirects
           </Typography>
@@ -183,32 +181,17 @@ export const Redirects = () => {
             Manage redirects that point to this content item
           </Typography>
         </Box>
-        <div style={{ display: "flex", flexDirection: "column" }}>
-          <DataGridPro
-            data-cy="ContentRedirectsTable"
-            rowHeight={52}
-            columns={columns}
-            rows={rows}
-            hideFooter
-            disableRowSelectionOnClick
-            loading={isLoadingRedirects}
-            scrollbarSize={0}
-            slots={{
-              moreActionsIcon: MoreHoriz,
-            }}
-          />
-        </div>
-        {/* <Box
+        <Box
           width="100%"
-          height="fit-content"
+          height="100%"
           flexGrow={1}
           sx={{
             display: "flex",
             flexDirection: "column",
             justifyContent: "flex-start",
           }}
-        > */}
-        {/* <AutoSizer>
+        >
+          <AutoSizer>
             {({ height, width }: { height: number; width: number }) => {
               const containerHeight = height - BOTTOM_SECTION_HEIGHT;
               const tableHeight = (rows.length + 1) * 52;
@@ -280,56 +263,7 @@ export const Redirects = () => {
                 </>
               );
             }}
-          </AutoSizer> */}
-        {/* </Box> */}
-        <Box
-          width="100%"
-          py={2}
-          // height={BOTTOM_SECTION_HEIGHT}
-          display="flex"
-          flexDirection="column"
-          alignItems="flex-start"
-          rowGap={1}
-        >
-          <Button
-            data-cy="AddIncomingPathButton"
-            variant="outlined"
-            color="primary"
-            startIcon={<AddIcon />}
-            onClick={() => {
-              openCreateForm({ target: itemZUID }, true);
-            }}
-          >
-            Add Incoming Redirect
-          </Button>
-        </Box>
-        <Box
-          width="100%"
-          flexGrow={0}
-          // height={BOTTOM_SECTION_HEIGHT}
-          display="flex"
-          flexDirection="column"
-          alignItems="flex-start"
-          rowGap="12px"
-        >
-          <Typography variant="h5" fontWeight={700} color="text.primary">
-            Redirect this Content Item
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Once your redirect your content item, it will be unpublished and
-            users won't be able to access this
-            <br /> content item at its current URL. They'll be automatically
-            sent to the destination URL you provide.
-          </Typography>
-          <Button
-            data-cy="RedirectContentItemButton"
-            variant="outlined"
-            color="primary"
-            startIcon={<ShuffleRoundedIcon />}
-            onClick={() => setOpenRedirectContentModal(true)}
-          >
-            Redirect this Content Item
-          </Button>
+          </AutoSizer>
         </Box>
       </Box>
       {!!redirectToDelete && (
