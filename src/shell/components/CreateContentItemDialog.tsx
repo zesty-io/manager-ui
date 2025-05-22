@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Box,
   Button,
@@ -10,12 +10,9 @@ import {
   InputLabel,
   Autocomplete,
   Typography,
-  Avatar,
 } from "@mui/material";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import { useHistory } from "react-router";
-import { ThemeProvider } from "@mui/material/styles";
-import { theme } from "@zesty-io/material";
 import { cloneDeep } from "lodash";
 
 import { useGetContentModelsQuery } from "../services/instance";
