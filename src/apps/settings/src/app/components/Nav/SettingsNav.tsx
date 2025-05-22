@@ -43,6 +43,14 @@ const GLOBAL_META_CAT: TreeItem[] = [
     children: [],
   },
 ];
+const USER_SETTINGS_CAT: TreeItem[] = [
+  {
+    label: "Workflows",
+    path: "/settings/user/workflows",
+    icon: LanguageRoundedIcon,
+    children: [],
+  },
+];
 
 export const SettingsNav = () => {
   const location = useLocation();
@@ -113,6 +121,9 @@ export const SettingsNav = () => {
         instance: instanceSettings?.filter((setting) =>
           setting.label.toLowerCase().includes(keyword)
         ),
+        user: USER_SETTINGS_CAT?.filter((setting) =>
+          setting.label.toLowerCase().includes(keyword)
+        ),
         meta: GLOBAL_META_CAT?.filter((setting) =>
           setting.label.toLowerCase().includes(keyword)
         ),
@@ -127,6 +138,7 @@ export const SettingsNav = () => {
 
     return {
       instance: instanceSettings,
+      user: USER_SETTINGS_CAT,
       meta: GLOBAL_META_CAT,
       styles: styleSettings,
       fonts: FONTS_CAT,
@@ -144,6 +156,7 @@ export const SettingsNav = () => {
     >
       {keyword &&
       !navItems.fonts?.length &&
+      !navItems.user?.length &&
       !navItems.instance?.length &&
       !navItems.meta?.length &&
       !navItems.styles?.length ? (
@@ -170,6 +183,14 @@ export const SettingsNav = () => {
               isLoadingInstanceSettings || isLoadingInstanceStylesCategories
             }
           />
+          <Box pt={1.5}>
+            <NavTree
+              id="UserTree"
+              HeaderComponent={<HeaderComponent title="User Settings" />}
+              tree={navItems.user}
+              selected={location.pathname}
+            />
+          </Box>
           <Box pt={1.5}>
             <NavTree
               id="MetaTree"
