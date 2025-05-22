@@ -445,7 +445,7 @@ export default function ItemEdit() {
         })
       );
       // fetch new draft history
-      dispatch(fetchAuditTrailDrafting(itemZUID));
+      await Promise.resolve(dispatch(fetchAuditTrailDrafting(itemZUID)));
     } catch (err) {
       // we need to set the item to dirty again because the save failed
       dispatch({
@@ -456,8 +456,8 @@ export default function ItemEdit() {
       throw new Error(err);
     } finally {
       if (isMounted.current) {
+        await Promise.resolve(dispatch(fetchItemPublishings()));
         setSaving(false);
-        dispatch(fetchItemPublishings());
       }
     }
   }
