@@ -53,3 +53,23 @@ Cypress.Commands.add("blockAnnouncements", () => {
     req.reply({});
   });
 });
+
+Cypress.Commands.add(
+  "apiRequest",
+  ({ method = "GET", url = "", body = undefined }) => {
+    return cy.getCookie(Cypress.env("COOKIE_NAME")).then((cookie) => {
+      const token = cookie?.value;
+      return cy
+        .request({
+          url,
+          method,
+          headers: { authorization: `Bearer ${token}` },
+          ...(body ? { body: body } : {}),
+        })
+        .then((response) => ({
+          status: response?.isOkStatusCode ? "success" : "error",
+          data: response?.body?.data,
+        }));
+    });
+  }
+);

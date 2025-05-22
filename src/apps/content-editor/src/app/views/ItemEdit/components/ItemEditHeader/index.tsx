@@ -219,7 +219,7 @@ export const ItemEditHeader = ({
               {type === "block" && (
                 <>
                   <LanguageSelector />
-                  <VersionSelector isLoadingItem={isLoadingItem} />
+                  <VersionSelector activeVersion={item?.meta?.version} />
                 </>
               )}
 
@@ -281,7 +281,7 @@ export const ItemEditHeader = ({
             <Box display="flex" gap={2} alignItems="center">
               <DuoModeSwitch />
               <LanguageSelector />
-              <VersionSelector isLoadingItem={isLoadingItem} />
+              <VersionSelector activeVersion={item?.meta?.version} />
             </Box>
           </Box>
         )}
