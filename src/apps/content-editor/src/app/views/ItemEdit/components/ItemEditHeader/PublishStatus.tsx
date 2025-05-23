@@ -15,10 +15,11 @@ export const PublishStatus = ({ currentVersion }: PublishStatusProps) => {
     modelZUID: string;
     itemZUID: string;
   }>();
-  const { data: itemPublishings } = useGetItemPublishingsQuery({
-    modelZUID,
-    itemZUID,
-  });
+  const { data: itemPublishings, isFetching: isFetchingPublishStatus } =
+    useGetItemPublishingsQuery({
+      modelZUID,
+      itemZUID,
+    });
   const { data: users } = useGetUsersQuery();
 
   const activePublishing = itemPublishings?.find(
@@ -38,6 +39,10 @@ export const PublishStatus = ({ currentVersion }: PublishStatusProps) => {
       return `${user.firstName} ${user.lastName}`;
     }
   };
+
+  if (isFetchingPublishStatus) {
+    return <></>;
+  }
 
   return (
     <Stack direction="row" gap={1.25} justifyContent="end">
@@ -68,33 +73,34 @@ export const PublishStatus = ({ currentVersion }: PublishStatusProps) => {
           </Stack>
         </Tooltip>
       )}
-      {scheduledPublishing && scheduledPublishing.version !== currentVersion && (
-        <Tooltip
-          enterDelay={1000}
-          enterNextDelay={1000}
-          title={
-            <>
-              v{scheduledPublishing.version} scheduled to publish on <br />
-              {formatDate(scheduledPublishing.publishAt)} <br />
-              by {getUsername(scheduledPublishing.publishedByUserZUID)}
-            </>
-          }
-          placement="bottom-start"
-        >
-          <Stack direction="row" gap={1} alignItems="center">
-            <ScheduleRounded fontSize="small" color="warning" />
-            <Typography
-              variant="body2"
-              color="warning.main"
-              fontWeight={500}
-              lineHeight="24px"
-              letterSpacing="0.46px"
-            >
-              v{scheduledPublishing.version} Scheduled
-            </Typography>
-          </Stack>
-        </Tooltip>
-      )}
+      {scheduledPublishing &&
+        scheduledPublishing.version !== currentVersion && (
+          <Tooltip
+            enterDelay={1000}
+            enterNextDelay={1000}
+            title={
+              <>
+                v{scheduledPublishing.version} scheduled to publish on <br />
+                {formatDate(scheduledPublishing.publishAt)} <br />
+                by {getUsername(scheduledPublishing.publishedByUserZUID)}
+              </>
+            }
+            placement="bottom-start"
+          >
+            <Stack direction="row" gap={1} alignItems="center">
+              <ScheduleRounded fontSize="small" color="warning" />
+              <Typography
+                variant="body2"
+                color="warning.main"
+                fontWeight={500}
+                lineHeight="24px"
+                letterSpacing="0.46px"
+              >
+                v{scheduledPublishing.version} Scheduled
+              </Typography>
+            </Stack>
+          </Tooltip>
+        )}
     </Stack>
   );
 };

@@ -33,11 +33,11 @@ export default function PreviewMode(props) {
         let url = "";
 
         if (props?.model?.type === "block") {
-          url = `/-/block/${props?.model?.name}.html?variant=${item?.meta?.ZUID}&version=${props.version}&preview=global&_bypassError=true`;
+          url = `/-/block/${props?.model?.name}.html?variant=${item?.meta?.ZUID}&version=${props.version}&preview=global`;
         } else {
           url = item?.web?.path
             ? `${item.web.path}`
-            : `/-/instant/${item.meta.ZUID}.json`;
+            : `/-/instant/${item?.meta?.ZUID}.json`;
 
           url = `${url}?_bypassError=true&__version=${props.version}`;
         }

@@ -15,25 +15,28 @@ import { ContentLinks } from "./Widgets/ContentLinks";
 import { ContentInfo } from "./Widgets/ContentInfo";
 
 export function Actions(props) {
-  if (!props.item.meta || !props.item.web) {
-    console.error("Actions:missing item");
-    return <Fragment />;
-  }
-
   const canPublish = usePermission("PUBLISH", props.itemZUID);
   const canDelete = usePermission("DELETE", props.itemZUID);
   const canUpdate = usePermission("UPDATE", props.itemZUID);
   const domain = useDomain();
 
-  const { publishing } = props.item;
-  const { listed, sort } = props.item.meta;
-  const { path, metaTitle, metaLinkText } = props.item.web;
+  const { publishing } = props.item || {};
+  const { listed, sort } = props.item?.meta || {};
+  const {
+    path = "",
+    metaTitle = "",
+    metaLinkText = "",
+  } = props.item?.web || {};
   const liveURL = domain ? `${domain}${path}` : "";
 
   return (
     <Fragment>
-      <ContentInfo modelZUID={props.modelZUID} itemZUID={props.itemZUID} />
-      <ContentLinks item={props.item} />
+      <ContentInfo
+        isLoadingItem={props.isLoadingItem}
+        modelZUID={props.modelZUID}
+        itemZUID={props.itemZUID}
+      />
+      <ContentLinks item={props.item} isLoadingItem={props.isLoadingItem} />
 
       {/* <Release item={props.item} /> */}
 
@@ -55,13 +58,18 @@ export function Actions(props) {
           itemZUID={props.itemZUID}
           listed={listed}
           sort={sort}
+          isLoadingItem={props.isLoadingItem}
         />
       )}
 
       <WorkflowRequest itemTitle={metaTitle} fields={props.fields} />
 
       {props.set.type !== "dataset" && props.set.type !== "block" && domain && (
-        <WidgetQuickShare url={liveURL} metaLinkText={metaLinkText} />
+        <WidgetQuickShare
+          url={liveURL}
+          metaLinkText={metaLinkText}
+          isLoadingItem={props.isLoadingItem}
+        />
       )}
 
       {canPublish && (
@@ -70,6 +78,7 @@ export function Actions(props) {
           itemZUID={props.itemZUID}
           modelZUID={props.modelZUID}
           instanceZUID={props.instance.ZUID}
+          isLoadingItem={props.isLoadingItem}
         />
       )}
       {canPublish && props.set.type !== "block" && (
@@ -78,6 +87,7 @@ export function Actions(props) {
           publishing={publishing}
           modelZUID={props.modelZUID}
           itemZUID={props.itemZUID}
+          isLoadingItem={props.isLoadingItem}
         />
       )}
 
@@ -88,6 +98,7 @@ export function Actions(props) {
           modelZUID={props.modelZUID}
           metaTitle={metaTitle}
           altText={props.set.type === "block" && "Variant"}
+          isLoadingItem={props.isLoadingItem}
         />
       )}
     </Fragment>

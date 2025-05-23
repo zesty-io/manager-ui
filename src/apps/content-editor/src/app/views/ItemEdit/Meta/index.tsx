@@ -118,12 +118,13 @@ export const Meta = forwardRef(
       skip: !modelZUID,
     });
     const { data: fields } = useGetContentModelFieldsQuery(modelZUID);
-    const { meta, data, web } = useSelector(
-      (state: AppState) =>
-        state.content[isCreateItemPage ? `new:${modelZUID}` : itemZUID]
-    );
+    const { meta, data, web } =
+      useSelector(
+        (state: AppState) =>
+          state.content[isCreateItemPage ? `new:${modelZUID}` : itemZUID]
+      ) || {};
     const [flowType, setFlowType] =
-      useState<typeof FlowType[keyof typeof FlowType]>(null);
+      useState<(typeof FlowType)[keyof typeof FlowType]>(null);
     const metaDescriptionButtonRef = useRef(null);
     const metaTitleButtonRef = useRef(null);
 

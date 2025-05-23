@@ -17,7 +17,7 @@ import {
 import useIsMounted from "ismounted";
 import { useDispatch, useSelector } from "react-redux";
 import { createSelector } from "@reduxjs/toolkit";
-import { cloneDeep, has } from "lodash";
+import { cloneDeep } from "lodash";
 
 import { notify } from "shell/store/notifications";
 import { fetchAuditTrailDrafting } from "shell/store/logs";
@@ -31,20 +31,17 @@ import {
   unlock,
 } from "shell/store/content";
 import { selectLang } from "shell/store/user";
-import { WithLoader } from "@zesty-io/core/WithLoader";
 import { PendingEditsModal } from "../../components/PendingEditsModal";
 import { LockedItem } from "../../components/LockedItem";
 import { Content } from "./Content";
 import { ItemHead } from "./ItemHead";
 
-import { NotFound } from "../NotFound";
+import NotFound from "../NotFound";
 
 import { PublishState } from "./PublishState.tsx";
 import Analytics from "../Analytics";
 import { ApiDetails } from "../../../../../schema/src/app/components/ModelApi/ApiDetails";
 import { ApiCardList } from "../../../../../schema/src/app/components/ModelApi/ApiCardList";
-import { theme } from "@zesty-io/material";
-import { ThemeProvider } from "@mui/material/styles";
 import { Box } from "@mui/material";
 import { ItemEditHeader } from "./components/ItemEditHeader";
 import {
@@ -57,10 +54,7 @@ import { FreestyleWrapper } from "./FreestyleWrapper";
 import { Meta } from "./Meta";
 import { FieldError } from "../../components/Editor/FieldError";
 import { AIGeneratorProvider } from "../../../../../../shell/components/withAi/AIGeneratorProvider";
-import {
-  fetchItemPublishings,
-  fetchItems,
-} from "../../../../../../shell/store/content";
+import { fetchItemPublishings } from "../../../../../../shell/store/content";
 
 const selectItemHeadTags = createSelector(
   (state) => state.headTags,
@@ -104,8 +98,11 @@ export default function ItemEdit() {
   const [fieldErrors, setFieldErrors] = useState({});
   const [SEOErrors, setSEOErrors] = useState({});
   // const [hasSEOErrors, setHasSEOErrors] = useState(false);
-  const { data: fields, isError: fieldsLoadingError } =
-    useGetContentModelFieldsQuery(modelZUID);
+  const {
+    data: fields,
+    isError: fieldsLoadingError,
+    isLoading: isLoadingFields,
+  } = useGetContentModelFieldsQuery(modelZUID);
   const [showDuoModeLS, setShowDuoModeLS] = useLocalStorage(
     "zesty:content:duoModeOpen",
     true
@@ -170,7 +167,8 @@ export default function ItemEdit() {
   }, [location.pathname]);
 
   useEffect(() => {
-    if (fieldsLoadingError) {
+    if (loading || isLoadingFields) return;
+    if (fieldsLoadingError && !!model) {
       dispatch(
         notify({
           message: "Failed to load fields",
@@ -178,7 +176,7 @@ export default function ItemEdit() {
         })
       );
     }
-  }, [fieldsLoadingError]);
+  }, [fieldsLoadingError, model, isLoadingFields, loading]);
 
   const hasErrors = useMemo(() => {
     const hasErrors = Object.values(fieldErrors)
@@ -447,7 +445,7 @@ export default function ItemEdit() {
         })
       );
       // fetch new draft history
-      dispatch(fetchAuditTrailDrafting(itemZUID));
+      await Promise.resolve(dispatch(fetchAuditTrailDrafting(itemZUID)));
     } catch (err) {
       // we need to set the item to dirty again because the save failed
       dispatch({
@@ -458,8 +456,8 @@ export default function ItemEdit() {
       throw new Error(err);
     } finally {
       if (isMounted.current) {
+        await Promise.resolve(dispatch(fetchItemPublishings()));
         setSaving(false);
-        dispatch(fetchItemPublishings());
       }
     }
   }
@@ -474,32 +472,26 @@ export default function ItemEdit() {
   }
 
   const isLocked = !checkingLock && lockState.userZUID !== user.ZUID;
+  // console.log(loading, item, Object.keys(item).length);
 
   return (
     <Fragment>
-      {notFound ? (
-        <NotFound message={notFound} />
+      {!isLoadingFields && !loading && notFound ? (
+        <NotFound />
       ) : (
-        <WithLoader
-          condition={!loading && item && Object.keys(item).length}
-          message={
-            model?.label ? `Loading ${model.label} Content` : "Loading Content"
-          }
-        >
+        <>
           {isLocked && (
             <Box sx={{ zIndex: (theme) => theme.zIndex.modal + 1 }}>
               <LockedItem
-                timestamp={lockState.timestamp}
-                userFirstName={lockState.firstName}
-                userLastName={lockState.lastName}
-                userEmail={lockState.email}
+                viewTimestamp={lockState.timestamp}
+                currentViewerFirstName={lockState.firstName}
+                currentViewerLastName={lockState.lastName}
                 itemName={item?.web?.metaLinkText}
-                handleUnlock={forceUnlock}
-                handleCancel={(evt) => {
+                onUnlock={forceUnlock}
+                onCancel={(evt) => {
                   evt.stopPropagation();
                   history.goBack();
                 }}
-                isLocked={isLocked}
               />
             </Box>
           )}
@@ -532,6 +524,7 @@ export default function ItemEdit() {
                 onSave={() => save().catch((err) => console.error(err))}
                 saving={saving}
                 hasError={Object.keys(fieldErrors)?.length}
+                isLoadingItem={loading || isLoadingFields}
               />
               <Switch>
                 <Route
@@ -648,7 +641,7 @@ export default function ItemEdit() {
                             save().catch((err) => console.error(err))
                           }
                           dispatch={dispatch}
-                          loading={loading}
+                          loading={loading || isLoadingFields}
                           saving={saving}
                           saveClicked={saveClicked}
                           onUpdateFieldErrors={(errors) => {
@@ -671,7 +664,7 @@ export default function ItemEdit() {
               </Switch>
             </Box>
           </DuoModeContext.Provider>
-        </WithLoader>
+        </>
       )}
     </Fragment>
   );

@@ -1,6 +1,14 @@
 import { Editor } from "../../../components/Editor";
 import { PreviewMode } from "../../../components/Editor/PreviewMode";
-import { Box, Stack, IconButton, Tooltip, useMediaQuery } from "@mui/material";
+import {
+  Box,
+  Stack,
+  IconButton,
+  Tooltip,
+  useMediaQuery,
+  Skeleton,
+  Container,
+} from "@mui/material";
 import { theme } from "@zesty-io/material";
 import { StartRounded, DesktopMacRounded } from "@mui/icons-material";
 import { Actions } from "./Actions";
@@ -17,9 +25,10 @@ export default function Content(props) {
     "zesty:content:sidebarOpen",
     false
   );
-  const { data: fields } = useGetContentModelFieldsQuery(props.modelZUID, {
-    skip: !props.modelZUID,
-  });
+  const { data: fields, isFetching: isFetchingFields } =
+    useGetContentModelFieldsQuery(props.modelZUID, {
+      skip: !props.modelZUID,
+    });
 
   const hasFields = useMemo(() => {
     if (!fields) return false;
@@ -51,12 +60,19 @@ export default function Content(props) {
   const isFocusMode = !showDuoMode && !showSidebar;
 
   const showDuoMode = props?.model?.type === "block" || showDuoModeContextValue;
+  const isLoadingItem =
+    props.loading &&
+    (!props.item ||
+      !Object.keys(props.item?.web).length ||
+      !Object.keys(props.item?.meta).length);
 
-  if (!hasFields) {
+  if (!hasFields && !isFetchingFields) {
     return (
-      <Stack height="100%" mx={3} justifyContent="center">
-        <NoFields />
-      </Stack>
+      <Container disableGutters maxWidth="lg" sx={{ height: "100%" }}>
+        <Stack p={4} height="100%" justifyContent="center">
+          <NoFields />
+        </Stack>
+      </Container>
     );
   }
 
@@ -117,13 +133,14 @@ export default function Content(props) {
               itemZUID={props.itemZUID}
               item={props.item}
               dispatch={props.dispatch}
-              isDirty={props.item.dirty}
+              isDirty={props.item?.dirty}
               onSave={props.onSave}
               modelZUID={props.modelZUID}
               saveClicked={props.saveClicked}
               fieldErrors={props.fieldErrors}
               onUpdateFieldErrors={props.onUpdateFieldErrors}
               hasErrors={props.hasErrors}
+              isLoadingItem={isLoadingItem}
             />
           </Box>
         </Box>
@@ -139,24 +156,35 @@ export default function Content(props) {
               }),
             }}
           >
-            <Tooltip
-              title={showSidebar ? "Close Info Bar" : "Open Info Bar"}
-              placement="left"
-            >
-              <IconButton
-                size="small"
-                onClick={() => setShowSidebar(!showSidebar)}
-                data-cy="ContentSidebarToggle"
+            {isLoadingItem ? (
+              <Skeleton variant="circular" width={16} height={16} />
+            ) : (
+              <Tooltip
+                title={showSidebar ? "Close Info Bar" : "Open Info Bar"}
+                placement="left"
               >
-                <StartRounded
-                  fontSize="small"
-                  sx={{
-                    transform: showSidebar ? "rotate(0deg)" : "rotate(180deg)",
-                  }}
-                />
-              </IconButton>
-            </Tooltip>
-            {!isDisabled && (
+                <IconButton
+                  size="small"
+                  onClick={() => setShowSidebar(!showSidebar)}
+                  data-cy="ContentSidebarToggle"
+                >
+                  <StartRounded
+                    fontSize="small"
+                    sx={{
+                      transform: showSidebar
+                        ? "rotate(0deg)"
+                        : "rotate(180deg)",
+                    }}
+                  />
+                </IconButton>
+              </Tooltip>
+            )}
+
+            {isLoadingItem ? (
+              <Skeleton variant="circular" width={16} height={16} />
+            ) : isDisabled ? (
+              <></>
+            ) : (
               <Tooltip title="Open DUO Mode" placement="left" dark>
                 <IconButton
                   size="small"
@@ -187,6 +215,7 @@ export default function Content(props) {
                 set={{
                   type: props.model?.type,
                 }}
+                isLoadingItem={isLoadingItem}
               />
             </Box>
           )}
@@ -202,8 +231,8 @@ export default function Content(props) {
         >
           <Box flex={1}>
             <PreviewMode
-              dirty={props.item.dirty}
-              version={props.item.meta.version}
+              dirty={props.item?.dirty}
+              version={props.item?.meta?.version}
               onClose={() => setShowDuoMode(false)}
               onSave={() => props.onSave()}
               hasErrors={props.hasErrors}

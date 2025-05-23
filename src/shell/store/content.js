@@ -562,7 +562,9 @@ export function saveItem({
       }
     )
       .then(async (res) => {
-        dispatch(instanceApi.util.invalidateTags(["ContentNav"]));
+        dispatch(
+          instanceApi.util.invalidateTags(["ContentNav", "ItemWorkflowStatus"])
+        );
         dispatch(
           instanceApi.util.invalidateTags([{ type: "ItemVersions", itemZUID }])
         );
@@ -587,7 +589,12 @@ export function saveItem({
                 `${CONFIG.URL_PREVIEW_PROTOCOL}${itemBlockPreviewUrl}`
               )
             ).then(() => {
-              dispatch(instanceApi.util.invalidateTags(["ContentItems"]));
+              dispatch(
+                instanceApi.util.invalidateTags([
+                  "ContentItems",
+                  "ItemWorkflowStatus",
+                ])
+              );
               dispatch({
                 type: "DONE_CAPTURING_SCREENSHOT",
                 itemZUID,

@@ -582,6 +582,35 @@ export type CommentReply = {
   updatedAt: string;
 };
 
+export type WorkflowStatusLabel = {
+  ZUID: string;
+  name: string;
+  description: string;
+  color: string;
+  allowPublish: boolean;
+  sort: number;
+  addPermissionRoles: string[];
+  removePermissionRoles: string[];
+  createdByUserZUID: string;
+  updatedByUserZUID: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: string;
+};
+
+export type ItemWorkflowStatus = {
+  ZUID: string;
+  itemZUID: string;
+  setZUID: string;
+  itemVersionZUID: string;
+  itemVersion: number;
+  labelZUIDs: string[];
+  createdByUserZUID: string;
+  updatedByUserZUID: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type GroupItem = {
   zuid: string;
   type?: string;
@@ -592,3 +621,68 @@ export type GroupItem = {
   createdAt: string;
   updatedAt: string;
 };
+
+export type RedirectsCodes = 301 | 302;
+export type RedirectsTargetType = "page" | "external" | "path";
+
+export type RedirectRequest = {
+  path: string;
+  targetType: RedirectsTargetType;
+  target: string;
+  code: RedirectsCodes;
+};
+
+export type Redirects = {
+  ZUID: string;
+  path: string;
+  targetType: RedirectsTargetType;
+  target: string;
+  code: RedirectsCodes;
+  query_string: string | null;
+  createdByUserZUID: string;
+  updatedByUserZUID: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type WorkflowStatusLabelQueryParams = {
+  showDeleted?: boolean;
+};
+
+export type StatusLabelQuery = {
+  ZUID: string;
+  name: string;
+  description: string;
+  color: string;
+  allowPublish: boolean;
+  sort: number;
+  addPermissionRoles: string[];
+  removePermissionRoles: string[];
+  createdByUserZUID: string;
+  updatedByUserZUID: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: string | undefined;
+};
+
+export type StatusLabel = Omit<
+  WorkflowStatusLabel,
+  | "createdByUserZUID"
+  | "updatedByUserZUID"
+  | "createdAt"
+  | "updatedAt"
+  | "deletedAt"
+>;
+
+export type UpdateStatusLabel = Omit<
+  WorkflowStatusLabel,
+  | "createdByUserZUID"
+  | "updatedByUserZUID"
+  | "createdAt"
+  | "updatedAt"
+  | "deletedAt"
+>;
+
+export type CreateStatusLabel = Partial<Omit<StatusLabel, "ZUID" | "sort">>;
+
+export type UpdateSortingOrder = Pick<StatusLabelQuery, "ZUID" | "sort">;
