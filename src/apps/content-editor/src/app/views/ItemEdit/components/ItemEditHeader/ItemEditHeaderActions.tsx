@@ -286,7 +286,7 @@ export const ItemEditHeaderActions = ({
         await Promise.all(deleteScheduledPromises);
 
         // Proceed with publishing
-        await Promise.allSettled([
+        const publishResponse = await Promise.allSettled([
           createPublishing({
             modelZUID,
             itemZUID,
@@ -308,6 +308,35 @@ export const ItemEditHeaderActions = ({
             })
           ),
         ]);
+
+        // Checks if any of the related content items failed to publish due to missing
+        // the required status that allows publishing
+        const relatedItemsWithMissingPublishStatus = publishResponse
+          ?.map((response: any, index) => {
+            if (response.value.error?.status === 403) {
+              const erroredContentItem = relatedItemsToPublish[index - 1];
+
+              if (erroredContentItem) {
+                return (
+                  erroredContentItem.web?.metaTitle ||
+                  erroredContentItem.web?.metaLinkText ||
+                  erroredContentItem.meta.ZUID
+                );
+              }
+            }
+          })
+          ?.filter((name) => !!name);
+
+        if (relatedItemsWithMissingPublishStatus?.length) {
+          dispatch(
+            notify({
+              kind: "error",
+              message: `The following related items does not have the required status that allows publishing: ${relatedItemsWithMissingPublishStatus.join(
+                ", "
+              )}`,
+            })
+          );
+        }
 
         // Retain non rtk-query fetch of item publishing for legacy code
         dispatch(fetchItemPublishings());
