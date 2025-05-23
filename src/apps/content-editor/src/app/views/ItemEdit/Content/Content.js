@@ -7,6 +7,7 @@ import {
   Tooltip,
   useMediaQuery,
   Skeleton,
+  Container,
 } from "@mui/material";
 import { theme } from "@zesty-io/material";
 import { StartRounded, DesktopMacRounded } from "@mui/icons-material";
@@ -67,9 +68,11 @@ export default function Content(props) {
 
   if (!hasFields && !isFetchingFields) {
     return (
-      <Stack height="100%" mx={3} justifyContent="center">
-        <NoFields />
-      </Stack>
+      <Container disableGutters maxWidth="lg" sx={{ height: "100%" }}>
+        <Stack p={4} height="100%" justifyContent="center">
+          <NoFields />
+        </Stack>
+      </Container>
     );
   }
 
