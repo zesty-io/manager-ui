@@ -399,7 +399,7 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
         data-cy="status-label-form"
       >
         <Box display="flex" flexDirection="column" gap={3} p={2.5}>
-          <FormInputFieldWrapper label="Name" error={formErrors?.name} required>
+          <FormInputFieldWrapper label="Name" error={formErrors?.name}>
             <OutlinedInput
               name="name"
               defaultValue={values?.name || ""}
@@ -410,7 +410,6 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
           <FormInputFieldWrapper
             label="Description (optional)"
             description="Describe what this status means in the context of your workflows"
-            required
           >
             <OutlinedInput
               name="description"
@@ -480,14 +479,15 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
                   color="text.primary"
                   fontWeight={600}
                 >
-                  Allow publish with this status
+                  Publishing content items requires this status to be applied.
                 </Typography>
                 <Typography
                   variant="body2"
                   color="text.secondary"
                   fontWeight={400}
                 >
-                  This means a content item with this status can be published
+                  This is a global setting and means content items cannot be
+                  published unless this status has been applied.
                 </Typography>
               </Box>
             }
