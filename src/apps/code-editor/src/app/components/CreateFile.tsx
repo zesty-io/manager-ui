@@ -98,6 +98,7 @@ const CreateFile = memo(function CreateFile({
 
   return (
     <Dialog
+      data-cy="CodeAppCreateFileDialog"
       open={open}
       onClose={() => {
         handleClearForm();
@@ -142,6 +143,7 @@ const CreateFile = memo(function CreateFile({
               File Type
             </Typography>
             <Autocomplete
+              data-cy="CreateFileFileTypeInput"
               color="primary"
               disableClearable
               autoHighlight
@@ -225,6 +227,7 @@ const CreateFile = memo(function CreateFile({
               File Name
             </Typography>
             <TextField
+              data-cy="CreateFileFileNameInput"
               name="file_name"
               fullWidth
               value={name}
@@ -252,6 +255,7 @@ const CreateFile = memo(function CreateFile({
           Cancel
         </Button>
         <LoadingButton
+          data-cy="CreateFileCreateButton"
           variant="contained"
           color="primary"
           onClick={handleCreateFile}
