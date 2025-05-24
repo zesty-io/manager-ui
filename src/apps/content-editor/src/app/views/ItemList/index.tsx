@@ -634,7 +634,9 @@ export const ItemList = () => {
             )}
             <ItemListTable
               key={modelZUID}
-              loading={isFieldsFetching || isUsersFetching}
+              loading={
+                isFieldsFetching || isUsersFetching || isModelItemsFetching
+              }
               rows={sortedAndFilteredItems}
               fields={isFieldsFetching ? [] : fields}
               noRowsOverlay={() => {

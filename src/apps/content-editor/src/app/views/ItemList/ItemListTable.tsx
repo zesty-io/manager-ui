@@ -32,12 +32,9 @@ import { Currency } from "../../../../../../shell/components/FieldTypeCurrency/c
 import { ImageCell } from "./TableCells/ImageCell";
 import { SingleRelationshipCell } from "./TableCells/SingleRelationshipCell";
 import { TableSortContext } from "./TableSortProvider";
-import {
-  DataGridSkeletonCell,
-  FIELD_SKELETON_MAP,
-  gridLoadingStyles,
-} from "./Loader";
+import { FIELD_SKELETON_MAP, gridLoadingStyles } from "./Loader";
 import { Skeleton } from "@mui/material";
+import DataGridSkeletonCell from "../../../../../../shell/components/DataGridSkeletonCell";
 
 type ItemListTableProps = {
   loading: boolean;
