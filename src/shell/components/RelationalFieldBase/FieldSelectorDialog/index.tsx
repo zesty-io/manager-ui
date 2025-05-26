@@ -475,7 +475,7 @@ export const FieldSelectorDialog = ({
     });
 
     return _rows;
-  }, [mappedRows, filterKeyword, relatedModelFields]);
+  }, [mappedRows, relatedModelFields]);
 
   const deletedItemZUIDs = useMemo(() => {
     if (!contentItems?.length || !selectedZUIDs) return [];
@@ -597,6 +597,7 @@ export const FieldSelectorDialog = ({
             <AutoSizer>
               {({ width, height }: Size) => (
                 <DataGridPro
+                  keepNonExistentRowsSelected
                   style={{
                     width: width,
                     height: height,
