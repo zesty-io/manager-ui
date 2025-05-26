@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Box,
   Button,
@@ -10,12 +10,9 @@ import {
   InputLabel,
   Autocomplete,
   Typography,
-  Avatar,
 } from "@mui/material";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import { useHistory } from "react-router";
-import { ThemeProvider } from "@mui/material/styles";
-import { theme } from "@zesty-io/material";
 import { cloneDeep } from "lodash";
 
 import { useGetContentModelsQuery } from "../services/instance";
@@ -34,10 +31,8 @@ export const CreateContentItemDialog = ({
 }: Props) => {
   const { data: models } = useGetContentModelsQuery();
   const history = useHistory();
-  const [selectedModel, setSelectedModel] = useState({
-    label: "None",
-    ZUID: "",
-  });
+  const [selectedModel, setSelectedModel] = useState(null);
+  const [hasError, setHasError] = useState(false);
 
   const sortedModels = useMemo(() => {
     if (models?.length) {
@@ -65,8 +60,12 @@ export const CreateContentItemDialog = ({
   }, [models, limitTo]);
 
   const onCreateClick = () => {
-    onClose();
-    history.push("/content/" + selectedModel.ZUID + "/new");
+    if (!selectedModel?.ZUID) {
+      setHasError(true);
+    } else {
+      onClose();
+      history.push("/content/" + selectedModel.ZUID + "/new");
+    }
   };
 
   return (
@@ -101,6 +100,7 @@ export const CreateContentItemDialog = ({
         <InputLabel sx={{ mb: 0.5 }}>Select Model</InputLabel>
         <Autocomplete
           data-cy="create_new_content_item_input"
+          openOnFocus
           size="small"
           fullWidth
           value={selectedModel}
@@ -109,10 +109,6 @@ export const CreateContentItemDialog = ({
             sortedModels
               ? [
                   {
-                    label: "None",
-                    ZUID: "",
-                  },
-                  {
                     label: "Internal/External Link",
                     ZUID: "link",
                   },
@@ -120,10 +116,25 @@ export const CreateContentItemDialog = ({
                 ]
               : []
           }
-          renderInput={(params) => <TextField {...params} hiddenLabel />}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              placeholder="Select"
+              hiddenLabel
+              autoFocus
+              error={hasError}
+              helperText={hasError && "Please select a Model to proceed."}
+            />
+          )}
           getOptionLabel={(option: any) => option.label}
           isOptionEqualToValue={(option, value) => option.ZUID === value.ZUID}
-          onChange={(event, newValue) => setSelectedModel(newValue)}
+          onChange={(event, newValue) => {
+            if (!!newValue?.ZUID) {
+              setHasError(false);
+            }
+
+            setSelectedModel(newValue);
+          }}
           onKeyDown={(evt) => {
             if (evt.key.toLowerCase() === "enter" && !!selectedModel?.ZUID) {
               evt.preventDefault();
@@ -138,14 +149,17 @@ export const CreateContentItemDialog = ({
         />
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="inherit">
+        <Button
+          data-cy="discard_new_content_item_btn"
+          onClick={onClose}
+          color="inherit"
+        >
           Discard
         </Button>
         <Button
           data-cy="create_new_content_item_btn"
           variant="contained"
           color="primary"
-          disabled={!selectedModel.ZUID}
           onClick={onCreateClick}
         >
           Create
