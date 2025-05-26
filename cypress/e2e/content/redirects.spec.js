@@ -54,9 +54,10 @@ describe("Content item redirects", () => {
     cy.getBySelector("ConfirmDeleteRedirect").click();
 
     cy.wait("@redirects").then(() => {
-      cy.get(".MuiDataGrid-cell")
-        .contains(`/test-redirect/${NOW}/updated`, { timeout: 10000 })
-        .should("not.exist");
+      cy.getBySelector("toast").should(
+        "contain.text",
+        `Redirect Deleted: /test-redirect/${NOW}/updated`
+      );
     });
   });
 });
