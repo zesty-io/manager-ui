@@ -140,8 +140,7 @@ export const UnpublishedRelatedItem = ({
         primary={
           fieldValue ||
           contentItem?.web?.metaTitle ||
-          contentItem?.web?.metaLinkText ||
-          contentItem?.meta?.ZUID
+          contentItem?.web?.metaLinkText
         }
         secondary={contentItem?.web?.metaDescription}
         primaryTypographyProps={{
