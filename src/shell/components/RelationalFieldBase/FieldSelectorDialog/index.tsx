@@ -559,6 +559,7 @@ export const FieldSelectorDialog = ({
         }}
       >
         <TextField
+          data-cy="relational-fields-search-input"
           ref={searchField}
           fullWidth
           onChange={(evt) => debouncedSetFilterKeyword(evt.currentTarget.value)}
