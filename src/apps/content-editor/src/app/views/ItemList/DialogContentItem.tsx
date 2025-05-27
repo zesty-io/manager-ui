@@ -46,7 +46,7 @@ export const DialogContentItem = ({ item }: DialogContentItemProps) => {
   const heroImage = useMemo(() => {
     if (!imageFields?.length || !item?.data) return null;
 
-    let image = String(item.data[imageFields[0]?.name])?.split(",")?.[0];
+    let image = String(item.data[imageFields[0]?.name] ?? "")?.split(",")?.[0];
 
     if (image?.startsWith("3-")) {
       image = files?.find((file) => file.id === image)?.thumbnail;
