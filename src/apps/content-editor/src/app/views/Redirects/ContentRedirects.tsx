@@ -7,23 +7,11 @@ import {
   DialogTitle,
   Typography,
   Box,
+  Stack,
 } from "@mui/material";
-
-import { memo, useCallback } from "react";
-import { useHistory } from "react-router";
-
-import { Stack } from "@mui/material";
 import { DeleteRounded } from "@mui/icons-material";
 
-import {
-  DialogContent,
-  TextField,
-  MenuItem,
-  Paper,
-  Skeleton,
-} from "@mui/material";
-import { ShuffleVariant } from "@zesty-io/material";
-import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import { Paper, Skeleton } from "@mui/material";
 import {
   Redirects,
   RedirectsCodes,
@@ -31,22 +19,13 @@ import {
 } from "../../../../../../shell/services/types";
 import { useDispatch } from "react-redux";
 import { notify } from "../../../../../../shell/store/notifications";
-import { useRedirectsDialog } from "../../../../../seo/src/app/components/RedirectsDialogProvider";
 import LoadingButton from "@mui/lab/LoadingButton";
 import StopRoundedIcon from "@mui/icons-material/StopRounded";
-import {
-  ContentItemProps,
-  TARGET_OPTIONS,
-  TOOL_TIPS,
-} from "../../../../../seo/src/app/components/RedirectsDialogProvider/constants";
-import { FieldWrapper } from "../../../../../seo/src/app/components/RedirectsDialogProvider/CreateRedirects/CreateForm";
-import SearchField, {
-  ListOption,
-} from "../../../../../seo/src/app/components/RedirectsDialogProvider/CreateRedirects/SearchField";
-import PathField from "../../../../../seo/src/app/components/RedirectsDialogProvider/CreateRedirects/PathField";
-import { useTargetListOptions } from "../../../../../seo/src/app/components/RedirectsDialogProvider/useTargetListOptions";
+import { ContentItemProps } from "../../../../../seo/src/app/components/RedirectsDialogProvider/constants";
 import { ContentRedirectModal } from "./ContentRedirectModal";
-import { deleteFile } from "../../../../../code-editor/src/store/files";
+import { useDeleteRedirectMutation } from "../../../../../../shell/services/instance";
+import DescriptionIcon from "@mui/icons-material/Description";
+import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 
 const REDIRECTED = {
   button: "Stop Redirecting",
@@ -92,6 +71,91 @@ export const validateUrl = (url: string) => {
   }
 };
 
+const RedirectItem = ({
+  ZUID,
+  targetType,
+  path,
+  target,
+  langCode,
+  label,
+  isLoading = false,
+}: {
+  ZUID: string;
+  targetType: RedirectsTargetType;
+  path: string;
+  target: string;
+  langCode: string;
+  label: string;
+  isLoading?: boolean;
+}) => {
+  if (isLoading) {
+    return <Skeleton variant="rounded" height={52} width="100%" />;
+  }
+  return (
+    <>
+      {targetType !== "page" ? (
+        <Typography variant="body2">{target}</Typography>
+      ) : (
+        <Box
+          key={ZUID}
+          display="flex"
+          flexDirection="row"
+          justifyContent="space-between"
+          alignItems="center"
+          flexGrow={1}
+          columnGap="12px"
+          sx={{
+            pl: "8px",
+            width: "100%",
+            height: "52px",
+          }}
+        >
+          {targetType === "page" ? (
+            <DescriptionIcon fontSize="small" color="action" />
+          ) : (
+            <FormatListBulletedIcon fontSize="small" color="action" />
+          )}
+          <Box
+            display="flex"
+            flexDirection="column"
+            justifyContent="space-between"
+            alignItems="stretch"
+            flexGrow={1}
+            sx={{
+              overflow: "hidden",
+              position: "relative",
+              boxSizing: "border-box",
+            }}
+          >
+            <Typography
+              variant="body2"
+              color="text.primary"
+              noWrap
+              textOverflow="ellipsis"
+              overflow="hidden"
+              fontWeight={500}
+              px="2px"
+            >
+              {`(${langCode}) ${label?.trim()}`}
+            </Typography>
+            <Typography
+              variant="body2"
+              color="info.dark"
+              noWrap
+              textOverflow="ellipsis"
+              maxWidth="100%"
+              overflow="hidden"
+              px="2px"
+            >
+              {path}
+            </Typography>
+          </Box>
+        </Box>
+      )}
+    </>
+  );
+};
+
 const ContentRedirects: FC<ContentRedirectsProps> = ({
   itemZUID,
   isLoading,
@@ -101,35 +165,31 @@ const ContentRedirects: FC<ContentRedirectsProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isRedirected, setIsRedirected] = useState(false);
-  const [redirection, setRedirection] = useState<ContentItemProps | null>(null);
-
+  const [redirection, setRedirection] = useState<Redirects | null>(null);
+  const [redirectOption, setRedirectOption] = useState<ContentItemProps | null>(
+    null
+  );
   const currentItem = options?.find((option) => option?.ZUID === itemZUID);
 
   useEffect(() => {
-    // if (!!currentItem) {
-    //   setIsRedirected(true);
-    // }
-    console.debug("currentItem", { itemZUID, currentItem, redirects });
     const redirectData = redirects?.find(
       (redirect) => redirect?.path === currentItem?.path
     );
 
-    const redirectTo = options?.find(
+    const redirectsTo = options?.find(
       (option) => option?.ZUID === redirectData?.target
     );
 
-    console.debug("currentItem", {
-      itemZUID,
-      currentItem,
-      redirects,
-      redirectData,
-      options,
-    });
-    if (!!redirectTo) {
-      setRedirection(redirectTo);
+    if (!!redirectData) {
+      setRedirectOption(redirectsTo);
+      setRedirection(redirectData);
       setIsRedirected(true);
+    } else {
+      setRedirectOption(null);
+      setRedirection(null);
+      setIsRedirected(false);
     }
-  }, [options, itemZUID, redirects]);
+  }, [options, itemZUID, redirects, currentItem]);
   return (
     <>
       {isLoading ? (
@@ -138,7 +198,6 @@ const ContentRedirects: FC<ContentRedirectsProps> = ({
         <Box
           width={640}
           flexGrow={0}
-          // height={BOTTOM_SECTION_HEIGHT}
           display="flex"
           flexDirection="column"
           alignItems="flex-start"
@@ -153,9 +212,35 @@ const ContentRedirects: FC<ContentRedirectsProps> = ({
             <Paper
               elevation={0}
               variant="outlined"
-              sx={{ width: "100%", py: "6px", px: 1, borderColor: "border" }}
+              sx={{
+                width: "100%",
+
+                py: "6px",
+                px: 1,
+                borderColor: "border",
+              }}
             >
-              <ListOption {...currentItem} isListItem={false} />
+              <RedirectItem
+                ZUID={redirection?.ZUID}
+                targetType={redirection?.targetType}
+                path={redirection?.path}
+                target={redirection?.target}
+                langCode={
+                  redirection?.targetType !== "page"
+                    ? ""
+                    : options?.find(
+                        (option) => option?.ZUID === redirection?.target
+                      )?.langCode
+                }
+                label={
+                  redirection?.targetType !== "page"
+                    ? ""
+                    : options?.find(
+                        (option) => option?.ZUID === redirection?.target
+                      )?.label
+                }
+                isLoading={isLoading}
+              />
             </Paper>
           )}
           <Button
@@ -172,36 +257,61 @@ const ContentRedirects: FC<ContentRedirectsProps> = ({
           </Button>
         </Box>
       )}
-      <ContentRedirectModal
-        open={isOpen}
-        onClose={() => setIsOpen(false)}
-        options={options}
-        loading={isLoading}
-        redirect={redirection}
-      />
-      <ConfirmDeleteModal
-        open={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
-      />
+      {isOpen && (
+        <ContentRedirectModal
+          open={isOpen}
+          onClose={() => setIsOpen(false)}
+          options={options}
+          loading={isLoading}
+          currentItem={currentItem}
+        />
+      )}
+      {isDeleteModalOpen && (
+        <ConfirmDeleteModal
+          open={isDeleteModalOpen}
+          onClose={() => setIsDeleteModalOpen(false)}
+          itemZUID={redirection?.ZUID}
+        />
+      )}
     </>
   );
 };
 
-interface ConfirmDeleteModalProps {
+type ConfirmDeleteModalProps = {
   open: boolean;
   onClose: () => void;
-  // fileZUID: string;
-  // fileName: string;
-  // status: string;
-}
+  itemZUID: string;
+};
 
 export const ConfirmDeleteModal = (props: ConfirmDeleteModalProps) => {
-  // const { open, onClose, fileZUID, fileName, status } = props;
-  const { open, onClose } = props;
-
-  const [deleting, setDeleting] = useState(false);
-  const history = useHistory();
+  const { open, onClose, itemZUID } = props;
   const dispatch = useDispatch();
+
+  const [deleteRedirect, { isLoading: isDeleting }] =
+    useDeleteRedirectMutation();
+
+  const handleDeleteRedirects = () => {
+    Promise.resolve(deleteRedirect({ ZUID: itemZUID }))
+      .then((res) => {
+        onClose();
+      })
+      .catch(() => {
+        dispatch(
+          notify({
+            kind: "error",
+            message: `Error deleting redirect`,
+          })
+        );
+      })
+      .finally(() => {
+        dispatch(
+          notify({
+            kind: "error",
+            message: `1 Redirect Deleted`,
+          })
+        );
+      });
+  };
 
   return (
     <Dialog open={open} fullWidth maxWidth="xs" onClose={onClose}>
@@ -251,8 +361,8 @@ export const ConfirmDeleteModal = (props: ConfirmDeleteModalProps) => {
           data-cy="DeleteContentItemConfirmButton"
           variant="contained"
           color="error"
-          // onClick={handleDeleteFile}
-          loading={deleting}
+          onClick={handleDeleteRedirects}
+          loading={isDeleting}
           startIcon={<StopRoundedIcon />}
         >
           Stop Redirecting

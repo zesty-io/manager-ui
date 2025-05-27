@@ -63,8 +63,11 @@ export const Redirects = () => {
   const { itemZUID } = useParams<{
     itemZUID: string;
   }>();
-  const { data: redirects, isLoading: isLoadingRedirects } =
-    useGetRedirectsQuery();
+  const {
+    data: redirects,
+    isLoading: isLoadingRedirects,
+    isFetching: isFetchingRedirects,
+  } = useGetRedirectsQuery();
   const { options, isLoading: isLoadingOptions } = useTargetListOptions();
   const { web } = useSelector((state: AppState) => state.content[itemZUID]);
 
@@ -114,7 +117,7 @@ export const Redirects = () => {
       renderHeader: () =>
         isLoading ? <Skeleton width="186px" height={24} /> : "Target Path",
       flex: 1,
-      renderCell: (params) => {
+      renderCell: () => {
         if (isLoading) return <Skeleton width="100%" height={24} />;
         return (
           <Link
@@ -186,10 +189,6 @@ export const Redirects = () => {
       );
   }, [redirectsHere]);
 
-  useEffect(() => {
-    console.debug("LOADING_ROWS:", LOADING_ROWS);
-  }, [LOADING_ROWS]);
-
   return (
     <>
       <Box
@@ -237,7 +236,6 @@ export const Redirects = () => {
                     rows={isLoading ? (LOADING_ROWS as any) : rows}
                     hideFooter
                     disableRowSelectionOnClick
-                    // loading={isLoading}
                     scrollbarSize={0}
                     slots={{
                       moreActionsIcon: () =>
@@ -249,9 +247,9 @@ export const Redirects = () => {
                     }}
                     sx={{
                       height: isLoading
-                        ? 214
+                        ? (LOADING_ROWS?.length + 1) * 52 + 6
                         : Math.min(containerHeight, tableHeight) + 6,
-                      minHeight: 214,
+                      minHeight: 108,
                       width: width,
                       "& .MuiDataGrid-row": {
                         "& .MuiDataGrid-cell": {
@@ -306,7 +304,7 @@ export const Redirects = () => {
                   >
                     <ContentRedirects
                       itemZUID={itemZUID}
-                      isLoading={isLoading}
+                      isLoading={isLoading || isFetchingRedirects}
                       options={options}
                       redirects={redirects}
                     />

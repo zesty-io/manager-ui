@@ -1,5 +1,4 @@
-import { FC, useEffect, useState } from "react";
-import ShuffleRoundedIcon from "@mui/icons-material/ShuffleRounded";
+import { FC, useState } from "react";
 import {
   Button,
   Dialog,
@@ -9,13 +8,7 @@ import {
   Box,
 } from "@mui/material";
 
-import {
-  DialogContent,
-  TextField,
-  MenuItem,
-  Paper,
-  Skeleton,
-} from "@mui/material";
+import { DialogContent, TextField, MenuItem } from "@mui/material";
 import { ShuffleVariant } from "@zesty-io/material";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import {
@@ -26,26 +19,20 @@ import { useDispatch } from "react-redux";
 import { notify } from "../../../../../../shell/store/notifications";
 import { useRedirectsDialog } from "../../../../../seo/src/app/components/RedirectsDialogProvider";
 import LoadingButton from "@mui/lab/LoadingButton";
-import StopRoundedIcon from "@mui/icons-material/StopRounded";
 import {
   ContentItemProps,
   TARGET_OPTIONS,
   TOOL_TIPS,
 } from "../../../../../seo/src/app/components/RedirectsDialogProvider/constants";
 import { FieldWrapper } from "../../../../../seo/src/app/components/RedirectsDialogProvider/CreateRedirects/CreateForm";
-import SearchField, {
-  ListOption,
-} from "../../../../../seo/src/app/components/RedirectsDialogProvider/CreateRedirects/SearchField";
+import SearchField from "../../../../../seo/src/app/components/RedirectsDialogProvider/CreateRedirects/SearchField";
 import PathField from "../../../../../seo/src/app/components/RedirectsDialogProvider/CreateRedirects/PathField";
-import { useTargetListOptions } from "../../../../../seo/src/app/components/RedirectsDialogProvider/useTargetListOptions";
-
 export type ContentRedirectModalProps = {
   open: boolean;
   onClose: () => void;
   loading: boolean;
+  currentItem: ContentItemProps | null;
   options: ContentItemProps[];
-  redirect?: ContentItemProps | null;
-  newPath?: string;
 };
 
 export const validateUrl = (url: string) => {
@@ -67,9 +54,8 @@ export const ContentRedirectModal: FC<ContentRedirectModalProps> = ({
   open,
   onClose,
   loading,
+  currentItem,
   options,
-  redirect,
-  newPath,
 }) => {
   const dispatch = useDispatch();
   const [targetInternal, setTargetInternal] = useState<ContentItemProps>(null);
@@ -88,9 +74,9 @@ export const ContentRedirectModal: FC<ContentRedirectModalProps> = ({
 
   const handleCreateRedirect = async () => {
     const requestData = {
-      targetType: "page" as RedirectsTargetType,
+      targetType: targetType as RedirectsTargetType,
       target: target,
-      paths: [newPath],
+      paths: [currentItem?.path],
       code: 301 as RedirectsCodes,
     };
 
@@ -200,8 +186,7 @@ export const ContentRedirectModal: FC<ContentRedirectModalProps> = ({
               OLD PATH
             </Typography>
             <Typography variant="body2" color="info.dark">
-              {redirect?.path}
-              {/* articles/trailblazing-washingtons-beauty-unraveling-the-top-5-hiking-trails */}
+              {currentItem?.path}
             </Typography>
             <Box display="flex" flexDirection="row" width="100%" my={1}>
               <ArrowDownwardIcon color="action" fontSize="small" />
@@ -249,7 +234,9 @@ export const ContentRedirectModal: FC<ContentRedirectModalProps> = ({
               >
                 {targetType === "page" ? (
                   <SearchField
-                    options={options}
+                    options={options?.filter(
+                      (option) => option?.ZUID !== currentItem?.ZUID
+                    )}
                     loading={isLoading}
                     value={targetInternal}
                     defaultValue={targetPath}
@@ -260,8 +247,8 @@ export const ContentRedirectModal: FC<ContentRedirectModalProps> = ({
                     testId="RedirectsExternalFieldPath"
                     placeHolder="Enter URL (e.g. https://www.google.com/)"
                     value={targetPath}
-                    onChange={(e) => {
-                      setTargetPath(e);
+                    onChange={(value) => {
+                      setTargetPath(value);
                     }}
                     validation={
                       targetType === "external" ? urlValidation : null
@@ -283,6 +270,7 @@ export const ContentRedirectModal: FC<ContentRedirectModalProps> = ({
           color="primary"
           onClick={handleCreateRedirect}
           loading={isRedirectsLoading}
+          disabled={isRedirectsLoading || invalidTarget || !target}
         >
           Create Redirect
         </LoadingButton>
