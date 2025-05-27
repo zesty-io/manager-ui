@@ -90,6 +90,7 @@ export const CreateModelDialogue = ({
   modelType = "templateset",
   typeIsSet = false,
 }: Props) => {
+  const [referenceIDError, setReferenceIDError] = useState<string | null>(null);
   const [type, setType] = useState(modelType);
   const [isTypeSet, setIsTypeSet] = useState(typeIsSet);
   const dispatch = useDispatch();
@@ -101,6 +102,10 @@ export const CreateModelDialogue = ({
 
       if (prev.label !== newModel.label) {
         newModel.name = newModel.label.toLowerCase().replace(/\W/g, "_");
+
+        if (!!referenceIDError) {
+          setReferenceIDError(null);
+        }
       } else {
         newModel.name = newModel.name.toLowerCase().replace(/\W/g, "_");
       }
@@ -116,7 +121,6 @@ export const CreateModelDialogue = ({
       listed: modelType === "block" ? false : true,
     }
   );
-  const [referenceIDError, setReferenceIDError] = useState<string | null>(null);
 
   const [
     createModel,
@@ -475,9 +479,13 @@ export const CreateModelDialogue = ({
                       }}
                       placeholder="Auto-Generated from Display Name"
                       value={model.name}
-                      onChange={(event: any) =>
-                        updateModel({ name: event.target.value })
-                      }
+                      onChange={(event: any) => {
+                        updateModel({ name: event.target.value });
+
+                        if (!!referenceIDError) {
+                          setReferenceIDError(null);
+                        }
+                      }}
                       fullWidth
                       error={!!referenceIDError}
                       helperText={referenceIDError}
