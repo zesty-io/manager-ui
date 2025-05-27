@@ -81,7 +81,7 @@ export const DialogContentItem = ({ item }: DialogContentItemProps) => {
 };
 
 type HeroImageProps = {
-  imageURL: string;
+  imageURL: string | null;
 };
 const HeroImage = ({ imageURL }: HeroImageProps) => {
   if (imageURL) {
