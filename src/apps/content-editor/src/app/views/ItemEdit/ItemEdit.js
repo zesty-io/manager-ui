@@ -36,7 +36,7 @@ import { LockedItem } from "../../components/LockedItem";
 import { Content } from "./Content";
 import { ItemHead } from "./ItemHead";
 
-import { NotFound } from "../NotFound";
+import NotFound from "../NotFound";
 
 import { PublishState } from "./PublishState.tsx";
 import Analytics from "../Analytics";
@@ -54,9 +54,7 @@ import { FreestyleWrapper } from "./FreestyleWrapper";
 import { Meta } from "./Meta";
 import { FieldError } from "../../components/Editor/FieldError";
 import { AIGeneratorProvider } from "../../../../../../shell/components/withAi/AIGeneratorProvider";
-import {
-  fetchItemPublishings,
-} from "../../../../../../shell/store/content";
+import { fetchItemPublishings } from "../../../../../../shell/store/content";
 import { Redirects } from "../Redirects";
 import RedirectsDialogContextProvider from "../../../../../seo/src/app/components/RedirectsDialogProvider";
 
@@ -102,8 +100,11 @@ export default function ItemEdit() {
   const [fieldErrors, setFieldErrors] = useState({});
   const [SEOErrors, setSEOErrors] = useState({});
   // const [hasSEOErrors, setHasSEOErrors] = useState(false);
-  const { data: fields, isError: fieldsLoadingError } =
-    useGetContentModelFieldsQuery(modelZUID);
+  const {
+    data: fields,
+    isError: fieldsLoadingError,
+    isLoading: isLoadingFields,
+  } = useGetContentModelFieldsQuery(modelZUID);
   const [showDuoModeLS, setShowDuoModeLS] = useLocalStorage(
     "zesty:content:duoModeOpen",
     true
@@ -168,7 +169,8 @@ export default function ItemEdit() {
   }, [location.pathname]);
 
   useEffect(() => {
-    if (fieldsLoadingError) {
+    if (loading || isLoadingFields) return;
+    if (fieldsLoadingError && !!model) {
       dispatch(
         notify({
           message: "Failed to load fields",
@@ -176,7 +178,7 @@ export default function ItemEdit() {
         })
       );
     }
-  }, [fieldsLoadingError]);
+  }, [fieldsLoadingError, model, isLoadingFields, loading]);
 
   const hasErrors = useMemo(() => {
     const hasErrors = Object.values(fieldErrors)
@@ -445,7 +447,7 @@ export default function ItemEdit() {
         })
       );
       // fetch new draft history
-      dispatch(fetchAuditTrailDrafting(itemZUID));
+      await Promise.resolve(dispatch(fetchAuditTrailDrafting(itemZUID)));
     } catch (err) {
       // we need to set the item to dirty again because the save failed
       dispatch({
@@ -456,8 +458,8 @@ export default function ItemEdit() {
       throw new Error(err);
     } finally {
       if (isMounted.current) {
+        await Promise.resolve(dispatch(fetchItemPublishings()));
         setSaving(false);
-        dispatch(fetchItemPublishings());
       }
     }
   }
@@ -476,8 +478,8 @@ export default function ItemEdit() {
 
   return (
     <Fragment>
-      {notFound ? (
-        <NotFound message={notFound} />
+      {!isLoadingFields && !loading && notFound ? (
+        <NotFound />
       ) : (
         <>
           {isLocked && (
@@ -524,7 +526,7 @@ export default function ItemEdit() {
                 onSave={() => save().catch((err) => console.error(err))}
                 saving={saving}
                 hasError={Object.keys(fieldErrors)?.length}
-                isLoadingItem={loading}
+                isLoadingItem={loading || isLoadingFields}
               />
               <Switch>
                 <Route
@@ -641,7 +643,7 @@ export default function ItemEdit() {
                             save().catch((err) => console.error(err))
                           }
                           dispatch={dispatch}
-                          loading={loading}
+                          loading={loading || isLoadingFields}
                           saving={saving}
                           saveClicked={saveClicked}
                           onUpdateFieldErrors={(errors) => {

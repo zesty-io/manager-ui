@@ -27,6 +27,7 @@ import {
   useCreateItemPublishingMutation,
   useGetContentItemQuery,
   useGetContentModelFieldsQuery,
+  useGetWorkflowStatusLabelsQuery,
 } from "../../../../../../shell/services/instance";
 import { Error } from "../../components/Editor/Field/FieldShell";
 import {
@@ -107,6 +108,10 @@ export const ItemCreate = () => {
     isSuccess: isSuccessNewModelFields,
     isLoading: isFetchingNewModelFields,
   } = useGetContentModelFieldsQuery(modelZUID);
+  const { data: statusLabels } = useGetWorkflowStatusLabelsQuery();
+  const hasAllowPublishLabel = statusLabels?.some(
+    (label) => label.allowPublish
+  );
 
   // on mount and update modelZUID, load item fields
   useEffect(() => {
@@ -347,28 +352,85 @@ export const ItemCreate = () => {
             break;
 
           case "publishNow":
-            // Make an api call to publish now
-            handlePublish(res.data.ZUID);
-            setWillRedirect(true);
+            if (hasAllowPublishLabel) {
+              // New items will by default have no workflow labels, therefore as long as there's a workflow label
+              // that is used to allow publish permissions, new content items should never be allowed to be published
+              // from the create new content item page
+              dispatch(
+                notify({
+                  message: `Cannot Publish: "${item.web.metaTitle}". Does not have a status that allows publishing`,
+                  kind: "error",
+                })
+              );
+              history.push(
+                `/${
+                  model?.type === "block" ? "blocks" : "content"
+                }/${modelZUID}/${res.data.ZUID}`
+              );
+            } else {
+              // Make an api call to publish now
+              handlePublish(res.data.ZUID);
+              setWillRedirect(true);
+            }
             break;
 
           case "schedulePublish":
-            // Open schedule publish flyout and redirect to item once done
-            setIsScheduleDialogOpen(true);
-            setWillRedirect(true);
+            if (hasAllowPublishLabel) {
+              // New items will by default have no workflow labels, therefore as long as there's a workflow label
+              // that is used to allow publish permissions, new content items should never be allowed to be published
+              // from the create new content item page
+              dispatch(
+                notify({
+                  message: `Cannot Publish: "${item.web.metaTitle}". Does not have a status that allows publishing`,
+                  kind: "error",
+                })
+              );
+              history.push(
+                `/${
+                  model?.type === "block" ? "blocks" : "content"
+                }/${modelZUID}/${res.data.ZUID}`
+              );
+            } else {
+              // Open schedule publish flyout and redirect to item once done
+              setIsScheduleDialogOpen(true);
+              setWillRedirect(true);
+            }
             break;
 
           case "publishAddNew":
-            // Publish but stay on page
-            handlePublish(res.data.ZUID);
-            setWillRedirect(false);
-
+            if (hasAllowPublishLabel) {
+              // New items will by default have no workflow labels, therefore as long as there's a workflow label
+              // that is used to allow publish permissions, new content items should never be allowed to be published
+              // from the create new content item page
+              dispatch(
+                notify({
+                  message: `Cannot Publish: "${item.web.metaTitle}". Does not have a status that allows publishing`,
+                  kind: "error",
+                })
+              );
+            } else {
+              // Publish but stay on page
+              handlePublish(res.data.ZUID);
+              setWillRedirect(false);
+            }
             break;
 
           case "schedulePublishAddNew":
-            // Open schedule publish flyout but stay on page once done
-            setIsScheduleDialogOpen(true);
-            setWillRedirect(false);
+            if (hasAllowPublishLabel) {
+              // New items will by default have no workflow labels, therefore as long as there's a workflow label
+              // that is used to allow publish permissions, new content items should never be allowed to be published
+              // from the create new content item page
+              dispatch(
+                notify({
+                  message: `Cannot Publish: "${item.web.metaTitle}". Does not have a status that allows publishing`,
+                  kind: "error",
+                })
+              );
+            } else {
+              // Open schedule publish flyout but stay on page once done
+              setIsScheduleDialogOpen(true);
+              setWillRedirect(false);
+            }
             break;
 
           default:
