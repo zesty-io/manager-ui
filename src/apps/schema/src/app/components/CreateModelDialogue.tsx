@@ -17,6 +17,7 @@ import {
   TextField,
   Tooltip,
   Checkbox,
+  setRef,
 } from "@mui/material";
 import { useEffect, useReducer, useState } from "react";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
@@ -115,6 +116,7 @@ export const CreateModelDialogue = ({
       listed: modelType === "block" ? false : true,
     }
   );
+  const [referenceIDError, setReferenceIDError] = useState<string | null>(null);
 
   const [
     createModel,
@@ -221,24 +223,28 @@ export const CreateModelDialogue = ({
   useEffect(() => {
     if (error) {
       // @ts-ignore
-      let message = error?.data?.error || "Failed to create model",
-        heading = "";
-      // @ts-ignore
-      if (error?.data?.error.includes("label cannot be blank")) {
-        message = "Please Add Display Name";
-        heading = "Cannot Create Model";
-        // @ts-ignore
-      } else if (error?.data?.error.includes("name is already in use")) {
-        message = "Display name is already in use";
-        heading = "Cannot Create Model";
+      const errorMessage = error?.data?.error || "Failed to create model";
+
+      if (errorMessage.includes("name is already in use")) {
+        setReferenceIDError(
+          "This Reference ID is already in use. Please enter a different one."
+        );
+      } else if (errorMessage.includes("label cannot be blank")) {
+        dispatch(
+          notify({
+            message: "Please Add Display Name",
+            heading: "Cannot Create Model",
+            kind: "error",
+          })
+        );
+      } else {
+        dispatch(
+          notify({
+            message: errorMessage,
+            kind: "error",
+          })
+        );
       }
-      dispatch(
-        notify({
-          message,
-          heading,
-          kind: "error",
-        })
-      );
     }
   }, [error]);
 
@@ -473,6 +479,8 @@ export const CreateModelDialogue = ({
                         updateModel({ name: event.target.value })
                       }
                       fullWidth
+                      error={!!referenceIDError}
+                      helperText={referenceIDError}
                     />
                   </Box>
                   <SelectModelParentInput
