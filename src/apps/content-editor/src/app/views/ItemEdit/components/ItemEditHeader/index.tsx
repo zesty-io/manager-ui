@@ -25,6 +25,7 @@ import {
   ContentCopyRounded,
   WebRounded,
 } from "@mui/icons-material";
+import { ShuffleVariant } from "@zesty-io/material";
 import { useSelector } from "react-redux";
 import { AppState } from "../../../../../../../../shell/store/types";
 import { ItemEditHeaderActions } from "./ItemEditHeaderActions";
@@ -40,6 +41,7 @@ import { DuoModeSwitch } from "./DuoModeToggle";
 import { useGetContentModelsQuery } from "../../../../../../../../shell/services/instance";
 import { ContentItemWithDirtyAndPublishing } from "../../../../../../../../shell/services/types";
 import { PublishStatus } from "./PublishStatus";
+import RedirectsDialogContextProvider from "../../../../../../../seo/src/app/components/RedirectsDialogProvider";
 
 const tabs = [
   {
@@ -51,6 +53,11 @@ const tabs = [
     label: "SEO",
     icon: QueryStatsRounded,
     value: "meta",
+  },
+  {
+    label: "Redirects",
+    icon: ShuffleVariant,
+    value: "redirects",
   },
   {
     label: "Analytics",
@@ -219,16 +226,17 @@ export const ItemEditHeader = ({
               {type === "block" && (
                 <>
                   <LanguageSelector />
-                  <VersionSelector isLoadingItem={isLoadingItem} />
+                  <VersionSelector activeVersion={item?.meta?.version} />
                 </>
               )}
-
-              <ItemEditHeaderActions
-                saving={saving}
-                onSave={onSave}
-                hasError={hasError}
-                isLoadingItem={isLoadingItem}
-              />
+              <RedirectsDialogContextProvider>
+                <ItemEditHeaderActions
+                  saving={saving}
+                  onSave={onSave}
+                  hasError={hasError}
+                  isLoadingItem={isLoadingItem}
+                />
+              </RedirectsDialogContextProvider>
             </Box>
             <PublishStatus currentVersion={item?.web?.version} />
           </Stack>
@@ -281,7 +289,7 @@ export const ItemEditHeader = ({
             <Box display="flex" gap={2} alignItems="center">
               <DuoModeSwitch />
               <LanguageSelector />
-              <VersionSelector isLoadingItem={isLoadingItem} />
+              <VersionSelector activeVersion={item?.meta?.version} />
             </Box>
           </Box>
         )}

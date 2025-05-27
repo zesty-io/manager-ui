@@ -18,6 +18,7 @@ import {
   fetchFontsInstalled,
 } from "../../../../shell/store/settings";
 import { ResizableContainer } from "../../../../shell/components/ResizeableContainer";
+import Workflows from "./views/User/Workflows";
 import Installed from "./views/Fonts/Installed";
 import Browse from "./views/Fonts/Browse";
 import { HeadTags } from "./views/Robots/HeadTags";
@@ -110,6 +111,7 @@ export default connect((state) => {
               path="/settings/head"
               render={() => <HeadTags resourceZUID={props?.instance?.ZUID} />}
             />
+            <Route path="/settings/user/workflows" component={Workflows} />
 
             <Redirect from="/settings" to="/settings/instance/general" />
             <Redirect

@@ -53,6 +53,7 @@ import { TCDescription } from "./settings/TCDescription";
 import { TCImage } from "./settings/TCImage";
 import RedirectsTableContextProvider from "../../../../../../seo/src/views/RedirectsManager/RedirectsTable/RedirectsTableContextProvider";
 import IncomingRedirects from "./IncomingRedirects";
+import RedirectsDialogContextProvider from "../../../../../../seo/src/app/components/RedirectsDialogProvider";
 
 const rotateAnimation = keyframes`
 	0% {
@@ -584,12 +585,14 @@ export const Meta = forwardRef(
                   });
                 }}
               />
-              <RedirectsTableContextProvider>
-                <IncomingRedirects
-                  targetZUID={meta?.ZUID}
-                  urlPath={web?.path}
-                />
-              </RedirectsTableContextProvider>
+              <RedirectsDialogContextProvider>
+                <RedirectsTableContextProvider>
+                  <IncomingRedirects
+                    targetZUID={meta?.ZUID}
+                    urlPath={web?.path}
+                  />
+                </RedirectsTableContextProvider>
+              </RedirectsDialogContextProvider>
             </Stack>
           )}
           <Stack gap={3} pb={2.5}>
