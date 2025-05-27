@@ -147,7 +147,7 @@ const RedirectItem = ({
               overflow="hidden"
               px="2px"
             >
-              {path}
+              {target}
             </Typography>
           </Box>
         </Box>
@@ -224,7 +224,13 @@ const ContentRedirects: FC<ContentRedirectsProps> = ({
                 ZUID={redirection?.ZUID}
                 targetType={redirection?.targetType}
                 path={redirection?.path}
-                target={redirection?.target}
+                target={
+                  redirection?.targetType !== "page"
+                    ? redirection?.target
+                    : options?.find(
+                        (option) => option?.ZUID === redirection?.target
+                      )?.path
+                }
                 langCode={
                   redirection?.targetType !== "page"
                     ? ""
