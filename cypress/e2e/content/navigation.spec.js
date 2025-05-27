@@ -19,6 +19,13 @@ describe("Navigation through content editor", () => {
     cy.get(".ModalAligner--ptdt-.Open--M5j6S button.Close--kVpCO").click();
   });
 
+  it("Should not navigate to the create item page if no model is selected", () => {
+    cy.getBySelector("create_new_content_item").should("exist").click();
+    cy.getBySelector("create_new_content_item_btn").click({ force: true });
+    cy.contains("Please select a Model to proceed.").should("exist");
+    cy.getBySelector("discard_new_content_item_btn").should("exist").click();
+  });
+
   it("Creates a new item from the menu", () => {
     cy.getBySelector("create_new_content_item").should("exist").click();
     cy.getBySelector("create_new_content_item_dialog").should("exist");
