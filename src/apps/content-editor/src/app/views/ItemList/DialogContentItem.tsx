@@ -57,7 +57,7 @@ export const DialogContentItem = ({ item }: DialogContentItemProps) => {
 
   return (
     <List disablePadding>
-      <ListItem dense disableGutters divider>
+      <ListItem dense disableGutters divider sx={{ minHeight: 49 }}>
         {!!imageFields?.length && <HeroImage imageURL={heroImage} />}
         <ListItemText
           primaryTypographyProps={{
