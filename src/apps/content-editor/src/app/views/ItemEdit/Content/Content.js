@@ -7,6 +7,7 @@ import {
   Tooltip,
   useMediaQuery,
   Skeleton,
+  Container,
 } from "@mui/material";
 import { theme } from "@zesty-io/material";
 import { StartRounded, DesktopMacRounded } from "@mui/icons-material";
@@ -24,9 +25,10 @@ export default function Content(props) {
     "zesty:content:sidebarOpen",
     false
   );
-  const { data: fields } = useGetContentModelFieldsQuery(props.modelZUID, {
-    skip: !props.modelZUID,
-  });
+  const { data: fields, isFetching: isFetchingFields } =
+    useGetContentModelFieldsQuery(props.modelZUID, {
+      skip: !props.modelZUID,
+    });
 
   const hasFields = useMemo(() => {
     if (!fields) return false;
@@ -64,11 +66,13 @@ export default function Content(props) {
       !Object.keys(props.item?.web).length ||
       !Object.keys(props.item?.meta).length);
 
-  if (!hasFields) {
+  if (!hasFields && !isFetchingFields) {
     return (
-      <Stack height="100%" mx={3} justifyContent="center">
-        <NoFields />
-      </Stack>
+      <Container disableGutters maxWidth="lg" sx={{ height: "100%" }}>
+        <Stack p={4} height="100%" justifyContent="center">
+          <NoFields />
+        </Stack>
+      </Container>
     );
   }
 

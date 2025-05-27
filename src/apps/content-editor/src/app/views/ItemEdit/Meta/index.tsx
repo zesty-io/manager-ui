@@ -124,7 +124,7 @@ export const Meta = forwardRef(
           state.content[isCreateItemPage ? `new:${modelZUID}` : itemZUID]
       ) || {};
     const [flowType, setFlowType] =
-      useState<typeof FlowType[keyof typeof FlowType]>(null);
+      useState<(typeof FlowType)[keyof typeof FlowType]>(null);
     const metaDescriptionButtonRef = useRef(null);
     const metaTitleButtonRef = useRef(null);
 

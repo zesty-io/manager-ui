@@ -19,6 +19,8 @@ import {
   useGetAuditsQuery,
   useGetContentModelFieldsQuery,
   useGetItemPublishingsQuery,
+  useGetItemWorkflowStatusQuery,
+  useGetWorkflowStatusLabelsQuery,
 } from "../../../../../../../../shell/services/instance";
 import { useHistory, useParams } from "react-router";
 import { useEffect, useMemo, useState } from "react";
@@ -51,6 +53,8 @@ import {
   ContentModel,
 } from "../../../../../../../../shell/services/types";
 import { SchedulePublish } from "../../../../../../../../shell/components/SchedulePublish";
+import { notify } from "../../../../../../../../shell/store/notifications";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query";
 import { ConfirmPublishModal } from "../../../../../../../../shell/components/ConfirmPublishModal";
 import { UnpublishedRelatedItem } from "./UnpublishedRelatedItem";
 import { uniqBy } from "lodash";
@@ -124,6 +128,12 @@ export const ItemEditHeaderActions = ({
   const activePublishing = itemPublishings?.find(
     (itemPublishing) => itemPublishing._active
   );
+  const { data: statusLabels } = useGetWorkflowStatusLabelsQuery();
+  const { data: itemWorkflowStatus, isLoading: isLoadingItemWorkflowStatus } =
+    useGetItemWorkflowStatusQuery(
+      { itemZUID, modelZUID },
+      { skip: !itemZUID || !modelZUID }
+    );
 
   const saveShortcut = useMetaKey("s", () => {
     if (!canUpdate) return;
@@ -228,61 +238,90 @@ export const ItemEditHeaderActions = ({
     }
   })();
 
+  const allowPublish = useMemo(() => {
+    const allowPublishLabelZUIDs = statusLabels?.reduce((acc, next) => {
+      if (next.allowPublish) {
+        return (acc = [...acc, next.ZUID]);
+      }
+
+      return acc;
+    }, []);
+
+    if (!allowPublishLabelZUIDs?.length) return true;
+
+    const itemWorkflowLabelZUIDs = itemWorkflowStatus?.find(
+      (i) => i.itemVersion === item?.meta?.version
+    )?.labelZUIDs;
+
+    return itemWorkflowLabelZUIDs?.some((labelZUID) =>
+      allowPublishLabelZUIDs?.includes(labelZUID)
+    );
+  }, [statusLabels, itemWorkflowStatus, item?.meta?.version]);
+
   const handlePublish = async () => {
-    setIsPublishing(true);
-    try {
-      // Delete scheduled publishings first
-      const deleteScheduledPromises = [
-        // Delete main item's scheduled publishing if it exists
-        itemState === ITEM_STATES.scheduled &&
-          deleteItemPublishing({
+    if (allowPublish) {
+      setIsPublishing(true);
+      try {
+        // Delete scheduled publishings first
+        const deleteScheduledPromises = [
+          // Delete main item's scheduled publishing if it exists
+          itemState === ITEM_STATES.scheduled &&
+            deleteItemPublishing({
+              modelZUID,
+              itemZUID,
+              publishingZUID: item?.scheduling?.ZUID,
+            }),
+          // Delete related items' scheduled publishings if they exist
+          ...relatedItemsToPublish
+            .filter((item) => !!item.scheduling?.ZUID)
+            .map((item) =>
+              deleteItemPublishing({
+                modelZUID: item.meta.contentModelZUID,
+                itemZUID: item.meta.ZUID,
+                publishingZUID: item.scheduling.ZUID,
+              })
+            ),
+        ].filter((item) => !!item);
+
+        await Promise.all(deleteScheduledPromises);
+
+        // Proceed with publishing
+        await Promise.allSettled([
+          createPublishing({
             modelZUID,
             itemZUID,
-            publishingZUID: item?.scheduling?.ZUID,
-          }),
-        // Delete related items' scheduled publishings if they exist
-        ...relatedItemsToPublish
-          .filter((item) => !!item.scheduling?.ZUID)
-          .map((item) =>
-            deleteItemPublishing({
-              modelZUID: item.meta.contentModelZUID,
-              itemZUID: item.meta.ZUID,
-              publishingZUID: item.scheduling.ZUID,
-            })
-          ),
-      ].filter((item) => !!item);
-
-      await Promise.all(deleteScheduledPromises);
-
-      // Proceed with publishing
-      await Promise.allSettled([
-        createPublishing({
-          modelZUID,
-          itemZUID,
-          body: {
-            version: item?.meta.version,
-            publishAt: "now",
-            unpublishAt: "never",
-          },
-        }),
-        ...relatedItemsToPublish.map((item) =>
-          createPublishing({
-            modelZUID: item.meta.contentModelZUID,
-            itemZUID: item.meta.ZUID,
             body: {
-              version: item.meta.version,
+              version: item?.meta.version,
               publishAt: "now",
               unpublishAt: "never",
             },
-          })
-        ),
-      ]);
+          }),
+          ...relatedItemsToPublish.map((item) =>
+            createPublishing({
+              modelZUID: item.meta.contentModelZUID,
+              itemZUID: item.meta.ZUID,
+              body: {
+                version: item.meta.version,
+                publishAt: "now",
+                unpublishAt: "never",
+              },
+            })
+          ),
+        ]);
 
-      // Retain non rtk-query fetch of item publishing for legacy code
-      dispatch(fetchItemPublishings());
-    } finally {
-      setIsPublishing(false);
-      setIsConfirmPublishModalOpen(false);
+        // Retain non rtk-query fetch of item publishing for legacy code
+        dispatch(fetchItemPublishings());
+      } finally {
+        setIsPublishing(false);
+        setIsConfirmPublishModalOpen(false);
+      }
+    } else {
+      dispatch(
+        notify({
+          message: `Cannot Publish: "${item.web.metaTitle}". Does not have a status that allows publishing`,
+          kind: "error",
+        })
+      );
     }
   };
 
@@ -632,7 +671,18 @@ export const ItemEditHeaderActions = ({
         setPublishAfterSave={setPublishAfterSave}
         setScheduleAfterSave={setScheduleAfterSave}
         setUnpublishDialogOpen={setUnpublishDialogOpen}
-        setScheduledPublishDialogOpen={setScheduledPublishDialogOpen}
+        setScheduledPublishDialogOpen={(open) => {
+          if (!allowPublish) {
+            dispatch(
+              notify({
+                message: `Cannot Publish: "${item.web.metaTitle}". Does not have a status that allows publishing`,
+                kind: "error",
+              })
+            );
+          } else {
+            setScheduledPublishDialogOpen(open);
+          }
+        }}
         setPublishAfterUnschedule={() => {
           setScheduledPublishDialogOpen(true);
           setPublishAfterUnschedule(true);

@@ -22,7 +22,11 @@ export function Actions(props) {
 
   const { publishing } = props.item || {};
   const { listed, sort } = props.item?.meta || {};
-  const { path = "", metaTitle = "", metaLinkText = "" } = props.item?.web || {};
+  const {
+    path = "",
+    metaTitle = "",
+    metaLinkText = "",
+  } = props.item?.web || {};
   const liveURL = domain ? `${domain}${path}` : "";
 
   return (
