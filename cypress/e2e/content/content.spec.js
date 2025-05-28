@@ -562,5 +562,16 @@ describe("Content Specs", () => {
         retries: 1,
       }).should("have.length", 3);
     });
+
+    it("preserves selected items while filtering", () => {
+      cy.get("#12-269a28-1bkm34 [data-cy='add-relational-item-button']").click({
+        force: true,
+      });
+
+      cy.getBySelector("relational-fields-search-input")
+        .find("input")
+        .type("someveryrandomtextthatshouldnotmatchanything");
+      cy.contains("3 selected").should("exist");
+    });
   });
 });
