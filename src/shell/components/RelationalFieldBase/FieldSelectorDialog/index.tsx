@@ -475,7 +475,7 @@ export const FieldSelectorDialog = ({
     });
 
     return _rows;
-  }, [mappedRows, filterKeyword, relatedModelFields]);
+  }, [mappedRows, relatedModelFields]);
 
   const deletedItemZUIDs = useMemo(() => {
     if (!contentItems?.length || !selectedZUIDs) return [];
@@ -559,6 +559,7 @@ export const FieldSelectorDialog = ({
         }}
       >
         <TextField
+          data-cy="relational-fields-search-input"
           ref={searchField}
           fullWidth
           onChange={(evt) => debouncedSetFilterKeyword(evt.currentTarget.value)}
@@ -597,6 +598,7 @@ export const FieldSelectorDialog = ({
             <AutoSizer>
               {({ width, height }: Size) => (
                 <DataGridPro
+                  keepNonExistentRowsSelected
                   style={{
                     width: width,
                     height: height,
