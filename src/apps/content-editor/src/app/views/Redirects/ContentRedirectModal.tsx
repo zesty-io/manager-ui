@@ -265,7 +265,7 @@ export const ContentRedirectModal: FC<ContentRedirectModalProps> = ({
           Don't Create
         </Button>
         <LoadingButton
-          data-cy="DeleteContentItemConfirmButton"
+          data-cy="RedirectContentItemConfirmButton"
           variant="contained"
           color="primary"
           onClick={handleCreateRedirect}

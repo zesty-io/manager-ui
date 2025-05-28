@@ -24,7 +24,7 @@ import { useRedirectsDialog } from "../../../../../seo/src/app/components/Redire
 import AddIcon from "@mui/icons-material/Add";
 import AutoSizer from "react-virtualized-auto-sizer";
 import ContentRedirects from "./ContentRedirects";
-import { useTargetListOptions } from "../../../../../seo/src/app/components/RedirectsDialogProvider/useTargetListOptions";
+import { useContentItems } from "../../../../../seo/src/app/components/RedirectsDialogProvider/useContentItems";
 import StopRoundedIcon from "@mui/icons-material/StopRounded";
 
 const ADD_SECTION_HEIGHT = 70;
@@ -68,7 +68,7 @@ export const Redirects = () => {
     isLoading: isLoadingRedirects,
     isFetching: isFetchingRedirects,
   } = useGetRedirectsQuery();
-  const { options, isLoading: isLoadingOptions } = useTargetListOptions();
+  const { options, isLoading: isLoadingOptions } = useContentItems();
   const { web } = useSelector((state: AppState) => state.content[itemZUID]);
 
   const isLoading = isLoadingRedirects || isLoadingOptions;
@@ -284,7 +284,7 @@ export const Redirects = () => {
                       />
                     ) : (
                       <Button
-                        data-cy="AddIncomingPathButton"
+                        data-cy="AddIncomingRedirectButton"
                         variant="outlined"
                         color="primary"
                         startIcon={<AddIcon />}

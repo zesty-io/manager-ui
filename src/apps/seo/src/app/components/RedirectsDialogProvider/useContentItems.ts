@@ -13,7 +13,7 @@ import {
 import { ContentItemProps } from "./constants";
 import { PublishingsMap } from "./CreateRedirects/CreateForm";
 
-const useTargetListOptions = () => {
+const useContentItems = () => {
   const { data: contentItems, isLoading: isLoadingContentItems } =
     useSearchContentQuery({
       query: "",
@@ -116,4 +116,4 @@ const useTargetListOptions = () => {
   };
 };
 
-export { useTargetListOptions };
+export { useContentItems };

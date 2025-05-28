@@ -94,7 +94,9 @@ const RedirectItem = ({
   return (
     <>
       {targetType !== "page" ? (
-        <Typography variant="body2">{target}</Typography>
+        <Typography variant="body2" data-cy="RedirectTargetUrl">
+          {target}
+        </Typography>
       ) : (
         <Box
           key={ZUID}
@@ -139,6 +141,7 @@ const RedirectItem = ({
               {`(${langCode}) ${label?.trim()}`}
             </Typography>
             <Typography
+              data-cy="RedirectTargetUrl"
               variant="body2"
               color="info.dark"
               noWrap
@@ -202,7 +205,12 @@ const ContentRedirects: FC<ContentRedirectsProps> = ({
           flexDirection="column"
           alignItems="flex-start"
         >
-          <Typography variant="h5" fontWeight={700} color="text.primary">
+          <Typography
+            variant="h5"
+            fontWeight={700}
+            color="text.primary"
+            data-cy="ContentRedirectHeader"
+          >
             {!!isRedirected ? REDIRECTED.header : NOT_REDIRECTED.header}
           </Typography>
           <Typography variant="body2" color="text.secondary" pt="4px" pb="12px">
@@ -364,7 +372,7 @@ export const ConfirmDeleteModal = (props: ConfirmDeleteModalProps) => {
           Cancel
         </Button>
         <LoadingButton
-          data-cy="DeleteContentItemConfirmButton"
+          data-cy="StopRedirectContentItemConfirmButton"
           variant="contained"
           color="error"
           onClick={handleDeleteRedirects}
