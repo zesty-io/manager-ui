@@ -41,12 +41,10 @@ const RedirectsImport: FC = () => {
         setIsDialogOpen(true);
         return;
       }
-      await new Promise((resolve) => setTimeout(resolve, 100));
       dispatch({ type: IMPORT_REDIRECTS, redirects: importRes.targets });
       clearFiles();
       setIsDialogOpen(false);
     } catch (error) {
-      console.error("Import failed:", error);
       dispatch({ type: IMPORT_REDIRECTS, redirects: [] });
       setIsDialogOpen(true);
     }
