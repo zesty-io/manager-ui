@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Typography, Stack, Link, Box, Button, Skeleton } from "@mui/material";
 import {
   MoreHoriz,
@@ -25,23 +25,6 @@ import AddIcon from "@mui/icons-material/Add";
 import AutoSizer from "react-virtualized-auto-sizer";
 import ContentRedirects from "./ContentRedirects";
 import { useContentItems } from "../../../../../seo/src/app/components/RedirectsDialogProvider/useContentItems";
-import StopRoundedIcon from "@mui/icons-material/StopRounded";
-
-const ADD_SECTION_HEIGHT = 70;
-const CONTENT_REDIRECTS_HEIGHT = 200;
-
-const idMap: Record<number, string> = {
-  1: "incomingPath",
-  2: "httpCode",
-  3: "targetPath",
-};
-
-const LOADING_ROWS = Array.from({ length: 3 }).map((_, index) => ({
-  id: idMap[index + 1],
-  incomingPath: "...",
-  httpCode: 301,
-  targetPath: "...",
-}));
 
 type Row = {
   id: string;
@@ -90,46 +73,37 @@ export const Redirects = () => {
       renderHeader: () =>
         isLoading ? <Skeleton width="200px" height={24} /> : "Incoming Path",
       flex: 1,
-      renderCell: (params) => {
-        if (isLoading) return <Skeleton width="100%" height={24} />;
-        return (
-          <Typography variant="body2">{params.row.incomingPath}</Typography>
-        );
-      },
+      renderCell: (params) => (
+        <Typography variant="body2">{params.row.incomingPath}</Typography>
+      ),
     },
     {
       field: "httpCode",
       renderHeader: () =>
         isLoading ? <Skeleton width="150px" height={24} /> : "HTTP Code",
       width: 150,
-      renderCell: (params) => {
-        if (isLoading) return <Skeleton width="100%" height={24} />;
-        return (
-          <Stack direction="row" alignItems="center" gap={1.5} height="100%">
-            <Typography variant="body2">{params.row.httpCode}</Typography>
-            <ArrowForwardRounded fontSize="small" color="action" />
-          </Stack>
-        );
-      },
+      renderCell: (params) => (
+        <Stack direction="row" alignItems="center" gap={1.5} height="100%">
+          <Typography variant="body2">{params.row.httpCode}</Typography>
+          <ArrowForwardRounded fontSize="small" color="action" />
+        </Stack>
+      ),
     },
     {
       field: "targetPath",
       renderHeader: () =>
         isLoading ? <Skeleton width="186px" height={24} /> : "Target Path",
       flex: 1,
-      renderCell: () => {
-        if (isLoading) return <Skeleton width="100%" height={24} />;
-        return (
-          <Link
-            variant="body2"
-            href={`${domain}${web?.path}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {web?.path}
-          </Link>
-        );
-      },
+      renderCell: () => (
+        <Link
+          variant="body2"
+          href={`${domain}${web?.path}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {web?.path}
+        </Link>
+      ),
     },
     {
       field: "actions",
@@ -214,98 +188,106 @@ export const Redirects = () => {
         </Box>
         <Box
           width="100%"
-          height="100%"
           flexGrow={1}
           sx={{
             display: "flex",
             flexDirection: "column",
-            justifyContent: "flex-start",
+            justifyContent: "space-between",
           }}
         >
-          <AutoSizer>
-            {({ height, width }: { height: number; width: number }) => {
-              const containerHeight =
-                height - ADD_SECTION_HEIGHT - CONTENT_REDIRECTS_HEIGHT;
-              const tableHeight = (rows.length + 1) * 52;
-              return (
-                <>
-                  <DataGridPro
-                    data-cy="ContentRedirectsTable"
-                    rowHeight={52}
-                    columns={columns}
-                    rows={isLoading ? (LOADING_ROWS as any) : rows}
-                    hideFooter
-                    disableRowSelectionOnClick
-                    scrollbarSize={0}
-                    slots={{
-                      moreActionsIcon: () =>
-                        isLoading ? (
-                          <Skeleton variant="rounded" height={18} width={18} />
-                        ) : (
-                          <MoreHoriz />
-                        ),
-                    }}
-                    sx={{
-                      height: isLoading
-                        ? (LOADING_ROWS?.length + 1) * 52 + 6
-                        : Math.min(containerHeight, tableHeight) + 6,
-                      minHeight: 108,
-                      width: width,
-                      "& .MuiDataGrid-row": {
-                        "& .MuiDataGrid-cell": {
-                          outline: "none!important",
-                          display: "flex",
-                          flexDirection: "row",
-                          justifyContent: "flex-start",
-                          alignItems: "center",
+          <Box
+            sx={{
+              width: "100%",
+              minHeight: 158,
+              height: rows.length * 52 + 58,
+              maxHeight: 318,
+              display: "flex",
+              flexDirection: "column",
+              overflow: "hidden",
+            }}
+          >
+            <AutoSizer>
+              {({ width, height }: { width: number; height: number }) => (
+                <DataGridPro
+                  data-cy="ContentRedirectsTable"
+                  rowHeight={52}
+                  columns={columns}
+                  rows={isLoading ? [] : rows}
+                  hideFooter
+                  loading={isLoading}
+                  disableRowSelectionOnClick
+                  slots={{
+                    moreActionsIcon: () => <MoreHoriz />,
+                  }}
+                  slotProps={{
+                    loadingOverlay: {
+                      variant: "skeleton",
+                      noRowsVariant: "skeleton",
+                    },
+                  }}
+                  sx={{
+                    width: width,
+                    height: height,
+                    "& .MuiDataGrid-columnHeaderTitleContainerContent": {
+                      fontWeight: 600,
+                    },
+                    "& .MuiDataGrid-row": {
+                      "& .MuiDataGrid-cell": {
+                        outline: "none!important",
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "flex-start",
+                        alignItems: "center",
+                        "& .MuiTypography-root": {
+                          overflow: "hidden",
+                          whiteSpace: "nowrap",
+                          textOverflow: "ellipsis",
+                          width: "100%",
                         },
                       },
-                    }}
-                  />
-                  <Box
-                    width={width}
-                    flexGrow={0}
-                    py={2}
-                    height={ADD_SECTION_HEIGHT}
-                  >
-                    {isLoading ? (
-                      <Skeleton
-                        variant="rounded"
-                        height={38}
-                        width={224}
-                        sx={{ mb: 1 }}
-                      />
-                    ) : (
-                      <Button
-                        data-cy="AddIncomingRedirectButton"
-                        variant="outlined"
-                        color="primary"
-                        startIcon={<AddIcon />}
-                        onClick={() => {
-                          openCreateForm({ target: itemZUID }, true);
-                        }}
-                      >
-                        Add Incoming Redirect
-                      </Button>
-                    )}
-                  </Box>
-                  <Box
-                    width={width}
-                    flexGrow={0}
-                    // py={2}
-                    height={CONTENT_REDIRECTS_HEIGHT}
-                  >
-                    <ContentRedirects
-                      itemZUID={itemZUID}
-                      isLoading={isLoading || isFetchingRedirects}
-                      options={options}
-                      redirects={redirects}
-                    />
-                  </Box>
-                </>
-              );
+                    },
+                    "& .MuiDataGrid-cellSkeleton .MuiSkeleton-root": {
+                      width: "95%!important",
+                      height: "18px!important",
+                    },
+                    '& .MuiDataGrid-cellSkeleton[data-field="actions"] .MuiSkeleton-root':
+                      {
+                        height: "18px!important",
+                        width: "18px!important",
+                      },
+                  }}
+                />
+              )}
+            </AutoSizer>
+          </Box>
+          <Box
+            sx={{
+              width: "100%",
+              height: 262,
+              flexGrow: 1,
             }}
-          </AutoSizer>
+          >
+            <Box flexGrow={0} py={2}>
+              <Button
+                data-cy="AddIncomingRedirectButton"
+                variant="outlined"
+                color="primary"
+                startIcon={<AddIcon />}
+                onClick={() => {
+                  openCreateForm({ target: itemZUID }, true);
+                }}
+              >
+                Add Incoming Redirect
+              </Button>
+            </Box>
+
+            <ContentRedirects
+              itemZUID={itemZUID}
+              isLoading={isLoadingOptions}
+              options={options}
+              redirects={redirects}
+            />
+          </Box>
         </Box>
       </Box>
       {!!redirectToDelete && (

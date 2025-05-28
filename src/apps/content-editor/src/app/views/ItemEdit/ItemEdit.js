@@ -171,10 +171,6 @@ export default function ItemEdit() {
   }, [location.pathname]);
 
   useEffect(() => {
-    console.debug("userRole", userRole);
-  }, [userRole]);
-
-  useEffect(() => {
     if (loading || isLoadingFields) return;
     if (fieldsLoadingError && !!model) {
       dispatch(

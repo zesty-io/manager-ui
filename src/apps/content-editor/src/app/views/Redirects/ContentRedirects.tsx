@@ -26,6 +26,7 @@ import { ContentRedirectModal } from "./ContentRedirectModal";
 import { useDeleteRedirectMutation } from "../../../../../../shell/services/instance";
 import DescriptionIcon from "@mui/icons-material/Description";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
+import { ListOptionSkeleton } from "../../../../../seo/src/app/components/RedirectsDialogProvider/CreateRedirects/SearchField";
 
 const REDIRECTED = {
   button: "Stop Redirecting",
@@ -89,7 +90,7 @@ const RedirectItem = ({
   isLoading?: boolean;
 }) => {
   if (isLoading) {
-    return <Skeleton variant="rounded" height={52} width="100%" />;
+    return <ListOptionSkeleton count={1} />;
   }
   return (
     <>
@@ -107,7 +108,6 @@ const RedirectItem = ({
           flexGrow={1}
           columnGap={1.5}
           sx={{
-            pl: 1,
             width: "100%",
           }}
         >
@@ -166,9 +166,7 @@ const ContentRedirects: FC<ContentRedirectsProps> = ({
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isRedirected, setIsRedirected] = useState(false);
   const [redirection, setRedirection] = useState<Redirects | null>(null);
-  const [redirectOption, setRedirectOption] = useState<ContentItemProps | null>(
-    null
-  );
+
   const currentItem = options?.find((option) => option?.ZUID === itemZUID);
 
   useEffect(() => {
@@ -176,97 +174,90 @@ const ContentRedirects: FC<ContentRedirectsProps> = ({
       (redirect) => redirect?.path === currentItem?.path
     );
 
-    const redirectsTo = options?.find(
-      (option) => option?.ZUID === redirectData?.target
-    );
-
     if (!!redirectData) {
-      setRedirectOption(redirectsTo);
       setRedirection(redirectData);
       setIsRedirected(true);
     } else {
-      setRedirectOption(null);
       setRedirection(null);
       setIsRedirected(false);
     }
   }, [options, itemZUID, redirects, currentItem]);
+
   return (
     <>
-      {isLoading ? (
-        <ContentRedirectsSkeleton />
-      ) : (
-        <Box
-          width={640}
-          flexGrow={0}
-          display="flex"
-          flexDirection="column"
-          alignItems="flex-start"
+      <Box
+        width={640}
+        flexGrow={0}
+        display="flex"
+        flexDirection="column"
+        alignItems="flex-start"
+      >
+        <Typography
+          variant="h5"
+          fontWeight={700}
+          color="text.primary"
+          data-cy="ContentRedirectHeader"
         >
-          <Typography
-            variant="h5"
-            fontWeight={700}
-            color="text.primary"
-            data-cy="ContentRedirectHeader"
-          >
-            {!!isRedirected ? REDIRECTED.header : NOT_REDIRECTED.header}
-          </Typography>
-          <Typography variant="body2" color="text.secondary" pt="4px" pb="12px">
-            {!!isRedirected ? REDIRECTED.subHeader : NOT_REDIRECTED.subHeader}
-          </Typography>
-          {!!isRedirected && !!currentItem && (
-            <Paper
-              elevation={0}
-              variant="outlined"
-              sx={{
-                width: "100%",
-                p: 1,
-                borderColor: "border",
-                borderRadius: 2,
-              }}
-            >
-              <RedirectItem
-                ZUID={redirection?.ZUID}
-                targetType={redirection?.targetType}
-                path={redirection?.path}
-                target={
-                  redirection?.targetType !== "page"
-                    ? redirection?.target
-                    : options?.find(
-                        (option) => option?.ZUID === redirection?.target
-                      )?.path
-                }
-                langCode={
-                  redirection?.targetType !== "page"
-                    ? ""
-                    : options?.find(
-                        (option) => option?.ZUID === redirection?.target
-                      )?.langCode
-                }
-                label={
-                  redirection?.targetType !== "page"
-                    ? ""
-                    : options?.find(
-                        (option) => option?.ZUID === redirection?.target
-                      )?.label
-                }
-                isLoading={isLoading}
-              />
-            </Paper>
-          )}
-          <Button
-            data-cy="RedirectContentItemButton"
+          {!!isRedirected ? REDIRECTED.header : NOT_REDIRECTED.header}
+        </Typography>
+        <Typography variant="body2" color="text.secondary" pt={0.5} pb={1.5}>
+          {!!isRedirected ? REDIRECTED.subHeader : NOT_REDIRECTED.subHeader}
+        </Typography>
+        {!isLoading && (!isRedirected || !currentItem) ? null : (
+          <Paper
+            elevation={0}
             variant="outlined"
-            color={!!isRedirected ? "primary" : "error"}
-            startIcon={!!isRedirected ? REDIRECTED.icon : NOT_REDIRECTED.icon}
-            onClick={() =>
-              !!isRedirected ? setIsDeleteModalOpen(true) : setIsOpen(true)
-            }
-            sx={{ mt: 1.5 }}
+            sx={{
+              width: "100%",
+              py: 1,
+              px: 2,
+              borderColor: "border",
+              borderRadius: 2,
+            }}
           >
-            {!!isRedirected ? REDIRECTED.button : NOT_REDIRECTED.button}
-          </Button>
-        </Box>
-      )}
+            <RedirectItem
+              ZUID={redirection?.ZUID}
+              targetType={redirection?.targetType}
+              path={redirection?.path}
+              target={
+                redirection?.targetType !== "page"
+                  ? redirection?.target
+                  : options?.find(
+                      (option) => option?.ZUID === redirection?.target
+                    )?.path
+              }
+              langCode={
+                redirection?.targetType !== "page"
+                  ? ""
+                  : options?.find(
+                      (option) => option?.ZUID === redirection?.target
+                    )?.langCode
+              }
+              label={
+                redirection?.targetType !== "page"
+                  ? ""
+                  : options?.find(
+                      (option) => option?.ZUID === redirection?.target
+                    )?.label
+              }
+              isLoading={isLoading}
+            />
+          </Paper>
+        )}
+
+        <Button
+          data-cy="RedirectContentItemButton"
+          variant="outlined"
+          color={!!isRedirected ? "primary" : "error"}
+          startIcon={!!isRedirected ? REDIRECTED.icon : NOT_REDIRECTED.icon}
+          onClick={() =>
+            !!isRedirected ? setIsDeleteModalOpen(true) : setIsOpen(true)
+          }
+          sx={{ mt: 1.5 }}
+        >
+          {!!isRedirected ? REDIRECTED.button : NOT_REDIRECTED.button}
+        </Button>
+      </Box>
       {isOpen && (
         <ContentRedirectModal
           open={isOpen}
