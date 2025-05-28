@@ -105,11 +105,10 @@ const RedirectItem = ({
           justifyContent="space-between"
           alignItems="center"
           flexGrow={1}
-          columnGap="12px"
+          columnGap={1.5}
           sx={{
-            pl: "8px",
+            pl: 1,
             width: "100%",
-            height: "52px",
           }}
         >
           {targetType === "page" ? (
@@ -136,7 +135,6 @@ const RedirectItem = ({
               textOverflow="ellipsis"
               overflow="hidden"
               fontWeight={500}
-              px="2px"
             >
               {`(${langCode}) ${label?.trim()}`}
             </Typography>
@@ -148,7 +146,6 @@ const RedirectItem = ({
               textOverflow="ellipsis"
               maxWidth="100%"
               overflow="hidden"
-              px="2px"
             >
               {target}
             </Typography>
@@ -222,10 +219,9 @@ const ContentRedirects: FC<ContentRedirectsProps> = ({
               variant="outlined"
               sx={{
                 width: "100%",
-
-                py: "6px",
-                px: 1,
+                p: 1,
                 borderColor: "border",
+                borderRadius: 2,
               }}
             >
               <RedirectItem
@@ -265,7 +261,7 @@ const ContentRedirects: FC<ContentRedirectsProps> = ({
             onClick={() =>
               !!isRedirected ? setIsDeleteModalOpen(true) : setIsOpen(true)
             }
-            sx={{ mt: "12px" }}
+            sx={{ mt: 1.5 }}
           >
             {!!isRedirected ? REDIRECTED.button : NOT_REDIRECTED.button}
           </Button>

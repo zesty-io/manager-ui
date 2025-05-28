@@ -58,6 +58,8 @@ import { fetchItemPublishings } from "../../../../../../shell/store/content";
 import { Redirects } from "../Redirects";
 import RedirectsDialogContextProvider from "../../../../../seo/src/app/components/RedirectsDialogProvider";
 
+const CONTRIBUTOR_ROLE_ZUID = "31-71cfc74-c0ntr1b0t0r";
+
 const selectItemHeadTags = createSelector(
   (state) => state.headTags,
   (_, itemZUID) => itemZUID,
@@ -167,6 +169,10 @@ export default function ItemEdit() {
     setFieldErrors({});
     setSEOErrors({});
   }, [location.pathname]);
+
+  useEffect(() => {
+    console.debug("userRole", userRole);
+  }, [userRole]);
 
   useEffect(() => {
     if (loading || isLoadingFields) return;
@@ -513,165 +519,167 @@ export default function ItemEdit() {
               isDisabled: duoModeDisabled,
             }}
           >
-            <RedirectsDialogContextProvider>
-              <Box
-                component="section"
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  height: "100%",
-                  bgcolor: "grey.50",
-                }}
-              >
-                <ItemEditHeader
-                  onSave={() => save().catch((err) => console.error(err))}
-                  saving={saving}
-                  hasError={Object.keys(fieldErrors)?.length}
-                  isLoadingItem={loading}
+            <Box
+              component="section"
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                height: "100%",
+                bgcolor: "grey.50",
+              }}
+            >
+              <ItemEditHeader
+                onSave={() => save().catch((err) => console.error(err))}
+                saving={saving}
+                hasError={Object.keys(fieldErrors)?.length}
+                isLoadingItem={loading}
+              />
+              <Switch>
+                <Route
+                  exact
+                  path="/content/:modelZUID/:itemZUID/head"
+                  render={({ match }) => {
+                    // All roles except contributor are allowed to edit the document head
+                    return userRole.systemRoleZUID !== CONTRIBUTOR_ROLE_ZUID ? (
+                      <ItemHead
+                        instance={instance}
+                        modelZUID={modelZUID}
+                        model={model}
+                        itemZUID={itemZUID}
+                        item={item}
+                        tags={tags}
+                        dispatch={dispatch}
+                      />
+                    ) : (
+                      <Redirect
+                        to={`/content/${match.params.modelZUID}/${match.params.itemZUID}`}
+                      />
+                    );
+                  }}
                 />
-                <Switch>
-                  <Route
-                    exact
-                    path="/content/:modelZUID/:itemZUID/head"
-                    render={({ match }) => {
-                      // All roles except contributor are allowed to edit the document head
-                      return userRole.name !== "Contributor" ? (
-                        <ItemHead
+                <Route
+                  exact
+                  path="/content/:modelZUID/:itemZUID/meta"
+                  render={() => (
+                    <AIGeneratorProvider>
+                      <Meta
+                        ref={metaRef}
+                        onUpdateSEOErrors={(errors) => {
+                          setSEOErrors(errors);
+                        }}
+                        isSaving={saving}
+                        errors={SEOErrors}
+                        errorComponent={
+                          saveClicked &&
+                          hasSEOErrors && (
+                            <FieldError
+                              ref={fieldErrorRef}
+                              errors={{ ...fieldErrors, ...SEOErrors }}
+                              fields={activeFields}
+                            />
+                          )
+                        }
+                      />
+                    </AIGeneratorProvider>
+                  )}
+                />
+                <Route
+                  exact
+                  path="/content/:modelZUID/:itemZUID/analytics"
+                  render={() => <Analytics item={item} />}
+                />
+                <Route
+                  path="/content/:contentModelZUID/:contentItemZUID/api"
+                  render={() => (
+                    <Box
+                      sx={{
+                        color: "text.primary",
+                        flex: "1",
+                        overflow: "hidden",
+                        "*": {
+                          boxSizing: "border-box",
+                        },
+                        bgcolor: "grey.50",
+                      }}
+                    >
+                      <Route
+                        exact
+                        path="/content/:contentModelZUID/:contentItemZUID/api/:type"
+                        component={ApiDetails}
+                      />
+                      <Route
+                        exact
+                        path="/content/:contentModelZUID/:contentItemZUID/api"
+                        component={ApiCardList}
+                      />
+                    </Box>
+                  )}
+                />
+                <Route
+                  exact
+                  path="/content/:modelZUID/:itemZUID/publishings"
+                  render={() => (
+                    <PublishState
+                      reloadItem={() => load(modelZUID, itemZUID)}
+                    />
+                  )}
+                />
+                <Route
+                  exact
+                  path={[
+                    "/content/:modelZUID/:itemZUID",
+                    "/content/:modelZUID/:itemZUID/comment/:resourceZUID",
+                    "/content/:modelZUID/:itemZUID/comment/:resourceZUID/:commentZUID",
+                    "/blocks/:modelZUID/:itemZUID",
+                    "/blocks/:modelZUID/:itemZUID/comment/:resourceZUID",
+                    "/blocks/:modelZUID/:itemZUID/comment/:resourceZUID/:commentZUID",
+                  ]}
+                  render={() => (
+                    <ItemLockContext.Provider value={isLocked}>
+                      <AIGeneratorProvider>
+                        <Content
                           instance={instance}
                           modelZUID={modelZUID}
                           model={model}
+                          fields={fields}
                           itemZUID={itemZUID}
                           item={item}
-                          tags={tags}
-                          dispatch={dispatch}
-                        />
-                      ) : (
-                        <Redirect
-                          to={`/content/${match.params.modelZUID}/${match.params.itemZUID}`}
-                        />
-                      );
-                    }}
-                  />
-                  <Route
-                    exact
-                    path="/content/:modelZUID/:itemZUID/meta"
-                    render={() => (
-                      <AIGeneratorProvider>
-                        <Meta
-                          ref={metaRef}
-                          onUpdateSEOErrors={(errors) => {
-                            setSEOErrors(errors);
-                          }}
-                          isSaving={saving}
-                          errors={SEOErrors}
-                          errorComponent={
-                            saveClicked &&
-                            hasSEOErrors && (
-                              <FieldError
-                                ref={fieldErrorRef}
-                                errors={{ ...fieldErrors, ...SEOErrors }}
-                                fields={activeFields}
-                              />
-                            )
+                          user={user}
+                          onSave={() =>
+                            save().catch((err) => console.error(err))
                           }
+                          dispatch={dispatch}
+                          loading={loading}
+                          saving={saving}
+                          saveClicked={saveClicked}
+                          onUpdateFieldErrors={(errors) => {
+                            setFieldErrors(errors);
+                          }}
+                          fieldErrors={fieldErrors}
+                          hasErrors={hasErrors}
+                          activeFields={activeFields}
+                          fieldErrorRef={fieldErrorRef}
                         />
                       </AIGeneratorProvider>
-                    )}
-                  />
-                  <Route
-                    exact
-                    path="/content/:modelZUID/:itemZUID/analytics"
-                    render={() => <Analytics item={item} />}
-                  />
-                  <Route
-                    path="/content/:contentModelZUID/:contentItemZUID/api"
-                    render={() => (
-                      <Box
-                        sx={{
-                          color: "text.primary",
-                          flex: "1",
-                          overflow: "hidden",
-                          "*": {
-                            boxSizing: "border-box",
-                          },
-                          bgcolor: "grey.50",
-                        }}
-                      >
-                        <Route
-                          exact
-                          path="/content/:contentModelZUID/:contentItemZUID/api/:type"
-                          component={ApiDetails}
-                        />
-                        <Route
-                          exact
-                          path="/content/:contentModelZUID/:contentItemZUID/api"
-                          component={ApiCardList}
-                        />
-                      </Box>
-                    )}
-                  />
-                  <Route
-                    exact
-                    path="/content/:modelZUID/:itemZUID/publishings"
-                    render={() => (
-                      <PublishState
-                        reloadItem={() => load(modelZUID, itemZUID)}
-                      />
-                    )}
-                  />
-                  <Route
-                    exact
-                    path={[
-                      "/content/:modelZUID/:itemZUID",
-                      "/content/:modelZUID/:itemZUID/comment/:resourceZUID",
-                      "/content/:modelZUID/:itemZUID/comment/:resourceZUID/:commentZUID",
-                      "/blocks/:modelZUID/:itemZUID",
-                      "/blocks/:modelZUID/:itemZUID/comment/:resourceZUID",
-                      "/blocks/:modelZUID/:itemZUID/comment/:resourceZUID/:commentZUID",
-                    ]}
-                    render={() => (
-                      <ItemLockContext.Provider value={isLocked}>
-                        <AIGeneratorProvider>
-                          <Content
-                            instance={instance}
-                            modelZUID={modelZUID}
-                            model={model}
-                            fields={fields}
-                            itemZUID={itemZUID}
-                            item={item}
-                            user={user}
-                            onSave={() =>
-                              save().catch((err) => console.error(err))
-                            }
-                            dispatch={dispatch}
-                            loading={loading}
-                            saving={saving}
-                            saveClicked={saveClicked}
-                            onUpdateFieldErrors={(errors) => {
-                              setFieldErrors(errors);
-                            }}
-                            fieldErrors={fieldErrors}
-                            hasErrors={hasErrors}
-                            activeFields={activeFields}
-                            fieldErrorRef={fieldErrorRef}
-                          />
-                        </AIGeneratorProvider>
-                      </ItemLockContext.Provider>
-                    )}
-                  />
-                  <Route
-                    exact
-                    path="/content/:modelZUID/:itemZUID/freestyle"
-                    render={() => <FreestyleWrapper />}
-                  />
-                  <Route
-                    exact
-                    path="/content/:modelZUID/:itemZUID/redirects"
-                    render={() => <Redirects />}
-                  />
-                </Switch>
-              </Box>
-            </RedirectsDialogContextProvider>
+                    </ItemLockContext.Provider>
+                  )}
+                />
+                <Route
+                  exact
+                  path="/content/:modelZUID/:itemZUID/freestyle"
+                  render={() => <FreestyleWrapper />}
+                />
+                <Route
+                  exact
+                  path="/content/:modelZUID/:itemZUID/redirects"
+                  render={() => (
+                    <RedirectsDialogContextProvider>
+                      <Redirects />
+                    </RedirectsDialogContextProvider>
+                  )}
+                />
+              </Switch>
+            </Box>
           </DuoModeContext.Provider>
         </>
       )}

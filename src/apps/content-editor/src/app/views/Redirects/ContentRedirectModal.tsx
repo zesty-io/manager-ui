@@ -153,7 +153,7 @@ export const ContentRedirectModal: FC<ContentRedirectModalProps> = ({
         >
           Redirect this Content Item
         </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mt: "8px" }}>
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
           Once your redirect your content item, it will be unpublished and users
           won't be able to access this content item at its current URL. They'll
           be automatically sent to the destination URL you provide.
@@ -166,9 +166,9 @@ export const ContentRedirectModal: FC<ContentRedirectModalProps> = ({
           flexDirection="column"
           justifyContent="flex-start"
           alignItems="flex-start"
-          rowGap="12px"
+          rowGap={1.5}
           py={0}
-          px="20px"
+          px={2.5}
         >
           <Box
             width="100%"
@@ -196,7 +196,7 @@ export const ContentRedirectModal: FC<ContentRedirectModalProps> = ({
               color="text.primary"
               fontWeight={600}
               noWrap
-              mb="20px"
+              mb={2.5}
             >
               NEW PATH
             </Typography>
@@ -206,7 +206,7 @@ export const ContentRedirectModal: FC<ContentRedirectModalProps> = ({
               flexDirection="column"
               justifyContent="flex-start"
               alignItems="flex-start"
-              rowGap="20px"
+              rowGap={2.5}
             >
               <FieldWrapper label="Type" tooltip={TOOL_TIPS.targetType}>
                 <TextField
@@ -260,7 +260,7 @@ export const ContentRedirectModal: FC<ContentRedirectModalProps> = ({
           </Box>
         </Box>
       </DialogContent>
-      <DialogActions sx={{ p: "20px", pl: "20px", pr: "20px", pt: "30px" }}>
+      <DialogActions sx={{ px: 2.5, pb: 2.5, pt: 3.75 }}>
         <Button variant="text" color="inherit" onClick={onClose}>
           Don't Create
         </Button>

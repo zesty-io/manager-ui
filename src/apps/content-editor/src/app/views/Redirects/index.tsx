@@ -259,13 +259,6 @@ export const Redirects = () => {
                           justifyContent: "flex-start",
                           alignItems: "center",
                         },
-                        '& .MuiDataGrid-cell[data-field="actions"]': {
-                          position: "absolute!important",
-                          right: "5px",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        },
                       },
                     }}
                   />
