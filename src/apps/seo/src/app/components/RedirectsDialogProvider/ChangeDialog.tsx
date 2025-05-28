@@ -30,8 +30,8 @@ export type ChangeRedirectProps = {
 export type ChangeDialogProps = {
   open: boolean;
   onClose: () => void;
-  redirect?: ChangeRedirectProps | null;
-  newPath?: string;
+  redirect: ChangeRedirectProps | null;
+  newPath: string;
 };
 
 export const ChangeDialog: FC<ChangeDialogProps> = ({

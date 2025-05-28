@@ -102,7 +102,7 @@ export const ItemEditHeaderActions = ({
     ContentItemWithDirtyAndPublishing[]
   >([]);
   const [isPublishing, setIsPublishing] = useState(false);
-  const [isCheckingUrlPathChange, setIsCheckingUrlPathChange] = useState(false);
+  const [isCheckingPathUpdate, setIsCheckingPathUpdate] = useState(false);
   const item = useSelector(
     (state: AppState) =>
       state.content[itemZUID] as ContentItemWithDirtyAndPublishing
@@ -152,50 +152,50 @@ export const ItemEditHeaderActions = ({
 
   useEffect(() => {
     if (
-      isLoadingVersions ||
-      isFetchingVersions ||
-      isFetching ||
-      !isCheckingUrlPathChange
-    )
-      return;
-    const publishedItemVersions = itemVersions
-      ?.filter((ver) => !!ver?.publishAt)
-      ?.map((ver) => ({
-        ZUID: ver?.meta?.ZUID,
-        publishedAt: ver?.publishAt,
-        path: ver?.web?.path,
-        version: ver?.web?.version,
-        isActive: ver?.web?.versionZUID === activePublishing?.versionZUID,
-      }))
-      .sort((a, b) => {
-        return (
-          new Date(b?.publishedAt).getTime() -
-          new Date(a?.publishedAt).getTime()
-        );
-      });
+      !isLoadingVersions &&
+      !isFetchingVersions &&
+      !isFetching &&
+      !!isCheckingPathUpdate
+    ) {
+      const publishedItemVersions = itemVersions
+        ?.filter((ver) => !!ver?.publishAt)
+        ?.map((ver) => ({
+          ZUID: ver?.meta?.ZUID,
+          publishedAt: ver?.publishAt,
+          path: ver?.web?.path,
+          version: ver?.web?.version,
+          isActive: ver?.web?.versionZUID === activePublishing?.versionZUID,
+        }))
+        .sort((a, b) => {
+          return (
+            new Date(b?.publishedAt).getTime() -
+            new Date(a?.publishedAt).getTime()
+          );
+        });
 
-    if (publishedItemVersions?.length < 2) return;
-    const activeVersion = publishedItemVersions[0];
-    const previousVersion = publishedItemVersions[1];
-    const pathHasChanged =
-      activeVersion?.path?.trim() !== previousVersion?.path?.trim();
-    if (pathHasChanged) {
-      const redirect = {
-        targetType: "page" as RedirectsTargetType,
-        target: item?.meta?.ZUID,
-        path: previousVersion?.path,
-        code: 301 as RedirectsCodes,
-      };
-      openChangeDialog(redirect, activeVersion?.path);
+      if (publishedItemVersions?.length < 2) return;
+      const activeVersion = publishedItemVersions[0];
+      const previousVersion = publishedItemVersions[1];
+      const pathHasChanged =
+        activeVersion?.path?.trim() !== previousVersion?.path?.trim();
+      if (pathHasChanged) {
+        const redirect = {
+          targetType: "page" as RedirectsTargetType,
+          target: item?.meta?.ZUID,
+          path: previousVersion?.path,
+          code: 301 as RedirectsCodes,
+        };
+        openChangeDialog(redirect, activeVersion?.path);
+      }
+      setIsCheckingPathUpdate(false);
     }
-    setIsCheckingUrlPathChange(false);
   }, [
     itemVersions,
     isLoadingVersions,
     isFetchingVersions,
     isFetching,
     activePublishing,
-    isCheckingUrlPathChange,
+    isCheckingPathUpdate,
   ]);
 
   const saveShortcut = useMetaKey("s", () => {
@@ -376,7 +376,7 @@ export const ItemEditHeaderActions = ({
         dispatch(fetchItemPublishings());
         refetchVersions();
       } finally {
-        setIsCheckingUrlPathChange(true);
+        setIsCheckingPathUpdate(true);
         setIsPublishing(false);
         setIsConfirmPublishModalOpen(false);
       }
