@@ -323,7 +323,7 @@ export const FieldFormInput = ({
             height={18}
           >
             <Typography component="span" variant="body2" fontWeight={600}>
-              {fieldConfig.label}
+              {fieldConfig.label} {fieldConfig.required && "*"}
             </Typography>
             {fieldConfig.label?.toLowerCase().includes("description") && (
               <Typography
