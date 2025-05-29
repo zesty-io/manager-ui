@@ -1,23 +1,10 @@
 import { useHistory, useParams as useRouterParams } from "react-router";
-import {
-  Box,
-  CircularProgress,
-  Chip,
-  Typography,
-  Link,
-  Checkbox,
-  Stack,
-} from "@mui/material";
-import { ImageRounded } from "@mui/icons-material";
-import { useGetContentModelFieldsQuery } from "../../../../../../shell/services/instance";
+import { Box, Typography, Link, Checkbox } from "@mui/material";
 import {
   DataGridPro,
   GridRenderCellParams,
-  GRID_CHECKBOX_SELECTION_COL_DEF,
   useGridApiRef,
   GridInitialState,
-  GridComparatorFn,
-  GridPinnedColumns,
 } from "@mui/x-data-grid-pro";
 import {
   memo,
@@ -28,7 +15,10 @@ import {
   useContext,
 } from "react";
 import AutoSizer, { Size } from "react-virtualized-auto-sizer";
-import { ContentItem } from "../../../../../../shell/services/types";
+import {
+  ContentItem,
+  ContentModelField,
+} from "../../../../../../shell/services/types";
 import { useStagedChanges } from "./StagedChangesContext";
 import { OneToManyCell } from "./TableCells/OneToManyCell";
 import { UserCell } from "./TableCells/UserCell";
@@ -41,12 +31,15 @@ import { currencies } from "../../../../../../shell/components/FieldTypeCurrency
 import { Currency } from "../../../../../../shell/components/FieldTypeCurrency/currencies";
 import { ImageCell } from "./TableCells/ImageCell";
 import { SingleRelationshipCell } from "./TableCells/SingleRelationshipCell";
-import { useParams } from "../../../../../../shell/hooks/useParams";
 import { TableSortContext } from "./TableSortProvider";
+import { FIELD_SKELETON_MAP, gridLoadingStyles } from "./Loader";
+import { Skeleton } from "@mui/material";
+import DataGridSkeletonCell from "../../../../../../shell/components/DataGridSkeletonCell";
 
 type ItemListTableProps = {
   loading: boolean;
   rows: ContentItem[];
+  fields: ContentModelField[];
   noRowsOverlay: () => JSX.Element;
 };
 
@@ -265,7 +258,7 @@ const fieldTypeColumnConfigMap = {
 } as const;
 
 export const ItemListTable = memo(
-  ({ loading, rows, noRowsOverlay }: ItemListTableProps) => {
+  ({ loading, rows, fields, noRowsOverlay }: ItemListTableProps) => {
     const { modelZUID } = useRouterParams<{ modelZUID: string }>();
     const apiRef = useGridApiRef();
     const [initialState, setInitialState] = useState<GridInitialState>();
@@ -274,8 +267,6 @@ export const ItemListTable = memo(
     const [selectedItems, setSelectedItems] = useSelectedItems();
     const [sortModel, setSortModel] = useContext(TableSortContext);
     const [pinnedColumns, setPinnedColumns] = useState({});
-
-    const { data: fields } = useGetContentModelFieldsQuery(modelZUID);
 
     const saveSnapshot = useCallback(() => {
       if (apiRef?.current && localStorage) {
@@ -319,6 +310,11 @@ export const ItemListTable = memo(
     }, [saveSnapshot, fields, modelZUID]);
 
     const columns = useMemo(() => {
+      const gridState = localStorage?.getItem(`${modelZUID}-dataGridState`);
+      const colDimensions = gridState
+        ? JSON.parse(gridState)?.columns?.dimensions
+        : null;
+
       let result: any[] = [
         {
           field: "version",
@@ -326,6 +322,7 @@ export const ItemListTable = memo(
           width: 64,
           sortable: true,
           filterable: false,
+          cellClassName: "version",
           renderCell: (params: GridRenderCellParams) => (
             <VersionCell params={params} />
           ),
@@ -340,6 +337,7 @@ export const ItemListTable = memo(
               field: field.name,
               headerName: field.label,
               filterable: false,
+              cellClassName: field?.datatype,
               valueGetter: (params: any, row: any) => {
                 if (field.datatype === "currency") {
                   return {
@@ -360,21 +358,24 @@ export const ItemListTable = memo(
             })),
         ];
       }
-      return [...result, ...METADATA_COLUMNS];
-    }, [fields]);
-
-    if (!initialState) {
-      return (
-        <Box
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          height="100%"
-        >
-          <CircularProgress />
-        </Box>
-      );
-    }
+      result = [
+        ...result,
+        ...METADATA_COLUMNS?.map((column) => ({
+          ...column,
+          cellClassName: column.field,
+          flex: !fields?.length ? 1 : 0,
+        })),
+      ];
+      return result.map((column) => {
+        const { headerName, ...other } = column;
+        return {
+          ...other,
+          width: colDimensions?.[column.field]?.width || column.width,
+          renderHeader: () =>
+            loading ? FIELD_SKELETON_MAP.header : headerName,
+        };
+      });
+    }, [fields, loading]);
 
     return (
       <AutoSizer>
@@ -382,7 +383,7 @@ export const ItemListTable = memo(
           <DataGridPro
             apiRef={apiRef}
             loading={loading}
-            rows={rows}
+            rows={loading ? [] : rows}
             columns={columns}
             style={{
               width,
@@ -413,12 +414,18 @@ export const ItemListTable = memo(
             }}
             slots={{
               noRowsOverlay: noRowsOverlay,
-              baseCheckbox: (props: any) => (
-                <Checkbox
-                  disabled={stagedChanges && Object.keys(stagedChanges)?.length}
-                  {...props}
-                />
-              ),
+              baseCheckbox: (props: any) =>
+                loading ? (
+                  <Skeleton variant="rounded" width="18px" height="18px" />
+                ) : (
+                  <Checkbox
+                    disabled={
+                      stagedChanges && Object.keys(stagedChanges)?.length
+                    }
+                    {...props}
+                  />
+                ),
+              skeletonCell: DataGridSkeletonCell,
             }}
             slotProps={{
               baseTooltip: {
@@ -435,6 +442,10 @@ export const ItemListTable = memo(
                     ],
                   },
                 },
+              },
+              loadingOverlay: {
+                variant: "skeleton",
+                noRowsVariant: "skeleton",
               },
             }}
             getRowClassName={(params) => {
@@ -473,6 +484,7 @@ export const ItemListTable = memo(
               params.row?.meta?.version &&
               !(stagedChanges && Object.keys(stagedChanges)?.length)
             }
+            onColumnWidthChange={saveSnapshot}
             sx={{
               backgroundColor: "common.white",
               ".MuiDataGrid-row": {
@@ -515,6 +527,11 @@ export const ItemListTable = memo(
               "& [data-cy='NoResults']": {
                 pointerEvents: "all",
               },
+              "& .MuiDataGrid-row.MuiDataGrid-rowSkeleton": {
+                borderBottom: "1px solid",
+                borderColor: "border",
+              },
+              ...(loading ? gridLoadingStyles : {}),
             }}
           />
         )}
