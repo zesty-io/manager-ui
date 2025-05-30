@@ -56,7 +56,7 @@ Cypress.Commands.add("blockAnnouncements", () => {
 
 Cypress.Commands.add(
   "apiRequest",
-  ({ method = "GET", url = "", body = undefined }) => {
+  ({ method = "GET", url = "", body = undefined, ...otherOptions }) => {
     return cy.getCookie(Cypress.env("COOKIE_NAME")).then((cookie) => {
       const token = cookie?.value;
       return cy
@@ -65,6 +65,7 @@ Cypress.Commands.add(
           method,
           headers: { authorization: `Bearer ${token}` },
           ...(body ? { body: body } : {}),
+          ...otherOptions,
         })
         .then((response) => ({
           status: response?.isOkStatusCode ? "success" : "error",
