@@ -1,5 +1,6 @@
 import parse from "csv-parse/lib/es5/sync";
-import { notify } from "shell/store/notifications";
+import { notify } from "../../../../shell/store/notifications";
+
 export const IMPORT_LOADING = "IMPORT_LOADING";
 export const IMPORT_REDIRECTS = "IMPORT_REDIRECTS";
 export const IMPORT_CODE = "IMPORT_CODE";
@@ -178,6 +179,52 @@ export function CSVImporter(evt) {
       }
     }
   };
+}
+
+export async function importCSVFile(file, redirects, dispatch) {
+  const CSV_REGEXP = /.*\.csv$/;
+  try {
+    if (
+      file.type !== "text/csv" &&
+      file.type !== "text/xml" &&
+      !file.name.match(CSV_REGEXP) // workaround for Windows CSV which have no MIME type
+    )
+      return {
+        status: "error",
+        data: "Invalid file selected",
+      };
+
+    const content = await readFileAsText(file);
+    let targets = {};
+    if (file.type === "text/csv" || file.name.match(CSV_REGEXP)) {
+      const [columns, imports] = CSVToArray(content);
+      targets = compareKeys(imports, redirects);
+    } else if (file.type === "text/xml") {
+      const parser = new DOMParser();
+      const xml = parser.parseFromString(content, "text/xml");
+      targets = parseXML(xml, dispatch);
+    }
+    targets = findTargetPages(targets);
+
+    return {
+      status: "success",
+      targets: targets,
+    };
+  } catch (error) {
+    return {
+      status: "error",
+      message: error.message,
+    };
+  }
+}
+
+async function readFileAsText(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (event) => resolve(event.target?.result);
+    reader.onerror = () => reject(new Error("Failed to read file"));
+    reader.readAsText(file);
+  });
 }
 
 /**
