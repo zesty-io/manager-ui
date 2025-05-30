@@ -275,6 +275,12 @@ function CustomField(props: any) {
   const [dateValue, setDateValue] = useState<string | null>(null);
   const { value, ...rest } = props;
 
+  useEffect(() => {
+    if (value) {
+      setDateValue(format(value, "MMM dd, yyyy"));
+    }
+  }, [value]);
+
   return (
     <TextField
       data-cy="datePickerInputField"

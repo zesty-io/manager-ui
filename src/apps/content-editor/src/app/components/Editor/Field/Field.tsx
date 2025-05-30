@@ -46,6 +46,7 @@ import {
 } from "../../../../../../../shell/services/types";
 import { FieldTypeMedia } from "../../FieldTypeMedia";
 import { debounce, parseInt } from "lodash";
+import { useRegisterRef } from "../../../../../../../engine/useRegisterRef";
 
 const AIFieldShell = withAI(FieldShell);
 
@@ -108,6 +109,7 @@ export const Field = ({
   const version = item?.meta?.version;
   const fieldData = fields?.find((field) => field.ZUID === ZUID);
   const [inputValue, setInputValue] = useState(value || "");
+  const [rerenderKey, setRerenderKey] = useState(0);
 
   const debouncedOnChange = useMemo(() => debounce(onChange, 300), [onChange]);
 
@@ -123,6 +125,65 @@ export const Field = ({
   useEffect(() => {
     setInputValue(value || "");
   }, [value]);
+
+  const handle = useMemo<any>(
+    () => ({
+      setValue: (val: string) => {
+        const el = document.getElementById(ZUID);
+        if (el) {
+          el.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest",
+            inline: "center",
+          });
+        }
+
+        const inputEl = el.querySelector(
+          'input, textarea, [contenteditable="true"]'
+        ) as HTMLElement | null;
+        if (inputEl && typeof inputEl.focus === "function") {
+          inputEl.focus();
+        }
+
+        if (datatype === "number" || datatype === "yes_no") {
+          onChange(Number(val), name);
+        } else {
+          onChange(val, name);
+        }
+
+        setRerenderKey((prevKey: number) => prevKey + 1);
+      },
+    }),
+    []
+  );
+
+  useRegisterRef(
+    name,
+    handle,
+    {
+      ZUID,
+      contentModelZUID,
+      currentValue: value,
+      datatype,
+      required,
+      settings,
+      label,
+      name,
+      maxLength,
+      minLength,
+    },
+    {
+      skip: [
+        "uuid",
+        "images",
+        "files",
+        "internal_link",
+        "one_to_one",
+        "one_to_many",
+        "block_selector",
+      ].includes(datatype),
+    }
+  );
 
   const renderMediaModal = () => {
     return ReactDOM.createPortal(
@@ -329,6 +390,7 @@ export const Field = ({
             value={value}
           >
             <FieldTypeTinyMCE
+              key={rerenderKey}
               name={name}
               value={value}
               version={version}
@@ -353,6 +415,7 @@ export const Field = ({
       return (
         <div className={styles.WYSIWYGFieldType}>
           <AIFieldShell
+            key={rerenderKey}
             ZUID={fieldData?.ZUID}
             name={fieldData?.name}
             label={fieldData?.label}
