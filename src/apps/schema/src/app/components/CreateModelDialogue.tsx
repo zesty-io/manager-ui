@@ -17,6 +17,7 @@ import {
   TextField,
   Tooltip,
   Checkbox,
+  setRef,
 } from "@mui/material";
 import { useEffect, useReducer, useState } from "react";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
@@ -89,6 +90,7 @@ export const CreateModelDialogue = ({
   modelType = "templateset",
   typeIsSet = false,
 }: Props) => {
+  const [referenceIDError, setReferenceIDError] = useState<string | null>(null);
   const [type, setType] = useState(modelType);
   const [isTypeSet, setIsTypeSet] = useState(typeIsSet);
   const dispatch = useDispatch();
@@ -100,6 +102,10 @@ export const CreateModelDialogue = ({
 
       if (prev.label !== newModel.label) {
         newModel.name = newModel.label.toLowerCase().replace(/\W/g, "_");
+
+        if (!!referenceIDError) {
+          setReferenceIDError(null);
+        }
       } else {
         newModel.name = newModel.name.toLowerCase().replace(/\W/g, "_");
       }
@@ -221,24 +227,28 @@ export const CreateModelDialogue = ({
   useEffect(() => {
     if (error) {
       // @ts-ignore
-      let message = error?.data?.error || "Failed to create model",
-        heading = "";
-      // @ts-ignore
-      if (error?.data?.error.includes("label cannot be blank")) {
-        message = "Please Add Display Name";
-        heading = "Cannot Create Model";
-        // @ts-ignore
-      } else if (error?.data?.error.includes("name is already in use")) {
-        message = "Display name is already in use";
-        heading = "Cannot Create Model";
+      const errorMessage = error?.data?.error || "Failed to create model";
+
+      if (errorMessage.includes("name is already in use")) {
+        setReferenceIDError(
+          "This Reference ID is already in use. Please enter a different one."
+        );
+      } else if (errorMessage.includes("label cannot be blank")) {
+        dispatch(
+          notify({
+            message: "Please Add Display Name",
+            heading: "Cannot Create Model",
+            kind: "error",
+          })
+        );
+      } else {
+        dispatch(
+          notify({
+            message: errorMessage,
+            kind: "error",
+          })
+        );
       }
-      dispatch(
-        notify({
-          message,
-          heading,
-          kind: "error",
-        })
-      );
     }
   }, [error]);
 
@@ -469,10 +479,16 @@ export const CreateModelDialogue = ({
                       }}
                       placeholder="Auto-Generated from Display Name"
                       value={model.name}
-                      onChange={(event: any) =>
-                        updateModel({ name: event.target.value })
-                      }
+                      onChange={(event: any) => {
+                        updateModel({ name: event.target.value });
+
+                        if (!!referenceIDError) {
+                          setReferenceIDError(null);
+                        }
+                      }}
                       fullWidth
+                      error={!!referenceIDError}
+                      helperText={referenceIDError}
                     />
                   </Box>
                   <SelectModelParentInput
