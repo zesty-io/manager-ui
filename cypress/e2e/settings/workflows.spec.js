@@ -461,6 +461,7 @@ describe("Filter Active and Deactivated Status Labels", { retries: 1 }, () => {
 });
 
 Cypress.Commands.add("goToWorkflowsPage", () => {
+  cy.blockAnnouncements();
   cy.visit("/settings/user/workflows");
   cy.get('[data-cy="workflows-authorized-page"]', { timeout: 60_000 });
 });
