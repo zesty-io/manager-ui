@@ -181,6 +181,8 @@ export const Field = ({
         "one_to_one",
         "one_to_many",
         "block_selector",
+        "yes_no",
+        "dropdown",
       ].includes(datatype),
     }
   );
