@@ -175,6 +175,7 @@ export const Filters: FC<FiltersProps> = ({
               setParams(happenedAt?.toString(), "sortBy")
             }
             defaultButtonText="Most Recent"
+            isSort
           />
         );
       case "sortByUsers":
@@ -186,6 +187,7 @@ export const Filters: FC<FiltersProps> = ({
               setParams(userActivity.toString(), "sortByUsers")
             }
             options={USER_ACTIVITY}
+            isSort
           />
         );
       case "resourceType":
