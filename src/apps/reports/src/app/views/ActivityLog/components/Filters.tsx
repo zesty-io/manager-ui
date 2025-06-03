@@ -15,15 +15,19 @@ import {
 
 const RESOURCE_TYPES = [
   {
-    text: "Code",
+    text: "Block Variants",
+    value: "block",
+  },
+  {
+    text: "Code Files and Snippets",
     value: "code",
   },
   {
-    text: "Content",
+    text: "Content Items",
     value: "content",
   },
   {
-    text: "Schema",
+    text: "Models",
     value: "schema",
   },
   {

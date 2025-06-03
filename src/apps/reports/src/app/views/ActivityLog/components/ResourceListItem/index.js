@@ -5,6 +5,7 @@ import { SettingsResourceListItem } from "./SettingsResourceListItem";
 
 export const ResourceListItem = (props) => {
   switch (props.resource.resourceType) {
+    case "block":
     case "content":
       return (
         <ContentResourceListItem
