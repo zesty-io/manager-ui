@@ -81,7 +81,7 @@ export const AIDrawer = () => {
       behavior: "smooth",
       block: "nearest",
     });
-  }, [responses.length]);
+  }, [responses]);
 
   const registryKeys = Object.keys(refRegistry);
 
@@ -241,7 +241,7 @@ ${JSON.stringify(
         <>
           <Typography variant="h6">AI Assistant</Typography>
           <Typography variant="body1">
-            Navigate to content app to use AI features.
+            AI features only available in content app.
           </Typography>
         </>
       )}
