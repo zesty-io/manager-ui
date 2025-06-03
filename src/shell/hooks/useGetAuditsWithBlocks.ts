@@ -7,13 +7,11 @@ import {
 
 type GetAuditsWithBlocksParams = {
   skip?: boolean;
-  start_date?: string;
-  end_date?: string;
+  params?: Record<string, any>;
 };
 export const useGetAuditsWithBlocks = ({
   skip = false,
-  start_date,
-  end_date,
+  params = {},
 }: GetAuditsWithBlocksParams) => {
   const { data: models } = useGetContentModelsQuery();
   const {
@@ -23,13 +21,7 @@ export const useGetAuditsWithBlocks = ({
     isUninitialized,
     status,
     refetch,
-  } = useGetAuditsQuery(
-    {
-      ...(start_date ? { start_date } : {}),
-      ...(end_date ? { end_date } : {}),
-    },
-    { skip }
-  );
+  } = useGetAuditsQuery(params, { skip });
 
   const auditsWithBlocks = useMemo(() => {
     if (!models?.length || !actions?.length) {

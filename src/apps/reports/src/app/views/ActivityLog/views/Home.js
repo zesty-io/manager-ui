@@ -109,12 +109,14 @@ export const Home = () => {
     status,
     refetch,
   } = useGetAuditsWithBlocks({
-    ...(params.get("from") && {
-      start_date: toUTC(params.get("from")),
-    }),
-    ...(params.get("to") && {
-      end_date: toUTC(params.get("to")),
-    }),
+    params: {
+      ...(params.get("from") && {
+        start_date: toUTC(params.get("from")),
+      }),
+      ...(params.get("to") && {
+        end_date: toUTC(params.get("to")),
+      }),
+    },
     skip: !initialized,
   });
 
