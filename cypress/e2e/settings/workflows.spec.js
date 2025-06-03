@@ -132,11 +132,8 @@ describe("Restricted User", { retries: 1 }, () => {
 });
 
 describe("Authorized User", { retries: 1 }, () => {
-  before(() => {
-    cy.goToWorkflowsPage();
-  });
-
   it("displays workflow page elements for authorized users", () => {
+    cy.goToWorkflowsPage();
     cy.get('[data-cy="active-labels-container"]', TIMEOUT);
 
     cy.contains("Workflows").should("exist");
@@ -153,11 +150,8 @@ describe("Authorized User", { retries: 1 }, () => {
 });
 
 describe("Create New Status Label", { retries: 1 }, () => {
-  before(() => {
-    cy.goToWorkflowsPage();
-  });
-
   it("Form Validation: should display error message when required fields are empty", function () {
+    cy.goToWorkflowsPage();
     cy.get("button").contains("Create Status").click(TIMEOUT);
 
     cy.get('[data-cy="status-label-form"]', TIMEOUT);
@@ -299,11 +293,8 @@ describe("Edit Status Label", { retries: 1 }, () => {
 });
 
 describe("Re-order Status Labels", { retries: 1 }, () => {
-  before(() => {
-    cy.goToWorkflowsPage();
-  });
-
   it("Drag status label to a new position", () => {
+    cy.goToWorkflowsPage();
     const dataTransfer = new DataTransfer();
 
     cy.get('[data-cy="active-labels-container"]', TIMEOUT);
@@ -339,11 +330,8 @@ describe("Re-order Status Labels", { retries: 1 }, () => {
 });
 
 describe("Deactivate Status Label", { retries: 1 }, () => {
-  beforeEach(() => {
-    cy.goToWorkflowsPage();
-  });
-
   it("Deactivate using menu options", () => {
+    cy.goToWorkflowsPage();
     cy.get('[data-cy="active-labels-container"]', TIMEOUT);
 
     cy.get('[data-cy="active-labels-container"] [data-cy="status-label"]')
@@ -426,11 +414,11 @@ describe("Filter Active and Deactivated Status Labels", { retries: 1 }, () => {
     cy.getStatusLabels().then((data) =>
       cy.wrap(data).as("activeDeactivatedStatusLabels")
     );
-    cy.goToWorkflowsPage();
-    cy.get('input[value="deactivated"]').click(TIMEOUT);
   });
 
   it("Displays active/deactivated status labels", function () {
+    cy.goToWorkflowsPage();
+    cy.get('input[value="deactivated"]').click(TIMEOUT);
     const { active, deactivated } = this.activeDeactivatedStatusLabels || {};
     cy.get(
       '[data-cy="active-labels-container"] [data-cy="status-label"]'
@@ -441,6 +429,7 @@ describe("Filter Active and Deactivated Status Labels", { retries: 1 }, () => {
   });
 
   it("Displays Error page when search results returns empty", () => {
+    cy.get('input[value="deactivated"]').click(TIMEOUT);
     cy.get('input[placeholder="Search Statuses"]')
       .clear()
       .type(EMPTY_SEARCH_TEXT);
@@ -451,6 +440,7 @@ describe("Filter Active and Deactivated Status Labels", { retries: 1 }, () => {
   });
 
   it("Clears and focuses search field when clicking 'Search Again'", () => {
+    cy.get('input[value="deactivated"]').click(TIMEOUT);
     cy.get("button").contains("Search Again").click();
     cy.get(
       '[data-cy="active-labels-container"], [data-cy="deactivated-labels-container"]'
@@ -461,7 +451,6 @@ describe("Filter Active and Deactivated Status Labels", { retries: 1 }, () => {
 });
 
 Cypress.Commands.add("goToWorkflowsPage", () => {
-  cy.blockAnnouncements();
   cy.visit("/settings/user/workflows");
   cy.get('[data-cy="workflows-authorized-page"]', { timeout: 60_000 });
 });
