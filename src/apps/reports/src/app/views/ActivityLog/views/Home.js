@@ -34,6 +34,7 @@ import { isEmpty, omitBy, uniqBy } from "lodash";
 import { EmptyState } from "../components/EmptyState";
 import { ApiErrorState } from "../components/ApiErrorState";
 import { toUTC } from "../utils";
+import { useGetAuditsWithBlocks } from "../../../../../../../shell/hooks/useGetAuditsWithBlocks";
 
 const tabPaths = ["resources", "users", "timeline", "insights"];
 
@@ -82,6 +83,24 @@ export const Home = () => {
     setInitialized(true);
   }, [location.pathname]);
 
+  // const {
+  //   data: actions,
+  //   isLoading,
+  //   isFetching,
+  //   isUninitialized,
+  //   status,
+  //   refetch,
+  // } = instanceApi.useGetAuditsQuery(
+  //   {
+  //     ...(params.get("from") && {
+  //       start_date: toUTC(params.get("from")),
+  //     }),
+  //     ...(params.get("to") && {
+  //       end_date: toUTC(params.get("to")),
+  //     }),
+  //   },
+  //   { skip: !initialized }
+  // );
   const {
     data: actions,
     isLoading,
@@ -89,17 +108,15 @@ export const Home = () => {
     isUninitialized,
     status,
     refetch,
-  } = instanceApi.useGetAuditsQuery(
-    {
-      ...(params.get("from") && {
-        start_date: toUTC(params.get("from")),
-      }),
-      ...(params.get("to") && {
-        end_date: toUTC(params.get("to")),
-      }),
-    },
-    { skip: !initialized }
-  );
+  } = useGetAuditsWithBlocks({
+    ...(params.get("from") && {
+      start_date: toUTC(params.get("from")),
+    }),
+    ...(params.get("to") && {
+      end_date: toUTC(params.get("to")),
+    }),
+    skip: !initialized,
+  });
 
   // Sets date parameters to 3 months
   const setDefaultDateParams = () => {
