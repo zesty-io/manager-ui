@@ -183,6 +183,8 @@ export const Field = ({
         "block_selector",
         "yes_no",
         "dropdown",
+        "date",
+        "datetime",
       ].includes(datatype),
     }
   );
