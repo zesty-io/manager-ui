@@ -24,10 +24,6 @@ export const useGetAuditsWithBlocks = ({
   } = useGetAuditsQuery(params, { skip });
 
   const auditsWithBlocks = useMemo(() => {
-    // if (!models?.length || !actions?.length) {
-    //   return [];
-    // }
-
     return actions?.map((audit) => {
       if (audit.affectedZUID.startsWith("7")) {
         // Get the modelZUID from the URI
