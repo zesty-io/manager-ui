@@ -83,24 +83,6 @@ export const Home = () => {
     setInitialized(true);
   }, [location.pathname]);
 
-  // const {
-  //   data: actions,
-  //   isLoading,
-  //   isFetching,
-  //   isUninitialized,
-  //   status,
-  //   refetch,
-  // } = instanceApi.useGetAuditsQuery(
-  //   {
-  //     ...(params.get("from") && {
-  //       start_date: toUTC(params.get("from")),
-  //     }),
-  //     ...(params.get("to") && {
-  //       end_date: toUTC(params.get("to")),
-  //     }),
-  //   },
-  //   { skip: !initialized }
-  // );
   const {
     data: actions,
     isLoading,
@@ -188,7 +170,10 @@ export const Home = () => {
               height: "100%",
             }}
           >
-            <ResourceList actions={filteredActions} showSkeletons={isLoading} />
+            <ResourceList
+              actions={filteredActions}
+              showSkeletons={isLoading || isFetching}
+            />
             <Box sx={{ pl: 8, minWidth: 298, boxSizing: "border-box" }}>
               <ActivityByResource
                 actions={filteredActions}
