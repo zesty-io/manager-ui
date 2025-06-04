@@ -268,7 +268,7 @@ export const ActiveItem = memo(
                 onClose={() => setShowTooltip(false)}
               >
                 <IconButton
-                  // ref={drag}
+                  ref={drag}
                   disableRipple
                   disableFocusRipple
                   disableTouchRipple

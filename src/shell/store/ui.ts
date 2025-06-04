@@ -16,9 +16,8 @@ import {
   RecentActorsRounded,
   SvgIconComponent,
   ExtensionRounded,
-  ShuffleRounded,
 } from "@mui/icons-material";
-import { Database, Block } from "@zesty-io/material";
+import { Database, Block, ShuffleVariant } from "@zesty-io/material";
 import { capitalize, isEqual } from "lodash";
 
 export type Tab = {
@@ -139,7 +138,7 @@ export const { actions, reducer } = ui;
 
 const ICON_CONFIG: { [index: string]: SvgIconComponent } = Object.freeze({
   launchpad: RocketLaunchRounded,
-  redirects: ShuffleRounded,
+  redirects: ShuffleVariant as SvgIconComponent,
   content: EditRounded,
   blocks: Block as SvgIconComponent,
   media: ImageRounded,

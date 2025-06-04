@@ -4,9 +4,9 @@ import { Box, Button, Typography } from "@mui/material";
 import {
   useGetContentModelFieldsQuery,
   useGetContentModelQuery,
+  useGetContentNavItemsQuery,
   useGetLangsQuery,
 } from "../../../../../../shell/services/instance";
-import { theme } from "@zesty-io/material";
 import { ItemListEmpty } from "./ItemListEmpty";
 import { ItemListActions } from "./ItemListActions";
 import {
@@ -38,6 +38,7 @@ import { fetchItems } from "../../../../../../shell/store/content";
 import { TableSortContext } from "./TableSortProvider";
 import { fetchFields } from "../../../../../../shell/store/fields";
 import { debounce } from "lodash";
+import { SkeletonContentHeader, SkeletonItemListFilters } from "./Loader";
 
 const dateFormatter = new Intl.DateTimeFormat("en-US", {
   year: "numeric",
@@ -80,7 +81,7 @@ export const ItemList = () => {
     useGetContentModelQuery(modelZUID);
   const { data: fields, isFetching: isFieldsFetching } =
     useGetContentModelFieldsQuery(modelZUID);
-  const { data: languages } = useGetLangsQuery({});
+  const { data: languages, isLoading: isLangsLoading } = useGetLangsQuery({});
   const activeLangId =
     languages?.find((lang) => lang.code === activeLanguageCode)?.ID || 1;
   const allItems = useSelector((state: AppState) => state.content);
@@ -274,8 +275,8 @@ export const ItemList = () => {
     });
   }, [items, fields, users, isFieldsFetching, isUsersFetching, fieldMap]);
 
-  /* 
-    We debounce the processed items compute since certain fields can call for items to be fetched if they are not in memory 
+  /*
+    We debounce the processed items compute since certain fields can call for items to be fetched if they are not in memory
     and we don't want to trigger a heavy computation on every item fetched in parallel. This reduces initial load time.
   */
   const debouncedCompute = useMemo(() => {
@@ -576,6 +577,7 @@ export const ItemList = () => {
           justifyContent: "space-between",
           alignItems: "start",
           gap: 4,
+          minHeight: "106px",
         }}
       >
         {(stagedChanges && Object.keys(stagedChanges)?.length) ||
@@ -583,26 +585,32 @@ export const ItemList = () => {
           <UpdateListActions items={items as ContentItem[]} />
         ) : (
           <>
-            <Box flex={1}>
-              <ContentBreadcrumbs />
-              <Typography
-                variant="h3"
-                mt={0.25}
-                fontWeight={700}
-                sx={{
-                  display: "-webkit-box",
-                  "-webkit-line-clamp": "2",
-                  "-webkit-box-orient": "vertical",
-                  wordBreak: "break-word",
-                  wordWrap: "break-word",
-                  hyphens: "auto",
-                  overflow: "hidden",
-                }}
-              >
-                {model?.label}
-              </Typography>
-            </Box>
-            <ItemListActions ref={searchRef} />
+            {isUsersFetching || isLangsLoading ? (
+              <SkeletonContentHeader />
+            ) : (
+              <>
+                <Box flex={1}>
+                  <ContentBreadcrumbs />
+                  <Typography
+                    variant="h3"
+                    mt={0.25}
+                    fontWeight={700}
+                    sx={{
+                      display: "-webkit-box",
+                      "-webkit-line-clamp": "2",
+                      "-webkit-box-orient": "vertical",
+                      wordBreak: "break-word",
+                      wordWrap: "break-word",
+                      hyphens: "auto",
+                      overflow: "hidden",
+                    }}
+                  >
+                    {model?.label}
+                  </Typography>
+                </Box>
+                <ItemListActions ref={searchRef} />
+              </>
+            )}
           </>
         )}
       </Box>
@@ -619,11 +627,18 @@ export const ItemList = () => {
           <ItemListEmpty />
         ) : (
           <>
-            <ItemListFilters />
+            {isFieldsFetching || isUsersFetching ? (
+              <SkeletonItemListFilters />
+            ) : (
+              <ItemListFilters />
+            )}
             <ItemListTable
               key={modelZUID}
-              loading={isFieldsFetching || isUsersFetching}
+              loading={
+                isFieldsFetching || isUsersFetching || isModelItemsFetching
+              }
               rows={sortedAndFilteredItems}
+              fields={isFieldsFetching ? [] : fields}
               noRowsOverlay={() => {
                 if (search && !isModelItemsFetching) {
                   return (
