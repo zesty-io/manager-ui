@@ -33,6 +33,7 @@ import { APIEndpoints } from "../../components/APIEndpoints";
 import { useLazyDownloadCsvQuery } from "../../../../../../shell/services/cloudFunctions";
 import { useDispatch } from "react-redux";
 import { searchItems } from "../../../../../../shell/store/content";
+import SearchBox from "../../../../../../shell/components/SearchBox";
 
 export const ItemListActions = forwardRef((props, ref) => {
   const dispatch = useDispatch();
@@ -199,7 +200,7 @@ export const ItemListActions = forwardRef((props, ref) => {
           </MenuItem>
         )}
       </Menu>
-      <TextField
+      <SearchBox
         data-cy="MultiPageTableSearchField"
         onChange={handleSearchChange}
         value={searchTerm}
@@ -215,6 +216,7 @@ export const ItemListActions = forwardRef((props, ref) => {
               <Search fontSize="small" />
             </InputAdornment>
           ),
+
           sx: {
             backgroundColor: "grey.50",
           },

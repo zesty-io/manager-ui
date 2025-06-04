@@ -23,6 +23,8 @@ import { TopBar } from "../../components/TopBar";
 import Box from "@mui/material/Box";
 import { MainWrapper } from "../../components/Containers";
 import Typography from "@mui/material/Typography";
+import SearchBox from "../../../../../../shell/components/SearchBox";
+
 export default connect((state) => {
   return {
     fonts: state.settings.fonts,
@@ -389,10 +391,9 @@ export default connect((state) => {
   return (
     <>
       <TopBar title="Browse Fonts">
-        <TextField
+        <SearchBox
           id="filled-search"
           placeholder="Search font"
-          type="search"
           variant="outlined"
           fullWidth
           size="small"
@@ -407,14 +408,9 @@ export default connect((state) => {
             const term = evt.target.value;
             onSearch(term);
           }}
+          value={search}
           sx={{
             width: 260,
-            "& fieldset": {
-              backgroundColor: "grey.50",
-            },
-            "& .MuiInputAdornment-root, & input": {
-              zIndex: 1,
-            },
           }}
         />
       </TopBar>

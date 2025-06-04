@@ -29,6 +29,7 @@ import { useLocation, useHistory } from "react-router-dom";
 import ManageSearchRoundedIcon from "@mui/icons-material/ManageSearchRounded";
 import { AddRounded } from "@mui/icons-material";
 import { alpha } from "@mui/material";
+import SearchBox from "../SearchBox";
 
 export interface SubMenu {
   name: string;
@@ -62,22 +63,19 @@ const darkTheme = {
   "& .MuiTreeItem-label,\
   & .app-sidebar-header-container input,\
   & .app-sidebar-header-container input::placeholder,\
-  & .app-sidebar-header-container fieldset":
-    {
-      color: "grey.300",
-      border: "none",
-    },
+  & .app-sidebar-header-container fieldset": {
+    color: "grey.300",
+    border: "none",
+  },
   "& .MuiAccordion-root .MuiTypography-root,\
   & .nav-tree-header .MuiTypography-root,\
-  & .MuiSvgIcon-root":
-    {
-      color: "grey.400",
-    },
+  & .MuiSvgIcon-root": {
+    color: "grey.400",
+  },
   "& .app-sidebar-header .MuiTypography-root, \
-  & .app-sidebar-header .MuiSvgIcon-root":
-    {
-      color: "common.white",
-    },
+  & .app-sidebar-header .MuiSvgIcon-root": {
+    color: "common.white",
+  },
   "& .nav-tree-header .MuiIconButton-root:hover": {
     bgcolor: "grey.800",
   },
@@ -192,12 +190,13 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
                 )}
               </Stack>
               {withSearch && (
-                <TextField
+                <SearchBox
                   data-cy={searchId}
                   value={userInputKeyword}
                   inputProps={{
                     ref: textfieldRef,
                   }}
+                  // inputRef={textfieldRef}
                   InputProps={{
                     sx: {
                       backgroundColor: "grey.800",

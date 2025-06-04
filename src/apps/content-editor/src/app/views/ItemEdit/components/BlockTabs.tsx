@@ -25,6 +25,7 @@ import blockPlaceholder from "../../../../../../../../public/images/blockPlaceho
 import { CreateVariantDialog } from "../../../../../../blocks/components/CreateVariantDialog";
 import { useSelector } from "react-redux";
 import { AppState } from "../../../../../../../shell/store/types";
+import SearchBox from "../../../../../../../shell/components/SearchBox";
 
 export const BlockTabs = (props: any) => {
   const [value, setValue] = useState(0);
@@ -94,7 +95,7 @@ export const BlockTabs = (props: any) => {
       </Box>
       {value === 0 && (
         <>
-          <TextField
+          <SearchBox
             placeholder="Search variants"
             value={search}
             onChange={(e) => setSearch(e.target.value)}

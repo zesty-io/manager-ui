@@ -17,6 +17,7 @@ import { Box } from "@mui/material";
 import { MainWrapper } from "../../components/Containers";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { DeleteRounded } from "@mui/icons-material";
+import SearchBox from "../../../../../../shell/components/SearchBox";
 
 export default connect((state) => {
   return {
@@ -260,9 +261,8 @@ export default connect((state) => {
   return (
     <>
       <TopBar title="Installed Fonts">
-        <TextField
+        <SearchBox
           placeholder="Search font"
-          type="text"
           variant="outlined"
           size="small"
           InputProps={{
@@ -276,14 +276,9 @@ export default connect((state) => {
             const term = evt.target.value;
             onSearch(term);
           }}
+          value={search}
           sx={{
             width: 260,
-            "& fieldset": {
-              backgroundColor: "grey.50",
-            },
-            "& .MuiInputAdornment-root, & input": {
-              zIndex: 1,
-            },
           }}
         />
       </TopBar>

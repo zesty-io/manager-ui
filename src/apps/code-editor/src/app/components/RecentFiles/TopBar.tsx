@@ -8,6 +8,7 @@ import {
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import AddIcon from "@mui/icons-material/Add";
+import SearchBox from "../../../../../../shell/components/SearchBox";
 
 type TopBarProps = {
   searchKeyword: string;
@@ -48,7 +49,7 @@ export const TopBar: FC<TopBarProps> = ({
         alignItems="center"
         columnGap={1}
       >
-        <TextField
+        <SearchBox
           data-cy="AllFilesSearchInput"
           inputRef={searchInputRef}
           placeholder="Search Files"
@@ -81,6 +82,7 @@ export const TopBar: FC<TopBarProps> = ({
           value={searchKeyword}
           onChange={(e) => setSearchKeyword(e.target.value)}
         />
+
         <Button
           data-cy="AllFilesCreateButton"
           variant="contained"
