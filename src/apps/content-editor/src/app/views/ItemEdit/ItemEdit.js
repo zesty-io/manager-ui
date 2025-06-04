@@ -528,7 +528,7 @@ export default function ItemEdit() {
                 onSave={() => save().catch((err) => console.error(err))}
                 saving={saving}
                 hasError={Object.keys(fieldErrors)?.length}
-                isLoadingItem={loading}
+                isLoadingItem={loading || isLoadingFields}
               />
               <Switch>
                 <Route
@@ -563,6 +563,7 @@ export default function ItemEdit() {
                         onUpdateSEOErrors={(errors) => {
                           setSEOErrors(errors);
                         }}
+                        item={item}
                         isSaving={saving}
                         errors={SEOErrors}
                         errorComponent={
@@ -645,7 +646,7 @@ export default function ItemEdit() {
                             save().catch((err) => console.error(err))
                           }
                           dispatch={dispatch}
-                          loading={loading}
+                          loading={loading || isLoadingFields}
                           saving={saving}
                           saveClicked={saveClicked}
                           onUpdateFieldErrors={(errors) => {
