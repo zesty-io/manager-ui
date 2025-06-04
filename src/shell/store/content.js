@@ -432,7 +432,7 @@ export function saveItem({
       item?.web?.version + 1
     }${
       previewLock?.value ? `&zpw=${previewLock.value}` : ""
-    }&_bypassError=true`;
+    }&_bypassError=true&preview=global`;
     const fields = Object.keys(state.fields)
       .filter(
         (fieldZUID) =>
