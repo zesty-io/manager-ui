@@ -25,6 +25,7 @@ import {
   ContentCopyRounded,
   WebRounded,
 } from "@mui/icons-material";
+import { ShuffleVariant } from "@zesty-io/material";
 import { useSelector } from "react-redux";
 import { AppState } from "../../../../../../../../shell/store/types";
 import { ItemEditHeaderActions } from "./ItemEditHeaderActions";
@@ -51,6 +52,11 @@ const tabs = [
     label: "SEO",
     icon: QueryStatsRounded,
     value: "meta",
+  },
+  {
+    label: "Redirects",
+    icon: ShuffleVariant,
+    value: "redirects",
   },
   {
     label: "Analytics",

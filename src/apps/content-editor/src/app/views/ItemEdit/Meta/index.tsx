@@ -359,12 +359,14 @@ export const Meta = forwardRef(
                   mb={1}
                   color="text.primary"
                 >
-                  Would you like to improve your Meta Title & Description?
+                  Have AI write your Meta Data?
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   Our AI Assistant will scan your content and improve your meta
-                  title and description to help improve search engine
-                  visibility.{" "}
+                  title and description to help{" "}
+                  {model?.type === "dataset"
+                    ? "with internal content search."
+                    : "improve search engine visibility."}
                 </Typography>
               </Box>
               {flowButtons.map((data) => (
