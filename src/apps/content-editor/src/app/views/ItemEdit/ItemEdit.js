@@ -561,6 +561,7 @@ export default function ItemEdit() {
                         onUpdateSEOErrors={(errors) => {
                           setSEOErrors(errors);
                         }}
+                        item={item}
                         isSaving={saving}
                         errors={SEOErrors}
                         errorComponent={
