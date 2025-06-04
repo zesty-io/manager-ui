@@ -57,7 +57,12 @@ export const ListItem = (props) => {
     >
       <ListItemAvatar>
         {props.showSkeletons ? (
-          <Skeleton variant="circular" width={40} height={40} />
+          <Skeleton
+            data-cy="resourceItemSkeleton"
+            variant="circular"
+            width={40}
+            height={40}
+          />
         ) : (
           <Avatar
             sx={{

@@ -167,9 +167,9 @@ describe("Reports > Activity Log > Home", () => {
         });
       }).as("request");
       cy.visit("/reports/activity-log/resources?from=2022-07-14&to=2022-07-16");
-      cy.get(".MuiSkeleton-root").should("have.length", 50);
+      cy.getBySelector("resourceItemSkeleton").should("have.length", 10);
       cy.wait("@request");
-      cy.get(".MuiSkeleton-root").should("have.length", 0);
+      cy.getBySelector("resourceItemSkeleton").should("have.length", 0);
     });
 
     it("Displays partial Skeletons when changing dates and refetching API", () => {
@@ -216,9 +216,9 @@ describe("Reports > Activity Log > Home", () => {
       cy.get(`[data-timestamp=${to}]`).should("exist").click();
 
       cy.root().click();
-      cy.get(".MuiSkeleton-root").should("have.length", 16);
+      cy.getBySelector("resourceItemSkeleton").should("have.length", 10);
       cy.wait("@request");
-      cy.get(".MuiSkeleton-root").should("have.length", 0);
+      cy.getBySelector("resourceItemSkeleton").should("have.length", 0);
     });
   });
 
