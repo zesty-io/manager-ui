@@ -24,7 +24,6 @@ const SearchBox = (props: TextFieldProps) => {
         <TextField
           {...params}
           {...otherProps}
-          size={size || "medium"}
           InputProps={{
             ...params?.InputProps,
             ...props?.InputProps,
@@ -38,7 +37,8 @@ const SearchBox = (props: TextFieldProps) => {
         "& .MuiOutlinedInput-root.MuiInputBase-sizeSmall": {
           py: 0,
           "& .MuiAutocomplete-input": {
-            py: "6px",
+            py: 1,
+            px: 0,
           },
         },
       }}

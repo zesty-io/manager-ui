@@ -2,7 +2,6 @@ import {
   Button,
   Box,
   InputAdornment,
-  TextField,
   Menu,
   MenuItem,
   ListItemIcon,
@@ -207,19 +206,19 @@ export const ItemListActions = forwardRef((props, ref) => {
         placeholder="Filter Items"
         variant="outlined"
         size="small"
-        inputProps={{
-          ref,
-        }}
+        inputRef={ref}
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
               <Search fontSize="small" />
             </InputAdornment>
           ),
-
           sx: {
             backgroundColor: "grey.50",
           },
+        }}
+        sx={{
+          width: "205px",
         }}
       />
       <Button

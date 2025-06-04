@@ -24,7 +24,6 @@ import Box from "@mui/material/Box";
 import { MainWrapper } from "../../components/Containers";
 import Typography from "@mui/material/Typography";
 import SearchBox from "../../../../../../shell/components/SearchBox";
-
 export default connect((state) => {
   return {
     fonts: state.settings.fonts,

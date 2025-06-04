@@ -193,10 +193,7 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
                 <SearchBox
                   data-cy={searchId}
                   value={userInputKeyword}
-                  inputProps={{
-                    ref: textfieldRef,
-                  }}
-                  // inputRef={textfieldRef}
+                  inputRef={textfieldRef}
                   InputProps={{
                     sx: {
                       backgroundColor: "grey.800",

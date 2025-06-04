@@ -68,7 +68,6 @@ export const MostMentionedWords = ({ wordsArray }: MostMentionedWordsProps) => {
           Check that your focus keywords are occurring a minimum 2 times.
         </Typography>
       </Box>
-
       <SearchBox
         value={filterKeyword}
         onChange={(evt) => setFilterKeyword(evt.target.value)}
@@ -82,7 +81,6 @@ export const MostMentionedWords = ({ wordsArray }: MostMentionedWordsProps) => {
           ),
         }}
       />
-
       <Stack direction="row" gap={1} flexWrap="wrap">
         {!filteredWords?.length && !filterKeyword && (
           <Typography variant="body2" color="text.secondary">
