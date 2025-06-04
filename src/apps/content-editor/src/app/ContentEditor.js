@@ -20,7 +20,7 @@ import { ItemEdit } from "./views/ItemEdit";
 import { ItemCreate } from "./views/ItemCreate";
 import { LinkCreate } from "./views/LinkCreate";
 import { LinkEdit } from "./views/LinkEdit";
-import { NotFound } from "./views/NotFound";
+import NotFound from "./views/NotFound";
 import { CSVImport } from "./views/CSVImport";
 import ReleaseApp from "../../../release/src";
 
