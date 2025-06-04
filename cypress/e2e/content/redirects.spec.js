@@ -161,6 +161,81 @@ describe("Content item redirects", () => {
       .contains(`/${REDIRECTS[0].path}/updated`, { timeout: 10000 })
       .should("have.length", 0);
   });
+
+  it("Add Incoming Redirect", () => {
+    cy.visit(
+      `/content/${Cypress.env("contentZUID")}/${Cypress.env(
+        "itemZUID"
+      )}/redirects`
+    );
+    cy.getElement('[data-cy="AddIncomingRedirectButton"]').click();
+
+    cy.getElement('[data-cy="RedirectsFieldPath"]:eq(0) input')
+      .clear()
+      .wait(500)
+      .type(ADD_REDIRECTS.path);
+
+    cy.getElement('[data-cy="RedirectsCreateButton"]').click();
+
+    cy.getElement(".MuiDataGrid-row").should("have.length", 2);
+  });
+
+  it("Redirect Content Item", () => {
+    cy.visit(
+      `/content/${Cypress.env("contentZUID")}/${Cypress.env(
+        "itemZUID"
+      )}/redirects`
+    );
+    cy.getElement('[data-cy="RedirectContentItemButton"]').click();
+
+    cy.getElement('[data-cy="RedirectsSearchFieldInputField"]')
+      .clear()
+      .wait(500)
+      .type(REDIRECT_ITEMS[0]?.web.metaTitle);
+
+    cy.getElement('[data-cy="RedirectsTargetOptionsContainer"] ul li')
+      .contains(REDIRECT_ITEMS[0]?.web.metaTitle, {
+        timeout: 15000,
+        matchCase: false,
+      })
+      .click();
+
+    cy.getElement('[data-cy="RedirectContentItemConfirmButton"]').click();
+
+    cy.getElement('[data-cy="ContentRedirectHeader"]').should(
+      "contain",
+      "This Content Item is Currently Being Redirected"
+    );
+
+    cy.getElement('[data-cy="RedirectContentItemButton"]').should(
+      "contain",
+      "Stop Redirecting"
+    );
+
+    cy.getElement('[data-cy="RedirectTargetUrl"]').should(
+      "contain",
+      REDIRECT_ITEMS[0]?.web?.pathPart
+    );
+  });
+
+  it("Stop Content Item Redirect", () => {
+    cy.getElement('[data-cy="RedirectContentItemButton"]').click();
+    cy.getElement('[data-cy="StopRedirectContentItemConfirmButton"]').click();
+
+    cy.getElement('[data-cy="toast"]').should("contain", "1 Redirect Deleted", {
+      matchCase: false,
+    });
+
+    cy.getElement('[data-cy="ContentRedirectHeader"]').should(
+      "contain",
+      "Redirect this Content Item"
+    );
+
+    cy.getElement('[data-cy="RedirectContentItemButton"]').should(
+      "contain",
+      "Redirect this Content Item"
+    );
+  });
 });
 
 function createTestContents() {
