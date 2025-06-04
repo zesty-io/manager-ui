@@ -6,6 +6,7 @@ import {
   ListItemText,
   Skeleton,
 } from "@mui/material";
+import { Block } from "@zesty-io/material";
 import { isEmpty, omitBy } from "lodash";
 import { useHistory, useLocation } from "react-router";
 import { useParams } from "shell/hooks/useParams";
@@ -67,7 +68,11 @@ export const ListItem = (props) => {
               }),
             }}
           >
-            <FontAwesomeIcon icon={props.icon} />
+            {props.isBlockItem ? (
+              <Block />
+            ) : (
+              <FontAwesomeIcon icon={props.icon} />
+            )}
           </Avatar>
         )}
       </ListItemAvatar>
