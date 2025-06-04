@@ -24,15 +24,15 @@ export const useGetAuditsWithBlocks = ({
   } = useGetAuditsQuery(params, { skip });
 
   const auditsWithBlocks = useMemo(() => {
-    if (!models?.length || !actions?.length) {
-      return [];
-    }
+    // if (!models?.length || !actions?.length) {
+    //   return [];
+    // }
 
-    return actions.map((audit) => {
+    return actions?.map((audit) => {
       if (audit.affectedZUID.startsWith("7")) {
         // Get the modelZUID from the URI
         const modelZUID = audit.meta.uri?.split("/")?.[4];
-        const model = models.find((model) => model.ZUID === modelZUID);
+        const model = models?.find((model) => model.ZUID === modelZUID);
 
         if (model?.type === "block") {
           return {
