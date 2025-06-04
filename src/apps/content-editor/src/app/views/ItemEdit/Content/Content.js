@@ -151,7 +151,7 @@ export default function Content(props) {
             gap={1.5}
             sx={{
               ...(!showSidebar && {
-                position: "absolute",
+                position: "relative",
                 right: "24px",
               }),
             }}
