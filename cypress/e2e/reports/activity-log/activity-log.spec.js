@@ -134,6 +134,18 @@ describe("Reports > Activity Log > Home", () => {
         `?from=${expectedFromDate}&to=${expectedToDate}&sortBy=happenedAt&resourceType=content`
       );
     });
+
+    it("Filters block items", () => {
+      cy.waitOn("/v1/env/audits*", () => {
+        cy.visit("/reports/activity-log/resources");
+      });
+
+      cy.getBySelector("resourceType_default").should("exist").click();
+      cy.getBySelector("filter_value_block").should("exist").click();
+      cy.contains(
+        "Last action @ Mar 11, 3:43 AM • Block Variant • Stuart: Gallery"
+      ).should("exist");
+    });
   });
 
   describe("Resources View", () => {
