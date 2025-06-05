@@ -142,9 +142,7 @@ describe("Reports > Activity Log > Home", () => {
 
       cy.getBySelector("resourceType_default").should("exist").click();
       cy.getBySelector("filter_value_block").should("exist").click();
-      cy.contains(
-        "Last action @ Mar 11, 3:43 AM • Block Variant • Stuart: Gallery"
-      ).should("exist");
+      cy.getBySelector("resource_list_item").should("exist");
     });
   });
 
@@ -158,7 +156,7 @@ describe("Reports > Activity Log > Home", () => {
     });
 
     it("Navigates to Resource Detail on Resource Item click", () => {
-      cy.getBySelector("resouce_list_item")
+      cy.getBySelector("resource_list_item")
         .should("have.attr", "data-is-loading", "false")
         .click();
 

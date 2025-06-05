@@ -19,7 +19,7 @@ export const ListItem = (props) => {
   return (
     <MuiListItem
       data-is-loading={props.showSkeletons}
-      data-cy="resouce_list_item"
+      data-cy="resource_list_item"
       disableGutters
       divider={props.divider}
       sx={{
