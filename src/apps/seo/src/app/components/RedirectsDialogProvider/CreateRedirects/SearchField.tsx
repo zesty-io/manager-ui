@@ -12,7 +12,9 @@ import { InputAdornment } from "@mui/material";
 import DescriptionIcon from "@mui/icons-material/Description";
 import AutoSizer from "react-virtualized-auto-sizer";
 
-const ListOption: React.FC<ContentItemProps & { isListItem?: boolean }> = ({
+export const ListOption: React.FC<
+  ContentItemProps & { isListItem?: boolean }
+> = ({
   label,
   path,
   ZUID,
@@ -94,7 +96,7 @@ const ListboxComponent = React.forwardRef<
     <div
       ref={ref}
       data-cy="RedirectsTargetOptionsContainer"
-      style={{ width: "100%", height: `${rowHeight * 6}px` }}
+      style={{ width: "100%", height: `${rowHeight * 5}px` }}
       {...other}
     >
       <AutoSizer>
