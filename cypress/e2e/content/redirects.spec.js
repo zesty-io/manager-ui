@@ -26,7 +26,7 @@ describe("Content item redirects", () => {
       cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19/redirects");
     });
 
-    cy.contains(`/test-redirect/${NOW}`, { timeout: 10000 }).should("exist");
+    cy.contains(`/test-redirect/${NOW}`).should("exist");
   });
 
   it("should be able to edit a redirect", () => {
@@ -38,13 +38,11 @@ describe("Content item redirects", () => {
       });
     cy.getBySelector("EditRedirect").click();
     cy.getBySelector("RedirectsFieldPath").find("input").type(`/updated`);
-    cy.getBySelector("RedirectsCreateButton").click({ timeout: 10000 });
+    cy.getBySelector("RedirectsCreateButton").click();
 
     cy.wait("@redirects");
 
-    cy.contains(`/test-redirect/${NOW}/updated`, { timeout: 10000 }).should(
-      "exist"
-    );
+    cy.contains(`/test-redirect/${NOW}/updated`).should("exist");
   });
 
   it("should be able to delete a redirect", () => {
