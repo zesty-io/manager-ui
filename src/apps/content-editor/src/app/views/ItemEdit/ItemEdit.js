@@ -54,9 +54,7 @@ import { FreestyleWrapper } from "./FreestyleWrapper";
 import { Meta } from "./Meta";
 import { FieldError } from "../../components/Editor/FieldError";
 import { AIGeneratorProvider } from "../../../../../../shell/components/withAi/AIGeneratorProvider";
-import {
-  fetchItemPublishings,
-} from "../../../../../../shell/store/content";
+import { fetchItemPublishings } from "../../../../../../shell/store/content";
 import { Redirects } from "../Redirects";
 import RedirectsDialogContextProvider from "../../../../../seo/src/app/components/RedirectsDialogProvider";
 
@@ -563,6 +561,7 @@ export default function ItemEdit() {
                         onUpdateSEOErrors={(errors) => {
                           setSEOErrors(errors);
                         }}
+                        item={item}
                         isSaving={saving}
                         errors={SEOErrors}
                         errorComponent={
