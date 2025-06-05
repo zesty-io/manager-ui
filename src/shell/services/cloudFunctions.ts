@@ -26,7 +26,7 @@ export const cloudFunctionsApi = createApi({
     geminiGeneration: builder.mutation<any, any>({
       query: (body) => {
         return {
-          url: `generateGeminiContent`,
+          url: `ask-gemini`,
           method: "POST",
           body,
         };
