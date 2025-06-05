@@ -237,6 +237,7 @@ export default function Content(props) {
               onSave={() => props.onSave()}
               hasErrors={props.hasErrors}
               model={props.model}
+              itemZUID={props?.itemZUID}
             />
           </Box>
           {props?.model?.type === "block" && (
