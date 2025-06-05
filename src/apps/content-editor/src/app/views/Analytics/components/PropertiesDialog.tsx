@@ -44,6 +44,7 @@ import { useSelector } from "react-redux";
 import { AppState } from "../../../../../../../shell/store/types";
 import { LoadingButton } from "@mui/lab";
 import { AnalyticsDialog } from "./AnalyticsDialog";
+import SearchBox from "../../../../../../../shell/components/SearchBox";
 
 type Message = {
   source: "zesty";
@@ -250,7 +251,7 @@ export const PropertiesDialog = ({ onClose }: Props) => {
                   Please select the Google Analytics property you want to see
                   analytics and insights for
                 </Typography>
-                <TextField
+                <SearchBox
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   sx={{ mt: 1.5 }}
@@ -267,9 +268,7 @@ export const PropertiesDialog = ({ onClose }: Props) => {
                       </InputAdornment>
                     ),
                   }}
-                  inputProps={{
-                    ref: inputRef,
-                  }}
+                  inputRef={inputRef}
                   placeholder="Search Google Analytics Properties"
                   fullWidth
                 />

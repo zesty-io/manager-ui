@@ -34,7 +34,10 @@ const SearchBox = (props: TextFieldProps) => {
         ...otherProps?.sx,
         boxSizing: "border-box",
         px: 0,
-        "& .MuiOutlinedInput-root.MuiInputBase-sizeSmall": {
+        "& .MuiAutocomplete-inputRoot": {
+          boxSizing: "border-box",
+        },
+        "& .MuiAutocomplete-inputRoot.MuiInputBase-sizeSmall": {
           py: 0,
           "& .MuiAutocomplete-input": {
             py: 1,
