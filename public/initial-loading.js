@@ -1,4 +1,3 @@
-console.log("initial loading script");
 const quotesFromApi = fetch(
   "https://www.zesty.io/-/instant/6-b4e8dbf8d8-kv87rx.json"
 )
