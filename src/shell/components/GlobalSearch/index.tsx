@@ -444,6 +444,10 @@ export const GlobalSearch = () => {
             "&.Mui-focused .MuiAutocomplete-clearIndicator": {
               visibility: searchKeyword ? "visible" : "hidden",
             },
+            "& .MuiOutlinedInput-root .MuiAutocomplete-endAdornment": {
+              position: "absolute",
+              right: "40px",
+            },
           }}
           onInputChange={(_, newVal) => {
             let keyword = newVal;
@@ -625,6 +629,7 @@ export const GlobalSearch = () => {
                   content: "Content Items",
                   schema: "Models in Schema",
                   media: "Media Items",
+                  block: "Blocks",
                 };
 
                 return (
