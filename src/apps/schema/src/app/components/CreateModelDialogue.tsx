@@ -219,6 +219,7 @@ export const CreateModelDialogue = ({
   useEffect(() => {
     // Only navigate to schema page once initial content is created for templateset & og_image field is created for block
     if ((isContentItemCreated || isOgImageFieldCreated) && createModelData) {
+      console.log(createModelData);
       history.push(`/schema/${createModelData.data.ZUID}`);
       onClose();
     }
@@ -391,7 +392,7 @@ export const CreateModelDialogue = ({
               selectBlank={() => setSelectedBlankBlock(true)}
             />
           ) : (
-            <Box component="form">
+            <Box component="form" onSubmit={(e) => e.preventDefault()}>
               <DialogTitle component="div">
                 <Stack
                   direction="row"
