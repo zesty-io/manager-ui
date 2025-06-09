@@ -185,7 +185,7 @@ describe("Content Specs", () => {
     it("Currency Field", () => {
       cy.get("#12-b35c68-jd1s8s input")
         .focus()
-        .clear()
+        .type("{selectall}")
         .type("100.00")
         .should("have.value", "100.00");
     });
