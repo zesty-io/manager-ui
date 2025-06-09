@@ -21,6 +21,7 @@ export type BlockModel = Partial<ContentModel> & {
   lang?: string;
   langID?: number;
   isVariant?: boolean;
+  title?: string;
 };
 
 type Block = {
@@ -44,17 +45,13 @@ export const Block: FC<Block> = ({
       !!data?.isVariant && !!data?.contentModelLabel
         ? `${data?.contentModelLabel} • `
         : "";
-    if (modelAudit?.length) {
-      const audit = modelAudit[0];
 
-      return `${preFix}Block • ${moment(audit?.happenedAt)?.fromNow()} by ${
-        audit?.firstName
-      } ${audit?.lastName}`;
-    }
     const userName = !data?.createdByUserName
       ? ""
       : ` by ${data?.createdByUserName}`;
-    return `${preFix}Block • ${moment(data?.createdAt)?.fromNow()}${userName}`;
+    return `${preFix}Block • created ${moment(
+      data?.createdAt
+    )?.fromNow()}${userName}`;
   }, [modelAudit]);
 
   const titlePrefix = !!data?.lang ? `(${data?.lang}) ` : "";

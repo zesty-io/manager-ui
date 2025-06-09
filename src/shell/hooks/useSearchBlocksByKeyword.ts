@@ -1,22 +1,32 @@
-import { useState, useMemo } from "react";
-import { isEmpty } from "lodash";
-
-import { ContentModel, Language, User } from "../services/types";
+import { useEffect, useMemo, useState, useCallback } from "react";
+import { ContentItem } from "../services/types";
 import {
   useGetContentModelsQuery,
   useGetLangsQuery,
+  useLazyGetContentModelItemsQuery,
   useSearchContentQuery,
 } from "../services/instance";
 import { useGetUsersQuery } from "../services/accounts";
 import { BlockModel } from "../../shell/views/SearchPage/List/Block";
 
-type UseSearchBlocksByKeyword = [
-  BlockModel[],
-  (searchTerm: string) => void,
-  boolean
-];
+const BLOCK_KEYWORDS = new Set([
+  "block models",
+  "block model",
+  "blocks model",
+  "blocks models",
+]);
 
-const toProperCase = (str: string) => {
+type UsersMap = Record<string, string>;
+type ModelsMap = Record<string, BlockModel>;
+type LanguageMap = Record<string, { code: string }>;
+
+type SearchResult = {
+  blocks: BlockModel[];
+  setSearchTerm: (term: string) => void;
+  isLoading: boolean;
+};
+
+const toProperCase = (str?: string): string => {
   if (!str) return "";
   return str
     .toLowerCase()
@@ -26,114 +36,208 @@ const toProperCase = (str: string) => {
     .trim();
 };
 
-export const useSearchBlocksByKeyword: () => UseSearchBlocksByKeyword = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const { data: models, isLoading: isLoadingModels } =
-    useGetContentModelsQuery();
+const parseBlockVariant = (
+  content: ContentItem,
+  model: BlockModel | undefined,
+  usersMap: UsersMap,
+  languageMap: LanguageMap
+): BlockModel => {
+  const langValue = languageMap[content?.meta?.langID]?.code || null;
+  const titlePrefix = !!langValue ? `(${langValue}) ` : "";
+  const blockLabel =
+    content?.web?.metaTitle || content?.web?.metaLinkText || "";
+  return {
+    ...content?.meta,
+    ZUID: content?.meta?.ZUID || "",
+    label: blockLabel,
+    contentModelZUID: content?.meta?.contentModelZUID || "",
+    contentModelLabel: model?.label || model?.metaTitle || "",
+    createdByUserZUID:
+      content?.web?.createdByUserZUID || content?.meta?.createdByUserZUID || "",
+    createdByUserName: toProperCase(
+      usersMap[content?.web?.createdByUserZUID] ||
+        usersMap[content?.meta?.createdByUserZUID]
+    ),
+    updatedAt: content?.meta?.updatedAt || content?.web?.updatedAt || "",
+    langID: content?.meta?.langID || null,
+    lang: languageMap[content?.meta?.langID]?.code || null,
+    type: "block",
+    isVariant: true,
+    title: `${titlePrefix}${blockLabel}`,
+  };
+};
 
-  const { data: contentItems, isLoading: isLoadingContentItems } =
-    useSearchContentQuery({
-      query: "",
-      order: "created",
-      dir: "desc",
-      limit: 10000,
-    });
-  const { data: users, isLoading: isLoadingUsers } = useGetUsersQuery();
-  const { data: languages, isLoading: isLoadingLanguages } = useGetLangsQuery(
-    {}
+export const useSearchBlocksByKeyword = (): SearchResult => {
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const [isLoadingVariants, setIsLoadingVariants] = useState(false);
+  const [blockModels, setBlockModels] = useState<BlockModel[]>([]);
+  const [blockVariants, setBlockVariants] = useState<BlockModel[]>([]);
+
+  const { data: models = [], isLoading: isLoadingModels } =
+    useGetContentModelsQuery();
+  const { data: users = [], isLoading: isLoadingUsers } = useGetUsersQuery();
+  const { data: languages = [], isLoading: isLoadingLanguages } =
+    useGetLangsQuery({});
+
+  const [getBlockItem] = useLazyGetContentModelItemsQuery();
+
+  const allUsers = useMemo<UsersMap>(
+    () =>
+      Object.fromEntries(
+        users.map((user) => [
+          `${user.firstName} ${user.lastName}`.toLowerCase(),
+          user.ZUID,
+        ])
+      ),
+    [users]
+  );
+
+  const usersMap = useMemo<UsersMap>(
+    () =>
+      Object.fromEntries(
+        users.map((user) => [
+          user.ZUID,
+          `${user.firstName} ${user.lastName}`.toLowerCase(),
+        ])
+      ),
+    [users]
+  );
+
+  const modelsMap = useMemo<ModelsMap>(
+    () => Object.fromEntries(models.map((model) => [model.ZUID, model])),
+    [models]
+  );
+
+  const languageMap = useMemo<LanguageMap>(
+    () => Object.fromEntries(languages.map((lang) => [lang.ID, lang])),
+    [languages]
+  );
+
+  const normalizedSearch = searchTerm.toLowerCase()?.trim();
+  const matchedUserZUID = allUsers[normalizedSearch];
+
+  const { data: contents, isFetching: isFetchingContent } =
+    useSearchContentQuery(
+      { query: matchedUserZUID || normalizedSearch },
+      { skip: !matchedUserZUID && !normalizedSearch }
+    );
+
+  const fetchAndProcessVariants = useCallback(
+    async (blocks: BlockModel[]) => {
+      let isMounted = true;
+      setIsLoadingVariants(true);
+
+      try {
+        const variants = await Promise.all(
+          blocks.map((block) =>
+            getBlockItem({ modelZUID: block.ZUID }).then(
+              (res) =>
+                res.data?.map((item) =>
+                  parseBlockVariant(item, block, usersMap, languageMap)
+                ) || []
+            )
+          )
+        );
+
+        if (isMounted) {
+          setBlockVariants(variants.flat());
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoadingVariants(false);
+        }
+      }
+
+      return () => {
+        isMounted = false;
+      };
+    },
+    [getBlockItem, usersMap, languageMap]
   );
 
   const isLoading =
     isLoadingModels ||
-    isLoadingContentItems ||
+    isLoadingUsers ||
     isLoadingLanguages ||
-    isLoadingUsers;
+    isLoadingVariants ||
+    isFetchingContent;
 
-  const blockModels = useMemo(() => {
-    if (isLoading) return [];
+  useEffect(() => {
+    let isMounted = true;
+    if (!normalizedSearch) {
+      if (isMounted) {
+        setBlockModels([]);
+        setBlockVariants([]);
+      }
+      return;
+    }
 
-    const term = searchTerm?.toLowerCase() || "";
+    if (isLoadingModels || isLoadingUsers || isLoadingLanguages) return;
 
-    if (isEmpty(models)) return [];
+    const matchedUserZUID = allUsers[normalizedSearch];
+    const isBlockKeyword = BLOCK_KEYWORDS.has(normalizedSearch);
 
-    const modelsMap = Object.fromEntries(
-      (models || []).map((item) => [item.ZUID, item])
-    );
-
-    const usersMap = Object.fromEntries(
-      (users || []).map((item) => [
-        item.ZUID,
-        `${item.firstName} ${item.lastName}`.toLowerCase(),
-      ])
-    );
-
-    const languageMap = Object.fromEntries(
-      (languages || []).map((item) => [item.ID, item])
-    );
-
-    const getCreatorName = (zuid: string) =>
-      toProperCase(usersMap[zuid] || zuid) || null;
-
-    const filteredBlockModels = (models || [])
-      .filter((model) => model.type === "block")
-      .map((model) => ({
+    const filteredBlocks: BlockModel[] = models
+      .filter((item) => item?.type === "block")
+      .map((model: BlockModel) => ({
         ...model,
-        createdByUserName: getCreatorName(model.createdByUserZUID),
+        createdByUserName: `${toProperCase(usersMap[model.createdByUserZUID])}`,
         isVariant: false,
-      }));
-
-    const blockModelZUIDs = new Set(
-      filteredBlockModels.map((model) => model.ZUID)
-    );
-    const flattenedContentItems = (contentItems || [])
-      .map((content) => ({
-        ...content?.meta,
-        ...content?.data,
-        ...content?.web,
       }))
-      .filter((item) => blockModelZUIDs.has(item?.contentModelZUID))
-      .map((item) => ({
-        ZUID: item.ZUID,
-        label: item.metaTitle || item.metaLinkText,
-        contentModelZUID: item.contentModelZUID,
-        contentModelLabel:
-          modelsMap[item.contentModelZUID]?.label ||
-          modelsMap[item.contentModelZUID]?.metaTitle,
-        masterZUID: item.masterZUID,
-        parentZUID: item.parentZUID,
-        createdAt: item.createdAt,
-        createdByUserZUID: item.createdByUserZUID,
-        createdByUserName: getCreatorName(item.createdByUserZUID),
-        updatedAt: item.updatedAt,
-        langID: item?.langID || null,
-        isVariant: true,
+      ?.filter(
+        (model: BlockModel) =>
+          (model?.type === "block" &&
+            model.label?.toLowerCase().includes(normalizedSearch)) ||
+          model.ZUID === normalizedSearch ||
+          (isBlockKeyword && model.type === "block") ||
+          model.createdByUserZUID === normalizedSearch ||
+          model.createdByUserZUID === matchedUserZUID ||
+          usersMap[model.createdByUserZUID]?.includes(normalizedSearch)
+      );
+
+    if (isMounted) {
+      setBlockModels(filteredBlocks);
+    }
+    if (contents?.length) {
+      const variantsFromSearch = contents?.map((item) => ({
+        ...parseBlockVariant(
+          item,
+          modelsMap[item.meta?.contentModelZUID],
+          usersMap,
+          languageMap
+        ),
+        createdByUserName: `${toProperCase(
+          usersMap[item?.meta?.createdByUserZUID]
+        )}`,
       }));
+      if (isMounted) {
+        setBlockVariants(variantsFromSearch);
+      }
+    } else if (filteredBlocks.length) {
+      fetchAndProcessVariants(filteredBlocks);
+    } else if (isMounted) {
+      setBlockVariants([]);
+    }
 
-    const combinedBlockModels = [
-      ...filteredBlockModels,
-      ...flattenedContentItems,
-    ].map((block: BlockModel) => ({
-      ...block,
-      langID: block.langID || null,
-      lang: languageMap[block.langID]?.code || null,
-      isVariant: !!block.isVariant,
-    }));
+    return () => {
+      isMounted = false;
+    };
+  }, [
+    normalizedSearch,
+    models,
+    contents,
+    modelsMap,
+    usersMap,
+    languageMap,
+    allUsers,
+    isLoading,
+    fetchAndProcessVariants,
+  ]);
 
-    if (!term) return combinedBlockModels;
-
-    return combinedBlockModels.filter((model) =>
-      [
-        "label",
-        "ZUID",
-        "contentModelZUID",
-        "contentModelLabel",
-        "createdByUserZUID",
-        "createdByUserName",
-      ].some((prop: keyof typeof model) =>
-        model[prop]?.toLowerCase().includes(term)
-      )
-    );
-  }, [models, searchTerm, contentItems, languages, users, isLoading]);
-
-  return [blockModels, setSearchTerm, isLoading || isLoadingModels];
+  return {
+    blocks: [...blockModels, ...blockVariants],
+    setSearchTerm,
+    isLoading,
+  };
 };

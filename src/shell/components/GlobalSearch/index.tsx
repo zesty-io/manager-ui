@@ -46,6 +46,7 @@ import { RecentSearchItem } from "./components/RecentSearchItem";
 import { KeywordSearchItem } from "./components/KeywordSearchItem";
 import { useParams } from "../../hooks/useParams";
 import { withCursorPosition } from "../../components/withCursorPosition";
+import { useSearchBlocksByKeyword } from "../../hooks/useSearchBlocksByKeyword";
 
 // List of dropdown options that are NOT suggestions
 const AdditionalDropdownOptions = [
@@ -127,6 +128,8 @@ export const GlobalSearch = () => {
     isFetchingMediaSearchResults ||
     isFetchingContentSearchResults;
 
+  const { blocks, setSearchTerm } = useSearchBlocksByKeyword();
+
   const suggestions: Suggestion[] = useMemo(() => {
     // Content data needs to be reset to [] when api call fails
     const contentSuggestions: Suggestion[] =
@@ -159,6 +162,17 @@ export const GlobalSearch = () => {
           title: model.label,
           updatedAt: model.updatedAt,
           url: `/schema/${model.ZUID}`,
+        };
+      }) || [];
+
+    const blocksSuggestions: Suggestion[] =
+      blocks?.map((block) => {
+        return {
+          type: "block",
+          ZUID: block.ZUID,
+          title: block.label,
+          updatedAt: block.updatedAt,
+          url: `/blocks/${block.ZUID}`,
         };
       }) || [];
 
@@ -208,6 +222,7 @@ export const GlobalSearch = () => {
       ...codeFileSuggestions,
       ...mediaFileSuggestions,
       ...mediaFolderSuggestions,
+      ...blocksSuggestions,
     ];
 
     const activeAccelerator = chipSearchAccelerator ?? typedSearchAccelerator;
@@ -224,6 +239,10 @@ export const GlobalSearch = () => {
 
       case "schema":
         consolidatedResults = [...modelSuggestions];
+        break;
+
+      case "block":
+        consolidatedResults = [...blocksSuggestions];
         break;
 
       case "media":
@@ -244,6 +263,7 @@ export const GlobalSearch = () => {
   }, [
     contents,
     models,
+    blocks,
     codeFiles,
     mediaFiles,
     mediaFolders,
@@ -295,6 +315,7 @@ export const GlobalSearch = () => {
     setModelKeyword(apiQueryTerm);
     setFileKeyword(apiQueryTerm);
     setMediaFolderKeyword(apiQueryTerm);
+    setSearchTerm(apiQueryTerm);
   }, [apiQueryTerm]);
 
   useEffect(() => {

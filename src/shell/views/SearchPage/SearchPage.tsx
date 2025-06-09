@@ -31,8 +31,8 @@ import {
   useGetBinsQuery,
 } from "../../services/mediaManager";
 import { useSearchMediaFoldersByKeyword } from "../../hooks/useSearchMediaFoldersByKeyword";
-import { useSearchBlocksByKeyword } from "../../hooks/useSearchBlocksByKeyword";
 import { BlockModel } from "./List/Block";
+import { useSearchBlocksByKeyword } from "../../hooks/useSearchBlocksByKeyword";
 export interface SearchPageItem {
   ZUID: string;
   title: string;
@@ -55,7 +55,7 @@ export const SearchPage: FC = () => {
     isError: isContentFetchingFailed,
   } = useSearchContentQuery({ query: keyword, order: "created", dir: "desc" });
   const [models, setModelKeyword] = useSearchModelsByKeyword();
-  const [blocks, setBlockKeyword, isLoadingBlocks] = useSearchBlocksByKeyword();
+  const { blocks, setSearchTerm } = useSearchBlocksByKeyword();
   const [codeFiles, setCodeFileKeyword] = useSearchCodeFilesByKeywords();
   const [mediaFolders, setMediaFolderKeyword] =
     useSearchMediaFoldersByKeyword();
@@ -68,13 +68,21 @@ export const SearchPage: FC = () => {
       }
     );
   const { data: langs } = useGetLangsQuery({});
-  const isLoading = isFetchingContent || isFetchingMedia || isLoadingBlocks;
+  const isLoading = isFetchingContent || isFetchingMedia;
 
   useEffect(() => {
-    setModelKeyword(keyword);
-    setCodeFileKeyword(keyword);
-    setMediaFolderKeyword(keyword);
-    setBlockKeyword(keyword);
+    let isMounted = true;
+
+    if (isMounted) {
+      setModelKeyword(keyword);
+      setCodeFileKeyword(keyword);
+      setMediaFolderKeyword(keyword);
+      setSearchTerm(keyword);
+    }
+
+    return () => {
+      isMounted = false;
+    };
   }, [keyword]);
 
   // Combine results from contents, models, code files, media files and media folders
