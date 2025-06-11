@@ -3,7 +3,6 @@ import {
   Box,
   Button,
   Dialog,
-  Typography,
   DialogTitle,
   DialogContent,
   InputLabel,
@@ -14,10 +13,12 @@ import { ModeEditRounded } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 import { ContentModel } from "../../../shell/services/types";
 import { createItem, generateItem } from "../../../shell/store/content";
-import { useDispatch, useSelector } from "react-redux";
-import { selectSortedModelFields } from "../../content-editor/src/app/views/ItemCreate/ItemCreate";
+import { useDispatch } from "react-redux";
 import { useHistory } from "react-router";
-import { useGetContentModelFieldsQuery } from "../../../shell/services/instance";
+import {
+  useGetContentModelFieldsQuery,
+  useGetContentModelItemsQuery,
+} from "../../../shell/services/instance";
 
 export const CreateVariantDialog = ({
   onClose,
@@ -32,6 +33,9 @@ export const CreateVariantDialog = ({
   const [isLoading, setIsLoading] = useState(false);
   const { data: fields, isFetching: isFieldsLoading } =
     useGetContentModelFieldsQuery(model?.ZUID);
+  const { refetch: refetchModelItems } = useGetContentModelItemsQuery({
+    modelZUID: model?.ZUID,
+  });
 
   const handleVariantCreate = async () => {
     setIsLoading(true);
@@ -50,14 +54,16 @@ export const CreateVariantDialog = ({
         metaTitle: variantName,
       })
     );
-    const res = await dispatch(
-      createItem({
-        modelZUID: model.ZUID,
-        itemZUID: `new:${model.ZUID}`,
-        skipPathPartValidation: true,
-      })
+    const res = await Promise.resolve(
+      dispatch(
+        createItem({
+          modelZUID: model.ZUID,
+          itemZUID: `new:${model.ZUID}`,
+          skipPathPartValidation: true,
+        })
+      )
     );
-
+    refetchModelItems();
     // @ts-ignore
     history.push(`/blocks/${model.ZUID}/${res.data.ZUID}`);
     setIsLoading(false);

@@ -13,7 +13,7 @@ import { theme } from "@zesty-io/material";
 import { StartRounded, DesktopMacRounded } from "@mui/icons-material";
 import { Actions } from "./Actions";
 import { useLocalStorage } from "react-use";
-import { useContext, useMemo } from "react";
+import { useContext, useEffect, useMemo } from "react";
 import { DuoModeContext } from "../../../../../../../shell/contexts/duoModeContext";
 import { FieldError } from "../../../components/Editor/FieldError";
 import { BlockTabs } from "../components/BlockTabs";
@@ -237,6 +237,7 @@ export default function Content(props) {
               onSave={() => props.onSave()}
               hasErrors={props.hasErrors}
               model={props.model}
+              itemZUID={props?.itemZUID}
             />
           </Box>
           {props?.model?.type === "block" && (
