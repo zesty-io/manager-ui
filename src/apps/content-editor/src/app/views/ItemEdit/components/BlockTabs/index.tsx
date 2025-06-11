@@ -22,6 +22,7 @@ import { AddRounded, SearchRounded } from "@mui/icons-material";
 import noSearchResults from "../../../../../../../../../public/images/noSearchResults.svg";
 import { CreateVariantDialog } from "../../../../../../../blocks/components/CreateVariantDialog";
 import { BlockVariantCard } from "./BlockVariantCard";
+import { CodeSample } from "./CodeSample";
 
 export const BlockTabs = (props: any) => {
   const [value, setValue] = useState(0);
@@ -210,7 +211,7 @@ export const BlockTabs = (props: any) => {
           />
         </Box>
       )}
-      {value === 2 && <Box>Code example</Box>}
+      {value === 2 && <CodeSample />}
     </>
   );
 };
