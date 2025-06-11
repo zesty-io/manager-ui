@@ -202,8 +202,13 @@ export default memo(function Editor({
         };
       }
 
-      if (field.datatype === "one_to_many") {
+      if (
+        ["one_to_many", "wysiwyg_advanced", "wysiwyg_basic"].includes(
+          field.datatype
+        )
+      ) {
         // Clear out the error after changing the value
+        // Note: These errors are most of the time validation errors from the api
         errors[name] = {
           ...(errors[name] ?? []),
           CUSTOM_ERROR: "",
