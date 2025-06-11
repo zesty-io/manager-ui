@@ -1,13 +1,13 @@
 import { useState, useMemo, useEffect } from "react";
 import { useParams, useLocation } from "react-router";
-import { Dialog } from "@mui/material";
-import { theme } from "@zesty-io/material";
+import { Dialog, Fade, Slide, Grow, Zoom } from "@mui/material";
 
 import { FieldSelection } from "./views/FieldSelection";
 import { FieldForm } from "./views/FieldForm";
 import { useGetContentModelFieldsQuery } from "../../../../../../shell/services/instance";
 import { FieldType } from "../configs";
 import { ContentModelFieldDataType } from "../../../../../../shell/services/types";
+import { useIntegrationField } from "../IntegrationField/IntegrationFieldProvider";
 
 type Params = {
   id: string;
@@ -29,6 +29,9 @@ export const AddFieldModal = ({ onModalClose, mode, sortIndex }: Props) => {
   const { id, fieldId } = params;
   const [localSortIndex, setLocalSortIndex] = useState<number | null>(null);
   const { data: fields } = useGetContentModelFieldsQuery(id);
+
+  const { isFormOpen, openConnectForm, closeConnectForm } =
+    useIntegrationField();
 
   useEffect(() => {
     // Local copy is incremented when user clicks "add another field"
@@ -55,19 +58,22 @@ export const AddFieldModal = ({ onModalClose, mode, sortIndex }: Props) => {
   return (
     <Dialog
       data-cy="AddFieldModal"
-      open
+      open={!isFormOpen}
       onClose={onModalClose}
       fullScreen={viewMode === "fields_list"}
+      keepMounted={isFormOpen}
       sx={{
         my: "20px",
       }}
-      PaperProps={{
-        sx: {
-          width: viewMode === "fields_list" ? "900px" : "640px",
-          maxWidth: "100%",
-          maxHeight: "min(100%, 1000px)",
-          minHeight: "680px",
-          m: 0,
+      slotProps={{
+        paper: {
+          sx: {
+            width: viewMode === "fields_list" ? "900px" : "640px",
+            maxWidth: "100%",
+            maxHeight: "min(100%, 1000px)",
+            minHeight: "680px",
+            m: 0,
+          },
         },
       }}
     >

@@ -18,6 +18,7 @@ import {
   InputProps,
   OutlinedInputProps,
   InputAdornment,
+  Fade,
 } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { isEmpty } from "lodash";
@@ -78,6 +79,8 @@ import {
   currencies,
 } from "../../../../../../../shell/components/FieldTypeCurrency/currencies";
 import getFlagEmoji from "../../../../../../../utility/getFlagEmoji";
+import { useIntegrationField } from "../../IntegrationField/IntegrationFieldProvider";
+import ConnectForm from "../../IntegrationField/ConnectForm";
 
 type ActiveTab = "details" | "rules" | "learn";
 type Params = {
@@ -186,6 +189,9 @@ export const FieldForm = ({
       fieldData?.settings?.defaultValue !== undefined
   );
 
+  const { isFormOpen, openConnectForm, closeConnectForm } =
+    useIntegrationField();
+
   /** Initiate field type form */
   useEffect(() => {
     let formFields: { [key: string]: FormValue } = {};
@@ -246,6 +252,8 @@ export const FieldForm = ({
         } else if (field.name === "fileExtensions") {
           formFields[field.name] = fieldData.settings?.[field.name] ?? null;
         } else if (field.name === "fileExtensionsErrorMessage") {
+          formFields[field.name] = fieldData.settings?.[field.name] ?? null;
+        } else if (field.name === "integration") {
           formFields[field.name] = fieldData.settings?.[field.name] ?? null;
         } else {
           formFields[field.name] = fieldData[field.name] as FormValue;
@@ -1053,6 +1061,11 @@ export const FieldForm = ({
           </Box>
         </DialogActions>
       )}
+
+      {/* {isFormOpen && (
+        <ConnectForm open={isFormOpen} onClose={closeConnectForm} />
+      )} */}
+      <ConnectForm open={isFormOpen} onClose={closeConnectForm} />
     </>
   );
 };

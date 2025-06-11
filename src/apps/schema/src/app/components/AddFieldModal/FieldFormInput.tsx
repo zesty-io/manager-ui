@@ -30,6 +30,8 @@ import { FieldSettingsOptions } from "../../../../../../shell/services/types";
 import { convertDropdownValue } from "../../utils";
 import { withCursorPosition } from "../../../../../../shell/components/withCursorPosition";
 import { Currency } from "../../../../../../shell/components/FieldTypeCurrency/currencies";
+import IntegrationField from "../IntegrationField/index";
+import { useIntegrationField } from "../IntegrationField/IntegrationFieldProvider";
 
 const TextFieldWithCursorPosition = withCursorPosition(TextField);
 
@@ -57,14 +59,16 @@ export type FieldNames =
   | "maxValue"
   | "currency"
   | "fileExtensions"
-  | "fileExtensionsErrorMessage";
+  | "fileExtensionsErrorMessage"
+  | "integration";
 type FieldType =
   | "input"
   | "checkbox"
   | "dropdown"
   | "autocomplete"
   | "options"
-  | "toggle_options";
+  | "toggle_options"
+  | "integration";
 type InputType = "text" | "number";
 export interface InputField {
   name: FieldNames;
@@ -127,6 +131,8 @@ export const FieldFormInput = ({
     (fieldConfig.type === "toggle_options" && prefillData)
       ? (prefillData as FieldSettingsOptions[])
       : [];
+
+  const { isFormOpen } = useIntegrationField();
 
   const handleOptionValueChanged = (
     newKeyValueData: { [key: string]: string },
@@ -430,6 +436,9 @@ export const FieldFormInput = ({
             </Button>
           )}
         </>
+      )}
+      {fieldConfig.type === "integration" && (
+        <IntegrationField name={fieldConfig.name} label={fieldConfig.label} />
       )}
     </Grid>
   );

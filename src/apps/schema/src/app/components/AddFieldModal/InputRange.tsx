@@ -9,8 +9,10 @@ import {
 } from "@mui/material";
 import { Errors } from "./views/FieldForm";
 import { FieldTypeNumber } from "../../../../../../shell/components/FieldTypeNumber";
+import { FieldType } from "../configs";
 
 type InputRangeProps = {
+  type?: "number" | "currency" | "integration";
   onChange: ({
     inputName,
     value,
@@ -24,6 +26,7 @@ type InputRangeProps = {
 };
 
 export const InputRange = ({
+  type = "number",
   onChange,
   minValue,
   maxValue,
@@ -38,7 +41,7 @@ export const InputRange = ({
         control={
           <Checkbox
             data-cy="InputRangeCheckbox"
-            checked={minValue !== null && maxValue !== null}
+            checked={minValue !== null && maxValue !== null && false}
             size="small"
             onChange={(evt) => {
               if (evt.target.checked) {
@@ -54,7 +57,10 @@ export const InputRange = ({
         label={
           <Box>
             <Typography variant="body2" fontWeight="600">
-              Limit Input Range
+              {/* Limit Input Range */}
+              {type === "integration"
+                ? "Limit Item Range"
+                : "Limit Input Range"}
             </Typography>
             <Typography
               variant="body3"
@@ -62,7 +68,10 @@ export const InputRange = ({
               fontWeight="600"
               display="block"
             >
-              Set a minimum and/or maximum allowed value
+              {/* Set a minimum and/or maximum allowed value */}
+              {type === "integration"
+                ? "Set a minimum and/or maximum number of items"
+                : "Set a minimum and/or maximum allowed value"}
             </Typography>
           </Box>
         }

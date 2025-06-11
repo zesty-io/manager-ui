@@ -48,27 +48,29 @@ export const Rules = ({
 
   return (
     <Stack gap={2.5}>
-      <DefaultValue
-        type={type}
-        value={formData["defaultValue"]}
-        onChange={(value) => {
-          onFieldDataChanged({ inputName: "defaultValue", value });
-        }}
-        isDefaultValueEnabled={isDefaultValueEnabled}
-        setIsDefaultValueEnabled={setIsDefaultValueEnabled}
-        error={isSubmitClicked && (errors["defaultValue"] as string)}
-        mediaRules={{
-          limit: formData["limit"],
-          group_id: formData["group_id"],
-        }}
-        relationshipFields={{
-          relatedModelZUID: formData["relatedModelZUID"] as string,
-          relatedFieldZUID: formData["relatedFieldZUID"] as string,
-        }}
-        options={formData["options"] as FieldSettingsOptions[]}
-        currency={(formData["currency"] as string) || "USD"}
-        fieldLabel={formData["label"] as string}
-      />
+      {type !== "integration" && (
+        <DefaultValue
+          type={type}
+          value={formData["defaultValue"]}
+          onChange={(value) => {
+            onFieldDataChanged({ inputName: "defaultValue", value });
+          }}
+          isDefaultValueEnabled={isDefaultValueEnabled}
+          setIsDefaultValueEnabled={setIsDefaultValueEnabled}
+          error={isSubmitClicked && (errors["defaultValue"] as string)}
+          mediaRules={{
+            limit: formData["limit"],
+            group_id: formData["group_id"],
+          }}
+          relationshipFields={{
+            relatedModelZUID: formData["relatedModelZUID"] as string,
+            relatedFieldZUID: formData["relatedFieldZUID"] as string,
+          }}
+          options={formData["options"] as FieldSettingsOptions[]}
+          currency={(formData["currency"] as string) || "USD"}
+          fieldLabel={formData["label"] as string}
+        />
+      )}
 
       {type === "images" && (
         <MediaRules
@@ -113,8 +115,9 @@ export const Rules = ({
         </>
       )}
 
-      {(type === "number" || type === "currency") && (
+      {["number", "currency", "integration"].includes(type) && (
         <InputRange
+          type={type as "number" | "currency" | "integration"}
           onChange={onFieldDataChanged}
           minValue={formData["minValue"] as number}
           maxValue={formData["maxValue"] as number}

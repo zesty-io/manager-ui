@@ -155,6 +155,7 @@ export const getCategory = (type: string) => {
     case "color":
     case "sort":
     case "uuid":
+    case "integration":
       category = "options";
       break;
 

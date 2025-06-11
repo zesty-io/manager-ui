@@ -209,6 +209,7 @@ export interface FieldSettings {
   currency?: string;
   fileExtensions?: string[];
   fileExtensionsErrorMessage?: string;
+  integration?: string;
 }
 
 export type ContentModelFieldValue =
