@@ -12,19 +12,23 @@ import {
 } from "@mui/material";
 import { useRef, useState } from "react";
 
-import { VerticalSplitRounded, InfoRounded } from "@mui/icons-material";
-import { Actions } from "../Content/Actions";
+import {
+  VerticalSplitRounded,
+  InfoRounded,
+  CodeRounded,
+} from "@mui/icons-material";
+import { Actions } from "../../Content/Actions";
 import { useHistory, useParams } from "react-router";
-import { useGetContentModelItemsQuery } from "../../../../../../../shell/services/instance";
-import { ContentItem } from "../../../../../../../shell/services/types";
+import { useGetContentModelItemsQuery } from "../../../../../../../../shell/services/instance";
+import { ContentItem } from "../../../../../../../../shell/services/types";
 import moment from "moment-timezone";
-import { useGetUsersQuery } from "../../../../../../../shell/services/accounts";
+import { useGetUsersQuery } from "../../../../../../../../shell/services/accounts";
 import { AddRounded, SearchRounded } from "@mui/icons-material";
-import noSearchResults from "../../../../../../../../public/images/noSearchResults.svg";
-import blockPlaceholder from "../../../../../../../../public/images/blockPlaceholder.png";
-import { CreateVariantDialog } from "../../../../../../blocks/components/CreateVariantDialog";
+import noSearchResults from "../../../../../../../../../public/images/noSearchResults.svg";
+import blockPlaceholder from "../../../../../../../../../public/images/blockPlaceholder.png";
+import { CreateVariantDialog } from "../../../../../../../blocks/components/CreateVariantDialog";
 import { useSelector } from "react-redux";
-import { AppState } from "../../../../../../../shell/store/types";
+import { AppState } from "../../../../../../../../shell/store/types";
 
 export const BlockTabs = (props: any) => {
   const [value, setValue] = useState(0);
@@ -63,6 +67,11 @@ export const BlockTabs = (props: any) => {
           <Tab
             label="Info"
             icon={<InfoRounded fontSize="small" />}
+            iconPosition="start"
+          />
+          <Tab
+            label="Code"
+            icon={<CodeRounded fontSize="small" />}
             iconPosition="start"
           />
         </Tabs>
@@ -209,6 +218,7 @@ export const BlockTabs = (props: any) => {
           />
         </Box>
       )}
+      {value === 2 && <Box>Code example</Box>}
     </>
   );
 };
