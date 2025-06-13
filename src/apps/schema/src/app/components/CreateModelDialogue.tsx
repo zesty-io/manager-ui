@@ -219,7 +219,6 @@ export const CreateModelDialogue = ({
   useEffect(() => {
     // Only navigate to schema page once initial content is created for templateset & og_image field is created for block
     if ((isContentItemCreated || isOgImageFieldCreated) && createModelData) {
-      console.log(createModelData);
       history.push(`/schema/${createModelData.data.ZUID}`);
       onClose();
     }
