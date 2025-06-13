@@ -1,9 +1,20 @@
 import { Stack, Typography, Tooltip, Box } from "@mui/material";
 import { InfoRounded } from "@mui/icons-material";
+import { useParams } from "react-router";
 
 import { CopyTextField } from "../../../../../../../../shell/components/CopyTextField";
+import {
+  useGetContentModelItemsQuery,
+  useGetContentModelQuery,
+} from "../../../../../../../../shell/services/instance";
 
 export const CodeSample = () => {
+  const { modelZUID, itemZUID } = useParams<{
+    itemZUID: string;
+    modelZUID: string;
+  }>();
+  const { data: model } = useGetContentModelQuery(modelZUID);
+
   return (
     <Stack gap={2} my={2} height="calc(100% - 80px)" sx={{ overflowY: "auto" }}>
       <Box>
@@ -26,7 +37,7 @@ export const CodeSample = () => {
             <InfoRounded color="action" sx={{ width: 12, height: 12 }} />
           </Tooltip>
         </Stack>
-        <CopyTextField value="{{ block({this.block_selector_field}) }}" />
+        <CopyTextField value="{{ block(this.block_selector_field) }}" />
       </Box>
 
       <Box>
@@ -49,7 +60,7 @@ export const CodeSample = () => {
             <InfoRounded color="action" sx={{ width: 12, height: 12 }} />
           </Tooltip>
         </Stack>
-        <CopyTextField value="{{ block('/-/block/tests_blocks.html') }}" />
+        <CopyTextField value={`{{ block('/-/block/${model?.name}.html') }}`} />
       </Box>
 
       <Box>
@@ -72,7 +83,9 @@ export const CodeSample = () => {
             <InfoRounded color="action" sx={{ width: 12, height: 12 }} />
           </Tooltip>
         </Stack>
-        <CopyTextField value="{{ block('/-/block/test_block_3.html?version=5') }}" />
+        <CopyTextField
+          value={`{{ block('/-/block/${model?.name}.html?version=5') }}`}
+        />
       </Box>
 
       <Box>
@@ -95,7 +108,9 @@ export const CodeSample = () => {
             <InfoRounded color="action" sx={{ width: 12, height: 12 }} />
           </Tooltip>
         </Stack>
-        <CopyTextField value="{{ block('/-/block/test_block_3.html?variant=7-e694b0d995-dngkkt') }}" />
+        <CopyTextField
+          value={`{{ block('/-/block/${model?.name}.html?variant=${itemZUID}') }}`}
+        />
       </Box>
     </Stack>
   );
