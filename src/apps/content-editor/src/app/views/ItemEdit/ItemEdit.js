@@ -473,8 +473,8 @@ export default function ItemEdit() {
     return dispatch(fetchItem(modelZUID, itemZUID));
   }
 
-  const isLocked = !checkingLock && lockState.userZUID !== user.ZUID;
-  // console.log(loading, item, Object.keys(item).length);
+  const isLocked =
+    isMounted.current && !checkingLock && lockState.userZUID !== user.ZUID;
 
   return (
     <Fragment>
