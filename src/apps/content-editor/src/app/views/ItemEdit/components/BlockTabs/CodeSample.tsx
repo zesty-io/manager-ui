@@ -4,7 +4,7 @@ import { useParams } from "react-router";
 
 import { CopyTextField } from "../../../../../../../../shell/components/CopyTextField";
 import {
-  useGetContentModelItemsQuery,
+  useGetContentItemQuery,
   useGetContentModelQuery,
 } from "../../../../../../../../shell/services/instance";
 
@@ -14,6 +14,7 @@ export const CodeSample = () => {
     modelZUID: string;
   }>();
   const { data: model } = useGetContentModelQuery(modelZUID);
+  const { data: item } = useGetContentItemQuery(itemZUID);
 
   return (
     <Stack gap={2} my={2} height="calc(100% - 80px)" sx={{ overflowY: "auto" }}>
@@ -84,7 +85,7 @@ export const CodeSample = () => {
           </Tooltip>
         </Stack>
         <CopyTextField
-          value={`{{ block('/-/block/${model?.name}.html?version=5') }}`}
+          value={`{{ block('/-/block/${model?.name}.html?version=${item?.web?.version}') }}`}
         />
       </Box>
 
