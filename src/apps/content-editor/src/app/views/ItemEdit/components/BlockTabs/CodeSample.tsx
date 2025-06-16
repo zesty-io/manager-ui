@@ -1,4 +1,4 @@
-import { Stack, Typography, Tooltip, Box } from "@mui/material";
+import { Stack, Typography, Tooltip, Box, Skeleton } from "@mui/material";
 import { InfoRounded } from "@mui/icons-material";
 import { useParams } from "react-router";
 
@@ -13,8 +13,10 @@ export const CodeSample = () => {
     itemZUID: string;
     modelZUID: string;
   }>();
-  const { data: model } = useGetContentModelQuery(modelZUID);
-  const { data: item } = useGetContentItemQuery(itemZUID);
+  const { data: model, isLoading: isLoadingModel } =
+    useGetContentModelQuery(modelZUID);
+  const { data: item, isLoading: isLoadingItem } =
+    useGetContentItemQuery(itemZUID);
 
   return (
     <Stack gap={2} my={2} height="calc(100% - 80px)" sx={{ overflowY: "auto" }}>
@@ -61,7 +63,13 @@ export const CodeSample = () => {
             <InfoRounded color="action" sx={{ width: 12, height: 12 }} />
           </Tooltip>
         </Stack>
-        <CopyTextField value={`{{ block('/-/block/${model?.name}.html') }}`} />
+        {isLoadingModel ? (
+          <Skeleton variant="rounded" width="100%" height={36} />
+        ) : (
+          <CopyTextField
+            value={`{{ block('/-/block/${model?.name}.html') }}`}
+          />
+        )}
       </Box>
 
       <Box>
@@ -84,9 +92,13 @@ export const CodeSample = () => {
             <InfoRounded color="action" sx={{ width: 12, height: 12 }} />
           </Tooltip>
         </Stack>
-        <CopyTextField
-          value={`{{ block('/-/block/${model?.name}.html?version=${item?.web?.version}') }}`}
-        />
+        {isLoadingModel || isLoadingItem ? (
+          <Skeleton variant="rounded" width="100%" height={36} />
+        ) : (
+          <CopyTextField
+            value={`{{ block('/-/block/${model?.name}.html?version=${item?.web?.version}') }}`}
+          />
+        )}
       </Box>
 
       <Box>
@@ -109,9 +121,13 @@ export const CodeSample = () => {
             <InfoRounded color="action" sx={{ width: 12, height: 12 }} />
           </Tooltip>
         </Stack>
-        <CopyTextField
-          value={`{{ block('/-/block/${model?.name}.html?variant=${itemZUID}') }}`}
-        />
+        {isLoadingModel ? (
+          <Skeleton variant="rounded" width="100%" height={36} />
+        ) : (
+          <CopyTextField
+            value={`{{ block('/-/block/${model?.name}.html?variant=${itemZUID}') }}`}
+          />
+        )}
       </Box>
     </Stack>
   );
