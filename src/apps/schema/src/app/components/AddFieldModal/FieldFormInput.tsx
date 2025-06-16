@@ -26,7 +26,10 @@ import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
 import { cloneDeep } from "lodash";
 
 import { FormValue } from "./views/FieldForm";
-import { FieldSettingsOptions } from "../../../../../../shell/services/types";
+import {
+  FieldSettingsOptions,
+  FieldConfig,
+} from "../../../../../../shell/services/types";
 import { convertDropdownValue } from "../../utils";
 import { withCursorPosition } from "../../../../../../shell/components/withCursorPosition";
 import { Currency } from "../../../../../../shell/components/FieldTypeCurrency/currencies";
@@ -60,7 +63,7 @@ export type FieldNames =
   | "currency"
   | "fileExtensions"
   | "fileExtensionsErrorMessage"
-  | "integration";
+  | "integrationConfig";
 type FieldType =
   | "input"
   | "checkbox"
@@ -68,7 +71,8 @@ type FieldType =
   | "autocomplete"
   | "options"
   | "toggle_options"
-  | "integration";
+  | "config";
+
 type InputType = "text" | "number";
 export interface InputField {
   name: FieldNames;
@@ -131,8 +135,6 @@ export const FieldFormInput = ({
     (fieldConfig.type === "toggle_options" && prefillData)
       ? (prefillData as FieldSettingsOptions[])
       : [];
-
-  const { isFormOpen } = useIntegrationField();
 
   const handleOptionValueChanged = (
     newKeyValueData: { [key: string]: string },
@@ -437,8 +439,17 @@ export const FieldFormInput = ({
           )}
         </>
       )}
-      {fieldConfig.type === "integration" && (
-        <IntegrationField name={fieldConfig.name} label={fieldConfig.label} />
+      {fieldConfig.type === "config" && (
+        <IntegrationField
+          name={fieldConfig.name}
+          label={fieldConfig.label}
+          // onChange={(value) => {
+          //   // const updatedConfig = { inputName: "integrationConfig", value };
+          //   onDataChange({ inputName: "integrationConfig", value });
+          // }}
+          onChange={onDataChange}
+          error={errorMsg}
+        />
       )}
     </Grid>
   );

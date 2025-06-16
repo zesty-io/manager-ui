@@ -7,7 +7,6 @@ import { FieldForm } from "./views/FieldForm";
 import { useGetContentModelFieldsQuery } from "../../../../../../shell/services/instance";
 import { FieldType } from "../configs";
 import { ContentModelFieldDataType } from "../../../../../../shell/services/types";
-import { useIntegrationField } from "../IntegrationField/IntegrationFieldProvider";
 
 type Params = {
   id: string;
@@ -29,9 +28,6 @@ export const AddFieldModal = ({ onModalClose, mode, sortIndex }: Props) => {
   const { id, fieldId } = params;
   const [localSortIndex, setLocalSortIndex] = useState<number | null>(null);
   const { data: fields } = useGetContentModelFieldsQuery(id);
-
-  const { isFormOpen, openConnectForm, closeConnectForm } =
-    useIntegrationField();
 
   useEffect(() => {
     // Local copy is incremented when user clicks "add another field"
@@ -58,10 +54,9 @@ export const AddFieldModal = ({ onModalClose, mode, sortIndex }: Props) => {
   return (
     <Dialog
       data-cy="AddFieldModal"
-      open={!isFormOpen}
+      open
       onClose={onModalClose}
       fullScreen={viewMode === "fields_list"}
-      keepMounted={isFormOpen}
       sx={{
         my: "20px",
       }}

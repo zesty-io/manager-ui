@@ -52,50 +52,48 @@ export const Model = () => {
   }
 
   return (
-    <IntegrationFieldProvider>
-      <Box
-        flex="1"
-        display="flex"
-        height="100%"
-        flexDirection="column"
-        sx={{ backgroundColor: "grey.50" }}
-      >
-        <ModelHeader onNewFieldModalClick={handleNewFieldModalClick} />
+    <Box
+      flex="1"
+      display="flex"
+      height="100%"
+      flexDirection="column"
+      sx={{ backgroundColor: "grey.50" }}
+    >
+      <ModelHeader onNewFieldModalClick={handleNewFieldModalClick} />
+      <Route
+        path="/schema/:id/fields/:fieldId"
+        render={() => {
+          return (
+            <AddFieldModal
+              mode="update_field"
+              onModalClose={() => history.push(`/schema/${id}/fields`)}
+            />
+          );
+        }}
+      />
+      <Switch>
         <Route
-          path="/schema/:id/fields/:fieldId"
-          render={() => {
-            return (
-              <AddFieldModal
-                mode="update_field"
-                onModalClose={() => history.push(`/schema/${id}/fields`)}
-              />
-            );
-          }}
+          path="/schema/:id/fields"
+          render={() => (
+            <FieldList onNewFieldModalClick={handleNewFieldModalClick} />
+          )}
         />
-        <Switch>
-          <Route
-            path="/schema/:id/fields"
-            render={() => (
-              <FieldList onNewFieldModalClick={handleNewFieldModalClick} />
-            )}
-          />
-          <Route path="/schema/:id/api" component={ModelApi} />
-          <Route exact path="/schema/:id/info" component={ModelInfo} />
-          <Route
-            exact
-            path="/schema/:id/activity-log"
-            component={ModelActivityLog}
-          />
-          <Redirect to="/schema/:id/fields" />
-        </Switch>
-        {isAddFieldModalOpen && (
-          <AddFieldModal
-            mode="fields_list"
-            onModalClose={handleModalClosed}
-            sortIndex={sortIndex}
-          />
-        )}
-      </Box>
-    </IntegrationFieldProvider>
+        <Route path="/schema/:id/api" component={ModelApi} />
+        <Route exact path="/schema/:id/info" component={ModelInfo} />
+        <Route
+          exact
+          path="/schema/:id/activity-log"
+          component={ModelActivityLog}
+        />
+        <Redirect to="/schema/:id/fields" />
+      </Switch>
+      {isAddFieldModalOpen && (
+        <AddFieldModal
+          mode="fields_list"
+          onModalClose={handleModalClosed}
+          sortIndex={sortIndex}
+        />
+      )}
+    </Box>
   );
 };

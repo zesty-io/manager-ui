@@ -66,6 +66,17 @@ export interface File {
 
 export type ModelType = "pageset" | "templateset" | "dataset" | "block";
 
+export type IntegrationFieldTypes =
+  | "simple"
+  | "text"
+  | "details"
+  | "image"
+  | "video"
+  | "shopify"
+  | "youtube"
+  | "mux"
+  | "classy";
+
 export interface ContentModel {
   ZUID: string;
   masterZUID: string;
@@ -190,7 +201,11 @@ export interface HeadTag {
 export interface FieldSettingsOptions {
   [key: string | number]: string;
 }
-
+export interface FieldConfig {
+  endpoint: string;
+  type: IntegrationFieldTypes;
+  headers?: { [key: string]: string };
+}
 export interface FieldSettings {
   options?: FieldSettingsOptions;
   group_id?: string;
@@ -209,7 +224,7 @@ export interface FieldSettings {
   currency?: string;
   fileExtensions?: string[];
   fileExtensionsErrorMessage?: string;
-  integration?: string;
+  config?: FieldConfig;
 }
 
 export type ContentModelFieldValue =
@@ -218,7 +233,8 @@ export type ContentModelFieldValue =
   | boolean
   | string[]
   | FieldSettings
-  | FieldSettingsOptions[];
+  | FieldSettingsOptions[]
+  | FieldConfig;
 
 export type ContentModelFieldDataType =
   | "text"
@@ -241,7 +257,8 @@ export type ContentModelFieldDataType =
   | "internal_link"
   | "yes_no"
   | "color"
-  | "sort";
+  | "sort"
+  | "integration";
 
 export interface ContentModelField {
   ZUID: string;
@@ -262,6 +279,11 @@ export interface ContentModelField {
   createdAt: string;
   updatedAt: string;
   deletedAt: string;
+  // integration?: string;
+  // integrationUrl?: string;
+  // integrationType?: string;
+  integrationConfig?: FieldConfig;
+  config?: FieldConfig;
 }
 
 export interface WebView {

@@ -255,6 +255,14 @@ const fieldTypeColumnConfigMap = {
     filterable: true,
     renderCell: (params: GridRenderCellParams) => <SortCell params={params} />,
   },
+  integration: {
+    width: 240,
+    filterable: true,
+    renderCell: (params: any) =>
+      params.value && (
+        <Typography variant="body2">{params.value?.toUpperCase()}</Typography>
+      ),
+  },
 } as const;
 
 export const ItemListTable = memo(

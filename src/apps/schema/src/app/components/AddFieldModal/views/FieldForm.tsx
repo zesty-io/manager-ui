@@ -60,6 +60,8 @@ import {
   ContentModelFieldValue,
   FieldSettingsOptions,
   ContentModelFieldDataType,
+  IntegrationFieldTypes,
+  FieldConfig,
 } from "../../../../../../../shell/services/types";
 import {
   FIELD_COPY_CONFIG,
@@ -79,8 +81,6 @@ import {
   currencies,
 } from "../../../../../../../shell/components/FieldTypeCurrency/currencies";
 import getFlagEmoji from "../../../../../../../utility/getFlagEmoji";
-import { useIntegrationField } from "../../IntegrationField/IntegrationFieldProvider";
-import ConnectForm from "../../IntegrationField/ConnectForm";
 
 type ActiveTab = "details" | "rules" | "learn";
 type Params = {
@@ -189,8 +189,8 @@ export const FieldForm = ({
       fieldData?.settings?.defaultValue !== undefined
   );
 
-  const { isFormOpen, openConnectForm, closeConnectForm } =
-    useIntegrationField();
+  // const { isFormOpen, openConnectForm, closeConnectForm } =
+  //   useIntegrationField();
 
   /** Initiate field type form */
   useEffect(() => {
@@ -253,8 +253,6 @@ export const FieldForm = ({
           formFields[field.name] = fieldData.settings?.[field.name] ?? null;
         } else if (field.name === "fileExtensionsErrorMessage") {
           formFields[field.name] = fieldData.settings?.[field.name] ?? null;
-        } else if (field.name === "integration") {
-          formFields[field.name] = fieldData.settings?.[field.name] ?? null;
         } else {
           formFields[field.name] = fieldData[field.name] as FormValue;
         }
@@ -273,6 +271,15 @@ export const FieldForm = ({
           formFields[field.name] = [{ 0: "No" }, { 1: "Yes" }];
         } else if (field.name === "defaultValue" && type === "number") {
           formFields[field.name] = 0;
+        } else if (
+          field.type === "config" &&
+          field.name === "integrationConfig"
+        ) {
+          formFields[field.name] = {
+            endpoint: null,
+            type: null,
+            headers: null,
+          };
         } else {
           if (
             field.name === "defaultValue" ||
@@ -550,6 +557,7 @@ export const FieldForm = ({
 
   const handleSubmitForm = () => {
     setIsSubmitClicked(true);
+
     const hasErrors = Object.values(errors)
       .flat(2)
       .some((error) => error.length);
@@ -557,7 +565,7 @@ export const FieldForm = ({
       (max, field) => (field.sort > max ? field.sort : max),
       0
     );
-
+    console.debug("handleSubmitForm: ", { formData, fields });
     const sort = isInbetweenField ? sortIndex : highestSortValue + 1;
 
     if (hasErrors) {
@@ -642,6 +650,8 @@ export const FieldForm = ({
       sort: isUpdateField ? fieldData.sort : sort, // Just use the length since sort starts at 0
     };
 
+    console.debug("handleSubmitForm: ", { formData, fields, body });
+
     if (type === "one_to_one" || type === "one_to_many") {
       body.relatedModelZUID = formData.relatedModelZUID || null;
       body.relatedFieldZUID = formData.relatedFieldZUID || null;
@@ -657,6 +667,10 @@ export const FieldForm = ({
       );
 
       body.settings.options = optionsObject;
+    }
+
+    if (type === "integration") {
+      body.integrationConfig = formData?.integrationConfig as FieldConfig;
     }
 
     if (isUpdateField) {
@@ -1065,7 +1079,7 @@ export const FieldForm = ({
       {/* {isFormOpen && (
         <ConnectForm open={isFormOpen} onClose={closeConnectForm} />
       )} */}
-      <ConnectForm open={isFormOpen} onClose={closeConnectForm} />
+      {/* <ConnectForm open={isFormOpen} onClose={closeConnectForm} /> */}
     </>
   );
 };

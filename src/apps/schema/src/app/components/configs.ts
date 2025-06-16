@@ -329,16 +329,6 @@ const FIELD_COPY_CONFIG: { [key: string]: FieldListData[] } = {
       subHeaderText: "Use to add order to content items",
     },
     {
-      type: "uuid",
-      name: "UUID",
-      shortDescription: "Generates unique, uneditable alphanumeric identifiers",
-      description:
-        "The UUID field creates a unique alpha numeric string when an item is created. This is a helpful feature for analytics tracking, inventory management, user management, etc.",
-      commonUses: ["Product ID", "Inventory ID", "Employee ID"],
-      proTip: "UUID are always unique and are non editable.",
-      subHeaderText: "Use to set unique ids to each content item",
-    },
-    {
       type: "integration",
       name: "Integration",
       shortDescription: "Fetch and store data from APIs",
@@ -355,6 +345,16 @@ const FIELD_COPY_CONFIG: { [key: string]: FieldListData[] } = {
       proTip:
         "The data is stored as a JSON object and can be accessed headlessly or with Parsley for dynamic rendering in templates. ",
       subHeaderText: "Fetch and store data from APIs",
+    },
+    {
+      type: "uuid",
+      name: "UUID",
+      shortDescription: "Generates unique, uneditable alphanumeric identifiers",
+      description:
+        "The UUID field creates a unique alpha numeric string when an item is created. This is a helpful feature for analytics tracking, inventory management, user management, etc.",
+      commonUses: ["Product ID", "Inventory ID", "Employee ID"],
+      proTip: "UUID are always unique and are non editable.",
+      subHeaderText: "Use to set unique ids to each content item",
     },
   ],
 };
@@ -741,13 +741,12 @@ const FORM_CONFIG: Record<FieldType, FormConfig> = {
     details: [
       ...COMMON_FIELDS.slice(0, 4),
       {
-        name: "integration",
-        type: "integration",
-        label: "Connect to API",
-        required: false,
+        name: "integrationConfig",
+        type: "config",
+        label: "API URL",
+        required: true,
         gridSize: 12,
         maxLength: 150,
-        validate: ["length", "unique"],
       },
       ...COMMON_FIELDS.slice(4),
     ],
@@ -755,34 +754,14 @@ const FORM_CONFIG: Record<FieldType, FormConfig> = {
       {
         name: "limit",
         type: "input",
-        label: "Media Item Limit",
+        label: "Limit Item Range",
         required: false,
         gridSize: 12,
         inputType: "number",
-        tooltip: "Set the minimum media file limit to 1. It cannot go lower.",
+        tooltip: "Set a minimum and/or maximum number of items",
       },
-      {
-        name: "group_id",
-        type: "autocomplete",
-        label: "Select Folder",
-        required: false,
-        gridSize: 12,
-      },
-      {
-        name: "fileExtensions",
-        type: "input",
-        label: "File Extensions",
-        required: false,
-        gridSize: 12,
-      },
-      {
-        name: "fileExtensionsErrorMessage",
-        type: "input",
-        label: "File extensions error message",
-        required: false,
-        gridSize: 12,
-      },
-      ...COMMON_RULES,
+
+      // ...COMMON_RULES,
     ],
   },
 };
@@ -843,17 +822,6 @@ const SEO_FIELDS: readonly SystemField[] = [
   },
 ] as const;
 
-type IntegrationFieldTypes =
-  | "simple"
-  | "text"
-  | "detail"
-  | "image"
-  | "video"
-  | "shopify"
-  | "youtube"
-  | "mux"
-  | "classy";
-
 export {
   FieldListData,
   FIELD_COPY_CONFIG,
@@ -862,5 +830,4 @@ export {
   SYSTEM_FIELDS,
   SystemField,
   SEO_FIELDS,
-  IntegrationFieldTypes,
 };

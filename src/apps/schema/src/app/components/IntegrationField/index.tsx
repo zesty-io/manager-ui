@@ -1,10 +1,21 @@
 import { FC, useEffect, useState } from "react";
-import { Box, Typography, Button, Paper, InputBase } from "@mui/material";
-import { IntegrationFieldTypes } from "../configs";
+import {
+  Box,
+  Typography,
+  Button,
+  Paper,
+  InputBase,
+  OutlinedInput,
+} from "@mui/material";
+import { IntegrationFieldTypes, IntegrationConfig } from "./configs";
 import LinkRoundedIcon from "@mui/icons-material/LinkRounded";
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
-import ConnectForm from "./ConnectForm";
-import { useIntegrationField } from "./IntegrationFieldProvider";
+import IntegrationFieldProvider, {
+  useIntegrationField,
+} from "./IntegrationFieldProvider";
+import IntegrationForm from "./IntegrationForm";
+import { Errors, FormValue } from "../AddFieldModal/views/FieldForm";
+import { arrayToKeyValuePairs } from "./utils";
 
 type IntegrationDataProps = {
   url: string;
@@ -14,21 +25,61 @@ type IntegrationDataProps = {
 type IntegrationFieldProps = {
   name: string;
   label: string;
+  onChange: ({
+    inputName,
+    value,
+  }: {
+    inputName: string;
+    value: FormValue;
+  }) => void;
+  error?: string | [string, string][] | null;
   // data?: IntegrationDataProps;
 };
 
-const IntegrationField: FC<IntegrationFieldProps> = ({ name, label }) => {
-  const [isConnectFormOpen, setIsConnectFormOpen] = useState(false);
+const IntegrationFieldComponent: FC<IntegrationFieldProps> = ({
+  name,
+  label,
+  onChange,
+  error,
+}) => {
+  // const [isFormOpen, setIsFormOpen] = useState(false);
 
-  const { openConnectForm, data, setData } = useIntegrationField();
+  const {
+    isFormOpen,
+    openForm,
+    closeForm,
+    endpoint,
+    setEndpoint,
+    type,
+    setType,
+    headers: headersArray,
+    isConnected,
+    setIsConnected,
+    setActiveStep,
+    integrationConfig,
+  } = useIntegrationField();
 
   useEffect(() => {
-    console.debug("INTEGRATION MOUNTED");
+    console.debug("MOUNTED");
+    if (!isConnected || !type || !endpoint) return;
+
+    const headers = arrayToKeyValuePairs(headersArray);
+
+    onChange({ inputName: name, value: { endpoint, type, headers } });
     return () => {
-      console.debug("INTEGRATION UNMOUNTED");
-      setData(null);
+      console.debug("UNMOUNTED");
     };
-  }, []);
+  }, [endpoint, type, headersArray, isConnected]);
+
+  // useEffect(() => {
+  //   return () => {
+  //     // console.debug("unmounting IntegrationField");
+  //     setIsConnected(false);
+  //     setUrl(null);
+  //     setType(null);
+  //     setActiveStep(1);
+  //   };
+  // }, []);
   return (
     <>
       <Box
@@ -40,7 +91,7 @@ const IntegrationField: FC<IntegrationFieldProps> = ({ name, label }) => {
           width: "100%",
         }}
       >
-        {!!data && (
+        {!!isConnected && (
           <Box
             sx={{
               display: "flex",
@@ -78,7 +129,7 @@ const IntegrationField: FC<IntegrationFieldProps> = ({ name, label }) => {
                 }}
               >
                 <Typography
-                  width={200}
+                  width={170}
                   variant="body2"
                   fontWeight={600}
                   flexGrow={0}
@@ -87,8 +138,9 @@ const IntegrationField: FC<IntegrationFieldProps> = ({ name, label }) => {
                   API URL
                 </Typography>
                 <InputBase
+                  size="small"
                   readOnly
-                  value={data?.url || "https://api.nba.com/players.json"}
+                  value={endpoint}
                   sx={{ flexGrow: 1 }}
                 />
               </Box>
@@ -103,7 +155,7 @@ const IntegrationField: FC<IntegrationFieldProps> = ({ name, label }) => {
                 }}
               >
                 <Typography
-                  width={200}
+                  width={170}
                   variant="body2"
                   fontWeight={600}
                   flexGrow={0}
@@ -112,9 +164,17 @@ const IntegrationField: FC<IntegrationFieldProps> = ({ name, label }) => {
                   Display Items as
                 </Typography>
                 <InputBase
+                  size="small"
                   readOnly
-                  value={`${data?.type || "Simple"} Card`}
+                  value={`${type} Card` || ""}
                   sx={{ flexGrow: 1 }}
+                  slotProps={{
+                    input: {
+                      sx: {
+                        textTransform: "capitalize",
+                      },
+                    },
+                  }}
                 />
               </Box>
             </Paper>
@@ -124,13 +184,42 @@ const IntegrationField: FC<IntegrationFieldProps> = ({ name, label }) => {
           variant="outlined"
           color="primary"
           size="small"
-          startIcon={!!data ? <AutorenewRoundedIcon /> : <LinkRoundedIcon />}
-          onClick={openConnectForm}
+          startIcon={
+            !!isConnected ? <AutorenewRoundedIcon /> : <LinkRoundedIcon />
+          }
+          onClick={() => {
+            setActiveStep(1);
+            openForm();
+          }}
         >
-          {!!data ? "Reconfigure" : "Connect to API"}
+          {!!isConnected ? "Reconfigure" : "Connect to API"}
         </Button>
+        {!!error ? (
+          <Typography variant="body2" color="error.main" mt={0.5}>
+            {error}
+          </Typography>
+        ) : null}
+        {!!isFormOpen && <IntegrationForm />}
       </Box>
     </>
+  );
+};
+
+const IntegrationField: FC<IntegrationFieldProps> = ({
+  name,
+  label,
+  onChange,
+  error,
+}) => {
+  return (
+    <IntegrationFieldProvider>
+      <IntegrationFieldComponent
+        name={name}
+        label={label}
+        onChange={onChange}
+        error={error}
+      />
+    </IntegrationFieldProvider>
   );
 };
 
