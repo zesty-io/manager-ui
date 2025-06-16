@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo } from "react";
 import { Box, Button, Stack } from "@mui/material";
 import { useParams } from "shell/hooks/useParams";
 import moment from "moment";
-import { instanceApi } from "shell/services/instance";
 import { Filters } from "../components/Filters";
 import { ResourceList } from "../components/ResourceList";
 import { ActivityByResource } from "../components/ActivityByResource";
@@ -13,6 +12,7 @@ import { useDispatch } from "react-redux";
 import EmailIcon from "@mui/icons-material/Email";
 import { UserHeaderTitle } from "../components/UserHeaderTitle";
 import { toUTC } from "../utils";
+import { useGetAuditsWithBlocks } from "../../../../../../../shell/hooks/useGetAuditsWithBlocks";
 
 export const UserDetails = () => {
   const dispatch = useDispatch();
@@ -47,8 +47,8 @@ export const UserDetails = () => {
     isLoading,
     isFetching,
     isUninitialized,
-  } = instanceApi.useGetAuditsQuery(
-    {
+  } = useGetAuditsWithBlocks({
+    params: {
       userZUID: zuid,
       ...(params.get("from") && {
         start_date: toUTC(params.get("from")),
@@ -57,8 +57,8 @@ export const UserDetails = () => {
         end_date: toUTC(params.get("to")),
       }),
     },
-    { skip: !initialized }
-  );
+    skip: !initialized,
+  });
 
   const filteredActions = useMemo(
     () => (actionsByZuid?.length ? filterByParams(actionsByZuid, params) : []),
