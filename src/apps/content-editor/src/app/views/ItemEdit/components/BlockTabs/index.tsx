@@ -140,7 +140,7 @@ export const BlockTabs = (props: any) => {
                   return a.web?.metaTitle.localeCompare(b.web?.metaTitle);
                 })
                 ?.map((block) => (
-                  <BlockVariantCard block={block} />
+                  <BlockVariantCard key={block.meta.ZUID} block={block} />
                 ))}
             </List>
           )}
