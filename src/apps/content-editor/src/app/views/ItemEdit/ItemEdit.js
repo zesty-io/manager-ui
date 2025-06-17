@@ -58,6 +58,8 @@ import { fetchItemPublishings } from "../../../../../../shell/store/content";
 import { Redirects } from "../Redirects";
 import RedirectsDialogContextProvider from "../../../../../seo/src/app/components/RedirectsDialogProvider";
 
+const CONTRIBUTOR_ROLE_ZUID = "31-71cfc74-c0ntr1b0t0r";
+
 const selectItemHeadTags = createSelector(
   (state) => state.headTags,
   (_, itemZUID) => itemZUID,
@@ -534,7 +536,7 @@ export default function ItemEdit() {
                   path="/content/:modelZUID/:itemZUID/head"
                   render={({ match }) => {
                     // All roles except contributor are allowed to edit the document head
-                    return userRole.name !== "Contributor" ? (
+                    return userRole.systemRoleZUID !== CONTRIBUTOR_ROLE_ZUID ? (
                       <ItemHead
                         instance={instance}
                         modelZUID={modelZUID}

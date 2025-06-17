@@ -332,6 +332,7 @@ const RedirectsTable = () => {
                     flexDirection: "row",
                     justifyContent: "flex-start",
                     alignItems: "center",
+                    outline: "none!important",
                   },
                   "& .MuiDataGrid-container--top [role=row]": {
                     backgroundColor: "grey.100",
