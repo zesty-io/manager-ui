@@ -41,6 +41,7 @@ import { DuoModeSwitch } from "./DuoModeToggle";
 import { useGetContentModelsQuery } from "../../../../../../../../shell/services/instance";
 import { ContentItemWithDirtyAndPublishing } from "../../../../../../../../shell/services/types";
 import { PublishStatus } from "./PublishStatus";
+import RedirectsDialogContextProvider from "../../../../../../../seo/src/app/components/RedirectsDialogProvider";
 
 const tabs = [
   {
@@ -228,13 +229,14 @@ export const ItemEditHeader = ({
                   <VersionSelector activeVersion={item?.meta?.version} />
                 </>
               )}
-
-              <ItemEditHeaderActions
-                saving={saving}
-                onSave={onSave}
-                hasError={hasError}
-                isLoadingItem={isLoadingItem}
-              />
+              <RedirectsDialogContextProvider>
+                <ItemEditHeaderActions
+                  saving={saving}
+                  onSave={onSave}
+                  hasError={hasError}
+                  isLoadingItem={isLoadingItem}
+                />
+              </RedirectsDialogContextProvider>
             </Box>
             <PublishStatus currentVersion={item?.web?.version} />
           </Stack>
