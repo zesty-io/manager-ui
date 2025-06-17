@@ -134,6 +134,16 @@ describe("Reports > Activity Log > Home", () => {
         `?from=${expectedFromDate}&to=${expectedToDate}&sortBy=happenedAt&resourceType=content`
       );
     });
+
+    it("Filters block items", () => {
+      cy.waitOn("/v1/env/audits*", () => {
+        cy.visit("/reports/activity-log/resources");
+      });
+
+      cy.getBySelector("resourceType_default").should("exist").click();
+      cy.getBySelector("filter_value_block").should("exist").click();
+      cy.getBySelector("resource_list_item").should("exist");
+    });
   });
 
   describe("Resources View", () => {
@@ -146,7 +156,7 @@ describe("Reports > Activity Log > Home", () => {
     });
 
     it("Navigates to Resource Detail on Resource Item click", () => {
-      cy.getBySelector("resouce_list_item")
+      cy.getBySelector("resource_list_item")
         .should("have.attr", "data-is-loading", "false")
         .click();
 
@@ -167,9 +177,9 @@ describe("Reports > Activity Log > Home", () => {
         });
       }).as("request");
       cy.visit("/reports/activity-log/resources?from=2022-07-14&to=2022-07-16");
-      cy.get(".MuiSkeleton-root").should("have.length", 50);
+      cy.getBySelector("resourceItemSkeleton").should("have.length", 10);
       cy.wait("@request");
-      cy.get(".MuiSkeleton-root").should("have.length", 0);
+      cy.getBySelector("resourceItemSkeleton").should("have.length", 0);
     });
 
     it("Displays partial Skeletons when changing dates and refetching API", () => {
@@ -216,9 +226,9 @@ describe("Reports > Activity Log > Home", () => {
       cy.get(`[data-timestamp=${to}]`).should("exist").click();
 
       cy.root().click();
-      cy.get(".MuiSkeleton-root").should("have.length", 16);
+      cy.getBySelector("resourceItemSkeleton").should("have.length", 10);
       cy.wait("@request");
-      cy.get(".MuiSkeleton-root").should("have.length", 0);
+      cy.getBySelector("resourceItemSkeleton").should("have.length", 0);
     });
   });
 
