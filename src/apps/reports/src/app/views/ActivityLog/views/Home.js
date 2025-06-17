@@ -34,6 +34,7 @@ import { isEmpty, omitBy, uniqBy } from "lodash";
 import { EmptyState } from "../components/EmptyState";
 import { ApiErrorState } from "../components/ApiErrorState";
 import { toUTC } from "../utils";
+import { useGetAuditsWithBlocks } from "../../../../../../../shell/hooks/useGetAuditsWithBlocks";
 
 const tabPaths = ["resources", "users", "timeline", "insights"];
 
@@ -89,8 +90,8 @@ export const Home = () => {
     isUninitialized,
     status,
     refetch,
-  } = instanceApi.useGetAuditsQuery(
-    {
+  } = useGetAuditsWithBlocks({
+    params: {
       ...(params.get("from") && {
         start_date: toUTC(params.get("from")),
       }),
@@ -98,8 +99,8 @@ export const Home = () => {
         end_date: toUTC(params.get("to")),
       }),
     },
-    { skip: !initialized }
-  );
+    skip: !initialized,
+  });
 
   // Sets date parameters to 3 months
   const setDefaultDateParams = () => {
@@ -169,7 +170,10 @@ export const Home = () => {
               height: "100%",
             }}
           >
-            <ResourceList actions={filteredActions} showSkeletons={isLoading} />
+            <ResourceList
+              actions={filteredActions}
+              showSkeletons={isLoading || isFetching}
+            />
             <Box sx={{ pl: 8, minWidth: 298, boxSizing: "border-box" }}>
               <ActivityByResource
                 actions={filteredActions}
