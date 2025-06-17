@@ -25,22 +25,17 @@ import {
   TOOL_TIPS,
 } from "../constants";
 import { CreateFormDefaultValues, useRedirectsDialog } from "..";
+
 import {
-  useGetAllPublishingsQuery,
-  useGetContentModelsQuery,
-  useGetLangsQuery,
-  useSearchContentQuery,
-} from "../../../../../../../shell/services/instance";
-import {
-  ContentModel,
-  Language,
   Publishing,
   RedirectsCodes,
   RedirectsTargetType,
 } from "../../../../../../../shell/services/types";
 import { notify } from "../../../../../../../shell/store/notifications";
 import InfoIcon from "@mui/icons-material/Info";
+import NotInterestedIcon from "@mui/icons-material/NotInterested";
 import SearchField from "./SearchField";
+import { useContentItems } from "../useContentItems";
 
 type CreateFormProps = {
   open: boolean;
@@ -100,27 +95,7 @@ const CreateForm: FC<CreateFormProps> = ({
     updateRedirect,
   } = useRedirectsDialog();
 
-  const { data: contentItems, isLoading: isLoadingContentItems } =
-    useSearchContentQuery({
-      query: "",
-      order: "created",
-      dir: "desc",
-      limit: 10000,
-    });
-
-  const { data: publishings, isLoading: isLoadingPublishings } =
-    useGetAllPublishingsQuery();
-  const { data: languages, isLoading: isLoadingLanguages } = useGetLangsQuery(
-    {}
-  );
-  const { data: models, isLoading: isLoadingModels } =
-    useGetContentModelsQuery();
-
-  const isLoading =
-    !!isLoadingPublishings ||
-    !!isLoadingLanguages ||
-    !!isLoadingContentItems ||
-    !!isLoadingModels;
+  const { options, isLoading } = useContentItems();
 
   const isDisabled =
     !paths?.map((item) => item?.path?.trim())?.filter(Boolean)?.length ||
@@ -141,80 +116,6 @@ const CreateForm: FC<CreateFormProps> = ({
     setTargetInternal(null);
     setTargetPath("");
   };
-
-  const publishingMap: PublishingsMap = useMemo(() => {
-    if (isLoadingPublishings) return {};
-    return [...(publishings || [])]
-      .sort((a, b) => a.version - b.version)
-      .reduce((acc: PublishingsMap, item: Publishing) => {
-        const current = acc[item?.itemZUID];
-        if (!current) {
-          acc[item.itemZUID] = item;
-        } else {
-          if (current?.version < item?.version) {
-            acc[item.itemZUID] = item;
-          }
-        }
-
-        return acc;
-      }, {});
-  }, [publishings, isLoadingPublishings]);
-
-  const languageMap = useMemo(() => {
-    if (isLoadingLanguages) return {};
-    return [...(languages || [])].reduce(
-      (acc: Record<string, Language>, item: Language) => {
-        acc[item.ID] = item;
-        return acc;
-      },
-      {}
-    );
-  }, [languages, isLoadingLanguages]);
-
-  const modelsMap = useMemo(() => {
-    if (isLoadingModels) return {};
-    return [...(models || [])].reduce(
-      (acc: Record<string, ContentModel>, item: ContentModel) => {
-        acc[item.ZUID] = item;
-        return acc;
-      },
-      {}
-    );
-  }, [models, isLoadingModels]);
-
-  const options = useMemo(() => {
-    if (isLoading) return [];
-
-    const parseContentItems = contentItems
-      ?.filter(
-        (result) =>
-          result?.web?.path !== null &&
-          ["templateset", "pageset"].includes(
-            modelsMap?.[result?.meta?.contentModelZUID]?.type
-          )
-      )
-      ?.map((item) => {
-        const publishData = publishingMap?.[item?.meta?.ZUID];
-        const langCode = languageMap?.[item?.meta?.langID]?.code;
-        return {
-          ZUID: item?.meta?.ZUID,
-          label:
-            item?.web?.metaTitle || item?.web?.metaLinkText || item?.web?.path,
-          path: item?.web?.path,
-          publishAt: item?.publishAt || publishData?.publishAt || null,
-          langCode: langCode || "en",
-          isPublished:
-            !!publishData &&
-            publishData?.versionZUID === item?.web?.versionZUID,
-          type: modelsMap?.[item?.meta?.contentModelZUID]?.type,
-        };
-      })
-      .sort(
-        (a, b) =>
-          new Date(b.publishAt).getTime() - new Date(a.publishAt).getTime()
-      );
-    return parseContentItems as ContentItemProps[];
-  }, [contentItems, publishingMap, languageMap, modelsMap, isLoading]);
 
   const handleSubmit = async (submitType: "multiple" | "single") => {
     setSubmitType(submitType);
@@ -303,14 +204,20 @@ const CreateForm: FC<CreateFormProps> = ({
       maxWidth={false}
       onClose={onClose}
       slotProps={{
+        container: {
+          sx: {
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "flex-start",
+            py: "20px",
+          },
+        },
         paper: {
           sx: {
             width: "640px",
             minHeight: "680px",
-            height: "`calc(100vh - 100px)`",
-            position: "fixed",
-            top: "50px",
-            bottom: "50px",
+            height: "calc(100vh - 40px)",
+            maxHeight: "1240px",
             m: 0,
           },
         },
@@ -513,7 +420,12 @@ const CreateForm: FC<CreateFormProps> = ({
             </TextField>
           </FieldWrapper>
 
-          <FieldWrapper label="Type" tooltip={TOOL_TIPS.targetType}>
+          <FieldWrapper
+            label="Type"
+            tooltip={TOOL_TIPS.targetType}
+            disabledTooltip="This value cannot be modified"
+            readOnly={isInternal}
+          >
             <TextField
               data-cy="RedirectsTypeSelector"
               select
@@ -527,7 +439,6 @@ const CreateForm: FC<CreateFormProps> = ({
                 setTargetType(e.target.value);
               }}
               slotProps={{
-                root: {},
                 input: {
                   readOnly: isInternal,
                   disabled: isInternal,
@@ -541,7 +452,12 @@ const CreateForm: FC<CreateFormProps> = ({
               ))}
             </TextField>
           </FieldWrapper>
-          <FieldWrapper label="Redirect Target" tooltip="File Path Only">
+          <FieldWrapper
+            label="Redirect Target"
+            tooltip="File Path Only"
+            disabledTooltip="This value cannot be modified"
+            readOnly={isInternal}
+          >
             {targetType === "page" ? (
               <SearchField
                 options={options}
@@ -618,14 +534,44 @@ const CreateForm: FC<CreateFormProps> = ({
 type FieldWrapperProps = {
   label: string;
   tooltip?: string | ReactNode;
+  disabledTooltip?: string | ReactNode;
+  readOnly?: boolean;
   children: ReactNode;
 };
 
 export const FieldWrapper: FC<FieldWrapperProps> = ({
   label,
   tooltip,
+  disabledTooltip,
+  readOnly = false,
   children,
 }: FieldWrapperProps) => {
+  const withDisabledTooltip =
+    !!disabledTooltip && readOnly ? (
+      <Tooltip
+        title={
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: "8px",
+            }}
+          >
+            <NotInterestedIcon color="error" fontSize="small" />
+            {disabledTooltip}
+          </Box>
+        }
+        placement="top"
+        followCursor
+      >
+        <Box width="100%">{children}</Box>
+      </Tooltip>
+    ) : (
+      <>{children}</>
+    );
+
   return (
     <Box
       width="100%"
@@ -672,7 +618,7 @@ export const FieldWrapper: FC<FieldWrapperProps> = ({
           </Tooltip>
         )}
       </Stack>
-      {children}
+      {withDisabledTooltip}
     </Box>
   );
 };

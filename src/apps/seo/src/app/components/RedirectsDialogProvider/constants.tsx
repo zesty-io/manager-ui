@@ -21,16 +21,6 @@ export const TARGET_OPTIONS = [
   },
 ] as const;
 
-export const DEFAULT_COLUMN_PROPS = {
-  resizable: false,
-  disableReorder: true,
-  filterable: false,
-  hideable: false,
-  hideSortIcons: true,
-  disableColumnMenu: true,
-  sortable: false,
-};
-
 export const TOOL_TIPS = {
   code: (
     <Box
