@@ -15,15 +15,19 @@ import {
 
 const RESOURCE_TYPES = [
   {
-    text: "Code",
+    text: "Block Variants",
+    value: "block",
+  },
+  {
+    text: "Code Files and Snippets",
     value: "code",
   },
   {
-    text: "Content",
+    text: "Content Items",
     value: "content",
   },
   {
-    text: "Schema",
+    text: "Models",
     value: "schema",
   },
   {
@@ -175,6 +179,7 @@ export const Filters: FC<FiltersProps> = ({
               setParams(happenedAt?.toString(), "sortBy")
             }
             defaultButtonText="Most Recent"
+            isSort
           />
         );
       case "sortByUsers":
@@ -186,6 +191,7 @@ export const Filters: FC<FiltersProps> = ({
               setParams(userActivity.toString(), "sortByUsers")
             }
             options={USER_ACTIVITY}
+            isSort
           />
         );
       case "resourceType":
