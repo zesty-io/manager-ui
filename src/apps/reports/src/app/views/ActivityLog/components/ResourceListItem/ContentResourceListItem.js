@@ -10,6 +10,7 @@ const modelTypeName = {
   templateset: "Single Page Item",
   pageset: "Multi Page Item",
   dataset: "Headless Data Item",
+  block: "Block Variant",
 };
 
 export const ContentResourceListItem = (props) => {
@@ -81,6 +82,7 @@ export const ContentResourceListItem = (props) => {
       }
       secondary={secondaryText}
       showSkeletons={isLoading}
+      isBlockItem={modelData?.type === "block"}
     />
   );
 };

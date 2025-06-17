@@ -1,10 +1,8 @@
-import { Box, ThemeProvider } from "@mui/material";
-import { theme } from "@zesty-io/material";
+import { Box } from "@mui/material";
 import { ResizableContainer } from "../../shell/components/ResizeableContainer";
 import { Sidebar } from "./components/Sidebar";
-import { Redirect, Route, Switch } from "react-router";
+import { Route, Switch } from "react-router";
 import { AllBlocks } from "./views/AllBlocks";
-import { useGetContentModelItemsQuery } from "../../shell/services/instance";
 import { BlockModel } from "./views/BlockModel";
 import { BlockItem } from "./views/BlockItem";
 
@@ -37,10 +35,9 @@ export const BlocksApp = () => {
             <BlockItem isCreate key={match.params.modelZUID} />
           )}
         />
-        <Route
-          path="/blocks/:modelZUID/:itemZUID"
-          render={({ match }) => <BlockItem key={match.params.itemZUID} />}
-        />
+        <Route path="/blocks/:modelZUID/:itemZUID">
+          <BlockItem />
+        </Route>
         <Route
           path="/blocks/:modelZUID"
           render={({ match }) => <BlockModel key={match.params.modelZUID} />}
