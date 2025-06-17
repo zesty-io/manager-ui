@@ -23,7 +23,7 @@ import { RedirectsTargetType } from "../../../../../../shell/services/types";
 import { useRedirectsDialog } from "../../../../../seo/src/app/components/RedirectsDialogProvider";
 import AddIcon from "@mui/icons-material/Add";
 import AutoSizer from "react-virtualized-auto-sizer";
-import ContentRedirects from "./ContentRedirects";
+import ContentRedirects, { ContentRedirectsSkeleton } from "./ContentRedirects";
 import { useContentItems } from "../../../../../seo/src/app/components/RedirectsDialogProvider/useContentItems";
 
 type Row = {
@@ -267,26 +267,32 @@ export const Redirects = () => {
               flexGrow: 1,
             }}
           >
-            <Box flexGrow={0} py={2}>
-              <Button
-                data-cy="AddIncomingRedirectButton"
-                variant="outlined"
-                color="primary"
-                startIcon={<AddIcon />}
-                onClick={() => {
-                  openCreateForm({ target: itemZUID }, true);
-                }}
-              >
-                Add Incoming Redirect
-              </Button>
-            </Box>
+            {isLoading ? (
+              <ContentRedirectsSkeleton />
+            ) : (
+              <>
+                <Box flexGrow={0} py={2}>
+                  <Button
+                    data-cy="AddIncomingRedirectButton"
+                    variant="outlined"
+                    color="primary"
+                    startIcon={<AddIcon />}
+                    onClick={() => {
+                      openCreateForm({ target: itemZUID }, true);
+                    }}
+                  >
+                    Add Incoming Redirect
+                  </Button>
+                </Box>
 
-            <ContentRedirects
-              itemZUID={itemZUID}
-              isLoading={isLoadingOptions}
-              options={options}
-              redirects={redirects}
-            />
+                <ContentRedirects
+                  itemZUID={itemZUID}
+                  isLoading={isLoading}
+                  options={options}
+                  redirects={redirects}
+                />
+              </>
+            )}
           </Box>
         </Box>
       </Box>

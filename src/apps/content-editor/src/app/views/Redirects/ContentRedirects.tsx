@@ -375,13 +375,14 @@ export const ConfirmDeleteModal = (props: ConfirmDeleteModalProps) => {
 
 export const ContentRedirectsSkeleton = () => {
   return (
-    <Box display="flex" flexDirection="column" gap={1.75}>
+    <Box display="flex" flexDirection="column" gap={1.75} mt={2}>
+      <Skeleton variant="rounded" height={38} width={224} />
       <Skeleton variant="rounded" height={24} width={422} />
       <Box display="flex" flexDirection="column" gap={1}>
         <Skeleton variant="rounded" height={12} width={600} />
         <Skeleton variant="rounded" height={12} width={600} />
       </Box>
-      <Skeleton variant="rounded" height={38} width={224} />
+      <Skeleton variant="rounded" height={38} width={204} />
     </Box>
   );
 };

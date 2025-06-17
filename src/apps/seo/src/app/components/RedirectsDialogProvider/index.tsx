@@ -13,6 +13,7 @@ import {
   RedirectsCodes,
   RedirectsTargetType,
 } from "../../../../../../shell/services/types";
+import ChangeDialog, { ChangeRedirectProps } from "./ChangeDialog";
 import { CreateRedirectErrors } from "./constants";
 import CreateForm from "./CreateRedirects/CreateForm";
 import { DeleteDialog, DeleteRedirectsProps } from "./DeleteDialog";
@@ -57,6 +58,11 @@ type RedirectsDialogContextType = {
   }) => Promise<any>;
   openDeleteDialog: (data: DeleteRedirectsProps[]) => void;
   closeDeleteDialog: () => void;
+  openChangeDialog: (
+    redirect: ChangeRedirectProps | null,
+    newPath: string
+  ) => void;
+  closeChangeDialog: () => void;
 };
 
 const RedirectsDialogContext = createContext<RedirectsDialogContextType | null>(
@@ -71,12 +77,17 @@ const RedirectsDialogContextProvider = ({
   const [createFormOpen, setCreateFormOpen] = useState<boolean>(false);
   const [errorDialogOpen, setErrorDialogOpen] = useState<boolean>(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
+  const [changeDialogOpen, setChangeDialogOpen] = useState<boolean>(false);
   const [isInternal, setIsInternal] = useState<boolean>(false);
   const [createRedirectErrors, setCreateRedirectErrors] =
     useState<CreateRedirectErrors>();
   const [deleteRedirects, setDeleteRedirects] = useState<
     DeleteRedirectsProps[]
   >([]);
+  const [changeRedirect, setChangeRedirect] = useState<{
+    redirect: ChangeRedirectProps | null;
+    newPath?: string;
+  } | null>(null);
   const [createFormDefaultValues, setCreateFormDefaultValues] =
     useState<CreateFormDefaultValues | null>(null);
 
@@ -101,6 +112,15 @@ const RedirectsDialogContextProvider = ({
     setDeleteDialogOpen(true);
   };
   const closeDeleteDialog = () => setDeleteDialogOpen(false);
+
+  const openChangeDialog = (
+    redirect: ChangeRedirectProps | null,
+    newPath: string
+  ) => {
+    setChangeRedirect({ redirect, newPath });
+    setChangeDialogOpen(true);
+  };
+  const closeChangeDialog = () => setChangeDialogOpen(false);
 
   const [createRedirect, { isLoading: isCreatingRedirect }] =
     useCreateRedirectMutation();
@@ -232,6 +252,8 @@ const RedirectsDialogContextProvider = ({
         updateRedirect: updateRedirectRequest,
         openDeleteDialog,
         closeDeleteDialog,
+        openChangeDialog,
+        closeChangeDialog,
       }}
     >
       {children}
@@ -256,6 +278,14 @@ const RedirectsDialogContextProvider = ({
           open={deleteDialogOpen}
           onClose={closeDeleteDialog}
           redirects={deleteRedirects}
+        />
+      )}
+      {changeDialogOpen && (
+        <ChangeDialog
+          redirect={changeRedirect?.redirect ?? null}
+          open={changeDialogOpen}
+          onClose={closeChangeDialog}
+          newPath={changeRedirect?.newPath ?? ""}
         />
       )}
     </RedirectsDialogContext.Provider>
