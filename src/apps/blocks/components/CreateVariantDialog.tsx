@@ -15,10 +15,7 @@ import { ContentModel } from "../../../shell/services/types";
 import { createItem, generateItem } from "../../../shell/store/content";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router";
-import {
-  useGetContentModelFieldsQuery,
-  useGetContentModelItemsQuery,
-} from "../../../shell/services/instance";
+import { useGetContentModelFieldsQuery } from "../../../shell/services/instance";
 
 export const CreateVariantDialog = ({
   onClose,
@@ -33,9 +30,6 @@ export const CreateVariantDialog = ({
   const [isLoading, setIsLoading] = useState(false);
   const { data: fields, isFetching: isFieldsLoading } =
     useGetContentModelFieldsQuery(model?.ZUID);
-  const { refetch: refetchModelItems } = useGetContentModelItemsQuery({
-    modelZUID: model?.ZUID,
-  });
 
   const handleVariantCreate = async () => {
     setIsLoading(true);
@@ -63,9 +57,8 @@ export const CreateVariantDialog = ({
         })
       )
     );
-    refetchModelItems();
     // @ts-ignore
-    history.push(`/blocks/${model.ZUID}/${res.data.ZUID}`);
+    history.push(`/blocks/${model.ZUID}/${res?.data?.ZUID}`);
     setIsLoading(false);
     onClose();
   };
