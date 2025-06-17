@@ -231,6 +231,7 @@ export default function Content(props) {
         >
           <Box flex={1}>
             <PreviewMode
+              key={props?.itemZUID}
               dirty={props.item?.dirty}
               version={props.item?.meta?.version}
               onClose={() => setShowDuoMode(false)}
