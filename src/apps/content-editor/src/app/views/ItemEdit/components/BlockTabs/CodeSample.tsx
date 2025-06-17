@@ -31,12 +31,7 @@ export const CodeSample = () => {
           >
             Block Selector
           </Typography>
-          <Tooltip
-            title='Uses the value of a block selector field. Replace "block_selector_field" with the actual name of the block selector field during model creation.'
-            sx={{
-              fontSize: "12px",
-            }}
-          >
+          <Tooltip title='Uses the value of a block selector field. Replace "block_selector_field" with the actual name of the block selector field during model creation.'>
             <InfoRounded color="action" sx={{ width: 12, height: 12 }} />
           </Tooltip>
         </Stack>
@@ -54,12 +49,7 @@ export const CodeSample = () => {
           >
             Base Template
           </Typography>
-          <Tooltip
-            title="Uses the base template for rendering the block. This is the default template applied when no specific template is selected."
-            sx={{
-              fontSize: "12px",
-            }}
-          >
+          <Tooltip title="Uses the base template for rendering the block. This is the default template applied when no specific template is selected.">
             <InfoRounded color="action" sx={{ width: 12, height: 12 }} />
           </Tooltip>
         </Stack>
@@ -83,12 +73,7 @@ export const CodeSample = () => {
           >
             Base Template with Version
           </Typography>
-          <Tooltip
-            title="Uses the base template for rendering the block with a specific version number. Adding the version parameter allows you to target a particular version of the template."
-            sx={{
-              fontSize: "12px",
-            }}
-          >
+          <Tooltip title="Uses the base template for rendering the block with a specific version number. Adding the version parameter allows you to target a particular version of the template.">
             <InfoRounded color="action" sx={{ width: 12, height: 12 }} />
           </Tooltip>
         </Stack>
@@ -112,12 +97,7 @@ export const CodeSample = () => {
           >
             Specific Block Variant
           </Typography>
-          <Tooltip
-            title="Uses a specific variant of the block. The variant parameter targets a particular variation of the block by its ZUID."
-            sx={{
-              fontSize: "12px",
-            }}
-          >
+          <Tooltip title="Uses a specific variant of the block. The variant parameter targets a particular variation of the block by its ZUID.">
             <InfoRounded color="action" sx={{ width: 12, height: 12 }} />
           </Tooltip>
         </Stack>
