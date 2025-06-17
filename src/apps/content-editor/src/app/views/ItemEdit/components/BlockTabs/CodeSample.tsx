@@ -35,7 +35,7 @@ export const CodeSample = () => {
             <InfoRounded color="action" sx={{ width: 12, height: 12 }} />
           </Tooltip>
         </Stack>
-        <CopyTextField value="{{ block(this.block_selector_field) }}" />
+        <CopyTextField value="{{ block({this.block_selector_field}) }}" />
       </Box>
 
       <Box>
