@@ -19,11 +19,11 @@ import { DeleteDialog, DeleteRedirectsProps } from "./DeleteDialog";
 import ErrorDialog from "./ErrorDialog";
 
 export type CreateFormDefaultValues = {
-  ZUID: string;
-  code: RedirectsCodes;
-  target: string;
-  targetType: RedirectsTargetType;
-  path: string;
+  ZUID?: string;
+  code?: RedirectsCodes;
+  target?: string;
+  targetType?: RedirectsTargetType;
+  path?: string;
 };
 
 export const parseRedirectError = (error: string): string => {
@@ -34,7 +34,10 @@ export const parseRedirectError = (error: string): string => {
 };
 
 type RedirectsDialogContextType = {
-  openCreateForm: (data?: CreateFormDefaultValues | null) => void;
+  openCreateForm: (
+    data?: CreateFormDefaultValues | null,
+    isInternal?: boolean
+  ) => void;
   closeCreateForm: () => void;
   openErrorDialog: (errors: CreateRedirectErrors) => void;
   closeErrorDialog: () => void;
@@ -68,6 +71,7 @@ const RedirectsDialogContextProvider = ({
   const [createFormOpen, setCreateFormOpen] = useState<boolean>(false);
   const [errorDialogOpen, setErrorDialogOpen] = useState<boolean>(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
+  const [isInternal, setIsInternal] = useState<boolean>(false);
   const [createRedirectErrors, setCreateRedirectErrors] =
     useState<CreateRedirectErrors>();
   const [deleteRedirects, setDeleteRedirects] = useState<
@@ -76,7 +80,11 @@ const RedirectsDialogContextProvider = ({
   const [createFormDefaultValues, setCreateFormDefaultValues] =
     useState<CreateFormDefaultValues | null>(null);
 
-  const openCreateForm = (data: CreateFormDefaultValues | null = null) => {
+  const openCreateForm = (
+    data: CreateFormDefaultValues | null = null,
+    isInternal: boolean = false
+  ) => {
+    setIsInternal(isInternal);
     setCreateFormDefaultValues(data);
     setCreateFormOpen(true);
   };
@@ -233,6 +241,7 @@ const RedirectsDialogContextProvider = ({
           open={createFormOpen}
           onClose={closeCreateForm}
           defaultValues={createFormDefaultValues}
+          isInternal={isInternal}
         />
       )}
       {errorDialogOpen && (
