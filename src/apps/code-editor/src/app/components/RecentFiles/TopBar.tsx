@@ -74,11 +74,6 @@ export const TopBar: FC<TopBarProps> = ({
               </InputAdornment>
             ),
           }}
-          inputProps={{
-            style: {
-              padding: "6px 0",
-            },
-          }}
           value={searchKeyword}
           onChange={(e) => setSearchKeyword(e.target.value)}
         />

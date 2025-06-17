@@ -12,7 +12,9 @@ import { InputAdornment } from "@mui/material";
 import DescriptionIcon from "@mui/icons-material/Description";
 import AutoSizer from "react-virtualized-auto-sizer";
 
-const ListOption: React.FC<ContentItemProps & { isListItem?: boolean }> = ({
+export const ListOption: React.FC<
+  ContentItemProps & { isListItem?: boolean }
+> = ({
   label,
   path,
   ZUID,
@@ -94,7 +96,7 @@ const ListboxComponent = React.forwardRef<
     <div
       ref={ref}
       data-cy="RedirectsTargetOptionsContainer"
-      style={{ width: "100%", height: `${rowHeight * 6}px` }}
+      style={{ width: "100%", height: `${rowHeight * 5}px` }}
       {...other}
     >
       <AutoSizer>
@@ -121,6 +123,7 @@ type SearchFieldProps = {
   value: ContentItemProps;
   defaultValue?: string;
   onChange: (value: ContentItemProps) => void;
+  readOnly?: boolean;
 };
 
 const SearchField: React.FC<SearchFieldProps> = ({
@@ -129,6 +132,7 @@ const SearchField: React.FC<SearchFieldProps> = ({
   value,
   defaultValue,
   onChange,
+  readOnly = false,
 }) => {
   const textInputRef = React.useRef(null);
   const [open, setOpen] = React.useState(false);
@@ -166,7 +170,9 @@ const SearchField: React.FC<SearchFieldProps> = ({
       ) : (
         <Autocomplete
           data-cy="RedirectsSearchFieldInput"
-          open={open}
+          readOnly={readOnly}
+          disabled={readOnly}
+          open={readOnly ? false : open}
           onOpen={() => setOpen(true)}
           onClose={() => setOpen(false)}
           limitTags={1}

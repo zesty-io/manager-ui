@@ -5,6 +5,7 @@ import {
   useRef,
   ForwardedRef,
   useMemo,
+  useCallback,
 } from "react";
 import {
   Box,
@@ -94,6 +95,7 @@ export const VersionItem = memo(
       const [activeLabels, setActiveLabels] = useState(
         data?.labels?.map((label) => label?.ZUID)?.filter((label) => !!label)
       );
+      const lastSavedLabels = useRef(activeLabels);
 
       const currentUserRoleZUID = usersRoles?.find(
         (userWithRole) => userWithRole.ZUID === user.ZUID
@@ -143,20 +145,17 @@ export const VersionItem = memo(
         }
       };
 
-      const saveLabelChanges = () => {
-        const labelsBeforeUpdate = data?.labels
-          ?.map((label) => label?.ZUID)
-          ?.filter((label) => !!label);
-
-        if (!isEqual(labelsBeforeUpdate, activeLabels)) {
+      const saveLabelChanges = useCallback(() => {
+        if (!isEqual(lastSavedLabels.current, activeLabels)) {
           updateItemWorkflowStatus({
             modelZUID,
             itemZUID,
             itemWorkflowZUID: data?.itemWorkflowZUID,
             labelZUIDs: activeLabels,
           });
+          lastSavedLabels.current = activeLabels;
         }
-      };
+      }, [activeLabels, modelZUID, itemZUID, data?.itemWorkflowZUID]);
 
       return (
         <Stack ref={ref} width="100%" data-cy="VersionItem">

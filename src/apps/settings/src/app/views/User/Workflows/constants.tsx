@@ -26,4 +26,4 @@ const OWNER_ZUID = "31-71cfc74-0wn3r";
 
 export const AUTHORIZED_ROLES: string[] = [ADMIN_ZUID, OWNER_ZUID];
 
-export type AuthorizedRole = typeof AUTHORIZED_ROLES[number];
+export type AuthorizedRole = (typeof AUTHORIZED_ROLES)[number];
