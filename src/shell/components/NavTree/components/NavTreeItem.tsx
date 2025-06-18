@@ -1,7 +1,8 @@
-import React, { FC, useEffect, useRef } from "react";
-import { TreeItem } from "@mui/x-tree-view";
+import { FC, useEffect, useRef, memo, useState } from "react";
+import { TreeItem2, useTreeItemState } from "@mui/x-tree-view";
 import { Stack, Box, Typography, Tooltip } from "@mui/material";
 import { TreeItem as TreeItemType } from "../index";
+import { useHistory } from "react-router";
 
 interface Props {
   labelName: string;
@@ -17,7 +18,7 @@ interface Props {
   selected?: string;
 }
 
-export const NavTreeItem: FC<Props> = React.memo(
+export const NavTreeItem: FC<Props> = memo(
   ({
     labelName,
     labelIcon,
@@ -33,7 +34,9 @@ export const NavTreeItem: FC<Props> = React.memo(
   }) => {
     const itemTreeRef = useRef(null);
     const currentDepth = depth + 1;
-    const depthPadding = currentDepth * 1;
+    const history = useHistory();
+    const isCodeNav = nodeData?.navSource === "code";
+    const isRoot = currentDepth === 1;
 
     useEffect(() => {
       if (!itemTreeRef?.current) return;
@@ -48,52 +51,34 @@ export const NavTreeItem: FC<Props> = React.memo(
     }, [selected, nodeId, itemTreeRef]);
 
     return (
-      <TreeItem
+      <TreeItem2
         ref={itemTreeRef}
         itemId={nodeId}
         label={
-          <Stack
-            direction="row"
-            alignItems="center"
-            justifyContent="space-between"
-            position="relative"
-            sx={{
-              "& .treeActions": {
-                display: "flex",
-                position: "absolute",
-                right: 0,
-                zIndex: nodeData?.navSource == "code" ? 2 : -1,
-              },
-              "&:hover .treeActions": {
-                zIndex: 2,
-              },
-              // HACK: Makes sure that the label width is adjusted when the overlay buttons are rendered
-              "& .treeSpacer": {
-                display: nodeData?.navSource == "code" ? "block" : "none",
-              },
-              "&:hover .treeSpacer": {
-                display: "block",
-              },
-            }}
-          >
-            {!labelIcon && nodeData?.navSource == "code" ? null : (
-              <Box component={labelIcon} sx={{ fontSize: 16, mr: 1 }} />
+          <>
+            {!labelIcon && isCodeNav ? null : (
+              <Box
+                className="contentLabelIcon"
+                component={labelIcon}
+                sx={{ fontSize: 16 }}
+              />
             )}
-            <Tooltip title={labelName} enterDelay={1000} enterNextDelay={1000}>
-              <Typography variant="body2" noWrap width="100%">
+            <Tooltip
+              title={labelName}
+              enterDelay={1000}
+              enterNextDelay={1000}
+              disableInteractive
+            >
+              <Typography
+                className="contentLabel"
+                variant="body2"
+                noWrap
+                width="100%"
+                component="div"
+              >
                 {labelName}
               </Typography>
             </Tooltip>
-            {/* HACK: Used to force the label width to shrink when actions overlay is shown */}
-            <Box
-              className="treeSpacer"
-              minWidth={
-                // calculate width based on number of actions + padding between each action
-                !isNaN(actions?.length)
-                  ? actions?.length * 20 + (actions?.length - 1) * 4
-                  : 0
-              }
-            />
             <Stack
               direction="row"
               alignItems="center"
@@ -104,81 +89,39 @@ export const NavTreeItem: FC<Props> = React.memo(
                 return action;
               })}
             </Stack>
-          </Stack>
+          </>
         }
-        sx={{
-          "& .MuiTreeItem-content": {
-            py: 0.5,
-            pl: 1,
-            borderRadius: 0,
-            ".MuiTreeItem-iconContainer": {
-              width: 20,
-              height: 20,
-              svg: {
-                fontSize: 20,
-              },
+        slotProps={{
+          content: {
+            id: nodeData?.isDir ? "" : nodeId.split("/").pop(),
+            className:
+              isCodeNav && !isRoot && !nodeData?.isDir ? "codeNav-item" : "",
+            onClick: () => {
+              if (!nodeData?.isDir) {
+                history.push(nodeId);
+              }
             },
-
-            ".MuiTreeItem-label .treeActions [data-cy='tree-item-add-new-content'] svg":
-              {
-                color: "common.white",
-              },
-          },
-          "& .MuiTreeItem-content.Mui-selected": {
-            borderLeft: "2px solid",
-            borderColor: "primary.main",
-            pl: 0.75,
-
-            ".MuiTreeItem-iconContainer svg": {
-              color: "primary.main",
+            onDragOver: (event: any) => {
+              if (dragAndDrop) {
+                event.preventDefault();
+                event.currentTarget.style.backgroundColor = "#f6f6f7";
+              }
             },
-
-            ".MuiTreeItem-label .treeActions [data-cy='tree-item-hide'] svg": {
-              // Makes sure that the hide icon color does not change when tree item is selected
-              color: "grey.400",
+            onDragLeave: (event: any) => {
+              if (dragAndDrop) {
+                event.preventDefault();
+                event.currentTarget.style.backgroundColor = "";
+              }
             },
-
-            ".MuiTreeItem-label .treeActions [data-cy='tree-item-add-new-content'] svg":
-              {
-                // Makes sure that the add new content icon color does not change when tree item is selected
-                color: "common.white",
-              },
-
-            ".MuiMenu-root .MuiList-root .MuiListItemText-root .MuiTypography-root":
-              {
-                color: "common.black",
-              },
-          },
-          "& .MuiCollapse-root.MuiTreeItem-group": {
-            // This makes sure that the whole row is highlighted while still maintaining tree item depth
-            marginLeft: 0,
-            ".MuiTreeItem-content .MuiTreeItem-iconContainer": {
-              marginLeft: depthPadding,
+            onDrop: (event: any) => {
+              if (dragAndDrop) {
+                event.currentTarget.style.backgroundColor = "";
+                const draggedItem = JSON.parse(
+                  event.dataTransfer.getData("text/plain")
+                );
+                onItemDrop && onItemDrop(draggedItem, nodeData);
+              }
             },
-          },
-        }}
-        ContentProps={{
-          id: nodeData?.isDir ? "" : nodeId.split("/").pop(),
-          onDragOver: (event: any) => {
-            if (dragAndDrop) {
-              event.preventDefault();
-              event.currentTarget.style.backgroundColor = "#f6f6f7";
-            }
-          },
-          onDragLeave: (event: any) => {
-            if (dragAndDrop) {
-              event.preventDefault();
-              event.currentTarget.style.backgroundColor = "";
-            }
-          },
-          onDrop: (event: any) => {
-            if (dragAndDrop) {
-              event.currentTarget.style.backgroundColor = "";
-              const draggedItem = JSON.parse(
-                event.dataTransfer.getData("text/plain")
-              );
-              onItemDrop && onItemDrop(draggedItem, nodeData);
-            }
           },
         }}
       >
@@ -204,7 +147,7 @@ export const NavTreeItem: FC<Props> = React.memo(
               />
             );
           })}
-      </TreeItem>
+      </TreeItem2>
     );
   }
 );

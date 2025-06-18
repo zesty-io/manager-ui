@@ -6,7 +6,7 @@ import { NavTreeItem } from "./components/NavTreeItem";
 import { ContentNavItem } from "../../services/types";
 import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 import ArrowRightRoundedIcon from "@mui/icons-material/ArrowRightRounded";
-import { Stack, Box, Skeleton } from "@mui/material";
+import { Stack, Box, Skeleton, alpha } from "@mui/material";
 
 export type TreeItem = {
   icon: any;
@@ -47,8 +47,7 @@ export const NavTree: FC<Readonly<Props>> = ({
   dragAndDrop = false,
   isLoading,
 }) => {
-  const history = useHistory();
-  const isCodeApp = ["html", "css", "js"].includes(id);
+  const isCodeNav = ["html", "css", "js"].includes(id);
 
   if (isLoading) {
     return (
@@ -102,24 +101,94 @@ export const NavTree: FC<Readonly<Props>> = ({
             collapseIcon: ArrowDropDownRoundedIcon,
             expandIcon: ArrowRightRoundedIcon,
           }}
-          onItemClick={(evt: any, itemId: string) => {
-            if (
-              !!evt.currentTarget.id &&
-              evt.target.tagName !== "svg" &&
-              evt.target.tagName !== "path"
-            ) {
-              history.push(itemId);
-            }
-          }}
           onExpandedItemsChange={(evt: any, nodeIds: string[]) => {
-            if (
-              !evt.currentTarget.id ||
-              evt.target.tagName === "svg" ||
-              evt.target.tagName === "path"
-            ) {
-              onToggleCollapse(nodeIds);
-            }
+            onToggleCollapse(nodeIds);
           }}
+          expansionTrigger={isCodeNav ? "content" : "iconContainer"}
+          experimentalFeatures={{ indentationAtItemLevel: true }}
+          itemChildrenIndentation={10}
+          sx={(theme) => ({
+            ".MuiTreeItem-root": {
+              position: "relative",
+              boxSizing: "border-box",
+              width: "100%",
+              "& *": {
+                boxSizing: "border-box",
+              },
+            },
+            "& .MuiTreeItem-content": {
+              cursor: "pointer",
+              gap: 0,
+              borderRadius: 0,
+              width: "100%",
+              height: "28px",
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              position: "relative",
+              "& .MuiTreeItem-iconContainer": {
+                height: "100%",
+                display: "grid",
+                placeContent: "center",
+              },
+              "& .MuiTreeItem-label": {
+                height: "100%",
+                position: "relative",
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                flexGrow: 1,
+                "& .contentLabelIcon": {
+                  color: "grey.400",
+                  height: "100%",
+                  flexGrow: 0,
+                  display: "grid",
+                  placeContent: "center",
+                },
+                "& .contentLabel": {
+                  py: 0.25,
+                  lineHeight: 1,
+                  flexGrow: 1,
+                  pl: 0.5,
+                  noWrap: true,
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                },
+                "& .treeActions": {
+                  display: isCodeNav ? "flex" : "none",
+                  "& [data-cy='tree-item-add-new-content']": {
+                    height: "20px",
+                    width: "20px",
+                    bgcolor: "primary.main",
+                    color: "common.white",
+                    "& svg": {
+                      color: "inherit!important",
+                    },
+                  },
+                },
+              },
+            },
+            "& .MuiTreeItem-content.Mui-selected": {
+              bgcolor: alpha(theme.palette.primary.main, 0.1),
+              boxShadow: `2px 0px 0px 0px ${theme.palette.primary.main} inset`,
+              "& .MuiTreeItem-iconContainer svg": { color: "primary.main" },
+              "& .MuiTreeItem-label": {
+                "& .contentLabelIcon, & .contentLabel": {
+                  color: "primary.main",
+                },
+              },
+            },
+            "& .MuiTreeItem-content:hover .treeActions": {
+              display: "flex",
+            },
+            "& .MuiTreeItem-content.codeNav-item": {
+              "& .MuiTreeItem-iconContainer": {
+                width: "10px",
+              },
+            },
+          })}
         >
           {tree?.map((item) => {
             if ((!isHiddenTree && item.hidden) || !item) {

@@ -63,10 +63,10 @@ const ActionsButton = ({
   return (
     <IconButton
       key="publish"
-      color="inherit"
-      size="xsmall"
       sx={{
-        transform: "translateX(5px)",
+        color: "grey.600",
+        width: "20px",
+        height: "20px",
       }}
       onClick={() => {
         setIsLoading(true);
@@ -81,12 +81,12 @@ const ActionsButton = ({
       }}
     >
       {isLoading ? (
-        <CircularProgress size="16px" />
+        <CircularProgress size="20px" color="inherit" />
       ) : (
         <CloudUploadRoundedIcon
+          color="inherit"
           sx={{
-            fontSize: 16,
-            color: (theme) => `${theme.palette.grey[500]}!important`,
+            fontSize: "17px",
           }}
         />
       )}
