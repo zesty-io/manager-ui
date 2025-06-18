@@ -315,28 +315,25 @@ describe("Actions in content editor", () => {
       });
     });
 
-    cy.intercept("/ai").as("ai");
-    cy.wait(5000);
-
     // Generate AI content for single line text
-    cy.get("#12-0c3934-8dz720").find("[data-cy='AIOpen']").click();
+    cy.get("#12-0c3934-8dz720", { timeout: 30_000 })
+      .find("[data-cy='AIOpen']")
+      .click();
     cy.getBySelector("AITopicField").type("biking");
     cy.getBySelector("AIAudienceField").type("young adults");
     cy.getBySelector("AIGenerate").click();
 
-    cy.wait("@ai");
-
-    cy.getBySelector("AIApprove").click();
+    cy.get("[data-cy='AIApprove']", { timeout: 50_000 }).click();
 
     // Generate AI content for wysiwyg
-    cy.get("#12-717920-6z46t7").find("[data-cy='AIOpen']").click();
+    cy.get("#12-717920-6z46t7", { timeout: 30_000 })
+      .find("[data-cy='AIOpen']")
+      .click();
     cy.getBySelector("AITopicField").type("biking");
     cy.getBySelector("AIAudienceField").type("young adults");
-    cy.getBySelector("AIGenerate").click();
+    cy.get("[data-cy='AIGenerate']", { timeout: 30_000 }).click();
 
-    cy.wait("@ai");
-
-    cy.getBySelector("AIApprove").click();
+    cy.get("[data-cy='AIApprove']", { timeout: 50_000 }).click();
 
     // Select AI-assisted metadata generation flow
     cy.getBySelector("ManualMetaFlow").click();
@@ -344,12 +341,11 @@ describe("Actions in content editor", () => {
     // Generate AI content for meta title
     cy.getBySelector("metaTitle").find("input").clear();
     cy.getBySelector("metaTitle").find("[data-cy='AIOpen']").click();
-    cy.getBySelector("AIGenerate").click();
+    cy.get("[data-cy='AIGenerate']", { timeout: 30_000 }).click();
 
-    cy.wait("@ai");
+    cy.get("[data-cy='AISuggestion1']", { timeout: 30_000 }).click();
 
-    cy.getBySelector("AISuggestion1").click();
-    cy.getBySelector("AIApprove").click();
+    cy.get("[data-cy='AIApprove']", { timeout: 50_000 }).click();
 
     // Generate AI content for meta description
     cy.getBySelector("metaDescription")
@@ -358,10 +354,9 @@ describe("Actions in content editor", () => {
     cy.getBySelector("metaDescription").find("[data-cy='AIOpen']").click();
     cy.getBySelector("AIGenerate").click();
 
-    cy.wait("@ai", { timeout: 50000 });
+    cy.get("[data-cy='AISuggestion1']", { timeout: 50_000 }).click();
 
-    cy.getBySelector("AISuggestion1").click();
-    cy.getBySelector("AIApprove").click();
+    cy.get("[data-cy='AIApprove']", { timeout: 50_000 }).click();
 
     cy.getBySelector("CreateItemSaveButton").click();
 
