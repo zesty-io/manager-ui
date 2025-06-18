@@ -204,14 +204,20 @@ const CreateForm: FC<CreateFormProps> = ({
       maxWidth={false}
       onClose={onClose}
       slotProps={{
+        container: {
+          sx: {
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "flex-start",
+            py: "20px",
+          },
+        },
         paper: {
           sx: {
             width: "640px",
             minHeight: "680px",
-            height: "`calc(100vh - 100px)`",
-            position: "fixed",
-            top: "50px",
-            bottom: "50px",
+            height: "calc(100vh - 40px)",
+            maxHeight: "1240px",
             m: 0,
           },
         },

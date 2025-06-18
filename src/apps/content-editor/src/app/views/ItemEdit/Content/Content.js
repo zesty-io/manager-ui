@@ -13,7 +13,7 @@ import { theme } from "@zesty-io/material";
 import { StartRounded, DesktopMacRounded } from "@mui/icons-material";
 import { Actions } from "./Actions";
 import { useLocalStorage } from "react-use";
-import { useContext, useMemo } from "react";
+import { useContext, useEffect, useMemo } from "react";
 import { DuoModeContext } from "../../../../../../../shell/contexts/duoModeContext";
 import { FieldError } from "../../../components/Editor/FieldError";
 import { BlockTabs } from "../components/BlockTabs";
@@ -231,6 +231,7 @@ export default function Content(props) {
         >
           <Box flex={1}>
             <PreviewMode
+              key={props?.itemZUID}
               dirty={props.item?.dirty}
               version={props.item?.meta?.version}
               onClose={() => setShowDuoMode(false)}
