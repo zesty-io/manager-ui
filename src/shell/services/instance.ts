@@ -516,7 +516,7 @@ export const instanceApi = createApi({
         method: "POST",
         body,
       }),
-      invalidatesTags: ["ContentNav"],
+      invalidatesTags: ["ContentNav", "ContentItems"],
     }),
     // https://www.zesty.io/docs/instances/api-reference/env/nav/#Get-Content-Navigation
     getContentNavItems: builder.query<ContentNavItem[], void>({
