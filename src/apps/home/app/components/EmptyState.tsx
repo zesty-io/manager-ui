@@ -16,6 +16,7 @@ export const EmptyState = () => {
         width="100%"
         display="flex"
         alignItems="center"
+        justifyContent="center"
         gap={4}
         sx={{ px: 2, mb: 2 }}
       >
