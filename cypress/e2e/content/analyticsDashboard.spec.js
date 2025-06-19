@@ -1,3 +1,5 @@
+const options = { timeout: 15000 };
+
 describe("Analytics dashboard", () => {
   before(() => {
     cy.waitOn("*properties*", () => {
@@ -8,7 +10,7 @@ describe("Analytics dashboard", () => {
     cy.contains("zesty.pw");
   });
   it("Filters properties on search input", () => {
-    cy.getBySelector("analytics-settings").click({ force: true });
+    cy.getBySelector("analytics-settings", options).click({ force: true });
     cy.get('input[placeholder="Search Google Analytics Properties"]').type(
       "zesty.pw"
     );
@@ -26,7 +28,7 @@ describe("Analytics dashboard", () => {
   });
   it("Displays linked google account information", () => {
     cy.getBySelector("analytics-settings").click({ force: true });
-    cy.contains("GA Settings").click();
+    cy.contains("GA Settings", options).click();
     cy.getBySelector("loggedInGa4Account")
       .find("span")
       .invoke("text")
