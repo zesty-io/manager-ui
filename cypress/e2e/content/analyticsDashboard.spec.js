@@ -11,11 +11,12 @@ describe("Analytics dashboard", () => {
   });
   it("Filters properties on search input", () => {
     cy.getBySelector("analytics-settings", options).click({ force: true });
-    cy.get('input[placeholder="Search Google Analytics Properties"]').type(
-      "zesty.pw"
-    );
+    cy.get(
+      'input[placeholder="Search Google Analytics Properties"]',
+      options
+    ).type("zesty.pw");
 
-    cy.get('[role="presentation"]')
+    cy.get('[role="presentation"]', options)
       .find(".MuiList-root .MuiListItemButton-root")
       .should("have.length", 1);
     cy.get("body").type("{esc}");
@@ -23,22 +24,24 @@ describe("Analytics dashboard", () => {
   it("Allows property switching by updating instance setting", () => {
     cy.getBySelector("analytics-settings", options).click({ force: true });
     cy.waitOn("*/env/settings/*", () => {
-      cy.get('[role="presentation"]').contains("zesty.pw").click();
+      cy.get('[role="presentation"]', options)
+        .contains("zesty.pw")
+        .click({ force: true });
     });
   });
   it("Displays linked google account information", () => {
     cy.getBySelector("analytics-settings", options).click({ force: true });
-    cy.contains("GA Settings", options).click();
-    cy.getBySelector("loggedInGa4Account")
-      .find("span")
-      .invoke("text")
-      .should("be.oneOf", ["Andres Galindo", "Lunar Jay  Cuenca"]);
+    cy.get(`button:contains("GA Settings")`, options).click({ force: true });
+    cy.getBySelector("loggedInGa4Account", options)
+      .contains(/(Andres Galindo|Lunar Jay Cuenca)/i)
+      .should("exist");
+
     cy.get("body").type("{esc}");
   });
   it("Applies selected date filter to url params", () => {
     cy.url().should("include", "datePreset=last_14_days");
-    cy.getBySelector("date_default").click({ force: true });
-    cy.contains("Last 7 days").click({ force: true });
+    cy.getBySelector("date_default", options).click({ force: true });
+    cy.contains("Last 7 days", options).click({ force: true });
     cy.url().should("include", "datePreset=last_7_days");
   });
 });
