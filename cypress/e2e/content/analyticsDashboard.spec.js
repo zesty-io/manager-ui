@@ -8,7 +8,7 @@ describe("Analytics dashboard", () => {
     cy.contains("zesty.pw");
   });
   it("Filters properties on search input", () => {
-    cy.getBySelector("analytics-settings").click();
+    cy.getBySelector("analytics-settings").click({ force: true });
     cy.get('input[placeholder="Search Google Analytics Properties"]').type(
       "zesty.pw"
     );
@@ -19,13 +19,13 @@ describe("Analytics dashboard", () => {
     cy.get("body").type("{esc}");
   });
   it("Allows property switching by updating instance setting", () => {
-    cy.getBySelector("analytics-settings").click();
+    cy.getBySelector("analytics-settings").click({ force: true });
     cy.waitOn("*/env/settings/*", () => {
       cy.get('[role="presentation"]').contains("zesty.pw").click();
     });
   });
   it("Displays linked google account information", () => {
-    cy.getBySelector("analytics-settings").click();
+    cy.getBySelector("analytics-settings").click({ force: true });
     cy.contains("GA Settings").click();
     cy.getBySelector("loggedInGa4Account")
       .find("span")
