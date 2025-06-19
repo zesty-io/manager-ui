@@ -749,7 +749,9 @@ export function createItem({ modelZUID, itemZUID, skipPathPartValidation }) {
     })
       .then(async (res) => {
         if (!res.error) {
-          dispatch(instanceApi.util.invalidateTags(["ContentNav"]));
+          dispatch(
+            instanceApi.util.invalidateTags(["ContentNav", "ContentItems"])
+          );
           dispatch({
             type: "REMOVE_ITEM",
             itemZUID,
