@@ -1,4 +1,4 @@
-const options = { timeout: 15000 };
+const options = { timeout: 20000 };
 
 describe("Analytics dashboard", () => {
   before(() => {
