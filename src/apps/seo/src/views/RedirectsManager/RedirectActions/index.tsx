@@ -5,8 +5,8 @@ import { useRedirectsTable } from "../RedirectsTable/RedirectsTableContextProvid
 import RedirectsDelete from "./RedirectsDelete";
 import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
-import TextField from "@mui/material/TextField";
 import RedirectsImport from "./RedirectsImport";
+import SearchBox from "../../../../../../shell/components/SearchBox";
 
 export default function RedirectActions() {
   const { openCreateForm } = useRedirectsDialog();
@@ -38,18 +38,14 @@ export default function RedirectActions() {
             alignItems="center"
             columnGap={1}
           >
-            <TextField
+            <SearchBox
               placeholder="Filter Redirects"
-              type="search"
               variant="outlined"
               size="small"
               value={searchFilter}
               InputProps={{
                 sx: {
                   backgroundColor: "grey.50",
-                  input: {
-                    py: 0.75,
-                  },
                 },
                 startAdornment: (
                   <InputAdornment position="start">
