@@ -129,6 +129,7 @@ export default function Content(props) {
             <Editor
               // active={this.state.makeActive}
               // scrolled={() => this.setState({ makeActive: "" })}
+              key={`${props.modelZUID}-${props.itemZUID}`}
               model={props.model}
               itemZUID={props.itemZUID}
               item={props.item}

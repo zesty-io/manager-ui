@@ -18,7 +18,8 @@ type APIEndpointsProps = {
   type: Extract<ApiType, "quick-access" | "site-generators">;
 };
 export const APIEndpoints = ({ type }: APIEndpointsProps) => {
-  const { itemZUID } = useParams<{
+  const { modelZUID, itemZUID } = useParams<{
+    modelZUID: string;
     itemZUID: string;
   }>();
   const item = useSelector(
@@ -28,7 +29,7 @@ export const APIEndpoints = ({ type }: APIEndpointsProps) => {
   const { data: domains } = useGetDomainsQuery();
 
   const apiTypeEndpointMap: Partial<Record<ApiType, string>> = {
-    "quick-access": `/-/instant/${itemZUID}.json`,
+    "quick-access": `/-/instant/${itemZUID || modelZUID}.json`,
     "site-generators": item ? `/${item?.web?.path}/?toJSON` : "/?toJSON",
   };
 
