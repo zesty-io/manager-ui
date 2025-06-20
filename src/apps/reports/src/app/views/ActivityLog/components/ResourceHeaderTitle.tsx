@@ -13,6 +13,7 @@ import {
   useGetContentItemQuery,
   useGetContentModelsQuery,
   useGetInstanceSettingsQuery,
+  useGetLangsQuery,
 } from "../../../../../../../shell/services/instance";
 import {
   modelNameMap,
@@ -42,6 +43,7 @@ export const ResourceHeaderTitle = ({
     useGetContentModelsQuery();
   const { data: instanceSettings, isLoading: isLoadingInstanceSettings } =
     useGetInstanceSettingsQuery();
+  const { data: langs } = useGetLangsQuery({ type: "all" });
   const fileData = useSelector((state: AppState) =>
     Object.values(state.files).find((item) => item.ZUID === affectedZUID)
   );
@@ -66,9 +68,19 @@ export const ResourceHeaderTitle = ({
     switch (resourceType) {
       case "content":
         if (contentItem) {
-          data.title = contentItem?.web?.metaTitle?.length
-            ? contentItem?.web?.metaTitle
-            : `${affectedZUID} (Missing Meta Title)`;
+          if (langs?.length === 1) {
+            data.title = contentItem?.web?.metaTitle?.length
+              ? contentItem?.web?.metaTitle
+              : `${affectedZUID} (Missing Meta Title)`;
+          } else {
+            const lang = langs?.find(
+              (lang) => lang.ID === contentItem?.meta?.langID
+            );
+            data.title = lang?.code
+              ? `(${lang.code}) ${contentItem?.web?.metaTitle}`
+              : contentItem?.web?.metaTitle ||
+                `${affectedZUID} (Missing Meta Title)`;
+          }
 
           const contentModel = contentModels?.find(
             (model) => model.ZUID === contentItem?.meta?.contentModelZUID
