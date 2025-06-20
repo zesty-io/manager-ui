@@ -16,7 +16,7 @@ const modelTypeName = {
 
 export const ContentResourceListItem = (props) => {
   const dispatch = useDispatch();
-  const { data: langs } = useGetLangsQuery();
+  const { data: langs } = useGetLangsQuery({ type: "all" });
   const [contentError, setContentError] = useState(false);
   const [modelError, setModelError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
