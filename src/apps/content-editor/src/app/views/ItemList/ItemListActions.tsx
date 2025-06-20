@@ -236,3 +236,5 @@ export const ItemListActions = forwardRef((props, ref) => {
     </Box>
   );
 });
+
+ItemListActions.displayName = "ItemListActions";

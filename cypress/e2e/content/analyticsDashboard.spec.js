@@ -30,9 +30,10 @@ describe("Analytics dashboard", () => {
     });
   });
   it("Displays linked google account information", () => {
-    cy.getBySelector("analytics-settings", options).click({ force: true });
-    cy.contains("GA Settings", options).click({ force: true });
-    cy.getBySelector("loggedInGa4Account", options)
+    cy.visit("content?datePreset=last_14_days");
+    cy.get('[data-cy="analytics-settings"]', options).click({ force: true });
+    cy.get('button:contains("GA Settings")', options).click({ force: true });
+    cy.get('[data-cy="loggedInGa4Account"]', options)
       .contains(/(Andres Galindo|Lunar Jay Cuenca)/i)
       .should("exist");
 
