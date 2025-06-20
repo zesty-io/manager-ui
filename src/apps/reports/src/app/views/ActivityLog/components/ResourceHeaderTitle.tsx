@@ -43,7 +43,9 @@ export const ResourceHeaderTitle = ({
     useGetContentModelsQuery();
   const { data: instanceSettings, isLoading: isLoadingInstanceSettings } =
     useGetInstanceSettingsQuery();
-  const { data: langs } = useGetLangsQuery({ type: "all" });
+  const { data: langs, isLoading: isLoadingInstanceLangs } = useGetLangsQuery({
+    type: "all",
+  });
   const fileData = useSelector((state: AppState) =>
     Object.values(state.files).find((item) => item.ZUID === affectedZUID)
   );
@@ -52,7 +54,8 @@ export const ResourceHeaderTitle = ({
     isLoadingContentItem ||
     isLoadingContentModels ||
     isLoadingActions ||
-    isLoadingInstanceSettings;
+    isLoadingInstanceSettings ||
+    isLoadingInstanceLangs;
 
   const headerData = useMemo(() => {
     const data = {
