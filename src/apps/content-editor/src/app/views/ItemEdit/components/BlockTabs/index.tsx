@@ -5,26 +5,25 @@ import {
   Box,
   Typography,
   List,
-  ListItemButton,
   TextField,
   InputAdornment,
-  Skeleton,
 } from "@mui/material";
 import { useRef, useState } from "react";
 
-import { VerticalSplitRounded, InfoRounded } from "@mui/icons-material";
-import { Actions } from "../Content/Actions";
-import { useHistory, useParams } from "react-router";
-import { useGetContentModelItemsQuery } from "../../../../../../../shell/services/instance";
-import { ContentItem } from "../../../../../../../shell/services/types";
-import moment from "moment-timezone";
-import { useGetUsersQuery } from "../../../../../../../shell/services/accounts";
+import {
+  VerticalSplitRounded,
+  InfoRounded,
+  CodeRounded,
+} from "@mui/icons-material";
+import { Actions } from "../../Content/Actions";
+import { useParams } from "react-router";
+import { useGetContentModelItemsQuery } from "../../../../../../../../shell/services/instance";
 import { AddRounded, SearchRounded } from "@mui/icons-material";
-import noSearchResults from "../../../../../../../../public/images/noSearchResults.svg";
-import blockPlaceholder from "../../../../../../../../public/images/blockPlaceholder.png";
-import { CreateVariantDialog } from "../../../../../../blocks/components/CreateVariantDialog";
-import { useSelector } from "react-redux";
-import { AppState } from "../../../../../../../shell/store/types";
+import noSearchResults from "../../../../../../../../../public/images/noSearchResults.svg";
+import { CreateVariantDialog } from "../../../../../../../blocks/components/CreateVariantDialog";
+import { BlockVariantCard } from "./BlockVariantCard";
+import { CodeSample } from "./CodeSample";
+import SearchBox from "../../../../../../../../shell/components/SearchBox";
 
 export const BlockTabs = (props: any) => {
   const [value, setValue] = useState(0);
@@ -32,7 +31,6 @@ export const BlockTabs = (props: any) => {
   const { data, isFetching } = useGetContentModelItemsQuery({
     modelZUID: modelZUID,
   });
-  const history = useHistory();
   const searchRef = useRef(null);
   const [search, setSearch] = useState("");
   const [createVariantDialogOpen, setCreateVariantDialogOpen] = useState(false);
@@ -65,6 +63,11 @@ export const BlockTabs = (props: any) => {
             icon={<InfoRounded fontSize="small" />}
             iconPosition="start"
           />
+          <Tab
+            label="Code"
+            icon={<CodeRounded fontSize="small" />}
+            iconPosition="start"
+          />
         </Tabs>
         <Button
           size="xsmall"
@@ -94,7 +97,7 @@ export const BlockTabs = (props: any) => {
       </Box>
       {value === 0 && (
         <>
-          <TextField
+          <SearchBox
             placeholder="Search variants"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -138,7 +141,7 @@ export const BlockTabs = (props: any) => {
                   return a.web?.metaTitle.localeCompare(b.web?.metaTitle);
                 })
                 ?.map((block) => (
-                  <BlockVariantCard block={block} />
+                  <BlockVariantCard key={block.meta.ZUID} block={block} />
                 ))}
             </List>
           )}
@@ -209,114 +212,7 @@ export const BlockTabs = (props: any) => {
           />
         </Box>
       )}
+      {value === 2 && <CodeSample />}
     </>
-  );
-};
-
-const BlockVariantCard = ({ block }: { block: ContentItem }) => {
-  const history = useHistory();
-  const { modelZUID, itemZUID } = useParams<{
-    modelZUID: string;
-    itemZUID: string;
-  }>();
-  const isCapturingScreenshot =
-    useSelector(
-      (state: AppState) => state.content?.[block.meta.ZUID]?.capturingScreenshot
-    ) || false;
-  const { data: users } = useGetUsersQuery();
-  const updatedByUser = users?.find(
-    (user) => user.ZUID === block.web?.createdByUserZUID
-  );
-  const imageRef = useRef(null);
-  const [isErrored, setIsErrored] = useState(false);
-
-  return (
-    <ListItemButton
-      divider
-      selected={
-        itemZUID === block.meta.ZUID ||
-        Object?.values(block?.siblings || {})?.includes(itemZUID)
-      }
-      disableGutters
-      sx={{
-        display: "grid",
-        position: "relative",
-        overflow: "hidden",
-        gridTemplateColumns: "187px 1fr",
-        px: 2,
-        py: 1.75,
-        gap: "0px 12px",
-        "&.Mui-selected": {
-          "&:first-of-type": {
-            borderBottomColor: "primary.main",
-          },
-          "&:not(:last-of-type)": {
-            borderBottomColor: "primary.main",
-          },
-        },
-      }}
-      onClick={() => history.push(`/blocks/${modelZUID}/${block.meta.ZUID}`)}
-    >
-      {!!isCapturingScreenshot ? (
-        <Skeleton
-          variant="rectangular"
-          width={187}
-          height={120}
-          sx={{ flexShrink: 0, borderRadius: "8px" }}
-        />
-      ) : (
-        <Box
-          ref={imageRef}
-          // This make it so that if the image errored it would retry on next organic render
-          key={isErrored ? Date.now() : ""}
-          component="img"
-          width={187}
-          height={120}
-          sx={{
-            objectFit: "contain",
-            borderRadius: "8px",
-            backgroundColor: "grey.200",
-            flexShrink: 0,
-          }}
-          src={(block.data?.og_image as string) || blockPlaceholder}
-          onError={() => {
-            setIsErrored(true);
-            imageRef.current.src = blockPlaceholder;
-          }}
-        ></Box>
-      )}
-
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "flex-start",
-          overflow: "hidden",
-        }}
-      >
-        <Typography
-          noWrap
-          variant="body1"
-          fontWeight={700}
-          sx={{
-            width: "100%",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-          }}
-        >
-          {block?.web?.metaTitle}
-        </Typography>
-        <Typography
-          variant="body2"
-          color="text.secondary"
-          mt={0.5}
-          fontWeight={600}
-        >
-          Updated on {moment(block.web?.updatedAt).format("MMMM D")} by{" "}
-          {updatedByUser?.firstName} {updatedByUser?.lastName}
-        </Typography>
-      </Box>
-    </ListItemButton>
   );
 };

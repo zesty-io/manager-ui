@@ -3,7 +3,6 @@ import {
   Box,
   Button,
   Dialog,
-  Typography,
   DialogTitle,
   DialogContent,
   InputLabel,
@@ -14,8 +13,7 @@ import { ModeEditRounded } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 import { ContentModel } from "../../../shell/services/types";
 import { createItem, generateItem } from "../../../shell/store/content";
-import { useDispatch, useSelector } from "react-redux";
-import { selectSortedModelFields } from "../../content-editor/src/app/views/ItemCreate/ItemCreate";
+import { useDispatch } from "react-redux";
 import { useHistory } from "react-router";
 import { useGetContentModelFieldsQuery } from "../../../shell/services/instance";
 
@@ -50,16 +48,17 @@ export const CreateVariantDialog = ({
         metaTitle: variantName,
       })
     );
-    const res = await dispatch(
-      createItem({
-        modelZUID: model.ZUID,
-        itemZUID: `new:${model.ZUID}`,
-        skipPathPartValidation: true,
-      })
+    const res = await Promise.resolve(
+      dispatch(
+        createItem({
+          modelZUID: model.ZUID,
+          itemZUID: `new:${model.ZUID}`,
+          skipPathPartValidation: true,
+        })
+      )
     );
-
     // @ts-ignore
-    history.push(`/blocks/${model.ZUID}/${res.data.ZUID}`);
+    history.push(`/blocks/${model.ZUID}/${res?.data?.ZUID}`);
     setIsLoading(false);
     onClose();
   };

@@ -39,10 +39,12 @@ describe("Schema: Models", () => {
     cy.intercept("POST", "**/v1/content/models").as("createModel");
     cy.intercept("GET", "**/v1/content/models").as("getModels");
 
-    cy.getBySelector(`create-model-button-all-models`).click(TIMEOUT);
-    cy.contains("Multi Page Model").click(TIMEOUT);
-    cy.contains("Next").click();
-    cy.contains("Display Name").next().type("Cypress Test Model");
+    cy.getBySelector(`create-model-button-all-models`, options).click(
+      forceClick
+    );
+    cy.contains("Multi Page Model", options).click(forceClick);
+    cy.contains("Next", options).click(forceClick);
+    cy.contains("Display Name", options).next().type("Cypress Test Model");
     cy.contains("Reference ID")
       .next()
       .find("input")

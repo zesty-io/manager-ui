@@ -13,7 +13,7 @@ import { theme } from "@zesty-io/material";
 import { StartRounded, DesktopMacRounded } from "@mui/icons-material";
 import { Actions } from "./Actions";
 import { useLocalStorage } from "react-use";
-import { useContext, useMemo } from "react";
+import { useContext, useEffect, useMemo } from "react";
 import { DuoModeContext } from "../../../../../../../shell/contexts/duoModeContext";
 import { FieldError } from "../../../components/Editor/FieldError";
 import { BlockTabs } from "../components/BlockTabs";
@@ -129,6 +129,7 @@ export default function Content(props) {
             <Editor
               // active={this.state.makeActive}
               // scrolled={() => this.setState({ makeActive: "" })}
+              key={`${props.modelZUID}-${props.itemZUID}`}
               model={props.model}
               itemZUID={props.itemZUID}
               item={props.item}
@@ -231,12 +232,14 @@ export default function Content(props) {
         >
           <Box flex={1}>
             <PreviewMode
+              key={props?.itemZUID}
               dirty={props.item?.dirty}
               version={props.item?.meta?.version}
               onClose={() => setShowDuoMode(false)}
               onSave={() => props.onSave()}
               hasErrors={props.hasErrors}
               model={props.model}
+              itemZUID={props?.itemZUID}
             />
           </Box>
           {props?.model?.type === "block" && (
