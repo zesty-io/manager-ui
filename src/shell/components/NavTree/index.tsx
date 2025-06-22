@@ -47,8 +47,7 @@ export const NavTree: FC<Readonly<Props>> = ({
   dragAndDrop = false,
   isLoading,
 }) => {
-  const history = useHistory();
-  const isCodeApp = ["html", "css", "js"].includes(id);
+  const isCodeNav = ["html", "css", "js"].includes(id);
 
   if (isLoading) {
     return (
@@ -102,23 +101,12 @@ export const NavTree: FC<Readonly<Props>> = ({
             collapseIcon: ArrowDropDownRoundedIcon,
             expandIcon: ArrowRightRoundedIcon,
           }}
-          onItemClick={(evt: any, itemId: string) => {
-            if (
-              !!evt.currentTarget.id &&
-              evt.target.tagName !== "svg" &&
-              evt.target.tagName !== "path"
-            ) {
-              history.push(itemId);
-            }
-          }}
-          onExpandedItemsChange={(evt: any, nodeIds: string[]) => {
-            if (
-              !evt.currentTarget.id ||
-              evt.target.tagName === "svg" ||
-              evt.target.tagName === "path"
-            ) {
-              onToggleCollapse(nodeIds);
-            }
+          expansionTrigger={isCodeNav ? "content" : "iconContainer"}
+          onExpandedItemsChange={(_: any, nodeIds: string[]) =>
+            onToggleCollapse(nodeIds)
+          }
+          experimentalFeatures={{
+            indentationAtItemLevel: true,
           }}
         >
           {tree?.map((item) => {

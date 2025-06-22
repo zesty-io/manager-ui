@@ -6,7 +6,7 @@ import { StrictMode } from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import { Router } from "react-router-dom";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "@zesty-io/material";
 import CssBaseline from "@mui/material/CssBaseline";
 
@@ -50,61 +50,6 @@ window.zestyStore = store;
 const instanceZUID = store.getState().instance.ZUID;
 window.CONFIG.API_INSTANCE = `${window.CONFIG.API_INSTANCE_PROTOCOL}${instanceZUID}${window.CONFIG.API_INSTANCE}`;
 
-const appTheme = createTheme(theme, {
-  palette: {
-    success: {
-      contrastText: "#fff",
-    },
-    warning: {
-      contrastText: "#fff",
-    },
-    info: {
-      contrastText: "#fff",
-    },
-
-    action: {
-      active: "rgba(127, 127, 126, 0.7)",
-      selected: "rgba(127,127, 126, 0.125)",
-      disabled: "rgba(127,127, 126, 0.47)",
-      disabledBackground: "rgba(127,127, 126, 0.28)",
-      hover: "rgba(127, 127, 126, 0.07)",
-    },
-    background: {
-      editor: "#0F0F0F",
-    },
-  },
-
-  components: {
-    MuiToggleButton: {
-      styleOverrides: (theme) => ({
-        sizeSmall: {
-          ...theme.typography.body2,
-        },
-      }),
-    },
-    MuiCssBaseline: {
-      styleOverrides: (theme) => ({
-        body: {
-          boxSizing: "border-box",
-          "&::-webkit-scrollbar, & *::-webkit-scrollbar": {
-            width: "8px",
-            height: "8px",
-          },
-          "&::-webkit-scrollbar-track-piece, & *::-webkit-scrollbar-track-piece":
-            {
-              backgroundColor: theme.palette.grey[100],
-              borderRadius: "4px",
-            },
-          "&::-webkit-scrollbar-thumb, & *::-webkit-scrollbar-thumb": {
-            backgroundColor: theme.palette.grey[300],
-            borderRadius: "4px",
-          },
-        },
-      }),
-    },
-  },
-});
-
 MonacoSetup(store);
 
 // TODO: Add a context here that will store all draft comments
@@ -117,7 +62,7 @@ const App = Sentry.withProfiler(() => (
         scope.setTag("error_boundary", true);
       }}
     >
-      <ThemeProvider theme={appTheme}>
+      <ThemeProvider theme={theme}>
         <CssBaseline>
           <Provider store={store}>
             <Router history={history}>

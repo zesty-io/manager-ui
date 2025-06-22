@@ -12,7 +12,6 @@ import {
   Typography,
   PaletteMode,
   Tooltip,
-  TextField,
   List,
   ListItem,
   ListItemIcon,
@@ -22,13 +21,13 @@ import {
   SvgIcon,
   Theme,
   Skeleton,
+  alpha,
 } from "@mui/material";
 import { IconButton as IconButtonCustom } from "@zesty-io/material";
 import { SvgIconComponent } from "@mui/icons-material";
 import { useLocation, useHistory } from "react-router-dom";
 import ManageSearchRoundedIcon from "@mui/icons-material/ManageSearchRounded";
 import { AddRounded } from "@mui/icons-material";
-import { alpha } from "@mui/material";
 import SearchBox from "../SearchBox";
 
 export interface SubMenu {
@@ -60,16 +59,9 @@ interface Props {
 
 const darkTheme = {
   backgroundColor: "grey.900",
-  "& .MuiTreeItem-label,\
-  & .app-sidebar-header-container input,\
-  & .app-sidebar-header-container input::placeholder,\
-  & .app-sidebar-header-container fieldset": {
-    color: "grey.300",
-    border: "none",
-  },
   "& .MuiAccordion-root .MuiTypography-root,\
   & .nav-tree-header .MuiTypography-root,\
-  & .MuiSvgIcon-root": {
+  & .nav-tree-header .MuiSvgIcon-root": {
     color: "grey.400",
   },
   "& .app-sidebar-header .MuiTypography-root, \
@@ -79,13 +71,10 @@ const darkTheme = {
   "& .nav-tree-header .MuiIconButton-root:hover": {
     bgcolor: "grey.800",
   },
-  "& .MuiTreeItem-content:hover, & .app-sidebar-header-container .MuiListItem-root:hover":
-    {
-      bgcolor: (theme: Theme) => alpha(theme.palette.primary.main, 0.08),
-      "& .MuiButtonBase-root": {
-        bgcolor: "transparent",
-      },
-    },
+  "& .app-sidebar-header-container .MuiListItem-root:hover": {
+    bgcolor: (theme: Theme) =>
+      alpha(theme.palette.primary.main, theme.palette.action.hoverOpacity),
+  },
 };
 
 export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
@@ -195,16 +184,12 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
                   value={userInputKeyword}
                   inputRef={textfieldRef}
                   InputProps={{
-                    sx: {
-                      backgroundColor: "grey.800",
-                      height: "100%",
-                    },
                     startAdornment: (
-                      <InputAdornment
-                        position="start"
-                        sx={{ marginRight: 0.5 }}
-                      >
-                        <ManageSearchRoundedIcon fontSize="small" />
+                      <InputAdornment position="start">
+                        <ManageSearchRoundedIcon
+                          fontSize="small"
+                          sx={{ color: "grey.400" }}
+                        />
                       </InputAdornment>
                     ),
                   }}
@@ -213,6 +198,21 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
                   sx={{
                     px: 1.5,
                     height: 36,
+                    color: "white",
+                    "& .MuiInputBase-root": {
+                      backgroundColor: "grey.800",
+                      "& input, & fieldset": {
+                        border: "none",
+                        color: "white",
+                      },
+                      "& svg, & input::placeholder": {
+                        color: "grey.400",
+                      },
+                      "& .MuiAutocomplete-endAdornment": {
+                        right: "5px",
+                        fontSize: "1rem",
+                      },
+                    },
                   }}
                   onChange={(evt) => setUserInputKeyword(evt.target.value)}
                   onKeyDown={(evt) => {
@@ -292,15 +292,23 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
                               }
                             }}
                           >
-                            <ListItemIcon sx={{ minWidth: 32 }}>
+                            <ListItemIcon
+                              sx={{ minWidth: 32, color: "grey.400" }}
+                            >
                               <SvgIcon component={menu.icon} />
                             </ListItemIcon>
                             <ListItemText
                               primary={menu.name}
-                              primaryTypographyProps={{
-                                variant: "body3",
-                                fontWeight: 600,
+                              slotProps={{
+                                primary: {
+                                  variant: "body3",
+                                  sx: {
+                                    fontWeight: 600,
+                                    color: "grey.300",
+                                  },
+                                },
                               }}
+                              sx={{ fill: "grey.400" }}
                             />
                           </ListItemButton>
                         </ListItem>
