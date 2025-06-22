@@ -12,6 +12,7 @@ import { ModelsTable } from "../components/ModelsTable";
 import { CreateModelDialogue } from "../components/CreateModelDialogue";
 import { useState, useRef } from "react";
 import { useLocation } from "react-router";
+import SearchBox from "../../../../../shell/components/SearchBox";
 
 export const AllModels = () => {
   const [search, setSearch] = useState("");
@@ -46,7 +47,7 @@ export const AllModels = () => {
             All Models
           </Typography>
           <Stack direction="row" alignItems="center" gap={1}>
-            <TextField
+            <SearchBox
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               size="small"
@@ -60,9 +61,6 @@ export const AllModels = () => {
               InputProps={{
                 sx: {
                   backgroundColor: "grey.50",
-                  input: {
-                    py: 0.75,
-                  },
                 },
                 startAdornment: (
                   <InputAdornment position="start" sx={{ marginRight: 0.5 }}>
@@ -86,7 +84,10 @@ export const AllModels = () => {
         <Box height="100%" px={4} pt={2}>
           <ModelsTable
             search={search}
-            onEmptySearch={() => searchRef?.current?.focus()}
+            onEmptySearch={() => {
+              setSearch("");
+              searchRef?.current?.focus();
+            }}
           />
         </Box>
       </Box>
