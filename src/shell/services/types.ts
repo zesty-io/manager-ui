@@ -312,7 +312,7 @@ export interface AuditMeta {
 
 export interface Audit {
   ZUID: string;
-  resourceType: "content" | "schema" | "code" | "settings";
+  resourceType: "content" | "schema" | "code" | "settings" | "block";
   affectedZUID: string;
   actionByUserZUID: string;
   entityZUID: string;

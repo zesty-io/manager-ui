@@ -6,6 +6,7 @@ import moment from "moment-timezone";
 import { checkLock, lock, unlock } from "shell/store/content";
 
 import Button from "@mui/material/Button";
+import { LoadingButton } from "@mui/lab";
 import CircularProgress from "@mui/material/CircularProgress";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
 import SkipPreviousIcon from "@mui/icons-material/SkipPrevious";
@@ -26,6 +27,14 @@ import {
 } from "@zesty-io/core/Modal";
 
 import styles from "./LockedView.less";
+import { LockRounded } from "@mui/icons-material";
+import {
+  Box,
+  Dialog,
+  DialogActions,
+  DialogTitle,
+  Typography,
+} from "@mui/material";
 
 /**
  * This component is designed to be a generic view lock
@@ -105,49 +114,51 @@ export function LockedView(props) {
 
   if (isLocked) {
     return (
-      <Modal className={styles.LockedView} open onClose={onClose}>
-        <ModalHeader className={styles.ModalHeader}>
-          <h2 className={styles.headline}>
-            <FontAwesomeIcon icon={faLock} /> Locked
-          </h2>
-        </ModalHeader>
-        <ModalContent className={styles.ModalContent}>
-          <p className={styles.subheadline}>
-            <strong>
-              {lockData.firstName} {lockData.lastName}
-            </strong>{" "}
-            is viewing{" "}
-            <strong className={styles.ItemName}>
-              <em>{name}</em>
-            </strong>{" "}
-            since{" "}
-            {moment
-              .unix(lockData.timestamp)
-              .format("MMMM Do YYYY, [at] h:mm a")}
-            . Unlock this item to ignore this warning and possibly overwrite{" "}
-            {lockData.firstName}'s changes.
-          </p>
-        </ModalContent>
-        <ModalFooter className={styles.ModalFooter}>
-          <Button
-            variant="contained"
-            onClick={onClose}
-            startIcon={<SkipPreviousIcon />}
+      <Dialog open fullWidth maxWidth="xs">
+        <DialogTitle>
+          <Box
+            sx={{
+              backgroundColor: "warning.light",
+              borderRadius: "100%",
+              width: "40px",
+              height: "40px",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              mb: 1.5,
+            }}
           >
+            <LockRounded color="warning" />
+          </Box>
+
+          <Typography variant="inherit" fontWeight={700}>
+            File Locked
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+            {lockData.firstName} {lockData.lastName} is viewing <em>{name}</em>{" "}
+            since{" "}
+            {moment.unix(lockData.timestamp).format("MMMM Do, YYYY h:mm a")}.
+            Unlock this item to ignore this warning and possibly overwrite{" "}
+            {lockData.firstName}'s changes.
+          </Typography>
+        </DialogTitle>
+        <DialogActions>
+          <Button variant="text" color="inherit" onClick={onClose}>
             Go Back
           </Button>
-          <Button
+          <LoadingButton
+            data-cy="DeleteContentItemConfirmButton"
             variant="contained"
-            color="success"
+            color="warning"
             onClick={userUnlock}
             startIcon={
               loading ? <CircularProgress size="20px" /> : <LockOpenIcon />
             }
           >
             Unlock
-          </Button>
-        </ModalFooter>
-      </Modal>
+          </LoadingButton>
+        </DialogActions>
+      </Dialog>
     );
   }
 

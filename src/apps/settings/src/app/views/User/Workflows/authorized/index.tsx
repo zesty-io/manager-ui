@@ -1,9 +1,8 @@
-import { useEffect, useRef, useState, useCallback, useMemo } from "react";
+import { useRef, useState, useMemo } from "react";
 import {
   Box,
   Typography,
   Button,
-  TextField,
   InputAdornment,
   FormGroup,
   FormControlLabel,
@@ -20,6 +19,7 @@ import { useGetWorkflowStatusLabelsQuery } from "../../../../../../../../shell/s
 import { useFormDialogContext } from "./forms-dialogs";
 import { NoResults } from "../../../../../../../schema/src/app/components/NoResults";
 import { StatusLabelQuery } from "../../../../../../../../shell/services/types";
+import SearchBox from "../../../../../../../../shell/components/SearchBox";
 
 export type StatusLabelSorting = {
   id: string;
@@ -167,7 +167,7 @@ export const AuthorizedUserPage = () => {
         alignItems="center"
         flexGrow={0}
       >
-        <TextField
+        <SearchBox
           data-cy="status-label-search-box"
           placeholder="Search Statuses"
           variant="outlined"
