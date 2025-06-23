@@ -8,30 +8,15 @@ import { ItemCreate } from "../../content-editor/src/app/views/ItemCreate";
 
 export const BlockItem = ({ isCreate }: { isCreate?: boolean }) => {
   const dispatch = useDispatch();
-  const { modelZUID, itemZUID } = useParams<{
+  const { itemZUID } = useParams<{
     modelZUID: string;
     itemZUID: string;
   }>();
-  const [isFetching, setIsFetching] = useState(true);
 
   useEffect(() => {
     //@ts-ignore
-    dispatch(fetchModels()).then(() => setIsFetching(false));
-  }, []);
-
-  if (isFetching) {
-    return (
-      <Box
-        display="flex"
-        justifyContent={"center"}
-        alignItems={"center"}
-        height="100%"
-        width="100%"
-      >
-        <CircularProgress />
-      </Box>
-    );
-  }
+    dispatch(fetchModels());
+  }, [itemZUID]);
 
   return (
     <Box

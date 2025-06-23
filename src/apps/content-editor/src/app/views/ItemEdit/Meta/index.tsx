@@ -54,6 +54,9 @@ import { OGDescription } from "./settings/OGDescription";
 import { TCTitle } from "./settings/TCTitle";
 import { TCDescription } from "./settings/TCDescription";
 import { TCImage } from "./settings/TCImage";
+import RedirectsTableContextProvider from "../../../../../../seo/src/views/RedirectsManager/RedirectsTable/RedirectsTableContextProvider";
+import IncomingRedirects from "./IncomingRedirects";
+import RedirectsDialogContextProvider from "../../../../../../seo/src/app/components/RedirectsDialogProvider";
 import { useRegisterRef } from "../../../../../../../engine/useRegisterRef";
 
 const rotateAnimation = keyframes`
@@ -645,6 +648,14 @@ export const Meta = forwardRef(
                   });
                 }}
               />
+              <RedirectsDialogContextProvider>
+                <RedirectsTableContextProvider>
+                  <IncomingRedirects
+                    targetZUID={meta?.ZUID}
+                    urlPath={web?.path}
+                  />
+                </RedirectsTableContextProvider>
+              </RedirectsDialogContextProvider>
             </Stack>
           )}
           <Stack gap={3} pb={2.5}>
