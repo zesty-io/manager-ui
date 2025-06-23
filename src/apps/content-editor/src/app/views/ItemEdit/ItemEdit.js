@@ -54,11 +54,11 @@ import { FreestyleWrapper } from "./FreestyleWrapper";
 import { Meta } from "./Meta";
 import { FieldError } from "../../components/Editor/FieldError";
 import { AIGeneratorProvider } from "../../../../../../shell/components/withAi/AIGeneratorProvider";
-import {
-  fetchItemPublishings,
-} from "../../../../../../shell/store/content";
+import { fetchItemPublishings } from "../../../../../../shell/store/content";
 import { Redirects } from "../Redirects";
 import RedirectsDialogContextProvider from "../../../../../seo/src/app/components/RedirectsDialogProvider";
+
+const CONTRIBUTOR_ROLE_ZUID = "31-71cfc74-c0ntr1b0t0r";
 
 const selectItemHeadTags = createSelector(
   (state) => state.headTags,
@@ -536,7 +536,7 @@ export default function ItemEdit() {
                   path="/content/:modelZUID/:itemZUID/head"
                   render={({ match }) => {
                     // All roles except contributor are allowed to edit the document head
-                    return userRole.name !== "Contributor" ? (
+                    return userRole.systemRoleZUID !== CONTRIBUTOR_ROLE_ZUID ? (
                       <ItemHead
                         instance={instance}
                         modelZUID={modelZUID}
@@ -563,6 +563,7 @@ export default function ItemEdit() {
                         onUpdateSEOErrors={(errors) => {
                           setSEOErrors(errors);
                         }}
+                        item={item}
                         isSaving={saving}
                         errors={SEOErrors}
                         errorComponent={

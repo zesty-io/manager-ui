@@ -3,13 +3,14 @@ import { Box, Typography, useTheme, Skeleton } from "@mui/material";
 import { Pie } from "react-chartjs-2";
 import { startCase } from "lodash";
 
-const resourceTypes = ["content", "schema", "code", "settings"];
+const resourceTypes = ["content", "schema", "code", "settings", "block"];
 
 const resourceTypeColors = {
   content: "deepPurple",
   schema: "blue",
   code: "pink",
   settings: "green",
+  block: "deepOrange",
 };
 
 export const ActivityByResource = (props) => {
