@@ -9,7 +9,7 @@ describe("Content Specs", () => {
       cy.waitOn("/v1/content/models*", () => {
         cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
       });
-      cy.getBySelector("DuoModeToggle").click();
+      cy.getBySelector("DuoModeToggle").click(forceClick);
     });
 
     it("Text Field", () => {
@@ -438,7 +438,7 @@ describe("Content Specs", () => {
       cy.intercept({ method: "GET", url: "**/fields*" }).as("fetchFields");
 
       cy.wait("@fetchFields");
-      cy.getBySelector("DuoModeToggle", { timeout: 10000 }).click();
+      cy.getBySelector("DuoModeToggle", { timeout: 10000 }).click(forceClick);
     });
 
     it("can only select/add one item", () => {
@@ -505,7 +505,7 @@ describe("Content Specs", () => {
       cy.intercept({ method: "GET", url: "**/fields*" }).as("fetchFields");
 
       cy.wait("@fetchFields");
-      cy.getBySelector("DuoModeToggle", { timeout: 10000 }).click();
+      cy.getBySelector("DuoModeToggle", { timeout: 10000 }).click(forceClick);
     });
 
     it("can add multiple items", () => {
@@ -529,8 +529,10 @@ describe("Content Specs", () => {
     it("can remove the selected item", () => {
       cy.get("#12-269a28-1bkm34 [data-cy='active-relational-item-more-button']")
         .first()
-        .click();
-      cy.getBySelector("active-relational-item-remove-item-button").click();
+        .click(forceClick);
+      cy.getBySelector("active-relational-item-remove-item-button").click(
+        forceClick
+      );
       cy.get("#12-269a28-1bkm34 [data-cy='active-relational-item']").should(
         "have.length",
         2

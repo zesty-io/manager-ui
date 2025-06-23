@@ -23,6 +23,7 @@ import noSearchResults from "../../../../../../../../../public/images/noSearchRe
 import { CreateVariantDialog } from "../../../../../../../blocks/components/CreateVariantDialog";
 import { BlockVariantCard } from "./BlockVariantCard";
 import { CodeSample } from "./CodeSample";
+import SearchBox from "../../../../../../../../shell/components/SearchBox";
 
 export const BlockTabs = (props: any) => {
   const [value, setValue] = useState(0);
@@ -96,7 +97,7 @@ export const BlockTabs = (props: any) => {
       </Box>
       {value === 0 && (
         <>
-          <TextField
+          <SearchBox
             placeholder="Search variants"
             value={search}
             onChange={(e) => setSearch(e.target.value)}

@@ -30,6 +30,7 @@ import { ContentModelField } from "../../../../../shell/services/types";
 import { FieldEmptyState } from "./FieldEmptyState";
 import { SEO_FIELDS, SYSTEM_FIELDS, SystemField } from "./configs";
 import { useParams as useSearchParams } from "../../../../../shell/hooks/useParams";
+import SearchBox from "../../../../../shell/components/SearchBox";
 
 type Params = {
   id: string;
@@ -185,7 +186,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
           pr={2}
           pl={4}
         >
-          <TextField
+          <SearchBox
             data-cy="FieldListFilter"
             size="small"
             placeholder="Search Fields"
