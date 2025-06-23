@@ -1,14 +1,20 @@
 import { ReactNode, useRef } from "react";
 import { Dialog, Paper } from "@mui/material";
-import ConnectToApi from "./ConnectToApi";
+import ConnectToApi from "./IntegrationForm/ConnectToApi";
 import { useIntegrationField } from "../IntegrationFieldProvider";
-import SelectDisplayOptions from "./SelectDisplayOptions";
-import ConfigureDisplayOptions from "./ConfigureDisplayOptions";
+import SelectDisplayOptions from "./IntegrationForm/SelectDisplayOptions";
+import ConfigureDisplayOptions from "./IntegrationForm/ConfigureDisplayOptions";
 
 const IntegrationForm = () => {
   const containerRef = useRef(null);
-  const { activeStep, setActiveStep, isFormOpen, closeForm, endpoint } =
-    useIntegrationField();
+  const {
+    activeStep,
+    setActiveStep,
+    isFormOpen,
+    closeForm,
+    integrationEndPoint,
+    integrationType,
+  } = useIntegrationField();
   return (
     <Dialog
       open={isFormOpen}

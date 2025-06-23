@@ -6,14 +6,22 @@ import Typography from "@mui/material/Typography";
 import CardActionArea from "@mui/material/CardActionArea";
 import DragIndicatorRoundedIcon from "@mui/icons-material/DragIndicatorRounded";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import { IconButton } from "@zesty-io/material";
-import { CardMedia, Avatar, Checkbox } from "@mui/material";
+import {
+  CardMedia,
+  Avatar,
+  Checkbox,
+  Grid,
+  IconButton,
+  Stack,
+} from "@mui/material";
 // import { SelectionDisplayType } from "../configs";
 import AddPhotoAlternateRoundedIcon from "@mui/icons-material/AddPhotoAlternateRounded";
 import VideoCallRoundedIcon from "@mui/icons-material/VideoCallRounded";
 import moment from "moment-timezone";
 import { getObjectValue } from "../utils";
 import DataObjectIcon from "@mui/icons-material/DataObject";
+
+import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 type DetailsProps = Record<string, string | number>;
 
 const Details = ({ paths, data }: { paths: string[]; data: any }) => {
@@ -73,6 +81,7 @@ const Details = ({ paths, data }: { paths: string[]; data: any }) => {
   );
 };
 const SelectionDisplay: FC<any> = ({
+  id,
   type,
   heading = "Add Heading",
   subHeading = "Add Sub-heading",
@@ -80,156 +89,164 @@ const SelectionDisplay: FC<any> = ({
   detail = "Add Detail",
   details,
   data,
+  isSelected,
+  onSelect,
 }) => {
-  const [selectedCard, setSelectedCard] = useState(0);
-
-  const withCardMedia = [
-    "image",
-    "video",
-    "shopify",
-    "youtube",
-    "mux",
-  ].includes(type);
-
   const withsourceIcon = ["shopify", "youtube", "mux", "classy"].includes(type);
-
-  const mediaIcon =
-    type === "image" ? AddPhotoAlternateRoundedIcon : VideoCallRoundedIcon;
-
   return (
     <Card
       elevation={0}
-      variant="outlined"
       sx={{
-        borderColor: "border",
-        display: "-webkit-box",
+        display: "flex",
         flexDirection: "row",
-        justifyContent: "space-between",
         alignItems: "center",
         py: 1,
         pl: "54px",
         pr: "58px",
         width: "100%",
         height: "96px",
+
         borderRadius: 0,
-        // maxHeight: type !== "details" ? "70px" : "none",
-        // minHeight: "70px",
-        boxSizing: "border-box",
+
         position: "relative",
+        outline: "1px solid",
+        outlineColor: "border",
+        "& *": {
+          boxSizing: "border-box",
+        },
       }}
     >
-      <Box
+      <Checkbox
+        checked={isSelected}
+        onChange={(e) => onSelect(e.target.checked, id)}
         sx={{
-          width: "54px",
-          height: "100%",
-          display: "grid",
-          placeContent: "center",
-          flexGrow: 0,
+          color: "action.active",
           position: "absolute",
-          left: 0,
-          top: 0,
-          bottom: 0,
+          left: 8,
         }}
-      >
-        {/* <DragIndicatorRoundedIcon color="action" fontSize="small" /> */}
-        <Checkbox />
-      </Box>
+      />
 
       <CardContent
         sx={{
-          height: "100%",
           width: "100%",
-          flexGrow: 1,
+          height: "100%",
           p: 0,
           display: "flex",
           flexDirection: "row",
           justifyContent: "space-between",
           alignItems: "center",
-          overflow: "hidden",
-          position: "relative",
-          boxSizing: "border-box",
         }}
       >
-        <CardMedia
-          component="img"
-          sx={{ width: 142, borderRadius: "12px", flexGrow: 0 }}
-          image="/images/media-sample-image.png"
-          alt="Live from space album cover"
-        />
-
-        <Box
-          display="flex"
-          flexDirection="column"
-          justifyContent="center"
-          alignItems="flex-start"
-          // width="100%"
-          flexGrow={1}
-          sx={{
-            height: "100%",
-            rowGap: 0.25,
-          }}
+        <Grid
+          container
+          spacing={1}
+          width="100%"
+          height="100%"
+          sx={{ position: "relative", boxSizing: "border-box" }}
         >
-          <Typography
-            variant="h6"
-            fontWeight={700}
-            color="text.primary"
-            noWrap
-            textOverflow="ellipsis"
-            flexGrow={1}
-            width="100%"
-            height="20px"
-            maxHeight="22px"
-            px={2}
+          <Grid
+            size={3}
+            height="100%"
+            sx={{
+              position: "relative",
+            }}
           >
-            Chugging through Sri Lanka's tea plantations
-          </Typography>
-          <Typography
-            px={2}
-            variant="body2"
-            fontWeight={400}
-            color="text.primary"
-            noWrap
-            textOverflow="ellipsis"
-            flexGrow={1}
-            width="100%"
-            height="20px"
-            maxHeight="22px"
-          >
-            13:10 • 1 month ago
-          </Typography>
-        </Box>
+            <CardMedia
+              component="img"
+              height="100%"
+              width="100%"
+              sx={{
+                borderRadius: 2,
+                flexGrow: 0,
+                bgcolor: "grey.100",
+              }}
+              image="/images/media-sample-image.png"
+              alt="Live from space album cover"
+            />
+            <PlayCircleIcon
+              fontSize="large"
+              sx={{
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                zIndex: 2,
+                color: "common.white",
+              }}
+            />
+          </Grid>
+          <Grid size="grow">
+            <Stack
+              spacing="4px"
+              direction="column"
+              justifyContent="center"
+              width="100%"
+              height="100%"
+              p={2}
+            >
+              <Typography
+                variant="body2"
+                fontWeight={700}
+                color="text.primary"
+                noWrap
+                textOverflow="ellipsis"
+                width="100%"
+              >
+                Chugging through Sri Lanka's tea plantations Chugging through
+                Sri Lanka's tea plantations Chugging through Sri Lanka's tea
+                plantations
+              </Typography>
+              <Typography
+                variant="body2"
+                fontWeight={400}
+                color="text.secondary"
+                noWrap
+                textOverflow="ellipsis"
+                width="100%"
+              >
+                13:10 • 1 month ago Chugging through Sri Lanka's tea plantations
+                Chugging through Sri Lanka's tea plantations
+              </Typography>
+            </Stack>
+          </Grid>
+          {!!withsourceIcon && (
+            <Grid
+              size={1}
+              height="100%"
+              border="1px solid red"
+              sx={{
+                border: "1px solid red",
+                height: "100%",
+                display: "grid",
+                placeContent: "center",
+              }}
+            >
+              <Avatar
+                src={`/images/${type}Icon.svg`}
+                variant="square"
+                sizes="small"
+                sx={{
+                  width: "32px",
+                  height: "auto",
+                  objectFit: "contain",
+                }}
+              />
+            </Grid>
+          )}
+        </Grid>
       </CardContent>
 
-      <Box
+      <IconButton
         sx={{
-          width: "58px",
-          height: "100%",
-          display: "grid",
-          placeContent: "center",
-          flexGrow: 0,
-
-          pr: "16px",
+          borderRadius: 1,
+          color: "action.active",
           position: "absolute",
-          right: 0,
-          top: 0,
-          bottom: 0,
+          right: 16,
         }}
+        // onClick={() => setSelectedCard(1)}
       >
-        <CardActionArea
-          sx={{
-            flexGrow: 0,
-            width: "28px",
-            height: "28px",
-
-            display: "grid",
-            placeContent: "center",
-            borderRadius: 2,
-          }}
-          onClick={() => setSelectedCard(1)}
-        >
-          <DataObjectIcon color="action" />
-        </CardActionArea>
-      </Box>
+        <DataObjectIcon color="action" sx={{ color: "action.active" }} />
+      </IconButton>
     </Card>
   );
 };

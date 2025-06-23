@@ -10,7 +10,7 @@ import { NotFound } from "../../../../../shell/components/NotFound";
 import SchemaRoundedIcon from "@mui/icons-material/SchemaRounded";
 import { ModelActivityLog } from "../components/ModelActivityLog";
 import { ModelApi } from "../components/ModelApi";
-import IntegrationFieldProvider from "../components/IntegrationField/IntegrationFieldProvider";
+import IntegrationFieldProvider from "../../../../../shell/components/FieldTypeIntegration/IntegrationFieldProvider";
 
 type Params = {
   id: string;

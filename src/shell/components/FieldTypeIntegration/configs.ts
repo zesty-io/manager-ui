@@ -1,4 +1,4 @@
-export type IntegrationDisplayType =
+export type IntegrationTypes =
   | "simple"
   | "text"
   | "details"
@@ -9,10 +9,13 @@ export type IntegrationDisplayType =
   | "mux"
   | "classy";
 
+export type FormTypes = "select" | "configure";
+
 export type IntegrationFieldSource = "shopify" | "youtube" | "mux" | "classy";
 
-export type IntegrationDisplayProps = {
-  type: IntegrationDisplayType;
+export type IntegrationDisplay = {
+  ZUID: string;
+  type: IntegrationTypes;
   heading?: string;
   subHeading?: string;
   detail?: string;
@@ -62,10 +65,10 @@ export type ConfigProps = {
   placeholder?: string;
 };
 
-export type IntegrationConfig = {
-  endpoint: string;
-  type: IntegrationDisplayType;
-  headers?: APIHeader[] | null;
+export type IntegrationFieldConfig = {
+  integrationEndPoint: string | null;
+  integrationType: IntegrationTypes | null;
+  integrationHeaders?: APIHeader[] | null;
 };
 
 const HEADING: ConfigProps = {

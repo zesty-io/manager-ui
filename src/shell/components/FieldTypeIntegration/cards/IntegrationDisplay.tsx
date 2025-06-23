@@ -8,7 +8,7 @@ import DragIndicatorRoundedIcon from "@mui/icons-material/DragIndicatorRounded";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { IconButton } from "@zesty-io/material";
 import { CardMedia, Avatar } from "@mui/material";
-import { IntegrationDisplayType, IntegrationDisplayProps } from "../configs";
+import { IntegrationTypes, IntegrationDisplay } from "../configs";
 import AddPhotoAlternateRoundedIcon from "@mui/icons-material/AddPhotoAlternateRounded";
 import VideoCallRoundedIcon from "@mui/icons-material/VideoCallRounded";
 import moment from "moment-timezone";
@@ -72,7 +72,7 @@ const Details = ({ paths, data }: { paths: string[]; data: any }) => {
     </Box>
   );
 };
-const IntegrationDisplay: FC<IntegrationDisplayProps> = ({
+const IntegrationDisplay: FC<IntegrationDisplay> = ({
   type,
   heading = "Add Heading",
   subHeading = "Add Sub-heading",

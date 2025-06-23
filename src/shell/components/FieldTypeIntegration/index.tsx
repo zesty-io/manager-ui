@@ -7,32 +7,33 @@ import {
   InputBase,
   OutlinedInput,
 } from "@mui/material";
-import { IntegrationDisplayType, IntegrationConfig } from "./configs";
+import { IntegrationTypes, FormTypes } from "./configs";
 import LinkRoundedIcon from "@mui/icons-material/LinkRounded";
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
 import IntegrationFieldProvider, {
   useIntegrationField,
 } from "./IntegrationFieldProvider";
-import IntegrationForm from "./IntegrationForm";
+import IntegrationForm from "./forms";
 import {
   Errors,
   FormValue,
 } from "../../../apps/schema/src/app/components/AddFieldModal/views/FieldForm";
 import { arrayToKeyValuePairs } from "./utils";
 import AddIcon from "@mui/icons-material/Add";
-import SelectFromRemoteSource from "./IntegrationForm/SelectFromRemoteSource";
+import SelectionForm from "./forms/SelectionForm";
+import { FieldWrapper } from "./forms/FieldWrapper";
 
 type IntegrationDataProps = {
   url: string;
-  // type: IntegrationDisplayType;
+  // type: IntegrationType;
 };
-
-type FormTypes = "select" | "create";
 
 type IntegrationFieldProps = {
   name: string;
   label: string;
+  description?: string;
   formType: FormTypes;
+  required?: boolean;
   onChange?: ({
     inputName,
     value,
@@ -44,25 +45,118 @@ type IntegrationFieldProps = {
   // data?: IntegrationDataProps;
 };
 
+const ApiConfigurationSettings = ({
+  url,
+  displayType,
+}: {
+  url: string;
+  displayType: IntegrationTypes;
+}) => {
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "flex-start",
+        alignItems: "flex-start",
+        width: "100%",
+        py: 1,
+        rowGap: 1,
+      }}
+    >
+      <Paper
+        elevation={0}
+        variant="outlined"
+        sx={{
+          width: "100%",
+          bgcolor: "background.paper",
+          borderColor: "border",
+          borderRadius: 2,
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "flex-start",
+            alignItems: "center",
+            width: "100%",
+            p: 2,
+            borderBottom: "1px solid",
+            borderColor: "border",
+          }}
+        >
+          <Typography
+            width={170}
+            variant="body2"
+            fontWeight={600}
+            flexGrow={0}
+            flexShrink={0}
+          >
+            API URL
+          </Typography>
+          <InputBase size="small" readOnly value={url} sx={{ flexGrow: 1 }} />
+        </Box>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "flex-start",
+            alignItems: "center",
+            width: "100%",
+            p: 2,
+          }}
+        >
+          <Typography
+            width={170}
+            variant="body2"
+            fontWeight={600}
+            flexGrow={0}
+            flexShrink={0}
+          >
+            Display Items as
+          </Typography>
+          <InputBase
+            size="small"
+            readOnly
+            value={`${displayType} Card` || ""}
+            sx={{ flexGrow: 1 }}
+            slotProps={{
+              input: {
+                sx: {
+                  textTransform: "capitalize",
+                },
+              },
+            }}
+          />
+        </Box>
+      </Paper>
+    </Box>
+  );
+};
+
 const IntegrationFieldComponent: FC<IntegrationFieldProps> = ({
   name,
   label,
+  description,
   formType,
   onChange,
+  required,
   error,
 }) => {
   // const [isFormOpen, setIsFormOpen] = useState(false);
 
   const isSelection = formType === "select";
+  const isConfiguration = formType === "configure";
 
   const {
     isFormOpen,
     openForm,
     closeForm,
-    endpoint,
-    setEndpoint,
-    type,
-    setType,
+    integrationEndPoint,
+    setIntegrationEndPoint,
+    integrationType,
+    setIntegrationType,
     headers: headersArray,
     isConnected,
     setIsConnected,
@@ -72,27 +166,6 @@ const IntegrationFieldComponent: FC<IntegrationFieldProps> = ({
     setRemoteSelectorOpen,
   } = useIntegrationField();
 
-  useEffect(() => {
-    console.debug("MOUNTED");
-    if (!isConnected || !type || !endpoint) return;
-
-    const headers = arrayToKeyValuePairs(headersArray);
-
-    onChange({ inputName: name, value: { endpoint, type, headers } });
-    return () => {
-      console.debug("UNMOUNTED");
-    };
-  }, [endpoint, type, headersArray, isConnected]);
-
-  // useEffect(() => {
-  //   return () => {
-  //     // console.debug("unmounting IntegrationField");
-  //     setIsConnected(false);
-  //     setUrl(null);
-  //     setType(null);
-  //     setActiveStep(1);
-  //   };
-  // }, []);
   return (
     <>
       <Box
@@ -104,157 +177,177 @@ const IntegrationFieldComponent: FC<IntegrationFieldProps> = ({
           width: "100%",
         }}
       >
-        {!!isConnected && (
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "flex-start",
-              alignItems: "flex-start",
-              width: "100%",
-              py: 1,
-              rowGap: 1,
-            }}
+        {/* {!!isConnected && !!isConfiguration && (
+          // <Box
+          //   sx={{
+          //     display: "flex",
+          //     flexDirection: "column",
+          //     justifyContent: "flex-start",
+          //     alignItems: "flex-start",
+          //     width: "100%",
+          //     py: 1,
+          //     rowGap: 1,
+          //   }}
+          // >
+          //   <Typography variant="body2" fontWeight={600}>
+          //     API Configuration Settings
+          //   </Typography>
+          //   <Paper
+          //     elevation={0}
+          //     variant="outlined"
+          //     sx={{
+          //       width: "100%",
+          //       bgcolor: "background.paper",
+          //       borderColor: "border",
+          //       borderRadius: 2,
+          //     }}
+          //   >
+          //     <Box
+          //       sx={{
+          //         display: "flex",
+          //         flexDirection: "row",
+          //         justifyContent: "flex-start",
+          //         alignItems: "center",
+          //         width: "100%",
+          //         p: 2,
+          //         borderBottom: "1px solid",
+          //         borderColor: "border",
+          //       }}
+          //     >
+          //       <Typography
+          //         width={170}
+          //         variant="body2"
+          //         fontWeight={600}
+          //         flexGrow={0}
+          //         flexShrink={0}
+          //       >
+          //         API URL
+          //       </Typography>
+          //       <InputBase
+          //         size="small"
+          //         readOnly
+          //         value={endpoint}
+          //         sx={{ flexGrow: 1 }}
+          //       />
+          //     </Box>
+          //     <Box
+          //       sx={{
+          //         display: "flex",
+          //         flexDirection: "row",
+          //         justifyContent: "flex-start",
+          //         alignItems: "center",
+          //         width: "100%",
+          //         p: 2,
+          //       }}
+          //     >
+          //       <Typography
+          //         width={170}
+          //         variant="body2"
+          //         fontWeight={600}
+          //         flexGrow={0}
+          //         flexShrink={0}
+          //       >
+          //         Display Items as
+          //       </Typography>
+          //       <InputBase
+          //         size="small"
+          //         readOnly
+          //         value={`${type} Card` || ""}
+          //         sx={{ flexGrow: 1 }}
+          //         slotProps={{
+          //           input: {
+          //             sx: {
+          //               textTransform: "capitalize",
+          //             },
+          //           },
+          //         }}
+          //       />
+          //     </Box>
+          //   </Paper>
+          // </Box>
+          <ApiConfigurationSettings url={endpoint} displayType={type} />
+        )} */}
+
+        {!!isSelection ? (
+          <FieldWrapper
+            name={name}
+            label={label}
+            description={description}
+            isRequired={true}
+            // value={value}
           >
-            <Typography variant="body2" fontWeight={600}>
-              API Configuration Settings
-            </Typography>
-            <Paper
-              elevation={0}
+            <Button
               variant="outlined"
-              sx={{
-                width: "100%",
-                bgcolor: "background.paper",
-                borderColor: "border",
-                borderRadius: 2,
+              color="primary"
+              size="large"
+              fullWidth={true}
+              startIcon={<AddIcon />}
+              onClick={() => {
+                setRemoteSelectorOpen(true);
               }}
             >
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "row",
-                  justifyContent: "flex-start",
-                  alignItems: "center",
-                  width: "100%",
-                  p: 2,
-                  borderBottom: "1px solid",
-                  borderColor: "border",
-                }}
-              >
-                <Typography
-                  width={170}
-                  variant="body2"
-                  fontWeight={600}
-                  flexGrow={0}
-                  flexShrink={0}
-                >
-                  API URL
-                </Typography>
-                <InputBase
-                  size="small"
-                  readOnly
-                  value={endpoint}
-                  sx={{ flexGrow: 1 }}
-                />
-              </Box>
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "row",
-                  justifyContent: "flex-start",
-                  alignItems: "center",
-                  width: "100%",
-                  p: 2,
-                }}
-              >
-                <Typography
-                  width={170}
-                  variant="body2"
-                  fontWeight={600}
-                  flexGrow={0}
-                  flexShrink={0}
-                >
-                  Display Items as
-                </Typography>
-                <InputBase
-                  size="small"
-                  readOnly
-                  value={`${type} Card` || ""}
-                  sx={{ flexGrow: 1 }}
-                  slotProps={{
-                    input: {
-                      sx: {
-                        textTransform: "capitalize",
-                      },
-                    },
-                  }}
-                />
-              </Box>
-            </Paper>
-          </Box>
-        )}
-        <Button
-          variant="outlined"
-          color="primary"
-          size={isSelection ? "large" : "small"}
-          fullWidth={isSelection ? true : false}
-          startIcon={
-            !!isSelection ? (
-              <AddIcon />
-            ) : !!isConnected ? (
-              <AutorenewRoundedIcon />
-            ) : (
-              <LinkRoundedIcon />
-            )
-          }
-          onClick={() => {
-            if (isSelection) {
-              setRemoteSelectorOpen(true);
-            } else {
-              setActiveStep(1);
-              openForm();
-            }
-          }}
-        >
-          {!!isSelection
-            ? "Select Remote Items"
-            : !!isConnected
-            ? "Reconfigure"
-            : "Connect to API"}
-        </Button>
-        {!!error ? (
-          <Typography variant="body2" color="error.main" mt={0.5}>
-            {error}
-          </Typography>
-        ) : null}
-        {!remoteSelectorOpen ? (
-          <IntegrationForm />
+              Select Remote Items
+            </Button>
+            <SelectionForm
+              ZUID="test"
+              displayType="youtube"
+              endpoint="s"
+              headers={[]}
+              title="SelectFromRemoteSource"
+            />
+          </FieldWrapper>
         ) : (
-          <SelectFromRemoteSource
-            ZUID="test"
-            displayType="video"
-            endpoint="s"
-            headers={[]}
-            title="SelectFromRemoteSource"
-          />
+          <FieldWrapper
+            name={name}
+            label={!!isConnected && label}
+            description={!!isConnected && description}
+            isRequired={!!isConnected && required}
+            // value={value}
+          >
+            {!!isConnected && (
+              <ApiConfigurationSettings
+                url={integrationEndPoint}
+                displayType={integrationType}
+              />
+            )}
+            <Button
+              variant="outlined"
+              color="primary"
+              size="small"
+              fullWidth={false}
+              startIcon={
+                !!isConnected ? <AutorenewRoundedIcon /> : <LinkRoundedIcon />
+              }
+              onClick={() => {
+                setActiveStep(1);
+                openForm();
+              }}
+            >
+              {!!isConnected ? "Reconfigure" : "Connect to API"}
+            </Button>
+            <IntegrationForm />
+          </FieldWrapper>
         )}
       </Box>
     </>
   );
 };
 
-const IntegrationField: FC<IntegrationFieldProps> = ({
+const FieldTypeIntegration: FC<IntegrationFieldProps> = ({
   name,
   label,
+  description,
   onChange,
+  required,
   error,
-  formType = "create",
+  formType = "configure",
 }) => {
   return (
-    <IntegrationFieldProvider>
+    <IntegrationFieldProvider onChange={onChange}>
       <IntegrationFieldComponent
         name={name}
         label={label}
+        description={description}
         onChange={onChange}
         error={error}
         formType={formType}
@@ -263,4 +356,4 @@ const IntegrationField: FC<IntegrationFieldProps> = ({
   );
 };
 
-export default IntegrationField;
+export default FieldTypeIntegration;

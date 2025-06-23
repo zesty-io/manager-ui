@@ -22,7 +22,7 @@ import DataObjectRoundedIcon from "@mui/icons-material/DataObjectRounded";
 import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
 import LinkRoundedIcon from "@mui/icons-material/LinkRounded";
 import InfoIcon from "@mui/icons-material/Info";
-import { useIntegrationField } from "../IntegrationFieldProvider";
+import { useIntegrationField } from "../../IntegrationFieldProvider";
 import CircularProgress from "@mui/material/CircularProgress";
 import StopRoundedIcon from "@mui/icons-material/StopRounded";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
@@ -31,14 +31,14 @@ import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
 import InsertLinkRoundedIcon from "@mui/icons-material/InsertLinkRounded";
 import { FormWrapper } from ".";
-import { IntegrationFieldTypes, APIHeader, DEFAULT_HEADERS } from "../configs";
-import { FieldWrapper } from "./FieldWrapper";
+import { IntegrationTypes, APIHeader, DEFAULT_HEADERS } from "../../configs";
+import { FieldWrapper } from "../FieldWrapper";
 import {
   getValuePaths,
   getKeyValuePairs,
   getObjectValue,
   validateUrl,
-} from "../utils";
+} from "../../utils";
 
 const CONNECTION_STATUSES: {
   [key: string]: {
@@ -99,8 +99,12 @@ const ConnectionStatus = ({
   next: () => void;
   stop: () => void;
 }) => {
-  const { endpoint, type, setActiveStep, setIsConnected } =
-    useIntegrationField();
+  const {
+    integrationEndPoint,
+    integrationType,
+    setActiveStep,
+    setIsConnected,
+  } = useIntegrationField();
 
   const handleAction = () => {
     if (status === "success") {
@@ -182,8 +186,8 @@ const ConnectToApi = () => {
 
   const {
     setActiveStep,
-    endpoint,
-    setEndpoint,
+    integrationEndPoint,
+    setIntegrationEndPoint,
     closeForm,
     headers,
     setHeaders,
@@ -192,6 +196,7 @@ const ConnectToApi = () => {
 
     dataPathOptions,
     setDataPathOptions,
+    onChange,
   } = useIntegrationField();
 
   const [headersCount, setHeadersCount] = useState<number>(5);
@@ -210,7 +215,7 @@ const ConnectToApi = () => {
       ...(!!reqHeaders ? { headers: reqHeaders } : {}),
     };
     try {
-      const res = await fetch(endpoint, reqOptions);
+      const res = await fetch(integrationEndPoint, reqOptions);
       if (res?.ok) {
         setStatus("success");
         const data = await res?.json();
@@ -230,9 +235,9 @@ const ConnectToApi = () => {
       setApiData(null);
       setStatus("failed");
     }
-  }, [headers, endpoint]);
+  }, [integrationEndPoint, headers]);
   useEffect(() => {
-    setEndpoint(
+    setIntegrationEndPoint(
       "https://imdb232.p.rapidapi.com/api/news/get-by-category?limit=25&category=CELEBRITY"
     );
     setHeaders([
@@ -304,9 +309,9 @@ const ConnectToApi = () => {
             size="small"
             autoFocus
             placeholder="https://api.example.com/endpoint"
-            value={endpoint}
+            value={integrationEndPoint}
             onChange={(e) => {
-              setEndpoint(e.target.value);
+              setIntegrationEndPoint(e.target.value);
               const validUrl = !e.target.value
                 ? true
                 : validateUrl(e.target.value);
@@ -395,7 +400,7 @@ const ConnectToApi = () => {
           variant="contained"
           onClick={handleApiConnect}
           startIcon={<LinkRoundedIcon />}
-          disabled={!endpoint || !isValidUrl}
+          disabled={!integrationEndPoint || !isValidUrl}
         >
           Connect
         </Button>

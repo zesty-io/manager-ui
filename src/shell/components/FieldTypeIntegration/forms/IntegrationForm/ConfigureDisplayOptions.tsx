@@ -17,23 +17,23 @@ import {
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import IconButton from "@mui/material/IconButton";
 import { FormWrapper } from ".";
-import { useIntegrationField } from "../IntegrationFieldProvider";
+import { useIntegrationField } from "../../IntegrationFieldProvider";
 import { CheckRounded } from "@mui/icons-material";
 import SettingsIcon from "@mui/icons-material/Settings";
-import IntegrationDisplay from "../cards/IntegrationDisplay";
-import { FieldWrapper } from "./FieldWrapper";
+import IntegrationDisplay from "../../cards/IntegrationDisplay";
+import { FieldWrapper } from "./../FieldWrapper";
 import {
   COLOR_MAP,
   DISPLAY_OPTIONS_CONFIG,
   DisplayPath,
   ConfigProps,
-} from "../configs";
+} from "../../configs";
 import {
   getValuePaths,
   getKeyValuePairs,
   getObjectValue,
   validateUrl,
-} from "../utils";
+} from "../../utils";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 
@@ -296,15 +296,16 @@ const ConfigureDisplayOptions = () => {
     setActiveStep,
     closeForm,
     setIsConnected,
-    type,
+    integrationType,
     dataPathOptions,
     setDataPathOptions,
     displayData,
     setDisplayData,
     displayPathOptions,
     setDisplayPathOptions,
-    displayPaths,
-    setDisplayPaths,
+    propertyPaths,
+    setPropertyPaths,
+    jsonData,
   } = useIntegrationField();
 
   // const optionKeyValueChange = (data: any[]): void => {
@@ -420,13 +421,13 @@ const ConfigureDisplayOptions = () => {
 
             <FieldWrapper label="List Path" isRequired={true}>
               <PathSelector
-                value={displayPaths?.["dataPath"]}
+                value={propertyPaths?.["dataPath"]}
                 onChange={(value: string) => {
                   const rawData = getObjectValue(apiData, value);
                   const displayOptionsRaw = getValuePaths(rawData?.[0]);
 
-                  setDisplayPaths({
-                    ...displayPaths,
+                  setPropertyPaths({
+                    ...propertyPaths,
                     ["dataPath"]: value,
                   });
                   setDisplayData(rawData?.[0]);
@@ -441,51 +442,53 @@ const ConfigureDisplayOptions = () => {
             <Divider sx={{ my: 1 }} />
             {!!displayPathOptions?.length && (
               <>
-                {DISPLAY_OPTIONS_CONFIG?.[type]?.map((config: ConfigProps) => {
-                  return (
-                    <FieldWrapper
-                      key={config?.name}
-                      label={config?.label}
-                      isRequired={config?.isRequired}
-                    >
-                      {config?.type === "option" ? (
-                        <DetailsPathSelector
-                          options={displayPathOptions}
-                          placeholder={config?.placeholder}
-                          onChange={(value: string[]) => {
-                            const newPaths = {
-                              ...displayPaths,
-                              [config?.name]: value,
-                            };
-                            setDisplayPaths(newPaths);
-                          }}
-                          details={displayPaths?.details}
-                          data={displayData}
-                          optionsDescription="Values previewed for the keys below are from the first item in the API response."
-                        />
-                      ) : (
-                        <PathSelector
-                          value={
-                            displayPaths?.[
-                              config?.name as keyof DisplayPath
-                            ] as string
-                          }
-                          onChange={(value: string) => {
-                            const newPaths = {
-                              ...displayPaths,
-                              [config?.name]: value,
-                            };
-                            setDisplayPaths(newPaths);
-                          }}
-                          options={displayPathOptions}
-                          placeholder={config?.placeholder}
-                          data={displayData}
-                          optionsDescription="Values previewed for the keys below are from the first item in the API response."
-                        />
-                      )}
-                    </FieldWrapper>
-                  );
-                })}
+                {DISPLAY_OPTIONS_CONFIG?.[integrationType]?.map(
+                  (config: ConfigProps) => {
+                    return (
+                      <FieldWrapper
+                        key={config?.name}
+                        label={config?.label}
+                        isRequired={config?.isRequired}
+                      >
+                        {config?.type === "option" ? (
+                          <DetailsPathSelector
+                            options={displayPathOptions}
+                            placeholder={config?.placeholder}
+                            onChange={(value: string[]) => {
+                              const newPaths = {
+                                ...propertyPaths,
+                                [config?.name]: value,
+                              };
+                              setPropertyPaths(newPaths);
+                            }}
+                            details={propertyPaths?.details}
+                            data={displayData}
+                            optionsDescription="Values previewed for the keys below are from the first item in the API response."
+                          />
+                        ) : (
+                          <PathSelector
+                            value={
+                              propertyPaths?.[
+                                config?.name as keyof DisplayPath
+                              ] as string
+                            }
+                            onChange={(value: string) => {
+                              const newPaths = {
+                                ...propertyPaths,
+                                [config?.name]: value,
+                              };
+                              setPropertyPaths(newPaths);
+                            }}
+                            options={displayPathOptions}
+                            placeholder={config?.placeholder}
+                            data={displayData}
+                            optionsDescription="Values previewed for the keys below are from the first item in the API response."
+                          />
+                        )}
+                      </FieldWrapper>
+                    );
+                  }
+                )}
               </>
             )}
           </Box>
@@ -510,7 +513,7 @@ const ConfigureDisplayOptions = () => {
               width="100%"
             >
               <Typography variant="body2" fontWeight={700} width="100%">
-                {`Item Preview [${type}]`}
+                {`Item Preview [${integrationType}]`}
               </Typography>
               <Typography variant="body2" width="100%">
                 How the items will appear to content editors
@@ -518,12 +521,16 @@ const ConfigureDisplayOptions = () => {
             </Box>
 
             <IntegrationDisplay
-              type={type}
-              heading={getObjectValue(displayData, displayPaths?.heading)}
-              subHeading={getObjectValue(displayData, displayPaths?.subHeading)}
-              preview={getObjectValue(displayData, displayPaths?.image)}
-              detail={getObjectValue(displayData, displayPaths?.detail)}
-              details={displayPaths?.details}
+              ZUID={`preview-${integrationType}`}
+              type={integrationType}
+              heading={getObjectValue(displayData, propertyPaths?.heading)}
+              subHeading={getObjectValue(
+                displayData,
+                propertyPaths?.subHeading
+              )}
+              preview={getObjectValue(displayData, propertyPaths?.image)}
+              detail={getObjectValue(displayData, propertyPaths?.detail)}
+              details={propertyPaths?.details}
               data={displayData}
             />
           </Box>

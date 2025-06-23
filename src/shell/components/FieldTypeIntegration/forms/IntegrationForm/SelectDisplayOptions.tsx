@@ -23,19 +23,24 @@ import IconButton from "@mui/material/IconButton";
 import PlayCircleOutlineRoundedIcon from "@mui/icons-material/PlayCircleOutlineRounded";
 import { isNull } from "lodash";
 import SearchIcon from "@mui/icons-material/SearchRounded";
-import { FormWrapper } from ".";
-import { useIntegrationField } from "../IntegrationFieldProvider";
-import DisplayTypes from "../cards/IntegrationDisplay";
+import { FormWrapper } from "..";
+import { useIntegrationField } from "../../IntegrationFieldProvider";
+import DisplayTypes from "../../cards/IntegrationDisplay";
 
-import { IntegrationDisplayProps, IntegrationDisplayType } from "../configs";
-import IntegrationDisplay from "../cards/IntegrationDisplay";
+import {
+  IntegrationDisplay as IntegrationDisplayProps,
+  IntegrationTypes,
+} from "../../configs";
+// import IntegrationDisplay from "../cards/IntegrationDisplay";
 import IntegrationField from "..";
+import IntegrationDisplay from "../../cards/IntegrationDisplay";
 
 const GENERIC_DISPLAY_TYPES: DisplayOptionCardProps[] = [
   {
     title: "Text Card",
     description: "Display items with a heading and subheading",
     card: {
+      ZUID: "sample-card-0001",
       type: "text",
       heading: "Chugging through Sri Lanka's tea plantations",
       subHeading: "The beautiful train from Kandy to Ella",
@@ -45,6 +50,7 @@ const GENERIC_DISPLAY_TYPES: DisplayOptionCardProps[] = [
     title: "Image Card",
     description: "Display items with an image, heading, and subheading.",
     card: {
+      ZUID: "sample-card-0002",
       type: "image",
       heading: "Washington-state-mountain.jpg",
       subHeading: "A photo of a beautiful mountain in the state of Washington",
@@ -55,6 +61,7 @@ const GENERIC_DISPLAY_TYPES: DisplayOptionCardProps[] = [
     title: "Video Card",
     description: "Display Shopify product listings",
     card: {
+      ZUID: "sample-card-0003",
       type: "video",
       heading: "Chugging through Sri Lanka's tea plantations",
       subHeading: "13:10",
@@ -65,6 +72,7 @@ const GENERIC_DISPLAY_TYPES: DisplayOptionCardProps[] = [
     title: "Details Card",
     description: "Display items with multiple details",
     card: {
+      ZUID: "sample-card-0004",
       type: "details",
       heading: "Anfernee Simons",
       subHeading: "A photo of a beautiful mountain in the state of Washington",
@@ -75,6 +83,7 @@ const GENERIC_DISPLAY_TYPES: DisplayOptionCardProps[] = [
     title: "Simple Card",
     description: "Display items with a heading and subheading",
     card: {
+      ZUID: "sample-card-0004",
       type: "simple",
       heading: "Lebron James",
     },
@@ -86,6 +95,7 @@ const SPECIAL_DISPLAY_TYPES: DisplayOptionCardProps[] = [
     title: "MUX Card",
     description: "Display videos from MUX",
     card: {
+      ZUID: "mux-card-0001",
       type: "mux",
       heading: "HK01Bq7FrEQmIu3QpRiZZ98HQOOZjm6BYyg17eEunlyo",
       subHeading: "13:10",
@@ -96,6 +106,7 @@ const SPECIAL_DISPLAY_TYPES: DisplayOptionCardProps[] = [
     title: "Youtube Card",
     description: "Display videos from Youtube",
     card: {
+      ZUID: "youtube-card-0001",
       type: "youtube",
       heading: "Chugging through Sri Lanka's tea plantations",
       subHeading: "13:10 • 92M views • 1 day ago",
@@ -106,6 +117,7 @@ const SPECIAL_DISPLAY_TYPES: DisplayOptionCardProps[] = [
     title: "Shopify Card",
     description: "Display Shopify product listings",
     card: {
+      ZUID: "shopify-card-0001",
       type: "shopify",
       heading: "Basic Chair",
       subHeading: "Furniture",
@@ -117,6 +129,7 @@ const SPECIAL_DISPLAY_TYPES: DisplayOptionCardProps[] = [
     title: "Classy Card",
     description: "Display campaigns from classy",
     card: {
+      ZUID: "classy-card-0001",
       type: "classy",
       heading: "Campaign Name",
       subHeading: "Campaign Description",
@@ -127,21 +140,21 @@ const SPECIAL_DISPLAY_TYPES: DisplayOptionCardProps[] = [
 export type DisplayOptionCardProps = {
   title: string;
   description?: string;
-  card: IntegrationDisplayProps;
+  card: IntegrationDisplay;
   disabled?: boolean;
 };
 
 const SelectDisplayOptions = () => {
   const [open, setOpen] = useState(false);
   const [recommendedType, setRecommendedType] =
-    useState<IntegrationDisplayType | null>(null);
+    useState<IntegrationTypes | null>(null);
 
   const {
     setActiveStep,
     closeForm,
-    endpoint,
-    type,
-    setType,
+    integrationEndPoint,
+    integrationType,
+    setIntegrationType,
     // setIntegrationConfig,
   } = useIntegrationField();
 
@@ -154,15 +167,19 @@ const SelectDisplayOptions = () => {
   );
 
   useEffect(() => {
-    if (endpoint?.includes("mux.com")) return setRecommendedType("mux");
-    if (endpoint?.includes("youtube.com")) return setRecommendedType("youtube");
-    if (endpoint?.includes("shopify.com")) return setRecommendedType("shopify");
-    if (endpoint?.includes("classy.org")) return setRecommendedType("classy");
+    if (integrationEndPoint?.includes("mux.com"))
+      return setRecommendedType("mux");
+    if (integrationEndPoint?.includes("youtube.com"))
+      return setRecommendedType("youtube");
+    if (integrationEndPoint?.includes("shopify.com"))
+      return setRecommendedType("shopify");
+    if (integrationEndPoint?.includes("classy.org"))
+      return setRecommendedType("classy");
     setRecommendedType(null);
-  }, [endpoint]);
+  }, [integrationEndPoint]);
 
   useEffect(() => {
-    if (!!recommendedType) setType(recommendedType);
+    if (!!recommendedType) setIntegrationType(recommendedType);
   }, [recommendedType]);
 
   return (
@@ -371,7 +388,7 @@ const SelectDisplayOptions = () => {
             // });
             setActiveStep(3);
           }}
-          disabled={!type}
+          disabled={!integrationType}
         >
           Next
         </Button>
@@ -386,13 +403,13 @@ export const DisplayOptionCard: FC<DisplayOptionCardProps> = ({
   card,
   disabled = false,
 }) => {
-  const { type, setType } = useIntegrationField();
+  const { integrationType, setIntegrationType } = useIntegrationField();
   return (
     <Paper
       elevation={0}
       variant="outlined"
       role="button"
-      className={type === card?.type ? "active" : ""}
+      className={integrationType === card?.type ? "active" : ""}
       sx={{
         width: "100%",
         bgcolor: "grey.100",
@@ -421,7 +438,7 @@ export const DisplayOptionCard: FC<DisplayOptionCardProps> = ({
         pointerEvents: disabled ? "none" : "auto",
       }}
       onClick={() => {
-        setType(card?.type);
+        setIntegrationType(card?.type);
       }}
     >
       <Grid container spacing={0} height="100%" width="100%">

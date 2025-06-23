@@ -6,11 +6,16 @@ import {
   useState,
 } from "react";
 import {
-  IntegrationDisplayType,
+  Errors,
+  FormValue,
+} from "../../../apps/schema/src/app/components/AddFieldModal/views/FieldForm";
+import {
+  IntegrationTypes,
   APIHeader,
   DataKeys,
   DisplayPath,
-  IntegrationConfig,
+  IntegrationFieldConfig,
+  IntegrationDisplay,
 } from "./configs";
 
 type IntegrationFieldContextType = {
@@ -19,10 +24,10 @@ type IntegrationFieldContextType = {
   isFormOpen: boolean;
   activeStep: number;
   setActiveStep: (step: number) => void;
-  endpoint: string | null;
-  setEndpoint: (endpoint: string | null) => void;
-  type: IntegrationDisplayType;
-  setType: (type: IntegrationDisplayType | null) => void;
+  integrationEndPoint: string | null;
+  setIntegrationEndPoint: (integrationEndPoint: string | null) => void;
+  integrationType: IntegrationTypes;
+  setIntegrationType: (type: IntegrationTypes | null) => void;
   isConnected: boolean;
   setIsConnected: (isConnected: boolean) => void;
   headers: APIHeader[] | null;
@@ -36,23 +41,54 @@ type IntegrationFieldContextType = {
   setDisplayPathOptions: (displayPathOptions: string[]) => void;
   displayData: any | null;
   setDisplayData: (displayData: any | null) => void;
-  displayPaths: DisplayPath;
-  setDisplayPaths: (displayPaths: DisplayPath) => void;
-  integrationConfig: IntegrationConfig;
-  setIntegrationConfig: (integrationConfig: IntegrationConfig) => void;
+  propertyPaths: DisplayPath;
+  setPropertyPaths: (propertyPaths: DisplayPath) => void;
+  integrationConfig: IntegrationFieldConfig;
+  setIntegrationConfig: (integrationConfig: IntegrationFieldConfig) => void;
   remoteSelectorOpen: boolean;
   setRemoteSelectorOpen: (remoteSelectorOpen: boolean) => void;
+  selectedItems: string[];
+  setSelectedItems: (selectedItems: string[]) => void;
+  displayListData: IntegrationDisplay[] | null;
+  setDisplayListData: (displayListData: IntegrationDisplay[] | null) => void;
+  jsonViewerIsOpen: boolean;
+  setJsonViewerIsOpen: (jsonViewerIsOpen: boolean) => void;
+  jsonData: any | null;
+  setjsonData: (jsonData: any | null) => void;
+  onChange: ({
+    inputName,
+    value,
+  }: {
+    inputName: string;
+    value: FormValue;
+  }) => void;
 };
 
 export const IntegrationFieldContext =
   createContext<IntegrationFieldContextType | null>(null);
 
-const IntegrationFieldProvider = ({ children }: { children: ReactNode }) => {
+const IntegrationFieldProvider = ({
+  onChange,
+  children,
+}: {
+  onChange: ({
+    inputName,
+    value,
+  }: {
+    inputName: string;
+    value: FormValue;
+  }) => void;
+  children: ReactNode;
+}) => {
   const [activeStep, setActiveStep] = useState(1);
   const [isConnected, setIsConnected] = useState(false);
+  const [jsonViewerIsOpen, setJsonViewerIsOpen] = useState(false);
 
-  const [endpoint, setEndpoint] = useState<string | null>(null);
-  const [type, setType] = useState<IntegrationDisplayType | null>(null);
+  const [integrationEndPoint, setIntegrationEndPoint] = useState<string | null>(
+    null
+  );
+  const [integrationType, setIntegrationType] =
+    useState<IntegrationTypes | null>(null);
   const [headers, setHeaders] = useState<APIHeader[] | null>(null);
   const [apiData, setApiData] = useState<any | null>(null);
 
@@ -64,7 +100,14 @@ const IntegrationFieldProvider = ({ children }: { children: ReactNode }) => {
 
   const [remoteSelectorOpen, setRemoteSelectorOpen] = useState(false);
 
-  const [displayPaths, setDisplayPaths] = useState<DisplayPath | null>({
+  const [selectedItems, setSelectedItems] = useState([]);
+  const [jsonData, setjsonData] = useState<any | null>(null);
+
+  const [displayListData, setDisplayListData] = useState<
+    IntegrationDisplay[] | null
+  >([]);
+
+  const [propertyPaths, setPropertyPaths] = useState<DisplayPath | null>({
     dataPath: "",
     heading: "",
     subHeading: "",
@@ -73,13 +116,12 @@ const IntegrationFieldProvider = ({ children }: { children: ReactNode }) => {
     details: [],
   });
 
-  const [integrationConfig, setIntegrationConfig] = useState<IntegrationConfig>(
-    {
-      endpoint: null,
-      type: null,
-      headers: null,
-    }
-  );
+  const [integrationConfig, setIntegrationConfig] =
+    useState<IntegrationFieldConfig>({
+      integrationEndPoint: null,
+      integrationType: null,
+      integrationHeaders: null,
+    });
 
   const [isFormOpen, setIsFormOpen] = useState(false);
 
@@ -97,10 +139,10 @@ const IntegrationFieldProvider = ({ children }: { children: ReactNode }) => {
         isFormOpen,
         openForm,
         closeForm,
-        endpoint,
-        setEndpoint,
-        type,
-        setType,
+        integrationEndPoint,
+        setIntegrationEndPoint,
+        integrationType,
+        setIntegrationType,
         activeStep,
         setActiveStep: (step) => setActiveStep(step),
         isConnected,
@@ -116,12 +158,21 @@ const IntegrationFieldProvider = ({ children }: { children: ReactNode }) => {
         setDisplayPathOptions,
         displayData,
         setDisplayData,
-        displayPaths,
-        setDisplayPaths,
+        propertyPaths,
+        setPropertyPaths,
         integrationConfig,
         setIntegrationConfig,
         remoteSelectorOpen,
         setRemoteSelectorOpen,
+        selectedItems,
+        setSelectedItems,
+        displayListData,
+        setDisplayListData,
+        jsonViewerIsOpen,
+        setJsonViewerIsOpen,
+        jsonData,
+        setjsonData,
+        onChange,
       }}
     >
       {children}
