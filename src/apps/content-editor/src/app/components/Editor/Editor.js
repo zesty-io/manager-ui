@@ -9,6 +9,7 @@ import { cloneDeep } from "lodash";
 import { useGetContentModelFieldsQuery } from "../../../../../../shell/services/instance";
 import { DYNAMIC_META_FIELD_NAMES } from "../../views/ItemEdit/Meta";
 import { FieldsLoader } from "./FieldsLoader";
+import IntegrationField from "../../../../../../shell/components/FieldTypeIntegration";
 
 export const MaxLengths = {
   text: 150,
@@ -419,6 +420,22 @@ export default memo(function Editor({
           </div>
         );
       })}
+      <IntegrationField
+        label="Select Remote Items"
+        name="select-remote-items"
+        // value={value}
+        // onChange={onChange}
+        formType="select"
+        title="Select Article Videos"
+      />
+      <IntegrationField
+        label="Select Remote Items"
+        name="select-remote-items"
+        // value={value}
+        // onChange={onChange}
+        formType="create"
+        title="Select Article Videos"
+      />
     </div>
   );
 });

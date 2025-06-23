@@ -34,6 +34,7 @@ import { FieldTypeDateTime } from "../../../../../../../shell/components/FieldTy
 import { FieldTypeSort } from "../../../../../../../shell/components/FieldTypeSort";
 import { FieldTypeNumber } from "../../../../../../../shell/components/FieldTypeNumber";
 import { FieldTypeBlockSelector } from "../../../../../../../shell/components/FieldTypeBlockSelector";
+// import { FieldTypeIntegration } from "../../../../../../../shell/components/FieldTypeIntegration";
 import { InternalLink } from "./InternalLink";
 
 import styles from "./Field.less";
@@ -770,6 +771,20 @@ export const Field = ({
             onChange={(value) => onChange(value, name, datatype)}
             requiredError={errors?.MISSING_REQUIRED}
             missingVariantError={errors?.INVALID_BLOCK_VARIANT}
+          />
+        </FieldShell>
+      );
+    case "integration":
+      return (
+        <FieldShell settings={fieldData} errors={errors}>
+          <RelationalFieldBase
+            name={name}
+            value={!!value ? String(value) : null}
+            fieldZUID={ZUID}
+            relatedModelZUID={relatedModelZUID}
+            relatedFieldZUID={relatedFieldZUID}
+            onChange={onChange}
+            fieldLabel={fieldData?.label}
           />
         </FieldShell>
       );
