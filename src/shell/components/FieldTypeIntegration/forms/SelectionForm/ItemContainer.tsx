@@ -15,6 +15,7 @@ import {
   Stack,
   Paper,
   Tooltip,
+  alpha,
 } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
 import Menu from "@mui/material/Menu";
@@ -35,7 +36,7 @@ import { IntegrationTypes, ConfigProps } from "../../configs";
 
 type DetailsProps = Record<string, string | number>;
 
-type DisplayWrapperProps = {
+type ItemContainerProps = {
   title: string;
   subTitle: string;
   children: ReactNode;
@@ -46,7 +47,7 @@ type DisplayWrapperProps = {
   cardType?: "select" | "drag" | "preview";
 };
 
-const DisplayWrapper: FC<DisplayWrapperProps> = ({
+const ItemContainer: FC<ItemContainerProps> = ({
   title,
   subTitle,
   cardType,
@@ -75,12 +76,20 @@ const DisplayWrapper: FC<DisplayWrapperProps> = ({
         alignItems: "center",
         outline: "1px solid",
         outlineColor: "border",
+        outlineOffset: "0",
+        backgroundColor: isSelected
+          ? "rgba(255, 93, 10, 0.04)"
+          : "common.white",
+        boxShadow: isSelected
+          ? (theme) => `0px -3px 0px 0px ${theme.palette.primary.main} inset`
+          : "none",
+        rowGap: "1px",
         "& *": {
           boxSizing: "border-box",
         },
       }}
     >
-      <Box
+      {/* <Box
         position="absolute"
         left={0}
         width="56px"
@@ -90,15 +99,25 @@ const DisplayWrapper: FC<DisplayWrapperProps> = ({
           display: "grid",
           placeContent: "center",
         }}
+      > */}
+      <SelectCheckBox
+        isSelected={isSelected}
+        onChange={(e) => {
+          onSelect && onSelect(e);
+        }}
+      />
+      {/* </Box> */}
+      <Box
+        // border="1px solid red"
+        width="100%"
+        height="100%"
+        position="relative"
+        boxSizing="border-box"
+        overflow="hidden"
       >
-        <SelectCheckBox
-          isSelected={isSelected}
-          onChange={(e) => {
-            onSelect && onSelect(e);
-          }}
-        />
+        {children}
       </Box>
-      {children}
+
       <Box
         position="absolute"
         right={0}
@@ -148,6 +167,12 @@ const SelectCheckBox = ({
       checked={isSelected}
       onChange={(e) => {
         onChange(e.target.checked);
+      }}
+      color="primary"
+      sx={{
+        color: "action.active",
+        position: "absolute",
+        left: "8px",
       }}
     />
   );
@@ -202,4 +227,4 @@ const MoreOptions = () => {
   );
 };
 
-export default DisplayWrapper;
+export default ItemContainer;

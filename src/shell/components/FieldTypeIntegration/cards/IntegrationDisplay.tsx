@@ -8,11 +8,19 @@ import DragIndicatorRoundedIcon from "@mui/icons-material/DragIndicatorRounded";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { IconButton } from "@zesty-io/material";
 import { CardMedia, Avatar } from "@mui/material";
-import { IntegrationTypes, IntegrationDisplay } from "../configs";
+// import { IntegrationTypes, IntegrationDisplay } from "../config";
 import AddPhotoAlternateRoundedIcon from "@mui/icons-material/AddPhotoAlternateRounded";
 import VideoCallRoundedIcon from "@mui/icons-material/VideoCallRounded";
 import moment from "moment-timezone";
 import { getObjectValue } from "../utils";
+
+export const MEDIA_TYPE_MAP = {
+  youtube: "video",
+  mux: "video",
+  classy: "image",
+  image: "image",
+  video: "video",
+} as const;
 
 type DetailsProps = Record<string, string | number>;
 
@@ -72,14 +80,13 @@ const Details = ({ paths, data }: { paths: string[]; data: any }) => {
     </Box>
   );
 };
-const IntegrationDisplay: FC<IntegrationDisplay> = ({
+const IntegrationDisplay: FC<any> = ({
   type,
   heading = "Add Heading",
   subHeading = "Add Sub-heading",
   preview,
   detail = "Add Detail",
   details,
-  data,
 }) => {
   const [selectedCard, setSelectedCard] = useState(0);
 
@@ -95,6 +102,11 @@ const IntegrationDisplay: FC<IntegrationDisplay> = ({
 
   const mediaIcon =
     type === "image" ? AddPhotoAlternateRoundedIcon : VideoCallRoundedIcon;
+
+  const mediaType =
+    withCardMedia && type in MEDIA_TYPE_MAP
+      ? MEDIA_TYPE_MAP[type as keyof typeof MEDIA_TYPE_MAP]
+      : "image";
 
   return (
     <Card
@@ -146,8 +158,10 @@ const IntegrationDisplay: FC<IntegrationDisplay> = ({
               image={preview}
               sx={{
                 flexGrow: 0,
-                height: "100%",
-                width: "100%",
+                // height: "100%",
+                // width: "100%",
+                minHeight: "100%",
+                minWidth: "100%",
                 objectFit: "contain",
               }}
             />
@@ -224,10 +238,11 @@ const IntegrationDisplay: FC<IntegrationDisplay> = ({
             )}
           </Box>
           {type === "simple" ? null : type === "details" ? (
-            <Details
-              paths={[...(!!details?.length ? details : [""])]}
-              data={data}
-            />
+            // <Details
+            //   paths={[...(!!details?.length ? details : [""])]}
+            //   data={data}
+            // />
+            <Box />
           ) : (
             <Typography
               variant="body2"

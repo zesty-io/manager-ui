@@ -59,14 +59,29 @@ const getObjectValue = (obj: object, path: string) => {
   }, obj) as any;
 };
 
-function validateUrl(str: string): boolean {
+// function validateUrl(str: string): boolean {
+//   try {
+//     const url = new URL(str);
+//     return ["http://", "https://", "ftp://"].includes(url.protocol);
+//   } catch (_) {
+//     return false;
+//   }
+// }
+
+const validateUrl = (url: string) => {
+  const validProtocols = ["http://", "https://"];
+
+  const hasValidProtocol = validProtocols.some((protocol) =>
+    url.startsWith(protocol)
+  );
+  if (!hasValidProtocol) return false;
   try {
-    const url = new URL(str);
-    return ["http://", "https://", "ftp://"].includes(url.protocol);
+    new URL(url);
+    return true;
   } catch (_) {
     return false;
   }
-}
+};
 
 function arrayToKeyValuePairs(arr: any[]) {
   return arr?.reduce((acc: any, obj: any) => {

@@ -28,7 +28,8 @@ import { cloneDeep } from "lodash";
 import { FormValue } from "./views/FieldForm";
 import {
   FieldSettingsOptions,
-  FieldConfig,
+  IntegrationFieldTypes,
+  IntegrationFieldConfig,
 } from "../../../../../../shell/services/types";
 import { convertDropdownValue } from "../../utils";
 import { withCursorPosition } from "../../../../../../shell/components/withCursorPosition";
@@ -65,7 +66,12 @@ export type FieldNames =
   | "currency"
   | "fileExtensions"
   | "fileExtensionsErrorMessage"
+  | "integrationEndpoint"
+  | "integrationType"
+  | "requestHeaders"
+  | "propertyPaths"
   | "integrationConfig";
+
 type FieldType =
   | "input"
   | "checkbox"
@@ -74,6 +80,9 @@ type FieldType =
   | "options"
   | "toggle_options"
   | "config";
+
+// | "requestHeaders"
+// | "propertyPaths"
 
 type InputType = "text" | "number";
 export interface InputField {
@@ -91,6 +100,9 @@ export interface InputField {
   validate?: Validation[];
   inputType?: InputType;
   autoFocus?: boolean;
+  integrationConfig?: IntegrationFieldConfig;
+  // integrationEndpoint?: string;
+  // integrationType?: IntegrationFieldTypes;
 }
 export interface DropdownOptions {
   label: string;
@@ -117,6 +129,7 @@ type FieldFormInputProps = {
   dropdownOptions?: DropdownOptions[] | Currency[];
   disabled?: boolean;
   autocompleteConfig?: AutocompleteConfig;
+  integrationConfig?: IntegrationFieldConfig;
 } & Pick<
   AutocompleteProps<DropdownOptions | Currency, false, false, false, "div">,
   "renderOption" | "filterOptions"

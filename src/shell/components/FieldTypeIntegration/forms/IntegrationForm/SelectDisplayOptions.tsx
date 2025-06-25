@@ -25,23 +25,30 @@ import { isNull } from "lodash";
 import SearchIcon from "@mui/icons-material/SearchRounded";
 import { FormWrapper } from "..";
 import { useIntegrationField } from "../../IntegrationFieldProvider";
+import DragIndicatorRoundedIcon from "@mui/icons-material/DragIndicatorRounded";
 import DisplayTypes from "../../cards/IntegrationDisplay";
 
-import {
-  IntegrationDisplay as IntegrationDisplayProps,
-  IntegrationTypes,
-} from "../../configs";
+import { IntegrationPropertyPath, IntegrationTypes } from "../../config";
 // import IntegrationDisplay from "../cards/IntegrationDisplay";
 import IntegrationField from "..";
 import IntegrationDisplay from "../../cards/IntegrationDisplay";
+import DisplayType from "../../cards/DisplayType";
+import Wrapper from "../../cards/Wrapper";
+
+type DisplayOptionCardProps = {
+  title: string;
+  description: string;
+  type: IntegrationTypes;
+  card: IntegrationPropertyPath;
+  disabled?: boolean;
+};
 
 const GENERIC_DISPLAY_TYPES: DisplayOptionCardProps[] = [
   {
     title: "Text Card",
     description: "Display items with a heading and subheading",
+    type: "text",
     card: {
-      ZUID: "sample-card-0001",
-      type: "text",
       heading: "Chugging through Sri Lanka's tea plantations",
       subHeading: "The beautiful train from Kandy to Ella",
     },
@@ -49,42 +56,47 @@ const GENERIC_DISPLAY_TYPES: DisplayOptionCardProps[] = [
   {
     title: "Image Card",
     description: "Display items with an image, heading, and subheading.",
+    type: "image",
     card: {
-      ZUID: "sample-card-0002",
-      type: "image",
       heading: "Washington-state-mountain.jpg",
       subHeading: "A photo of a beautiful mountain in the state of Washington",
-      preview: "/images/shopify-sample-image.png",
+      thumbnail: "/images/shopify-sample-image.png",
     },
   },
   {
     title: "Video Card",
     description: "Display Shopify product listings",
+    type: "video",
     card: {
-      ZUID: "sample-card-0003",
-      type: "video",
       heading: "Chugging through Sri Lanka's tea plantations",
       subHeading: "13:10",
-      preview: "/images/media-sample-image.png",
+      thumbnail: "/images/media-sample-image.png",
     },
   },
   {
     title: "Details Card",
     description: "Display items with multiple details",
+    type: "details",
     card: {
-      ZUID: "sample-card-0004",
-      type: "details",
       heading: "Anfernee Simons",
       subHeading: "A photo of a beautiful mountain in the state of Washington",
-      details: ["position", "stats.points"],
+      details: [
+        {
+          label: "Position",
+          path: "player.position",
+        },
+        {
+          label: "Points",
+          path: "player.stats.points",
+        },
+      ],
     },
   },
   {
     title: "Simple Card",
     description: "Display items with a heading and subheading",
+    type: "simple",
     card: {
-      ZUID: "sample-card-0004",
-      type: "simple",
       heading: "Lebron James",
     },
   },
@@ -94,55 +106,52 @@ const SPECIAL_DISPLAY_TYPES: DisplayOptionCardProps[] = [
   {
     title: "MUX Card",
     description: "Display videos from MUX",
+    type: "mux",
     card: {
-      ZUID: "mux-card-0001",
-      type: "mux",
       heading: "HK01Bq7FrEQmIu3QpRiZZ98HQOOZjm6BYyg17eEunlyo",
       subHeading: "13:10",
-      preview: "/images/media-sample-image.png",
+      thumbnail: "/images/media-sample-image.png",
     },
   },
   {
     title: "Youtube Card",
     description: "Display videos from Youtube",
+
+    type: "youtube",
     card: {
-      ZUID: "youtube-card-0001",
-      type: "youtube",
       heading: "Chugging through Sri Lanka's tea plantations",
       subHeading: "13:10 • 92M views • 1 day ago",
-      preview: "/images/media-sample-image.png",
+      thumbnail: "/images/media-sample-image.png",
     },
   },
   {
     title: "Shopify Card",
     description: "Display Shopify product listings",
+    type: "shopify",
     card: {
-      ZUID: "shopify-card-0001",
-      type: "shopify",
       heading: "Basic Chair",
       subHeading: "Furniture",
       detail: "$73.00",
-      preview: "/images/shopify-sample-image.png",
+      thumbnail: "/images/shopify-sample-image.png",
     },
   },
   {
     title: "Classy Card",
     description: "Display campaigns from classy",
+    type: "classy",
     card: {
-      ZUID: "classy-card-0001",
-      type: "classy",
       heading: "Campaign Name",
       subHeading: "Campaign Description",
     },
   },
 ];
 
-export type DisplayOptionCardProps = {
-  title: string;
-  description?: string;
-  card: IntegrationDisplay;
-  disabled?: boolean;
-};
+// export type DisplayOptionCardProps = {
+//   title: string;
+//   description?: string;
+//   card: IntegrationDisplay;
+//   disabled?: boolean;
+// };
 
 const SelectDisplayOptions = () => {
   const [open, setOpen] = useState(false);
@@ -155,25 +164,25 @@ const SelectDisplayOptions = () => {
     integrationEndPoint,
     integrationType,
     setIntegrationType,
+    setPropertyPaths,
     // setIntegrationConfig,
   } = useIntegrationField();
 
   const recommendedOption = SPECIAL_DISPLAY_TYPES.filter(
-    (option) => option.card.type === recommendedType
+    (option) => option.type === recommendedType
   );
 
   const disabledOptions = SPECIAL_DISPLAY_TYPES.filter(
-    (option) => option.card.type !== recommendedType
+    (option) => option.type !== recommendedType
   );
 
   useEffect(() => {
-    if (integrationEndPoint?.includes("mux.com"))
-      return setRecommendedType("mux");
-    if (integrationEndPoint?.includes("youtube.com"))
+    if (integrationEndPoint?.includes("mux")) return setRecommendedType("mux");
+    if (integrationEndPoint?.includes("youtube"))
       return setRecommendedType("youtube");
-    if (integrationEndPoint?.includes("shopify.com"))
+    if (integrationEndPoint?.includes("shopify"))
       return setRecommendedType("shopify");
-    if (integrationEndPoint?.includes("classy.org"))
+    if (integrationEndPoint?.includes("classy"))
       return setRecommendedType("classy");
     setRecommendedType(null);
   }, [integrationEndPoint]);
@@ -184,7 +193,12 @@ const SelectDisplayOptions = () => {
 
   return (
     <FormWrapper height="calc(100vh - 40px)" width="1200px">
-      <DialogTitle component="div" flexGrow={0} p={2}>
+      <DialogTitle
+        component="div"
+        flexGrow={0}
+        p={2}
+        sx={{ borderBottom: "1px solid", borderColor: "border" }}
+      >
         <Stack
           direction="row"
           justifyContent="space-between"
@@ -272,6 +286,7 @@ const SelectDisplayOptions = () => {
                     title={item?.title}
                     description={item?.description}
                     card={item?.card}
+                    type={item?.type}
                   />
                 ))}
               </Box>
@@ -313,6 +328,7 @@ const SelectDisplayOptions = () => {
                   title={item?.title}
                   description={item?.description}
                   card={item?.card}
+                  type={item?.type}
                 />
               ))}
             </Box>
@@ -352,8 +368,9 @@ const SelectDisplayOptions = () => {
                   key={item?.title}
                   title={item?.title}
                   description={item?.description}
-                  // disabled={true}
+                  disabled={true}
                   card={item?.card}
+                  type={item?.type}
                 />
               ))}
             </Box>
@@ -367,6 +384,8 @@ const SelectDisplayOptions = () => {
           height: "76px",
           minHeight: "76px",
           maxHeight: "76px",
+          borderTop: "1px solid",
+          borderColor: "border",
         }}
       >
         <Button
@@ -400,48 +419,62 @@ const SelectDisplayOptions = () => {
 export const DisplayOptionCard: FC<DisplayOptionCardProps> = ({
   title,
   description,
+  type,
   card,
   disabled = false,
 }) => {
   const { integrationType, setIntegrationType } = useIntegrationField();
+  const isActive = integrationType === type;
+
+  useEffect(() => {
+    setIntegrationType(type);
+  }, [type]);
+
   return (
     <Paper
       elevation={0}
       variant="outlined"
       role="button"
-      className={integrationType === card?.type ? "active" : ""}
+      className={isActive ? "active" : "free-card"}
       sx={{
+        position: "relative",
         width: "100%",
         bgcolor: "grey.100",
-        borderRadius: 2,
+        borderRadius: "4px",
         borderColor: "border",
         overflow: "hidden",
-        "&:hover": (theme) => ({
-          // bgcolor: alpha(theme.palette.action.hover, 0.04),
+        "& .hover-overlay": {
+          position: "absolute",
+          top: 0,
+          left: 0,
+          height: "100%",
+          width: "100%",
+          bgcolor: "grey.400",
+          opacity: 0.1,
+        },
+        "&.free-card:hover": (theme) => ({
           "& .left-content": {
-            bgcolor: alpha(theme.palette.action.hover, 0.04),
+            bgcolor: "action.hover",
+          },
+          "& .right-content": {
+            bgcolor: !isActive
+              ? (theme) => alpha(theme.palette.grey[200], 0.3)
+              : "grey.100",
           },
         }),
         "&.active": (theme) => ({
           outline: "1px solid",
           outlineColor: "primary.main",
-          "& .left-content": {
-            bgcolor: `${alpha(theme.palette.primary.main, 0.04)}!important`,
-          },
-          // "& .right-content": {
-          //   // bgcolor: `${theme.palette.grey[100]}!important`,
-          //   bgcolor: `${alpha(theme.palette.primary.main, 0.01)}!important`,
-          // },
         }),
         opacity: disabled ? 0.5 : 1,
         cursor: disabled ? "not-allowed" : "pointer",
         pointerEvents: disabled ? "none" : "auto",
       }}
       onClick={() => {
-        setIntegrationType(card?.type);
+        setIntegrationType(type);
       }}
     >
-      <Grid container spacing={0} height="100%" width="100%">
+      <Grid container spacing={0} height="100%" width="100%" bgcolor="grey.100">
         <Grid size={3}>
           <Box
             className="left-content"
@@ -449,12 +482,18 @@ export const DisplayOptionCard: FC<DisplayOptionCardProps> = ({
             flexDirection="column"
             justifyContent="center"
             alignItems="flex-start"
-            bgcolor="background.paper"
+            bgcolor={
+              isActive
+                ? (theme) => alpha(theme.palette.primary.main, 0.04)
+                : "background.paper"
+            }
+            borderRight={isActive ? "1px solid" : "none"}
+            borderColor="primary.main"
             width="100%"
             height="100%"
             p={2}
           >
-            {["shopify", "youtube", "mux", "classy"]?.includes(card?.type) && (
+            {["shopify", "youtube", "mux", "classy"]?.includes(type) && (
               <Box
                 sx={{
                   width: "32px",
@@ -465,7 +504,7 @@ export const DisplayOptionCard: FC<DisplayOptionCardProps> = ({
                 }}
               >
                 <Avatar
-                  src={`/images/${card?.type}Icon.svg`}
+                  src={`/images/${type}Icon.svg`}
                   variant="square"
                   sizes="small"
                   sx={{
@@ -484,7 +523,7 @@ export const DisplayOptionCard: FC<DisplayOptionCardProps> = ({
             </Typography>
           </Box>
         </Grid>
-        <Grid size={9}>
+        <Grid size={9} sx={{ zIndex: 2 }}>
           <Box
             className="right-content"
             display="flex"
@@ -495,8 +534,30 @@ export const DisplayOptionCard: FC<DisplayOptionCardProps> = ({
             height="100%"
             px={10}
             py={3}
+            bgcolor={
+              isActive
+                ? (theme) => alpha(theme.palette.primary.main, 0.01)
+                : "grey.100"
+            }
           >
-            <IntegrationDisplay {...card} />
+            {/* <IntegrationDisplay {...card} /> */}
+            <Wrapper
+              startIcon={
+                <DragIndicatorRoundedIcon color="action" fontSize="small" />
+              }
+              cardType="preview"
+            >
+              <DisplayType
+                rootPath=""
+                type={type}
+                heading={card?.heading}
+                subHeading={card?.subHeading}
+                detail={card?.detail}
+                thumbnail={card?.thumbnail}
+                details={card?.details}
+                isPreview={true}
+              />
+            </Wrapper>
           </Box>
         </Grid>
       </Grid>

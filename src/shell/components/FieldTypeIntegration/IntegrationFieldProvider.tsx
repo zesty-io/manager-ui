@@ -12,11 +12,10 @@ import {
 import {
   IntegrationTypes,
   APIHeader,
-  DataKeys,
-  DisplayPath,
   IntegrationFieldConfig,
-  IntegrationDisplay,
-} from "./configs";
+  IntegrationFieldDisplay,
+  IntegrationPropertyPath,
+} from "./config";
 
 type IntegrationFieldContextType = {
   openForm: () => void;
@@ -35,22 +34,26 @@ type IntegrationFieldContextType = {
   apiData: any | null;
   setApiData: (apiData: any | null) => void;
 
-  dataPathOptions: string[];
-  setDataPathOptions: (dataPathOptions: string[]) => void;
-  displayPathOptions: string[];
-  setDisplayPathOptions: (displayPathOptions: string[]) => void;
+  apiPathOptions: string[];
+  setApiPathOptions: (apiPathOptions: string[]) => void;
+  propertyPathOptions: string[];
+  setPropertyPathOptions: (propertyPathOptions: string[]) => void;
   displayData: any | null;
   setDisplayData: (displayData: any | null) => void;
-  propertyPaths: DisplayPath;
-  setPropertyPaths: (propertyPaths: DisplayPath) => void;
+  rootPath: string | null;
+  setRootPath: (rootPath: string | null) => void;
+  propertyPaths: IntegrationPropertyPath;
+  setPropertyPaths: (propertyPaths: IntegrationPropertyPath) => void;
   integrationConfig: IntegrationFieldConfig;
   setIntegrationConfig: (integrationConfig: IntegrationFieldConfig) => void;
   remoteSelectorOpen: boolean;
   setRemoteSelectorOpen: (remoteSelectorOpen: boolean) => void;
   selectedItems: string[];
   setSelectedItems: (selectedItems: string[]) => void;
-  displayListData: IntegrationDisplay[] | null;
-  setDisplayListData: (displayListData: IntegrationDisplay[] | null) => void;
+  displayListData: IntegrationFieldDisplay[] | null;
+  setDisplayListData: (
+    displayListData: IntegrationFieldDisplay[] | null
+  ) => void;
   jsonViewerIsOpen: boolean;
   setJsonViewerIsOpen: (jsonViewerIsOpen: boolean) => void;
   jsonData: any | null;
@@ -92,9 +95,9 @@ const IntegrationFieldProvider = ({
   const [headers, setHeaders] = useState<APIHeader[] | null>(null);
   const [apiData, setApiData] = useState<any | null>(null);
 
-  const [dataPathOptions, setDataPathOptions] = useState<string[]>([]);
+  const [apiPathOptions, setApiPathOptions] = useState<string[]>([]);
 
-  const [displayPathOptions, setDisplayPathOptions] = useState<string[]>([]);
+  const [propertyPathOptions, setPropertyPathOptions] = useState<string[]>([]);
 
   const [displayData, setDisplayData] = useState<any | null>(null);
 
@@ -104,17 +107,20 @@ const IntegrationFieldProvider = ({
   const [jsonData, setjsonData] = useState<any | null>(null);
 
   const [displayListData, setDisplayListData] = useState<
-    IntegrationDisplay[] | null
+    IntegrationFieldDisplay[] | null
   >([]);
 
-  const [propertyPaths, setPropertyPaths] = useState<DisplayPath | null>({
-    dataPath: "",
-    heading: "",
-    subHeading: "",
-    detail: "",
-    image: "",
-    details: [],
-  });
+  const [rootPath, setRootPath] = useState<string | null>(null);
+
+  const [propertyPaths, setPropertyPaths] =
+    useState<IntegrationPropertyPath | null>({
+      rootPath: "",
+      heading: "",
+      subHeading: "",
+      detail: "",
+      thumbnail: "",
+      details: [],
+    });
 
   const [integrationConfig, setIntegrationConfig] =
     useState<IntegrationFieldConfig>({
@@ -152,12 +158,14 @@ const IntegrationFieldProvider = ({
         apiData,
         setApiData,
 
-        dataPathOptions,
-        setDataPathOptions,
-        displayPathOptions,
-        setDisplayPathOptions,
+        apiPathOptions,
+        setApiPathOptions,
+        propertyPathOptions,
+        setPropertyPathOptions,
         displayData,
         setDisplayData,
+        rootPath,
+        setRootPath,
         propertyPaths,
         setPropertyPaths,
         integrationConfig,

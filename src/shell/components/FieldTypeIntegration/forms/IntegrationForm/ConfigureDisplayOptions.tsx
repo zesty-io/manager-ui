@@ -20,14 +20,15 @@ import { FormWrapper } from ".";
 import { useIntegrationField } from "../../IntegrationFieldProvider";
 import { CheckRounded } from "@mui/icons-material";
 import SettingsIcon from "@mui/icons-material/Settings";
-import IntegrationDisplay from "../../cards/IntegrationDisplay";
+import IntegrationdDisplay from "../../cards/IntegrationDisplay";
 import { FieldWrapper } from "./../FieldWrapper";
 import {
   COLOR_MAP,
   DISPLAY_OPTIONS_CONFIG,
   DisplayPath,
   ConfigProps,
-} from "../../configs";
+  IntegrationFieldDisplay,
+} from "../../config";
 import {
   getValuePaths,
   getKeyValuePairs,
@@ -36,6 +37,11 @@ import {
 } from "../../utils";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
+import DragIndicatorRoundedIcon from "@mui/icons-material/DragIndicatorRounded";
+import IntegrationDisplay from "../../cards/IntegrationDisplay";
+
+import DisplayType from "../../cards/DisplayType";
+import Wrapper from "../../cards/Wrapper";
 
 type PopperComponentProps = {
   anchorEl?: any;
@@ -91,7 +97,7 @@ const PathSelector = ({
     <Autocomplete
       fullWidth
       options={options}
-      value={value}
+      // value={value}
       size="small"
       disableClearable
       autoHighlight
@@ -203,20 +209,32 @@ const DetailsPathSelector = ({
   data,
   optionsDescription = null,
 }: {
-  details: string[];
-  onChange: (value: string[]) => void;
+  details: {
+    label: string;
+    path: string;
+  }[];
+  onChange: (
+    value: {
+      label: string;
+      path: string;
+    }[]
+  ) => void;
   options: string[];
   placeholder?: string;
   optionsDescription?: string | null;
   data: any;
 }) => {
   const lastDetailRef = useRef(null);
-  const [internalData, setInternalData] = useState<string[]>([
-    ...(!!details?.length ? details : [""]),
+  const [internalData, setInternalData] = useState([
+    {
+      label: "",
+      path: "",
+    },
   ]);
 
   useEffect(() => {
     onChange(internalData);
+    console.debug("internalData", internalData);
   }, [internalData]);
 
   return (
@@ -239,11 +257,28 @@ const DetailsPathSelector = ({
             justifyContent="space-between"
             width="100%"
           >
+            <TextField
+              size="small"
+              placeholder="Label"
+              onChange={(e) => {
+                const newInternalData = internalData ? [...internalData] : [];
+                newInternalData[index] = {
+                  ...newInternalData[index],
+                  label: e.target.value || "",
+                };
+
+                setInternalData(newInternalData);
+              }}
+            />
             <PathSelector
-              value={item}
+              value={item?.path}
               onChange={(value) => {
                 const newInternalData = internalData ? [...internalData] : [];
-                newInternalData[index] = value || "";
+                newInternalData[index] = {
+                  ...newInternalData[index],
+                  path: value || "",
+                };
+                console.debug("newInternalData:", { value, newInternalData });
                 setInternalData(newInternalData);
               }}
               options={options}
@@ -258,7 +293,7 @@ const DetailsPathSelector = ({
               size="small"
               onClick={() => {
                 if (internalData.length === 1) {
-                  setInternalData([""]);
+                  setInternalData([]);
                   lastDetailRef.current?.focus();
                   return;
                 }
@@ -279,7 +314,13 @@ const DetailsPathSelector = ({
         size="small"
         startIcon={<AddRoundedIcon />}
         onClick={() => {
-          setInternalData([...internalData, ""]);
+          setInternalData([
+            ...internalData,
+            {
+              label: "",
+              path: "",
+            },
+          ]);
         }}
       >
         Add Detail
@@ -290,6 +331,7 @@ const DetailsPathSelector = ({
 
 const ConfigureDisplayOptions = () => {
   const [open, setOpen] = useState(false);
+  const [options, setOptions] = useState([]);
 
   const {
     apiData,
@@ -297,12 +339,14 @@ const ConfigureDisplayOptions = () => {
     closeForm,
     setIsConnected,
     integrationType,
-    dataPathOptions,
-    setDataPathOptions,
+    apiPathOptions,
+    setApiPathOptions,
     displayData,
     setDisplayData,
-    displayPathOptions,
-    setDisplayPathOptions,
+    propertyPathOptions,
+    setPropertyPathOptions,
+    rootPath,
+    setRootPath,
     propertyPaths,
     setPropertyPaths,
     jsonData,
@@ -318,6 +362,56 @@ const ConfigureDisplayOptions = () => {
   //   }));
   //   setDisplayOptions(displayOptionRaw);
   // };
+
+  const handleSave = () => {
+    localStorage.setItem(
+      "integrationPropertyPaths",
+      JSON.stringify(propertyPaths)
+    );
+
+    localStorage.setItem("integrationType", JSON.stringify(integrationType));
+    console.debug("propertyPaths:", propertyPaths);
+  };
+
+  useEffect(() => {
+    // const displayKeyValue = getKeyValuePairs(apiData);
+
+    // const arrayObjectsOnly = getValuePaths(apiData)
+
+    // const displayOptionRaw = displayKeyValue?.map((item) => ({
+    //   label: item?.key,
+    //   value: item?.value,
+    // }));
+    // const rawData = getObjectValue(apiData, value);
+    // const displayOptionsRaw = getValuePaths(rawData?.[0]);
+
+    // setRootPath(value);
+
+    // setPropertyPaths({
+    //   ...propertyPaths,
+    //   ["rootPath"]: value,
+    // });
+
+    // setDisplayData(rawData?.[0]);
+
+    // setpropertyPathOptions(displayOptionsRaw);
+    // setPropertyPaths(null)
+
+    // localStorage.setItem(
+    //   "integrationApiData",
+    //   JSON.stringify(rawData)
+    // );
+    if (apiPathOptions?.length === 1) {
+      // setActiveStep(2);
+      const arrayObjectsOnly = getObjectValue(apiData, apiPathOptions?.[0]);
+      setPropertyPathOptions(arrayObjectsOnly);
+      setRootPath(apiPathOptions?.[0]);
+      console.debug("arrayObjectsOnly", { arrayObjectsOnly });
+    }
+
+    console.debug("displayOptionRaw", { apiPathOptions });
+    // setOptions(displayOptionRaw);
+  }, [apiPathOptions]);
 
   return (
     <FormWrapper height="calc(100vh - 40px)" width="1200px">
@@ -421,26 +515,35 @@ const ConfigureDisplayOptions = () => {
 
             <FieldWrapper label="List Path" isRequired={true}>
               <PathSelector
-                value={propertyPaths?.["dataPath"]}
+                value={rootPath}
                 onChange={(value: string) => {
                   const rawData = getObjectValue(apiData, value);
                   const displayOptionsRaw = getValuePaths(rawData?.[0]);
 
+                  setRootPath(value);
+
                   setPropertyPaths({
                     ...propertyPaths,
-                    ["dataPath"]: value,
+                    ["rootPath"]: value,
                   });
+
                   setDisplayData(rawData?.[0]);
 
-                  setDisplayPathOptions(displayOptionsRaw);
+                  setPropertyPathOptions(displayOptionsRaw);
+                  setPropertyPaths(null);
+
+                  localStorage.setItem(
+                    "integrationApiData",
+                    JSON.stringify(rawData)
+                  );
                 }}
-                options={dataPathOptions}
+                options={apiPathOptions}
                 placeholder="Select Data Path"
                 data={apiData}
               />
             </FieldWrapper>
             <Divider sx={{ my: 1 }} />
-            {!!displayPathOptions?.length && (
+            {!!propertyPathOptions?.length && (
               <>
                 {DISPLAY_OPTIONS_CONFIG?.[integrationType]?.map(
                   (config: ConfigProps) => {
@@ -452,9 +555,11 @@ const ConfigureDisplayOptions = () => {
                       >
                         {config?.type === "option" ? (
                           <DetailsPathSelector
-                            options={displayPathOptions}
+                            options={propertyPathOptions}
                             placeholder={config?.placeholder}
-                            onChange={(value: string[]) => {
+                            onChange={(
+                              value: { label: string; path: string }[]
+                            ) => {
                               const newPaths = {
                                 ...propertyPaths,
                                 [config?.name]: value,
@@ -467,11 +572,7 @@ const ConfigureDisplayOptions = () => {
                           />
                         ) : (
                           <PathSelector
-                            value={
-                              propertyPaths?.[
-                                config?.name as keyof DisplayPath
-                              ] as string
-                            }
+                            value={propertyPaths?.rootPath}
                             onChange={(value: string) => {
                               const newPaths = {
                                 ...propertyPaths,
@@ -479,7 +580,7 @@ const ConfigureDisplayOptions = () => {
                               };
                               setPropertyPaths(newPaths);
                             }}
-                            options={displayPathOptions}
+                            options={propertyPathOptions}
                             placeholder={config?.placeholder}
                             data={displayData}
                             optionsDescription="Values previewed for the keys below are from the first item in the API response."
@@ -520,7 +621,7 @@ const ConfigureDisplayOptions = () => {
               </Typography>
             </Box>
 
-            <IntegrationDisplay
+            {/* <IntegrationDisplay
               ZUID={`preview-${integrationType}`}
               type={integrationType}
               heading={getObjectValue(displayData, propertyPaths?.heading)}
@@ -528,11 +629,36 @@ const ConfigureDisplayOptions = () => {
                 displayData,
                 propertyPaths?.subHeading
               )}
-              preview={getObjectValue(displayData, propertyPaths?.image)}
+              preview={getObjectValue(displayData, propertyPaths?.thumbnail)}
               detail={getObjectValue(displayData, propertyPaths?.detail)}
               details={propertyPaths?.details}
               data={displayData}
-            />
+            /> */}
+            <Wrapper
+              startIcon={
+                <DragIndicatorRoundedIcon color="action" fontSize="small" />
+              }
+              cardType="preview"
+            >
+              <DisplayType
+                // ZUID={`preview-${integrationType}`}
+                isPreview={true}
+                rootPath={rootPath}
+                type={integrationType}
+                heading={getObjectValue(displayData, propertyPaths?.heading)}
+                subHeading={getObjectValue(
+                  displayData,
+                  propertyPaths?.subHeading
+                )}
+                thumbnail={getObjectValue(
+                  displayData,
+                  propertyPaths?.thumbnail
+                )}
+                detail={getObjectValue(displayData, propertyPaths?.detail)}
+                details={propertyPaths?.details}
+                data={displayData}
+              />
+            </Wrapper>
           </Box>
         </Box>
       </DialogContent>
@@ -561,6 +687,7 @@ const ConfigureDisplayOptions = () => {
           onClick={() => {
             setIsConnected(true);
             closeForm();
+            handleSave();
           }}
         >
           Done

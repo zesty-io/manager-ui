@@ -82,12 +82,17 @@ const JsonViewer = ({
               width: "100%",
               overflow: "auto",
               bgcolor: "grey.50",
-              //   backgroundColor: "grey.900",
-              py: "16px",
-              px: "32px",
+              py: 2,
+              px: 4,
               "& .react-monaco-editor-container": {
                 borderRadius: "8px",
                 overflow: "hidden",
+                "& .monaco-editor, \
+                & .monaco-editor-background,\
+                & .monaco-editor .inputarea.ime-input,\
+                & .overflow-guard .margin": {
+                  backgroundColor: "grey.900",
+                },
               },
             }}
           >

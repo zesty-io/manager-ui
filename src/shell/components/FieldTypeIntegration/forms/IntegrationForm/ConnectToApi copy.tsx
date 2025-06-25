@@ -194,7 +194,7 @@ const ConnectToApi = () => {
     setHeaders,
     apiData,
     setApiData,
-    setIsConnected,
+
     apiPathOptions,
     setApiPathOptions,
     setPropertyPaths,
@@ -243,44 +243,23 @@ const ConnectToApi = () => {
 
   useEffect(() => {
     setIntegrationEndPoint(
-      "https://imdb232.p.rapidapi.com/api/news/get-by-category?limit=25&category=CELEBRITY"
-      // "https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=cat%20videos&key=AIzaSyBoHf1I0mRlnLYkkxKYmokfr92NPzUL6NY"
+      // "https://imdb232.p.rapidapi.com/api/news/get-by-category?limit=25&category=CELEBRITY"
+      "https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=cat%20videos&key=AIzaSyBoHf1I0mRlnLYkkxKYmokfr92NPzUL6NY"
     );
-    setHeaders([
-      {
-        key: "x-rapidapi-key",
-        value: "1affe04b49msh5e2438bb0baa009p10b8e8jsnbe0d01884692",
-      },
-      {
-        key: "x-rapidapi-host",
-        value: "imdb232.p.rapidapi.com",
-      },
-    ]);
+    // setHeaders([
+    //   {
+    //     key: "x-rapidapi-key",
+    //     value: "1affe04b49msh5e2438bb0baa009p10b8e8jsnbe0d01884692",
+    //   },
+    //   {
+    //     key: "x-rapidapi-host",
+    //     value: "imdb232.p.rapidapi.com",
+    //   },
+    // ]);
     // return () => {
     //   setStatus(null);
     // };
   }, [integrationEndPoint]);
-
-  //   next={() => {
-  //     setReqAborted(false);
-  //     setActiveStep(2);
-  //   }}
-  //   stop={() => {
-  //     setReqAborted(true);
-  //     setStatus(null);
-  //     setActiveStep(1);
-  //   }}
-
-  const handleNext = () => {
-    setReqAborted(false);
-    setIsConnected(true);
-    setActiveStep(2);
-  };
-  const handleAbort = () => {
-    setReqAborted(true);
-    setStatus(null);
-    setActiveStep(1);
-  };
 
   useEffect(() => {
     console.debug("MOUNTED");
@@ -440,75 +419,19 @@ const ConnectToApi = () => {
         </Button>
       </DialogActions>
       {!!status && !reqAborted && (
-        // <ConnectionStatus
-        //   status={status}
-        //   error={reqError}
-        //   next={() => {
-        //     setReqAborted(false);
-        //     setActiveStep(2);
-        //   }}
-        //   stop={() => {
-        //     setReqAborted(true);
-        //     setStatus(null);
-        //     setActiveStep(1);
-        //   }}
-        // />
-        <Paper
-          sx={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
-            rowGap: 0.5,
-            p: 4,
+        <ConnectionStatus
+          status={status}
+          error={reqError}
+          next={() => {
+            setReqAborted(false);
+            setActiveStep(2);
           }}
-        >
-          {/* <CircularProgress size={32} /> */}
-          {CONNECTION_STATUSES?.[status]?.icon || null}
-          <Box
-            width="100%"
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              alignItems: "center",
-              rowGap: 0.5,
-              pt: 3,
-              pb: 2,
-            }}
-          >
-            <Typography
-              variant="h5"
-              color="text.primary"
-              fontWeight={600}
-              noWrap
-            >
-              {CONNECTION_STATUSES[status].title}
-            </Typography>
-            <Typography
-              variant="body2"
-              color="text.primary"
-              fontWeight={400}
-              textAlign="center"
-            >
-              {CONNECTION_STATUSES[status].subTitle}
-            </Typography>
-          </Box>
-          <Button
-            startIcon={CONNECTION_STATUSES[status].buttonIcon}
-            onClick={status === "success" ? handleNext : handleAbort}
-            variant={CONNECTION_STATUSES[status].variant}
-            color={CONNECTION_STATUSES[status].color}
-            size="small"
-          >
-            {CONNECTION_STATUSES[status].buttonLabel}
-          </Button>
-        </Paper>
+          stop={() => {
+            setReqAborted(true);
+            setStatus(null);
+            setActiveStep(1);
+          }}
+        />
       )}
     </FormWrapper>
   );

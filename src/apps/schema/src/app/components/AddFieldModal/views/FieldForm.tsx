@@ -61,7 +61,6 @@ import {
   FieldSettingsOptions,
   ContentModelFieldDataType,
   IntegrationFieldTypes,
-  FieldConfig,
 } from "../../../../../../../shell/services/types";
 import {
   FIELD_COPY_CONFIG,
@@ -253,6 +252,10 @@ export const FieldForm = ({
           formFields[field.name] = fieldData.settings?.[field.name] ?? null;
         } else if (field.name === "fileExtensionsErrorMessage") {
           formFields[field.name] = fieldData.settings?.[field.name] ?? null;
+        } else if (field.name === "requestHeaders") {
+          formFields[field.name] = fieldData.settings?.[field.name] ?? null;
+        } else if (field.name === "propertyPaths") {
+          formFields[field.name] = fieldData.settings?.[field.name] ?? null;
         } else {
           formFields[field.name] = fieldData[field.name] as FormValue;
         }
@@ -275,11 +278,7 @@ export const FieldForm = ({
           field.type === "config" &&
           field.name === "integrationConfig"
         ) {
-          formFields[field.name] = {
-            endpoint: null,
-            type: null,
-            headers: null,
-          };
+          formFields[field.name] = null;
         } else {
           if (
             field.name === "defaultValue" ||
@@ -670,7 +669,8 @@ export const FieldForm = ({
     }
 
     if (type === "integration") {
-      body.integrationConfig = formData?.integrationConfig as FieldConfig;
+      body.integrationEndpoint = formData?.integrationEndpoint as string;
+      body.integrationType = formData?.integrationType as IntegrationFieldTypes;
     }
 
     if (isUpdateField) {

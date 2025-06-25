@@ -748,6 +748,22 @@ const FORM_CONFIG: Record<FieldType, FormConfig> = {
         gridSize: 12,
         maxLength: 150,
       },
+      // {
+      //   name: "integrationEndpoint",
+      //   type: "input",
+      //   label: "API URL",
+      //   required: true,
+      //   gridSize: 12,
+      //   maxLength: 150,
+      // },
+      // {
+      //   name: "integrationType",
+      //   type: "input",
+      //   label: "Display Items as",
+      //   required: true,
+      //   gridSize: 12,
+      //   maxLength: 150,
+      // },
       ...COMMON_FIELDS.slice(4),
     ],
     rules: [

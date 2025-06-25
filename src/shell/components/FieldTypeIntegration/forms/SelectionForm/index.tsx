@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { IconButton, Box, Paper } from "@mui/material";
 import Button from "@mui/material/Button";
 import Dialog, { DialogProps } from "@mui/material/Dialog";
@@ -20,9 +20,10 @@ import SelectionDisplay from "../../cards/SelectionDisplay";
 import Typography from "@mui/material/Typography";
 import CheckIcon from "@mui/icons-material/Check";
 import DisplayType from "../../cards/DisplayType";
-import SelectionWrapper from "./DisplayWrapper";
+import ItemContainer from "./ItemContainer";
 import SearchIcon from "@mui/icons-material/Search";
 import JsonViewer from "./JsonViewer";
+import { getObjectValue, getValuePaths } from "../../utils";
 
 type SelectionFormProps = {
   ZUID: string;
@@ -35,14 +36,21 @@ type SelectionFormProps = {
 const SelectionForm: FC<SelectionFormProps> = ({ endpoint, displayType }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const {
+    apiData,
+    integrationType,
+    setIntegrationType,
     remoteSelectorOpen,
     setRemoteSelectorOpen,
     selectedItems,
     setSelectedItems,
     jsonViewerIsOpen,
     setJsonViewerIsOpen,
+    displayData,
+    setDisplayData,
     jsonData,
     setjsonData,
+    propertyPaths,
+    setPropertyPaths,
   } = useIntegrationField();
 
   const handleItemSelect = (val: boolean, id: string) => {
@@ -58,6 +66,29 @@ const SelectionForm: FC<SelectionFormProps> = ({ endpoint, displayType }) => {
   const closeViewer = () => {
     setJsonViewerIsOpen(false);
   };
+
+  // useEffect(() => {
+  //   console.debug("propertyPaths", { jsonData, displayData, apiData, propertyPaths });
+  // }, [jsonData, displayData, apiData, propertyPaths]);
+
+  // TEMPORARY: Sync local storage with state
+  useEffect(() => {
+    const data = localStorage.getItem("integrationApiData");
+    console.debug("data", data);
+    if (data) {
+      setDisplayData(JSON.parse(data));
+    }
+    const propPaths = localStorage.getItem("integrationPropertyPaths");
+    if (propPaths) {
+      setPropertyPaths(JSON.parse(propPaths));
+    }
+
+    const intTyp = localStorage.getItem("integrationType");
+    if (intTyp) {
+      setIntegrationType(JSON.parse(intTyp));
+    }
+  }, []);
+
   return (
     <Dialog
       fullWidth
@@ -202,7 +233,7 @@ const SelectionForm: FC<SelectionFormProps> = ({ endpoint, displayType }) => {
                 mb: "8px",
               }}
             >
-              {[...new Array(10)].map((_, i) => (
+              {/* {[...new Array(10)].map((_, i) => (
                 // <SelectionDisplay
                 //   key={`ID-${i}`}
                 //   id={`ID-${i}`}
@@ -210,7 +241,7 @@ const SelectionForm: FC<SelectionFormProps> = ({ endpoint, displayType }) => {
                 //   isSelected={selectedItems.includes(`ID-${i}`)}
                 //   onSelect={handleItemSelect}
                 // />
-                <SelectionWrapper
+                <ItemContainer
                   key={`ID-${i}`}
                   cardType="select"
                   title=""
@@ -226,8 +257,47 @@ const SelectionForm: FC<SelectionFormProps> = ({ endpoint, displayType }) => {
                     // isSelected={selectedItems.includes(`ID-${i}`)}
                     // onSelect={handleItemSelect}
                   />
-                </SelectionWrapper>
-              ))}
+                </ItemContainer>
+              ))} */}
+
+              {!!displayData?.length &&
+                displayData?.map((item: any, index: number) => (
+                  <ItemContainer
+                    key={item?.id}
+                    cardType="select"
+                    title={item?.["name"]}
+                    subTitle="Integration Field"
+                    isSelected={selectedItems.includes(
+                      `${item?.["name"]}--${index}`
+                    )}
+                    onSelect={(select) =>
+                      handleItemSelect(select, `${item?.["name"]}--${index}`)
+                    }
+                    openViewer={openViewer}
+                  >
+                    {/* ZUID: string; type: IntegrationTypes; heading?: string;
+                    subHeading?: string; detail?: string; preview?: string;
+                    details?: string[]; data?: any; */}
+                    <DisplayType
+                      rootPath={propertyPaths?.rootPath}
+                      key={item?.id}
+                      type={integrationType}
+                      heading={getObjectValue(item, propertyPaths?.heading)}
+                      subHeading={getObjectValue(
+                        item,
+                        propertyPaths?.subHeading
+                      )}
+                      detail={getObjectValue(item, propertyPaths?.detail)}
+                      thumbnail={getObjectValue(item, propertyPaths?.thumbnail)}
+                      isPreview={false}
+                      details={propertyPaths?.details}
+                      data={item}
+
+                      // isSelected={selectedItems.includes(`ID-${i}`)}
+                      // onSelect={handleItemSelect}
+                    />
+                  </ItemContainer>
+                ))}
             </Paper>
           </Box>
         </Box>

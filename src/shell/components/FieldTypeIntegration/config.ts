@@ -11,26 +11,29 @@ export type IntegrationTypes =
 
 export type FormTypes = "select" | "configure";
 
-export type IntegrationFieldSource = "shopify" | "youtube" | "mux" | "classy";
-
-export type IntegrationDisplay = {
+export type IntegrationFieldDisplay = {
   ZUID: string;
-  type: IntegrationTypes;
-  heading?: string;
-  subHeading?: string;
-  detail?: string;
-  preview?: string;
-  details?: string[];
+  name: string;
+  label: string;
+  description?: string;
+
+  integrationEndpoint: string;
+  integrationType: IntegrationTypes;
+  title: string;
+
+  items: IntegrationPropertyPath[];
 };
 
-export type PropertyPath = {
-  rootPath: string;
+export type IntegrationPropertyPath = {
+  rootPath?: string;
   heading: string;
-  subHeading: string;
-  detail: string;
-  thumbnail: string;
-
-  details?: string[];
+  subHeading?: string;
+  detail?: string;
+  thumbnail?: string;
+  details?: {
+    label: string;
+    path: string;
+  }[];
 };
 
 export type APIHeader = {
@@ -59,7 +62,7 @@ export const DEFAULT_DATA_KEYS = {
   heading: "",
   subHeading: "",
   detail: "",
-  image: "",
+  thumbnail: "",
   details: "",
 };
 
@@ -97,8 +100,8 @@ const SUB_HEADING: ConfigProps = {
 };
 
 const IMAGE: ConfigProps = {
-  name: "image",
-  label: "Image",
+  name: "thumbnail",
+  label: "Thumbnail",
   type: "text",
   isRequired: true,
   placeholder: "Select",

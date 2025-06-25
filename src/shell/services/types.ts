@@ -77,6 +77,27 @@ export type IntegrationFieldTypes =
   | "mux"
   | "classy";
 
+export type IntegrationRequestHeaders = {
+  [key: string]: string;
+};
+
+export type IntegrationPropertyPaths = {
+  rootPath: string;
+  heading?: string;
+  subHeading?: string;
+  thumbnail?: string;
+  detail?: string;
+  details?: {
+    label: string;
+    path: string;
+  }[];
+};
+
+export type IntegrationFieldConfig = {
+  requestHeaders?: IntegrationRequestHeaders;
+  propertyPaths?: IntegrationPropertyPaths;
+};
+
 export interface ContentModel {
   ZUID: string;
   masterZUID: string;
@@ -201,11 +222,7 @@ export interface HeadTag {
 export interface FieldSettingsOptions {
   [key: string | number]: string;
 }
-export interface FieldConfig {
-  endpoint: string;
-  type: IntegrationFieldTypes;
-  headers?: { [key: string]: string };
-}
+
 export interface FieldSettings {
   options?: FieldSettingsOptions;
   group_id?: string;
@@ -224,7 +241,9 @@ export interface FieldSettings {
   currency?: string;
   fileExtensions?: string[];
   fileExtensionsErrorMessage?: string;
-  config?: FieldConfig;
+  requestHeaders?: IntegrationRequestHeaders;
+  propertyPaths?: IntegrationPropertyPaths;
+  // apiConfig?: IntegrationFieldConfig
 }
 
 export type ContentModelFieldValue =
@@ -234,7 +253,8 @@ export type ContentModelFieldValue =
   | string[]
   | FieldSettings
   | FieldSettingsOptions[]
-  | FieldConfig;
+  | IntegrationRequestHeaders
+  | IntegrationPropertyPaths;
 
 export type ContentModelFieldDataType =
   | "text"
@@ -279,11 +299,9 @@ export interface ContentModelField {
   createdAt: string;
   updatedAt: string;
   deletedAt: string;
-  // integration?: string;
-  // integrationUrl?: string;
-  // integrationType?: string;
-  integrationConfig?: FieldConfig;
-  config?: FieldConfig;
+  integrationEndpoint?: string;
+  integrationType?: IntegrationFieldTypes;
+  integrationConfig?: IntegrationFieldConfig;
 }
 
 export interface WebView {
