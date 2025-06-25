@@ -221,6 +221,7 @@ export const UpdateListActions = ({ items }: UpdateListActionsProps) => {
             </Tooltip>
           ) : canDelete ? (
             <LoadingButton
+              data-cy="MultiPageTableDelete"
               loading={isDeleting}
               onClick={() => {
                 setShowDeletesModal(true);
