@@ -68,6 +68,7 @@ export const ConfirmDeletesDialog = ({
           Cancel
         </Button>
         <Button
+          data-cy="ConfirmMultiPageTableDelete"
           action={(actions) => (actionRef.current = actions)}
           variant="contained"
           color="error"
