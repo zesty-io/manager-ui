@@ -34,7 +34,7 @@ export const SettingsResourceListItem = (props) => {
         if (workflowStatusData?.name) {
           return props.message?.replace(
             /`([^`]+)`/g,
-            `"${workflowStatusData?.name}"`
+            `${workflowStatusData?.name}`
           );
         }
         return props.message;

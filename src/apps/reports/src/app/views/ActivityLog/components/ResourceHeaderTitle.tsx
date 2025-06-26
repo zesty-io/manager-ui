@@ -131,7 +131,7 @@ export const ResourceHeaderTitle = ({
             if (workflowStatusData?.name) {
               data.title = actionDescription?.replace(
                 /`([^`]+)`/g,
-                `"${workflowStatusData?.name}"`
+                `${workflowStatusData?.name}`
               );
             } else {
               data.title = actionDescription;
