@@ -41,7 +41,6 @@ import { withCursorPosition } from "../../../../../shell/components/withCursorPo
 import { formatPathPart } from "../../../../../utility/formatPathPart";
 import { AppState } from "../../../../../shell/store/types";
 import { SelectModelParentInput } from "./SelectModelParentInput";
-import { isZestyEmail } from "../../../../../utility/isZestyEmail";
 import StarterBlocks from "./StarterBlocks";
 
 interface Props {
@@ -285,83 +284,74 @@ export const CreateModelDialogue = ({
           </DialogTitle>
           <DialogContent sx={{ pt: 2.5, backgroundColor: "grey.50" }} dividers>
             <Box display="grid" gap={2} gridTemplateColumns="1fr 1fr">
-              {modelTypes
-                ?.filter((modelType) => {
-                  if (modelType.key === "block") {
-                    return isZestyEmail(user.email);
-                  }
-                  return true;
-                })
-                .map((modelType) => (
-                  <ListItemButton
-                    data-cy={`model-type-${modelType.key}`}
-                    selected={type === modelType.key}
-                    key={modelType.key}
-                    onClick={() => {
-                      setType(modelType.key);
-                      if (modelType.key === "block") {
-                        updateModel({
-                          listed: false,
-                        });
-                      } else {
-                        updateModel({
-                          listed: true,
-                        });
-                      }
-                    }}
-                    sx={{
-                      borderRadius: "8px",
-                      borderStyle: "solid",
-                      borderWidth: "1px",
-                      borderColor: "border",
-                      backgroundColor: "common.white",
-                      py: 2,
-                      "&.Mui-selected": {
-                        borderColor: "primary.main",
-                        svg: {
-                          color: "primary.main",
-                        },
+              {modelTypes.map((modelType) => (
+                <ListItemButton
+                  data-cy={`model-type-${modelType.key}`}
+                  selected={type === modelType.key}
+                  key={modelType.key}
+                  onClick={() => {
+                    setType(modelType.key);
+                    if (modelType.key === "block") {
+                      updateModel({
+                        listed: false,
+                      });
+                    } else {
+                      updateModel({
+                        listed: true,
+                      });
+                    }
+                  }}
+                  sx={{
+                    borderRadius: "8px",
+                    borderStyle: "solid",
+                    borderWidth: "1px",
+                    borderColor: "border",
+                    backgroundColor: "common.white",
+                    py: 2,
+                    "&.Mui-selected": {
+                      borderColor: "primary.main",
+                      svg: {
+                        color: "primary.main",
                       },
-                      flexDirection: "column",
-                      alignItems: "flex-start",
-                      gap: 2,
-                    }}
-                  >
-                    <ListItemIcon sx={{ minWidth: 48 }}>
-                      <SvgIcon
-                        sx={{ fontSize: "32px" }}
-                        component={
-                          modelIconMap[
-                            modelType.key as keyof typeof modelIconMap
-                          ]
-                        }
-                      />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={
-                        <Typography variant="h6" fontWeight={600}>
-                          {modelType.name}
-                        </Typography>
-                      }
-                      disableTypography
-                      sx={{ my: 0 }}
-                      secondary={
-                        <>
-                          <Typography variant="body2" sx={{ mt: 0.5 }}>
-                            {modelType.description}
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            color="text.secondary"
-                            sx={{ mt: 1 }}
-                          >
-                            {modelType.examples}
-                          </Typography>
-                        </>
+                    },
+                    flexDirection: "column",
+                    alignItems: "flex-start",
+                    gap: 2,
+                  }}
+                >
+                  <ListItemIcon sx={{ minWidth: 48 }}>
+                    <SvgIcon
+                      sx={{ fontSize: "32px" }}
+                      component={
+                        modelIconMap[modelType.key as keyof typeof modelIconMap]
                       }
                     />
-                  </ListItemButton>
-                ))}
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={
+                      <Typography variant="h6" fontWeight={600}>
+                        {modelType.name}
+                      </Typography>
+                    }
+                    disableTypography
+                    sx={{ my: 0 }}
+                    secondary={
+                      <>
+                        <Typography variant="body2" sx={{ mt: 0.5 }}>
+                          {modelType.description}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{ mt: 1 }}
+                        >
+                          {modelType.examples}
+                        </Typography>
+                      </>
+                    }
+                  />
+                </ListItemButton>
+              ))}
             </Box>
           </DialogContent>
           <DialogActions sx={{ pt: 2.5 }}>
