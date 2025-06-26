@@ -35,6 +35,11 @@ describe("All Files Page", () => {
     cy.getElement('[data-cy="AllFilesTable"]').should("exist");
   });
 
+  it("Automatically opens create file dialog if URL search param includes ?triggerCreate=true", () => {
+    cy.visit("/code?triggerCreate=true");
+    cy.getElement('[data-cy="CodeAppCreateFileDialog"]').should("exist");
+  });
+
   it("Create New File", () => {
     cy.visit("/code");
     cy.getElement('[data-cy="AllFilesCreateButton"]').click();
