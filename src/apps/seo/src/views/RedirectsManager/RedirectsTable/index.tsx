@@ -226,7 +226,7 @@ const RedirectsTable = () => {
   }, [redirects, searchFilter, isLoading, sortBy, httpCodeFilter, typeFilter]);
 
   const saveSnapshot = useCallback(() => {
-    if (apiRef?.current && localStorage) {
+    if (apiRef?.current?.exportState && localStorage) {
       const currentState = apiRef.current.exportState();
       const fullState = {
         ...currentState,

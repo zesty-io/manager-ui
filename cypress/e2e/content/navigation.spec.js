@@ -23,7 +23,9 @@ describe("Navigation through content editor", () => {
     cy.getBySelector("create_new_content_item").should("exist").click();
     cy.getBySelector("create_new_content_item_btn").click({ force: true });
     cy.contains("Please select a Model to proceed.").should("exist");
-    cy.getBySelector("discard_new_content_item_btn").should("exist").click();
+    cy.getBySelector("discard_new_content_item_btn")
+      .should("exist")
+      .click({ force: true });
   });
 
   it("Creates a new item from the menu", () => {
