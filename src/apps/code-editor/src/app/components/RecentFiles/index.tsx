@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { Box } from "@mui/material";
 
 import { TopBar } from "./TopBar";
@@ -7,7 +7,7 @@ import { DevResources } from "./DevResources";
 import { useSelector } from "react-redux";
 import { AppState } from "../../../../../../shell/store/types";
 import { NavCodeTypes } from "../constants";
-import { useMemo } from "react";
+import { useParams as useSearchParams } from "../../../../../../shell/hooks/useParams";
 
 type RecentFilesProps = {
   openCreateFileDialog: (
@@ -20,6 +20,13 @@ export const RecentFiles = ({ openCreateFileDialog }: RecentFilesProps) => {
   const searchInputRef = useRef(undefined);
   const files = useSelector((state: AppState) => state?.navCode?.raw);
   const [searchKeyword, setSearchKeyword] = useState("");
+  const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    if (searchParams.get("triggerCreate") === "true") {
+      openCreateFileDialog("snippet", "file");
+    }
+  }, [searchParams]);
 
   const recentFiles = useMemo(() => {
     if (!files?.length) return;
