@@ -6,7 +6,9 @@ import { ListItem } from "./ListItem";
 import { useGetWorkflowStatusLabelsQuery } from "../../../../../../../../shell/services/instance";
 
 export const SettingsResourceListItem = (props) => {
-  const { data: workflowStatusLabels } = useGetWorkflowStatusLabelsQuery();
+  const { data: workflowStatusLabels } = useGetWorkflowStatusLabelsQuery({
+    showDeleted: true,
+  });
   const settingsData = useSelector((state) =>
     state.settings.instance.find(
       (instanceSetting) => instanceSetting.ZUID === props.affectedZUID

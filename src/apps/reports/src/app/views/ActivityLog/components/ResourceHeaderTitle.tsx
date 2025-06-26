@@ -13,6 +13,7 @@ import {
   useGetContentItemQuery,
   useGetContentModelsQuery,
   useGetInstanceSettingsQuery,
+  useGetWorkflowStatusLabelsQuery,
 } from "../../../../../../../shell/services/instance";
 import {
   modelNameMap,
@@ -42,6 +43,10 @@ export const ResourceHeaderTitle = ({
     useGetContentModelsQuery();
   const { data: instanceSettings, isLoading: isLoadingInstanceSettings } =
     useGetInstanceSettingsQuery();
+  const {
+    data: workflowStatusLabels,
+    isLoading: isLoadingWorkflowStatusLabels,
+  } = useGetWorkflowStatusLabelsQuery({ showDeleted: true });
   const fileData = useSelector((state: AppState) =>
     Object.values(state.files).find((item) => item.ZUID === affectedZUID)
   );
@@ -50,6 +55,7 @@ export const ResourceHeaderTitle = ({
     isLoadingContentItem ||
     isLoadingContentModels ||
     isLoadingActions ||
+    isLoadingWorkflowStatusLabels ||
     isLoadingInstanceSettings;
 
   const headerData = useMemo(() => {
@@ -115,6 +121,21 @@ export const ResourceHeaderTitle = ({
 
           case "21":
             data.title = "Head Tag";
+            break;
+
+          case "36":
+            const workflowStatusData = workflowStatusLabels?.find(
+              (label) => label.ZUID === affectedZUID
+            );
+
+            if (workflowStatusData?.name) {
+              data.title = actionDescription?.replace(
+                /`([^`]+)`/g,
+                `"${workflowStatusData?.name}"`
+              );
+            } else {
+              data.title = actionDescription;
+            }
             break;
 
           default:
