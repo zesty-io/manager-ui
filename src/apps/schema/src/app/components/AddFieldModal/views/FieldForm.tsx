@@ -666,7 +666,8 @@ export const FieldForm = ({
             });
           }
         })
-        .catch(() => {
+        .catch((error) => {
+          console.error("Failed to update the field", error);
           dispatch(
             notify({
               message: "Failed to update the field",
