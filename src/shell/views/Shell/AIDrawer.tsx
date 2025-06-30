@@ -4,7 +4,7 @@ import {
   AccordionSummary,
   Autocomplete,
   Box,
-  Divider,
+  Button,
   FormControlLabel,
   FormGroup,
   IconButton,
@@ -19,15 +19,33 @@ import {
 } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { useGeminiGenerationMutation } from "../../services/cloudFunctions";
-import { refRegistry } from "../../../engine/refRegistry";
 import { enqueueAction } from "../../../engine/queue";
-import { CheckCircleRounded } from "@mui/icons-material";
+import {
+  ArrowUpwardRounded,
+  AutoFixHighRounded,
+  ChevronRightRounded,
+  NotInterestedRounded,
+} from "@mui/icons-material";
 import { useLocation } from "react-router";
 import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import LanguageRoundedIcon from "@mui/icons-material/LanguageRounded";
 import { useGetLangsMappingQuery } from "../../services/instance";
+import {
+  contentSystemInstruction,
+  suggestionSystemInstruction,
+} from "./systemInstructions";
+import { useLocalStorage } from "react-use";
+import { getRefRegistry } from "../../../engine/refRegistry";
+import { Brain } from "@zesty-io/material";
+import { keyframes } from "@emotion/react";
+import geminiLogo from "../../../../public/images/geminiLogo.svg";
+
+const borderMove = keyframes`
+  0% { background-position: 0 0; }
+  100% { background-position: 0 200%; }
+`;
 
 const TONE_OPTIONS = [
   {
@@ -50,11 +68,20 @@ export const AIDrawer = () => {
   const { pathname } = useLocation();
   const isInContentApp = /^\/content\/[^/]+\/[^/]+$/.test(pathname);
   const isInContentMeta = /^\/content\/[^/]+\/[^/]+\/meta$/.test(pathname);
+  const isInBlocks = /^\/blocks\/[^/]+\/[^/]+\/?$/.test(pathname);
   const { data: langMappings } = useGetLangsMappingQuery();
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+  const [isInitialMount, setIsInitialMount] = useState(true);
+  const promptInputRef = useRef<HTMLInputElement>(null);
 
-  const [responses, setResponses] = useState([]);
+  const [responsesLS, setResponsesLS] = useLocalStorage<any[]>(
+    `ai-drawer-responses-${pathname}`,
+    []
+  );
+  const [responses, setResponses] = useState(responsesLS || []);
   const [prompt, setPrompt] = useState("");
   const [autoApply, setAutoApply] = useState(false);
+
   const [selectedLanguage, setSelectedLanguage] = useState({
     label: "English (United States)",
     value: "en-US",
@@ -77,76 +104,17 @@ export const AIDrawer = () => {
   const responsesEndRef = useRef(null);
 
   useEffect(() => {
-    responsesEndRef.current?.scrollIntoView({
-      behavior: "smooth",
-      block: "nearest",
-    });
-  }, [responses]);
-
-  const registryKeys = Object.keys(refRegistry);
-
-  const systemInstruction = `You are an AI assistant for a CMS system. You must respond in valid **JSON** format only, structured as an **array** of one or more action objects, where each object follows this schema:
-
-{
-  "type": "SET_VALUE",
-  "payload": {
-    "refKey": "<refKey from list below>",
-    "value": "<best-fitting value>"
-  }
-}
-
----
-
-**Your job:**
-Given a user instruction or prompt, return the appropriate JSON actions to populate matching content fields.
-
-- **refKey**: A unique content field identifier in our system.
-- **value**: The actual content that best satisfies the user’s intent, written in the tone of **"${
-    selectedTone.value
-  }"** and in the language **"${selectedLanguage.value}"**.
-
----
-
-### Matching Logic:
-
-1. Identify all relevant **refKeys** based on the user prompt.
-2. Generate one 'SET_VALUE' action per matching refKey.
-3. If no match is found, respond with the fallback:
-
-[
-  {
-    "type": "NO_MATCH",
-    "payload": {
-      "value": "No field to modify was found. Closest might be '<closestMatch>'"
+    if (isInitialMount) {
+      setIsInitialMount(false);
     }
-  }
-]
+  }, [isInitialMount]);
 
----
-
-### Guidelines for 'value':
-- If the prompt asks for **titles, content, or descriptions**, generate high-quality content—not just restating the prompt.
-- Adapt tone and language properly.
-- If multiple fields seem applicable, use the prompt's cues to prioritize.
-- Never include the field context, internal notes, or any explanation in the output.
-
----
-
-### Available refKeys:  
-[${registryKeys}]
-
-Context for refKeys (for your matching logic only – **never include this in output**):  
-${JSON.stringify(
-  registryKeys.map((x) => `"${x}": "${JSON.stringify(refRegistry[x].context)}"`)
-)}
-
----
-
-⚠️ **Important Output Rules:**
-- Return only valid JSON.
-- Output must be a single top-level array of valid action objects.
-- No comments, markdown, or extra text.
-`;
+  useEffect(() => {
+    if (responsesEndRef.current) {
+      responsesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+    setResponsesLS(responses);
+  }, [responses]);
 
   useEffect(() => {
     if (!aiResponse) return;
@@ -156,49 +124,9 @@ ${JSON.stringify(
       const parsed = JSON.parse(cleaned);
       const responsesArray = Array.isArray(parsed) ? parsed : [parsed];
 
-      const animateTyping = (response: any, indexInArray: number) => {
-        const fullText = response.payload.value;
-        let currentText = "";
-        let currentIndex = 0;
-
-        const interval = setInterval(() => {
-          currentText += fullText[currentIndex];
-
-          setResponses((prev) => {
-            const updated = [...prev];
-            if (updated[indexInArray]) {
-              updated[indexInArray] = {
-                ...response,
-                payload: { ...response.payload, value: currentText },
-              };
-            }
-            return updated;
-          });
-
-          currentIndex++;
-          if (currentIndex >= fullText.length) clearInterval(interval);
-        }, 20);
-      };
+      setResponses((prev) => [...prev, ...responsesArray]);
 
       responsesArray.forEach((response) => {
-        if (response.type === "USER_INPUT") {
-          setResponses((prev) => [...prev, response]);
-          return;
-        }
-
-        // Push placeholder and animate after it's in state
-        setResponses((prev) => {
-          const newIndex = prev.length;
-          const newResponses = [
-            ...prev,
-            {
-              ...response,
-              payload: { value: "", refKey: response.payload.refKey },
-            },
-          ];
-          setTimeout(() => animateTyping(response, newIndex), 0);
-          return newResponses;
-        });
         if (autoApply && response.type === "SET_VALUE") {
           enqueueAction({
             type: response.type,
@@ -223,6 +151,29 @@ ${JSON.stringify(
     }
   }, [aiResponse]);
 
+  const handlePrompt = (newPrompt: string) => {
+    geminiGenerate({
+      prompt: newPrompt,
+      systemInstruction: contentSystemInstruction(
+        Object.keys(getRefRegistry() || {}),
+        getRefRegistry(),
+        selectedTone,
+        selectedLanguage
+      ),
+      temperature: 0.5,
+    });
+    setResponses((prev) => [
+      ...prev,
+      {
+        type: "USER_INPUT",
+        payload: {
+          value: newPrompt,
+        },
+      },
+    ]);
+    setPrompt("");
+  };
+
   return (
     <Box
       display="flex"
@@ -233,24 +184,93 @@ ${JSON.stringify(
         px: 2,
         pt: 2,
         boxSizing: "border-box",
-        borderLeft: "2px solid",
-        borderColor: "border",
+        position: "relative",
+        overflow: "hidden",
+        "&::before": {
+          content: '""',
+          position: "absolute",
+          left: 0,
+          top: 0,
+          bottom: 0,
+          width: "2px",
+          zIndex: 2,
+          background:
+            "linear-gradient(180deg, #0ba5ec 0%, #ee46bc 50%, #6938ef 100%)",
+          backgroundSize: "100% 200%",
+          animation: `${borderMove} 4s linear infinite`,
+          pointerEvents: "none",
+        },
+        bgcolor: "background.paper", // optional: give a bg to cover avatar overflow
       }}
     >
-      {!isInContentApp && !isInContentMeta && (
+      {!isInContentApp && !isInContentMeta && !isInBlocks && (
         <>
-          <Typography variant="h6">AI Assistant</Typography>
+          <Typography variant="h5" fontWeight={700}>
+            AI Assistant Beta
+          </Typography>
           <Typography variant="body1">
-            AI features only available in content app.
+            Only available in content app.
           </Typography>
         </>
       )}
-      {(isInContentApp || isInContentMeta) && (
+      {(isInContentApp || isInContentMeta || isInBlocks) && (
         <>
-          <Typography variant="h6" pb={1}>
-            AI Content Editor
-          </Typography>
-          <Box flex="1" overflow="auto">
+          <Box
+            display="flex"
+            alignItems={"center"}
+            justifyContent={"space-between"}
+          >
+            <Box display="flex" alignItems={"center"} gap={1}>
+              <Stack
+                width={40}
+                height={40}
+                borderRadius="50%"
+                justifyContent="center"
+                alignItems="center"
+                sx={{
+                  background:
+                    "linear-gradient(90deg, rgba(11,165,236,1) 0%, rgba(238,70,188,1) 50%, rgba(105,56,239,1) 100%)",
+                }}
+              >
+                <Brain sx={{ color: "common.white" }} />
+              </Stack>
+              <Box>
+                <Box
+                  component="img"
+                  src={geminiLogo}
+                  alt="Gemini Logo"
+                  width="40px"
+                  display="block"
+                />
+                <Typography variant="h5" fontWeight={700}>
+                  AI Assistant Beta
+                </Typography>
+              </Box>
+            </Box>
+            <Box display="flex" alignItems={"center"} gap={0.5}>
+              <Tooltip title="Clear chat" placement="top">
+                <IconButton
+                  size="small"
+                  color="error"
+                  onClick={() => {
+                    setResponses([]);
+                    setResponsesLS([]);
+                  }}
+                >
+                  <NotInterestedRounded sx={{ fontSize: 16 }} />
+                </IconButton>
+              </Tooltip>
+            </Box>
+          </Box>
+          <Box
+            flex="1"
+            overflow="auto"
+            my={1}
+            display="flex"
+            flexDirection="column"
+            gap={1}
+            ref={chatContainerRef}
+          >
             {responses.map((response, index) => {
               if (response.type === "USER_INPUT") {
                 return (
@@ -259,60 +279,87 @@ ${JSON.stringify(
                     sx={{
                       padding: 1,
                       borderRadius: 1,
-                      marginBottom: 1,
                       maxWidth: "168px",
                       width: "fit-content",
                       color: "white",
                       ml: "auto",
-                      backgroundColor: "primary.main",
+                      backgroundColor: "grey.500",
                     }}
                   >
                     <Typography
                       variant="body2"
                       sx={{
                         wordBreak: "break-word",
+                        fontStyle:
+                          response.payload.value.startsWith(
+                            "Generate suggestions"
+                          ) && "italic",
                       }}
                     >
                       {response.payload.value}
                     </Typography>
                   </Box>
                 );
+              } else if (response.type === "SYSTEM_SUGGESTION") {
+                return (
+                  <Button
+                    onClick={() => {
+                      setPrompt(response.payload.value);
+                      promptInputRef.current?.focus();
+                    }}
+                    sx={{
+                      textAlign: "left",
+                      justifyContent: "flex-start",
+                      width: "fit-content",
+                      padding: 1,
+                    }}
+                    variant="contained"
+                    color="inherit"
+                    endIcon={<ChevronRightRounded />}
+                  >
+                    <AnimatedText
+                      text={response.payload.value}
+                      animate={!isInitialMount}
+                      onGrow={() => {
+                        if (responsesEndRef.current) {
+                          responsesEndRef.current.scrollIntoView({
+                            behavior: "smooth",
+                          });
+                        }
+                      }}
+                    />
+                  </Button>
+                );
               }
 
               return (
-                <Box
-                  key={index}
-                  sx={{
-                    padding: 1,
-                    borderRadius: 1,
-                    marginBottom: 1,
-                    border: "1px solid",
-                    borderColor: "border",
-                  }}
-                >
+                <Box key={index}>
                   <Typography
-                    variant="body2"
+                    variant="body3"
                     sx={{
-                      wordBreak: "break-word",
+                      mb: 0.5,
                     }}
                   >
-                    {response.payload.value}
+                    {response.payload.refKey}
                   </Typography>
-                  <Divider
-                    sx={{
-                      my: 0.5,
+                  <AnimatedText
+                    key={index}
+                    text={response.payload.value}
+                    animate={!isInitialMount}
+                    onGrow={() => {
+                      if (responsesEndRef.current) {
+                        responsesEndRef.current.scrollIntoView({
+                          behavior: "smooth",
+                        });
+                      }
                     }}
                   />
                   {response.type === "SET_VALUE" && (
-                    <Box display="flex" alignItems="center" gap={0.5}>
-                      <Typography variant="body3">
-                        Apply this response to{" "}
-                        {refRegistry?.[response.payload.refKey]?.context
-                          ?.label || response.payload.refKey}
-                        ?
-                      </Typography>
-                      <IconButton
-                        color="success"
+                    <Box display="flex" justifyContent="flex-end">
+                      <Button
+                        size="xsmall"
+                        variant="contained"
+                        sx={{ ml: "auto", mt: 0.5 }}
                         onClick={() => {
                           enqueueAction({
                             type: response.type,
@@ -322,15 +369,10 @@ ${JSON.stringify(
                             },
                           });
                         }}
-                        size="xsmall"
+                        endIcon={<AutoFixHighRounded fontSize="small" />}
                       >
-                        <CheckCircleRounded
-                          sx={{
-                            height: "16px",
-                            width: "16px",
-                          }}
-                        />
-                      </IconButton>
+                        Apply
+                      </Button>
                     </Box>
                   )}
                 </Box>
@@ -356,6 +398,7 @@ ${JSON.stringify(
             )}
           </Box>
           <TextField
+            inputRef={promptInputRef}
             disabled={isLoading}
             placeholder="Ask AI to make edits to your content..."
             variant="outlined"
@@ -367,9 +410,22 @@ ${JSON.stringify(
             onKeyPress={(e) => {
               if (e.key === "Enter") {
                 e.preventDefault();
+                handlePrompt(prompt);
+              }
+            }}
+          />
+          <Box display="flex" justifyContent="space-between" my={0.5}>
+            <Button
+              size="small"
+              variant="contained"
+              onClick={() => {
                 geminiGenerate({
-                  prompt: prompt,
-                  systemInstruction,
+                  prompt:
+                    prompt || "Generate suggestions for my content fields",
+                  systemInstruction: suggestionSystemInstruction(
+                    Object.keys(getRefRegistry() || {}),
+                    getRefRegistry()
+                  ),
                   temperature: 0.5,
                 });
                 setResponses((prev) => [
@@ -377,14 +433,30 @@ ${JSON.stringify(
                   {
                     type: "USER_INPUT",
                     payload: {
-                      value: prompt,
+                      value: prompt
+                        ? `Generate suggestions: ${prompt}`
+                        : "Generate suggestions",
                     },
                   },
                 ]);
                 setPrompt("");
-              }
-            }}
-          />
+              }}
+              endIcon={<AutoFixHighRounded />}
+            >
+              Generate Suggestions
+            </Button>
+            <Button
+              variant="contained"
+              onClick={() => handlePrompt(prompt)}
+              sx={{
+                borderRadius: "24px",
+                padding: 0.5,
+                minWidth: 0,
+              }}
+            >
+              <ArrowUpwardRounded />
+            </Button>
+          </Box>
           <Accordion elevation={0} disableGutters>
             <AccordionSummary
               sx={{
@@ -490,4 +562,36 @@ ${JSON.stringify(
       )}
     </Box>
   );
+};
+
+type AnimatedTextProps = {
+  text: string;
+  animate: boolean;
+  onGrow?: () => void;
+};
+
+export const AnimatedText = ({ text, animate, onGrow }: AnimatedTextProps) => {
+  const [displayedText, setDisplayedText] = useState(animate ? "" : text);
+  useEffect(() => {
+    console.log("animate", animate);
+    if (!animate) {
+      return;
+    }
+    let idx = 0;
+    const interval = setInterval(() => {
+      setDisplayedText((prev) => {
+        const next = prev + text[idx];
+        if (onGrow) onGrow();
+        return next;
+      });
+      idx += 1;
+      if (idx >= text.length) {
+        clearInterval(interval);
+      }
+    }, 30);
+
+    return () => clearInterval(interval);
+  }, [text]);
+
+  return <Typography variant="body2">{displayedText}</Typography>;
 };
