@@ -205,9 +205,33 @@ export const AIDrawer = () => {
     >
       {!isInContentApp && !isInContentMeta && !isInBlocks && (
         <>
-          <Typography variant="h5" fontWeight={700}>
-            AI Assistant Beta
-          </Typography>
+          <Box display="flex" alignItems={"center"} gap={1}>
+            <Stack
+              width={40}
+              height={40}
+              borderRadius="50%"
+              justifyContent="center"
+              alignItems="center"
+              sx={{
+                background:
+                  "linear-gradient(90deg, rgba(11,165,236,1) 0%, rgba(238,70,188,1) 50%, rgba(105,56,239,1) 100%)",
+              }}
+            >
+              <Brain sx={{ color: "common.white" }} />
+            </Stack>
+            <Box>
+              <Box
+                component="img"
+                src={geminiLogo}
+                alt="Gemini Logo"
+                width="40px"
+                display="block"
+              />
+              <Typography variant="h5" fontWeight={700}>
+                AI Assistant Beta
+              </Typography>
+            </Box>
+          </Box>
           <Typography variant="body1">
             Only available in content app.
           </Typography>
@@ -572,26 +596,30 @@ type AnimatedTextProps = {
 
 export const AnimatedText = ({ text, animate, onGrow }: AnimatedTextProps) => {
   const [displayedText, setDisplayedText] = useState(animate ? "" : text);
+  const intervalRef = useRef(null);
   useEffect(() => {
-    console.log("animate", animate);
     if (!animate) {
       return;
     }
-    let idx = 0;
-    const interval = setInterval(() => {
+    setDisplayedText("");
+    intervalRef.current = setInterval(() => {
       setDisplayedText((prev) => {
-        const next = prev + text[idx];
-        if (onGrow) onGrow();
-        return next;
+        if (prev.length < text.length) {
+          const next = prev + text[prev.length];
+          if (onGrow) onGrow();
+          if (prev.length + 1 === text.length) {
+            clearInterval(intervalRef.current);
+          }
+          return next;
+        } else {
+          clearInterval(intervalRef.current);
+          return prev;
+        }
       });
-      idx += 1;
-      if (idx >= text.length) {
-        clearInterval(interval);
-      }
     }, 30);
 
-    return () => clearInterval(interval);
-  }, [text]);
+    return () => clearInterval(intervalRef.current);
+  }, []);
 
   return <Typography variant="body2">{displayedText}</Typography>;
 };
