@@ -1,8 +1,3 @@
 export function isZestyEmail(email: string): boolean {
-  return (
-    email.endsWith("@zesty.io") ||
-    email.endsWith("@kin.com") ||
-    email.endsWith("@geo-blue.com") ||
-    email.endsWith("@bpcreates.com")
-  );
+  return email.endsWith("@zesty.io");
 }

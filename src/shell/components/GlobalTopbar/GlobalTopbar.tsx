@@ -11,6 +11,7 @@ import { IconButton } from "@mui/material";
 import { useSelector } from "react-redux";
 import { AppState } from "../../store/types";
 import { User } from "../../services/types";
+import { isZestyEmail } from "../../../utility/isZestyEmail";
 
 type Props = {
   onShowAiDrawerToggle: () => void;
@@ -44,7 +45,7 @@ export function GlobalTopbar({ onShowAiDrawerToggle }: Props) {
         <GlobalTabs />
       </Box>
       <Stack direction="row" flexBasis={72} alignItems="baseline" gap={1}>
-        {user.email.endsWith("zesty.io") && (
+        {isZestyEmail(user.email) && (
           <IconButton
             onClick={() => {
               onShowAiDrawerToggle();
