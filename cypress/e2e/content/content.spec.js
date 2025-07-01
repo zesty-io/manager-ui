@@ -9,7 +9,7 @@ describe("Content Specs", () => {
       cy.waitOn("/v1/content/models*", () => {
         cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
       });
-      cy.getBySelector("DuoModeToggle", { timeout: 10000 }).click(forceClick);
+      cy.getBySelector("DuoModeToggle").click(forceClick);
     });
 
     it("Text Field", () => {
@@ -185,7 +185,7 @@ describe("Content Specs", () => {
     it("Currency Field", () => {
       cy.get("#12-b35c68-jd1s8s input")
         .focus()
-        .clear()
+        .type("{selectall}")
         .type("100.00")
         .should("have.value", "100.00");
     });
@@ -271,7 +271,7 @@ describe("Content Specs", () => {
     });
 
     it("renders an image with a url from a template", () => {
-      cy.get("#12-1c94d4-pg8dvx", { timeout: 10000 })
+      cy.get("#12-1c94d4-pg8dvx")
         .find('[data-cy="file-preview"]')
         .eq(3)
         .find("img")
@@ -285,21 +285,16 @@ describe("Content Specs", () => {
     it("opens the bynder modal", () => {
       cy.get("#12-1c94d4-pg8dvx").find('[data-cy="addFromBynderBtn"]').click();
       cy.get('[data-test-id="CompactViewContainer"]')
-        .eq(2)
         .find('[data-testid="root"]')
         .should("exist");
 
       // Close modal
       cy.get('[data-test-id="CompactViewContainer"]')
-        .eq(2)
         .find('[data-testid="root"]')
         .shadow()
         .find('button[title="Close"]')
         .click();
-      cy.get('[data-test-id="CompactViewContainer"]')
-        .eq(2)
-        .find('[data-testid="root"]')
-        .should("not.exist");
+      cy.get('[data-test-id="CompactViewContainer"]').should("not.exist");
     });
 
     it("renders bynder asset previews", () => {

@@ -17,6 +17,7 @@ import {
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { useHistory, useLocation } from "react-router";
+import { useGetWorkflowStatusLabelsQuery } from "../../../../../../../../shell/services/instance";
 
 const actionIconMap = {
   1: faPencilAlt,
@@ -48,6 +49,10 @@ const actionIconColorMap = {
 export const TimelineItem = (props) => {
   const location = useLocation();
   const history = useHistory();
+  const {
+    data: workflowStatusLabels,
+    isLoading: isLoadingWorkflowStatusLabels,
+  } = useGetWorkflowStatusLabelsQuery({ showDeleted: true });
 
   const actionMessage = useMemo(() => {
     if (props.action?.meta?.uri?.includes("labels")) {
@@ -55,7 +60,13 @@ export const TimelineItem = (props) => {
       // This regex captures the labels inside the backticks.
       const match = props.action?.meta?.message?.match(/`([^`]*)`/);
       const labels = match?.[1]
-        ? match[1].split(",").map((label) => `"${label}"`)
+        ? match[1].split(",").map((labelZUID) => {
+            const workflowStatus = workflowStatusLabels?.find(
+              (label) => label.ZUID === labelZUID
+            );
+
+            return `"${workflowStatus?.name || labelZUID}"`;
+          })
         : [];
 
       switch (props.action?.action) {
