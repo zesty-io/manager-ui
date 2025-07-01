@@ -9,7 +9,6 @@ import {
 } from "@mui/material";
 import PersonRemoveRoundedIcon from "@mui/icons-material/PersonRemoveRounded";
 import { theme } from "@zesty-io/material";
-import { Modal, Login } from "@bynder/compact-view";
 
 import bynderPreview from "../../../../../../public/images/bynder-preview.png";
 import bynderLogo from "../../../../../../public/images/bynder-logo.svg";
@@ -18,10 +17,10 @@ import {
   useGetInstanceSettingsQuery,
   useUpdateInstanceSettingMutation,
 } from "../../../../../shell/services/instance";
+import openBynder from "../../../../../utility/openBynder";
 
 // NOTE: cvrt is the bynder refresh token, determines if user is logged in or not
 export const Bynder = () => {
-  const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isBynderSessionValid, setIsBynderSessionValid] = useState(false);
   const [bynderSessionUrl, setBynderSessionUrl] = useState("");
   const [createInstanceSetting] = useCreateInstanceSettingsMutation();
@@ -118,7 +117,13 @@ export const Bynder = () => {
       bynderToken = localStorage.getItem("cvrt");
 
       if (!!bynderToken) {
-        setIsLoginOpen(false);
+        // This makes sure the bynder modal is closed after the user logs in
+        const bynderCloseButton = document
+          ?.querySelector("[data-test-id='CompactViewContainer'] div")
+          ?.shadowRoot.querySelector(
+            "button[title='Close']"
+          ) as HTMLButtonElement;
+        bynderCloseButton?.click();
       }
 
       setIsBynderSessionValid(!!bynderToken);
@@ -136,6 +141,12 @@ export const Bynder = () => {
 
     return () => clearInterval(bynderSessionInterval);
   }, [bynderTokenSetting]);
+
+  const handleOpenBynder = () => {
+    openBynder({
+      url: bynderPortalUrlSetting?.value,
+    });
+  };
 
   return (
     <Stack height="100%" bgcolor="grey.50">
@@ -170,7 +181,7 @@ export const Bynder = () => {
                 clearInterval(tokenInterval);
                 updateBynderPortalUrl("");
                 updateBynderToken("");
-                setIsLoginOpen(true);
+                handleOpenBynder();
               }}
             >
               Change Bynder Portal
@@ -211,11 +222,7 @@ export const Bynder = () => {
               Streamline your workflow by giving your team easy access to your
               Bynder assets within Zesty
             </Typography>
-            <Button
-              variant="contained"
-              size="small"
-              onClick={() => setIsLoginOpen(true)}
-            >
+            <Button variant="contained" size="small" onClick={handleOpenBynder}>
               Connect to Bynder
             </Button>
           </Box>
@@ -231,12 +238,6 @@ export const Bynder = () => {
           />
         </Stack>
       )}
-      <Modal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)}>
-        <Login>
-          {/** HACK: Bynder's Login component requires a child*/}
-          <></>
-        </Login>
-      </Modal>
     </Stack>
   );
 };

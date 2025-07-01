@@ -2,7 +2,6 @@ import {
   Button,
   Box,
   InputAdornment,
-  TextField,
   Menu,
   MenuItem,
   ListItemIcon,
@@ -33,6 +32,7 @@ import { APIEndpoints } from "../../components/APIEndpoints";
 import { useLazyDownloadCsvQuery } from "../../../../../../shell/services/cloudFunctions";
 import { useDispatch } from "react-redux";
 import { searchItems } from "../../../../../../shell/store/content";
+import SearchBox from "../../../../../../shell/components/SearchBox";
 
 export const ItemListActions = forwardRef((props, ref) => {
   const dispatch = useDispatch();
@@ -199,16 +199,14 @@ export const ItemListActions = forwardRef((props, ref) => {
           </MenuItem>
         )}
       </Menu>
-      <TextField
+      <SearchBox
         data-cy="MultiPageTableSearchField"
         onChange={handleSearchChange}
         value={searchTerm}
         placeholder="Filter Items"
         variant="outlined"
         size="small"
-        inputProps={{
-          ref,
-        }}
+        inputRef={ref}
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
@@ -218,6 +216,9 @@ export const ItemListActions = forwardRef((props, ref) => {
           sx: {
             backgroundColor: "grey.50",
           },
+        }}
+        sx={{
+          width: "205px",
         }}
       />
       <Button
@@ -235,3 +236,5 @@ export const ItemListActions = forwardRef((props, ref) => {
     </Box>
   );
 });
+
+ItemListActions.displayName = "ItemListActions";

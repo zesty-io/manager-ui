@@ -446,6 +446,7 @@ export function saveItem({
     const missingRequired = fields.filter(
       (field) =>
         field.required &&
+        field?.name !== "og_image" &&
         (item.data[field.name] === "" || item.data[field.name] === null)
     );
 
@@ -651,6 +652,7 @@ export function createItem({ modelZUID, itemZUID, skipPathPartValidation }) {
             if (
               !field.deletedAt &&
               ![
+                "og_image", // skip og_image validation
                 "og_title",
                 "og_description",
                 "tc_title",

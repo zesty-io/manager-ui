@@ -1,4 +1,4 @@
-import { memo, useState, useMemo } from "react";
+import { memo, useState, useMemo, useEffect } from "react";
 import {
   Typography,
   Stack,
@@ -38,7 +38,7 @@ import { VersionCell } from "../FieldSelectorDialog/VersionCell";
 import { AppState } from "../../../store/types";
 import { useGetUsersQuery } from "../../../services/accounts";
 import { ConfirmPublishModal } from "../../ConfirmPublishModal";
-import { fetchItemPublishing } from "../../../store/content";
+import { fetchItem, fetchItemPublishing } from "../../../store/content";
 import { SchedulePublish } from "../../SchedulePublish";
 import { useDomain } from "../../../hooks/use-domain";
 
@@ -237,6 +237,12 @@ export const ActiveItem = memo(
     if (isLoadingRelatedModel || isLoadingUsers) {
       return <ActiveItemLoading draggable={draggable} />;
     }
+
+    // Ensure item is fetched if it wasn't included in the initial 100-item fetch
+    useEffect(() => {
+      if (contentItem) return;
+      dispatch(fetchItem(relatedModelData.ZUID, itemZUID));
+    }, [contentItem]);
 
     return (
       <>

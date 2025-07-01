@@ -36,6 +36,7 @@ export const localStorage = (store) => (next) => (action) => {
       case "FETCH_ITEM_SUCCESS":
       case "FETCH_ITEMS_SUCCESS":
       case "SEARCH_ITEMS_SUCCESS":
+      case "REMOVE_ITEM":
         idb.set(`${state.instance.ZUID}:content`, state.content);
         break;
 
