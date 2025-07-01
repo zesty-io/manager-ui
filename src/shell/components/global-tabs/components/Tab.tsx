@@ -206,7 +206,6 @@ export type UnpinnedTopBarTab = {
 export const UnpinnedTopBarTab: FC<UnpinnedTopBarTab> = ({ tabWidth }) => {
   const instanceId = useSelector((state: any) => state.instance.ID);
   const ecoId = useSelector((state: any) => state.instance.ecoID);
-  const state = useSelector((state: AppState) => state);
   const location = useLocation();
   // RTK QUERY FOR HOOKING INTO ALL MEDIA BIN GROUPS
   const { data: bins } = useGetBinsQuery({ instanceId, ecoId });
@@ -229,7 +228,7 @@ export const UnpinnedTopBarTab: FC<UnpinnedTopBarTab> = ({ tabWidth }) => {
     };
   }, [binGroups]);
 
-  const tab = createTab(state, parsePath(location), queryData);
+  const tab = createTab(parsePath(location), queryData);
 
   return (
     <TopBarTab

@@ -19,6 +19,7 @@ import {
 } from "@mui/icons-material";
 import { Database, Block, ShuffleVariant } from "@zesty-io/material";
 import { capitalize, isEqual } from "lodash";
+import { store } from "../store/index";
 
 export type Tab = {
   pathname: string;
@@ -253,11 +254,8 @@ export function parsePath({ pathname: path, search }: TabLocation) {
 
 export type ParsedPath = ReturnType<typeof parsePath>;
 
-export function createTab(
-  state: AppState,
-  parsedPath: ParsedPath,
-  queryData?: any
-) {
+export function createTab(parsedPath: ParsedPath, queryData?: any) {
+  const state = store.getState() as AppState;
   const { path, parts, zuid, prefix, search } = parsedPath;
   const tab: Tab = { pathname: path, search };
   const appNameMap = {
@@ -558,7 +556,7 @@ export function pinTab({ pathname, search }: TabLocation, queryData: any) {
   return async (dispatch: Dispatch, getState: () => AppState) => {
     const state = getState();
     const parsedPath = parsePath({ pathname, search });
-    const tab = createTab(state, parsedPath, queryData);
+    const tab = createTab(parsedPath, queryData);
     let newTabs = state.ui.pinnedTabs;
     const tabIndex = state.ui.pinnedTabs.findIndex((t) =>
       tabLocationEquality(t, tab)
@@ -597,7 +595,7 @@ export function unpinTab(
   return (dispatch: Dispatch, getState: () => AppState) => {
     const state = getState();
     const parsedPath = parsePath({ pathname, search });
-    const tab = createTab(state, parsedPath, queryData);
+    const tab = createTab(parsedPath, queryData);
     const { parts } = parsedPath;
     if (parts[0] === "code") {
       const fileType = parts[2];
@@ -646,7 +644,7 @@ export function rebuildTabs(queryData: any) {
   return (dispatch: Dispatch, getState: () => AppState) => {
     const state = getState();
     const newTabs = state.ui.pinnedTabs.map((tab: Tab) =>
-      createTab(state, parsePath(tab), queryData)
+      createTab(parsePath(tab), queryData)
     );
     /*
       This function is called on every slice update so
@@ -667,7 +665,7 @@ export function setDocumentTitle(location: TabLocation, queryData: any) {
 
     const { pathname, search } = location;
     const parsedPath = parsePath({ pathname, search });
-    const tab = createTab(state, parsedPath, queryData);
+    const tab = createTab(parsedPath, queryData);
     const { app } = tab;
     let item = tab.name || tab.pathname;
     let keyword = "";
