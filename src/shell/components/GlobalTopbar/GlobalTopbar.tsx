@@ -45,16 +45,14 @@ export function GlobalTopbar({ onShowAiDrawerToggle }: Props) {
         <GlobalTabs />
       </Box>
       <Stack direction="row" flexBasis={72} alignItems="baseline" gap={1}>
-        {isZestyEmail(user.email) && (
-          <IconButton
-            onClick={() => {
-              onShowAiDrawerToggle();
-            }}
-            size="small"
-          >
-            <Brain fontSize="inherit" />
-          </IconButton>
-        )}
+        <IconButton
+          onClick={() => {
+            onShowAiDrawerToggle();
+          }}
+          size="small"
+        >
+          <Brain fontSize="inherit" />
+        </IconButton>
         <DomainSwitcher />
         <GlobalNotifications />
       </Stack>
