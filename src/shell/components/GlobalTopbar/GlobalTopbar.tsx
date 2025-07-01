@@ -11,6 +11,7 @@ import { IconButton } from "@mui/material";
 import { useSelector } from "react-redux";
 import { AppState } from "../../store/types";
 import { User } from "../../services/types";
+import { isZestyEmail } from "../../../utility/isZestyEmail";
 
 type Props = {
   onShowAiDrawerToggle: () => void;
