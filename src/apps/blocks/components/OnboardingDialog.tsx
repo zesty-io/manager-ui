@@ -24,11 +24,6 @@ const stepMapping = [
     description:
       "Variants of these blocks can be created in the Blocks app and added to webpages using a Block Content field or with Freestyle.",
   },
-  {
-    title: "Continue Learning About Blocks",
-    image: "",
-    description: "Read our support docs or watch our in depth tutorial",
-  },
 ];
 
 export const OnboardingDialog = ({ onClose }: { onClose: () => void }) => {
@@ -63,7 +58,7 @@ export const OnboardingDialog = ({ onClose }: { onClose: () => void }) => {
       </Typography>
       <MobileStepper
         variant="dots"
-        steps={4}
+        steps={stepMapping.length}
         position="static"
         activeStep={step}
         sx={{
@@ -103,14 +98,14 @@ export const OnboardingDialog = ({ onClose }: { onClose: () => void }) => {
           size="large"
           data-cy="onboarding-next-button"
           onClick={() => {
-            if (step === 3) {
+            if (step === stepMapping.length - 1) {
               onClose();
             } else {
               setStep(step + 1);
             }
           }}
         >
-          {step === 3 ? "Done" : "Next"}
+          {step === stepMapping.length - 1 ? "Done" : "Next"}
         </Button>
       </Box>
     </Dialog>
