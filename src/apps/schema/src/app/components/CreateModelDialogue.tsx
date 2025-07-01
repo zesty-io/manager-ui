@@ -381,7 +381,7 @@ export const CreateModelDialogue = ({
               selectBlank={() => setSelectedBlankBlock(true)}
             />
           ) : (
-            <Box component="form">
+            <Box component="form" onSubmit={(e) => e.preventDefault()}>
               <DialogTitle component="div">
                 <Stack
                   direction="row"

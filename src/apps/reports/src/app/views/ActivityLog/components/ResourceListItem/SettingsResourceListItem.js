@@ -3,13 +3,26 @@ import { faCog } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
 import { useSelector } from "react-redux";
 import { ListItem } from "./ListItem";
+import { useGetWorkflowStatusLabelsQuery } from "../../../../../../../../shell/services/instance";
 
 export const SettingsResourceListItem = (props) => {
+  const { data: workflowStatusLabels } = useGetWorkflowStatusLabelsQuery({
+    showDeleted: true,
+  });
   const settingsData = useSelector((state) =>
     state.settings.instance.find(
       (instanceSetting) => instanceSetting.ZUID === props.affectedZUID
     )
   );
+
+  const workflowStatusData = useMemo(() => {
+    if (!workflowStatusLabels || !props.affectedZUID?.startsWith("36"))
+      return null;
+
+    return workflowStatusLabels.find(
+      (label) => label.ZUID === props.affectedZUID
+    );
+  }, [workflowStatusLabels, props.affectedZUID]);
 
   const primaryText = useMemo(() => {
     switch (props.affectedZUID?.split("-")?.[0]) {
@@ -17,6 +30,14 @@ export const SettingsResourceListItem = (props) => {
         return settingsData?.keyFriendly || props.message;
       case "21":
         return "Head Tag";
+      case "36":
+        if (workflowStatusData?.name) {
+          return props.message?.replace(
+            /`([^`]+)`/g,
+            `${workflowStatusData?.name}`
+          );
+        }
+        return props.message;
       default:
         return props.message;
     }

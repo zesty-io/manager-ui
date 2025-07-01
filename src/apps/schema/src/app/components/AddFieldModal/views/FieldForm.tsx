@@ -133,11 +133,7 @@ export const FieldForm = ({
   ] = useCreateContentModelFieldMutation();
   const [
     updateContentModelField,
-    {
-      isLoading: isUpdatingField,
-      isSuccess: isFieldUpdated,
-      error: fieldUpdateError,
-    },
+    { isLoading: isUpdatingField, isSuccess: isFieldUpdated },
   ] = useUpdateContentModelFieldMutation();
   const [
     bulkUpdateContentModelField,
@@ -498,25 +494,15 @@ export const FieldForm = ({
   }, [formData, isDefaultValueEnabled]);
 
   useEffect(() => {
-    if (fieldCreationError || fieldUpdateError) {
-      let errorMsg = "";
-
-      if (fieldCreationError) {
-        errorMsg = "Failed to create the field";
-      }
-
-      if (fieldUpdateError) {
-        errorMsg = "Failed to update the field";
-      }
-
+    if (fieldCreationError) {
       dispatch(
         notify({
-          message: errorMsg,
+          message: "Failed to create the field",
           kind: "error",
         })
       );
     }
-  }, [fieldCreationError, fieldUpdateError]);
+  }, [fieldCreationError]);
 
   useEffect(() => {
     if (isFieldDeleted) {
@@ -679,6 +665,15 @@ export const FieldForm = ({
               fieldZUID: fieldData?.ZUID,
             });
           }
+        })
+        .catch((error) => {
+          console.error("Failed to update the field", error);
+          dispatch(
+            notify({
+              message: "Failed to update the field",
+              kind: "error",
+            })
+          );
         });
     } else {
       // We want to skip field cache invalidation when creating an in-between field
