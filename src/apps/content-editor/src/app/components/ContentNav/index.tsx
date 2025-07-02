@@ -1,4 +1,11 @@
-import { useRef, useMemo, useEffect, useState, useReducer } from "react";
+import {
+  useRef,
+  useMemo,
+  useEffect,
+  useState,
+  useReducer,
+  useCallback,
+} from "react";
 import {
   Stack,
   Typography,
@@ -466,11 +473,260 @@ export const ContentNav = () => {
     }
   };
 
+  const handleAddClick = useCallback(() => {
+    setIsCreateContentDialogOpen(true);
+  }, []);
+
+  const handleFilterChange = useCallback((keyword: string) => {
+    setKeyword(keyword);
+  }, []);
+
   const noMatchedItems =
     !navTree.nav.length &&
     !navTree.headless.length &&
     !navTree.hidden.length &&
     !!debouncedKeyword;
+
+  const memoizedSidebarChildren = useMemo(() => {
+    if (noMatchedItems) {
+      return (
+        <Stack gap={1.5} alignItems="center" justifyContent="center" p={1.5}>
+          <img
+            src={noSearchResults}
+            alt="No search results"
+            width="70px"
+            height="64px"
+          />
+          <Typography color="text.secondary" variant="body2" align="center">
+            No results available for "{debouncedKeyword}"
+          </Typography>
+        </Stack>
+      );
+    }
+
+    return (
+      <>
+        <NavTree
+          id="pages_nav"
+          tree={navTree.nav}
+          expandedItems={expandedNavItems}
+          selected={activeNodeId}
+          onToggleCollapse={(paths) => {
+            const path = getClosedPath(paths);
+            setClosedNavItems(path);
+          }}
+          error={currentUserRolesError || navItemsError}
+          HeaderComponent={
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+              px={1.5}
+              pb={1.5}
+              sx={{
+                color: "text.secondary",
+              }}
+            >
+              <Stack direction="row" alignItems="center" gap={0.5}>
+                <Typography variant="body2" textTransform="uppercase">
+                  Pages
+                </Typography>
+                <Tooltip
+                  placement="right-start"
+                  title="Pages include single page and multi page models with URLs. Datasets that have been parented also show in this navigation."
+                  enterDelay={1000}
+                  enterNextDelay={1000}
+                >
+                  <InfoRoundedIcon
+                    sx={{ width: 12, height: 12, color: "action.active" }}
+                  />
+                </Tooltip>
+              </Stack>
+              <Stack direction="row" gap={1}>
+                <Tooltip
+                  placement="right-start"
+                  title="Reorder Pages"
+                  enterDelay={1000}
+                  enterNextDelay={1000}
+                >
+                  <IconButton
+                    data-cy="reorder_nav"
+                    size="xxsmall"
+                    onClick={() => setIsReorderDialogOpen(true)}
+                  >
+                    <ReorderRoundedIcon sx={{ fontSize: 16 }} />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip
+                  placement="right-start"
+                  title="Create Page"
+                  enterDelay={1000}
+                  enterNextDelay={1000}
+                >
+                  <IconButton
+                    onClick={() => {
+                      setCreateContentDialogLimit(["pageset", "templateset"]);
+                      setIsCreateContentDialogOpen(true);
+                    }}
+                    size="xxsmall"
+                  >
+                    <AddRoundedIcon sx={{ fontSize: 16 }} />
+                  </IconButton>
+                </Tooltip>
+              </Stack>
+            </Stack>
+          }
+          ErrorComponent={<NavError navName="models" />}
+          isLoading={isLoadingNavData}
+        />
+        <NavTree
+          id="dataset_nav"
+          tree={navTree.headless}
+          expandedItems={expandedNavItems}
+          selected={activeNodeId}
+          onToggleCollapse={(paths) => {
+            const path = getClosedPath(paths);
+            setClosedNavItems(path);
+          }}
+          error={currentUserRolesError || navItemsError}
+          HeaderComponent={
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+              px={1.5}
+              py={1.5}
+              sx={{
+                color: "text.secondary",
+              }}
+            >
+              <Stack direction="row" alignItems="center" gap={0.5}>
+                <Typography variant="body2" textTransform="uppercase">
+                  Datasets
+                </Typography>
+                <Tooltip
+                  placement="right-start"
+                  title="Datasets listed here do not have a parent content item and do not have URLs for the content items."
+                  enterDelay={1000}
+                  enterNextDelay={1000}
+                >
+                  <InfoRoundedIcon
+                    sx={{ width: 12, height: 12, color: "action.active" }}
+                  />
+                </Tooltip>
+              </Stack>
+              <Tooltip
+                placement="right-start"
+                title="Create Dataset"
+                enterDelay={1000}
+                enterNextDelay={1000}
+              >
+                <IconButton
+                  onClick={() => {
+                    setCreateContentDialogLimit(["dataset"]);
+                    setIsCreateContentDialogOpen(true);
+                  }}
+                  size="xxsmall"
+                >
+                  <AddRoundedIcon sx={{ fontSize: 16 }} />
+                </IconButton>
+              </Tooltip>
+            </Stack>
+          }
+          ErrorComponent={<NavError navName="datasets" />}
+          isLoading={isLoadingNavData}
+        />
+        <Accordion
+          elevation={0}
+          onChange={() => {
+            setTimeout(() => {
+              sideBarChildrenContainerRef.current?.scrollDown();
+            }, 300);
+          }}
+          sx={{
+            mt: 1.5,
+            "&.Mui-expanded": {
+              mt: 1.5,
+            },
+            "&:before": {
+              display: "none",
+            },
+            "&.MuiPaper-root": {
+              backgroundColor: "transparent",
+              backgroundImage: "none",
+            },
+          }}
+        >
+          <AccordionSummary
+            expandIcon={<ArrowDropDownRoundedIcon sx={{ fontSize: "20px" }} />}
+            sx={{
+              "&.MuiButtonBase-root": {
+                minHeight: 20,
+                mb: 1.5,
+                px: 1.5,
+                "&.Mui-expanded": {
+                  height: 20,
+                },
+              },
+              "& .MuiAccordionSummary-content": {
+                m: 0,
+                "&.Mui-expanded": {
+                  m: 0,
+                },
+              },
+              "& .MuiAccordionSummary-expandIconWrapper": {
+                transform: "rotate(-90deg)",
+                "&.Mui-expanded": {
+                  transform: "rotate(0deg)",
+                },
+              },
+            }}
+          >
+            <Typography
+              variant="body2"
+              textTransform="uppercase"
+              color="text.secondary"
+            >
+              Hidden Items
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails
+            sx={{
+              p: 0,
+            }}
+          >
+            <NavTree
+              id="hidden_nav"
+              tree={navTree.hidden}
+              selected={activeNodeId}
+              expandedItems={expandedNavItems}
+              onToggleCollapse={(paths) => {
+                const path = getClosedPath(paths);
+                setClosedNavItems(path);
+              }}
+              isLoading={isLoadingNavData}
+            />
+          </AccordionDetails>
+        </Accordion>
+      </>
+    );
+  }, [
+    noMatchedItems,
+    debouncedKeyword,
+    navTree.nav,
+    navTree.headless,
+    navTree.hidden,
+    expandedNavItems,
+    activeNodeId,
+    currentUserRolesError,
+    navItemsError,
+    isLoadingNavData,
+    setIsReorderDialogOpen,
+    setCreateContentDialogLimit,
+    setIsCreateContentDialogOpen,
+    setClosedNavItems,
+    sideBarChildrenContainerRef,
+  ]);
 
   return (
     <>
@@ -481,237 +737,12 @@ export const ContentNav = () => {
         searchPlaceholder="Filter Models"
         ref={sideBarChildrenContainerRef}
         subMenus={SUB_MENUS}
-        onAddClick={() => setIsCreateContentDialogOpen(true)}
-        onFilterChange={(keyword) => setKeyword(keyword)}
+        onAddClick={handleAddClick}
+        onFilterChange={handleFilterChange}
         titleButtonTooltip="Create Content"
         isLoading={isLoadingNavData}
       >
-        {noMatchedItems ? (
-          <Stack gap={1.5} alignItems="center" justifyContent="center" p={1.5}>
-            <img
-              src={noSearchResults}
-              alt="No search results"
-              width="70px"
-              height="64px"
-            />
-            <Typography color="text.secondary" variant="body2" align="center">
-              No results available for "{debouncedKeyword}"
-            </Typography>
-          </Stack>
-        ) : (
-          <>
-            <NavTree
-              id="pages_nav"
-              tree={navTree.nav}
-              expandedItems={expandedNavItems}
-              selected={activeNodeId}
-              onToggleCollapse={(paths) => {
-                const path = getClosedPath(paths);
-
-                setClosedNavItems(path);
-              }}
-              error={currentUserRolesError || navItemsError}
-              HeaderComponent={
-                <Stack
-                  direction="row"
-                  justifyContent="space-between"
-                  alignItems="center"
-                  px={1.5}
-                  pb={1.5}
-                  sx={{
-                    color: "text.secondary",
-                  }}
-                >
-                  <Stack direction="row" alignItems="center" gap={0.5}>
-                    <Typography variant="body2" textTransform="uppercase">
-                      Pages
-                    </Typography>
-                    <Tooltip
-                      placement="right-start"
-                      title="Pages include single page and multi page models with URLs. Datasets that have been parented also show in this navigation."
-                      enterDelay={1000}
-                      enterNextDelay={1000}
-                    >
-                      <InfoRoundedIcon
-                        sx={{ width: 12, height: 12, color: "action.active" }}
-                      />
-                    </Tooltip>
-                  </Stack>
-                  <Stack direction="row" gap={1}>
-                    <Tooltip
-                      placement="right-start"
-                      title="Reorder Pages"
-                      enterDelay={1000}
-                      enterNextDelay={1000}
-                    >
-                      <IconButton
-                        data-cy="reorder_nav"
-                        size="xxsmall"
-                        onClick={() => setIsReorderDialogOpen(true)}
-                      >
-                        <ReorderRoundedIcon sx={{ fontSize: 16 }} />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip
-                      placement="right-start"
-                      title="Create Page"
-                      enterDelay={1000}
-                      enterNextDelay={1000}
-                    >
-                      <IconButton
-                        onClick={() => {
-                          setCreateContentDialogLimit([
-                            "pageset",
-                            "templateset",
-                          ]);
-                          setIsCreateContentDialogOpen(true);
-                        }}
-                        size="xxsmall"
-                      >
-                        <AddRoundedIcon sx={{ fontSize: 16 }} />
-                      </IconButton>
-                    </Tooltip>
-                  </Stack>
-                </Stack>
-              }
-              ErrorComponent={<NavError navName="models" />}
-              isLoading={isLoadingNavData}
-            />
-            <NavTree
-              id="dataset_nav"
-              tree={navTree.headless}
-              expandedItems={expandedNavItems}
-              selected={activeNodeId}
-              onToggleCollapse={(paths) => {
-                const path = getClosedPath(paths);
-
-                setClosedNavItems(path);
-              }}
-              error={currentUserRolesError || navItemsError}
-              HeaderComponent={
-                <Stack
-                  direction="row"
-                  justifyContent="space-between"
-                  alignItems="center"
-                  px={1.5}
-                  py={1.5}
-                  sx={{
-                    color: "text.secondary",
-                  }}
-                >
-                  <Stack direction="row" alignItems="center" gap={0.5}>
-                    <Typography variant="body2" textTransform="uppercase">
-                      Datasets
-                    </Typography>
-                    <Tooltip
-                      placement="right-start"
-                      title="Datasets listed here do not have a parent content item and do not have URLs for the content items."
-                      enterDelay={1000}
-                      enterNextDelay={1000}
-                    >
-                      <InfoRoundedIcon
-                        sx={{ width: 12, height: 12, color: "action.active" }}
-                      />
-                    </Tooltip>
-                  </Stack>
-                  <Tooltip
-                    placement="right-start"
-                    title="Create Dataset"
-                    enterDelay={1000}
-                    enterNextDelay={1000}
-                  >
-                    <IconButton
-                      onClick={() => {
-                        setCreateContentDialogLimit(["dataset"]);
-                        setIsCreateContentDialogOpen(true);
-                      }}
-                      size="xxsmall"
-                    >
-                      <AddRoundedIcon sx={{ fontSize: 16 }} />
-                    </IconButton>
-                  </Tooltip>
-                </Stack>
-              }
-              ErrorComponent={<NavError navName="datasets" />}
-              isLoading={isLoadingNavData}
-            />
-            <Accordion
-              elevation={0}
-              onChange={() => {
-                setTimeout(() => {
-                  sideBarChildrenContainerRef.current?.scrollDown();
-                }, 300);
-              }}
-              sx={{
-                mt: 1.5,
-                "&.Mui-expanded": {
-                  mt: 1.5,
-                },
-                "&:before": {
-                  display: "none",
-                },
-                "&.MuiPaper-root": {
-                  backgroundColor: "transparent",
-                  backgroundImage: "none",
-                },
-              }}
-            >
-              <AccordionSummary
-                expandIcon={
-                  <ArrowDropDownRoundedIcon sx={{ fontSize: "20px" }} />
-                }
-                sx={{
-                  "&.MuiButtonBase-root": {
-                    minHeight: 20,
-                    mb: 1.5,
-                    px: 1.5,
-                    "&.Mui-expanded": {
-                      height: 20,
-                    },
-                  },
-                  "& .MuiAccordionSummary-content": {
-                    m: 0,
-                    "&.Mui-expanded": {
-                      m: 0,
-                    },
-                  },
-                  "& .MuiAccordionSummary-expandIconWrapper": {
-                    transform: "rotate(-90deg)",
-                    "&.Mui-expanded": {
-                      transform: "rotate(0deg)",
-                    },
-                  },
-                }}
-              >
-                <Typography
-                  variant="body2"
-                  textTransform="uppercase"
-                  color="text.secondary"
-                >
-                  Hidden Items
-                </Typography>
-              </AccordionSummary>
-              <AccordionDetails
-                sx={{
-                  p: 0,
-                }}
-              >
-                <NavTree
-                  id="hidden_nav"
-                  tree={navTree.hidden}
-                  selected={activeNodeId}
-                  expandedItems={expandedNavItems}
-                  onToggleCollapse={(paths) => {
-                    const path = getClosedPath(paths);
-
-                    setClosedNavItems(path);
-                  }}
-                  isLoading={isLoadingNavData}
-                />
-              </AccordionDetails>
-            </Accordion>
-          </>
-        )}
+        {memoizedSidebarChildren}
       </AppSideBar>
       {isCreateContentDialogOpen && (
         <CreateContentItemDialog
