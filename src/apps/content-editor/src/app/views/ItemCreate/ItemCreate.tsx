@@ -534,6 +534,7 @@ export const ItemCreate = () => {
                   onUpdateSEOErrors={(errors: FieldErrors) => {
                     setSEOErrors(errors);
                   }}
+                  item={item}
                   isSaving={saving}
                   ref={metaRef}
                   errors={SEOErrors}
@@ -564,6 +565,7 @@ export const ItemCreate = () => {
                   onUpdateSEOErrors={(errors: FieldErrors) => {
                     setSEOErrors(errors);
                   }}
+                  item={item}
                   isSaving={saving}
                   ref={metaRef}
                   errors={SEOErrors}

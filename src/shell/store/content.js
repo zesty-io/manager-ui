@@ -432,7 +432,7 @@ export function saveItem({
       item?.web?.version + 1
     }${
       previewLock?.value ? `&zpw=${previewLock.value}` : ""
-    }&_bypassError=true`;
+    }&_bypassError=true&preview=global`;
     const fields = Object.keys(state.fields)
       .filter(
         (fieldZUID) =>
@@ -446,6 +446,7 @@ export function saveItem({
     const missingRequired = fields.filter(
       (field) =>
         field.required &&
+        field?.name !== "og_image" &&
         (item.data[field.name] === "" || item.data[field.name] === null)
     );
 
@@ -651,6 +652,7 @@ export function createItem({ modelZUID, itemZUID, skipPathPartValidation }) {
             if (
               !field.deletedAt &&
               ![
+                "og_image", // skip og_image validation
                 "og_title",
                 "og_description",
                 "tc_title",
@@ -749,7 +751,9 @@ export function createItem({ modelZUID, itemZUID, skipPathPartValidation }) {
     })
       .then(async (res) => {
         if (!res.error) {
-          dispatch(instanceApi.util.invalidateTags(["ContentNav"]));
+          dispatch(
+            instanceApi.util.invalidateTags(["ContentNav", "ContentItems"])
+          );
           dispatch({
             type: "REMOVE_ITEM",
             itemZUID,

@@ -8,7 +8,9 @@ import {
 } from "@mui/material";
 import { ContentCopyRounded } from "@mui/icons-material";
 import { useHistory, useParams } from "react-router";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { LoadingButton } from "@mui/lab";
+
 import { AppState } from "../../../../../../../../shell/store/types";
 import { ContentItem } from "../../../../../../../../shell/services/types";
 import {
@@ -16,13 +18,14 @@ import {
   useGetContentModelFieldsQuery,
   useGetContentModelsQuery,
 } from "../../../../../../../../shell/services/instance";
-import { LoadingButton } from "@mui/lab";
+import { notify } from "../../../../../../../../shell/store/notifications";
 
 type DuplicateItemProps = {
   onClose: () => void;
 };
 
 export const DuplicateItemDialog = ({ onClose }: DuplicateItemProps) => {
+  const dispatch = useDispatch();
   const { modelZUID, itemZUID } = useParams<{
     modelZUID: string;
     itemZUID: string;
@@ -79,12 +82,22 @@ export const DuplicateItemDialog = ({ onClose }: DuplicateItemProps) => {
     })
       .unwrap()
       .then((res) => {
+        onClose();
         history.push(
           `/${
             models?.find((model) => model?.type === "block")
               ? "blocks"
               : "content"
           }/${modelZUID}/${res.data.ZUID}`
+        );
+      })
+      .catch((error) => {
+        console.error("Failed to duplicate item", error);
+        dispatch(
+          notify({
+            message: "Failed to duplicate item.",
+            kind: "error",
+          })
         );
       });
   };

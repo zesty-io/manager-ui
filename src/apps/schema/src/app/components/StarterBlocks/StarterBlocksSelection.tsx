@@ -24,6 +24,7 @@ import SearchIcon from "@mui/icons-material/Search";
 
 import { NoResults } from "../NoResults";
 import { StarterBlockProps, STARTER_BLOCKS } from "./configs";
+import SearchBox from "../../../../../../shell/components/SearchBox";
 
 const BlockItem = ({
   block,
@@ -220,7 +221,7 @@ export const StarterBlocksSelection: React.FC<StarterBlocksSelectionProps> = ({
         dividers
       >
         <Box flexGrow={0}>
-          <TextField
+          <SearchBox
             data-cy="starter-blocks-search"
             size="small"
             placeholder="Search variants"

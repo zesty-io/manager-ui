@@ -226,7 +226,7 @@ const RedirectsTable = () => {
   }, [redirects, searchFilter, isLoading, sortBy, httpCodeFilter, typeFilter]);
 
   const saveSnapshot = useCallback(() => {
-    if (apiRef?.current && localStorage) {
+    if (apiRef?.current?.exportState && localStorage) {
       const currentState = apiRef.current.exportState();
       const fullState = {
         ...currentState,
@@ -332,6 +332,7 @@ const RedirectsTable = () => {
                     flexDirection: "row",
                     justifyContent: "flex-start",
                     alignItems: "center",
+                    outline: "none!important",
                   },
                   "& .MuiDataGrid-container--top [role=row]": {
                     backgroundColor: "grey.100",

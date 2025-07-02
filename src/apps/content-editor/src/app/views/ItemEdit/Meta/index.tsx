@@ -32,7 +32,10 @@ import {
 import { AppState } from "../../../../../../../shell/store/types";
 import { Error } from "../../../components/Editor/Field/FieldShell";
 import { fetchGlobalItem } from "../../../../../../../shell/store/content";
-import { ContentModelField } from "../../../../../../../shell/services/types";
+import {
+  ContentItem,
+  ContentModelField,
+} from "../../../../../../../shell/services/types";
 import { SocialMediaPreview } from "./SocialMediaPreview";
 import { validateMetaDescription } from "./settings/util";
 
@@ -51,6 +54,10 @@ import { OGDescription } from "./settings/OGDescription";
 import { TCTitle } from "./settings/TCTitle";
 import { TCDescription } from "./settings/TCDescription";
 import { TCImage } from "./settings/TCImage";
+import RedirectsTableContextProvider from "../../../../../../seo/src/views/RedirectsManager/RedirectsTable/RedirectsTableContextProvider";
+import IncomingRedirects from "./IncomingRedirects";
+import RedirectsDialogContextProvider from "../../../../../../seo/src/app/components/RedirectsDialogProvider";
+import { useRegisterRef } from "../../../../../../../engine/useRegisterRef";
 
 const rotateAnimation = keyframes`
 	0% {
@@ -104,9 +111,13 @@ type MetaProps = {
   onUpdateSEOErrors: (errors: Errors) => void;
   errors: Errors;
   errorComponent?: React.ReactNode;
+  item: ContentItem;
 };
 export const Meta = forwardRef(
-  ({ isSaving, onUpdateSEOErrors, errors, errorComponent }: MetaProps, ref) => {
+  (
+    { isSaving, onUpdateSEOErrors, errors, errorComponent, item }: MetaProps,
+    ref
+  ) => {
     const dispatch = useDispatch();
     const location = useLocation();
     const isCreateItemPage = location?.pathname?.split("/")?.pop() === "new";
@@ -334,6 +345,59 @@ export const Meta = forwardRef(
       }
     }, [flowType, isCreateItemPage, meta?.ZUID]);
 
+    const handleMetaTitle = useMemo(
+      () => ({
+        setValue: (val: string) => {
+          const el = document.getElementById("metaTitle");
+          if (el) {
+            el.scrollIntoView({
+              behavior: "smooth",
+              block: "nearest",
+              inline: "center",
+            });
+          }
+
+          const inputEl = el.querySelector(
+            'input, textarea, [contenteditable="true"]'
+          ) as HTMLElement | null;
+          if (inputEl && typeof inputEl.focus === "function") {
+            inputEl.focus();
+          }
+
+          handleOnChange(val, "metaTitle");
+        },
+      }),
+      []
+    );
+
+    const handleMetaDescription = useMemo(
+      () => ({
+        setValue: (val: string) => {
+          const el = document.getElementById("metaDescription");
+          if (el) {
+            el.scrollIntoView({
+              behavior: "smooth",
+              block: "nearest",
+              inline: "center",
+            });
+          }
+
+          const inputEl = el.querySelector(
+            'input, textarea, [contenteditable="true"]'
+          ) as HTMLElement | null;
+          if (inputEl && typeof inputEl.focus === "function") {
+            inputEl.focus();
+          }
+
+          handleOnChange(val, "metaDescription");
+        },
+      }),
+      []
+    );
+
+    useRegisterRef("meta-title", handleMetaTitle, item);
+    useRegisterRef("meta-description", handleMetaDescription, item);
+
     if (isFetching) return null;
 
     if (isCreateItemPage && flowType === null && model?.type !== "block") {
@@ -359,12 +423,14 @@ export const Meta = forwardRef(
                   mb={1}
                   color="text.primary"
                 >
-                  Would you like to improve your Meta Title & Description?
+                  Have AI write your Meta Data?
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   Our AI Assistant will scan your content and improve your meta
-                  title and description to help improve search engine
-                  visibility.{" "}
+                  title and description to help{" "}
+                  {model?.type === "dataset"
+                    ? "with internal content search."
+                    : "improve search engine visibility."}
                 </Typography>
               </Box>
               {flowButtons.map((data) => (
@@ -582,6 +648,14 @@ export const Meta = forwardRef(
                   });
                 }}
               />
+              <RedirectsDialogContextProvider>
+                <RedirectsTableContextProvider>
+                  <IncomingRedirects
+                    targetZUID={meta?.ZUID}
+                    urlPath={web?.path}
+                  />
+                </RedirectsTableContextProvider>
+              </RedirectsDialogContextProvider>
             </Stack>
           )}
           <Stack gap={3} pb={2.5}>

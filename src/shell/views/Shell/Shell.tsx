@@ -1,5 +1,11 @@
-import { memo } from "react";
-import { Switch, Route, Redirect } from "react-router-dom";
+import { memo, useEffect } from "react";
+import {
+  Switch,
+  Route,
+  Redirect,
+  useHistory,
+  useLocation,
+} from "react-router-dom";
 import { Sentry } from "../../../utility/sentry";
 import { Severity } from "@sentry/browser";
 import { Box } from "@mui/material";
@@ -32,6 +38,9 @@ import { Products } from "../../services/types";
 
 import styles from "./Shell.less";
 import { LoadingShell } from "./LoadingShell";
+import { registerNavigate } from "../../../engine/navigator";
+import { AIDrawer } from "./AIDrawer";
+import { useLocalStorage } from "react-use";
 
 export default memo(function Shell() {
   const dispatch = useDispatch();
@@ -55,15 +64,29 @@ export default memo(function Shell() {
     !!files?.length &&
     !!files?.length;
 
+  const history = useHistory();
+  const { pathname } = useLocation();
+  const [showAiDrawer, setShowAiDrawer] = useLocalStorage(
+    "showAiDrawer",
+    false
+  );
+
+  useEffect(() => {
+    registerNavigate((to, { replace = false } = {}) => {
+      replace ? history.replace(to) : history.push(to);
+    });
+  }, [history]);
+
   return (
     <Box
       component="section"
       className={styles.Shell}
       height="100vh"
-      overflow="hidden"
+      overflow="clip"
       display="grid"
       gridTemplateColumns={openNav ? "200px 1fr" : "48px 1fr"}
       sx={{
+        flex: 1,
         backgroundColor: "background.paper",
       }}
     >
@@ -75,7 +98,11 @@ export default memo(function Shell() {
         openNav={openNav}
       />
       <main className={styles.AppLoader}>
-        <GlobalTopbar />
+        <GlobalTopbar
+          onShowAiDrawerToggle={() => {
+            setShowAiDrawer(!showAiDrawer);
+          }}
+        />
         <Box
           className={styles.SubApp}
           data-cy="SubApp"
@@ -96,99 +123,116 @@ export default memo(function Shell() {
             }}
           >
             {isAppLoaded ? (
-              <Switch>
-                <Route path="/release" component={ReleaseApp} />
+              <Box
+                display="flex"
+                sx={{
+                  height: "100%",
+                }}
+              >
+                <Box flex={1}>
+                  <Switch>
+                    <Route path="/release" component={ReleaseApp} />
 
-                <Route path="/media/:groupID/file/:fileID" component={DamApp} />
-                <Route path="/media/:groupID" component={DamApp} />
-                <Route path="/media" component={DamApp} />
-                <Route path="/search" component={SearchPage} />
-                {products.map((product) => {
-                  switch (product) {
-                    case "launchpad":
-                      return (
-                        <Route
-                          key={product}
-                          path="/launchpad"
-                          component={HomeApp}
-                        />
-                      );
-                    case "content":
-                      return (
-                        <Route
-                          key={product}
-                          path="/content"
-                          component={ContentApp}
-                        />
-                      );
-                    case "blocks":
-                      return (
-                        <Route
-                          key={product}
-                          path="/blocks"
-                          component={BlocksApp}
-                        />
-                      );
-                    case "reports":
-                      return (
-                        <Route
-                          key={product}
-                          path="/reports"
-                          component={ReportingApp}
-                        />
-                      );
-                    case "code":
-                      return (
-                        <Route key={product} path="/code" component={CodeApp} />
-                      );
-                    case "leads":
-                      return (
-                        <Route
-                          key={product}
-                          path="/leads"
-                          component={LeadsApp}
-                        />
-                      );
-                    case "schema":
-                      return (
-                        <Route
-                          key={product}
-                          path="/schema"
-                          component={SchemaApp}
-                        />
-                      );
-                    case "redirects":
-                      return (
-                        <Route
-                          key={product}
-                          path="/redirects"
-                          component={SeoApp}
-                        />
-                      );
-                    case "settings":
-                      return (
-                        <Route
-                          key={product}
-                          path="/settings"
-                          component={SettingsApp}
-                        />
-                      );
-                    case "apps":
-                      return (
-                        <Route
-                          key={product}
-                          path="/apps*"
-                          component={MarketplaceApp}
-                        />
-                      );
-                    default:
-                      null;
-                  }
-                })}
+                    <Route
+                      path="/media/:groupID/file/:fileID"
+                      component={DamApp}
+                    />
+                    <Route path="/media/:groupID" component={DamApp} />
+                    <Route path="/media" component={DamApp} />
+                    <Route path="/search" component={SearchPage} />
+                    {products.map((product) => {
+                      switch (product) {
+                        case "launchpad":
+                          return (
+                            <Route
+                              key={product}
+                              path="/launchpad"
+                              component={HomeApp}
+                            />
+                          );
+                        case "content":
+                          return (
+                            <Route
+                              key={product}
+                              path="/content"
+                              component={ContentApp}
+                            />
+                          );
+                        case "blocks":
+                          return (
+                            <Route
+                              key={product}
+                              path="/blocks"
+                              component={BlocksApp}
+                            />
+                          );
+                        case "reports":
+                          return (
+                            <Route
+                              key={product}
+                              path="/reports"
+                              component={ReportingApp}
+                            />
+                          );
+                        case "code":
+                          return (
+                            <Route
+                              key={product}
+                              path="/code"
+                              component={CodeApp}
+                            />
+                          );
+                        case "leads":
+                          return (
+                            <Route
+                              key={product}
+                              path="/leads"
+                              component={LeadsApp}
+                            />
+                          );
+                        case "schema":
+                          return (
+                            <Route
+                              key={product}
+                              path="/schema"
+                              component={SchemaApp}
+                            />
+                          );
+                        case "redirects":
+                          return (
+                            <Route
+                              key={product}
+                              path="/redirects"
+                              component={SeoApp}
+                            />
+                          );
+                        case "settings":
+                          return (
+                            <Route
+                              key={product}
+                              path="/settings"
+                              component={SettingsApp}
+                            />
+                          );
+                        case "apps":
+                          return (
+                            <Route
+                              key={product}
+                              path="/apps*"
+                              component={MarketplaceApp}
+                            />
+                          );
+                        default:
+                          null;
+                      }
+                    })}
 
-                <Redirect exact from="/" to="/launchpad" />
-                <Route path="*" component={Missing} />
-              </Switch>
+                    <Redirect exact from="/" to="/launchpad" />
+                    <Route path="*" component={Missing} />
+                  </Switch>
+                </Box>
+                {showAiDrawer && <AIDrawer key={pathname} />}
+              </Box>
             ) : (
               <LoadingShell />
             )}

@@ -5,6 +5,7 @@ import { SettingsActionTimelineItem } from "./SettingsActionTimelineItem";
 
 export const ActionTimelineItem = (props) => {
   switch (props.action.resourceType) {
+    case "block":
     case "content":
       return (
         <ContentActionTimelineItem

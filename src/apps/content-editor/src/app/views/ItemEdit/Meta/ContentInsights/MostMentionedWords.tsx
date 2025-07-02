@@ -9,6 +9,7 @@ import {
 import { Search, AddRounded, RemoveRounded } from "@mui/icons-material";
 import { useMemo, useState } from "react";
 import { COMMON_WORDS } from ".";
+import SearchBox from "../../../../../../../../shell/components/SearchBox";
 
 type MostMentionedWordsProps = {
   wordsArray: string[];
@@ -67,7 +68,7 @@ export const MostMentionedWords = ({ wordsArray }: MostMentionedWordsProps) => {
           Check that your focus keywords are occurring a minimum 2 times.
         </Typography>
       </Box>
-      <TextField
+      <SearchBox
         value={filterKeyword}
         onChange={(evt) => setFilterKeyword(evt.target.value)}
         size="small"

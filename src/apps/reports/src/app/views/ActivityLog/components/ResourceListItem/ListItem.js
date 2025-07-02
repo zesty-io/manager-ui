@@ -6,6 +6,7 @@ import {
   ListItemText,
   Skeleton,
 } from "@mui/material";
+import { Block } from "@zesty-io/material";
 import { isEmpty, omitBy } from "lodash";
 import { useHistory, useLocation } from "react-router";
 import { useParams } from "shell/hooks/useParams";
@@ -18,7 +19,7 @@ export const ListItem = (props) => {
   return (
     <MuiListItem
       data-is-loading={props.showSkeletons}
-      data-cy="resouce_list_item"
+      data-cy="resource_list_item"
       disableGutters
       divider={props.divider}
       sx={{
@@ -56,7 +57,12 @@ export const ListItem = (props) => {
     >
       <ListItemAvatar>
         {props.showSkeletons ? (
-          <Skeleton variant="circular" width={40} height={40} />
+          <Skeleton
+            data-cy="resourceItemSkeleton"
+            variant="circular"
+            width={40}
+            height={40}
+          />
         ) : (
           <Avatar
             sx={{
@@ -67,7 +73,11 @@ export const ListItem = (props) => {
               }),
             }}
           >
-            <FontAwesomeIcon icon={props.icon} />
+            {props.isBlockItem ? (
+              <Block />
+            ) : (
+              <FontAwesomeIcon icon={props.icon} />
+            )}
           </Avatar>
         )}
       </ListItemAvatar>
