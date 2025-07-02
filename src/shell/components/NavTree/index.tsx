@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { SimpleTreeView } from "@mui/x-tree-view";
+import { RichTreeView } from "@mui/x-tree-view";
 import { useHistory } from "react-router-dom";
 
 import { NavTreeItem } from "./components/NavTreeItem";
@@ -50,6 +50,28 @@ export const NavTree: FC<Readonly<Props>> = ({
   const history = useHistory();
   const isCodeApp = ["html", "css", "js"].includes(id);
 
+  // Transform tree data for RichTreeView
+  const transformTreeData = (items: TreeItem[]): any[] => {
+    return items
+      ?.filter((item) => !(!isHiddenTree && item.hidden) && item)
+      ?.map((item) => ({
+        id: item.path,
+        label: item.label,
+        children:
+          item.children?.length > 0
+            ? transformTreeData(item.children)
+            : undefined,
+        // Store additional data for custom rendering
+        icon: item.icon,
+        actions: item.actions ?? [],
+        nodeData: item.nodeData,
+        isHiddenTree,
+        onItemDrop,
+        dragAndDrop,
+        selected,
+      }));
+  };
+
   if (isLoading) {
     return (
       <>
@@ -94,8 +116,9 @@ export const NavTree: FC<Readonly<Props>> = ({
       {error ? (
         ErrorComponent
       ) : (
-        <SimpleTreeView
+        <RichTreeView
           data-cy={id}
+          items={transformTreeData(tree)}
           expandedItems={expandedItems}
           selectedItems={[selected]}
           slots={{
@@ -120,29 +143,9 @@ export const NavTree: FC<Readonly<Props>> = ({
               onToggleCollapse(nodeIds);
             }
           }}
-        >
-          {tree?.map((item) => {
-            if ((!isHiddenTree && item.hidden) || !item) {
-              return <></>;
-            }
-
-            return (
-              <NavTreeItem
-                isHiddenTree={isHiddenTree}
-                key={item.path}
-                labelName={item.label}
-                nodeId={item.path}
-                labelIcon={item.icon}
-                nestedItems={item.children}
-                actions={item.actions ?? []}
-                nodeData={item.nodeData}
-                onItemDrop={onItemDrop}
-                dragAndDrop={dragAndDrop}
-                selected={selected}
-              />
-            );
-          })}
-        </SimpleTreeView>
+          getItemLabel={(item) => item.label}
+          getItemId={(item) => item.id}
+        />
       )}
     </>
   );
