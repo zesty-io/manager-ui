@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useMemo } from "react";
 import { RichTreeView } from "@mui/x-tree-view";
 import { useHistory } from "react-router-dom";
 
@@ -19,6 +19,28 @@ export type TreeItem = {
   nodeData?: any;
   createdAt?: string;
 } & Partial<ContentNavItem>;
+
+// Transform tree data for RichTreeView
+const transformTreeData = (items: TreeItem[], isHiddenTree: boolean): any[] => {
+  return items
+    ?.filter((item) => !(!isHiddenTree && item.hidden) && item)
+    ?.map((item) => ({
+      id: item.path,
+      label: item.label,
+      children:
+        item.children?.length > 0
+          ? transformTreeData(item.children, isHiddenTree)
+          : undefined,
+      // Store additional data for custom rendering
+      // icon: item.icon,
+      // actions: item.actions ?? [],
+      // nodeData: item.nodeData,
+      // isHiddenTree,
+      // onItemDrop,
+      // dragAndDrop,
+      // selected,
+    }));
+};
 
 interface Props {
   id: string;
@@ -51,27 +73,9 @@ export const NavTree: FC<Readonly<Props>> = ({
   const history = useHistory();
   const isCodeApp = ["html", "css", "js"].includes(id);
 
-  // Transform tree data for RichTreeView
-  const transformTreeData = (items: TreeItem[]): any[] => {
-    return items
-      ?.filter((item) => !(!isHiddenTree && item.hidden) && item)
-      ?.map((item) => ({
-        id: item.path,
-        label: item.label,
-        children:
-          item.children?.length > 0
-            ? transformTreeData(item.children)
-            : undefined,
-        // Store additional data for custom rendering
-        icon: item.icon,
-        actions: item.actions ?? [],
-        nodeData: item.nodeData,
-        isHiddenTree,
-        onItemDrop,
-        dragAndDrop,
-        selected,
-      }));
-  };
+  const memoizedTree = useMemo(() => {
+    return transformTreeData(tree, isHiddenTree);
+  }, [tree]);
 
   if (isLoading) {
     return (
@@ -119,7 +123,7 @@ export const NavTree: FC<Readonly<Props>> = ({
       ) : (
         <RichTreeView
           data-cy={id}
-          items={transformTreeData(tree)}
+          items={memoizedTree}
           expandedItems={expandedItems}
           selectedItems={[selected]}
           expansionTrigger="iconContainer"
@@ -146,8 +150,8 @@ export const NavTree: FC<Readonly<Props>> = ({
               onToggleCollapse(nodeIds);
             }
           }}
-          getItemLabel={(item) => item.label}
-          getItemId={(item) => item.id}
+          // getItemLabel={(item) => item.label}
+          // getItemId={(item) => item.id}
         />
       )}
     </>

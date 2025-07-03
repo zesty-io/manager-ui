@@ -1,4 +1,4 @@
-import { forwardRef } from "react";
+import { forwardRef, memo, useMemo } from "react";
 import {
   TreeItem2,
   TreeItem2Props,
@@ -7,11 +7,16 @@ import {
 
 import { NavTreeLabel } from "./NavTreeLabel";
 
-export const RichTreeItem = forwardRef(
-  (props: TreeItem2Props, ref: React.Ref<HTMLLIElement>) => {
+export const RichTreeItem = memo(
+  forwardRef((props: TreeItem2Props, ref: React.Ref<HTMLLIElement>) => {
+    const memoizedChildren = useMemo(() => {
+      return props.children;
+    }, [props.children]);
+
     return (
       <TreeItem2
         {...props}
+        children={memoizedChildren}
         ref={ref}
         slots={{ label: NavTreeLabel }}
         slotProps={
@@ -23,6 +28,6 @@ export const RichTreeItem = forwardRef(
         }
       />
     );
-  }
+  })
 );
 RichTreeItem.displayName = "RichTreeItem";
