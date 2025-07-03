@@ -3,6 +3,7 @@ import { RichTreeView } from "@mui/x-tree-view";
 import { useHistory } from "react-router-dom";
 
 import { NavTreeItem } from "./components/NavTreeItem";
+import { RichTreeItem } from "./components/RichTreeItem";
 import { ContentNavItem } from "../../services/types";
 import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 import ArrowRightRoundedIcon from "@mui/icons-material/ArrowRightRounded";
@@ -121,9 +122,11 @@ export const NavTree: FC<Readonly<Props>> = ({
           items={transformTreeData(tree)}
           expandedItems={expandedItems}
           selectedItems={[selected]}
+          expansionTrigger="iconContainer"
           slots={{
             collapseIcon: ArrowDropDownRoundedIcon,
             expandIcon: ArrowRightRoundedIcon,
+            item: RichTreeItem,
           }}
           onItemClick={(evt: any, itemId: string) => {
             if (
