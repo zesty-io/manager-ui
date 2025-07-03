@@ -1,5 +1,11 @@
 import { memo, useEffect } from "react";
-import { Switch, Route, Redirect, useHistory } from "react-router-dom";
+import {
+  Switch,
+  Route,
+  Redirect,
+  useHistory,
+  useLocation,
+} from "react-router-dom";
 import { Sentry } from "../../../utility/sentry";
 import { Severity } from "@sentry/browser";
 import { Box } from "@mui/material";
@@ -59,6 +65,7 @@ export default memo(function Shell() {
     !!files?.length;
 
   const history = useHistory();
+  const { pathname } = useLocation();
   const [showAiDrawer, setShowAiDrawer] = useLocalStorage(
     "showAiDrawer",
     false
@@ -224,7 +231,7 @@ export default memo(function Shell() {
                     <Route path="*" component={Missing} />
                   </Switch>
                 </Box>
-                {showAiDrawer && <AIDrawer />}
+                {showAiDrawer && <AIDrawer key={pathname} />}
               </Box>
             ) : (
               <LoadingShell />
