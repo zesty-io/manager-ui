@@ -220,7 +220,7 @@ export default function Content(props) {
         <Box
           height="100%"
           flex="1 1 auto"
-          minWidth={360}
+          minWidth={300}
           display="flex"
           flexDirection="column"
           gap={2}
