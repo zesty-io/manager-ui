@@ -57,9 +57,10 @@ export default function Content(props) {
 
   const xLarge = useMediaQuery((theme) => theme.breakpoints.up("xl"));
 
+  const showDuoMode = props?.model?.type === "block" || showDuoModeContextValue;
+
   const isFocusMode = !showDuoMode && !showSidebar;
 
-  const showDuoMode = props?.model?.type === "block" || showDuoModeContextValue;
   const isLoadingItem =
     props.loading &&
     (!props.item ||
@@ -105,17 +106,11 @@ export default function Content(props) {
           overflowY: "scroll",
           maxWidth: showDuoMode ? 640 : "unset",
           width: showDuoMode ? "100%" : "unset",
-          minWidth: showDuoMode || showSidebar ? 640 : "unset",
         }}
         pr={3}
         pl={4}
       >
-        <Box
-          width={isFocusMode ? "60%" : "100%"}
-          height="100%"
-          minWidth={isFocusMode && 640}
-          flex="0 1 auto"
-        >
+        <Box width={isFocusMode ? "75%" : "100%"} height="100%" flex="0 1 auto">
           <Box width="100%">
             {props.saveClicked && props.hasErrors && (
               <Box mb={3}>
