@@ -85,7 +85,7 @@ export const DuplicateItemDialog = ({ onClose }: DuplicateItemProps) => {
         onClose();
         history.push(
           `/${
-            models?.find((model) => model?.type === "block")
+            models?.find((model) => model?.ZUID === modelZUID)?.type === "block"
               ? "blocks"
               : "content"
           }/${modelZUID}/${res.data.ZUID}`
