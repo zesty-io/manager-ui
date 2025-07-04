@@ -21,7 +21,20 @@ export type TreeItem = {
 } & Partial<ContentNavItem>;
 
 // Transform tree data for RichTreeView
-const transformTreeData = (items: TreeItem[], isHiddenTree: boolean): any[] => {
+type TransformTreeDataParams = {
+  items: TreeItem[];
+  isHiddenTree: boolean;
+  onItemDrop: (draggedItem: any, targetItem: any) => void;
+  dragAndDrop?: boolean;
+  selected?: string;
+};
+const transformTreeData = ({
+  items,
+  isHiddenTree,
+  onItemDrop,
+  dragAndDrop,
+  selected,
+}: TransformTreeDataParams): any[] => {
   return items
     ?.filter((item) => !(!isHiddenTree && item.hidden) && item)
     ?.map((item) => ({
@@ -29,16 +42,22 @@ const transformTreeData = (items: TreeItem[], isHiddenTree: boolean): any[] => {
       label: item.label,
       children:
         item.children?.length > 0
-          ? transformTreeData(item.children, isHiddenTree)
+          ? transformTreeData({
+              items: item.children,
+              isHiddenTree,
+              onItemDrop,
+              dragAndDrop,
+              selected,
+            })
           : undefined,
       // Store additional data for custom rendering
-      // icon: item.icon,
-      // actions: item.actions ?? [],
-      // nodeData: item.nodeData,
-      // isHiddenTree,
-      // onItemDrop,
-      // dragAndDrop,
-      // selected,
+      icon: item.icon,
+      actions: item.actions ?? [],
+      nodeData: item.nodeData,
+      isHiddenTree,
+      onItemDrop,
+      dragAndDrop,
+      selected,
     }));
 };
 
@@ -74,8 +93,14 @@ export const NavTree: FC<Readonly<Props>> = ({
   const isCodeApp = ["html", "css", "js"].includes(id);
 
   const memoizedTree = useMemo(() => {
-    return transformTreeData(tree, isHiddenTree);
-  }, [tree]);
+    return transformTreeData({
+      items: tree,
+      isHiddenTree,
+      onItemDrop,
+      dragAndDrop,
+      selected,
+    });
+  }, [tree, isHiddenTree, onItemDrop, dragAndDrop, selected]);
 
   if (isLoading) {
     return (
