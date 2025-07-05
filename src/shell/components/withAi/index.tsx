@@ -101,7 +101,9 @@ export const withAI = (WrappedComponent: ComponentType) =>
           props.datatype
         );
         // Force re-render after appending generated AI text due to uncontrolled component
-        setKey(key + 1);
+        setTimeout(() => {
+          setKey(key + 1);
+        }, 0);
       } else {
         props.onChange(
           { target: { value: `${props.value || ""}${generatedText}` } },

@@ -1,1 +1,1 @@
-export { default as plugins } from "./plugins";
+export { plugins } from "./plugins";

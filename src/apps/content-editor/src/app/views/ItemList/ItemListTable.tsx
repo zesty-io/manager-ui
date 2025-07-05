@@ -269,7 +269,7 @@ export const ItemListTable = memo(
     const [pinnedColumns, setPinnedColumns] = useState({});
 
     const saveSnapshot = useCallback(() => {
-      if (apiRef?.current && localStorage) {
+      if (apiRef?.current?.exportState && localStorage) {
         const currentState = apiRef.current.exportState();
         const fullState = {
           ...currentState,

@@ -8,6 +8,7 @@ import {
   TrendingDownRounded,
 } from "@mui/icons-material";
 import { DataGridPro, GridRenderCellParams } from "@mui/x-data-grid-pro";
+import AutoSizer, { Size } from "react-virtualized-auto-sizer";
 import {
   useGetAnalyticsPropertiesQuery,
   useGetAnalyticsPropertyDataByQueryQuery,
@@ -343,8 +344,8 @@ export const ItemsTableContent = ({
     })) || [];
 
   return (
-    <>
-      <Box height="718px">
+    <AutoSizer>
+      {({ width }: Size) => (
         <DataGridPro
           rows={
             isFetching || showSkeleton
@@ -357,6 +358,7 @@ export const ItemsTableContent = ({
           disableColumnMenu
           disableSelectionOnClick
           rowHeight={66}
+          style={{ width, height: 781 }}
           sx={{
             ".MuiDataGrid-virtualScrollerContent": {
               backgroundColor: "background.paper",
@@ -373,7 +375,7 @@ export const ItemsTableContent = ({
             },
           }}
         />
-      </Box>
-    </>
+      )}
+    </AutoSizer>
   );
 };
