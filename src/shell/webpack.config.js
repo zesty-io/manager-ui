@@ -73,8 +73,6 @@ module.exports = async (env) => {
         shell: path.resolve(__dirname, "../shell"),
         utility: path.resolve(__dirname, "../utility"),
         apps: path.resolve(__dirname, "../apps"),
-        "react/jsx-dev-runtime": "react/jsx-dev-runtime.js",
-        "react/jsx-runtime": "react/jsx-runtime.js",
       },
       extensions: [".ts", ".tsx", ".js", ".jsx"],
       fullySpecified: false,

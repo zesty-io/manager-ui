@@ -108,7 +108,6 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
   ]);
 
   const filteredFields = useMemo(() => {
-    if (!sortedFields?.length) return [];
     if (search) {
       return sortedFields?.filter(
         (field) =>
@@ -245,7 +244,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
           {/* ACTIVE FIELDS ARE PRESENT */}
           {Boolean(filteredFields?.length) && (
             <>
-              {[...filteredFields]?.map((field, index) => {
+              {filteredFields?.map((field, index) => {
                 return (
                   <Box key={field.ZUID}>
                     {index !== 0 && (

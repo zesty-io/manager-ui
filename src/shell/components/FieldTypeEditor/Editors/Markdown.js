@@ -13,7 +13,7 @@ export function MarkdownEditor(props) {
   });
 
   // update value if the version changes
-  useEffect(() => setValue(props.value), [props.version]);
+  useEffect(() => setValue(props.value), [props.version, props.value]);
 
   return (
     <textarea

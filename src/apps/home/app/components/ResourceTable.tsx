@@ -13,6 +13,7 @@ import { Database } from "@zesty-io/material";
 import { useHistory } from "react-router";
 import { useMemo } from "react";
 import { uniqBy } from "lodash";
+import AutoSizer, { Size } from "react-virtualized-auto-sizer";
 import { EmptyState } from "./EmptyState";
 import { resolveUrlFromAudit } from "../../../../utility/resolveResourceUrlFromAudit";
 import { Audit } from "../../../../shell/services/types";
@@ -167,30 +168,37 @@ export const ResourceTable = ({ dateRange }: Props) => {
   }
 
   return (
-    <DataGridPro
-      // @ts-expect-error - missing types for headerAlign and align on DataGridPro
-      columns={columns}
-      rows={
-        uniqBy(
-          audit?.filter((resource) =>
-            viewableResourceTypes.includes(resource.resourceType)
-          ),
-          "affectedZUID"
-        )?.map((row: any) => ({ id: row.ZUID, ...row })) || []
-      }
-      rowHeight={52}
-      hideFooter
-      disableSelectionOnClick
-      disableColumnFilter
-      loading={isAuditFetching}
-      onRowClick={(params) => handleRowClick(params.row)}
-      onCellClick={() => {}}
-      sx={{
-        backgroundColor: "common.white",
-        ".MuiDataGrid-row": {
-          cursor: "pointer",
-        },
-      }}
-    />
+    <Box width="100%">
+      <AutoSizer>
+        {({ width, height }: Size) => (
+          <DataGridPro
+            // @ts-expect-error - missing types for headerAlign and align on DataGridPro
+            columns={columns}
+            rows={
+              uniqBy(
+                audit?.filter((resource) =>
+                  viewableResourceTypes.includes(resource.resourceType)
+                ),
+                "affectedZUID"
+              )?.map((row: any) => ({ id: row.ZUID, ...row })) || []
+            }
+            rowHeight={52}
+            hideFooter
+            disableSelectionOnClick
+            disableColumnFilter
+            loading={isAuditFetching}
+            onRowClick={(params) => handleRowClick(params.row)}
+            onCellClick={() => {}}
+            style={{ width, height }}
+            sx={{
+              backgroundColor: "common.white",
+              ".MuiDataGrid-row": {
+                cursor: "pointer",
+              },
+            }}
+          />
+        )}
+      </AutoSizer>
+    </Box>
   );
 };

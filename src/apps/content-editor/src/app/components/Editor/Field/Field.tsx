@@ -34,9 +34,7 @@ import { FieldTypeDateTime } from "../../../../../../../shell/components/FieldTy
 import { FieldTypeSort } from "../../../../../../../shell/components/FieldTypeSort";
 import { FieldTypeNumber } from "../../../../../../../shell/components/FieldTypeNumber";
 import { FieldTypeBlockSelector } from "../../../../../../../shell/components/FieldTypeBlockSelector";
-// import { FieldTypeIntegration } from "../../../../../../../shell/components/FieldTypeIntegration";
 import { InternalLink } from "./InternalLink";
-
 import styles from "./Field.less";
 import { MemoryRouter } from "react-router";
 import { withAI } from "../../../../../../../shell/components/withAi";
@@ -49,11 +47,6 @@ import { FieldTypeMedia } from "../../FieldTypeMedia";
 import { debounce, parseInt } from "lodash";
 import { useRegisterRef } from "../../../../../../../engine/useRegisterRef";
 import FieldTypeIntegration from "../../../../../../../shell/components/FieldTypeIntegration";
-import { fields } from "../../../../../../../shell/store/fields";
-import {
-  INTEGRATION_FIELD_DATA,
-  INTEGRATION_FIELD_VALUE,
-} from "../../../../../../../shell/components/FieldTypeIntegration/configs";
 
 const AIFieldShell = withAI(FieldShell);
 

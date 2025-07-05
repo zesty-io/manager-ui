@@ -24,7 +24,7 @@ describe("All Blocks Tests", () => {
 
   it("should show and traverse onboarding flow", () => {
     AllBlocksPage.onboardingDialog.should("be.visible");
-    const totalSteps = 4;
+    const totalSteps = 3;
     for (let i = 0; i < totalSteps; i++) {
       AllBlocksPage.clickOnboardingNextButton();
     }

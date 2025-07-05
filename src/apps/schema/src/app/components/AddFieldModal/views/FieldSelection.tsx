@@ -15,7 +15,6 @@ import { useSelector } from "react-redux";
 
 import { FieldItem } from "../FieldItem";
 import { FieldListData, FIELD_COPY_CONFIG } from "../../configs";
-import { isZestyEmail } from "../../../../../../../utility/isZestyEmail";
 import { AppState } from "../../../../../../../shell/store/types";
 import { User } from "../../../../../../../shell/services/types";
 
@@ -152,13 +151,6 @@ export const FieldSelection = ({ onFieldClick, onModalClose }: Props) => {
               columnGap={2}
             >
               {fieldTypes[fieldKey].map((field: FieldListData, index) => {
-                if (
-                  !isZestyEmail(user.email) &&
-                  field?.type === "block_selector"
-                ) {
-                  return <></>;
-                }
-
                 return (
                   <FieldItem
                     key={index}

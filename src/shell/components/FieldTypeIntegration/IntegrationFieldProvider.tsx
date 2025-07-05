@@ -1,10 +1,4 @@
-import {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { createContext, ReactNode, useContext, useState } from "react";
 
 import {
   IntegrationTypes,
@@ -96,19 +90,14 @@ type IntegrationFieldContextType = {
   setIntegrationValue: (value: string | null) => void;
   apiData: any | null;
   setApiData: (apiData: any | null) => void;
-
   isConnecting: boolean;
   setIsConnecting: (isConnecting: boolean) => void;
   connectionError: boolean;
   setConnectionError: (connectionError: boolean) => void;
-  // apiPathOptions: string[];
-  // setApiPathOptions: (apiPathOptions: string[]) => void;
   rootData: any | null;
   setRootData: (rootData: any | null) => void;
   rootPath: string | null;
   setRootPath: (rootPath: string | null) => void;
-  integrationConfig: IntegrationFieldConfig;
-  setIntegrationConfig: (integrationConfig: IntegrationFieldConfig) => void;
   remoteSelectorOpen: boolean;
   setRemoteSelectorOpen: (remoteSelectorOpen: boolean) => void;
   selectedItems: any[];
@@ -167,14 +156,6 @@ const IntegrationFieldProvider = ({
   const [jsonData, setJsonData] = useState<any | null>(null);
 
   const [rootPath, setRootPath] = useState<string | null>(null);
-
-  const [integrationConfig, setIntegrationConfig] =
-    useState<IntegrationFieldConfig>({
-      integrationEndpoint: null,
-      integrationType: null,
-      integrationRequestHeaders: null,
-      integrationKeyPaths: null,
-    });
 
   const [isFormOpen, setIsFormOpen] = useState(false);
 
@@ -254,8 +235,6 @@ const IntegrationFieldProvider = ({
         setRootData,
         rootPath,
         setRootPath,
-        integrationConfig,
-        setIntegrationConfig,
         remoteSelectorOpen,
         setRemoteSelectorOpen,
         selectedItems,

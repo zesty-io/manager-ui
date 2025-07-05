@@ -116,22 +116,7 @@ const SelectCard: FC<SelectCardProps> = ({
           },
         }}
       >
-        {/* <DisplayCard
-          // ZUID={`preview-${integrationType}`}
-          rootPath={rootPath}
-          type={integrationType}
-          heading={getKeyValue(data, propertyPaths?.heading)}
-          subHeading={getKeyValue(data, propertyPaths?.subHeading)}
-          thumbnail={getKeyValue(data, propertyPaths?.thumbnail)}
-          detail={getKeyValue(data, propertyPaths?.detail)}
-          details={propertyPaths?.details}
-          data={data}
-          showPlayIcon={true}
-          loading={loading}
-        /> */}
         <DisplayCard
-          // ZUID={`preview-${integrationType}`}
-          // rootPath={rootPath}
           type={type}
           heading={heading}
           subHeading={subHeading}

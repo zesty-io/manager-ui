@@ -19,6 +19,8 @@ export const modelNameMap = {
   block: "Block",
 };
 
+export const RESERVED_FIELD_NAMES = ["og_image"];
+
 export const stringStartsWithVowel = (string: string): boolean => {
   if (!string) return;
 
@@ -111,6 +113,11 @@ export const getErrorMessage = ({
 
     if (validate.includes("length") && maxLength && value.length > maxLength) {
       return `Shorten to less than ${maxLength} characters (${value.length}/${maxLength})`;
+    }
+
+    // check for reserved field names
+    if (RESERVED_FIELD_NAMES.includes(value)) {
+      return `"${value}" is a System Reserved Field Name`;
     }
 
     return "";

@@ -82,6 +82,7 @@ import {
   Currency,
   currencies,
 } from "../../../../../../../shell/components/FieldTypeCurrency/currencies";
+import getFlagEmoji from "../../../../../../../utility/getFlagEmoji";
 
 type ActiveTab = "details" | "rules" | "learn";
 type Params = {
@@ -137,11 +138,7 @@ export const FieldForm = ({
   ] = useCreateContentModelFieldMutation();
   const [
     updateContentModelField,
-    {
-      isLoading: isUpdatingField,
-      isSuccess: isFieldUpdated,
-      error: fieldUpdateError,
-    },
+    { isLoading: isUpdatingField, isSuccess: isFieldUpdated },
   ] = useUpdateContentModelFieldMutation();
   const [
     bulkUpdateContentModelField,
@@ -532,25 +529,15 @@ export const FieldForm = ({
   }, [formData, isDefaultValueEnabled]);
 
   useEffect(() => {
-    if (fieldCreationError || fieldUpdateError) {
-      let errorMsg = "";
-
-      if (fieldCreationError) {
-        errorMsg = "Failed to create the field";
-      }
-
-      if (fieldUpdateError) {
-        errorMsg = "Failed to update the field";
-      }
-
+    if (fieldCreationError) {
       dispatch(
         notify({
-          message: errorMsg,
+          message: "Failed to create the field",
           kind: "error",
         })
       );
     }
-  }, [fieldCreationError, fieldUpdateError]);
+  }, [fieldCreationError]);
 
   useEffect(() => {
     if (isFieldDeleted) {
@@ -665,14 +652,6 @@ export const FieldForm = ({
           fileExtensionsErrorMessage:
             formData.fileExtensionsErrorMessage as string,
         }),
-        ...(formData.integrationRequestHeaders && {
-          integrationRequestHeaders:
-            formData.integrationRequestHeaders as IntegrationRequestHeaders,
-        }),
-        ...(formData.integrationKeyPaths && {
-          integrationKeyPaths:
-            formData.integrationKeyPaths as IntegrationKeyPaths,
-        }),
       },
       sort: isUpdateField ? fieldData.sort : sort, // Just use the length since sort starts at 0
     };
@@ -731,6 +710,15 @@ export const FieldForm = ({
               fieldZUID: fieldData?.ZUID,
             });
           }
+        })
+        .catch((error) => {
+          console.error("Failed to update the field", error);
+          dispatch(
+            notify({
+              message: "Failed to update the field",
+              kind: "error",
+            })
+          );
         });
     } else {
       // We want to skip field cache invalidation when creating an in-between field

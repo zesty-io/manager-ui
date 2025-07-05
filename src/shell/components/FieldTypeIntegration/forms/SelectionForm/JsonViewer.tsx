@@ -4,7 +4,6 @@ import TrapFocus from "@mui/material/Unstable_TrapFocus";
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import MonacoEditor from "react-monaco-editor/lib/editor";
 import CloseIcon from "@mui/icons-material/Close";
-type Props = {};
 
 export const CodeEditor = ({
   data,
@@ -234,8 +233,8 @@ const JsonViewer = ({
               language="json"
               theme="vs-dark"
               options={{
-                // readOnly: true,
-                // domReadOnly: true,
+                readOnly: true,
+                domReadOnly: true,
                 fontSize: 14,
                 lineNumbers: "off",
                 scrollBeyondLastLine: false,

@@ -41,7 +41,7 @@ export const InputRange = ({
         control={
           <Checkbox
             data-cy="InputRangeCheckbox"
-            checked={minValue !== null && maxValue !== null && false}
+            checked={minValue !== null && maxValue !== null}
             size="small"
             onChange={(evt) => {
               if (evt.target.checked) {
@@ -57,7 +57,6 @@ export const InputRange = ({
         label={
           <Box>
             <Typography variant="body2" fontWeight="600">
-              {/* Limit Input Range */}
               {type === "integration"
                 ? "Limit Item Range"
                 : "Limit Input Range"}

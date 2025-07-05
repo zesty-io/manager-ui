@@ -25,7 +25,7 @@ import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
 import { cloneDeep } from "lodash";
 
-import { FormData, FormValue } from "./views/FieldForm";
+import { FormValue } from "./views/FieldForm";
 import {
   FieldSettingsOptions,
   IntegrationFieldConfig,
@@ -33,9 +33,6 @@ import {
 import { convertDropdownValue } from "../../utils";
 import { withCursorPosition } from "../../../../../../shell/components/withCursorPosition";
 import { Currency } from "../../../../../../shell/components/FieldTypeCurrency/currencies";
-// import IntegrationField from "../../../../../../shell/components/FieldTypeIn/currencies";
-import { useIntegrationField } from "../../../../../../shell/components/FieldTypeIntegration/IntegrationFieldProvider";
-// import IntegrationField from "../../../../../../shell/components/FieldTypeIntegration/index";
 import FieldTypeIntegration from "../../../../../../shell/components/FieldTypeIntegration";
 
 const TextFieldWithCursorPosition = withCursorPosition(TextField);
@@ -80,9 +77,6 @@ type FieldType =
   | "toggle_options"
   | "config";
 
-// | "integrationRequestHeaders"
-// | "integrationKeyPaths"
-
 type InputType = "text" | "number";
 export interface InputField {
   name: FieldNames;
@@ -99,9 +93,6 @@ export interface InputField {
   validate?: Validation[];
   inputType?: InputType;
   autoFocus?: boolean;
-  // integrationConfig?: IntegrationFieldConfig;
-  // integrationEndpoint?: string;
-  // integrationType?: IntegrationFieldTypes;
 }
 export interface DropdownOptions {
   label: string;
