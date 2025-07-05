@@ -29,7 +29,7 @@ function getKeyValuePairs(obj: object, prefix: string = ""): KeyValuePair[] {
   return result;
 }
 
-function getValuePaths(obj: object, prefix: string = ""): string[] {
+function getKeyPaths(obj: object, prefix: string = ""): string[] {
   const result: string[] = [];
 
   for (const key in obj) {
@@ -42,7 +42,7 @@ function getValuePaths(obj: object, prefix: string = ""): string[] {
         value !== null &&
         !Array.isArray(value)
       ) {
-        result.push(...getValuePaths(value, currentKey));
+        result.push(...getKeyPaths(value, currentKey));
       } else {
         result.push(currentKey);
       }
@@ -52,21 +52,12 @@ function getValuePaths(obj: object, prefix: string = ""): string[] {
   return result;
 }
 
-const getObjectValue = (obj: object, path: string) => {
+const getKeyValue = (obj: object, path: string) => {
   if (!obj || !path) return "";
   return path?.split(".").reduce((acc, key) => {
     return acc?.[key as keyof typeof acc];
   }, obj) as any;
 };
-
-// function validateUrl(str: string): boolean {
-//   try {
-//     const url = new URL(str);
-//     return ["http://", "https://", "ftp://"].includes(url.protocol);
-//   } catch (_) {
-//     return false;
-//   }
-// }
 
 const validateUrl = (url: string) => {
   const validProtocols = ["http://", "https://"];
@@ -84,16 +75,44 @@ const validateUrl = (url: string) => {
 };
 
 function arrayToKeyValuePairs(arr: any[]) {
+  if (!arr?.length) return {};
   return arr?.reduce((acc: any, obj: any) => {
     acc[obj.key] = obj.value;
     return acc;
   }, {});
 }
 
+function keyValuePairsToArray(
+  obj: Record<string, any>
+): { key: string; value: any }[] {
+  if (!obj) return [];
+  return Object.entries(obj).map(([key, value]) => ({
+    key,
+    value,
+  }));
+}
+
+function createInitialValues(
+  config: Array<{ name: string }>
+): Record<string, string> {
+  if (!config?.length) return {};
+  return config.reduce((acc, item) => {
+    acc[item.name] = "";
+    return acc;
+  }, {} as Record<string, string>);
+}
+
+function generateIdFromHeading(heading: string) {
+  return heading?.replace(/\s+/g, "-")?.toLowerCase().trim();
+}
+
 export {
   getKeyValuePairs,
-  getValuePaths,
-  getObjectValue,
+  getKeyPaths,
+  getKeyValue,
   validateUrl,
   arrayToKeyValuePairs,
+  keyValuePairsToArray,
+  createInitialValues,
+  generateIdFromHeading,
 };

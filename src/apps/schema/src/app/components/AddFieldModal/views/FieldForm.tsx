@@ -60,7 +60,10 @@ import {
   ContentModelFieldValue,
   FieldSettingsOptions,
   ContentModelFieldDataType,
-  IntegrationFieldTypes,
+  IntegrationTypes,
+  IntegrationFieldConfig,
+  IntegrationRequestHeaders,
+  IntegrationKeyPaths,
 } from "../../../../../../../shell/services/types";
 import {
   FIELD_COPY_CONFIG,
@@ -79,7 +82,6 @@ import {
   Currency,
   currencies,
 } from "../../../../../../../shell/components/FieldTypeCurrency/currencies";
-import getFlagEmoji from "../../../../../../../utility/getFlagEmoji";
 
 type ActiveTab = "details" | "rules" | "learn";
 type Params = {
@@ -188,9 +190,6 @@ export const FieldForm = ({
       fieldData?.settings?.defaultValue !== undefined
   );
 
-  // const { isFormOpen, openConnectForm, closeConnectForm } =
-  //   useIntegrationField();
-
   /** Initiate field type form */
   useEffect(() => {
     let formFields: { [key: string]: FormValue } = {};
@@ -252,10 +251,15 @@ export const FieldForm = ({
           formFields[field.name] = fieldData.settings?.[field.name] ?? null;
         } else if (field.name === "fileExtensionsErrorMessage") {
           formFields[field.name] = fieldData.settings?.[field.name] ?? null;
-        } else if (field.name === "requestHeaders") {
-          formFields[field.name] = fieldData.settings?.[field.name] ?? null;
-        } else if (field.name === "propertyPaths") {
-          formFields[field.name] = fieldData.settings?.[field.name] ?? null;
+        } else if (field.name === "integrationConfig") {
+          formFields["integrationEndpoint"] =
+            fieldData?.["integrationEndpoint"] ?? null;
+          formFields["integrationType"] =
+            fieldData?.["integrationType"] ?? null;
+          formFields["integrationRequestHeaders"] =
+            fieldData?.["integrationRequestHeaders"] ?? null;
+          formFields["integrationKeyPaths"] =
+            fieldData?.["integrationKeyPaths"] ?? null;
         } else {
           formFields[field.name] = fieldData[field.name] as FormValue;
         }
@@ -278,7 +282,10 @@ export const FieldForm = ({
           field.type === "config" &&
           field.name === "integrationConfig"
         ) {
-          formFields[field.name] = null;
+          formFields["integrationEndpoint"] = null;
+          formFields["integrationType"] = null;
+          formFields["integrationRequestHeaders"] = null;
+          formFields["integrationKeyPaths"] = null;
         } else {
           if (
             field.name === "defaultValue" ||
@@ -305,7 +312,6 @@ export const FieldForm = ({
         }
       }
     });
-
     setFormData(formFields);
     setErrors(errors);
   }, [type, fieldData, mediaFoldersOptions.length]);
@@ -456,6 +462,19 @@ export const FieldForm = ({
       }
 
       if (
+        [
+          "integrationEndpoint",
+          "integrationType",
+          "integrationKeyPaths",
+        ].includes(inputName) &&
+        (!formData.integrationEndpoint ||
+          !formData.integrationType ||
+          !formData.integrationKeyPaths)
+      ) {
+        newErrorsObj["integrationConfig"] = "Incomplete API Configuration";
+      }
+
+      if (
         inputName in errors &&
         ![
           "defaultValue",
@@ -470,6 +489,7 @@ export const FieldForm = ({
           "currency",
           "fileExtensions",
           "fileExtensionsErrorMessage",
+          "integrationConfig",
         ].includes(inputName)
       ) {
         const { maxLength, label, validate } = FORM_CONFIG[type].details.find(
@@ -564,7 +584,7 @@ export const FieldForm = ({
       (max, field) => (field.sort > max ? field.sort : max),
       0
     );
-    console.debug("handleSubmitForm: ", { formData, fields });
+
     const sort = isInbetweenField ? sortIndex : highestSortValue + 1;
 
     if (hasErrors) {
@@ -645,11 +665,17 @@ export const FieldForm = ({
           fileExtensionsErrorMessage:
             formData.fileExtensionsErrorMessage as string,
         }),
+        ...(formData.integrationRequestHeaders && {
+          integrationRequestHeaders:
+            formData.integrationRequestHeaders as IntegrationRequestHeaders,
+        }),
+        ...(formData.integrationKeyPaths && {
+          integrationKeyPaths:
+            formData.integrationKeyPaths as IntegrationKeyPaths,
+        }),
       },
       sort: isUpdateField ? fieldData.sort : sort, // Just use the length since sort starts at 0
     };
-
-    console.debug("handleSubmitForm: ", { formData, fields, body });
 
     if (type === "one_to_one" || type === "one_to_many") {
       body.relatedModelZUID = formData.relatedModelZUID || null;
@@ -670,7 +696,11 @@ export const FieldForm = ({
 
     if (type === "integration") {
       body.integrationEndpoint = formData?.integrationEndpoint as string;
-      body.integrationType = formData?.integrationType as IntegrationFieldTypes;
+      body.integrationType = formData?.integrationType as IntegrationTypes;
+      body.integrationRequestHeaders =
+        formData?.integrationRequestHeaders as IntegrationRequestHeaders;
+      body.integrationKeyPaths =
+        formData?.integrationKeyPaths as IntegrationKeyPaths;
     }
 
     if (isUpdateField) {
@@ -850,7 +880,7 @@ export const FieldForm = ({
           borderTop: 0,
         }}
       >
-        {activeTab === "details" && (
+        <div role="tabpanel" hidden={activeTab !== "details"}>
           <Grid
             data-cy="DetailsTab"
             container
@@ -873,10 +903,21 @@ export const FieldForm = ({
               let renderOption: any;
               let filterOptions: any;
               let autocompleteConfig: AutocompleteConfig = {};
+              let integrationConfig: IntegrationFieldConfig = null;
 
               if (fieldConfig.name === "relatedModelZUID") {
                 dropdownOptions = modelsOptions;
                 disabled = isLoadingModels;
+              }
+
+              if (fieldConfig.name === "integrationConfig") {
+                integrationConfig = {
+                  integrationType: fieldData?.integrationType,
+                  integrationEndpoint: fieldData?.integrationEndpoint,
+                  integrationRequestHeaders:
+                    fieldData?.integrationRequestHeaders,
+                  integrationKeyPaths: fieldData?.integrationKeyPaths,
+                };
               }
 
               if (fieldConfig.name === "relatedFieldZUID") {
@@ -964,6 +1005,7 @@ export const FieldForm = ({
                   renderOption={renderOption}
                   filterOptions={filterOptions}
                   autocompleteConfig={autocompleteConfig}
+                  integrationConfig={integrationConfig}
                 />
               );
             })}
@@ -996,9 +1038,9 @@ export const FieldForm = ({
               </Grid>
             )}
           </Grid>
-        )}
+        </div>
 
-        {activeTab === "rules" && (
+        <div role="tabpanel" hidden={activeTab !== "rules"}>
           <Rules
             type={type}
             onFieldDataChanged={handleFieldDataChange}
@@ -1009,9 +1051,11 @@ export const FieldForm = ({
             isDefaultValueEnabled={isDefaultValueEnabled}
             setIsDefaultValueEnabled={setIsDefaultValueEnabled}
           />
-        )}
+        </div>
 
-        {activeTab === "learn" && <Learn type={type} />}
+        <div role="tabpanel" hidden={activeTab !== "learn"}>
+          <Learn type={type} />
+        </div>
       </DialogContent>
       {isUpdateField ? (
         <DialogActions
@@ -1075,11 +1119,6 @@ export const FieldForm = ({
           </Box>
         </DialogActions>
       )}
-
-      {/* {isFormOpen && (
-        <ConnectForm open={isFormOpen} onClose={closeConnectForm} />
-      )} */}
-      {/* <ConnectForm open={isFormOpen} onClose={closeConnectForm} /> */}
     </>
   );
 };

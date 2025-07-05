@@ -48,6 +48,12 @@ import {
 import { FieldTypeMedia } from "../../FieldTypeMedia";
 import { debounce, parseInt } from "lodash";
 import { useRegisterRef } from "../../../../../../../engine/useRegisterRef";
+import FieldTypeIntegration from "../../../../../../../shell/components/FieldTypeIntegration";
+import { fields } from "../../../../../../../shell/store/fields";
+import {
+  INTEGRATION_FIELD_DATA,
+  INTEGRATION_FIELD_VALUE,
+} from "../../../../../../../shell/components/FieldTypeIntegration/configs";
 
 const AIFieldShell = withAI(FieldShell);
 
@@ -106,7 +112,7 @@ export const Field = ({
   const [imageModal, setImageModal] = useState(null);
   const [editorType, setEditorType] = useState<EditorType>();
 
-  const value = item?.data?.[name];
+  const value = item?.data?.[name as keyof typeof item.data];
   const version = item?.meta?.version;
   const fieldData = fields?.find((field) => field.ZUID === ZUID);
   const [inputValue, setInputValue] = useState(value || "");
@@ -186,6 +192,7 @@ export const Field = ({
         "dropdown",
         "date",
         "datetime",
+        "integration",
       ].includes(datatype),
     }
   );
@@ -777,14 +784,24 @@ export const Field = ({
     case "integration":
       return (
         <FieldShell settings={fieldData} errors={errors}>
-          <RelationalFieldBase
+          <FieldTypeIntegration
             name={name}
-            value={!!value ? String(value) : null}
-            fieldZUID={ZUID}
-            relatedModelZUID={relatedModelZUID}
-            relatedFieldZUID={relatedFieldZUID}
-            onChange={onChange}
-            fieldLabel={fieldData?.label}
+            label={label}
+            description={fieldData?.description}
+            required={required}
+            value={value ? value?.toString() : null}
+            onChange={({ inputName, value }) =>
+              onChange(value, inputName, datatype)
+            }
+            formType="select"
+            maxItems={settings?.maxValue}
+            isError={errors && Object.values(errors)?.some((error) => !!error)}
+            integrationConfig={{
+              integrationEndpoint: fieldData?.integrationEndpoint,
+              integrationType: fieldData?.integrationType,
+              integrationRequestHeaders: fieldData?.integrationRequestHeaders,
+              integrationKeyPaths: fieldData?.integrationKeyPaths,
+            }}
           />
         </FieldShell>
       );

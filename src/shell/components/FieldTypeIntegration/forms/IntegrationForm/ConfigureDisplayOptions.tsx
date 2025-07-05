@@ -1,205 +1,24 @@
-import { useEffect, useState, useRef, RefObject } from "react";
+import { useEffect, useState, useRef } from "react";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import {
-  Box,
-  Stack,
-  Typography,
-  Autocomplete,
-  PaperProps,
-  Paper,
-  Chip,
-  Divider,
-} from "@mui/material";
+import { Box, Stack, Typography, Divider } from "@mui/material";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import IconButton from "@mui/material/IconButton";
 import { FormWrapper } from ".";
 import { useIntegrationField } from "../../IntegrationFieldProvider";
 import { CheckRounded } from "@mui/icons-material";
 import SettingsIcon from "@mui/icons-material/Settings";
-import IntegrationdDisplay from "../../cards/IntegrationDisplay";
 import { FieldWrapper } from "./../FieldWrapper";
-import {
-  COLOR_MAP,
-  DISPLAY_OPTIONS_CONFIG,
-  DisplayPath,
-  ConfigProps,
-  IntegrationFieldDisplay,
-} from "../../config";
-import {
-  getValuePaths,
-  getKeyValuePairs,
-  getObjectValue,
-  validateUrl,
-} from "../../utils";
+import { DISPLAY_OPTIONS_CONFIG, ConfigProps } from "../../configs";
+import { getKeyPaths, getKeyValue, createInitialValues } from "../../utils";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
-import DragIndicatorRoundedIcon from "@mui/icons-material/DragIndicatorRounded";
-import IntegrationDisplay from "../../cards/IntegrationDisplay";
-
-import DisplayType from "../../cards/DisplayType";
-import Wrapper from "../../cards/Wrapper";
-
-type PopperComponentProps = {
-  anchorEl?: any;
-  disablePortal?: boolean;
-  open: boolean;
-};
-
-const CustomPaper = (props: PaperProps & { optionsDescription: string }) => {
-  return (
-    <Paper {...props} sx={{ px: 0, py: 1 }}>
-      {!!props?.optionsDescription && (
-        <Typography
-          variant="body2"
-          color="text.secondary"
-          sx={{ px: 2, pt: 1, pb: 0.5, fontStyle: "italic" }}
-        >
-          {props?.optionsDescription}
-        </Typography>
-      )}
-      <Box
-        sx={{
-          width: "100%",
-
-          "& ul.MuiAutocomplete-listbox": {
-            py: 0,
-          },
-        }}
-      >
-        {props.children}
-      </Box>
-    </Paper>
-  );
-};
-
-const PathSelector = ({
-  value,
-  onChange,
-  options,
-  placeholder,
-  optionsDescription = null,
-  data,
-  inputRef,
-}: {
-  value: string;
-  onChange: (value: string) => void;
-  options: string[];
-  placeholder?: string;
-  optionsDescription?: string | null;
-  data?: any;
-  inputRef?: RefObject<HTMLInputElement>;
-}) => {
-  return (
-    <Autocomplete
-      fullWidth
-      options={options}
-      // value={value}
-      size="small"
-      disableClearable
-      autoHighlight
-      onChange={(_e, value) => {
-        onChange(value || "");
-      }}
-      slots={{
-        paper: (props) => (
-          <CustomPaper {...props} optionsDescription={optionsDescription} />
-        ),
-      }}
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          placeholder={placeholder || ""}
-          inputRef={inputRef}
-        />
-      )}
-      renderOption={(props, option) => {
-        const optionValue = !data ? null : getObjectValue(data, option);
-        let valueType: string = typeof optionValue;
-        valueType =
-          valueType === "object"
-            ? Array.isArray(optionValue)
-              ? "array"
-              : "object"
-            : valueType;
-
-        const isUrl =
-          valueType === "string" && validateUrl(optionValue as string);
-
-        const typeColor =
-          COLOR_MAP[valueType as keyof typeof COLOR_MAP] || COLOR_MAP.default;
-
-        const hyphen = valueType === "string" ? '"' : "";
-
-        return (
-          <li {...props}>
-            <Box
-              display="flex"
-              flexDirection="row"
-              justifyContent="space-between"
-              alignItems={"center"}
-              width="100%"
-              position="relative"
-              boxSizing="border-box"
-              whiteSpace="nowrap"
-              overflow="hidden"
-              sx={{
-                "& .MuiTypography-root, & .MuiChip-label": {
-                  fontFamily: "monospace",
-                  fontWeight: 400,
-                },
-              }}
-            >
-              <Typography
-                variant="body2"
-                color="text.primary"
-                flexGrow={0}
-                flexShrink={0}
-                overflow="hidden"
-                noWrap
-              >
-                {`${option}:`}
-              </Typography>
-              <Typography
-                variant="body2"
-                color={`${isUrl ? COLOR_MAP.url : typeColor}.600`}
-                flexGrow={1}
-                flexShrink={1}
-                overflow="hidden"
-                textOverflow="ellipsis"
-                noWrap
-                px={1}
-              >
-                {`${hyphen}${
-                  typeof optionValue === "object"
-                    ? JSON.stringify(optionValue)
-                    : optionValue
-                }${hyphen}`}
-              </Typography>
-
-              <Chip
-                label={valueType}
-                size="small"
-                variant="filled"
-                sx={{
-                  flexShrink: 0,
-                  borderRadius: 1,
-                  bgcolor: `${typeColor}.50`,
-                  color: `${typeColor}.600`,
-                  px: "0px !important",
-                  py: 0.5,
-                }}
-              />
-            </Box>
-          </li>
-        );
-      }}
-    />
-  );
-};
+import KeyPathSelector from "./KeyPathSelector";
+import { IntegrationKeyPaths } from "../../../../services/types";
+import DraggableCard from "../../DisplayCard/DraggableCard";
 
 const DetailsPathSelector = ({
   details,
@@ -270,7 +89,7 @@ const DetailsPathSelector = ({
                 setInternalData(newInternalData);
               }}
             />
-            <PathSelector
+            <KeyPathSelector
               value={item?.path}
               onChange={(value) => {
                 const newInternalData = internalData ? [...internalData] : [];
@@ -330,8 +149,11 @@ const DetailsPathSelector = ({
 };
 
 const ConfigureDisplayOptions = () => {
-  const [open, setOpen] = useState(false);
-  const [options, setOptions] = useState([]);
+  const [parentPathOptions, setParentPathOptions] = useState([]);
+  const [childPathOptions, setChildPathOptions] = useState([]);
+  const [rootDataRaw, setRootDataRaw] = useState(null);
+  const [rootPathRaw, setRootPathRaw] = useState("");
+  const [completed, setCompleted] = useState(false);
 
   const {
     apiData,
@@ -339,82 +161,68 @@ const ConfigureDisplayOptions = () => {
     closeForm,
     setIsConnected,
     integrationType,
-    apiPathOptions,
-    setApiPathOptions,
-    displayData,
-    setDisplayData,
-    propertyPathOptions,
-    setPropertyPathOptions,
+    setRootData,
     rootPath,
     setRootPath,
-    propertyPaths,
-    setPropertyPaths,
-    jsonData,
+    integrationKeyPaths,
+    setIntegrationKeyPaths,
+    defaultConfig,
   } = useIntegrationField();
 
-  // const optionKeyValueChange = (data: any[]): void => {
-
-  //   const displayKeyValue = getKeyValuePairs(data?.[0]);
-
-  //   const displayOptionRaw = displayKeyValue?.map((item) => ({
-  //     label: item?.key,
-  //     value: item?.value,
-  //   }));
-  //   setDisplayOptions(displayOptionRaw);
-  // };
-
-  const handleSave = () => {
-    localStorage.setItem(
-      "integrationPropertyPaths",
-      JSON.stringify(propertyPaths)
+  const [integrationKeyPathsLocal, setIntegrationKeyPathsLocal] =
+    useState<IntegrationKeyPaths>(
+      createInitialValues(DISPLAY_OPTIONS_CONFIG?.[integrationType])
     );
 
-    localStorage.setItem("integrationType", JSON.stringify(integrationType));
-    console.debug("propertyPaths:", propertyPaths);
+  const handleSave = () => {
+    setRootData(rootDataRaw);
+    setRootPath(rootPathRaw);
+    setIntegrationKeyPaths(integrationKeyPathsLocal);
+
+    setIsConnected(true);
   };
 
   useEffect(() => {
-    // const displayKeyValue = getKeyValuePairs(apiData);
+    const rootIsArray = Array.isArray(apiData);
+    const rootOptions = !!rootIsArray
+      ? getKeyPaths(apiData?.[0])
+      : getKeyPaths(apiData).filter((item) => {
+          const val = getKeyValue(apiData, item);
+          return Array.isArray(val);
+        });
 
-    // const arrayObjectsOnly = getValuePaths(apiData)
+    setParentPathOptions(rootOptions);
+  }, [apiData, integrationKeyPaths?.rootPath]);
 
-    // const displayOptionRaw = displayKeyValue?.map((item) => ({
-    //   label: item?.key,
-    //   value: item?.value,
-    // }));
-    // const rawData = getObjectValue(apiData, value);
-    // const displayOptionsRaw = getValuePaths(rawData?.[0]);
+  useEffect(() => {
+    if (!!integrationKeyPaths?.rootPath) {
+      const rootData = getKeyValue(apiData, integrationKeyPaths?.rootPath);
+      setRootDataRaw(rootData?.[0]);
+      setRootPathRaw(integrationKeyPaths?.rootPath);
+      const childOptions = getKeyPaths(rootData?.[0]).filter((item) => {
+        const val = getKeyValue(rootData, item);
+        return (
+          !["object", "function"]?.includes(typeof val) && !Array.isArray(val)
+        );
+      });
 
-    // setRootPath(value);
-
-    // setPropertyPaths({
-    //   ...propertyPaths,
-    //   ["rootPath"]: value,
-    // });
-
-    // setDisplayData(rawData?.[0]);
-
-    // setpropertyPathOptions(displayOptionsRaw);
-    // setPropertyPaths(null)
-
-    // localStorage.setItem(
-    //   "integrationApiData",
-    //   JSON.stringify(rawData)
-    // );
-    if (apiPathOptions?.length === 1) {
-      // setActiveStep(2);
-      const arrayObjectsOnly = getObjectValue(apiData, apiPathOptions?.[0]);
-      setPropertyPathOptions(arrayObjectsOnly);
-      setRootPath(apiPathOptions?.[0]);
-      console.debug("arrayObjectsOnly", { arrayObjectsOnly });
+      setChildPathOptions(childOptions);
+      setIntegrationKeyPathsLocal(integrationKeyPaths);
     }
+  }, [apiData, integrationKeyPaths?.rootPath]);
 
-    console.debug("displayOptionRaw", { apiPathOptions });
-    // setOptions(displayOptionRaw);
-  }, [apiPathOptions]);
+  useEffect(() => {
+    const allValid = DISPLAY_OPTIONS_CONFIG?.[integrationType]
+      ?.map(
+        (field) =>
+          !!integrationKeyPathsLocal[field?.name as keyof IntegrationKeyPaths]
+      )
+      .every((item) => !!item);
+    setCompleted(!!allValid);
+  }, [integrationKeyPathsLocal]);
 
   return (
-    <FormWrapper height="calc(100vh - 40px)" width="1200px">
+    <FormWrapper height="calc(100vh - 40px)" width="1080px">
       <DialogTitle component="div" flexGrow={0}>
         <SettingsIcon
           color="primary"
@@ -482,7 +290,6 @@ const ConfigureDisplayOptions = () => {
           alignItems="flex-start"
           height="100%"
           width="100%"
-          border="1px solid red"
           boxSizing="border-box"
         >
           <Box
@@ -514,36 +321,44 @@ const ConfigureDisplayOptions = () => {
             </Box>
 
             <FieldWrapper label="List Path" isRequired={true}>
-              <PathSelector
-                value={rootPath}
+              <KeyPathSelector
+                value={defaultConfig?.integrationKeyPaths?.rootPath}
                 onChange={(value: string) => {
-                  const rawData = getObjectValue(apiData, value);
-                  const displayOptionsRaw = getValuePaths(rawData?.[0]);
+                  const rootDataRaw = getKeyValue(apiData, value);
+                  const childOptionsRaw = getKeyPaths(rootDataRaw?.[0]).filter(
+                    (item) => {
+                      const val = getKeyValue(rootDataRaw, item);
+                      return (
+                        !["object", "function"]?.includes(typeof val) &&
+                        !Array.isArray(val)
+                      );
+                    }
+                  );
+
+                  console.debug("rawData - displayOptionsRaw", {
+                    rootDataRaw,
+                    childOptionsRaw,
+                    value,
+                  });
 
                   setRootPath(value);
 
-                  setPropertyPaths({
-                    ...propertyPaths,
+                  const newPaths = {
+                    ...integrationKeyPathsLocal,
                     ["rootPath"]: value,
-                  });
-
-                  setDisplayData(rawData?.[0]);
-
-                  setPropertyPathOptions(displayOptionsRaw);
-                  setPropertyPaths(null);
-
-                  localStorage.setItem(
-                    "integrationApiData",
-                    JSON.stringify(rawData)
-                  );
+                  };
+                  setIntegrationKeyPathsLocal(newPaths);
+                  setRootPathRaw(value);
+                  setRootDataRaw(rootDataRaw?.[0]);
+                  setChildPathOptions(childOptionsRaw);
                 }}
-                options={apiPathOptions}
+                options={parentPathOptions}
                 placeholder="Select Data Path"
                 data={apiData}
               />
             </FieldWrapper>
             <Divider sx={{ my: 1 }} />
-            {!!propertyPathOptions?.length && (
+            {!!childPathOptions?.length && (
               <>
                 {DISPLAY_OPTIONS_CONFIG?.[integrationType]?.map(
                   (config: ConfigProps) => {
@@ -555,35 +370,40 @@ const ConfigureDisplayOptions = () => {
                       >
                         {config?.type === "option" ? (
                           <DetailsPathSelector
-                            options={propertyPathOptions}
+                            options={childPathOptions}
                             placeholder={config?.placeholder}
                             onChange={(
                               value: { label: string; path: string }[]
                             ) => {
                               const newPaths = {
-                                ...propertyPaths,
+                                ...integrationKeyPathsLocal,
                                 [config?.name]: value,
                               };
-                              setPropertyPaths(newPaths);
+                              setIntegrationKeyPathsLocal(newPaths);
                             }}
-                            details={propertyPaths?.details}
-                            data={displayData}
+                            details={integrationKeyPathsLocal?.details}
+                            data={rootDataRaw}
                             optionsDescription="Values previewed for the keys below are from the first item in the API response."
                           />
                         ) : (
-                          <PathSelector
-                            value={propertyPaths?.rootPath}
+                          <KeyPathSelector
+                            value={
+                              integrationKeyPathsLocal?.[
+                                config?.name as keyof typeof integrationKeyPathsLocal
+                              ] as string
+                            }
                             onChange={(value: string) => {
                               const newPaths = {
-                                ...propertyPaths,
+                                ...integrationKeyPathsLocal,
                                 [config?.name]: value,
                               };
-                              setPropertyPaths(newPaths);
+                              setIntegrationKeyPathsLocal(newPaths);
                             }}
-                            options={propertyPathOptions}
+                            options={childPathOptions}
                             placeholder={config?.placeholder}
-                            data={displayData}
+                            data={rootDataRaw}
                             optionsDescription="Values previewed for the keys below are from the first item in the API response."
+                            restrictedTypes={["array", "object", "function"]}
                           />
                         )}
                       </FieldWrapper>
@@ -614,51 +434,36 @@ const ConfigureDisplayOptions = () => {
               width="100%"
             >
               <Typography variant="body2" fontWeight={700} width="100%">
-                {`Item Preview [${integrationType}]`}
+                Item Preview
               </Typography>
               <Typography variant="body2" width="100%">
                 How the items will appear to content editors
               </Typography>
             </Box>
 
-            {/* <IntegrationDisplay
-              ZUID={`preview-${integrationType}`}
+            <DraggableCard
+              rootPath={rootPath}
               type={integrationType}
-              heading={getObjectValue(displayData, propertyPaths?.heading)}
-              subHeading={getObjectValue(
-                displayData,
-                propertyPaths?.subHeading
+              heading={getKeyValue(
+                rootDataRaw,
+                integrationKeyPathsLocal?.heading
               )}
-              preview={getObjectValue(displayData, propertyPaths?.thumbnail)}
-              detail={getObjectValue(displayData, propertyPaths?.detail)}
-              details={propertyPaths?.details}
-              data={displayData}
-            /> */}
-            <Wrapper
-              startIcon={
-                <DragIndicatorRoundedIcon color="action" fontSize="small" />
-              }
-              cardType="preview"
-            >
-              <DisplayType
-                // ZUID={`preview-${integrationType}`}
-                isPreview={true}
-                rootPath={rootPath}
-                type={integrationType}
-                heading={getObjectValue(displayData, propertyPaths?.heading)}
-                subHeading={getObjectValue(
-                  displayData,
-                  propertyPaths?.subHeading
-                )}
-                thumbnail={getObjectValue(
-                  displayData,
-                  propertyPaths?.thumbnail
-                )}
-                detail={getObjectValue(displayData, propertyPaths?.detail)}
-                details={propertyPaths?.details}
-                data={displayData}
-              />
-            </Wrapper>
+              subHeading={getKeyValue(
+                rootDataRaw,
+                integrationKeyPathsLocal?.subHeading
+              )}
+              thumbnail={getKeyValue(
+                rootDataRaw,
+                integrationKeyPathsLocal?.thumbnail
+              )}
+              detail={getKeyValue(
+                rootDataRaw,
+                integrationKeyPathsLocal?.detail
+              )}
+              details={integrationKeyPathsLocal?.details}
+              data={rootDataRaw}
+              disableMenu={true}
+            />
           </Box>
         </Box>
       </DialogContent>
@@ -684,6 +489,7 @@ const ConfigureDisplayOptions = () => {
           variant="contained"
           data-cy="select-block-type-next-button"
           startIcon={<CheckRounded />}
+          disabled={!completed}
           onClick={() => {
             setIsConnected(true);
             closeForm();

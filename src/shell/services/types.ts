@@ -66,7 +66,7 @@ export interface File {
 
 export type ModelType = "pageset" | "templateset" | "dataset" | "block";
 
-export type IntegrationFieldTypes =
+export type IntegrationTypes =
   | "simple"
   | "text"
   | "details"
@@ -77,25 +77,27 @@ export type IntegrationFieldTypes =
   | "mux"
   | "classy";
 
-export type IntegrationRequestHeaders = {
-  [key: string]: string;
+export type IntegrationRequestHeaders<T extends string = string> = {
+  [key: string]: T;
 };
 
-export type IntegrationPropertyPaths = {
+export type IntegrationKeyPaths = Partial<{
   rootPath: string;
-  heading?: string;
-  subHeading?: string;
-  thumbnail?: string;
-  detail?: string;
-  details?: {
+  heading: string;
+  subHeading: string;
+  thumbnail: string;
+  detail: string;
+  details: {
     label: string;
     path: string;
   }[];
-};
+}>;
 
 export type IntegrationFieldConfig = {
-  requestHeaders?: IntegrationRequestHeaders;
-  propertyPaths?: IntegrationPropertyPaths;
+  integrationEndpoint: string;
+  integrationType: IntegrationTypes;
+  integrationRequestHeaders?: IntegrationRequestHeaders;
+  integrationKeyPaths?: IntegrationKeyPaths;
 };
 
 export interface ContentModel {
@@ -241,9 +243,6 @@ export interface FieldSettings {
   currency?: string;
   fileExtensions?: string[];
   fileExtensionsErrorMessage?: string;
-  requestHeaders?: IntegrationRequestHeaders;
-  propertyPaths?: IntegrationPropertyPaths;
-  // apiConfig?: IntegrationFieldConfig
 }
 
 export type ContentModelFieldValue =
@@ -253,8 +252,10 @@ export type ContentModelFieldValue =
   | string[]
   | FieldSettings
   | FieldSettingsOptions[]
+  | IntegrationTypes
   | IntegrationRequestHeaders
-  | IntegrationPropertyPaths;
+  | IntegrationKeyPaths
+  | IntegrationFieldConfig;
 
 export type ContentModelFieldDataType =
   | "text"
@@ -300,7 +301,9 @@ export interface ContentModelField {
   updatedAt: string;
   deletedAt: string;
   integrationEndpoint?: string;
-  integrationType?: IntegrationFieldTypes;
+  integrationType?: IntegrationTypes;
+  integrationRequestHeaders?: IntegrationRequestHeaders;
+  integrationKeyPaths?: IntegrationKeyPaths;
   integrationConfig?: IntegrationFieldConfig;
 }
 

@@ -5,131 +5,218 @@ import {
   useEffect,
   useState,
 } from "react";
-import {
-  Errors,
-  FormValue,
-} from "../../../apps/schema/src/app/components/AddFieldModal/views/FieldForm";
+
 import {
   IntegrationTypes,
-  APIHeader,
+  IntegrationKeyPaths,
+  IntegrationRequestHeaders,
   IntegrationFieldConfig,
-  IntegrationFieldDisplay,
-  IntegrationPropertyPath,
-} from "./config";
+} from "../../services/types";
+import { generateIdFromHeading, getKeyValue } from "./utils";
+
+interface ApiResponse<T> {
+  status: "success" | "error";
+  data: T;
+}
+
+const queryApi = async <T = unknown,>({
+  endpoint,
+  headers,
+}: {
+  endpoint: string;
+  headers?: IntegrationRequestHeaders | null;
+}): Promise<ApiResponse<T>> => {
+  let isFetching = true;
+
+  try {
+    const reqOptions: RequestInit = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        ...(headers || {}),
+      },
+    };
+
+    const fetchResponse = await fetch(endpoint, reqOptions);
+    const response = await (() => {
+      if (!fetchResponse.ok) {
+        return fetchResponse
+          .json()
+          .then((errorData) => ({
+            status: "error" as const,
+
+            data: errorData as T,
+          }))
+          .catch(() => ({
+            status: "error" as const,
+            data: fetchResponse.statusText as T,
+          }));
+      }
+      return fetchResponse.json().then((data) => ({
+        status: "success" as const,
+        data: data as T,
+      }));
+    })();
+
+    return response;
+  } catch (error) {
+    return {
+      status: "error",
+      data: (error.message || "Unknown error") as T,
+    };
+  }
+};
 
 type IntegrationFieldContextType = {
   openForm: () => void;
   closeForm: () => void;
+  isFetching: boolean;
+  fetchApi: () => void;
+  queryApi: <T = unknown>({
+    endpoint,
+    headers,
+  }: {
+    endpoint: string;
+    headers?: IntegrationRequestHeaders | null;
+  }) => Promise<ApiResponse<T>>;
   isFormOpen: boolean;
   activeStep: number;
   setActiveStep: (step: number) => void;
-  integrationEndPoint: string | null;
-  setIntegrationEndPoint: (integrationEndPoint: string | null) => void;
+  integrationEndpoint: string | null;
+  setIntegrationEndpoint: (integrationEndpoint: string | null) => void;
   integrationType: IntegrationTypes;
   setIntegrationType: (type: IntegrationTypes | null) => void;
   isConnected: boolean;
   setIsConnected: (isConnected: boolean) => void;
-  headers: APIHeader[] | null;
-  setHeaders: (headers: APIHeader[] | null) => void;
+  integrationHeaders: IntegrationRequestHeaders | null;
+  setIntegrationHeaders: (headers: IntegrationRequestHeaders | null) => void;
+  integrationKeyPaths: IntegrationKeyPaths;
+  setIntegrationKeyPaths: (keyPaths: IntegrationKeyPaths) => void;
+  integrationValue: string | null;
+  setIntegrationValue: (value: string | null) => void;
   apiData: any | null;
   setApiData: (apiData: any | null) => void;
 
-  apiPathOptions: string[];
-  setApiPathOptions: (apiPathOptions: string[]) => void;
-  propertyPathOptions: string[];
-  setPropertyPathOptions: (propertyPathOptions: string[]) => void;
-  displayData: any | null;
-  setDisplayData: (displayData: any | null) => void;
+  isConnecting: boolean;
+  setIsConnecting: (isConnecting: boolean) => void;
+  connectionError: boolean;
+  setConnectionError: (connectionError: boolean) => void;
+  // apiPathOptions: string[];
+  // setApiPathOptions: (apiPathOptions: string[]) => void;
+  rootData: any | null;
+  setRootData: (rootData: any | null) => void;
   rootPath: string | null;
   setRootPath: (rootPath: string | null) => void;
-  propertyPaths: IntegrationPropertyPath;
-  setPropertyPaths: (propertyPaths: IntegrationPropertyPath) => void;
   integrationConfig: IntegrationFieldConfig;
   setIntegrationConfig: (integrationConfig: IntegrationFieldConfig) => void;
   remoteSelectorOpen: boolean;
   setRemoteSelectorOpen: (remoteSelectorOpen: boolean) => void;
-  selectedItems: string[];
-  setSelectedItems: (selectedItems: string[]) => void;
-  displayListData: IntegrationFieldDisplay[] | null;
-  setDisplayListData: (
-    displayListData: IntegrationFieldDisplay[] | null
-  ) => void;
+  selectedItems: any[];
+  setSelectedItems: (selectedItems: any) => void;
+  removeSelectedItem: (id: string) => void;
   jsonViewerIsOpen: boolean;
   setJsonViewerIsOpen: (jsonViewerIsOpen: boolean) => void;
   jsonData: any | null;
-  setjsonData: (jsonData: any | null) => void;
-  onChange: ({
-    inputName,
-    value,
-  }: {
-    inputName: string;
-    value: FormValue;
-  }) => void;
+  setJsonData: (jsonData: any | null) => void;
+  defaultConfig?: IntegrationFieldConfig | undefined;
+  setDefaultConfig: (defaultConfig: IntegrationFieldConfig | null) => void;
+  maxItems: number | null;
 };
 
 export const IntegrationFieldContext =
   createContext<IntegrationFieldContextType | null>(null);
 
 const IntegrationFieldProvider = ({
-  onChange,
+  maxItems,
   children,
 }: {
-  onChange: ({
-    inputName,
-    value,
-  }: {
-    inputName: string;
-    value: FormValue;
-  }) => void;
+  maxItems: number | null;
   children: ReactNode;
 }) => {
   const [activeStep, setActiveStep] = useState(1);
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [isFetching, setIsFetching] = useState(false);
+  const [connectionError, setConnectionError] = useState<boolean>(false);
+
   const [isConnected, setIsConnected] = useState(false);
   const [jsonViewerIsOpen, setJsonViewerIsOpen] = useState(false);
 
-  const [integrationEndPoint, setIntegrationEndPoint] = useState<string | null>(
+  const [integrationEndpoint, setIntegrationEndpoint] = useState<string | null>(
     null
   );
   const [integrationType, setIntegrationType] =
     useState<IntegrationTypes | null>(null);
-  const [headers, setHeaders] = useState<APIHeader[] | null>(null);
+  const [integrationHeaders, setIntegrationHeaders] =
+    useState<IntegrationRequestHeaders | null>(null);
+
+  const [integrationKeyPaths, setIntegrationKeyPaths] =
+    useState<IntegrationKeyPaths | null>(null);
+
+  const [integrationValue, setIntegrationValue] = useState<string | null>(null);
+
+  const [defaultConfig, setDefaultConfig] =
+    useState<IntegrationFieldConfig | null>(null);
+
   const [apiData, setApiData] = useState<any | null>(null);
 
-  const [apiPathOptions, setApiPathOptions] = useState<string[]>([]);
-
-  const [propertyPathOptions, setPropertyPathOptions] = useState<string[]>([]);
-
-  const [displayData, setDisplayData] = useState<any | null>(null);
+  const [rootData, setRootData] = useState<any | null>(null);
 
   const [remoteSelectorOpen, setRemoteSelectorOpen] = useState(false);
 
   const [selectedItems, setSelectedItems] = useState([]);
-  const [jsonData, setjsonData] = useState<any | null>(null);
-
-  const [displayListData, setDisplayListData] = useState<
-    IntegrationFieldDisplay[] | null
-  >([]);
+  const [jsonData, setJsonData] = useState<any | null>(null);
 
   const [rootPath, setRootPath] = useState<string | null>(null);
 
-  const [propertyPaths, setPropertyPaths] =
-    useState<IntegrationPropertyPath | null>({
-      rootPath: "",
-      heading: "",
-      subHeading: "",
-      detail: "",
-      thumbnail: "",
-      details: [],
-    });
-
   const [integrationConfig, setIntegrationConfig] =
     useState<IntegrationFieldConfig>({
-      integrationEndPoint: null,
+      integrationEndpoint: null,
       integrationType: null,
-      integrationHeaders: null,
+      integrationRequestHeaders: null,
+      integrationKeyPaths: null,
     });
 
   const [isFormOpen, setIsFormOpen] = useState(false);
+
+  const sendQuery = async () => {
+    setIsFetching(true);
+
+    const { status, data } = await queryApi({
+      endpoint: integrationEndpoint,
+      headers: integrationHeaders,
+    });
+
+    if (status === "success") {
+      setApiData(data);
+      const extractedData = !integrationKeyPaths?.rootPath
+        ? data
+        : getKeyValue(data as object, integrationKeyPaths?.rootPath).map(
+            (item: any) => ({
+              ...item,
+              _itemId: generateIdFromHeading(
+                getKeyValue(item, integrationKeyPaths?.heading)
+              ),
+            })
+          );
+
+      setRootData(extractedData);
+      setConnectionError(false);
+    } else {
+      setApiData(null);
+      setConnectionError(true);
+    }
+    setIsFetching(false);
+  };
+
+  const removeSelectedItem = (itemId: string) => {
+    setSelectedItems((prev) => {
+      const newItems = prev.filter((i) => i?._itemId !== itemId);
+      setIntegrationValue(
+        !newItems?.length ? "" : JSON.stringify(newItems)?.trim()
+      );
+      return newItems;
+    });
+  };
 
   const openForm = () => {
     setIsFormOpen(true);
@@ -145,42 +232,47 @@ const IntegrationFieldProvider = ({
         isFormOpen,
         openForm,
         closeForm,
-        integrationEndPoint,
-        setIntegrationEndPoint,
+        integrationEndpoint,
+        setIntegrationEndpoint,
         integrationType,
         setIntegrationType,
         activeStep,
         setActiveStep: (step) => setActiveStep(step),
         isConnected,
         setIsConnected: (isConnected) => setIsConnected(isConnected),
-        headers,
-        setHeaders,
+        integrationHeaders,
+        setIntegrationHeaders,
+        integrationKeyPaths,
+        setIntegrationKeyPaths,
+        integrationValue,
+        setIntegrationValue,
         apiData,
         setApiData,
-
-        apiPathOptions,
-        setApiPathOptions,
-        propertyPathOptions,
-        setPropertyPathOptions,
-        displayData,
-        setDisplayData,
+        defaultConfig,
+        setDefaultConfig,
+        rootData,
+        setRootData,
         rootPath,
         setRootPath,
-        propertyPaths,
-        setPropertyPaths,
         integrationConfig,
         setIntegrationConfig,
         remoteSelectorOpen,
         setRemoteSelectorOpen,
         selectedItems,
         setSelectedItems,
-        displayListData,
-        setDisplayListData,
+        removeSelectedItem,
         jsonViewerIsOpen,
         setJsonViewerIsOpen,
         jsonData,
-        setjsonData,
-        onChange,
+        setJsonData,
+        queryApi: queryApi,
+        fetchApi: sendQuery,
+        isFetching,
+        isConnecting,
+        setIsConnecting,
+        connectionError,
+        setConnectionError,
+        maxItems,
       }}
     >
       {children}

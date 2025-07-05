@@ -1,4 +1,3 @@
-import { FC, useEffect, useState } from "react";
 import { Box, Tooltip, Typography } from "@mui/material";
 
 import InfoIcon from "@mui/icons-material/Info";

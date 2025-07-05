@@ -1,18 +1,12 @@
 import { FC, useEffect, useState } from "react";
 import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
-import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import {
   Box,
-  Slide,
   Stack,
   Typography,
-  Link,
-  InputAdornment,
   Grid,
   Paper,
   Avatar,
@@ -20,153 +14,32 @@ import {
 } from "@mui/material";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import IconButton from "@mui/material/IconButton";
-import PlayCircleOutlineRoundedIcon from "@mui/icons-material/PlayCircleOutlineRounded";
-import { isNull } from "lodash";
-import SearchIcon from "@mui/icons-material/SearchRounded";
-import { FormWrapper } from "..";
+import { uniqueId } from "lodash";
+import { FormWrapper } from "../IntegrationForm";
 import { useIntegrationField } from "../../IntegrationFieldProvider";
-import DragIndicatorRoundedIcon from "@mui/icons-material/DragIndicatorRounded";
-import DisplayTypes from "../../cards/IntegrationDisplay";
 
-import { IntegrationPropertyPath, IntegrationTypes } from "../../config";
-// import IntegrationDisplay from "../cards/IntegrationDisplay";
-import IntegrationField from "..";
-import IntegrationDisplay from "../../cards/IntegrationDisplay";
-import DisplayType from "../../cards/DisplayType";
-import Wrapper from "../../cards/Wrapper";
-
-type DisplayOptionCardProps = {
-  title: string;
-  description: string;
-  type: IntegrationTypes;
-  card: IntegrationPropertyPath;
-  disabled?: boolean;
-};
-
-const GENERIC_DISPLAY_TYPES: DisplayOptionCardProps[] = [
-  {
-    title: "Text Card",
-    description: "Display items with a heading and subheading",
-    type: "text",
-    card: {
-      heading: "Chugging through Sri Lanka's tea plantations",
-      subHeading: "The beautiful train from Kandy to Ella",
-    },
-  },
-  {
-    title: "Image Card",
-    description: "Display items with an image, heading, and subheading.",
-    type: "image",
-    card: {
-      heading: "Washington-state-mountain.jpg",
-      subHeading: "A photo of a beautiful mountain in the state of Washington",
-      thumbnail: "/images/shopify-sample-image.png",
-    },
-  },
-  {
-    title: "Video Card",
-    description: "Display Shopify product listings",
-    type: "video",
-    card: {
-      heading: "Chugging through Sri Lanka's tea plantations",
-      subHeading: "13:10",
-      thumbnail: "/images/media-sample-image.png",
-    },
-  },
-  {
-    title: "Details Card",
-    description: "Display items with multiple details",
-    type: "details",
-    card: {
-      heading: "Anfernee Simons",
-      subHeading: "A photo of a beautiful mountain in the state of Washington",
-      details: [
-        {
-          label: "Position",
-          path: "player.position",
-        },
-        {
-          label: "Points",
-          path: "player.stats.points",
-        },
-      ],
-    },
-  },
-  {
-    title: "Simple Card",
-    description: "Display items with a heading and subheading",
-    type: "simple",
-    card: {
-      heading: "Lebron James",
-    },
-  },
-];
-
-const SPECIAL_DISPLAY_TYPES: DisplayOptionCardProps[] = [
-  {
-    title: "MUX Card",
-    description: "Display videos from MUX",
-    type: "mux",
-    card: {
-      heading: "HK01Bq7FrEQmIu3QpRiZZ98HQOOZjm6BYyg17eEunlyo",
-      subHeading: "13:10",
-      thumbnail: "/images/media-sample-image.png",
-    },
-  },
-  {
-    title: "Youtube Card",
-    description: "Display videos from Youtube",
-
-    type: "youtube",
-    card: {
-      heading: "Chugging through Sri Lanka's tea plantations",
-      subHeading: "13:10 • 92M views • 1 day ago",
-      thumbnail: "/images/media-sample-image.png",
-    },
-  },
-  {
-    title: "Shopify Card",
-    description: "Display Shopify product listings",
-    type: "shopify",
-    card: {
-      heading: "Basic Chair",
-      subHeading: "Furniture",
-      detail: "$73.00",
-      thumbnail: "/images/shopify-sample-image.png",
-    },
-  },
-  {
-    title: "Classy Card",
-    description: "Display campaigns from classy",
-    type: "classy",
-    card: {
-      heading: "Campaign Name",
-      subHeading: "Campaign Description",
-    },
-  },
-];
-
-// export type DisplayOptionCardProps = {
-//   title: string;
-//   description?: string;
-//   card: IntegrationDisplay;
-//   disabled?: boolean;
-// };
+import { IntegrationTypes } from "../../../../services/types";
+import DraggableCard from "../../DisplayCard/DraggableCard";
+import {
+  DisplayOptionCardProps,
+  GENERIC_DISPLAY_TYPES,
+  SPECIAL_DISPLAY_TYPES,
+} from "../../configs";
 
 const SelectDisplayOptions = () => {
-  const [open, setOpen] = useState(false);
   const [recommendedType, setRecommendedType] =
     useState<IntegrationTypes | null>(null);
 
   const {
     setActiveStep,
     closeForm,
-    integrationEndPoint,
+    integrationEndpoint,
     integrationType,
     setIntegrationType,
-    setPropertyPaths,
-    // setIntegrationConfig,
   } = useIntegrationField();
+
+  const [integrationTypeLocal, setIntegrationTypeLocal] =
+    useState<IntegrationTypes | null>(integrationType || null);
 
   const recommendedOption = SPECIAL_DISPLAY_TYPES.filter(
     (option) => option.type === recommendedType
@@ -176,23 +49,30 @@ const SelectDisplayOptions = () => {
     (option) => option.type !== recommendedType
   );
 
-  useEffect(() => {
-    if (integrationEndPoint?.includes("mux")) return setRecommendedType("mux");
-    if (integrationEndPoint?.includes("youtube"))
-      return setRecommendedType("youtube");
-    if (integrationEndPoint?.includes("shopify"))
-      return setRecommendedType("shopify");
-    if (integrationEndPoint?.includes("classy"))
-      return setRecommendedType("classy");
-    setRecommendedType(null);
-  }, [integrationEndPoint]);
+  const handleNext = () => {
+    setIntegrationType(integrationTypeLocal);
+    setActiveStep(3);
+  };
 
   useEffect(() => {
-    if (!!recommendedType) setIntegrationType(recommendedType);
-  }, [recommendedType]);
+    const endpointTypes: { keyword: string; type: IntegrationTypes }[] = [
+      { keyword: "mux", type: "mux" },
+      { keyword: "youtube", type: "youtube" },
+      { keyword: "shopify", type: "shopify" },
+      { keyword: "classy", type: "classy" },
+    ];
+
+    const matchedType: IntegrationTypes | null =
+      endpointTypes.find(({ keyword }) =>
+        integrationEndpoint?.includes(keyword)
+      )?.type || null;
+    setRecommendedType(matchedType);
+    if (!!integrationType) return;
+    setIntegrationTypeLocal(matchedType);
+  }, [integrationEndpoint, integrationType]);
 
   return (
-    <FormWrapper height="calc(100vh - 40px)" width="1200px">
+    <FormWrapper height="calc(100vh - 40px)" width="1080px">
       <DialogTitle
         component="div"
         flexGrow={0}
@@ -237,7 +117,6 @@ const SelectDisplayOptions = () => {
             borderRadius: "4px",
           },
         }}
-        // dividers
       >
         <Box
           sx={{
@@ -287,6 +166,11 @@ const SelectDisplayOptions = () => {
                     description={item?.description}
                     card={item?.card}
                     type={item?.type}
+                    disableMenu={true}
+                    isSelected={integrationTypeLocal === item?.type}
+                    onSelect={() => {
+                      setIntegrationTypeLocal(item?.type);
+                    }}
                   />
                 ))}
               </Box>
@@ -329,6 +213,11 @@ const SelectDisplayOptions = () => {
                   description={item?.description}
                   card={item?.card}
                   type={item?.type}
+                  disableMenu={true}
+                  isSelected={integrationTypeLocal === item?.type}
+                  onSelect={() => {
+                    setIntegrationTypeLocal(item?.type);
+                  }}
                 />
               ))}
             </Box>
@@ -371,6 +260,11 @@ const SelectDisplayOptions = () => {
                   disabled={true}
                   card={item?.card}
                   type={item?.type}
+                  disableMenu={true}
+                  isSelected={integrationTypeLocal === item?.type}
+                  onSelect={() => {
+                    setIntegrationTypeLocal(item?.type);
+                  }}
                 />
               ))}
             </Box>
@@ -400,14 +294,8 @@ const SelectDisplayOptions = () => {
         <Button
           variant="contained"
           data-cy="select-block-type-next-button"
-          onClick={() => {
-            // setIntegrationConfig({
-            //   endpoint,
-            //   type,
-            // });
-            setActiveStep(3);
-          }}
-          disabled={!integrationType}
+          onClick={handleNext}
+          disabled={!integrationTypeLocal}
         >
           Next
         </Button>
@@ -422,20 +310,18 @@ export const DisplayOptionCard: FC<DisplayOptionCardProps> = ({
   type,
   card,
   disabled = false,
+  disableMenu = false,
+  isSelected = false,
+  onSelect,
 }) => {
-  const { integrationType, setIntegrationType } = useIntegrationField();
-  const isActive = integrationType === type;
-
-  useEffect(() => {
-    setIntegrationType(type);
-  }, [type]);
+  const itemId = uniqueId();
 
   return (
     <Paper
       elevation={0}
       variant="outlined"
       role="button"
-      className={isActive ? "active" : "free-card"}
+      className={isSelected ? "active" : "free-card"}
       sx={{
         position: "relative",
         width: "100%",
@@ -454,24 +340,29 @@ export const DisplayOptionCard: FC<DisplayOptionCardProps> = ({
         },
         "&.free-card:hover": (theme) => ({
           "& .left-content": {
-            bgcolor: "action.hover",
+            bgcolor: alpha(theme.palette.action.hover, 0.04),
           },
           "& .right-content": {
-            bgcolor: !isActive
-              ? (theme) => alpha(theme.palette.grey[200], 0.3)
-              : "grey.100",
+            bgcolor: alpha(theme.palette.grey[200], 0.08),
           },
         }),
         "&.active": (theme) => ({
           outline: "1px solid",
           outlineColor: "primary.main",
+          "& .left-content": {
+            bgcolor: alpha(theme.palette.primary.main, 0.04),
+            borderRight: `1px solid ${theme.palette.primary.main}`,
+          },
+          "& .right-content": {
+            bgcolor: alpha(theme.palette.primary.main, 0.01),
+          },
         }),
         opacity: disabled ? 0.5 : 1,
         cursor: disabled ? "not-allowed" : "pointer",
         pointerEvents: disabled ? "none" : "auto",
       }}
       onClick={() => {
-        setIntegrationType(type);
+        onSelect();
       }}
     >
       <Grid container spacing={0} height="100%" width="100%" bgcolor="grey.100">
@@ -482,12 +373,7 @@ export const DisplayOptionCard: FC<DisplayOptionCardProps> = ({
             flexDirection="column"
             justifyContent="center"
             alignItems="flex-start"
-            bgcolor={
-              isActive
-                ? (theme) => alpha(theme.palette.primary.main, 0.04)
-                : "background.paper"
-            }
-            borderRight={isActive ? "1px solid" : "none"}
+            bgcolor="background.paper"
             borderColor="primary.main"
             width="100%"
             height="100%"
@@ -534,30 +420,19 @@ export const DisplayOptionCard: FC<DisplayOptionCardProps> = ({
             height="100%"
             px={10}
             py={3}
-            bgcolor={
-              isActive
-                ? (theme) => alpha(theme.palette.primary.main, 0.01)
-                : "grey.100"
-            }
+            bgcolor="grey.100"
           >
-            {/* <IntegrationDisplay {...card} /> */}
-            <Wrapper
-              startIcon={
-                <DragIndicatorRoundedIcon color="action" fontSize="small" />
-              }
-              cardType="preview"
-            >
-              <DisplayType
-                rootPath=""
-                type={type}
-                heading={card?.heading}
-                subHeading={card?.subHeading}
-                detail={card?.detail}
-                thumbnail={card?.thumbnail}
-                details={card?.details}
-                isPreview={true}
-              />
-            </Wrapper>
+            <DraggableCard
+              data={card}
+              type={type}
+              rootPath=""
+              heading={card?.heading}
+              subHeading={card?.subHeading}
+              detail={card?.detail}
+              thumbnail={card?.thumbnail}
+              details={card?.details}
+              disableMenu={disableMenu}
+            />
           </Box>
         </Grid>
       </Grid>

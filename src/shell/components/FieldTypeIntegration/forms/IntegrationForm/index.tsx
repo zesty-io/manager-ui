@@ -12,7 +12,7 @@ const IntegrationForm = () => {
     setActiveStep,
     isFormOpen,
     closeForm,
-    integrationEndPoint,
+    integrationEndpoint,
   } = useIntegrationField();
   return (
     <Dialog
@@ -25,14 +25,21 @@ const IntegrationForm = () => {
         },
       }}
       slotProps={{
+        root: {
+          className: "IntegrationConfigForm",
+          disablePortal: true,
+          keepMounted: false,
+        },
+
         paper: {
           ref: containerRef,
           elevation: 0,
+
           sx: {
             width: "fit-content",
-            maxWidth: "1200px",
+            maxWidth: "1080px",
             height: "calc(100vh - 40px)",
-            minHeight: "680px",
+            minHeight: "860px",
             maxHeight: "1240px",
             display: "flex",
             flexDirection: "row",
@@ -40,6 +47,7 @@ const IntegrationForm = () => {
             justifyContent: "center",
             background: "transparent",
             overflow: "hidden",
+            visibility: "visible",
           },
         },
       }}

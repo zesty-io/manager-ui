@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
-import { useParams, useLocation } from "react-router";
-import { Dialog, Fade, Slide, Grow, Zoom } from "@mui/material";
+import { useParams } from "react-router";
+import { Dialog } from "@mui/material";
 
 import { FieldSelection } from "./views/FieldSelection";
 import { FieldForm } from "./views/FieldForm";
@@ -68,6 +68,9 @@ export const AddFieldModal = ({ onModalClose, mode, sortIndex }: Props) => {
             maxHeight: "min(100%, 1000px)",
             minHeight: "680px",
             m: 0,
+            "&:has(.IntegrationConfigForm)": {
+              visibility: "hidden",
+            },
           },
         },
       }}

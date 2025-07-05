@@ -57,6 +57,7 @@ import { AIGeneratorProvider } from "../../../../../../shell/components/withAi/A
 import { fetchItemPublishings } from "../../../../../../shell/store/content";
 import { Redirects } from "../Redirects";
 import RedirectsDialogContextProvider from "../../../../../seo/src/app/components/RedirectsDialogProvider";
+import { INTEGRATION_FIELD_DATA } from "../../../../../../shell/components/FieldTypeIntegration/configs";
 
 const CONTRIBUTOR_ROLE_ZUID = "31-71cfc74-c0ntr1b0t0r";
 
@@ -107,6 +108,7 @@ export default function ItemEdit() {
     isError: fieldsLoadingError,
     isLoading: isLoadingFields,
   } = useGetContentModelFieldsQuery(modelZUID);
+
   const [showDuoModeLS, setShowDuoModeLS] = useLocalStorage(
     "zesty:content:duoModeOpen",
     true

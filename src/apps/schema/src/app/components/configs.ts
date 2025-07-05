@@ -748,37 +748,10 @@ const FORM_CONFIG: Record<FieldType, FormConfig> = {
         gridSize: 12,
         maxLength: 150,
       },
-      // {
-      //   name: "integrationEndpoint",
-      //   type: "input",
-      //   label: "API URL",
-      //   required: true,
-      //   gridSize: 12,
-      //   maxLength: 150,
-      // },
-      // {
-      //   name: "integrationType",
-      //   type: "input",
-      //   label: "Display Items as",
-      //   required: true,
-      //   gridSize: 12,
-      //   maxLength: 150,
-      // },
+
       ...COMMON_FIELDS.slice(4),
     ],
-    rules: [
-      {
-        name: "limit",
-        type: "input",
-        label: "Limit Item Range",
-        required: false,
-        gridSize: 12,
-        inputType: "number",
-        tooltip: "Set a minimum and/or maximum number of items",
-      },
-
-      // ...COMMON_RULES,
-    ],
+    rules: [...INPUT_RANGE_RULES],
   },
 };
 

@@ -10,8 +10,6 @@ import { useGetContentModelFieldsQuery } from "../../../../../../shell/services/
 import { DYNAMIC_META_FIELD_NAMES } from "../../views/ItemEdit/Meta";
 import { FieldsLoader } from "./FieldsLoader";
 
-import FieldTypeIntegration from "../../../../../../shell/components/FieldTypeIntegration";
-
 export const MaxLengths = {
   text: 150,
   link: 2000,
@@ -39,6 +37,7 @@ export default memo(function Editor({
   const isNewItem = itemZUID.slice(0, 3) === "new";
   const { data: fields, isFetching: isFetchingFields } =
     useGetContentModelFieldsQuery(modelZUID);
+
   const [isLoaded, setIsLoaded] = useState(false);
   const [prevFirstContentFieldValue, setPrevFirstContentFieldValue] =
     useState(null);
@@ -421,17 +420,6 @@ export default memo(function Editor({
           </div>
         );
       })}
-
-      <FieldTypeIntegration
-        label="Article Videos"
-        description="Display videos related to the places discussed in the article"
-        name="select-remote-items"
-        required={true}
-        // value={value}
-        // onChange={onChange}
-        formType="select"
-        title="Select Article Videos"
-      />
     </div>
   );
 });

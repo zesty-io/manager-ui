@@ -25,10 +25,9 @@ import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
 import { cloneDeep } from "lodash";
 
-import { FormValue } from "./views/FieldForm";
+import { FormData, FormValue } from "./views/FieldForm";
 import {
   FieldSettingsOptions,
-  IntegrationFieldTypes,
   IntegrationFieldConfig,
 } from "../../../../../../shell/services/types";
 import { convertDropdownValue } from "../../utils";
@@ -36,8 +35,8 @@ import { withCursorPosition } from "../../../../../../shell/components/withCurso
 import { Currency } from "../../../../../../shell/components/FieldTypeCurrency/currencies";
 // import IntegrationField from "../../../../../../shell/components/FieldTypeIn/currencies";
 import { useIntegrationField } from "../../../../../../shell/components/FieldTypeIntegration/IntegrationFieldProvider";
-import IntegrationField from "../../../../../../shell/components/FieldTypeIntegration/index";
-import FieldTypeIntegration from "../../../../../../shell/components/FieldTypeIntegration/index";
+// import IntegrationField from "../../../../../../shell/components/FieldTypeIntegration/index";
+import FieldTypeIntegration from "../../../../../../shell/components/FieldTypeIntegration";
 
 const TextFieldWithCursorPosition = withCursorPosition(TextField);
 
@@ -68,8 +67,8 @@ export type FieldNames =
   | "fileExtensionsErrorMessage"
   | "integrationEndpoint"
   | "integrationType"
-  | "requestHeaders"
-  | "propertyPaths"
+  | "integrationRequestHeaders"
+  | "integrationKeyPaths"
   | "integrationConfig";
 
 type FieldType =
@@ -81,8 +80,8 @@ type FieldType =
   | "toggle_options"
   | "config";
 
-// | "requestHeaders"
-// | "propertyPaths"
+// | "integrationRequestHeaders"
+// | "integrationKeyPaths"
 
 type InputType = "text" | "number";
 export interface InputField {
@@ -100,7 +99,7 @@ export interface InputField {
   validate?: Validation[];
   inputType?: InputType;
   autoFocus?: boolean;
-  integrationConfig?: IntegrationFieldConfig;
+  // integrationConfig?: IntegrationFieldConfig;
   // integrationEndpoint?: string;
   // integrationType?: IntegrationFieldTypes;
 }
@@ -144,6 +143,7 @@ export const FieldFormInput = ({
   renderOption,
   filterOptions,
   autocompleteConfig,
+  integrationConfig,
 }: FieldFormInputProps) => {
   const options =
     fieldConfig.type === "options" ||
@@ -458,13 +458,9 @@ export const FieldFormInput = ({
         <FieldTypeIntegration
           name={fieldConfig.name}
           label="API Configuration Settings"
-          // description={fieldConfig.description}
           formType="configure"
-          // onChange={(value) => {
-          //   // const updatedConfig = { inputName: "integrationConfig", value };
-          //   onDataChange({ inputName: "integrationConfig", value });
-          // }}
           onChange={onDataChange}
+          integrationConfig={integrationConfig}
           error={errorMsg}
         />
       )}

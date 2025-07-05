@@ -1,27 +1,20 @@
-import { FC, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Button,
   Box,
-  Tooltip,
   Typography,
   DialogContent,
   DialogActions,
   DialogTitle,
-  Dialog,
   TextField,
   Grid,
   Link,
   Divider,
-  Slide,
-  Grow,
   Paper,
-  OutlinedInput,
 } from "@mui/material";
-import { LoadingButton } from "@mui/lab";
 import DataObjectRoundedIcon from "@mui/icons-material/DataObjectRounded";
 import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
 import LinkRoundedIcon from "@mui/icons-material/LinkRounded";
-import InfoIcon from "@mui/icons-material/Info";
 import { useIntegrationField } from "../../IntegrationFieldProvider";
 import CircularProgress from "@mui/material/CircularProgress";
 import StopRoundedIcon from "@mui/icons-material/StopRounded";
@@ -29,14 +22,11 @@ import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
-import InsertLinkRoundedIcon from "@mui/icons-material/InsertLinkRounded";
 import { FormWrapper } from ".";
-import { IntegrationTypes, APIHeader, DEFAULT_HEADERS } from "../../configs";
 import { FieldWrapper } from "../FieldWrapper";
 import {
-  getValuePaths,
-  getKeyValuePairs,
-  getObjectValue,
+  arrayToKeyValuePairs,
+  keyValuePairsToArray,
   validateUrl,
 } from "../../utils";
 
@@ -75,106 +65,12 @@ const CONNECTION_STATUSES: {
     ),
     title: "Connection Failed",
     subTitle:
-      "We couldn't connect to the API endpoint you entered. This may be due to an unexpected structure, a missing or invalid URL, or incorrect custom headers.",
+      "We couldn't connect to the API endpoint you entered. This may be due to an unexpected structure, a missing or invalid URL, or incorrect custom integrationHeaders.",
     buttonLabel: "Try Again",
     buttonIcon: <AutorenewRoundedIcon fontSize="small" sx={{ fontSize: 40 }} />,
     variant: "contained",
     color: "primary",
   },
-};
-
-type ConnectToApiProps = {
-  open?: boolean;
-  onClose?: () => void;
-};
-
-const ConnectionStatus = ({
-  status,
-  error,
-  next,
-  stop,
-}: {
-  status: "connecting" | "success" | "failed" | null;
-  error: string | null;
-  next: () => void;
-  stop: () => void;
-}) => {
-  const {
-    integrationEndPoint,
-    integrationType,
-    setActiveStep,
-    setIsConnected,
-  } = useIntegrationField();
-
-  const handleAction = () => {
-    if (status === "success") {
-      // setIntegrationConfig({
-      //   url,
-      //   type,
-      // });
-
-      setIsConnected(true);
-      setActiveStep(2);
-    } else if (status === "connecting") {
-      stop();
-    } else {
-      stop();
-    }
-  };
-
-  return (
-    <Paper
-      sx={{
-        position: "absolute",
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        rowGap: 0.5,
-        p: 4,
-      }}
-    >
-      {/* <CircularProgress size={32} /> */}
-      {CONNECTION_STATUSES?.[status]?.icon || null}
-      <Box
-        width="100%"
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          rowGap: 0.5,
-          pt: 3,
-          pb: 2,
-        }}
-      >
-        <Typography variant="h5" color="text.primary" fontWeight={600} noWrap>
-          {CONNECTION_STATUSES[status].title}
-        </Typography>
-        <Typography
-          variant="body2"
-          color="text.primary"
-          fontWeight={400}
-          textAlign="center"
-        >
-          {CONNECTION_STATUSES[status].subTitle}
-        </Typography>
-      </Box>
-      <Button
-        startIcon={CONNECTION_STATUSES[status].buttonIcon}
-        onClick={handleAction}
-        variant={CONNECTION_STATUSES[status].variant}
-        color={CONNECTION_STATUSES[status].color}
-        size="small"
-      >
-        {CONNECTION_STATUSES[status].buttonLabel}
-      </Button>
-    </Paper>
-  );
 };
 
 const ConnectToApi = () => {
@@ -186,92 +82,55 @@ const ConnectToApi = () => {
   const [reqAborted, setReqAborted] = useState<boolean>(false);
 
   const {
+    integrationHeaders,
     setActiveStep,
-    integrationEndPoint,
-    setIntegrationEndPoint,
+    setIntegrationEndpoint,
     closeForm,
-    headers,
-    setHeaders,
-    apiData,
+    setIntegrationHeaders,
     setApiData,
     setIsConnected,
-    apiPathOptions,
-    setApiPathOptions,
-    setPropertyPaths,
-    onChange,
+    queryApi,
+    defaultConfig,
   } = useIntegrationField();
 
-  const [headersCount, setHeadersCount] = useState<number>(5);
+  const [integrationEndpointLocal, setIntegrationEndpointLocal] = useState<
+    string | null
+  >(null);
+
+  const [integrationHeadersLocal, setIntegrationHeadersLocal] = useState<
+    { key: string; value: string }[] | null
+  >(keyValuePairsToArray(defaultConfig?.integrationRequestHeaders || []));
 
   const handleApiConnect = useCallback(async () => {
     setReqAborted(false);
     setStatus("connecting");
-    const reqHeaders = !headers?.length
-      ? null
-      : headers?.reduce((acc: any, header: any) => {
-          acc[header.key] = header.value;
-          return acc;
-        }, {});
-    const reqOptions = {
-      method: "GET",
-      ...(!!reqHeaders ? { headers: reqHeaders } : {}),
-    };
+    const reqHeaders = arrayToKeyValuePairs(integrationHeadersLocal);
     try {
-      const res = await fetch(integrationEndPoint, reqOptions);
-      // const res = await fetch(integrationEndPoint);
-      if (res?.ok) {
-        setStatus("success");
-        const data = await res?.json();
+      const { status, data } = await queryApi({
+        endpoint: integrationEndpointLocal,
+        headers: reqHeaders,
+      });
+
+      if (status === "success") {
         setApiData(data);
-
-        const keyPathsRaw = getValuePaths(data).filter((item) => {
-          const val = getObjectValue(data, item);
-          return Array.isArray(val);
-        });
-
-        setApiPathOptions(keyPathsRaw);
-        setPropertyPaths(null);
+        setStatus("success");
+        setIsConnected(true);
       } else {
-        throw new Error(res?.statusText);
+        throw new Error("Failed to connect");
       }
     } catch (error) {
       setReqError(error);
       setApiData(null);
       setStatus("failed");
     }
-  }, [integrationEndPoint, headers]);
-
-  useEffect(() => {
-    setIntegrationEndPoint(
-      "https://imdb232.p.rapidapi.com/api/news/get-by-category?limit=25&category=CELEBRITY"
-      // "https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=cat%20videos&key=AIzaSyBoHf1I0mRlnLYkkxKYmokfr92NPzUL6NY"
-    );
-    setHeaders([
-      {
-        key: "x-rapidapi-key",
-        value: "1affe04b49msh5e2438bb0baa009p10b8e8jsnbe0d01884692",
-      },
-      {
-        key: "x-rapidapi-host",
-        value: "imdb232.p.rapidapi.com",
-      },
-    ]);
-    // return () => {
-    //   setStatus(null);
-    // };
-  }, [integrationEndPoint]);
-
-  //   next={() => {
-  //     setReqAborted(false);
-  //     setActiveStep(2);
-  //   }}
-  //   stop={() => {
-  //     setReqAborted(true);
-  //     setStatus(null);
-  //     setActiveStep(1);
-  //   }}
+  }, [integrationEndpointLocal, integrationHeadersLocal]);
 
   const handleNext = () => {
+    if (!!integrationHeadersLocal?.length) {
+      const reqHeaders = arrayToKeyValuePairs(integrationHeadersLocal);
+      setIntegrationHeaders(reqHeaders);
+    }
+    setIntegrationEndpoint(integrationEndpointLocal);
     setReqAborted(false);
     setIsConnected(true);
     setActiveStep(2);
@@ -283,18 +142,14 @@ const ConnectToApi = () => {
   };
 
   useEffect(() => {
-    console.debug("MOUNTED");
-    if (headers?.length > 5) {
-      setHeadersCount(headers?.length);
-    }
-  }, [headers?.length]);
-
-  // FOR CLEAM-UP
-  useEffect(() => {
-    return () => {
-      console.debug("UNMOUNTED");
-    };
-  }, []);
+    if (
+      !integrationHeaders ||
+      (!!integrationHeaders && !Object.keys(integrationHeaders)?.length)
+    )
+      return;
+    const convertedHeaders = keyValuePairsToArray(integrationHeaders);
+    setIntegrationHeadersLocal(convertedHeaders);
+  }, [integrationHeaders]);
 
   return (
     <FormWrapper width="480px" height="600px">
@@ -344,12 +199,12 @@ const ConnectToApi = () => {
             size="small"
             autoFocus
             placeholder="https://api.example.com/endpoint"
-            value={integrationEndPoint}
+            value={integrationEndpointLocal}
             onInput={(e: any) => {
               const validUrl = !!e.target.value && validateUrl(e.target.value);
               console.debug("integrationUrl changed", e.target.value, validUrl);
               setIsValidUrl(validUrl);
-              setIntegrationEndPoint(e.target.value);
+              setIntegrationEndpointLocal(e.target.value);
             }}
             slotProps={{
               input: {
@@ -379,7 +234,7 @@ const ConnectToApi = () => {
           toolTip="Authentication Headers"
         >
           <Grid container spacing={1} columns={16} width="100%">
-            {[...new Array(headersCount)].map((_, i) => (
+            {[...new Array(5)].map((_, i) => (
               <Grid
                 key={`header-${i}`}
                 container
@@ -393,15 +248,17 @@ const ConnectToApi = () => {
                     fullWidth
                     size="small"
                     placeholder="Key"
-                    value={headers?.[i]?.key || ""}
+                    value={integrationHeadersLocal?.[i]?.key || ""}
                     onChange={(e) => {
-                      const newHeaders = headers ? [...headers] : [];
+                      const newHeaders = integrationHeadersLocal
+                        ? [...integrationHeadersLocal]
+                        : [];
                       newHeaders[i] = {
                         ...newHeaders[i],
                         key: e.target.value,
-                        value: headers?.[i]?.value || "",
+                        value: integrationHeadersLocal?.[i]?.value || "",
                       };
-                      setHeaders(newHeaders);
+                      setIntegrationHeadersLocal(newHeaders);
                     }}
                   />
                 </Grid>
@@ -410,14 +267,16 @@ const ConnectToApi = () => {
                     fullWidth
                     size="small"
                     placeholder="Value"
-                    value={headers?.[i]?.value || ""}
+                    value={integrationHeadersLocal?.[i]?.value || ""}
                     onChange={(e) => {
-                      const newHeaders = headers ? [...headers] : [];
+                      const newHeaders = integrationHeadersLocal
+                        ? [...integrationHeadersLocal]
+                        : [];
                       newHeaders[i] = {
                         ...newHeaders[i],
                         value: e.target.value || "",
                       };
-                      setHeaders(newHeaders);
+                      setIntegrationHeadersLocal(newHeaders);
                     }}
                   />
                 </Grid>
@@ -434,25 +293,12 @@ const ConnectToApi = () => {
           variant="contained"
           onClick={handleApiConnect}
           startIcon={<LinkRoundedIcon />}
-          disabled={!integrationEndPoint}
+          disabled={!integrationEndpointLocal || !isValidUrl}
         >
           Connect
         </Button>
       </DialogActions>
       {!!status && !reqAborted && (
-        // <ConnectionStatus
-        //   status={status}
-        //   error={reqError}
-        //   next={() => {
-        //     setReqAborted(false);
-        //     setActiveStep(2);
-        //   }}
-        //   stop={() => {
-        //     setReqAborted(true);
-        //     setStatus(null);
-        //     setActiveStep(1);
-        //   }}
-        // />
         <Paper
           sx={{
             position: "absolute",
@@ -468,7 +314,6 @@ const ConnectToApi = () => {
             p: 4,
           }}
         >
-          {/* <CircularProgress size={32} /> */}
           {CONNECTION_STATUSES?.[status]?.icon || null}
           <Box
             width="100%"
