@@ -173,14 +173,14 @@ const IntegrationFieldProvider = ({
 
     if (status === "success") {
       setApiData(data);
-      const extractedData = !integrationKeyPaths?.rootPath
-        ? data
-        : getKeyValue(data as object, integrationKeyPaths?.rootPath).map(
-            (item: any) => ({
-              ...item,
-              _itemId: generateItemId(item, integrationKeyPaths),
-            })
-          );
+      const extractedData = (
+        !integrationKeyPaths?.rootPath
+          ? data
+          : getKeyValue(data as object, integrationKeyPaths?.rootPath)
+      )?.map((item: any) => ({
+        ...item,
+        _itemId: generateItemId(item, integrationKeyPaths),
+      }));
 
       setRootData(extractedData);
       setConnectionError(false);

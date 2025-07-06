@@ -152,7 +152,7 @@ const ConfigureDisplayOptions = () => {
   const [parentPathOptions, setParentPathOptions] = useState([]);
   const [childPathOptions, setChildPathOptions] = useState([]);
   const [rootDataRaw, setRootDataRaw] = useState(null);
-  const [rootPathRaw, setRootPathRaw] = useState("");
+  const [rootPathRaw, setRootPathRaw] = useState(null);
   const [completed, setCompleted] = useState(false);
 
   const {
@@ -184,30 +184,19 @@ const ConfigureDisplayOptions = () => {
 
   useEffect(() => {
     const rootIsArray = Array.isArray(apiData);
-    const rootOptions = !!rootIsArray
-      ? getKeyPaths(apiData?.[0])
-      : getKeyPaths(apiData).filter((item) => {
-          const val = getKeyValue(apiData, item);
-          return Array.isArray(val);
-        });
-
-    setParentPathOptions(rootOptions);
-  }, [apiData, integrationKeyPaths?.rootPath]);
-
-  useEffect(() => {
-    if (!!integrationKeyPaths?.rootPath) {
-      const rootData = getKeyValue(apiData, integrationKeyPaths?.rootPath);
-      setRootDataRaw(rootData?.[0]);
-      setRootPathRaw(integrationKeyPaths?.rootPath);
-      const childOptions = getKeyPaths(rootData?.[0]).filter((item) => {
-        const val = getKeyValue(rootData, item);
-        return (
-          !["object", "function"]?.includes(typeof val) && !Array.isArray(val)
-        );
-      });
-
+    if (rootIsArray) {
+      const dataRoot = apiData?.[0];
+      const childOptions = getKeyPaths(dataRoot);
+      setRootDataRaw(dataRoot);
+      setRootPathRaw(".");
       setChildPathOptions(childOptions);
-      setIntegrationKeyPathsLocal(integrationKeyPaths);
+      setParentPathOptions(null);
+    } else {
+      const parentOptions = getKeyPaths(apiData);
+      setRootDataRaw(null);
+      setRootPathRaw(null);
+      setChildPathOptions(null);
+      setParentPathOptions(parentOptions);
     }
   }, [apiData, integrationKeyPaths?.rootPath]);
 
@@ -319,45 +308,42 @@ const ConfigureDisplayOptions = () => {
                 These can be re-configured later
               </Typography>
             </Box>
+            {!!parentPathOptions?.length && (
+              <>
+                <FieldWrapper label="List Path" isRequired={true}>
+                  <KeyPathSelector
+                    value={defaultConfig?.integrationKeyPaths?.rootPath}
+                    onChange={(value: string) => {
+                      const rootDataRaw = getKeyValue(apiData, value);
+                      const childOptionsRaw = getKeyPaths(
+                        rootDataRaw?.[0]
+                      ).filter((item) => {
+                        const val = getKeyValue(rootDataRaw, item);
+                        return (
+                          !["object", "function"]?.includes(typeof val) &&
+                          !Array.isArray(val)
+                        );
+                      });
 
-            <FieldWrapper label="List Path" isRequired={true}>
-              <KeyPathSelector
-                value={defaultConfig?.integrationKeyPaths?.rootPath}
-                onChange={(value: string) => {
-                  const rootDataRaw = getKeyValue(apiData, value);
-                  const childOptionsRaw = getKeyPaths(rootDataRaw?.[0]).filter(
-                    (item) => {
-                      const val = getKeyValue(rootDataRaw, item);
-                      return (
-                        !["object", "function"]?.includes(typeof val) &&
-                        !Array.isArray(val)
-                      );
-                    }
-                  );
+                      setRootPath(value);
 
-                  console.debug("rawData - displayOptionsRaw", {
-                    rootDataRaw,
-                    childOptionsRaw,
-                    value,
-                  });
-
-                  setRootPath(value);
-
-                  const newPaths = {
-                    ...integrationKeyPathsLocal,
-                    ["rootPath"]: value,
-                  };
-                  setIntegrationKeyPathsLocal(newPaths);
-                  setRootPathRaw(value);
-                  setRootDataRaw(rootDataRaw?.[0]);
-                  setChildPathOptions(childOptionsRaw);
-                }}
-                options={parentPathOptions}
-                placeholder="Select Data Path"
-                data={apiData}
-              />
-            </FieldWrapper>
-            <Divider sx={{ my: 1 }} />
+                      const newPaths = {
+                        ...integrationKeyPathsLocal,
+                        ["rootPath"]: value,
+                      };
+                      setIntegrationKeyPathsLocal(newPaths);
+                      setRootPathRaw(value);
+                      setRootDataRaw(rootDataRaw?.[0]);
+                      setChildPathOptions(childOptionsRaw);
+                    }}
+                    options={parentPathOptions}
+                    placeholder="Select Data Path"
+                    data={apiData}
+                  />
+                </FieldWrapper>
+                <Divider sx={{ my: 1 }} />
+              </>
+            )}
             {!!childPathOptions?.length && (
               <>
                 {DISPLAY_OPTIONS_CONFIG?.[integrationType]?.map(
