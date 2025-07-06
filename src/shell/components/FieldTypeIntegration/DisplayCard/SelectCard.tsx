@@ -23,7 +23,6 @@ type SelectCardProps = IntegrationKeyPaths & {
 
 const SelectCard: FC<SelectCardProps> = ({
   id,
-  rootPath,
   heading,
   subHeading,
   thumbnail,
@@ -33,7 +32,6 @@ const SelectCard: FC<SelectCardProps> = ({
   onSelect,
   onViewJson,
   data,
-  propertyPaths,
   type,
   loading = false,
   disabled = false,
@@ -47,9 +45,7 @@ const SelectCard: FC<SelectCardProps> = ({
         pl: "54px",
         pr: "58px",
         width: "100%",
-        // height: "96px",
         height: "fit-content",
-
         borderRadius: 0,
         position: "relative",
         overflow: "hidden",
@@ -104,7 +100,6 @@ const SelectCard: FC<SelectCardProps> = ({
       </Box>
 
       <Box
-        // border="1px solid red"
         width="100%"
         height="100%"
         position="relative"

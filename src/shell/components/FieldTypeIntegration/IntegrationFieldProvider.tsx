@@ -1,4 +1,10 @@
-import { createContext, ReactNode, useContext, useState } from "react";
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 import {
   IntegrationTypes,
@@ -6,7 +12,7 @@ import {
   IntegrationRequestHeaders,
   IntegrationFieldConfig,
 } from "../../services/types";
-import { generateIdFromHeading, getKeyValue } from "./utils";
+import { generateItemId, getKeyValue } from "./utils";
 
 interface ApiResponse<T> {
   status: "success" | "error";
@@ -20,8 +26,6 @@ const queryApi = async <T = unknown,>({
   endpoint: string;
   headers?: IntegrationRequestHeaders | null;
 }): Promise<ApiResponse<T>> => {
-  let isFetching = true;
-
   try {
     const reqOptions: RequestInit = {
       method: "GET",
@@ -174,9 +178,7 @@ const IntegrationFieldProvider = ({
         : getKeyValue(data as object, integrationKeyPaths?.rootPath).map(
             (item: any) => ({
               ...item,
-              _itemId: generateIdFromHeading(
-                getKeyValue(item, integrationKeyPaths?.heading)
-              ),
+              _itemId: generateItemId(item, integrationKeyPaths),
             })
           );
 
@@ -206,6 +208,12 @@ const IntegrationFieldProvider = ({
   const closeForm = () => {
     setIsFormOpen(false);
   };
+
+  useEffect(() => {
+    if (!integrationEndpoint || !!isFetching || !!apiData || !!connectionError)
+      return;
+    sendQuery();
+  }, [integrationEndpoint, isFetching, apiData, connectionError]);
 
   return (
     <IntegrationFieldContext.Provider

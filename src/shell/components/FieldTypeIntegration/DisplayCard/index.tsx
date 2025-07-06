@@ -84,7 +84,8 @@ const DisplayCard: FC<
           justifyContent="center"
           width="100%"
           height="100%"
-          p={2}
+          px={2}
+          py={1.5}
           position="relative"
         >
           <Stack direction="row" justifyContent="space-between" width="100%">
@@ -117,25 +118,22 @@ const DisplayCard: FC<
               </>
             )}
           </Stack>
-          {loading ? (
+
+          {type === "simple" ? null : type === "details" ? (
+            <Details listItems={details} data={data} loading={loading} />
+          ) : loading ? (
             <Skeleton animation="wave" height="20px" width="90%" />
           ) : (
-            <>
-              {type === "simple" ? null : type === "details" ? (
-                <Details listItems={details} data={data} />
-              ) : (
-                <Typography
-                  variant="body2"
-                  fontWeight={400}
-                  color="text.secondary"
-                  noWrap
-                  textOverflow="ellipsis"
-                  width="100%"
-                >
-                  {subHeading || "Add Sub-heading"}
-                </Typography>
-              )}
-            </>
+            <Typography
+              variant="body2"
+              fontWeight={400}
+              color="text.secondary"
+              noWrap
+              textOverflow="ellipsis"
+              width="100%"
+            >
+              {subHeading || "Add Sub-heading"}
+            </Typography>
           )}
         </Stack>
       </Grid>
@@ -148,7 +146,12 @@ const DisplayCard: FC<
           }}
         >
           {loading ? (
-            <Skeleton animation="wave" height="32px" width="32px" />
+            <Skeleton
+              variant="rounded"
+              animation="wave"
+              height="32px"
+              width="32px"
+            />
           ) : (
             <Avatar
               src={`/images/${type}Icon.svg`}

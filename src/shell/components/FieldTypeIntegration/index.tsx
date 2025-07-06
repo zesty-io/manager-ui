@@ -25,6 +25,7 @@ type IntegrationFieldProps<Value> = {
   isError?: boolean;
   integrationConfig?: IntegrationFieldConfig;
   maxItems?: number | null;
+  isLoading?: boolean;
 };
 
 const FieldTypeIntegration: FC<IntegrationFieldProps<any>> = ({
@@ -38,6 +39,7 @@ const FieldTypeIntegration: FC<IntegrationFieldProps<any>> = ({
   formType = "configure",
   integrationConfig,
   maxItems,
+  isLoading = false,
 }) => {
   return (
     <IntegrationFieldProvider maxItems={maxItems}>
@@ -49,6 +51,7 @@ const FieldTypeIntegration: FC<IntegrationFieldProps<any>> = ({
             value={value}
             onSelectionChange={onChange}
             integrationConfig={integrationConfig}
+            isLoading={isLoading}
           />
         ) : (
           <ConfigureIntegration

@@ -151,7 +151,7 @@ const ConfigureIntegration: FC<IntegrationFieldProps> = ({
             <InputBase
               size="small"
               readOnly
-              value={integrationEndpoint}
+              value={integrationEndpoint || ""}
               sx={{ flexGrow: 1 }}
               slotProps={{
                 input: {
@@ -185,7 +185,7 @@ const ConfigureIntegration: FC<IntegrationFieldProps> = ({
             <InputBase
               size="small"
               readOnly
-              value={integrationType}
+              value={integrationType || ""}
               sx={{ flexGrow: 1 }}
               slotProps={{
                 input: {

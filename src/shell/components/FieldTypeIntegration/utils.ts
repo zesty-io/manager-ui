@@ -1,3 +1,5 @@
+import { IntegrationKeyPaths } from "../../services/types";
+
 interface KeyValuePair<T = unknown> {
   key: string;
   value: T;
@@ -102,8 +104,20 @@ function createInitialValues(
   }, {} as Record<string, string>);
 }
 
-function generateIdFromHeading(heading: string) {
-  return heading?.replace(/\s+/g, "-")?.toLowerCase().trim();
+function generateItemId(item: any, integrationKeyPaths: IntegrationKeyPaths) {
+  const headingText = getKeyValue(item, integrationKeyPaths?.heading) || "";
+  const subHeadingText =
+    getKeyValue(item, integrationKeyPaths?.subHeading) || "";
+  const detailText = getKeyValue(item, integrationKeyPaths?.detail) || "";
+  const detailsText = !integrationKeyPaths?.details
+    ? ""
+    : integrationKeyPaths?.details
+        ?.map((detail) => getKeyValue(item, detail?.path))
+        .join("-");
+
+  const textId = `${headingText}${subHeadingText}${detailText}${detailsText}`;
+
+  return textId?.replace(/\s+/g, "_")?.toLowerCase().trim();
 }
 
 export {
@@ -114,5 +128,5 @@ export {
   arrayToKeyValuePairs,
   keyValuePairsToArray,
   createInitialValues,
-  generateIdFromHeading,
+  generateItemId,
 };

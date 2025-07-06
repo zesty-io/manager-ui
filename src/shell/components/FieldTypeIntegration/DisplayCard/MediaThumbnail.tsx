@@ -1,4 +1,3 @@
-import { CardMedia } from "@mui/material";
 import { Box } from "@mui/material";
 import { IntegrationTypes } from "../../../services/types";
 import AddPhotoAlternateRoundedIcon from "@mui/icons-material/AddPhotoAlternateRounded";
@@ -9,12 +8,10 @@ import { useState } from "react";
 const MediaThumbnail = ({
   url,
   type,
-  isPreview = false,
   showPlayIcon = false,
 }: {
   url: string;
   type: IntegrationTypes;
-  isPreview?: boolean;
   showPlayIcon?: boolean;
 }) => {
   const isVideo = ["video", "mux", "youtube"].includes(type);

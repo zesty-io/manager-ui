@@ -2,12 +2,12 @@ import { FC, useCallback, useEffect, useState } from "react";
 import { Box, Button, Dialog } from "@mui/material";
 import { useIntegrationField } from "./IntegrationFieldProvider";
 
-import { generateIdFromHeading, getKeyValue } from "./utils";
+import { generateItemId, getKeyValue } from "./utils";
 import AddIcon from "@mui/icons-material/Add";
 import SelectionForm from "./forms/SelectionForm";
 import { IntegrationFieldConfig } from "../../services/types";
 import DraggableCard from "./DisplayCard/DraggableCard";
-import { CodeEditor } from "./forms/SelectionForm/JsonViewer";
+import JsonViewer from "./forms/SelectionForm/JsonViewer";
 import { useDrop } from "react-dnd";
 
 type SelectItemsProps = {
@@ -23,6 +23,7 @@ type SelectItemsProps = {
   }) => void;
 
   integrationConfig?: IntegrationFieldConfig;
+  isLoading?: boolean;
 };
 
 const SelectItems: FC<SelectItemsProps> = ({
@@ -31,10 +32,12 @@ const SelectItems: FC<SelectItemsProps> = ({
   value,
   onSelectionChange,
   integrationConfig,
+  isLoading = false,
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
 
   const {
+    isFetching,
     selectedItems,
     setSelectedItems,
     integrationType,
@@ -79,9 +82,7 @@ const SelectItems: FC<SelectItemsProps> = ({
 
     const mappedValue = parsedValue.map((item: any) => ({
       ...item,
-      _itemId: generateIdFromHeading(
-        getKeyValue(item, integrationKeyPaths?.heading)
-      ),
+      _itemId: generateItemId(item, integrationKeyPaths),
     }));
     setSelectedItems(mappedValue);
   }, [value, integrationKeyPaths]);
@@ -167,6 +168,7 @@ const SelectItems: FC<SelectItemsProps> = ({
                 onReorder={onReorder}
                 data={item}
                 draggable={true}
+                loading={isLoading || isFetching}
               />
             ))}
           </Box>
@@ -203,9 +205,9 @@ const SelectItems: FC<SelectItemsProps> = ({
             },
           }}
         >
-          <CodeEditor
-            data={jsonData}
+          <JsonViewer
             onClose={() => setJsonViewerIsOpen(false)}
+            data={jsonData}
             showCloseButton={true}
           />
         </Dialog>

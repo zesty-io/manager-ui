@@ -10,7 +10,7 @@ import { IntegrationTypes, IntegrationKeyPaths } from "../../../services/types";
 import DisplayCard from ".";
 import { useIntegrationField } from "../IntegrationFieldProvider";
 import Skeleton from "@mui/material/Skeleton";
-import { useDrag, useDrop, useDrop as useItemDrop } from "react-dnd";
+import { useDrag, useDrop } from "react-dnd";
 
 type DraggableCardProps = IntegrationKeyPaths & {
   id?: string;
@@ -23,7 +23,6 @@ type DraggableCardProps = IntegrationKeyPaths & {
   onReorder?: () => void;
   index?: number;
   draggable?: boolean;
-  updateValue?: () => void;
 };
 interface DragItem {
   index: number;
@@ -50,7 +49,6 @@ const DraggableCard: FC<DraggableCardProps> = ({
   moveCard,
   onReorder,
   draggable = false,
-  updateValue,
 }) => {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -93,7 +91,6 @@ const DraggableCard: FC<DraggableCardProps> = ({
         height: "fit-content",
         borderRadius: "8px",
         position: "relative",
-
         boxSizing: "border-box",
         display: "flex",
         flexDirection: "row",
@@ -103,7 +100,6 @@ const DraggableCard: FC<DraggableCardProps> = ({
         outlineColor: "border",
         outlineOffset: "0",
         transform: "translate(0, 0)",
-        // transform: isDragging ? "scale(0.85)" : "scale(1)",
         "& *": {
           boxSizing: "border-box",
         },
@@ -123,7 +119,7 @@ const DraggableCard: FC<DraggableCardProps> = ({
         }}
       >
         {loading ? (
-          <Skeleton animation="wave" height="20px" width="20px" />
+          <Skeleton animation="wave" height="35px" width="11px" />
         ) : (
           <DragIndicatorRoundedIcon color="action" fontSize="small" />
         )}
@@ -145,6 +141,7 @@ const DraggableCard: FC<DraggableCardProps> = ({
           detail={detail}
           details={details}
           data={data}
+          loading={loading}
         />
       </Box>
 

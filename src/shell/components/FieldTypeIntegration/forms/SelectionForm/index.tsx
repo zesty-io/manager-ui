@@ -21,14 +21,11 @@ import { NoResults } from "../../../../../apps/schema/src/app/components/NoResul
 
 const SelectionForm = () => {
   const searchInputRef = useRef(null);
-  const jsonViewerContainerRef = useRef(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [jsonViewData, setJsonViewData] = useState(null);
 
   const [viewerOpen, setViewerOpen] = useState(false);
   const {
-    apiData,
-
     isFetching,
     isConnecting,
     remoteSelectorOpen,
@@ -37,11 +34,9 @@ const SelectionForm = () => {
     setSelectedItems,
     rootData,
     integrationKeyPaths,
-    integrationEndpoint,
     integrationType,
     setIntegrationValue,
     maxItems,
-    fetchApi,
   } = useIntegrationField();
 
   const [selectedItemsLocal, setSelectedItemsLocal] = useState(selectedItems);
@@ -49,9 +44,7 @@ const SelectionForm = () => {
   const maxItemsSelected = selectedItemsLocal?.length >= maxItems;
 
   const handleItemSelect = (val: boolean, data: any) => {
-    const isAdd = !!val;
     if (!!val && selectedItemsLocal?.length >= maxItems) return;
-
     const newList = !!val
       ? [...selectedItemsLocal, data]
       : selectedItemsLocal.filter((item) => item?._itemId !== data?._itemId);
@@ -69,10 +62,6 @@ const SelectionForm = () => {
   const openViewer = (data: any) => {
     setJsonViewData(data);
     setViewerOpen(true);
-  };
-  const closeViewer = () => {
-    setJsonViewData(null);
-    setViewerOpen(false);
   };
 
   const fileteredList = useMemo(() => {
@@ -92,11 +81,6 @@ const SelectionForm = () => {
     });
   }, [rootData, searchTerm, isFetching, selectedItems]);
 
-  useEffect(() => {
-    if (!integrationEndpoint || !!apiData) return;
-    fetchApi();
-  }, [fetchApi, integrationEndpoint, apiData]);
-
   return (
     <Dialog
       fullWidth
@@ -104,7 +88,6 @@ const SelectionForm = () => {
       onClose={() => setRemoteSelectorOpen(false)}
       slotProps={{
         paper: {
-          ref: jsonViewerContainerRef,
           style: {
             maxWidth: "800px",
             minHeight: "860px",
@@ -171,7 +154,6 @@ const SelectionForm = () => {
       <DialogContent
         sx={{
           bgcolor: "grey.50",
-          // p: 0,
           px: 4,
           pb: 2,
           position: "relative",
@@ -236,7 +218,7 @@ const SelectionForm = () => {
                 <SelectCard id={`skeleton-${i}`} key={i} loading={true} />
               ))}
             </>
-          ) : !fileteredList?.length ? (
+          ) : !fileteredList?.length && !!searchTerm ? (
             <NoResultsComponent
               searchTerm={searchTerm}
               onSearchAgain={() => {
@@ -278,7 +260,7 @@ const SelectionForm = () => {
         open={viewerOpen}
         onClose={() => setViewerOpen(false)}
         data={jsonViewData}
-        container={jsonViewerContainerRef.current}
+        isSlider={true}
       />
     </Dialog>
   );

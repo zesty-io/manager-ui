@@ -2,27 +2,6 @@ import { IntegrationTypes, IntegrationKeyPaths } from "../../services/types";
 
 export type FormTypes = "select" | "configure";
 
-export type IntegrationRequestHeaders = {
-  [key: string]: string;
-};
-
-export type IntegrationPropertyPaths = {
-  rootPath: string;
-  heading: string;
-  subHeading?: string;
-  thumbnail?: string;
-  detail?: string;
-  details?: {
-    label: string;
-    path: string;
-  }[];
-};
-
-export type IntegrationFieldConfig = {
-  requestHeaders?: IntegrationRequestHeaders;
-  propertyPaths?: IntegrationPropertyPaths;
-};
-
 export type IntegrationDisplayProps = {
   [key: string]: string;
 };
