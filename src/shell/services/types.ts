@@ -100,13 +100,6 @@ export type IntegrationFieldDisplay = {
   keyPaths: IntegrationKeyPaths | null;
 };
 
-export type IntegrationFieldConfig = {
-  integrationEndpoint: string;
-  integrationType: IntegrationTypes;
-  integrationRequestHeaders?: IntegrationRequestHeaders;
-  integrationKeyPaths?: IntegrationKeyPaths;
-};
-
 export interface ContentModel {
   ZUID: string;
   masterZUID: string;
@@ -259,10 +252,6 @@ export type ContentModelFieldValue =
   | string[]
   | FieldSettings
   | FieldSettingsOptions[]
-  | IntegrationTypes
-  | IntegrationRequestHeaders
-  | IntegrationKeyPaths
-  | IntegrationFieldConfig
   | IntegrationFieldApiConfig
   | IntegrationFieldDisplay;
 
@@ -309,12 +298,6 @@ export interface ContentModelField {
   createdAt: string;
   updatedAt: string;
   deletedAt: string;
-  integrationEndpoint?: string;
-  integrationType?: IntegrationTypes;
-  integrationRequestHeaders?: IntegrationRequestHeaders;
-  integrationKeyPaths?: IntegrationKeyPaths;
-  integrationConfig?: IntegrationFieldConfig;
-
   integrationFieldApiConfig?: IntegrationFieldApiConfig;
   integrationFieldDisplay?: IntegrationFieldDisplay;
 }

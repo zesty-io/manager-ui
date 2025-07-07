@@ -29,7 +29,6 @@ import { FormValue } from "./views/FieldForm";
 import {
   FieldSettingsOptions,
   IntegrationFieldApiConfig,
-  IntegrationFieldConfig,
   IntegrationFieldDisplay,
 } from "../../../../../../shell/services/types";
 import { convertDropdownValue } from "../../utils";
@@ -64,10 +63,6 @@ export type FieldNames =
   | "currency"
   | "fileExtensions"
   | "fileExtensionsErrorMessage"
-  | "integrationEndpoint"
-  | "integrationType"
-  | "integrationRequestHeaders"
-  | "integrationKeyPaths"
   | "integrationConfig"
   | "integrationFieldApiConfig"
   | "integrationFieldDisplay";

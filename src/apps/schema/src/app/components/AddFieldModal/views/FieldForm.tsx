@@ -60,10 +60,6 @@ import {
   ContentModelFieldValue,
   FieldSettingsOptions,
   ContentModelFieldDataType,
-  IntegrationTypes,
-  IntegrationFieldConfig,
-  IntegrationRequestHeaders,
-  IntegrationKeyPaths,
   IntegrationFieldApiConfig,
   IntegrationFieldDisplay,
 } from "../../../../../../../shell/services/types";
@@ -567,13 +563,6 @@ export const FieldForm = ({
 
     const sort = isInbetweenField ? sortIndex : highestSortValue + 1;
 
-    console.debug(" hasErrors, formData, errors, fieldData :", {
-      hasErrors,
-      formData,
-      errors,
-      fieldData,
-    });
-
     if (hasErrors) {
       // Switch the active tab to details to show the user the errors if
       // they're not on the details tab and they clicked the submit button
@@ -679,12 +668,6 @@ export const FieldForm = ({
       body.integrationFieldDisplay =
         formData?.integrationFieldDisplay as IntegrationFieldDisplay;
     }
-    console.debug(" body, formData, errors, fieldData :", {
-      body,
-      formData,
-      errors,
-      fieldData,
-    });
 
     if (isUpdateField) {
       const updateBody: ContentModelField = {
@@ -905,12 +888,12 @@ export const FieldForm = ({
 
               if (fieldConfig.name === "integrationConfig") {
                 integrationFieldApiConfig = {
-                  endpoint: fieldData?.integrationEndpoint,
-                  headers: fieldData?.integrationRequestHeaders,
+                  endpoint: fieldData?.integrationFieldApiConfig?.endpoint,
+                  headers: fieldData?.integrationFieldApiConfig?.headers,
                 };
                 integrationFieldDisplay = {
-                  type: fieldData?.integrationType,
-                  keyPaths: fieldData?.integrationKeyPaths,
+                  type: fieldData?.integrationFieldDisplay?.type,
+                  keyPaths: fieldData?.integrationFieldDisplay?.keyPaths,
                 };
               }
 

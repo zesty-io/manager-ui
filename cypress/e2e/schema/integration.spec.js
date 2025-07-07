@@ -189,7 +189,6 @@ function createTestData() {
     method: "POST",
     body: MODEL_SCHEMA,
   }).then(({ status, data }) => {
-    console.debug("data", data);
     Cypress.env("modelZUID", data?.ZUID);
   });
 }
@@ -205,7 +204,6 @@ function deleteTestData() {
     );
 
     const forDeleteZuids = forDeleteData?.map((del) => del?.ZUID);
-    console.debug("forDeleteData", forDeleteData);
 
     forDeleteZuids?.forEach((zuid) => {
       cy.apiRequest({

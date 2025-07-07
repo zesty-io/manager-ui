@@ -3,7 +3,6 @@ import { FormTypes } from "./configs";
 import IntegrationFieldProvider from "./IntegrationFieldProvider";
 import {
   IntegrationFieldApiConfig,
-  IntegrationFieldConfig,
   IntegrationFieldDisplay,
 } from "../../services/types";
 import ConfigureIntegration from "./ConfigureIntegration";
