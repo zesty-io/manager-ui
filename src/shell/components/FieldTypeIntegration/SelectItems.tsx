@@ -7,7 +7,6 @@ import AddIcon from "@mui/icons-material/Add";
 import SelectionForm from "./forms/SelectionForm";
 import {
   IntegrationFieldApiConfig,
-  IntegrationFieldConfig,
   IntegrationFieldDisplay,
 } from "../../services/types";
 import DraggableCard from "./DisplayCard/DraggableCard";
@@ -26,7 +25,6 @@ type SelectItemsProps = {
     value: any;
   }) => void;
 
-  integrationConfig?: IntegrationFieldConfig;
   integrationFieldApiConfig?: IntegrationFieldApiConfig | null;
   integrationFieldDisplay?: IntegrationFieldDisplay | null;
   isLoading?: boolean;
@@ -37,7 +35,6 @@ const SelectItems: FC<SelectItemsProps> = ({
   label,
   value,
   onSelectionChange,
-  integrationConfig,
   integrationFieldApiConfig = null,
   integrationFieldDisplay = null,
   isLoading = false,
@@ -49,18 +46,12 @@ const SelectItems: FC<SelectItemsProps> = ({
     selectedItems,
     setSelectedItems,
     remoteSelectorOpen,
-    // integrationValue,
-    // setIntegrationValue,
     setRemoteSelectorOpen,
 
     jsonViewerIsOpen,
     setJsonViewerIsOpen,
     jsonData,
-
-    //NEW
-    endpoint,
     setEndpoint,
-    headers,
     setHeaders,
     keyPaths,
     setKeyPaths,
@@ -69,26 +60,6 @@ const SelectItems: FC<SelectItemsProps> = ({
     value: valueLocal,
     setValue,
   } = useIntegrationField();
-
-  // useEffect(() => {
-  //   if (!integrationConfig?.integrationEndpoint || isLoaded) return;
-  //   setIntegrationEndpoint(integrationConfig?.integrationEndpoint);
-  //   setIntegrationType(integrationConfig?.integrationType);
-  //   setIntegrationHeaders(integrationConfig?.integrationRequestHeaders);
-  //   setIntegrationKeyPaths(integrationConfig?.integrationKeyPaths);
-  //   setIntegrationValue(value);
-  //   setIsLoaded(true);
-  // }, [
-  //   integrationConfig,
-  //   setIntegrationEndpoint,
-  //   setIntegrationType,
-  //   setIntegrationHeaders,
-  //   setIntegrationKeyPaths,
-  //   setIntegrationValue,
-  //   isLoaded,
-  //   setIsLoaded,
-  //   value,
-  // ]);
 
   useEffect(() => {
     if (isLoading || isLoaded) return;
@@ -106,21 +77,8 @@ const SelectItems: FC<SelectItemsProps> = ({
     value,
   ]);
 
-  // useEffect(() => {
-  //   if (!integrationFieldApiConfig && !integrationFieldDisplay) return;
-
-  //   setEndpoint(integrationFieldApiConfig?.endpoint || "");
-  //   setHeaders(integrationFieldApiConfig?.headers || null);
-  //   setKeyPaths(integrationFieldDisplay?.keyPaths || null);
-  //   setDisplayType(integrationFieldDisplay?.type || null);
-  //   setValue(value || null);
-  // }, [integrationFieldApiConfig, integrationFieldDisplay, value]);
-
   useEffect(() => {
-    console.debug("Value: ", { value, valueLocal });
     if (!valueLocal || !keyPaths) return;
-    // const parsedValue = JSON.parse(value);
-
     const mappedValue = valueLocal?.map((item: any) => ({
       ...item,
       _itemId: generateItemId(item, keyPaths),
@@ -160,9 +118,6 @@ const SelectItems: FC<SelectItemsProps> = ({
     [findCard]
   );
   const onReorder = useCallback(() => {
-    const stringifiedValue = !selectedItems?.length
-      ? ""
-      : JSON.stringify(selectedItems)?.trim();
     setValue(selectedItems);
   }, [selectedItems]);
 

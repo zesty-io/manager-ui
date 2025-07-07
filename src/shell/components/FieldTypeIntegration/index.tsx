@@ -27,7 +27,6 @@ type IntegrationFieldProps<Value> = {
   }) => void;
   error?: string | [string, string][] | null;
   isError?: boolean;
-  integrationConfig?: IntegrationFieldConfig;
   integrationFieldApiConfig?: IntegrationFieldApiConfig | null;
   integrationFieldDisplay?: IntegrationFieldDisplay | null;
   maxItems?: number | null;
@@ -43,7 +42,6 @@ const FieldTypeIntegration: FC<IntegrationFieldProps<any>> = ({
   required,
   error,
   formType = "configure",
-  integrationConfig,
   maxItems,
   isLoading = false,
   integrationFieldApiConfig = null,
@@ -58,7 +56,6 @@ const FieldTypeIntegration: FC<IntegrationFieldProps<any>> = ({
             label="Select Remote Items"
             value={value}
             onSelectionChange={onChange}
-            integrationConfig={integrationConfig}
             isLoading={isLoading}
             integrationFieldApiConfig={integrationFieldApiConfig}
             integrationFieldDisplay={integrationFieldDisplay}

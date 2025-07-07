@@ -1,6 +1,5 @@
 import { useEffect, useState, useRef } from "react";
 import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
@@ -73,11 +72,8 @@ const DetailsPathSelector = ({
   }, [detailsLocal]);
 
   useEffect(() => {
-    // validation?.(detailsLocal.map((item) => !!item));
-
     const detailsCount = detailsLocal?.length;
     const valueCount = detailsLocal?.filter(Boolean).length;
-    console.debug("detailsLocal", { detailsLocal, detailsCount, valueCount });
     validation(detailsCount === valueCount);
   }, [detailsLocal]);
 
@@ -157,12 +153,9 @@ const ConfigureDisplayOptions = () => {
 
     endpoint,
     headers,
-    keyPaths,
     setKeyPaths,
     displayType,
     apiResponseData,
-    rootDataArray,
-    setRootDataArray,
     setApiConfig,
     setDisplayConfig,
   } = useIntegrationField();
@@ -337,20 +330,12 @@ const ConfigureDisplayOptions = () => {
                         );
                       });
 
-                      // setRootPath(value);
                       setRootPathLocal(value);
-                      const newPaths = {
-                        ...keyPathsLocal,
-                        ["rootPath"]: value,
-                      };
                       setKeyPathsLocal((prev) => ({
                         ...prev,
                         ["rootPath"]: value,
                       }));
-                      // setRootPathRaw(value);
-                      // setRootPathLocal(value);
 
-                      // setRootDataRaw(rootDataRaw?.[0]);
                       setKeyDataReference(rootDataRaw?.[0]);
                       setChildPathOptions(childOptionsRaw);
                     }}
@@ -406,10 +391,6 @@ const ConfigureDisplayOptions = () => {
                                 ] as string
                               }
                               onChange={(value: string) => {
-                                // const newPaths = {
-                                //   ...integrationKeyPathsLocal,
-                                //   [config?.name]: value,
-                                // };
                                 setKeyPathsLocal((prev) => ({
                                   ...prev,
                                   [config?.name]: value,

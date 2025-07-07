@@ -9,7 +9,6 @@ import { cloneDeep } from "lodash";
 import { useGetContentModelFieldsQuery } from "../../../../../../shell/services/instance";
 import { DYNAMIC_META_FIELD_NAMES } from "../../views/ItemEdit/Meta";
 import { FieldsLoader } from "./FieldsLoader";
-import { INTEGRATION_DATA } from "../../../../../../shell/components/FieldTypeIntegration/configs";
 
 export const MaxLengths = {
   text: 150,
@@ -36,10 +35,9 @@ export default memo(function Editor({
 }) {
   const dispatch = useDispatch();
   const isNewItem = itemZUID.slice(0, 3) === "new";
-  const { data: fieldsRaw, isFetching: isFetchingFields } =
+  const { data: fields, isFetching: isFetchingFields } =
     useGetContentModelFieldsQuery(modelZUID);
 
-  const fields = !fieldsRaw ? [] : [...fieldsRaw, INTEGRATION_DATA];
   const [isLoaded, setIsLoaded] = useState(false);
   const [prevFirstContentFieldValue, setPrevFirstContentFieldValue] =
     useState(null);

@@ -82,17 +82,9 @@ const ConnectToApi = () => {
   const [reqAborted, setReqAborted] = useState<boolean>(false);
 
   const {
-    // integrationHeaders,
     setActiveStep,
-    // setIntegrationEndpoint,
     closeForm,
-    // setIntegrationHeaders,
-    // setApiData,
-    setIsConnected,
     queryApi,
-    // defaultConfig,
-
-    //NEW
     endpoint,
     setEndpoint,
     headers,
@@ -121,7 +113,6 @@ const ConnectToApi = () => {
       if (status === "success") {
         setApiResponseData(data);
         setStatus("success");
-        // setIsConnected(true);
       } else {
         throw new Error("Failed to connect");
       }
@@ -135,13 +126,10 @@ const ConnectToApi = () => {
   const handleNext = () => {
     if (!!headersLocal?.length) {
       const reqHeaders = arrayToKeyValuePairs(headersLocal);
-      // setIntegrationHeaders(reqHeaders);
       setHeaders(reqHeaders);
     }
-    // setIntegrationEndpoint(integrationEndpointLocal);
     setEndpoint(endpointLocal);
     setReqAborted(false);
-    // setIsConnected(true);
     setActiveStep(2);
   };
   const handleAbort = () => {
@@ -149,16 +137,6 @@ const ConnectToApi = () => {
     setStatus(null);
     setActiveStep(1);
   };
-
-  // useEffect(() => {
-  //   if (
-  //     !integrationHeaders ||
-  //     (!!integrationHeaders && !Object.keys(integrationHeaders)?.length)
-  //   )
-  //     return;
-  //   const convertedHeaders = keyValuePairsToArray(integrationHeaders);
-  //   setIntegrationHeadersLocal(convertedHeaders);
-  // }, [integrationHeaders]);
 
   useEffect(() => {
     if (!headers || (!!headers && !Object.keys(headers)?.length)) return;
@@ -219,7 +197,6 @@ const ConnectToApi = () => {
             onInput={(e: any) => {
               const validUrl = !!e.target.value && validateUrl(e.target.value);
               setIsValidUrl(validUrl);
-              // setIntegrationEndpointLocal(e.target.value);
               setEndpointLocal(e.target.value);
             }}
             slotProps={{

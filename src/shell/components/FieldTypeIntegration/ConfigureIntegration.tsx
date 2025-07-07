@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { Box, Typography, Button, Paper, InputBase } from "@mui/material";
 import { FormTypes } from "./configs";
 import LinkRoundedIcon from "@mui/icons-material/LinkRounded";
@@ -10,7 +10,6 @@ import { FormValue } from "../../../apps/schema/src/app/components/AddFieldModal
 import { FieldWrapper } from "./forms/FieldWrapper";
 import {
   IntegrationFieldApiConfig,
-  IntegrationFieldConfig,
   IntegrationFieldDisplay,
 } from "../../services/types";
 
@@ -52,7 +51,6 @@ const ConfigureIntegration: FC<IntegrationFieldProps> = ({
     openForm,
     isConnected,
     setActiveStep,
-    //NEW
     setEndpoint,
     setHeaders,
     setKeyPaths,

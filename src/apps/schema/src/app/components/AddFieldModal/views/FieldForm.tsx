@@ -251,15 +251,6 @@ export const FieldForm = ({
         } else if (field.name === "fileExtensionsErrorMessage") {
           formFields[field.name] = fieldData.settings?.[field.name] ?? null;
         } else if (field.name === "integrationConfig") {
-          // formFields["integrationEndpoint"] =
-          //   fieldData?.["integrationEndpoint"] ?? null;
-          // formFields["integrationType"] =
-          //   fieldData?.["integrationType"] ?? null;
-          // formFields["integrationRequestHeaders"] =
-          //   fieldData?.["integrationRequestHeaders"] ?? null;
-          // formFields["integrationKeyPaths"] =
-          //   fieldData?.["integrationKeyPaths"] ?? null;
-
           formFields["integrationFieldApiConfig"] =
             fieldData?.["integrationFieldApiConfig"] ?? null;
           formFields["integrationFieldDisplay"] =
@@ -286,11 +277,6 @@ export const FieldForm = ({
           field.type === "config" &&
           field.name === "integrationConfig"
         ) {
-          // formFields["integrationEndpoint"] = null;
-          // formFields["integrationType"] = null;
-          // formFields["integrationRequestHeaders"] = null;
-          // formFields["integrationKeyPaths"] = null;
-
           formFields["integrationFieldApiConfig"] = null;
           formFields["integrationFieldDisplay"] = null;
         } else {
@@ -467,19 +453,6 @@ export const FieldForm = ({
       ) {
         newErrorsObj[inputName] = "This field is required";
       }
-
-      // if (
-      //   [
-      //     "integrationEndpoint",
-      //     "integrationType",
-      //     "integrationKeyPaths",
-      //   ].includes(inputName) &&
-      //   (!formData.integrationEndpoint ||
-      //     !formData.integrationType ||
-      //     !formData.integrationKeyPaths)
-      // ) {
-      //   newErrorsObj["integrationConfig"] = "Incomplete API Configuration";
-      // }
 
       if (
         ["integrationFieldApiConfig", "integrationFieldDisplay"].includes(
@@ -701,13 +674,6 @@ export const FieldForm = ({
     }
 
     if (type === "integration") {
-      // body.integrationEndpoint = formData?.integrationEndpoint as string;
-      // body.integrationType = formData?.integrationType as IntegrationTypes;
-      // body.integrationRequestHeaders =
-      //   formData?.integrationRequestHeaders as IntegrationRequestHeaders;
-      // body.integrationKeyPaths =
-      //   formData?.integrationKeyPaths as IntegrationKeyPaths;
-
       body.integrationFieldApiConfig =
         formData?.integrationFieldApiConfig as IntegrationFieldApiConfig;
       body.integrationFieldDisplay =
@@ -929,8 +895,6 @@ export const FieldForm = ({
               let renderOption: any;
               let filterOptions: any;
               let autocompleteConfig: AutocompleteConfig = {};
-              // let integrationConfig: IntegrationFieldConfig = null;
-
               let integrationFieldApiConfig: IntegrationFieldApiConfig = null;
               let integrationFieldDisplay: IntegrationFieldDisplay = null;
 
@@ -940,14 +904,6 @@ export const FieldForm = ({
               }
 
               if (fieldConfig.name === "integrationConfig") {
-                // integrationConfig = {
-                //   integrationType: fieldData?.integrationType,
-                //   integrationEndpoint: fieldData?.integrationEndpoint,
-                //   integrationRequestHeaders:
-                //     fieldData?.integrationRequestHeaders,
-                //   integrationKeyPaths: fieldData?.integrationKeyPaths,
-                // };
-
                 integrationFieldApiConfig = {
                   endpoint: fieldData?.integrationEndpoint,
                   headers: fieldData?.integrationRequestHeaders,
@@ -1043,7 +999,6 @@ export const FieldForm = ({
                   renderOption={renderOption}
                   filterOptions={filterOptions}
                   autocompleteConfig={autocompleteConfig}
-                  // integrationConfig={integrationConfig}
                   integrationFieldApiConfig={integrationFieldApiConfig}
                   integrationFieldDisplay={integrationFieldDisplay}
                 />

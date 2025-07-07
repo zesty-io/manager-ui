@@ -123,8 +123,6 @@ type FieldFormInputProps = {
   dropdownOptions?: DropdownOptions[] | Currency[];
   disabled?: boolean;
   autocompleteConfig?: AutocompleteConfig;
-  integrationConfig?: IntegrationFieldConfig;
-
   integrationFieldApiConfig?: IntegrationFieldApiConfig;
   integrationFieldDisplay?: IntegrationFieldDisplay;
 } & Pick<
@@ -141,7 +139,6 @@ export const FieldFormInput = ({
   renderOption,
   filterOptions,
   autocompleteConfig,
-  integrationConfig,
   integrationFieldApiConfig,
   integrationFieldDisplay,
 }: FieldFormInputProps) => {
@@ -460,7 +457,6 @@ export const FieldFormInput = ({
           label="API Configuration Settings"
           formType="configure"
           onChange={onDataChange}
-          integrationConfig={integrationConfig}
           integrationFieldApiConfig={integrationFieldApiConfig}
           integrationFieldDisplay={integrationFieldDisplay}
           error={errorMsg}

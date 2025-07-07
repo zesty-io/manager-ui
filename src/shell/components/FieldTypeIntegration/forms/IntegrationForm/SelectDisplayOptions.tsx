@@ -30,16 +30,8 @@ const SelectDisplayOptions = () => {
   const [recommendedType, setRecommendedType] =
     useState<IntegrationTypes | null>(null);
 
-  const {
-    setActiveStep,
-    closeForm,
-    // integrationEndpoint,
-    // integrationType,
-    // setIntegrationType,
-    endpoint,
-    displayType,
-    setDisplayType,
-  } = useIntegrationField();
+  const { setActiveStep, closeForm, endpoint, displayType, setDisplayType } =
+    useIntegrationField();
 
   const [displayTypeLocal, setDisplayTypeLocal] =
     useState<IntegrationTypes | null>(displayType || null);
