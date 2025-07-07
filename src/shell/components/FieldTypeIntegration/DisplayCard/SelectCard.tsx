@@ -38,6 +38,7 @@ const SelectCard: FC<SelectCardProps> = ({
 }) => {
   return (
     <Paper
+      data-cy="integrationSelectCard"
       className={isSelected ? "select-card" : ""}
       elevation={0}
       sx={{
@@ -87,6 +88,7 @@ const SelectCard: FC<SelectCardProps> = ({
           />
         ) : (
           <Checkbox
+            className="integrationSelectCardCheckbox"
             disabled={!isSelected && disabled}
             checked={isSelected}
             onChange={(e) => {
@@ -144,6 +146,7 @@ const SelectCard: FC<SelectCardProps> = ({
           />
         ) : (
           <IconButton
+            className="integrationSelectCardViewJsonButton"
             sx={{
               borderRadius: 1,
               color: "action.active",

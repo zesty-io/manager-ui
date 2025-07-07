@@ -112,7 +112,7 @@ function generateItemId(item: any, integrationKeyPaths: IntegrationKeyPaths) {
   const detailsText = !integrationKeyPaths?.details
     ? ""
     : integrationKeyPaths?.details
-        ?.map((detail) => getKeyValue(item, detail?.path))
+        ?.map((detail) => getKeyValue(item, detail))
         .join("-");
 
   const textId = `${headingText}${subHeadingText}${detailText}${detailsText}`;

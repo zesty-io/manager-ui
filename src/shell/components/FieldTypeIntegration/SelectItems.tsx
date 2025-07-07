@@ -175,6 +175,7 @@ const SelectItems: FC<SelectItemsProps> = ({
         )}
 
         <Button
+          data-cy="integrationSelectItemsButton"
           variant="outlined"
           color="primary"
           size="large"
@@ -189,6 +190,7 @@ const SelectItems: FC<SelectItemsProps> = ({
 
         {!!remoteSelectorOpen && <SelectionForm />}
         <Dialog
+          data-cy="integrationSelectItemsDialog"
           open={jsonViewerIsOpen}
           onClose={() => setJsonViewerIsOpen(false)}
           maxWidth="md"

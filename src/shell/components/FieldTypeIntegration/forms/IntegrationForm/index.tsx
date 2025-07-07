@@ -16,6 +16,7 @@ const IntegrationForm = () => {
   } = useIntegrationField();
   return (
     <Dialog
+      data-cy="integrationFormDialog"
       open={isFormOpen}
       onClose={closeForm}
       fullWidth

@@ -80,16 +80,8 @@ export const GENERIC_DISPLAY_TYPES: DisplayOptionCardProps[] = [
     card: {
       heading: "Anfernee Simons",
       subHeading: "A photo of a beautiful mountain in the state of Washington",
-      details: [
-        {
-          label: "Position",
-          path: "player.position",
-        },
-        {
-          label: "Points",
-          path: "player.stats.points",
-        },
-      ],
+
+      details: ["player.position", "player.stats.points"],
     },
   },
   {

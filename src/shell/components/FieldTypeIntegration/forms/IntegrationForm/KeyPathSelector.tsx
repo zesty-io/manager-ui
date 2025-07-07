@@ -13,7 +13,10 @@ import { COLOR_MAP } from "../../configs";
 import { getKeyValue, validateUrl } from "../../utils";
 import { IntegrationTypes } from "../../../../services/types";
 
-const CustomPaper = (props: PaperProps & { optionsDescription: string }) => {
+const CustomPaper = ({
+  optionsDescription,
+  ...props
+}: PaperProps & { optionsDescription: string }) => {
   return (
     <Paper
       {...props}
@@ -25,13 +28,13 @@ const CustomPaper = (props: PaperProps & { optionsDescription: string }) => {
         overflow: "hidden",
       }}
     >
-      {!!props?.optionsDescription && (
+      {!!optionsDescription && (
         <Typography
           variant="body2"
           color="text.secondary"
           sx={{ px: 2, pt: 1, pb: 0.5, fontStyle: "italic" }}
         >
-          {props?.optionsDescription}
+          {optionsDescription}
         </Typography>
       )}
       <Box
@@ -59,6 +62,7 @@ const KeyPathSelector = ({
   inputRef,
   type,
   restrictedTypes = [],
+  name,
 }: {
   value: string;
   onChange: (value: string) => void;
@@ -69,6 +73,7 @@ const KeyPathSelector = ({
   inputRef?: RefObject<HTMLInputElement>;
   type?: IntegrationTypes;
   restrictedTypes?: string[];
+  name?: string;
 }) => {
   const filteredOpions = !restrictedTypes?.length
     ? options
@@ -81,6 +86,7 @@ const KeyPathSelector = ({
 
   return (
     <Autocomplete
+      data-cy={`integrationKeyPathSelector-${name}`}
       fullWidth
       options={filteredOpions}
       value={value}
@@ -128,9 +134,12 @@ const KeyPathSelector = ({
 
         const tooltipText = `${option}: ${stringOptionValue}`;
 
+        const { key: keyProp, ...otherProps } = props;
+
         return (
           <li
-            {...props}
+            key={keyProp}
+            {...otherProps}
             style={{
               width: "100%",
               position: "relative",
@@ -207,7 +216,7 @@ const KeyPathSelector = ({
                 </Typography>
 
                 <Box
-                  component="caption"
+                  component="span"
                   sx={{
                     flexShrink: 0,
                     borderRadius: 1,

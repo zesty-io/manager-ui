@@ -19,7 +19,6 @@ import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import KeyPathSelector from "./KeyPathSelector";
 import { IntegrationKeyPaths } from "../../../../services/types";
 import DraggableCard from "../../DisplayCard/DraggableCard";
-
 const DetailsPathSelector = ({
   details,
   onChange,
@@ -27,37 +26,53 @@ const DetailsPathSelector = ({
   placeholder,
   data,
   optionsDescription = null,
+  name,
 }: {
-  details: {
-    label: string;
-    path: string;
-  }[];
-  onChange: (
-    value: {
-      label: string;
-      path: string;
-    }[]
-  ) => void;
+  details: string[];
+  onChange: (value: string[]) => void;
   options: string[];
   placeholder?: string;
   optionsDescription?: string | null;
   data: any;
+  name?: string;
 }) => {
   const lastDetailRef = useRef(null);
-  const [internalData, setInternalData] = useState([
-    {
-      label: "",
-      path: "",
-    },
-  ]);
+  const [detailsLocal, setDetailsLocal] = useState([""]);
+
+  const handlePathChange = (index: number, value: string) => {
+    if (!value)
+      return setDetailsLocal((prev) => prev.filter((_, i) => i !== index));
+
+    setDetailsLocal((prev) => [
+      ...prev.slice(0, index),
+      value,
+      ...prev.slice(index + 1),
+    ]);
+  };
+
+  const handleRemoveDetail = (index: number) => {
+    if (detailsLocal.length === 1) {
+      setDetailsLocal((prev) => [
+        ...prev.slice(0, index),
+        null,
+        ...prev.slice(index + 1),
+      ]);
+      lastDetailRef.current?.focus();
+      return;
+    }
+    setDetailsLocal((prev) => [
+      ...prev.slice(0, index),
+      ...prev.slice(index + 1),
+    ]);
+  };
 
   useEffect(() => {
-    onChange(internalData);
-    console.debug("internalData", internalData);
-  }, [internalData]);
+    onChange(detailsLocal);
+  }, [detailsLocal]);
 
   return (
     <Box
+      data-cy="integrationDetailsPathSelectorContainer"
       sx={{
         width: "100%",
         display: "flex",
@@ -67,59 +82,33 @@ const DetailsPathSelector = ({
         rowGap: 1,
       }}
     >
-      {internalData?.map((item, index) => {
+      {detailsLocal?.map((item, index) => {
         return (
           <Stack
+            data-cy={`integrationDetailsSelectorRow-${index}`}
             direction="row"
             columnGap={1}
             alignItems="center"
             justifyContent="space-between"
             width="100%"
           >
-            <TextField
-              size="small"
-              placeholder="Label"
-              onChange={(e) => {
-                const newInternalData = internalData ? [...internalData] : [];
-                newInternalData[index] = {
-                  ...newInternalData[index],
-                  label: e.target.value || "",
-                };
-
-                setInternalData(newInternalData);
-              }}
-            />
             <KeyPathSelector
-              value={item?.path}
+              value={item || ""}
               onChange={(value) => {
-                const newInternalData = internalData ? [...internalData] : [];
-                newInternalData[index] = {
-                  ...newInternalData[index],
-                  path: value || "",
-                };
-                console.debug("newInternalData:", { value, newInternalData });
-                setInternalData(newInternalData);
+                handlePathChange(index, value);
               }}
               options={options}
               data={data}
               placeholder={placeholder}
               inputRef={
-                index === internalData.length - 1 ? lastDetailRef : null
+                index === detailsLocal.length - 1 ? lastDetailRef : null
               }
               optionsDescription={optionsDescription}
             />
             <IconButton
+              className="integrationDetailsSelectorDeleteButton"
               size="small"
-              onClick={() => {
-                if (internalData.length === 1) {
-                  setInternalData([]);
-                  lastDetailRef.current?.focus();
-                  return;
-                }
-                const newinternalData = internalData ? [...internalData] : [];
-                newinternalData.splice(index, 1);
-                setInternalData(newinternalData);
-              }}
+              onClick={() => handleRemoveDetail(index)}
             >
               <DeleteRoundedIcon color="action" />
             </IconButton>
@@ -128,18 +117,13 @@ const DetailsPathSelector = ({
       })}
 
       <Button
+        data-cy="integrationConfigureDisplayOptionsAddDetailButton"
         variant="outlined"
         color="primary"
         size="small"
         startIcon={<AddRoundedIcon />}
         onClick={() => {
-          setInternalData([
-            ...internalData,
-            {
-              label: "",
-              path: "",
-            },
-          ]);
+          setDetailsLocal((prev) => [...prev, null]);
         }}
       >
         Add Detail
@@ -249,7 +233,7 @@ const ConfigureDisplayOptions = () => {
         </IconButton>
       </DialogTitle>
       <DialogContent
-        data-cy="starter-blocks-selection-dialog"
+        data-cy="integrationConfigureDisplayOptionsDialog"
         sx={{
           p: 0,
           backgroundColor: "grey.50",
@@ -312,6 +296,7 @@ const ConfigureDisplayOptions = () => {
               <>
                 <FieldWrapper label="List Path" isRequired={true}>
                   <KeyPathSelector
+                    data-cy="integrationRootPathSelector"
                     value={defaultConfig?.integrationKeyPaths?.rootPath}
                     onChange={(value: string) => {
                       const rootDataRaw = getKeyValue(apiData, value);
@@ -339,65 +324,75 @@ const ConfigureDisplayOptions = () => {
                     options={parentPathOptions}
                     placeholder="Select Data Path"
                     data={apiData}
+                    name="rootPath"
                   />
                 </FieldWrapper>
                 <Divider sx={{ my: 1 }} />
               </>
             )}
-            {!!childPathOptions?.length && (
-              <>
-                {DISPLAY_OPTIONS_CONFIG?.[integrationType]?.map(
-                  (config: ConfigProps) => {
-                    return (
-                      <FieldWrapper
-                        key={config?.name}
-                        label={config?.label}
-                        isRequired={config?.isRequired}
-                      >
-                        {config?.type === "option" ? (
-                          <DetailsPathSelector
-                            options={childPathOptions}
-                            placeholder={config?.placeholder}
-                            onChange={(
-                              value: { label: string; path: string }[]
-                            ) => {
-                              const newPaths = {
-                                ...integrationKeyPathsLocal,
-                                [config?.name]: value,
-                              };
-                              setIntegrationKeyPathsLocal(newPaths);
-                            }}
-                            details={integrationKeyPathsLocal?.details}
-                            data={rootDataRaw}
-                            optionsDescription="Values previewed for the keys below are from the first item in the API response."
-                          />
-                        ) : (
-                          <KeyPathSelector
-                            value={
-                              integrationKeyPathsLocal?.[
-                                config?.name as keyof typeof integrationKeyPathsLocal
-                              ] as string
-                            }
-                            onChange={(value: string) => {
-                              const newPaths = {
-                                ...integrationKeyPathsLocal,
-                                [config?.name]: value,
-                              };
-                              setIntegrationKeyPathsLocal(newPaths);
-                            }}
-                            options={childPathOptions}
-                            placeholder={config?.placeholder}
-                            data={rootDataRaw}
-                            optionsDescription="Values previewed for the keys below are from the first item in the API response."
-                            restrictedTypes={["array", "object", "function"]}
-                          />
-                        )}
-                      </FieldWrapper>
-                    );
-                  }
-                )}
-              </>
-            )}
+            <Box
+              data-cy="integrationConfigureOptionKeyPathContainer"
+              width="100%"
+              display="flex"
+              flexDirection="column"
+              justifyContent="flex-start"
+              alignItems="flex-start"
+              rowGap={1}
+            >
+              {!!childPathOptions?.length && (
+                <>
+                  {DISPLAY_OPTIONS_CONFIG?.[integrationType]?.map(
+                    (config: ConfigProps) => {
+                      return (
+                        <FieldWrapper
+                          key={config?.name}
+                          label={config?.label}
+                          isRequired={config?.isRequired}
+                        >
+                          {config?.type === "option" ? (
+                            <DetailsPathSelector
+                              options={childPathOptions}
+                              placeholder={config?.placeholder}
+                              onChange={(value: string[]) => {
+                                setIntegrationKeyPathsLocal((prev) => ({
+                                  ...prev,
+                                  [config?.name]: value,
+                                }));
+                              }}
+                              details={integrationKeyPathsLocal?.details}
+                              data={rootDataRaw}
+                              optionsDescription="Values previewed for the keys below are from the first item in the API response."
+                              name={config?.name}
+                            />
+                          ) : (
+                            <KeyPathSelector
+                              value={
+                                integrationKeyPathsLocal?.[
+                                  config?.name as keyof typeof integrationKeyPathsLocal
+                                ] as string
+                              }
+                              onChange={(value: string) => {
+                                const newPaths = {
+                                  ...integrationKeyPathsLocal,
+                                  [config?.name]: value,
+                                };
+                                setIntegrationKeyPathsLocal(newPaths);
+                              }}
+                              options={childPathOptions}
+                              placeholder={config?.placeholder}
+                              data={rootDataRaw}
+                              optionsDescription="Values previewed for the keys below are from the first item in the API response."
+                              restrictedTypes={["array", "object", "function"]}
+                              name={config?.name}
+                            />
+                          )}
+                        </FieldWrapper>
+                      );
+                    }
+                  )}
+                </>
+              )}
+            </Box>
           </Box>
           <Box
             position="relative"
@@ -428,6 +423,7 @@ const ConfigureDisplayOptions = () => {
             </Box>
 
             <DraggableCard
+              data-cy="integrationPreviewCard"
               rootPath={rootPath}
               type={integrationType}
               heading={getKeyValue(
@@ -463,6 +459,7 @@ const ConfigureDisplayOptions = () => {
         }}
       >
         <Button
+          data-cy="integrationConfigureDisplayOptionsBackButton"
           variant="outlined"
           color="inherit"
           onClick={() => {
@@ -473,7 +470,7 @@ const ConfigureDisplayOptions = () => {
         </Button>
         <Button
           variant="contained"
-          data-cy="select-block-type-next-button"
+          data-cy="integrationConfigureDisplayOptionsDoneButton"
           startIcon={<CheckRounded />}
           disabled={!completed}
           onClick={() => {

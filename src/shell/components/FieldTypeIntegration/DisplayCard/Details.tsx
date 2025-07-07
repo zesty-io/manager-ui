@@ -1,14 +1,11 @@
+import { FC } from "react";
 import { Typography, Stack, Skeleton } from "@mui/material";
 import { Box } from "@mui/material";
-import { FC } from "react";
 import { getKeyValue } from "../utils";
 
 type DetailsProps = {
   data: any[];
-  listItems: {
-    label: string;
-    path: string;
-  }[];
+  listItems: string[];
   loading?: boolean;
 };
 
@@ -95,7 +92,7 @@ const Details: FC<DetailsProps> = ({ data, listItems, loading = false }) => {
         <DetailsSkeleton />
       ) : (
         listItems.map((item, i) => {
-          const itemValue = getKeyValue(data, item?.path);
+          const itemValue = getKeyValue(data, item);
 
           return (
             <Box
@@ -118,7 +115,7 @@ const Details: FC<DetailsProps> = ({ data, listItems, loading = false }) => {
                 noWrap
                 maxWidth="70%"
               >
-                {item?.label || `+ Add Detail`}
+                {item || `+ Add Detail`}
               </Typography>
               {!!itemValue && (
                 <Typography

@@ -98,7 +98,7 @@ const SelectDisplayOptions = () => {
         </Stack>
       </DialogTitle>
       <DialogContent
-        data-cy="starter-blocks-selection-dialog"
+        data-cy="integrationSelectDisplayOptionsDialog"
         sx={{
           py: "0px !important",
           backgroundColor: "grey.50",
@@ -150,6 +150,7 @@ const SelectDisplayOptions = () => {
                 RECOMMENDED
               </Typography>
               <Box
+                data-cy="integrationRecommendedOptionsContainer"
                 sx={{
                   width: "100%",
                   display: "flex",
@@ -161,6 +162,7 @@ const SelectDisplayOptions = () => {
               >
                 {recommendedOption?.map((item) => (
                   <DisplayOptionCard
+                    data-cy={`integrationRecommendedOption-${item?.type}`}
                     key={item?.title}
                     title={item?.title}
                     description={item?.description}
@@ -197,6 +199,7 @@ const SelectDisplayOptions = () => {
               {!!recommendedOption?.length ? "OTHER OPTIONS" : "OPTIONS"}
             </Typography>
             <Box
+              data-cy="integrationOptionsContainer"
               sx={{
                 width: "100%",
                 display: "flex",
@@ -208,6 +211,7 @@ const SelectDisplayOptions = () => {
             >
               {GENERIC_DISPLAY_TYPES?.map((item) => (
                 <DisplayOptionCard
+                  data-cy={`integrationOption-${item?.type}`}
                   key={item?.title}
                   title={item?.title}
                   description={item?.description}
@@ -243,6 +247,7 @@ const SelectDisplayOptions = () => {
               {!!recommendedOption?.length ? "NOT AVAILABLE" : "OTHER OPTIONS"}
             </Typography>
             <Box
+              data-cy="integrationOtherOptionsContainer"
               sx={{
                 width: "100%",
                 display: "flex",
@@ -254,6 +259,7 @@ const SelectDisplayOptions = () => {
             >
               {disabledOptions?.map((item, index) => (
                 <DisplayOptionCard
+                  data-cy={`integrationOtherOption-${item?.type}`}
                   key={item?.title}
                   title={item?.title}
                   description={item?.description}
@@ -292,8 +298,8 @@ const SelectDisplayOptions = () => {
           Cancel
         </Button>
         <Button
+          data-cy="integrationConfigureOptionNextButton"
           variant="contained"
-          data-cy="select-block-type-next-button"
           onClick={handleNext}
           disabled={!integrationTypeLocal}
         >
@@ -318,6 +324,7 @@ export const DisplayOptionCard: FC<DisplayOptionCardProps> = ({
 
   return (
     <Paper
+      data-cy={`integrationDisplayOption-${type}`}
       elevation={0}
       variant="outlined"
       role="button"

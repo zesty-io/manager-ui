@@ -87,10 +87,7 @@ export type IntegrationKeyPaths = Partial<{
   subHeading: string;
   thumbnail: string;
   detail: string;
-  details: {
-    label: string;
-    path: string;
-  }[];
+  details: string[];
 }>;
 
 export type IntegrationFieldConfig = {

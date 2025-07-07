@@ -199,25 +199,25 @@ const ConfigureIntegration: FC<IntegrationFieldProps> = ({
           </Box>
         </Paper>
       )}
-      <div ref={configContainerRef}>
-        <Button
-          variant="outlined"
-          color="primary"
-          size="small"
-          fullWidth={false}
-          startIcon={
-            !!isConnected ? <AutorenewRoundedIcon /> : <LinkRoundedIcon />
-          }
-          onClick={() => {
-            setActiveStep(1);
-            openForm();
-          }}
-        >
-          {!!isConnected ? "Reconfigure" : "Connect to API"}
-        </Button>
 
-        {isFormOpen && <IntegrationForm />}
-      </div>
+      <Button
+        data-cy="integrationConfigureButton"
+        variant="outlined"
+        color="primary"
+        size="small"
+        fullWidth={false}
+        startIcon={
+          !!isConnected ? <AutorenewRoundedIcon /> : <LinkRoundedIcon />
+        }
+        onClick={() => {
+          setActiveStep(1);
+          openForm();
+        }}
+      >
+        {!!isConnected ? "Reconfigure" : "Connect to API"}
+      </Button>
+
+      {isFormOpen && <IntegrationForm />}
     </FieldWrapper>
   );
 };

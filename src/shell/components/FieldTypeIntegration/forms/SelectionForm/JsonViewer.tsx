@@ -120,6 +120,7 @@ const JsonViewer = ({
           }}
         >
           <MonacoEditor
+            data-cy="integrationJsonViewerEditor"
             language="json"
             theme="vs-dark"
             options={{

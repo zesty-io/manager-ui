@@ -79,6 +79,7 @@ const DraggableCard: FC<DraggableCardProps> = ({
 
   return (
     <Paper
+      className="draggableCard"
       id={id}
       elevation={0}
       ref={draggable ? ref : null}
@@ -106,6 +107,7 @@ const DraggableCard: FC<DraggableCardProps> = ({
       }}
     >
       <Box
+        className="draggableCardDragHandle"
         ref={draggable ? (node) => drag(node as HTMLElement) : null}
         sx={{
           position: "absolute",
@@ -207,10 +209,16 @@ const MoreOptions = ({
   };
   return (
     <Box>
-      <IconButton size="small" onClick={handleClick} disabled={disableMenu}>
+      <IconButton
+        size="small"
+        onClick={handleClick}
+        disabled={disableMenu}
+        className="moreOptionButton"
+      >
         <MoreHorizIcon color="action" fontSize="small" />
       </IconButton>
       <Menu
+        className="moreOptionMenu"
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
@@ -224,13 +232,19 @@ const MoreOptions = ({
           horizontal: "left",
         }}
       >
-        <MenuItem onClick={handleViewJsonData}>
+        <MenuItem
+          onClick={handleViewJsonData}
+          className="moreOptionMenuItem-view"
+        >
           <DataObjectIcon color="action" sx={{ mr: 1 }} />
           <Typography variant="body1" color="text.primary">
             View Raw JSON
           </Typography>
         </MenuItem>
-        <MenuItem onClick={handleRemoveItem}>
+        <MenuItem
+          onClick={handleRemoveItem}
+          className="moreOptionMenuItem-remove"
+        >
           <ClearIcon color="action" sx={{ mr: 1 }} />
           <Typography variant="body1" color="text.primary">
             Remove

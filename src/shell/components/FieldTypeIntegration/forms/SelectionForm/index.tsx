@@ -152,6 +152,7 @@ const SelectionForm = () => {
         </Box>
       </DialogTitle>
       <DialogContent
+        data-cy="integrationSelectionFormDialog"
         sx={{
           bgcolor: "grey.50",
           px: 4,
@@ -173,6 +174,7 @@ const SelectionForm = () => {
           }}
         >
           <SearchBox
+            data-cy="integrationSelectionFormSearchBox"
             size="small"
             placeholder="Filter Items"
             fullWidth
@@ -189,6 +191,7 @@ const SelectionForm = () => {
           />
         </Box>
         <Paper
+          data-cy="integrationSelectionFormListContainer"
           elevation={0}
           variant="outlined"
           sx={{
@@ -215,11 +218,17 @@ const SelectionForm = () => {
           {isConnecting || isFetching ? (
             <>
               {[...new Array(6)].map((_, i) => (
-                <SelectCard id={`skeleton-${i}`} key={i} loading={true} />
+                <SelectCard
+                  id={`skeleton-${i}`}
+                  key={i}
+                  loading={true}
+                  data-cy="integrationSelectionFormListLoadingCard"
+                />
               ))}
             </>
           ) : !fileteredList?.length && !!searchTerm ? (
             <NoResultsComponent
+              data-cy="integrationSelectionFormNoResults"
               searchTerm={searchTerm}
               onSearchAgain={() => {
                 setSearchTerm("");
@@ -230,6 +239,7 @@ const SelectionForm = () => {
             <>
               {fileteredList?.map((item: any, index: number) => (
                 <SelectCard
+                  data-cy={`integrationSelectionFormListCard-${index}`}
                   id={item?._itemId}
                   key={item?._itemId}
                   rootPath={integrationKeyPaths?.rootPath}

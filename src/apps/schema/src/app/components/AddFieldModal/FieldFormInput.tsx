@@ -383,7 +383,7 @@ export const FieldFormInput = ({
                 value: e.target.value,
               });
             }}
-            value={prefillData}
+            value={prefillData || ""}
             error={Boolean(errorMsg)}
             helperText={
               errorMsg && (
@@ -510,7 +510,7 @@ const KeyValueInput = ({
           required
           fullWidth
           placeholder="Enter Label"
-          value={optionValue}
+          value={optionValue || ""}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
             handleDataChanged("value", e.target?.value);
           }}
@@ -528,7 +528,7 @@ const KeyValueInput = ({
           required
           fullWidth
           placeholder="Enter Value"
-          value={optionKey}
+          value={optionKey || ""}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
             handleDataChanged("key", e.target?.value);
           }}

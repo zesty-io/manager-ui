@@ -93,9 +93,8 @@ const ConnectToApi = () => {
     defaultConfig,
   } = useIntegrationField();
 
-  const [integrationEndpointLocal, setIntegrationEndpointLocal] = useState<
-    string | null
-  >(null);
+  const [integrationEndpointLocal, setIntegrationEndpointLocal] =
+    useState<string>("");
 
   const [integrationHeadersLocal, setIntegrationHeadersLocal] = useState<
     { key: string; value: string }[] | null
@@ -153,7 +152,7 @@ const ConnectToApi = () => {
 
   return (
     <FormWrapper width="480px" height="600px">
-      <DialogTitle>
+      <DialogTitle component="div">
         <DataObjectRoundedIcon
           color="primary"
           sx={{
@@ -195,6 +194,7 @@ const ConnectToApi = () => {
           name="integrationUrl"
         >
           <TextField
+            data-cy="integrationEndpointInput"
             fullWidth
             size="small"
             autoFocus
@@ -233,9 +233,16 @@ const ConnectToApi = () => {
           label="Headers (if applicable)"
           toolTip="Authentication Headers"
         >
-          <Grid container spacing={1} columns={16} width="100%">
+          <Grid
+            container
+            spacing={1}
+            columns={16}
+            width="100%"
+            data-cy="integrationHeadersContainer"
+          >
             {[...new Array(5)].map((_, i) => (
               <Grid
+                data-cy={`integrationHeadersContainerRow-${i}`}
                 key={`header-${i}`}
                 container
                 size={16}
@@ -245,6 +252,7 @@ const ConnectToApi = () => {
               >
                 <Grid size={8}>
                   <TextField
+                    className="keyInput"
                     fullWidth
                     size="small"
                     placeholder="Key"
@@ -264,6 +272,7 @@ const ConnectToApi = () => {
                 </Grid>
                 <Grid size={8}>
                   <TextField
+                    className="valueInput"
                     fullWidth
                     size="small"
                     placeholder="Value"
@@ -290,6 +299,7 @@ const ConnectToApi = () => {
           Cancel
         </Button>
         <Button
+          data-cy="integrationConnectButton"
           variant="contained"
           onClick={handleApiConnect}
           startIcon={<LinkRoundedIcon />}
@@ -300,6 +310,7 @@ const ConnectToApi = () => {
       </DialogActions>
       {!!status && !reqAborted && (
         <Paper
+          data-cy="integrationConnectionStatusContainer"
           sx={{
             position: "absolute",
             top: 0,
@@ -328,6 +339,7 @@ const ConnectToApi = () => {
             }}
           >
             <Typography
+              data-cy="integrationConnectionStatusLabel"
               variant="h5"
               color="text.primary"
               fontWeight={600}
@@ -345,6 +357,7 @@ const ConnectToApi = () => {
             </Typography>
           </Box>
           <Button
+            data-cy="integrationConnectionStatusButton"
             startIcon={CONNECTION_STATUSES[status].buttonIcon}
             onClick={status === "success" ? handleNext : handleAbort}
             variant={CONNECTION_STATUSES[status].variant}

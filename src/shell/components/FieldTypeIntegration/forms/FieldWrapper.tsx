@@ -21,6 +21,7 @@ export const FieldWrapper = ({
 }) => {
   return (
     <Box
+      className="fieldWrapper"
       sx={{
         width: "100%",
         display: "flex",
