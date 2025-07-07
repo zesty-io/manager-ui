@@ -5,6 +5,7 @@ import { GlobalNotifications } from "../global-notifications";
 import { Brain } from "@zesty-io/material";
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
+import { memo } from "react";
 
 import { DomainSwitcher } from "./DomainSwitcher";
 import { IconButton } from "@mui/material";
@@ -17,7 +18,7 @@ type Props = {
   onShowAiDrawerToggle: () => void;
 };
 
-export function GlobalTopbar({ onShowAiDrawerToggle }: Props) {
+export const GlobalTopbar = memo(({ onShowAiDrawerToggle }: Props) => {
   const user: User = useSelector((state: AppState) => state.user);
   return (
     <Stack
@@ -58,4 +59,6 @@ export function GlobalTopbar({ onShowAiDrawerToggle }: Props) {
       </Stack>
     </Stack>
   );
-}
+});
+
+GlobalTopbar.displayName = "GlobalTopbar";
