@@ -9,7 +9,6 @@ type NavTreeLabelProps = UseTreeItem2LabelSlotOwnProps & {
   // nestedItems?: TreeItemType[];
   actions?: React.ReactNode[];
   depth?: number;
-  isHiddenTree?: boolean;
   nodeData?: any;
   // onItemDrop?: (draggedItem: any, targetItem: any) => void;
   // dragAndDrop?: boolean;

@@ -1,5 +1,5 @@
 import React, { FC, useMemo } from "react";
-import { RichTreeView } from "@mui/x-tree-view";
+import { RichTreeView, TreeViewBaseItem } from "@mui/x-tree-view";
 import { useHistory } from "react-router-dom";
 
 import { NavTreeItem } from "./components/NavTreeItem";
@@ -18,48 +18,53 @@ export type TreeItem = {
   hidden?: boolean;
   nodeData?: any;
   createdAt?: string;
+  onItemDrop?: (draggedItem: any, targetItem: any) => void;
+  dragAndDrop?: boolean;
+  selected: string;
 } & Partial<ContentNavItem>;
 
 // Transform tree data for RichTreeView
-type TransformTreeDataParams = {
-  items: TreeItem[];
-  isHiddenTree: boolean;
-  onItemDrop: (draggedItem: any, targetItem: any) => void;
-  dragAndDrop?: boolean;
-  selected?: string;
-};
-const transformTreeData = ({
-  items,
-  isHiddenTree,
-  onItemDrop,
-  dragAndDrop,
-  selected,
-}: TransformTreeDataParams): any[] => {
-  return items
-    ?.filter((item) => !(!isHiddenTree && item.hidden) && item)
-    ?.map((item) => ({
-      id: item.path,
-      label: item.label,
-      children:
-        item.children?.length > 0
-          ? transformTreeData({
-              items: item.children,
-              isHiddenTree,
-              onItemDrop,
-              dragAndDrop,
-              selected,
-            })
-          : undefined,
-      // Store additional data for custom rendering
-      icon: item.icon,
-      actions: item.actions ?? [],
-      nodeData: item.nodeData,
-      isHiddenTree,
-      onItemDrop,
-      dragAndDrop,
-      selected,
-    }));
-};
+// type RichTreeData = TreeViewBaseItem & {
+
+// }
+// type TransformTreeDataParams = {
+//   items: TreeItem[];
+//   isHiddenTree: boolean;
+//   onItemDrop: (draggedItem: any, targetItem: any) => void;
+//   dragAndDrop?: boolean;
+//   selected?: string;
+// };
+// const transformTreeData = ({
+//   items,
+//   isHiddenTree,
+//   onItemDrop,
+//   dragAndDrop,
+//   selected,
+// }: TransformTreeDataParams): any[] => {
+//   return items
+//     ?.filter((item) => !(!isHiddenTree && item.hidden) && item)
+//     ?.map((item) => ({
+//       id: item.path,
+//       label: item.label,
+//       children:
+//         item.children?.length > 0
+//           ? transformTreeData({
+//               items: item.children,
+//               isHiddenTree,
+//               onItemDrop,
+//               dragAndDrop,
+//               selected,
+//             })
+//           : undefined,
+//       // Store additional data for custom rendering
+//       icon: item.icon,
+//       actions: item.actions ?? [],
+//       nodeData: item.nodeData,
+//       onItemDrop,
+//       dragAndDrop,
+//       selected,
+//     }));
+// };
 
 interface Props {
   id: string;
@@ -92,15 +97,15 @@ export const NavTree: FC<Readonly<Props>> = ({
   const history = useHistory();
   const isCodeApp = ["html", "css", "js"].includes(id);
 
-  const memoizedTree = useMemo(() => {
-    return transformTreeData({
-      items: tree,
-      isHiddenTree,
-      onItemDrop,
-      dragAndDrop,
-      selected,
-    });
-  }, [tree, isHiddenTree, onItemDrop, dragAndDrop, selected]);
+  // const memoizedTree = useMemo(() => {
+  //   return transformTreeData({
+  //     items: tree,
+  //     isHiddenTree,
+  //     onItemDrop,
+  //     dragAndDrop,
+  //     selected,
+  //   });
+  // }, [tree, isHiddenTree, onItemDrop, dragAndDrop, selected]);
 
   if (isLoading) {
     return (
@@ -148,7 +153,7 @@ export const NavTree: FC<Readonly<Props>> = ({
       ) : (
         <RichTreeView
           data-cy={id}
-          items={memoizedTree}
+          items={tree}
           expandedItems={expandedItems}
           selectedItems={[selected]}
           expansionTrigger="iconContainer"
@@ -176,7 +181,7 @@ export const NavTree: FC<Readonly<Props>> = ({
             }
           }}
           // getItemLabel={(item) => item.label}
-          // getItemId={(item) => item.id}
+          getItemId={(item) => item.path}
         />
       )}
     </>
