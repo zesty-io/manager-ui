@@ -27,6 +27,7 @@ const DetailsPathSelector = ({
   data,
   optionsDescription = null,
   name,
+  validation,
 }: {
   details: string[];
   onChange: (value: string[]) => void;
@@ -35,6 +36,7 @@ const DetailsPathSelector = ({
   optionsDescription?: string | null;
   data: any;
   name?: string;
+  validation?: (value: boolean) => void;
 }) => {
   const lastDetailRef = useRef(null);
   const [detailsLocal, setDetailsLocal] = useState([""]);
@@ -68,6 +70,15 @@ const DetailsPathSelector = ({
 
   useEffect(() => {
     onChange(detailsLocal);
+  }, [detailsLocal]);
+
+  useEffect(() => {
+    // validation?.(detailsLocal.map((item) => !!item));
+
+    const detailsCount = detailsLocal?.length;
+    const valueCount = detailsLocal?.filter(Boolean).length;
+    console.debug("detailsLocal", { detailsLocal, detailsCount, valueCount });
+    validation(detailsCount === valueCount);
   }, [detailsLocal]);
 
   return (
@@ -135,64 +146,80 @@ const DetailsPathSelector = ({
 const ConfigureDisplayOptions = () => {
   const [parentPathOptions, setParentPathOptions] = useState([]);
   const [childPathOptions, setChildPathOptions] = useState([]);
-  const [rootDataRaw, setRootDataRaw] = useState(null);
-  const [rootPathRaw, setRootPathRaw] = useState(null);
   const [completed, setCompleted] = useState(false);
+  const [rootPathLocal, setRootPathLocal] = useState(null);
+  const [keyDataReference, setKeyDataReference] = useState(null);
 
   const {
-    apiData,
     setActiveStep,
     closeForm,
     setIsConnected,
-    integrationType,
-    setRootData,
-    rootPath,
-    setRootPath,
-    integrationKeyPaths,
-    setIntegrationKeyPaths,
-    defaultConfig,
+
+    endpoint,
+    headers,
+    keyPaths,
+    setKeyPaths,
+    displayType,
+    apiResponseData,
+    rootDataArray,
+    setRootDataArray,
+    setApiConfig,
+    setDisplayConfig,
   } = useIntegrationField();
 
-  const [integrationKeyPathsLocal, setIntegrationKeyPathsLocal] =
-    useState<IntegrationKeyPaths>(
-      createInitialValues(DISPLAY_OPTIONS_CONFIG?.[integrationType])
-    );
+  const [keyPathsLocal, setKeyPathsLocal] = useState<IntegrationKeyPaths>(
+    createInitialValues(DISPLAY_OPTIONS_CONFIG?.[displayType])
+  );
+
+  const [detailsCompleted, setDetailsCompleted] = useState(false);
 
   const handleSave = () => {
-    setRootData(rootDataRaw);
-    setRootPath(rootPathRaw);
-    setIntegrationKeyPaths(integrationKeyPathsLocal);
+    setKeyPaths(keyPathsLocal);
+    setApiConfig({
+      endpoint: endpoint,
+      headers: headers,
+    });
+
+    setDisplayConfig({
+      type: displayType,
+      keyPaths: {
+        ...keyPathsLocal,
+        rootPath: rootPathLocal,
+      },
+    });
 
     setIsConnected(true);
   };
 
   useEffect(() => {
-    const rootIsArray = Array.isArray(apiData);
+    const rootIsArray = Array.isArray(apiResponseData);
     if (rootIsArray) {
-      const dataRoot = apiData?.[0];
+      const dataRoot = apiResponseData?.[0];
       const childOptions = getKeyPaths(dataRoot);
-      setRootDataRaw(dataRoot);
-      setRootPathRaw(".");
+
+      setKeyDataReference(dataRoot);
+      setRootPathLocal(null);
       setChildPathOptions(childOptions);
       setParentPathOptions(null);
     } else {
-      const parentOptions = getKeyPaths(apiData);
-      setRootDataRaw(null);
-      setRootPathRaw(null);
+      const parentOptions = getKeyPaths(apiResponseData);
+      setKeyDataReference(null);
+      setRootPathLocal(null);
       setChildPathOptions(null);
       setParentPathOptions(parentOptions);
     }
-  }, [apiData, integrationKeyPaths?.rootPath]);
+  }, [apiResponseData]);
 
   useEffect(() => {
-    const allValid = DISPLAY_OPTIONS_CONFIG?.[integrationType]
+    const allValid = DISPLAY_OPTIONS_CONFIG?.[displayType]
       ?.map(
-        (field) =>
-          !!integrationKeyPathsLocal[field?.name as keyof IntegrationKeyPaths]
+        (field) => !!keyPathsLocal[field?.name as keyof IntegrationKeyPaths]
       )
       .every((item) => !!item);
-    setCompleted(!!allValid);
-  }, [integrationKeyPathsLocal]);
+    setCompleted(
+      !!allValid && (displayType === "details" ? !!detailsCompleted : true)
+    );
+  }, [keyPathsLocal, detailsCompleted, displayType]);
 
   return (
     <FormWrapper height="calc(100vh - 40px)" width="1080px">
@@ -297,9 +324,9 @@ const ConfigureDisplayOptions = () => {
                 <FieldWrapper label="List Path" isRequired={true}>
                   <KeyPathSelector
                     data-cy="integrationRootPathSelector"
-                    value={defaultConfig?.integrationKeyPaths?.rootPath}
+                    value={rootPathLocal || null}
                     onChange={(value: string) => {
-                      const rootDataRaw = getKeyValue(apiData, value);
+                      const rootDataRaw = getKeyValue(apiResponseData, value);
                       const childOptionsRaw = getKeyPaths(
                         rootDataRaw?.[0]
                       ).filter((item) => {
@@ -310,20 +337,26 @@ const ConfigureDisplayOptions = () => {
                         );
                       });
 
-                      setRootPath(value);
-
+                      // setRootPath(value);
+                      setRootPathLocal(value);
                       const newPaths = {
-                        ...integrationKeyPathsLocal,
+                        ...keyPathsLocal,
                         ["rootPath"]: value,
                       };
-                      setIntegrationKeyPathsLocal(newPaths);
-                      setRootPathRaw(value);
-                      setRootDataRaw(rootDataRaw?.[0]);
+                      setKeyPathsLocal((prev) => ({
+                        ...prev,
+                        ["rootPath"]: value,
+                      }));
+                      // setRootPathRaw(value);
+                      // setRootPathLocal(value);
+
+                      // setRootDataRaw(rootDataRaw?.[0]);
+                      setKeyDataReference(rootDataRaw?.[0]);
                       setChildPathOptions(childOptionsRaw);
                     }}
                     options={parentPathOptions}
                     placeholder="Select Data Path"
-                    data={apiData}
+                    data={apiResponseData}
                     name="rootPath"
                   />
                 </FieldWrapper>
@@ -341,7 +374,7 @@ const ConfigureDisplayOptions = () => {
             >
               {!!childPathOptions?.length && (
                 <>
-                  {DISPLAY_OPTIONS_CONFIG?.[integrationType]?.map(
+                  {DISPLAY_OPTIONS_CONFIG?.[displayType]?.map(
                     (config: ConfigProps) => {
                       return (
                         <FieldWrapper
@@ -354,33 +387,37 @@ const ConfigureDisplayOptions = () => {
                               options={childPathOptions}
                               placeholder={config?.placeholder}
                               onChange={(value: string[]) => {
-                                setIntegrationKeyPathsLocal((prev) => ({
+                                setKeyPathsLocal((prev) => ({
                                   ...prev,
                                   [config?.name]: value,
                                 }));
                               }}
-                              details={integrationKeyPathsLocal?.details}
-                              data={rootDataRaw}
+                              details={keyPathsLocal?.details}
+                              data={keyDataReference}
                               optionsDescription="Values previewed for the keys below are from the first item in the API response."
                               name={config?.name}
+                              validation={(val) => setDetailsCompleted(val)}
                             />
                           ) : (
                             <KeyPathSelector
                               value={
-                                integrationKeyPathsLocal?.[
-                                  config?.name as keyof typeof integrationKeyPathsLocal
+                                keyPathsLocal?.[
+                                  config?.name as keyof typeof keyPathsLocal
                                 ] as string
                               }
                               onChange={(value: string) => {
-                                const newPaths = {
-                                  ...integrationKeyPathsLocal,
+                                // const newPaths = {
+                                //   ...integrationKeyPathsLocal,
+                                //   [config?.name]: value,
+                                // };
+                                setKeyPathsLocal((prev) => ({
+                                  ...prev,
                                   [config?.name]: value,
-                                };
-                                setIntegrationKeyPathsLocal(newPaths);
+                                }));
                               }}
                               options={childPathOptions}
                               placeholder={config?.placeholder}
-                              data={rootDataRaw}
+                              data={keyDataReference}
                               optionsDescription="Values previewed for the keys below are from the first item in the API response."
                               restrictedTypes={["array", "object", "function"]}
                               name={config?.name}
@@ -424,26 +461,20 @@ const ConfigureDisplayOptions = () => {
 
             <DraggableCard
               data-cy="integrationPreviewCard"
-              rootPath={rootPath}
-              type={integrationType}
-              heading={getKeyValue(
-                rootDataRaw,
-                integrationKeyPathsLocal?.heading
-              )}
+              rootPath={rootPathLocal}
+              type={displayType}
+              heading={getKeyValue(keyDataReference, keyPathsLocal?.heading)}
               subHeading={getKeyValue(
-                rootDataRaw,
-                integrationKeyPathsLocal?.subHeading
+                keyDataReference,
+                keyPathsLocal?.subHeading
               )}
               thumbnail={getKeyValue(
-                rootDataRaw,
-                integrationKeyPathsLocal?.thumbnail
+                keyDataReference,
+                keyPathsLocal?.thumbnail
               )}
-              detail={getKeyValue(
-                rootDataRaw,
-                integrationKeyPathsLocal?.detail
-              )}
-              details={integrationKeyPathsLocal?.details}
-              data={rootDataRaw}
+              detail={getKeyValue(keyDataReference, keyPathsLocal?.detail)}
+              details={keyPathsLocal?.details}
+              data={keyDataReference}
               disableMenu={true}
             />
           </Box>

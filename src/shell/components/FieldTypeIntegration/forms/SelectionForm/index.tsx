@@ -32,11 +32,15 @@ const SelectionForm = () => {
     setRemoteSelectorOpen,
     selectedItems,
     setSelectedItems,
-    rootData,
-    integrationKeyPaths,
-    integrationType,
-    setIntegrationValue,
+    // rootData,
+    rootDataArray,
+    // integrationKeyPaths,
+    // integrationType,
+    // setIntegrationValue,
     maxItems,
+    keyPaths,
+    displayType,
+    setValue,
   } = useIntegrationField();
 
   const [selectedItemsLocal, setSelectedItemsLocal] = useState(selectedItems);
@@ -53,9 +57,7 @@ const SelectionForm = () => {
 
   const handleDone = () => {
     setSelectedItems(selectedItemsLocal);
-    setIntegrationValue(
-      !selectedItemsLocal?.length ? "" : JSON.stringify(selectedItemsLocal)
-    );
+    setValue(!selectedItemsLocal?.length ? null : selectedItemsLocal);
     setRemoteSelectorOpen(false);
   };
 
@@ -65,12 +67,12 @@ const SelectionForm = () => {
   };
 
   const fileteredList = useMemo(() => {
-    if (!rootData || isFetching) return [];
-    return rootData?.filter((item: any) => {
-      const heading = getKeyValue(item, integrationKeyPaths?.heading);
-      const subHeading = getKeyValue(item, integrationKeyPaths?.subHeading);
-      const thumbnail = getKeyValue(item, integrationKeyPaths?.thumbnail);
-      const detail = getKeyValue(item, integrationKeyPaths?.detail);
+    if (!rootDataArray || isFetching) return [];
+    return rootDataArray?.filter((item: any) => {
+      const heading = getKeyValue(item, keyPaths?.heading);
+      const subHeading = getKeyValue(item, keyPaths?.subHeading);
+      const thumbnail = getKeyValue(item, keyPaths?.thumbnail);
+      const detail = getKeyValue(item, keyPaths?.detail);
 
       const searchString =
         `${heading}\n${subHeading}\n${thumbnail}\n${detail}`?.toLowerCase();
@@ -79,7 +81,7 @@ const SelectionForm = () => {
         ? true
         : searchString?.includes(searchTerm?.toLowerCase());
     });
-  }, [rootData, searchTerm, isFetching, selectedItems]);
+  }, [rootDataArray, searchTerm, isFetching, selectedItems]);
 
   return (
     <Dialog
@@ -242,16 +244,13 @@ const SelectionForm = () => {
                   data-cy={`integrationSelectionFormListCard-${index}`}
                   id={item?._itemId}
                   key={item?._itemId}
-                  rootPath={integrationKeyPaths?.rootPath}
-                  type={integrationType}
-                  heading={getKeyValue(item, integrationKeyPaths?.heading)}
-                  subHeading={getKeyValue(
-                    item,
-                    integrationKeyPaths?.subHeading
-                  )}
-                  detail={getKeyValue(item, integrationKeyPaths?.detail)}
-                  thumbnail={getKeyValue(item, integrationKeyPaths?.thumbnail)}
-                  details={integrationKeyPaths?.details}
+                  rootPath={keyPaths?.rootPath}
+                  type={displayType}
+                  heading={getKeyValue(item, keyPaths?.heading)}
+                  subHeading={getKeyValue(item, keyPaths?.subHeading)}
+                  detail={getKeyValue(item, keyPaths?.detail)}
+                  thumbnail={getKeyValue(item, keyPaths?.thumbnail)}
+                  details={keyPaths?.details}
                   data={item}
                   isSelected={selectedItemsLocal
                     ?.map((item) => item?._itemId)

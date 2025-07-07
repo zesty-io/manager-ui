@@ -64,6 +64,8 @@ import {
   IntegrationFieldConfig,
   IntegrationRequestHeaders,
   IntegrationKeyPaths,
+  IntegrationFieldApiConfig,
+  IntegrationFieldDisplay,
 } from "../../../../../../../shell/services/types";
 import {
   FIELD_COPY_CONFIG,
@@ -249,14 +251,19 @@ export const FieldForm = ({
         } else if (field.name === "fileExtensionsErrorMessage") {
           formFields[field.name] = fieldData.settings?.[field.name] ?? null;
         } else if (field.name === "integrationConfig") {
-          formFields["integrationEndpoint"] =
-            fieldData?.["integrationEndpoint"] ?? null;
-          formFields["integrationType"] =
-            fieldData?.["integrationType"] ?? null;
-          formFields["integrationRequestHeaders"] =
-            fieldData?.["integrationRequestHeaders"] ?? null;
-          formFields["integrationKeyPaths"] =
-            fieldData?.["integrationKeyPaths"] ?? null;
+          // formFields["integrationEndpoint"] =
+          //   fieldData?.["integrationEndpoint"] ?? null;
+          // formFields["integrationType"] =
+          //   fieldData?.["integrationType"] ?? null;
+          // formFields["integrationRequestHeaders"] =
+          //   fieldData?.["integrationRequestHeaders"] ?? null;
+          // formFields["integrationKeyPaths"] =
+          //   fieldData?.["integrationKeyPaths"] ?? null;
+
+          formFields["integrationFieldApiConfig"] =
+            fieldData?.["integrationFieldApiConfig"] ?? null;
+          formFields["integrationFieldDisplay"] =
+            fieldData?.["integrationFieldDisplay"] ?? null;
         } else {
           formFields[field.name] = fieldData[field.name] as FormValue;
         }
@@ -279,10 +286,13 @@ export const FieldForm = ({
           field.type === "config" &&
           field.name === "integrationConfig"
         ) {
-          formFields["integrationEndpoint"] = null;
-          formFields["integrationType"] = null;
-          formFields["integrationRequestHeaders"] = null;
-          formFields["integrationKeyPaths"] = null;
+          // formFields["integrationEndpoint"] = null;
+          // formFields["integrationType"] = null;
+          // formFields["integrationRequestHeaders"] = null;
+          // formFields["integrationKeyPaths"] = null;
+
+          formFields["integrationFieldApiConfig"] = null;
+          formFields["integrationFieldDisplay"] = null;
         } else {
           if (
             field.name === "defaultValue" ||
@@ -458,15 +468,25 @@ export const FieldForm = ({
         newErrorsObj[inputName] = "This field is required";
       }
 
+      // if (
+      //   [
+      //     "integrationEndpoint",
+      //     "integrationType",
+      //     "integrationKeyPaths",
+      //   ].includes(inputName) &&
+      //   (!formData.integrationEndpoint ||
+      //     !formData.integrationType ||
+      //     !formData.integrationKeyPaths)
+      // ) {
+      //   newErrorsObj["integrationConfig"] = "Incomplete API Configuration";
+      // }
+
       if (
-        [
-          "integrationEndpoint",
-          "integrationType",
-          "integrationKeyPaths",
-        ].includes(inputName) &&
-        (!formData.integrationEndpoint ||
-          !formData.integrationType ||
-          !formData.integrationKeyPaths)
+        ["integrationFieldApiConfig", "integrationFieldDisplay"].includes(
+          inputName
+        ) &&
+        (!formData.integrationFieldApiConfig ||
+          !formData.integrationFieldDisplay)
       ) {
         newErrorsObj["integrationConfig"] = "Incomplete API Configuration";
       }
@@ -574,6 +594,13 @@ export const FieldForm = ({
 
     const sort = isInbetweenField ? sortIndex : highestSortValue + 1;
 
+    console.debug(" hasErrors, formData, errors, fieldData :", {
+      hasErrors,
+      formData,
+      errors,
+      fieldData,
+    });
+
     if (hasErrors) {
       // Switch the active tab to details to show the user the errors if
       // they're not on the details tab and they clicked the submit button
@@ -674,13 +701,24 @@ export const FieldForm = ({
     }
 
     if (type === "integration") {
-      body.integrationEndpoint = formData?.integrationEndpoint as string;
-      body.integrationType = formData?.integrationType as IntegrationTypes;
-      body.integrationRequestHeaders =
-        formData?.integrationRequestHeaders as IntegrationRequestHeaders;
-      body.integrationKeyPaths =
-        formData?.integrationKeyPaths as IntegrationKeyPaths;
+      // body.integrationEndpoint = formData?.integrationEndpoint as string;
+      // body.integrationType = formData?.integrationType as IntegrationTypes;
+      // body.integrationRequestHeaders =
+      //   formData?.integrationRequestHeaders as IntegrationRequestHeaders;
+      // body.integrationKeyPaths =
+      //   formData?.integrationKeyPaths as IntegrationKeyPaths;
+
+      body.integrationFieldApiConfig =
+        formData?.integrationFieldApiConfig as IntegrationFieldApiConfig;
+      body.integrationFieldDisplay =
+        formData?.integrationFieldDisplay as IntegrationFieldDisplay;
     }
+    console.debug(" body, formData, errors, fieldData :", {
+      body,
+      formData,
+      errors,
+      fieldData,
+    });
 
     if (isUpdateField) {
       const updateBody: ContentModelField = {
@@ -891,7 +929,10 @@ export const FieldForm = ({
               let renderOption: any;
               let filterOptions: any;
               let autocompleteConfig: AutocompleteConfig = {};
-              let integrationConfig: IntegrationFieldConfig = null;
+              // let integrationConfig: IntegrationFieldConfig = null;
+
+              let integrationFieldApiConfig: IntegrationFieldApiConfig = null;
+              let integrationFieldDisplay: IntegrationFieldDisplay = null;
 
               if (fieldConfig.name === "relatedModelZUID") {
                 dropdownOptions = modelsOptions;
@@ -899,12 +940,21 @@ export const FieldForm = ({
               }
 
               if (fieldConfig.name === "integrationConfig") {
-                integrationConfig = {
-                  integrationType: fieldData?.integrationType,
-                  integrationEndpoint: fieldData?.integrationEndpoint,
-                  integrationRequestHeaders:
-                    fieldData?.integrationRequestHeaders,
-                  integrationKeyPaths: fieldData?.integrationKeyPaths,
+                // integrationConfig = {
+                //   integrationType: fieldData?.integrationType,
+                //   integrationEndpoint: fieldData?.integrationEndpoint,
+                //   integrationRequestHeaders:
+                //     fieldData?.integrationRequestHeaders,
+                //   integrationKeyPaths: fieldData?.integrationKeyPaths,
+                // };
+
+                integrationFieldApiConfig = {
+                  endpoint: fieldData?.integrationEndpoint,
+                  headers: fieldData?.integrationRequestHeaders,
+                };
+                integrationFieldDisplay = {
+                  type: fieldData?.integrationType,
+                  keyPaths: fieldData?.integrationKeyPaths,
                 };
               }
 
@@ -993,7 +1043,9 @@ export const FieldForm = ({
                   renderOption={renderOption}
                   filterOptions={filterOptions}
                   autocompleteConfig={autocompleteConfig}
-                  integrationConfig={integrationConfig}
+                  // integrationConfig={integrationConfig}
+                  integrationFieldApiConfig={integrationFieldApiConfig}
+                  integrationFieldDisplay={integrationFieldDisplay}
                 />
               );
             })}

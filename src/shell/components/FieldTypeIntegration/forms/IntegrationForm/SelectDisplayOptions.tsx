@@ -33,13 +33,16 @@ const SelectDisplayOptions = () => {
   const {
     setActiveStep,
     closeForm,
-    integrationEndpoint,
-    integrationType,
-    setIntegrationType,
+    // integrationEndpoint,
+    // integrationType,
+    // setIntegrationType,
+    endpoint,
+    displayType,
+    setDisplayType,
   } = useIntegrationField();
 
-  const [integrationTypeLocal, setIntegrationTypeLocal] =
-    useState<IntegrationTypes | null>(integrationType || null);
+  const [displayTypeLocal, setDisplayTypeLocal] =
+    useState<IntegrationTypes | null>(displayType || null);
 
   const recommendedOption = SPECIAL_DISPLAY_TYPES.filter(
     (option) => option.type === recommendedType
@@ -50,7 +53,7 @@ const SelectDisplayOptions = () => {
   );
 
   const handleNext = () => {
-    setIntegrationType(integrationTypeLocal);
+    setDisplayType(displayTypeLocal);
     setActiveStep(3);
   };
 
@@ -63,13 +66,12 @@ const SelectDisplayOptions = () => {
     ];
 
     const matchedType: IntegrationTypes | null =
-      endpointTypes.find(({ keyword }) =>
-        integrationEndpoint?.includes(keyword)
-      )?.type || null;
+      endpointTypes.find(({ keyword }) => endpoint?.includes(keyword))?.type ||
+      null;
     setRecommendedType(matchedType);
-    if (!!integrationType) return;
-    setIntegrationTypeLocal(matchedType);
-  }, [integrationEndpoint, integrationType]);
+    if (!!displayTypeLocal) return;
+    setDisplayTypeLocal(matchedType);
+  }, [endpoint, displayTypeLocal]);
 
   return (
     <FormWrapper height="calc(100vh - 40px)" width="1080px">
@@ -169,9 +171,9 @@ const SelectDisplayOptions = () => {
                     card={item?.card}
                     type={item?.type}
                     disableMenu={true}
-                    isSelected={integrationTypeLocal === item?.type}
+                    isSelected={displayTypeLocal === item?.type}
                     onSelect={() => {
-                      setIntegrationTypeLocal(item?.type);
+                      setDisplayTypeLocal(item?.type);
                     }}
                   />
                 ))}
@@ -218,9 +220,9 @@ const SelectDisplayOptions = () => {
                   card={item?.card}
                   type={item?.type}
                   disableMenu={true}
-                  isSelected={integrationTypeLocal === item?.type}
+                  isSelected={displayTypeLocal === item?.type}
                   onSelect={() => {
-                    setIntegrationTypeLocal(item?.type);
+                    setDisplayTypeLocal(item?.type);
                   }}
                 />
               ))}
@@ -267,9 +269,9 @@ const SelectDisplayOptions = () => {
                   card={item?.card}
                   type={item?.type}
                   disableMenu={true}
-                  isSelected={integrationTypeLocal === item?.type}
+                  isSelected={displayTypeLocal === item?.type}
                   onSelect={() => {
-                    setIntegrationTypeLocal(item?.type);
+                    setDisplayTypeLocal(item?.type);
                   }}
                 />
               ))}
@@ -301,7 +303,7 @@ const SelectDisplayOptions = () => {
           data-cy="integrationConfigureOptionNextButton"
           variant="contained"
           onClick={handleNext}
-          disabled={!integrationTypeLocal}
+          disabled={!displayTypeLocal}
         >
           Next
         </Button>

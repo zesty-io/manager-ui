@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import { Box, Typography, Button, Paper, InputBase } from "@mui/material";
 import { FormTypes } from "./configs";
 import LinkRoundedIcon from "@mui/icons-material/LinkRounded";
@@ -8,7 +8,11 @@ import IntegrationForm from "./forms/IntegrationForm";
 import { FormValue } from "../../../apps/schema/src/app/components/AddFieldModal/views/FieldForm";
 
 import { FieldWrapper } from "./forms/FieldWrapper";
-import { IntegrationFieldConfig } from "../../services/types";
+import {
+  IntegrationFieldApiConfig,
+  IntegrationFieldConfig,
+  IntegrationFieldDisplay,
+} from "../../services/types";
 
 type IntegrationFieldProps = {
   name: string;
@@ -24,7 +28,9 @@ type IntegrationFieldProps = {
     value: FormValue;
   }) => void;
   error?: string | [string, string][] | null;
-  integrationConfig?: IntegrationFieldConfig;
+  isLoading?: boolean;
+  integrationFieldApiConfig?: IntegrationFieldApiConfig | null;
+  integrationFieldDisplay?: IntegrationFieldDisplay | null;
 };
 
 const ConfigureIntegration: FC<IntegrationFieldProps> = ({
@@ -35,77 +41,53 @@ const ConfigureIntegration: FC<IntegrationFieldProps> = ({
   required,
   error,
   formType = "configure",
-  integrationConfig,
+  isLoading = false,
+  integrationFieldApiConfig = null,
+  integrationFieldDisplay = null,
 }) => {
-  const configContainerRef = useRef(null);
+  const [defaultLoaded, setDefaultLoaded] = useState(false);
 
   const {
     isFormOpen,
     openForm,
-    integrationEndpoint,
-    setIntegrationEndpoint,
-    integrationType,
-    setIntegrationType,
-    integrationHeaders,
-    setIntegrationHeaders,
-    integrationKeyPaths,
-    setIntegrationKeyPaths,
     isConnected,
-    setIsConnected,
     setActiveStep,
-    defaultConfig,
-
-    setDefaultConfig,
+    //NEW
+    setEndpoint,
+    setHeaders,
+    setKeyPaths,
+    setDisplayType,
+    apiConfig,
+    displayConfig,
   } = useIntegrationField();
 
   useEffect(() => {
     onChange({
-      inputName: "integrationEndpoint",
-      value: integrationEndpoint,
+      inputName: "integrationFieldApiConfig",
+      value: apiConfig,
     });
-  }, [integrationEndpoint]);
+  }, [apiConfig]);
 
   useEffect(() => {
     onChange({
-      inputName: "integrationType",
-      value: integrationType,
+      inputName: "integrationFieldDisplay",
+      value: displayConfig,
     });
-  }, [integrationType]);
+  }, [displayConfig]);
 
   useEffect(() => {
-    onChange({
-      inputName: "integrationRequestHeaders",
-      value: integrationHeaders,
-    });
-  }, [integrationHeaders]);
-
-  useEffect(() => {
-    onChange({
-      inputName: "integrationKeyPaths",
-      value: integrationKeyPaths,
-    });
-  }, [integrationKeyPaths]);
-
-  useEffect(() => {
-    if (!!defaultConfig) return;
-    const {
-      integrationEndpoint: endpoint,
-      integrationType: type,
-      integrationRequestHeaders: headers,
-      integrationKeyPaths: propPaths,
-    } = integrationConfig;
-
-    setIntegrationEndpoint(endpoint);
-    setIntegrationType(type);
-    setIntegrationHeaders(headers);
-    setIntegrationKeyPaths(propPaths);
-
-    setDefaultConfig(integrationConfig);
-
-    if (!!endpoint && !!type) {
-      setIsConnected(true);
-    }
-  }, [integrationConfig, defaultConfig]);
+    if (isLoading || defaultLoaded) return;
+    setEndpoint(integrationFieldApiConfig?.endpoint || "");
+    setHeaders(integrationFieldApiConfig?.headers || null);
+    setKeyPaths(integrationFieldDisplay?.keyPaths || null);
+    setDisplayType(integrationFieldDisplay?.type || null);
+    setDefaultLoaded(true);
+  }, [
+    integrationFieldApiConfig,
+    integrationFieldDisplay,
+    isLoading,
+    defaultLoaded,
+  ]);
 
   return (
     <FieldWrapper
@@ -151,7 +133,7 @@ const ConfigureIntegration: FC<IntegrationFieldProps> = ({
             <InputBase
               size="small"
               readOnly
-              value={integrationEndpoint || ""}
+              value={apiConfig?.endpoint || ""}
               sx={{ flexGrow: 1 }}
               slotProps={{
                 input: {
@@ -185,7 +167,7 @@ const ConfigureIntegration: FC<IntegrationFieldProps> = ({
             <InputBase
               size="small"
               readOnly
-              value={integrationType || ""}
+              value={displayConfig?.type || ""}
               sx={{ flexGrow: 1 }}
               slotProps={{
                 input: {

@@ -5,7 +5,11 @@ import { useIntegrationField } from "./IntegrationFieldProvider";
 import { generateItemId, getKeyValue } from "./utils";
 import AddIcon from "@mui/icons-material/Add";
 import SelectionForm from "./forms/SelectionForm";
-import { IntegrationFieldConfig } from "../../services/types";
+import {
+  IntegrationFieldApiConfig,
+  IntegrationFieldConfig,
+  IntegrationFieldDisplay,
+} from "../../services/types";
 import DraggableCard from "./DisplayCard/DraggableCard";
 import JsonViewer from "./forms/SelectionForm/JsonViewer";
 import { useDrop } from "react-dnd";
@@ -13,16 +17,18 @@ import { useDrop } from "react-dnd";
 type SelectItemsProps = {
   name: string;
   label: string;
-  value?: string;
+  value?: any;
   onSelectionChange?: ({
     inputName,
     value,
   }: {
     inputName: string;
-    value: string;
+    value: any;
   }) => void;
 
   integrationConfig?: IntegrationFieldConfig;
+  integrationFieldApiConfig?: IntegrationFieldApiConfig | null;
+  integrationFieldDisplay?: IntegrationFieldDisplay | null;
   isLoading?: boolean;
 };
 
@@ -32,6 +38,8 @@ const SelectItems: FC<SelectItemsProps> = ({
   value,
   onSelectionChange,
   integrationConfig,
+  integrationFieldApiConfig = null,
+  integrationFieldDisplay = null,
   isLoading = false,
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -40,58 +48,91 @@ const SelectItems: FC<SelectItemsProps> = ({
     isFetching,
     selectedItems,
     setSelectedItems,
-    integrationType,
-    integrationKeyPaths,
     remoteSelectorOpen,
-    integrationValue,
-    setIntegrationValue,
+    // integrationValue,
+    // setIntegrationValue,
     setRemoteSelectorOpen,
-    setIntegrationEndpoint,
-    setIntegrationType,
-    setIntegrationHeaders,
-    setIntegrationKeyPaths,
 
     jsonViewerIsOpen,
     setJsonViewerIsOpen,
     jsonData,
+
+    //NEW
+    endpoint,
+    setEndpoint,
+    headers,
+    setHeaders,
+    keyPaths,
+    setKeyPaths,
+    displayType,
+    setDisplayType,
+    value: valueLocal,
+    setValue,
   } = useIntegrationField();
 
+  // useEffect(() => {
+  //   if (!integrationConfig?.integrationEndpoint || isLoaded) return;
+  //   setIntegrationEndpoint(integrationConfig?.integrationEndpoint);
+  //   setIntegrationType(integrationConfig?.integrationType);
+  //   setIntegrationHeaders(integrationConfig?.integrationRequestHeaders);
+  //   setIntegrationKeyPaths(integrationConfig?.integrationKeyPaths);
+  //   setIntegrationValue(value);
+  //   setIsLoaded(true);
+  // }, [
+  //   integrationConfig,
+  //   setIntegrationEndpoint,
+  //   setIntegrationType,
+  //   setIntegrationHeaders,
+  //   setIntegrationKeyPaths,
+  //   setIntegrationValue,
+  //   isLoaded,
+  //   setIsLoaded,
+  //   value,
+  // ]);
+
   useEffect(() => {
-    if (!integrationConfig?.integrationEndpoint || isLoaded) return;
-    setIntegrationEndpoint(integrationConfig?.integrationEndpoint);
-    setIntegrationType(integrationConfig?.integrationType);
-    setIntegrationHeaders(integrationConfig?.integrationRequestHeaders);
-    setIntegrationKeyPaths(integrationConfig?.integrationKeyPaths);
-    setIntegrationValue(value);
+    if (isLoading || isLoaded) return;
+    setEndpoint(integrationFieldApiConfig?.endpoint || "");
+    setHeaders(integrationFieldApiConfig?.headers || null);
+    setKeyPaths(integrationFieldDisplay?.keyPaths || null);
+    setDisplayType(integrationFieldDisplay?.type || null);
     setIsLoaded(true);
+    setValue(value || null);
   }, [
-    integrationConfig,
-    setIntegrationEndpoint,
-    setIntegrationType,
-    setIntegrationHeaders,
-    setIntegrationKeyPaths,
-    setIntegrationValue,
+    integrationFieldApiConfig,
+    integrationFieldDisplay,
+    isLoading,
     isLoaded,
-    setIsLoaded,
     value,
   ]);
 
-  useEffect(() => {
-    if (!value || !integrationKeyPaths) return;
-    const parsedValue = JSON.parse(value);
+  // useEffect(() => {
+  //   if (!integrationFieldApiConfig && !integrationFieldDisplay) return;
 
-    const mappedValue = parsedValue.map((item: any) => ({
+  //   setEndpoint(integrationFieldApiConfig?.endpoint || "");
+  //   setHeaders(integrationFieldApiConfig?.headers || null);
+  //   setKeyPaths(integrationFieldDisplay?.keyPaths || null);
+  //   setDisplayType(integrationFieldDisplay?.type || null);
+  //   setValue(value || null);
+  // }, [integrationFieldApiConfig, integrationFieldDisplay, value]);
+
+  useEffect(() => {
+    console.debug("Value: ", { value, valueLocal });
+    if (!valueLocal || !keyPaths) return;
+    // const parsedValue = JSON.parse(value);
+
+    const mappedValue = valueLocal?.map((item: any) => ({
       ...item,
-      _itemId: generateItemId(item, integrationKeyPaths),
+      _itemId: generateItemId(item, keyPaths),
     }));
     setSelectedItems(mappedValue);
-  }, [value, integrationKeyPaths]);
+  }, [valueLocal, keyPaths]);
 
   useEffect(() => {
-    if (!isLoaded || value === integrationValue) return;
+    if (!isLoaded || value === valueLocal) return;
 
-    onSelectionChange({ inputName: name, value: integrationValue });
-  }, [integrationValue, isLoaded, value]);
+    onSelectionChange({ inputName: name, value: valueLocal });
+  }, [valueLocal, isLoaded, value]);
 
   const findCard = useCallback(
     (_itemId: string) => {
@@ -122,7 +163,7 @@ const SelectItems: FC<SelectItemsProps> = ({
     const stringifiedValue = !selectedItems?.length
       ? ""
       : JSON.stringify(selectedItems)?.trim();
-    setIntegrationValue(stringifiedValue);
+    setValue(selectedItems);
   }, [selectedItems]);
 
   const [, drop] = useDrop(() => ({ accept: "card" }));
@@ -157,12 +198,12 @@ const SelectItems: FC<SelectItemsProps> = ({
               <DraggableCard
                 key={item?._itemId}
                 id={item?._itemId}
-                type={integrationType}
-                heading={getKeyValue(item, integrationKeyPaths?.heading)}
-                subHeading={getKeyValue(item, integrationKeyPaths?.subHeading)}
-                thumbnail={getKeyValue(item, integrationKeyPaths?.thumbnail)}
-                detail={getKeyValue(item, integrationKeyPaths?.detail)}
-                details={integrationKeyPaths?.details}
+                type={displayType}
+                heading={getKeyValue(item, keyPaths?.heading)}
+                subHeading={getKeyValue(item, keyPaths?.subHeading)}
+                thumbnail={getKeyValue(item, keyPaths?.thumbnail)}
+                detail={getKeyValue(item, keyPaths?.detail)}
+                details={keyPaths?.details}
                 index={index}
                 moveCard={moveCard}
                 onReorder={onReorder}

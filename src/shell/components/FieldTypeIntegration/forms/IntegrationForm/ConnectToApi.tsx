@@ -82,56 +82,66 @@ const ConnectToApi = () => {
   const [reqAborted, setReqAborted] = useState<boolean>(false);
 
   const {
-    integrationHeaders,
+    // integrationHeaders,
     setActiveStep,
-    setIntegrationEndpoint,
+    // setIntegrationEndpoint,
     closeForm,
-    setIntegrationHeaders,
-    setApiData,
+    // setIntegrationHeaders,
+    // setApiData,
     setIsConnected,
     queryApi,
-    defaultConfig,
+    // defaultConfig,
+
+    //NEW
+    endpoint,
+    setEndpoint,
+    headers,
+    setHeaders,
+    setApiResponseData,
+    setAutoRequest,
   } = useIntegrationField();
 
-  const [integrationEndpointLocal, setIntegrationEndpointLocal] =
-    useState<string>("");
+  const [endpointLocal, setEndpointLocal] = useState<string>(endpoint || "");
 
-  const [integrationHeadersLocal, setIntegrationHeadersLocal] = useState<
+  const [headersLocal, setHeadersLocal] = useState<
     { key: string; value: string }[] | null
-  >(keyValuePairsToArray(defaultConfig?.integrationRequestHeaders || []));
+  >(null);
 
   const handleApiConnect = useCallback(async () => {
+    setAutoRequest(false);
     setReqAborted(false);
     setStatus("connecting");
-    const reqHeaders = arrayToKeyValuePairs(integrationHeadersLocal);
+    const reqHeaders = arrayToKeyValuePairs(headersLocal);
     try {
       const { status, data } = await queryApi({
-        endpoint: integrationEndpointLocal,
+        endpoint: endpointLocal,
         headers: reqHeaders,
       });
 
       if (status === "success") {
-        setApiData(data);
+        setApiResponseData(data);
         setStatus("success");
-        setIsConnected(true);
+        // setIsConnected(true);
       } else {
         throw new Error("Failed to connect");
       }
     } catch (error) {
       setReqError(error);
-      setApiData(null);
+      setApiResponseData(null);
       setStatus("failed");
     }
-  }, [integrationEndpointLocal, integrationHeadersLocal]);
+  }, [endpointLocal, headersLocal]);
 
   const handleNext = () => {
-    if (!!integrationHeadersLocal?.length) {
-      const reqHeaders = arrayToKeyValuePairs(integrationHeadersLocal);
-      setIntegrationHeaders(reqHeaders);
+    if (!!headersLocal?.length) {
+      const reqHeaders = arrayToKeyValuePairs(headersLocal);
+      // setIntegrationHeaders(reqHeaders);
+      setHeaders(reqHeaders);
     }
-    setIntegrationEndpoint(integrationEndpointLocal);
+    // setIntegrationEndpoint(integrationEndpointLocal);
+    setEndpoint(endpointLocal);
     setReqAborted(false);
-    setIsConnected(true);
+    // setIsConnected(true);
     setActiveStep(2);
   };
   const handleAbort = () => {
@@ -140,15 +150,21 @@ const ConnectToApi = () => {
     setActiveStep(1);
   };
 
+  // useEffect(() => {
+  //   if (
+  //     !integrationHeaders ||
+  //     (!!integrationHeaders && !Object.keys(integrationHeaders)?.length)
+  //   )
+  //     return;
+  //   const convertedHeaders = keyValuePairsToArray(integrationHeaders);
+  //   setIntegrationHeadersLocal(convertedHeaders);
+  // }, [integrationHeaders]);
+
   useEffect(() => {
-    if (
-      !integrationHeaders ||
-      (!!integrationHeaders && !Object.keys(integrationHeaders)?.length)
-    )
-      return;
-    const convertedHeaders = keyValuePairsToArray(integrationHeaders);
-    setIntegrationHeadersLocal(convertedHeaders);
-  }, [integrationHeaders]);
+    if (!headers || (!!headers && !Object.keys(headers)?.length)) return;
+    const convertedHeaders = keyValuePairsToArray(headers);
+    setHeadersLocal(convertedHeaders);
+  }, [headers]);
 
   return (
     <FormWrapper width="480px" height="600px">
@@ -199,12 +215,12 @@ const ConnectToApi = () => {
             size="small"
             autoFocus
             placeholder="https://api.example.com/endpoint"
-            value={integrationEndpointLocal}
+            value={endpointLocal}
             onInput={(e: any) => {
               const validUrl = !!e.target.value && validateUrl(e.target.value);
-              console.debug("integrationUrl changed", e.target.value, validUrl);
               setIsValidUrl(validUrl);
-              setIntegrationEndpointLocal(e.target.value);
+              // setIntegrationEndpointLocal(e.target.value);
+              setEndpointLocal(e.target.value);
             }}
             slotProps={{
               input: {
@@ -256,17 +272,15 @@ const ConnectToApi = () => {
                     fullWidth
                     size="small"
                     placeholder="Key"
-                    value={integrationHeadersLocal?.[i]?.key || ""}
+                    value={headersLocal?.[i]?.key || ""}
                     onChange={(e) => {
-                      const newHeaders = integrationHeadersLocal
-                        ? [...integrationHeadersLocal]
-                        : [];
+                      const newHeaders = headersLocal ? [...headersLocal] : [];
                       newHeaders[i] = {
                         ...newHeaders[i],
                         key: e.target.value,
-                        value: integrationHeadersLocal?.[i]?.value || "",
+                        value: headersLocal?.[i]?.value || "",
                       };
-                      setIntegrationHeadersLocal(newHeaders);
+                      setHeadersLocal(newHeaders);
                     }}
                   />
                 </Grid>
@@ -276,16 +290,14 @@ const ConnectToApi = () => {
                     fullWidth
                     size="small"
                     placeholder="Value"
-                    value={integrationHeadersLocal?.[i]?.value || ""}
+                    value={headersLocal?.[i]?.value || ""}
                     onChange={(e) => {
-                      const newHeaders = integrationHeadersLocal
-                        ? [...integrationHeadersLocal]
-                        : [];
+                      const newHeaders = headersLocal ? [...headersLocal] : [];
                       newHeaders[i] = {
                         ...newHeaders[i],
                         value: e.target.value || "",
                       };
-                      setIntegrationHeadersLocal(newHeaders);
+                      setHeadersLocal(newHeaders);
                     }}
                   />
                 </Grid>
@@ -303,7 +315,7 @@ const ConnectToApi = () => {
           variant="contained"
           onClick={handleApiConnect}
           startIcon={<LinkRoundedIcon />}
-          disabled={!integrationEndpointLocal || !isValidUrl}
+          disabled={!endpointLocal || !isValidUrl}
         >
           Connect
         </Button>

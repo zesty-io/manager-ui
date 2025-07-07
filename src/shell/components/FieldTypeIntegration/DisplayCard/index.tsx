@@ -53,7 +53,7 @@ const DisplayCard: FC<
   const isVideo = mediaType === "video";
 
   return (
-    <Grid container width="100%" height="100%">
+    <Grid container width="100%" height="100%" alignItems="center">
       {!!withCardMedia && (
         <Grid
           width={isVideo ? "142px" : "80px"}

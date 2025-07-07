@@ -66,7 +66,6 @@ const DraggableCard: FC<DraggableCardProps> = ({
   const [, drop] = useDrop({
     accept: ItemTypes.CARD,
     hover: (item: DragItem, monitor) => {
-      console.debug("hover", item, index);
       if (!ref.current) return;
       if (item.index === index) return;
 

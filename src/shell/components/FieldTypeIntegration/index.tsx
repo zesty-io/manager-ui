@@ -1,7 +1,11 @@
 import { FC } from "react";
 import { FormTypes } from "./configs";
 import IntegrationFieldProvider from "./IntegrationFieldProvider";
-import { IntegrationFieldConfig } from "../../services/types";
+import {
+  IntegrationFieldApiConfig,
+  IntegrationFieldConfig,
+  IntegrationFieldDisplay,
+} from "../../services/types";
 import ConfigureIntegration from "./ConfigureIntegration";
 import SelectItems from "./SelectItems";
 import { DndProvider } from "react-dnd";
@@ -24,6 +28,8 @@ type IntegrationFieldProps<Value> = {
   error?: string | [string, string][] | null;
   isError?: boolean;
   integrationConfig?: IntegrationFieldConfig;
+  integrationFieldApiConfig?: IntegrationFieldApiConfig | null;
+  integrationFieldDisplay?: IntegrationFieldDisplay | null;
   maxItems?: number | null;
   isLoading?: boolean;
 };
@@ -40,9 +46,11 @@ const FieldTypeIntegration: FC<IntegrationFieldProps<any>> = ({
   integrationConfig,
   maxItems,
   isLoading = false,
+  integrationFieldApiConfig = null,
+  integrationFieldDisplay = null,
 }) => {
   return (
-    <IntegrationFieldProvider maxItems={maxItems}>
+    <IntegrationFieldProvider maxItems={maxItems} isLoading={isLoading}>
       <DndProvider backend={HTML5Backend}>
         {formType === "select" ? (
           <SelectItems
@@ -52,6 +60,8 @@ const FieldTypeIntegration: FC<IntegrationFieldProps<any>> = ({
             onSelectionChange={onChange}
             integrationConfig={integrationConfig}
             isLoading={isLoading}
+            integrationFieldApiConfig={integrationFieldApiConfig}
+            integrationFieldDisplay={integrationFieldDisplay}
           />
         ) : (
           <ConfigureIntegration
@@ -62,7 +72,9 @@ const FieldTypeIntegration: FC<IntegrationFieldProps<any>> = ({
             error={error}
             required={required}
             formType={formType}
-            integrationConfig={integrationConfig}
+            isLoading={isLoading}
+            integrationFieldApiConfig={integrationFieldApiConfig}
+            integrationFieldDisplay={integrationFieldDisplay}
           />
         )}
       </DndProvider>

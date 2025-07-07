@@ -1,4 +1,4 @@
-import { ReactNode, useRef } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import { Dialog, Paper } from "@mui/material";
 import ConnectToApi from "./ConnectToApi";
 import { useIntegrationField } from "../../IntegrationFieldProvider";
@@ -6,14 +6,29 @@ import SelectDisplayOptions from "./SelectDisplayOptions";
 import ConfigureDisplayOptions from "./ConfigureDisplayOptions";
 
 const IntegrationForm = () => {
+  const [mounted, setMounted] = useState(false);
   const containerRef = useRef(null);
   const {
+    setEndpoint,
+    setHeaders,
+    setKeyPaths,
+    setDisplayType,
     activeStep,
-    setActiveStep,
     isFormOpen,
     closeForm,
-    integrationEndpoint,
+    apiConfig,
+    displayConfig,
   } = useIntegrationField();
+
+  useEffect(() => {
+    if (mounted) return;
+    setEndpoint(apiConfig?.endpoint || "");
+    setHeaders(apiConfig?.headers || null);
+    setKeyPaths(displayConfig?.keyPaths || null);
+    setDisplayType(displayConfig?.type || null);
+
+    setMounted(true);
+  }, [apiConfig, displayConfig, mounted]);
   return (
     <Dialog
       data-cy="integrationFormDialog"

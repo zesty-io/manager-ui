@@ -225,3 +225,41 @@ export const DEFAULT_HEADERS = [
     value: "",
   },
 ];
+
+export const INTEGRATION_DATA: any = {
+  ZUID: "12-f8cfdcf2fa-5mlxxz",
+  contentModelZUID: "6-92fda9baef-wx38b3",
+  name: "integration_test_api",
+  label: "Integration Test API",
+  description: "Integration Test API Description",
+  datatype: "integration",
+  sort: 4,
+  required: true,
+  relationship: null,
+  options: null,
+  fieldOptions: null,
+  datatypeOptions: null,
+  integrationFieldApiConfig: {
+    endpoint:
+      "https://8xbq19z1-dev.preview.stage.zesty.io/api/__Integration_Field_Test_API.json",
+    headers: null,
+  },
+  integrationFieldDisplay: {
+    type: "image",
+    keyPaths: {
+      heading: "name",
+      subHeading: "team",
+      thumbnail: "playerImage",
+      rootPath: null,
+    },
+  },
+  settings: {
+    defaultValue: null,
+    list: true,
+    minValue: 1,
+    maxValue: 20,
+  },
+  createdAt: "2025-06-18T07:36:49Z",
+  updatedAt: "2025-06-18T07:36:49Z",
+  // deletedAt: null,
+};

@@ -28,7 +28,9 @@ import { cloneDeep } from "lodash";
 import { FormValue } from "./views/FieldForm";
 import {
   FieldSettingsOptions,
+  IntegrationFieldApiConfig,
   IntegrationFieldConfig,
+  IntegrationFieldDisplay,
 } from "../../../../../../shell/services/types";
 import { convertDropdownValue } from "../../utils";
 import { withCursorPosition } from "../../../../../../shell/components/withCursorPosition";
@@ -66,7 +68,9 @@ export type FieldNames =
   | "integrationType"
   | "integrationRequestHeaders"
   | "integrationKeyPaths"
-  | "integrationConfig";
+  | "integrationConfig"
+  | "integrationFieldApiConfig"
+  | "integrationFieldDisplay";
 
 type FieldType =
   | "input"
@@ -120,6 +124,9 @@ type FieldFormInputProps = {
   disabled?: boolean;
   autocompleteConfig?: AutocompleteConfig;
   integrationConfig?: IntegrationFieldConfig;
+
+  integrationFieldApiConfig?: IntegrationFieldApiConfig;
+  integrationFieldDisplay?: IntegrationFieldDisplay;
 } & Pick<
   AutocompleteProps<DropdownOptions | Currency, false, false, false, "div">,
   "renderOption" | "filterOptions"
@@ -135,6 +142,8 @@ export const FieldFormInput = ({
   filterOptions,
   autocompleteConfig,
   integrationConfig,
+  integrationFieldApiConfig,
+  integrationFieldDisplay,
 }: FieldFormInputProps) => {
   const options =
     fieldConfig.type === "options" ||
@@ -452,6 +461,8 @@ export const FieldFormInput = ({
           formType="configure"
           onChange={onDataChange}
           integrationConfig={integrationConfig}
+          integrationFieldApiConfig={integrationFieldApiConfig}
+          integrationFieldDisplay={integrationFieldDisplay}
           error={errorMsg}
         />
       )}

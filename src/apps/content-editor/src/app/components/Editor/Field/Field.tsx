@@ -47,6 +47,7 @@ import { FieldTypeMedia } from "../../FieldTypeMedia";
 import { debounce, parseInt } from "lodash";
 import { useRegisterRef } from "../../../../../../../engine/useRegisterRef";
 import FieldTypeIntegration from "../../../../../../../shell/components/FieldTypeIntegration";
+import { INTEGRATION_DATA } from "../../../../../../../shell/components/FieldTypeIntegration/configs";
 
 const AIFieldShell = withAI(FieldShell);
 
@@ -100,7 +101,9 @@ export const Field = ({
   minLength,
 }: FieldProps) => {
   const dispatch = useDispatch();
-  const { data: fields } = useGetContentModelFieldsQuery(contentModelZUID);
+  const { data: fieldsRaw } = useGetContentModelFieldsQuery(contentModelZUID);
+
+  const fields = !fieldsRaw ? [] : [...fieldsRaw, INTEGRATION_DATA];
 
   const [imageModal, setImageModal] = useState(null);
   const [editorType, setEditorType] = useState<EditorType>();
@@ -789,12 +792,14 @@ export const Field = ({
             formType="select"
             maxItems={settings?.maxValue}
             isError={errors && Object.values(errors)?.some((error) => !!error)}
-            integrationConfig={{
-              integrationEndpoint: fieldData?.integrationEndpoint,
-              integrationType: fieldData?.integrationType,
-              integrationRequestHeaders: fieldData?.integrationRequestHeaders,
-              integrationKeyPaths: fieldData?.integrationKeyPaths,
-            }}
+            // integrationConfig={{
+            //   integrationEndpoint: fieldData?.integrationEndpoint,
+            //   integrationType: fieldData?.integrationType,
+            //   integrationRequestHeaders: fieldData?.integrationRequestHeaders,
+            //   integrationKeyPaths: fieldData?.integrationKeyPaths,
+            // }}
+            integrationFieldApiConfig={fieldData?.integrationFieldApiConfig}
+            integrationFieldDisplay={fieldData?.integrationFieldDisplay}
           />
         </FieldShell>
       );
