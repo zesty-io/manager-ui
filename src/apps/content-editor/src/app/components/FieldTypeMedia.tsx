@@ -417,7 +417,6 @@ export const FieldTypeMedia = forwardRef(
                 <Box
                   display="flex"
                   gap={1}
-                  width={400}
                   justifyContent="center"
                   flexWrap="wrap"
                 >
