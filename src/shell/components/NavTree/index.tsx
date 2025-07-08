@@ -20,7 +20,7 @@ export type TreeItem = {
   createdAt?: string;
   onItemDrop?: (draggedItem: any, targetItem: any) => void;
   dragAndDrop?: boolean;
-  selected: string;
+  selected?: string;
 } & Partial<ContentNavItem>;
 
 // Transform tree data for RichTreeView
@@ -163,11 +163,7 @@ export const NavTree: FC<Readonly<Props>> = ({
             item: RichTreeItem,
           }}
           onItemClick={(evt: any, itemId: string) => {
-            if (
-              !!evt.currentTarget.id &&
-              evt.target.tagName !== "svg" &&
-              evt.target.tagName !== "path"
-            ) {
+            if (evt.target.tagName !== "svg" && evt.target.tagName !== "path") {
               history.push(itemId);
             }
           }}
@@ -180,7 +176,6 @@ export const NavTree: FC<Readonly<Props>> = ({
               onToggleCollapse(nodeIds);
             }
           }}
-          // getItemLabel={(item) => item.label}
           getItemId={(item) => item.path}
         />
       )}

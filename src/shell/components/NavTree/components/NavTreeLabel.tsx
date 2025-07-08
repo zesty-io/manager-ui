@@ -27,25 +27,21 @@ export const NavTreeLabel = ({
       alignItems="center"
       justifyContent="space-between"
       position="relative"
+      width="100%"
+      overflow="hidden"
       {...props}
-      // sx={{
-      //   "& .treeActions": {
-      //     display: "flex",
-      //     position: "absolute",
-      //     right: 0,
-      //     zIndex: nodeData?.navSource == "code" ? 2 : -1,
-      //   },
-      //   "&:hover .treeActions": {
-      //     zIndex: 2,
-      //   },
-      //   // HACK: Makes sure that the label width is adjusted when the overlay buttons are rendered
-      //   "& .treeSpacer": {
-      //     display: nodeData?.navSource == "code" ? "block" : "none",
-      //   },
-      //   "&:hover .treeSpacer": {
-      //     display: "block",
-      //   },
-      // }}
+      sx={{
+        "& .treeActions": {
+          display: "flex",
+          position: "absolute",
+          right: 0,
+          zIndex: nodeData?.navSource == "code" ? 2 : -1,
+        },
+        // HACK: Makes sure that the label width is adjusted when the overlay buttons are rendered
+        "& .treeSpacer": {
+          display: nodeData?.navSource == "code" ? "block" : "none",
+        },
+      }}
     >
       {!labelIcon && nodeData?.navSource == "code" ? null : (
         <Box component={labelIcon} sx={{ fontSize: 16, mr: 1 }} />

@@ -64,10 +64,7 @@ const ActionsButton = ({
     <IconButton
       key="publish"
       color="inherit"
-      size="xsmall"
-      sx={{
-        transform: "translateX(5px)",
-      }}
+      size="xxsmall"
       onClick={() => {
         setIsLoading(true);
         dispatch(publishFile(ZUID, status))

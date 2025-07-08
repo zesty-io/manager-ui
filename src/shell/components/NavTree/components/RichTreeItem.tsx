@@ -1,4 +1,4 @@
-import { forwardRef, memo, useEffect, useRef, useMemo } from "react";
+import { forwardRef, memo } from "react";
 import {
   TreeItem2,
   TreeItem2Props,
@@ -21,8 +21,6 @@ export const RichTreeItem = memo(
     });
     const item = publicAPI.getItem(itemId);
 
-    console.log(props.label, item);
-
     return (
       <TreeItem2
         {...props}
@@ -32,7 +30,19 @@ export const RichTreeItem = memo(
         slotProps={
           {
             content: {
-              // sx: { border: "1px solid white" },
+              sx: {
+                "&:hover .treeActions": {
+                  zIndex: 2,
+                },
+                "&:hover .treeSpacer": {
+                  display: "block",
+                },
+              },
+            },
+            label: {
+              labelIcon: item?.icon,
+              nodeData: item?.nodeData,
+              actions: item?.actions,
             },
           } as TreeItem2SlotProps
         }
