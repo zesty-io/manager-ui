@@ -734,7 +734,7 @@ export const ContentNav = () => {
         data-cy="contentNav"
         mode="dark"
         headerTitle="Content"
-        searchPlaceholder="Filter Models"
+        searchPlaceholder="Filter Items"
         ref={sideBarChildrenContainerRef}
         subMenus={SUB_MENUS}
         onAddClick={handleAddClick}
