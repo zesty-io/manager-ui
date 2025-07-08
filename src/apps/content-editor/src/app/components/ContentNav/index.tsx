@@ -223,8 +223,8 @@ export const ContentNav = () => {
               ? ICONS["homepage"]
               : ICONS[navItem.type],
           path,
-          actions: [],
-          children: [],
+          actions: [] as JSX.Element[],
+          children: [] as TreeItem[],
         };
       });
     }
