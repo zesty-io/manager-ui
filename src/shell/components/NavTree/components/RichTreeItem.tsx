@@ -70,23 +70,6 @@ export const RichTreeItem = memo(
                       color: "primary.main",
                     },
                   },
-
-                  // ".MuiTreeItem-label .treeActions [data-cy='tree-item-hide'] svg":
-                  //   {
-                  //     // Makes sure that the hide icon color does not change when tree item is selected
-                  //     color: "grey.400",
-                  //   },
-
-                  // ".MuiTreeItem-label .treeActions [data-cy='tree-item-add-new-content'] svg":
-                  //   {
-                  //     // Makes sure that the add new content icon color does not change when tree item is selected
-                  //     color: "common.white",
-                  //   },
-
-                  // ".MuiMenu-root .MuiList-root .MuiListItemText-root .MuiTypography-root":
-                  //   {
-                  //     color: "common.black",
-                  //   },
                 },
               },
             },

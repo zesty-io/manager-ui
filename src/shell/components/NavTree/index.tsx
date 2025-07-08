@@ -22,49 +22,6 @@ export type TreeItem = {
   dragAndDrop?: boolean;
 } & Partial<ContentNavItem>;
 
-// Transform tree data for RichTreeView
-// type RichTreeData = TreeViewBaseItem & {
-
-// }
-// type TransformTreeDataParams = {
-//   items: TreeItem[];
-//   isHiddenTree: boolean;
-//   onItemDrop: (draggedItem: any, targetItem: any) => void;
-//   dragAndDrop?: boolean;
-//   selected?: string;
-// };
-// const transformTreeData = ({
-//   items,
-//   isHiddenTree,
-//   onItemDrop,
-//   dragAndDrop,
-//   selected,
-// }: TransformTreeDataParams): any[] => {
-//   return items
-//     ?.filter((item) => !(!isHiddenTree && item.hidden) && item)
-//     ?.map((item) => ({
-//       id: item.path,
-//       label: item.label,
-//       children:
-//         item.children?.length > 0
-//           ? transformTreeData({
-//               items: item.children,
-//               isHiddenTree,
-//               onItemDrop,
-//               dragAndDrop,
-//               selected,
-//             })
-//           : undefined,
-//       // Store additional data for custom rendering
-//       icon: item.icon,
-//       actions: item.actions ?? [],
-//       nodeData: item.nodeData,
-//       onItemDrop,
-//       dragAndDrop,
-//       selected,
-//     }));
-// };
-
 interface Props {
   id: string;
   HeaderComponent?: React.ReactNode;
@@ -94,17 +51,6 @@ export const NavTree: FC<Readonly<Props>> = ({
   isLoading,
 }) => {
   const history = useHistory();
-  const isCodeApp = ["html", "css", "js"].includes(id);
-
-  // const memoizedTree = useMemo(() => {
-  //   return transformTreeData({
-  //     items: tree,
-  //     isHiddenTree,
-  //     onItemDrop,
-  //     dragAndDrop,
-  //     selected,
-  //   });
-  // }, [tree, isHiddenTree, onItemDrop, dragAndDrop, selected]);
 
   if (isLoading) {
     return (
@@ -176,6 +122,7 @@ export const NavTree: FC<Readonly<Props>> = ({
             }
           }}
           getItemId={(item) => item.path}
+          experimentalFeatures={{ indentationAtItemLevel: true }}
         />
       )}
     </>
