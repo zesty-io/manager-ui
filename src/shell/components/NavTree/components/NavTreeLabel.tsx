@@ -1,5 +1,8 @@
 import { Stack, Box, Tooltip, Typography } from "@mui/material";
-import { UseTreeItem2LabelSlotOwnProps } from "@mui/x-tree-view";
+import {
+  UseTreeItem2LabelSlotOwnProps,
+  UseTreeItem2Status,
+} from "@mui/x-tree-view";
 import { memo } from "react";
 
 type NavTreeLabelProps = UseTreeItem2LabelSlotOwnProps & {
@@ -12,7 +15,7 @@ type NavTreeLabelProps = UseTreeItem2LabelSlotOwnProps & {
   nodeData?: any;
   // onItemDrop?: (draggedItem: any, targetItem: any) => void;
   // dragAndDrop?: boolean;
-  selected?: string;
+  status: UseTreeItem2Status;
 };
 export const NavTreeLabel = ({
   children: labelName,
@@ -44,7 +47,11 @@ export const NavTreeLabel = ({
       }}
     >
       {!labelIcon && nodeData?.navSource == "code" ? null : (
-        <Box component={labelIcon} sx={{ fontSize: 16, mr: 1 }} />
+        <Box
+          className="treeIcon"
+          component={labelIcon}
+          sx={{ fontSize: 16, mr: 1 }}
+        />
       )}
       <Tooltip title={labelName} enterDelay={1000} enterNextDelay={1000}>
         <Typography variant="body2" noWrap width="100%">

@@ -20,7 +20,6 @@ export type TreeItem = {
   createdAt?: string;
   onItemDrop?: (draggedItem: any, targetItem: any) => void;
   dragAndDrop?: boolean;
-  selected?: string;
 } & Partial<ContentNavItem>;
 
 // Transform tree data for RichTreeView
