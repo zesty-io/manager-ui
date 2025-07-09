@@ -49,7 +49,12 @@ export const NavTreeLabel = ({
           sx={{ fontSize: 16, mr: 1 }}
         />
       )}
-      <Tooltip title={labelName} enterDelay={1000} enterNextDelay={1000}>
+      <Tooltip
+        title={labelName}
+        enterDelay={1000}
+        enterNextDelay={1000}
+        disableInteractive
+      >
         <Typography variant="body2" noWrap width="100%">
           {labelName}
         </Typography>
