@@ -1,13 +1,13 @@
-import React, { FC, useMemo } from "react";
-import { RichTreeView, TreeViewBaseItem } from "@mui/x-tree-view";
+import React, { FC } from "react";
+import { RichTreeView } from "@mui/x-tree-view";
 import { useHistory } from "react-router-dom";
 
-import { NavTreeItem } from "./components/NavTreeItem";
 import { RichTreeItem } from "./components/RichTreeItem";
 import { ContentNavItem } from "../../services/types";
 import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 import ArrowRightRoundedIcon from "@mui/icons-material/ArrowRightRounded";
 import { Stack, Box, Skeleton } from "@mui/material";
+import { isValid as zuidIsValid } from "zuid";
 
 export type TreeItem = {
   icon: any;
@@ -22,7 +22,7 @@ export type TreeItem = {
   dragAndDrop?: boolean;
 } & Partial<ContentNavItem>;
 
-interface Props {
+type Props = {
   id: string;
   HeaderComponent?: React.ReactNode;
   ErrorComponent?: React.ReactNode;
@@ -35,7 +35,8 @@ interface Props {
   onItemDrop?: (draggedItem: any, targetItem: any) => void;
   dragAndDrop?: boolean;
   isLoading?: boolean;
-}
+  isDirectoryNavigation?: boolean;
+};
 export const NavTree: FC<Readonly<Props>> = ({
   id,
   HeaderComponent,
@@ -49,6 +50,7 @@ export const NavTree: FC<Readonly<Props>> = ({
   onItemDrop,
   dragAndDrop = false,
   isLoading,
+  isDirectoryNavigation = false,
 }) => {
   const history = useHistory();
 
@@ -101,7 +103,7 @@ export const NavTree: FC<Readonly<Props>> = ({
           items={tree}
           expandedItems={expandedItems}
           selectedItems={[selected]}
-          expansionTrigger="iconContainer"
+          expansionTrigger={isDirectoryNavigation ? "content" : "iconContainer"}
           slots={{
             collapseIcon: ArrowDropDownRoundedIcon,
             expandIcon: ArrowRightRoundedIcon,
@@ -114,6 +116,12 @@ export const NavTree: FC<Readonly<Props>> = ({
             } as any,
           }}
           onItemClick={(evt: any, itemId: string) => {
+            if (
+              isDirectoryNavigation &&
+              !zuidIsValid(itemId?.split("/")?.pop())
+            )
+              return;
+
             if (evt.target.tagName !== "svg" && evt.target.tagName !== "path") {
               history.push(itemId);
             }

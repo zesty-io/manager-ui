@@ -97,6 +97,7 @@ const FileNav: FC<FileNavProps> = ({
       {treeData?.length > 0 && (
         <Box width="100%">
           <NavTree
+            isDirectoryNavigation
             id={id}
             tree={treeData}
             isLoading={isLoading}

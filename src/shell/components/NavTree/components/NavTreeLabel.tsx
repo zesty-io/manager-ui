@@ -42,7 +42,7 @@ export const NavTreeLabel = ({
         },
       }}
     >
-      {!labelIcon && nodeData?.navSource == "code" ? null : (
+      {!labelIcon ? null : (
         <Box
           className="treeIcon"
           component={labelIcon}
