@@ -496,6 +496,7 @@ export const Folders = ({ lockedToGroupId }: Props) => {
       <Menu anchorEl={anchorEl} open={open} onClose={closeMenu}>
         {SortMenuItems.map((menuItem) => (
           <MenuItem
+            key={menuItem.value}
             onClick={() => {
               closeMenu();
               setSort(menuItem.value);

@@ -1,18 +1,12 @@
 import { Stack, Box, Tooltip, Typography } from "@mui/material";
-import {
-  UseTreeItem2LabelSlotOwnProps,
-  UseTreeItem2Status,
-} from "@mui/x-tree-view";
+import { UseTreeItem2LabelSlotOwnProps } from "@mui/x-tree-view";
 import { memo } from "react";
 
 type NavTreeLabelProps = UseTreeItem2LabelSlotOwnProps & {
   labelName: string;
   labelIcon?: any;
-  nodeId: string;
   actions?: React.ReactNode[];
-  depth?: number;
   nodeData?: any;
-  status: UseTreeItem2Status;
 };
 export const NavTreeLabel = memo(
   ({

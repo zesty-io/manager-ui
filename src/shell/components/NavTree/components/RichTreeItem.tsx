@@ -4,7 +4,6 @@ import {
   TreeItem2Props,
   TreeItem2SlotProps,
   useTreeItem2,
-  useTreeItem2Utils,
 } from "@mui/x-tree-view";
 
 import { NavTreeLabel } from "./NavTreeLabel";
@@ -17,10 +16,6 @@ export const RichTreeItem = memo(
   forwardRef((props: CustomTreeItem2Props, ref: React.Ref<HTMLLIElement>) => {
     const { id, itemId, label, disabled, children, onItemDrop, dragAndDrop } =
       props;
-    const { interactions, status } = useTreeItem2Utils({
-      itemId: props.itemId,
-      children: props.children,
-    });
     const { publicAPI } = useTreeItem2({
       id,
       itemId,
@@ -30,6 +25,10 @@ export const RichTreeItem = memo(
       rootRef: ref,
     });
     const item = publicAPI.getItem(itemId);
+
+    if (item?.hidden) {
+      return <></>;
+    }
 
     return (
       <TreeItem2
@@ -104,7 +103,6 @@ export const RichTreeItem = memo(
               labelIcon: item?.icon,
               nodeData: item?.nodeData,
               actions: item?.actions,
-              status,
             },
           } as TreeItem2SlotProps
         }
