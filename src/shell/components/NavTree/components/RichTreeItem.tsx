@@ -71,7 +71,9 @@ export const RichTreeItem = memo(
                     color: "primary.main",
 
                     ".treeIcon": {
-                      color: "primary.main",
+                      svg: {
+                        color: "primary.main",
+                      },
                     },
                   },
                 },

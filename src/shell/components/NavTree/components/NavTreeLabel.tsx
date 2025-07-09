@@ -43,11 +43,9 @@ export const NavTreeLabel = ({
       }}
     >
       {!labelIcon ? null : (
-        <Box
-          className="treeIcon"
-          component={labelIcon}
-          sx={{ fontSize: 16, mr: 1 }}
-        />
+        <Box className="treeIcon" display="flex">
+          <Box component={labelIcon} sx={{ fontSize: 16, mr: 1 }} />
+        </Box>
       )}
       <Tooltip
         title={labelName}
