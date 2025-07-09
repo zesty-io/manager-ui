@@ -9,9 +9,14 @@ import {
 
 import { NavTreeLabel } from "./NavTreeLabel";
 
+type CustomTreeItem2Props = TreeItem2Props & {
+  onItemDrop?: (draggedItem: any, targetItem: any) => void;
+  dragAndDrop?: boolean;
+};
 export const RichTreeItem = memo(
-  forwardRef((props: TreeItem2Props, ref: React.Ref<HTMLLIElement>) => {
-    const { id, itemId, label, disabled, children } = props;
+  forwardRef((props: CustomTreeItem2Props, ref: React.Ref<HTMLLIElement>) => {
+    const { id, itemId, label, disabled, children, onItemDrop, dragAndDrop } =
+      props;
     const { interactions, status } = useTreeItem2Utils({
       itemId: props.itemId,
       children: props.children,
@@ -71,6 +76,27 @@ export const RichTreeItem = memo(
                     },
                   },
                 },
+              },
+              onDragOver: (event: any) => {
+                if (dragAndDrop) {
+                  event.preventDefault();
+                  event.currentTarget.style.backgroundColor = "#f6f6f7";
+                }
+              },
+              onDragLeave: (event: any) => {
+                if (dragAndDrop) {
+                  event.preventDefault();
+                  event.currentTarget.style.backgroundColor = "";
+                }
+              },
+              onDrop: (event: any) => {
+                if (dragAndDrop) {
+                  event.currentTarget.style.backgroundColor = "";
+                  const draggedItem = JSON.parse(
+                    event.dataTransfer.getData("text/plain")
+                  );
+                  onItemDrop && onItemDrop(draggedItem, item?.nodeData);
+                }
               },
             },
             label: {

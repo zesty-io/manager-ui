@@ -107,6 +107,12 @@ export const NavTree: FC<Readonly<Props>> = ({
             expandIcon: ArrowRightRoundedIcon,
             item: RichTreeItem,
           }}
+          slotProps={{
+            item: {
+              dragAndDrop,
+              onItemDrop,
+            } as any,
+          }}
           onItemClick={(evt: any, itemId: string) => {
             if (evt.target.tagName !== "svg" && evt.target.tagName !== "path") {
               history.push(itemId);

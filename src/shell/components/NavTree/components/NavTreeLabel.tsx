@@ -3,18 +3,14 @@ import {
   UseTreeItem2LabelSlotOwnProps,
   UseTreeItem2Status,
 } from "@mui/x-tree-view";
-import { memo } from "react";
 
 type NavTreeLabelProps = UseTreeItem2LabelSlotOwnProps & {
   labelName: string;
   labelIcon?: any;
   nodeId: string;
-  // nestedItems?: TreeItemType[];
   actions?: React.ReactNode[];
   depth?: number;
   nodeData?: any;
-  // onItemDrop?: (draggedItem: any, targetItem: any) => void;
-  // dragAndDrop?: boolean;
   status: UseTreeItem2Status;
 };
 export const NavTreeLabel = ({
