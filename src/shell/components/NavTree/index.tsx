@@ -9,6 +9,12 @@ import ArrowRightRoundedIcon from "@mui/icons-material/ArrowRightRounded";
 import { Stack, Box, Skeleton } from "@mui/material";
 import { isValid as zuidIsValid } from "zuid";
 
+// Note: This needs to be defined outside the component to avoid re-creating it on every render
+// Otherwise, it will cause unnecessary re-renders and performance issues.
+const getItemId = (item: TreeItem) => {
+  return item.path;
+};
+
 export type TreeItem = {
   icon: any;
   children: TreeItem[];
@@ -99,6 +105,7 @@ export const NavTree: FC<Readonly<Props>> = ({
         ErrorComponent
       ) : (
         <RichTreeView
+          id={id}
           data-cy={id}
           items={tree}
           expandedItems={expandedItems}
@@ -135,7 +142,7 @@ export const NavTree: FC<Readonly<Props>> = ({
               onToggleCollapse(nodeIds);
             }
           }}
-          getItemId={(item) => item.path}
+          getItemId={getItemId}
           experimentalFeatures={{ indentationAtItemLevel: true }}
         />
       )}
