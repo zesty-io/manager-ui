@@ -37,7 +37,6 @@ type Props = {
   expandedItems?: string[];
   onToggleCollapse?: (paths: string[]) => void;
   error?: boolean;
-  isHiddenTree?: boolean;
   onItemDrop?: (draggedItem: any, targetItem: any) => void;
   dragAndDrop?: boolean;
   isLoading?: boolean;
@@ -52,7 +51,6 @@ export const NavTree: FC<Readonly<Props>> = ({
   expandedItems,
   onToggleCollapse,
   error = false,
-  isHiddenTree = false,
   onItemDrop,
   dragAndDrop = false,
   isLoading,

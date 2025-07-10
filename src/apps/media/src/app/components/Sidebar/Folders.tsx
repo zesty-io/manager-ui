@@ -470,7 +470,6 @@ export const Folders = ({ lockedToGroupId }: Props) => {
           >
             <NavTree
               id="media-hidden-nav"
-              isHiddenTree
               tree={hiddenTrees}
               selected={location.pathname}
               expandedItems={hiddenExpanded}
