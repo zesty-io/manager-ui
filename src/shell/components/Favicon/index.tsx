@@ -104,10 +104,6 @@ export const Favicon = ({ onCloseFaviconModal }: FaviconProps) => {
         (tag) => tag.attributes?.sizes === "196x196"
       );
 
-      if (!tag) {
-        return;
-      }
-
       const faviconZUID = allMediaFiles.find(
         (file) => file.url === tag.attributes?.href
       )?.id;
