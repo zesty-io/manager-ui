@@ -45,6 +45,7 @@ export const ModelMenu: FC<Props> = ({ anchorEl, onClose, modelZUID }) => {
         open={!!anchorEl}
         onClose={onClose}
         container={() => document.getElementById(modelZUID)!}
+        data-cy="schema-more-menu"
       >
         <MenuItem
           onClick={() => {
