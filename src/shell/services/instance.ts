@@ -540,7 +540,11 @@ export const instanceApi = createApi({
       query: (params) => {
         const searchParams = new URLSearchParams(params);
 
-        return `/env/langs${searchParams.toString()}`;
+        if (!!searchParams.toString()) {
+          return `/env/langs?${searchParams.toString()}`;
+        } else {
+          return `/env/langs`;
+        }
       },
       transformResponse: getResponseData,
       providesTags: ["Languages"],
