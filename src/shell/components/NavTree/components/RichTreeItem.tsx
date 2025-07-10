@@ -7,6 +7,7 @@ import {
 } from "@mui/x-tree-view";
 
 import { NavTreeLabel } from "./NavTreeLabel";
+import { Theme, alpha } from "@mui/material";
 
 type CustomTreeItem2Props = TreeItem2Props & {
   onItemDrop?: (draggedItem: any, targetItem: any) => void;
@@ -40,11 +41,17 @@ export const RichTreeItem = memo(
           {
             content: {
               sx: {
-                "&:hover .treeActions": {
-                  zIndex: 2,
-                },
-                "&:hover .treeSpacer": {
-                  display: "block",
+                "&:hover ": {
+                  bgcolor: (theme: Theme) =>
+                    alpha(theme.palette.primary.main, 0.08),
+
+                  ".treeActions": {
+                    zIndex: 2,
+                  },
+
+                  ".treeSpacer": {
+                    display: "block",
+                  },
                 },
 
                 "&.Mui-Focused": {

@@ -81,9 +81,6 @@ const darkTheme = {
   "& .nav-tree-header .MuiIconButton-root:hover": {
     bgcolor: "grey.800",
   },
-  "& .MuiTreeItem-content:hover": {
-    bgcolor: (theme: Theme) => alpha(theme.palette.primary.main, 0.08),
-  },
 };
 
 export const AppSideBar = memo(
