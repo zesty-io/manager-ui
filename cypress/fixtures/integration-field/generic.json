@@ -1,0 +1,202 @@
+[
+  {
+    "playerId": "1630173",
+    "name": "Precious Achiuwa",
+    "team": "New York - Knicks (NYK)",
+    "jerseyNo": "5",
+    "position": "F",
+    "height": "2.03",
+    "weight": "110.2 kg",
+    "playerImage": "https://cdn.nba.com/headshots/nba/latest/260x190/1630173.png"
+  },
+  {
+    "playerId": "203500",
+    "name": "Steven Adams",
+    "team": "Houston - Rockets (HOU)",
+    "jerseyNo": "12",
+    "position": "C",
+    "height": "2.11",
+    "weight": "120.2 kg",
+    "playerImage": "https://cdn.nba.com/headshots/nba/latest/260x190/203500.png"
+  },
+  {
+    "playerId": "1628389",
+    "name": "Bam Adebayo",
+    "team": "Miami - Heat (MIA)",
+    "jerseyNo": "13",
+    "position": "C-F",
+    "height": "2.06",
+    "weight": "115.7 kg",
+    "playerImage": "https://cdn.nba.com/headshots/nba/latest/260x190/1628389.png"
+  },
+  {
+    "playerId": "1630534",
+    "name": "Ochai Agbaji",
+    "team": "Toronto - Raptors (TOR)",
+    "jerseyNo": "30",
+    "position": "G",
+    "height": "1.96",
+    "weight": "97.5 kg",
+    "playerImage": "https://cdn.nba.com/headshots/nba/latest/260x190/1630534.png"
+  },
+  {
+    "playerId": "1630583",
+    "name": "Santi Aldama",
+    "team": "Memphis - Grizzlies (MEM)",
+    "jerseyNo": "7",
+    "position": "F-C",
+    "height": "2.13",
+    "weight": "97.5 kg",
+    "playerImage": "https://cdn.nba.com/headshots/nba/latest/260x190/1630583.png"
+  },
+  {
+    "playerId": "1641725",
+    "name": "Trey Alexander",
+    "team": "Denver - Nuggets (DEN)",
+    "jerseyNo": "23",
+    "position": "G",
+    "height": "1.93",
+    "weight": "83.9 kg",
+    "playerImage": "https://cdn.nba.com/headshots/nba/latest/260x190/1641725.png"
+  },
+  {
+    "playerId": "1629638",
+    "name": "Nickeil Alexander-Walker",
+    "team": "Minnesota - Timberwolves (MIN)",
+    "jerseyNo": "9",
+    "position": "G",
+    "height": "1.96",
+    "weight": "93.0 kg",
+    "playerImage": "https://cdn.nba.com/headshots/nba/latest/260x190/1629638.png"
+  },
+  {
+    "playerId": "1628960",
+    "name": "Grayson Allen",
+    "team": "Phoenix - Suns (PHX)",
+    "jerseyNo": "8",
+    "position": "G",
+    "height": "1.93",
+    "weight": "89.8 kg",
+    "playerImage": "https://cdn.nba.com/headshots/nba/latest/260x190/1628960.png"
+  },
+  {
+    "playerId": "1628386",
+    "name": "Jarrett Allen",
+    "team": "Cleveland - Cavaliers (CLE)",
+    "jerseyNo": "31",
+    "position": "C",
+    "height": "2.06",
+    "weight": "110.2 kg",
+    "playerImage": "https://cdn.nba.com/headshots/nba/latest/260x190/1628386.png"
+  },
+  {
+    "playerId": "1630631",
+    "name": "Jose Alvarado",
+    "team": "New Orleans - Pelicans (NOP)",
+    "jerseyNo": "15",
+    "position": "G",
+    "height": "1.83",
+    "weight": "81.2 kg",
+    "playerImage": "https://cdn.nba.com/headshots/nba/latest/260x190/1630631.png"
+  },
+  {
+    "playerId": "203937",
+    "name": "Kyle Anderson",
+    "team": "Miami - Heat (MIA)",
+    "jerseyNo": "20",
+    "position": "F-G",
+    "height": "2.06",
+    "weight": "104.3 kg",
+    "playerImage": "https://cdn.nba.com/headshots/nba/latest/260x190/203937.png"
+  },
+  {
+    "playerId": "203507",
+    "name": "Giannis Antetokounmpo",
+    "team": "Milwaukee - Bucks (MIL)",
+    "jerseyNo": "34",
+    "position": "F",
+    "height": "2.11",
+    "weight": "110.2 kg",
+    "playerImage": "https://cdn.nba.com/headshots/nba/latest/260x190/203507.png"
+  },
+  {
+    "playerId": "1630175",
+    "name": "Cole Anthony",
+    "team": "Memphis - Grizzlies (MEM)",
+    "jerseyNo": "50",
+    "position": "G",
+    "height": "1.88",
+    "weight": "83.9 kg",
+    "playerImage": "https://cdn.nba.com/headshots/nba/latest/260x190/1630175.png"
+  },
+  {
+    "playerId": "1628384",
+    "name": "OG Anunoby",
+    "team": "New York - Knicks (NYK)",
+    "jerseyNo": "8",
+    "position": "F-G",
+    "height": "2.01",
+    "weight": "108.9 kg",
+    "playerImage": "https://cdn.nba.com/headshots/nba/latest/260x190/1628384.png"
+  },
+  {
+    "playerId": "1642379",
+    "name": "Taran Armstrong",
+    "team": "Golden State - Warriors (GSW)",
+    "jerseyNo": "1",
+    "position": "G",
+    "height": "1.96",
+    "weight": "86.2 kg",
+    "playerImage": "https://cdn.nba.com/headshots/nba/latest/260x190/1642379.png"
+  },
+  {
+    "playerId": "1630166",
+    "name": "Deni Avdija",
+    "team": "Portland - Trail_blazers (POR)",
+    "jerseyNo": "8",
+    "position": "F",
+    "height": "2.06",
+    "weight": "108.9 kg",
+    "playerImage": "https://cdn.nba.com/headshots/nba/latest/260x190/1630166.png"
+  },
+  {
+    "playerId": "1629028",
+    "name": "Deandre Ayton",
+    "team": "Portland - Trail_blazers (POR)",
+    "jerseyNo": "2",
+    "position": "C",
+    "height": "2.13",
+    "weight": "114.3 kg",
+    "playerImage": "https://cdn.nba.com/headshots/nba/latest/260x190/1629028.png"
+  },
+  {
+    "playerId": "1628963",
+    "name": "Marvin Bagley III",
+    "team": "Memphis - Grizzlies (MEM)",
+    "jerseyNo": "35",
+    "position": "F",
+    "height": "2.08",
+    "weight": "106.6 kg",
+    "playerImage": "https://cdn.nba.com/headshots/nba/latest/260x190/1628963.png"
+  },
+  {
+    "playerId": "1631116",
+    "name": "Patrick Baldwin Jr.",
+    "team": "LA - Clippers (LAC)",
+    "jerseyNo": "23",
+    "position": "F",
+    "height": "2.06",
+    "weight": "99.8 kg",
+    "playerImage": "https://cdn.nba.com/headshots/nba/latest/260x190/1631116.png"
+  },
+  {
+    "playerId": "1630163",
+    "name": "LaMelo Ball",
+    "team": "Charlotte - Hornets (CHA)",
+    "jerseyNo": "1",
+    "position": "G",
+    "height": "2.01",
+    "weight": "81.6 kg",
+    "playerImage": "https://cdn.nba.com/headshots/nba/latest/260x190/1630163.png"
+  }
+]

@@ -3,7 +3,7 @@ import Button from "@mui/material/Button";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import { Box, Stack, Typography, Divider } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import IconButton from "@mui/material/IconButton";
 import { FormWrapper } from ".";
@@ -12,7 +12,12 @@ import { CheckRounded } from "@mui/icons-material";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { FieldWrapper } from "./../FieldWrapper";
 import { DISPLAY_OPTIONS_CONFIG, ConfigProps } from "../../configs";
-import { getKeyPaths, getKeyValue, createInitialValues } from "../../utils";
+import {
+  getKeyValue,
+  createInitialValues,
+  getObjectKeyPaths,
+  getAllArrayKeyPaths,
+} from "../../utils";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import KeyPathSelector from "./KeyPathSelector";
@@ -143,22 +148,11 @@ const ConfigureDisplayOptions = () => {
   const [parentPathOptions, setParentPathOptions] = useState([]);
   const [childPathOptions, setChildPathOptions] = useState([]);
   const [completed, setCompleted] = useState(false);
-  const [rootPathLocal, setRootPathLocal] = useState(null);
-  const [keyDataReference, setKeyDataReference] = useState(null);
+  const [rootPath, setRootPath] = useState(null);
+  const [rootData, setRootData] = useState(null);
 
-  const {
-    setActiveStep,
-    closeForm,
-    setIsConnected,
-
-    endpoint,
-    headers,
-    setKeyPaths,
-    displayType,
-    apiResponseData,
-    setApiConfig,
-    setDisplayConfig,
-  } = useIntegrationField();
+  const { setActiveStep, closeForm, setKeyPaths, displayType, apiData } =
+    useIntegrationField();
 
   const [keyPathsLocal, setKeyPathsLocal] = useState<IntegrationKeyPaths>(
     createInitialValues(DISPLAY_OPTIONS_CONFIG?.[displayType])
@@ -166,42 +160,24 @@ const ConfigureDisplayOptions = () => {
 
   const [detailsCompleted, setDetailsCompleted] = useState(false);
 
-  const handleSave = () => {
-    setKeyPaths(keyPathsLocal);
-    setApiConfig({
-      endpoint: endpoint,
-      headers: headers,
-    });
-
-    setDisplayConfig({
-      type: displayType,
-      keyPaths: {
-        ...keyPathsLocal,
-        rootPath: rootPathLocal,
-      },
-    });
-
-    setIsConnected(true);
-  };
-
   useEffect(() => {
-    const rootIsArray = Array.isArray(apiResponseData);
+    const rootIsArray = Array.isArray(apiData);
     if (rootIsArray) {
-      const dataRoot = apiResponseData?.[0];
-      const childOptions = getKeyPaths(dataRoot);
+      const dataRoot = apiData?.[0];
+      const childOptions = getObjectKeyPaths(dataRoot);
 
-      setKeyDataReference(dataRoot);
-      setRootPathLocal(null);
+      setRootData(dataRoot);
+      setRootPath(null);
       setChildPathOptions(childOptions);
       setParentPathOptions(null);
     } else {
-      const parentOptions = getKeyPaths(apiResponseData);
-      setKeyDataReference(null);
-      setRootPathLocal(null);
+      const parentOptions = getAllArrayKeyPaths(apiData);
+      setRootData(null);
+      setRootPath(null);
       setChildPathOptions(null);
       setParentPathOptions(parentOptions);
     }
-  }, [apiResponseData]);
+  }, [apiData]);
 
   useEffect(() => {
     const allValid = DISPLAY_OPTIONS_CONFIG?.[displayType]
@@ -215,7 +191,7 @@ const ConfigureDisplayOptions = () => {
   }, [keyPathsLocal, detailsCompleted, displayType]);
 
   return (
-    <FormWrapper height="calc(100vh - 40px)" width="1080px">
+    <FormWrapper height="calc(100vh - 40px)" width="1200px">
       <DialogTitle component="div" flexGrow={0}>
         <SettingsIcon
           color="primary"
@@ -295,7 +271,7 @@ const ConfigureDisplayOptions = () => {
             flexDirection="column"
             justifyContent="flex-start"
             alignItems="flex-start"
-            rowGap={1}
+            rowGap={2}
             bgcolor="grey.50"
           >
             <Box
@@ -304,8 +280,9 @@ const ConfigureDisplayOptions = () => {
               justifyContent="flex-start"
               alignItems="flex-start"
               width="100%"
+              rowGap={0.25}
             >
-              <Typography variant="body2" fontWeight={700} width="100%">
+              <Typography variant="body1" fontWeight={700} width="100%">
                 Select Keys to Display in Item
               </Typography>
               <Typography variant="body2" width="100%">
@@ -317,10 +294,10 @@ const ConfigureDisplayOptions = () => {
                 <FieldWrapper label="List Path" isRequired={true}>
                   <KeyPathSelector
                     data-cy="integrationRootPathSelector"
-                    value={rootPathLocal || null}
+                    value={rootPath || null}
                     onChange={(value: string) => {
-                      const rootDataRaw = getKeyValue(apiResponseData, value);
-                      const childOptionsRaw = getKeyPaths(
+                      const rootDataRaw = getKeyValue(apiData, value);
+                      const childOptionsRaw = getObjectKeyPaths(
                         rootDataRaw?.[0]
                       ).filter((item) => {
                         const val = getKeyValue(rootDataRaw, item);
@@ -330,22 +307,21 @@ const ConfigureDisplayOptions = () => {
                         );
                       });
 
-                      setRootPathLocal(value);
+                      setRootPath(value);
                       setKeyPathsLocal((prev) => ({
                         ...prev,
                         ["rootPath"]: value,
                       }));
 
-                      setKeyDataReference(rootDataRaw?.[0]);
+                      setRootData(rootDataRaw?.[0]);
                       setChildPathOptions(childOptionsRaw);
                     }}
                     options={parentPathOptions}
                     placeholder="Select Data Path"
-                    data={apiResponseData}
+                    data={apiData}
                     name="rootPath"
                   />
                 </FieldWrapper>
-                <Divider sx={{ my: 1 }} />
               </>
             )}
             <Box
@@ -378,7 +354,7 @@ const ConfigureDisplayOptions = () => {
                                 }));
                               }}
                               details={keyPathsLocal?.details}
-                              data={keyDataReference}
+                              data={rootData}
                               optionsDescription="Values previewed for the keys below are from the first item in the API response."
                               name={config?.name}
                               validation={(val) => setDetailsCompleted(val)}
@@ -398,7 +374,7 @@ const ConfigureDisplayOptions = () => {
                               }}
                               options={childPathOptions}
                               placeholder={config?.placeholder}
-                              data={keyDataReference}
+                              data={rootData}
                               optionsDescription="Values previewed for the keys below are from the first item in the API response."
                               restrictedTypes={["array", "object", "function"]}
                               name={config?.name}
@@ -422,7 +398,7 @@ const ConfigureDisplayOptions = () => {
             flexDirection="column"
             justifyContent="flex-start"
             alignItems="flex-start"
-            rowGap={1}
+            rowGap={2}
             bgcolor="grey.100"
           >
             <Box
@@ -431,8 +407,9 @@ const ConfigureDisplayOptions = () => {
               justifyContent="flex-start"
               alignItems="flex-start"
               width="100%"
+              rowGap={0.25}
             >
-              <Typography variant="body2" fontWeight={700} width="100%">
+              <Typography variant="body1" fontWeight={700} width="100%">
                 Item Preview
               </Typography>
               <Typography variant="body2" width="100%">
@@ -442,20 +419,14 @@ const ConfigureDisplayOptions = () => {
 
             <DraggableCard
               data-cy="integrationPreviewCard"
-              rootPath={rootPathLocal}
+              rootPath={rootPath}
               type={displayType}
-              heading={getKeyValue(keyDataReference, keyPathsLocal?.heading)}
-              subHeading={getKeyValue(
-                keyDataReference,
-                keyPathsLocal?.subHeading
-              )}
-              thumbnail={getKeyValue(
-                keyDataReference,
-                keyPathsLocal?.thumbnail
-              )}
-              detail={getKeyValue(keyDataReference, keyPathsLocal?.detail)}
+              heading={getKeyValue(rootData, keyPathsLocal?.heading)}
+              subHeading={getKeyValue(rootData, keyPathsLocal?.subHeading)}
+              thumbnail={getKeyValue(rootData, keyPathsLocal?.thumbnail)}
+              detail={getKeyValue(rootData, keyPathsLocal?.detail)}
               details={keyPathsLocal?.details}
-              data={keyDataReference}
+              data={rootData}
               disableMenu={true}
             />
           </Box>
@@ -486,9 +457,8 @@ const ConfigureDisplayOptions = () => {
           startIcon={<CheckRounded />}
           disabled={!completed}
           onClick={() => {
-            setIsConnected(true);
+            setKeyPaths(keyPathsLocal);
             closeForm();
-            handleSave();
           }}
         >
           Done

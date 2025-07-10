@@ -13,7 +13,6 @@ import {
   IntegrationFieldApiConfig,
   IntegrationFieldDisplay,
 } from "../../services/types";
-import { generateItemId, getKeyValue } from "./utils";
 
 interface ApiResponse<T> {
   status: "success" | "error";
@@ -83,21 +82,16 @@ type IntegrationFieldContextType = {
   setActiveStep: (step: number) => void;
   isConnected: boolean;
   setIsConnected: (isConnected: boolean) => void;
-  isConnecting: boolean;
-  setIsConnecting: (isConnecting: boolean) => void;
   connectionError: boolean;
   setConnectionError: (connectionError: boolean) => void;
-  remoteSelectorOpen: boolean;
-  setRemoteSelectorOpen: (remoteSelectorOpen: boolean) => void;
-  selectedItems: any[];
-  setSelectedItems: (selectedItems: any) => void;
-  removeSelectedItem: (id: string) => void;
+  formSelectorOpen: boolean;
+  setFormSelectorOpen: (formSelectorOpen: boolean) => void;
+  removeItem: (id: string) => void;
   jsonViewerIsOpen: boolean;
   setJsonViewerIsOpen: (jsonViewerIsOpen: boolean) => void;
   jsonData: any | null;
   setJsonData: (jsonData: any | null) => void;
   maxItems: number | null;
-  //NEW
   apiConfig: IntegrationFieldApiConfig;
   setApiConfig: (config: IntegrationFieldApiConfig) => void;
   displayConfig: IntegrationFieldDisplay;
@@ -112,10 +106,8 @@ type IntegrationFieldContextType = {
   setDisplayType: (type: IntegrationTypes | null) => void;
   value: any;
   setValue: (value: any) => void;
-  apiResponseData: any | null;
-  setApiResponseData: (data: any) => void;
-  rootDataArray: any | null;
-  setRootDataArray: (data: any) => void;
+  apiData: any | null;
+  setApiData: (data: any) => void;
   autoRequest: boolean;
   setAutoRequest: (autoRequest: boolean) => void;
 };
@@ -133,21 +125,18 @@ const IntegrationFieldProvider = ({
   children: ReactNode;
 }) => {
   const [activeStep, setActiveStep] = useState(1);
-  const [isConnecting, setIsConnecting] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
   const [connectionError, setConnectionError] = useState<boolean>(false);
 
   const [isConnected, setIsConnected] = useState(false);
   const [jsonViewerIsOpen, setJsonViewerIsOpen] = useState(false);
 
-  const [remoteSelectorOpen, setRemoteSelectorOpen] = useState(false);
-
-  const [selectedItems, setSelectedItems] = useState([]);
+  const [formSelectorOpen, setFormSelectorOpen] = useState(false);
   const [jsonData, setJsonData] = useState<any | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   const [autoRequest, setAutoRequest] = useState(true);
-  const [value, setValue] = useState<any | null>(null);
+  const [value, setValue] = useState<any[] | undefined>(undefined);
   const [endpoint, setEndpoint] = useState<string>("");
   const [headers, setHeaders] = useState<IntegrationRequestHeaders | null>(
     null
@@ -155,8 +144,7 @@ const IntegrationFieldProvider = ({
   const [keyPaths, setKeyPaths] = useState<IntegrationKeyPaths | null>(null);
   const [displayType, setDisplayType] = useState<IntegrationTypes | null>(null);
 
-  const [apiResponseData, setApiResponseData] = useState<any | null>(null);
-  const [rootDataArray, setRootDataArray] = useState<any | null>(null);
+  const [apiData, setApiData] = useState<any | null>(null);
 
   const [apiConfig, setApiConfig] = useState<IntegrationFieldApiConfig>({
     endpoint: "",
@@ -176,30 +164,19 @@ const IntegrationFieldProvider = ({
     });
 
     if (status === "success") {
-      setApiResponseData(data);
-      const extractedData = (
-        !keyPaths?.rootPath
-          ? data
-          : getKeyValue(data as object, keyPaths?.rootPath)
-      )?.map((item: any) => ({
-        ...item,
-        _itemId: generateItemId(item, keyPaths),
-      }));
-
-      setRootDataArray(extractedData);
+      setApiData(data);
       setConnectionError(false);
     } else {
-      setApiResponseData(null);
-      setRootDataArray(null);
+      setApiData(null);
       setConnectionError(true);
     }
     setIsFetching(false);
   };
 
-  const removeSelectedItem = (itemId: string) => {
-    setSelectedItems((prev) => {
+  const removeItem = (itemId: string) => {
+    setValue((prev) => {
       const newItems = prev.filter((i) => i?._itemId !== itemId);
-      setValue(!newItems?.length ? "" : JSON.stringify(newItems)?.trim());
+      setValue(!newItems?.length ? [] : newItems);
       return newItems;
     });
   };
@@ -216,13 +193,29 @@ const IntegrationFieldProvider = ({
     if (
       !endpoint ||
       !!isLoading ||
-      !!apiResponseData ||
+      !!apiData ||
       !!connectionError ||
       !autoRequest
     )
       return;
     sendApiQueryRequest();
-  }, [endpoint, isLoading, apiResponseData, connectionError, autoRequest]);
+  }, [endpoint, isLoading, apiData, connectionError, autoRequest]);
+
+  useEffect(() => {
+    if (!!keyPaths && !!endpoint && displayType) {
+      setApiConfig({
+        endpoint: endpoint,
+        headers: headers,
+      });
+
+      setDisplayConfig({
+        type: displayType,
+        keyPaths: keyPaths,
+      });
+
+      setIsConnected(true);
+    }
+  }, [keyPaths, endpoint, headers, displayType]);
 
   return (
     <IntegrationFieldContext.Provider
@@ -234,11 +227,9 @@ const IntegrationFieldProvider = ({
         setActiveStep: (step) => setActiveStep(step),
         isConnected,
         setIsConnected: (isConnected) => setIsConnected(isConnected),
-        remoteSelectorOpen,
-        setRemoteSelectorOpen,
-        selectedItems,
-        setSelectedItems,
-        removeSelectedItem,
+        formSelectorOpen,
+        setFormSelectorOpen,
+        removeItem,
         jsonViewerIsOpen,
         setJsonViewerIsOpen,
         jsonData,
@@ -246,8 +237,6 @@ const IntegrationFieldProvider = ({
         queryApi: queryApi,
         fetchApi: sendApiQueryRequest,
         isFetching,
-        isConnecting,
-        setIsConnecting,
         connectionError,
         setConnectionError,
         maxItems,
@@ -265,10 +254,8 @@ const IntegrationFieldProvider = ({
         setDisplayType,
         value,
         setValue,
-        apiResponseData,
-        setApiResponseData,
-        rootDataArray,
-        setRootDataArray,
+        apiData,
+        setApiData,
         autoRequest,
         setAutoRequest,
       }}

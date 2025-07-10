@@ -53,7 +53,7 @@ const IntegrationForm = () => {
 
           sx: {
             width: "fit-content",
-            maxWidth: "1080px",
+            maxWidth: "1200px",
             height: "calc(100vh - 40px)",
             minHeight: "860px",
             maxHeight: "1240px",

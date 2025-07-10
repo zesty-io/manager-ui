@@ -5,33 +5,10 @@ interface KeyValuePair<T = unknown> {
   value: T;
 }
 
-function getKeyValuePairs(obj: object, prefix: string = ""): KeyValuePair[] {
-  const result: KeyValuePair[] = [];
-
-  for (const key in obj) {
-    if (Object.prototype.hasOwnProperty.call(obj, key)) {
-      const currentKey = prefix ? `${prefix}.${key}` : key;
-      const value = (obj as Record<string, unknown>)[key];
-
-      if (
-        typeof value === "object" &&
-        value !== null &&
-        !Array.isArray(value)
-      ) {
-        result.push(...getKeyValuePairs(value, currentKey));
-      } else {
-        result.push({
-          key: currentKey,
-          value: value,
-        });
-      }
-    }
-  }
-
-  return result;
-}
-
-function getKeyPaths(obj: object, prefix: string = ""): string[] {
+function getObjectKeyPaths<T extends object>(
+  obj: T,
+  prefix: string = ""
+): string[] {
   const result: string[] = [];
 
   for (const key in obj) {
@@ -39,12 +16,19 @@ function getKeyPaths(obj: object, prefix: string = ""): string[] {
       const currentKey = prefix ? `${prefix}.${key}` : key;
       const value = (obj as Record<string, unknown>)[key];
 
-      if (
-        typeof value === "object" &&
-        value !== null &&
-        !Array.isArray(value)
-      ) {
-        result.push(...getKeyPaths(value, currentKey));
+      if (typeof value === "object" && value !== null) {
+        if (Array.isArray(value)) {
+          value.forEach((arrayElement, index) => {
+            const arrayKey = `${currentKey}[${index}]`;
+            if (typeof arrayElement === "object" && arrayElement !== null) {
+              result.push(...getObjectKeyPaths(arrayElement, arrayKey));
+            } else {
+              result.push(arrayKey);
+            }
+          });
+        } else {
+          result.push(...getObjectKeyPaths(value, currentKey));
+        }
       } else {
         result.push(currentKey);
       }
@@ -54,12 +38,55 @@ function getKeyPaths(obj: object, prefix: string = ""): string[] {
   return result;
 }
 
-const getKeyValue = (obj: object, path: string) => {
-  if (!obj || !path) return "";
-  return path?.split(".").reduce((acc, key) => {
-    return acc?.[key as keyof typeof acc];
-  }, obj) as any;
-};
+function getAllArrayKeyPaths<T extends object>(
+  obj: T,
+  prefix: string = ""
+): string[] {
+  const result: string[] = [];
+
+  for (const key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      const currentKey = prefix ? `${prefix}.${key}` : key;
+      const value = (obj as Record<string, unknown>)[key];
+
+      if (Array.isArray(value)) {
+        if (value.length > 0 && typeof value[0] === "object") {
+          result.push(currentKey);
+        }
+
+        value.forEach((item, index) => {
+          if (typeof item === "object" && item !== null) {
+            result.push(
+              ...getAllArrayKeyPaths(item, `${currentKey}[${index}]`)
+            );
+          }
+        });
+      } else if (typeof value === "object" && value !== null) {
+        result.push(...getAllArrayKeyPaths(value, currentKey));
+      }
+    }
+  }
+
+  return result;
+}
+
+function getKeyValue<T, K extends string>(obj: T, path: K): any {
+  if (!obj || !path) return undefined;
+
+  const keys = path.split(".").flatMap((part) => {
+    const arrayMatch = part.match(/([^\[]+)?\[(\d+)\]/);
+    if (arrayMatch) {
+      const [, prop, index] = arrayMatch;
+      return prop ? [prop, index] : [index];
+    }
+    return [part];
+  });
+
+  return keys.reduce((acc: any, key) => {
+    if (acc === null || acc === undefined) return undefined;
+    return acc[key];
+  }, obj);
+}
 
 const validateUrl = (url: string) => {
   const validProtocols = ["http://", "https://"];
@@ -104,29 +131,30 @@ function createInitialValues(
   }, {} as Record<string, string>);
 }
 
-function generateItemId(item: any, integrationKeyPaths: IntegrationKeyPaths) {
-  const headingText = getKeyValue(item, integrationKeyPaths?.heading) || "";
-  const subHeadingText =
-    getKeyValue(item, integrationKeyPaths?.subHeading) || "";
-  const detailText = getKeyValue(item, integrationKeyPaths?.detail) || "";
-  const detailsText = !integrationKeyPaths?.details
+function generateItemId(item: any, keyPaths: IntegrationKeyPaths) {
+  const headingText = getKeyValue(item, keyPaths?.heading) || "";
+  const subHeadingText = getKeyValue(item, keyPaths?.subHeading) || "";
+  const thumbnailText = getKeyValue(item, keyPaths?.thumbnail) || "";
+  const detailText = getKeyValue(item, keyPaths?.detail) || "";
+  const detailsText = !keyPaths?.details
     ? ""
-    : integrationKeyPaths?.details
-        ?.map((detail) => getKeyValue(item, detail))
-        .join("-");
+    : keyPaths?.details?.map((detail) => getKeyValue(item, detail)).join("");
 
-  const textId = `${headingText}${subHeadingText}${detailText}${detailsText}`;
+  const textId = `${headingText}${subHeadingText}${thumbnailText}${detailText}${detailsText}`;
 
-  return textId?.replace(/\s+/g, "_")?.toLowerCase().trim();
+  return textId
+    ?.replace(/[\/:;&*%$#@!?=\s+]/g, "")
+    ?.toLowerCase()
+    .trim();
 }
 
 export {
-  getKeyValuePairs,
-  getKeyPaths,
   getKeyValue,
   validateUrl,
   arrayToKeyValuePairs,
   keyValuePairsToArray,
   createInitialValues,
   generateItemId,
+  getObjectKeyPaths,
+  getAllArrayKeyPaths,
 };

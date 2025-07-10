@@ -11,12 +11,11 @@ import {
 } from "../../services/types";
 import DraggableCard from "./DisplayCard/DraggableCard";
 import JsonViewer from "./forms/SelectionForm/JsonViewer";
-import { useDrop } from "react-dnd";
 
 type SelectItemsProps = {
   name: string;
   label: string;
-  value?: any;
+  value?: any[];
   onSelectionChange?: ({
     inputName,
     value,
@@ -33,21 +32,22 @@ type SelectItemsProps = {
 const SelectItems: FC<SelectItemsProps> = ({
   name,
   label,
-  value,
+  value: defaultValue,
   onSelectionChange,
   integrationFieldApiConfig = null,
   integrationFieldDisplay = null,
   isLoading = false,
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
+  const [initialValue, setInitialValue] = useState<any[] | undefined>(
+    undefined
+  );
+  const [isDragging, setIsDragging] = useState(false);
 
   const {
     isFetching,
-    selectedItems,
-    setSelectedItems,
-    remoteSelectorOpen,
-    setRemoteSelectorOpen,
-
+    formSelectorOpen,
+    setFormSelectorOpen,
     jsonViewerIsOpen,
     setJsonViewerIsOpen,
     jsonData,
@@ -57,71 +57,73 @@ const SelectItems: FC<SelectItemsProps> = ({
     setKeyPaths,
     displayType,
     setDisplayType,
-    value: valueLocal,
+    value,
     setValue,
   } = useIntegrationField();
 
   useEffect(() => {
-    if (isLoading || isLoaded) return;
+    if (
+      !integrationFieldApiConfig?.endpoint ||
+      !integrationFieldDisplay?.type ||
+      !integrationFieldDisplay?.keyPaths ||
+      isLoading ||
+      isFetching ||
+      !!isLoaded
+    )
+      return;
+
     setEndpoint(integrationFieldApiConfig?.endpoint || "");
     setHeaders(integrationFieldApiConfig?.headers || null);
     setKeyPaths(integrationFieldDisplay?.keyPaths || null);
     setDisplayType(integrationFieldDisplay?.type || null);
-    setIsLoaded(true);
-    setValue(value || null);
-  }, [
-    integrationFieldApiConfig,
-    integrationFieldDisplay,
-    isLoading,
-    isLoaded,
-    value,
-  ]);
-
-  useEffect(() => {
-    if (!valueLocal || !keyPaths) return;
-    const mappedValue = valueLocal?.map((item: any) => ({
+    const mappedDefaultValue = defaultValue?.map((item: any) => ({
       ...item,
       _itemId: generateItemId(item, keyPaths),
     }));
-    setSelectedItems(mappedValue);
-  }, [valueLocal, keyPaths]);
-
-  useEffect(() => {
-    if (!isLoaded || value === valueLocal) return;
-
-    onSelectionChange({ inputName: name, value: valueLocal });
-  }, [valueLocal, isLoaded, value]);
+    setValue(mappedDefaultValue || undefined);
+    setInitialValue(mappedDefaultValue || undefined);
+    setIsLoaded(true);
+  }, [
+    integrationFieldApiConfig,
+    integrationFieldDisplay,
+    defaultValue,
+    isLoading,
+    isFetching,
+    isLoaded,
+    setIsLoaded,
+  ]);
 
   const findCard = useCallback(
-    (_itemId: string) => {
-      const card = selectedItems.find((c) => `${c._itemId}` === _itemId);
-      return {
-        card,
-        index: selectedItems.findIndex((c) => `${c._itemId}` === _itemId),
-      };
+    (id: string) => {
+      const item = value.find((c: any) => c._itemId === id);
+      return { item, index: value.indexOf(item) };
     },
-    [selectedItems]
+    [value]
   );
 
   const moveCard = useCallback(
-    (dragId: string, hoverIndex: number) => {
-      const { card: dragCard, index: dragIndex } = findCard(dragId);
-      if (dragIndex === hoverIndex) return;
-
-      setSelectedItems((prevItems: any) => {
-        const newItems = [...prevItems];
-        const [removed] = newItems.splice(dragIndex, 1);
-        newItems.splice(hoverIndex, 0, removed);
-        return newItems;
-      });
+    (id: string, atIndex: number, isDragging?: boolean) => {
+      const { item, index } = findCard(id);
+      setIsDragging(isDragging || false);
+      if (!!item) {
+        setValue((prevItems: any) => {
+          const newItems = [...prevItems];
+          newItems.splice(atIndex, 0, newItems.splice(index, 1)[0]);
+          return newItems;
+        });
+      }
     },
-    [findCard]
+    [findCard, setValue]
   );
-  const onReorder = useCallback(() => {
-    setValue(selectedItems);
-  }, [selectedItems]);
 
-  const [, drop] = useDrop(() => ({ accept: "card" }));
+  useEffect(() => {
+    const isEqual = JSON.stringify(value) === JSON.stringify(initialValue);
+    if (!isLoaded || !!isDragging || isEqual) return;
+    onSelectionChange({
+      inputName: name,
+      value: !!value?.length ? value : null,
+    });
+  }, [value, initialValue, name, isDragging, isLoaded]);
 
   return (
     <>
@@ -136,20 +138,19 @@ const SelectItems: FC<SelectItemsProps> = ({
           rowGap: "8px",
         }}
       >
-        {selectedItems.length > 0 && (
+        {value?.length > 0 && (
           <Box
+            data-cy="integrationListValueContainer"
             component="div"
-            ref={drop}
             sx={{
               width: "100%",
               display: "flex",
               flexDirection: "column",
               justifyContent: "flex-start",
               alignItems: "flex-start",
-              rowGap: "8px",
             }}
           >
-            {selectedItems.map((item, index) => (
+            {value?.map((item: any, index: number) => (
               <DraggableCard
                 key={item?._itemId}
                 id={item?._itemId}
@@ -160,8 +161,9 @@ const SelectItems: FC<SelectItemsProps> = ({
                 detail={getKeyValue(item, keyPaths?.detail)}
                 details={keyPaths?.details}
                 index={index}
+                findCard={findCard}
                 moveCard={moveCard}
-                onReorder={onReorder}
+                onReorder={() => setIsDragging(false)}
                 data={item}
                 draggable={true}
                 loading={isLoading || isFetching}
@@ -178,13 +180,13 @@ const SelectItems: FC<SelectItemsProps> = ({
           fullWidth={true}
           startIcon={<AddIcon />}
           onClick={() => {
-            setRemoteSelectorOpen(true);
+            setFormSelectorOpen(true);
           }}
         >
           {label}
         </Button>
 
-        {!!remoteSelectorOpen && <SelectionForm />}
+        {!!formSelectorOpen && <SelectionForm />}
         <Dialog
           data-cy="integrationSelectItemsDialog"
           open={jsonViewerIsOpen}

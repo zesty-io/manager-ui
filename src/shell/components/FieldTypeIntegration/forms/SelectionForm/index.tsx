@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { IconButton, Box, Paper } from "@mui/material";
 import Button from "@mui/material/Button";
 import {
@@ -15,7 +15,7 @@ import Typography from "@mui/material/Typography";
 import CheckIcon from "@mui/icons-material/Check";
 import SearchIcon from "@mui/icons-material/Search";
 import JsonViewer from "./JsonViewer";
-import { getKeyValue } from "../../utils";
+import { generateItemId, getKeyValue } from "../../utils";
 import SelectCard from "../../DisplayCard/SelectCard";
 import { NoResults } from "../../../../../apps/schema/src/app/components/NoResults";
 
@@ -23,38 +23,69 @@ const SelectionForm = () => {
   const searchInputRef = useRef(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [jsonViewData, setJsonViewData] = useState(null);
-
   const [viewerOpen, setViewerOpen] = useState(false);
   const {
     isFetching,
-    isConnecting,
-    remoteSelectorOpen,
-    setRemoteSelectorOpen,
-    selectedItems,
-    setSelectedItems,
-    rootDataArray,
+    formSelectorOpen,
+    setFormSelectorOpen,
     maxItems,
     keyPaths,
     displayType,
+    apiData,
+    value,
     setValue,
   } = useIntegrationField();
 
-  const [selectedItemsLocal, setSelectedItemsLocal] = useState(selectedItems);
+  const [selectedItemIds, setSelectedItemIds] = useState<string[] | null>(
+    !value?.length ? [] : value?.map((item: any) => item?._itemId)
+  );
 
-  const maxItemsSelected = selectedItemsLocal?.length >= maxItems;
+  const maxItemsSelected = selectedItemIds?.length >= maxItems;
 
-  const handleItemSelect = (val: boolean, data: any) => {
-    if (!!val && selectedItemsLocal?.length >= maxItems) return;
-    const newList = !!val
-      ? [...selectedItemsLocal, data]
-      : selectedItemsLocal.filter((item) => item?._itemId !== data?._itemId);
-    setSelectedItemsLocal(newList);
-  };
+  const { listItems, fileteredList } = useMemo(() => {
+    if (!apiData || isFetching) return { listItems: [], fileteredList: [] };
+
+    const extractedData = (
+      !keyPaths?.rootPath
+        ? apiData
+        : getKeyValue(apiData as object, keyPaths?.rootPath)
+    )?.map((item: any) => ({
+      ...item,
+      _itemId: generateItemId(item, keyPaths),
+    }));
+
+    const filtered = extractedData?.filter((item: any) => {
+      const heading = getKeyValue(item, keyPaths?.heading);
+      const subHeading = getKeyValue(item, keyPaths?.subHeading);
+      const thumbnail = getKeyValue(item, keyPaths?.thumbnail);
+      const detail = getKeyValue(item, keyPaths?.detail);
+      const details = !keyPaths?.details
+        ? ""
+        : keyPaths?.details
+            ?.map((detail) => getKeyValue(item, detail))
+            .join("\n");
+
+      const searchString =
+        `${heading}\n${subHeading}\n${thumbnail}\n${detail}\n${details}`?.toLowerCase();
+
+      return !searchTerm
+        ? true
+        : searchString?.includes(searchTerm?.toLowerCase());
+    });
+
+    return {
+      listItems: extractedData,
+      fileteredList: filtered,
+    };
+  }, [apiData, searchTerm, isFetching]);
 
   const handleDone = () => {
-    setSelectedItems(selectedItemsLocal);
-    setValue(!selectedItemsLocal?.length ? null : selectedItemsLocal);
-    setRemoteSelectorOpen(false);
+    const selectedItemsData = listItems?.filter((item: any) =>
+      selectedItemIds.includes(item._itemId)
+    );
+    setSearchTerm("");
+    setValue(!selectedItemsData?.length ? null : selectedItemsData);
+    setFormSelectorOpen(false);
   };
 
   const openViewer = (data: any) => {
@@ -62,28 +93,11 @@ const SelectionForm = () => {
     setViewerOpen(true);
   };
 
-  const fileteredList = useMemo(() => {
-    if (!rootDataArray || isFetching) return [];
-    return rootDataArray?.filter((item: any) => {
-      const heading = getKeyValue(item, keyPaths?.heading);
-      const subHeading = getKeyValue(item, keyPaths?.subHeading);
-      const thumbnail = getKeyValue(item, keyPaths?.thumbnail);
-      const detail = getKeyValue(item, keyPaths?.detail);
-
-      const searchString =
-        `${heading}\n${subHeading}\n${thumbnail}\n${detail}`?.toLowerCase();
-
-      return !searchTerm
-        ? true
-        : searchString?.includes(searchTerm?.toLowerCase());
-    });
-  }, [rootDataArray, searchTerm, isFetching, selectedItems]);
-
   return (
     <Dialog
       fullWidth
-      open={remoteSelectorOpen}
-      onClose={() => setRemoteSelectorOpen(false)}
+      open={formSelectorOpen}
+      onClose={() => setFormSelectorOpen(false)}
       slotProps={{
         paper: {
           style: {
@@ -111,9 +125,9 @@ const SelectionForm = () => {
         }}
       >
         <Typography variant="h3" fontWeight={700}>
-          {!selectedItemsLocal?.length
+          {!selectedItemIds?.length
             ? `Select Article Videos`
-            : `${selectedItemsLocal?.length} Selected`}
+            : `${selectedItemIds?.length} Selected`}
         </Typography>
         <Box
           display="flex"
@@ -122,18 +136,20 @@ const SelectionForm = () => {
           alignItems="center"
           columnGap={1}
         >
-          {!!selectedItemsLocal?.length && (
+          {!!selectedItemIds?.length && (
             <>
               <Button
+                data-cy="selectIntegrationFormDeselectAllButton"
                 size="small"
                 variant="outlined"
                 color="inherit"
                 startIcon={<CloseIcon />}
-                onClick={() => setSelectedItemsLocal([])}
+                onClick={() => setSelectedItemIds([])}
               >
                 Deselect All
               </Button>
               <Button
+                data-cy="selectIntegrationFormDoneButton"
                 size="small"
                 variant="contained"
                 color="primary"
@@ -144,7 +160,7 @@ const SelectionForm = () => {
               </Button>
             </>
           )}
-          <IconButton size="small" onClick={() => setRemoteSelectorOpen(false)}>
+          <IconButton size="small" onClick={() => setFormSelectorOpen(false)}>
             <CloseIcon />
           </IconButton>
         </Box>
@@ -213,7 +229,7 @@ const SelectionForm = () => {
             },
           }}
         >
-          {isConnecting || isFetching ? (
+          {isFetching ? (
             <>
               {[...new Array(6)].map((_, i) => (
                 <SelectCard
@@ -248,10 +264,16 @@ const SelectionForm = () => {
                   thumbnail={getKeyValue(item, keyPaths?.thumbnail)}
                   details={keyPaths?.details}
                   data={item}
-                  isSelected={selectedItemsLocal
-                    ?.map((item) => item?._itemId)
-                    .includes(item?._itemId)}
-                  onSelect={(select) => handleItemSelect(select, item)}
+                  isSelected={selectedItemIds?.includes(item?._itemId)}
+                  onSelect={(select) => {
+                    setSelectedItemIds((prev) => {
+                      if (select) {
+                        return [...prev, item?._itemId];
+                      } else {
+                        return prev.filter((id) => id !== item?._itemId);
+                      }
+                    });
+                  }}
                   onViewJson={() => openViewer(item)}
                   loading={isFetching}
                   disabled={maxItemsSelected}

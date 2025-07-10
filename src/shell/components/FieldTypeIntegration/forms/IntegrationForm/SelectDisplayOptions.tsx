@@ -14,7 +14,6 @@ import {
 } from "@mui/material";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import IconButton from "@mui/material/IconButton";
-import { uniqueId } from "lodash";
 import { FormWrapper } from "../IntegrationForm";
 import { useIntegrationField } from "../../IntegrationFieldProvider";
 
@@ -57,9 +56,11 @@ const SelectDisplayOptions = () => {
       { keyword: "classy", type: "classy" },
     ];
 
+    const apiUrl = new URL(endpoint);
+
     const matchedType: IntegrationTypes | null =
-      endpointTypes.find(({ keyword }) => endpoint?.includes(keyword))?.type ||
-      null;
+      endpointTypes.find(({ keyword }) => apiUrl?.origin?.includes(keyword))
+        ?.type || null;
     setRecommendedType(matchedType);
     if (!!displayTypeLocal) return;
     setDisplayTypeLocal(matchedType);
@@ -314,8 +315,6 @@ export const DisplayOptionCard: FC<DisplayOptionCardProps> = ({
   isSelected = false,
   onSelect,
 }) => {
-  const itemId = uniqueId();
-
   return (
     <Paper
       data-cy={`integrationDisplayOption-${type}`}

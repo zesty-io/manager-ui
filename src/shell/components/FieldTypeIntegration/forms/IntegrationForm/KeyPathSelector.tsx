@@ -144,6 +144,7 @@ const KeyPathSelector = ({
               width: "100%",
               position: "relative",
               boxSizing: "border-box",
+              overflow: "hidden",
             }}
           >
             <Tooltip
@@ -174,13 +175,16 @@ const KeyPathSelector = ({
               <Box
                 display="flex"
                 flexDirection="row"
-                justifyContent="space-between"
-                alignItems={"center"}
+                justifyContent="flex-start"
+                alignItems="center"
+                columnGap={1}
                 width="100%"
                 position="relative"
                 boxSizing="border-box"
                 whiteSpace="nowrap"
                 overflow="hidden"
+                maxWidth="100%"
+                lineHeight={1}
                 sx={{
                   "& .MuiTypography-root, & .MuiChip-label": {
                     fontFamily: "monospace",
@@ -189,30 +193,24 @@ const KeyPathSelector = ({
                 }}
               >
                 <Typography
-                  variant="body3"
+                  variant="body2"
+                  component="p"
                   color="text.primary"
-                  flexGrow={0}
-                  maxWidth="50%"
+                  display="block"
                   overflow="hidden"
-                  textAlign="right"
-                  display="flex"
-                  justifyContent="flex-end"
-                  alignItems="center"
                   noWrap
-                >
-                  {`${option}:`}
-                </Typography>
-
-                <Typography
-                  variant="body3"
-                  color={`${isUrl ? COLOR_MAP.url : typeColor}.600`}
-                  flexGrow={1}
-                  overflow="hidden"
+                  width="100%"
                   textOverflow="ellipsis"
-                  noWrap
-                  px={1}
                 >
-                  {stringOptionValue}
+                  {`${option}: `}
+                  <Typography
+                    variant="body2"
+                    component="span"
+                    color={`${isUrl ? COLOR_MAP.url : typeColor}.600`}
+                    display="unset"
+                  >
+                    {stringOptionValue}
+                  </Typography>
                 </Typography>
 
                 <Box
@@ -223,8 +221,7 @@ const KeyPathSelector = ({
                     fontSize: "12px",
                     bgcolor: `${typeColor}.50`,
                     color: `${typeColor}.600`,
-                    px: "4px",
-                    py: 0,
+                    p: 0.5,
                   }}
                 >
                   {valueType}

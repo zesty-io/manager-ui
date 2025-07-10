@@ -129,6 +129,7 @@ const ConfigureIntegration: FC<IntegrationFieldProps> = ({
               API URL
             </Typography>
             <InputBase
+              data-cy="integrationApiUrl"
               size="small"
               readOnly
               value={apiConfig?.endpoint || ""}
@@ -163,6 +164,7 @@ const ConfigureIntegration: FC<IntegrationFieldProps> = ({
               Display Items as
             </Typography>
             <InputBase
+              data-cy="integrationDisplayType"
               size="small"
               readOnly
               value={displayConfig?.type || ""}

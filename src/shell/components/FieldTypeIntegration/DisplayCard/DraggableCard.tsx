@@ -1,4 +1,4 @@
-import { useState, FC, useRef } from "react";
+import { useState, FC, useRef, useEffect } from "react";
 import DragIndicatorRoundedIcon from "@mui/icons-material/DragIndicatorRounded";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { Box, Typography, IconButton, Paper } from "@mui/material";
@@ -19,18 +19,14 @@ type DraggableCardProps = IntegrationKeyPaths & {
   loading?: boolean;
 
   disableMenu?: boolean;
-  moveCard?: (id: string, hoverIndex: number) => void;
+  findCard?: (id: string) => {
+    item: any;
+    index: number;
+  };
+  moveCard?: (id: string, toIndex: number, isDragging?: boolean) => void;
   onReorder?: () => void;
   index?: number;
   draggable?: boolean;
-};
-interface DragItem {
-  index: number;
-  id: string;
-  type: string;
-}
-export const ItemTypes = {
-  CARD: "card",
 };
 
 const DraggableCard: FC<DraggableCardProps> = ({
@@ -46,43 +42,46 @@ const DraggableCard: FC<DraggableCardProps> = ({
   loading = false,
   disableMenu = false,
   index,
+  findCard,
   moveCard,
   onReorder,
   draggable = false,
 }) => {
-  const ref = useRef<HTMLDivElement>(null);
-
-  const [{ isDragging }, drag, preview] = useDrag({
-    type: ItemTypes.CARD,
-    item: () => ({ id, index }),
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
+  const [{ isDragging }, drag, preview] = useDrag(
+    () => ({
+      type: "draggable",
+      item: { id, index },
+      collect: (monitor) => ({
+        isDragging: monitor.isDragging(),
+      }),
     }),
-    end: () => {
-      onReorder?.();
-    },
-  });
+    [id, index]
+  );
 
-  const [, drop] = useDrop({
-    accept: ItemTypes.CARD,
-    hover: (item: DragItem, monitor) => {
-      if (!ref.current) return;
-      if (item.index === index) return;
-
-      moveCard?.(item.id, index);
-      item.index = index;
-    },
-  });
-
-  drag(drop(preview(ref)));
+  const [, drop] = useDrop(
+    () => ({
+      accept: "draggable",
+      hover({ id: draggedId }: { id: string }) {
+        const { index: overIndex } = findCard?.(id);
+        if (draggedId !== id) {
+          moveCard?.(draggedId, overIndex, true);
+        }
+      },
+      drop: () => {
+        onReorder?.();
+      },
+    }),
+    [findCard, moveCard, onReorder]
+  );
 
   return (
     <Paper
       className="draggableCard"
       id={id}
       elevation={0}
-      ref={draggable ? ref : null}
+      ref={!draggable ? null : (node) => drop(preview(node as HTMLElement))}
       sx={{
+        zIndex: isDragging ? 1 : 0,
         opacity: isDragging ? 0.1 : 1,
         py: 0,
         pl: "28px",
@@ -100,9 +99,7 @@ const DraggableCard: FC<DraggableCardProps> = ({
         outlineColor: "border",
         outlineOffset: "0",
         transform: "translate(0, 0)",
-        "& *": {
-          boxSizing: "border-box",
-        },
+        my: 0.5,
       }}
     >
       <Box
@@ -184,12 +181,8 @@ const MoreOptions = ({
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
-  const {
-    jsonViewerIsOpen,
-    setJsonViewerIsOpen,
-    setJsonData,
-    removeSelectedItem,
-  } = useIntegrationField();
+  const { jsonViewerIsOpen, setJsonViewerIsOpen, setJsonData, removeItem } =
+    useIntegrationField();
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -199,7 +192,7 @@ const MoreOptions = ({
   };
 
   const handleRemoveItem = () => {
-    removeSelectedItem(id);
+    removeItem(id);
   };
 
   const handleViewJsonData = () => {
@@ -214,7 +207,7 @@ const MoreOptions = ({
         disabled={disableMenu}
         className="moreOptionButton"
       >
-        <MoreHorizIcon color="action" fontSize="small" />
+        <MoreHorizIcon color="action" />
       </IconButton>
       <Menu
         className="moreOptionMenu"

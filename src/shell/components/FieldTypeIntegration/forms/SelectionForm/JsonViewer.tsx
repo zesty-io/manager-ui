@@ -69,7 +69,11 @@ const JsonViewer = ({
           }}
         >
           {!showCloseButton && (
-            <IconButton sx={{ flexGrow: 0 }} onClick={onClose}>
+            <IconButton
+              sx={{ flexGrow: 0 }}
+              onClick={onClose}
+              data-cy="jsonCodeViewerArrowButton"
+            >
               <ArrowBackRoundedIcon color="action" />
             </IconButton>
           )}
@@ -78,6 +82,7 @@ const JsonViewer = ({
           </Typography>
           {!!showCloseButton && (
             <IconButton
+              data-cy="jsonCodeViewerCloseButton"
               onClick={onClose}
               sx={{ flexGrow: 0, position: "absolute", top: 16, right: 16 }}
             >
@@ -120,7 +125,7 @@ const JsonViewer = ({
           }}
         >
           <MonacoEditor
-            data-cy="integrationJsonViewerEditor"
+            className="integrationJsonViewerEditor"
             language="json"
             theme="vs-dark"
             options={{
@@ -140,7 +145,7 @@ const JsonViewer = ({
                 bottom: 20,
               },
             }}
-            value={JSON.stringify(data, null, 2)}
+            value={!data ? "" : JSON.stringify(data, null, 2)}
           />
         </Box>
       </Paper>

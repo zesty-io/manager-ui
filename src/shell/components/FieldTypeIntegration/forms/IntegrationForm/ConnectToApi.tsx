@@ -78,7 +78,6 @@ const ConnectToApi = () => {
     "connecting" | "success" | "failed" | null
   >(null);
   const [isValidUrl, setIsValidUrl] = useState(true);
-  const [reqError, setReqError] = useState<string | null>(null);
   const [reqAborted, setReqAborted] = useState<boolean>(false);
 
   const {
@@ -89,7 +88,7 @@ const ConnectToApi = () => {
     setEndpoint,
     headers,
     setHeaders,
-    setApiResponseData,
+    setApiData,
     setAutoRequest,
   } = useIntegrationField();
 
@@ -111,14 +110,13 @@ const ConnectToApi = () => {
       });
 
       if (status === "success") {
-        setApiResponseData(data);
+        setApiData(data);
         setStatus("success");
       } else {
         throw new Error("Failed to connect");
       }
     } catch (error) {
-      setReqError(error);
-      setApiResponseData(null);
+      setApiData(null);
       setStatus("failed");
     }
   }, [endpointLocal, headersLocal]);
