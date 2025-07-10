@@ -30,11 +30,11 @@ export const NavTreeLabel = memo(
             display: "flex",
             position: "absolute",
             right: 0,
-            zIndex: nodeData?.navSource == "code" ? 2 : -1,
+            zIndex: nodeData?.navSource === "code" ? 2 : -1,
           },
           // HACK: Makes sure that the label width is adjusted when the overlay buttons are rendered
           "& .treeSpacer": {
-            display: nodeData?.navSource == "code" ? "block" : "none",
+            display: nodeData?.navSource === "code" ? "block" : "none",
           },
         }}
       >
