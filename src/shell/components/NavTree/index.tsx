@@ -132,13 +132,7 @@ export const NavTree: FC<Readonly<Props>> = ({
             }
           }}
           onExpandedItemsChange={(evt: any, nodeIds: string[]) => {
-            if (
-              !evt.currentTarget.id ||
-              evt.target.tagName === "svg" ||
-              evt.target.tagName === "path"
-            ) {
-              onToggleCollapse(nodeIds);
-            }
+            onToggleCollapse(nodeIds);
           }}
           getItemId={getItemId}
           experimentalFeatures={{ indentationAtItemLevel: true }}
