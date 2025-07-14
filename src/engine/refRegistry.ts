@@ -16,3 +16,4 @@ export interface RefRegistryEntry {
 }
 
 export const refRegistry: Record<string, RefRegistryEntry> = {};
+export const getRefRegistry = () => refRegistry;

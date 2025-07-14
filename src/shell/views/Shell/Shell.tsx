@@ -1,5 +1,11 @@
 import { memo, useEffect } from "react";
-import { Switch, Route, Redirect, useHistory } from "react-router-dom";
+import {
+  Switch,
+  Route,
+  Redirect,
+  useHistory,
+  useLocation,
+} from "react-router-dom";
 import { Sentry } from "../../../utility/sentry";
 import { Severity } from "@sentry/browser";
 import { Box } from "@mui/material";
@@ -59,6 +65,7 @@ export default memo(function Shell() {
     !!files?.length;
 
   const history = useHistory();
+  const { pathname } = useLocation();
   const [showAiDrawer, setShowAiDrawer] = useLocalStorage(
     "showAiDrawer",
     false
@@ -71,169 +78,167 @@ export default memo(function Shell() {
   }, [history]);
 
   return (
-    <Box display="flex">
-      <Box
-        component="section"
-        className={styles.Shell}
-        height="100vh"
-        overflow="hidden"
-        display="grid"
-        gridTemplateColumns={openNav ? "200px 1fr" : "48px 1fr"}
-        sx={{
-          flex: 1,
-          backgroundColor: "background.paper",
+    <Box
+      component="section"
+      className={styles.Shell}
+      height="100vh"
+      overflow="clip"
+      display="grid"
+      gridTemplateColumns={openNav ? "200px 1fr" : "48px 1fr"}
+      sx={{
+        flex: 1,
+        backgroundColor: "background.paper",
+      }}
+    >
+      <InAppAnnouncement />
+      <GlobalSidebar
+        onClick={() => {
+          dispatch(actions.setGlobalNav(!openNav));
         }}
-      >
-        <InAppAnnouncement />
-        <GlobalSidebar
-          onClick={() => {
-            dispatch(actions.setGlobalNav(!openNav));
+        openNav={openNav}
+      />
+      <main className={styles.AppLoader}>
+        <GlobalTopbar
+          onShowAiDrawerToggle={() => {
+            setShowAiDrawer(!showAiDrawer);
           }}
-          openNav={openNav}
         />
-        <main className={styles.AppLoader}>
-          <GlobalTopbar
-            onShowAiDrawerToggle={() => {
-              setShowAiDrawer(!showAiDrawer);
-            }}
-          />
-          <Box
-            className={styles.SubApp}
-            data-cy="SubApp"
-            sx={{
-              zIndex: 30,
-              backgroundColor: "background.paper",
-              // Makes sure that tinyMCE is not overlapped when in fullscreen mode
-              "&:has(div.tox-fullscreen)": {
-                zIndex: (theme) => theme.zIndex.appBar + 1,
-              },
+        <Box
+          className={styles.SubApp}
+          data-cy="SubApp"
+          sx={{
+            zIndex: 30,
+            backgroundColor: "background.paper",
+            // Makes sure that tinyMCE is not overlapped when in fullscreen mode
+            "&:has(div.tox-fullscreen)": {
+              zIndex: (theme) => theme.zIndex.appBar + 1,
+            },
+          }}
+        >
+          <Sentry.ErrorBoundary
+            fallback={() => <AppError />}
+            beforeCapture={(scope) => {
+              scope.setLevel(Severity.Fatal);
+              scope.setTag("error_boundary", true);
             }}
           >
-            <Sentry.ErrorBoundary
-              fallback={() => <AppError />}
-              beforeCapture={(scope) => {
-                scope.setLevel(Severity.Fatal);
-                scope.setTag("error_boundary", true);
-              }}
-            >
-              {isAppLoaded ? (
-                <Box
-                  display="flex"
-                  sx={{
-                    height: "100%",
-                  }}
-                >
-                  <Box flex={1}>
-                    <Switch>
-                      <Route path="/release" component={ReleaseApp} />
+            {isAppLoaded ? (
+              <Box
+                display="flex"
+                sx={{
+                  height: "100%",
+                }}
+              >
+                <Box flex={1}>
+                  <Switch>
+                    <Route path="/release" component={ReleaseApp} />
 
-                      <Route
-                        path="/media/:groupID/file/:fileID"
-                        component={DamApp}
-                      />
-                      <Route path="/media/:groupID" component={DamApp} />
-                      <Route path="/media" component={DamApp} />
-                      <Route path="/search" component={SearchPage} />
-                      {products.map((product) => {
-                        switch (product) {
-                          case "launchpad":
-                            return (
-                              <Route
-                                key={product}
-                                path="/launchpad"
-                                component={HomeApp}
-                              />
-                            );
-                          case "content":
-                            return (
-                              <Route
-                                key={product}
-                                path="/content"
-                                component={ContentApp}
-                              />
-                            );
-                          case "blocks":
-                            return (
-                              <Route
-                                key={product}
-                                path="/blocks"
-                                component={BlocksApp}
-                              />
-                            );
-                          case "reports":
-                            return (
-                              <Route
-                                key={product}
-                                path="/reports"
-                                component={ReportingApp}
-                              />
-                            );
-                          case "code":
-                            return (
-                              <Route
-                                key={product}
-                                path="/code"
-                                component={CodeApp}
-                              />
-                            );
-                          case "leads":
-                            return (
-                              <Route
-                                key={product}
-                                path="/leads"
-                                component={LeadsApp}
-                              />
-                            );
-                          case "schema":
-                            return (
-                              <Route
-                                key={product}
-                                path="/schema"
-                                component={SchemaApp}
-                              />
-                            );
-                          case "redirects":
-                            return (
-                              <Route
-                                key={product}
-                                path="/redirects"
-                                component={SeoApp}
-                              />
-                            );
-                          case "settings":
-                            return (
-                              <Route
-                                key={product}
-                                path="/settings"
-                                component={SettingsApp}
-                              />
-                            );
-                          case "apps":
-                            return (
-                              <Route
-                                key={product}
-                                path="/apps*"
-                                component={MarketplaceApp}
-                              />
-                            );
-                          default:
-                            null;
-                        }
-                      })}
+                    <Route
+                      path="/media/:groupID/file/:fileID"
+                      component={DamApp}
+                    />
+                    <Route path="/media/:groupID" component={DamApp} />
+                    <Route path="/media" component={DamApp} />
+                    <Route path="/search" component={SearchPage} />
+                    {products.map((product) => {
+                      switch (product) {
+                        case "launchpad":
+                          return (
+                            <Route
+                              key={product}
+                              path="/launchpad"
+                              component={HomeApp}
+                            />
+                          );
+                        case "content":
+                          return (
+                            <Route
+                              key={product}
+                              path="/content"
+                              component={ContentApp}
+                            />
+                          );
+                        case "blocks":
+                          return (
+                            <Route
+                              key={product}
+                              path="/blocks"
+                              component={BlocksApp}
+                            />
+                          );
+                        case "reports":
+                          return (
+                            <Route
+                              key={product}
+                              path="/reports"
+                              component={ReportingApp}
+                            />
+                          );
+                        case "code":
+                          return (
+                            <Route
+                              key={product}
+                              path="/code"
+                              component={CodeApp}
+                            />
+                          );
+                        case "leads":
+                          return (
+                            <Route
+                              key={product}
+                              path="/leads"
+                              component={LeadsApp}
+                            />
+                          );
+                        case "schema":
+                          return (
+                            <Route
+                              key={product}
+                              path="/schema"
+                              component={SchemaApp}
+                            />
+                          );
+                        case "redirects":
+                          return (
+                            <Route
+                              key={product}
+                              path="/redirects"
+                              component={SeoApp}
+                            />
+                          );
+                        case "settings":
+                          return (
+                            <Route
+                              key={product}
+                              path="/settings"
+                              component={SettingsApp}
+                            />
+                          );
+                        case "apps":
+                          return (
+                            <Route
+                              key={product}
+                              path="/apps*"
+                              component={MarketplaceApp}
+                            />
+                          );
+                        default:
+                          null;
+                      }
+                    })}
 
-                      <Redirect exact from="/" to="/launchpad" />
-                      <Route path="*" component={Missing} />
-                    </Switch>
-                  </Box>
-                  {showAiDrawer && <AIDrawer />}
+                    <Redirect exact from="/" to="/launchpad" />
+                    <Route path="*" component={Missing} />
+                  </Switch>
                 </Box>
-              ) : (
-                <LoadingShell />
-              )}
-            </Sentry.ErrorBoundary>
-          </Box>
-        </main>
-      </Box>
+                {showAiDrawer && <AIDrawer key={pathname} />}
+              </Box>
+            ) : (
+              <LoadingShell />
+            )}
+          </Sentry.ErrorBoundary>
+        </Box>
+      </main>
     </Box>
   );
 });

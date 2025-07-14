@@ -32,7 +32,6 @@ import {
   CloseRounded,
 } from "@mui/icons-material";
 import { alpha } from "@mui/material/styles";
-import { CompactView, Modal, Login } from "@bynder/compact-view";
 import { Bynder, FileReplace } from "@zesty-io/material";
 
 import {
@@ -51,7 +50,7 @@ import cx from "classnames";
 import { FileTypePreview } from "../../../../media/src/app/components/FileModal/FileTypePreview";
 import { useGetInstanceSettingsQuery } from "../../../../../shell/services/instance";
 import { ReplaceFileModal } from "../../../../media/src/app/components/FileModal/ReplaceFileModal";
-import { showReportDialog } from "@sentry/react";
+import openBynder from "../../../../../utility/openBynder";
 
 type FieldTypeMediaProps = {
   images: string[];
@@ -90,7 +89,6 @@ export const FieldTypeMedia = forwardRef(
     const dispatch = useDispatch();
     const [showFileModal, setShowFileModal] = useState("");
     const [imageToReplace, setImageToReplace] = useState("");
-    const [isBynderOpen, setIsBynderOpen] = useState(false);
     const { data: rawInstanceSettings } = useGetInstanceSettingsQuery();
     const [selectionError, setSelectionError] = useState("");
 
@@ -180,8 +178,8 @@ export const FieldTypeMedia = forwardRef(
       onChange([...images, ...filteredImageZUIDs].join(","), name);
     };
 
-    const addBynderAsset = (selectedAsset: any[]) => {
-      if (images.length > limit) return;
+    const addBynderAsset = (selectedAsset: ReadonlyArray<BynderImage>) => {
+      if (images.length > limit || !selectedAsset?.length) return;
 
       const removedAssets: any[] = [];
       const filteredBynderAssets = selectedAsset?.filter((asset) => {
@@ -263,7 +261,7 @@ export const FieldTypeMedia = forwardRef(
       onChange(newImageZUIDs.join(","), name);
     };
 
-    const replaceBynderAsset = (selectedAsset: any) => {
+    const replaceBynderAsset = (selectedAsset: BynderImage) => {
       // Prevent adding bynder asset that has already been added
       if (localImageZUIDs.includes(selectedAsset.originalUrl)) return;
 
@@ -328,6 +326,33 @@ export const FieldTypeMedia = forwardRef(
       onChange(newLocalImages.join(","), name);
     };
 
+    const handleOpenBynder = () => {
+      openBynder({
+        url: bynderPortalUrlSetting?.value,
+        onSuccess: (assets) => {
+          if (imageToReplace) {
+            replaceBynderAsset(assets[0]);
+          } else {
+            addBynderAsset(assets);
+          }
+        },
+        mode: limit > 1 && !imageToReplace ? "MultiSelect" : "SingleSelect",
+      });
+    };
+
+    useEffect(() => {
+      if (!!imageToReplace) {
+        if (imageToReplace.includes("bynder.com")) {
+          handleOpenBynder();
+        } else {
+          openMediaBrowser({
+            callback: replaceImage,
+            isReplace: true,
+          });
+        }
+      }
+    }, [imageToReplace]);
+
     const sortedImages = useMemo(() => {
       if (draggedIndex === null || hoveredIndex === null) {
         return localImageZUIDs;
@@ -346,128 +371,113 @@ export const FieldTypeMedia = forwardRef(
 
     if (!images?.length)
       return (
-        <>
+        <Box
+          {...getRootProps({
+            onClick: (evt) => evt.stopPropagation(),
+            onKeyDown: (evt) => evt.stopPropagation(),
+          })}
+          sx={{
+            "&:focus-visible": {
+              outlineColor: (theme) => theme.palette.primary.main,
+              borderRadius: 2,
+            },
+          }}
+        >
+          <input {...getInputProps()} />
           <Box
-            {...getRootProps({
-              onClick: (evt) => evt.stopPropagation(),
-              onKeyDown: (evt) => evt.stopPropagation(),
-            })}
             sx={{
-              "&:focus-visible": {
-                outlineColor: (theme) => theme.palette.primary.main,
-                borderRadius: 2,
-              },
+              border: (theme) => `1px dashed ${theme.palette.primary.main}`,
+              borderRadius: "8px",
+              backgroundColor: (theme) =>
+                alpha(theme.palette.primary.main, 0.04),
+              borderColor: hasError ? "error.main" : "primary.main",
             }}
           >
-            <input {...getInputProps()} />
-            <Box
-              sx={{
-                border: (theme) => `1px dashed ${theme.palette.primary.main}`,
-                borderRadius: "8px",
-                backgroundColor: (theme) =>
-                  alpha(theme.palette.primary.main, 0.04),
-                borderColor: hasError ? "error.main" : "primary.main",
-              }}
-            >
-              <Stack alignItems="center" gap={2} py={4} justifyContent="center">
+            <Stack alignItems="center" gap={2} py={4} justifyContent="center">
+              {isDragActive ? (
+                <UploadRounded color="primary" />
+              ) : (
+                <AttachmentRounded color="primary" />
+              )}
+              <Typography
+                align="center"
+                variant="h5"
+                color="primary"
+                fontWeight={600}
+              >
                 {isDragActive ? (
-                  <UploadRounded color="primary" />
+                  "Drop your files here to Upload"
                 ) : (
-                  <AttachmentRounded color="primary" />
+                  <>
+                    Drag and drop your files here <br /> or
+                  </>
                 )}
-                <Typography
-                  align="center"
-                  variant="h5"
-                  color="primary"
-                  fontWeight={600}
-                >
-                  {isDragActive ? (
-                    "Drop your files here to Upload"
-                  ) : (
-                    <>
-                      Drag and drop your files here <br /> or
-                    </>
-                  )}
-                </Typography>
-                {!isDragActive && (
-                  <Box
-                    display="flex"
-                    gap={1}
-                    width={400}
-                    justifyContent="center"
-                    flexWrap="wrap"
-                  >
-                    <Button
-                      size="large"
-                      variant="outlined"
-                      onClick={open}
-                      startIcon={<UploadRounded />}
-                      fullWidth
-                      sx={{
-                        maxWidth: "196px",
-                        flexShrink: 0,
-                      }}
-                    >
-                      Upload
-                    </Button>
-                    <Button
-                      data-cy="selectFromMediaButton"
-                      fullWidth
-                      size="large"
-                      startIcon={<AddRounded />}
-                      variant="outlined"
-                      onClick={() => {
-                        openMediaBrowser({
-                          limit,
-                          callback: addZestyImage,
-                        });
-                      }}
-                      sx={{
-                        maxWidth: "196px",
-                        flexShrink: 0,
-                      }}
-                    >
-                      Add from Media
-                    </Button>
-                    {isBynderSessionValid && (
-                      <Button
-                        data-cy="addFromBynderBtn"
-                        size="large"
-                        variant="outlined"
-                        onClick={() => setIsBynderOpen(true)}
-                        startIcon={<Bynder />}
-                        fullWidth
-                        sx={{
-                          maxWidth: "240px",
-                          flexShrink: 0,
-                        }}
-                      >
-                        Add from Bynder
-                      </Button>
-                    )}
-                  </Box>
-                )}
-              </Stack>
-            </Box>
-            {selectionError && (
-              <Typography variant="body2" color="error.dark" mt={0.5}>
-                {selectionError}
               </Typography>
-            )}
+              {!isDragActive && (
+                <Box
+                  display="flex"
+                  gap={1}
+                  justifyContent="center"
+                  flexWrap="wrap"
+                >
+                  <Button
+                    size="large"
+                    variant="outlined"
+                    onClick={open}
+                    startIcon={<UploadRounded />}
+                    fullWidth
+                    sx={{
+                      maxWidth: "196px",
+                      flexShrink: 0,
+                    }}
+                  >
+                    Upload
+                  </Button>
+                  <Button
+                    data-cy="selectFromMediaButton"
+                    fullWidth
+                    size="large"
+                    startIcon={<AddRounded />}
+                    variant="outlined"
+                    onClick={() => {
+                      openMediaBrowser({
+                        limit,
+                        callback: addZestyImage,
+                      });
+                    }}
+                    sx={{
+                      maxWidth: "196px",
+                      flexShrink: 0,
+                    }}
+                  >
+                    Add from Media
+                  </Button>
+                  {isBynderSessionValid && (
+                    <Button
+                      data-cy="addFromBynderBtn"
+                      size="large"
+                      variant="outlined"
+                      onClick={handleOpenBynder}
+                      startIcon={<Bynder />}
+                      fullWidth
+                      sx={{
+                        maxWidth: "240px",
+                        flexShrink: 0,
+                      }}
+                    >
+                      Add from Bynder
+                    </Button>
+                  )}
+                </Box>
+              )}
+            </Stack>
           </Box>
-          <Modal isOpen={isBynderOpen} onClose={() => setIsBynderOpen(false)}>
-            <Login>
-              <CompactView
-                onSuccess={(assets) => {
-                  if (assets?.length) {
-                    addBynderAsset(assets);
-                    setIsBynderOpen(false);
-                  }
-                }}
-              />
-            </Login>
-          </Modal>
-        </>
+          {selectionError && (
+            <Typography variant="body2" color="error.dark" mt={0.5}>
+              {selectionError}
+            </Typography>
+          )}
+        </Box>
       );
 
     return (
@@ -494,15 +504,6 @@ export const FieldTypeMedia = forwardRef(
                 onRemove={removeImage}
                 onReplace={(imageZUID) => {
                   setImageToReplace(imageZUID);
-
-                  if (isBynderAsset) {
-                    setIsBynderOpen(true);
-                  } else {
-                    openMediaBrowser({
-                      callback: replaceImage,
-                      isReplace: true,
-                    });
-                  }
                 }}
                 hideDrag={hideDrag || limit === 1}
                 isBynderAsset={isBynderAsset}
@@ -542,7 +543,7 @@ export const FieldTypeMedia = forwardRef(
                   data-cy="addFromBynderBtn"
                   size="large"
                   variant="outlined"
-                  onClick={() => setIsBynderOpen(true)}
+                  onClick={handleOpenBynder}
                   startIcon={<Bynder />}
                   fullWidth
                 >
@@ -571,23 +572,6 @@ export const FieldTypeMedia = forwardRef(
             }}
           />
         )}
-        <Modal isOpen={isBynderOpen} onClose={() => setIsBynderOpen(false)}>
-          <Login>
-            <CompactView
-              onSuccess={(assets) => {
-                if (assets?.length) {
-                  if (imageToReplace) {
-                    replaceBynderAsset(assets[0]);
-                  } else {
-                    addBynderAsset(assets);
-                  }
-
-                  setIsBynderOpen(false);
-                }
-              }}
-            />
-          </Login>
-        </Modal>
       </>
     );
   }
