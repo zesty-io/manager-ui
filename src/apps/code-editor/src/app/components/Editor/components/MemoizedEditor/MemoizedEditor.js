@@ -1,9 +1,10 @@
-import { memo, useEffect, useRef } from "react";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import MonacoEditor from "react-monaco-editor";
 import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
 import { resolveMonacoLang, updateFileCode } from "../../../../../store/files";
 import { actions } from "shell/store/ui";
+import { useRegisterRef } from "../../../../../../../../engine/useRegisterRef";
 
 /**
  * We memoize this component because we need to short circuit the redux->react->component update cycle
@@ -64,6 +65,23 @@ export const MemoizedEditor = memo(
         }
       }
     }, [props.code]);
+
+    const handle = useMemo(
+      () => ({
+        setValue: (val) => {
+          if (ref.current) {
+            ref.current.editor.getModel().setValue(val);
+          }
+        },
+      }),
+      []
+    );
+
+    useRegisterRef("code-editor", handle, () => ({
+      fileName: props.fileName,
+      code: ref.current?.editor.getValue() || props.code,
+      fields: props.fields,
+    }));
 
     return (
       <MonacoEditor
