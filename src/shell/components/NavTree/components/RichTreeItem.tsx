@@ -41,7 +41,7 @@ export const RichTreeItem = memo(
           {
             content: {
               sx: {
-                "&:hover ": {
+                "&:hover, &.hovered": {
                   bgcolor: (theme: Theme) =>
                     alpha(theme.palette.primary.main, 0.08),
 
@@ -103,6 +103,17 @@ export const RichTreeItem = memo(
                     event.dataTransfer.getData("text/plain")
                   );
                   onItemDrop && onItemDrop(draggedItem, item?.nodeData);
+                }
+              },
+              onMouseLeave: (event: any) => {
+                // This means that a popup has taken focus and we want the tree item to remain hovered
+                // The hovered class is removed by a mutation observer on the NavTree component
+                if (
+                  ["MuiModal-backdrop", "MuiBackdrop-root"].some((className) =>
+                    event.relatedTarget.classList.contains(className)
+                  )
+                ) {
+                  event.currentTarget.classList.add("hovered");
                 }
               },
             },

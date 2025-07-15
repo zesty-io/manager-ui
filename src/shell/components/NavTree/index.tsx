@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useEffect } from "react";
 import { RichTreeView } from "@mui/x-tree-view";
 import { useHistory } from "react-router-dom";
 
@@ -57,6 +57,31 @@ export const NavTree: FC<Readonly<Props>> = ({
   isDirectoryNavigation = false,
 }) => {
   const history = useHistory();
+
+  useEffect(() => {
+    // This observer will remove the "hovered" class from tree items when the menu modal is closed
+    const observer = new MutationObserver(() => {
+      const menuModalElement = document.querySelector(
+        "[data-cy='schema-more-menu']"
+      );
+      const hoveredTreeItems = document.querySelectorAll("div.hovered");
+
+      if (!menuModalElement && hoveredTreeItems.length > 0) {
+        hoveredTreeItems.forEach((item) => {
+          item.classList.remove("hovered");
+        });
+      }
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
 
   if (isLoading) {
     return (
