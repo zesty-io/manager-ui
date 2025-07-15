@@ -31,7 +31,8 @@ import {
   useGetBinsQuery,
 } from "../../services/mediaManager";
 import { useSearchMediaFoldersByKeyword } from "../../hooks/useSearchMediaFoldersByKeyword";
-
+import { BlockModel } from "./List/Block";
+import { useSearchBlocksByKeyword } from "../../hooks/useSearchBlocksByKeyword";
 export interface SearchPageItem {
   ZUID: string;
   title: string;
@@ -39,7 +40,7 @@ export interface SearchPageItem {
   updatedAt: string;
   createdAt: string;
   createdByUserZUID: string;
-  data: ContentItem | ContentModel | File | MediaFile | Group;
+  data: ContentItem | BlockModel | ContentModel | File | MediaFile | Group;
   subType?: "folder" | "item";
   langID?: number;
 }
@@ -54,6 +55,7 @@ export const SearchPage: FC = () => {
     isError: isContentFetchingFailed,
   } = useSearchContentQuery({ query: keyword, order: "created", dir: "desc" });
   const [models, setModelKeyword] = useSearchModelsByKeyword();
+  const { blocks, setBlockKeyword } = useSearchBlocksByKeyword();
   const [codeFiles, setCodeFileKeyword] = useSearchCodeFilesByKeywords();
   const [mediaFolders, setMediaFolderKeyword] =
     useSearchMediaFoldersByKeyword();
@@ -69,9 +71,18 @@ export const SearchPage: FC = () => {
   const isLoading = isFetchingContent || isFetchingMedia;
 
   useEffect(() => {
-    setModelKeyword(keyword);
-    setCodeFileKeyword(keyword);
-    setMediaFolderKeyword(keyword);
+    let isMounted = true;
+
+    if (isMounted) {
+      setModelKeyword(keyword);
+      setCodeFileKeyword(keyword);
+      setMediaFolderKeyword(keyword);
+      setBlockKeyword(keyword);
+    }
+
+    return () => {
+      isMounted = false;
+    };
   }, [keyword]);
 
   // Combine results from contents, models, code files, media files and media folders
@@ -104,6 +115,20 @@ export const SearchPage: FC = () => {
           createdAt: model.createdAt,
           createdByUserZUID: model.createdByUserZUID,
           data: model,
+        };
+      }) || [];
+
+    const blockResults: SearchPageItem[] =
+      blocks?.map((block) => {
+        return {
+          ZUID: block?.ZUID,
+          title: block?.label,
+          type: "block",
+          updatedAt: block?.updatedAt,
+          createdAt: block?.createdAt,
+          createdByUserZUID: block?.createdByUserZUID,
+          langID: block?.langID,
+          data: block,
         };
       }) || [];
 
@@ -154,6 +179,7 @@ export const SearchPage: FC = () => {
       ...fileResults,
       ...mediaFileResults,
       ...mediaFolderResults,
+      ...blockResults,
     ];
 
     // Sort the results
@@ -185,6 +211,7 @@ export const SearchPage: FC = () => {
   }, [
     contents,
     models,
+    blocks,
     params,
     codeFiles,
     mediaFiles,
