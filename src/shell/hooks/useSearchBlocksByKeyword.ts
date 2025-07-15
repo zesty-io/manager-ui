@@ -1,28 +1,19 @@
-import { useEffect, useMemo, useState, useCallback } from "react";
-import { ContentItem } from "../services/types";
+import { useEffect, useMemo, useState } from "react";
+import { ContentItem, ContentModel } from "../services/types";
 import {
   useGetContentModelsQuery,
   useGetLangsQuery,
-  useLazyGetContentModelItemsQuery,
   useSearchContentQuery,
 } from "../services/instance";
 import { useGetUsersQuery } from "../services/accounts";
 import { BlockModel } from "../../shell/views/SearchPage/List/Block";
 
-const BLOCK_KEYWORDS = new Set([
-  "block models",
-  "block model",
-  "blocks model",
-  "blocks models",
-]);
-
 type UsersMap = Record<string, string>;
-type ModelsMap = Record<string, BlockModel>;
 type LanguageMap = Record<string, { code: string }>;
 
 type SearchResult = {
   blocks: BlockModel[];
-  setSearchTerm: (term: string) => void;
+  setBlockKeyword: (term: string) => void;
   isLoading: boolean;
 };
 
@@ -36,51 +27,60 @@ const toProperCase = (str?: string): string => {
     .trim();
 };
 
-const parseBlockVariant = (
-  content: ContentItem,
-  model: BlockModel | undefined,
-  usersMap: UsersMap,
-  languageMap: LanguageMap
-): BlockModel => {
-  const langValue = languageMap[content?.meta?.langID]?.code || null;
-  const titlePrefix = !!langValue ? `(${langValue}) ` : "";
-  const blockLabel =
-    content?.web?.metaTitle || content?.web?.metaLinkText || "";
-  return {
-    ...content?.meta,
-    ZUID: content?.meta?.ZUID || "",
-    label: blockLabel,
-    contentModelZUID: content?.meta?.contentModelZUID || "",
-    contentModelLabel: model?.label || model?.metaTitle || "",
-    createdByUserZUID:
-      content?.web?.createdByUserZUID || content?.meta?.createdByUserZUID || "",
-    createdByUserName: toProperCase(
-      usersMap[content?.web?.createdByUserZUID] ||
-        usersMap[content?.meta?.createdByUserZUID]
-    ),
-    updatedAt: content?.meta?.updatedAt || content?.web?.updatedAt || "",
-    langID: content?.meta?.langID || null,
-    lang: languageMap[content?.meta?.langID]?.code || null,
-    type: "block",
-    isVariant: true,
-    title: `${titlePrefix}${blockLabel}`,
-  };
+const processData = (contentItems: ContentItem[], models: ContentModel[]) => {
+  const modelsMap = Object.fromEntries(
+    models.map((model) => [model.ZUID, model])
+  );
+
+  const processedModels = models.map((model) => ({
+    ZUID: model.ZUID,
+    label: model.label,
+    type: model.type,
+    contentModelLabel: null,
+    contentModelZUID: null,
+    updatedAt: model.updatedAt,
+    createdAt: model.createdAt,
+    createdByUserZUID: model.createdByUserZUID,
+    langID: null,
+  }));
+
+  const processedContent = contentItems.map((item) => {
+    const parentModel = modelsMap[item?.meta?.contentModelZUID];
+    return {
+      ZUID: item?.meta?.ZUID,
+      label: item?.web?.metaTitle || item?.web?.metaLinkText,
+      type: parentModel?.type,
+      contentModelZUID: item?.meta?.contentModelZUID,
+      contentModelLabel: parentModel?.label || parentModel?.metaTitle,
+      updatedAt: item?.meta?.updatedAt || item?.web?.updatedAt,
+      createdAt: item?.meta?.createdAt || item?.web?.createdAt,
+      createdByUserZUID:
+        item?.meta?.createdByUserZUID || item?.web?.createdByUserZUID,
+      langID: item?.meta?.langID,
+    };
+  });
+
+  return [...processedModels, ...processedContent];
 };
 
 export const useSearchBlocksByKeyword = (): SearchResult => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [blocks, setBlocks] = useState<BlockModel[]>([]);
 
-  const [isLoadingVariants, setIsLoadingVariants] = useState(false);
-  const [blockModels, setBlockModels] = useState<BlockModel[]>([]);
-  const [blockVariants, setBlockVariants] = useState<BlockModel[]>([]);
-
-  const { data: models = [], isLoading: isLoadingModels } =
+  const { data: modelsRaw, isLoading: isLoadingModels } =
     useGetContentModelsQuery();
+  const { data: contentsRaw, isLoading: isLoadingContents } =
+    useSearchContentQuery({ query: "", limit: 10000 });
+
   const { data: users = [], isLoading: isLoadingUsers } = useGetUsersQuery();
   const { data: languages = [], isLoading: isLoadingLanguages } =
     useGetLangsQuery({});
 
-  const [getBlockItem] = useLazyGetContentModelItemsQuery();
+  const isLoading =
+    isLoadingModels ||
+    isLoadingContents ||
+    isLoadingUsers ||
+    isLoadingLanguages;
 
   const allUsers = useMemo<UsersMap>(
     () =>
@@ -104,11 +104,6 @@ export const useSearchBlocksByKeyword = (): SearchResult => {
     [users]
   );
 
-  const modelsMap = useMemo<ModelsMap>(
-    () => Object.fromEntries(models.map((model) => [model.ZUID, model])),
-    [models]
-  );
-
   const languageMap = useMemo<LanguageMap>(
     () => Object.fromEntries(languages.map((lang) => [lang.ID, lang])),
     [languages]
@@ -117,127 +112,42 @@ export const useSearchBlocksByKeyword = (): SearchResult => {
   const normalizedSearch = searchTerm.toLowerCase()?.trim();
   const matchedUserZUID = allUsers[normalizedSearch];
 
-  const { data: contents, isFetching: isFetchingContent } =
-    useSearchContentQuery(
-      { query: matchedUserZUID || normalizedSearch },
-      { skip: !matchedUserZUID && !normalizedSearch }
-    );
+  const parsedBlocks = useMemo(() => {
+    if (isLoading) return [];
 
-  const fetchAndProcessVariants = useCallback(
-    async (blocks: BlockModel[]) => {
-      let isMounted = true;
-      setIsLoadingVariants(true);
+    const parsedData = processData(contentsRaw, modelsRaw);
 
-      try {
-        const variants = await Promise.all(
-          blocks.map((block) =>
-            getBlockItem({ modelZUID: block.ZUID }).then(
-              (res) =>
-                res.data?.map((item) =>
-                  parseBlockVariant(item, block, usersMap, languageMap)
-                ) || []
-            )
-          )
-        );
-
-        if (isMounted) {
-          setBlockVariants(variants.flat());
-        }
-      } finally {
-        if (isMounted) {
-          setIsLoadingVariants(false);
-        }
-      }
-
-      return () => {
-        isMounted = false;
-      };
-    },
-    [getBlockItem, usersMap, languageMap]
-  );
-
-  const isLoading =
-    isLoadingModels ||
-    isLoadingUsers ||
-    isLoadingLanguages ||
-    isLoadingVariants ||
-    isFetchingContent;
+    return parsedData
+      ?.filter((item) => item?.type === "block")
+      ?.map((item) => {
+        return {
+          ...item,
+          lang: languageMap?.[item?.langID]?.code,
+          createdByUserName: !usersMap?.[item?.createdByUserZUID]
+            ? ""
+            : toProperCase(usersMap?.[item?.createdByUserZUID]),
+          title: item?.label,
+        };
+      });
+  }, [isLoading, contentsRaw, modelsRaw, languageMap, usersMap]);
 
   useEffect(() => {
-    let isMounted = true;
-    if (!normalizedSearch) {
-      if (isMounted) {
-        setBlockModels([]);
-        setBlockVariants([]);
-      }
-      return;
-    }
+    if (isLoading) return;
+    const filteredBlocks = parsedBlocks?.filter((item) => {
+      const searchString = `${item?.ZUID}\n
+        ${item?.label}\n
+        ${item?.createdByUserName}\n
+        ${item?.title}\n
+        ${item?.contentModelZUID}\n
+        ${item?.type}\n${item?.contentModelLabel}}`?.toLowerCase();
+      return searchString?.includes(normalizedSearch);
+    });
 
-    if (isLoadingModels || isLoadingUsers || isLoadingLanguages) return;
-
-    const matchedUserZUID = allUsers[normalizedSearch];
-    const isBlockKeyword = BLOCK_KEYWORDS.has(normalizedSearch);
-
-    const filteredBlocks: BlockModel[] = models
-      .filter((item) => item?.type === "block")
-      .map((model: BlockModel) => ({
-        ...model,
-        createdByUserName: `${toProperCase(usersMap[model.createdByUserZUID])}`,
-        isVariant: false,
-      }))
-      ?.filter(
-        (model: BlockModel) =>
-          (model?.type === "block" &&
-            model.label?.toLowerCase().includes(normalizedSearch)) ||
-          model.ZUID === normalizedSearch ||
-          (isBlockKeyword && model.type === "block") ||
-          model.createdByUserZUID === normalizedSearch ||
-          model.createdByUserZUID === matchedUserZUID ||
-          usersMap[model.createdByUserZUID]?.includes(normalizedSearch)
-      );
-
-    if (isMounted) {
-      setBlockModels(filteredBlocks);
-    }
-    if (contents?.length) {
-      const variantsFromSearch = contents?.map((item) => ({
-        ...parseBlockVariant(
-          item,
-          modelsMap[item.meta?.contentModelZUID],
-          usersMap,
-          languageMap
-        ),
-        createdByUserName: `${toProperCase(
-          usersMap[item?.meta?.createdByUserZUID]
-        )}`,
-      }));
-      if (isMounted) {
-        setBlockVariants(variantsFromSearch);
-      }
-    } else if (filteredBlocks.length) {
-      fetchAndProcessVariants(filteredBlocks);
-    } else if (isMounted) {
-      setBlockVariants([]);
-    }
-
-    return () => {
-      isMounted = false;
-    };
-  }, [
-    normalizedSearch,
-    models,
-    contents,
-    modelsMap,
-    usersMap,
-    languageMap,
-    allUsers,
-    isLoading,
-    fetchAndProcessVariants,
-  ]);
-
+    setBlocks(filteredBlocks);
+  }, [parsedBlocks, normalizedSearch, matchedUserZUID, isLoading]);
   return {
-    blocks: [...blockModels, ...blockVariants],
-    setSearchTerm,
+    blocks: blocks,
+    setBlockKeyword: setSearchTerm,
     isLoading,
   };
 };

@@ -5,22 +5,18 @@ import moment from "moment-timezone";
 
 import { ContentModel } from "../../../services/types";
 import { SearchListItem } from "./SearchListItem";
-import { useGetAuditsQuery } from "../../../services/instance";
 
 export type BlockModel = Partial<ContentModel> & {
   ZUID: string;
   label?: string;
   contentModelZUID?: string;
   contentModelLabel?: string;
-  masterZUID?: string;
-  parentZUID?: string;
   createdByUserZUID?: string;
   createdByUserName?: string;
   createdAt?: string;
   updatedAt?: string;
   lang?: string;
   langID?: number;
-  isVariant?: boolean;
   title?: string;
 };
 
@@ -35,14 +31,11 @@ export const Block: FC<Block> = ({
   style,
   loading: parentIsLoading = false,
 }) => {
-  const { data: modelAudit, isLoading: loadingModelAudit } = useGetAuditsQuery(
-    { affectedZUID: data?.ZUID, limit: 1, dir: "desc", order: "created" },
-    { skip: !data?.ZUID }
-  );
+  const isVariant = data?.type === "block" && !!data?.contentModelZUID;
 
   const chips = useMemo(() => {
     const preFix =
-      !!data?.isVariant && !!data?.contentModelLabel
+      !!isVariant && !!data?.contentModelLabel
         ? `${data?.contentModelLabel} • `
         : "";
 
@@ -52,14 +45,14 @@ export const Block: FC<Block> = ({
     return `${preFix}Block • created ${moment(
       data?.createdAt
     )?.fromNow()}${userName}`;
-  }, [modelAudit]);
+  }, [data]);
 
   const titlePrefix = !!data?.lang ? `(${data?.lang}) ` : "";
-  const urlPath = data?.isVariant
+  const urlPath = isVariant
     ? `${data?.contentModelZUID}/${data?.ZUID}`
     : data?.ZUID;
 
-  const loading = loadingModelAudit || parentIsLoading;
+  const loading = parentIsLoading;
 
   return (
     <SearchListItem

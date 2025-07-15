@@ -128,7 +128,7 @@ export const GlobalSearch = () => {
     isFetchingMediaSearchResults ||
     isFetchingContentSearchResults;
 
-  const { blocks, setSearchTerm } = useSearchBlocksByKeyword();
+  const { blocks, setBlockKeyword } = useSearchBlocksByKeyword();
 
   const suggestions: Suggestion[] = useMemo(() => {
     // Content data needs to be reset to [] when api call fails
@@ -169,10 +169,10 @@ export const GlobalSearch = () => {
       blocks?.map((block) => {
         return {
           type: "block",
-          ZUID: block.ZUID,
-          title: block.label,
-          updatedAt: block.updatedAt,
-          url: `/blocks/${block.ZUID}`,
+          ZUID: block?.ZUID,
+          title: block?.label,
+          updatedAt: block?.updatedAt,
+          url: `/blocks/${block?.ZUID}`,
         };
       }) || [];
 
@@ -315,7 +315,7 @@ export const GlobalSearch = () => {
     setModelKeyword(apiQueryTerm);
     setFileKeyword(apiQueryTerm);
     setMediaFolderKeyword(apiQueryTerm);
-    setSearchTerm(apiQueryTerm);
+    setBlockKeyword(apiQueryTerm);
   }, [apiQueryTerm]);
 
   useEffect(() => {

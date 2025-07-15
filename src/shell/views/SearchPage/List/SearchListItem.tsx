@@ -23,7 +23,7 @@ export const SearchListItem: FC<SearchListItem> = ({
   return (
     <Box
       component={Link}
-      to={url}
+      to={url || ""}
       style={style}
       sx={{
         boxSizing: "border-box",
@@ -107,7 +107,7 @@ export const SearchListItem: FC<SearchListItem> = ({
             )}
           </Typography>
         </Stack>
-        <LinksContainer url={url} />
+        <LinksContainer url={url || ""} />
       </Stack>
     </Box>
   );

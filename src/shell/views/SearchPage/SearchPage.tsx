@@ -55,7 +55,7 @@ export const SearchPage: FC = () => {
     isError: isContentFetchingFailed,
   } = useSearchContentQuery({ query: keyword, order: "created", dir: "desc" });
   const [models, setModelKeyword] = useSearchModelsByKeyword();
-  const { blocks, setSearchTerm } = useSearchBlocksByKeyword();
+  const { blocks, setBlockKeyword } = useSearchBlocksByKeyword();
   const [codeFiles, setCodeFileKeyword] = useSearchCodeFilesByKeywords();
   const [mediaFolders, setMediaFolderKeyword] =
     useSearchMediaFoldersByKeyword();
@@ -77,7 +77,7 @@ export const SearchPage: FC = () => {
       setModelKeyword(keyword);
       setCodeFileKeyword(keyword);
       setMediaFolderKeyword(keyword);
-      setSearchTerm(keyword);
+      setBlockKeyword(keyword);
     }
 
     return () => {
