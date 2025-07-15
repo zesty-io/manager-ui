@@ -61,12 +61,15 @@ export const NavTree: FC<Readonly<Props>> = ({
   useEffect(() => {
     // This observer will remove the "hovered" class from tree items when the menu modal is closed
     const observer = new MutationObserver(() => {
-      const menuModalElement = document.querySelector(
+      const schemaMoreMenu = document.querySelector(
         "[data-cy='schema-more-menu']"
+      );
+      const mediaMoreMenu = document.querySelector(
+        "[data-cy='media-folder-menu']"
       );
       const hoveredTreeItems = document.querySelectorAll("div.hovered");
 
-      if (!menuModalElement && hoveredTreeItems.length > 0) {
+      if (!schemaMoreMenu && !mediaMoreMenu && hoveredTreeItems.length > 0) {
         hoveredTreeItems.forEach((item) => {
           item.classList.remove("hovered");
         });
