@@ -13,7 +13,7 @@ import {
   CodeRounded,
   ImageRounded,
 } from "@mui/icons-material";
-import { Database } from "@zesty-io/material";
+import { Database, Block } from "@zesty-io/material";
 import { ResourceType } from "../../../services/types";
 
 import { FilterButton } from "../../../components/Filters";
@@ -39,6 +39,10 @@ const RESOURCE_TYPE_OPTIONS: ResourceTypeOptions = {
   media: {
     text: "Media",
     icon: ImageRounded,
+  },
+  block: {
+    text: "Blocks",
+    icon: Block as SvgIconComponent,
   },
 };
 
