@@ -43,8 +43,8 @@ const SelectCard: FC<SelectCardProps> = ({
       elevation={0}
       sx={{
         py: 1,
-        pl: "54px",
-        pr: "58px",
+        pl: 6.75,
+        pr: 7.25,
         width: "100%",
         height: "fit-content",
         borderRadius: 0,
@@ -57,16 +57,11 @@ const SelectCard: FC<SelectCardProps> = ({
         alignItems: "center",
         borderBottom: "1px solid",
         borderColor: "border",
-        boxShadow: "none",
         backgroundColor: "background.paper",
-
         "&.select-card": {
           backgroundColor: (theme) => alpha(theme.palette.primary.light, 0.04),
           boxShadow: (theme) =>
             `0px -2px 0px 0px ${theme.palette.primary.light} inset`,
-        },
-        "& *": {
-          boxSizing: "border-box",
         },
       }}
     >
@@ -84,7 +79,7 @@ const SelectCard: FC<SelectCardProps> = ({
             variant="rounded"
             height="20px"
             width="20px"
-            sx={{ m: "8px" }}
+            sx={{ m: 1 }}
           />
         ) : (
           <Checkbox
@@ -109,7 +104,7 @@ const SelectCard: FC<SelectCardProps> = ({
         overflow="hidden"
         sx={{
           "& .media-thumbnail": {
-            borderRadius: "8px",
+            borderRadius: 1,
           },
         }}
       >

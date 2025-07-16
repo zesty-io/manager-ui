@@ -17,7 +17,6 @@ type IntegrationFieldProps = {
   name: string;
   label: string;
   description?: string;
-  formType: FormTypes;
   required?: boolean;
   onChange?: ({
     inputName,
@@ -28,8 +27,6 @@ type IntegrationFieldProps = {
   }) => void;
   error?: string | [string, string][] | null;
   isLoading?: boolean;
-  integrationFieldApiConfig?: IntegrationFieldApiConfig | null;
-  integrationFieldDisplay?: IntegrationFieldDisplay | null;
 };
 
 const ConfigureIntegration: FC<IntegrationFieldProps> = ({
@@ -39,63 +36,44 @@ const ConfigureIntegration: FC<IntegrationFieldProps> = ({
   onChange,
   required,
   error,
-  formType = "configure",
   isLoading = false,
-  integrationFieldApiConfig = null,
-  integrationFieldDisplay = null,
 }) => {
-  const [defaultLoaded, setDefaultLoaded] = useState(false);
-
   const {
     isFormOpen,
-    openForm,
+    setIsFormOpen,
     isConnected,
     setActiveStep,
-    setEndpoint,
-    setHeaders,
-    setKeyPaths,
-    setDisplayType,
-    apiConfig,
-    displayConfig,
+    config,
+    endpoint,
+    displayType,
   } = useIntegrationField();
+  const [defaultLoaded, setDefaultLoaded] = useState(false);
+  const isConfigured = isConnected && !!endpoint && !!displayType;
 
   useEffect(() => {
-    onChange({
-      inputName: "integrationFieldApiConfig",
-      value: apiConfig,
-    });
-  }, [apiConfig]);
+    if (config?.status === "completed") {
+      onChange({
+        inputName: "integrationFieldApiConfig",
+        value: config?.api,
+      });
 
-  useEffect(() => {
-    onChange({
-      inputName: "integrationFieldDisplay",
-      value: displayConfig,
-    });
-  }, [displayConfig]);
-
-  useEffect(() => {
-    if (isLoading || defaultLoaded) return;
-    setEndpoint(integrationFieldApiConfig?.endpoint || "");
-    setHeaders(integrationFieldApiConfig?.headers || null);
-    setKeyPaths(integrationFieldDisplay?.keyPaths || null);
-    setDisplayType(integrationFieldDisplay?.type || null);
-    setDefaultLoaded(true);
-  }, [
-    integrationFieldApiConfig,
-    integrationFieldDisplay,
-    isLoading,
-    defaultLoaded,
-  ]);
+      onChange({
+        inputName: "integrationFieldDisplay",
+        value: config?.display,
+      });
+    } else {
+    }
+  }, [config]);
 
   return (
     <FieldWrapper
       name={name}
-      label={!!isConnected && label}
-      description={!!isConnected && description}
-      isRequired={!!isConnected && required}
+      label={!!isConfigured && label}
+      description={!!isConfigured && description}
+      isRequired={!!isConfigured && required}
       error={error as string}
     >
-      {!!isConnected && (
+      {!!isConfigured && (
         <Paper
           elevation={0}
           variant="outlined"
@@ -132,7 +110,7 @@ const ConfigureIntegration: FC<IntegrationFieldProps> = ({
               data-cy="integrationApiUrl"
               size="small"
               readOnly
-              value={apiConfig?.endpoint || ""}
+              value={endpoint || ""}
               sx={{ flexGrow: 1 }}
               slotProps={{
                 input: {
@@ -167,7 +145,7 @@ const ConfigureIntegration: FC<IntegrationFieldProps> = ({
               data-cy="integrationDisplayType"
               size="small"
               readOnly
-              value={displayConfig?.type || ""}
+              value={displayType || ""}
               sx={{ flexGrow: 1 }}
               slotProps={{
                 input: {
@@ -189,14 +167,14 @@ const ConfigureIntegration: FC<IntegrationFieldProps> = ({
         size="small"
         fullWidth={false}
         startIcon={
-          !!isConnected ? <AutorenewRoundedIcon /> : <LinkRoundedIcon />
+          !!isConfigured ? <AutorenewRoundedIcon /> : <LinkRoundedIcon />
         }
         onClick={() => {
           setActiveStep(1);
-          openForm();
+          setIsFormOpen(true);
         }}
       >
-        {!!isConnected ? "Reconfigure" : "Connect to API"}
+        {!!isConfigured ? "Reconfigure" : "Connect to API"}
       </Button>
 
       {isFormOpen && <IntegrationForm />}

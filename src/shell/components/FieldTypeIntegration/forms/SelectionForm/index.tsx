@@ -19,15 +19,22 @@ import { generateItemId, getKeyValue } from "../../utils";
 import SelectCard from "../../DisplayCard/SelectCard";
 import { NoResults } from "../../../../../apps/schema/src/app/components/NoResults";
 
-const SelectionForm = () => {
+const SelectionForm = ({
+  open,
+  onClose,
+  selectedIds,
+}: {
+  open: boolean;
+  onClose: () => void;
+  selectedIds: string[];
+}) => {
   const searchInputRef = useRef(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [jsonViewData, setJsonViewData] = useState(null);
   const [viewerOpen, setViewerOpen] = useState(false);
+
   const {
     isFetching,
-    formSelectorOpen,
-    setFormSelectorOpen,
     maxItems,
     keyPaths,
     displayType,
@@ -37,7 +44,7 @@ const SelectionForm = () => {
   } = useIntegrationField();
 
   const [selectedItemIds, setSelectedItemIds] = useState<string[] | null>(
-    !value?.length ? [] : value?.map((item: any) => item?._itemId)
+    selectedIds || []
   );
 
   const maxItemsSelected = selectedItemIds?.length >= maxItems;
@@ -85,7 +92,7 @@ const SelectionForm = () => {
     );
     setSearchTerm("");
     setValue(!selectedItemsData?.length ? null : selectedItemsData);
-    setFormSelectorOpen(false);
+    onClose();
   };
 
   const openViewer = (data: any) => {
@@ -96,8 +103,8 @@ const SelectionForm = () => {
   return (
     <Dialog
       fullWidth
-      open={formSelectorOpen}
-      onClose={() => setFormSelectorOpen(false)}
+      open={open}
+      onClose={onclose}
       slotProps={{
         paper: {
           style: {
@@ -160,7 +167,7 @@ const SelectionForm = () => {
               </Button>
             </>
           )}
-          <IconButton size="small" onClick={() => setFormSelectorOpen(false)}>
+          <IconButton size="small" onClick={onClose}>
             <CloseIcon />
           </IconButton>
         </Box>
@@ -211,7 +218,7 @@ const SelectionForm = () => {
           sx={{
             width: "100%",
             minHeight: `calc(100% - 70px)`,
-            borderRadius: "8px",
+            borderRadius: 1,
             overflow: "hidden",
             boxSizing: "border-box",
             position: "relative",
@@ -220,7 +227,7 @@ const SelectionForm = () => {
             "& .list-container > div": {
               padding: "0 32px 16px 32px",
               width: "100%",
-              borderRadius: "8px",
+              borderRadius: 1,
               position: "relative",
               outline: "1px solid",
               outlineColor: "border",

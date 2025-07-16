@@ -82,50 +82,68 @@ const ConnectToApi = () => {
 
   const {
     setActiveStep,
+    activeStep,
     closeForm,
-    queryApi,
+    fetchApi,
     endpoint,
     setEndpoint,
     headers,
     setHeaders,
     setApiData,
-    setAutoRequest,
+
+    setIsConnected,
+    setDisplayType,
+    setKeyPaths,
   } = useIntegrationField();
 
-  const [endpointLocal, setEndpointLocal] = useState<string>(endpoint || "");
+  const [endpointLocal, setEndpointLocal] = useState<string>(endpoint);
 
   const [headersLocal, setHeadersLocal] = useState<
     { key: string; value: string }[] | null
-  >(null);
+  >(keyValuePairsToArray(headers));
+
+  const [apiDataLocal, setApiDataLocal] = useState(null);
 
   const handleApiConnect = useCallback(async () => {
-    setAutoRequest(false);
     setReqAborted(false);
     setStatus("connecting");
-    const reqHeaders = arrayToKeyValuePairs(headersLocal);
+
+    const headersWithValues = headersLocal.filter(
+      (i) => i.value !== "" && !i.value
+    );
+    const reqHeaders = !headersWithValues?.length
+      ? null
+      : arrayToKeyValuePairs(headersWithValues);
     try {
-      const { status, data } = await queryApi({
+      const { status, data } = await fetchApi({
         endpoint: endpointLocal,
         headers: reqHeaders,
       });
 
       if (status === "success") {
-        setApiData(data);
+        setApiDataLocal(data);
         setStatus("success");
+        setIsConnected(true);
       } else {
         throw new Error("Failed to connect");
       }
     } catch (error) {
-      setApiData(null);
+      setApiDataLocal(null);
       setStatus("failed");
+      setIsConnected(false);
     }
   }, [endpointLocal, headersLocal]);
 
   const handleNext = () => {
-    if (!!headersLocal?.length) {
-      const reqHeaders = arrayToKeyValuePairs(headersLocal);
-      setHeaders(reqHeaders);
+    if (endpointLocal !== endpoint) {
+      setDisplayType(null);
+      setKeyPaths(null);
     }
+    const reqHeaders = !headersLocal?.length
+      ? null
+      : arrayToKeyValuePairs(headersLocal);
+    setApiData(apiDataLocal);
+    setHeaders(reqHeaders);
     setEndpoint(endpointLocal);
     setReqAborted(false);
     setActiveStep(2);
@@ -134,13 +152,8 @@ const ConnectToApi = () => {
     setReqAborted(true);
     setStatus(null);
     setActiveStep(1);
+    setIsConnected(false);
   };
-
-  useEffect(() => {
-    if (!headers || (!!headers && !Object.keys(headers)?.length)) return;
-    const convertedHeaders = keyValuePairsToArray(headers);
-    setHeadersLocal(convertedHeaders);
-  }, [headers]);
 
   return (
     <FormWrapper width="480px" height="600px">
@@ -249,7 +262,9 @@ const ConnectToApi = () => {
                     placeholder="Key"
                     value={headersLocal?.[i]?.key || ""}
                     onChange={(e) => {
-                      const newHeaders = headersLocal ? [...headersLocal] : [];
+                      const newHeaders = headersLocal
+                        ? [...headersLocal]
+                        : null;
                       newHeaders[i] = {
                         ...newHeaders[i],
                         key: e.target.value,

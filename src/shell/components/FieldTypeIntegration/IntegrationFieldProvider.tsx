@@ -1,6 +1,7 @@
 import {
   createContext,
   ReactNode,
+  useCallback,
   useContext,
   useEffect,
   useState,
@@ -13,13 +14,26 @@ import {
   IntegrationFieldApiConfig,
   IntegrationFieldDisplay,
 } from "../../services/types";
+import { generateItemId } from "./utils";
 
 interface ApiResponse<T> {
   status: "success" | "error";
   data: T;
 }
 
-const queryApi = async <T = unknown,>({
+export type IntegrationDefaultValues = {
+  value: any[];
+  display: IntegrationFieldDisplay | null;
+  config: IntegrationFieldApiConfig | null;
+};
+
+export type IntegrationConfig = {
+  status: "completed" | "incomplete";
+  display: IntegrationFieldDisplay | null;
+  api: IntegrationFieldApiConfig | null;
+};
+
+const fetchApi = async <T = unknown,>({
   endpoint,
   headers,
 }: {
@@ -66,11 +80,8 @@ const queryApi = async <T = unknown,>({
 };
 
 type IntegrationFieldContextType = {
-  openForm: () => void;
-  closeForm: () => void;
   isFetching: boolean;
-  fetchApi: () => void;
-  queryApi: <T = unknown>({
+  fetchApi: <T = unknown>({
     endpoint,
     headers,
   }: {
@@ -78,24 +89,14 @@ type IntegrationFieldContextType = {
     headers?: IntegrationRequestHeaders | null;
   }) => Promise<ApiResponse<T>>;
   isFormOpen: boolean;
+  setIsFormOpen: (isFormOpen: boolean) => void;
   activeStep: number;
   setActiveStep: (step: number) => void;
   isConnected: boolean;
   setIsConnected: (isConnected: boolean) => void;
   connectionError: boolean;
   setConnectionError: (connectionError: boolean) => void;
-  formSelectorOpen: boolean;
-  setFormSelectorOpen: (formSelectorOpen: boolean) => void;
-  removeItem: (id: string) => void;
-  jsonViewerIsOpen: boolean;
-  setJsonViewerIsOpen: (jsonViewerIsOpen: boolean) => void;
-  jsonData: any | null;
-  setJsonData: (jsonData: any | null) => void;
   maxItems: number | null;
-  apiConfig: IntegrationFieldApiConfig;
-  setApiConfig: (config: IntegrationFieldApiConfig) => void;
-  displayConfig: IntegrationFieldDisplay;
-  setDisplayConfig: (display: IntegrationFieldDisplay) => void;
   endpoint: string;
   setEndpoint: (endpoint: string) => void;
   headers: IntegrationRequestHeaders | null;
@@ -108,8 +109,11 @@ type IntegrationFieldContextType = {
   setValue: (value: any) => void;
   apiData: any | null;
   setApiData: (data: any) => void;
-  autoRequest: boolean;
-  setAutoRequest: (autoRequest: boolean) => void;
+  defaultValues: IntegrationDefaultValues | null;
+  triggerFetch: () => void;
+  config: IntegrationConfig | null;
+  closeForm: () => void;
+  save: (data: IntegrationConfig) => void;
 };
 
 export const IntegrationFieldContext =
@@ -117,48 +121,48 @@ export const IntegrationFieldContext =
 
 const IntegrationFieldProvider = ({
   maxItems,
-  isLoading = false,
+  defaultValues,
   children,
 }: {
   maxItems: number | null;
   isLoading: boolean;
+  formType: "configure" | "select";
+  defaultValues: IntegrationDefaultValues;
   children: ReactNode;
 }) => {
   const [activeStep, setActiveStep] = useState(1);
   const [isFetching, setIsFetching] = useState(false);
   const [connectionError, setConnectionError] = useState<boolean>(false);
-
   const [isConnected, setIsConnected] = useState(false);
-  const [jsonViewerIsOpen, setJsonViewerIsOpen] = useState(false);
-
-  const [formSelectorOpen, setFormSelectorOpen] = useState(false);
-  const [jsonData, setJsonData] = useState<any | null>(null);
+  const [config, setConfig] = useState<IntegrationConfig | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
-
-  const [autoRequest, setAutoRequest] = useState(true);
-  const [value, setValue] = useState<any[] | undefined>(undefined);
-  const [endpoint, setEndpoint] = useState<string>("");
-  const [headers, setHeaders] = useState<IntegrationRequestHeaders | null>(
-    null
+  const [value, setValue] = useState<any[] | undefined>(
+    !defaultValues?.value?.length
+      ? undefined
+      : defaultValues?.value?.map((item: any) => ({
+          ...item,
+          _itemId: generateItemId(item, defaultValues?.display?.keyPaths),
+        }))
   );
-  const [keyPaths, setKeyPaths] = useState<IntegrationKeyPaths | null>(null);
-  const [displayType, setDisplayType] = useState<IntegrationTypes | null>(null);
+  const [endpoint, setEndpoint] = useState<string>(
+    defaultValues?.config?.endpoint || ""
+  );
+  const [headers, setHeaders] = useState<IntegrationRequestHeaders | null>(
+    defaultValues?.config?.headers || null
+  );
+  const [keyPaths, setKeyPaths] = useState<IntegrationKeyPaths | null>(
+    defaultValues?.display?.keyPaths || null
+  );
+  const [displayType, setDisplayType] = useState<IntegrationTypes | null>(
+    defaultValues?.display?.type || null
+  );
 
   const [apiData, setApiData] = useState<any | null>(null);
 
-  const [apiConfig, setApiConfig] = useState<IntegrationFieldApiConfig>({
-    endpoint: "",
-    headers: null,
-  });
-  const [displayConfig, setDisplayConfig] = useState<IntegrationFieldDisplay>({
-    type: null,
-    keyPaths: null,
-  });
-
-  const sendApiQueryRequest = async () => {
+  const triggerFetch = async () => {
     setIsFetching(true);
 
-    const { status, data } = await queryApi({
+    const { status, data } = await fetchApi({
       endpoint: endpoint,
       headers: headers,
     });
@@ -166,84 +170,64 @@ const IntegrationFieldProvider = ({
     if (status === "success") {
       setApiData(data);
       setConnectionError(false);
+      setIsConnected(true);
     } else {
       setApiData(null);
       setConnectionError(true);
+      setIsConnected(false);
     }
     setIsFetching(false);
   };
 
-  const removeItem = (itemId: string) => {
-    setValue((prev) => {
-      const newItems = prev.filter((i) => i?._itemId !== itemId);
-      setValue(!newItems?.length ? [] : newItems);
-      return newItems;
-    });
-  };
+  const save = useCallback(
+    (data?: IntegrationConfig) => {
+      const completed =
+        !!endpoint && !!keyPaths && !!displayType && !!isConnected;
 
-  const openForm = () => {
-    setIsFormOpen(true);
-  };
-
-  const closeForm = () => {
-    setIsFormOpen(false);
-  };
-
-  useEffect(() => {
-    if (
-      !endpoint ||
-      !!isLoading ||
-      !!apiData ||
-      !!connectionError ||
-      !autoRequest
-    )
-      return;
-    sendApiQueryRequest();
-  }, [endpoint, isLoading, apiData, connectionError, autoRequest]);
+      const configRaw: IntegrationConfig = !data
+        ? {
+            status: completed ? "completed" : "incomplete",
+            api: {
+              endpoint,
+              headers,
+            },
+            display: {
+              type: displayType,
+              keyPaths,
+            },
+          }
+        : data;
+      setConfig(configRaw);
+    },
+    [endpoint, keyPaths, displayType, isConnected, isFormOpen]
+  );
 
   useEffect(() => {
-    if (!!keyPaths && !!endpoint && displayType) {
-      setApiConfig({
-        endpoint: endpoint,
-        headers: headers,
-      });
-
-      setDisplayConfig({
-        type: displayType,
-        keyPaths: keyPaths,
-      });
-
+    if (!!endpoint && !!displayType) {
       setIsConnected(true);
     }
-  }, [keyPaths, endpoint, headers, displayType]);
+  }, [endpoint, keyPaths, displayType, isConnected, isFormOpen]);
+
+  const closeForm = () => {
+    save();
+    setIsFormOpen(false);
+  };
 
   return (
     <IntegrationFieldContext.Provider
       value={{
         isFormOpen,
-        openForm,
-        closeForm,
+        setIsFormOpen,
         activeStep,
         setActiveStep: (step) => setActiveStep(step),
         isConnected,
         setIsConnected: (isConnected) => setIsConnected(isConnected),
-        formSelectorOpen,
-        setFormSelectorOpen,
-        removeItem,
-        jsonViewerIsOpen,
-        setJsonViewerIsOpen,
-        jsonData,
-        setJsonData,
-        queryApi: queryApi,
-        fetchApi: sendApiQueryRequest,
+        fetchApi,
+        triggerFetch,
         isFetching,
         connectionError,
         setConnectionError,
         maxItems,
-        apiConfig,
-        setApiConfig,
-        displayConfig,
-        setDisplayConfig,
         endpoint,
         setEndpoint,
         headers,
@@ -256,8 +240,10 @@ const IntegrationFieldProvider = ({
         setValue,
         apiData,
         setApiData,
-        autoRequest,
-        setAutoRequest,
+        defaultValues,
+        config,
+        save,
+        closeForm,
       }}
     >
       {children}

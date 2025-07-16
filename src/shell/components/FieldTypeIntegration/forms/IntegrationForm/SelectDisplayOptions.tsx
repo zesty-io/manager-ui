@@ -29,8 +29,15 @@ const SelectDisplayOptions = () => {
   const [recommendedType, setRecommendedType] =
     useState<IntegrationTypes | null>(null);
 
-  const { setActiveStep, closeForm, endpoint, displayType, setDisplayType } =
-    useIntegrationField();
+  const {
+    activeStep,
+    setActiveStep,
+    closeForm,
+    endpoint,
+    displayType,
+    setDisplayType,
+    setKeyPaths,
+  } = useIntegrationField();
 
   const [displayTypeLocal, setDisplayTypeLocal] =
     useState<IntegrationTypes | null>(displayType || null);
@@ -44,6 +51,9 @@ const SelectDisplayOptions = () => {
   );
 
   const handleNext = () => {
+    if (displayType !== displayTypeLocal) {
+      setKeyPaths(null);
+    }
     setDisplayType(displayTypeLocal);
     setActiveStep(3);
   };
@@ -283,13 +293,7 @@ const SelectDisplayOptions = () => {
           borderColor: "border",
         }}
       >
-        <Button
-          variant="outlined"
-          color="inherit"
-          onClick={() => {
-            closeForm();
-          }}
-        >
+        <Button variant="outlined" color="inherit" onClick={closeForm}>
           Cancel
         </Button>
         <Button

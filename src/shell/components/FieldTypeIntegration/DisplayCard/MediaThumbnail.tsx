@@ -1,40 +1,58 @@
-import { Box } from "@mui/material";
+import { Box, Skeleton } from "@mui/material";
 import { IntegrationTypes } from "../../../services/types";
 import AddPhotoAlternateRoundedIcon from "@mui/icons-material/AddPhotoAlternateRounded";
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 import VideoCallRoundedIcon from "@mui/icons-material/VideoCallRounded";
 import { useState } from "react";
+import { OverridableStringUnion } from "@mui/types";
 
 const MediaThumbnail = ({
   url,
   type,
   showPlayIcon = false,
+  isLoading = false,
+  variant = "rounded",
 }: {
   url: string;
   type: IntegrationTypes;
   showPlayIcon?: boolean;
+  isLoading?: boolean;
+  variant?: OverridableStringUnion<"rectangular" | "rounded">;
 }) => {
   const isVideo = ["video", "mux", "youtube"].includes(type);
   const [imageSourceError, setImageSourceError] = useState(false);
 
-  const mediaIcon =
-    showPlayIcon && isVideo ? (
+  let mediaIcon;
+
+  if (showPlayIcon && isVideo) {
+    mediaIcon = (
       <PlayCircleIcon
         className="media-thumbnail-icon"
         fontSize="large"
         sx={{ color: "common.white" }}
       />
-    ) : type === "image" ? (
+    );
+  } else if (type === "image") {
+    mediaIcon = (
       <AddPhotoAlternateRoundedIcon
         className="media-thumbnail-icon"
         sx={{ color: "grey.400" }}
       />
-    ) : (
+    );
+  } else {
+    mediaIcon = (
       <VideoCallRoundedIcon
         className="media-thumbnail-icon"
         sx={{ color: "grey.400" }}
       />
     );
+  }
+
+  if (isLoading) {
+    return (
+      <Skeleton animation="wave" variant={variant} height="80px" width="100%" />
+    );
+  }
 
   return (
     <Box

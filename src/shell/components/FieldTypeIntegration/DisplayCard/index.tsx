@@ -1,4 +1,4 @@
-import { useState, FC } from "react";
+import { FC } from "react";
 import Typography from "@mui/material/Typography";
 import { Avatar } from "@mui/material";
 
@@ -23,6 +23,7 @@ const DisplayCard: FC<
     data?: any[];
     showPlayIcon?: boolean;
     loading?: boolean;
+    isDraggable?: boolean;
   }
 > = ({
   type,
@@ -34,6 +35,7 @@ const DisplayCard: FC<
   data = [],
   showPlayIcon = false,
   loading = false,
+  isDraggable = false,
 }) => {
   const withCardMedia = [
     "image",
@@ -67,20 +69,13 @@ const DisplayCard: FC<
           position="relative"
           boxSizing="border-box"
         >
-          {loading ? (
-            <Skeleton
-              animation="wave"
-              variant="rounded"
-              height="80px"
-              width="100%"
-            />
-          ) : (
-            <MediaThumbnail
-              type={mediaType}
-              url={thumbnail}
-              showPlayIcon={showPlayIcon}
-            />
-          )}
+          <MediaThumbnail
+            type={mediaType}
+            url={thumbnail}
+            showPlayIcon={showPlayIcon}
+            isLoading={loading}
+            variant={isDraggable ? "rectangular" : "rounded"}
+          />
         </Grid>
       )}
       <Grid size="grow" height="100%">
@@ -124,23 +119,13 @@ const DisplayCard: FC<
               </>
             )}
           </Stack>
-
-          {type === "simple" ? null : type === "details" ? (
-            <Details listItems={details} data={data} loading={loading} />
-          ) : loading ? (
-            <Skeleton animation="wave" height="20px" width="90%" />
-          ) : (
-            <Typography
-              variant="body2"
-              fontWeight={400}
-              color="text.secondary"
-              noWrap
-              textOverflow="ellipsis"
-              width="100%"
-            >
-              {subHeading || "Add Sub-heading"}
-            </Typography>
-          )}
+          <Details
+            subHeading={subHeading}
+            listItems={details}
+            data={data}
+            loading={loading}
+            type={type}
+          />
         </Stack>
       </Grid>
       {!!withsourceIcon && (

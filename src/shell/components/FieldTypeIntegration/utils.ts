@@ -121,12 +121,15 @@ function keyValuePairsToArray(
   }));
 }
 
-function createInitialValues(
-  config: Array<{ name: string }>
+function createKeyPathsInitialValue(
+  config: Array<{ name: string }>,
+  values: IntegrationKeyPaths | null
 ): Record<string, string> {
   if (!config?.length) return {};
   return config.reduce((acc, item) => {
-    acc[item.name] = "";
+    const val =
+      (values?.[item.name as keyof IntegrationKeyPaths] as string) || "";
+    acc[item.name] = val;
     return acc;
   }, {} as Record<string, string>);
 }
@@ -153,8 +156,8 @@ export {
   validateUrl,
   arrayToKeyValuePairs,
   keyValuePairsToArray,
-  createInitialValues,
   generateItemId,
   getObjectKeyPaths,
   getAllArrayKeyPaths,
+  createKeyPathsInitialValue,
 };

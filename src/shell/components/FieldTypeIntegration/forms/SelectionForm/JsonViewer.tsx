@@ -10,6 +10,14 @@ const SLIDER_PROPS = {
   unmountOnExit: true,
 };
 
+const getStringValue = (data: any) => {
+  try {
+    return JSON.stringify(data, null, 2);
+  } catch (error) {
+    return `Scrript Error: ${error?.message}`;
+  }
+};
+
 const JsonViewer = ({
   open,
   data,
@@ -26,7 +34,7 @@ const JsonViewer = ({
   if (!!data?.["_itemId"]) {
     delete data["_itemId"];
   }
-
+  const checkedValue = getStringValue(data);
   return (
     <Box
       component={isSlider ? Slide : "div"}
@@ -44,7 +52,7 @@ const JsonViewer = ({
           left: 0,
           width: "100%",
           height: "100%",
-          borderRadius: "8px",
+          borderRadius: 1,
           overflow: "hidden",
           display: "flex",
           flexDirection: "column",
@@ -145,7 +153,7 @@ const JsonViewer = ({
                 bottom: 20,
               },
             }}
-            value={!data ? "" : JSON.stringify(data, null, 2)}
+            value={checkedValue}
           />
         </Box>
       </Paper>

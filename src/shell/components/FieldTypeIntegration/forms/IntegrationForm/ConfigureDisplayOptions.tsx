@@ -14,9 +14,9 @@ import { FieldWrapper } from "./../FieldWrapper";
 import { DISPLAY_OPTIONS_CONFIG, ConfigProps } from "../../configs";
 import {
   getKeyValue,
-  createInitialValues,
   getObjectKeyPaths,
   getAllArrayKeyPaths,
+  createKeyPathsInitialValue,
 } from "../../utils";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
@@ -151,14 +151,40 @@ const ConfigureDisplayOptions = () => {
   const [rootPath, setRootPath] = useState(null);
   const [rootData, setRootData] = useState(null);
 
-  const { setActiveStep, closeForm, setKeyPaths, displayType, apiData } =
-    useIntegrationField();
+  const {
+    endpoint,
+    headers,
+    setIsFormOpen,
+    setActiveStep,
+    closeForm,
+    setKeyPaths,
+    displayType,
+    apiData,
+    keyPaths,
+    save,
+  } = useIntegrationField();
 
   const [keyPathsLocal, setKeyPathsLocal] = useState<IntegrationKeyPaths>(
-    createInitialValues(DISPLAY_OPTIONS_CONFIG?.[displayType])
+    createKeyPathsInitialValue(DISPLAY_OPTIONS_CONFIG?.[displayType], keyPaths)
   );
 
   const [detailsCompleted, setDetailsCompleted] = useState(false);
+
+  const hanleSave = () => {
+    setKeyPaths(keyPathsLocal);
+    save({
+      status: "completed",
+      display: {
+        type: displayType,
+        keyPaths: keyPathsLocal,
+      },
+      api: {
+        endpoint,
+        headers,
+      },
+    });
+    setIsFormOpen(false);
+  };
 
   useEffect(() => {
     const rootIsArray = Array.isArray(apiData);
@@ -189,7 +215,6 @@ const ConfigureDisplayOptions = () => {
       !!allValid && (displayType === "details" ? !!detailsCompleted : true)
     );
   }, [keyPathsLocal, detailsCompleted, displayType]);
-
   return (
     <FormWrapper height="calc(100vh - 40px)" width="1200px">
       <DialogTitle component="div" flexGrow={0}>
@@ -456,10 +481,7 @@ const ConfigureDisplayOptions = () => {
           data-cy="integrationConfigureDisplayOptionsDoneButton"
           startIcon={<CheckRounded />}
           disabled={!completed}
-          onClick={() => {
-            setKeyPaths(keyPathsLocal);
-            closeForm();
-          }}
+          onClick={hanleSave}
         >
           Done
         </Button>

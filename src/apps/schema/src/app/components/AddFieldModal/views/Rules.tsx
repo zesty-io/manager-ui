@@ -122,6 +122,12 @@ export const Rules = ({
           minValue={formData["minValue"] as number}
           maxValue={formData["maxValue"] as number}
           errors={errors}
+          primaryText={type === "integration" ? "Limit Item Range" : null}
+          secondaryText={
+            type === "integration"
+              ? "Set a minimum and/or maximum number of items"
+              : null
+          }
         />
       )}
     </Stack>

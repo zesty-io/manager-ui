@@ -23,6 +23,8 @@ type InputRangeProps = {
   minValue: number | null;
   maxValue: number | null;
   errors: Errors;
+  primaryText?: string | null;
+  secondaryText?: string | null;
 };
 
 export const InputRange = ({
@@ -31,6 +33,8 @@ export const InputRange = ({
   minValue,
   maxValue,
   errors,
+  primaryText = null,
+  secondaryText = null,
 }: InputRangeProps) => {
   return (
     <Box>
@@ -57,9 +61,7 @@ export const InputRange = ({
         label={
           <Box>
             <Typography variant="body2" fontWeight="600">
-              {type === "integration"
-                ? "Limit Item Range"
-                : "Limit Input Range"}
+              {primaryText || "Limit Input Range"}
             </Typography>
             <Typography
               variant="body3"
@@ -67,10 +69,7 @@ export const InputRange = ({
               fontWeight="600"
               display="block"
             >
-              {/* Set a minimum and/or maximum allowed value */}
-              {type === "integration"
-                ? "Set a minimum and/or maximum number of items"
-                : "Set a minimum and/or maximum allowed value"}
+              {secondaryText || "Set a minimum and/or maximum allowed value"}
             </Typography>
           </Box>
         }

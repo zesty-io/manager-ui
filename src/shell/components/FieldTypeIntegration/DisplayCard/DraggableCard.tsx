@@ -1,4 +1,4 @@
-import { useState, FC, useRef, useEffect } from "react";
+import { useState, FC } from "react";
 import DragIndicatorRoundedIcon from "@mui/icons-material/DragIndicatorRounded";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { Box, Typography, IconButton, Paper } from "@mui/material";
@@ -8,7 +8,6 @@ import MenuItem from "@mui/material/MenuItem";
 import DataObjectIcon from "@mui/icons-material/DataObject";
 import { IntegrationTypes, IntegrationKeyPaths } from "../../../services/types";
 import DisplayCard from ".";
-import { useIntegrationField } from "../IntegrationFieldProvider";
 import Skeleton from "@mui/material/Skeleton";
 import { useDrag, useDrop } from "react-dnd";
 
@@ -27,6 +26,8 @@ type DraggableCardProps = IntegrationKeyPaths & {
   onReorder?: () => void;
   index?: number;
   draggable?: boolean;
+  onView?: () => void;
+  onDelete?: () => void;
 };
 
 const DraggableCard: FC<DraggableCardProps> = ({
@@ -46,6 +47,8 @@ const DraggableCard: FC<DraggableCardProps> = ({
   moveCard,
   onReorder,
   draggable = false,
+  onView,
+  onDelete,
 }) => {
   const [{ isDragging }, drag, preview] = useDrag(
     () => ({
@@ -84,11 +87,11 @@ const DraggableCard: FC<DraggableCardProps> = ({
         zIndex: isDragging ? 1 : 0,
         opacity: isDragging ? 0.1 : 1,
         py: 0,
-        pl: "28px",
+        pl: 3.5,
         pr: "40px",
         width: "100%",
         height: "fit-content",
-        borderRadius: "8px",
+        borderRadius: 1,
         position: "relative",
         boxSizing: "border-box",
         display: "flex",
@@ -140,6 +143,7 @@ const DraggableCard: FC<DraggableCardProps> = ({
           details={details}
           data={data}
           loading={loading}
+          isDraggable={true}
         />
       </Box>
 
@@ -162,7 +166,11 @@ const DraggableCard: FC<DraggableCardProps> = ({
             width="20px"
           />
         ) : (
-          <MoreOptions id={id} data={data} disableMenu={disableMenu} />
+          <MoreOptions
+            disableMenu={disableMenu}
+            onView={onView}
+            onDelete={onDelete}
+          />
         )}
       </Box>
     </Paper>
@@ -170,34 +178,22 @@ const DraggableCard: FC<DraggableCardProps> = ({
 };
 
 const MoreOptions = ({
-  id,
-  data,
   disableMenu = false,
+  onDelete,
+  onView,
 }: {
-  id: string;
-  data: any;
   disableMenu?: boolean;
+  onDelete?: () => void;
+  onView?: () => void;
 }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
-
-  const { jsonViewerIsOpen, setJsonViewerIsOpen, setJsonData, removeItem } =
-    useIntegrationField();
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
   const handleClose = () => {
     setAnchorEl(null);
-  };
-
-  const handleRemoveItem = () => {
-    removeItem(id);
-  };
-
-  const handleViewJsonData = () => {
-    setJsonData(data);
-    setJsonViewerIsOpen(true);
   };
   return (
     <Box>
@@ -224,19 +220,13 @@ const MoreOptions = ({
           horizontal: "left",
         }}
       >
-        <MenuItem
-          onClick={handleViewJsonData}
-          className="moreOptionMenuItem-view"
-        >
+        <MenuItem onClick={onView} className="moreOptionMenuItem-view">
           <DataObjectIcon color="action" sx={{ mr: 1 }} />
           <Typography variant="body1" color="text.primary">
             View Raw JSON
           </Typography>
         </MenuItem>
-        <MenuItem
-          onClick={handleRemoveItem}
-          className="moreOptionMenuItem-remove"
-        >
+        <MenuItem onClick={onDelete} className="moreOptionMenuItem-remove">
           <ClearIcon color="action" sx={{ mr: 1 }} />
           <Typography variant="body1" color="text.primary">
             Remove

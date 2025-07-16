@@ -782,7 +782,7 @@ export const Field = ({
             label={label}
             description={fieldData?.description}
             required={required}
-            value={value ? value?.toString() : null}
+            value={value ? value : null}
             onChange={({ inputName, value }) =>
               onChange(value, inputName, datatype)
             }

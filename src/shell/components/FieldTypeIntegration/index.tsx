@@ -16,7 +16,7 @@ type IntegrationFieldProps<Value> = {
   description?: string;
   formType: FormTypes;
   required?: boolean;
-  value?: Value;
+  value?: Value | null;
   onChange?: ({
     inputName,
     value,
@@ -36,7 +36,7 @@ const FieldTypeIntegration: FC<IntegrationFieldProps<any>> = ({
   name,
   label,
   description,
-  value,
+  value = null,
   onChange,
   required,
   error,
@@ -47,17 +47,23 @@ const FieldTypeIntegration: FC<IntegrationFieldProps<any>> = ({
   integrationFieldDisplay = null,
 }) => {
   return (
-    <IntegrationFieldProvider maxItems={maxItems} isLoading={isLoading}>
+    <IntegrationFieldProvider
+      maxItems={maxItems}
+      isLoading={isLoading}
+      formType={formType}
+      defaultValues={{
+        value: value,
+        display: integrationFieldDisplay,
+        config: integrationFieldApiConfig,
+      }}
+    >
       <DndProvider backend={HTML5Backend}>
         {formType === "select" ? (
           <SelectItems
             name={name}
             label="Select Remote Items"
-            value={value}
             onSelectionChange={onChange}
             isLoading={isLoading}
-            integrationFieldApiConfig={integrationFieldApiConfig}
-            integrationFieldDisplay={integrationFieldDisplay}
           />
         ) : (
           <ConfigureIntegration
@@ -67,10 +73,7 @@ const FieldTypeIntegration: FC<IntegrationFieldProps<any>> = ({
             onChange={onChange}
             error={error}
             required={required}
-            formType={formType}
             isLoading={isLoading}
-            integrationFieldApiConfig={integrationFieldApiConfig}
-            integrationFieldDisplay={integrationFieldDisplay}
           />
         )}
       </DndProvider>

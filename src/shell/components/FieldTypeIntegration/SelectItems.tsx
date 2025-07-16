@@ -5,17 +5,13 @@ import { useIntegrationField } from "./IntegrationFieldProvider";
 import { generateItemId, getKeyValue } from "./utils";
 import AddIcon from "@mui/icons-material/Add";
 import SelectionForm from "./forms/SelectionForm";
-import {
-  IntegrationFieldApiConfig,
-  IntegrationFieldDisplay,
-} from "../../services/types";
+
 import DraggableCard from "./DisplayCard/DraggableCard";
 import JsonViewer from "./forms/SelectionForm/JsonViewer";
 
 type SelectItemsProps = {
   name: string;
   label: string;
-  value?: any[];
   onSelectionChange?: ({
     inputName,
     value,
@@ -23,75 +19,66 @@ type SelectItemsProps = {
     inputName: string;
     value: any;
   }) => void;
-
-  integrationFieldApiConfig?: IntegrationFieldApiConfig | null;
-  integrationFieldDisplay?: IntegrationFieldDisplay | null;
   isLoading?: boolean;
 };
 
 const SelectItems: FC<SelectItemsProps> = ({
   name,
   label,
-  value: defaultValue,
   onSelectionChange,
-  integrationFieldApiConfig = null,
-  integrationFieldDisplay = null,
   isLoading = false,
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
-  const [initialValue, setInitialValue] = useState<any[] | undefined>(
-    undefined
-  );
+  const [jsonData, setJsonData] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [jsonViewerIsOpen, setJsonViewerIsOpen] = useState(false);
+  const [selectionFormOpen, setSelectionFormOpen] = useState(false);
+  const [apiData, setApiData] = useState<any[] | null>(null);
 
   const {
     isFetching,
-    formSelectorOpen,
-    setFormSelectorOpen,
-    jsonViewerIsOpen,
-    setJsonViewerIsOpen,
-    jsonData,
-    setEndpoint,
-    setHeaders,
+    endpoint,
+    headers,
     keyPaths,
-    setKeyPaths,
     displayType,
-    setDisplayType,
     value,
     setValue,
+    defaultValues,
+    triggerFetch,
   } = useIntegrationField();
 
-  useEffect(() => {
-    if (
-      !integrationFieldApiConfig?.endpoint ||
-      !integrationFieldDisplay?.type ||
-      !integrationFieldDisplay?.keyPaths ||
-      isLoading ||
-      isFetching ||
-      !!isLoaded
-    )
-      return;
+  const initialValue = !defaultValues.value?.length
+    ? null
+    : defaultValues.value?.map((item: any) => ({
+        ...item,
+        _itemId: generateItemId(item, defaultValues?.display?.keyPaths),
+      }));
 
-    setEndpoint(integrationFieldApiConfig?.endpoint || "");
-    setHeaders(integrationFieldApiConfig?.headers || null);
-    setKeyPaths(integrationFieldDisplay?.keyPaths || null);
-    setDisplayType(integrationFieldDisplay?.type || null);
-    const mappedDefaultValue = defaultValue?.map((item: any) => ({
-      ...item,
-      _itemId: generateItemId(item, keyPaths),
-    }));
-    setValue(mappedDefaultValue || undefined);
-    setInitialValue(mappedDefaultValue || undefined);
-    setIsLoaded(true);
-  }, [
-    integrationFieldApiConfig,
-    integrationFieldDisplay,
-    defaultValue,
-    isLoading,
-    isFetching,
-    isLoaded,
-    setIsLoaded,
-  ]);
+  const valueWithItemId = !value?.length
+    ? []
+    : value?.map((item: any) => ({
+        ...item,
+        _itemId: generateItemId(item, defaultValues?.display?.keyPaths),
+      }));
+
+  const selectedItemIds = valueWithItemId?.map((item: any) => item?._itemId);
+
+  const handleViewJsonData = (data: any) => {
+    setJsonData(data);
+    setJsonViewerIsOpen(true);
+  };
+
+  const handleRemoveItem = (_itemId: string) => {
+    const updatedValue = valueWithItemId?.filter(
+      (item: any) => item?._itemId !== _itemId
+    );
+    setValue(
+      updatedValue?.map((item: any) => {
+        const { _itemId, ...rest } = item;
+        return rest;
+      })
+    );
+  };
 
   const findCard = useCallback(
     (id: string) => {
@@ -117,13 +104,19 @@ const SelectItems: FC<SelectItemsProps> = ({
   );
 
   useEffect(() => {
-    const isEqual = JSON.stringify(value) === JSON.stringify(initialValue);
-    if (!isLoaded || !!isDragging || isEqual) return;
+    if (!endpoint || !!isLoaded || !!apiData?.length) return;
+    triggerFetch();
+  }, [endpoint, headers, isLoaded, apiData]);
+
+  useEffect(() => {
+    const isEqual =
+      JSON.stringify(valueWithItemId) === JSON.stringify(initialValue);
+    if (!!isDragging || isEqual) return;
     onSelectionChange({
       inputName: name,
       value: !!value?.length ? value : null,
     });
-  }, [value, initialValue, name, isDragging, isLoaded]);
+  }, [value, isDragging]);
 
   return (
     <>
@@ -134,11 +127,11 @@ const SelectItems: FC<SelectItemsProps> = ({
           justifyContent: "flex-start",
           alignItems: "flex-start",
           width: "100%",
-          borderRadius: "8px",
-          rowGap: "8px",
+          borderRadius: 1,
+          rowGap: 1,
         }}
       >
-        {value?.length > 0 && (
+        {valueWithItemId?.length > 0 && (
           <Box
             data-cy="integrationListValueContainer"
             component="div"
@@ -150,7 +143,7 @@ const SelectItems: FC<SelectItemsProps> = ({
               alignItems: "flex-start",
             }}
           >
-            {value?.map((item: any, index: number) => (
+            {valueWithItemId?.map((item: any, index: number) => (
               <DraggableCard
                 key={item?._itemId}
                 id={item?._itemId}
@@ -167,6 +160,8 @@ const SelectItems: FC<SelectItemsProps> = ({
                 data={item}
                 draggable={true}
                 loading={isLoading || isFetching}
+                onView={() => handleViewJsonData(item)}
+                onDelete={() => handleRemoveItem(item?._itemId)}
               />
             ))}
           </Box>
@@ -180,13 +175,19 @@ const SelectItems: FC<SelectItemsProps> = ({
           fullWidth={true}
           startIcon={<AddIcon />}
           onClick={() => {
-            setFormSelectorOpen(true);
+            setSelectionFormOpen(true);
           }}
         >
           {label}
         </Button>
 
-        {!!formSelectorOpen && <SelectionForm />}
+        {!!selectionFormOpen && (
+          <SelectionForm
+            selectedIds={selectedItemIds}
+            open={selectionFormOpen}
+            onClose={() => setSelectionFormOpen(false)}
+          />
+        )}
         <Dialog
           data-cy="integrationSelectItemsDialog"
           open={jsonViewerIsOpen}
