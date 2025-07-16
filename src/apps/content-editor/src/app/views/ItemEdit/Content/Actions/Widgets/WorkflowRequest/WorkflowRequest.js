@@ -116,6 +116,7 @@ ${
           );
         }
       })
+      .catch((err) => console.error("Failed to send workflow request:", err))
       .finally(() => {
         if (isMounted.current) {
           setSending(false);

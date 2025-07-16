@@ -100,6 +100,7 @@ export default connect((state, props) => {
       .then((res) => {
         return props.dispatch(fetchHeaders());
       })
+      .catch((err) => console.error("Error saving sort:", err))
       .finally(() => {
         setOpen(false);
         setLoading(false);

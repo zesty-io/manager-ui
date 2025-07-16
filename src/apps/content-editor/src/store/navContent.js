@@ -61,17 +61,17 @@ export function fetchNav() {
             return role.entityZUID === getState().instance.ZUID;
           }).ZUID;
 
-          return request(
-            `${CONFIG.API_ACCOUNTS}/roles/${currentRoleZUID}`
-          ).then((data) => {
-            if (data.data && data.data.granularRoles) {
-              return data.data.granularRoles.reduce(
-                (acc, grain) => [...acc, grain.resourceZUID],
-                []
-              );
-            }
-            return null;
-          });
+          return request(`${CONFIG.API_ACCOUNTS}/roles/${currentRoleZUID}`)
+            .then((data) => {
+              if (data.data && data.data.granularRoles) {
+                return data.data.granularRoles.reduce(
+                  (acc, grain) => [...acc, grain.resourceZUID],
+                  []
+                );
+              }
+              return null;
+            })
+            .catch((err) => console.error("Failed to fetch roles:", err));
         }
         return null;
       })

@@ -201,6 +201,7 @@ const OrderFiles = (props: OrderFilesProps) => {
       .then(() => {
         return props.dispatch(fetchHeaders() as any);
       })
+      .catch((err: any) => console.error("Error saving sort:", err))
       .finally(() => {
         props?.onClose();
         setLoading(false);
