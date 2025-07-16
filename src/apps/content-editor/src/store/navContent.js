@@ -71,7 +71,10 @@ export function fetchNav() {
               }
               return null;
             })
-            .catch((err) => console.error("Failed to fetch roles:", err));
+            .catch((err) => {
+              console.error("Failed to fetch roles:", err);
+              return null;
+            });
         }
         return null;
       })
