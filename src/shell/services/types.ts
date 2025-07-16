@@ -486,7 +486,7 @@ export interface Script {
   updatedAt: string;
 }
 
-export type ResourceType = "schema" | "content" | "code" | "media";
+export type ResourceType = "schema" | "content" | "code" | "media" | "block";
 
 export interface Language {
   ID: number;
