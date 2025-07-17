@@ -22,13 +22,18 @@ type SelectItemsProps = {
   isLoading?: boolean;
 };
 
+const isEqualValue = (arr1: string[], arr2: string[]): boolean => {
+  if (arr1.length !== arr2.length) return false;
+  const set = new Set(arr1);
+  return arr2.every((item) => set.has(item));
+};
+
 const SelectItems: FC<SelectItemsProps> = ({
   name,
   label,
   onSelectionChange,
   isLoading = false,
 }) => {
-  const [isLoaded, setIsLoaded] = useState(false);
   const [jsonData, setJsonData] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [jsonViewerIsOpen, setJsonViewerIsOpen] = useState(false);
@@ -38,30 +43,30 @@ const SelectItems: FC<SelectItemsProps> = ({
   const {
     isFetching,
     endpoint,
-    headers,
     keyPaths,
     displayType,
     value,
-    setValue,
     defaultValues,
     triggerFetch,
   } = useIntegrationField();
 
   const initialValue = !defaultValues.value?.length
-    ? null
+    ? []
     : defaultValues.value?.map((item: any) => ({
         ...item,
         _itemId: generateItemId(item, defaultValues?.display?.keyPaths),
       }));
 
-  const valueWithItemId = !value?.length
-    ? []
-    : value?.map((item: any) => ({
-        ...item,
-        _itemId: generateItemId(item, defaultValues?.display?.keyPaths),
-      }));
+  const [valueWithId, setValueWithId] = useState<any[] | null>(
+    !value?.length
+      ? []
+      : value?.map((item: any) => ({
+          ...item,
+          _itemId: generateItemId(item, value?.display?.keyPaths),
+        }))
+  );
 
-  const selectedItemIds = valueWithItemId?.map((item: any) => item?._itemId);
+  const selectedItemIds = valueWithId?.map((item: any) => item?._itemId);
 
   const handleViewJsonData = (data: any) => {
     setJsonData(data);
@@ -69,10 +74,10 @@ const SelectItems: FC<SelectItemsProps> = ({
   };
 
   const handleRemoveItem = (_itemId: string) => {
-    const updatedValue = valueWithItemId?.filter(
+    const updatedValue = valueWithId?.filter(
       (item: any) => item?._itemId !== _itemId
     );
-    setValue(
+    setValueWithId(
       updatedValue?.map((item: any) => {
         const { _itemId, ...rest } = item;
         return rest;
@@ -82,10 +87,10 @@ const SelectItems: FC<SelectItemsProps> = ({
 
   const findCard = useCallback(
     (id: string) => {
-      const item = value.find((c: any) => c._itemId === id);
-      return { item, index: value.indexOf(item) };
+      const item = valueWithId.find((c: any) => c._itemId === id);
+      return { item, index: valueWithId.indexOf(item) };
     },
-    [value]
+    [valueWithId]
   );
 
   const moveCard = useCallback(
@@ -93,30 +98,32 @@ const SelectItems: FC<SelectItemsProps> = ({
       const { item, index } = findCard(id);
       setIsDragging(isDragging || false);
       if (!!item) {
-        setValue((prevItems: any) => {
+        setValueWithId((prevItems: any) => {
           const newItems = [...prevItems];
           newItems.splice(atIndex, 0, newItems.splice(index, 1)[0]);
           return newItems;
         });
       }
     },
-    [findCard, setValue]
+    [findCard, setValueWithId]
   );
 
   useEffect(() => {
-    if (!endpoint || !!isLoaded || !!apiData?.length) return;
+    if (!endpoint || !!apiData) return;
     triggerFetch();
-  }, [endpoint, headers, isLoaded, apiData]);
+  }, [endpoint, apiData]);
 
   useEffect(() => {
-    const isEqual =
-      JSON.stringify(valueWithItemId) === JSON.stringify(initialValue);
-    if (!!isDragging || isEqual) return;
-    onSelectionChange({
-      inputName: name,
-      value: !!value?.length ? value : null,
-    });
-  }, [value, isDragging]);
+    const initial = initialValue?.map((item: any) => item?._itemId);
+    const selected = valueWithId?.map((item: any) => item?._itemId);
+    const isEqual = isEqualValue(initial, selected);
+    if (!isEqual && !isDragging) {
+      onSelectionChange({
+        inputName: name,
+        value: !!valueWithId?.length ? valueWithId : null,
+      });
+    }
+  }, [initialValue, valueWithId, isDragging]);
 
   return (
     <>
@@ -131,7 +138,7 @@ const SelectItems: FC<SelectItemsProps> = ({
           rowGap: 1,
         }}
       >
-        {valueWithItemId?.length > 0 && (
+        {valueWithId?.length > 0 && (
           <Box
             data-cy="integrationListValueContainer"
             component="div"
@@ -143,7 +150,7 @@ const SelectItems: FC<SelectItemsProps> = ({
               alignItems: "flex-start",
             }}
           >
-            {valueWithItemId?.map((item: any, index: number) => (
+            {valueWithId?.map((item: any, index: number) => (
               <DraggableCard
                 key={item?._itemId}
                 id={item?._itemId}
@@ -184,6 +191,7 @@ const SelectItems: FC<SelectItemsProps> = ({
         {!!selectionFormOpen && (
           <SelectionForm
             selectedIds={selectedItemIds}
+            setSelectedItems={(items) => setValueWithId(items)}
             open={selectionFormOpen}
             onClose={() => setSelectionFormOpen(false)}
           />

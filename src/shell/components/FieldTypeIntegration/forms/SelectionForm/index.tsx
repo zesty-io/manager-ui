@@ -23,25 +23,20 @@ const SelectionForm = ({
   open,
   onClose,
   selectedIds,
+  setSelectedItems,
 }: {
   open: boolean;
   onClose: () => void;
   selectedIds: string[];
+  setSelectedItems: (items: any[]) => void;
 }) => {
   const searchInputRef = useRef(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [jsonViewData, setJsonViewData] = useState(null);
   const [viewerOpen, setViewerOpen] = useState(false);
 
-  const {
-    isFetching,
-    maxItems,
-    keyPaths,
-    displayType,
-    apiData,
-    value,
-    setValue,
-  } = useIntegrationField();
+  const { isFetching, maxItems, keyPaths, displayType, apiData } =
+    useIntegrationField();
 
   const [selectedItemIds, setSelectedItemIds] = useState<string[] | null>(
     selectedIds || []
@@ -91,7 +86,7 @@ const SelectionForm = ({
       selectedItemIds.includes(item._itemId)
     );
     setSearchTerm("");
-    setValue(!selectedItemsData?.length ? null : selectedItemsData);
+    setSelectedItems(!selectedItemsData?.length ? null : selectedItemsData);
     onClose();
   };
 
