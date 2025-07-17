@@ -367,13 +367,13 @@ const InviteMembersModal = ({ onClose }: Props) => {
           <Button color="inherit" onClick={() => onClose()}>
             Cancel
           </Button>
-          <LoadingButton
+          <Button
             variant="contained"
             onClick={handleInvites}
             loading={sendingEmails}
           >
             Invite
-          </LoadingButton>
+          </Button>
         </DialogActions>
       </Dialog>
       {isDoneSendingEmails && (

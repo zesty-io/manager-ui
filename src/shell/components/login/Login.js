@@ -18,13 +18,13 @@ import {
   InputAdornment,
   IconButton,
   TextField,
+  Button,
 } from "@mui/material";
 import AlternateEmailRoundedIcon from "@mui/icons-material/AlternateEmailRounded";
 import PasswordRoundedIcon from "@mui/icons-material/PasswordRounded";
 import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
 import VisibilityOffRoundedIcon from "@mui/icons-material/VisibilityOffRounded";
 import LoginRoundedIcon from "@mui/icons-material/LoginRounded";
-import { LoadingButton } from "@mui/lab";
 import { SSOButton, SSOButtonGroup } from "@zesty-io/material";
 import zestyLogo from "../../../../public/images/zestyLogo.svg";
 
@@ -143,7 +143,7 @@ export default connect((state) => {
                   error={!!error}
                   autoComplete="off"
                 />
-                <LoadingButton
+                <Button
                   size="large"
                   type="submit"
                   startIcon={<LoginRoundedIcon />}
@@ -153,7 +153,7 @@ export default connect((state) => {
                   loading={loading}
                 >
                   Continue
-                </LoadingButton>
+                </Button>
               </Box>
             </Box>
           ) : (
@@ -284,7 +284,7 @@ export default connect((state) => {
                     Forgot Password?
                   </Link>
                 </Box>
-                <LoadingButton
+                <Button
                   size="large"
                   type="submit"
                   startIcon={<LoginRoundedIcon />}
@@ -292,7 +292,7 @@ export default connect((state) => {
                   loading={loading}
                 >
                   Resume Session
-                </LoadingButton>
+                </Button>
               </Box>
             </Box>
           )}
