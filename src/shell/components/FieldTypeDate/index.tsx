@@ -272,16 +272,11 @@ export const FieldTypeDate = memo(
 );
 
 function CustomField(props: any) {
-  const [dateValue, setDateValue] = useState<string | null>(null);
   const { value, ...rest } = props;
 
   return (
     <TextField
       data-cy="datePickerInputField"
-      value={dateValue}
-      onChange={(e) => {
-        setDateValue(e.target.value);
-      }}
       placeholder="Mon DD YYYY"
       {...rest}
       type="text"
