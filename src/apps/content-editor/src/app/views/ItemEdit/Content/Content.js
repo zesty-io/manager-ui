@@ -181,7 +181,7 @@ export default function Content(props) {
             ) : isDisabled ? (
               <></>
             ) : (
-              <Tooltip title="Open DUO Mode" placement="left" dark>
+              <Tooltip title="Open DUO Mode" placement="left">
                 <IconButton
                   size="small"
                   onClick={() => {
