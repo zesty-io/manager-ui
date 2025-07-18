@@ -11,6 +11,7 @@ import {
   useState,
   useImperativeHandle,
   forwardRef,
+  useMemo,
 } from "react";
 import Button from "@mui/material/Button";
 import { Typography, Stack, Box, TextField } from "@mui/material";
@@ -272,13 +273,32 @@ export const FieldTypeDate = memo(
 );
 
 function CustomField(props: any) {
-  const { value, ...rest } = props;
+  // Filters listed below are not valid props for the TextField component
+  const excludedProps = [
+    "value",
+    "formatDensity",
+    "enableAccessibleFieldDOMStructure",
+    "selectedSections",
+    "onSelectedSectionsChange",
+    "disablePast",
+    "disableFuture",
+    "minDate",
+    "maxDate",
+    "unstableFieldRef",
+  ];
+  const filteredProps = useMemo(
+    () =>
+      Object.fromEntries(
+        Object.entries(props).filter(([key]) => !excludedProps.includes(key))
+      ),
+    [props]
+  );
 
   return (
     <TextField
       data-cy="datePickerInputField"
       placeholder="Mon DD YYYY"
-      {...rest}
+      {...filteredProps}
       type="text"
     />
   );
