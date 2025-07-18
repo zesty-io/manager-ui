@@ -219,7 +219,7 @@ export const PropertiesDialog = ({ onClose }: Props) => {
     >
       {!showSettings ? (
         <>
-          <DialogTitle>
+          <DialogTitle component="div">
             <Stack
               direction="row"
               justifyContent="space-between"
