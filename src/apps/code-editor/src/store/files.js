@@ -171,10 +171,6 @@ export function files(state = [], action) {
 
     case "UPDATE_FILE_CODE":
       files = state.map((file) => {
-        console.debug("UPDATE_FILE_CODE", {
-          file,
-          action,
-        });
         if (
           file.ZUID === action.payload.ZUID &&
           file.status === action.payload.status
@@ -461,8 +457,6 @@ export function saveFile(ZUID, status, code = null) {
   return (dispatch, getState) => {
     const file = resolveFile(dispatch, getState().files, ZUID, status);
     const newCode = code || file.code;
-
-    console.debug("saveFile", { file, ZUID, status });
     const pathPart = resolvePathPart(file.type);
 
     // delete file.version;
