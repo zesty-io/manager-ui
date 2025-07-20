@@ -171,6 +171,10 @@ export function files(state = [], action) {
 
     case "UPDATE_FILE_CODE":
       files = state.map((file) => {
+        console.debug("UPDATE_FILE_CODE", {
+          file,
+          action,
+        });
         if (
           file.ZUID === action.payload.ZUID &&
           file.status === action.payload.status
@@ -453,9 +457,12 @@ export function createFile(name, type, code = "") {
   };
 }
 
-export function saveFile(ZUID, status) {
+export function saveFile(ZUID, status, code = null) {
   return (dispatch, getState) => {
     const file = resolveFile(dispatch, getState().files, ZUID, status);
+    const newCode = code || file.code;
+
+    console.debug("saveFile", { file, ZUID, status });
     const pathPart = resolvePathPart(file.type);
 
     // delete file.version;
@@ -464,7 +471,7 @@ export function saveFile(ZUID, status) {
     return request(`${CONFIG.API_INSTANCE}/web/${pathPart}/${ZUID}`, {
       method: "PUT",
       json: true,
-      body: file,
+      body: { ...file, code: newCode },
     })
       .then((res) => {
         if (res.status === 200) {

@@ -17,6 +17,7 @@ export type LocalDirtyCodeModal = {
   dirtyCodeZuid: string;
   dirtyCodeStatus: string;
   dirtyCodeFileType: string;
+  dirtyCodeCode: string;
 };
 
 export const LocalDirtyCodeModal: FC<LocalDirtyCodeModal> = ({
@@ -26,6 +27,7 @@ export const LocalDirtyCodeModal: FC<LocalDirtyCodeModal> = ({
   dirtyCodeZuid,
   dirtyCodeStatus,
   dirtyCodeFileType,
+  dirtyCodeCode,
 }) => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -59,7 +61,9 @@ export const LocalDirtyCodeModal: FC<LocalDirtyCodeModal> = ({
         }}
         onSave={async () => {
           setLoading(true);
-          await dispatch(saveFile(dirtyCodeZuid, dirtyCodeStatus));
+          await dispatch(
+            saveFile(dirtyCodeZuid, dirtyCodeStatus, dirtyCodeCode)
+          );
           setLoading(false);
           setOpen(false);
           answer(true);
