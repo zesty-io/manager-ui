@@ -9,7 +9,6 @@ import {
 import { ContentCopyRounded } from "@mui/icons-material";
 import { useHistory, useParams } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
-import { LoadingButton } from "@mui/lab";
 
 import { AppState } from "../../../../../../../../shell/store/types";
 import { ContentItem } from "../../../../../../../../shell/services/types";
@@ -132,14 +131,14 @@ export const DuplicateItemDialog = ({ onClose }: DuplicateItemProps) => {
         <Button color="inherit" onClick={onClose}>
           Cancel
         </Button>
-        <LoadingButton
+        <Button
           variant="contained"
           color="primary"
           onClick={() => duplicateItem()}
           loading={isLoading}
         >
           Duplicate Item
-        </LoadingButton>
+        </Button>
       </DialogActions>
     </Dialog>
   );

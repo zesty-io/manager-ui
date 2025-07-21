@@ -16,7 +16,6 @@ import { useUpdateContentModelMutation } from "../../../../../shell/services/ins
 import { ContentModel } from "../../../../../shell/services/types";
 import { notify } from "../../../../../shell/store/notifications";
 import { useDispatch } from "react-redux";
-import { LoadingButton } from "@mui/lab";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 
 interface Props {
@@ -104,7 +103,7 @@ export const UpdateDescriptionModelDialogue = ({ onClose, model }: Props) => {
         <Button onClick={onClose} color="inherit">
           Cancel
         </Button>
-        <LoadingButton
+        <Button
           onClick={() =>
             updateModel({
               ZUID: model.ZUID,
@@ -115,7 +114,7 @@ export const UpdateDescriptionModelDialogue = ({ onClose, model }: Props) => {
           variant="contained"
         >
           Save
-        </LoadingButton>
+        </Button>
       </DialogActions>
     </Dialog>
   );

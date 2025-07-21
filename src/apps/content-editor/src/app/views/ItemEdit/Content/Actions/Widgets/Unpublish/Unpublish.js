@@ -1,6 +1,6 @@
 import { memo, useState } from "react";
 
-import LoadingButton from "@mui/lab/LoadingButton";
+import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import ManageAccountsRoundedIcon from "@mui/icons-material/ManageAccountsRounded";
 import Card from "@mui/material/Card";
@@ -10,7 +10,6 @@ import Skeleton from "@mui/material/Skeleton";
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 
-import { unpublish } from "shell/store/content";
 import { useHistory, useLocation } from "react-router";
 
 export const Unpublish = memo(function Unpublish(props) {
@@ -86,7 +85,7 @@ export const Unpublish = memo(function Unpublish(props) {
               By unpublishing this content it will no longer be served if the
               URL is requested. The URL will return a 404 not found response.
             </Typography>
-            <LoadingButton
+            <Button
               disableElevation
               variant="contained"
               id="UnpublishItemButton"
@@ -107,7 +106,7 @@ export const Unpublish = memo(function Unpublish(props) {
               }}
             >
               Manage Publish State
-            </LoadingButton>
+            </Button>
           </>
         )}
       </CardContent>

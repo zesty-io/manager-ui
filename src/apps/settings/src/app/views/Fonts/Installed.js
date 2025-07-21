@@ -1,7 +1,14 @@
 import { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import { Button, Dialog, DialogActions, DialogTitle } from "@mui/material";
-import { TextField, Typography, Stack } from "@mui/material";
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogTitle,
+  Typography,
+  Stack,
+} from "@mui/material";
 import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -13,9 +20,7 @@ import { updateSiteFont, deleteSiteFont } from "shell/store/settings";
 
 import styles from "./Fonts.less";
 import { TopBar } from "../../components/TopBar";
-import { Box } from "@mui/material";
 import { MainWrapper } from "../../components/Containers";
-import LoadingButton from "@mui/lab/LoadingButton";
 import { DeleteRounded } from "@mui/icons-material";
 import SearchBox from "../../../../../../shell/components/SearchBox";
 
@@ -352,7 +357,7 @@ export default connect((state) => {
           >
             Cancel
           </Button>
-          <LoadingButton
+          <Button
             variant="contained"
             color="error"
             loading={isUpdating}
@@ -361,7 +366,7 @@ export default connect((state) => {
             }}
           >
             Remove
-          </LoadingButton>
+          </Button>
         </DialogActions>
       </Dialog>
     </>

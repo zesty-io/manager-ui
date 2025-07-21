@@ -9,15 +9,10 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import DriveFileRenameOutlineRounded from "@mui/icons-material/DriveFileRenameOutlineRounded";
-import {
-  useGetContentModelsQuery,
-  useUpdateContentModelMutation,
-  useGetContentNavItemsQuery,
-} from "../../../../../shell/services/instance";
+import { useUpdateContentModelMutation } from "../../../../../shell/services/instance";
 import { ContentModel } from "../../../../../shell/services/types";
 import { notify } from "../../../../../shell/store/notifications";
 import { useDispatch } from "react-redux";
-import { LoadingButton } from "@mui/lab";
 import { SelectModelParentInput } from "./SelectModelParentInput";
 
 interface Props {
@@ -88,7 +83,7 @@ export const UpdateParentModelDialogue = ({ onClose, model }: Props) => {
         <Button onClick={onClose} color="inherit">
           Cancel
         </Button>
-        <LoadingButton
+        <Button
           onClick={() =>
             updateModel({
               ZUID: model.ZUID,
@@ -99,7 +94,7 @@ export const UpdateParentModelDialogue = ({ onClose, model }: Props) => {
           variant="contained"
         >
           Save
-        </LoadingButton>
+        </Button>
       </DialogActions>
     </Dialog>
   );

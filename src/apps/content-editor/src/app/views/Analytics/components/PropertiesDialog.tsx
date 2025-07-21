@@ -7,7 +7,6 @@ import {
   Box,
   IconButton,
   Typography,
-  TextField,
   InputAdornment,
   ListItemButton,
   ListItemIcon,
@@ -42,7 +41,6 @@ import { NoSearchResults } from "../../../../../../../shell/components/NoSearchR
 import googleAnalyticsIcon from "../../../../../../../../public/images/googleAnalyticsIcon.svg";
 import { useSelector } from "react-redux";
 import { AppState } from "../../../../../../../shell/store/types";
-import { LoadingButton } from "@mui/lab";
 import { AnalyticsDialog } from "./AnalyticsDialog";
 import SearchBox from "../../../../../../../shell/components/SearchBox";
 
@@ -491,7 +489,7 @@ const DisconnectConfirmationDialog = ({
         <Button variant="outlined" color="inherit" onClick={onClose}>
           Cancel
         </Button>
-        <LoadingButton
+        <Button
           loading={loading}
           variant="contained"
           color="error"
@@ -501,7 +499,7 @@ const DisconnectConfirmationDialog = ({
           }}
         >
           Disconnect Account
-        </LoadingButton>
+        </Button>
       </DialogActions>
     </Dialog>
   );

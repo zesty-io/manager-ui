@@ -1,7 +1,6 @@
 import { FC } from "react";
 import { Dialog, DialogActions, DialogTitle, Typography } from "@mui/material";
 import Button from "@mui/material/Button";
-import LoadingButton from "@mui/lab/LoadingButton";
 import Box from "@mui/material/Box";
 import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
 
@@ -54,7 +53,7 @@ const ConfirmSaveDialog: FC<ConfirmSaveDialogProps> = ({
         <Button variant="text" color="inherit" onClick={onClose}>
           Cancel
         </Button>
-        <LoadingButton
+        <Button
           variant="contained"
           color="primary"
           startIcon={<SaveRoundedIcon fontSize="small" />}
@@ -65,7 +64,7 @@ const ConfirmSaveDialog: FC<ConfirmSaveDialogProps> = ({
           data-cy="ConfirmSaveSettings"
         >
           Save
-        </LoadingButton>
+        </Button>
       </DialogActions>
     </Dialog>
   );

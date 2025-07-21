@@ -11,7 +11,6 @@ import {
   Alert,
   List,
 } from "@mui/material";
-import { LoadingButton } from "@mui/lab";
 import ScheduleRoundedIcon from "@mui/icons-material/ScheduleRounded";
 import WarningRoundedIcon from "@mui/icons-material/WarningRounded";
 import moment from "moment-timezone";
@@ -129,7 +128,7 @@ export const SchedulePublishesModal = ({
           Cancel
         </Button>
 
-        <LoadingButton
+        <Button
           data-cy="SchedulePublishButton"
           variant="contained"
           loading={loading}
@@ -148,7 +147,7 @@ export const SchedulePublishesModal = ({
           }}
         >
           Schedule Publish ({items.length})
-        </LoadingButton>
+        </Button>
       </DialogActions>
     </Dialog>
   );
