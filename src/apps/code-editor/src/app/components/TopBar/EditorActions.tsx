@@ -56,7 +56,9 @@ export const EditorActions = memo(function EditorActions(
     setIsSaving(true);
 
     try {
-      await Promise.resolve(dispatch(saveFile(props.fileZUID, props.status)));
+      await Promise.resolve(
+        dispatch(saveFile(props.fileZUID, props.status, props.code))
+      );
     } finally {
       getUpdatedFiles();
       setInitialCode(props.code);
@@ -68,7 +70,9 @@ export const EditorActions = memo(function EditorActions(
 
     try {
       if (isNotSaved) {
-        await Promise.resolve(dispatch(saveFile(props.fileZUID, props.status)));
+        await Promise.resolve(
+          dispatch(saveFile(props.fileZUID, props.status, props.code))
+        );
       }
       await Promise.resolve(
         dispatch(publishFile(props.fileZUID, props.status))

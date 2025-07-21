@@ -1,16 +1,27 @@
-import { memo } from "react";
+import { useState } from "react";
 import { Box } from "@mui/material";
 import { MemoizedEditor } from "./components/MemoizedEditor/MemoizedEditor";
 import { TopBar } from "../TopBar";
+import { LocalDirtyCodeModal } from "../LocalDirtyCodeModal";
 /**
  * We memoize this component because we need to short circuit the redux->react->component update cycle
  * This is done for performance reasons. Constantly re-rendering slows down the editor typing experience.
  * But we still want to broadcast store updates `onChange`
  */
 
-export const Editor = memo(function Editor(props) {
+export const Editor = function Editor(props) {
+  const [code, setCode] = useState(props.code);
   return (
     <>
+      <LocalDirtyCodeModal
+        show={props.isDirty || code !== props?.code}
+        title="Unsaved Changes"
+        content="You have unsaved changes that will be lost if you leave this page."
+        dirtyCodeFileType={props.fileType}
+        dirtyCodeZuid={props.fileZUID}
+        dirtyCodeStatus={props?.status}
+        dirtyCodeCode={code}
+      />
       <TopBar
         contentModelZUID={props.contentModelZUID}
         fileZUID={props.fileZUID}
@@ -22,7 +33,7 @@ export const Editor = memo(function Editor(props) {
         status={props.status}
         isLive={props.isLive}
         isDirty={props.isDirty}
-        code={props.code}
+        code={code}
         updatedAt={props.updatedAt}
         updatedBy={props.updatedBy}
         publishedAt={props.publishedAt}
@@ -42,7 +53,8 @@ export const Editor = memo(function Editor(props) {
       >
         <MemoizedEditor
           dispatch={props.dispatch}
-          code={props.code}
+          code={code}
+          setCode={setCode}
           fileName={props.fileName}
           fileZUID={props.fileZUID}
           contentModelZUID={props.contentModelZUID}
@@ -53,4 +65,4 @@ export const Editor = memo(function Editor(props) {
       </Box>
     </>
   );
-});
+};

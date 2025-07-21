@@ -135,14 +135,6 @@ const Workspace = connect((state, props) => {
         {file && file.ZUID ? (
           <Fragment>
             <LockedView ZUID={file.ZUID} name={file.fileName} />
-            <LocalDirtyCodeModal
-              show={file.dirty && !fileIsPinned}
-              title="Unsaved Changes"
-              content="You have unsaved changes that will be lost if you leave this page."
-              dirtyCodeFileType={match.params.fileType}
-              dirtyCodeZuid={match.params.fileZUID}
-              dirtyCodeStatus={props?.status}
-            />
 
             <Box
               display="block"
@@ -176,6 +168,7 @@ const Workspace = connect((state, props) => {
                   )}
 
                   <Editor
+                    key={file.ZUID}
                     fileZUID={match.params.fileZUID}
                     fileType={match.params.fileType}
                     dispatch={props?.dispatch}
