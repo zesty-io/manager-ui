@@ -30,7 +30,7 @@ export const MetaLinkText = memo(function MetaLinkText({
       >
         <TextField
           name="metaLinkText"
-          value={value}
+          value={value || ""}
           placeholder={"This text is used in application navigation"}
           onChange={(evt) => onChange(evt.target.value, "metaLinkText")}
         />
