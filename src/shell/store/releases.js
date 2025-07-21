@@ -227,37 +227,41 @@ export function activate() {
  */
 export function fetchReleases() {
   return (dispatch) => {
-    return request(`${CONFIG.API_INSTANCE}/releases`).then((res) => {
-      if (res.status === 200) {
-        const sorted = res.data.sort((a, b) => {
-          if (a.createdAt > b.createdAt) {
-            return -1;
-          }
-          if (a.createdAt < b.createdAt) {
-            return 1;
-          } else {
-            return 0;
-          }
-        });
+    return request(`${CONFIG.API_INSTANCE}/releases`)
+      .then((res) => {
+        if (res.status === 200) {
+          const sorted = res.data.sort((a, b) => {
+            if (a.createdAt > b.createdAt) {
+              return -1;
+            }
+            if (a.createdAt < b.createdAt) {
+              return 1;
+            } else {
+              return 0;
+            }
+          });
 
-        dispatch(actions.fetchReleasesSuccess(sorted));
-      }
-      return res;
-    });
+          dispatch(actions.fetchReleasesSuccess(sorted));
+        }
+        return res;
+      })
+      .catch((err) => console.error("Failed to fetch releases:", err));
   };
 }
 
 export function fetchRelease(zuid) {
   return (dispatch) => {
-    return request(`${CONFIG.API_INSTANCE}/releases/${zuid}`).then((res) => {
-      if (res.status === 200) {
-        dispatch(actions.fetchReleaseSuccess(res.data));
-      } else {
-        // todo handle error
-      }
+    return request(`${CONFIG.API_INSTANCE}/releases/${zuid}`)
+      .then((res) => {
+        if (res.status === 200) {
+          dispatch(actions.fetchReleaseSuccess(res.data));
+        } else {
+          // todo handle error
+        }
 
-      return res;
-    });
+        return res;
+      })
+      .catch((err) => console.error("Failed to fetch release:", err));
   };
 }
 
@@ -309,26 +313,28 @@ export function deleteRelease(zuid) {
       method: "delete",
     }).then((res) => {
       // Update store
-      return dispatch(fetchReleases()).then(() => {
-        if (res.status !== 200) {
-          dispatch(
-            notify({
-              message: `Failed deleting release ${release?.name}`,
-              type: "warn",
-            })
-          );
-        } else {
-          dispatch(
-            notify({
-              message: `Deleted release ${release?.name}`,
-              type: "success",
-            })
-          );
-        }
+      return dispatch(fetchReleases())
+        .then(() => {
+          if (res.status !== 200) {
+            dispatch(
+              notify({
+                message: `Failed deleting release ${release?.name}`,
+                type: "warn",
+              })
+            );
+          } else {
+            dispatch(
+              notify({
+                message: `Deleted release ${release?.name}`,
+                type: "success",
+              })
+            );
+          }
 
-        // Return delete request response
-        return res;
-      });
+          // Return delete request response
+          return res;
+        })
+        .catch((err) => console.error("Failed to delete release:", err));
     });
   };
 }

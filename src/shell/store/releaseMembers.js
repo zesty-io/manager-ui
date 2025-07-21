@@ -116,18 +116,18 @@ export const { actions, reducer } = releaseMembers;
 
 export function fetchMembers(releaseZUID) {
   return (dispatch) => {
-    return request(
-      `${CONFIG.API_INSTANCE}/releases/${releaseZUID}/members`
-    ).then((res) => {
-      dispatch(
-        actions.fetchMembersSuccess({
-          releaseZUID,
-          data: res.data,
-        })
-      );
+    return request(`${CONFIG.API_INSTANCE}/releases/${releaseZUID}/members`)
+      .then((res) => {
+        dispatch(
+          actions.fetchMembersSuccess({
+            releaseZUID,
+            data: res.data,
+          })
+        );
 
-      return res;
-    });
+        return res;
+      })
+      .catch((err) => console.error("Failed to fetch release members:", err));
   };
 }
 
@@ -137,10 +137,12 @@ export function createMember(releaseZUID, payload) {
       method: "POST",
       body: payload,
       json: true,
-    }).then((res) => {
-      dispatch(fetchMembers(releaseZUID));
-      return res;
-    });
+    })
+      .then((res) => {
+        dispatch(fetchMembers(releaseZUID));
+        return res;
+      })
+      .catch((err) => console.error("Failed to create member:", err));
   };
 }
 
@@ -153,25 +155,27 @@ export function updateMember(releaseZUID, memberZUID, payload) {
         body: payload,
         json: true,
       }
-    ).then((res) => {
-      const state = getState();
-      const release = state.releases.data.find(
-        (release) => release.ZUID === releaseZUID
-      );
-      const member = state.releaseMembers.data[releaseZUID]?.find(
-        (member) => member.ZUID === memberZUID
-      );
-      const item = state.content[member.resourceZUID];
+    )
+      .then((res) => {
+        const state = getState();
+        const release = state.releases.data.find(
+          (release) => release.ZUID === releaseZUID
+        );
+        const member = state.releaseMembers.data[releaseZUID]?.find(
+          (member) => member.ZUID === memberZUID
+        );
+        const item = state.content[member.resourceZUID];
 
-      dispatch(
-        notify({
-          kind: "success",
-          message: `Updated release(${release.name}) member(${item?.web.metaTitle}) to version ${payload.version}`,
-        })
-      );
-      dispatch(fetchMembers(releaseZUID));
-      return res;
-    });
+        dispatch(
+          notify({
+            kind: "success",
+            message: `Updated release(${release.name}) member(${item?.web.metaTitle}) to version ${payload.version}`,
+          })
+        );
+        dispatch(fetchMembers(releaseZUID));
+        return res;
+      })
+      .catch((err) => console.error("Failed to update member:", err));
   };
 }
 
@@ -182,9 +186,13 @@ export function deleteMember(releaseZUID, memberZUID) {
       {
         method: "DELETE",
       }
-    ).then((res) => {
-      dispatch(fetchMembers(releaseZUID));
-      return res;
-    });
+    )
+      .then((res) => {
+        dispatch(fetchMembers(releaseZUID));
+        return res;
+      })
+      .catch((err) => {
+        console.error("Failed to delete member:", err);
+      });
   };
 }

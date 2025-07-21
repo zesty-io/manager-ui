@@ -38,19 +38,23 @@ export function fetchAuditTrailDrafting(itemZUID, limit = 5) {
   return (dispatch) => {
     return request(
       `${CONFIG.API_INSTANCE}/env/audits?affectedZUID=${itemZUID}&order=created&dir=desc&action=2&limit=${limit}`
-    ).then((data) => {
-      if (data) {
-        dispatch({
-          type: "FETCH_AUDIT_TRAIL_DRAFT",
-          itemZUID,
-          data: data.data,
-        });
-      } else {
-        console.error(
-          "An error fetching Audit trail happened. it is broken, fix it"
-        );
-      }
-    });
+    )
+      .then((data) => {
+        if (data) {
+          dispatch({
+            type: "FETCH_AUDIT_TRAIL_DRAFT",
+            itemZUID,
+            data: data.data,
+          });
+        } else {
+          console.error(
+            "An error fetching Audit trail happened. it is broken, fix it"
+          );
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to fetch audit trail for drafting:", err);
+      });
   };
 }
 
@@ -58,14 +62,22 @@ export function fetchAuditTrailPublish(itemZUID, limit = 3) {
   return (dispatch) => {
     return request(
       `${CONFIG.API_INSTANCE}/env/audits?affectedZUID=${itemZUID}&order=created&dir=desc&action=4&limit=${limit}`
-    ).then((data) => {
-      if (data) {
-        dispatch({ type: "FETCH_AUDIT_TRAIL_PUB", itemZUID, data: data.data });
-      } else {
-        console.error(
-          "An error fetching Audit trail happened. it is broken, fix it"
-        );
-      }
-    });
+    )
+      .then((data) => {
+        if (data) {
+          dispatch({
+            type: "FETCH_AUDIT_TRAIL_PUB",
+            itemZUID,
+            data: data.data,
+          });
+        } else {
+          console.error(
+            "An error fetching Audit trail happened. it is broken, fix it"
+          );
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to fetch audit trail for publishing:", err);
+      });
   };
 }
