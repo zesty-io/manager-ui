@@ -85,8 +85,6 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
   const view = views?.find((view) => view?.contentModelZUID === model?.ZUID);
   const canCreateModel = model?.name.toLowerCase() !== "clippings";
 
-  // console.log(location.pathname.split("/"), location.pathname.split("/")[3]);
-
   return (
     <>
       <Box
