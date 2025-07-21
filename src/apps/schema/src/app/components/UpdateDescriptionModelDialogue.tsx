@@ -50,7 +50,7 @@ export const UpdateDescriptionModelDialogue = ({ onClose, model }: Props) => {
 
   return (
     <Dialog open onClose={onClose} fullWidth maxWidth="xs">
-      <DialogTitle>
+      <DialogTitle component="div">
         <Box
           sx={{
             backgroundColor: "blue.50",
