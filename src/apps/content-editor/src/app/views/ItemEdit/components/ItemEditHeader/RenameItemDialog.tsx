@@ -43,7 +43,7 @@ export const RenameItemDialog = ({ onClose }: DuplicateItemProps) => {
 
   return (
     <Dialog open fullWidth maxWidth={"xs"} onClose={onClose}>
-      <DialogTitle>
+      <DialogTitle component="div">
         <Box
           sx={{
             backgroundColor: "blue.50",
