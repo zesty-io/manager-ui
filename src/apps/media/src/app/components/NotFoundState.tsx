@@ -11,7 +11,10 @@ interface Props {
   message?: string;
 }
 
-export const NotFoundState: FC<Props> = ({ title, message }) => {
+export const NotFoundState: FC<Props> = ({
+  title = "Folder Not Found",
+  message = "We're sorry the folder you requested could not be found. Please go back to the all media page.",
+}) => {
   const history = useHistory();
   const isSelectDialog = useSelector(
     (state: { mediaRevamp: State }) => state.mediaRevamp.isSelectDialog
@@ -51,10 +54,4 @@ export const NotFoundState: FC<Props> = ({ title, message }) => {
       </Box>
     </Box>
   );
-};
-
-NotFoundState.defaultProps = {
-  title: "Folder Not Found",
-  message:
-    "We’re sorry the folder you requested could not be found. Please go back to the all media page.",
 };
