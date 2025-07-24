@@ -45,7 +45,7 @@ export const MoveFileDialog = ({
 
   return (
     <Dialog open={true} fullWidth maxWidth={"xs"} onClose={onClose}>
-      <DialogTitle>
+      <DialogTitle component="div">
         <Typography fontWeight={600} variant="h5">
           Move {fileCount > 1 ? `${fileCount} Files` : "files"}
         </Typography>

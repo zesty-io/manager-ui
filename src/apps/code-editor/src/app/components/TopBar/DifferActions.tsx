@@ -3,7 +3,6 @@ import moment from "moment-timezone";
 import { useHistory } from "react-router";
 import { Select, Button, MenuItem, Box, Typography } from "@mui/material";
 import HistoryIcon from "@mui/icons-material/History";
-import LoadingButton from "@mui/lab/LoadingButton";
 import SaveIcon from "@mui/icons-material/Save";
 import EastIcon from "@mui/icons-material/East";
 
@@ -274,7 +273,7 @@ export const DifferActions = memo(function DifferActions(
               </Button>
             </>
           ) : (
-            <LoadingButton
+            <Button
               variant="contained"
               loadingPosition="start"
               size="small"
@@ -284,7 +283,7 @@ export const DifferActions = memo(function DifferActions(
               startIcon={<SaveIcon />}
             >
               Save Version
-            </LoadingButton>
+            </Button>
           )}
         </Box>
       )}

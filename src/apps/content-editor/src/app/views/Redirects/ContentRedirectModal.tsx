@@ -18,7 +18,6 @@ import {
 import { useDispatch } from "react-redux";
 import { notify } from "../../../../../../shell/store/notifications";
 import { useRedirectsDialog } from "../../../../../seo/src/app/components/RedirectsDialogProvider";
-import LoadingButton from "@mui/lab/LoadingButton";
 import {
   ContentItemProps,
   TARGET_OPTIONS,
@@ -264,7 +263,7 @@ export const ContentRedirectModal: FC<ContentRedirectModalProps> = ({
         <Button variant="text" color="inherit" onClick={onClose}>
           Don't Create
         </Button>
-        <LoadingButton
+        <Button
           data-cy="RedirectContentItemConfirmButton"
           variant="contained"
           color="primary"
@@ -273,7 +272,7 @@ export const ContentRedirectModal: FC<ContentRedirectModalProps> = ({
           disabled={isRedirectsLoading || invalidTarget || !target}
         >
           Create Redirect
-        </LoadingButton>
+        </Button>
       </DialogActions>
     </Dialog>
   );

@@ -20,7 +20,6 @@ import {
 import { useEffect, useState } from "react";
 import { useParams as useRouterParams } from "react-router";
 import { useStagedChanges } from "./StagedChangesContext";
-import { LoadingButton } from "@mui/lab";
 import {
   useCreateItemsPublishingMutation,
   useDeleteContentItemsMutation,
@@ -208,7 +207,7 @@ export const UpdateListActions = ({ items }: UpdateListActionsProps) => {
                 </div>
               }
             >
-              <LoadingButton
+              <Button
                 data-cy="MultiPageTableSaveChanges"
                 variant="contained"
                 startIcon={<SaveRounded />}
@@ -217,10 +216,10 @@ export const UpdateListActions = ({ items }: UpdateListActionsProps) => {
                 loading={isSaving}
               >
                 Save
-              </LoadingButton>
+              </Button>
             </Tooltip>
           ) : canDelete ? (
-            <LoadingButton
+            <Button
               data-cy="MultiPageTableDelete"
               loading={isDeleting}
               onClick={() => {
@@ -232,7 +231,7 @@ export const UpdateListActions = ({ items }: UpdateListActionsProps) => {
               color="inherit"
             >
               Delete
-            </LoadingButton>
+            </Button>
           ) : null}
           {canPublish && canUpdate && (
             <ButtonGroup
@@ -258,7 +257,7 @@ export const UpdateListActions = ({ items }: UpdateListActionsProps) => {
                   </div>
                 }
               >
-                <LoadingButton
+                <Button
                   startIcon={<CloudUploadRounded />}
                   sx={{
                     color: "common.white",
@@ -277,7 +276,7 @@ export const UpdateListActions = ({ items }: UpdateListActionsProps) => {
                   data-cy="MultiPageTablePublish"
                 >
                   {hasStagedChanges ? "Save & Publish" : "Publish"}
-                </LoadingButton>
+                </Button>
               </Tooltip>
               <Button
                 sx={{

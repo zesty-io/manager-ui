@@ -71,7 +71,7 @@ export const RoleAccessInfo = ({ role }: Props) => {
       </Typography>
       <Box display="flex" flexWrap="wrap" gap={2}>
         {roleAccess[role].map((access) => (
-          <Box display="flex" width={120} alignItems="center">
+          <Box key={access} display="flex" width={120} alignItems="center">
             {accessIcon[access as keyof typeof accessIcon]}
             <Typography
               sx={{ ml: 1, textTransform: "capitalize" }}

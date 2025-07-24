@@ -405,7 +405,7 @@ export function Preview(props) {
           overflow: device === "fullscreen" ? "unset" : "auto",
 
           scrollbarWidth: "none",
-          "-ms-overflow-style": "none",
+          msOverflowStyle: "none",
           "&::-webkit-scrollbar": {
             display: "none",
           },

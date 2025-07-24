@@ -11,7 +11,6 @@ import {
   Link,
 } from "@mui/material";
 import { DeleteRounded, Description, HiveRounded } from "@mui/icons-material";
-import { LoadingButton } from "@mui/lab";
 import { useDispatch } from "react-redux";
 
 import { useDomain } from "../../../../../../shell/hooks/use-domain";
@@ -170,7 +169,7 @@ export const DeleteRedirectModal = ({
         >
           Cancel
         </Button>
-        <LoadingButton
+        <Button
           data-cy="ConfirmDeleteRedirect"
           variant="contained"
           color="error"
@@ -178,7 +177,7 @@ export const DeleteRedirectModal = ({
           loading={isDeletingRedirect}
         >
           Delete Forever
-        </LoadingButton>
+        </Button>
       </DialogActions>
     </Dialog>
   );

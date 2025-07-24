@@ -36,8 +36,8 @@ export const FilterButton: FC<FilterButton> = ({
               variant="inherit"
               sx={{
                 display: "-webkit-box",
-                "-webkit-line-clamp": "1",
-                "-webkit-box-orient": "vertical",
+                WebkitLineClamp: "1",
+                WebkitBoxOrient: "vertical",
                 wordBreak: "break-word",
                 wordWrap: "break-word",
                 hyphens: "auto",

@@ -35,7 +35,7 @@ export const DeleteFileModal: FC<Props> = ({
 
   return (
     <Dialog open={true} fullWidth maxWidth={"xs"} onClose={onClose}>
-      <DialogTitle>
+      <DialogTitle component="div">
         <Box
           sx={{
             backgroundColor: "red.100",

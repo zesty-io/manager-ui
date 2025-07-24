@@ -207,13 +207,14 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
             top: "2px",
             px: 4,
           }}
-          value={location.pathname.split("/")[3]}
+          value={location.pathname.split("/")[3] || TABS[0].value}
           onChange={(event, value) =>
             history.push(`/schema/${model?.ZUID}/${value}`)
           }
         >
           {TABS?.map((tab) => (
             <Tab
+              key={tab.value}
               icon={<SvgIcon component={tab.icon} fontSize="small" />}
               iconPosition="start"
               label={tab.name}
