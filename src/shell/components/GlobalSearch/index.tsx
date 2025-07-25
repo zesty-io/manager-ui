@@ -134,6 +134,8 @@ export const GlobalSearch = () => {
     isFetchingContentSearchResults ||
     isFetchingBlocksResults;
 
+  const { blocks, setBlockKeyword } = useSearchBlocksByKeyword();
+
   const suggestions: Suggestion[] = useMemo(() => {
     // Content data needs to be reset to [] when api call fails
     const contentSuggestions: Suggestion[] =
