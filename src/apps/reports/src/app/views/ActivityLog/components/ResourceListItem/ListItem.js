@@ -82,7 +82,7 @@ export const ListItem = (props) => {
         )}
       </ListItemAvatar>
       <ListItemText
-        sx={{ margin: props.size === "large" && 0 }}
+        sx={{ margin: 0 }}
         primaryTypographyProps={{
           ...(props.size === "large" && {
             variant: "h5",

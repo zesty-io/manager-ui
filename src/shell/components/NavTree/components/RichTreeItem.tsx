@@ -15,8 +15,8 @@ type CustomTreeItem2Props = TreeItem2Props & {
 };
 export const RichTreeItem = memo(
   forwardRef((props: CustomTreeItem2Props, ref: React.Ref<HTMLLIElement>) => {
-    const { id, itemId, label, disabled, children, onItemDrop, dragAndDrop } =
-      props;
+    const { onItemDrop, dragAndDrop, ...otherProps } = props;
+    const { id, itemId, label, disabled, children } = otherProps;
     const { publicAPI } = useTreeItem2({
       id,
       itemId,
@@ -33,7 +33,7 @@ export const RichTreeItem = memo(
 
     return (
       <TreeItem2
-        {...props}
+        {...otherProps}
         children={props.children}
         ref={ref}
         slots={{ label: NavTreeLabel }}

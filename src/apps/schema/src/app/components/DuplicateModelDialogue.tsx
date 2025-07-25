@@ -15,7 +15,6 @@ import {
   Checkbox,
   Alert,
 } from "@mui/material";
-import { alpha } from "@mui/material/styles";
 import { useEffect, useReducer, useMemo } from "react";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import { useSelector } from "react-redux";
@@ -35,7 +34,6 @@ import {
 } from "../../../../../shell/services/types";
 import { notify } from "../../../../../shell/store/notifications";
 import { useDispatch } from "react-redux";
-import { LoadingButton } from "@mui/lab";
 import { useHistory } from "react-router";
 import { modelIconMap, modelNameMap } from "../utils";
 import { formatPathPart } from "../../../../../utility/formatPathPart";
@@ -346,7 +344,7 @@ export const DuplicateModelDialogue = ({ onClose, model }: Props) => {
         <Button variant="outlined" color="inherit" onClick={onClose}>
           Cancel
         </Button>
-        <LoadingButton
+        <Button
           variant="contained"
           disabled={!newModel.name || !newModel.label}
           loading={
@@ -361,7 +359,7 @@ export const DuplicateModelDialogue = ({ onClose, model }: Props) => {
           }
         >
           Duplicate
-        </LoadingButton>
+        </Button>
       </DialogActions>
     </Dialog>
   );

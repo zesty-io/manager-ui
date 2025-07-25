@@ -8,7 +8,6 @@ import PauseCircleOutlineRoundedIcon from "@mui/icons-material/PauseCircleOutlin
 import Typography from "@mui/material/Typography";
 import { useDispatch } from "react-redux";
 import { notify } from "../../../../../../../../../shell/store/notifications";
-import { LoadingButton } from "@mui/lab";
 import { useDeactivateWorkflowStatusLabelMutation } from "../../../../../../../../../shell/services/instance";
 
 type DeactivationDialogProps = {
@@ -103,7 +102,7 @@ const DeactivationDialog: FC<DeactivationDialogProps> = ({
           Cancel
         </Button>
 
-        <LoadingButton
+        <Button
           onClick={handleConfirm}
           variant="contained"
           color="error"
@@ -112,7 +111,7 @@ const DeactivationDialog: FC<DeactivationDialogProps> = ({
           data-cy="deactivation-dialog-confirm-button"
         >
           Deactivate Status
-        </LoadingButton>
+        </Button>
       </DialogActions>
     </Dialog>
   );

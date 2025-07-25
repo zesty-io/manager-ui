@@ -11,14 +11,10 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
-import {
-  useDeleteContentModelMutation,
-  useUpdateContentModelMutation,
-} from "../../../../../shell/services/instance";
+import { useDeleteContentModelMutation } from "../../../../../shell/services/instance";
 import { ContentModel, WebView } from "../../../../../shell/services/types";
 import { notify } from "../../../../../shell/store/notifications";
 import { useDispatch, useSelector } from "react-redux";
-import { LoadingButton } from "@mui/lab";
 import { useHistory } from "react-router";
 
 interface Props {
@@ -122,7 +118,7 @@ export const DeleteModelDialogue = ({ onClose, model }: Props) => {
         <Button onClick={onClose} color="inherit">
           Cancel
         </Button>
-        <LoadingButton
+        <Button
           disabled={deleteConfirmation !== model.label}
           onClick={handleModelDelete}
           loading={isLoading}
@@ -131,7 +127,7 @@ export const DeleteModelDialogue = ({ onClose, model }: Props) => {
           data-cy="delete-model-confirmation-button"
         >
           Delete Forever
-        </LoadingButton>
+        </Button>
       </DialogActions>
     </Dialog>
   );

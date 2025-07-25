@@ -48,23 +48,35 @@ export default connect((state) => {
 
   useEffect(() => {
     setIsDirty(false);
-    request(`${CONFIG.API_INSTANCE}/env/settings`).then((res) => {
-      const robots_on = res.data.find((setting) => setting.key === "robots_on");
-      const robots_text = res.data.find(
-        (setting) => setting.key === "robots_text"
-      );
+    request(`${CONFIG.API_INSTANCE}/env/settings`)
+      .then((res) => {
+        const robots_on = res.data.find(
+          (setting) => setting.key === "robots_on"
+        );
+        const robots_text = res.data.find(
+          (setting) => setting.key === "robots_text"
+        );
 
-      // Merge current local state with incoming remote state
-      setRobotText((prevRobotText) => ({
-        ...prevRobotText,
-        ...robots_text,
-      }));
-      setRobotOn((prevRobotOn) => ({
-        ...prevRobotOn,
-        ...robots_on,
-        value: robots_on.value,
-      }));
-    });
+        // Merge current local state with incoming remote state
+        setRobotText((prevRobotText) => ({
+          ...prevRobotText,
+          ...robots_text,
+        }));
+        setRobotOn((prevRobotOn) => ({
+          ...prevRobotOn,
+          ...robots_on,
+          value: robots_on.value,
+        }));
+      })
+      .catch((err) => {
+        props.dispatch(
+          notify({
+            kind: "warn",
+            message: `Failed to fetch settings`,
+          })
+        );
+        console.error("Failed to fetch settings:", err);
+      });
   }, []);
 
   const handleRobotsOn = (value) => {
@@ -127,7 +139,9 @@ export default connect((state) => {
         method: data.ZUID ? "PUT" : "POST",
         body: JSON.stringify(data),
       }
-    );
+    ).catch((err) => {
+      console.error("Failed to save robots.txt settings:", err);
+    });
   };
 
   return (

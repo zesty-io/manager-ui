@@ -11,7 +11,6 @@ import { startCase } from "lodash";
 import ApiRoundedIcon from "@mui/icons-material/ApiRounded";
 import headlessLogos from "../../../../../../../public/images/headlessLogos.jpg";
 import hybridLogos from "../../../../../../../public/images/hybridLogos.jpg";
-import { LoadingButton } from "@mui/lab";
 import { InstanceSetting } from "../../../../../../shell/services/types";
 import { useUpdateInstanceSettingMutation } from "../../../../../../shell/services/instance";
 
@@ -144,13 +143,13 @@ export const HeadlessSwitcher = ({ instanceSetting }: Props) => {
           <Button onClick={() => setSelected(null)} color="primary">
             Cancel
           </Button>
-          <LoadingButton
+          <Button
             loading={isLoading}
             variant="contained"
             onClick={handleSwitch}
           >
             Switch to {startCase(selected)}
-          </LoadingButton>
+          </Button>
         </DialogActions>
       </Dialog>
     </>

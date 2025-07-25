@@ -55,7 +55,11 @@ export const SearchPage: FC = () => {
     isError: isContentFetchingFailed,
   } = useSearchContentQuery({ query: keyword, order: "created", dir: "desc" });
   const [models, setModelKeyword] = useSearchModelsByKeyword();
-  const { blocks, setBlockKeyword } = useSearchBlocksByKeyword();
+  const {
+    blocks,
+    setBlockKeyword,
+    isLoading: isLoadingBlocksResults,
+  } = useSearchBlocksByKeyword();
   const [codeFiles, setCodeFileKeyword] = useSearchCodeFilesByKeywords();
   const [mediaFolders, setMediaFolderKeyword] =
     useSearchMediaFoldersByKeyword();
@@ -68,7 +72,8 @@ export const SearchPage: FC = () => {
       }
     );
   const { data: langs } = useGetLangsQuery({});
-  const isLoading = isFetchingContent || isFetchingMedia;
+  const isLoading =
+    isFetchingContent || isFetchingMedia || isLoadingBlocksResults;
 
   useEffect(() => {
     let isMounted = true;

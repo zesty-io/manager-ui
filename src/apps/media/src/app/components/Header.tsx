@@ -358,8 +358,8 @@ export const Header = ({
                   fontWeight={700}
                   sx={{
                     display: "-webkit-box",
-                    "-webkit-line-clamp": "2",
-                    "-webkit-box-orient": "vertical",
+                    WebkitLineClamp: "2",
+                    WebkitBoxOrient: "vertical",
                     wordBreak: "break-word",
                     wordWrap: "break-word",
                     hyphens: "auto",

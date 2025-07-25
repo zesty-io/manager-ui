@@ -1,5 +1,4 @@
 import { useState, FC, useRef, useMemo, ReactNode, useEffect } from "react";
-import LoadingButton from "@mui/lab/LoadingButton";
 import {
   Button,
   Dialog,
@@ -501,7 +500,7 @@ const CreateForm: FC<CreateFormProps> = ({
         </Button>
         <Stack direction="row" justifyContent="space-between" gap="16px">
           {!isEdit && (
-            <LoadingButton
+            <Button
               data-cy="RedirectsCreateAddAnotherButton"
               variant="outlined"
               color="primary"
@@ -512,9 +511,9 @@ const CreateForm: FC<CreateFormProps> = ({
               onClick={() => handleSubmit("multiple")}
             >
               Create Another Redirect
-            </LoadingButton>
+            </Button>
           )}
-          <LoadingButton
+          <Button
             data-cy="RedirectsCreateButton"
             variant="contained"
             color="primary"
@@ -524,7 +523,7 @@ const CreateForm: FC<CreateFormProps> = ({
             onClick={() => handleSubmit("single")}
           >
             {isEdit ? "Save" : "Create Redirect"}
-          </LoadingButton>
+          </Button>
         </Stack>
       </DialogActions>
     </Dialog>

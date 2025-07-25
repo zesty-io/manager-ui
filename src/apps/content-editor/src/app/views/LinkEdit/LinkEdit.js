@@ -224,19 +224,26 @@ export default function LinkEdit() {
     return request(`${CONFIG.API_INSTANCE}/content/links/${linkZUID}`, {
       method: "DELETE",
       json: true,
-    }).then(() => {
-      dispatch({
-        type: "REMOVE_LINK",
+    })
+      .then(() => {
+        dispatch({
+          type: "REMOVE_LINK",
+        });
+        dispatch(
+          notify({
+            message: `Link Deleted: ${state.metaTitle}`,
+            kind: "error",
+          })
+        );
+        dispatch(
+          unpinTab({ pathname: `/content/link/${linkZUID}`, search: "" })
+        );
+        dispatch(instanceApi.util.invalidateTags(["ContentNav"]));
+      })
+      .catch((err) => {
+        console.error("Failed to delete link:", err);
+        dispatch(notify({ message: "Error deleting link", kind: "error" }));
       });
-      dispatch(
-        notify({
-          message: `Link Deleted: ${state.metaTitle}`,
-          kind: "error",
-        })
-      );
-      dispatch(unpinTab({ pathname: `/content/link/${linkZUID}`, search: "" }));
-      dispatch(instanceApi.util.invalidateTags(["ContentNav"]));
-    });
   }
 
   function onChange(value, name) {

@@ -13,6 +13,7 @@ import {
   useMemo,
   useState,
   useContext,
+  forwardRef,
 } from "react";
 import AutoSizer, { Size } from "react-virtualized-auto-sizer";
 import {
@@ -422,17 +423,19 @@ export const ItemListTable = memo(
             }}
             slots={{
               noRowsOverlay: noRowsOverlay,
-              baseCheckbox: (props: any) =>
-                loading ? (
+              baseCheckbox: forwardRef((props: any, ref: any) => {
+                return loading ? (
                   <Skeleton variant="rounded" width="18px" height="18px" />
                 ) : (
                   <Checkbox
+                    ref={ref}
                     disabled={
                       stagedChanges && Object.keys(stagedChanges)?.length
                     }
                     {...props}
                   />
-                ),
+                );
+              }),
               skeletonCell: DataGridSkeletonCell,
             }}
             slotProps={{

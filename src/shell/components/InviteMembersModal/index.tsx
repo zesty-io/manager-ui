@@ -20,7 +20,6 @@ import {
   useCreateUserInviteMutation,
   useGetCurrentUserRolesQuery,
 } from "../../services/accounts";
-import { LoadingButton } from "@mui/lab";
 import { NoPermission } from "../NoPermission";
 import instanzeZUID from "../../../utility/instanceZUID";
 import { ConfirmationModal } from "./ConfirmationDialog";
@@ -367,13 +366,13 @@ const InviteMembersModal = ({ onClose }: Props) => {
           <Button color="inherit" onClick={() => onClose()}>
             Cancel
           </Button>
-          <LoadingButton
+          <Button
             variant="contained"
             onClick={handleInvites}
             loading={sendingEmails}
           >
             Invite
-          </LoadingButton>
+          </Button>
         </DialogActions>
       </Dialog>
       {isDoneSendingEmails && (

@@ -1,5 +1,4 @@
 import { useState, useContext } from "react";
-import { LoadingButton } from "@mui/lab";
 import {
   Box,
   Stack,
@@ -18,7 +17,6 @@ import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
 import CloudUploadRoundedIcon from "@mui/icons-material/CloudUploadRounded";
 import CalendarTodayRoundedIcon from "@mui/icons-material/CalendarTodayRounded";
 import { CloseRounded } from "@mui/icons-material";
-import { theme } from "@zesty-io/material";
 
 import { useMetaKey } from "../../../../../../shell/hooks/useMetaKey";
 import { ContentModel } from "../../../../../../shell/services/types";
@@ -76,8 +74,8 @@ export const Header = ({ model, onSave, isLoading, isDirty }: Props) => {
             color="text.primary"
             sx={{
               display: "-webkit-box",
-              "-webkit-line-clamp": "2",
-              "-webkit-box-orient": "vertical",
+              WebkitLineClamp: "2",
+              WebkitBoxOrient: "vertical",
               wordBreak: "break-word",
               wordWrap: "break-word",
               hyphens: "auto",
@@ -95,7 +93,7 @@ export const Header = ({ model, onSave, isLoading, isDirty }: Props) => {
               size="small"
               disabled={!isDirty || isLoading}
             >
-              <LoadingButton
+              <Button
                 startIcon={<AddRoundedIcon />}
                 onClick={() => {
                   onSave("addNew");
@@ -104,7 +102,7 @@ export const Header = ({ model, onSave, isLoading, isDirty }: Props) => {
                 variant="outlined"
               >
                 Create & Add New
-              </LoadingButton>
+              </Button>
               <Button
                 size="xsmall"
                 onClick={(evt) => {
@@ -138,7 +136,7 @@ export const Header = ({ model, onSave, isLoading, isDirty }: Props) => {
               },
             }}
           >
-            <LoadingButton
+            <Button
               startIcon={<SaveRoundedIcon />}
               onClick={() => {
                 onSave("");
@@ -148,7 +146,7 @@ export const Header = ({ model, onSave, isLoading, isDirty }: Props) => {
               data-cy="CreateItemSaveButton"
             >
               Create
-            </LoadingButton>
+            </Button>
             <Button
               size="xsmall"
               onClick={(evt) => {

@@ -103,6 +103,7 @@ export const Header = ({ dateRange, onDateRangeChange }: Props) => {
       <Menu open={openMenu} onClose={handleClose} anchorEl={anchorEl}>
         {dateRanges.map((dateRangeItem) => (
           <MenuItem
+            key={dateRangeItem}
             onClick={() => {
               onDateRangeChange(dateRangeItem);
               handleClose();

@@ -89,7 +89,7 @@ export default function Content(props) {
       sx={{
         "*": {
           scrollbarWidth: "none",
-          "-ms-overflow-style": "none",
+          msOverflowStyle: "none",
           "&::-webkit-scrollbar": {
             display: "none",
           },
@@ -181,7 +181,7 @@ export default function Content(props) {
             ) : isDisabled ? (
               <></>
             ) : (
-              <Tooltip title="Open DUO Mode" placement="left" dark>
+              <Tooltip title="Open DUO Mode" placement="left">
                 <IconButton
                   size="small"
                   onClick={() => {

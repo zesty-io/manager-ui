@@ -1,13 +1,5 @@
-import { FC, useState, useMemo } from "react";
-import {
-  Box,
-  Typography,
-  Button,
-  Menu,
-  MenuItem,
-  ListItemIcon,
-} from "@mui/material";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import { FC, useState } from "react";
+import { Box, Typography, Menu, MenuItem, ListItemIcon } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
 import { useSelector } from "react-redux";
 import { alpha } from "@mui/material/styles";
@@ -118,6 +110,7 @@ export const InsightsMedia: FC = () => {
         <Menu open={open} onClose={handleClose} anchorEl={anchorEl}>
           {dateRanges.map((dateRangeItem) => (
             <MenuItem
+              key={dateRangeItem}
               onClick={() => {
                 setDateRange(dateRangeItem);
                 handleClose();

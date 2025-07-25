@@ -7,7 +7,6 @@ import {
   DialogActions,
 } from "@mui/material";
 import { UnpublishedRounded } from "@mui/icons-material";
-import { LoadingButton } from "@mui/lab";
 
 type UnpublishDialogProps = {
   onClose: () => void;
@@ -54,7 +53,7 @@ export const UnpublishDialog = ({
         <Button color="inherit" onClick={onClose}>
           Cancel
         </Button>
-        <LoadingButton
+        <Button
           data-cy="ConfirmUnpublishButton"
           variant="contained"
           color="error"
@@ -63,7 +62,7 @@ export const UnpublishDialog = ({
           loading={loading}
         >
           Unpublish Item
-        </LoadingButton>
+        </Button>
       </DialogActions>
     </Dialog>
   );

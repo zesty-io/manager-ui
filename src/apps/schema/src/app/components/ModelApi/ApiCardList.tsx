@@ -54,7 +54,7 @@ export const ApiCardList = () => {
         }}
       >
         {filteredApiTypes?.map((apiType) => (
-          <ApiCard type={apiType} />
+          <ApiCard key={apiType} type={apiType} />
         ))}
       </Box>
     </Stack>

@@ -3,8 +3,8 @@ import {
   TextField,
   InputAdornment,
   CircularProgress,
-  Typography,
   Box,
+  Theme,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useParams } from "react-router";
@@ -157,14 +157,19 @@ export const ItemRoute = ({
               <Adornment isLoading={isLoading} isUnique={isUnique} />
             ),
           }}
+          slotProps={{
+            formHelperText: {
+              variant: "body2",
+              sx: {
+                color: (theme: Theme) => theme.palette.info.dark,
+              },
+            },
+          }}
           helperText={
             !!pathPart &&
-            isUnique && (
-              <Typography variant="body2" color="info.dark">
-                {domain}
-                {parent ? parent.web?.path + pathPart : `/${pathPart}`}
-              </Typography>
-            )
+            isUnique &&
+            `${domain}
+                ${parent ? parent.web?.path + pathPart : `/${pathPart}`}`
           }
           error={hasErrors(error)}
         />

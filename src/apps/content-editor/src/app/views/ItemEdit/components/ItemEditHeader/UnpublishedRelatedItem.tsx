@@ -150,8 +150,8 @@ export const UnpublishedRelatedItem = ({
           color: "text.primary",
           sx: {
             display: "-webkit-box",
-            "-webkit-line-clamp": "1",
-            "-webkit-box-orient": "vertical",
+            WebkitLineClamp: "1",
+            WebkitBoxOrient: "vertical",
             wordBreak: "break-word",
             wordWrap: "break-word",
             hyphens: "auto",
@@ -164,8 +164,8 @@ export const UnpublishedRelatedItem = ({
           color: "text.secondary",
           sx: {
             display: "-webkit-box",
-            "-webkit-line-clamp": "1",
-            "-webkit-box-orient": "vertical",
+            WebkitLineClamp: "1",
+            WebkitBoxOrient: "vertical",
             wordBreak: "break-word",
             wordWrap: "break-word",
             hyphens: "auto",

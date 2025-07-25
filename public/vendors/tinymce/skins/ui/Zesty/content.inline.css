@@ -300,15 +300,22 @@ pre[class*="language-"] {
 .mce-content-body[data-mce-placeholder] {
   position: relative;
 }
-.mce-content-body[data-mce-placeholder]:not(.mce-visualblocks, .mce-edit-focus)::before {
+.mce-content-body[data-mce-placeholder]:not(
+    .mce-visualblocks,
+    .mce-edit-focus
+  )::before {
   color: rgba(71, 84, 103, 0.7);
   content: attr(data-mce-placeholder);
   position: absolute;
 }
-.mce-content-body:not([dir="rtl"])[data-mce-placeholder]:not(.mce-visualblocks)::before {
+.mce-content-body:not([dir="rtl"])[data-mce-placeholder]:not(
+    .mce-visualblocks
+  )::before {
   left: 8px;
 }
-.mce-content-body[dir="rtl"][data-mce-placeholder]:not(.mce-visualblocks)::before {
+.mce-content-body[dir="rtl"][data-mce-placeholder]:not(
+    .mce-visualblocks
+  )::before {
   right: 1px;
 }
 .mce-content-body div.mce-resizehandle {

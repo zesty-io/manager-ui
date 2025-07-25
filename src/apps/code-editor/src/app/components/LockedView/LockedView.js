@@ -6,7 +6,6 @@ import moment from "moment-timezone";
 import { checkLock, lock, unlock } from "shell/store/content";
 
 import Button from "@mui/material/Button";
-import { LoadingButton } from "@mui/lab";
 import CircularProgress from "@mui/material/CircularProgress";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
 import SkipPreviousIcon from "@mui/icons-material/SkipPrevious";
@@ -146,7 +145,7 @@ export function LockedView(props) {
           <Button variant="text" color="inherit" onClick={onClose}>
             Go Back
           </Button>
-          <LoadingButton
+          <Button
             data-cy="DeleteContentItemConfirmButton"
             variant="contained"
             color="warning"
@@ -156,7 +155,7 @@ export function LockedView(props) {
             }
           >
             Unlock
-          </LoadingButton>
+          </Button>
         </DialogActions>
       </Dialog>
     );

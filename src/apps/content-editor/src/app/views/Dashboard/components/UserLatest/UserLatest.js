@@ -86,23 +86,32 @@ export function UserLatest(props) {
               // NOTE: Can not use fetchField action because we do not have the field model ZUID on hand
               return request(
                 `${CONFIG.API_INSTANCE}${log.meta.uri.slice(3)}` // strip api version from uri
-              ).then((field) => {
-                return request(
-                  `${CONFIG.API_INSTANCE}/content/models/${field.data.contentModelZUID}`
-                ).then((model) => {
-                  if (field?.data?.label && model?.data?.label) {
-                    if (log.action === 2) {
-                      log.recentTitle = `You Modified ${
-                        field.data.label
-                      } Field on ${model.data.label} Schema ${moment(
-                        log.updatedAt
-                      ).fromNow()}`;
-                    }
-                  }
+              )
+                .then((field) => {
+                  return request(
+                    `${CONFIG.API_INSTANCE}/content/models/${field.data.contentModelZUID}`
+                  )
+                    .then((model) => {
+                      if (field?.data?.label && model?.data?.label) {
+                        if (log.action === 2) {
+                          log.recentTitle = `You Modified ${
+                            field.data.label
+                          } Field on ${model.data.label} Schema ${moment(
+                            log.updatedAt
+                          ).fromNow()}`;
+                        }
+                      }
 
-                  return log;
-                });
-              });
+                      return log;
+                    })
+                    .catch((err) =>
+                      console.error(
+                        `Failed to fetch model: ${field.data.contentModelZUID}`,
+                        err
+                      )
+                    );
+                })
+                .catch((err) => console.error(err));
 
             default:
               // NOTE: Brave browser does not support replaceAll so check for presence of

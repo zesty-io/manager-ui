@@ -16,7 +16,6 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import LoadingButton from "@mui/lab/LoadingButton";
 import CloseIcon from "@mui/icons-material/Close";
 import { FieldTypeText } from "@zesty-io/material";
 import { FormControl } from "@mui/material";
@@ -273,7 +272,7 @@ export const CreateFile = memo(function CreateFile(props) {
             >
               Cancel (ESC)
             </Button>
-            <LoadingButton
+            <Button
               variant="contained"
               color="primary"
               onClick={handleCreateFile}
@@ -284,7 +283,7 @@ export const CreateFile = memo(function CreateFile(props) {
               startIcon={<CheckCircleIcon />}
             >
               Create File
-            </LoadingButton>
+            </Button>
           </DialogActions>
         </Dialog>
       )}
