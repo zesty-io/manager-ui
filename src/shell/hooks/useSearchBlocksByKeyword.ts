@@ -76,7 +76,7 @@ export const useSearchBlocksByKeyword = (): SearchResult => {
   const parsedBlocks: BlockModel[] = useMemo(() => {
     if (isLoading) return [];
 
-    const processedModels = !modelsRaw?.length
+    const processedModels: BlockModel[] = !modelsRaw?.length
       ? []
       : modelsRaw?.map((model) => ({
           ZUID: model?.ZUID,
