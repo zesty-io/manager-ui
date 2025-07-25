@@ -1,15 +1,8 @@
-import { useEffect, useState, useMemo, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { searchItems } from "shell/store/content";
-import { Box, Link as MuiLink } from "@mui/material";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faAsterisk,
-  faExternalLinkAlt,
-  faLink,
-  faBan,
-} from "@fortawesome/free-solid-svg-icons";
+import { Box, Link as MuiLink, Typography } from "@mui/material";
 
 export const RedirectTargetCell = (props) => {
   const dispatch = useDispatch();
@@ -33,42 +26,48 @@ export const RedirectTargetCell = (props) => {
   return (
     <>
       {props.targetType === "page" ? (
-        <span>
+        <>
           {contentItem?.meta?.contentModelZUID ? (
             <Link
               to={`/content/${contentItem.meta.contentModelZUID}/${props.target}`}
+              style={{
+                textOverflow: "ellipsis",
+                overflow: "hidden",
+                textDecoration: "none",
+                color: "info.main",
+              }}
             >
-              <FontAwesomeIcon icon={faLink} />
-              &nbsp;
-              <code>{contentItem.web.path}</code>
+              <Typography variant="body2" color="info.main">
+                {contentItem.web.path}
+              </Typography>
             </Link>
           ) : loaded ? (
-            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-              <FontAwesomeIcon icon={faBan} />
-              Redirect Target has been deleted
-            </Box>
+            <Typography variant="body2" color="info.main">
+              Redirect Target has been
+            </Typography>
           ) : (
-            <span>Loading...</span>
+            <Typography variant="body2" color="info.main">
+              Loading...
+            </Typography>
           )}
-        </span>
+        </>
       ) : props.targetType === "external" ? (
-        <span>
-          <MuiLink
-            underline="none"
-            color="secondary"
-            href={props.target}
-            target="_blank"
-            title="Redirect URL"
-          >
-            <FontAwesomeIcon icon={faExternalLinkAlt} />
-            &nbsp;<code>{props.target}</code>
-          </MuiLink>
-        </span>
+        <MuiLink
+          underline="none"
+          color="info"
+          href={props.target}
+          target="_blank"
+          title="Redirect URL"
+          sx={{ textOverflow: "ellipsis", overflow: "hidden" }}
+        >
+          <Typography variant="body2" color="info.main">
+            {props.target}
+          </Typography>
+        </MuiLink>
       ) : (
-        <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-          <FontAwesomeIcon icon={faAsterisk} />
-          <code>{props.target}</code>
-        </Box>
+        <Typography variant="body2" color="info.main">
+          {props.target}
+        </Typography>
       )}
     </>
   );

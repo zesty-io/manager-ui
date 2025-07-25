@@ -1,7 +1,6 @@
 import {
   Box,
   Typography,
-  TextField,
   Button,
   InputAdornment,
   Stack,
@@ -19,6 +18,7 @@ import { NoResults } from "../../schema/src/app/components/NoResults";
 import allBlocksEmpty from "../../../../public/images/allBlocksEmpty.png";
 import { OnboardingDialog } from "../components/OnboardingDialog";
 import { useLocalStorage } from "react-use";
+import SearchBox from "../../../shell/components/SearchBox";
 
 export const AllBlocks = () => {
   const [search, setSearch] = useState("");
@@ -73,7 +73,7 @@ export const AllBlocks = () => {
             All Blocks
           </Typography>
           <Stack direction="row" alignItems="center" gap={1}>
-            <TextField
+            <SearchBox
               data-cy="search-blocks-input"
               value={search}
               onChange={(event) => setSearch(event.target.value)}
@@ -88,12 +88,9 @@ export const AllBlocks = () => {
               InputProps={{
                 sx: {
                   backgroundColor: "grey.50",
-                  input: {
-                    py: 0.75,
-                  },
                 },
                 startAdornment: (
-                  <InputAdornment position="start" sx={{ marginRight: 0.5 }}>
+                  <InputAdornment position="start">
                     <SearchRoundedIcon fontSize="small" color="action" />
                   </InputAdornment>
                 ),
@@ -198,7 +195,10 @@ export const AllBlocks = () => {
               <NoResults
                 type="search"
                 searchTerm={search}
-                onButtonClick={() => searchRef.current.focus()}
+                onButtonClick={() => {
+                  setSearch("");
+                  searchRef.current.focus();
+                }}
               />
             )}
           </Box>
@@ -220,6 +220,7 @@ export const AllBlocks = () => {
       {showCreateModelDialogue && (
         <CreateModelDialogue
           modelType="block"
+          typeIsSet={true}
           onClose={() => setShowCreateModelDialogue(false)}
         />
       )}

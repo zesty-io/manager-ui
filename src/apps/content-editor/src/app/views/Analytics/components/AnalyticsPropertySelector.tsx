@@ -11,6 +11,8 @@ type Props = {
 };
 
 const removeProtocolAndSubdomain = (url: string): string => {
+  if (!url) return "";
+
   const urlObj = new URL(url);
   const parts = urlObj.hostname.split(".");
 

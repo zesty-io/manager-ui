@@ -13,14 +13,17 @@ import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
 
-import { FieldTypeText } from "@zesty-io/material";
-
 import { Notice } from "@zesty-io/core/Notice";
 import { notify } from "shell/store/notifications";
 
 import { fetchFontsInstalled, installSiteFont } from "shell/store/settings";
 
 import styles from "./Fonts.less";
+import { TopBar } from "../../components/TopBar";
+import Box from "@mui/material/Box";
+import { MainWrapper } from "../../components/Containers";
+import Typography from "@mui/material/Typography";
+import SearchBox from "../../../../../../shell/components/SearchBox";
 export default connect((state) => {
   return {
     fonts: state.settings.fonts,
@@ -226,15 +229,46 @@ export default connect((state) => {
           <div key={index} className={styles.ListFontItem}>
             <header className={styles.FontHeader}>
               <div>
-                <h3 className={styles.FontFamily}>{itemFont.family}</h3>
-                <ul className={styles.FontVariants}>
+                <Typography
+                  color="text.primary"
+                  fontSize="18px"
+                  fontWeight={700}
+                >
+                  {itemFont.family}
+                </Typography>
+                <ul
+                  style={{
+                    lineHeight: 2,
+                    textTransform: "capitalize",
+                    display: "flex",
+                    flexWrap: "wrap",
+                    margin: "8px 0",
+                  }}
+                >
                   {itemFont.variants.map((item, index) => (
-                    <li key={`${itemFont.family}-${item}`}>
-                      <FormGroup>
+                    <li
+                      key={`${itemFont.family}-${item}`}
+                      style={{ marginRight: "8px", listStyleType: "none" }}
+                    >
+                      <FormGroup
+                        sx={{
+                          "& .MuiFormControlLabel-label": {
+                            color: "action.active",
+                            color: "text.secondary",
+                            fontSize: "14px",
+                            width: "40px",
+                          },
+                          "& .MuiButtonBase-root": {
+                            p: "2px",
+                            ml: "6px",
+                          },
+                          "& .MuiTypography-root": {},
+                        }}
+                      >
                         <FormControlLabel
                           control={
                             <Checkbox
-                              color="secondary"
+                              color="primary"
                               size="small"
                               name={item}
                               id={`${item}-${itemFont.family}-${index}`}
@@ -266,14 +300,16 @@ export default connect((state) => {
                 </Button>
               </div>
             </header>
-            <p
-              className={styles.Example}
-              style={{ fontFamily: itemFont.family }}
+            <Typography
+              variant="h4"
+              color="text.primary"
+              fontWeight={400}
+              sx={{ fontFamily: `"${itemFont.family}"` }}
             >
               {previewText
                 ? previewText
                 : "All their equipment and instruments are alive."}
-            </p>
+            </Typography>
           </div>
         ))}
         {pagination.data.length === 0 && (
@@ -352,12 +388,11 @@ export default connect((state) => {
   );
 
   return (
-    <div className={styles.PageContainer}>
-      <header className={styles.SearchContainer}>
-        <TextField
+    <>
+      <TopBar title="Browse Fonts">
+        <SearchBox
           id="filled-search"
           placeholder="Search font"
-          type="search"
           variant="outlined"
           fullWidth
           size="small"
@@ -372,36 +407,77 @@ export default connect((state) => {
             const term = evt.target.value;
             onSearch(term);
           }}
+          value={search}
+          sx={{
+            width: 260,
+          }}
         />
-        <FieldTypeText
-          placeholder="Type something to preview"
-          name="previewText"
-          value={previewText}
-          onChange={(evt) => setPreviewText(evt.target.value)}
-        />
-      </header>
-      {renderFontsList()}
-      <div className={styles.Pagination}>
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={() => changePage("prev")}
-          disabled={!validateActionPage("prev")}
-        >
-          Prev
-        </Button>
-        <div style={{ padding: "15px 0px", margin: "0px 20px" }}>
-          {`${pagination.current} / ${pagination.total}`}
-        </div>
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={() => changePage("next")}
-          disabled={!validateActionPage("next")}
-        >
-          Next
-        </Button>
-      </div>
-    </div>
+      </TopBar>
+      <Box
+        px="32px"
+        py="16px"
+        sx={{
+          width: "100%",
+          height: "calc(100% - 84px)",
+          overflowY: "auto",
+          overflowX: "hidden",
+          margin: "0",
+          display: "block",
+          maxHeight: "calc(100% - 84px)",
+          position: "relative",
+          boxSizing: "border-box",
+        }}
+      >
+        <MainWrapper rowGap={3} fullWidth>
+          <Box
+            sx={{
+              width: "100%",
+
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "flex-start",
+              alignItems: "center",
+            }}
+          >
+            <TextField
+              name="previewText"
+              id="previewText"
+              placeholder="Type something to preview"
+              type="text"
+              variant="outlined"
+              size="small"
+              value={previewText}
+              onChange={(evt) => setPreviewText(evt.target.value)}
+              sx={{
+                width: "60%",
+                minWidth: "300px",
+              }}
+            />
+          </Box>
+          {renderFontsList()}
+          <div className={styles.Pagination}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => changePage("prev")}
+              disabled={!validateActionPage("prev")}
+            >
+              Prev
+            </Button>
+            <div style={{ padding: "15px 0px", margin: "0px 20px" }}>
+              {`${pagination.current} / ${pagination.total}`}
+            </div>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => changePage("next")}
+              disabled={!validateActionPage("next")}
+            >
+              Next
+            </Button>
+          </div>
+        </MainWrapper>
+      </Box>
+    </>
   );
 });

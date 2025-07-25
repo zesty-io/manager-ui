@@ -19,6 +19,15 @@ describe("Navigation through content editor", () => {
     cy.get(".ModalAligner--ptdt-.Open--M5j6S button.Close--kVpCO").click();
   });
 
+  it("Should not navigate to the create item page if no model is selected", () => {
+    cy.getBySelector("create_new_content_item").should("exist").click();
+    cy.getBySelector("create_new_content_item_btn").click({ force: true });
+    cy.contains("Please select a Model to proceed.").should("exist");
+    cy.getBySelector("discard_new_content_item_btn")
+      .should("exist")
+      .click({ force: true });
+  });
+
   it("Creates a new item from the menu", () => {
     cy.getBySelector("create_new_content_item").should("exist").click();
     cy.getBySelector("create_new_content_item_dialog").should("exist");
@@ -89,5 +98,20 @@ describe("Navigation through content editor", () => {
     cy.get("menu").should("exist");
     cy.get("[data-cy=globalAccountAvatar]").click();
     cy.get("[data-cy=globalAccountAvatar] menu").should("not.exist");
+  });
+
+  it("can navigate content item files in the sidebar", () => {
+    cy.contains("All Field Types").click();
+    cy.location("pathname").should(
+      "eq",
+      "/content/6-556370-8sh47g/7-b939a4-457q19"
+    );
+  });
+
+  it("should be able to directly create a new content item from the sidebar item", () => {
+    cy.contains(".MuiTreeItem-root", "Articles")
+      .find("[data-cy='tree-item-add-new-content']")
+      .click({ force: true });
+    cy.location("pathname").should("eq", "/content/6-a8bae2f4d7-rffln5/new");
   });
 });

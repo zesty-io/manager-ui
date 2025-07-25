@@ -203,6 +203,24 @@ export function content(state = {}, action) {
         return acc;
       }, {});
 
+    case "START_CAPTURING_SCREENSHOT":
+      return {
+        ...state,
+        [action.itemZUID]: {
+          ...state[action.itemZUID],
+          capturingScreenshot: true,
+        },
+      };
+
+    case "DONE_CAPTURING_SCREENSHOT":
+      return {
+        ...state,
+        [action.itemZUID]: {
+          ...state[action.itemZUID],
+          capturingScreenshot: false,
+        },
+      };
+
     default:
       return state;
   }
@@ -414,7 +432,7 @@ export function saveItem({
       item?.web?.version + 1
     }${
       previewLock?.value ? `&zpw=${previewLock.value}` : ""
-    }&_bypassError=true`;
+    }&_bypassError=true&preview=global`;
     const fields = Object.keys(state.fields)
       .filter(
         (fieldZUID) =>
@@ -428,6 +446,7 @@ export function saveItem({
     const missingRequired = fields.filter(
       (field) =>
         field.required &&
+        field?.name !== "og_image" &&
         (item.data[field.name] === "" || item.data[field.name] === null)
     );
 
@@ -544,7 +563,9 @@ export function saveItem({
       }
     )
       .then(async (res) => {
-        dispatch(instanceApi.util.invalidateTags(["ContentNav"]));
+        dispatch(
+          instanceApi.util.invalidateTags(["ContentNav", "ItemWorkflowStatus"])
+        );
         dispatch(
           instanceApi.util.invalidateTags([{ type: "ItemVersions", itemZUID }])
         );
@@ -560,13 +581,26 @@ export function saveItem({
             Not awaiting this because capturing the screenshot is not critical to the save operation
             and we don't want to hold up the user
           */
+            dispatch({
+              type: "START_CAPTURING_SCREENSHOT",
+              itemZUID,
+            });
             dispatch(
               cloudFunctionsApi.endpoints.createScreenshot.initiate(
                 `${CONFIG.URL_PREVIEW_PROTOCOL}${itemBlockPreviewUrl}`
               )
-            ).then(() =>
-              dispatch(instanceApi.util.invalidateTags(["ContentItems"]))
-            );
+            ).then(() => {
+              dispatch(
+                instanceApi.util.invalidateTags([
+                  "ContentItems",
+                  "ItemWorkflowStatus",
+                ])
+              );
+              dispatch({
+                type: "DONE_CAPTURING_SCREENSHOT",
+                itemZUID,
+              });
+            });
           }
         }
 
@@ -618,6 +652,7 @@ export function createItem({ modelZUID, itemZUID, skipPathPartValidation }) {
             if (
               !field.deletedAt &&
               ![
+                "og_image", // skip og_image validation
                 "og_title",
                 "og_description",
                 "tc_title",
@@ -716,7 +751,9 @@ export function createItem({ modelZUID, itemZUID, skipPathPartValidation }) {
     })
       .then(async (res) => {
         if (!res.error) {
-          dispatch(instanceApi.util.invalidateTags(["ContentNav"]));
+          dispatch(
+            instanceApi.util.invalidateTags(["ContentNav", "ContentItems"])
+          );
           dispatch({
             type: "REMOVE_ITEM",
             itemZUID,

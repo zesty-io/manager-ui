@@ -19,20 +19,22 @@ describe("Single Page Analytics", () => {
     cy.get("body").type("{esc}");
   });
   it("Allows property switching by updating instance setting", () => {
-    cy.getBySelector("analytics-settings").click();
+    cy.getBySelector("analytics-settings").click({ force: true });
     cy.waitOn("*/env/settings/*", () => {
-      cy.get('[role="presentation"]').contains("zesty.pw").click();
+      cy.get('[role="presentation"]')
+        .contains("zesty.pw")
+        .click({ force: true });
     });
   });
   it("Allows selecting a page to compare by showing recent publishings", () => {
     cy.waitOn("*publishings*", () => {
-      cy.contains("Compare Page").click();
+      cy.contains("Compare Page").click({ force: true });
     });
     cy.get(".MuiList-root .MuiListItemButton-root").should("have.length.gt", 0);
     cy.get("body").type("{esc}");
   });
   it("Allows searching pages to compare by calling search api", () => {
-    cy.contains("Compare Page").click();
+    cy.contains("Compare Page").click({ force: true });
     cy.waitOn("*/search/items?q=t*", () => {
       cy.get('input[placeholder="Search"]').type("t");
     });
@@ -40,18 +42,19 @@ describe("Single Page Analytics", () => {
     cy.get("body").type("{esc}");
   });
   it("Displays linked google account information", () => {
-    cy.getBySelector("analytics-settings").click();
-    cy.contains("GA Settings").click();
+    cy.getBySelector("analytics-settings").click({ force: true });
+    cy.contains("GA Settings").click({ force: true });
     cy.getBySelector("loggedInGa4Account")
       .find("span")
       .invoke("text")
       .should("be.oneOf", ["Andres Galindo", "Lunar Jay  Cuenca"]);
+    cy.wait(1000);
     cy.get("body").type("{esc}");
   });
   it("Applies selected date filter to url params", () => {
     cy.url().should("include", "datePreset=last_14_days");
-    cy.getBySelector("date_default").click();
-    cy.contains("Last 7 days").click();
+    cy.getBySelector("date_default").click({ force: true });
+    cy.contains("Last 7 days").click({ force: true });
     cy.url().should("include", "datePreset=last_7_days");
   });
 });

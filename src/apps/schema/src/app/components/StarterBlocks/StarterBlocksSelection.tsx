@@ -11,7 +11,6 @@ import {
   TextField,
   InputAdornment,
   Grid,
-  styled,
   CardActionArea,
   CardMedia,
   CardContent,
@@ -25,28 +24,7 @@ import SearchIcon from "@mui/icons-material/Search";
 
 import { NoResults } from "../NoResults";
 import { StarterBlockProps, STARTER_BLOCKS } from "./configs";
-
-const CardStyles = styled(Card)(({ theme }) => ({
-  borderRadius: theme.spacing(1),
-  border: "1px solid",
-  borderColor: theme.palette.grey[100],
-  boxShadow: "none",
-  width: "100%",
-  aspectRatio: "1/.8",
-  backgroundColor: theme.palette.grey[100],
-  position: "relative",
-  "&.active": {
-    outline: "2px solid",
-    outlineColor: theme.palette.primary.main,
-    outlineOffset: "-1px",
-    "& .MuiCardContent-root": {
-      backgroundColor: alpha(theme.palette.primary.light, 0.3),
-      "& .card-content": {
-        opacity: 0.8,
-      },
-    },
-  },
-}));
+import SearchBox from "../../../../../../shell/components/SearchBox";
 
 const BlockItem = ({
   block,
@@ -58,7 +36,23 @@ const BlockItem = ({
   onClick: () => void;
 }) => {
   return (
-    <CardStyles className={isActive ? "active" : ""}>
+    <Card
+      elevation={0}
+      sx={{
+        borderRadius: "4px",
+        border: "1px solid",
+        borderColor: "grey.100",
+        boxShadow: "none",
+        width: "100%",
+        backgroundColor: "grey.100",
+        position: "relative",
+        ...(isActive && {
+          outline: "1px solid",
+          outlineColor: (theme) => theme.palette.primary.main,
+          outlineOffset: "-1px",
+        }),
+      }}
+    >
       <CardActionArea
         onClick={onClick}
         sx={{ height: "100%", width: "100%" }}
@@ -80,33 +74,39 @@ const BlockItem = ({
             alignItems="center"
             justifyContent="center"
             className="card-content"
-            sx={{
-              borderWidth: (theme) => theme.spacing(1),
-              borderColor: "transparent",
-              borderStyle: "solid",
-              overflow: "hidden",
-            }}
           >
-            <CardMedia component="img" image={block?.image} />
+            <CardMedia
+              component="img"
+              image={block?.image}
+              sx={{ height: "220px", padding: "8px" }}
+            />
           </Box>
-          <Typography
-            className="card-content"
-            flexGrow={0}
+          <Box
             height="52px"
-            width="100%"
-            display="flex"
-            flexDirection="row"
-            alignItems="center"
-            justifyContent="flex-start"
-            component="div"
-            px={1.5}
-            sx={{ backgroundColor: "background.paper" }}
+            px="8px"
+            py="16px"
+            bgcolor={(theme) =>
+              isActive
+                ? alpha(theme.palette.primary.main, 0.04)
+                : "background.paper"
+            }
+            {...(isActive && {
+              borderTop: "1px solid",
+              borderColor: "primary.main",
+            })}
           >
-            {block?.label}
-          </Typography>
+            <Typography
+              className="card-content"
+              variant="body2"
+              fontWeight={600}
+              color="text.primary"
+            >
+              {block?.label}
+            </Typography>
+          </Box>
         </CardContent>
       </CardActionArea>
-    </CardStyles>
+    </Card>
   );
 };
 
@@ -114,24 +114,26 @@ export type StarterBlocksSelectionProps = {
   onClose: () => void;
   setActiveStep: (step: "selection" | "form") => void;
   selectBlockType: (blockType: StarterBlockProps) => void;
+  selectBlank?: () => void;
+  blockType?: StarterBlockProps;
 };
 
 export const StarterBlocksSelection: React.FC<StarterBlocksSelectionProps> = ({
   onClose,
   setActiveStep,
   selectBlockType,
+  selectBlank,
+  blockType,
 }) => {
   const searchRef = useRef<HTMLDivElement>();
   const [filteredBlockTypes, setFilteredBlockTypes] =
     useState<StarterBlockProps[]>(STARTER_BLOCKS);
-  const [activeBlock, setActiveBlock] = useState(null);
 
   const [search, setSearch] = useState("");
 
-  const handleBlockSelect = (blockType: any) => {
+  const handleBlockSelect = (block: StarterBlockProps) => {
     return () => {
-      selectBlockType(blockType);
-      setActiveBlock(blockType);
+      selectBlockType(block);
     };
   };
 
@@ -141,10 +143,11 @@ export const StarterBlocksSelection: React.FC<StarterBlocksSelectionProps> = ({
   };
 
   const handleNext = useCallback(() => {
-    if (!!activeBlock) {
+    if (blockType?.name === "blank") return selectBlank();
+    if (!!blockType) {
       setActiveStep("form");
     }
-  }, [activeBlock, setActiveStep]);
+  }, [blockType, setActiveStep]);
 
   useEffect(() => {
     if (!search) return setFilteredBlockTypes(STARTER_BLOCKS);
@@ -165,7 +168,11 @@ export const StarterBlocksSelection: React.FC<StarterBlocksSelectionProps> = ({
       alignItems="stretch"
       overflow="hidden"
     >
-      <DialogTitle component="div" flexGrow={0}>
+      <DialogTitle
+        component="div"
+        flexGrow={0}
+        sx={{ height: "128px", minHeight: "128px" }}
+      >
         <Stack
           direction="row"
           justifyContent="space-between"
@@ -187,7 +194,7 @@ export const StarterBlocksSelection: React.FC<StarterBlocksSelectionProps> = ({
             </Box>
           </Box>
           <IconButton size="small" onClick={() => onClose()}>
-            <CloseRoundedIcon fontSize="small" />
+            <CloseRoundedIcon />
           </IconButton>
         </Stack>
       </DialogTitle>
@@ -206,11 +213,15 @@ export const StarterBlocksSelection: React.FC<StarterBlocksSelectionProps> = ({
           overflowX: "hidden",
           flexGrow: 1,
           position: "relative",
+          "&::-webkit-scrollbar-thumb, & *::-webkit-scrollbar-thumb": {
+            backgroundColor: "grey.300",
+            borderRadius: "4px",
+          },
         }}
         dividers
       >
         <Box flexGrow={0}>
-          <TextField
+          <SearchBox
             data-cy="starter-blocks-search"
             size="small"
             placeholder="Search variants"
@@ -251,29 +262,18 @@ export const StarterBlocksSelection: React.FC<StarterBlocksSelectionProps> = ({
           ) : (
             <Grid
               container
-              spacing={{ xs: 2, md: 2, lg: 2 }}
-              columns={{ xs: 4, sm: 8, md: 12 }}
+              spacing={2}
+              columns={3}
               sx={{
-                height: "100%",
-                width: "100%",
+                height: "fit-content",
               }}
               data-cy="starter-blocks-container"
             >
               {filteredBlockTypes?.map((block, index) => (
-                <Grid
-                  key={block?.name}
-                  item
-                  xs={2}
-                  sm={4}
-                  md={4}
-                  sx={{
-                    width: "100%",
-                    position: "relative",
-                  }}
-                >
+                <Grid key={block?.name} size={1}>
                   <BlockItem
                     block={block}
-                    isActive={activeBlock?.name === block?.name}
+                    isActive={blockType?.name === block?.name}
                     onClick={handleBlockSelect(block)}
                   />
                 </Grid>
@@ -282,14 +282,28 @@ export const StarterBlocksSelection: React.FC<StarterBlocksSelectionProps> = ({
           )}
         </Box>
       </DialogContent>
-      <DialogActions sx={{ pt: 2.5, flexGrow: 0 }}>
+      <DialogActions
+        sx={{
+          p: "20px",
+          flexGrow: 0,
+          height: "76px",
+          minHeight: "76px",
+          maxHeight: "76px",
+        }}
+      >
         <Button variant="outlined" color="inherit" onClick={onClose}>
           Cancel
         </Button>
         <Button
           variant="contained"
           onClick={handleNext}
-          disabled={!activeBlock}
+          disabled={
+            !blockType ||
+            !filteredBlockTypes?.length ||
+            !filteredBlockTypes?.filter(
+              (block) => block?.name === blockType?.name
+            )?.length
+          }
           data-cy="select-block-type-next-button"
         >
           Next

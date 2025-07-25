@@ -3,18 +3,18 @@
 window.CONFIG = __CONFIG__;
 
 import { StrictMode } from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { Router } from "react-router-dom";
-import { ThemeProvider } from "@mui/material/styles";
-import { legacyTheme } from "@zesty-io/material";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { theme } from "@zesty-io/material";
 import CssBaseline from "@mui/material/CssBaseline";
 
 import "chart.js/auto";
 
-import { LicenseInfo } from "@mui/x-license-pro";
+import { LicenseInfo } from "@mui/x-license";
 LicenseInfo.setLicenseKey(
-  "e9268055e7858ccf7d7bc5d078217f7eTz00ODIyOCxFPTE2OTA3Mzk5NDkxNjgsUz1wcm8sTE09c3Vic2NyaXB0aW9uLEtWPTI="
+  "4a9d79ec086e87806b702c7bc5c6e644Tz0xMTIyNDIsRT0xNzc3NTkzNTk5MDAwLFM9cHJvLExNPXBlcnBldHVhbCxQVj1RMy0yMDI0LEtWPTI="
 );
 
 import idb from "utility/idb";
@@ -50,13 +50,74 @@ window.zestyStore = store;
 const instanceZUID = store.getState().instance.ZUID;
 window.CONFIG.API_INSTANCE = `${window.CONFIG.API_INSTANCE_PROTOCOL}${instanceZUID}${window.CONFIG.API_INSTANCE}`;
 
+const appTheme = createTheme(theme, {
+  palette: {
+    success: {
+      contrastText: "#fff",
+    },
+    warning: {
+      contrastText: "#fff",
+    },
+    info: {
+      contrastText: "#fff",
+    },
+
+    action: {
+      active: "rgba(127, 127, 126, 0.7)",
+      selected: "rgba(127,127, 126, 0.125)",
+      disabled: "rgba(127,127, 126, 0.47)",
+      disabledBackground: "rgba(127,127, 126, 0.28)",
+      hover: "rgba(127, 127, 126, 0.07)",
+    },
+    background: {
+      editor: "#0F0F0F",
+    },
+  },
+
+  components: {
+    MuiToggleButton: {
+      styleOverrides: (theme) => ({
+        sizeSmall: {
+          ...theme.typography.body2,
+        },
+      }),
+    },
+    MuiCssBaseline: {
+      styleOverrides: (theme) => ({
+        body: {
+          boxSizing: "border-box",
+          "&::-webkit-scrollbar, & *::-webkit-scrollbar": {
+            width: "8px",
+            height: "8px",
+          },
+          "&::-webkit-scrollbar-track-piece, & *::-webkit-scrollbar-track-piece":
+            {
+              backgroundColor: theme.palette.grey[100],
+              borderRadius: "4px",
+            },
+          "&::-webkit-scrollbar-thumb, & *::-webkit-scrollbar-thumb": {
+            backgroundColor: theme.palette.grey[300],
+            borderRadius: "4px",
+          },
+        },
+      }),
+    },
+  },
+});
+
 MonacoSetup(store);
 
 // TODO: Add a context here that will store all draft comments
 const App = Sentry.withProfiler(() => (
   <StrictMode>
-    <Sentry.ErrorBoundary fallback={() => <AppError />}>
-      <ThemeProvider theme={legacyTheme}>
+    <Sentry.ErrorBoundary
+      fallback={() => <AppError />}
+      beforeCapture={(scope) => {
+        scope.setLevel("fatal");
+        scope.setTag("error_boundary", true);
+      }}
+    >
+      <ThemeProvider theme={appTheme}>
         <CssBaseline>
           <Provider store={store}>
             <Router history={history}>
@@ -78,7 +139,10 @@ const App = Sentry.withProfiler(() => (
 ));
 
 function render() {
-  ReactDOM.render(<App />, document.getElementById("root"));
+  const container = document.getElementById("root");
+  const root = createRoot(container);
+
+  root.render(<App />);
 }
 
 // Load IndexedDB cache
@@ -131,10 +195,15 @@ try {
       });
 
       store.dispatch(actions.loadedUI(ui));
+
+      // Render App after all store dispatches are complete
+      render();
+    })
+    .catch((err) => {
+      throw err;
     });
 } catch (err) {
   console.error("IndexedDB:get:error", err);
-} finally {
-  // Render App once all Cache has been loaded or failed
+  // Render App if there was an error with IndexedDB access
   render();
 }

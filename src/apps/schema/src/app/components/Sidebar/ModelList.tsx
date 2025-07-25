@@ -1,11 +1,4 @@
-import {
-  Stack,
-  IconButton,
-  Typography,
-  Menu,
-  MenuItem,
-  ThemeProvider,
-} from "@mui/material";
+import { Stack, IconButton, Typography, Menu, MenuItem } from "@mui/material";
 import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
@@ -54,7 +47,7 @@ export const ModelList = ({ title, models, type, app = "schema" }: Props) => {
       return models.map((model) => {
         return {
           icon: modelIconMap[model.type],
-          children: [],
+          children: [] as TreeItem[],
           label: model.label,
           path: `/${app}/${model.ZUID}`,
           actions: [
@@ -132,48 +125,49 @@ export const ModelList = ({ title, models, type, app = "schema" }: Props) => {
           </Stack>
         }
       />
-      <ThemeProvider theme={theme}>
-        <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
-          <MenuItem
-            selected={sort === "asc"}
-            onClick={() => {
-              handleClose();
-              setSort("asc");
-            }}
-          >
-            Name (A to Z)
-          </MenuItem>
-          <MenuItem
-            selected={sort === "desc"}
-            onClick={() => {
-              handleClose();
-              setSort("desc");
-            }}
-          >
-            Name (Z to A)
-          </MenuItem>
-          <MenuItem
-            selected={!sort}
-            onClick={() => {
-              handleClose();
-              setSort("");
-            }}
-          >
-            Last Created
-          </MenuItem>
-          <MenuItem
-            selected={sort === "modified"}
-            onClick={() => {
-              handleClose();
-              setSort("modified");
-            }}
-          >
-            Last Modified
-          </MenuItem>
-        </Menu>
-      </ThemeProvider>
+
+      <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
+        <MenuItem
+          selected={sort === "asc"}
+          onClick={() => {
+            handleClose();
+            setSort("asc");
+          }}
+        >
+          Name (A to Z)
+        </MenuItem>
+        <MenuItem
+          selected={sort === "desc"}
+          onClick={() => {
+            handleClose();
+            setSort("desc");
+          }}
+        >
+          Name (Z to A)
+        </MenuItem>
+        <MenuItem
+          selected={!sort}
+          onClick={() => {
+            handleClose();
+            setSort("");
+          }}
+        >
+          Last Created
+        </MenuItem>
+        <MenuItem
+          selected={sort === "modified"}
+          onClick={() => {
+            handleClose();
+            setSort("modified");
+          }}
+        >
+          Last Modified
+        </MenuItem>
+      </Menu>
+
       {showCreateModelDialogue && (
         <CreateModelDialogue
+          typeIsSet={true}
           modelType={type}
           onClose={() => setShowCreateModelDialogue(false)}
         />

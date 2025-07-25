@@ -11,16 +11,15 @@ import {
   Stack,
   Box,
   Typography,
-  ThemeProvider,
   Divider,
   ListItemIcon,
   ListItemText,
   ListItemButton,
 } from "@mui/material";
-import { Brain, theme } from "@zesty-io/material";
+import { Brain } from "@zesty-io/material";
 import { useParams, useLocation } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
-import { keyframes } from "@mui/system";
+import { keyframes } from "@emotion/react";
 import { EditRounded } from "@mui/icons-material";
 
 import { cloneDeep } from "lodash";
@@ -33,7 +32,10 @@ import {
 import { AppState } from "../../../../../../../shell/store/types";
 import { Error } from "../../../components/Editor/Field/FieldShell";
 import { fetchGlobalItem } from "../../../../../../../shell/store/content";
-import { ContentModelField } from "../../../../../../../shell/services/types";
+import {
+  ContentItem,
+  ContentModelField,
+} from "../../../../../../../shell/services/types";
 import { SocialMediaPreview } from "./SocialMediaPreview";
 import { validateMetaDescription } from "./settings/util";
 
@@ -52,6 +54,10 @@ import { OGDescription } from "./settings/OGDescription";
 import { TCTitle } from "./settings/TCTitle";
 import { TCDescription } from "./settings/TCDescription";
 import { TCImage } from "./settings/TCImage";
+import RedirectsTableContextProvider from "../../../../../../seo/src/views/RedirectsManager/RedirectsTable/RedirectsTableContextProvider";
+import IncomingRedirects from "./IncomingRedirects";
+import RedirectsDialogContextProvider from "../../../../../../seo/src/app/components/RedirectsDialogProvider";
+import { useRegisterRef } from "../../../../../../../engine/useRegisterRef";
 
 const rotateAnimation = keyframes`
 	0% {
@@ -105,9 +111,13 @@ type MetaProps = {
   onUpdateSEOErrors: (errors: Errors) => void;
   errors: Errors;
   errorComponent?: React.ReactNode;
+  item: ContentItem;
 };
 export const Meta = forwardRef(
-  ({ isSaving, onUpdateSEOErrors, errors, errorComponent }: MetaProps, ref) => {
+  (
+    { isSaving, onUpdateSEOErrors, errors, errorComponent, item }: MetaProps,
+    ref
+  ) => {
     const dispatch = useDispatch();
     const location = useLocation();
     const isCreateItemPage = location?.pathname?.split("/")?.pop() === "new";
@@ -119,12 +129,13 @@ export const Meta = forwardRef(
       skip: !modelZUID,
     });
     const { data: fields } = useGetContentModelFieldsQuery(modelZUID);
-    const { meta, data, web } = useSelector(
-      (state: AppState) =>
-        state.content[isCreateItemPage ? `new:${modelZUID}` : itemZUID]
-    );
+    const { meta, data, web } =
+      useSelector(
+        (state: AppState) =>
+          state.content[isCreateItemPage ? `new:${modelZUID}` : itemZUID]
+      ) || {};
     const [flowType, setFlowType] =
-      useState<typeof FlowType[keyof typeof FlowType]>(null);
+      useState<(typeof FlowType)[keyof typeof FlowType]>(null);
     const metaDescriptionButtonRef = useRef(null);
     const metaTitleButtonRef = useRef(null);
 
@@ -132,7 +143,7 @@ export const Meta = forwardRef(
     const siteName = useMemo(() => dispatch(fetchGlobalItem())?.site_name, []);
 
     const metaFields = useMemo(() => {
-      if (fields.length) {
+      if (fields?.length) {
         return fields.reduce(
           (
             accu: Record<string, ContentModelField>,
@@ -334,11 +345,64 @@ export const Meta = forwardRef(
       }
     }, [flowType, isCreateItemPage, meta?.ZUID]);
 
+    const handleMetaTitle = useMemo(
+      () => ({
+        setValue: (val: string) => {
+          const el = document.getElementById("metaTitle");
+          if (el) {
+            el.scrollIntoView({
+              behavior: "smooth",
+              block: "nearest",
+              inline: "center",
+            });
+          }
+
+          const inputEl = el.querySelector(
+            'input, textarea, [contenteditable="true"]'
+          ) as HTMLElement | null;
+          if (inputEl && typeof inputEl.focus === "function") {
+            inputEl.focus();
+          }
+
+          handleOnChange(val, "metaTitle");
+        },
+      }),
+      []
+    );
+
+    const handleMetaDescription = useMemo(
+      () => ({
+        setValue: (val: string) => {
+          const el = document.getElementById("metaDescription");
+          if (el) {
+            el.scrollIntoView({
+              behavior: "smooth",
+              block: "nearest",
+              inline: "center",
+            });
+          }
+
+          const inputEl = el.querySelector(
+            'input, textarea, [contenteditable="true"]'
+          ) as HTMLElement | null;
+          if (inputEl && typeof inputEl.focus === "function") {
+            inputEl.focus();
+          }
+
+          handleOnChange(val, "metaDescription");
+        },
+      }),
+      []
+    );
+
+    useRegisterRef("meta-title", handleMetaTitle, item);
+    useRegisterRef("meta-description", handleMetaDescription, item);
+
     if (isFetching) return null;
 
     if (isCreateItemPage && flowType === null && model?.type !== "block") {
       return (
-        <ThemeProvider theme={theme}>
+        <>
           <Box
             sx={{
               mt: 2.5,
@@ -359,12 +423,14 @@ export const Meta = forwardRef(
                   mb={1}
                   color="text.primary"
                 >
-                  Would you like to improve your Meta Title & Description?
+                  Have AI write your Meta Data?
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   Our AI Assistant will scan your content and improve your meta
-                  title and description to help improve search engine
-                  visibility.{" "}
+                  title and description to help{" "}
+                  {model?.type === "dataset"
+                    ? "with internal content search."
+                    : "improve search engine visibility."}
                 </Typography>
               </Box>
               {flowButtons.map((data) => (
@@ -414,25 +480,76 @@ export const Meta = forwardRef(
           <Box sx={{ display: "none" }}>
             <ItemParent onChange={handleOnChange} />
           </Box>
-        </ThemeProvider>
+        </>
       );
     }
 
     if (model?.type === "block" && isCreateItemPage) {
       return (
-        <ThemeProvider theme={theme}>
-          <Stack
-            gap={3}
-            pb={2}
-            mb={2}
-            sx={{
-              borderBottom: "2px solid",
-              borderColor: "border",
+        <Stack
+          gap={3}
+          pb={2}
+          mb={2}
+          sx={{
+            borderBottom: "2px solid",
+            borderColor: "border",
+          }}
+        >
+          {!!errorComponent && errorComponent}
+          <MetaTitle
+            label="Variant Title"
+            aiButtonRef={metaTitleButtonRef}
+            value={web.metaTitle}
+            onChange={handleOnChange}
+            error={errors?.metaTitle}
+            onResetFlowType={() => {
+              if (flowType === FlowType.AIGenerated) {
+                console.log("reset on meta title");
+                setFlowType(FlowType.Manual);
+              }
             }}
-          >
+            onAIMetaTitleInserted={() => {
+              // Scroll to and open the meta description ai generator to continue
+              // with the AI-assisted flow
+              if (flowType === FlowType.AIGenerated) {
+                metaDescriptionButtonRef.current?.triggerAIButton?.();
+              }
+            }}
+          />
+        </Stack>
+      );
+    }
+
+    return (
+      <Box
+        display="grid"
+        gridTemplateColumns={
+          !isCreateItemPage ? "1fr minmax(auto, 40%)" : "1fr"
+        }
+        gap={4}
+        pt={2.5}
+        mb={isCreateItemPage ? 4 : 0}
+        px={isCreateItemPage ? 0 : 4}
+        color="text.primary"
+        sx={{
+          scrollbarWidth: "none",
+          overflowY: "auto",
+        }}
+      >
+        <Stack flex={1} gap={4} minWidth={640}>
+          <Stack gap={3}>
             {!!errorComponent && errorComponent}
+            <Box>
+              <Typography variant="h5" fontWeight={700} mb={0.5}>
+                SEO & Open Graph Settings
+              </Typography>
+              <Typography color="text.secondary" variant="body2">
+                Specify this page's title and description. You can see how
+                they'll look in search engine results pages (SERPs) and social
+                media content in the preview on the right.
+              </Typography>
+            </Box>
             <MetaTitle
-              label="Variant Title"
               aiButtonRef={metaTitleButtonRef}
               value={web.metaTitle}
               onChange={handleOnChange}
@@ -451,205 +568,158 @@ export const Meta = forwardRef(
                 }
               }}
             />
-          </Stack>
-        </ThemeProvider>
-      );
-    }
-
-    return (
-      <ThemeProvider theme={theme}>
-        <Box
-          display="grid"
-          gridTemplateColumns={
-            !isCreateItemPage ? "1fr minmax(auto, 40%)" : "1fr"
-          }
-          gap={4}
-          pt={2.5}
-          mb={isCreateItemPage ? 4 : 0}
-          px={isCreateItemPage ? 0 : 4}
-          color="text.primary"
-          sx={{
-            scrollbarWidth: "none",
-            overflowY: "auto",
-          }}
-        >
-          <Stack flex={1} gap={4} minWidth={640}>
-            <Stack gap={3}>
-              {!!errorComponent && errorComponent}
-              <Box>
-                <Typography variant="h5" fontWeight={700} mb={0.5}>
-                  SEO & Open Graph Settings
-                </Typography>
-                <Typography color="text.secondary" variant="body2">
-                  Specify this page's title and description. You can see how
-                  they'll look in search engine results pages (SERPs) and social
-                  media content in the preview on the right.
-                </Typography>
-              </Box>
-              <MetaTitle
-                aiButtonRef={metaTitleButtonRef}
-                value={web.metaTitle}
+            <MetaDescription
+              aiButtonRef={metaDescriptionButtonRef}
+              value={web.metaDescription}
+              onChange={handleOnChange}
+              error={errors?.metaDescription}
+              onResetFlowType={() => {
+                if (flowType === FlowType.AIGenerated) {
+                  console.log("reset on meta description");
+                  setFlowType(FlowType.Manual);
+                }
+              }}
+              isAIAssistedFlow={flowType === FlowType.AIGenerated}
+              required={REQUIRED_FIELDS.includes("metaDescription")}
+            />
+            <MetaImage onChange={handleOnChange} />
+            {"og_title" in metaFields && (
+              <OGTitle
+                value={data.og_title as string}
                 onChange={handleOnChange}
-                error={errors?.metaTitle}
-                onResetFlowType={() => {
-                  if (flowType === FlowType.AIGenerated) {
-                    console.log("reset on meta title");
-                    setFlowType(FlowType.Manual);
-                  }
-                }}
-                onAIMetaTitleInserted={() => {
-                  // Scroll to and open the meta description ai generator to continue
-                  // with the AI-assisted flow
-                  if (flowType === FlowType.AIGenerated) {
-                    metaDescriptionButtonRef.current?.triggerAIButton?.();
-                  }
-                }}
+                error={errors?.og_title}
+                field={metaFields.og_title}
               />
-              <MetaDescription
-                aiButtonRef={metaDescriptionButtonRef}
-                value={web.metaDescription}
-                onChange={handleOnChange}
-                error={errors?.metaDescription}
-                onResetFlowType={() => {
-                  if (flowType === FlowType.AIGenerated) {
-                    console.log("reset on meta description");
-                    setFlowType(FlowType.Manual);
-                  }
-                }}
-                isAIAssistedFlow={flowType === FlowType.AIGenerated}
-                required={REQUIRED_FIELDS.includes("metaDescription")}
-              />
-              <MetaImage onChange={handleOnChange} />
-              {"og_title" in metaFields && (
-                <OGTitle
-                  value={data.og_title as string}
-                  onChange={handleOnChange}
-                  error={errors?.og_title}
-                  field={metaFields.og_title}
-                />
-              )}
-              {"og_description" in metaFields && (
-                <OGDescription
-                  value={data.og_description as string}
-                  onChange={handleOnChange}
-                  error={errors?.og_description}
-                  field={metaFields.og_description}
-                />
-              )}
-              {"tc_title" in metaFields && (
-                <TCTitle
-                  value={data.tc_title as string}
-                  onChange={handleOnChange}
-                  error={errors?.tc_title}
-                  field={metaFields.tc_title}
-                />
-              )}
-              {"tc_description" in metaFields && (
-                <TCDescription
-                  value={data.tc_description as string}
-                  onChange={handleOnChange}
-                  error={errors?.tc_description}
-                  field={metaFields.tc_description}
-                />
-              )}
-              {"tc_image" in metaFields && (
-                <TCImage
-                  field={metaFields.tc_image}
-                  onChange={handleOnChange}
-                  error={errors?.tc_image}
-                  value={data.tc_image as string}
-                />
-              )}
-            </Stack>
-            {model?.type !== "dataset" && web?.pathPart !== "zesty_home" && (
-              <Stack gap={3}>
-                <Box>
-                  <Typography variant="h5" fontWeight={700} mb={0.5}>
-                    URL Settings
-                  </Typography>
-                  <Typography color="text.secondary">
-                    Define the URL of your web page
-                  </Typography>
-                </Box>
-                <ItemParent onChange={handleOnChange} />
-                <ItemRoute
-                  onChange={handleOnChange}
-                  error={errors?.pathPart}
-                  onUpdateErrors={(name, error) => {
-                    onUpdateSEOErrors({
-                      ...errors,
-                      [name]: {
-                        ...errors?.[name],
-                        ...error,
-                      },
-                    });
-                  }}
-                />
-              </Stack>
             )}
-            <Stack gap={3} pb={2.5}>
+            {"og_description" in metaFields && (
+              <OGDescription
+                value={data.og_description as string}
+                onChange={handleOnChange}
+                error={errors?.og_description}
+                field={metaFields.og_description}
+              />
+            )}
+            {"tc_title" in metaFields && (
+              <TCTitle
+                value={data.tc_title as string}
+                onChange={handleOnChange}
+                error={errors?.tc_title}
+                field={metaFields.tc_title}
+              />
+            )}
+            {"tc_description" in metaFields && (
+              <TCDescription
+                value={data.tc_description as string}
+                onChange={handleOnChange}
+                error={errors?.tc_description}
+                field={metaFields.tc_description}
+              />
+            )}
+            {"tc_image" in metaFields && (
+              <TCImage
+                field={metaFields.tc_image}
+                onChange={handleOnChange}
+                error={errors?.tc_image}
+                value={data.tc_image as string}
+              />
+            )}
+          </Stack>
+          {model?.type !== "dataset" && web?.pathPart !== "zesty_home" && (
+            <Stack gap={3}>
               <Box>
                 <Typography variant="h5" fontWeight={700} mb={0.5}>
-                  Advanced Settings
+                  URL Settings
                 </Typography>
                 <Typography color="text.secondary">
-                  Optimize your content item's SEO further
+                  Define the URL of your web page
                 </Typography>
               </Box>
-              {model?.type !== "dataset" && (
-                <>
-                  <SitemapPriority
+              <ItemParent onChange={handleOnChange} />
+              <ItemRoute
+                onChange={handleOnChange}
+                error={errors?.pathPart}
+                onUpdateErrors={(name, error) => {
+                  onUpdateSEOErrors({
+                    ...errors,
+                    [name]: {
+                      ...errors?.[name],
+                      ...error,
+                    },
+                  });
+                }}
+              />
+              <RedirectsDialogContextProvider>
+                <RedirectsTableContextProvider>
+                  <IncomingRedirects
+                    targetZUID={meta?.ZUID}
+                    urlPath={web?.path}
+                  />
+                </RedirectsTableContextProvider>
+              </RedirectsDialogContextProvider>
+            </Stack>
+          )}
+          <Stack gap={3} pb={2.5}>
+            <Box>
+              <Typography variant="h5" fontWeight={700} mb={0.5}>
+                Advanced Settings
+              </Typography>
+              <Typography color="text.secondary">
+                Optimize your content item's SEO further
+              </Typography>
+            </Box>
+            {model?.type !== "dataset" && (
+              <>
+                <SitemapPriority
+                  // @ts-expect-error untyped
+                  sitemapPriority={web.sitemapPriority}
+                  onChange={handleOnChange}
+                />
+                {!!web && (
+                  <CanonicalTag
                     // @ts-expect-error untyped
-                    sitemapPriority={web.sitemapPriority}
+                    mode={web.canonicalTagMode}
+                    whitelist={web.canonicalQueryParamWhitelist}
+                    custom={web.canonicalTagCustomValue}
                     onChange={handleOnChange}
                   />
-                  {!!web && (
-                    <CanonicalTag
-                      // @ts-expect-error untyped
-                      mode={web.canonicalTagMode}
-                      whitelist={web.canonicalQueryParamWhitelist}
-                      custom={web.canonicalTagCustomValue}
-                      onChange={handleOnChange}
-                    />
-                  )}
+                )}
+              </>
+            )}
+            <MetaLinkText
+              value={web.metaLinkText}
+              onChange={handleOnChange}
+              error={errors?.metaLinkText}
+            />
+            <MetaKeywords
+              value={web.metaKeywords}
+              onChange={handleOnChange}
+              error={errors?.metaKeywords}
+            />
+          </Stack>
+        </Stack>
+        {!isCreateItemPage && (
+          <Box
+            position="sticky"
+            top={0}
+            pb={2.5}
+            alignSelf="start"
+            sx={{
+              scrollbarWidth: "none",
+              overflowY: "auto",
+            }}
+          >
+            <Box maxWidth={620}>
+              {model?.type !== "dataset" && (
+                <>
+                  <SocialMediaPreview />
+                  <Divider sx={{ my: 1.5 }} />
                 </>
               )}
-              <MetaLinkText
-                value={web.metaLinkText}
-                onChange={handleOnChange}
-                error={errors?.metaLinkText}
-              />
-              <MetaKeywords
-                value={web.metaKeywords}
-                onChange={handleOnChange}
-                error={errors?.metaKeywords}
-              />
-            </Stack>
-          </Stack>
-          {!isCreateItemPage && (
-            <Box
-              position="sticky"
-              top={0}
-              pb={2.5}
-              alignSelf="start"
-              sx={{
-                scrollbarWidth: "none",
-                overflowY: "auto",
-              }}
-            >
-              <Box maxWidth={620}>
-                {model?.type !== "dataset" && (
-                  <>
-                    <SocialMediaPreview />
-                    <Divider sx={{ my: 1.5 }} />
-                  </>
-                )}
-                <ContentInsights />
-              </Box>
+              <ContentInsights />
             </Box>
-          )}
-        </Box>
-      </ThemeProvider>
+          </Box>
+        )}
+      </Box>
     );
   }
 );

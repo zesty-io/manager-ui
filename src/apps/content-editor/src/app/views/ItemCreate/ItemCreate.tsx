@@ -27,6 +27,7 @@ import {
   useCreateItemPublishingMutation,
   useGetContentItemQuery,
   useGetContentModelFieldsQuery,
+  useGetWorkflowStatusLabelsQuery,
 } from "../../../../../../shell/services/instance";
 import { Error } from "../../components/Editor/Field/FieldShell";
 import {
@@ -107,6 +108,10 @@ export const ItemCreate = () => {
     isSuccess: isSuccessNewModelFields,
     isLoading: isFetchingNewModelFields,
   } = useGetContentModelFieldsQuery(modelZUID);
+  const { data: statusLabels } = useGetWorkflowStatusLabelsQuery();
+  const hasAllowPublishLabel = statusLabels?.some(
+    (label) => label.allowPublish
+  );
 
   // on mount and update modelZUID, load item fields
   useEffect(() => {
@@ -347,28 +352,85 @@ export const ItemCreate = () => {
             break;
 
           case "publishNow":
-            // Make an api call to publish now
-            handlePublish(res.data.ZUID);
-            setWillRedirect(true);
+            if (hasAllowPublishLabel) {
+              // New items will by default have no workflow labels, therefore as long as there's a workflow label
+              // that is used to allow publish permissions, new content items should never be allowed to be published
+              // from the create new content item page
+              dispatch(
+                notify({
+                  message: `Cannot Publish: "${item.web.metaTitle}". Does not have a status that allows publishing`,
+                  kind: "error",
+                })
+              );
+              history.push(
+                `/${
+                  model?.type === "block" ? "blocks" : "content"
+                }/${modelZUID}/${res.data.ZUID}`
+              );
+            } else {
+              // Make an api call to publish now
+              handlePublish(res.data.ZUID);
+              setWillRedirect(true);
+            }
             break;
 
           case "schedulePublish":
-            // Open schedule publish flyout and redirect to item once done
-            setIsScheduleDialogOpen(true);
-            setWillRedirect(true);
+            if (hasAllowPublishLabel) {
+              // New items will by default have no workflow labels, therefore as long as there's a workflow label
+              // that is used to allow publish permissions, new content items should never be allowed to be published
+              // from the create new content item page
+              dispatch(
+                notify({
+                  message: `Cannot Publish: "${item.web.metaTitle}". Does not have a status that allows publishing`,
+                  kind: "error",
+                })
+              );
+              history.push(
+                `/${
+                  model?.type === "block" ? "blocks" : "content"
+                }/${modelZUID}/${res.data.ZUID}`
+              );
+            } else {
+              // Open schedule publish flyout and redirect to item once done
+              setIsScheduleDialogOpen(true);
+              setWillRedirect(true);
+            }
             break;
 
           case "publishAddNew":
-            // Publish but stay on page
-            handlePublish(res.data.ZUID);
-            setWillRedirect(false);
-
+            if (hasAllowPublishLabel) {
+              // New items will by default have no workflow labels, therefore as long as there's a workflow label
+              // that is used to allow publish permissions, new content items should never be allowed to be published
+              // from the create new content item page
+              dispatch(
+                notify({
+                  message: `Cannot Publish: "${item.web.metaTitle}". Does not have a status that allows publishing`,
+                  kind: "error",
+                })
+              );
+            } else {
+              // Publish but stay on page
+              handlePublish(res.data.ZUID);
+              setWillRedirect(false);
+            }
             break;
 
           case "schedulePublishAddNew":
-            // Open schedule publish flyout but stay on page once done
-            setIsScheduleDialogOpen(true);
-            setWillRedirect(false);
+            if (hasAllowPublishLabel) {
+              // New items will by default have no workflow labels, therefore as long as there's a workflow label
+              // that is used to allow publish permissions, new content items should never be allowed to be published
+              // from the create new content item page
+              dispatch(
+                notify({
+                  message: `Cannot Publish: "${item.web.metaTitle}". Does not have a status that allows publishing`,
+                  kind: "error",
+                })
+              );
+            } else {
+              // Open schedule publish flyout but stay on page once done
+              setIsScheduleDialogOpen(true);
+              setWillRedirect(false);
+            }
             break;
 
           default:
@@ -472,6 +534,7 @@ export const ItemCreate = () => {
                   onUpdateSEOErrors={(errors: FieldErrors) => {
                     setSEOErrors(errors);
                   }}
+                  item={item}
                   isSaving={saving}
                   ref={metaRef}
                   errors={SEOErrors}
@@ -502,6 +565,7 @@ export const ItemCreate = () => {
                   onUpdateSEOErrors={(errors: FieldErrors) => {
                     setSEOErrors(errors);
                   }}
+                  item={item}
                   isSaving={saving}
                   ref={metaRef}
                   errors={SEOErrors}
@@ -509,49 +573,43 @@ export const ItemCreate = () => {
               )}
             </AIGeneratorProvider>
           </Box>
-          <ThemeProvider theme={theme}>
-            <Box
-              position="sticky"
-              top={0}
-              alignSelf="flex-start"
-              maxWidth={620}
-            >
-              {model?.type !== "dataset" && model?.type !== "block" && (
-                <>
-                  <SocialMediaPreview />
-                  <Button
-                    variant="text"
-                    color="inherit"
-                    size="large"
-                    onClick={() => metaRef.current?.triggerAIGeneratedFlow?.()}
-                    startIcon={
-                      <>
-                        <svg width={0} height={0}>
-                          <linearGradient
-                            id="gradientFill"
-                            x1={1}
-                            y1={0}
-                            x2={1}
-                            y2={1}
-                          >
-                            <stop offset="0%" stopColor="#0BA5EC" />
-                            <stop offset="50%" stopColor="#EE46BC" />
-                            <stop offset="100%" stopColor="#6938EF" />
-                          </linearGradient>
-                        </svg>
-                        <Brain sx={{ fill: "url(#gradientFill)" }} />
-                      </>
-                    }
-                    sx={{
-                      mt: 1.5,
-                    }}
-                  >
-                    Improve with AI
-                  </Button>
-                </>
-              )}
-            </Box>
-          </ThemeProvider>
+
+          <Box position="sticky" top={0} alignSelf="flex-start" maxWidth={620}>
+            {model?.type !== "dataset" && model?.type !== "block" && (
+              <>
+                <SocialMediaPreview />
+                <Button
+                  variant="text"
+                  color="inherit"
+                  size="large"
+                  onClick={() => metaRef.current?.triggerAIGeneratedFlow?.()}
+                  startIcon={
+                    <>
+                      <svg width={0} height={0}>
+                        <linearGradient
+                          id="gradientFill"
+                          x1={1}
+                          y1={0}
+                          x2={1}
+                          y2={1}
+                        >
+                          <stop offset="0%" stopColor="#0BA5EC" />
+                          <stop offset="50%" stopColor="#EE46BC" />
+                          <stop offset="100%" stopColor="#6938EF" />
+                        </linearGradient>
+                      </svg>
+                      <Brain sx={{ fill: "url(#gradientFill)" }} />
+                    </>
+                  }
+                  sx={{
+                    mt: 1.5,
+                  }}
+                >
+                  Improve with AI
+                </Button>
+              </>
+            )}
+          </Box>
         </Box>
       </Stack>
       {isScheduleDialogOpen && !isLoadingNewItem && (

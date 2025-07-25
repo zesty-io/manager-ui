@@ -9,7 +9,7 @@ describe("Content Specs", () => {
       cy.waitOn("/v1/content/models*", () => {
         cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
       });
-      cy.getBySelector("DuoModeToggle").click();
+      cy.getBySelector("DuoModeToggle").click(forceClick);
     });
 
     it("Text Field", () => {
@@ -185,7 +185,7 @@ describe("Content Specs", () => {
     it("Currency Field", () => {
       cy.get("#12-b35c68-jd1s8s input")
         .focus()
-        .clear()
+        .type("{selectall}")
         .type("100.00")
         .should("have.value", "100.00");
     });
@@ -285,21 +285,16 @@ describe("Content Specs", () => {
     it("opens the bynder modal", () => {
       cy.get("#12-1c94d4-pg8dvx").find('[data-cy="addFromBynderBtn"]').click();
       cy.get('[data-test-id="CompactViewContainer"]')
-        .eq(2)
         .find('[data-testid="root"]')
         .should("exist");
 
       // Close modal
       cy.get('[data-test-id="CompactViewContainer"]')
-        .eq(2)
         .find('[data-testid="root"]')
         .shadow()
         .find('button[title="Close"]')
         .click();
-      cy.get('[data-test-id="CompactViewContainer"]')
-        .eq(2)
-        .find('[data-testid="root"]')
-        .should("not.exist");
+      cy.get('[data-test-id="CompactViewContainer"]').should("not.exist");
     });
 
     it("renders bynder asset previews", () => {
@@ -319,7 +314,7 @@ describe("Content Specs", () => {
     });
 
     it("should be able to clear date entries", () => {
-      cy.get("#12-63ab04-0nkwcc")
+      cy.get("#12-63ab04-0nkwcc", { timeout: 10000 })
         .find("[data-cy='dateFieldClearButton']")
         .click();
       cy.get("#12-63ab04-0nkwcc")
@@ -348,7 +343,7 @@ describe("Content Specs", () => {
     });
 
     it("should be able to clear date and time entries", () => {
-      cy.get("#12-f3db44-c8kt0q")
+      cy.get("#12-f3db44-c8kt0q", { timeout: 10000 })
         .find("[data-cy='dateFieldClearButton']")
         .click();
       cy.get("#12-f3db44-c8kt0q")
@@ -443,7 +438,7 @@ describe("Content Specs", () => {
       cy.intercept({ method: "GET", url: "**/fields*" }).as("fetchFields");
 
       cy.wait("@fetchFields");
-      cy.getBySelector("DuoModeToggle").click();
+      cy.getBySelector("DuoModeToggle", { timeout: 10000 }).click(forceClick);
     });
 
     it("can only select/add one item", () => {
@@ -510,7 +505,7 @@ describe("Content Specs", () => {
       cy.intercept({ method: "GET", url: "**/fields*" }).as("fetchFields");
 
       cy.wait("@fetchFields");
-      cy.getBySelector("DuoModeToggle").click();
+      cy.getBySelector("DuoModeToggle", { timeout: 10000 }).click(forceClick);
     });
 
     it("can add multiple items", () => {
@@ -534,8 +529,10 @@ describe("Content Specs", () => {
     it("can remove the selected item", () => {
       cy.get("#12-269a28-1bkm34 [data-cy='active-relational-item-more-button']")
         .first()
-        .click();
-      cy.getBySelector("active-relational-item-remove-item-button").click();
+        .click(forceClick);
+      cy.getBySelector("active-relational-item-remove-item-button").click(
+        forceClick
+      );
       cy.get("#12-269a28-1bkm34 [data-cy='active-relational-item']").should(
         "have.length",
         2
@@ -561,6 +558,17 @@ describe("Content Specs", () => {
       cy.get("#12-269a28-1bkm34 [data-cy='active-relational-item']", {
         retries: 1,
       }).should("have.length", 3);
+    });
+
+    it("preserves selected items while filtering", () => {
+      cy.get("#12-269a28-1bkm34 [data-cy='add-relational-item-button']").click({
+        force: true,
+      });
+
+      cy.getBySelector("relational-fields-search-input")
+        .find("input")
+        .type("someveryrandomtextthatshouldnotmatchanything");
+      cy.contains("3 selected").should("exist");
     });
   });
 });

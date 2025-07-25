@@ -74,7 +74,8 @@ module.exports = async (env) => {
         utility: path.resolve(__dirname, "../utility"),
         apps: path.resolve(__dirname, "../apps"),
       },
-      extensions: [".ts", ".tsx", ".js"],
+      extensions: [".ts", ".tsx", ".js", ".jsx"],
+      fullySpecified: false,
     },
     plugins: [
       new SentryCliPlugin({

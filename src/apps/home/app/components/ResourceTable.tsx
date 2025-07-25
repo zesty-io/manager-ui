@@ -1,22 +1,19 @@
 import moment from "moment";
-import {
-  DataGridPro,
-  GridAutoSizer,
-  GridRenderCellParams,
-} from "@mui/x-data-grid-pro";
+import { DataGridPro, GridRenderCellParams } from "@mui/x-data-grid-pro";
 import {
   useGetAuditsQuery,
   useGetContentItemQuery,
   useGetContentModelQuery,
 } from "../../../../shell/services/instance";
 import { useSelector } from "react-redux";
-import { Typography, Skeleton, Tooltip } from "@mui/material";
+import { Typography, Skeleton, Tooltip, Box } from "@mui/material";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import CodeIcon from "@mui/icons-material/Code";
 import { Database } from "@zesty-io/material";
 import { useHistory } from "react-router";
 import { useMemo } from "react";
 import { uniqBy } from "lodash";
+import AutoSizer, { Size } from "react-virtualized-auto-sizer";
 import { EmptyState } from "./EmptyState";
 import { resolveUrlFromAudit } from "../../../../utility/resolveResourceUrlFromAudit";
 import { Audit } from "../../../../shell/services/types";
@@ -65,11 +62,15 @@ const NameCell = ({ affectedZUID, resourceType }: any) => {
   }, [resourceType, contentItem, contentModel, fileData]);
 
   if (isLoading) {
-    return <Skeleton variant="rectangular" width="100%" />;
+    return (
+      <Box display="flex" height="100%" alignItems="center">
+        <Skeleton variant="rectangular" width="100%" />
+      </Box>
+    );
   }
 
   return (
-    <>
+    <Box display="flex" height="100%" alignItems="center">
       {iconMap[resourceType as keyof typeof iconMap]}
       <Typography variant="body2" component="span" sx={{ ml: 2 }} noWrap>
         {name ? (
@@ -87,7 +88,7 @@ const NameCell = ({ affectedZUID, resourceType }: any) => {
           })`
         )}
       </Typography>
-    </>
+    </Box>
   );
 };
 
@@ -103,13 +104,24 @@ const VersionCell = ({ affectedZUID, resourceType }: any) => {
     resourceType === "code" ? fileData?.version : data?.meta?.version;
 
   if (isLoading) {
-    return <Skeleton variant="rectangular" width="100%" />;
+    return (
+      <Box display="flex" height="100%" alignItems="center">
+        <Skeleton variant="rectangular" width="100%" />
+      </Box>
+    );
   }
 
   return (
-    <Typography variant="body2" color="text.secondary">
-      {version ? `v${version}` : ""}
-    </Typography>
+    <Box
+      display="flex"
+      flexDirection="column"
+      height="100%"
+      justifyContent="center"
+    >
+      <Typography variant="body2" color="text.secondary">
+        {version ? `v${version}` : ""}
+      </Typography>
+    </Box>
   );
 };
 
@@ -126,7 +138,6 @@ export const ResourceTable = ({ dateRange }: Props) => {
   };
 
   const columns = [
-    { field: "id", headerName: "Id", hide: true },
     {
       field: "name",
       headerName: "Name",
@@ -157,30 +168,37 @@ export const ResourceTable = ({ dateRange }: Props) => {
   }
 
   return (
-    <DataGridPro
-      // @ts-expect-error - missing types for headerAlign and align on DataGridPro
-      columns={columns}
-      rows={
-        uniqBy(
-          audit?.filter((resource) =>
-            viewableResourceTypes.includes(resource.resourceType)
-          ),
-          "affectedZUID"
-        )?.map((row: any) => ({ id: row.ZUID, ...row })) || []
-      }
-      rowHeight={52}
-      hideFooter
-      disableSelectionOnClick
-      disableColumnFilter
-      loading={isAuditFetching}
-      onRowClick={(params) => handleRowClick(params.row)}
-      onCellClick={() => {}}
-      sx={{
-        backgroundColor: "common.white",
-        ".MuiDataGrid-row": {
-          cursor: "pointer",
-        },
-      }}
-    />
+    <Box width="100%">
+      <AutoSizer>
+        {({ width, height }: Size) => (
+          <DataGridPro
+            // @ts-expect-error - missing types for headerAlign and align on DataGridPro
+            columns={columns}
+            rows={
+              uniqBy(
+                audit?.filter((resource) =>
+                  viewableResourceTypes.includes(resource.resourceType)
+                ),
+                "affectedZUID"
+              )?.map((row: any) => ({ id: row.ZUID, ...row })) || []
+            }
+            rowHeight={52}
+            hideFooter
+            disableSelectionOnClick
+            disableColumnFilter
+            loading={isAuditFetching}
+            onRowClick={(params) => handleRowClick(params.row)}
+            onCellClick={() => {}}
+            style={{ width, height }}
+            sx={{
+              backgroundColor: "common.white",
+              ".MuiDataGrid-row": {
+                cursor: "pointer",
+              },
+            }}
+          />
+        )}
+      </AutoSizer>
+    </Box>
   );
 };

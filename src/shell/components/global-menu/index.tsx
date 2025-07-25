@@ -3,7 +3,13 @@ import { useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
 
-import { ListItem, ListItemIcon, ListItemText, Box } from "@mui/material";
+import {
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Box,
+  Skeleton,
+} from "@mui/material";
 import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
 import EditIcon from "@mui/icons-material/Edit";
 import ImageIcon from "@mui/icons-material/Image";
@@ -12,8 +18,7 @@ import RecentActorsIcon from "@mui/icons-material/RecentActors";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import SettingsIcon from "@mui/icons-material/Settings";
 import ExtensionIcon from "@mui/icons-material/Extension";
-import ShuffleRoundedIcon from "@mui/icons-material/ShuffleRounded";
-import { Database, Block } from "@zesty-io/material";
+import { Database, Block, ShuffleVariant } from "@zesty-io/material";
 
 import { AppState } from "../../store/types";
 import { Products } from "../../services/types";
@@ -21,7 +26,12 @@ import { Products } from "../../services/types";
 export default memo(function GlobalMenu() {
   const location = useLocation();
   const openNav = useSelector((state: AppState) => state.ui.openNav);
-  const products: Products[] = useSelector((state: AppState) => state.products);
+  const {
+    products,
+    isLoadingProducts,
+  }: { products: Products[]; isLoadingProducts: boolean } = useSelector(
+    (state: AppState) => state.products
+  );
 
   const slug = location.pathname.split("/")[1];
   const icons = {
@@ -33,7 +43,7 @@ export default memo(function GlobalMenu() {
     code: CodeIcon,
     leads: RecentActorsIcon,
     reports: BarChartIcon,
-    redirects: ShuffleRoundedIcon,
+    redirects: ShuffleVariant,
     settings: SettingsIcon,
     release: RocketLaunchIcon,
     apps: ExtensionIcon,
@@ -52,6 +62,43 @@ export default memo(function GlobalMenu() {
       </ListItemIcon>
     );
   };
+
+  if (isLoadingProducts) {
+    return (
+      <Box component="menu" width="100%" boxSizing="border-box">
+        {Array(10)
+          .fill(0)
+          .map((_, index) => (
+            <Box
+              key={index}
+              sx={{
+                height: "36px",
+                display: "flex",
+                alignItems: "center",
+                gap: 1,
+                pr: openNav ? 3 : 1.5,
+                pl: 1.5,
+              }}
+            >
+              <Skeleton
+                variant="circular"
+                width={24}
+                height={24}
+                sx={{ bgcolor: "grey.700" }}
+              />
+              {openNav && (
+                <Skeleton
+                  variant="rounded"
+                  width={132}
+                  height={12}
+                  sx={{ bgcolor: "grey.700" }}
+                />
+              )}
+            </Box>
+          ))}
+      </Box>
+    );
+  }
 
   return (
     <Box component="menu" width="100%" boxSizing="border-box">

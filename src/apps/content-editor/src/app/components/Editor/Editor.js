@@ -1,25 +1,14 @@
-import React, {
-  memo,
-  useCallback,
-  useEffect,
-  useMemo,
-  useReducer,
-  useState,
-} from "react";
-import { useDispatch, useSelector } from "react-redux";
-import cx from "classnames";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { useDispatch } from "react-redux";
 import { AppLink } from "@zesty-io/core/AppLink";
-import { ThemeProvider } from "@mui/material";
-import { theme } from "@zesty-io/material";
 import { unescape } from "lodash";
-import { Breadcrumbs } from "shell/components/global-tabs/components/Breadcrumbs";
 import { Field } from "./Field";
-import { FieldError } from "./FieldError";
 
 import styles from "./Editor.less";
 import { cloneDeep } from "lodash";
 import { useGetContentModelFieldsQuery } from "../../../../../../shell/services/instance";
 import { DYNAMIC_META_FIELD_NAMES } from "../../views/ItemEdit/Meta";
+import { FieldsLoader } from "./FieldsLoader";
 
 export const MaxLengths = {
   text: 150,
@@ -42,10 +31,12 @@ export default memo(function Editor({
   modelZUID,
   onUpdateFieldErrors,
   fieldErrors,
+  isLoadingItem,
 }) {
   const dispatch = useDispatch();
   const isNewItem = itemZUID.slice(0, 3) === "new";
-  const { data: fields } = useGetContentModelFieldsQuery(modelZUID);
+  const { data: fields, isFetching: isFetchingFields } =
+    useGetContentModelFieldsQuery(modelZUID);
   const [isLoaded, setIsLoaded] = useState(false);
   const [prevFirstContentFieldValue, setPrevFirstContentFieldValue] =
     useState(null);
@@ -211,8 +202,13 @@ export default memo(function Editor({
         };
       }
 
-      if (field.datatype === "one_to_many") {
+      if (
+        ["one_to_many", "wysiwyg_advanced", "wysiwyg_basic"].includes(
+          field.datatype
+        )
+      ) {
         // Clear out the error after changing the value
+        // Note: These errors are most of the time validation errors from the api
         errors[name] = {
           ...(errors[name] ?? []),
           CUSTOM_ERROR: "",
@@ -386,56 +382,43 @@ export default memo(function Editor({
     }
   }, [isNewItem, setIsLoaded, applyDefaultValuesToItemData]);
 
+  if (isFetchingFields || isLoadingItem) {
+    return <FieldsLoader />;
+  }
+
   if (!isLoaded) return null;
 
   return (
-    <ThemeProvider theme={theme}>
-      <div className={styles.Fields}>
-        {activeFields.length ? (
-          activeFields.map((field) => {
-            return (
-              <div
-                key={`${field.ZUID}`}
-                id={field.ZUID}
-                className={styles.Field}
-              >
-                <Field
-                  ZUID={field.ZUID}
-                  contentModelZUID={field.contentModelZUID}
-                  active={active === field.ZUID}
-                  name={field.name}
-                  label={field.label}
-                  description={field.description}
-                  required={field.required}
-                  relatedFieldZUID={field.relatedFieldZUID}
-                  relatedModelZUID={field.relatedModelZUID}
-                  datatype={field.datatype}
-                  options={field.options}
-                  settings={field.settings}
-                  onChange={onChange}
-                  onSave={onSave}
-                  item={item}
-                  langID={item?.meta?.langID}
-                  errors={fieldErrors[field.name]}
-                  maxLength={
-                    field.settings?.maxCharLimit ?? MaxLengths[field.datatype]
-                  }
-                  minLength={field.settings?.minCharLimit ?? 0}
-                />
-              </div>
-            );
-          })
-        ) : (
-          <div className={styles.NoFields}>
-            <h1 className={styles.Display}>No fields have been added</h1>
-            <h2 className={styles.SubHead}>
-              Use the{" "}
-              <AppLink to={`/schema/${modelZUID}`}>Schema Builder</AppLink> to
-              define your items content
-            </h2>
+    <div className={styles.Fields}>
+      {activeFields?.map((field) => {
+        return (
+          <div key={`${field.ZUID}`} id={field.ZUID} className={styles.Field}>
+            <Field
+              ZUID={field.ZUID}
+              contentModelZUID={field.contentModelZUID}
+              active={active === field.ZUID}
+              name={field.name}
+              label={field.label}
+              description={field.description}
+              required={field.required}
+              relatedFieldZUID={field.relatedFieldZUID}
+              relatedModelZUID={field.relatedModelZUID}
+              datatype={field.datatype}
+              options={field.options}
+              settings={field.settings}
+              onChange={onChange}
+              onSave={onSave}
+              item={item}
+              langID={item?.meta?.langID}
+              errors={fieldErrors[field.name]}
+              maxLength={
+                field.settings?.maxCharLimit ?? MaxLengths[field.datatype]
+              }
+              minLength={field.settings?.minCharLimit ?? 0}
+            />
           </div>
-        )}
-      </div>
-    </ThemeProvider>
+        );
+      })}
+    </div>
   );
 });

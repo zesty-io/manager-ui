@@ -6,28 +6,26 @@ import { ResizableContainer } from "../../../../shell/components/ResizeableConta
 
 export const MarketplaceApp = () => {
   return (
-    <ThemeProvider theme={theme}>
-      <Box
-        sx={{
-          color: "text.primary",
-          backgroundColor: "background.paper",
-          height: "100%",
-          display: "flex",
-          "*": {
-            boxSizing: "border-box",
-          },
-        }}
+    <Box
+      sx={{
+        color: "text.primary",
+        backgroundColor: "background.paper",
+        height: "100%",
+        display: "flex",
+        "*": {
+          boxSizing: "border-box",
+        },
+      }}
+    >
+      <ResizableContainer
+        id="appsNav"
+        defaultWidth={220}
+        minWidth={220}
+        maxWidth={360}
       >
-        <ResizableContainer
-          id="appsNav"
-          defaultWidth={220}
-          minWidth={220}
-          maxWidth={360}
-        >
-          <Sidebar />
-        </ResizableContainer>
-        <CustomApp />
-      </Box>
-    </ThemeProvider>
+        <Sidebar />
+      </ResizableContainer>
+      <CustomApp />
+    </Box>
   );
 };

@@ -1,11 +1,19 @@
-import React, { FC, HTMLAttributes } from "react";
-import { TreeView } from "@mui/x-tree-view";
+import React, { FC, useEffect } from "react";
+import { RichTreeView } from "@mui/x-tree-view";
 import { useHistory } from "react-router-dom";
 
-import { NavTreeItem } from "./components/NavTreeItem";
+import { RichTreeItem } from "./components/RichTreeItem";
 import { ContentNavItem } from "../../services/types";
 import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 import ArrowRightRoundedIcon from "@mui/icons-material/ArrowRightRounded";
+import { Stack, Box, Skeleton } from "@mui/material";
+import { isValid as zuidIsValid } from "zuid";
+
+// Note: This needs to be defined outside the component to avoid re-creating it on every render
+// Otherwise, it will cause unnecessary re-renders and performance issues.
+const getItemId = (item: TreeItem) => {
+  return item.path;
+};
 
 export type TreeItem = {
   icon: any;
@@ -16,9 +24,11 @@ export type TreeItem = {
   hidden?: boolean;
   nodeData?: any;
   createdAt?: string;
+  onItemDrop?: (draggedItem: any, targetItem: any) => void;
+  dragAndDrop?: boolean;
 } & Partial<ContentNavItem>;
 
-interface Props {
+type Props = {
   id: string;
   HeaderComponent?: React.ReactNode;
   ErrorComponent?: React.ReactNode;
@@ -27,10 +37,11 @@ interface Props {
   expandedItems?: string[];
   onToggleCollapse?: (paths: string[]) => void;
   error?: boolean;
-  isHiddenTree?: boolean;
   onItemDrop?: (draggedItem: any, targetItem: any) => void;
   dragAndDrop?: boolean;
-}
+  isLoading?: boolean;
+  isDirectoryNavigation?: boolean;
+};
 export const NavTree: FC<Readonly<Props>> = ({
   id,
   HeaderComponent,
@@ -40,58 +51,120 @@ export const NavTree: FC<Readonly<Props>> = ({
   expandedItems,
   onToggleCollapse,
   error = false,
-  isHiddenTree = false,
   onItemDrop,
   dragAndDrop = false,
+  isLoading,
+  isDirectoryNavigation = false,
 }) => {
   const history = useHistory();
 
+  useEffect(() => {
+    // This observer will remove the "hovered" class from tree items when the menu modal is closed
+    const observer = new MutationObserver(() => {
+      const schemaMoreMenu = document.querySelector(
+        "[data-cy='schema-more-menu']"
+      );
+      const mediaMoreMenu = document.querySelector(
+        "[data-cy='media-folder-menu']"
+      );
+      const hoveredTreeItems = document.querySelectorAll("div.hovered");
+
+      if (!schemaMoreMenu && !mediaMoreMenu && hoveredTreeItems.length > 0) {
+        hoveredTreeItems.forEach((item) => {
+          item.classList.remove("hovered");
+        });
+      }
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
+  if (isLoading) {
+    return (
+      <>
+        <Box className="nav-tree-header">{HeaderComponent}</Box>
+        <Stack sx={{ pl: 3.5, pr: 1.5 }}>
+          {Array(10)
+            .fill(0)
+            .map((_, index) => (
+              <Stack
+                key={index}
+                sx={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  height: 24,
+                  mr: 3,
+                  gap: 1,
+                }}
+              >
+                <Skeleton
+                  variant="circular"
+                  width={16}
+                  height={16}
+                  sx={{ backgroundColor: "grey.700", flexShrink: 0 }}
+                />
+                <Skeleton
+                  variant="rounded"
+                  width="100%"
+                  height={12}
+                  sx={{ backgroundColor: "grey.700" }}
+                />
+              </Stack>
+            ))}
+        </Stack>
+      </>
+    );
+  }
+
   return (
     <>
-      {HeaderComponent}
+      <Box className="nav-tree-header">{HeaderComponent}</Box>
       {error ? (
         ErrorComponent
       ) : (
-        <TreeView
+        <RichTreeView
+          id={id}
           data-cy={id}
-          expanded={expandedItems}
-          //  @ts-expect-error changed typed definition from mui/lab
-          selected={selected}
-          defaultCollapseIcon={<ArrowDropDownRoundedIcon />}
-          defaultExpandIcon={<ArrowRightRoundedIcon />}
-          //  @ts-expect-error changed typed definition from mui/lab
-          onNodeSelect={(evt: any, nodeIds: string) => {
-            if (evt.target.tagName !== "svg" && evt.target.tagName !== "path") {
-              history.push(nodeIds);
-            }
+          items={tree}
+          expandedItems={expandedItems}
+          selectedItems={[selected]}
+          expansionTrigger={isDirectoryNavigation ? "content" : "iconContainer"}
+          slots={{
+            collapseIcon: ArrowDropDownRoundedIcon,
+            expandIcon: ArrowRightRoundedIcon,
+            item: RichTreeItem,
           }}
-          onNodeToggle={(evt: any, nodeIds: string[]) => {
-            if (evt.target.tagName === "svg" || evt.target.tagName === "path") {
-              onToggleCollapse(nodeIds);
-            }
+          slotProps={{
+            item: {
+              dragAndDrop,
+              onItemDrop,
+            } as any,
           }}
-        >
-          {tree?.map((item) => {
-            if ((!isHiddenTree && item.hidden) || !item) {
-              return <></>;
-            }
+          onItemClick={(evt: any, itemId: string) => {
+            if (
+              isDirectoryNavigation &&
+              !zuidIsValid(itemId?.split("/")?.pop())
+            )
+              return;
 
-            return (
-              <NavTreeItem
-                isHiddenTree={isHiddenTree}
-                key={item.path}
-                labelName={item.label}
-                nodeId={item.path}
-                labelIcon={item.icon}
-                nestedItems={item.children}
-                actions={item.actions ?? []}
-                nodeData={item.nodeData}
-                onItemDrop={onItemDrop}
-                dragAndDrop={dragAndDrop}
-              />
-            );
-          })}
-        </TreeView>
+            if (evt.target.tagName !== "svg" && evt.target.tagName !== "path") {
+              history.push(itemId);
+            }
+          }}
+          onExpandedItemsChange={(evt: any, nodeIds: string[]) => {
+            onToggleCollapse(nodeIds);
+          }}
+          getItemId={getItemId}
+          experimentalFeatures={{ indentationAtItemLevel: true }}
+        />
       )}
     </>
   );

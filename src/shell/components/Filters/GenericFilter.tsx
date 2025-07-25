@@ -13,6 +13,7 @@ interface GenericFilterProps {
   value: string;
   onChange: (filter: string | number) => void;
   filterId?: string;
+  isSort?: boolean;
 }
 export const GenericFilter: FC<GenericFilterProps> = ({
   defaultButtonText,
@@ -20,6 +21,7 @@ export const GenericFilter: FC<GenericFilterProps> = ({
   value,
   onChange,
   filterId = "genericFilter",
+  isSort = false,
 }) => {
   const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLButtonElement | null>(
     null
@@ -41,7 +43,7 @@ export const GenericFilter: FC<GenericFilterProps> = ({
   return (
     <FilterButton
       isFilterActive={Boolean(value)}
-      buttonText={buttonText}
+      buttonText={isSort ? `Sort: ${buttonText}` : buttonText}
       onOpenMenu={handleOpenMenuClick}
       onRemoveFilter={() => onChange("")}
       filterId={filterId}

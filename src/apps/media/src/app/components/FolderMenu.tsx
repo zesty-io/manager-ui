@@ -1,11 +1,5 @@
 import { FC, useState } from "react";
-import {
-  Menu,
-  MenuItem,
-  ListItemIcon,
-  ListItemText,
-  ThemeProvider,
-} from "@mui/material";
+import { Menu, MenuItem, ListItemIcon, ListItemText } from "@mui/material";
 import { theme } from "@zesty-io/material";
 import CreateNewFolderIcon from "@mui/icons-material/CreateNewFolder";
 import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
@@ -41,8 +35,13 @@ export const FolderMenu: FC<Props> = ({
   const [_, setHiddenGroups] = useLocalStorage("zesty:navMedia:hidden", []);
 
   return (
-    <ThemeProvider theme={theme}>
-      <Menu anchorEl={anchorEl} open={!!anchorEl} onClose={onCloseMenu}>
+    <>
+      <Menu
+        data-cy="media-folder-menu"
+        anchorEl={anchorEl}
+        open={!!anchorEl}
+        onClose={onCloseMenu}
+      >
         <MenuItem
           divider
           onClick={() => {
@@ -138,6 +137,6 @@ export const FolderMenu: FC<Props> = ({
           groupId={groupId}
         />
       ) : null}
-    </ThemeProvider>
+    </>
   );
 };

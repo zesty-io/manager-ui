@@ -1,48 +1,79 @@
 import { useEffect, useState } from "react";
 import { connect } from "react-redux";
-
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCog } from "@fortawesome/free-solid-svg-icons";
-import { theme } from "@zesty-io/material";
-
 import {
   Divider,
   ToggleButtonGroup,
   ToggleButton,
-  FormLabel,
-  Tooltip,
   Select,
   MenuItem,
-  Stack,
+  Box,
+  ButtonBase,
+  Link,
 } from "@mui/material";
-
-import LoadingButton from "@mui/lab/LoadingButton";
-import SaveIcon from "@mui/icons-material/Save";
-import InfoIcon from "@mui/icons-material/InfoOutlined";
-
 import { FieldTypeText } from "@zesty-io/material";
+import MenuBookIcon from "@mui/icons-material/MenuBook";
 
-import { Docs } from "@zesty-io/core/Docs";
-import { notify } from "shell/store/notifications";
-import { FieldDescription } from "@zesty-io/core/FieldDescription";
-import { Notice } from "@zesty-io/core/Notice";
+import { TopBar } from "../../components/TopBar";
+import { FieldWrapper, MainWrapper } from "../../components/Containers";
+import { Typography } from "@mui/material";
+import { notify } from "../../../../../../shell/store/notifications";
+import { updateSettings } from "../../../../../../shell/store/settings";
 
-import { updateSettings } from "shell/store/settings";
+const DOCLINKS_MAP = {
+  mode: "https://docs.zesty.io/docs/modes",
+  site_protocol: "https://docs.zesty.io/docs/manager-instance-settings",
+};
 
-import styles from "./SettingsStyles.less";
-import typographystyles from "@zesty-io/core/typography.less";
+const DocLink = ({ href }) => {
+  return (
+    <ButtonBase
+      LinkComponent={Link}
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      sx={{
+        height: "32px",
+        border: "1px solid",
+        borderColor: "border",
+        borderRadius: "4px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        gap: "8px",
+        px: "10px",
+        py: "4px",
+        "&:hover": {
+          bgcolor: "border",
+        },
+        textDecoration: "none!important",
+      }}
+    >
+      <MenuBookIcon
+        sx={{ width: "18px", height: "18px", color: "action.active" }}
+      />
+      <Typography
+        variant="caption"
+        color="text.secondary"
+        fontSize="14px"
+        fontWeight={500}
+        sx={{ textDecoration: "none!important" }}
+      >
+        Read Docs
+      </Typography>
+    </ButtonBase>
+  );
+};
 
 export default connect((state) => {
   return {
     catInstance: state.settings.catInstance,
     instance: state.settings.instance,
   };
-})(function Settings(props) {
+})(function Instance(props) {
   const [saving, setSaving] = useState(false);
   const [fields, setFields] = useState([]);
   const [fieldValues, setFieldValues] = useState({});
   const [dirtyFields, setDirtyFields] = useState([]);
-
   // Set Fields and Field Values from store/URL
   useEffect(() => {
     const category = props.match.params.category
@@ -52,7 +83,7 @@ export default connect((state) => {
     const matchingFields = props.instance.filter(
       (item) => item.category === category
     );
-
+    setDirtyFields([]);
     setFields(matchingFields);
     setFieldValues(
       matchingFields.reduce((acc, field) => {
@@ -70,7 +101,7 @@ export default connect((state) => {
     setDirtyFields([...dirtyFields, name]);
   }
 
-  function saveFields() {
+  async function saveFields(callback) {
     setSaving(true);
 
     const requests = fields
@@ -79,12 +110,12 @@ export default connect((state) => {
           return field;
         }
       })
-      .map((field) => {
+      .map(async (field) => {
         const value =
           fieldValues[field.key] === null
             ? null
             : fieldValues[field.key].toString();
-        return props.dispatch(
+        return await props.dispatch(
           updateSettings(field.ZUID, {
             ...field,
             value,
@@ -96,15 +127,20 @@ export default connect((state) => {
       .then((responses) => {
         setSaving(false);
         setDirtyFields([]);
+        callback && callback();
         props.dispatch(
           notify({
             kind: "success",
-            message: "Settings Saved",
+            message: `${capitalizeFirstLetter(
+              props.match.params.category
+            )} Settings Saved`,
           })
         );
       })
       .catch((err) => {
         setSaving(false);
+        callback && callback();
+        setDirtyFields([]);
         props.dispatch(
           notify({
             kind: "warn",
@@ -119,72 +155,54 @@ export default connect((state) => {
 
   let i = 0;
   return (
-    <div className={styles.Settings}>
-      <div className={styles.row}>
-        <div className={styles.column}>
-          <h1 className={typographystyles.subheadline}>
-            <FontAwesomeIcon
-              color={theme.palette.action.active}
-              icon={faCog}
-              className={styles.titleIcon}
-            />
-            {capitalizeFirstLetter(props.match.params.category)} Settings
-          </h1>
-        </div>
-        <div className={styles.column}>
-          <div className={styles.labelRow}>
-            {dirtyFields.length !== 0 && (
-              <Notice>
-                {" "}
-                Changes affect production on first re-render, cache-expiry, or
-                cache clear
-              </Notice>
-            )}
-            <LoadingButton
-              variant="contained"
-              id="saveSettings"
-              color="success"
-              onClick={saveFields}
-              disabled={dirtyFields.length === 0}
-              loading={saving}
-              loadingPosition="start"
-              startIcon={<SaveIcon />}
-              sx={{ alignSelf: "flex-end" }}
-            >
-              Save Settings
-            </LoadingButton>
-          </div>
-        </div>
-      </div>
-      <Divider
-        sx={{
-          my: 1,
-          mx: 2,
-        }}
+    <>
+      <TopBar
+        title={`${capitalizeFirstLetter(props.match.params.category)}`}
+        onSave={saveFields}
+        isNotSaved={dirtyFields.length > 0}
+        isLoading={saving}
+        matchPath={props.match.path}
       />
-      <div className={styles.row}>
-        {fields.map((field) => {
-          {
-            i % 2 == 0 && (
-              <Divider
-                sx={{
-                  my: 1,
-                  mx: 2,
-                }}
-              />
-            );
-          }
-          i++;
-          switch (field.dataType) {
-            case "checkbox":
-              if (field.key === "site_protocol") {
-                return (
-                  <div key={field.ZUID} className={styles.column}>
-                    <div className={styles.labelRow}>
-                      <FormLabel> {field.keyFriendly} </FormLabel>{" "}
-                      <Docs subject={`${field.key}`} />
-                    </div>
-                    <div className={styles.selectProtocol}>
+      <Box
+        px="32px"
+        py="16px"
+        sx={{
+          width: "100%",
+          height: "calc(100% - 84px)",
+          overflowY: "auto",
+          overflowX: "hidden",
+          margin: "0",
+          display: "block",
+          maxHeight: "calc(100% - 84px)",
+          position: "relative",
+          boxSizing: "border-box",
+        }}
+      >
+        <MainWrapper rowGap={3}>
+          {fields.map((field) => {
+            {
+              i % 2 == 0 && (
+                <Divider
+                  key={field.ZUID}
+                  sx={{
+                    my: 1,
+                    mx: 2,
+                  }}
+                />
+              );
+            }
+            i++;
+            switch (field.dataType) {
+              case "checkbox":
+                const httpsDocLink = DOCLINKS_MAP?.[field?.key] || null;
+                if (field.key === "site_protocol") {
+                  return (
+                    <FieldWrapper
+                      key={field.ZUID}
+                      label={field.keyFriendly}
+                      tooltip={field.tips}
+                      rowGap={2}
+                    >
                       <Select
                         name={field.key}
                         onChange={(evt) =>
@@ -192,6 +210,7 @@ export default connect((state) => {
                         }
                         value={fieldValues[field.key]}
                         size="small"
+                        fullWidth
                       >
                         <MenuItem value="Select">Select</MenuItem>
                         {field.options.split(",").map((option, index) => (
@@ -200,110 +219,90 @@ export default connect((state) => {
                           </MenuItem>
                         ))}
                       </Select>
-                    </div>
-                  </div>
-                );
-              } else if (field.key === "preferred_domain_prefix") {
-                return (
-                  <div key={field.ZUID} className={styles.column}>
-                    <FormLabel>
-                      <Stack
-                        spacing={1}
-                        direction="row"
-                        alignItems="center"
-                        sx={{
-                          my: 1,
-                        }}
-                      >
-                        <Tooltip
-                          title={`Activating the WWW setting requires DNS setup of both the apex domain and www sub-domain.`}
-                        >
-                          <InfoIcon fontSize="small" />
-                        </Tooltip>
-                        <p>{field.keyFriendly}</p>
-                      </Stack>
-                    </FormLabel>
-                    <ToggleButtonGroup
-                      color="secondary"
-                      size="small"
-                      value={fieldValues[field.key]}
-                      exclusive
-                      onChange={(evt, val) => setValue(val, field.key)}
+                      {!!httpsDocLink ? <DocLink href={httpsDocLink} /> : null}
+                    </FieldWrapper>
+                  );
+                } else if (field.key === "preferred_domain_prefix") {
+                  return (
+                    <FieldWrapper
+                      key={field.ZUID}
+                      label={field.keyFriendly}
+                      tooltip={`Activating the WWW setting requires DNS setup of both the apex domain and www sub-domain.`}
                     >
-                      <ToggleButton value={"0"}>Off </ToggleButton>
-                      <ToggleButton value={"1"}>On </ToggleButton>
-                    </ToggleButtonGroup>
-                  </div>
-                );
-              } else {
-                return (
-                  <div key={field.ZUID} className={styles.column}>
-                    <FormLabel>
-                      <Stack
-                        spacing={1}
-                        direction="row"
-                        alignItems="center"
-                        sx={{
-                          my: 1,
-                        }}
+                      <ToggleButtonGroup
+                        color="primary"
+                        size="small"
+                        value={fieldValues[field.key]}
+                        exclusive
+                        onChange={(evt, val) => setValue(val, field.key)}
                       >
-                        <Tooltip title={field.tips}>
-                          <InfoIcon fontSize="small" />
-                        </Tooltip>
-                        <p>{field.keyFriendly}</p>
-                      </Stack>
-                    </FormLabel>
-                    <ToggleButtonGroup
-                      color="secondary"
-                      size="small"
-                      value={fieldValues[field.key]}
-                      exclusive
-                      onChange={(evt, val) => setValue(val, field.key)}
+                        <ToggleButton value={"0"}>Off </ToggleButton>
+                        <ToggleButton value={"1"}>On </ToggleButton>
+                      </ToggleButtonGroup>
+                    </FieldWrapper>
+                  );
+                } else {
+                  return (
+                    <FieldWrapper
+                      key={field.ZUID}
+                      label={field.keyFriendly}
+                      tooltip={field.tips}
                     >
-                      <ToggleButton value={"0"}>Off</ToggleButton>
-                      <ToggleButton value={"1"}>On </ToggleButton>
-                    </ToggleButtonGroup>
-                  </div>
-                );
-              }
-            case "textarea":
-              const tooltip = field.tips && (
-                <>
-                  <Tooltip title={field.tips} arrow placement="top-start">
-                    <InfoIcon fontSize="small" />
-                  </Tooltip>
-                  &nbsp;
-                </>
-              );
-
-              return (
-                <div key={field.ZUID} className={styles.column}>
-                  <FieldTypeText
+                      <ToggleButtonGroup
+                        color="primary"
+                        size="small"
+                        value={fieldValues[field.key]}
+                        exclusive
+                        onChange={(evt, val) => setValue(val, field.key)}
+                      >
+                        <ToggleButton value={"0"}>Off</ToggleButton>
+                        <ToggleButton value={"1"}>On </ToggleButton>
+                      </ToggleButtonGroup>
+                    </FieldWrapper>
+                  );
+                }
+              case "textarea":
+                return (
+                  <FieldWrapper
                     key={field.ZUID}
-                    name={field.key}
-                    value={fieldValues[field.key]}
-                    label={
-                      <>
-                        {tooltip}
-                        {field.keyFriendly}
-                      </>
-                    }
-                    onChange={(evt) => setValue(evt.target.value, field.key)}
-                    multiline
-                    rows={6}
-                  />
-                </div>
-              );
-            case "dropdown":
-              return (
-                <div key={field.ZUID} className={styles.column}>
-                  <FormLabel>{field.keyFriendly}</FormLabel>
-                  <div className={styles.selectProtocol}>
+                    label={field.keyFriendly}
+                    tooltip={field.tips}
+                    pb="22px"
+                  >
+                    <FieldTypeText
+                      key={field.ZUID}
+                      name={field.key}
+                      value={fieldValues[field.key]}
+                      onChange={(evt) => setValue(evt.target.value, field.key)}
+                      multiline
+                      rows={6}
+                      fullWidth
+                      sx={{
+                        "& .MuiInputAdornment-root.MuiInputAdornment-positionEnd":
+                          {
+                            height: "20px",
+                            position: "absolute",
+                            right: 0,
+                            bottom: "-22px",
+                          },
+                      }}
+                    />
+                  </FieldWrapper>
+                );
+              case "dropdown":
+                const docLink = DOCLINKS_MAP?.[field?.key] || null;
+                return (
+                  <FieldWrapper
+                    key={field.ZUID}
+                    label={field.keyFriendly}
+                    tooltip={field.tips}
+                  >
                     <Select
                       name={field.key}
                       onChange={(evt) => setValue(evt.target.value, field.key)}
                       value={fieldValues[field.key]}
                       size="small"
+                      fullWidth
                     >
                       {field.options.split(";").map((option, index) => {
                         let val = option.split(":");
@@ -314,33 +313,32 @@ export default connect((state) => {
                         );
                       })}
                     </Select>
-                  </div>
-                  <br />
-                  <div className={styles.labelRow}>
-                    <Docs subject={field.keyFriendly} />
-                    <FieldDescription description={field.tips} />
-                  </div>
-                </div>
-              );
-            default:
-              return (
-                <div key={field.ZUID} className={styles.column}>
-                  <FieldTypeText
-                    key={field.ZUID}
-                    label={field.keyFriendly}
-                    name={field.key}
-                    value={fieldValues[field.key]}
-                    onChange={(evt) =>
-                      setValue(evt.target.value, evt.target.name)
-                    }
-                    helperText={field.tips}
-                    maxLength={640}
-                  />
-                </div>
-              );
-          }
-        })}
-      </div>
-    </div>
+                    {!!docLink ? <DocLink href={docLink} /> : null}
+                    <Typography variant="body2" color="text.secondary">
+                      {field.tips}
+                    </Typography>
+                  </FieldWrapper>
+                );
+              default:
+                return (
+                  <FieldWrapper key={field.ZUID} label={field.keyFriendly}>
+                    <FieldTypeText
+                      key={field.ZUID}
+                      name={field.key}
+                      value={fieldValues[field.key]}
+                      onChange={(evt) =>
+                        setValue(evt.target.value, evt.target.name)
+                      }
+                      helperText={field.tips}
+                      maxLength={640}
+                      fullWidth
+                    />
+                  </FieldWrapper>
+                );
+            }
+          })}
+        </MainWrapper>
+      </Box>
+    </>
   );
 });

@@ -1,7 +1,5 @@
 import { FC, useMemo, useEffect } from "react";
 import { Typography, Box, Stack, Skeleton } from "@mui/material";
-import { ThemeProvider } from "@mui/material/styles";
-import { theme } from "@zesty-io/material";
 import moment from "moment-timezone";
 import { cloneDeep, isEmpty } from "lodash";
 import { useSelector } from "react-redux";
@@ -33,7 +31,8 @@ import {
   useGetBinsQuery,
 } from "../../services/mediaManager";
 import { useSearchMediaFoldersByKeyword } from "../../hooks/useSearchMediaFoldersByKeyword";
-
+import { BlockModel } from "./List/Block";
+import { useSearchBlocksByKeyword } from "../../hooks/useSearchBlocksByKeyword";
 export interface SearchPageItem {
   ZUID: string;
   title: string;
@@ -41,7 +40,7 @@ export interface SearchPageItem {
   updatedAt: string;
   createdAt: string;
   createdByUserZUID: string;
-  data: ContentItem | ContentModel | File | MediaFile | Group;
+  data: ContentItem | BlockModel | ContentModel | File | MediaFile | Group;
   subType?: "folder" | "item";
   langID?: number;
 }
@@ -56,6 +55,7 @@ export const SearchPage: FC = () => {
     isError: isContentFetchingFailed,
   } = useSearchContentQuery({ query: keyword, order: "created", dir: "desc" });
   const [models, setModelKeyword] = useSearchModelsByKeyword();
+  const { blocks, setBlockKeyword } = useSearchBlocksByKeyword();
   const [codeFiles, setCodeFileKeyword] = useSearchCodeFilesByKeywords();
   const [mediaFolders, setMediaFolderKeyword] =
     useSearchMediaFoldersByKeyword();
@@ -71,9 +71,18 @@ export const SearchPage: FC = () => {
   const isLoading = isFetchingContent || isFetchingMedia;
 
   useEffect(() => {
-    setModelKeyword(keyword);
-    setCodeFileKeyword(keyword);
-    setMediaFolderKeyword(keyword);
+    let isMounted = true;
+
+    if (isMounted) {
+      setModelKeyword(keyword);
+      setCodeFileKeyword(keyword);
+      setMediaFolderKeyword(keyword);
+      setBlockKeyword(keyword);
+    }
+
+    return () => {
+      isMounted = false;
+    };
   }, [keyword]);
 
   // Combine results from contents, models, code files, media files and media folders
@@ -106,6 +115,20 @@ export const SearchPage: FC = () => {
           createdAt: model.createdAt,
           createdByUserZUID: model.createdByUserZUID,
           data: model,
+        };
+      }) || [];
+
+    const blockResults: SearchPageItem[] =
+      blocks?.map((block) => {
+        return {
+          ZUID: block?.ZUID,
+          title: block?.label,
+          type: "block",
+          updatedAt: block?.updatedAt,
+          createdAt: block?.createdAt,
+          createdByUserZUID: block?.createdByUserZUID,
+          langID: block?.langID,
+          data: block,
         };
       }) || [];
 
@@ -156,6 +179,7 @@ export const SearchPage: FC = () => {
       ...fileResults,
       ...mediaFileResults,
       ...mediaFolderResults,
+      ...blockResults,
     ];
 
     // Sort the results
@@ -187,6 +211,7 @@ export const SearchPage: FC = () => {
   }, [
     contents,
     models,
+    blocks,
     params,
     codeFiles,
     mediaFiles,
@@ -244,69 +269,67 @@ export const SearchPage: FC = () => {
   }, [results, params]);
 
   return (
-    <ThemeProvider theme={theme}>
-      <Stack
+    <Stack
+      sx={{
+        width: "100%",
+        height: "100%",
+        backgroundColor: "background.paper",
+      }}
+    >
+      <Box
         sx={{
-          width: "100%",
-          height: "100%",
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "8px 24px",
+          gap: "10px",
+          minHeight: "52px",
+          boxSizing: "border-box",
+          borderColor: "grey.100",
+          borderStyle: "solid",
+          borderWidth: "0px 1px 1px 1px",
           backgroundColor: "background.paper",
         }}
       >
+        <Typography variant="h6" color="text.primary" fontWeight={700}>
+          {isLoading ? (
+            <Skeleton variant="text" width={200} />
+          ) : (
+            `${filteredResults?.length} results ${
+              Boolean(keyword) ? `for "${keyword}"` : ""
+            }`
+          )}
+        </Typography>
+        <BackButton />
+      </Box>
+      <Box
+        py={2}
+        px={3}
+        sx={{
+          backgroundColor: "grey.50",
+        }}
+      >
+        <Filters />
+      </Box>
+      {!isLoading && !filteredResults?.length ? (
+        <NoSearchResults query={keyword} />
+      ) : (
         <Box
           sx={{
             display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-            padding: "8px 24px",
-            gap: "10px",
-            minHeight: "52px",
-            boxSizing: "border-box",
-            borderColor: "grey.100",
-            borderStyle: "solid",
-            borderWidth: "0px 1px 1px 1px",
-            backgroundColor: "background.paper",
-          }}
-        >
-          <Typography variant="h6" color="text.primary" fontWeight={700}>
-            {isLoading ? (
-              <Skeleton variant="text" width={200} />
-            ) : (
-              `${filteredResults?.length} results ${
-                Boolean(keyword) ? `for "${keyword}"` : ""
-              }`
-            )}
-          </Typography>
-          <BackButton />
-        </Box>
-        <Box
-          py={2}
-          px={3}
-          sx={{
+            flexDirection: "column",
+            alignItems: "flex-start",
+            px: 3,
+            py: 0,
+            gap: 2,
             backgroundColor: "grey.50",
+            height: "100%",
           }}
         >
-          <Filters />
+          <SearchPageList results={filteredResults} loading={isLoading} />
         </Box>
-        {!isLoading && !filteredResults?.length ? (
-          <NoSearchResults query={keyword} />
-        ) : (
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "flex-start",
-              px: 3,
-              py: 0,
-              gap: 2,
-              backgroundColor: "grey.50",
-              height: "100%",
-            }}
-          >
-            <SearchPageList results={filteredResults} loading={isLoading} />
-          </Box>
-        )}
-      </Stack>
-    </ThemeProvider>
+      )}
+    </Stack>
   );
 };

@@ -9,9 +9,7 @@ import {
   Stack,
   Box,
   Alert,
-  ThemeProvider,
 } from "@mui/material";
-import { theme } from "@zesty-io/material";
 import { LoadingButton } from "@mui/lab";
 import ScheduleRoundedIcon from "@mui/icons-material/ScheduleRounded";
 import WarningRoundedIcon from "@mui/icons-material/WarningRounded";
@@ -107,7 +105,7 @@ export const SchedulePublish = ({
   };
 
   return (
-    <ThemeProvider theme={theme}>
+    <>
       <Dialog
         data-cy="SchedulePublishModal"
         open
@@ -143,7 +141,7 @@ export const SchedulePublish = ({
                 <Typography variant="h5" display="inline" fontWeight={700}>
                   {item?.scheduling?.isScheduled
                     ? "Unschedule Publish:"
-                    : "Schedule Content Item Publish:"}
+                    : "Schedule Publish:"}
                   &nbsp;
                 </Typography>
                 <Typography variant="h5" display="inline">
@@ -244,11 +242,11 @@ export const SchedulePublish = ({
               }}
               loading={isLoading}
             >
-              Schedule v{item?.web?.version} for Publish
+              Schedule Publish
             </LoadingButton>
           )}
         </DialogActions>
       </Dialog>
-    </ThemeProvider>
+    </>
   );
 };

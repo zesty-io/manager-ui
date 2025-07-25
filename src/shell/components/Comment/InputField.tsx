@@ -4,6 +4,7 @@ import { Editor } from "@tinymce/tinymce-react";
 import { theme } from "@zesty-io/material";
 import { LoadingButton } from "@mui/lab";
 import { useParams } from "react-router";
+import { useDebounce } from "react-use";
 
 import { MentionList } from "./MentionList";
 import tinymce from "tinymce";
@@ -15,10 +16,6 @@ import {
   useUpdateCommentMutation,
   useUpdateReplyMutation,
 } from "../../services/accounts";
-
-const PLACEHOLDER = '<p class="placeholder">Reply or add others with @</p>';
-const EMAIL_MENTION_REGEX =
-  /(?<!\>)@[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}(?!\<span\>)/gm;
 
 type InputFieldProps = {
   isFirstComment: boolean;
@@ -77,7 +74,7 @@ export const InputField = ({
   const inputRef = useRef<HTMLDivElement>();
   const mentionListRef = useRef(null);
   const [inputValue, setInputValue] = useState("");
-  const [initialValue, setInitialValue] = useState(PLACEHOLDER);
+  const [initialValue, setInitialValue] = useState("");
   const [mentionListAnchorEl, setMentionListAnchorEl] = useState(null);
   const [userFilterKeyword, setUserFilterKeyword] = useState("");
   const [prevCommentCount, setPrevCommentCount] = useState(commentCount);
@@ -157,21 +154,25 @@ export const InputField = ({
     }
   }, []);
 
-  useEffect(() => {
-    // No need to save edit mode changes in draft
-    if (inputValue && !isEditMode) {
-      updateComments({
-        [commentResourceZUID]: inputValue === PLACEHOLDER ? "" : inputValue,
-      });
-    }
-  }, [inputValue, isEditMode]);
+  useDebounce(
+    () => {
+      // No need to save edit mode changes in draft
+      if (inputValue && !isEditMode) {
+        updateComments({
+          [commentResourceZUID]: inputValue,
+        });
+      }
+    },
+    300,
+    [inputValue, isEditMode]
+  );
 
   useEffect(() => {
     if (
       (isCommentCreated || isReplyCreated) &&
       prevCommentCount !== commentCount
     ) {
-      tinymce?.activeEditor.setContent(PLACEHOLDER);
+      tinymce?.activeEditor.setContent("");
       setInputValue("");
       updateComments({
         [commentResourceZUID]: "",
@@ -182,7 +183,7 @@ export const InputField = ({
 
   useEffect(() => {
     if (isCommentUpdated || isReplyUpdated) {
-      tinymce?.activeEditor.setContent(PLACEHOLDER);
+      tinymce?.activeEditor.setContent("");
       setInputValue("");
       setCommentZUIDtoEdit(null);
     }
@@ -205,6 +206,11 @@ export const InputField = ({
     isReplyCreationError ||
     isCommentUpdateError ||
     isReplyUpdateError;
+  // Ensures that the buttons are only shown when there is text content in the input field without blocking the user from actually
+  // pressing enter to start or end the comment with multiple line breaks if they wanted to
+  const showButtons =
+    !!inputValue &&
+    !!tinymce.activeEditor.getContent({ format: "text" }).trim();
 
   return (
     <>
@@ -243,6 +249,8 @@ export const InputField = ({
             disabled={isLoading}
             init={{
               inline: true,
+              auto_focus: true,
+              placeholder: "Reply or add others with @",
 
               setup: (editor) => {
                 editor.on("ResizeEditor", () => {
@@ -253,18 +261,7 @@ export const InputField = ({
               },
 
               content_style: "ul, ol { margin-left: 16px }",
-            }}
-            onClick={() => {
-              // Removes the placeholder
-              if (tinymce?.activeEditor.getContent() === PLACEHOLDER) {
-                tinymce?.activeEditor.setContent("");
-              }
-            }}
-            onBlur={() => {
-              // Re-adds the placeholder when user clicks out and there's no value
-              if (!tinymce?.activeEditor.getContent()) {
-                tinymce?.activeEditor.setContent(PLACEHOLDER);
-              }
+              skin_url: "/vendors/tinymce/skins/ui/Zesty",
             }}
             onEditorChange={(value, editor) => {
               setInputValue(value);
@@ -365,7 +362,7 @@ export const InputField = ({
         justifyContent="end"
         mt={1.5}
       >
-        {inputValue && inputValue !== PLACEHOLDER && (
+        {showButtons && (
           <>
             <Button
               variant="outlined"

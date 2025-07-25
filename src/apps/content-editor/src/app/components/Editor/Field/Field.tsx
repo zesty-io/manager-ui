@@ -2,9 +2,7 @@ import { useMemo, useState, useEffect, ChangeEvent, useCallback } from "react";
 import ReactDOM from "react-dom";
 import { useDispatch } from "react-redux";
 import moment from "moment-timezone";
-import zuid from "zuid";
 
-import { searchItems } from "../../../../../../../shell/store/content";
 import { EditorType, FieldShell, Error } from "./FieldShell";
 
 import {
@@ -30,7 +28,6 @@ import { FieldTypeCurrency } from "../../../../../../../shell/components/FieldTy
 import { FieldTypeEditor } from "../../../../../../../shell/components/FieldTypeEditor";
 import { FieldTypeTinyMCE } from "../../../../../../../shell/components/FieldTypeTinyMCE";
 import { FieldTypeColor } from "../../../../../../../shell/components/FieldTypeColor";
-import { OneToManyOptions } from "../../../../../../../shell/components/FieldTypeOneToMany";
 import { RelationalFieldBase } from "../../../../../../../shell/components/RelationalFieldBase";
 import { FieldTypeDate } from "../../../../../../../shell/components/FieldTypeDate";
 import { FieldTypeDateTime } from "../../../../../../../shell/components/FieldTypeDateTime";
@@ -45,13 +42,11 @@ import { withAI } from "../../../../../../../shell/components/withAi";
 import { useGetContentModelFieldsQuery } from "../../../../../../../shell/services/instance";
 import {
   ContentItem,
-  ContentModelField,
   FieldSettings,
-  Language,
 } from "../../../../../../../shell/services/types";
-import { ResolvedOption } from "./ResolvedOption";
 import { FieldTypeMedia } from "../../FieldTypeMedia";
 import { debounce, parseInt } from "lodash";
+import { useRegisterRef } from "../../../../../../../engine/useRegisterRef";
 
 const AIFieldShell = withAI(FieldShell);
 
@@ -66,71 +61,6 @@ export const sortHTML = (a: any, b: any) => {
   }
   // names must be equal
   return 0;
-};
-
-export const resolveRelatedOptions = (
-  fields: Record<string, ContentModelField>,
-  items: any,
-  fieldZUID: string,
-  modelZUID: string,
-  langID: number,
-  value: any
-): OneToManyOptions[] => {
-  // guard against absent data in state
-  const field = fields && fields[fieldZUID];
-  if (!field || !items) {
-    return [];
-  }
-
-  return Object.keys(items)
-    .filter((itemZUID) => {
-      return (
-        items[itemZUID] &&
-        items[itemZUID].meta &&
-        items[itemZUID].meta.contentModelZUID === modelZUID &&
-        // filter by content language
-        (langID === items[itemZUID].meta.langID ||
-          // ...unless option already selected
-          value?.split(",").includes(itemZUID))
-      );
-    })
-    .map((itemZUID) => {
-      // Matching ItemZUID to languageZUID to get language code {key} to display in dropdown
-      let langCode = "";
-      if (items[itemZUID].siblings) {
-        const match = Object.entries(items[itemZUID].siblings).find(
-          (arr) => items[itemZUID].meta.ZUID === arr[1]
-        );
-        if (match) {
-          langCode = match[0];
-        }
-      }
-
-      return {
-        value: itemZUID,
-        inputLabel: items[itemZUID].data[field.name] || "",
-        component: (
-          <ResolvedOption
-            modelZUID={modelZUID}
-            itemZUID={itemZUID}
-            html={
-              <div
-                style={{
-                  display: "inline-grid",
-                  gridTemplateColumns: "minmax(50px, 100%) 41px",
-                }}
-              >
-                <span style={{ textOverflow: "ellipsis", overflow: "hidden" }}>
-                  {items[itemZUID].data[field.name]}
-                </span>
-                <em className={styles.Language}>&nbsp;{langCode}</em>
-              </div>
-            }
-          />
-        ),
-      };
-    })
-    .sort((a, b) => (a.inputLabel > b.inputLabel ? 1 : -1));
 };
 
 type FieldProps = {
@@ -179,6 +109,7 @@ export const Field = ({
   const version = item?.meta?.version;
   const fieldData = fields?.find((field) => field.ZUID === ZUID);
   const [inputValue, setInputValue] = useState(value || "");
+  const [rerenderKey, setRerenderKey] = useState(0);
 
   const debouncedOnChange = useMemo(() => debounce(onChange, 300), [onChange]);
 
@@ -195,17 +126,68 @@ export const Field = ({
     setInputValue(value || "");
   }, [value]);
 
-  useEffect(() => {
-    if (datatype !== "date" && datatype !== "datetime") {
-      if (value && typeof value === "string") {
-        value.split(",").forEach((z) => {
-          if (zuid.isValid(z) && !zuid.matches(z, zuid.prefix["MEDIA_FILE"])) {
-            dispatch(searchItems(z));
-          }
-        });
-      }
+  const handle = useMemo<any>(
+    () => ({
+      setValue: (val: string) => {
+        const el = document.getElementById(ZUID);
+        if (el) {
+          el.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest",
+            inline: "center",
+          });
+        }
+
+        const inputEl = el.querySelector(
+          'input, textarea, [contenteditable="true"]'
+        ) as HTMLElement | null;
+        if (inputEl && typeof inputEl.focus === "function") {
+          inputEl.focus();
+        }
+
+        if (datatype === "number" || datatype === "yes_no") {
+          onChange(Number(val), name);
+        } else {
+          onChange(val, name);
+        }
+
+        setRerenderKey((prevKey: number) => prevKey + 1);
+      },
+    }),
+    []
+  );
+
+  useRegisterRef(
+    name,
+    handle,
+    {
+      ZUID,
+      contentModelZUID,
+      currentValue: value,
+      datatype,
+      required,
+      settings,
+      label,
+      name,
+      maxLength,
+      minLength,
+    },
+    {
+      skip: [
+        "uuid",
+        "images",
+        "files",
+        "internal_link",
+        "one_to_one",
+        "one_to_many",
+        "block_selector",
+        "yes_no",
+        "dropdown",
+        "date",
+        "datetime",
+      ].includes(datatype),
     }
-  }, []);
+  );
 
   const renderMediaModal = () => {
     return ReactDOM.createPortal(
@@ -412,6 +394,7 @@ export const Field = ({
             value={value}
           >
             <FieldTypeTinyMCE
+              key={rerenderKey}
               name={name}
               value={value}
               version={version}
@@ -436,6 +419,7 @@ export const Field = ({
       return (
         <div className={styles.WYSIWYGFieldType}>
           <AIFieldShell
+            key={rerenderKey}
             ZUID={fieldData?.ZUID}
             name={fieldData?.name}
             label={fieldData?.label}

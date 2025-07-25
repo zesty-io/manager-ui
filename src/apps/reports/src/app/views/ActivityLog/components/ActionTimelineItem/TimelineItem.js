@@ -17,6 +17,7 @@ import {
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { useHistory, useLocation } from "react-router";
+import { useGetWorkflowStatusLabelsQuery } from "../../../../../../../../shell/services/instance";
 
 const actionIconMap = {
   1: faPencilAlt,
@@ -48,30 +49,60 @@ const actionIconColorMap = {
 export const TimelineItem = (props) => {
   const location = useLocation();
   const history = useHistory();
+  const {
+    data: workflowStatusLabels,
+    isLoading: isLoadingWorkflowStatusLabels,
+  } = useGetWorkflowStatusLabelsQuery({ showDeleted: true });
 
   const actionMessage = useMemo(() => {
-    switch (props.action?.action) {
-      case 1:
-        return "Created";
-      case 2:
-        return "Modified";
-      case 3:
-        return "Deleted";
-      case 4:
-        return "Published";
-      case 5:
-        return "Unpublished";
-      case 6:
-        const [publishAt] = props.action?.meta?.message.split(" ").slice(-1);
-        const happenedAt = props.action?.happenedAt;
-        const convertedDate = moment(publishAt).isValid()
-          ? moment(publishAt)
-          : moment(happenedAt);
-        return `Scheduled to Publish on  ${convertedDate.format(
-          "MMMM DD [at] hh:mm A"
-        )}`;
-      default:
-        return props.action?.meta?.message;
+    if (props.action?.meta?.uri?.includes("labels")) {
+      // The labels are formatted in the message as `label1,label2`.
+      // This regex captures the labels inside the backticks.
+      const match = props.action?.meta?.message?.match(/`([^`]*)`/);
+      const labels = match?.[1]
+        ? match[1].split(",").map((labelZUID) => {
+            const workflowStatus = workflowStatusLabels?.find(
+              (label) => label.ZUID === labelZUID
+            );
+
+            return `"${workflowStatus?.name || labelZUID}"`;
+          })
+        : [];
+
+      switch (props.action?.action) {
+        case 1:
+          return `Added status: ${labels.join(", ")}`;
+
+        case 3:
+          return `Removed status: ${labels.join(", ")}`;
+
+        default:
+          return props.action?.meta?.message;
+      }
+    } else {
+      switch (props.action?.action) {
+        case 1:
+          return "Created";
+        case 2:
+          return "Modified";
+        case 3:
+          return "Deleted";
+        case 4:
+          return "Published";
+        case 5:
+          return "Unpublished";
+        case 6:
+          const [publishAt] = props.action?.meta?.message.split(" ").slice(-1);
+          const happenedAt = props.action?.happenedAt;
+          const convertedDate = moment(publishAt).isValid()
+            ? moment(publishAt)
+            : moment(happenedAt);
+          return `Scheduled to Publish on  ${convertedDate.format(
+            "MMMM DD [at] hh:mm A"
+          )}`;
+        default:
+          return props.action?.meta?.message;
+      }
     }
   }, [props.action]);
 

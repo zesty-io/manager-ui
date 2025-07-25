@@ -1,6 +1,6 @@
 import { FC, useCallback } from "react";
 import Stack from "@mui/material/Stack";
-import { FixedSizeList } from "react-window";
+import { FixedSizeList, ListChildComponentProps } from "react-window";
 import AutoSizer, { Size } from "react-virtualized-auto-sizer";
 
 import {
@@ -15,6 +15,7 @@ import { Content } from "./Content";
 import { Model } from "./Model";
 import { Code } from "./Code";
 import { Media } from "./Media";
+import { Block, BlockModel } from "./Block";
 
 type SearchPageList = {
   results: SearchPageItem[];
@@ -29,7 +30,7 @@ export const SearchPageList: FC<SearchPageList> = ({
     ? new Array(10) // arbitrary length array of junk data
     : backendResults;
   const Row = useCallback(
-    ({ index, style }) => {
+    ({ index, style }: ListChildComponentProps) => {
       if (!loading) {
         const result = backendResults[index];
 
@@ -48,6 +49,15 @@ export const SearchPageList: FC<SearchPageList> = ({
               <Model
                 key={result.ZUID}
                 data={result.data as ContentModel}
+                style={style}
+              />
+            );
+
+          case "block":
+            return (
+              <Block
+                key={result.ZUID}
+                data={result.data as BlockModel}
                 style={style}
               />
             );

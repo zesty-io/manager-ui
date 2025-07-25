@@ -59,7 +59,8 @@ export const useImageURL: () => string = () => {
           .unwrap()
           .then((res) => {
             setImageURL(res.url);
-          });
+          })
+          .catch((error) => console.error("Error fetching og_image:", error));
       } else {
         setImageURL(String(item.data.og_image));
       }
@@ -70,21 +71,28 @@ export const useImageURL: () => string = () => {
       }
 
       let validImages = contentImages.map(async (value) => {
-        const isZestyMediaFile = value.startsWith("3-");
-        // Need to resolve media zuids to determine if these are actually images
-        const res = isZestyMediaFile && (await getFile(value).unwrap());
-        const isImage = [
-          "png",
-          "jpg",
-          "jpeg",
-          "svg",
-          "gif",
-          "tif",
-          "webp",
-        ].includes(fileExtension(isZestyMediaFile ? res.url : value));
+        try {
+          const isZestyMediaFile = value.startsWith("3-");
+          // Need to resolve media zuids to determine if these are actually images
+          const res = isZestyMediaFile && (await getFile(value).unwrap());
+          const isImage = [
+            "png",
+            "jpg",
+            "jpeg",
+            "svg",
+            "gif",
+            "tif",
+            "webp",
+          ].includes(fileExtension(isZestyMediaFile ? res.url : value));
 
-        if (isImage) {
-          return isZestyMediaFile ? res.url : value;
+          if (isImage) {
+            return isZestyMediaFile ? res.url : value;
+          }
+
+          return null;
+        } catch (error) {
+          console.error("Error fetching file:", error);
+          return null;
         }
       });
 

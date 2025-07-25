@@ -1,33 +1,16 @@
 import { useEffect, useState } from "react";
-import cx from "classnames";
 import { connect } from "react-redux";
 import { useDomain } from "shell/hooks/use-domain";
-import { useMetaKey } from "shell/hooks/useMetaKey";
-
-import Button from "@mui/material/Button";
-import Stack from "@mui/material/Stack";
-import Tooltip from "@mui/material/Tooltip";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import ToggleButton from "@mui/material/ToggleButton";
-import FormLabel from "@mui/material/FormLabel";
-import CircularProgress from "@mui/material/CircularProgress";
-import SaveIcon from "@mui/icons-material/Save";
 import Link from "@mui/material/Link";
-import InfoIcon from "@mui/icons-material/InfoOutlined";
-
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFile } from "@fortawesome/free-solid-svg-icons";
-
-import { Notice } from "@zesty-io/core/Notice";
 import { FieldTypeText } from "@zesty-io/material";
 import { WithLoader } from "@zesty-io/core/WithLoader";
-
 import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
-
-import styles from "./Robots.less";
-
-import Divider from "@mui/material/Divider";
+import { TopBar } from "../../components/TopBar";
+import { FieldWrapper, MainWrapper } from "../../components/Containers";
+import { Typography, Box, Alert } from "@mui/material";
 
 export default connect((state) => {
   return {
@@ -36,7 +19,7 @@ export default connect((state) => {
   };
 })(function Robots(props) {
   const domain = useDomain();
-
+  const [isDirty, setIsDirty] = useState(false);
   const [loading, setLoading] = useState(false);
   const [robotOn, setRobotOn] = useState({
     admin: false,
@@ -64,6 +47,7 @@ export default connect((state) => {
     .substring(2, 15)}`;
 
   useEffect(() => {
+    setIsDirty(false);
     request(`${CONFIG.API_INSTANCE}/env/settings`).then((res) => {
       const robots_on = res.data.find((setting) => setting.key === "robots_on");
       const robots_text = res.data.find(
@@ -89,6 +73,7 @@ export default connect((state) => {
       ...prevRobotOn,
       value,
     }));
+    setIsDirty(true);
   };
 
   const handleRobotsText = (value) => {
@@ -96,9 +81,10 @@ export default connect((state) => {
       ...prevRobotText,
       value,
     }));
+    setIsDirty(true);
   };
 
-  const handleSave = () => {
+  const handleSave = (callBack) => {
     setLoading(true);
 
     const robotsOn = makeRequest({
@@ -115,7 +101,6 @@ export default connect((state) => {
             message: "robots.txt file settings have been updated",
           })
         );
-        setLoading(false);
       })
       .catch((err) => {
         props.dispatch(
@@ -124,11 +109,13 @@ export default connect((state) => {
             message: `Failed saving robots.txt settings. ${err}`,
           })
         );
-        setLoading(true);
+      })
+      .finally(() => {
+        setLoading(false);
+        setIsDirty(false);
+        callBack && callBack();
       });
   };
-
-  const metaShortcut = useMetaKey("s", handleSave);
 
   const makeRequest = (data) => {
     return request(
@@ -145,114 +132,98 @@ export default connect((state) => {
 
   return (
     <WithLoader condition={robotOn.ZUID} message="Finding robots.txt settings">
-      <div className={styles.Robots}>
-        <h1 className={styles.subheadline}>
-          <FontAwesomeIcon icon={faFile} className={styles.titleIcon} />
-          Robots.txt Editor
-        </h1>
-        <Divider
-          sx={{
-            my: 1,
-            mx: 2,
-          }}
-        />
-
-        <div className={styles.Row}>
-          <FormLabel>
-            <Stack
-              spacing={1}
-              direction="row"
-              alignItems="center"
-              sx={{
-                my: 1,
-              }}
+      <TopBar
+        title="Robot.txt"
+        onSave={handleSave}
+        isNotSaved={isDirty}
+        isLoading={loading}
+        matchPath={props.match.path}
+      />
+      <Box
+        px="32px"
+        py="16px"
+        sx={{
+          width: "100%",
+          height: "calc(100% - 84px)",
+          overflowY: "auto",
+          overflowX: "hidden",
+          margin: "0",
+          display: "block",
+          maxHeight: "calc(100% - 84px)",
+          position: "relative",
+          boxSizing: "border-box",
+        }}
+      >
+        <MainWrapper rowGap={3}>
+          <FieldWrapper label={robotOn.keyFriendly} tooltip={robotOn.tips}>
+            <ToggleButtonGroup
+              color="primary"
+              size="small"
+              value={robotOn.value}
+              exclusive
+              onChange={(evt, val) => handleRobotsOn(val)}
             >
-              <Tooltip title={robotOn.tips} arrow placement="top-start">
-                <InfoIcon fontSize="small" />
-              </Tooltip>
-              <p>{robotOn.keyFriendly}</p>
-            </Stack>
-          </FormLabel>
-          <ToggleButtonGroup
-            color="secondary"
-            size="small"
-            value={robotOn.value}
-            exclusive
-            onChange={(evt, val) => handleRobotsOn(val)}
-          >
-            <ToggleButton value={"0"}>No </ToggleButton>
-            <ToggleButton value={"1"}>Yes </ToggleButton>
-          </ToggleButtonGroup>
-        </div>
-
-        <div className={cx(styles.IframeWrapper, styles.Row)}>
-          <h2>
-            <Link
+              <ToggleButton value={"0"}>No </ToggleButton>
+              <ToggleButton value={"1"}>Yes </ToggleButton>
+            </ToggleButtonGroup>
+          </FieldWrapper>
+          <FieldWrapper>
+            <Typography
+              component={Link}
               underline="none"
-              color="secondary"
               href={robotURL}
               target="_blank"
               title={robotURL}
+              variant="h5"
+              color="info.main"
             >
               {robotURL}
-            </Link>
-          </h2>
-          <iframe className={styles.Iframe} src={iframeURL}></iframe>
-        </div>
-
-        <div className={styles.Row}>
-          <FieldTypeText
-            className={styles.CustomRules}
-            name="settings[general][robots_text]"
-            label={
-              <>
-                {robotText.tips && (
-                  <>
-                    <Tooltip title={robotText.tips} arrow placement="top-start">
-                      <InfoIcon fontSize="small" />
-                    </Tooltip>
-                    &nbsp;
-                  </>
-                )}
-                {robotText.keyFriendly}
-              </>
-            }
-            onChange={(evt) =>
-              handleRobotsText(
-                evt.target.value,
-                "settings[general][robots_text]"
-              )
-            }
-            value={robotText.value}
-            multiline
-            rows={6}
-          />
-        </div>
-        <div className={styles.Row}>
-          <Notice className={styles.Notice}>
-            <p>Changes will not be reflected until a publish event occurs.</p>
-          </Notice>
-          <Notice>
-            <p>
-              Non-Live domains ALWAYS have robots.txt off to avoid being crawled
-              by search engines. This include [hash]-dev.webengine.zesty.io,
-              [hash]-dev.preview.zesty.io, and any registered domain set to the
-              "dev" branch
-            </p>
-          </Notice>
-        </div>
-
-        <Button
-          variant="contained"
-          color="success"
-          onClick={handleSave}
-          disabled={loading}
-          startIcon={loading ? <CircularProgress size="20px" /> : <SaveIcon />}
-          sx={{ alignSelf: "flex-start" }}
-        >
-          Save {metaShortcut}
-        </Button>
-      </div>
+            </Typography>
+            <iframe src={iframeURL} width="100%" height="350px" />
+          </FieldWrapper>
+          <FieldWrapper
+            label={robotText.keyFriendly}
+            tooltip={robotText.tips}
+            pb="22px"
+          >
+            <FieldTypeText
+              name="settings[general][robots_text]"
+              onChange={(evt) =>
+                handleRobotsText(
+                  evt.target.value,
+                  "settings[general][robots_text]"
+                )
+              }
+              value={robotText.value}
+              multiline
+              rows={6}
+              sx={{
+                "& .MuiInputAdornment-root.MuiInputAdornment-positionEnd": {
+                  height: "20px",
+                  position: "absolute",
+                  right: 0,
+                  bottom: "-22px",
+                },
+              }}
+            />
+          </FieldWrapper>
+          <FieldWrapper>
+            <Alert severity="warning">
+              <Typography variant="body2" component="p">
+                Changes will not be reflected until a publish event occurs.
+              </Typography>
+            </Alert>
+            <Alert severity="warning" sx={{ mt: 2 }}>
+              <Typography variant="body2" component="p">
+                Non-Live domains ALWAYS have robots.txt off to avoid being
+                crawled by search engines. This include
+                [hash]-dev.webengine.zesty.io, [hash]-dev.preview.zesty.io, and
+                any registered domain set to the "dev" branch
+              </Typography>
+            </Alert>
+          </FieldWrapper>
+        </MainWrapper>
+      </Box>
     </WithLoader>
   );
 });

@@ -1,22 +1,16 @@
 import { memo, useState } from "react";
-
 import { useHistory } from "react-router-dom";
-
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import DeleteIcon from "@mui/icons-material/Delete";
 import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
 import CircularProgress from "@mui/material/CircularProgress";
-import Accordion from "@mui/material/Accordion";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import AccordionDetails from "@mui/material/AccordionDetails";
-import AccordionActions from "@mui/material/AccordionActions";
+import Stack from "@mui/material/Stack";
+import Skeleton from "@mui/material/Skeleton";
 import Typography from "@mui/material/Typography";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
 import CardContent from "@mui/material/CardContent";
-
 import { ConfirmDialog } from "@zesty-io/material";
 
 import { deleteItem } from "shell/store/content";
@@ -59,35 +53,48 @@ export const WidgetDeleteItem = memo(function WidgetDeleteItem(props) {
             },
           }}
         >
-          <Typography
-            variant="body2"
-            color="text.secondary"
-            sx={{
-              fontSize: "14px",
-              lineHeight: "20px",
-              maxWidth: "595px",
-            }}
-          >
-            Delete this content? Removing it from all locations throughout your
-            site and making it unavailable to API requests.
-          </Typography>
-          <Button
-            variant="contained"
-            color="error"
-            type="warn"
-            id="DeleteItemButton"
-            onClick={() => setConfirmOpen(true)}
-            disabled={deleting}
-            startIcon={
-              deleting ? <CircularProgress size="20px" /> : <DeleteIcon />
-            }
-            disableElevation
-            sx={{
-              mt: 1.5,
-            }}
-          >
-            Delete {props?.altText || "Item"}
-          </Button>
+          {props.isLoadingItem ? (
+            <Box>
+              <Stack gap={1.25} mb={4}>
+                <Skeleton variant="rounded" width="100%" height={20} />
+                <Skeleton variant="rounded" width={259} height={20} />
+                <Skeleton variant="rounded" width={200} height={20} />
+              </Stack>
+              <Skeleton variant="rounded" width={137} height={32} />
+            </Box>
+          ) : (
+            <>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{
+                  fontSize: "14px",
+                  lineHeight: "20px",
+                  maxWidth: "595px",
+                }}
+              >
+                Delete this content? Removing it from all locations throughout
+                your site and making it unavailable to API requests.
+              </Typography>
+              <Button
+                variant="contained"
+                color="error"
+                type="warn"
+                id="DeleteItemButton"
+                onClick={() => setConfirmOpen(true)}
+                disabled={deleting}
+                startIcon={
+                  deleting ? <CircularProgress size="20px" /> : <DeleteIcon />
+                }
+                disableElevation
+                sx={{
+                  mt: 1.5,
+                }}
+              >
+                Delete {props?.altText || "Item"}
+              </Button>
+            </>
+          )}
         </CardContent>
       </Card>
       <ConfirmDialog

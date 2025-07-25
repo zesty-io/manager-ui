@@ -1,18 +1,17 @@
 import { memo } from "react";
-
-import { FileActions } from "../FileActions";
+import { Box } from "@mui/material";
 import { MemoizedEditor } from "./components/MemoizedEditor/MemoizedEditor";
-
+import { TopBar } from "../TopBar";
 /**
  * We memoize this component because we need to short circuit the redux->react->component update cycle
  * This is done for performance reasons. Constantly re-rendering slows down the editor typing experience.
  * But we still want to broadcast store updates `onChange`
  */
-import styles from "./Editor.less";
+
 export const Editor = memo(function Editor(props) {
   return (
-    <main className={styles.Editor}>
-      <FileActions
+    <>
+      <TopBar
         contentModelZUID={props.contentModelZUID}
         fileZUID={props.fileZUID}
         fileType={props.fileType}
@@ -21,10 +20,26 @@ export const Editor = memo(function Editor(props) {
         version={props.version}
         synced={props.synced}
         status={props.status}
-        dispatch={props.dispatch}
+        isLive={props.isLive}
+        isDirty={props.isDirty}
+        code={props.code}
+        updatedAt={props.updatedAt}
+        updatedBy={props.updatedBy}
+        publishedAt={props.publishedAt}
+        publishedBy={props.publishedBy}
+        icon={props.icon}
+        isDiffer={false}
       />
 
-      <div className={styles.EditorLayout}>
+      <Box
+        sx={{
+          position: "relative",
+          width: "100%",
+          height: "calc(100% - 64px)",
+          flexGrow: 1,
+          boxSizing: "border-box",
+        }}
+      >
         <MemoizedEditor
           dispatch={props.dispatch}
           code={props.code}
@@ -35,7 +50,7 @@ export const Editor = memo(function Editor(props) {
           status={props.status}
           lineNumber={props.lineNumber}
         />
-      </div>
-    </main>
+      </Box>
+    </>
   );
 });

@@ -170,7 +170,12 @@ export const FieldFormInput = ({
     fieldConfig.name === "name" ? TextFieldWithCursorPosition : TextField;
 
   return (
-    <Grid item xs={fieldConfig.gridSize}>
+    <Grid
+      size={fieldConfig.gridSize}
+      sx={{
+        pl: 2.5,
+      }}
+    >
       {fieldConfig.type === "checkbox" && (
         <FormControlLabel
           control={
@@ -318,7 +323,7 @@ export const FieldFormInput = ({
             height={18}
           >
             <Typography component="span" variant="body2" fontWeight={600}>
-              {fieldConfig.label}
+              {fieldConfig.label} {fieldConfig.required && "*"}
             </Typography>
             {fieldConfig.label?.toLowerCase().includes("description") && (
               <Typography

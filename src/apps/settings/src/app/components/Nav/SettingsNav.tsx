@@ -43,14 +43,25 @@ const GLOBAL_META_CAT: TreeItem[] = [
     children: [],
   },
 ];
+const USER_SETTINGS_CAT: TreeItem[] = [
+  {
+    label: "Workflows",
+    path: "/settings/user/workflows",
+    icon: LanguageRoundedIcon,
+    children: [],
+  },
+];
 
 export const SettingsNav = () => {
   const location = useLocation();
   const [keyword, setKeyword] = useState("");
 
-  const { data: rawInstanceSettings } = useGetInstanceSettingsQuery();
-  const { data: instanceStylesCategories } =
-    useGetInstanceStylesCategoriesQuery();
+  const { data: rawInstanceSettings, isLoading: isLoadingInstanceSettings } =
+    useGetInstanceSettingsQuery();
+  const {
+    data: instanceStylesCategories,
+    isLoading: isLoadingInstanceStylesCategories,
+  } = useGetInstanceStylesCategoriesQuery();
 
   const instanceSettings: TreeItem[] = useMemo(() => {
     if (rawInstanceSettings?.length) {
@@ -110,6 +121,9 @@ export const SettingsNav = () => {
         instance: instanceSettings?.filter((setting) =>
           setting.label.toLowerCase().includes(keyword)
         ),
+        user: USER_SETTINGS_CAT?.filter((setting) =>
+          setting.label.toLowerCase().includes(keyword)
+        ),
         meta: GLOBAL_META_CAT?.filter((setting) =>
           setting.label.toLowerCase().includes(keyword)
         ),
@@ -124,6 +138,7 @@ export const SettingsNav = () => {
 
     return {
       instance: instanceSettings,
+      user: USER_SETTINGS_CAT,
       meta: GLOBAL_META_CAT,
       styles: styleSettings,
       fonts: FONTS_CAT,
@@ -141,6 +156,7 @@ export const SettingsNav = () => {
     >
       {keyword &&
       !navItems.fonts?.length &&
+      !navItems.user?.length &&
       !navItems.instance?.length &&
       !navItems.meta?.length &&
       !navItems.styles?.length ? (
@@ -163,13 +179,27 @@ export const SettingsNav = () => {
             HeaderComponent={<HeaderComponent title="Instance Settings" />}
             tree={navItems.instance}
             selected={location.pathname}
+            isLoading={
+              isLoadingInstanceSettings || isLoadingInstanceStylesCategories
+            }
           />
+          <Box pt={1.5}>
+            <NavTree
+              id="UserTree"
+              HeaderComponent={<HeaderComponent title="User Settings" />}
+              tree={navItems.user}
+              selected={location.pathname}
+            />
+          </Box>
           <Box pt={1.5}>
             <NavTree
               id="MetaTree"
               HeaderComponent={<HeaderComponent title="Global Meta & SEO" />}
               tree={navItems.meta}
               selected={location.pathname}
+              isLoading={
+                isLoadingInstanceSettings || isLoadingInstanceStylesCategories
+              }
             />
           </Box>
           <Box pt={1.5}>
@@ -178,6 +208,9 @@ export const SettingsNav = () => {
               HeaderComponent={<HeaderComponent title="Styles" />}
               tree={navItems.styles}
               selected={location.pathname}
+              isLoading={
+                isLoadingInstanceSettings || isLoadingInstanceStylesCategories
+              }
             />
           </Box>
           <Box pt={1.5}>
@@ -186,6 +219,9 @@ export const SettingsNav = () => {
               HeaderComponent={<HeaderComponent title="Fonts" />}
               tree={navItems.fonts}
               selected={location.pathname}
+              isLoading={
+                isLoadingInstanceSettings || isLoadingInstanceStylesCategories
+              }
             />
           </Box>
         </>
@@ -203,7 +239,7 @@ const HeaderComponent = ({ title }: HeaderComponentProps) => {
       variant="body2"
       textTransform="uppercase"
       color="text.secondary"
-      sx={{ px: 1.5 }}
+      sx={{ px: 1.5, pb: 1.5 }}
     >
       {title}
     </Typography>

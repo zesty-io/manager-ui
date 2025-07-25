@@ -16,9 +16,12 @@
   // height: calc(100vh - 40px);
   height: 100%;
   display: flex;
-  grid-template-columns: 60px 1fr;
+  grid-template-columns: 60px 1fr 1fr;
   position: relative;
-
+  box-sizing: content-box;
+  input {
+    box-sizing: content-box;
+  }
   .Content {
     overflow: hidden;
     z-index: 1;
@@ -38,10 +41,10 @@
 
   &.ContentGridHover,
   &.ContentGridOpen {
-    grid-template-columns: 20vw auto;
+    grid-template-columns: 20vw auto auto;
 
     @media only screen and (min-width: 2000px) {
-      grid-template-columns: 15vw auto;
+      grid-template-columns: 15vw auto auto;
     }
   }
 

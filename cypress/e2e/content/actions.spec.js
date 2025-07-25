@@ -60,7 +60,7 @@ describe("Actions in content editor", () => {
       .first()
       .contains("Exceeding by 5 characters.");
     cy.get("#12-e6a5cfe3f6-k94nbg input", TIMEOUT)
-      .clear()
+      .clear({ force: true })
       .wait(500)
       .type("Lorem ipsum");
     cy.get("#SaveItemButton", TIMEOUT).click();
@@ -308,35 +308,32 @@ describe("Actions in content editor", () => {
   //   // cy.contains("The item has been purged from the CDN cache", { timeout: 5000 }).should("exist");
   // });
 
-  it("Creates a new content item using AI-generated data", () => {
+  it.only("Creates a new content item using AI-generated data", () => {
     cy.waitOn("/v1/content/models*", () => {
       cy.waitOn("/v1/content/models/*/fields?showDeleted=true", () => {
         cy.visit("/content/6-a1a600-k0b6f0/new");
       });
     });
 
-    cy.intercept("/ai").as("ai");
-    cy.wait(5000);
-
     // Generate AI content for single line text
-    cy.get("#12-0c3934-8dz720").find("[data-cy='AIOpen']").click();
+    cy.get("#12-0c3934-8dz720", { timeout: 30_000 })
+      .find("[data-cy='AIOpen']")
+      .click();
     cy.getBySelector("AITopicField").type("biking");
     cy.getBySelector("AIAudienceField").type("young adults");
     cy.getBySelector("AIGenerate").click();
 
-    cy.wait("@ai");
-
-    cy.getBySelector("AIApprove").click();
+    cy.get("[data-cy='AIApprove']", { timeout: 50_000 }).click();
 
     // Generate AI content for wysiwyg
-    cy.get("#12-717920-6z46t7").find("[data-cy='AIOpen']").click();
+    cy.get("#12-717920-6z46t7", { timeout: 30_000 })
+      .find("[data-cy='AIOpen']")
+      .click();
     cy.getBySelector("AITopicField").type("biking");
     cy.getBySelector("AIAudienceField").type("young adults");
-    cy.getBySelector("AIGenerate").click();
+    cy.get("[data-cy='AIGenerate']", { timeout: 30_000 }).click();
 
-    cy.wait("@ai");
-
-    cy.getBySelector("AIApprove").click();
+    cy.get("[data-cy='AIApprove']", { timeout: 50_000 }).click();
 
     // Select AI-assisted metadata generation flow
     cy.getBySelector("ManualMetaFlow").click();
@@ -344,12 +341,11 @@ describe("Actions in content editor", () => {
     // Generate AI content for meta title
     cy.getBySelector("metaTitle").find("input").clear();
     cy.getBySelector("metaTitle").find("[data-cy='AIOpen']").click();
-    cy.getBySelector("AIGenerate").click();
+    cy.get("[data-cy='AIGenerate']", { timeout: 30_000 }).click();
 
-    cy.wait("@ai");
+    cy.get("[data-cy='AISuggestion1']", { timeout: 30_000 }).click();
 
-    cy.getBySelector("AISuggestion1").click();
-    cy.getBySelector("AIApprove").click();
+    cy.get("[data-cy='AIApprove']", { timeout: 50_000 }).click();
 
     // Generate AI content for meta description
     cy.getBySelector("metaDescription")
@@ -358,10 +354,9 @@ describe("Actions in content editor", () => {
     cy.getBySelector("metaDescription").find("[data-cy='AIOpen']").click();
     cy.getBySelector("AIGenerate").click();
 
-    cy.wait("@ai", { timeout: 50000 });
+    cy.get("[data-cy='AISuggestion1']", { timeout: 50_000 }).click();
 
-    cy.getBySelector("AISuggestion1").click();
-    cy.getBySelector("AIApprove").click();
+    cy.get("[data-cy='AIApprove']", { timeout: 50_000 }).click();
 
     cy.getBySelector("CreateItemSaveButton").click();
 

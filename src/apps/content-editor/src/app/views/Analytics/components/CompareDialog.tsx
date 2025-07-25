@@ -33,6 +33,7 @@ import { modelIconMap } from "../../../../../../schema/src/app/utils";
 import { useSearchContentQuery } from "../../../../../../../shell/services/instance";
 import { debounce, uniqBy } from "lodash";
 import { useParams } from "../../../../../../../shell/hooks/useParams";
+import SearchBox from "../../../../../../../shell/components/SearchBox";
 
 type Props = {
   onClose: () => void;
@@ -125,7 +126,7 @@ export const CompareDialog = ({ onClose }: Props) => {
               Please select a page you&apos;d like to compare your current page
               against
             </Typography>
-            <TextField
+            <SearchBox
               value={search}
               // trigger on change only on enter
               onChange={(e) => setSearch(e.target.value)}
@@ -143,9 +144,7 @@ export const CompareDialog = ({ onClose }: Props) => {
                   </InputAdornment>
                 ),
               }}
-              inputProps={{
-                ref: inputRef,
-              }}
+              inputRef={inputRef}
               placeholder="Search"
               fullWidth
             />

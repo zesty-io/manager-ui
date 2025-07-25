@@ -1,9 +1,17 @@
-import { isZestyEmail } from "../../utility/isZestyEmail";
-
-export function products(state = ["content", "media"], action) {
+export function products(
+  state = {
+    products: ["content", "media"],
+    isLoadingProducts: true,
+  },
+  action
+) {
   switch (action.type) {
     case "FETCH_PRODUCTS_SUCCESS":
-      return action.payload.data;
+      return {
+        ...state,
+        products: action.payload.data,
+        isLoadingProducts: false,
+      };
 
     default:
       return state;
@@ -26,6 +34,7 @@ export function fetchProducts() {
         data = [
           "launchpad",
           "content",
+          "blocks",
           "schema",
           "media",
           "code",
@@ -42,6 +51,7 @@ export function fetchProducts() {
         data = [
           "launchpad",
           "content",
+          "blocks",
           "schema",
           "media",
           "code",
@@ -57,6 +67,7 @@ export function fetchProducts() {
         data = [
           "launchpad",
           "content",
+          "blocks",
           "media",
           "leads",
           "reports",
@@ -68,6 +79,7 @@ export function fetchProducts() {
         data = [
           "launchpad",
           "content",
+          "blocks",
           "media",
           "leads",
           "redirects",
@@ -76,7 +88,7 @@ export function fetchProducts() {
         ];
         break;
       case "31-71cfc74-c0ntr1b0t0r":
-        data = ["launchpad", "content", "media", "apps"];
+        data = ["launchpad", "content", "blocks", "media", "apps"];
         break;
       case "31-71cfc74-m3d14":
         data = ["media"];
@@ -89,6 +101,7 @@ export function fetchProducts() {
       data = [
         "launchpad",
         "content",
+        "blocks",
         "schema",
         "media",
         "code",
@@ -99,11 +112,6 @@ export function fetchProducts() {
         // "release",
         "settings",
       ];
-    }
-
-    if (isZestyEmail(getState().user.email)) {
-      const contentIndex = data.indexOf("content");
-      data.splice(contentIndex + 1, 0, "blocks");
     }
 
     dispatch({

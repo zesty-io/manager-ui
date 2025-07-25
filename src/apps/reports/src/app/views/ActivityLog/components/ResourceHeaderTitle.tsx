@@ -13,6 +13,8 @@ import {
   useGetContentItemQuery,
   useGetContentModelsQuery,
   useGetInstanceSettingsQuery,
+  useGetLangsQuery,
+  useGetWorkflowStatusLabelsQuery,
 } from "../../../../../../../shell/services/instance";
 import {
   modelNameMap,
@@ -42,6 +44,13 @@ export const ResourceHeaderTitle = ({
     useGetContentModelsQuery();
   const { data: instanceSettings, isLoading: isLoadingInstanceSettings } =
     useGetInstanceSettingsQuery();
+  const { data: langs, isLoading: isLoadingInstanceLangs } = useGetLangsQuery({
+    type: "all",
+  });
+  const {
+    data: workflowStatusLabels,
+    isLoading: isLoadingWorkflowStatusLabels,
+  } = useGetWorkflowStatusLabelsQuery({ showDeleted: true });
   const fileData = useSelector((state: AppState) =>
     Object.values(state.files).find((item) => item.ZUID === affectedZUID)
   );
@@ -50,7 +59,9 @@ export const ResourceHeaderTitle = ({
     isLoadingContentItem ||
     isLoadingContentModels ||
     isLoadingActions ||
-    isLoadingInstanceSettings;
+    isLoadingInstanceSettings ||
+    isLoadingInstanceLangs ||
+    isLoadingWorkflowStatusLabels;
 
   const headerData = useMemo(() => {
     const data = {
@@ -66,9 +77,19 @@ export const ResourceHeaderTitle = ({
     switch (resourceType) {
       case "content":
         if (contentItem) {
-          data.title = contentItem?.web?.metaTitle?.length
-            ? contentItem?.web?.metaTitle
-            : `${affectedZUID} (Missing Meta Title)`;
+          if (langs?.length === 1) {
+            data.title = contentItem?.web?.metaTitle?.length
+              ? contentItem?.web?.metaTitle
+              : `${affectedZUID} (Missing Meta Title)`;
+          } else {
+            const lang = langs?.find(
+              (lang) => lang.ID === contentItem?.meta?.langID
+            );
+            data.title = lang?.code
+              ? `(${lang.code}) ${contentItem?.web?.metaTitle}`
+              : contentItem?.web?.metaTitle ||
+                `${affectedZUID} (Missing Meta Title)`;
+          }
 
           const contentModel = contentModels?.find(
             (model) => model.ZUID === contentItem?.meta?.contentModelZUID
@@ -115,6 +136,21 @@ export const ResourceHeaderTitle = ({
 
           case "21":
             data.title = "Head Tag";
+            break;
+
+          case "36":
+            const workflowStatusData = workflowStatusLabels?.find(
+              (label) => label.ZUID === affectedZUID
+            );
+
+            if (workflowStatusData?.name) {
+              data.title = actionDescription?.replace(
+                /`([^`]+)`/g,
+                `${workflowStatusData?.name}`
+              );
+            } else {
+              data.title = actionDescription;
+            }
             break;
 
           default:

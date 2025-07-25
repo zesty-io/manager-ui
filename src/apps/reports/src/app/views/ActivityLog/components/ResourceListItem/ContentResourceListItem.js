@@ -5,15 +5,18 @@ import { useSelector, useDispatch } from "react-redux";
 import { searchItems } from "shell/store/content";
 import { fetchModel } from "shell/store/models";
 import { ListItem } from "./ListItem";
+import { useGetLangsQuery } from "../../../../../../../../shell/services/instance";
 
 const modelTypeName = {
   templateset: "Single Page Item",
   pageset: "Multi Page Item",
   dataset: "Headless Data Item",
+  block: "Block Variant",
 };
 
 export const ContentResourceListItem = (props) => {
   const dispatch = useDispatch();
+  const { data: langs } = useGetLangsQuery({ type: "all" });
   const [contentError, setContentError] = useState(false);
   const [modelError, setModelError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -48,6 +51,25 @@ export const ContentResourceListItem = (props) => {
     }
   }, [contentData, modelData, modelError]);
 
+  const primaryText = useMemo(() => {
+    if (contentError) {
+      return `${props.affectedZUID} (Deleted)`;
+    } else if (contentData?.web?.metaTitle) {
+      // There's no need to delineate the language when there's only one language
+      if (langs?.length === 1) {
+        return contentData?.web?.metaTitle;
+      }
+
+      const lang = langs?.find((lang) => lang.ID === contentData?.meta?.langID);
+
+      return lang?.code
+        ? `(${lang.code}) ${contentData?.web?.metaTitle}`
+        : contentData?.web?.metaTitle;
+    } else {
+      return `${props.affectedZUID} (Missing Meta Title)`;
+    }
+  }, [contentData, langs, contentError, props.affectedZUID]);
+
   const secondaryText = useMemo(() => {
     const chips = [
       `Last action @ ${
@@ -72,15 +94,10 @@ export const ContentResourceListItem = (props) => {
       clickable={props.clickable}
       affectedZUID={props.affectedZUID}
       icon={faEdit}
-      primary={
-        contentError
-          ? `${props.affectedZUID} (Deleted)`
-          : contentData?.web?.metaTitle
-          ? contentData?.web?.metaTitle
-          : `${props.affectedZUID} (Missing Meta Title)`
-      }
+      primary={primaryText}
       secondary={secondaryText}
       showSkeletons={isLoading}
+      isBlockItem={modelData?.type === "block"}
     />
   );
 };

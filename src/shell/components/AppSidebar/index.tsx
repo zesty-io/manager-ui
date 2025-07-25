@@ -5,13 +5,14 @@ import {
   useImperativeHandle,
   useState,
   useEffect,
+  memo,
+  useMemo,
 } from "react";
 import {
   Box,
   Stack,
   Typography,
   PaletteMode,
-  ScopedCssBaseline,
   Tooltip,
   TextField,
   List,
@@ -21,14 +22,16 @@ import {
   InputAdornment,
   ListItemButton,
   SvgIcon,
+  Theme,
+  Skeleton,
 } from "@mui/material";
-import { ThemeProvider } from "@mui/material/styles";
-import { darkTheme, theme } from "@zesty-io/material";
 import { IconButton as IconButtonCustom } from "@zesty-io/material";
 import { SvgIconComponent } from "@mui/icons-material";
 import { useLocation, useHistory } from "react-router-dom";
 import ManageSearchRoundedIcon from "@mui/icons-material/ManageSearchRounded";
 import { AddRounded } from "@mui/icons-material";
+import { alpha } from "@mui/material";
+import SearchBox from "../SearchBox";
 
 export interface SubMenu {
   name: string;
@@ -54,89 +57,115 @@ interface Props {
   filterKeyword?: string;
   titleButtonIcon?: SvgIconComponent;
   TitleButtonComponent?: React.ReactNode;
+  isLoading?: boolean;
 }
-export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
-  (
-    {
-      onAddClick,
-      onFilterChange,
-      onFilterEnter,
-      mode = "light",
-      headerTitle,
-      subMenus,
-      withSearch = true,
-      withTitleButton = true,
-      titleButtonTooltip,
-      searchId = "appSidebarSearch",
-      searchPlaceholder,
-      hideSubMenuOnSearch = true,
-      filterKeyword = "",
-      titleButtonIcon = AddRounded,
-      TitleButtonComponent,
-      children,
-      ...props
-    },
-    ref
-  ) => {
-    const location = useLocation();
-    const history = useHistory();
-    const childrenContainerRef = useRef<HTMLDivElement | null>(null);
-    const textfieldRef = useRef<HTMLInputElement | null>(null);
-    const [userInputKeyword, setUserInputKeyword] = useState("");
 
-    useImperativeHandle(
-      ref,
-      () => {
-        return {
-          scrollDown() {
-            const div = childrenContainerRef.current;
-            div.scrollTop = div?.scrollHeight;
-          },
-          clearAndFocusTextField() {
-            setUserInputKeyword("");
-            textfieldRef.current?.focus();
-          },
-        };
+const darkTheme = {
+  backgroundColor: "grey.900",
+  "& .MuiTreeItem-label,\
+  & .app-sidebar-header-container input,\
+  & .app-sidebar-header-container input::placeholder,\
+  & .app-sidebar-header-container fieldset": {
+    color: "grey.300",
+    border: "none",
+  },
+  "& .MuiAccordion-root .MuiTypography-root,\
+  & .nav-tree-header .MuiTypography-root,\
+  & .MuiSvgIcon-root": {
+    color: "grey.400",
+  },
+  "& .app-sidebar-header .MuiTypography-root, \
+  & .app-sidebar-header .MuiSvgIcon-root": {
+    color: "common.white",
+  },
+  "& .nav-tree-header .MuiIconButton-root:hover": {
+    bgcolor: "grey.800",
+  },
+};
+
+export const AppSideBar = memo(
+  forwardRef<any, PropsWithChildren<Props>>(
+    (
+      {
+        onAddClick,
+        onFilterChange,
+        onFilterEnter,
+        mode = "light",
+        headerTitle,
+        subMenus,
+        withSearch = true,
+        withTitleButton = true,
+        titleButtonTooltip,
+        searchId = "appSidebarSearch",
+        searchPlaceholder,
+        hideSubMenuOnSearch = true,
+        filterKeyword = "",
+        titleButtonIcon = AddRounded,
+        TitleButtonComponent,
+        isLoading,
+        children,
+        ...props
       },
-      []
-    );
+      ref
+    ) => {
+      const location = useLocation();
+      const history = useHistory();
+      const childrenContainerRef = useRef<HTMLDivElement | null>(null);
+      const textfieldRef = useRef<HTMLInputElement | null>(null);
+      const [userInputKeyword, setUserInputKeyword] = useState("");
 
-    useEffect(() => {
-      onFilterChange && onFilterChange(userInputKeyword);
-    }, [userInputKeyword]);
+      useImperativeHandle(
+        ref,
+        () => {
+          return {
+            scrollDown() {
+              const div = childrenContainerRef.current;
+              div.scrollTop = div?.scrollHeight;
+            },
+            clearAndFocusTextField() {
+              setUserInputKeyword("");
+              textfieldRef.current?.focus();
+            },
+          };
+        },
+        []
+      );
 
-    useEffect(() => {
-      setUserInputKeyword(filterKeyword);
-    }, [filterKeyword]);
+      useEffect(() => {
+        onFilterChange && onFilterChange(userInputKeyword);
+      }, [userInputKeyword]);
 
-    const themeMode = mode === "light" ? theme : darkTheme;
+      useEffect(() => {
+        setUserInputKeyword(filterKeyword);
+      }, [filterKeyword]);
 
-    return (
-      <ThemeProvider theme={themeMode}>
-        <ScopedCssBaseline
-          component={Box}
-          sx={{ height: "100%", width: "inherit" }}
+      const memoizedChildren = useMemo(() => children, [children]);
+
+      return (
+        <Box
+          height="100%"
+          width="inherit"
+          sx={mode === "dark" ? darkTheme : {}}
         >
           <Stack
             sx={{
-              backgroundColor: "background.paper",
               height: "100%",
               userSelect: "none",
             }}
             {...props}
           >
             <Box py={1.5}>
-              <Stack gap={1.5}>
+              <Stack gap={1.5} className="app-sidebar-header-container">
                 <Stack
                   direction="row"
                   alignItems="center"
                   justifyContent="space-between"
                   px={1.5}
+                  className="app-sidebar-header"
                 >
                   <Typography
                     data-cy="appSidebarHeaderTitle"
                     variant="h6"
-                    color="text.primary"
                     fontWeight={700}
                     lineHeight="24px"
                     fontSize={18}
@@ -163,12 +192,10 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
                   )}
                 </Stack>
                 {withSearch && (
-                  <TextField
+                  <SearchBox
                     data-cy={searchId}
                     value={userInputKeyword}
-                    inputProps={{
-                      ref: textfieldRef,
-                    }}
+                    inputRef={textfieldRef}
                     InputProps={{
                       sx: {
                         backgroundColor: "grey.800",
@@ -201,7 +228,34 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
                   <></>
                 ) : (
                   <List disablePadding>
-                    {!!subMenus?.length &&
+                    {isLoading ? (
+                      <ListItem
+                        disablePadding
+                        sx={{
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          height: 36,
+                          ml: 1.5,
+                          mr: 2,
+                          gap: 1,
+                          width: "inherit",
+                        }}
+                      >
+                        <Skeleton
+                          variant="circular"
+                          width={24}
+                          height={24}
+                          sx={{ backgroundColor: "grey.700", flexShrink: 0 }}
+                        />
+                        <Skeleton
+                          variant="rounded"
+                          width="100%"
+                          height={12}
+                          sx={{ backgroundColor: "grey.700" }}
+                        />
+                      </ListItem>
+                    ) : (
+                      !!subMenus?.length &&
                       subMenus?.map((menu) => {
                         const isActive = menu.substringPathMatch
                           ? location.pathname.includes(menu.path)
@@ -211,22 +265,31 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
                           <ListItem
                             key={menu.name}
                             disablePadding
-                            selected={menu.disableActive ? false : isActive}
                             sx={{
-                              color: "text.secondary",
+                              color: "grey.400",
                               borderLeft:
                                 !menu.disableActive && isActive
                                   ? "2px solid"
                                   : "none",
                               borderColor: "primary.main",
+
+                              "&:hover": {
+                                bgcolor: (theme: Theme) =>
+                                  alpha(theme.palette.primary.main, 0.08),
+                              },
                             }}
                           >
                             <ListItemButton
+                              selected={menu.disableActive ? false : isActive}
                               sx={{
                                 height: 36,
                                 pl: isActive ? 1.25 : 1.5,
                                 pr: 1.5,
                                 py: 0.75,
+                                "&.Mui-selected .MuiSvgIcon-root, &.Mui-selected .MuiListItemText-primary":
+                                  {
+                                    color: "primary.main",
+                                  },
                               }}
                               onClick={() => {
                                 if (menu.onClick) {
@@ -249,12 +312,14 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
                             </ListItemButton>
                           </ListItem>
                         );
-                      })}
+                      })
+                    )}
                   </List>
                 )}
               </Stack>
             </Box>
             <Box
+              className="nav-tree-container"
               height="100%"
               ref={childrenContainerRef}
               sx={{
@@ -262,11 +327,12 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
                 scrollBehavior: "smooth",
               }}
             >
-              {children}
+              {memoizedChildren}
             </Box>
           </Stack>
-        </ScopedCssBaseline>
-      </ThemeProvider>
-    );
-  }
+        </Box>
+      );
+    }
+  )
 );
+AppSideBar.displayName = "AppSideBar";

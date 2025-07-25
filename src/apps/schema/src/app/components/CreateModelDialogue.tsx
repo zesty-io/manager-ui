@@ -17,7 +17,7 @@ import {
   TextField,
   Tooltip,
   Checkbox,
-  ThemeProvider,
+  setRef,
 } from "@mui/material";
 import { useEffect, useReducer, useState } from "react";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
@@ -41,12 +41,12 @@ import { withCursorPosition } from "../../../../../shell/components/withCursorPo
 import { formatPathPart } from "../../../../../utility/formatPathPart";
 import { AppState } from "../../../../../shell/store/types";
 import { SelectModelParentInput } from "./SelectModelParentInput";
-import { isZestyEmail } from "../../../../../utility/isZestyEmail";
 import StarterBlocks from "./StarterBlocks";
 
 interface Props {
   onClose: () => void;
   modelType?: string;
+  typeIsSet?: boolean;
 }
 
 const modelTypes = [
@@ -84,16 +84,27 @@ const largeWidth = ["block"];
 
 const TextFieldWithCursorPosition = withCursorPosition(TextField);
 
-export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
+export const CreateModelDialogue = ({
+  onClose,
+  modelType = "templateset",
+  typeIsSet = false,
+}: Props) => {
+  const [referenceIDError, setReferenceIDError] = useState<string | null>(null);
   const [type, setType] = useState(modelType);
+  const [isTypeSet, setIsTypeSet] = useState(typeIsSet);
   const dispatch = useDispatch();
   const history = useHistory();
+  const [selectedBlankBlock, setSelectedBlankBlock] = useState(false);
   const [model, updateModel] = useReducer(
     (prev: Partial<ContentModel>, next: any) => {
       const newModel = { ...prev, ...next };
 
       if (prev.label !== newModel.label) {
         newModel.name = newModel.label.toLowerCase().replace(/\W/g, "_");
+
+        if (!!referenceIDError) {
+          setReferenceIDError(null);
+        }
       } else {
         newModel.name = newModel.name.toLowerCase().replace(/\W/g, "_");
       }
@@ -215,29 +226,33 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
   useEffect(() => {
     if (error) {
       // @ts-ignore
-      let message = error?.data?.error || "Failed to create model",
-        heading = "";
-      // @ts-ignore
-      if (error?.data?.error.includes("label cannot be blank")) {
-        message = "Please Add Display Name";
-        heading = "Cannot Create Model";
-        // @ts-ignore
-      } else if (error?.data?.error.includes("name is already in use")) {
-        message = "Display name is already in use";
-        heading = "Cannot Create Model";
+      const errorMessage = error?.data?.error || "Failed to create model";
+
+      if (errorMessage.includes("name is already in use")) {
+        setReferenceIDError(
+          "This Reference ID is already in use. Please enter a different one."
+        );
+      } else if (errorMessage.includes("label cannot be blank")) {
+        dispatch(
+          notify({
+            message: "Please Add Display Name",
+            heading: "Cannot Create Model",
+            kind: "error",
+          })
+        );
+      } else {
+        dispatch(
+          notify({
+            message: errorMessage,
+            kind: "error",
+          })
+        );
       }
-      dispatch(
-        notify({
-          message,
-          heading,
-          kind: "error",
-        })
-      );
     }
   }, [error]);
 
   const getView = () => {
-    if (!model.type) {
+    if (!isTypeSet) {
       return (
         <>
           <DialogTitle component="div">
@@ -269,83 +284,74 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
           </DialogTitle>
           <DialogContent sx={{ pt: 2.5, backgroundColor: "grey.50" }} dividers>
             <Box display="grid" gap={2} gridTemplateColumns="1fr 1fr">
-              {modelTypes
-                ?.filter((modelType) => {
-                  if (modelType.key === "block") {
-                    return isZestyEmail(user.email);
-                  }
-                  return true;
-                })
-                .map((modelType) => (
-                  <ListItemButton
-                    data-cy={`model-type-${modelType.key}`}
-                    selected={type === modelType.key}
-                    key={modelType.key}
-                    onClick={() => {
-                      setType(modelType.key);
-                      if (modelType.key === "block") {
-                        updateModel({
-                          listed: false,
-                        });
-                      } else {
-                        updateModel({
-                          listed: true,
-                        });
-                      }
-                    }}
-                    sx={{
-                      borderRadius: "8px",
-                      borderStyle: "solid",
-                      borderWidth: "1px",
-                      borderColor: "border",
-                      backgroundColor: "common.white",
-                      py: 2,
-                      "&.Mui-selected": {
-                        borderColor: "primary.main",
-                        svg: {
-                          color: "primary.main",
-                        },
+              {modelTypes.map((modelType) => (
+                <ListItemButton
+                  data-cy={`model-type-${modelType.key}`}
+                  selected={type === modelType.key}
+                  key={modelType.key}
+                  onClick={() => {
+                    setType(modelType.key);
+                    if (modelType.key === "block") {
+                      updateModel({
+                        listed: false,
+                      });
+                    } else {
+                      updateModel({
+                        listed: true,
+                      });
+                    }
+                  }}
+                  sx={{
+                    borderRadius: "8px",
+                    borderStyle: "solid",
+                    borderWidth: "1px",
+                    borderColor: "border",
+                    backgroundColor: "common.white",
+                    py: 2,
+                    "&.Mui-selected": {
+                      borderColor: "primary.main",
+                      svg: {
+                        color: "primary.main",
                       },
-                      flexDirection: "column",
-                      alignItems: "flex-start",
-                      gap: 2,
-                    }}
-                  >
-                    <ListItemIcon sx={{ minWidth: 48 }}>
-                      <SvgIcon
-                        sx={{ fontSize: "32px" }}
-                        component={
-                          modelIconMap[
-                            modelType.key as keyof typeof modelIconMap
-                          ]
-                        }
-                      />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={
-                        <Typography variant="h6" fontWeight={600}>
-                          {modelType.name}
-                        </Typography>
-                      }
-                      disableTypography
-                      sx={{ my: 0 }}
-                      secondary={
-                        <>
-                          <Typography variant="body2" sx={{ mt: 0.5 }}>
-                            {modelType.description}
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            color="text.secondary"
-                            sx={{ mt: 1 }}
-                          >
-                            {modelType.examples}
-                          </Typography>
-                        </>
+                    },
+                    flexDirection: "column",
+                    alignItems: "flex-start",
+                    gap: 2,
+                  }}
+                >
+                  <ListItemIcon sx={{ minWidth: 48 }}>
+                    <SvgIcon
+                      sx={{ fontSize: "32px" }}
+                      component={
+                        modelIconMap[modelType.key as keyof typeof modelIconMap]
                       }
                     />
-                  </ListItemButton>
-                ))}
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={
+                      <Typography variant="h6" fontWeight={600}>
+                        {modelType.name}
+                      </Typography>
+                    }
+                    disableTypography
+                    sx={{ my: 0 }}
+                    secondary={
+                      <>
+                        <Typography variant="body2" sx={{ mt: 0.5 }}>
+                          {modelType.description}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{ mt: 1 }}
+                        >
+                          {modelType.examples}
+                        </Typography>
+                      </>
+                    }
+                  />
+                </ListItemButton>
+              ))}
             </Box>
           </DialogContent>
           <DialogActions sx={{ pt: 2.5 }}>
@@ -354,7 +360,10 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
             </Button>
             <Button
               variant="contained"
-              onClick={() => updateModel({ type })}
+              onClick={() => {
+                setIsTypeSet(true);
+                updateModel({ type });
+              }}
               disabled={!type}
               data-cy="create-model-next-button"
             >
@@ -366,10 +375,13 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
     } else {
       return (
         <>
-          {model?.type === "block" ? (
-            <StarterBlocks onClose={onClose} />
+          {model?.type === "block" && !selectedBlankBlock ? (
+            <StarterBlocks
+              onClose={onClose}
+              selectBlank={() => setSelectedBlankBlock(true)}
+            />
           ) : (
-            <Box component="form">
+            <Box component="form" onSubmit={(e) => e.preventDefault()}>
               <DialogTitle component="div">
                 <Stack
                   direction="row"
@@ -457,10 +469,16 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
                       }}
                       placeholder="Auto-Generated from Display Name"
                       value={model.name}
-                      onChange={(event: any) =>
-                        updateModel({ name: event.target.value })
-                      }
+                      onChange={(event: any) => {
+                        updateModel({ name: event.target.value });
+
+                        if (!!referenceIDError) {
+                          setReferenceIDError(null);
+                        }
+                      }}
                       fullWidth
+                      error={!!referenceIDError}
+                      helperText={referenceIDError}
                     />
                   </Box>
                   <SelectModelParentInput
@@ -565,25 +583,45 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
   };
 
   return (
-    <ThemeProvider theme={theme}>
-      <Dialog
-        data-cy="create-model-dialog"
-        open
-        onClose={onClose}
-        sx={{
-          my: "20px",
-        }}
-        PaperProps={{
-          sx: {
-            maxWidth: largeWidth?.includes(model?.type) ? "1080px" : "640px",
-            width: largeWidth?.includes(model?.type) ? 1080 : 640,
-            maxHeight: "min(100%, 1000px)",
-            m: 0,
-          },
-        }}
-      >
-        {getView()}
-      </Dialog>
-    </ThemeProvider>
+    <Dialog
+      data-cy="create-model-dialog"
+      open
+      onClose={onClose}
+      sx={{
+        "& .MuiDialog-container": {
+          py: "20px",
+          alignItems:
+            largeWidth?.includes(model?.type) && !selectedBlankBlock
+              ? "flex-start"
+              : "center",
+        },
+      }}
+      fullScreen
+      PaperProps={{
+        sx: {
+          maxWidth:
+            largeWidth?.includes(model?.type) && !selectedBlankBlock
+              ? "1080px"
+              : "640px",
+          minWidth:
+            largeWidth?.includes(model?.type) && !selectedBlankBlock
+              ? "1080px"
+              : "640px",
+          height:
+            largeWidth?.includes(model?.type) && !selectedBlankBlock
+              ? "100%"
+              : "auto",
+          minHeight:
+            largeWidth?.includes(model?.type) && !selectedBlankBlock
+              ? "680px"
+              : "auto",
+          maxHeight: "1240px",
+          overflow: "hidden",
+          m: 0,
+        },
+      }}
+    >
+      {getView()}
+    </Dialog>
   );
 };

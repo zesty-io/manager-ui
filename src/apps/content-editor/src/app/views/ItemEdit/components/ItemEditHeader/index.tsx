@@ -6,6 +6,7 @@ import {
   Typography,
   IconButton,
   Tooltip,
+  Skeleton,
 } from "@mui/material";
 import { theme } from "@zesty-io/material";
 import { useHistory, useLocation, useParams } from "react-router";
@@ -24,6 +25,7 @@ import {
   ContentCopyRounded,
   WebRounded,
 } from "@mui/icons-material";
+import { ShuffleVariant } from "@zesty-io/material";
 import { useSelector } from "react-redux";
 import { AppState } from "../../../../../../../../shell/store/types";
 import { ItemEditHeaderActions } from "./ItemEditHeaderActions";
@@ -39,6 +41,7 @@ import { DuoModeSwitch } from "./DuoModeToggle";
 import { useGetContentModelsQuery } from "../../../../../../../../shell/services/instance";
 import { ContentItemWithDirtyAndPublishing } from "../../../../../../../../shell/services/types";
 import { PublishStatus } from "./PublishStatus";
+import RedirectsDialogContextProvider from "../../../../../../../seo/src/app/components/RedirectsDialogProvider";
 
 const tabs = [
   {
@@ -50,6 +53,11 @@ const tabs = [
     label: "SEO",
     icon: QueryStatsRounded,
     value: "meta",
+  },
+  {
+    label: "Redirects",
+    icon: ShuffleVariant,
+    value: "redirects",
   },
   {
     label: "Analytics",
@@ -82,8 +90,14 @@ type HeaderProps = {
   saving: boolean;
   onSave: () => void;
   hasError: boolean;
+  isLoadingItem?: boolean;
 };
-export const ItemEditHeader = ({ saving, onSave, hasError }: HeaderProps) => {
+export const ItemEditHeader = ({
+  saving,
+  onSave,
+  hasError,
+  isLoadingItem,
+}: HeaderProps) => {
   const { modelZUID, itemZUID } = useParams<{
     modelZUID: string;
     itemZUID: string;
@@ -112,25 +126,45 @@ export const ItemEditHeader = ({ saving, onSave, hasError }: HeaderProps) => {
   const headerTitle = item?.web?.metaTitle || item?.web?.metaLinkText || "";
 
   return (
-    <ThemeProvider theme={theme}>
-      <>
-        <Box
-          px={4}
-          pt={4}
-          pb={type === "block" ? 1 : 0}
-          sx={{
-            backgroundColor: "background.paper",
-            color: "text.primary",
-            borderBottom: (theme) => `2px solid ${theme?.palette?.border} `,
-            "*": {
-              boxSizing: "border-box",
-            },
-            containerType: "inline-size",
-          }}
-        >
-          <Box display="flex" justifyContent="space-between" gap={4}>
-            <Box>
-              {type !== "block" && <ContentBreadcrumbs />}
+    <>
+      <Box
+        px={4}
+        pt={4}
+        pb={type === "block" ? 1 : 0}
+        sx={{
+          backgroundColor: "background.paper",
+          color: "text.primary",
+          borderBottom: (theme) => `2px solid ${theme?.palette?.border} `,
+          "*": {
+            boxSizing: "border-box",
+          },
+          containerType: "inline-size",
+        }}
+      >
+        <Box display="flex" justifyContent="space-between" gap={4}>
+          <Box>
+            {type !== "block" && <ContentBreadcrumbs />}
+            {isLoadingItem &&
+            (!modelLabel || !item || !Object.keys(item?.web).length) ? (
+              <Stack>
+                <Typography
+                  variant="h3"
+                  sx={{
+                    width: 667,
+                  }}
+                >
+                  <Skeleton variant="text" />
+                </Typography>
+                <Typography
+                  variant="h3"
+                  sx={{
+                    width: 442,
+                  }}
+                >
+                  <Skeleton variant="text" />
+                </Typography>
+              </Stack>
+            ) : (
               <Typography
                 variant="h3"
                 fontWeight="700"
@@ -148,107 +182,123 @@ export const ItemEditHeader = ({ saving, onSave, hasError }: HeaderProps) => {
                   ? `${modelLabel}: ${headerTitle}`
                   : headerTitle) || ""}
               </Typography>
-            </Box>
-            <Stack gap={1.25}>
-              <Box
-                display="flex"
-                gap={1}
-                alignItems="center"
-                sx={{
-                  "@container (max-width: 900px)": {
-                    flexWrap: "wrap",
-                  },
-                }}
-              >
-                <MoreMenu />
-                <Tooltip
-                  title="Duplicate Item"
-                  enterDelay={1000}
-                  enterNextDelay={1000}
-                  placement="bottom-start"
-                >
-                  <IconButton
-                    size="small"
-                    onClick={() => setShowDuplicateItemDialog(true)}
+            )}
+          </Box>
+          <Stack gap={1.25}>
+            <Box
+              display="flex"
+              gap={1}
+              alignItems="center"
+              sx={{
+                "@container (max-width: 900px)": {
+                  flexWrap: "wrap",
+                },
+                minHeight: 32,
+              }}
+            >
+              {isLoadingItem &&
+              (!item ||
+                !Object.keys(item.web).length ||
+                !Object.keys(item.meta).length) ? (
+                <Stack direction="row" gap={3} mr={1}>
+                  <Skeleton variant="circular" width={16} height={16} />
+                  <Skeleton variant="circular" width={16} height={16} />
+                </Stack>
+              ) : (
+                <>
+                  <MoreMenu />
+                  <Tooltip
+                    title="Duplicate Item"
+                    enterDelay={1000}
+                    enterNextDelay={1000}
+                    placement="bottom-start"
                   >
-                    <ContentCopyRounded fontSize="small" />
-                  </IconButton>
-                </Tooltip>
-                {type !== "dataset" && type !== "block" && <PreviewMenu />}
-                {type === "block" && (
-                  <>
-                    <LanguageSelector />
-                    <VersionSelector />
-                  </>
-                )}
+                    <IconButton
+                      size="small"
+                      onClick={() => setShowDuplicateItemDialog(true)}
+                    >
+                      <ContentCopyRounded fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                  {type !== "dataset" && type !== "block" && <PreviewMenu />}
+                </>
+              )}
+              {type === "block" && (
+                <>
+                  <LanguageSelector />
+                  <VersionSelector activeVersion={item?.meta?.version} />
+                </>
+              )}
+              <RedirectsDialogContextProvider>
                 <ItemEditHeaderActions
                   saving={saving}
                   onSave={onSave}
                   hasError={hasError}
+                  isLoadingItem={isLoadingItem}
                 />
-              </Box>
-              <PublishStatus currentVersion={item?.web?.version} />
-            </Stack>
-          </Box>
-          {type !== "block" && (
-            <Box
-              display="flex"
-              justifyContent="space-between"
-              alignItems="center"
-              mt={2}
-            >
-              <Tabs
-                variant="scrollable"
-                scrollButtons={false}
-                value={
-                  tabs.find(
-                    (tab) =>
-                      tab.label !== "Content" &&
-                      location.pathname.includes(tab.value)
-                  )?.value || ""
-                }
-                onChange={(event, value) =>
-                  history.push(
-                    value
-                      ? `/content/${modelZUID}/${itemZUID}/${value}`
-                      : `/content/${modelZUID}/${itemZUID}`
-                  )
-                }
-                sx={{
-                  position: "relative",
-                  top: "2px",
-                }}
-              >
-                {tabs.map((tab) => {
-                  if (tab.label === "Freestyle" && !layoutsAppInstalled) {
-                    return;
-                  } else
-                    return (
-                      <Tab
-                        key={tab.value}
-                        disableRipple
-                        label={tab.label}
-                        value={tab.value}
-                        icon={<tab.icon fontSize="small" />}
-                        iconPosition="start"
-                      />
-                    );
-                })}
-              </Tabs>
-              <Box display="flex" gap={2} alignItems="center">
-                <DuoModeSwitch />
-                <LanguageSelector />
-                <VersionSelector />
-              </Box>
+              </RedirectsDialogContextProvider>
             </Box>
-          )}
+            <PublishStatus currentVersion={item?.web?.version} />
+          </Stack>
         </Box>
-        {showDuplicateItemDialog && (
-          <DuplicateItemDialog
-            onClose={() => setShowDuplicateItemDialog(false)}
-          />
+        {type !== "block" && (
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+            mt={2}
+          >
+            <Tabs
+              variant="scrollable"
+              scrollButtons={false}
+              value={
+                tabs.find(
+                  (tab) =>
+                    tab.label !== "Content" &&
+                    location.pathname.includes(tab.value)
+                )?.value || ""
+              }
+              onChange={(event, value) =>
+                history.push(
+                  value
+                    ? `/content/${modelZUID}/${itemZUID}/${value}`
+                    : `/content/${modelZUID}/${itemZUID}`
+                )
+              }
+              sx={{
+                position: "relative",
+                top: "2px",
+              }}
+            >
+              {tabs.map((tab) => {
+                if (tab.label === "Freestyle" && !layoutsAppInstalled) {
+                  return;
+                } else
+                  return (
+                    <Tab
+                      key={tab.value}
+                      disableRipple
+                      label={tab.label}
+                      value={tab.value}
+                      icon={<tab.icon fontSize="small" />}
+                      iconPosition="start"
+                    />
+                  );
+              })}
+            </Tabs>
+            <Box display="flex" gap={2} alignItems="center">
+              <DuoModeSwitch />
+              <LanguageSelector />
+              <VersionSelector activeVersion={item?.meta?.version} />
+            </Box>
+          </Box>
         )}
-      </>
-    </ThemeProvider>
+      </Box>
+      {showDuplicateItemDialog && (
+        <DuplicateItemDialog
+          onClose={() => setShowDuplicateItemDialog(false)}
+        />
+      )}
+    </>
   );
 };

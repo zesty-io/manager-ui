@@ -178,7 +178,7 @@ ${
                     <FormControlLabel
                       control={
                         <Checkbox
-                          color="secondary"
+                          color="primary"
                           size="small"
                           name={user.email}
                           onChange={(evt, val) => handleSelectUser(evt, val)}
@@ -195,13 +195,13 @@ ${
               Select fields for review
             </Typography>
             <Box component="ul">
-              {fields.map((field) => (
+              {fields?.map((field) => (
                 <Box component="li" key={field.ZUID} sx={{ listStyle: "none" }}>
                   <FormGroup>
                     <FormControlLabel
                       control={
                         <Checkbox
-                          color="secondary"
+                          color="primary"
                           size="small"
                           name={field.name}
                           onChange={(evt, val) => handleSelectField(evt, val)}

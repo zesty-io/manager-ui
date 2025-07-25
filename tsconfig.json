@@ -8,6 +8,8 @@
     "jsx": "react-jsx",
     "moduleResolution": "node",
     "sourceMap": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "types": ["react"]
   }
 }

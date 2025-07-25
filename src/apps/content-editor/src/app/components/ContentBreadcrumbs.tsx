@@ -1,4 +1,11 @@
-import { Box, SvgIcon, Typography, Tooltip } from "@mui/material";
+import {
+  Box,
+  SvgIcon,
+  Typography,
+  Tooltip,
+  Stack,
+  Skeleton,
+} from "@mui/material";
 import {
   useGetContentModelQuery,
   useGetContentNavItemsQuery,
@@ -12,7 +19,7 @@ import { Link } from "react-router-dom";
 import { CustomBreadcrumbs } from "../../../../../shell/components/CustomBreadcrumbs";
 
 export const ContentBreadcrumbs = () => {
-  const { data: nav } = useGetContentNavItemsQuery();
+  const { data: nav, isLoading: isNavLoading } = useGetContentNavItemsQuery();
   const { modelZUID, itemZUID } = useParams<{
     modelZUID: string;
     itemZUID: string;
@@ -73,6 +80,51 @@ export const ContentBreadcrumbs = () => {
       },
     }));
   }, [nav, itemZUID, modelZUID, location]);
+
+  if (isNavLoading) {
+    return (
+      <Stack direction="row">
+        <Skeleton variant="circular" width={20} height={20} />
+        <Typography
+          variant="body2"
+          color="grey.200"
+          sx={{ width: 20, textAlign: "center" }}
+        >
+          /
+        </Typography>
+        <Skeleton variant="circular" width={20} height={20} sx={{ mr: 0.5 }} />
+        <Typography variant="body2" width={69}>
+          <Skeleton
+            variant="text"
+            width={100}
+            sx={{ width: "inherit !important" }}
+          />
+        </Typography>
+        <Typography
+          variant="body2"
+          color="grey.200"
+          sx={{ width: 20, textAlign: "center" }}
+        >
+          /
+        </Typography>
+        <Skeleton variant="circular" width={20} height={20} sx={{ mr: 0.5 }} />
+        <Typography variant="body2" width={69}>
+          <Skeleton
+            variant="text"
+            width={100}
+            sx={{ width: "inherit !important" }}
+          />
+        </Typography>
+        <Typography
+          variant="body2"
+          color="grey.200"
+          sx={{ width: 20, textAlign: "center" }}
+        >
+          /
+        </Typography>
+      </Stack>
+    );
+  }
 
   return (
     <CustomBreadcrumbs

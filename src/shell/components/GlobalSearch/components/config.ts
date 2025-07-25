@@ -4,7 +4,7 @@ import {
   CodeRounded,
   ImageRounded,
 } from "@mui/icons-material";
-import { Database } from "@zesty-io/material";
+import { Database, Block } from "@zesty-io/material";
 
 import {
   PresetType,
@@ -71,6 +71,7 @@ export const RESOURCE_TYPES: Record<ResourceType, string> = {
   schema: "Models",
   code: "Code Files",
   media: "Media",
+  block: "Blocks",
 } as const;
 
 interface SearchAccelerator {
@@ -93,5 +94,9 @@ export const SEARCH_ACCELERATORS: Record<ResourceType, SearchAccelerator> = {
   code: {
     icon: CodeRounded,
     text: "Code",
+  },
+  block: {
+    icon: CodeRounded,
+    text: "Block",
   },
 } as const;

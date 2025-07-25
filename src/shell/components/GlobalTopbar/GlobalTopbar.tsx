@@ -2,45 +2,63 @@ import { GlobalSearch } from "../GlobalSearch";
 import GlobalTabs from "../global-tabs";
 import { GlobalNotifications } from "../global-notifications";
 
-import { theme, legacyTheme } from "@zesty-io/material";
-import { ThemeProvider } from "@mui/material/styles";
+import { Brain } from "@zesty-io/material";
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
+import { memo } from "react";
 
 import { DomainSwitcher } from "./DomainSwitcher";
+import { IconButton } from "@mui/material";
+import { useSelector } from "react-redux";
+import { AppState } from "../../store/types";
+import { User } from "../../services/types";
+import { isZestyEmail } from "../../../utility/isZestyEmail";
 
-export function GlobalTopbar() {
+type Props = {
+  onShowAiDrawerToggle: () => void;
+};
+
+export const GlobalTopbar = memo(({ onShowAiDrawerToggle }: Props) => {
+  const user: User = useSelector((state: AppState) => state.user);
   return (
-    <ThemeProvider theme={theme}>
-      <Stack
-        direction="row"
-        justifyContent="flex-start"
-        alignItems="flex-end"
+    <Stack
+      direction="row"
+      justifyContent="flex-start"
+      alignItems="flex-end"
+      sx={{
+        backgroundColor: "grey.100",
+        height: "40px",
+      }}
+    >
+      <Box
         sx={{
-          backgroundColor: "grey.100",
-          height: "40px",
+          width: 288,
+          minWidth: 288,
         }}
       >
-        <Box
-          sx={{
-            width: 288,
-            minWidth: 288,
+        <GlobalSearch />
+      </Box>
+      <Box
+        sx={{
+          flexGrow: 1,
+        }}
+      >
+        <GlobalTabs />
+      </Box>
+      <Stack direction="row" flexBasis={72} alignItems="baseline" gap={1}>
+        <IconButton
+          onClick={() => {
+            onShowAiDrawerToggle();
           }}
+          size="small"
         >
-          <GlobalSearch />
-        </Box>
-        <Box
-          sx={{
-            flexGrow: 1,
-          }}
-        >
-          <GlobalTabs />
-        </Box>
-        <Stack direction="row" flexBasis={72} alignItems="baseline" gap={1}>
-          <DomainSwitcher />
-          <GlobalNotifications />
-        </Stack>
+          <Brain fontSize="inherit" />
+        </IconButton>
+        <DomainSwitcher />
+        <GlobalNotifications />
       </Stack>
-    </ThemeProvider>
+    </Stack>
   );
-}
+});
+
+GlobalTopbar.displayName = "GlobalTopbar";

@@ -214,9 +214,12 @@ const InviteMembersModal = ({ onClose }: Props) => {
               borderRadius: "20px",
               backgroundColor: "deepOrange.50",
               display: "block",
+              width: "40px",
+              height: "40px",
+              mb: 1.5,
             }}
           />
-          <Box sx={{ mt: 1.5, fontWeight: 700 }}>Invite Users</Box>
+          <Box sx={{ fontWeight: 700 }}>Invite Users</Box>
           <Typography sx={{ mt: 1 }} variant="body2" color="text.secondary">
             These invites will be sent as emails
           </Typography>

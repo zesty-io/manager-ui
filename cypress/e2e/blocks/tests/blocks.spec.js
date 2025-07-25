@@ -24,7 +24,7 @@ describe("All Blocks Tests", () => {
 
   it("should show and traverse onboarding flow", () => {
     AllBlocksPage.onboardingDialog.should("be.visible");
-    const totalSteps = 4;
+    const totalSteps = 3;
     for (let i = 0; i < totalSteps; i++) {
       AllBlocksPage.clickOnboardingNextButton();
     }
@@ -47,20 +47,14 @@ describe("All Blocks Tests", () => {
   it("creates new block with default values", () => {
     AllBlocksPage.visit();
     cy.get('[data-cy="create_new_content_item"]').click();
-    cy.get('[data-cy="starter-block-card"]').first().click();
+    cy.get('[data-cy="starter-block-card"]:eq(1)').click();
     cy.get('[data-cy="select-block-type-next-button"]').click();
     cy.get('[data-cy="starter-block-form-label"] input')
       .clear()
       .type(CypressTestBlock);
     cy.intercept("POST", "/v1/content/models").as("createModel");
     cy.get('[data-cy="starter-block-form-submit"]').click();
-    cy.wait("@createModel").then((interception) => {
-      const ZUID = interception?.response?.body?.data?.ZUID;
-      Cypress.env("model_zuid", ZUID);
-
-      console.debug("ZUID: ", ZUID);
-      // expect(res.data.label).to.eq(CypressTestBlock);
-    });
+    cy.wait("@createModel");
     AllBlocksPage.visit();
   });
 
@@ -87,10 +81,9 @@ describe("All Blocks Tests", () => {
     AllBlocksPage.visit();
     cy.contains(CypressTestBlock).click(TIMEOUT);
     BlockPage.createVariant(CypressTestVariant);
-    cy.contains(
-      new RegExp(`${CypressTestBlock}:\\s*${CypressTestVariant}`)
-    ).should("exist");
-    // cy.get('input[name="foo"]').should("have.value", "Default Foo");
+    cy.contains(new RegExp(`${CypressTestBlock}:\\s*${CypressTestVariant}`), {
+      timeout: 15_000,
+    }).should("exist");
   });
 });
 

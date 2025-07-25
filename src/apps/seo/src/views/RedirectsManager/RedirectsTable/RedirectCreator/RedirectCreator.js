@@ -1,31 +1,31 @@
 import { useState } from "react";
 import {
-  Button,
   ToggleButtonGroup,
   ToggleButton,
   TextField,
   InputAdornment,
-  Select,
-  MenuItem,
+  Autocomplete,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from "@mui/icons-material/Search";
-
 import { createRedirect } from "../../../../store/redirects";
-import RedirectsImport from "../../../RedirectsManager/RedirectActions/RedirectsImport/RedirectsImport";
-
-import { CSVImporter } from "../../../../../src/store/imports";
-
 import ContentSearch from "shell/components/LegacyContentSearch";
+import { Box } from "@mui/material";
+import LoadingButton from "@mui/lab/LoadingButton";
 
-import styles from "./RedirectCreator.less";
+const optionTypes = [
+  { label: "Internal", value: "page" },
+  { label: "External", value: "external" },
+  { label: "Wildcard", value: "path" },
+];
 
 export function RedirectCreator(props) {
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [code, setCode] = useState(301); // Toggle defaults to 301
-  const [type, setType] = useState("page");
   const [contentSearchValue, setContentSearchValue] = useState("");
+  const [type, setType] = useState(optionTypes[0]); // Set initial type as full object
+  const [isLoading, setIsLoading] = useState(false);
 
   const determineTerm = (term) => {
     // ContentSearch return Object while Search return string
@@ -37,11 +37,12 @@ export function RedirectCreator(props) {
   };
 
   const handleCreateRedirect = () => {
+    setIsLoading(true);
     props
       .dispatch(
         createRedirect({
           path: from,
-          targetType: type,
+          targetType: type?.value,
           target: to,
           code, // API expects a 301/302 value
         })
@@ -49,6 +50,9 @@ export function RedirectCreator(props) {
       .then(() => {
         setFrom("");
         setContentSearchValue("");
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   };
 
@@ -58,8 +62,20 @@ export function RedirectCreator(props) {
   };
 
   return (
-    <div className={styles.RedirectCreator}>
-      <span className={styles.RedirectCreatorCell}>
+    <Box
+      display="flex"
+      flexDirection="row"
+      justifyContent="space-between"
+      alignItems="center"
+      py={2}
+      px={2}
+      width="100%"
+      boxSizing="border-box"
+      columnGap={1}
+      bgcolor="grey.100"
+      borderRadius={2}
+    >
+      <Box flexGrow={1} flexShrink={0}>
         <TextField
           name="redirectFrom"
           type="text"
@@ -72,56 +88,67 @@ export function RedirectCreator(props) {
           color="primary"
           fullWidth
         />
-      </span>
-      <span className={styles.RedirectCreatorCell}>
+      </Box>
+      <Box flexGrow={0} width="fit-content">
         <ToggleButtonGroup
-          color="secondary"
+          color="primary"
           value={code}
           size="small"
           exclusive
           onChange={(evt, val) => handleToggle(val)}
+          sx={{
+            "& button": {
+              padding: "4px 4px",
+            },
+          }}
         >
           <ToggleButton value={302}>302</ToggleButton>
           <ToggleButton value={301}>301</ToggleButton>
         </ToggleButtonGroup>
-      </span>
-      <span className={styles.RedirectCreatorCell}>
-        <Select
-          name={"selectType"}
-          onChange={(evt) => setType(evt.target.value)}
-          value={type}
-          size="small"
+      </Box>
+      <Box width={150} flexGrow={0}>
+        <Autocomplete
           fullWidth
-        >
-          <MenuItem value="page" text="Internal">
-            Internal
-          </MenuItem>
-          <MenuItem value="external" text="External">
-            External
-          </MenuItem>
-          <MenuItem value="path" text="Wildcard">
-            Wildcard
-          </MenuItem>
-        </Select>
-      </span>
-      <span className={styles.RedirectCreatorCell}>
-        {type === "page" ? (
+          size="small"
+          disablePortal
+          name="selectType"
+          autoHighlight
+          onChange={(event, newValue) => {
+            setType(newValue || null);
+          }}
+          disableClearable
+          value={type}
+          options={optionTypes}
+          getOptionLabel={(option) => option?.label || ""}
+          isOptionEqualToValue={(option, value) =>
+            option?.value === value?.value
+          }
+          renderInput={(params) => (
+            <TextField {...params} size="small" placeholder="Type" />
+          )}
+        />
+      </Box>
+
+      <Box flexGrow={1} flexShrink={0}>
+        {type?.value === "page" ? (
           <ContentSearch
-            className={styles.SearchBar}
             placeholder="Search for item"
             onSelect={determineTerm}
             filterResults={(results) =>
               results.filter((result) => result.web.path !== null)
             }
+            sx={{ width: "100%" }}
             value={contentSearchValue}
           />
         ) : (
           <TextField
-            placeholder={type === "external" ? "Add URL" : "Add File Path"}
+            placeholder={
+              type?.value === "external" ? "Add URL" : "Add File Path"
+            }
             type="search"
             variant="outlined"
             size="small"
-            fullWidth
+            sx={{ width: "100%" }}
             value={to}
             InputProps={{
               startAdornment: (
@@ -136,26 +163,22 @@ export function RedirectCreator(props) {
             }}
           />
         )}
-      </span>
-
-      <span className={styles.RedirectCreatorCell}>
-        <RedirectsImport
-          onChange={(evt) => {
-            props.dispatch(CSVImporter(evt));
-          }}
-        />
-      </span>
-      <span className={styles.RedirectCreatorCell}>
-        <Button
+      </Box>
+      <Box width="fit-content" flexGrow={0}>
+        <LoadingButton
+          loading={isLoading}
           variant="contained"
-          color="success"
+          color="primary"
+          size="small"
           onClick={handleCreateRedirect}
           disabled={!from.length || !from.startsWith("/")}
           startIcon={<AddIcon />}
+          fullWidth
+          sx={{ whiteSpace: "nowrap", boxSizing: "border-box" }}
         >
           Create Redirect
-        </Button>
-      </span>
-    </div>
+        </LoadingButton>
+      </Box>
+    </Box>
   );
 }

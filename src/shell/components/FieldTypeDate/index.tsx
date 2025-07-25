@@ -216,7 +216,7 @@ export const FieldTypeDate = memo(
                         props.onChange(parsedDate, null);
                       }
                     },
-                    onKeyDown: (evt: KeyboardEvent) => {
+                    onKeyDown: (evt: any) => {
                       if (evt.key === "Enter") {
                         setIsOpen(false);
                         textFieldRef.current?.blur();
