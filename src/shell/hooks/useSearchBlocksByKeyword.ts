@@ -73,7 +73,7 @@ export const useSearchBlocksByKeyword = (): SearchResult => {
 
   const normalizedSearch = searchTerm.toLowerCase()?.trim();
 
-  const parsedBlocks = useMemo(() => {
+  const parsedBlocks: BlockModel[] = useMemo(() => {
     if (isLoading) return [];
 
     const processedModels = !modelsRaw?.length
@@ -82,8 +82,8 @@ export const useSearchBlocksByKeyword = (): SearchResult => {
           ZUID: model?.ZUID,
           label: model?.label,
           type: model?.type,
-          contentModelLabel: null,
-          contentModelZUID: null,
+          contentModelLabel: "",
+          contentModelZUID: "",
           updatedAt: model?.updatedAt,
           createdAt: model?.createdAt,
           createdByUserZUID: model?.createdByUserZUID,
