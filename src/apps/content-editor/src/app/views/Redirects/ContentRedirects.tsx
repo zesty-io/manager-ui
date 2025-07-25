@@ -19,7 +19,6 @@ import {
 } from "../../../../../../shell/services/types";
 import { useDispatch } from "react-redux";
 import { notify } from "../../../../../../shell/store/notifications";
-import LoadingButton from "@mui/lab/LoadingButton";
 import StopRoundedIcon from "@mui/icons-material/StopRounded";
 import { ContentItemProps } from "../../../../../seo/src/app/components/RedirectsDialogProvider/constants";
 import { ContentRedirectModal } from "./ContentRedirectModal";
@@ -358,7 +357,7 @@ export const ConfirmDeleteModal = (props: ConfirmDeleteModalProps) => {
         <Button variant="text" color="inherit" onClick={onClose}>
           Cancel
         </Button>
-        <LoadingButton
+        <Button
           data-cy="StopRedirectContentItemConfirmButton"
           variant="contained"
           color="error"
@@ -367,7 +366,7 @@ export const ConfirmDeleteModal = (props: ConfirmDeleteModalProps) => {
           startIcon={<StopRoundedIcon />}
         >
           Stop Redirecting
-        </LoadingButton>
+        </Button>
       </DialogActions>
     </Dialog>
   );

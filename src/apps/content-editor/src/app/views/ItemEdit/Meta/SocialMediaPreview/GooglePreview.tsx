@@ -110,8 +110,8 @@ export const GooglePreview = ({ imageURL }: GooglePreviewProps) => {
           fontWeight={600}
           sx={{
             display: "-webkit-box",
-            "-webkit-line-clamp": "2",
-            "-webkit-box-orient": "vertical",
+            WebkitLineClamp: "2",
+            WebkitBoxOrient: "vertical",
             wordBreak: "break-word",
             wordWrap: "break-word",
             hyphens: "auto",
@@ -128,8 +128,8 @@ export const GooglePreview = ({ imageURL }: GooglePreviewProps) => {
           minHeight={39}
           sx={{
             display: "-webkit-box",
-            "-webkit-line-clamp": "2",
-            "-webkit-box-orient": "vertical",
+            WebkitLineClamp: "2",
+            WebkitBoxOrient: "vertical",
             wordBreak: "break-word",
             wordWrap: "break-word",
             hyphens: "auto",

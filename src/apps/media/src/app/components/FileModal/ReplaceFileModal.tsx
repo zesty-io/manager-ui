@@ -156,7 +156,7 @@ export const ReplaceFileModal = ({
   return (
     <>
       <Dialog open onClose={onCancel} maxWidth="xs">
-        <DialogTitle>
+        <DialogTitle component="div">
           <Box
             width={120}
             height={120}

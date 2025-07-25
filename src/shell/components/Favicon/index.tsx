@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { Dialog, IconButton, Button, Skeleton } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 import { Close, Save, DoDisturbAlt } from "@mui/icons-material";
-import LoadingButton from "@mui/lab/LoadingButton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCog } from "@fortawesome/free-solid-svg-icons";
 import {
@@ -331,7 +330,7 @@ export const Favicon = ({ onCloseFaviconModal }: FaviconProps) => {
           >
             Cancel (ESC)
           </Button>
-          <LoadingButton
+          <Button
             variant="contained"
             color="success"
             data-cy="faviconSave"
@@ -342,7 +341,7 @@ export const Favicon = ({ onCloseFaviconModal }: FaviconProps) => {
             startIcon={<Save />}
           >
             Save Favicon
-          </LoadingButton>
+          </Button>
         </ModalFooter>
       </Modal>
     </>

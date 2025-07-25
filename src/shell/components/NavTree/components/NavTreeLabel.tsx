@@ -1,6 +1,6 @@
 import { Stack, Box, Tooltip, Typography } from "@mui/material";
 import { UseTreeItem2LabelSlotOwnProps } from "@mui/x-tree-view";
-import { memo } from "react";
+import { memo, Fragment } from "react";
 
 type NavTreeLabelProps = UseTreeItem2LabelSlotOwnProps & {
   labelName: string;
@@ -69,9 +69,9 @@ export const NavTreeLabel = memo(
           gap={0.5}
           className="treeActions"
         >
-          {actions?.map((action) => {
-            return action;
-          })}
+          {actions?.map((action, index) => (
+            <Fragment key={`action-${index}`}>{action}</Fragment>
+          ))}
         </Stack>
       </Stack>
     );

@@ -15,12 +15,7 @@ import { useHistory, useParams } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "../../../../../../../../shell/store/types";
 import { ContentItem } from "../../../../../../../../shell/services/types";
-import {
-  useDeleteContentItemMutation,
-  useGetContentModelFieldsQuery,
-  useUpdateContentItemMutation,
-} from "../../../../../../../../shell/services/instance";
-import { LoadingButton } from "@mui/lab";
+import { useUpdateContentItemMutation } from "../../../../../../../../shell/services/instance";
 import { fetchItem } from "../../../../../../../../shell/store/content";
 
 type DuplicateItemProps = {
@@ -43,7 +38,7 @@ export const RenameItemDialog = ({ onClose }: DuplicateItemProps) => {
 
   return (
     <Dialog open fullWidth maxWidth={"xs"} onClose={onClose}>
-      <DialogTitle>
+      <DialogTitle component="div">
         <Box
           sx={{
             backgroundColor: "blue.50",
@@ -76,7 +71,7 @@ export const RenameItemDialog = ({ onClose }: DuplicateItemProps) => {
         <Button color="inherit" onClick={onClose}>
           Cancel
         </Button>
-        <LoadingButton
+        <Button
           variant="contained"
           onClick={() => {
             updateContentItem({
@@ -97,7 +92,7 @@ export const RenameItemDialog = ({ onClose }: DuplicateItemProps) => {
           loading={isLoading}
         >
           Save
-        </LoadingButton>
+        </Button>
       </DialogActions>
     </Dialog>
   );

@@ -14,7 +14,6 @@ import { useRef } from "react";
 import { ContentItem } from "../../../../../../shell/services/types";
 import { DialogContentItem } from "./DialogContentItem";
 import pluralizeWord from "../../../../../../utility/pluralizeWord";
-import { LoadingButton } from "@mui/lab";
 
 type ConfirmPublishesModalProps = {
   items: ContentItem[];
@@ -71,7 +70,7 @@ export const ConfirmPublishesModal = ({
         <Button variant="text" color="inherit" onClick={() => onCancel()}>
           Cancel
         </Button>
-        <LoadingButton
+        <Button
           loading={loading}
           action={(actions) => (actionRef.current = actions)}
           variant="contained"
@@ -83,7 +82,7 @@ export const ConfirmPublishesModal = ({
           data-cy="ConfirmPublishButton"
         >
           Publish Items ({items.length})
-        </LoadingButton>
+        </Button>
       </DialogActions>
     </Dialog>
   );

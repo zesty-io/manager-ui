@@ -1,7 +1,7 @@
 import { memo, useState } from "react";
 
 import SyncIcon from "@mui/icons-material/Sync";
-import LoadingButton from "@mui/lab/LoadingButton";
+import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
 import CardContent from "@mui/material/CardContent";
@@ -76,7 +76,7 @@ export const WidgetPurgeItem = memo(function WidgetPurgeItem(props) {
               take from a few seconds to minutes to occur as this re-caches the
               item across the entire global network.
             </Typography>
-            <LoadingButton
+            <Button
               variant="contained"
               id="RefreshCache"
               onClick={() => {
@@ -121,7 +121,7 @@ export const WidgetPurgeItem = memo(function WidgetPurgeItem(props) {
               }}
             >
               {loading ? "Refreshing Cached Item" : "Refresh Cached Item"}
-            </LoadingButton>
+            </Button>
           </>
         )}
       </CardContent>

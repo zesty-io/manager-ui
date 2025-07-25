@@ -1,7 +1,6 @@
 import { FC } from "react";
 import { Box, Typography, Button } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import LoadingButton from "@mui/lab/LoadingButton";
 import ClearIcon from "@mui/icons-material/Clear";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
 import { useRedirectsDialog } from "../../../app/components/RedirectsDialogProvider";
@@ -67,7 +66,7 @@ const RedirectsDelete: FC<RedirectsDeleteProps> = () => {
         >
           Select All
         </Button>
-        <LoadingButton
+        <Button
           data-cy="RedirectActionDeleteButton"
           variant="contained"
           color="error"
@@ -76,7 +75,7 @@ const RedirectsDelete: FC<RedirectsDeleteProps> = () => {
           startIcon={<DeleteIcon />}
         >
           Delete
-        </LoadingButton>
+        </Button>
       </Box>
     </Box>
   );

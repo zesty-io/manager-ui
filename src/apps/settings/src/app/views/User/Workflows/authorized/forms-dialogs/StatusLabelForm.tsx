@@ -20,7 +20,6 @@ import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import CheckIcon from "@mui/icons-material/Check";
 import SaveIcon from "@mui/icons-material/Save";
 import PauseCircleOutlineRoundedIcon from "@mui/icons-material/PauseCircleOutlineRounded";
-import { LoadingButton } from "@mui/lab";
 import {
   useCreateWorkflowStatusLabelMutation,
   useUpdateWorkflowStatusLabelMutation,
@@ -511,7 +510,7 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
         <Button onClick={onClose} variant="outlined" color="inherit">
           Cancel
         </Button>
-        <LoadingButton
+        <Button
           data-cy="status-label-submit-button"
           type="submit"
           variant="contained"
@@ -520,7 +519,7 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
           startIcon={<SaveIcon />}
         >
           {ZUID ? "Save" : "Create Status"}
-        </LoadingButton>
+        </Button>
       </DialogActions>
     </Dialog>
   );

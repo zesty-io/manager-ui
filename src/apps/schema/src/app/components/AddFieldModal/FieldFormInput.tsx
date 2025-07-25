@@ -369,7 +369,7 @@ export const FieldFormInput = ({
                 value: e.target.value,
               });
             }}
-            value={prefillData}
+            value={prefillData || ""}
             error={Boolean(errorMsg)}
             helperText={
               errorMsg && (

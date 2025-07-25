@@ -10,7 +10,6 @@ import {
   Autocomplete,
   createFilterOptions,
 } from "@mui/material";
-import { LoadingButton } from "@mui/lab";
 import { useSelector } from "react-redux";
 
 import {
@@ -165,14 +164,14 @@ export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
         <Button onClick={onClose} color="inherit">
           Cancel
         </Button>
-        <LoadingButton
+        <Button
           loading={isCreatingGroup}
           disabled={loading || !selectedGroup || selectedGroup?.bin_id === null}
           variant="contained"
           onClick={handleCreate}
         >
           Create
-        </LoadingButton>
+        </Button>
       </DialogActions>
     </Dialog>
   );

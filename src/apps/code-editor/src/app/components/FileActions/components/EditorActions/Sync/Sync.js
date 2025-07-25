@@ -5,7 +5,6 @@ import CircularProgress from "@mui/material/CircularProgress";
 import SyncIcon from "@mui/icons-material/Sync";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
-import LoadingButton from "@mui/lab/LoadingButton";
 
 import { Notice } from "@zesty-io/core/Notice";
 
@@ -62,7 +61,7 @@ export const Sync = memo(function Sync(props) {
         </ModalContent>
         <ModalFooter>
           <ButtonGroup className={styles.ModalActions}>
-            <LoadingButton
+            <Button
               variant="contained"
               color="success"
               onClick={handleSync}
@@ -71,7 +70,7 @@ export const Sync = memo(function Sync(props) {
               startIcon={<CheckCircleIcon />}
             >
               Sync File
-            </LoadingButton>
+            </Button>
             <Button
               variant="contained"
               onClick={() => setOpen(false)}

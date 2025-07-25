@@ -22,7 +22,6 @@ import {
 import ZoomOutMapIcon from "@mui/icons-material/ZoomOutMap";
 import { resolvePathPart } from "../../../store/files";
 import { fetchHeaders, saveSort } from "../../../store/headers";
-import { LoadingButton } from "@mui/lab";
 import CloseIcon from "@mui/icons-material/Close";
 
 interface FileHeader {
@@ -325,7 +324,7 @@ const OrderFiles = (props: OrderFilesProps) => {
         <Button variant="outlined" color="inherit" onClick={handleClose}>
           Cancel
         </Button>
-        <LoadingButton
+        <Button
           variant="contained"
           data-cy="saveOrder"
           color="primary"
@@ -333,7 +332,7 @@ const OrderFiles = (props: OrderFilesProps) => {
           loading={loading}
         >
           Save Order
-        </LoadingButton>
+        </Button>
       </DialogActions>
     </Dialog>
   );

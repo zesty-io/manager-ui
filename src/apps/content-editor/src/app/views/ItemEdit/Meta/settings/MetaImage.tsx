@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from "react";
-import { Dialog, IconButton, Stack } from "@mui/material";
-import { LoadingButton } from "@mui/lab";
+import { Dialog, IconButton, Stack, Button } from "@mui/material";
 import { AddRounded, Close, EditRounded } from "@mui/icons-material";
 import { MemoryRouter, useLocation, useParams } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
@@ -295,7 +294,7 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
             hideActionButtons
             hideDrag
           />
-          <LoadingButton
+          <Button
             loading={isCreatingOgImageField || isUndeletingField}
             size="large"
             startIcon={<EditRounded />}
@@ -307,7 +306,7 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
             }}
           >
             Customize Image
-          </LoadingButton>
+          </Button>
         </Stack>
       </FieldShell>
     );
@@ -323,7 +322,7 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
       customTooltip="This image appears in search engine and social media previews. It is recommended that these images are at least 1200px by 630px and have a 1.91:1 aspect ratio."
       errors={{}}
     >
-      <LoadingButton
+      <Button
         loading={isCreatingOgImageField || isUndeletingField}
         size="large"
         startIcon={<AddRounded />}
@@ -332,7 +331,7 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
         onClick={handleCreateOgImageField}
       >
         Add Meta Image
-      </LoadingButton>
+      </Button>
     </FieldShell>
   );
 };

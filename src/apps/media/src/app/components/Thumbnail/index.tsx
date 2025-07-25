@@ -75,8 +75,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
   src,
   url,
   filename,
-  isDraggable,
-  showVideo,
+  isDraggable = false,
+  showVideo = true,
   onRemove,
   onFilenameChange,
   onClick,
@@ -1787,9 +1787,4 @@ export const Thumbnail: FC<ThumbnailProps> = ({
         </Card>
       );
   }
-};
-
-Thumbnail.defaultProps = {
-  isDraggable: false,
-  showVideo: true,
 };
