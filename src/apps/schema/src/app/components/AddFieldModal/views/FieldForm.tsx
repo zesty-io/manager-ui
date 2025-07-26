@@ -54,8 +54,7 @@ import {
   ContentModelFieldValue,
   FieldSettingsOptions,
   ContentModelFieldDataType,
-  IntegrationFieldApiConfig,
-  IntegrationFieldDisplay,
+  IntegrationFieldConfig,
 } from "../../../../../../../shell/services/types";
 import { FIELD_COPY_CONFIG, TYPE_TEXT, FORM_CONFIG } from "../../configs";
 import { Learn } from "../Learn";
@@ -231,11 +230,9 @@ export const FieldForm = ({
           formFields[field.name] = fieldData.settings?.[field.name] ?? null;
         } else if (field.name === "fileExtensionsErrorMessage") {
           formFields[field.name] = fieldData.settings?.[field.name] ?? null;
-        } else if (field.name === "integrationConfig") {
-          formFields["integrationFieldApiConfig"] =
-            fieldData?.["integrationFieldApiConfig"] ?? null;
-          formFields["integrationFieldDisplay"] =
-            fieldData?.["integrationFieldDisplay"] ?? null;
+        } else if (field.name === "integrationFieldConfig") {
+          formFields["integrationFieldConfig"] =
+            fieldData?.["integrationFieldConfig"] ?? null;
         } else {
           formFields[field.name] = fieldData[field.name] as FormValue;
         }
@@ -256,10 +253,14 @@ export const FieldForm = ({
           formFields[field.name] = 0;
         } else if (
           field.type === "config" &&
-          field.name === "integrationConfig"
+          field.name === "integrationFieldConfig"
         ) {
-          formFields["integrationFieldApiConfig"] = null;
-          formFields["integrationFieldDisplay"] = null;
+          formFields["integrationFieldConfig"] = {
+            endpoint: "",
+            headers: null,
+            type: null,
+            keyPaths: null,
+          };
         } else {
           if (
             field.name === "defaultValue" ||
@@ -427,22 +428,14 @@ export const FieldForm = ({
         newErrorsObj[inputName] = "This field is required";
       }
 
-      if (
-        inputName === "fileExtensionsErrorMessage" &&
-        formData.fileExtensions !== null &&
-        formData.fileExtensionsErrorMessage === ""
-      ) {
-        newErrorsObj[inputName] = "This field is required";
-      }
+      if (inputName === "integrationFieldConfig") {
+        const intField =
+          formData?.integrationFieldConfig as IntegrationFieldConfig;
 
-      if (
-        ["integrationFieldApiConfig", "integrationFieldDisplay"].includes(
-          inputName
-        ) &&
-        (!formData.integrationFieldApiConfig ||
-          !formData.integrationFieldDisplay)
-      ) {
-        newErrorsObj["integrationConfig"] = "Incomplete API Configuration";
+        if (!intField?.endpoint || !intField?.type || !intField?.keyPaths) {
+          newErrorsObj["integrationFieldConfig"] =
+            "Incomplete API Configuration";
+        }
       }
 
       if (
@@ -460,7 +453,7 @@ export const FieldForm = ({
           "currency",
           "fileExtensions",
           "fileExtensionsErrorMessage",
-          "integrationConfig",
+          "integrationFieldConfig",
         ].includes(inputName)
       ) {
         const { maxLength, label, validate } = FORM_CONFIG[type].details.find(
@@ -648,10 +641,8 @@ export const FieldForm = ({
     }
 
     if (type === "integration") {
-      body.integrationFieldApiConfig =
-        formData?.integrationFieldApiConfig as IntegrationFieldApiConfig;
-      body.integrationFieldDisplay =
-        formData?.integrationFieldDisplay as IntegrationFieldDisplay;
+      body.integrationFieldConfig =
+        formData?.integrationFieldConfig as IntegrationFieldConfig;
     }
 
     if (isUpdateField) {
@@ -863,22 +854,19 @@ export const FieldForm = ({
               let renderOption: any;
               let filterOptions: any;
               let autocompleteConfig: AutocompleteConfig = {};
-              let integrationFieldApiConfig: IntegrationFieldApiConfig = null;
-              let integrationFieldDisplay: IntegrationFieldDisplay = null;
+              let integrationFieldConfig: IntegrationFieldConfig = null;
 
               if (fieldConfig.name === "relatedModelZUID") {
                 dropdownOptions = modelsOptions;
                 disabled = isLoadingModels;
               }
 
-              if (fieldConfig.name === "integrationConfig") {
-                integrationFieldApiConfig = {
-                  endpoint: fieldData?.integrationFieldApiConfig?.endpoint,
-                  headers: fieldData?.integrationFieldApiConfig?.headers,
-                };
-                integrationFieldDisplay = {
-                  type: fieldData?.integrationFieldDisplay?.type,
-                  keyPaths: fieldData?.integrationFieldDisplay?.keyPaths,
+              if (fieldConfig.name === "integrationFieldConfig") {
+                integrationFieldConfig = {
+                  endpoint: fieldData?.integrationFieldConfig?.endpoint,
+                  headers: fieldData?.integrationFieldConfig?.headers,
+                  type: fieldData?.integrationFieldConfig?.type,
+                  keyPaths: fieldData?.integrationFieldConfig?.keyPaths,
                 };
               }
 
@@ -967,8 +955,7 @@ export const FieldForm = ({
                   renderOption={renderOption}
                   filterOptions={filterOptions}
                   autocompleteConfig={autocompleteConfig}
-                  integrationFieldApiConfig={integrationFieldApiConfig}
-                  integrationFieldDisplay={integrationFieldDisplay}
+                  integrationFieldConfig={integrationFieldConfig}
                 />
               );
             })}

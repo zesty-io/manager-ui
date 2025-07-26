@@ -741,7 +741,7 @@ const FORM_CONFIG: Record<FieldType, FormConfig> = {
     details: [
       ...COMMON_FIELDS.slice(0, 4),
       {
-        name: "integrationConfig",
+        name: "integrationFieldConfig",
         type: "config",
         label: "API URL",
         required: true,

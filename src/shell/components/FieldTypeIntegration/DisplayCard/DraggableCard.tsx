@@ -11,6 +11,11 @@ import DisplayCard from ".";
 import Skeleton from "@mui/material/Skeleton";
 import { useDrag, useDrop } from "react-dnd";
 
+type DragItem = {
+  id: string;
+  index: number;
+};
+
 type DraggableCardProps = IntegrationKeyPaths & {
   id?: string;
   type: IntegrationTypes;
@@ -18,12 +23,8 @@ type DraggableCardProps = IntegrationKeyPaths & {
   loading?: boolean;
 
   disableMenu?: boolean;
-  findCard?: (id: string) => {
-    item: any;
-    index: number;
-  };
-  moveCard?: (id: string, toIndex: number, isDragging?: boolean) => void;
-  onReorder?: () => void;
+  findCard?: (id: string) => number;
+  moveCard?: (from: number, to: number) => void;
   index?: number;
   draggable?: boolean;
   onView?: () => void;
@@ -45,36 +46,39 @@ const DraggableCard: FC<DraggableCardProps> = ({
   index,
   findCard,
   moveCard,
-  onReorder,
   draggable = false,
   onView,
   onDelete,
 }) => {
-  const [{ isDragging }, drag, preview] = useDrag(
-    () => ({
-      type: "draggable",
-      item: { id, index },
-      collect: (monitor) => ({
-        isDragging: monitor.isDragging(),
-      }),
-    }),
-    [id, index]
-  );
+  const originIndex = findCard?.(id);
 
-  const [, drop] = useDrop(
+  const [{ isDragging }, drag, preview] = useDrag(() => ({
+    type: "card",
+    item: { id, originIndex },
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+  }));
+
+  const [{ isOver }, drop] = useDrop(
     () => ({
-      accept: "draggable",
-      hover({ id: draggedId }: { id: string }) {
-        const { index: overIndex } = findCard?.(id);
-        if (draggedId !== id) {
-          moveCard?.(draggedId, overIndex, true);
+      accept: "card",
+      collect: (monitor) => ({
+        isOver: monitor.isOver(),
+      }),
+
+      drop(item: DragItem, monitor) {
+        const { id: droppedId } = item;
+
+        const draggedIndex = findCard(droppedId);
+        const currentIndex = findCard(id);
+
+        if (draggedIndex !== currentIndex) {
+          moveCard?.(draggedIndex, currentIndex);
         }
       },
-      drop: () => {
-        onReorder?.();
-      },
     }),
-    [findCard, moveCard, onReorder]
+    [findCard, moveCard]
   );
 
   return (
@@ -84,25 +88,22 @@ const DraggableCard: FC<DraggableCardProps> = ({
       elevation={0}
       ref={!draggable ? null : (node) => drop(preview(node as HTMLElement))}
       sx={{
-        zIndex: isDragging ? 1 : 0,
-        opacity: isDragging ? 0.1 : 1,
         py: 0,
         pl: 3.5,
         pr: "40px",
         width: "100%",
         height: "fit-content",
-        borderRadius: 1,
+        borderRadius: 2,
         position: "relative",
         boxSizing: "border-box",
         display: "flex",
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        outline: "1px solid",
-        outlineColor: "border",
-        outlineOffset: "0",
-        transform: "translate(0, 0)",
         my: 0.5,
+        outline: isOver ? "1px dashed green" : "none",
+        opacity: isOver || isDragging ? 0.2 : 1,
+        scale: isOver ? 1.03 : 1,
       }}
     >
       <Box

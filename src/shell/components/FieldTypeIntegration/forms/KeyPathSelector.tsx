@@ -9,9 +9,10 @@ import {
   Tooltip,
 } from "@mui/material";
 
-import { COLOR_MAP } from "../../configs";
-import { getKeyValue, validateUrl } from "../../utils";
-import { IntegrationTypes } from "../../../../services/types";
+import { COLOR_MAP } from "../configs";
+import { getKeyValue } from "../utils";
+import { IntegrationTypes } from "../../../services/types";
+import { validateUrl } from "../../../../utility/validateUrl";
 
 const CustomPaper = ({
   optionsDescription,

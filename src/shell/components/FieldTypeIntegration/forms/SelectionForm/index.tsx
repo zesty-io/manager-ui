@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { IconButton, Box, Paper } from "@mui/material";
 import Button from "@mui/material/Button";
 import {
@@ -9,34 +9,59 @@ import {
 } from "@mui/material";
 
 import SearchBox from "../../../SearchBox";
-import { useIntegrationField } from "../../IntegrationFieldProvider";
 import CloseIcon from "@mui/icons-material/Close";
 import Typography from "@mui/material/Typography";
 import CheckIcon from "@mui/icons-material/Check";
 import SearchIcon from "@mui/icons-material/Search";
-import JsonViewer from "./JsonViewer";
-import { generateItemId, getKeyValue } from "../../utils";
+
+import { getKeyValue } from "../../utils";
 import SelectCard from "../../DisplayCard/SelectCard";
 import { NoResults } from "../../../../../apps/schema/src/app/components/NoResults";
+import {
+  IntegrationFieldConfig,
+  IntegrationTypes,
+} from "../../../../services/types";
+import JsonViewer from "../JsonViewer";
+import AutoSizer from "react-virtualized-auto-sizer";
+import { FixedSizeList as ListBox } from "react-window";
+
+const heightIncrement = 20;
+
+const getItemRowHeight = (type: IntegrationTypes, details?: any[]) => {
+  if (type === "simple") return 64;
+  if (type === "details" && details?.length > 2) {
+    const heightMultiplier = details?.length - 1;
+    const additionalHeight = heightMultiplier * heightIncrement;
+    return 96 + additionalHeight;
+  }
+
+  return 96;
+};
 
 const SelectionForm = ({
   open,
   onClose,
   selectedIds,
-  setSelectedItems,
+  rootData,
+  maxItems,
+  isLoading,
+  onSave,
+  integrationFieldConfig,
 }: {
   open: boolean;
   onClose: () => void;
   selectedIds: string[];
-  setSelectedItems: (items: any[]) => void;
+  rootData: any[] | null;
+  maxItems: number;
+  isLoading: boolean;
+  onSave: (items: string[]) => void;
+  integrationFieldConfig: IntegrationFieldConfig | null;
 }) => {
+  const listRef = useRef(null);
   const searchInputRef = useRef(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [jsonViewData, setJsonViewData] = useState(null);
   const [viewerOpen, setViewerOpen] = useState(false);
-
-  const { isFetching, maxItems, keyPaths, displayType, apiData } =
-    useIntegrationField();
 
   const [selectedItemIds, setSelectedItemIds] = useState<string[] | null>(
     selectedIds || []
@@ -44,26 +69,27 @@ const SelectionForm = ({
 
   const maxItemsSelected = selectedItemIds?.length >= maxItems;
 
-  const { listItems, fileteredList } = useMemo(() => {
-    if (!apiData || isFetching) return { listItems: [], fileteredList: [] };
-
-    const extractedData = (
-      !keyPaths?.rootPath
-        ? apiData
-        : getKeyValue(apiData as object, keyPaths?.rootPath)
-    )?.map((item: any) => ({
-      ...item,
-      _itemId: generateItemId(item, keyPaths),
-    }));
-
-    const filtered = extractedData?.filter((item: any) => {
-      const heading = getKeyValue(item, keyPaths?.heading);
-      const subHeading = getKeyValue(item, keyPaths?.subHeading);
-      const thumbnail = getKeyValue(item, keyPaths?.thumbnail);
-      const detail = getKeyValue(item, keyPaths?.detail);
-      const details = !keyPaths?.details
+  const filteredList = useMemo(() => {
+    const filtered = rootData?.filter((item: any) => {
+      const heading = getKeyValue(
+        item,
+        integrationFieldConfig?.keyPaths?.heading
+      );
+      const subHeading = getKeyValue(
+        item,
+        integrationFieldConfig?.keyPaths?.subHeading
+      );
+      const thumbnail = getKeyValue(
+        item,
+        integrationFieldConfig?.keyPaths?.thumbnail
+      );
+      const detail = getKeyValue(
+        item,
+        integrationFieldConfig?.keyPaths?.detail
+      );
+      const details = !integrationFieldConfig?.keyPaths?.details
         ? ""
-        : keyPaths?.details
+        : integrationFieldConfig?.keyPaths?.details
             ?.map((detail) => getKeyValue(item, detail))
             .join("\n");
 
@@ -74,19 +100,12 @@ const SelectionForm = ({
         ? true
         : searchString?.includes(searchTerm?.toLowerCase());
     });
-
-    return {
-      listItems: extractedData,
-      fileteredList: filtered,
-    };
-  }, [apiData, searchTerm, isFetching]);
+    return filtered;
+  }, [rootData, searchTerm]);
 
   const handleDone = () => {
-    const selectedItemsData = listItems?.filter((item: any) =>
-      selectedItemIds.includes(item._itemId)
-    );
     setSearchTerm("");
-    setSelectedItems(!selectedItemsData?.length ? null : selectedItemsData);
+    onSave(selectedItemIds);
     onClose();
   };
 
@@ -94,6 +113,22 @@ const SelectionForm = ({
     setJsonViewData(data);
     setViewerOpen(true);
   };
+
+  const handleSelect = useCallback((select, itemId) => {
+    setSelectedItemIds((prev) => {
+      if (select) {
+        return [...prev, itemId];
+      } else {
+        return prev.filter((id) => id !== itemId);
+      }
+    });
+  }, []);
+
+  const detailsKeyPaths = integrationFieldConfig?.keyPaths?.details;
+  const rowHeight = getItemRowHeight(
+    integrationFieldConfig?.type,
+    detailsKeyPaths
+  );
 
   return (
     <Dialog
@@ -171,17 +206,19 @@ const SelectionForm = ({
         data-cy="integrationSelectionFormDialog"
         sx={{
           bgcolor: "grey.50",
-          px: 4,
-          pb: 2,
+          p: 0,
           position: "relative",
           boxSizing: "border-box",
+          width: "100%",
+          height: "100%",
+          overflow: "hidden",
         }}
       >
         <Box
           sx={{
             bgcolor: "grey.50",
             flexGrow: 0,
-            px: 0,
+            px: 4,
             py: 2,
             position: "sticky",
             top: 0,
@@ -206,14 +243,12 @@ const SelectionForm = ({
             }}
           />
         </Box>
-        <Paper
+        <Box
           data-cy="integrationSelectionFormListContainer"
-          elevation={0}
-          variant="outlined"
           sx={{
             width: "100%",
-            minHeight: `calc(100% - 70px)`,
-            borderRadius: 1,
+            height: `calc(100% - 70px)`,
+            borderRadius: 0,
             overflow: "hidden",
             boxSizing: "border-box",
             position: "relative",
@@ -231,18 +266,17 @@ const SelectionForm = ({
             },
           }}
         >
-          {isFetching ? (
+          {isLoading ? (
             <>
               {[...new Array(6)].map((_, i) => (
                 <SelectCard
-                  id={`skeleton-${i}`}
                   key={i}
                   loading={true}
                   data-cy="integrationSelectionFormListLoadingCard"
                 />
               ))}
             </>
-          ) : !fileteredList?.length && !!searchTerm ? (
+          ) : !filteredList?.length && !!searchTerm ? (
             <NoResultsComponent
               data-cy="integrationSelectionFormNoResults"
               searchTerm={searchTerm}
@@ -252,38 +286,90 @@ const SelectionForm = ({
               }}
             />
           ) : (
-            <>
-              {fileteredList?.map((item: any, index: number) => (
-                <SelectCard
-                  data-cy={`integrationSelectionFormListCard-${index}`}
-                  id={item?._itemId}
-                  key={item?._itemId}
-                  rootPath={keyPaths?.rootPath}
-                  type={displayType}
-                  heading={getKeyValue(item, keyPaths?.heading)}
-                  subHeading={getKeyValue(item, keyPaths?.subHeading)}
-                  detail={getKeyValue(item, keyPaths?.detail)}
-                  thumbnail={getKeyValue(item, keyPaths?.thumbnail)}
-                  details={keyPaths?.details}
-                  data={item}
-                  isSelected={selectedItemIds?.includes(item?._itemId)}
-                  onSelect={(select) => {
-                    setSelectedItemIds((prev) => {
-                      if (select) {
-                        return [...prev, item?._itemId];
-                      } else {
-                        return prev.filter((id) => id !== item?._itemId);
-                      }
-                    });
-                  }}
-                  onViewJson={() => openViewer(item)}
-                  loading={isFetching}
-                  disabled={maxItemsSelected}
-                />
-              ))}
-            </>
+            <Box
+              ref={listRef}
+              data-cy="RedirectsTargetOptionsContainer"
+              sx={{
+                width: "100%",
+                height: `100%`,
+                position: "relative",
+                "& ul": {
+                  position: "relative",
+                  overflow: "hidden",
+                  borderRadius: 2,
+                },
+              }}
+            >
+              <AutoSizer>
+                {({ width, height }: { width: number; height: number }) => (
+                  <ListBox
+                    className="integrationSelectionFormList"
+                    height={height}
+                    width={width}
+                    itemCount={filteredList?.length || 0}
+                    itemSize={rowHeight}
+                    overscanCount={5}
+                    innerElementType="ul"
+                    outerElementType="div"
+                    style={{
+                      paddingLeft: 32,
+                      paddingRight: 32,
+                      paddingBottom: 16,
+                      overflow: "auto",
+                    }}
+                  >
+                    {({ index, style }) => {
+                      const item = filteredList?.[index];
+                      if (!item) return null;
+
+                      const isSelectedItem = selectedItemIds?.includes(
+                        item?._itemId
+                      );
+
+                      return (
+                        <li style={style} key={item?._itemId}>
+                          <SelectCard
+                            key={item?._itemId}
+                            data-cy={`integrationSelectionFormListCard-${index}`}
+                            rootPath={
+                              integrationFieldConfig?.keyPaths?.rootPath
+                            }
+                            type={integrationFieldConfig?.type}
+                            heading={getKeyValue(
+                              item,
+                              integrationFieldConfig?.keyPaths?.heading
+                            )}
+                            subHeading={getKeyValue(
+                              item,
+                              integrationFieldConfig?.keyPaths?.subHeading
+                            )}
+                            detail={getKeyValue(
+                              item,
+                              integrationFieldConfig?.keyPaths?.detail
+                            )}
+                            thumbnail={getKeyValue(
+                              item,
+                              integrationFieldConfig?.keyPaths?.thumbnail
+                            )}
+                            details={integrationFieldConfig?.keyPaths?.details}
+                            data={item}
+                            isSelected={isSelectedItem}
+                            onSelect={(select) =>
+                              handleSelect(select, item?._itemId)
+                            }
+                            onViewJson={() => openViewer(item)}
+                            loading={isLoading}
+                            disabled={maxItemsSelected}
+                          />
+                        </li>
+                      );
+                    }}
+                  </ListBox>
+                )}
+              </AutoSizer>
+            </Box>
           )}
-        </Paper>
+        </Box>
       </DialogContent>
       <JsonViewer
         open={viewerOpen}

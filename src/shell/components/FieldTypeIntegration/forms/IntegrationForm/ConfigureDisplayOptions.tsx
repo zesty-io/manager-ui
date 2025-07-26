@@ -4,25 +4,104 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { Box, Stack, Typography } from "@mui/material";
-import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import IconButton from "@mui/material/IconButton";
-import { FormWrapper } from ".";
-import { useIntegrationField } from "../../IntegrationFieldProvider";
+import { FormWrapper } from "../Wrappers";
 import { CheckRounded } from "@mui/icons-material";
 import SettingsIcon from "@mui/icons-material/Settings";
-import { FieldWrapper } from "./../FieldWrapper";
+
 import { DISPLAY_OPTIONS_CONFIG, ConfigProps } from "../../configs";
-import {
-  getKeyValue,
-  getObjectKeyPaths,
-  getAllArrayKeyPaths,
-  createKeyPathsInitialValue,
-} from "../../utils";
+import { getKeyValue } from "../../utils";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
-import KeyPathSelector from "./KeyPathSelector";
-import { IntegrationKeyPaths } from "../../../../services/types";
+import KeyPathSelector from "../KeyPathSelector";
+
+import {
+  IntegrationKeyPaths,
+  IntegrationFieldConfig,
+  IntegrationTypes,
+  IntegrationRequestHeaders,
+} from "../../../../services/types";
 import DraggableCard from "../../DisplayCard/DraggableCard";
+import { FieldWrapper } from "../Wrappers";
+
+const createKeyPathsInitialValue = (
+  config: Array<{ name: string }>,
+  values: IntegrationKeyPaths | null
+): Record<string, string> => {
+  if (!config?.length) return {};
+  return config.reduce((acc, item) => {
+    const val =
+      (values?.[item.name as keyof IntegrationKeyPaths] as string) || "";
+    acc[item.name] = val;
+    return acc;
+  }, {} as Record<string, string>);
+};
+
+const getObjectKeyPaths = <T extends object>(
+  obj: T,
+  prefix: string = ""
+): string[] => {
+  const result: string[] = [];
+
+  for (const key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      const currentKey = prefix ? `${prefix}.${key}` : key;
+      const value = (obj as Record<string, unknown>)[key];
+
+      if (typeof value === "object" && value !== null) {
+        if (Array.isArray(value)) {
+          value.forEach((arrayElement, index) => {
+            const arrayKey = `${currentKey}[${index}]`;
+            if (typeof arrayElement === "object" && arrayElement !== null) {
+              result.push(...getObjectKeyPaths(arrayElement, arrayKey));
+            } else {
+              result.push(arrayKey);
+            }
+          });
+        } else {
+          result.push(...getObjectKeyPaths(value, currentKey));
+        }
+      } else {
+        result.push(currentKey);
+      }
+    }
+  }
+
+  return result;
+};
+
+const getAllArrayKeyPaths = <T extends object>(
+  obj: T,
+  prefix: string = ""
+): string[] => {
+  const result: string[] = [];
+
+  for (const key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      const currentKey = prefix ? `${prefix}.${key}` : key;
+      const value = (obj as Record<string, unknown>)[key];
+
+      if (Array.isArray(value)) {
+        if (value.length > 0 && typeof value[0] === "object") {
+          result.push(currentKey);
+        }
+
+        value.forEach((item, index) => {
+          if (typeof item === "object" && item !== null) {
+            result.push(
+              ...getAllArrayKeyPaths(item, `${currentKey}[${index}]`)
+            );
+          }
+        });
+      } else if (typeof value === "object" && value !== null) {
+        result.push(...getAllArrayKeyPaths(value, currentKey));
+      }
+    }
+  }
+
+  return result;
+};
+
 const DetailsPathSelector = ({
   details,
   onChange,
@@ -144,46 +223,47 @@ const DetailsPathSelector = ({
   );
 };
 
-const ConfigureDisplayOptions = () => {
+const ConfigureDisplayOptions = ({
+  endpoint,
+  headers,
+  type,
+  keyPaths,
+  setKeyPaths,
+  apiData,
+  onChange,
+  closeForm,
+  setActiveStep,
+}: {
+  endpoint: string | null;
+  headers: IntegrationRequestHeaders | null;
+  type: IntegrationTypes | null;
+  keyPaths: IntegrationKeyPaths | null;
+  setKeyPaths: (keyPaths: IntegrationKeyPaths) => void;
+  apiData: any;
+  onChange?: (value: IntegrationFieldConfig) => void;
+  closeForm: () => void;
+  setActiveStep: (step: number) => void;
+}) => {
   const [parentPathOptions, setParentPathOptions] = useState([]);
   const [childPathOptions, setChildPathOptions] = useState([]);
   const [completed, setCompleted] = useState(false);
   const [rootPath, setRootPath] = useState(null);
   const [rootData, setRootData] = useState(null);
 
-  const {
-    endpoint,
-    headers,
-    setIsFormOpen,
-    setActiveStep,
-    closeForm,
-    setKeyPaths,
-    displayType,
-    apiData,
-    keyPaths,
-    save,
-  } = useIntegrationField();
-
   const [keyPathsLocal, setKeyPathsLocal] = useState<IntegrationKeyPaths>(
-    createKeyPathsInitialValue(DISPLAY_OPTIONS_CONFIG?.[displayType], keyPaths)
+    createKeyPathsInitialValue(DISPLAY_OPTIONS_CONFIG?.[type], keyPaths)
   );
 
   const [detailsCompleted, setDetailsCompleted] = useState(false);
 
-  const hanleSave = () => {
-    setKeyPaths(keyPathsLocal);
-    save({
-      status: "completed",
-      display: {
-        type: displayType,
-        keyPaths: keyPathsLocal,
-      },
-      api: {
-        endpoint,
-        headers,
-      },
+  const handleSave = () => {
+    onChange({
+      endpoint: endpoint,
+      headers: headers,
+      type: type,
+      keyPaths: keyPathsLocal,
     });
-    setIsFormOpen(false);
+    closeForm();
   };
 
   useEffect(() => {
@@ -206,15 +286,15 @@ const ConfigureDisplayOptions = () => {
   }, [apiData]);
 
   useEffect(() => {
-    const allValid = DISPLAY_OPTIONS_CONFIG?.[displayType]
+    const allValid = DISPLAY_OPTIONS_CONFIG?.[type]
       ?.map(
         (field) => !!keyPathsLocal[field?.name as keyof IntegrationKeyPaths]
       )
       .every((item) => !!item);
     setCompleted(
-      !!allValid && (displayType === "details" ? !!detailsCompleted : true)
+      !!allValid && (type === "details" ? !!detailsCompleted : true)
     );
-  }, [keyPathsLocal, detailsCompleted, displayType]);
+  }, [keyPathsLocal, detailsCompleted, type]);
   return (
     <FormWrapper height="calc(100vh - 40px)" width="1200px">
       <DialogTitle component="div" flexGrow={0}>
@@ -245,13 +325,6 @@ const ConfigureDisplayOptions = () => {
             </Typography>
           </Box>
         </Stack>
-        <IconButton
-          size="small"
-          sx={{ position: "absolute", top: "16px", right: "16px" }}
-          onClick={closeForm}
-        >
-          <CloseRoundedIcon />
-        </IconButton>
       </DialogTitle>
       <DialogContent
         data-cy="integrationConfigureDisplayOptionsDialog"
@@ -360,7 +433,7 @@ const ConfigureDisplayOptions = () => {
             >
               {!!childPathOptions?.length && (
                 <>
-                  {DISPLAY_OPTIONS_CONFIG?.[displayType]?.map(
+                  {DISPLAY_OPTIONS_CONFIG?.[type]?.map(
                     (config: ConfigProps) => {
                       return (
                         <FieldWrapper
@@ -445,7 +518,7 @@ const ConfigureDisplayOptions = () => {
             <DraggableCard
               data-cy="integrationPreviewCard"
               rootPath={rootPath}
-              type={displayType}
+              type={type}
               heading={getKeyValue(rootData, keyPathsLocal?.heading)}
               subHeading={getKeyValue(rootData, keyPathsLocal?.subHeading)}
               thumbnail={getKeyValue(rootData, keyPathsLocal?.thumbnail)}
@@ -481,7 +554,7 @@ const ConfigureDisplayOptions = () => {
           data-cy="integrationConfigureDisplayOptionsDoneButton"
           startIcon={<CheckRounded />}
           disabled={!completed}
-          onClick={hanleSave}
+          onClick={handleSave}
         >
           Done
         </Button>

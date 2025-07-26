@@ -10,7 +10,6 @@ import { IntegrationKeyPaths, IntegrationTypes } from "../../../services/types";
 import Skeleton from "@mui/material/Skeleton";
 
 type SelectCardProps = IntegrationKeyPaths & {
-  id: string;
   isSelected?: boolean;
   onSelect?: (selected: boolean) => void;
   onViewJson?: (data: any) => void;
@@ -22,7 +21,6 @@ type SelectCardProps = IntegrationKeyPaths & {
 };
 
 const SelectCard: FC<SelectCardProps> = ({
-  id,
   heading,
   subHeading,
   thumbnail,
@@ -46,7 +44,7 @@ const SelectCard: FC<SelectCardProps> = ({
         pl: 6.75,
         pr: 7.25,
         width: "100%",
-        height: "fit-content",
+        height: "100%",
         borderRadius: 0,
         position: "relative",
         overflow: "hidden",
@@ -104,7 +102,7 @@ const SelectCard: FC<SelectCardProps> = ({
         overflow="hidden"
         sx={{
           "& .media-thumbnail": {
-            borderRadius: 1,
+            borderRadius: 2,
           },
         }}
       >

@@ -1,18 +1,51 @@
-import { ReactNode, useEffect, useRef, useState, memo } from "react";
-import { Dialog, Paper } from "@mui/material";
+import { useRef, useState, memo } from "react";
+import { Dialog } from "@mui/material";
 import ConnectToApi from "./ConnectToApi";
-import { useIntegrationField } from "../../IntegrationFieldProvider";
 import SelectDisplayOptions from "./SelectDisplayOptions";
 import ConfigureDisplayOptions from "./ConfigureDisplayOptions";
+import {
+  IntegrationFieldConfig,
+  IntegrationRequestHeaders,
+} from "../../../../services/types";
 
-const IntegrationForm = () => {
+const IntegrationForm = ({
+  integrationFieldConfig,
+  activeStep,
+  setActiveStep,
+  isFormOpen,
+  setIsFormOpen,
+  onChange,
+}: {
+  integrationFieldConfig: IntegrationFieldConfig;
+  activeStep: number;
+  setActiveStep: (step: number) => void;
+  isFormOpen: boolean;
+  setIsFormOpen: (isOpen: boolean) => void;
+  onChange?: (value: IntegrationFieldConfig) => void;
+}) => {
   const containerRef = useRef(null);
-  const { activeStep, closeForm } = useIntegrationField();
+
+  const [endpoint, setEndpoint] = useState(
+    integrationFieldConfig?.endpoint || ""
+  );
+  const [headers, setHeaders] = useState<IntegrationRequestHeaders | null>(
+    integrationFieldConfig?.headers || null
+  );
+  const [type, setType] = useState(integrationFieldConfig?.type || null);
+  const [keyPaths, setKeyPaths] = useState(
+    integrationFieldConfig?.keyPaths || null
+  );
+
+  const [apiData, setApiData] = useState(null);
+
+  const closeForm = () => {
+    setIsFormOpen(false);
+  };
 
   return (
     <Dialog
       data-cy="integrationFormDialog"
-      open={true}
+      open={isFormOpen}
       onClose={closeForm}
       fullWidth
       sx={{
@@ -49,41 +82,39 @@ const IntegrationForm = () => {
       }}
     >
       {activeStep === 1 ? (
-        <ConnectToApi />
+        <ConnectToApi
+          activeStep={activeStep}
+          endpoint={endpoint}
+          setEndpoint={setEndpoint}
+          headers={headers}
+          setHeaders={setHeaders}
+          setApiData={setApiData}
+          setActiveStep={setActiveStep}
+          closeForm={closeForm}
+        />
       ) : activeStep === 2 ? (
-        <SelectDisplayOptions />
+        <SelectDisplayOptions
+          activeStep={activeStep}
+          setActiveStep={setActiveStep}
+          endpoint={endpoint}
+          type={type}
+          setType={setType}
+          closeForm={closeForm}
+        />
       ) : activeStep === 3 ? (
-        <ConfigureDisplayOptions />
+        <ConfigureDisplayOptions
+          endpoint={endpoint}
+          headers={headers}
+          type={type}
+          keyPaths={keyPaths}
+          setKeyPaths={setKeyPaths}
+          apiData={apiData}
+          onChange={onChange}
+          closeForm={closeForm}
+          setActiveStep={setActiveStep}
+        />
       ) : null}
     </Dialog>
-  );
-};
-
-export const FormWrapper = ({
-  width,
-  height,
-  children,
-}: {
-  width: string | number;
-  height: string | number;
-  children: ReactNode;
-}) => {
-  return (
-    <Paper
-      sx={{
-        width: width,
-        height: height,
-        borderRadius: 2,
-        position: "relative",
-        boxSizing: "border-box",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
-        alignItems: "stretch",
-      }}
-    >
-      {children}
-    </Paper>
   );
 };
 

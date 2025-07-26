@@ -783,14 +783,11 @@ export const Field = ({
             description={fieldData?.description}
             required={required}
             value={value ? value : null}
-            onChange={({ inputName, value }) =>
-              onChange(value, inputName, datatype)
-            }
+            onChange={(value) => onChange(value, name, datatype)}
             formType="select"
             maxItems={settings?.maxValue}
             isError={errors && Object.values(errors)?.some((error) => !!error)}
-            integrationFieldApiConfig={fieldData?.integrationFieldApiConfig}
-            integrationFieldDisplay={fieldData?.integrationFieldDisplay}
+            integrationFieldConfig={fieldData?.integrationFieldConfig}
           />
         </FieldShell>
       );

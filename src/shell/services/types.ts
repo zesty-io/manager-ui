@@ -90,12 +90,9 @@ export type IntegrationKeyPaths = Partial<{
   details: string[];
 }>;
 
-export type IntegrationFieldApiConfig = {
+export type IntegrationFieldConfig = {
   endpoint: string;
   headers: IntegrationRequestHeaders | null;
-};
-
-export type IntegrationFieldDisplay = {
   type: IntegrationTypes | null;
   keyPaths: IntegrationKeyPaths | null;
 };
@@ -252,8 +249,7 @@ export type ContentModelFieldValue =
   | string[]
   | FieldSettings
   | FieldSettingsOptions[]
-  | IntegrationFieldApiConfig
-  | IntegrationFieldDisplay;
+  | IntegrationFieldConfig;
 
 export type ContentModelFieldDataType =
   | "text"
@@ -298,8 +294,7 @@ export interface ContentModelField {
   createdAt: string;
   updatedAt: string;
   deletedAt: string;
-  integrationFieldApiConfig?: IntegrationFieldApiConfig;
-  integrationFieldDisplay?: IntegrationFieldDisplay;
+  integrationFieldConfig?: IntegrationFieldConfig;
 }
 
 export interface WebView {

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import {
   Button,
   Box,
@@ -15,20 +15,18 @@ import {
 import DataObjectRoundedIcon from "@mui/icons-material/DataObjectRounded";
 import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
 import LinkRoundedIcon from "@mui/icons-material/LinkRounded";
-import { useIntegrationField } from "../../IntegrationFieldProvider";
 import CircularProgress from "@mui/material/CircularProgress";
 import StopRoundedIcon from "@mui/icons-material/StopRounded";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
-import { FormWrapper } from ".";
-import { FieldWrapper } from "../FieldWrapper";
-import {
-  arrayToKeyValuePairs,
-  keyValuePairsToArray,
-  validateUrl,
-} from "../../utils";
+import { FormWrapper } from "../Wrappers";
+
+import { fetchApi } from "../../utils";
+import { IntegrationRequestHeaders } from "../../../../services/types";
+import { FieldWrapper } from "../Wrappers";
+import { validateUrl } from "../../../../../utility/validateUrl";
 
 const CONNECTION_STATUSES: {
   [key: string]: {
@@ -73,30 +71,50 @@ const CONNECTION_STATUSES: {
   },
 };
 
-const ConnectToApi = () => {
+const arrayToKeyValuePairs = (arr: any[]) => {
+  if (!arr?.length) return {};
+  return arr?.reduce((acc: any, obj: any) => {
+    acc[obj.key] = obj.value;
+    return acc;
+  }, {});
+};
+
+const keyValuePairsToArray = (
+  obj: Record<string, any>
+): { key: string; value: any }[] => {
+  if (!obj) return [];
+  return Object.entries(obj).map(([key, value]) => ({
+    key,
+    value,
+  }));
+};
+
+const ConnectToApi = ({
+  activeStep,
+  endpoint,
+  setEndpoint,
+  headers,
+  setHeaders,
+  setApiData,
+  setActiveStep,
+  closeForm,
+}: {
+  activeStep: number;
+  endpoint: string;
+  setEndpoint: (endpoint: string) => void;
+  headers: IntegrationRequestHeaders;
+  setHeaders: (headers: IntegrationRequestHeaders | null) => void;
+  setApiData: (data: any) => void;
+  setActiveStep: (step: number) => void;
+  closeForm: () => void;
+}) => {
   const [status, setStatus] = useState<
     "connecting" | "success" | "failed" | null
   >(null);
   const [isValidUrl, setIsValidUrl] = useState(true);
   const [reqAborted, setReqAborted] = useState<boolean>(false);
 
-  const {
-    setActiveStep,
-    activeStep,
-    closeForm,
-    fetchApi,
-    endpoint,
-    setEndpoint,
-    headers,
-    setHeaders,
-    setApiData,
-
-    setIsConnected,
-    setDisplayType,
-    setKeyPaths,
-  } = useIntegrationField();
-
-  const [endpointLocal, setEndpointLocal] = useState<string>(endpoint);
+  const [endpointLocal, setEndpointLocal] = useState<string>(endpoint || "");
 
   const [headersLocal, setHeadersLocal] = useState<
     { key: string; value: string }[] | null
@@ -123,22 +141,16 @@ const ConnectToApi = () => {
       if (status === "success") {
         setApiDataLocal(data);
         setStatus("success");
-        setIsConnected(true);
       } else {
         throw new Error("Failed to connect");
       }
     } catch (error) {
       setApiDataLocal(null);
       setStatus("failed");
-      setIsConnected(false);
     }
   }, [endpointLocal, headersLocal]);
 
   const handleNext = () => {
-    if (endpointLocal !== endpoint) {
-      setDisplayType(null);
-      setKeyPaths(null);
-    }
     const reqHeaders = !headersLocal?.length
       ? null
       : arrayToKeyValuePairs(headersLocal);
@@ -152,7 +164,6 @@ const ConnectToApi = () => {
     setReqAborted(true);
     setStatus(null);
     setActiveStep(1);
-    setIsConnected(false);
   };
 
   return (

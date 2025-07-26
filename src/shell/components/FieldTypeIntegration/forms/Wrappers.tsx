@@ -1,6 +1,7 @@
-import { Box, Tooltip, Typography } from "@mui/material";
+import { Box, Paper, Tooltip, Typography } from "@mui/material";
 
 import InfoIcon from "@mui/icons-material/Info";
+import { ReactNode } from "react";
 
 export const FieldWrapper = ({
   name,
@@ -78,5 +79,33 @@ export const FieldWrapper = ({
         </Typography>
       )}
     </Box>
+  );
+};
+
+export const FormWrapper = ({
+  width,
+  height,
+  children,
+}: {
+  width: string | number;
+  height: string | number;
+  children: ReactNode;
+}) => {
+  return (
+    <Paper
+      sx={{
+        width: width,
+        height: height,
+        borderRadius: 2,
+        position: "relative",
+        boxSizing: "border-box",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        alignItems: "stretch",
+      }}
+    >
+      {children}
+    </Paper>
   );
 };

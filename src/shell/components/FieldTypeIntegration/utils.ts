@@ -1,76 +1,7 @@
-import { IntegrationKeyPaths } from "../../services/types";
+import { IntegrationRequestHeaders } from "../../services/types";
+import { ApiResponse } from "./configs";
 
-interface KeyValuePair<T = unknown> {
-  key: string;
-  value: T;
-}
-
-function getObjectKeyPaths<T extends object>(
-  obj: T,
-  prefix: string = ""
-): string[] {
-  const result: string[] = [];
-
-  for (const key in obj) {
-    if (Object.prototype.hasOwnProperty.call(obj, key)) {
-      const currentKey = prefix ? `${prefix}.${key}` : key;
-      const value = (obj as Record<string, unknown>)[key];
-
-      if (typeof value === "object" && value !== null) {
-        if (Array.isArray(value)) {
-          value.forEach((arrayElement, index) => {
-            const arrayKey = `${currentKey}[${index}]`;
-            if (typeof arrayElement === "object" && arrayElement !== null) {
-              result.push(...getObjectKeyPaths(arrayElement, arrayKey));
-            } else {
-              result.push(arrayKey);
-            }
-          });
-        } else {
-          result.push(...getObjectKeyPaths(value, currentKey));
-        }
-      } else {
-        result.push(currentKey);
-      }
-    }
-  }
-
-  return result;
-}
-
-function getAllArrayKeyPaths<T extends object>(
-  obj: T,
-  prefix: string = ""
-): string[] {
-  const result: string[] = [];
-
-  for (const key in obj) {
-    if (Object.prototype.hasOwnProperty.call(obj, key)) {
-      const currentKey = prefix ? `${prefix}.${key}` : key;
-      const value = (obj as Record<string, unknown>)[key];
-
-      if (Array.isArray(value)) {
-        if (value.length > 0 && typeof value[0] === "object") {
-          result.push(currentKey);
-        }
-
-        value.forEach((item, index) => {
-          if (typeof item === "object" && item !== null) {
-            result.push(
-              ...getAllArrayKeyPaths(item, `${currentKey}[${index}]`)
-            );
-          }
-        });
-      } else if (typeof value === "object" && value !== null) {
-        result.push(...getAllArrayKeyPaths(value, currentKey));
-      }
-    }
-  }
-
-  return result;
-}
-
-function getKeyValue<T, K extends string>(obj: T, path: K): any {
+export function getKeyValue<T, K extends string>(obj: T, path: K): any {
   if (!obj || !path) return undefined;
 
   const keys = path.split(".").flatMap((part) => {
@@ -88,76 +19,48 @@ function getKeyValue<T, K extends string>(obj: T, path: K): any {
   }, obj);
 }
 
-const validateUrl = (url: string) => {
-  const validProtocols = ["http://", "https://"];
-
-  const hasValidProtocol = validProtocols.some((protocol) =>
-    url.startsWith(protocol)
-  );
-  if (!hasValidProtocol) return false;
+export const fetchApi = async <T = unknown>({
+  endpoint,
+  headers,
+}: {
+  endpoint: string;
+  headers?: IntegrationRequestHeaders | null;
+}): Promise<ApiResponse<T>> => {
   try {
-    new URL(url);
-    return true;
-  } catch (_) {
-    return false;
+    const reqOptions: RequestInit = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        ...(headers || {}),
+      },
+    };
+
+    const fetchResponse = await fetch(endpoint, reqOptions);
+    const response = await (() => {
+      if (!fetchResponse.ok) {
+        return fetchResponse
+          .json()
+          .then((errorData) => ({
+            status: "error" as const,
+
+            data: errorData as T,
+          }))
+          .catch(() => ({
+            status: "error" as const,
+            data: fetchResponse.statusText as T,
+          }));
+      }
+      return fetchResponse.json().then((data) => ({
+        status: "success" as const,
+        data: data as T,
+      }));
+    })();
+
+    return response;
+  } catch (error) {
+    return {
+      status: "error",
+      data: (error.message || "Unknown error") as T,
+    };
   }
-};
-
-function arrayToKeyValuePairs(arr: any[]) {
-  if (!arr?.length) return {};
-  return arr?.reduce((acc: any, obj: any) => {
-    acc[obj.key] = obj.value;
-    return acc;
-  }, {});
-}
-
-function keyValuePairsToArray(
-  obj: Record<string, any>
-): { key: string; value: any }[] {
-  if (!obj) return [];
-  return Object.entries(obj).map(([key, value]) => ({
-    key,
-    value,
-  }));
-}
-
-function createKeyPathsInitialValue(
-  config: Array<{ name: string }>,
-  values: IntegrationKeyPaths | null
-): Record<string, string> {
-  if (!config?.length) return {};
-  return config.reduce((acc, item) => {
-    const val =
-      (values?.[item.name as keyof IntegrationKeyPaths] as string) || "";
-    acc[item.name] = val;
-    return acc;
-  }, {} as Record<string, string>);
-}
-
-function generateItemId(item: any, keyPaths: IntegrationKeyPaths) {
-  const headingText = getKeyValue(item, keyPaths?.heading) || "";
-  const subHeadingText = getKeyValue(item, keyPaths?.subHeading) || "";
-  const thumbnailText = getKeyValue(item, keyPaths?.thumbnail) || "";
-  const detailText = getKeyValue(item, keyPaths?.detail) || "";
-  const detailsText = !keyPaths?.details
-    ? ""
-    : keyPaths?.details?.map((detail) => getKeyValue(item, detail)).join("");
-
-  const textId = `${headingText}${subHeadingText}${thumbnailText}${detailText}${detailsText}`;
-
-  return textId
-    ?.replace(/[\/:;&*%$#@!?=\s+]/g, "")
-    ?.toLowerCase()
-    .trim();
-}
-
-export {
-  getKeyValue,
-  validateUrl,
-  arrayToKeyValuePairs,
-  keyValuePairsToArray,
-  generateItemId,
-  getObjectKeyPaths,
-  getAllArrayKeyPaths,
-  createKeyPathsInitialValue,
 };

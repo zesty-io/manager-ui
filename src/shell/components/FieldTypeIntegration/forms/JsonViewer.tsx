@@ -31,10 +31,11 @@ const JsonViewer = ({
   isSlider?: boolean;
   showCloseButton?: boolean;
 }) => {
-  if (!!data?.["_itemId"]) {
-    delete data["_itemId"];
+  const dataCopy = { ...data };
+  if (!!dataCopy?.["_itemId"]) {
+    delete dataCopy["_itemId"];
   }
-  const checkedValue = getStringValue(data);
+  const checkedValue = getStringValue(dataCopy);
   return (
     <Box
       component={isSlider ? Slide : "div"}

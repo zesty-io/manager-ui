@@ -14,8 +14,7 @@ import {
 } from "@mui/material";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import IconButton from "@mui/material/IconButton";
-import { FormWrapper } from "../IntegrationForm";
-import { useIntegrationField } from "../../IntegrationFieldProvider";
+import { FormWrapper } from "../Wrappers";
 
 import { IntegrationTypes } from "../../../../services/types";
 import DraggableCard from "../../DisplayCard/DraggableCard";
@@ -25,22 +24,28 @@ import {
   SPECIAL_DISPLAY_TYPES,
 } from "../../configs";
 
-const SelectDisplayOptions = () => {
+const SelectDisplayOptions = ({
+  activeStep,
+
+  setActiveStep,
+  endpoint,
+  type,
+  setType,
+  closeForm,
+}: {
+  activeStep: number;
+  setActiveStep: (step: number) => void;
+  endpoint: string | null;
+  type: IntegrationTypes | null;
+  setType: (type: IntegrationTypes | null) => void;
+  closeForm: () => void;
+}) => {
   const [recommendedType, setRecommendedType] =
     useState<IntegrationTypes | null>(null);
 
-  const {
-    activeStep,
-    setActiveStep,
-    closeForm,
-    endpoint,
-    displayType,
-    setDisplayType,
-    setKeyPaths,
-  } = useIntegrationField();
-
-  const [displayTypeLocal, setDisplayTypeLocal] =
-    useState<IntegrationTypes | null>(displayType || null);
+  const [displayType, setDisplayType] = useState<IntegrationTypes | null>(
+    type || null
+  );
 
   const recommendedOption = SPECIAL_DISPLAY_TYPES.filter(
     (option) => option.type === recommendedType
@@ -51,10 +56,7 @@ const SelectDisplayOptions = () => {
   );
 
   const handleNext = () => {
-    if (displayType !== displayTypeLocal) {
-      setKeyPaths(null);
-    }
-    setDisplayType(displayTypeLocal);
+    setType(displayType);
     setActiveStep(3);
   };
 
@@ -66,15 +68,15 @@ const SelectDisplayOptions = () => {
       { keyword: "classy", type: "classy" },
     ];
 
-    const apiUrl = new URL(endpoint);
+    const apiUrl = new URL(endpoint || "");
 
     const matchedType: IntegrationTypes | null =
       endpointTypes.find(({ keyword }) => apiUrl?.origin?.includes(keyword))
         ?.type || null;
     setRecommendedType(matchedType);
-    if (!!displayTypeLocal) return;
-    setDisplayTypeLocal(matchedType);
-  }, [endpoint, displayTypeLocal]);
+    if (!!displayType) return;
+    setDisplayType(matchedType);
+  }, [endpoint, displayType]);
 
   return (
     <FormWrapper height="calc(100vh - 40px)" width="1080px">
@@ -174,9 +176,9 @@ const SelectDisplayOptions = () => {
                     card={item?.card}
                     type={item?.type}
                     disableMenu={true}
-                    isSelected={displayTypeLocal === item?.type}
+                    isSelected={displayType === item?.type}
                     onSelect={() => {
-                      setDisplayTypeLocal(item?.type);
+                      setDisplayType(item?.type);
                     }}
                   />
                 ))}
@@ -223,9 +225,9 @@ const SelectDisplayOptions = () => {
                   card={item?.card}
                   type={item?.type}
                   disableMenu={true}
-                  isSelected={displayTypeLocal === item?.type}
+                  isSelected={displayType === item?.type}
                   onSelect={() => {
-                    setDisplayTypeLocal(item?.type);
+                    setDisplayType(item?.type);
                   }}
                 />
               ))}
@@ -272,9 +274,9 @@ const SelectDisplayOptions = () => {
                   card={item?.card}
                   type={item?.type}
                   disableMenu={true}
-                  isSelected={displayTypeLocal === item?.type}
+                  isSelected={displayType === item?.type}
                   onSelect={() => {
-                    setDisplayTypeLocal(item?.type);
+                    setDisplayType(item?.type);
                   }}
                 />
               ))}
@@ -300,7 +302,7 @@ const SelectDisplayOptions = () => {
           data-cy="integrationConfigureOptionNextButton"
           variant="contained"
           onClick={handleNext}
-          disabled={!displayTypeLocal}
+          disabled={!displayType}
         >
           Next
         </Button>
