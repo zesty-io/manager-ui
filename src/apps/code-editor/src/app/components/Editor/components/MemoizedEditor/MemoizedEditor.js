@@ -30,7 +30,6 @@ export const MemoizedEditor = memo(
           query: `contentModelZUID=${props.contentModelZUID}&fileZUID=${props.fileZUID}`,
         });
         let model = monaco.editor.getModel(filenameURI);
-        const didCreate = !model;
 
         if (!model) {
           model = monaco.editor.createModel(props.code, language, filenameURI);
@@ -56,7 +55,7 @@ export const MemoizedEditor = memo(
               })
             );
           }
-          if (didCreate && model && !model.isDisposed()) {
+          if (model && !model.isDisposed()) {
             model.dispose();
           }
         };
