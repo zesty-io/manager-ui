@@ -11,7 +11,10 @@ import { useHistory, useParams } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
 
 import { AppState } from "../../../../../../../../shell/store/types";
-import { ContentItem } from "../../../../../../../../shell/services/types";
+import {
+  ContentItem,
+  Data,
+} from "../../../../../../../../shell/services/types";
 import {
   useCreateContentItemMutation,
   useGetContentModelFieldsQuery,
@@ -39,16 +42,27 @@ export const DuplicateItemDialog = ({ onClose }: DuplicateItemProps) => {
   const [createContentItem, { isLoading }] = useCreateContentItemMutation();
 
   const duplicateItem = () => {
+    const activeFields =
+      modelFields?.filter((field) => !field?.deletedAt) || [];
+    const validFieldNames = activeFields?.map((field) => field?.name);
+
     let fieldToChange;
-    if (modelFields?.[0]?.datatype === "text") {
-      fieldToChange = modelFields[0].name;
+    if (activeFields?.[0]?.datatype === "text") {
+      fieldToChange = activeFields[0].name;
     }
 
-    const uuidFieldKeys = modelFields
+    const uuidFieldKeys = activeFields
       ?.filter((field) => field.datatype === "uuid")
       ?.map((field) => field.name);
 
-    const newData = { ...item.data };
+    const itemData = Object.keys(item?.data).reduce((acc, key) => {
+      if (validFieldNames?.includes(key)) {
+        acc[key] = item?.data[key];
+      }
+      return acc;
+    }, {} as Record<string, any>);
+
+    const newData = { ...itemData };
 
     uuidFieldKeys?.forEach((key) => {
       newData[key] = null; // Set each uuid key to null
