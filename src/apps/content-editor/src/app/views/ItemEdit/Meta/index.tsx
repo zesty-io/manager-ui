@@ -35,7 +35,11 @@ import { fetchGlobalItem } from "../../../../../../../shell/store/content";
 import {
   ContentItem,
   ContentModelField,
+  Data,
+  Web,
 } from "../../../../../../../shell/services/types";
+
+import { Meta as MetaType } from "../../../../../../../shell/services/types";
 import { SocialMediaPreview } from "./SocialMediaPreview";
 import { validateMetaDescription } from "./settings/util";
 
@@ -129,11 +133,15 @@ export const Meta = forwardRef(
       skip: !modelZUID,
     });
     const { data: fields } = useGetContentModelFieldsQuery(modelZUID);
-    const { meta, data, web } =
+    const { meta, data, web }: { meta: MetaType; data: Data; web: Web } =
       useSelector(
         (state: AppState) =>
           state.content[isCreateItemPage ? `new:${modelZUID}` : itemZUID]
-      ) || {};
+      ) || {
+        meta: {} as MetaType,
+        data: {} as Data,
+        web: {} as Web,
+      };
     const [flowType, setFlowType] =
       useState<(typeof FlowType)[keyof typeof FlowType]>(null);
     const metaDescriptionButtonRef = useRef(null);
