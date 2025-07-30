@@ -73,17 +73,17 @@ export const useSearchBlocksByKeyword = (): SearchResult => {
 
   const normalizedSearch = searchTerm.toLowerCase()?.trim();
 
-  const parsedBlocks: BlockModel[] = useMemo(() => {
+  const parsedBlocks = useMemo(() => {
     if (isLoading) return [];
 
-    const processedModels: BlockModel[] = !modelsRaw?.length
+    const processedModels = !modelsRaw?.length
       ? []
       : modelsRaw?.map((model) => ({
           ZUID: model?.ZUID,
           label: model?.label,
           type: model?.type,
-          contentModelLabel: "",
-          contentModelZUID: "",
+          contentModelLabel: null,
+          contentModelZUID: null,
           updatedAt: model?.updatedAt,
           createdAt: model?.createdAt,
           createdByUserZUID: model?.createdByUserZUID,
