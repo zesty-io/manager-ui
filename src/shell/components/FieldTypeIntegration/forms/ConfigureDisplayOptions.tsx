@@ -269,7 +269,6 @@ const ConfigureDisplayOptions = ({
 
   useEffect(() => {
     const rootIsArray = Array.isArray(apiData);
-    console.debug("apiData rootIsArray", { apiData, rootIsArray });
     if (rootIsArray) {
       const dataRoot = apiData?.[0];
       const childOptions = getObjectKeyPaths(dataRoot);
