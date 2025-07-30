@@ -22,6 +22,39 @@ export function getKeyValue<T, K extends string>(obj: T, path: K): any {
 export const fetchApi = async <T = unknown>({
   endpoint,
   headers,
+  signal,
+}: {
+  endpoint: string;
+  headers?: Record<string, string>;
+  signal?: AbortSignal;
+}): Promise<{ status: "success" | "error"; data: T }> => {
+  try {
+    const response = await fetch(endpoint, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        ...(headers || {}),
+      },
+      signal,
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return { status: "success", data };
+  } catch (error) {
+    return {
+      status: "error",
+      data: (error.message || "Unknown error") as T,
+    };
+  }
+};
+
+export const fetchApi0 = async <T = unknown>({
+  endpoint,
+  headers,
 }: {
   endpoint: string;
   headers?: IntegrationRequestHeaders | null;

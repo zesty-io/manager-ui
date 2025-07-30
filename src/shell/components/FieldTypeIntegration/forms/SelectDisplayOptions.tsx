@@ -14,19 +14,19 @@ import {
 } from "@mui/material";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import IconButton from "@mui/material/IconButton";
-import { FormWrapper } from "../Wrappers";
-
-import { IntegrationTypes } from "../../../../services/types";
-import DraggableCard from "../../DisplayCard/DraggableCard";
+import { FormWrapper } from "./Wrappers";
+import DragIndicatorRoundedIcon from "@mui/icons-material/DragIndicatorRounded";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import { IntegrationTypes } from "../../../services/types";
 import {
   DisplayOptionCardProps,
   GENERIC_DISPLAY_TYPES,
   SPECIAL_DISPLAY_TYPES,
-} from "../../configs";
+} from "../configs";
+import DisplayCard from "../DisplayCard";
 
 const SelectDisplayOptions = ({
   activeStep,
-
   setActiveStep,
   endpoint,
   type,
@@ -57,7 +57,7 @@ const SelectDisplayOptions = ({
 
   const handleNext = () => {
     setType(displayType);
-    setActiveStep(3);
+    setActiveStep(activeStep + 1);
   };
 
   useEffect(() => {
@@ -317,7 +317,6 @@ export const DisplayOptionCard: FC<DisplayOptionCardProps> = ({
   type,
   card,
   disabled = false,
-  disableMenu = false,
   isSelected = false,
   onSelect,
 }) => {
@@ -428,17 +427,62 @@ export const DisplayOptionCard: FC<DisplayOptionCardProps> = ({
             py={3}
             bgcolor="grey.100"
           >
-            <DraggableCard
-              data={card}
-              type={type}
-              rootPath=""
-              heading={card?.heading}
-              subHeading={card?.subHeading}
-              detail={card?.detail}
-              thumbnail={card?.thumbnail}
-              details={card?.details}
-              disableMenu={disableMenu}
-            />
+            <Paper
+              className="PreviewCard"
+              elevation={0}
+              sx={{
+                py: 0,
+                pl: 3.5,
+                pr: "40px",
+                width: "100%",
+                height: "fit-content",
+                borderRadius: 2,
+                position: "relative",
+                boxSizing: "border-box",
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                my: 0.5,
+              }}
+            >
+              <Box
+                className="PreviewCardDragHandle"
+                sx={{
+                  position: "absolute",
+                  left: 0,
+                  top: 0,
+                  bottom: 0,
+                  width: "28px",
+                  display: "grid",
+                  placeContent: "center",
+                }}
+              >
+                <DragIndicatorRoundedIcon color="action" fontSize="small" />
+              </Box>
+              <DisplayCard
+                rootPath=""
+                type={type}
+                heading={card?.heading}
+                subHeading={card?.subHeading}
+                detail={card?.detail}
+                thumbnail={card?.thumbnail}
+                details={card?.details}
+              />
+              <Box
+                position="absolute"
+                right={0}
+                width="40px"
+                height="100%"
+                pr={2}
+                sx={{
+                  display: "grid",
+                  placeContent: "center",
+                }}
+              >
+                <MoreHorizIcon color="action" />
+              </Box>
+            </Paper>
           </Box>
         </Grid>
       </Grid>

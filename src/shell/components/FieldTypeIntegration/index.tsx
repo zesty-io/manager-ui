@@ -1,33 +1,37 @@
-import { FC, useCallback, useEffect, useMemo, useState } from "react";
+import { FC, useCallback, useMemo, useState } from "react";
 import {
   Box,
   Button,
-  Dialog,
-  InputBase,
   Paper,
-  Skeleton,
   Typography,
+  InputBase,
+  Dialog,
 } from "@mui/material";
-import LinkRoundedIcon from "@mui/icons-material/LinkRounded";
-import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
-import AddIcon from "@mui/icons-material/Add";
-import { FormTypes } from "./configs";
+import { LinkRounded, Autorenew } from "@mui/icons-material";
+import useIntegrationField from "./useIntegrationField";
 
+import { FieldTypeIntegrationProps } from "./configs";
 import {
   IntegrationFieldConfig,
   IntegrationKeyPaths,
   IntegrationRequestHeaders,
+  IntegrationTypes,
 } from "../../services/types";
-import { DndProvider, useDrop } from "react-dnd";
+import AddIcon from "@mui/icons-material/Add";
+import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import { FieldWrapper } from "./forms/Wrappers";
-import IntegrationForm from "./forms/IntegrationForm";
-import SelectionForm from "./forms/SelectionForm";
-import { fetchApi, getKeyValue } from "./utils";
-import DraggableCard from "./DisplayCard/DraggableCard";
+
 import JsonViewer from "./forms/JsonViewer";
 
-type SelectItemsProps = {
+import SelectDisplayOptions from "./forms/SelectDisplayOptions";
+import ConnectToApi from "./forms/ConnectToApi";
+import ConfigureDisplayOptions from "./forms/ConfigureDisplayOptions";
+
+import { DraggableCard } from "./DisplayCard";
+import ItemSelection from "./forms/ItemSelection";
+import { getKeyValue } from "./utils";
+
+type IntegrationSelectProps = {
   name: string;
   label: string;
   value: any[];
@@ -37,18 +41,10 @@ type SelectItemsProps = {
   isLoading?: boolean;
 };
 
-type IntegrationFieldProps = {
+type IntegrationConfigureProps = {
+  integrationFieldConfig: IntegrationFieldConfig;
   name: string;
-  label: string;
-  description?: string;
-  formType?: FormTypes;
-  required?: boolean;
-  value?: any | null;
-  onChange?: (value: any) => void;
-  error?: string | [string, string][] | null;
-  isError?: boolean;
-  integrationFieldConfig?: IntegrationFieldConfig | null;
-  maxItems?: number | null;
+  onChange: (value: any) => void;
   isLoading?: boolean;
 };
 
@@ -69,7 +65,7 @@ function generateItemId(item: any, keyPaths: IntegrationKeyPaths) {
     .trim();
 }
 
-const SelectItems: FC<SelectItemsProps> = ({
+const IntegrationSelect: FC<IntegrationSelectProps> = ({
   name,
   label,
   value,
@@ -78,15 +74,22 @@ const SelectItems: FC<SelectItemsProps> = ({
   isLoading = false,
   maxItems = 10,
 }) => {
-  const { endpoint, headers, type, keyPaths } = integrationFieldConfig || {};
+  // const { endpoint, headers, type, keyPaths } = integrationFieldConfig || {};
 
+  const {
+    config,
+    rootData,
+    selectedItems,
+    isLoading: isFetching,
+    updateConfig,
+    selectItems,
+  } = useIntegrationField(integrationFieldConfig);
+  const { endpoint, headers, type, keyPaths } = config || {};
   const [jsonData, setJsonData] = useState<string | null>(null);
   const [jsonViewerIsOpen, setJsonViewerIsOpen] = useState(false);
   const [selectionFormOpen, setSelectionFormOpen] = useState(false);
-  const [apiData, setApiData] = useState<any | null>(null);
-  const [rootData, setRootData] = useState<any | null>(null);
-  const [isFetching, setIsFetching] = useState(false);
-  const [isError, setIsError] = useState(false);
+
+  const loading = isLoading || isFetching;
 
   const rootDataMap = useMemo(() => {
     if (isLoading) return {};
@@ -104,17 +107,6 @@ const SelectItems: FC<SelectItemsProps> = ({
         }))
   );
 
-  // const [valueWithId, setValueWithId] = useState<any[] | null>(
-  //   !value?.length
-  //     ? []
-  //     : value?.map((item: any) => ({
-  //         ...item,
-  //         _itemId: generateItemId(item, integrationFieldConfig?.keyPaths),
-  //       }))
-  // );
-
-  // const selectedItemIds = valueWithId?.map((item: any) => item?._itemId);
-
   const handleViewJsonData = (data: any) => {
     setJsonData(data);
     setJsonViewerIsOpen(true);
@@ -122,11 +114,12 @@ const SelectItems: FC<SelectItemsProps> = ({
 
   const handleSave = useCallback(
     (itemIds: any[]) => {
-      const items = rootData?.filter((item: any) =>
-        itemIds?.includes(item?._itemId)
-      );
+      const items = itemIds.map((id) => {
+        const { _itemId, ...rest } = rootDataMap[id];
+        return rest;
+      });
 
-      onSelectionChange(items);
+      onSelectionChange(!items?.length ? null : items);
       setSelectedIds(itemIds);
     },
     [rootData, onSelectionChange]
@@ -148,48 +141,16 @@ const SelectItems: FC<SelectItemsProps> = ({
     [selectedIds]
   );
 
-  const moveCard = useCallback((from: number, to: number) => {
-    setSelectedIds((prevIds: any[]) => {
-      const newIds = [...prevIds];
+  const moveCard = useCallback(
+    (from: number, to: number) => {
+      const newIds = [...selectedIds];
       newIds.splice(to, 0, newIds.splice(from, 1)[0]);
-      return newIds;
-    });
-  }, []);
 
-  const triggerFetch = async (
-    endpoint: string,
-    headers: IntegrationRequestHeaders | null
-  ) => {
-    setIsFetching(true);
-    const { status, data } = await fetchApi({
-      endpoint: endpoint,
-      headers: headers,
-    });
-
-    if (status === "success") {
-      const extractedData = (
-        !keyPaths?.rootPath
-          ? data
-          : getKeyValue(data as object, keyPaths?.rootPath)
-      )?.map((item: any) => ({
-        ...item,
-        _itemId: generateItemId(item, keyPaths),
-      }));
-
-      setRootData(extractedData);
-      setApiData(data);
-      setIsError(false);
-    } else {
-      setIsError(true);
-      setApiData(null);
-    }
-    setIsFetching(false);
-  };
-
-  useEffect(() => {
-    if (!endpoint || !!apiData) return;
-    triggerFetch(endpoint, headers);
-  }, [integrationFieldConfig, apiData]);
+      setSelectedIds(newIds);
+      handleSave(newIds);
+    },
+    [selectedIds, handleSave, setSelectedIds]
+  );
 
   return (
     <>
@@ -258,15 +219,15 @@ const SelectItems: FC<SelectItemsProps> = ({
         </Button>
 
         {!!selectionFormOpen && (
-          <SelectionForm
-            selectedIds={selectedIds}
-            onSave={handleSave}
-            open={selectionFormOpen}
-            onClose={() => setSelectionFormOpen(false)}
-            rootData={rootData}
+          <ItemSelection
+            items={rootData}
+            selectedItems={selectedIds}
+            config={config}
             maxItems={maxItems}
-            isLoading={isLoading}
-            integrationFieldConfig={integrationFieldConfig}
+            onClose={() => setSelectionFormOpen(false)}
+            onSave={handleSave}
+            onView={handleViewJsonData}
+            loading={loading}
           />
         )}
         <Dialog
@@ -298,211 +259,218 @@ const SelectItems: FC<SelectItemsProps> = ({
   );
 };
 
-const ConfigureIntegration: FC<IntegrationFieldProps> = ({
+const IntegrationConfigure = ({
   name,
-  label,
-  description,
   onChange,
-  required,
-  error,
-
   integrationFieldConfig,
   isLoading = false,
-}) => {
-  const [activeStep, setActiveStep] = useState(0);
+}: IntegrationConfigureProps) => {
+  const {
+    config,
+    isLoading: isFetching,
+    updateConfig,
+  } = useIntegrationField(integrationFieldConfig);
+
   const [isFormOpen, setIsFormOpen] = useState(false);
-
-  const [endpoint, setEndpoint] = useState(
-    integrationFieldConfig?.endpoint || ""
+  const [activeStep, setActiveStep] = useState(0);
+  const [endpoint, setEndpoint] = useState(config?.endpoint || "");
+  const [headers, setHeaders] = useState<IntegrationRequestHeaders | null>(
+    config?.headers || null
   );
-  const [headers, setHeaders] = useState<{ [key: string]: string } | null>(
-    integrationFieldConfig?.headers || null
+  const [type, setType] = useState<IntegrationTypes | null>(
+    config?.type || null
   );
-  const [type, setType] = useState(integrationFieldConfig?.type || null);
-  const [keyPaths, setKeyPaths] = useState(
-    integrationFieldConfig?.keyPaths || null
+  const [keyPaths, setKeyPaths] = useState<IntegrationKeyPaths>(
+    config?.keyPaths || null
   );
+  const [apiData, setApiData] = useState<any>(null);
 
-  const isConnected = !!endpoint && !!type && !!keyPaths;
+  const handleSaveConfig = (newConfig: IntegrationFieldConfig) => {
+    updateConfig(newConfig);
+    onChange?.(newConfig);
+    setIsFormOpen(false);
+  };
 
-  const handleSave = (data: IntegrationFieldConfig) => {
-    const { endpoint, headers, type, keyPaths } = data;
+  const onClose = () => {
+    setIsFormOpen(false);
+  };
+  const onOpen = () => {
+    setIsFormOpen(true);
+    setActiveStep(0);
+  };
 
-    setEndpoint(endpoint);
-    setHeaders(headers);
-    setType(type);
-    setKeyPaths(keyPaths);
-    onChange(data);
+  const loading = isLoading || isFetching;
+
+  const isConnected = !!config?.endpoint && !!config?.type;
+
+  const renderStep = () => {
+    switch (activeStep) {
+      case 0:
+        return (
+          <ConnectToApi
+            activeStep={activeStep}
+            endpoint={endpoint}
+            setEndpoint={setEndpoint}
+            headers={headers}
+            setHeaders={setHeaders}
+            setApiData={setApiData}
+            setActiveStep={setActiveStep}
+            closeForm={onClose}
+          />
+        );
+      case 1:
+        return (
+          <SelectDisplayOptions
+            activeStep={activeStep}
+            endpoint={endpoint}
+            type={type}
+            setType={(type) => {
+              setType(type);
+              updateConfig({ ...config, type });
+            }}
+            setActiveStep={setActiveStep}
+            closeForm={onClose}
+          />
+        );
+      case 2:
+        return (
+          <ConfigureDisplayOptions
+            endpoint={endpoint}
+            headers={headers}
+            type={type || null}
+            keyPaths={keyPaths || null}
+            setKeyPaths={(keyPaths) => {
+              setKeyPaths(keyPaths);
+              updateConfig({ ...config, keyPaths });
+            }}
+            apiData={apiData}
+            onChange={handleSaveConfig}
+            closeForm={onClose}
+            setActiveStep={setActiveStep}
+          />
+        );
+      default:
+        return null;
+    }
   };
 
   return (
-    <FieldWrapper
-      name={name}
-      label={!!isConnected && label}
-      description={!!isConnected && description}
-      isRequired={!!isConnected && required}
-      error={error as string}
-    >
-      {!!isConnected && (
+    <Box>
+      {isConnected && !loading ? (
         <Paper
           elevation={0}
           variant="outlined"
-          sx={{
-            width: "100%",
-            bgcolor: "background.paper",
-            borderColor: "border",
-            borderRadius: 2,
-          }}
+          sx={{ borderRadius: 2, borderColor: "border" }}
         >
           <Box
-            sx={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "flex-start",
-              alignItems: "center",
-              width: "100%",
-              height: "54px",
-              px: 2,
-              borderBottom: "1px solid",
-              borderColor: "border",
-            }}
+            display="flex"
+            alignItems="center"
+            p={2}
+            borderBottom="1px solid"
+            borderColor="border"
           >
-            <Typography
-              width={170}
-              variant="body2"
-              fontWeight={600}
-              flexGrow={0}
-              flexShrink={0}
-            >
+            <Typography width={170} variant="body2" fontWeight={600}>
               API URL
             </Typography>
-            <InputBase
-              data-cy="integrationApiUrl"
-              size="small"
-              readOnly
-              value={endpoint}
-              sx={{ flexGrow: 1 }}
-              slotProps={{
-                input: {
-                  sx: {
-                    padding: 0,
-                  },
-                },
-              }}
-            />
+            <InputBase readOnly value={config?.endpoint} sx={{ flexGrow: 1 }} />
           </Box>
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "flex-start",
-              alignItems: "center",
-              width: "100%",
-              height: "54px",
-              px: 2,
-            }}
-          >
-            <Typography
-              width={170}
-              variant="body2"
-              fontWeight={600}
-              flexGrow={0}
-              flexShrink={0}
-            >
+          <Box display="flex" alignItems="center" p={2}>
+            <Typography width={170} variant="body2" fontWeight={600}>
               Display Items as
             </Typography>
-            <InputBase
-              data-cy="integrationDisplayType"
-              size="small"
-              readOnly
-              value={type}
-              sx={{ flexGrow: 1 }}
-              slotProps={{
-                input: {
-                  sx: {
-                    textTransform: "capitalize",
-                    padding: 0,
-                  },
-                },
-              }}
-            />
+            <InputBase readOnly value={config?.type} sx={{ flexGrow: 1 }} />
           </Box>
         </Paper>
-      )}
+      ) : null}
 
-      {isLoading ? (
-        <Skeleton variant="rounded" width="100%" height="42.5px" />
-      ) : (
-        <Button
-          data-cy="integrationConfigureButton"
-          variant="outlined"
-          color="primary"
-          size="small"
-          fullWidth={false}
-          startIcon={
-            !!isConnected ? <AutorenewRoundedIcon /> : <LinkRoundedIcon />
-          }
-          onClick={() => {
-            setActiveStep(1);
-            setIsFormOpen(true);
-          }}
-        >
-          {!!isConnected ? "Reconfigure" : "Connect to API"}
-        </Button>
-      )}
+      <Button
+        loading={loading}
+        variant="outlined"
+        color="primary"
+        startIcon={isConnected ? <Autorenew /> : <LinkRounded />}
+        onClick={onOpen}
+        sx={{ mt: 1 }}
+      >
+        {isConnected ? "Reconfigure" : "Connect to API"}
+      </Button>
 
       {isFormOpen && (
-        <IntegrationForm
-          integrationFieldConfig={integrationFieldConfig}
-          isFormOpen={isFormOpen}
-          setIsFormOpen={setIsFormOpen}
-          activeStep={activeStep}
-          setActiveStep={setActiveStep}
-          onChange={handleSave}
-        />
+        <Dialog
+          open
+          data-cy="integrationFormDialog"
+          onClose={onClose}
+          fullWidth
+          sx={{
+            "& *": {
+              boxSizing: "border-box",
+            },
+          }}
+          slotProps={{
+            root: {
+              className: "IntegrationConfigForm",
+              disablePortal: true,
+              keepMounted: false,
+            },
+
+            paper: {
+              elevation: 0,
+
+              sx: {
+                width: "fit-content",
+                maxWidth: "1200px",
+                height: "calc(100vh - 40px)",
+                minHeight: "860px",
+                maxHeight: "1240px",
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+                background: "transparent",
+                overflow: "hidden",
+                visibility: "visible",
+              },
+            },
+          }}
+        >
+          {renderStep()}
+        </Dialog>
       )}
-    </FieldWrapper>
+    </Box>
   );
 };
 
-const FieldTypeIntegration: FC<IntegrationFieldProps> = ({
+const FieldTypeIntegration: FC<FieldTypeIntegrationProps> = ({
   name,
-  label,
-  description,
-  value = null,
-  onChange,
-  required,
-  error,
   formType = "configure",
-  maxItems,
+  value,
+  onChange,
+  integrationFieldConfig,
+  maxItems = 10,
   isLoading = false,
-  integrationFieldConfig = null,
 }) => {
-  return (
-    <DndProvider backend={HTML5Backend}>
-      {formType === "select" ? (
-        <SelectItems
+  if (formType === "select") {
+    return (
+      <DndProvider backend={HTML5Backend}>
+        <IntegrationSelect
           name={name}
           label="Select Remote Items"
           value={value}
-          onSelectionChange={(value) => onChange({ inputName: name, value })}
+          onSelectionChange={(value) => onChange(value)}
           integrationFieldConfig={integrationFieldConfig}
           isLoading={isLoading}
           maxItems={maxItems}
         />
-      ) : (
-        <ConfigureIntegration
-          name={name}
-          label={label}
-          description={description}
-          onChange={(value) => onChange({ inputName: name, value })}
-          error={error}
-          required={required}
-          isLoading={isLoading}
-          integrationFieldConfig={integrationFieldConfig}
-        />
-      )}
-    </DndProvider>
+      </DndProvider>
+    );
+  }
+
+  return (
+    <IntegrationConfigure
+      name={name}
+      integrationFieldConfig={integrationFieldConfig}
+      onChange={(value) => onChange(value)}
+      isLoading={isLoading}
+    />
   );
 };
 

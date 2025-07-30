@@ -21,12 +21,12 @@ import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
-import { FormWrapper } from "../Wrappers";
+import { FormWrapper } from "./Wrappers";
 
-import { fetchApi } from "../../utils";
-import { IntegrationRequestHeaders } from "../../../../services/types";
-import { FieldWrapper } from "../Wrappers";
-import { validateUrl } from "../../../../../utility/validateUrl";
+import { fetchApi } from "../utils";
+import { IntegrationRequestHeaders } from "../../../services/types";
+import { FieldWrapper } from "./Wrappers";
+import { validateUrl } from "../../../../utility/validateUrl";
 
 const CONNECTION_STATUSES: {
   [key: string]: {
@@ -106,7 +106,7 @@ const ConnectToApi = ({
   setHeaders: (headers: IntegrationRequestHeaders | null) => void;
   setApiData: (data: any) => void;
   setActiveStep: (step: number) => void;
-  closeForm: () => void;
+  closeForm?: () => void;
 }) => {
   const [status, setStatus] = useState<
     "connecting" | "success" | "failed" | null
@@ -119,8 +119,6 @@ const ConnectToApi = ({
   const [headersLocal, setHeadersLocal] = useState<
     { key: string; value: string }[] | null
   >(keyValuePairsToArray(headers));
-
-  const [apiDataLocal, setApiDataLocal] = useState(null);
 
   const handleApiConnect = useCallback(async () => {
     setReqAborted(false);
@@ -139,13 +137,13 @@ const ConnectToApi = ({
       });
 
       if (status === "success") {
-        setApiDataLocal(data);
+        setApiData(data);
         setStatus("success");
       } else {
         throw new Error("Failed to connect");
       }
     } catch (error) {
-      setApiDataLocal(null);
+      setApiData(null);
       setStatus("failed");
     }
   }, [endpointLocal, headersLocal]);
@@ -154,16 +152,15 @@ const ConnectToApi = ({
     const reqHeaders = !headersLocal?.length
       ? null
       : arrayToKeyValuePairs(headersLocal);
-    setApiData(apiDataLocal);
     setHeaders(reqHeaders);
     setEndpoint(endpointLocal);
     setReqAborted(false);
-    setActiveStep(2);
+    setActiveStep(activeStep + 1);
   };
   const handleAbort = () => {
     setReqAborted(true);
     setStatus(null);
-    setActiveStep(1);
+    setActiveStep(0);
   };
 
   return (

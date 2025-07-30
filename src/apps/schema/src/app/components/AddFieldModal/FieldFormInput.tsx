@@ -446,7 +446,9 @@ export const FieldFormInput = ({
           name={fieldConfig.name}
           label="API Configuration Settings"
           formType="configure"
-          onChange={onDataChange}
+          onChange={(value) =>
+            onDataChange({ inputName: fieldConfig.name, value })
+          }
           integrationFieldConfig={integrationFieldConfig}
           error={errorMsg}
         />

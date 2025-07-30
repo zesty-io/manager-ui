@@ -3,26 +3,27 @@ import Button from "@mui/material/Button";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import { Box, Stack, Typography } from "@mui/material";
+import { Box, Paper, Stack, Typography } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
-import { FormWrapper } from "../Wrappers";
+import { FormWrapper } from "./Wrappers";
 import { CheckRounded } from "@mui/icons-material";
 import SettingsIcon from "@mui/icons-material/Settings";
-
-import { DISPLAY_OPTIONS_CONFIG, ConfigProps } from "../../configs";
-import { getKeyValue } from "../../utils";
+import DragIndicatorRoundedIcon from "@mui/icons-material/DragIndicatorRounded";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import { DISPLAY_OPTIONS_CONFIG, ConfigProps } from "../configs";
+import { getKeyValue } from "../utils";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
-import KeyPathSelector from "../KeyPathSelector";
+import KeyPathSelector from "./KeyPathSelector";
 
 import {
   IntegrationKeyPaths,
   IntegrationFieldConfig,
   IntegrationTypes,
   IntegrationRequestHeaders,
-} from "../../../../services/types";
-import DraggableCard from "../../DisplayCard/DraggableCard";
-import { FieldWrapper } from "../Wrappers";
+} from "../../../services/types";
+import { FieldWrapper } from "./Wrappers";
+import DisplayCard from "../DisplayCard";
 
 const createKeyPathsInitialValue = (
   config: Array<{ name: string }>,
@@ -241,8 +242,8 @@ const ConfigureDisplayOptions = ({
   setKeyPaths: (keyPaths: IntegrationKeyPaths) => void;
   apiData: any;
   onChange?: (value: IntegrationFieldConfig) => void;
-  closeForm: () => void;
-  setActiveStep: (step: number) => void;
+  closeForm?: () => void;
+  setActiveStep?: (step: number) => void;
 }) => {
   const [parentPathOptions, setParentPathOptions] = useState([]);
   const [childPathOptions, setChildPathOptions] = useState([]);
@@ -268,6 +269,7 @@ const ConfigureDisplayOptions = ({
 
   useEffect(() => {
     const rootIsArray = Array.isArray(apiData);
+    console.debug("apiData rootIsArray", { apiData, rootIsArray });
     if (rootIsArray) {
       const dataRoot = apiData?.[0];
       const childOptions = getObjectKeyPaths(dataRoot);
@@ -515,18 +517,65 @@ const ConfigureDisplayOptions = ({
               </Typography>
             </Box>
 
-            <DraggableCard
-              data-cy="integrationPreviewCard"
-              rootPath={rootPath}
-              type={type}
-              heading={getKeyValue(rootData, keyPathsLocal?.heading)}
-              subHeading={getKeyValue(rootData, keyPathsLocal?.subHeading)}
-              thumbnail={getKeyValue(rootData, keyPathsLocal?.thumbnail)}
-              detail={getKeyValue(rootData, keyPathsLocal?.detail)}
-              details={keyPathsLocal?.details}
-              data={rootData}
-              disableMenu={true}
-            />
+            <Paper
+              className="PreviewCard"
+              elevation={0}
+              sx={{
+                py: 0,
+                pl: 3.5,
+                pr: "40px",
+                width: "100%",
+                height: "fit-content",
+                borderRadius: 2,
+                position: "relative",
+                boxSizing: "border-box",
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                my: 0.5,
+              }}
+            >
+              <Box
+                className="PreviewCardDragHandle"
+                sx={{
+                  position: "absolute",
+                  left: 0,
+                  top: 0,
+                  bottom: 0,
+                  width: "28px",
+                  display: "grid",
+                  placeContent: "center",
+                }}
+              >
+                <DragIndicatorRoundedIcon color="action" fontSize="small" />
+              </Box>
+              <DisplayCard
+                rootPath={rootPath}
+                type={type}
+                heading={getKeyValue(rootData, keyPathsLocal?.heading)}
+                subHeading={getKeyValue(rootData, keyPathsLocal?.subHeading)}
+                thumbnail={getKeyValue(rootData, keyPathsLocal?.thumbnail)}
+                detail={getKeyValue(rootData, keyPathsLocal?.detail)}
+                details={keyPathsLocal?.details}
+                data={rootData}
+                isDraggable={false}
+                showPlayIcon={false}
+              />
+              <Box
+                position="absolute"
+                right={0}
+                width="40px"
+                height="100%"
+                pr={2}
+                sx={{
+                  display: "grid",
+                  placeContent: "center",
+                }}
+              >
+                <MoreHorizIcon color="action" />
+              </Box>
+            </Paper>
           </Box>
         </Box>
       </DialogContent>
@@ -544,7 +593,7 @@ const ConfigureDisplayOptions = ({
           variant="outlined"
           color="inherit"
           onClick={() => {
-            setActiveStep(2);
+            setActiveStep(1);
           }}
         >
           Back
