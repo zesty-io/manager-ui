@@ -3,58 +3,62 @@ export default () => {
     window.location.hostname.includes(".cms.content.one");
 
   if (isContentOneDomain) {
+    const COOKIE_DOMAIN = ".content.one";
+
     switch (process.env.NODE_ENV) {
       case "production":
         return {
           URL_MANAGER: ".cms.content.one",
-          COOKIE_DOMAIN: ".content.one",
+          COOKIE_DOMAIN,
         };
 
       case "stage":
         return {
           URL_MANAGER: ".stage.cms.content.one",
-          COOKIE_DOMAIN: ".content.one",
+          COOKIE_DOMAIN,
         };
 
       case "development":
         return {
           URL_MANAGER: ".dev.cms.content.one:8080",
-          COOKIE_DOMAIN: ".content.one",
+          COOKIE_DOMAIN,
         };
 
       case "local":
         return {
           URL_MANAGER: ".local.cms.content.one:9000",
-          COOKIE_DOMAIN: ".content.one",
+          COOKIE_DOMAIN,
         };
 
       default:
         break;
     }
   } else {
+    const COOKIE_DOMAIN = ".zesty.io";
+
     switch (process.env.NODE_ENV) {
       case "production":
         return {
           URL_MANAGER: ".manager.zesty.io",
-          COOKIE_DOMAIN: ".zesty.io",
+          COOKIE_DOMAIN,
         };
 
       case "stage":
         return {
           URL_MANAGER: ".manager.stage.zesty.io",
-          COOKIE_DOMAIN: ".zesty.io",
+          COOKIE_DOMAIN,
         };
 
       case "development":
         return {
           URL_MANAGER: ".manager.dev.zesty.io:8080",
-          COOKIE_DOMAIN: ".zesty.io",
+          COOKIE_DOMAIN,
         };
 
       case "local":
         return {
           URL_MANAGER: ".manager.zesty.localdev:9000",
-          COOKIE_DOMAIN: ".zesty.io",
+          COOKIE_DOMAIN,
         };
 
       default:
