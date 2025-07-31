@@ -100,7 +100,7 @@ const ItemSelection: FC<ItemSelectionProps> = ({
       const isSelected = selectedItemIds.includes(item._itemId);
 
       return (
-        <div style={style} key={item._itemId}>
+        <div style={{ ...style }} key={item._itemId}>
           <SelectionItem
             item={item}
             isSelected={isSelected}
@@ -130,11 +130,19 @@ const ItemSelection: FC<ItemSelectionProps> = ({
       fullWidth
       maxWidth="md"
       onClose={onClose}
-      PaperProps={{
-        sx: {
-          minHeight: "calc(100vh - 40px)",
-          display: "flex",
-          flexDirection: "column",
+      // PaperProps={{
+      //   sx: {
+      //     minHeight: "calc(100vh - 40px)",
+      //     display: "flex",
+      //     flexDirection: "column",
+      //   },
+      // }}
+      slotProps={{
+        paper: {
+          sx: {
+            minHeight: "calc(100vh - 40px)",
+            maxHeight: "1080px",
+          },
         },
       }}
     >
@@ -147,15 +155,18 @@ const ItemSelection: FC<ItemSelectionProps> = ({
 
       <DialogContent
         sx={{
-          pt: 0,
-          px: 0,
-          pb: 10,
+          p: 0,
+          // px: 0,
+          // pb: 10,
           // mb: 12,
           bgcolor: "grey.50",
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
+          // flex: 1,
+          // display: "flex",
+          // flexDirection: "column",
           overflow: "hidden",
+          // overflowX: "hidden",
+          // overflowY: "auto",
+          position: "relative",
           "& .integrationSelectCardList > div": {
             borderRadius: 2,
             border: "1px solid",
@@ -193,18 +204,18 @@ const ItemSelection: FC<ItemSelectionProps> = ({
             },
           }}
         > */}
-        {loading && !filteredItems.length ? (
-          <LoadingSkeleton config={config} />
-        ) : filteredItems.length ? (
+
+        {!loading && !!searchTerm && !filteredItems.length ? (
+          <NoResultsComponent
+            searchTerm={searchTerm}
+            onSearchAgain={handleClearSearch}
+          />
+        ) : (
           <VirtualizedList
             items={filteredItems}
             config={config}
             rowRenderer={rowRenderer}
-          />
-        ) : (
-          <NoResultsComponent
-            searchTerm={searchTerm}
-            onSearchAgain={handleClearSearch}
+            loading={loading}
           />
         )}
         {/* </Box> */}
@@ -273,7 +284,17 @@ const SearchBar: FC<{
   searchTerm: string;
   onChange: (value: string) => void;
 }> = ({ inputRef, searchTerm, onChange }) => (
-  <Box py={2} px={4} position="sticky" top={0} zIndex={5} bgcolor="grey.50">
+  <Box
+    py={2}
+    px={4}
+    position="absolute"
+    top={0}
+    left={0}
+    width="calc(100% - 12px)"
+    height="72px"
+    zIndex={5}
+    bgcolor="grey.50"
+  >
     <TextField
       inputRef={inputRef}
       fullWidth
@@ -328,8 +349,9 @@ const SelectionItem: FC<{
       borderBottom: "1px solid",
       borderColor: "border",
       backgroundColor: "background.paper",
+      boxSizing: "border-box",
       "&.select-card": {
-        backgroundColor: (theme) => alpha(theme.palette.primary.light, 0.04),
+        backgroundColor: (theme) => alpha(theme.palette.primary.main, 0.04),
         boxShadow: (theme) =>
           `0px -2px 0px 0px ${theme.palette.primary.light} inset`,
       },
@@ -390,6 +412,7 @@ const SelectionItem: FC<{
         <Skeleton animation="wave" variant="rounded" height={20} width={20} />
       ) : (
         <IconButton
+          size="small"
           className="integrationSelectCardViewJsonButton"
           sx={{ borderRadius: 1, color: "action.active" }}
           onClick={() => onView?.(item)}
@@ -405,7 +428,8 @@ const VirtualizedList: FC<{
   items: any[];
   config: IntegrationFieldConfig;
   rowRenderer: (props: ListChildComponentProps) => React.ReactElement;
-}> = ({ items, config, rowRenderer }) => {
+  loading?: boolean;
+}> = ({ items, config, rowRenderer, loading }) => {
   const itemSize = getItemRowHeight(config.type, config.keyPaths.details);
 
   return (
@@ -415,34 +439,25 @@ const VirtualizedList: FC<{
           className="integrationSelectCardList"
           height={height}
           width={width}
-          itemCount={items.length}
+          itemCount={loading ? 10 : items.length}
           itemSize={itemSize}
           overscanCount={5}
           outerElementType="div"
           innerElementType="div"
-          style={{ overflowX: "hidden", overflowY: "auto", padding: "0 32px" }}
+          style={{
+            overflowX: "hidden",
+            overflowY: "auto",
+            minHeight: "500px",
+            paddingLeft: 32,
+            paddingRight: 32,
+            paddingTop: 72,
+            paddingBottom: 16,
+          }}
         >
           {rowRenderer}
         </List>
       )}
     </AutoSizer>
-  );
-};
-
-const LoadingSkeleton: FC<{ config: IntegrationFieldConfig }> = ({
-  config,
-}) => {
-  const itemSize = getItemRowHeight(config.type, config.keyPaths.details);
-  const skeletonItems = Array(5).fill(null);
-
-  return (
-    <Box>
-      {skeletonItems.map((_, index) => (
-        <Box key={index} height={itemSize} py={1}>
-          <Skeleton variant="rectangular" width="100%" height="100%" />
-        </Box>
-      ))}
-    </Box>
   );
 };
 

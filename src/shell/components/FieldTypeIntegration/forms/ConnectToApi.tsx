@@ -105,6 +105,7 @@ const ConnectToApi = ({
   headers: IntegrationRequestHeaders;
   setHeaders: (headers: IntegrationRequestHeaders | null) => void;
   setApiData: (data: any) => void;
+
   setActiveStep: (step: number) => void;
   closeForm?: () => void;
 }) => {
@@ -321,7 +322,9 @@ const ConnectToApi = ({
       {!!status && !reqAborted && (
         <Paper
           data-cy="integrationConnectionStatusContainer"
+          elevation={0}
           sx={{
+            borderRadius: 2,
             position: "absolute",
             top: 0,
             left: 0,

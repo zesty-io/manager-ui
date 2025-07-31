@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo, useState } from "react";
+import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import {
   Box,
   Button,
@@ -10,7 +10,7 @@ import {
 import { LinkRounded, Autorenew } from "@mui/icons-material";
 import useIntegrationField from "./useIntegrationField";
 
-import { FieldTypeIntegrationProps } from "./configs";
+import { FieldTypeIntegrationProps, LOADING_DATA } from "./configs";
 import {
   IntegrationFieldConfig,
   IntegrationKeyPaths,
@@ -43,27 +43,27 @@ type IntegrationSelectProps = {
 
 type IntegrationConfigureProps = {
   integrationFieldConfig: IntegrationFieldConfig;
-  name: string;
   onChange: (value: any) => void;
   isLoading?: boolean;
+  isNew?: boolean;
 };
 
-function generateItemId(item: any, keyPaths: IntegrationKeyPaths) {
-  const headingText = getKeyValue(item, keyPaths?.heading) || "";
-  const subHeadingText = getKeyValue(item, keyPaths?.subHeading) || "";
-  const thumbnailText = getKeyValue(item, keyPaths?.thumbnail) || "";
-  const detailText = getKeyValue(item, keyPaths?.detail) || "";
-  const detailsText = !keyPaths?.details
-    ? ""
-    : keyPaths?.details?.map((detail) => getKeyValue(item, detail)).join("");
+// function generateItemId(item: any, keyPaths: IntegrationKeyPaths) {
+//   const headingText = getKeyValue(item, keyPaths?.heading) || "";
+//   const subHeadingText = getKeyValue(item, keyPaths?.subHeading) || "";
+//   const thumbnailText = getKeyValue(item, keyPaths?.thumbnail) || "";
+//   const detailText = getKeyValue(item, keyPaths?.detail) || "";
+//   const detailsText = !keyPaths?.details
+//     ? ""
+//     : keyPaths?.details?.map((detail) => getKeyValue(item, detail)).join("");
 
-  const textId = `${headingText}${subHeadingText}${thumbnailText}${detailText}${detailsText}`;
+//   const textId = `${headingText}${subHeadingText}${thumbnailText}${detailText}${detailsText}`;
 
-  return textId
-    ?.replace(/[\/:;&*%$#@!?=\s+]/g, "")
-    ?.toLowerCase()
-    .trim();
-}
+//   return textId
+//     ?.replace(/[\/:;&*%$#@!?=\s+]/g, "")
+//     ?.toLowerCase()
+//     .trim();
+// }
 
 const IntegrationSelect: FC<IntegrationSelectProps> = ({
   name,
@@ -79,10 +79,8 @@ const IntegrationSelect: FC<IntegrationSelectProps> = ({
   const {
     config,
     rootData,
-    selectedItems,
     isLoading: isFetching,
-    updateConfig,
-    selectItems,
+    generateItemId,
   } = useIntegrationField(integrationFieldConfig);
   const { endpoint, headers, type, keyPaths } = config || {};
   const [jsonData, setJsonData] = useState<string | null>(null);
@@ -92,14 +90,14 @@ const IntegrationSelect: FC<IntegrationSelectProps> = ({
   const loading = isLoading || isFetching;
 
   const rootDataMap = useMemo(() => {
-    if (isLoading) return {};
+    if (loading) return {};
     return rootData?.reduce((acc: any, item: any) => {
       acc[item?._itemId] = item;
       return acc;
     }, {});
-  }, [rootData, isLoading]);
+  }, [rootData]);
 
-  const [selectedIds, setSelectedIds] = useState<any[] | null>(
+  const [selectedItemIds, setSelectedItemIds] = useState<any[] | null>(
     !value?.length
       ? []
       : value?.map((item: any) => ({
@@ -114,42 +112,44 @@ const IntegrationSelect: FC<IntegrationSelectProps> = ({
 
   const handleSave = useCallback(
     (itemIds: any[]) => {
-      const items = itemIds.map((id) => {
+      const items = itemIds?.map((id) => {
         const { _itemId, ...rest } = rootDataMap[id];
         return rest;
       });
 
-      onSelectionChange(!items?.length ? null : items);
-      setSelectedIds(itemIds);
+      onSelectionChange(!items?.length ? [] : items);
+      setSelectedItemIds(itemIds);
     },
     [rootData, onSelectionChange]
   );
   const handleRemoveItem = useCallback(
     (_itemId: string) => {
-      const newIds = selectedIds.filter((id) => id !== _itemId);
-      setSelectedIds(newIds);
+      const newIds = selectedItemIds.filter((id) => id !== _itemId);
+      // setSelectedItemIds(newIds);
       handleSave(newIds);
     },
-    [setSelectedIds, selectedIds, handleSave]
+    [setSelectedItemIds, selectedItemIds, handleSave]
   );
 
   const findCard = useCallback(
     (id: string) => {
-      const itemIndex = selectedIds.findIndex((itemId: any) => itemId === id);
+      const itemIndex = selectedItemIds.findIndex(
+        (itemId: any) => itemId === id
+      );
       return itemIndex;
     },
-    [selectedIds]
+    [selectedItemIds]
   );
 
   const moveCard = useCallback(
     (from: number, to: number) => {
-      const newIds = [...selectedIds];
+      const newIds = [...selectedItemIds];
       newIds.splice(to, 0, newIds.splice(from, 1)[0]);
 
-      setSelectedIds(newIds);
+      // setSelectedItemIds(newIds);
       handleSave(newIds);
     },
-    [selectedIds, handleSave, setSelectedIds]
+    [selectedItemIds, handleSave, setSelectedItemIds]
   );
 
   return (
@@ -165,7 +165,7 @@ const IntegrationSelect: FC<IntegrationSelectProps> = ({
           rowGap: 1,
         }}
       >
-        {selectedIds?.length > 0 && (
+        {selectedItemIds?.length > 0 && (
           <Box
             data-cy="integrationListValueContainer"
             component="div"
@@ -177,7 +177,7 @@ const IntegrationSelect: FC<IntegrationSelectProps> = ({
               alignItems: "flex-start",
             }}
           >
-            {selectedIds?.map((itemId: any, index: number) => {
+            {selectedItemIds?.map((itemId: any, index: number) => {
               const item = rootDataMap[itemId];
 
               return (
@@ -220,8 +220,8 @@ const IntegrationSelect: FC<IntegrationSelectProps> = ({
 
         {!!selectionFormOpen && (
           <ItemSelection
-            items={rootData}
-            selectedItems={selectedIds}
+            items={loading ? LOADING_DATA : rootData}
+            selectedItems={selectedItemIds}
             config={config}
             maxItems={maxItems}
             onClose={() => setSelectionFormOpen(false)}
@@ -260,12 +260,14 @@ const IntegrationSelect: FC<IntegrationSelectProps> = ({
 };
 
 const IntegrationConfigure = ({
-  name,
   onChange,
   integrationFieldConfig,
   isLoading = false,
+  isNew = false,
 }: IntegrationConfigureProps) => {
   const {
+    apiData: apiDataRaw,
+
     config,
     isLoading: isFetching,
     updateConfig,
@@ -283,7 +285,7 @@ const IntegrationConfigure = ({
   const [keyPaths, setKeyPaths] = useState<IntegrationKeyPaths>(
     config?.keyPaths || null
   );
-  const [apiData, setApiData] = useState<any>(null);
+  const [apiData, setApiData] = useState<any>(apiDataRaw || null);
 
   const handleSaveConfig = (newConfig: IntegrationFieldConfig) => {
     updateConfig(newConfig);
@@ -296,8 +298,12 @@ const IntegrationConfigure = ({
   };
   const onOpen = () => {
     setIsFormOpen(true);
-    setActiveStep(0);
+    setActiveStep(!!isNew ? 0 : 1);
   };
+
+  useEffect(() => {
+    setApiData(apiDataRaw);
+  }, [apiDataRaw]);
 
   const loading = isLoading || isFetching;
 
@@ -356,42 +362,74 @@ const IntegrationConfigure = ({
 
   return (
     <Box>
-      {isConnected && !loading ? (
-        <Paper
-          elevation={0}
-          variant="outlined"
-          sx={{ borderRadius: 2, borderColor: "border" }}
-        >
-          <Box
-            display="flex"
-            alignItems="center"
-            p={2}
-            borderBottom="1px solid"
-            borderColor="border"
+      {isConnected ? (
+        <>
+          <Typography variant="h6" mb={1}>
+            API Configuration Settings
+          </Typography>
+          <Paper
+            elevation={0}
+            variant="outlined"
+            sx={{ borderRadius: 2, borderColor: "border" }}
           >
-            <Typography width={170} variant="body2" fontWeight={600}>
-              API URL
-            </Typography>
-            <InputBase readOnly value={config?.endpoint} sx={{ flexGrow: 1 }} />
-          </Box>
-          <Box display="flex" alignItems="center" p={2}>
-            <Typography width={170} variant="body2" fontWeight={600}>
-              Display Items as
-            </Typography>
-            <InputBase readOnly value={config?.type} sx={{ flexGrow: 1 }} />
-          </Box>
-        </Paper>
+            <Box
+              display="flex"
+              alignItems="center"
+              p={2}
+              borderBottom="1px solid"
+              borderColor="border"
+            >
+              <Typography width={170} variant="body2" fontWeight={600}>
+                API URL
+              </Typography>
+              <InputBase
+                readOnly
+                value={config?.endpoint}
+                sx={{ flexGrow: 1 }}
+                slotProps={{
+                  input: {
+                    sx: {
+                      color: "text.secondary",
+                    },
+                  },
+                }}
+              />
+            </Box>
+            <Box display="flex" alignItems="center" p={2}>
+              <Typography width={170} variant="body2" fontWeight={600}>
+                Display Items as
+              </Typography>
+              <InputBase
+                readOnly
+                value={config?.type}
+                sx={{ flexGrow: 1 }}
+                slotProps={{
+                  input: {
+                    sx: {
+                      color: "text.secondary",
+                      textTransform: "capitalize",
+                    },
+                  },
+                }}
+              />
+            </Box>
+          </Paper>
+        </>
       ) : null}
 
       <Button
-        loading={loading}
+        data-cy="integrationConfigureButton"
         variant="outlined"
         color="primary"
         startIcon={isConnected ? <Autorenew /> : <LinkRounded />}
         onClick={onOpen}
         sx={{ mt: 1 }}
       >
-        {isConnected ? "Reconfigure" : "Connect to API"}
+        {!isNew
+          ? "Reconfigure Display Options"
+          : !!isNew && isConnected
+          ? "Reconfigure"
+          : "Connect to API"}
       </Button>
 
       {isFormOpen && (
@@ -448,6 +486,9 @@ const FieldTypeIntegration: FC<FieldTypeIntegrationProps> = ({
   maxItems = 10,
   isLoading = false,
 }) => {
+  const isNewConfig =
+    !integrationFieldConfig?.endpoint && !integrationFieldConfig?.type;
+
   if (formType === "select") {
     return (
       <DndProvider backend={HTML5Backend}>
@@ -466,10 +507,10 @@ const FieldTypeIntegration: FC<FieldTypeIntegrationProps> = ({
 
   return (
     <IntegrationConfigure
-      name={name}
       integrationFieldConfig={integrationFieldConfig}
       onChange={(value) => onChange(value)}
       isLoading={isLoading}
+      isNew={isNewConfig}
     />
   );
 };

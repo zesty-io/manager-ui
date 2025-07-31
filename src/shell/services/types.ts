@@ -82,12 +82,12 @@ export type IntegrationRequestHeaders<T extends string = string> = {
 };
 
 export type IntegrationKeyPaths = Partial<{
-  rootPath: string;
-  heading: string;
-  subHeading: string;
-  thumbnail: string;
-  detail: string;
-  details: string[];
+  rootPath?: string | null;
+  heading?: string;
+  subHeading?: string;
+  thumbnail?: string;
+  detail?: string | null;
+  details?: string[] | null;
 }>;
 
 export type IntegrationFieldConfig = {

@@ -1,6 +1,7 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import {
   IntegrationFieldConfig,
+  IntegrationKeyPaths,
   IntegrationRequestHeaders,
 } from "../../services/types";
 import { fetchApi, getKeyValue } from "./utils";
@@ -8,27 +9,25 @@ import { fetchApi, getKeyValue } from "./utils";
 const useIntegrationField = (initialConfig: IntegrationFieldConfig | null) => {
   const [config, setConfig] = useState(initialConfig);
   const [apiData, setApiData] = useState<any>(null);
-  const [rootData, setRootData] = useState<any[]>([]);
+  // const [rootData, setRootData] = useState<any[]>([]);
   const [selectedItems, setSelectedItems] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const generateItemId = useCallback(
-    (item: any) => {
-      if (!config?.keyPaths) return "";
+  const { endpoint, headers, type, keyPaths } = config;
+  // const rootPath = keyPaths?.rootPath;
 
-      const headingText = item[config.keyPaths.heading] || "";
-      const subHeadingText = config.keyPaths.subHeading
-        ? item[config.keyPaths.subHeading] || ""
-        : "";
-      const thumbnailText = config.keyPaths.thumbnail
-        ? item[config.keyPaths.thumbnail] || ""
-        : "";
-      const detailText = config.keyPaths.detail
-        ? item[config.keyPaths.detail] || ""
-        : "";
-      const detailsText = config.keyPaths.details
-        ? config.keyPaths.details.map((d) => item[d] || "").join("")
+  const generateItemId = useCallback(
+    (item: any, keyPaths: IntegrationKeyPaths) => {
+      if (!keyPaths) return "";
+      const { heading, subHeading, thumbnail, detail, details } = keyPaths;
+
+      const headingText = item[heading] || "";
+      const subHeadingText = subHeading ? item[subHeading] || "" : "";
+      const thumbnailText = thumbnail ? item[thumbnail] || "" : "";
+      const detailText = detail ? item[detail] || "" : "";
+      const detailsText = details
+        ? details.map((d) => item[d] || "").join("")
         : "";
 
       return `${headingText}${subHeadingText}${thumbnailText}${detailText}${detailsText}`
@@ -36,7 +35,7 @@ const useIntegrationField = (initialConfig: IntegrationFieldConfig | null) => {
         .toLowerCase()
         .trim();
     },
-    [config]
+    []
   );
 
   const fetchApiData = useCallback(
@@ -61,13 +60,16 @@ const useIntegrationField = (initialConfig: IntegrationFieldConfig | null) => {
         if (status === "success") {
           setApiData(data);
         } else {
-          setError("Failed to fetch data from API");
+          throw new Error("Failed to fetch data from API");
         }
       } catch (err) {
         setError(err.message || "Failed to fetch data");
-      } finally {
-        setIsLoading(false);
+        setApiData(null);
       }
+
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 2000);
     },
     [setApiData, setIsLoading, setError]
   );
@@ -81,25 +83,23 @@ const useIntegrationField = (initialConfig: IntegrationFieldConfig | null) => {
   }, []);
 
   useEffect(() => {
-    if (!config?.endpoint || !!apiData) return;
-    fetchApiData({ endpoint: config.endpoint, headers: config.headers });
-  }, [config?.endpoint, config?.headers, apiData, fetchApiData]);
+    if (!endpoint || !!apiData) return;
+    fetchApiData({ endpoint: endpoint, headers: headers });
+  }, [endpoint, headers, apiData, fetchApiData]);
 
-  useEffect(() => {
-    if (isLoading) return;
-    if (!!apiData) {
-      const extractedData = config.keyPaths.rootPath
-        ? getKeyValue(apiData, config.keyPaths.rootPath)
-        : apiData;
+  const rootData = useMemo(() => {
+    if (!!isLoading || !apiData) return [];
 
-      const itemsWithIds = extractedData.map((item: any) => ({
-        ...item,
-        _itemId: generateItemId(item),
-      }));
+    const extractedData = keyPaths?.rootPath
+      ? getKeyValue(apiData, keyPaths?.rootPath)
+      : apiData;
 
-      setRootData(itemsWithIds);
-    }
-  }, [apiData, config, isLoading]);
+    const itemsWithIds = extractedData.map((item: any) => ({
+      ...item,
+      _itemId: generateItemId(item, keyPaths),
+    }));
+    return itemsWithIds;
+  }, [apiData, keyPaths, isLoading]);
 
   return {
     config,

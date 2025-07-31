@@ -255,6 +255,8 @@ const ConfigureDisplayOptions = ({
     createKeyPathsInitialValue(DISPLAY_OPTIONS_CONFIG?.[type], keyPaths)
   );
 
+  console.debug("ConfigureDisplayOptions apiData", { apiData });
+
   const [detailsCompleted, setDetailsCompleted] = useState(false);
 
   const handleSave = () => {
