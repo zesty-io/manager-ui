@@ -47,7 +47,7 @@ export const ModelList = ({ title, models, type, app = "schema" }: Props) => {
       return models.map((model) => {
         return {
           icon: modelIconMap[model.type],
-          children: [],
+          children: [] as TreeItem[],
           label: model.label,
           path: `/${app}/${model.ZUID}`,
           actions: [

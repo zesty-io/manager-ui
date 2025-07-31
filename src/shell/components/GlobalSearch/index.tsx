@@ -46,6 +46,7 @@ import { RecentSearchItem } from "./components/RecentSearchItem";
 import { KeywordSearchItem } from "./components/KeywordSearchItem";
 import { useParams } from "../../hooks/useParams";
 import { withCursorPosition } from "../../components/withCursorPosition";
+import { useSearchBlocksByKeyword } from "../../hooks/useSearchBlocksByKeyword";
 
 // List of dropdown options that are NOT suggestions
 const AdditionalDropdownOptions = [
@@ -80,6 +81,11 @@ export const GlobalSearch = () => {
   const [isAdvancedSearchOpen, setIsAdvancedSearchOpen] = useState(false);
   const [recentSearches, addSearchTerm, deleteSearchTerm] = useRecentSearches();
   const [models, setModelKeyword] = useSearchModelsByKeyword();
+  const {
+    blocks,
+    setBlockKeyword,
+    isLoading: isFetchingBlocksResults,
+  } = useSearchBlocksByKeyword();
   const [codeFiles, setFileKeyword] = useSearchCodeFilesByKeywords();
   const [mediaFolders, setMediaFolderKeyword] =
     useSearchMediaFoldersByKeyword();
@@ -125,7 +131,8 @@ export const GlobalSearch = () => {
   const isLoading =
     isFetchingAllMediaFiles ||
     isFetchingMediaSearchResults ||
-    isFetchingContentSearchResults;
+    isFetchingContentSearchResults ||
+    isFetchingBlocksResults;
 
   const suggestions: Suggestion[] = useMemo(() => {
     // Content data needs to be reset to [] when api call fails
@@ -159,6 +166,17 @@ export const GlobalSearch = () => {
           title: model.label,
           updatedAt: model.updatedAt,
           url: `/schema/${model.ZUID}`,
+        };
+      }) || [];
+
+    const blocksSuggestions: Suggestion[] =
+      blocks?.map((block) => {
+        return {
+          type: "block",
+          ZUID: block?.ZUID,
+          title: block?.label,
+          updatedAt: block?.updatedAt,
+          url: `/blocks/${block?.ZUID}`,
         };
       }) || [];
 
@@ -208,6 +226,7 @@ export const GlobalSearch = () => {
       ...codeFileSuggestions,
       ...mediaFileSuggestions,
       ...mediaFolderSuggestions,
+      ...blocksSuggestions,
     ];
 
     const activeAccelerator = chipSearchAccelerator ?? typedSearchAccelerator;
@@ -224,6 +243,10 @@ export const GlobalSearch = () => {
 
       case "schema":
         consolidatedResults = [...modelSuggestions];
+        break;
+
+      case "block":
+        consolidatedResults = [...blocksSuggestions];
         break;
 
       case "media":
@@ -244,6 +267,7 @@ export const GlobalSearch = () => {
   }, [
     contents,
     models,
+    blocks,
     codeFiles,
     mediaFiles,
     mediaFolders,
@@ -295,11 +319,11 @@ export const GlobalSearch = () => {
     setModelKeyword(apiQueryTerm);
     setFileKeyword(apiQueryTerm);
     setMediaFolderKeyword(apiQueryTerm);
+    setBlockKeyword(apiQueryTerm);
   }, [apiQueryTerm]);
 
   useEffect(() => {
     const paramsSearchKeyword = params?.get("q");
-
     if (paramsSearchKeyword) {
       setSearchKeyword(paramsSearchKeyword);
     }
@@ -391,36 +415,45 @@ export const GlobalSearch = () => {
               setOpen(false);
             }
           }}
-          PaperComponent={(props) => {
-            return (
-              <Paper
-                {...props}
-                elevation={0}
-                sx={{
-                  borderStyle: "solid",
-                  borderWidth: options?.length ? "0px 1px 1px 1px" : "0px",
-                  borderColor: "border",
-                  borderRadius: "0px 0px 4px 4px",
+          slots={{
+            paper(props) {
+              return (
+                <Paper
+                  {...props}
+                  elevation={0}
+                  sx={{
+                    borderStyle: "solid",
+                    borderWidth: options?.length ? "0px 1px 1px 1px" : "0px",
+                    borderColor: "border",
+                    borderRadius: "0px 0px 4px 4px",
 
-                  "& .MuiAutocomplete-listbox": {
-                    maxHeight: "60vh",
-                  },
-                }}
-              />
-            );
+                    "& .MuiAutocomplete-listbox": {
+                      maxHeight: "60vh",
+                    },
+                  }}
+                />
+              );
+            },
+            popper(props) {
+              return (
+                <Popper
+                  {...props}
+                  style={{
+                    ...props.style,
+                    // default z-index is too high, we want it to be BELOW the side nav close button
+                    zIndex: theme.zIndex.appBar - 1,
+                    width: fullWidth,
+                  }}
+                />
+              );
+            },
           }}
-          PopperComponent={(props) => {
-            return (
-              <Popper
-                {...props}
-                style={{
-                  ...props.style,
-                  // default z-index is too high, we want it to be BELOW the side nav close button
-                  zIndex: theme.zIndex.appBar - 1,
-                  width: fullWidth,
-                }}
-              />
-            );
+          slotProps={{
+            listbox: {
+              style: {
+                paddingTop: searchKeyword ? "8px" : "0px",
+              },
+            },
           }}
           id={ElementId}
           openOnFocus
@@ -443,6 +476,10 @@ export const GlobalSearch = () => {
             },
             "&.Mui-focused .MuiAutocomplete-clearIndicator": {
               visibility: searchKeyword ? "visible" : "hidden",
+            },
+            "& .MuiOutlinedInput-root .MuiAutocomplete-endAdornment": {
+              position: "absolute",
+              right: "40px",
             },
           }}
           onInputChange={(_, newVal) => {
@@ -583,7 +620,7 @@ export const GlobalSearch = () => {
                       height: 32,
                       mt: 1,
                     }}
-                    key={option}
+                    key={`${String(option)}-${props.id}`}
                   >
                     <Button
                       data-cy="AdvancedSearchButton"
@@ -625,6 +662,7 @@ export const GlobalSearch = () => {
                   content: "Content Items",
                   schema: "Models in Schema",
                   media: "Media Items",
+                  block: "Blocks",
                 };
 
                 return (
@@ -658,7 +696,7 @@ export const GlobalSearch = () => {
                     sx={{
                       height: 32,
                     }}
-                    key={option.ZUID}
+                    key={`${String(option.ZUID)}-${props.id}`}
                     onClick={() => {}}
                   >
                     <Skeleton width="100%" />
@@ -670,7 +708,7 @@ export const GlobalSearch = () => {
               return (
                 <GlobalSearchItem
                   {...props}
-                  key={option.ZUID}
+                  key={`${String(option.ZUID)}-${props.id}`}
                   icon={getItemIcon(option.type, option.subType ?? "")}
                   text={option.title}
                 />
@@ -785,11 +823,6 @@ export const GlobalSearch = () => {
                 }}
               />
             );
-          }}
-          ListboxProps={{
-            style: {
-              paddingTop: searchKeyword ? "8px" : "0px",
-            },
           }}
         />
       </Collapse>

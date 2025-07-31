@@ -80,6 +80,7 @@ export const PublishState = ({ reloadItem }: Props) => {
           if (value.row._active) {
             return [
               <Button
+                key="take-offline"
                 color="primary"
                 sx={{ textTransform: "none" }}
                 onClick={() =>
@@ -98,6 +99,7 @@ export const PublishState = ({ reloadItem }: Props) => {
           } else if (new Date(value.row.publishAt) > new Date()) {
             return [
               <Button
+                key="delete-publishing"
                 color="primary"
                 sx={{ textTransform: "none" }}
                 onClick={() =>

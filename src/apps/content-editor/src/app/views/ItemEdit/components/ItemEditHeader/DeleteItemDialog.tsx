@@ -12,11 +12,7 @@ import { useHistory, useParams } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "../../../../../../../../shell/store/types";
 import { ContentItem } from "../../../../../../../../shell/services/types";
-import {
-  useDeleteContentItemMutation,
-  useGetContentModelFieldsQuery,
-} from "../../../../../../../../shell/services/instance";
-import { LoadingButton } from "@mui/lab";
+import { useDeleteContentItemMutation } from "../../../../../../../../shell/services/instance";
 
 type DuplicateItemProps = {
   onClose: () => void;
@@ -67,7 +63,7 @@ export const DeleteItemDialog = ({ onClose }: DuplicateItemProps) => {
         <Button color="inherit" onClick={onClose}>
           Cancel
         </Button>
-        <LoadingButton
+        <Button
           data-cy="DeleteContentItemConfirmButton"
           variant="contained"
           color="error"
@@ -89,7 +85,7 @@ export const DeleteItemDialog = ({ onClose }: DuplicateItemProps) => {
           loading={isLoading}
         >
           Delete Item
-        </LoadingButton>
+        </Button>
       </DialogActions>
     </Dialog>
   );

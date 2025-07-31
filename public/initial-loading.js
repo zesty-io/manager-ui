@@ -134,9 +134,13 @@ getFromIndexedDB(`${instanceZUID}:ui`)
 
     // Show/hide subapp nav depending on which app is open
     if (["", "launchpad", "leads", "redirects"].includes(openApp)) {
-      document.querySelector(".subapp-sidebar").style.display = "none";
-      document.querySelector(".subapp").style.gridTemplateAreas =
-        '"topbar topbar" "quote quote"';
+      if (document.querySelector(".subapp-sidebar")) {
+        document.querySelector(".subapp-sidebar").style.display = "none";
+      }
+      if (document.querySelector(".subapp")) {
+        document.querySelector(".subapp").style.gridTemplateAreas =
+          '"topbar topbar" "quote quote"';
+      }
     } else if (!!appLocalStorageMap[openApp]) {
       // Set subapp nav width and collapsed status based on localStorage value
       const appWidth = getFromLocalStorage(

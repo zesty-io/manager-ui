@@ -173,16 +173,20 @@ export const createHeadTag = (tag) => {
       method: "POST",
       json: true,
       body: tag,
-    }).then((res) => {
-      if (!res.data.error) {
-        res.data.attributes = transformAttributes(res.data?.attributes);
-        dispatch({
-          type: "ADD_HEADTAG",
-          tag: res.data,
-        });
-      }
-      return res;
-    });
+    })
+      .then((res) => {
+        if (!res.data.error) {
+          res.data.attributes = transformAttributes(res.data?.attributes);
+          dispatch({
+            type: "ADD_HEADTAG",
+            tag: res.data,
+          });
+        }
+        return res;
+      })
+      .catch((err) => {
+        console.error("Failed to create head tag:", err);
+      });
   };
 };
 
@@ -190,15 +194,19 @@ export const deleteHeadTag = (id) => {
   return (dispatch) => {
     return request(`${CONFIG.API_INSTANCE}/web/headtags/${id}`, {
       method: "DELETE",
-    }).then((res) => {
-      if (!res.data.error) {
-        dispatch({
-          type: "DELETE_HEADTAG",
-          id,
-        });
-        return res;
-      }
-    });
+    })
+      .then((res) => {
+        if (!res.data.error) {
+          dispatch({
+            type: "DELETE_HEADTAG",
+            id,
+          });
+          return res;
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to delete head tag:", err);
+      });
   };
 };
 
@@ -208,6 +216,8 @@ export const saveHeadTag = (tag) => {
       method: "PUT",
       json: true,
       body: tag,
+    }).catch((err) => {
+      console.error("Failed to save head tag:", err);
     });
   };
 };

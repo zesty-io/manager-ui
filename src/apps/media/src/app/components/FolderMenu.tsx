@@ -36,7 +36,12 @@ export const FolderMenu: FC<Props> = ({
 
   return (
     <>
-      <Menu anchorEl={anchorEl} open={!!anchorEl} onClose={onCloseMenu}>
+      <Menu
+        data-cy="media-folder-menu"
+        anchorEl={anchorEl}
+        open={!!anchorEl}
+        onClose={onCloseMenu}
+      >
         <MenuItem
           divider
           onClick={() => {

@@ -306,8 +306,9 @@ export const VersionItem = memo(
                 }
 
                 return (
-                  <Tooltip followCursor title={title}>
+                  <Tooltip key={label.ZUID} followCursor title={title}>
                     <MenuItem
+                      component="div"
                       data-cy="WorkflowStatusLabelOption"
                       key={label.ZUID}
                       sx={{
@@ -375,6 +376,7 @@ export const VersionItem = memo(
                 );
               })}
               <MenuItem
+                component="div"
                 sx={{
                   pr: 1,
                   pl: 4,

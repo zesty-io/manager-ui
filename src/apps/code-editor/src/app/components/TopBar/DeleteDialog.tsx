@@ -1,6 +1,5 @@
 import { memo, useState, useCallback } from "react";
 import { useHistory } from "react-router";
-import LoadingButton from "@mui/lab/LoadingButton";
 import {
   Button,
   Dialog,
@@ -94,7 +93,7 @@ export const DeleteDialog = memo(function DeleteDialog(
         <Button variant="text" color="inherit" onClick={onClose}>
           Cancel
         </Button>
-        <LoadingButton
+        <Button
           data-cy="DeleteContentItemConfirmButton"
           variant="contained"
           color="error"
@@ -102,7 +101,7 @@ export const DeleteDialog = memo(function DeleteDialog(
           loading={deleting}
         >
           Delete
-        </LoadingButton>
+        </Button>
       </DialogActions>
     </Dialog>
   );

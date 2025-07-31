@@ -57,7 +57,7 @@ export const RenameFileModal: FC<Props> = ({
 
   return (
     <Dialog open={true} fullWidth maxWidth={"xs"} onClose={onClose}>
-      <DialogTitle>
+      <DialogTitle component="div">
         <Box
           component="img"
           src={`${src}?height=120&width=120&fit=bounds`}
@@ -97,7 +97,6 @@ export const RenameFileModal: FC<Props> = ({
             event.key === "Enter" && handleUpdate()
           }
           InputProps={{
-            disableUnderline: true,
             endAdornment: (
               <Typography variant="body2" color="text.secondary">
                 .{extension}

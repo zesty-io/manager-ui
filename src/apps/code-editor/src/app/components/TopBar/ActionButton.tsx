@@ -1,7 +1,6 @@
-import React, { FC } from "react";
-import { ExtendButton, Tooltip, Box, Typography } from "@mui/material";
-import { LoadingButton, LoadingButtonProps } from "@mui/lab";
-import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
+import { FC } from "react";
+import { Tooltip, Box, Typography, Button } from "@mui/material";
+import { LoadingButtonProps } from "@mui/lab";
 import { CheckCircleRounded } from "@mui/icons-material";
 
 export type ActionButtonProps = Omit<
@@ -46,14 +45,14 @@ export const ActionButton: FC<ActionButtonProps> = ({
     >
       {isActive && !isDisabled ? (
         <span>
-          <LoadingButton
+          <Button
             {...props}
             onClick={onClick}
             loading={isLoading}
             sx={{ whiteSpace: "nowrap" }}
           >
             {label}
-          </LoadingButton>
+          </Button>
         </span>
       ) : (
         <Box display="flex" alignItems="center" columnGap={1} px={1}>

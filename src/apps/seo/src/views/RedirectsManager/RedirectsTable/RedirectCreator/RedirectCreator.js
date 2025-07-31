@@ -5,13 +5,13 @@ import {
   TextField,
   InputAdornment,
   Autocomplete,
+  Button,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from "@mui/icons-material/Search";
 import { createRedirect } from "../../../../store/redirects";
 import ContentSearch from "shell/components/LegacyContentSearch";
 import { Box } from "@mui/material";
-import LoadingButton from "@mui/lab/LoadingButton";
 
 const optionTypes = [
   { label: "Internal", value: "page" },
@@ -165,7 +165,7 @@ export function RedirectCreator(props) {
         )}
       </Box>
       <Box width="fit-content" flexGrow={0}>
-        <LoadingButton
+        <Button
           loading={isLoading}
           variant="contained"
           color="primary"
@@ -177,7 +177,7 @@ export function RedirectCreator(props) {
           sx={{ whiteSpace: "nowrap", boxSizing: "border-box" }}
         >
           Create Redirect
-        </LoadingButton>
+        </Button>
       </Box>
     </Box>
   );

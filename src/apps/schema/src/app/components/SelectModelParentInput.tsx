@@ -90,6 +90,7 @@ export const SelectModelParentInput = ({
             padding: "2px",
           },
         }}
+        getOptionKey={(option) => option.ZUID}
       />
     </Box>
   );

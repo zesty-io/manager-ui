@@ -4,41 +4,18 @@ import DocumentScannerRoundedIcon from "@mui/icons-material/DocumentScannerRound
 import { resolvePathPart } from "./files";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
-import { Database } from "@zesty-io/material";
 import { SvgIcon } from "@mui/material";
 import FlashOnRoundedIcon from "@mui/icons-material/FlashOnRounded";
 import { faFileCode, faLock } from "@fortawesome/free-solid-svg-icons";
 import {
-  faCss3Alt,
-  faJs,
-  faLess,
-  faSass,
-} from "@fortawesome/free-brands-svg-icons";
-
-const createIcon = (icon) => {
-  if (!icon) return null;
-  const {
-    icon: [width, height, , , svgPathData],
-  } = icon;
-  return () => (
-    <SvgIcon
-      viewBox={`0 0 ${width} ${height}`}
-      sx={{ mr: 1, fontSize: "16px", p: "1px" }}
-    >
-      {typeof svgPathData === "string" ? (
-        <path fill="currentColor" d={svgPathData} />
-      ) : (
-        svgPathData.map((d, i) => (
-          <path
-            fill="currentColor"
-            style={{ opacity: i === 0 ? 0.4 : 1 }}
-            d={d}
-          />
-        ))
-      )}
-    </SvgIcon>
-  );
-};
+  Css,
+  Database,
+  FileCode,
+  JavaScript,
+  Less,
+  LockClosed,
+  Sass,
+} from "@zesty-io/material";
 
 export function navCode(
   state = {
@@ -64,7 +41,8 @@ export function navCode(
       let map = [...action.payload.files, ...state.raw]
         .filter((file) => file.status === "dev")
         .reduce((acc, file) => {
-          acc[file.ZUID] = file;
+          const { code, sync, ...rest } = file;
+          acc[file.ZUID] = rest;
           return acc;
         }, {});
 
@@ -199,7 +177,7 @@ function resolveNavData(file) {
     snippet: InsertDriveFileIcon,
     dataset: Database,
     pageset: FormatListBulletedIcon,
-    templateset: createIcon(faFileCode),
+    templateset: FileCode,
     // Instant api
     "ajax-json": FlashOnRoundedIcon,
     "ajax-html": FlashOnRoundedIcon,
@@ -207,14 +185,14 @@ function resolveNavData(file) {
     block: FlashOnRoundedIcon,
 
     // JavaScript
-    "text/js": createIcon(faJs),
-    "text/javascript": createIcon(faJs),
+    "text/js": JavaScript,
+    "text/javascript": JavaScript,
 
     // Stylesheets
-    "text/css": createIcon(faCss3Alt),
-    "text/less": createIcon(faLess),
-    "text/scss": createIcon(faSass),
-    "text/sass": createIcon(faSass),
+    "text/css": Css,
+    "text/less": Less,
+    "text/scss": Sass,
+    "text/sass": Sass,
 
     404: DocumentScannerRoundedIcon,
   };
@@ -225,7 +203,7 @@ function resolveNavData(file) {
     ...file,
     label: file.sort ? `(${file.sort}) ${file.fileName}` : file.fileName,
     path: `/code/file/${pathPart}/${file.ZUID}`,
-    icon: file.fileName === "loader" ? createIcon(faLock) : ICONS[file.type],
+    icon: file.fileName === "loader" ? LockClosed : ICONS[file.type],
   };
 
   // Remove this prop to ensure we don't accidentially

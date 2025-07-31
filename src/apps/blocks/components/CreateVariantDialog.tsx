@@ -10,7 +10,6 @@ import {
   DialogActions,
 } from "@mui/material";
 import { ModeEditRounded } from "@mui/icons-material";
-import { LoadingButton } from "@mui/lab";
 import { ContentModel } from "../../../shell/services/types";
 import { createItem, generateItem } from "../../../shell/store/content";
 import { useDispatch } from "react-redux";
@@ -104,7 +103,7 @@ export const CreateVariantDialog = ({
         <Button onClick={onClose} color="inherit">
           Cancel
         </Button>
-        <LoadingButton
+        <Button
           disabled={!variantName || isFieldsLoading}
           onClick={handleVariantCreate}
           loading={isLoading}
@@ -112,7 +111,7 @@ export const CreateVariantDialog = ({
           data-cy="create-variant-confirm-button"
         >
           Create
-        </LoadingButton>
+        </Button>
       </DialogActions>
     </Dialog>
   );

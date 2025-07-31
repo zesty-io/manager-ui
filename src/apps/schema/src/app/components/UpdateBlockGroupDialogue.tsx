@@ -10,10 +10,8 @@ import {
 import { useEffect, useReducer, useState } from "react";
 import DriveFileRenameOutlineRounded from "@mui/icons-material/DriveFileRenameOutlineRounded";
 import { useCreateGroupMutation } from "../../../../../shell/services/instance";
-import { ContentModel } from "../../../../../shell/services/types";
 import { notify } from "../../../../../shell/store/notifications";
 import { useDispatch } from "react-redux";
-import { LoadingButton } from "@mui/lab";
 import { SelectBlockGroupInput, GroupType } from "./SelectBlockGroupInput";
 import { useParams } from "react-router";
 
@@ -127,13 +125,13 @@ export const UpdateBlockGroupDialogue = ({
         <Button onClick={onClose} color="inherit">
           Cancel
         </Button>
-        <LoadingButton
+        <Button
           onClick={handleSave}
           loading={isCreatingGroup}
           variant="contained"
         >
           Save
-        </LoadingButton>
+        </Button>
       </DialogActions>
     </Dialog>
   );

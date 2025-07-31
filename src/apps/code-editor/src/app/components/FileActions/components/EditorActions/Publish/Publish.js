@@ -1,7 +1,7 @@
 import { memo, useState } from "react";
 
 import UploadIcon from "@mui/icons-material/Upload";
-import LoadingButton from "@mui/lab/LoadingButton";
+import { Button } from "@mui/material";
 
 import { publishFile, fetchFiles } from "../../../../../../store/files";
 
@@ -11,7 +11,7 @@ export const Publish = memo(function Publish(props) {
   const [publishing, setPublishing] = useState(false);
 
   return (
-    <LoadingButton
+    <Button
       variant="contained"
       color="success"
       size="small"
@@ -32,6 +32,6 @@ export const Publish = memo(function Publish(props) {
     >
       Publish
       <span className={styles.HideSmall}>&nbsp;Version {props.version}</span>
-    </LoadingButton>
+    </Button>
   );
 });

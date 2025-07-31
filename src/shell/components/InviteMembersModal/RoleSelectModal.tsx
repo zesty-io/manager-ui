@@ -7,7 +7,7 @@ import {
   Typography,
 } from "@mui/material";
 import { alpha } from "@mui/material/styles";
-import { useMemo, useState } from "react";
+import { useMemo, useState, Fragment } from "react";
 import CheckIcon from "@mui/icons-material/Check";
 import AdminPanelSettingsRoundedIcon from "@mui/icons-material/AdminPanelSettingsRounded";
 import { RoleAccessInfo } from "./RoleAccessInfo";
@@ -110,11 +110,12 @@ export const RoleSelectModal = ({ role, onSelect, onClose }: Props) => {
         <Box sx={{ mt: 1 }}>
           {roles.map((roleItem, index) => {
             if (roleItem.name === "Owner" && !isOwner) {
-              return <></>;
+              return <Fragment key={roleItem.name}></Fragment>;
             }
 
             return (
               <ListItemButton
+                key={roleItem.name}
                 onMouseLeave={() => setHoveredRoleIndex(role)}
                 onMouseEnter={() => setHoveredRoleIndex(index)}
                 onClick={() => onSelect(index)}

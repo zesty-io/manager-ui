@@ -6,7 +6,6 @@ import { useHistory } from "react-router";
 import { Select, Button, MenuItem, Box, FormControl } from "@mui/material";
 import HistoryIcon from "@mui/icons-material/History";
 import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
-import LoadingButton from "@mui/lab/LoadingButton";
 import SaveIcon from "@mui/icons-material/Save";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -229,7 +228,7 @@ export const DifferActions = memo(function DifferActions(props) {
         </>
       ) : (
         <>
-          <LoadingButton
+          <Button
             variant="contained"
             loadingPosition="start"
             onClick={resolveSync}
@@ -239,7 +238,7 @@ export const DifferActions = memo(function DifferActions(props) {
             startIcon={<SaveIcon fontSize="small" />}
           >
             Save Version {selectedVersion}
-          </LoadingButton>
+          </Button>
         </>
       )}
     </Box>

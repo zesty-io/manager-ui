@@ -475,7 +475,7 @@ const AnalyticsDashboardHeader = () => {
         </Typography>
         <Box display="flex" gap={1.5} height="fit-content">
           {topUsedModels?.reverse()?.map((model: any) => (
-            <CreateItemButton modelZUID={model[0]} />
+            <CreateItemButton key={model[0]} modelZUID={model[0]} />
           ))}
           <Button
             variant="contained"

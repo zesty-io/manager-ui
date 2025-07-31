@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useMetaKey } from "shell/hooks/useMetaKey";
 
 import SaveIcon from "@mui/icons-material/Save";
-import LoadingButton from "@mui/lab/LoadingButton";
+import { Button } from "@mui/material";
 
 import { saveFile } from "../../../../../../store/files";
 
@@ -27,7 +27,7 @@ export function Save(props) {
   const metaShortcut = useMetaKey("s", onSave);
 
   return (
-    <LoadingButton
+    <Button
       variant="contained"
       color="primary"
       size="small"
@@ -39,6 +39,6 @@ export function Save(props) {
     >
       Save&nbsp;
       <span className={styles.HideSmall}>{metaShortcut}</span>
-    </LoadingButton>
+    </Button>
   );
 }

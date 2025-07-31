@@ -44,6 +44,7 @@ export const Sort: FC = () => {
       <Menu open={open} onClose={handleClose} anchorEl={anchorEl}>
         {Object.entries(SORT_ORDER).map(([key, value]) => (
           <MenuItem
+            key={key}
             onClick={() => handleChange(key as SortOrder)}
             selected={
               key === "dateadded"
