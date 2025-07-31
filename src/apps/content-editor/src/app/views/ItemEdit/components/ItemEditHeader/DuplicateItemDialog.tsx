@@ -32,7 +32,10 @@ export const DuplicateItemDialog = ({ onClose }: DuplicateItemProps) => {
     modelZUID: string;
     itemZUID: string;
   }>();
-  const { data: modelFields } = useGetContentModelFieldsQuery(modelZUID);
+  const { data: modelFields } = useGetContentModelFieldsQuery({
+    modelZUID,
+    showDeleted: false,
+  });
   const history = useHistory();
   const item = useSelector(
     (state: AppState) => state.content[itemZUID] as ContentItem
@@ -42,27 +45,16 @@ export const DuplicateItemDialog = ({ onClose }: DuplicateItemProps) => {
   const [createContentItem, { isLoading }] = useCreateContentItemMutation();
 
   const duplicateItem = () => {
-    const activeFields =
-      modelFields?.filter((field) => !field?.deletedAt) || [];
-    const validFieldNames = activeFields?.map((field) => field?.name);
-
     let fieldToChange;
-    if (activeFields?.[0]?.datatype === "text") {
-      fieldToChange = activeFields[0].name;
+    if (modelFields?.[0]?.datatype === "text") {
+      fieldToChange = modelFields[0].name;
     }
 
-    const uuidFieldKeys = activeFields
+    const uuidFieldKeys = modelFields
       ?.filter((field) => field.datatype === "uuid")
       ?.map((field) => field.name);
 
-    const itemData = Object.keys(item?.data).reduce((acc, key) => {
-      if (validFieldNames?.includes(key)) {
-        acc[key] = item?.data[key];
-      }
-      return acc;
-    }, {} as Record<string, any>);
-
-    const newData = { ...itemData };
+    const newData = { ...item.data };
 
     uuidFieldKeys?.forEach((key) => {
       newData[key] = null; // Set each uuid key to null
