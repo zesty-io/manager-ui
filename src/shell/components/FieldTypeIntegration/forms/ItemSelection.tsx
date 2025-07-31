@@ -3,7 +3,6 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions,
   Button,
   Box,
   Typography,
@@ -130,13 +129,6 @@ const ItemSelection: FC<ItemSelectionProps> = ({
       fullWidth
       maxWidth="md"
       onClose={onClose}
-      // PaperProps={{
-      //   sx: {
-      //     minHeight: "calc(100vh - 40px)",
-      //     display: "flex",
-      //     flexDirection: "column",
-      //   },
-      // }}
       slotProps={{
         paper: {
           sx: {
@@ -156,16 +148,8 @@ const ItemSelection: FC<ItemSelectionProps> = ({
       <DialogContent
         sx={{
           p: 0,
-          // px: 0,
-          // pb: 10,
-          // mb: 12,
           bgcolor: "grey.50",
-          // flex: 1,
-          // display: "flex",
-          // flexDirection: "column",
           overflow: "hidden",
-          // overflowX: "hidden",
-          // overflowY: "auto",
           position: "relative",
           "& .integrationSelectCardList > div": {
             borderRadius: 2,
@@ -175,10 +159,7 @@ const ItemSelection: FC<ItemSelectionProps> = ({
             overflow: "hidden",
             position: "relative",
             boxSizing: "border-box",
-            // height: "100%",
-            // height: "calc(100% - 120px)",
             px: 4,
-            // mb: 2,
           },
         }}
       >
@@ -187,23 +168,6 @@ const ItemSelection: FC<ItemSelectionProps> = ({
           searchTerm={searchTerm}
           onChange={setSearchTerm}
         />
-
-        {/* <Box
-          flex={1}
-          position="relative"
-          px={0}
-          sx={{
-            "& ul": {
-              borderRadius: 2,
-              border: "1px solid",
-              borderColor: "border",
-              bgcolor: "grey.50",
-              overflow: "hidden",
-              height: "100%",
-              px: 4,
-            },
-          }}
-        > */}
 
         {!loading && !!searchTerm && !filteredItems.length ? (
           <NoResultsComponent
@@ -218,13 +182,10 @@ const ItemSelection: FC<ItemSelectionProps> = ({
             loading={loading}
           />
         )}
-        {/* </Box> */}
       </DialogContent>
     </Dialog>
   );
 };
-
-// Sub-components for better organization
 
 const DialogHeader: FC<{
   selectedCount: number;

@@ -74,8 +74,6 @@ const IntegrationSelect: FC<IntegrationSelectProps> = ({
   isLoading = false,
   maxItems = 10,
 }) => {
-  // const { endpoint, headers, type, keyPaths } = integrationFieldConfig || {};
-
   const {
     config,
     rootData,
@@ -125,7 +123,6 @@ const IntegrationSelect: FC<IntegrationSelectProps> = ({
   const handleRemoveItem = useCallback(
     (_itemId: string) => {
       const newIds = selectedItemIds.filter((id) => id !== _itemId);
-      // setSelectedItemIds(newIds);
       handleSave(newIds);
     },
     [setSelectedItemIds, selectedItemIds, handleSave]
@@ -145,8 +142,6 @@ const IntegrationSelect: FC<IntegrationSelectProps> = ({
     (from: number, to: number) => {
       const newIds = [...selectedItemIds];
       newIds.splice(to, 0, newIds.splice(from, 1)[0]);
-
-      // setSelectedItemIds(newIds);
       handleSave(newIds);
     },
     [selectedItemIds, handleSave, setSelectedItemIds]

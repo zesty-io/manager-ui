@@ -9,13 +9,11 @@ import { fetchApi, getKeyValue } from "./utils";
 const useIntegrationField = (initialConfig: IntegrationFieldConfig | null) => {
   const [config, setConfig] = useState(initialConfig);
   const [apiData, setApiData] = useState<any>(null);
-  // const [rootData, setRootData] = useState<any[]>([]);
   const [selectedItems, setSelectedItems] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const { endpoint, headers, type, keyPaths } = config;
-  // const rootPath = keyPaths?.rootPath;
 
   const generateItemId = useCallback(
     (item: any, keyPaths: IntegrationKeyPaths) => {
