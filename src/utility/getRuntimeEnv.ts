@@ -62,7 +62,7 @@ export default () => {
         };
 
       default:
-        break;
+        throw new Error(`Unhandled NODE_ENV value: ${process.env.NODE_ENV}`);
     }
   }
 };
