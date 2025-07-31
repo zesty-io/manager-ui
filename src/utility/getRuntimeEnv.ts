@@ -31,7 +31,7 @@ export default () => {
         };
 
       default:
-        break;
+        throw new Error(`Invalid NODE_ENV value: ${process.env.NODE_ENV}`);
     }
   } else {
     const COOKIE_DOMAIN = ".zesty.io";
