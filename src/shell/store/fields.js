@@ -154,15 +154,17 @@ export function saveField(modelZUID, fieldZUID, payload) {
         json: true,
         body: modifedField,
       }
-    ).then((res) => {
-      dispatch({
-        type: "SAVE_FIELD_SUCCESS",
-        payload: { modelZUID, fieldZUID },
-      });
+    )
+      .then((res) => {
+        dispatch({
+          type: "SAVE_FIELD_SUCCESS",
+          payload: { modelZUID, fieldZUID },
+        });
 
-      // dispatch(fetchField(modelZUID, fieldZUID));
-      return res;
-    });
+        // dispatch(fetchField(modelZUID, fieldZUID));
+        return res;
+      })
+      .catch((err) => console.error("Failed to save field:", err));
   };
 }
 
@@ -200,10 +202,12 @@ export function deactivateField(modelZUID, fieldZUID) {
       {
         method: "DELETE",
       }
-    ).then((res) => {
-      dispatch(fetchFields(modelZUID));
-      return res;
-    });
+    )
+      .then((res) => {
+        dispatch(fetchFields(modelZUID));
+        return res;
+      })
+      .catch((err) => console.error("Failed to deactivate field:", err));
   };
 }
 
@@ -214,9 +218,11 @@ export function activateField(modelZUID, fieldZUID) {
       {
         method: "PUT",
       }
-    ).then((res) => {
-      dispatch(fetchFields(modelZUID));
-      return res;
-    });
+    )
+      .then((res) => {
+        dispatch(fetchFields(modelZUID));
+        return res;
+      })
+      .catch((err) => console.error("Failed to activate field:", err));
   };
 }

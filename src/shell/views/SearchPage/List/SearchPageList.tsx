@@ -15,6 +15,7 @@ import { Content } from "./Content";
 import { Model } from "./Model";
 import { Code } from "./Code";
 import { Media } from "./Media";
+import { Block, BlockModel } from "./Block";
 
 type SearchPageList = {
   results: SearchPageItem[];
@@ -48,6 +49,15 @@ export const SearchPageList: FC<SearchPageList> = ({
               <Model
                 key={result.ZUID}
                 data={result.data as ContentModel}
+                style={style}
+              />
+            );
+
+          case "block":
+            return (
+              <Block
+                key={result.ZUID}
+                data={result.data as BlockModel}
                 style={style}
               />
             );

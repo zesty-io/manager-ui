@@ -65,7 +65,7 @@ export const DefaultValue = ({
           />
         }
         label={
-          <Box>
+          <>
             <Typography variant="body2" fontWeight="600">
               Default Value
             </Typography>
@@ -77,7 +77,7 @@ export const DefaultValue = ({
             >
               Set a predefined value for this field
             </Typography>
-          </Box>
+          </>
         }
       />
 
@@ -95,7 +95,7 @@ export const DefaultValue = ({
               currency={currency}
               fieldLabel={fieldLabel}
             />
-            <FormHelperText>
+            <FormHelperText component="div">
               <Box display="flex" justifyContent="space-between">
                 <Box>{error}</Box>
                 {MaxLengths[type as keyof typeof MaxLengths] !== undefined && (

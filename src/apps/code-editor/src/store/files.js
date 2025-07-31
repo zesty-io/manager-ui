@@ -453,9 +453,10 @@ export function createFile(name, type, code = "") {
   };
 }
 
-export function saveFile(ZUID, status) {
+export function saveFile(ZUID, status, code = null) {
   return (dispatch, getState) => {
     const file = resolveFile(dispatch, getState().files, ZUID, status);
+    const newCode = code || file.code;
     const pathPart = resolvePathPart(file.type);
 
     // delete file.version;
@@ -464,7 +465,7 @@ export function saveFile(ZUID, status) {
     return request(`${CONFIG.API_INSTANCE}/web/${pathPart}/${ZUID}`, {
       method: "PUT",
       json: true,
-      body: file,
+      body: { ...file, code: newCode },
     })
       .then((res) => {
         if (res.status === 200) {

@@ -51,7 +51,7 @@ export const UserListItem = (props) => {
         )}
       </ListItemAvatar>
       <ListItemText
-        sx={{ margin: props.size === "large" && 0 }}
+        sx={{ margin: 0 }}
         primaryTypographyProps={{
           whiteSpace: "nowrap",
           overflow: "hidden",

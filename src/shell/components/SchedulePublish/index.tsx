@@ -10,7 +10,6 @@ import {
   Box,
   Alert,
 } from "@mui/material";
-import { LoadingButton } from "@mui/lab";
 import ScheduleRoundedIcon from "@mui/icons-material/ScheduleRounded";
 import WarningRoundedIcon from "@mui/icons-material/WarningRounded";
 import CalendarTodayRoundedIcon from "@mui/icons-material/CalendarTodayRounded";
@@ -218,7 +217,7 @@ export const SchedulePublish = ({
             Cancel
           </Button>
           {item?.scheduling?.isScheduled ? (
-            <LoadingButton
+            <Button
               data-cy="UnschedulePublishButton"
               variant="contained"
               color="warning"
@@ -227,9 +226,9 @@ export const SchedulePublish = ({
               loading={isLoading}
             >
               Unschedule Publish
-            </LoadingButton>
+            </Button>
           ) : (
-            <LoadingButton
+            <Button
               data-cy="SchedulePublishButton"
               variant="contained"
               startIcon={<ScheduleRoundedIcon />}
@@ -243,7 +242,7 @@ export const SchedulePublish = ({
               loading={isLoading}
             >
               Schedule Publish
-            </LoadingButton>
+            </Button>
           )}
         </DialogActions>
       </Dialog>

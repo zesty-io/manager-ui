@@ -1,6 +1,5 @@
 import { memo, useState, useEffect } from "react";
 import { Prompt } from "react-router-dom";
-import { ThemeProvider } from "@mui/material/styles";
 import {
   Button,
   Dialog,
@@ -10,8 +9,6 @@ import {
   Typography,
 } from "@mui/material";
 import { WarningAmberRounded } from "@mui/icons-material";
-import { theme } from "@zesty-io/material";
-import { LoadingButton } from "@mui/lab";
 
 type PendingEditsModalProps = {
   show: boolean;
@@ -117,21 +114,21 @@ export default memo(function PendingEditsModal(props: PendingEditsModalProps) {
             Continue Editing
           </Button>
           <Box display="flex" gap={1}>
-            <LoadingButton
+            <Button
               color="primary"
               loading={loading}
               onClick={() => handler("delete")}
             >
               Don't Save
-            </LoadingButton>
-            <LoadingButton
+            </Button>
+            <Button
               variant="contained"
               color="primary"
               loading={loading}
               onClick={() => handler("save")}
             >
               Save
-            </LoadingButton>
+            </Button>
           </Box>
         </DialogActions>
       </Dialog>

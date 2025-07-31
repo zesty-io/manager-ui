@@ -362,7 +362,6 @@ export const OTFEditor = ({
           disabled
           InputProps={{
             readOnly: true,
-            disableUnderline: true,
             sx: { background: "white" },
             endAdornment: (
               <InputAdornment position="end">

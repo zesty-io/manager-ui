@@ -99,4 +99,19 @@ describe("Navigation through content editor", () => {
     cy.get("[data-cy=globalAccountAvatar]").click();
     cy.get("[data-cy=globalAccountAvatar] menu").should("not.exist");
   });
+
+  it("can navigate content item files in the sidebar", () => {
+    cy.contains("All Field Types").click();
+    cy.location("pathname").should(
+      "eq",
+      "/content/6-556370-8sh47g/7-b939a4-457q19"
+    );
+  });
+
+  it("should be able to directly create a new content item from the sidebar item", () => {
+    cy.contains(".MuiTreeItem-root", "Articles")
+      .find("[data-cy='tree-item-add-new-content']")
+      .click({ force: true });
+    cy.location("pathname").should("eq", "/content/6-a8bae2f4d7-rffln5/new");
+  });
 });

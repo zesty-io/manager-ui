@@ -12,14 +12,9 @@ import {
   Tab,
   Button,
   Grid,
-  Stack,
   ListItem,
-  FilledInputProps,
-  InputProps,
-  OutlinedInputProps,
   InputAdornment,
 } from "@mui/material";
-import LoadingButton from "@mui/lab/LoadingButton";
 import { isEmpty } from "lodash";
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -38,7 +33,6 @@ import {
   AutocompleteConfig,
 } from "../FieldFormInput";
 import { useMediaRules } from "../../hooks/useMediaRules";
-import { MediaRules } from "../MediaRules";
 import {
   getCategory,
   convertLabelValue,
@@ -60,24 +54,15 @@ import {
   FieldSettingsOptions,
   ContentModelFieldDataType,
 } from "../../../../../../../shell/services/types";
-import {
-  FIELD_COPY_CONFIG,
-  TYPE_TEXT,
-  FORM_CONFIG,
-  FieldType,
-} from "../../configs";
-import { ComingSoon } from "../ComingSoon";
+import { FIELD_COPY_CONFIG, TYPE_TEXT, FORM_CONFIG } from "../../configs";
 import { Learn } from "../Learn";
 import { notify } from "../../../../../../../shell/store/notifications";
-import { DefaultValue } from "../DefaultValue";
-import { CharacterLimit } from "../CharacterLimit";
 import { Rules } from "./Rules";
 import { MaxLengths } from "../../../../../../content-editor/src/app/components/Editor/Editor";
 import {
   Currency,
   currencies,
 } from "../../../../../../../shell/components/FieldTypeCurrency/currencies";
-import getFlagEmoji from "../../../../../../../utility/getFlagEmoji";
 
 type ActiveTab = "details" | "rules" | "learn";
 type Params = {
@@ -942,7 +927,7 @@ export const FieldForm = ({
             })}
             {isUpdateField && (
               <Grid size={12}>
-                <LoadingButton
+                <Button
                   data-cy="DeactivateReactivateFieldUpdateModal"
                   variant="outlined"
                   color="inherit"
@@ -965,7 +950,7 @@ export const FieldForm = ({
                   {fieldStateOnSaveAction === "deactivate"
                     ? "Reactivate Field"
                     : "Deactivate Field"}
-                </LoadingButton>
+                </Button>
               </Grid>
             )}
           </Grid>
@@ -1002,7 +987,7 @@ export const FieldForm = ({
           >
             Cancel
           </Button>
-          <LoadingButton
+          <Button
             data-cy="FieldFormAddFieldBtn"
             loading={isUpdatingField}
             onClick={handleSubmitForm}
@@ -1010,7 +995,7 @@ export const FieldForm = ({
             startIcon={<SaveRoundedIcon />}
           >
             Save
-          </LoadingButton>
+          </Button>
         </DialogActions>
       ) : (
         <DialogActions
@@ -1025,7 +1010,7 @@ export const FieldForm = ({
             Cancel
           </Button>
           <Box>
-            <LoadingButton
+            <Button
               data-cy="FieldFormAddAnotherFieldBtn"
               variant="outlined"
               startIcon={<AddRoundedIcon />}
@@ -1036,15 +1021,15 @@ export const FieldForm = ({
               onClick={handleAddAnotherField}
             >
               Add Another Field
-            </LoadingButton>
-            <LoadingButton
+            </Button>
+            <Button
               data-cy="FieldFormAddFieldBtn"
               loading={isCreatingField || isBulkUpdating}
               onClick={handleSubmitForm}
               variant="contained"
             >
               Add Field
-            </LoadingButton>
+            </Button>
           </Box>
         </DialogActions>
       )}

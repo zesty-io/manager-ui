@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useMemo, FC } from "react";
+import { useState, useCallback, useMemo, FC } from "react";
 import {
   Stack,
   Typography,
@@ -64,10 +64,7 @@ const ActionsButton = ({
     <IconButton
       key="publish"
       color="inherit"
-      size="xsmall"
-      sx={{
-        transform: "translateX(5px)",
-      }}
+      size="xxsmall"
       onClick={() => {
         setIsLoading(true);
         dispatch(publishFile(ZUID, status))
@@ -142,13 +139,13 @@ const createTreeData = (
         : [];
 
     return {
+      ZUID: treeItem?.ZUID,
       icon: treeItem?.icon,
       path: filePath,
       label: treeItem?.label,
       children: treeItem?.children?.map((child) => createTreeItemData(child)),
       actions: actions,
-      nodeData: { ...treeData, navSource: "code", isDir },
-      ...treeData,
+      nodeData: { navSource: "code", isDir },
     };
   };
   const treeData = tree

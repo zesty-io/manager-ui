@@ -38,6 +38,7 @@ export const InstallApp = () => {
       <Stack direction="row" gap={1} mb={8}>
         {ICONS.map((icon) => (
           <Box
+            key={icon.altText.replaceAll(" ", "")}
             component="img"
             src={icon.image}
             alt={icon.altText}

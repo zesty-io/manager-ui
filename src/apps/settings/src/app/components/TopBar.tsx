@@ -1,10 +1,9 @@
 import { FC, useState } from "react";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, Button } from "@mui/material";
 import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
 import { useMetaKey } from "../../../../../shell/hooks/useMetaKey";
 import { LoadingButtonProps } from "@mui/lab";
 import { Tooltip } from "@mui/material";
-import LoadingButton from "@mui/lab/LoadingButton";
 import { CheckCircleRounded } from "@mui/icons-material";
 import ConfirmSaveDialog from "./ConfirmSaveDialog";
 
@@ -128,7 +127,7 @@ export const ActionButton: FC<ActionButtonProps> = ({
       placement="bottom"
     >
       {isActive ? (
-        <LoadingButton
+        <Button
           {...props}
           onClick={onClick}
           loading={isLoading}
@@ -136,7 +135,7 @@ export const ActionButton: FC<ActionButtonProps> = ({
           sx={{ whiteSpace: "nowrap" }}
         >
           {label}
-        </LoadingButton>
+        </Button>
       ) : (
         <Box display="flex" alignItems="center" columnGap={1} px={1}>
           <CheckCircleRounded

@@ -9,7 +9,6 @@ import {
   DialogContent,
 } from "@mui/material";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
-import { LoadingButton } from "@mui/lab";
 
 type ConfirmDeleteModalProps = {
   onClose: () => void;
@@ -51,7 +50,7 @@ export const ConfirmDeleteModal = ({
       <Button variant="text" color="inherit" onClick={onClose}>
         Cancel
       </Button>
-      <LoadingButton
+      <Button
         data-cy="ConfirmDeleteCommentButton"
         variant="contained"
         color="error"
@@ -59,7 +58,7 @@ export const ConfirmDeleteModal = ({
         loading={isDeletingComment}
       >
         Delete Forever
-      </LoadingButton>
+      </Button>
     </DialogActions>
   </Dialog>
 );

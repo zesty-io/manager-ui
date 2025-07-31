@@ -423,7 +423,6 @@ export const FileModalContent: FC<Props> = ({
             value={src}
             InputProps={{
               readOnly: true,
-              disableUnderline: true,
               endAdornment: (
                 <InputAdornment position="end">
                   {isCopied ? (
@@ -482,7 +481,6 @@ export const FileModalContent: FC<Props> = ({
             data-cy="zuid-textfield"
             InputProps={{
               readOnly: true,
-              disableUnderline: true,
               endAdornment: (
                 <InputAdornment position="end">
                   {isCopiedZuid ? (
