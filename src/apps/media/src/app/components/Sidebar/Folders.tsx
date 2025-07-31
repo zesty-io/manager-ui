@@ -99,12 +99,15 @@ export const Folders = ({ lockedToGroupId }: Props) => {
   };
 
   useEffect(() => {
-    window.addEventListener("storage", () =>
-      setHiddenGroups(JSON.parse(localStorage.getItem("zesty:navMedia:hidden")))
-    );
+    const handleStorage = () =>
+      setHiddenGroups(
+        JSON.parse(localStorage.getItem("zesty:navMedia:hidden"))
+      );
+
+    window.addEventListener("storage", handleStorage);
 
     return () => {
-      window.removeEventListener("storage", () => {});
+      window.removeEventListener("storage", handleStorage);
     };
   }, []);
 
