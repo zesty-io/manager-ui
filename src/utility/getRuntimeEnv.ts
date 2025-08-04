@@ -1,6 +1,5 @@
 export default () => {
-  const isContentOneDomain =
-    window.location.hostname.includes(".cms.content.one");
+  const isContentOneDomain = window.location.hostname.includes(".content.one");
 
   if (isContentOneDomain) {
     const COOKIE_DOMAIN = ".content.one";
@@ -14,19 +13,19 @@ export default () => {
 
       case "stage":
         return {
-          URL_MANAGER: ".stage.cms.content.one",
+          URL_MANAGER: ".cms.stage.content.one",
           COOKIE_DOMAIN,
         };
 
       case "development":
         return {
-          URL_MANAGER: ".dev.cms.content.one:8080",
+          URL_MANAGER: ".cms.dev.content.one:8080",
           COOKIE_DOMAIN,
         };
 
       case "local":
         return {
-          URL_MANAGER: ".local.cms.content.one:9000",
+          URL_MANAGER: ".cms.local.content.one:9000",
           COOKIE_DOMAIN,
         };
 
