@@ -116,6 +116,7 @@ type FieldFormInputProps = {
   disabled?: boolean;
   autocompleteConfig?: AutocompleteConfig;
   integrationFieldConfig?: IntegrationFieldConfig;
+  isUpdateField?: boolean;
 } & Pick<
   AutocompleteProps<DropdownOptions | Currency, false, false, false, "div">,
   "renderOption" | "filterOptions"
@@ -131,6 +132,7 @@ export const FieldFormInput = ({
   filterOptions,
   autocompleteConfig,
   integrationFieldConfig,
+  isUpdateField,
 }: FieldFormInputProps) => {
   const options =
     fieldConfig.type === "options" ||
@@ -450,6 +452,7 @@ export const FieldFormInput = ({
             onDataChange({ inputName: fieldConfig.name, value })
           }
           integrationFieldConfig={integrationFieldConfig}
+          isUpdate={isUpdateField}
           error={errorMsg}
         />
       )}

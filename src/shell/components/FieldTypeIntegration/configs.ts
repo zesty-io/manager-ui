@@ -24,10 +24,10 @@ export type FieldTypeIntegrationProps = {
   value?: any | null;
   onChange?: (value: any) => void;
   error?: string | [string, string][] | null;
-  isError?: boolean;
   integrationFieldConfig?: IntegrationFieldConfig | null;
   maxItems?: number | null;
   isLoading?: boolean;
+  isUpdate?: boolean;
 };
 
 export type DisplayOptionCardProps = {

@@ -45,6 +45,7 @@ type IntegrationConfigureProps = {
   integrationFieldConfig: IntegrationFieldConfig;
   onChange: (value: any) => void;
   isLoading?: boolean;
+  error?: string | [string, string][] | null;
   isNew?: boolean;
 };
 
@@ -240,6 +241,7 @@ const IntegrationConfigure = ({
   onChange,
   integrationFieldConfig,
   isLoading = false,
+  error = null,
   isNew = false,
 }: IntegrationConfigureProps) => {
   const {
@@ -410,7 +412,11 @@ const IntegrationConfigure = ({
           ? "Reconfigure"
           : "Connect to API"}
       </Button>
-
+      {!!error && (
+        <Typography variant="body2" color="error.main" sx={{ mt: 0.5 }}>
+          {error}
+        </Typography>
+      )}
       {isFormOpen && (
         <Dialog
           open
@@ -463,11 +469,10 @@ const FieldTypeIntegration: FC<FieldTypeIntegrationProps> = ({
   onChange,
   integrationFieldConfig,
   maxItems = 10,
+  error = null,
   isLoading = false,
+  isUpdate = false,
 }) => {
-  const isNewConfig =
-    !integrationFieldConfig?.endpoint && !integrationFieldConfig?.type;
-
   if (formType === "select") {
     return (
       <DndProvider backend={HTML5Backend}>
@@ -489,7 +494,8 @@ const FieldTypeIntegration: FC<FieldTypeIntegrationProps> = ({
       integrationFieldConfig={integrationFieldConfig}
       onChange={(value) => onChange(value)}
       isLoading={isLoading}
-      isNew={isNewConfig}
+      isNew={!isUpdate}
+      error={error}
     />
   );
 };

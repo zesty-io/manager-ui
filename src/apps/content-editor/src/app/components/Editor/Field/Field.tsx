@@ -786,7 +786,6 @@ export const Field = ({
             onChange={(value) => onChange(value, name, datatype)}
             formType="select"
             maxItems={settings?.maxValue}
-            isError={errors && Object.values(errors)?.some((error) => !!error)}
             integrationFieldConfig={fieldData?.integrationFieldConfig}
           />
         </FieldShell>

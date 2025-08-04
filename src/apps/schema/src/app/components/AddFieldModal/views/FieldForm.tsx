@@ -433,8 +433,7 @@ export const FieldForm = ({
           formData?.integrationFieldConfig as IntegrationFieldConfig;
 
         if (!intField?.endpoint || !intField?.type || !intField?.keyPaths) {
-          newErrorsObj["integrationFieldConfig"] =
-            "Incomplete API Configuration";
+          newErrorsObj[inputName] = "Incomplete API Configuration";
         }
       }
 
@@ -831,7 +830,7 @@ export const FieldForm = ({
           borderTop: 0,
         }}
       >
-        <div role="tabpanel" hidden={activeTab !== "details"}>
+        {activeTab === "details" && (
           <Grid
             data-cy="DetailsTab"
             container
@@ -862,12 +861,11 @@ export const FieldForm = ({
               }
 
               if (fieldConfig.name === "integrationFieldConfig") {
-                integrationFieldConfig = {
-                  endpoint: fieldData?.integrationFieldConfig?.endpoint,
-                  headers: fieldData?.integrationFieldConfig?.headers,
-                  type: fieldData?.integrationFieldConfig?.type,
-                  keyPaths: fieldData?.integrationFieldConfig?.keyPaths,
-                };
+                integrationFieldConfig = isUpdateField
+                  ? fieldData?.integrationFieldConfig
+                  : (formData[
+                      "integrationFieldConfig"
+                    ] as IntegrationFieldConfig);
               }
 
               if (fieldConfig.name === "relatedFieldZUID") {
@@ -956,6 +954,7 @@ export const FieldForm = ({
                   filterOptions={filterOptions}
                   autocompleteConfig={autocompleteConfig}
                   integrationFieldConfig={integrationFieldConfig}
+                  isUpdateField={isUpdateField}
                 />
               );
             })}
@@ -988,9 +987,9 @@ export const FieldForm = ({
               </Grid>
             )}
           </Grid>
-        </div>
+        )}
 
-        <div role="tabpanel" hidden={activeTab !== "rules"}>
+        {activeTab === "rules" && (
           <Rules
             type={type}
             onFieldDataChanged={handleFieldDataChange}
@@ -1001,11 +1000,9 @@ export const FieldForm = ({
             isDefaultValueEnabled={isDefaultValueEnabled}
             setIsDefaultValueEnabled={setIsDefaultValueEnabled}
           />
-        </div>
+        )}
 
-        <div role="tabpanel" hidden={activeTab !== "learn"}>
-          <Learn type={type} />
-        </div>
+        {activeTab === "learn" && <Learn type={type} />}
       </DialogContent>
       {isUpdateField ? (
         <DialogActions
