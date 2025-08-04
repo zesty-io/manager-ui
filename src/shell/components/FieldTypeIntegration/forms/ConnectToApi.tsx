@@ -125,9 +125,7 @@ const ConnectToApi = ({
     setReqAborted(false);
     setStatus("connecting");
 
-    const headersWithValues = headersLocal.filter(
-      (i) => i.value !== "" && !i.value
-    );
+    const headersWithValues = headersLocal.filter((i) => !i?.value);
     const reqHeaders = !headersWithValues?.length
       ? null
       : arrayToKeyValuePairs(headersWithValues);

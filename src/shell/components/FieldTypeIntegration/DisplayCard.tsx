@@ -399,7 +399,9 @@ export const DraggableCard: FC<DraggableCardProps> = ({
       id={id}
       elevation={0}
       ref={!draggable ? null : (node) => drop(preview(node as HTMLElement))}
+      variant="outlined"
       sx={{
+        borderColor: "border",
         py: 0,
         pl: 3.5,
         pr: "40px",

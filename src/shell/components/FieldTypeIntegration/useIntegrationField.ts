@@ -13,7 +13,18 @@ const useIntegrationField = (initialConfig: IntegrationFieldConfig | null) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const { endpoint, headers, type, keyPaths } = config;
+  const { endpoint, headers, type, keyPaths } = config || {
+    endpoint: null,
+    headers: null,
+    type: null,
+    keyPaths: {
+      heading: "",
+      subHeading: "",
+      thumbnail: "",
+      detail: "",
+      details: null,
+    },
+  };
 
   const generateItemId = useCallback(
     (item: any, keyPaths: IntegrationKeyPaths) => {
@@ -65,9 +76,7 @@ const useIntegrationField = (initialConfig: IntegrationFieldConfig | null) => {
         setApiData(null);
       }
 
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 2000);
+      setIsLoading(false);
     },
     [setApiData, setIsLoading, setError]
   );

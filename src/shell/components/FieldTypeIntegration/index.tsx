@@ -48,23 +48,6 @@ type IntegrationConfigureProps = {
   isNew?: boolean;
 };
 
-// function generateItemId(item: any, keyPaths: IntegrationKeyPaths) {
-//   const headingText = getKeyValue(item, keyPaths?.heading) || "";
-//   const subHeadingText = getKeyValue(item, keyPaths?.subHeading) || "";
-//   const thumbnailText = getKeyValue(item, keyPaths?.thumbnail) || "";
-//   const detailText = getKeyValue(item, keyPaths?.detail) || "";
-//   const detailsText = !keyPaths?.details
-//     ? ""
-//     : keyPaths?.details?.map((detail) => getKeyValue(item, detail)).join("");
-
-//   const textId = `${headingText}${subHeadingText}${thumbnailText}${detailText}${detailsText}`;
-
-//   return textId
-//     ?.replace(/[\/:;&*%$#@!?=\s+]/g, "")
-//     ?.toLowerCase()
-//     .trim();
-// }
-
 const IntegrationSelect: FC<IntegrationSelectProps> = ({
   name,
   label,
@@ -80,7 +63,7 @@ const IntegrationSelect: FC<IntegrationSelectProps> = ({
     isLoading: isFetching,
     generateItemId,
   } = useIntegrationField(integrationFieldConfig);
-  const { endpoint, headers, type, keyPaths } = config || {};
+
   const [jsonData, setJsonData] = useState<string | null>(null);
   const [jsonViewerIsOpen, setJsonViewerIsOpen] = useState(false);
   const [selectionFormOpen, setSelectionFormOpen] = useState(false);
@@ -99,7 +82,7 @@ const IntegrationSelect: FC<IntegrationSelectProps> = ({
     !value?.length
       ? []
       : value?.map((item: any) => ({
-          _itemId: generateItemId(item, keyPaths),
+          _itemId: generateItemId(item, config?.keyPaths),
         }))
   );
 
@@ -130,7 +113,7 @@ const IntegrationSelect: FC<IntegrationSelectProps> = ({
 
   const findCard = useCallback(
     (id: string) => {
-      const itemIndex = selectedItemIds.findIndex(
+      const itemIndex = selectedItemIds?.findIndex(
         (itemId: any) => itemId === id
       );
       return itemIndex;
@@ -179,12 +162,12 @@ const IntegrationSelect: FC<IntegrationSelectProps> = ({
                 <DraggableCard
                   key={item?._itemId}
                   id={item?._itemId}
-                  type={type}
-                  heading={getKeyValue(item, keyPaths?.heading)}
-                  subHeading={getKeyValue(item, keyPaths?.subHeading)}
-                  thumbnail={getKeyValue(item, keyPaths?.thumbnail)}
-                  detail={getKeyValue(item, keyPaths?.detail)}
-                  details={keyPaths?.details}
+                  type={config?.type}
+                  heading={getKeyValue(item, config?.keyPaths?.heading)}
+                  subHeading={getKeyValue(item, config?.keyPaths?.subHeading)}
+                  thumbnail={getKeyValue(item, config?.keyPaths?.thumbnail)}
+                  detail={getKeyValue(item, config?.keyPaths?.detail)}
+                  details={config?.keyPaths?.details}
                   index={index}
                   findCard={findCard}
                   moveCard={moveCard}
@@ -221,7 +204,6 @@ const IntegrationSelect: FC<IntegrationSelectProps> = ({
             maxItems={maxItems}
             onClose={() => setSelectionFormOpen(false)}
             onSave={handleSave}
-            onView={handleViewJsonData}
             loading={loading}
           />
         )}
@@ -378,6 +360,7 @@ const IntegrationConfigure = ({
                 API URL
               </Typography>
               <InputBase
+                data-cy="integrationApiUrl"
                 readOnly
                 value={config?.endpoint}
                 sx={{ flexGrow: 1 }}
@@ -395,6 +378,7 @@ const IntegrationConfigure = ({
                 Display Items as
               </Typography>
               <InputBase
+                data-cy="integrationDisplayType"
                 readOnly
                 value={config?.type}
                 sx={{ flexGrow: 1 }}

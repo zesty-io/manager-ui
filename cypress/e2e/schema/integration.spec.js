@@ -126,8 +126,8 @@ describe("Integration Field", () => {
             : item.label,
         ...(item.datatype === "integration"
           ? {
-              integrationFieldApiConfig: {
-                ...item.integrationFieldApiConfig,
+              integrationFieldConfig: {
+                ...item.integrationFieldConfig,
                 endpoint: GENERIC_FIELD_DATA.endpoint,
               },
             }
@@ -161,7 +161,7 @@ describe("Integration Field", () => {
         .clear()
         .type("Memphis");
 
-      cy.getElement('[data-cy="integrationSelectionFormListContainer"]')
+      cy.getElement(".integrationSelectionFormListContainer > div")
         .children()
         .should("have.length", 3);
     });
@@ -170,15 +170,11 @@ describe("Integration Field", () => {
         .clear()
         .type("xxxxxx");
 
-      cy.getElement(
-        '[data-cy="integrationSelectionFormListContainer"] [data-cy="NoResultsContainer"]'
-      ).should("exist");
+      cy.getElement('[data-cy="NoResultsContainer"]').should("exist");
     });
 
     it("Search Filter - reset search term by clicking Search again button", () => {
-      cy.getElement(
-        '[data-cy="integrationSelectionFormListContainer"] [data-cy="NoResultsContainer"] button'
-      ).click();
+      cy.getElement('[data-cy="NoResultsContainer"] button').click();
 
       cy.getElement('[data-cy="integrationSelectionFormSearchBox"] input')
         .should("be.empty")
@@ -186,13 +182,13 @@ describe("Integration Field", () => {
     });
     it("select 3 Items from the list", () => {
       cy.getElement(
-        '[data-cy="integrationSelectionFormListContainer"] [data-cy="integrationSelectCard"]:eq(0) input'
+        '.integrationSelectionFormListContainer > div [data-cy="integrationSelectCard"]:eq(0) input'
       ).check({ force: true });
       cy.getElement(
-        '[data-cy="integrationSelectionFormListContainer"] [data-cy="integrationSelectCard"]:eq(1) input'
+        '.integrationSelectionFormListContainer > div [data-cy="integrationSelectCard"]:eq(1) input'
       ).check({ force: true });
       cy.getElement(
-        '[data-cy="integrationSelectionFormListContainer"] [data-cy="integrationSelectCard"]:eq(2) input'
+        '.integrationSelectionFormListContainer > div [data-cy="integrationSelectCard"]:eq(2) input'
       ).check({ force: true });
 
       cy.getElement('[data-cy="selectIntegrationFormDoneButton"]').click();
@@ -278,7 +274,7 @@ function connectToEndpoint(endpoint, type, apiData) {
     statusCode: 200,
     body: apiData,
   });
-  cy.visit(`/schema/${modelZUID}/fields`);
+  cy.visit(`/schema/${Cypress.env("modelZUID")}/fields`);
 
   cy.getElement('[data-cy="AddFieldBtn"]').click();
 

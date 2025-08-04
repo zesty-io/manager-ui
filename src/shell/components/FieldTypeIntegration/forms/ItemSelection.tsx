@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo, useRef, useState } from "react";
+import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -13,6 +13,7 @@ import {
   alpha,
   Checkbox,
   IconButton,
+  Drawer,
 } from "@mui/material";
 import { Search, Check, Close, DataObject } from "@mui/icons-material";
 import { FixedSizeList as List, ListChildComponentProps } from "react-window";
@@ -23,6 +24,7 @@ import {
 } from "../../../services/types";
 import DisplayCard from "../DisplayCard";
 import { NoResults } from "../../../../apps/schema/src/app/components/NoResults";
+import JsonViewer from "./JsonViewer";
 
 interface ItemSelectionProps {
   items: any[];
@@ -32,7 +34,6 @@ interface ItemSelectionProps {
   config: IntegrationFieldConfig;
   maxItems: number;
   loading?: boolean;
-  onView?: (item: any) => void;
 }
 
 const getItemRowHeight = (type: IntegrationTypes, details?: any[]): number => {
@@ -51,12 +52,15 @@ const ItemSelection: FC<ItemSelectionProps> = ({
   config,
   maxItems,
   loading = false,
-  onView,
 }) => {
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const drawerContainerRef = useRef<HTMLInputElement>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedItemIds, setSelectedItemIds] =
     useState<string[]>(selectedItems);
+
+  const [jsonViewData, setJsonViewData] = useState(null);
+  const [isOpen, setIsOpen] = useState(false);
 
   const limitReached = selectedItemIds.length >= maxItems;
 
@@ -91,6 +95,11 @@ const ItemSelection: FC<ItemSelectionProps> = ({
     searchInputRef.current?.focus();
   }, []);
 
+  const handleViewJsonData = (data: any) => {
+    setJsonViewData(data);
+    setIsOpen(true);
+  };
+
   const rowRenderer = useCallback(
     ({ index, style }: ListChildComponentProps): React.ReactElement => {
       const item = filteredItems[index];
@@ -107,7 +116,7 @@ const ItemSelection: FC<ItemSelectionProps> = ({
             loading={loading}
             config={config}
             onSelect={handleSelect}
-            onView={onView}
+            onView={() => handleViewJsonData(item)}
           />
         </div>
       );
@@ -119,7 +128,6 @@ const ItemSelection: FC<ItemSelectionProps> = ({
       loading,
       config,
       handleSelect,
-      onView,
     ]
   );
 
@@ -129,8 +137,10 @@ const ItemSelection: FC<ItemSelectionProps> = ({
       fullWidth
       maxWidth="md"
       onClose={onClose}
+      data-cy="integrationSelectionFormDialog"
       slotProps={{
         paper: {
+          ref: drawerContainerRef,
           sx: {
             minHeight: "calc(100vh - 40px)",
             maxHeight: "1080px",
@@ -146,12 +156,13 @@ const ItemSelection: FC<ItemSelectionProps> = ({
       />
 
       <DialogContent
+        data-cy="integrationSelectionFormContainer"
         sx={{
           p: 0,
           bgcolor: "grey.50",
           overflow: "hidden",
           position: "relative",
-          "& .integrationSelectCardList > div": {
+          "& .integrationSelectionFormListContainer > div": {
             borderRadius: 2,
             border: "1px solid",
             borderColor: "border",
@@ -183,6 +194,35 @@ const ItemSelection: FC<ItemSelectionProps> = ({
           />
         )}
       </DialogContent>
+      <Drawer
+        container={drawerContainerRef?.current}
+        anchor="left"
+        open={isOpen}
+        onClose={() => setIsOpen(false)}
+        hideBackdrop
+        slotProps={{
+          root: {
+            sx: {
+              position: "absolute",
+            },
+          },
+          paper: {
+            sx: {
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+            },
+          },
+        }}
+      >
+        <JsonViewer
+          onClose={() => setIsOpen(false)}
+          data={jsonViewData}
+          showCloseButton={false}
+        />
+      </Drawer>
     </Dialog>
   );
 };
@@ -194,6 +234,7 @@ const DialogHeader: FC<{
   onClose: () => void;
 }> = ({ selectedCount, onDone, onDeselectAll, onClose }) => (
   <DialogTitle
+    component="div"
     sx={{
       borderBottom: "1px solid",
       borderColor: "border",
@@ -257,6 +298,7 @@ const SearchBar: FC<{
     bgcolor="grey.50"
   >
     <TextField
+      data-cy="integrationSelectionFormSearchBox"
       inputRef={inputRef}
       fullWidth
       placeholder="Filter Items"
@@ -376,7 +418,7 @@ const SelectionItem: FC<{
           size="small"
           className="integrationSelectCardViewJsonButton"
           sx={{ borderRadius: 1, color: "action.active" }}
-          onClick={() => onView?.(item)}
+          onClick={onView}
         >
           <DataObject />
         </IconButton>
@@ -391,16 +433,16 @@ const VirtualizedList: FC<{
   rowRenderer: (props: ListChildComponentProps) => React.ReactElement;
   loading?: boolean;
 }> = ({ items, config, rowRenderer, loading }) => {
-  const itemSize = getItemRowHeight(config.type, config.keyPaths.details);
+  const itemSize = getItemRowHeight(config?.type, config?.keyPaths?.details);
 
   return (
     <AutoSizer>
       {({ width, height }: { width: number; height: number }) => (
         <List
-          className="integrationSelectCardList"
+          className="integrationSelectionFormListContainer"
           height={height}
           width={width}
-          itemCount={loading ? 10 : items.length}
+          itemCount={loading ? 5 : items?.length}
           itemSize={itemSize}
           overscanCount={5}
           outerElementType="div"

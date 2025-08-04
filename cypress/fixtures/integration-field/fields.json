@@ -42,17 +42,23 @@
       "options": null,
       "fieldOptions": null,
       "datatypeOptions": null,
-      "integrationFieldApiConfig": {
+      "integrationFieldConfig": {
         "endpoint": "https://test.api.com/api/v1/generic.json",
-        "headers": null
-      },
-      "integrationFieldDisplay": {
+        "headers": null,
         "type": "image",
         "keyPaths": {
           "heading": "name",
           "subHeading": "team",
           "thumbnail": "playerImage",
-          "rootPath": null
+          "rootPath": null,
+          "details": [
+            "playerId",
+            "team",
+            "jerseyNo",
+            "position",
+            "height",
+            "weight"
+          ]
         }
       },
       "settings": {
