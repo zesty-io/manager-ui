@@ -6,7 +6,6 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import { useRef, useState } from "react";
 import { useHistory, useParams } from "react-router";
 import { useSelector } from "react-redux";
 import moment from "moment-timezone";
@@ -30,8 +29,6 @@ export const BlockVariantCard = ({ block }: { block: ContentItem }) => {
   const updatedByUser = users?.find(
     (user) => user.ZUID === block.web?.createdByUserZUID
   );
-  const imageRef = useRef(null);
-  const [isErrored, setIsErrored] = useState(false);
 
   return (
     <Tooltip
