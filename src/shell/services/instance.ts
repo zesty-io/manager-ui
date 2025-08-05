@@ -345,7 +345,12 @@ export const instanceApi = createApi({
         const showDeleted =
           typeof args === "string" ? true : args.showDeleted ?? true;
 
-        return `content/models/${modelZUID}/fields?showDeleted=${showDeleted}`;
+        return {
+          url: `content/models/${modelZUID}/fields`,
+          params: {
+            showDeleted: showDeleted,
+          },
+        };
       },
       transformResponse: (res: { data: ContentModelField[] }) =>
         res.data.sort((a, b) => a.sort - b.sort),
