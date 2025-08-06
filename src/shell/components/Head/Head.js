@@ -12,7 +12,10 @@ import { Preview } from "./Preview";
 
 import { fetchHeadTags, addHeadTag } from "shell/store/headTags";
 import { useDomain } from "shell/hooks/use-domain";
-import { useGetLegacyHeadTagsQuery } from "../../services/instance";
+import {
+  useGetHeadTagsQuery,
+  useGetLegacyHeadTagsQuery,
+} from "../../services/instance";
 
 import styles from "./Head.less";
 export default connect((state, props) => {
@@ -35,17 +38,28 @@ export default connect((state, props) => {
   return {
     item,
     instanceName: state.instance.name,
-    tags: Object.values(state.headTags)
-      .filter((tag) => tag.resourceZUID === props.resourceZUID)
-      .sort((a, b) => a.sort > b.sort),
   };
 })(function Head(props) {
   const domain = useDomain();
   const { data: rawLegacyHeadTags } = useGetLegacyHeadTagsQuery();
+  const { data: headTagsData, isFetching: isFetchingHeadTags } =
+    useGetHeadTagsQuery();
 
-  useEffect(() => {
-    props.dispatch(fetchHeadTags());
-  }, []);
+  const headTags = !headTagsData?.length
+    ? []
+    : Object.values(headTagsData)
+        .filter((tag) => tag.resourceZUID === props.resourceZUID)
+        .sort((a, b) => a.sort > b.sort)
+        ?.map((item) => {
+          const attrData = Object.entries(item?.attributes).map(
+            ([key, value]) => ({ key, value })
+          );
+
+          return {
+            ...item,
+            attributes: attrData,
+          };
+        });
 
   const legacyHeadTags = useMemo(() => {
     const customRawLegacyHeadTags = rawLegacyHeadTags?.filter(
@@ -70,7 +84,7 @@ export default connect((state, props) => {
   }, [rawLegacyHeadTags]);
 
   function handleAdd() {
-    props.dispatch(addHeadTag(props.resourceZUID, props.tags.length));
+    props.dispatch(addHeadTag(props.resourceZUID, headTags?.length));
   }
 
   return (
@@ -106,8 +120,8 @@ export default connect((state, props) => {
             </Box>
           )}
         </div>
-        {props.tags.length ? (
-          props.tags
+        {headTags?.length ? (
+          headTags
             .sort((a, b) => (a.sort > b.sort ? 1 : -1))
             .map((tag, index) => {
               return (
@@ -125,7 +139,7 @@ export default connect((state, props) => {
         item={props.item}
         instanceName={props.instanceName}
         domain={domain}
-        tags={props.tags}
+        tags={headTags}
         legacyHeadTags={legacyHeadTags}
       />
     </div>

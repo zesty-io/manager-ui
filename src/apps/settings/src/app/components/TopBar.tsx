@@ -62,6 +62,7 @@ export const TopBar: FC<TopBarProps> = ({
             color="text.primary"
             noWrap
             minWidth="fit-content"
+            sx={{ flexGrow: 1, width: "100%" }}
           >
             {title}
           </Typography>

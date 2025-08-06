@@ -65,6 +65,8 @@ export const instanceApi = createApi({
     "WorkflowStatusLabels",
     "Groups",
     "Redirects",
+    "WebFonts",
+    "LegacyHeadTags",
   ],
   endpoints: (builder) => ({
     // https://www.zesty.io/docs/instances/api-reference/content/models/items/publishings/#Get-All-Item-Publishings
@@ -274,6 +276,24 @@ export const instanceApi = createApi({
       transformResponse: getResponseData,
       providesTags: ["HeadTags"],
     }),
+    updateHeadTags: builder.mutation<HeadTag[], { ZUID: string; href: string }>(
+      {
+        query: ({ ZUID, href }) => ({
+          url: `/web/headtags/${ZUID}`,
+          method: "PUT",
+          body: {
+            type: "link",
+            sort: 1,
+            attributes: {
+              rel: "stylesheet",
+              href: href,
+            },
+          },
+        }),
+        transformResponse: getResponseData,
+        invalidatesTags: ["HeadTags", "LegacyHeadTags"],
+      }
+    ),
     createHeadTag: builder.mutation<
       HeadTag,
       {
@@ -297,7 +317,7 @@ export const instanceApi = createApi({
         url: `/web/headtags/${headTagZUID}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["HeadTags"],
+      invalidatesTags: ["HeadTags", "LegacyHeadTags"],
     }),
     createContentModelFromTemplate: builder.mutation<
       any,
@@ -478,6 +498,7 @@ export const instanceApi = createApi({
     getLegacyHeadTags: builder.query<LegacyHeader[], void>({
       query: () => `/web/headers`,
       transformResponse: getResponseData,
+      providesTags: ["LegacyHeadTags"],
     }),
     // https://www.zesty.io/docs/instances/api-reference/env/settings/#Get-All-Settings
     getInstanceSettings: builder.query<InstanceSetting[], void>({
@@ -871,6 +892,21 @@ export const instanceApi = createApi({
       }),
       invalidatesTags: ["Redirects"],
     }),
+    getWebFonts: builder.query<any, void>({
+      async queryFn(args, _queryApi, _extraOptions, fetchWithBQ) {
+        try {
+          const res: any = await fetchWithBQ({
+            url: "https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyAWGIDvIvAF69UQZR9vIOtz88s55deGs8Y",
+          });
+          // Return just the data without the status field
+          return { data: res?.data?.items };
+        } catch (error) {
+          // Return just the error without the status field
+          return { error };
+        }
+      },
+      providesTags: ["WebFonts"],
+    }),
   }),
 });
 
@@ -938,4 +974,6 @@ export const {
   useDeleteRedirectMutation,
   useLazySearchContentQuery,
   useUpdateRedirectMutation,
+  useGetWebFontsQuery,
+  useUpdateHeadTagsMutation,
 } = instanceApi;

@@ -8,6 +8,7 @@ import {
   Dialog,
   IconButton,
   Typography,
+  Portal,
 } from "@mui/material";
 
 import { MediaApp } from "../../../../../media/src/app";
@@ -63,7 +64,8 @@ export default connect((state, props) => {
   // Set Font Options from installed fonts
   useEffect(() => {
     // inject all installed fonts
-    props.fontsInstalled.forEach(injectFontImport);
+    // props.fontsInstalled.forEach(injectFontImport);
+
     setFonts(
       props.fontsInstalled.map((headTag) => {
         const url = headTag.attributes.href;
@@ -71,8 +73,9 @@ export default connect((state, props) => {
         const font = fontVariants.split(":")[0];
         const variants = fontVariants.split(":")[1];
         const fontOption = {
-          label: font.replace("+", " "),
-          family: font.replace("+", " "),
+          label: font.replace(/\+/g, " "),
+          family: font.replace(/\+/g, " "),
+          href: url,
         };
         if (variants) {
           const variantsArr = variants.split(",");
@@ -439,6 +442,15 @@ export default connect((state, props) => {
           ))}
         </MainWrapper>
       </Box>
+      {!fonts?.length ? null : (
+        <Portal container={document.head}>
+          {fonts?.map((font) => {
+            return (
+              <link rel="stylesheet" href={font?.href} title="stylesheetLink" />
+            );
+          })}
+        </Portal>
+      )}
     </>
   );
 });
