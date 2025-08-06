@@ -7,14 +7,32 @@ import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
 import RedirectsImport from "./RedirectsImport";
 import SearchBox from "../../../../../../shell/components/SearchBox";
+import { useEffect, useState } from "react";
 
 export default function RedirectActions() {
   const { openCreateForm } = useRedirectsDialog();
-  const { selectedRedirects, redirects, searchFilter, setSearchFilter } =
+  const { redirects, searchFilter, setSearchFilter, apiRef } =
     useRedirectsTable();
+  const [showDeleteHeader, setShowDeleteHeader] = useState(false);
+
+  useEffect(() => {
+    if (!apiRef.current || !Object.keys(apiRef.current).length) {
+      return;
+    }
+
+    const handleSelectionChange = () => {
+      setShowDeleteHeader(apiRef.current.getSelectedRows().size > 0);
+    };
+
+    return apiRef.current.subscribeEvent(
+      "rowSelectionChange",
+      handleSelectionChange
+    );
+  }, [apiRef.current]);
+
   return (
     <>
-      {!!selectedRedirects?.length ? (
+      {showDeleteHeader ? (
         <RedirectsDelete />
       ) : (
         <Box
