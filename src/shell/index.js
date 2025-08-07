@@ -36,6 +36,8 @@ import { actions } from "shell/store/ui";
 import { CommentProvider } from "./contexts/CommentProvider";
 import { CreateContentItemDialogProvider } from "./contexts/CreateContentItemDialogProvider";
 
+import * as amplitude from "@amplitude/analytics-browser";
+
 // needed for Breadcrumbs in Shell
 injectReducer(store, "navContent", navContent);
 
@@ -106,6 +108,8 @@ const appTheme = createTheme(theme, {
 });
 
 MonacoSetup(store);
+
+amplitude.init("b70c721acc447e41a3c120a943aca9d9", { autocapture: true });
 
 // TODO: Add a context here that will store all draft comments
 const App = Sentry.withProfiler(() => (
