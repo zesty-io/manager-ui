@@ -3,33 +3,23 @@ import { useEffect, useState, FC, useMemo, useRef, useCallback } from "react";
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
-
-import { MainWrapper } from "../../components/Wrappers";
 import { TopBar } from "../../components/TopBar";
 import Box from "@mui/material/Box";
-import { Typography, Button, Portal, FormGroup, Divider } from "@mui/material";
+import { Typography, Button, Portal, FormGroup } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import {
   useCreateHeadTagMutation,
-  useGetWebFontsQuery,
-  useGetHeadTagsQuery,
   useUpdateHeadTagsMutation,
 } from "../../../../../../shell/services/instance";
-import { WithLoader } from "@zesty-io/core/WithLoader";
 import AddIcon from "@mui/icons-material/Add";
 import { notify } from "../../../../../../shell/store/notifications";
 import { FormControlLabel, Checkbox } from "@mui/material";
-// import { GoogleFonts } from "../../../../../shell/services/types";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  FONT_QUERY_MAP,
-  InstalledFont,
-  parseInstalledFonts,
-} from "./constants";
+
 import { NoResults } from "../../../../../schema/src/app/components/NoResults";
 import { AppState } from "../../../../../../shell/store/types";
-import { fetchFontsInstalled } from "../../../../../../shell/store/settings";
-import { fetchHeadTags } from "../../../../../../shell/store/headTags";
+import SearchBox from "../../../../../../shell/components/SearchBox";
+import { useSettingsFonts } from "../../components/useSettingsFonts";
 
 export type FontRowItemProps = {
   ZUID: string | null;
@@ -37,8 +27,13 @@ export type FontRowItemProps = {
   variants: string[];
   installedVariants: string[];
   previewText: string;
-  // onDelete: (font: any) => void;
   activePage: number;
+};
+type InstalledFont = {
+  ZUID: string;
+  family: string;
+  variants: string[];
+  href: string;
 };
 const FontRowItem: FC<FontRowItemProps> = ({
   ZUID = null,
@@ -53,6 +48,12 @@ const FontRowItem: FC<FontRowItemProps> = ({
 
   const [selectedVariants, setSelectedVariants] = useState([]);
   const [activeVariants, setActiveVariants] = useState(installedVariants);
+
+  const {
+    installedFonts,
+    isLoading: isLoadingInstalledFonts,
+    getFontDataFromHref,
+  } = useSettingsFonts();
 
   const [createHeadTag, { isLoading: isCreating }] = useCreateHeadTagMutation();
   const [updateFont, { isLoading: isUpdating }] = useUpdateHeadTagsMutation();
@@ -98,7 +99,7 @@ const FontRowItem: FC<FontRowItemProps> = ({
         });
       }
 
-      dispatch(fetchFontsInstalled());
+      // dispatch(fetchFontsInstalled());
 
       if (!response?.error) {
         setSelectedVariants([]);
@@ -239,15 +240,6 @@ const FontRowItem: FC<FontRowItemProps> = ({
             : "All their equipment and instruments are alive."}
         </Typography>
       </Box>
-      <Portal container={document.head}>
-        <link
-          rel="stylesheet"
-          href={`https://fonts.googleapis.com/css?family=${family?.replace(
-            /\s/g,
-            "+"
-          )}`}
-        />
-      </Portal>
     </>
   );
 };
@@ -256,65 +248,44 @@ const Browser = () => {
   const [search, setSearch] = useState<string>("");
   const searchInputRef = useRef<HTMLInputElement>(null);
 
+  const [prevActivePage, setPrevActivePage] = useState<number>(0);
   const [activePage, setActivePage] = useState<number>(0);
   const [activePagination, setActivePagination] = useState([]);
   const [previewText, setPreviewText] = useState<string>("");
 
-  const {
-    data: installedFontsData,
-    isLoading: installedFontsIsLoading,
-    isError: installedFontsIsError,
-    isFetching: installedFontsIsFetching,
-  } = useGetHeadTagsQuery();
-  const {
-    data: googleFontsData,
-    isLoading: googleFontsIsLoading,
-    isError: googleFontsIsError,
-    isFetching: googleFontsIsFetching,
-  } = useGetWebFontsQuery();
-
-  const isLoading =
-    googleFontsIsLoading ||
-    installedFontsIsLoading ||
-    googleFontsIsFetching ||
-    installedFontsIsFetching;
+  const { installedFonts, webFonts, isLoading, getFontDataFromHref } =
+    useSettingsFonts();
 
   const fontData = useMemo(() => {
-    if (googleFontsIsLoading || installedFontsIsLoading) return;
-    if (!!googleFontsIsError) {
+    if (isLoading) return;
+    if (!webFonts?.length) {
       return [];
     } else {
-      const installedFonts = !!installedFontsIsError
-        ? []
-        : parseInstalledFonts(installedFontsData);
-
-      const paginationWithZUID = [...googleFontsData]
+      const paginationWithZUID = [...webFonts]
         ?.sort((a: any, b: any) => a?.family?.localeCompare(b?.family))
         ?.map((gFont, index) => {
           const currentInstalledFonts = installedFonts?.find(
-            (item: InstalledFont) => item?.family === gFont?.family
+            (item: InstalledFont) => {
+              const { family, variants } = getFontDataFromHref(item?.href);
+              return family === gFont?.family;
+            }
           );
+
+          const { variants } = getFontDataFromHref(currentInstalledFonts?.href);
 
           return {
             index: index,
             family: gFont?.family,
             ZUID: currentInstalledFonts?.ZUID || null,
             variants: gFont?.variants,
-            installedVariants: currentInstalledFonts?.variants,
+            installedVariants: variants,
           };
         });
 
       setLoadComplete(true);
       return paginationWithZUID;
     }
-  }, [
-    installedFontsIsLoading,
-    googleFontsIsLoading,
-    installedFontsData,
-    googleFontsData,
-    googleFontsIsError,
-    installedFontsIsError,
-  ]);
+  }, [installedFonts, webFonts, isLoading]);
 
   const paginationData = useMemo(() => {
     if (!fontData) return [];
@@ -339,6 +310,20 @@ const Browser = () => {
 
   return (
     <>
+      {!!activePagination?.length && (
+        <Portal container={document.head}>
+          {activePagination?.map((itemFont) => (
+            <link
+              key={itemFont?.family}
+              rel="stylesheet"
+              href={`https://fonts.googleapis.com/css?family=${itemFont?.family?.replace(
+                /\s/g,
+                "+"
+              )}`}
+            />
+          ))}
+        </Portal>
+      )}
       <TopBar
         title="Browse Fonts"
         isNotSaved={false}
@@ -362,151 +347,192 @@ const Browser = () => {
             },
           }}
         >
-          <TextField
-            id="filled-search"
-            placeholder="Search font"
+          <SearchBox
+            placeholder="Search Fonts"
             type="text"
             variant="outlined"
             size="small"
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon fontSize="small" />
-                </InputAdornment>
-              ),
-            }}
-            inputProps={{
-              ref: searchInputRef,
-            }}
             value={search}
             onChange={(evt) => {
-              if (activePage > 0) {
+              if (activePage !== 0 && !!evt.target.value) {
                 setActivePage(0);
+                setPrevActivePage(activePage);
+              }
+
+              if (
+                activePage === 0 &&
+                !evt.target.value &&
+                activePage !== prevActivePage
+              ) {
+                setActivePage(prevActivePage);
+                setPrevActivePage(prevActivePage);
               }
               setSearch(evt.target.value);
             }}
+            inputRef={searchInputRef}
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon fontSize="small" />
+                  </InputAdornment>
+                ),
+              },
+            }}
             sx={{
-              flexGrow: 0,
-              width: "260px",
+              width: "280px",
+              "& .MuiInputBase-root.MuiOutlinedInput-root.MuiInputBase-sizeSmall":
+                {
+                  py: 0.5,
+                  bgcolor: "grey.50",
+                },
             }}
           />
         </Box>
       </TopBar>
 
-      <MainWrapper height="100%" fullWidth rowGap={0}>
+      <Box
+        className="main-wrapper"
+        px={4}
+        sx={{
+          width: "100%",
+          height: "calc(100% - 84px)",
+          overflowY: "auto",
+          overflowX: "hidden",
+          margin: "0",
+          display: "block",
+          maxHeight: "calc(100% - 84px)",
+          position: "relative",
+          boxSizing: "border-box",
+        }}
+      >
         <Box
+          py={2}
+          height="100%"
+          display="flex"
+          flexDirection="column"
+          justifyContent="flex-start"
           sx={{
-            width: "100%",
-
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-            alignItems: "flex-start",
-            borderBottom: "1px solid",
-            borderColor: "border",
-            pb: 3,
+            minHeight: "100%",
+            boxSizing: "border-box",
           }}
         >
-          <TextField
-            id="previewText"
-            placeholder="Type something to preview"
-            type="text"
-            variant="outlined"
-            size="small"
-            name="previewText"
-            value={previewText}
-            onChange={(evt) => setPreviewText(evt.target.value)}
+          <Box
             sx={{
-              width: "60%",
-              minWidth: "300px",
+              width: "100%",
+
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
+              alignItems: "flex-start",
+              borderBottom: "1px solid",
+              borderColor: "border",
+              pb: 3,
             }}
-          />
-        </Box>
-        {!isLoading && paginationData?.length < 1 ? (
-          <Box width="100%" height="100%" display="grid" alignContent="center">
-            <NoResults
-              type="search"
-              searchTerm={search}
-              onButtonClick={() => {
-                setSearch("");
-                searchInputRef?.current?.focus();
+          >
+            <TextField
+              id="previewText"
+              placeholder="Type something to preview"
+              type="text"
+              variant="outlined"
+              size="small"
+              name="previewText"
+              value={previewText}
+              onChange={(evt) => setPreviewText(evt.target.value)}
+              sx={{
+                width: "60%",
+                minWidth: "300px",
               }}
             />
           </Box>
-        ) : (
-          <>
-            {activePagination?.map((itemFont, index) => (
-              <FontRowItem
-                // index={index}
-                previewText={previewText}
-                key={itemFont?.ZUID || index}
-                family={itemFont?.family}
-                variants={[...itemFont?.variants]}
-                installedVariants={itemFont?.installedVariants}
-                // index={itemFont?.index}
-                ZUID={itemFont?.ZUID}
-                // onDelete={() => {}}
-                // page={Math.ceil(paginationData?.length / 10) || 1}
-                activePage={activePage + 1}
-              />
-            ))}
+          {!isLoading && paginationData?.length < 1 ? (
             <Box
               width="100%"
-              display="flex"
-              flexDirection="row"
-              justifyContent="center"
-              alignItems="center"
-              py={5}
-              boxSizing="border-box"
+              height="100%"
+              display="grid"
+              alignContent="center"
             >
-              <Button
-                variant="contained"
-                color="primary"
-                size="large"
-                onClick={() => {
-                  setActivePage((prev) => prev - 1);
+              <NoResults
+                type="search"
+                searchTerm={search}
+                onButtonClick={() => {
+                  setSearch("");
+                  setActivePage(prevActivePage);
+                  searchInputRef?.current?.focus();
                 }}
-                disabled={activePage === 0}
-                sx={{
-                  py: 2,
-                  width: 64,
-                }}
-              >
-                Prev
-              </Button>
-              <Typography
-                variant="h5"
-                sx={{
-                  width: "85px",
-                  textAlign: "center",
-                  color: "text.secondary",
-                }}
-                noWrap
-              >
-                {`${activePage + 1} / ${
-                  Math.ceil(paginationData?.length / 10) || 1
-                }`}
-              </Typography>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => {
-                  setActivePage((prev) => prev + 1);
-                }}
-                disabled={
-                  activePage >= Math.ceil(paginationData?.length / 10) - 1
-                }
-                sx={{
-                  py: 2,
-                  width: 64,
-                }}
-              >
-                Next
-              </Button>
+              />
             </Box>
-          </>
-        )}
-      </MainWrapper>
+          ) : (
+            <>
+              {activePagination?.map((itemFont, index) => (
+                <FontRowItem
+                  previewText={previewText}
+                  key={itemFont?.family + index}
+                  family={itemFont?.family}
+                  variants={[...itemFont?.variants]}
+                  installedVariants={itemFont?.installedVariants}
+                  ZUID={itemFont?.ZUID}
+                  activePage={activePage + 1}
+                />
+              ))}
+              <Box
+                width="100%"
+                display="flex"
+                flexDirection="row"
+                justifyContent="center"
+                alignItems="center"
+                py={5}
+                boxSizing="border-box"
+              >
+                <Button
+                  variant="contained"
+                  color="primary"
+                  size="large"
+                  onClick={() => {
+                    setActivePage((prev) => prev - 1);
+                  }}
+                  disabled={activePage === 0}
+                  sx={{
+                    py: 2,
+                    width: 64,
+                  }}
+                >
+                  Prev
+                </Button>
+                <Typography
+                  variant="h5"
+                  sx={{
+                    width: "85px",
+                    textAlign: "center",
+                    color: "text.secondary",
+                  }}
+                  noWrap
+                >
+                  {`${activePage + 1} / ${
+                    Math.ceil(paginationData?.length / 10) || 1
+                  }`}
+                </Typography>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => {
+                    setActivePage((prev) => prev + 1);
+                  }}
+                  disabled={
+                    activePage >= Math.ceil(paginationData?.length / 10) - 1
+                  }
+                  sx={{
+                    py: 2,
+                    width: 64,
+                  }}
+                >
+                  Next
+                </Button>
+              </Box>
+            </>
+          )}
+        </Box>
+      </Box>
     </>
   );
 };

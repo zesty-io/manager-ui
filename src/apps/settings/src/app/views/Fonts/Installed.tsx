@@ -1,24 +1,18 @@
-import { useEffect, useState, FC, useRef, useMemo } from "react";
-
-import TextField from "@mui/material/TextField";
+import { useState, useRef, useMemo } from "react";
 import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
 import DeleteIcon from "@mui/icons-material/Delete";
-
-import { MainWrapper } from "../../components/Wrappers";
 import { TopBar } from "../../components/TopBar";
 import Box from "@mui/material/Box";
-import { Typography, Button, Portal } from "@mui/material";
-import { useGetHeadTagsQuery } from "../../../../../../shell/services/instance";
+import { Typography, Button } from "@mui/material";
 
 import DeleteFontDialog from "./DeleteFontDialog";
-import { InstalledWebFont, parseInstalledFonts } from "./constants";
 import { NoResults } from "../../../../../schema/src/app/components/NoResults";
 import SearchBox from "../../../../../../shell/components/SearchBox";
-import { getWebFontFromUrl } from "./utils";
+import { useSettingsFonts } from "../../components/useSettingsFonts";
+import { capitalize } from "lodash";
 
-const FONT_PREVIEW_TEXT =
-  "All their equipment and instruments are alive. All their equipment and instruments are alive.";
+const FONT_PREVIEW_TEXT = "All their equipment and instruments are alive.";
 
 export type FontItemCardProps = {
   ZUID: string;
@@ -41,11 +35,10 @@ const getWeightAndStyle = (fontText: string) => {
 };
 
 const WebFontCard = ({ ZUID, href }: { ZUID: string; href: string }) => {
-  const { family, variants } = getWebFontFromUrl(href);
-
+  const { getFontDataFromHref } = useSettingsFonts();
+  const { family, variants } = getFontDataFromHref(href);
   const [deleteDialogIsOpen, setDeleteDialogIsOpen] = useState(false);
   const [fontForDelete, setFontForDelete] = useState(null);
-
   const handleDeleteFontVariant = (variant: any) => {
     const updatedVariants = variants?.filter((item: any) => item !== variant);
     setFontForDelete({ ZUID, family, variant, updatedVariants });
@@ -103,6 +96,7 @@ const WebFontCard = ({ ZUID, href }: { ZUID: string; href: string }) => {
 
               return (
                 <Box
+                  key={`${family}-${fontWeight}-${fontStyle}`}
                   display="flex"
                   flexDirection="row"
                   justifyContent="space-between"
@@ -136,9 +130,7 @@ const WebFontCard = ({ ZUID, href }: { ZUID: string; href: string }) => {
                       minWidth: "fit-content",
                     }}
                   >
-                    {`Remove ${fontWeight} ${
-                      fontStyle === "normal" ? "" : fontStyle
-                    }`.trim()}
+                    {`Remove ${capitalize(variant)}`}
                   </Button>
                 </Box>
               );
@@ -151,7 +143,6 @@ const WebFontCard = ({ ZUID, href }: { ZUID: string; href: string }) => {
           onClose={() => setDeleteDialogIsOpen(false)}
           family={fontForDelete?.family}
           variant={fontForDelete?.variant}
-          variants={fontForDelete?.updatedVariants}
           ZUID={fontForDelete?.ZUID}
         />
       )}
@@ -159,26 +150,27 @@ const WebFontCard = ({ ZUID, href }: { ZUID: string; href: string }) => {
   );
 };
 
-const Installed = ({ webFonts }: { webFonts: InstalledWebFont[] }) => {
+const Installed = () => {
   const searchInputRef = useRef(null);
   const [search, setSearch] = useState("");
-  const { data } = useGetHeadTagsQuery();
+  const { installedFonts, renderLinkTags } = useSettingsFonts();
 
-  const installedFonts: InstalledWebFont[] = useMemo(() => {
-    if (!data?.length) return [];
+  const filteredInstalledFonts = useMemo(() => {
+    if (!installedFonts?.length) return [];
     return !search
-      ? webFonts
-      : webFonts.filter((item) =>
+      ? installedFonts
+      : installedFonts.filter((item) =>
           item.href
             .toLowerCase()
             .includes(
               `family=${search.replace(/[\+％＋]/g, " ")}`.toLowerCase()
             )
         );
-  }, [webFonts, search]);
+  }, [installedFonts, search]);
 
   return (
     <>
+      {renderLinkTags()}
       <TopBar title="Installed Fonts">
         <Box display="flex" alignItems="center" justifyContent="flex-end">
           <SearchBox
@@ -189,6 +181,7 @@ const Installed = ({ webFonts }: { webFonts: InstalledWebFont[] }) => {
             value={search}
             onChange={(evt) => setSearch(evt.target.value)}
             inputRef={searchInputRef}
+            disabled={!filteredInstalledFonts?.length}
             slotProps={{
               input: {
                 startAdornment: (
@@ -209,46 +202,90 @@ const Installed = ({ webFonts }: { webFonts: InstalledWebFont[] }) => {
           />
         </Box>
       </TopBar>
-      <MainWrapper fullWidth rowGap={0}>
-        {installedFonts?.length < 1 ? (
-          <Box
-            width="100%"
-            height="100%"
-            position="absolute"
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-          >
-            {!search ? (
-              "No Installed Fonts"
-            ) : (
-              <NoResults
-                type="search"
-                searchTerm={search}
-                onButtonClick={() => {
-                  setSearch("");
-                  searchInputRef?.current?.focus();
-                }}
-              />
-            )}
-          </Box>
-        ) : (
+
+      <Box
+        className="main-wrapper"
+        px={4}
+        sx={{
+          width: "100%",
+          height: "calc(100% - 84px)",
+          overflowY: "auto",
+          overflowX: "hidden",
+          margin: "0",
+          display: "block",
+          maxHeight: "calc(100% - 84px)",
+          position: "relative",
+          boxSizing: "border-box",
+        }}
+      >
+        <Box
+          py={2}
+          height="100%"
+          display="flex"
+          flexDirection="column"
+          justifyContent="flex-start"
+          sx={{
+            minHeight: "100%",
+            boxSizing: "border-box",
+          }}
+        >
           <Box
             sx={{
               width: "100%",
-              py: 2,
-              position: "relative",
+
               display: "flex",
               flexDirection: "column",
-              justifyContent: "flex-start",
+              justifyContent: "space-between",
+              alignItems: "flex-start",
+              borderBottom: "1px solid",
+              borderColor: "border",
+              pb: 3,
             }}
           >
-            {installedFonts?.map((font) => (
-              <WebFontCard key={font?.ZUID} {...font} />
-            ))}
+            {" "}
+            {filteredInstalledFonts?.length < 1 ? (
+              <Box
+                width="100%"
+                height="100%"
+                position="absolute"
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+              >
+                {!search ? (
+                  <Typography variant="h5" color="text.seconddary">
+                    No Installed Fonts
+                  </Typography>
+                ) : (
+                  <NoResults
+                    type="search"
+                    searchTerm={search}
+                    onButtonClick={() => {
+                      setSearch("");
+                      searchInputRef?.current?.focus();
+                    }}
+                  />
+                )}
+              </Box>
+            ) : (
+              <Box
+                sx={{
+                  width: "100%",
+                  py: 2,
+                  position: "relative",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "flex-start",
+                }}
+              >
+                {filteredInstalledFonts?.map((font) => (
+                  <WebFontCard key={font?.ZUID} {...font} />
+                ))}
+              </Box>
+            )}
           </Box>
-        )}
-      </MainWrapper>
+        </Box>
+      </Box>
     </>
   );
 };

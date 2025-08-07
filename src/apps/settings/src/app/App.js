@@ -21,11 +21,7 @@ import { ResizableContainer } from "../../../../shell/components/ResizeableConta
 import Workflows from "./views/User/Workflows";
 import Installed from "./views/Fonts/Installed";
 import Browser from "./views/Fonts/Browser";
-
 import { HeadTags } from "./views/Robots/HeadTags";
-import { useGetHeadTagsQuery } from "../../../../shell/services/instance";
-import { parseWebFonts } from "./views/Fonts/utils";
-// import FontBrowser from "./views/Fonts/FontBrowser";
 // import FontInstalled from "./views/Fonts/FontInstalled";
 // Makes sure that other apps using legacy theme does not get affected with the palette
 
@@ -37,14 +33,6 @@ export default connect((state) => {
 })(function SettingsApp(props) {
   const location = useLocation();
 
-  const { data } = useGetHeadTagsQuery();
-
-  const installedFonts = useMemo(() => {
-    if (!data?.length) return [];
-    const fontData = parseWebFonts(data);
-    return fontData; // fontData?.map((item) => item?.href);
-  }, [data]);
-
   useEffect(() => {
     props.dispatch(fetchSettings());
     props.dispatch(fetchStylesCategories());
@@ -55,13 +43,6 @@ export default connect((state) => {
 
   return (
     <>
-      <Portal container={document.head}>
-        {installedFonts
-          ?.map((item) => item?.href)
-          ?.map((url) => (
-            <link rel="stylesheet" href={url} />
-          ))}
-      </Portal>
       <Grid
         container
         spacing={0}
@@ -132,11 +113,8 @@ export default connect((state) => {
               <Route path="/settings/instance/:category" component={Instance} />
 
               <Route path="/settings/fonts/browse" component={Browser} />
-              {/* <Route path="/settings/fonts/installed" component={Installed} /> */}
-              <Route
-                path="/settings/fonts/installed"
-                render={() => <Installed webFonts={installedFonts} />}
-              />
+              <Route path="/settings/fonts/installed" component={Installed} />
+
               <Redirect from="/settings/fonts" to="/settings/fonts/browse" />
 
               <Route path="/settings/robots" component={Robots} />
