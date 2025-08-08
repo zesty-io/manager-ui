@@ -126,7 +126,7 @@ export const BlockTabs = (props: any) => {
                 borderStyle: "solid",
                 borderColor: "border",
                 backgroundColor: "common.white",
-                height: "calc(100% - 120px)",
+                height: "calc(100% - 150px)",
                 overflowY: "auto",
               }}
             >
