@@ -75,6 +75,9 @@ export const MemoizedEditor = memo(
       }
     }, [props.code]);
 
+    // Manually handle monaco editor resizing instead of relying on MonacoEditor's
+    // `automaticLayout` as it causes a lot of ResizeObserver loop errors
+    // when rapidly resizing the window
     useEffect(() => {
       if (ref.current && dimensions) {
         ref.current.editor.layout({
