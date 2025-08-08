@@ -34,9 +34,11 @@ export const MemoizedEditor = memo(
           // attach contentModelZUID to monaco model for lookup within completion provider
           query: `contentModelZUID=${props.contentModelZUID}&fileZUID=${props.fileZUID}`,
         });
-        const model =
-          monaco.editor.getModel(filenameURI) ||
-          monaco.editor.createModel(props.code, language, filenameURI);
+        let model = monaco.editor.getModel(filenameURI);
+
+        if (!model) {
+          model = monaco.editor.createModel(props.code, language, filenameURI);
+        }
 
         ref.current.editor.setModel(model);
 
@@ -57,6 +59,9 @@ export const MemoizedEditor = memo(
                 [props.fileZUID]: ref.current.editor.getPosition(),
               })
             );
+          }
+          if (model && !model.isDisposed()) {
+            model.dispose();
           }
         };
       }
