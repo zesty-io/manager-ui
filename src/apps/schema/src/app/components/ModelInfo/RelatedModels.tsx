@@ -14,7 +14,7 @@ export const RelatedModels = () => {
   const params = useParams<Params>();
   const { id } = params;
   const history = useHistory();
-  const { data: fields } = useGetContentModelFieldsQuery(id);
+  const { data: fields } = useGetContentModelFieldsQuery({ modelZUID: id });
   const { data: models } = useGetContentModelsQuery();
   const relatedModelsZUIDs = fields
     ?.filter(
@@ -22,7 +22,6 @@ export const RelatedModels = () => {
         field.datatype === "one_to_one" || field.datatype === "one_to_many"
     )
     ?.map((field) => field.relatedModelZUID);
-
   return (
     <Box>
       <Typography variant="h5" fontWeight={600}>

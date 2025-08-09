@@ -36,7 +36,7 @@ export default memo(function Editor({
   const dispatch = useDispatch();
   const isNewItem = itemZUID.slice(0, 3) === "new";
   const { data: fields, isFetching: isFetchingFields } =
-    useGetContentModelFieldsQuery(modelZUID);
+    useGetContentModelFieldsQuery({ modelZUID });
   const [isLoaded, setIsLoaded] = useState(false);
   const [prevFirstContentFieldValue, setPrevFirstContentFieldValue] =
     useState(null);

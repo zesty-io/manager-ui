@@ -174,9 +174,12 @@ export const ContentInsights = ({}) => {
     modelZUID: string;
   }>();
   const item = useSelector((state: AppState) => state.content[itemZUID]);
-  const { data: modelFields } = useGetContentModelFieldsQuery(modelZUID, {
-    skip: !modelZUID,
-  });
+  const { data: modelFields } = useGetContentModelFieldsQuery(
+    { modelZUID },
+    {
+      skip: !modelZUID,
+    }
+  );
 
   const textFieldNames = useMemo(() => {
     if (modelFields?.length) {

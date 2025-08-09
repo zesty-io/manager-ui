@@ -82,7 +82,7 @@ export const FieldSelectorFilters = ({
   });
   const { data: users } = useGetUsersQuery();
   const { data: fields, isLoading: isFieldsLoading } =
-    useGetContentModelFieldsQuery(modelZUID);
+    useGetContentModelFieldsQuery({ modelZUID });
   const { data: langs } = useGetLangsQuery({});
 
   const userOptions = useMemo(() => {

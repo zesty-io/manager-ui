@@ -338,13 +338,9 @@ export const instanceApi = createApi({
     // https://www.zesty.io/docs/instances/api-reference/content/models/#Get-Fields
     getContentModelFields: builder.query<
       ContentModelField[],
-      string | { modelZUID: string; showDeleted?: boolean }
+      { modelZUID: string; showDeleted?: boolean }
     >({
-      query: (args) => {
-        const modelZUID = typeof args === "string" ? args : args.modelZUID;
-        const showDeleted =
-          typeof args === "string" ? true : args.showDeleted ?? true;
-
+      query: ({ modelZUID, showDeleted = true }) => {
         return {
           url: `content/models/${modelZUID}/fields`,
           params: {
@@ -354,10 +350,9 @@ export const instanceApi = createApi({
       },
       transformResponse: (res: { data: ContentModelField[] }) =>
         res.data.sort((a, b) => a.sort - b.sort),
-      providesTags: (result, error, arg) => {
-        const modelZUID = typeof arg === "string" ? arg : arg.modelZUID;
-        return [{ type: "ContentModelFields", id: modelZUID }];
-      },
+      providesTags: (result, error, { modelZUID }) => [
+        { type: "ContentModelFields", id: modelZUID },
+      ],
     }),
     // https://www.zesty.io/docs/instances/api-reference/content/models/fields/#Create-Field
     createContentModelField: builder.mutation<
