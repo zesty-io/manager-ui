@@ -283,16 +283,10 @@ export function fetchItem(modelZUID, itemZUID) {
         }
         return res;
       },
-    })
-      .then(() => {
-        dispatch(
-          instanceApi.util.invalidateTags(["ContentItems", "ContentModels"])
-        );
-      })
-      .catch((err) => {
-        console.error("Failed to fetch item:", err);
-        return err;
-      });
+    }).catch((err) => {
+      console.error("Failed to fetch item:", err);
+      return err;
+    });
   };
 }
 
