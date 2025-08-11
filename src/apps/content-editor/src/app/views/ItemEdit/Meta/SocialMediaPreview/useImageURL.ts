@@ -83,6 +83,7 @@ export const useImageURL: () => string = () => {
             "gif",
             "tif",
             "webp",
+            "avif",
           ].includes(fileExtension(isZestyMediaFile ? res.url : value));
 
           if (isImage) {

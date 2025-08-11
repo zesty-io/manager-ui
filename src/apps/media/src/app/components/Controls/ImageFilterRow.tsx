@@ -73,6 +73,12 @@ export const ImageFilterRow: FC<ImageFilterRow> = ({ onClose }) => {
         <MenuItem onClick={() => handleChange("GIF")}>
           <Typography variant="body1">GIF</Typography>
         </MenuItem>
+        <MenuItem onClick={() => handleChange("GIF")}>
+          <Typography variant="body1">GIF</Typography>
+        </MenuItem>
+        <MenuItem onClick={() => handleChange("AVIF")}>
+          <Typography variant="body1">AVIF</Typography>
+        </MenuItem>
       </Menu>
     </>
   );
