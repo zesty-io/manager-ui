@@ -2,8 +2,11 @@ import { memo, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import MonacoEditor from "react-monaco-editor";
 import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
+import { Box } from "@mui/material";
+
 import { resolveMonacoLang, updateFileCode } from "../../../../../store/files";
 import { actions } from "shell/store/ui";
+import { useResizeObserver } from "../../../../../../../../shell/hooks/useResizeObserver";
 
 /**
  * We memoize this component because we need to short circuit the redux->react->component update cycle
@@ -13,6 +16,8 @@ import { actions } from "shell/store/ui";
 export const MemoizedEditor = memo(
   function MemoizedEditor(props) {
     const dispatch = useDispatch();
+    const containerRef = useRef(null);
+    const dimensions = useResizeObserver(containerRef);
     const codeEditorPosition = useSelector(
       (state) => state.ui.codeEditorPosition
     );
@@ -70,53 +75,66 @@ export const MemoizedEditor = memo(
       }
     }, [props.code]);
 
-    return (
-      <MonacoEditor
-        ref={ref}
-        theme="vs-dark"
-        options={{
-          scrollBeyondLastLine: false,
-          selectOnLineNumbers: true,
-          automaticLayout: true,
-          wordWrap: "on",
-          padding: {
-            top: 10,
-            bottom: 10,
-          },
-        }}
-        onChange={(newValue) => {
-          props.setCode(newValue);
-        }}
-        editorDidMount={(editor, monaco) => {
-          // Line number linking feature
-          if (Number(props.lineNumber)) {
-            editor.revealLineInCenter(Number(props.lineNumber));
-            editor.setSelection(
-              new monaco.Selection(
-                Number(props.lineNumber),
-                0,
-                Number(props.lineNumber),
-                1000
-              )
-            );
-          } else {
-            editor.setSelection(new monaco.Selection(1, 0, 1, 0));
-          }
+    // Manually handle monaco editor resizing instead of relying on MonacoEditor's
+    // `automaticLayout` as it causes a lot of ResizeObserver loop errors
+    // when rapidly resizing the window
+    useEffect(() => {
+      if (ref.current && dimensions) {
+        ref.current.editor.layout({
+          width: dimensions.width,
+          height: dimensions.height,
+        });
+      }
+    }, [dimensions]);
 
-          editor.updateOptions({
-            theme: "parsleyDark",
-          });
-        }}
-        // Save cursor position to store before unmounting
-        editorWillUnmount={(editor) => {
-          dispatch(
-            actions.setCodeEditorPosition({
-              ...codeEditorPosition,
-              [props.fileZUID]: editor.getPosition(),
-            })
-          );
-        }}
-      />
+    return (
+      <Box ref={containerRef} width="100%" height="100%">
+        <MonacoEditor
+          ref={ref}
+          theme="vs-dark"
+          options={{
+            scrollBeyondLastLine: false,
+            selectOnLineNumbers: true,
+            wordWrap: "on",
+            padding: {
+              top: 10,
+              bottom: 10,
+            },
+          }}
+          onChange={(newValue) => {
+            props.setCode(newValue);
+          }}
+          editorDidMount={(editor, monaco) => {
+            // Line number linking feature
+            if (Number(props.lineNumber)) {
+              editor.revealLineInCenter(Number(props.lineNumber));
+              editor.setSelection(
+                new monaco.Selection(
+                  Number(props.lineNumber),
+                  0,
+                  Number(props.lineNumber),
+                  1000
+                )
+              );
+            } else {
+              editor.setSelection(new monaco.Selection(1, 0, 1, 0));
+            }
+
+            editor.updateOptions({
+              theme: "parsleyDark",
+            });
+          }}
+          // Save cursor position to store before unmounting
+          editorWillUnmount={(editor) => {
+            dispatch(
+              actions.setCodeEditorPosition({
+                ...codeEditorPosition,
+                [props.fileZUID]: editor.getPosition(),
+              })
+            );
+          }}
+        />
+      </Box>
     );
   },
   (prev, next) => {
