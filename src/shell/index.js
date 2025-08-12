@@ -1,7 +1,3 @@
-// interploated by webpack at build time
-// must be setup before starting the store
-window.CONFIG = __CONFIG__;
-
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
@@ -35,6 +31,11 @@ import { MonacoSetup } from "../apps/code-editor/src/app/components/Editor/compo
 import { actions } from "shell/store/ui";
 import { CommentProvider } from "./contexts/CommentProvider";
 import { CreateContentItemDialogProvider } from "./contexts/CreateContentItemDialogProvider";
+import getRuntimeEnv from "../utility/getRuntimeEnv";
+
+// interploated by webpack at build time
+// must be setup before starting the store
+window.CONFIG = { ...__CONFIG__, ...getRuntimeEnv() };
 
 // needed for Breadcrumbs in Shell
 injectReducer(store, "navContent", navContent);
