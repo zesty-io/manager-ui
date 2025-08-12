@@ -1,5 +1,5 @@
 import { memo, useEffect, useState } from "react";
-import { connect } from "react-redux";
+import { connect, useDispatch } from "react-redux";
 import { alpha } from "@mui/material/styles";
 import Link from "@mui/material/Link";
 import {
@@ -35,6 +35,7 @@ export default connect((state) => {
   };
 })(
   memo(function Login(props) {
+    const dispatch = useDispatch();
     const [loading, setLoading] = useState(false);
     const [twoFactor, setTwoFactor] = useState(false);
     const [error, setError] = useState("");
@@ -172,7 +173,16 @@ export default connect((state) => {
               </Box>
               <SSOButtonGroup
                 authServiceUrl={CONFIG.SERVICE_AUTH}
-                onSuccess={() => {
+                onSuccess={(data) => {
+                  dispatch({
+                    type: "FETCH_LOGIN_SUCCESS",
+                    payload: {
+                      code: data.status,
+                      meta: {
+                        token: data.token,
+                      },
+                    },
+                  });
                   setIsAuthenticated(true);
                 }}
                 onError={(err) => {
