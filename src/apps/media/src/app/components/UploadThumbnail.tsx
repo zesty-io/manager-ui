@@ -44,7 +44,7 @@ export const UploadThumbnail: FC<Props> = ({
         dispatch(replaceFile(file, originalFile));
       }
     }
-  }, [bin]);
+  }, [bin, file, action, dispatch, originalFile]);
 
   const onRemove =
     file.status !== "success"
