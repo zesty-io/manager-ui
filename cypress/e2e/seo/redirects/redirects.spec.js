@@ -429,7 +429,7 @@ describe("Redirects", () => {
         .contains(`/${TEST_DELETE_DATA[4]?.path}`, { matchCase: false })
         .parents(".MuiDataGrid-row")
         .find(".MuiDataGrid-cell:eq(0) .MuiCheckbox-root input")
-        .click();
+        .check();
 
       cy.getElement('[data-cy="RedirectActionDeleteButton"]').click();
       cy.getElement('[data-cy="RedirectsDeleteDialog"]').should("exist");
