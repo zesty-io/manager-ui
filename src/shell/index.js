@@ -111,6 +111,10 @@ MonacoSetup(store);
 
 amplitude.init(window.CONFIG.AMPLITUDE_API_KEY, { autocapture: true });
 
+const preLoginIdentify = new amplitude.Identify();
+preLoginIdentify.set("env", window.CONFIG.ENV);
+amplitude.identify(preLoginIdentify);
+
 // TODO: Add a context here that will store all draft comments
 const App = Sentry.withProfiler(() => (
   <StrictMode>
