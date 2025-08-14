@@ -223,7 +223,7 @@ const MoreActionsMenu = ({
   return (
     <>
       <IconButton
-        data-id="workflows-status-label-menu-button"
+        id="workflows-status-label-menu-button"
         size="small"
         onClick={handleOpen}
         sx={{ borderRadius: "50%" }}

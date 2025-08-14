@@ -219,7 +219,7 @@ export const VersionItem = memo(
 
               return (
                 <Chip
-                  data-id="content-active-status-abel-item"
+                  id="content-active-status-abel-item"
                   data-cy="ActiveWorkflowStatusLabel"
                   key={labelData.ZUID}
                   clickable
@@ -312,7 +312,7 @@ export const VersionItem = memo(
                 return (
                   <Tooltip key={label.ZUID} followCursor title={title}>
                     <MenuItem
-                      data-id="content-status-label-add-menu-item"
+                      id="content-status-label-add-menu-item"
                       component="div"
                       data-cy="WorkflowStatusLabelOption"
                       key={label.ZUID}
@@ -335,7 +335,7 @@ export const VersionItem = memo(
                     >
                       <Stack direction="row" gap={1}>
                         <Check
-                          data-id="content-status-label-add-menu-item-select"
+                          id="content-status-label-add-menu-item-select"
                           fontSize="small"
                           color="action"
                           sx={{
