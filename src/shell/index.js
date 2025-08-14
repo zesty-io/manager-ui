@@ -109,7 +109,7 @@ const appTheme = createTheme(theme, {
 
 MonacoSetup(store);
 
-amplitude.init("b70c721acc447e41a3c120a943aca9d9", { autocapture: true });
+amplitude.init(window.CONFIG.AMPLITUDE_API_KEY, { autocapture: true });
 
 // TODO: Add a context here that will store all draft comments
 const App = Sentry.withProfiler(() => (
