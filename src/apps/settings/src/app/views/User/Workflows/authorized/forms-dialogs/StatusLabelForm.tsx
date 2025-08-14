@@ -105,10 +105,12 @@ const FormInputFieldWrapper: FC<FormInputFieldWrapperProps> = ({
 );
 
 const ColorSelectInput = ({
+  id,
   name,
   defaultValue = "",
   usedColors = [],
 }: {
+  id: string;
   name: string;
   defaultValue?: string | "";
   usedColors: string[];
@@ -131,6 +133,7 @@ const ColorSelectInput = ({
   return (
     <>
       <Autocomplete
+        id={id}
         disableClearable
         autoHighlight
         fullWidth
@@ -183,10 +186,12 @@ const ColorSelectInput = ({
 };
 
 const RolesSelectInput = ({
+  id,
   name,
   listData,
   defaultValue = "",
 }: {
+  id: string;
   name: string;
   listData: RoleMenu[];
   defaultValue?: string;
@@ -207,6 +212,7 @@ const RolesSelectInput = ({
   return (
     <>
       <Autocomplete
+        id={id}
         multiple
         fullWidth
         options={sortedListData}
@@ -400,6 +406,7 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
         <Box display="flex" flexDirection="column" gap={3} p={2.5}>
           <FormInputFieldWrapper label="Name" error={formErrors?.name}>
             <OutlinedInput
+              id="workflows-create-status-label-name-inout"
               name="name"
               defaultValue={values?.name || ""}
               placeholder="e.g. Needs Content Review"
@@ -411,6 +418,7 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
             description="Describe what this status means in the context of your workflows"
           >
             <OutlinedInput
+              id="workflows-create-status-label-description-inout"
               name="description"
               defaultValue={values?.description || ""}
               multiline
@@ -422,6 +430,7 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
           </FormInputFieldWrapper>
           <FormInputFieldWrapper label="Color" error={formErrors?.color}>
             <ColorSelectInput
+              id="workflows-create-status-label-color-select"
               name="color"
               defaultValue={values?.color}
               usedColors={usedColors}
@@ -432,6 +441,7 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
             description="Users who can add this status will be notified."
           >
             <RolesSelectInput
+              id="workflows-create-status-label-addPermissionRoles-select"
               name="addPermissionRoles"
               listData={rolesMenuItems}
               defaultValue={values?.addPermissionRoles?.join(",")}
@@ -442,6 +452,7 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
             description="Users who can remove this status will be notified."
           >
             <RolesSelectInput
+              id="workflows-create-status-label-removePermissionRoles-select"
               name="removePermissionRoles"
               listData={rolesMenuItems}
               defaultValue={values?.removePermissionRoles?.join(",")}
@@ -451,6 +462,7 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
             sx={{ display: "flex", alignItems: "start" }}
             control={
               <Checkbox
+                id="workflows-create-status-label-allowPublish-toggle"
                 name="allowPublish"
                 defaultChecked={values?.allowPublish}
                 disableRipple
@@ -494,6 +506,7 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
           {!!ZUID && !isDeactivated && (
             <Box>
               <Button
+                id="workflows-create-status-label-deactivate-button"
                 variant="outlined"
                 color="inherit"
                 onClick={handleDeactivation}
@@ -507,10 +520,16 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
         </Box>
       </DialogContent>
       <DialogActions sx={{ pt: 2 }}>
-        <Button onClick={onClose} variant="outlined" color="inherit">
+        <Button
+          id="workflows-create-status-label-cancel-button"
+          onClick={onClose}
+          variant="outlined"
+          color="inherit"
+        >
           Cancel
         </Button>
         <Button
+          id="workflows-create-status-label-submit-button"
           data-cy="status-label-submit-button"
           type="submit"
           variant="contained"

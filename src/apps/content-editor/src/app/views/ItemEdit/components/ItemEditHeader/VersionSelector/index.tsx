@@ -173,6 +173,7 @@ export const VersionSelector = memo(
           placement="top-start"
         >
           <Button
+            id="content-version-selector-open-button"
             data-cy="VersionSelector"
             sx={{
               color: "text.disabled",
@@ -252,6 +253,7 @@ export const VersionSelector = memo(
           open={!!anchorEl}
           slotProps={{
             paper: {
+              id: "content-version-selector-menu",
               sx: {
                 height: listHeight,
                 overflow: "auto",

@@ -219,6 +219,7 @@ export const VersionItem = memo(
 
               return (
                 <Chip
+                  data-id="content-active-status-abel-item"
                   data-cy="ActiveWorkflowStatusLabel"
                   key={labelData.ZUID}
                   clickable
@@ -241,6 +242,7 @@ export const VersionItem = memo(
             })}
             {isActive && (
               <Chip
+                id="content-status-label-add-button"
                 data-cy="AddWorkflowStatusLabel"
                 clickable
                 label="Add Status"
@@ -255,6 +257,7 @@ export const VersionItem = memo(
           </Stack>
           {isAddNewLabelOpen && (
             <Box
+              id="content-status-label-add-menu"
               ref={addNewLabelRef}
               onClick={(evt) => evt.stopPropagation()}
               borderTop={1}
@@ -263,6 +266,7 @@ export const VersionItem = memo(
               overflow="hidden"
             >
               <TextField
+                id="content-status-label-add-menu-search-input"
                 ref={searchRef}
                 value={filterKeyword}
                 onChange={(evt) => setFilterKeyword(evt.currentTarget.value)}
@@ -308,6 +312,7 @@ export const VersionItem = memo(
                 return (
                   <Tooltip key={label.ZUID} followCursor title={title}>
                     <MenuItem
+                      data-id="content-status-label-add-menu-item"
                       component="div"
                       data-cy="WorkflowStatusLabelOption"
                       key={label.ZUID}
@@ -330,6 +335,7 @@ export const VersionItem = memo(
                     >
                       <Stack direction="row" gap={1}>
                         <Check
+                          data-id="content-status-label-add-menu-item-select"
                           fontSize="small"
                           color="action"
                           sx={{
@@ -376,6 +382,7 @@ export const VersionItem = memo(
                 );
               })}
               <MenuItem
+                id="content-status-label-add-menu-edit-button"
                 component="div"
                 sx={{
                   pr: 1,

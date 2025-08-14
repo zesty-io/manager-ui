@@ -55,6 +55,7 @@ const DeactivationDialog: FC<DeactivationDialogProps> = ({
 
   return (
     <Dialog
+      id="workflows-status-label-deactivation-dialog"
       data-cy="deactivation-dialog"
       fullWidth
       maxWidth="xs"
@@ -98,11 +99,17 @@ const DeactivationDialog: FC<DeactivationDialogProps> = ({
       </DialogContent>
 
       <DialogActions>
-        <Button onClick={onClose} variant="text" color="inherit">
+        <Button
+          id="workflows-status-label-deactivation-cancel-button"
+          onClick={onClose}
+          variant="text"
+          color="inherit"
+        >
           Cancel
         </Button>
 
         <Button
+          id="workflows-status-label-deactivation-confirm-button"
           onClick={handleConfirm}
           variant="contained"
           color="error"
