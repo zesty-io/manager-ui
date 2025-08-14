@@ -384,6 +384,7 @@ describe("Redirects", () => {
     });
     it("Single Selection", () => {
       cy.visit("/redirects");
+      cy.wait(5000); // Need to add an arbitrary wait for the grid api ref to be set
       cy.getElement(".MuiDataGrid-cell")
         .contains(`/${TEST_DELETE_DATA[1]?.path}`, { matchCase: false })
         .parents(".MuiDataGrid-row")
@@ -411,6 +412,7 @@ describe("Redirects", () => {
 
     it("Multiple", () => {
       cy.visit("/redirects");
+      cy.wait(5000); // Need to add an arbitrary wait for the grid api ref to be set
       cy.getElement(".MuiDataGrid-cell")
         .contains(`/${TEST_DELETE_DATA[2]?.path}`, { matchCase: false })
         .parents(".MuiDataGrid-row")
@@ -427,7 +429,7 @@ describe("Redirects", () => {
         .contains(`/${TEST_DELETE_DATA[4]?.path}`, { matchCase: false })
         .parents(".MuiDataGrid-row")
         .find(".MuiDataGrid-cell:eq(0) .MuiCheckbox-root input")
-        .check();
+        .click();
 
       cy.getElement('[data-cy="RedirectActionDeleteButton"]').click();
       cy.getElement('[data-cy="RedirectsDeleteDialog"]').should("exist");
