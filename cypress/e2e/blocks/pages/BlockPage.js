@@ -8,6 +8,12 @@ class BlockPage {
     cy.getBySelector("variant-name-input").type(name);
     cy.getBySelector("create-variant-confirm-button").click();
   }
+
+  deleteVariant() {
+    cy.getBySelector("ContentItemMoreButton").click();
+    cy.getBySelector("DeleteContentItem").click();
+    cy.getBySelector("DeleteContentItemConfirmButton").click();
+  }
 }
 
 export default new BlockPage();

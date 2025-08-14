@@ -85,6 +85,14 @@ describe("All Blocks Tests", () => {
       timeout: 15_000,
     }).should("exist");
   });
+
+  it("keeps user in the blocks app when deleting a variant", () => {
+    AllBlocksPage.visit();
+    cy.contains(CypressTestBlock).click(TIMEOUT);
+    BlockPage.deleteVariant();
+    cy.wait(1000);
+    cy.location("pathname").should("eq", "/blocks");
+  });
 });
 
 function deleteTestDataModels() {
