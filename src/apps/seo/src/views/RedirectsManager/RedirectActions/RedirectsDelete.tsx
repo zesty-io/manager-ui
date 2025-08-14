@@ -7,29 +7,13 @@ import { useRedirectsDialog } from "../../../app/components/RedirectsDialogProvi
 import { useRedirectsTable } from "../RedirectsTable/RedirectsTableContextProvider";
 import { GridRowId } from "@mui/x-data-grid-pro";
 
-type RedirectsDeleteProps = {};
+type RedirectsDeleteProps = {
+  selectedRedirects: GridRowId[];
+};
 
-const RedirectsDelete: FC<RedirectsDeleteProps> = () => {
+const RedirectsDelete: FC<RedirectsDeleteProps> = ({ selectedRedirects }) => {
   const { openDeleteDialog } = useRedirectsDialog();
   const { apiRef, redirects } = useRedirectsTable();
-  const [selectedRedirects, setSelectedRedirects] = useState<GridRowId[]>([]);
-
-  useEffect(() => {
-    if (!apiRef.current || !Object.keys(apiRef.current).length) {
-      return;
-    }
-
-    const handleSelectionChange = () => {
-      setSelectedRedirects(
-        Array.from(apiRef.current.getSelectedRows().keys() || [])
-      );
-    };
-
-    return apiRef.current.subscribeEvent(
-      "rowSelectionChange",
-      handleSelectionChange
-    );
-  }, [apiRef.current]);
 
   const handleDelete = () => {
     const deleteData = selectedRedirects.map((ZUID: any) => ({

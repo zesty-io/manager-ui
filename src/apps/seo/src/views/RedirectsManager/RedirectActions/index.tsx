@@ -8,12 +8,13 @@ import SearchIcon from "@mui/icons-material/Search";
 import RedirectsImport from "./RedirectsImport";
 import SearchBox from "../../../../../../shell/components/SearchBox";
 import { useEffect, useState } from "react";
+import { GridRowId } from "@mui/x-data-grid-pro";
 
 export default function RedirectActions() {
   const { openCreateForm } = useRedirectsDialog();
   const { redirects, searchFilter, setSearchFilter, apiRef } =
     useRedirectsTable();
-  const [showDeleteHeader, setShowDeleteHeader] = useState(false);
+  const [selectedRedirects, setSelectedRedirects] = useState<GridRowId[]>([]);
 
   useEffect(() => {
     if (!apiRef.current || !Object.keys(apiRef.current).length) {
@@ -21,7 +22,9 @@ export default function RedirectActions() {
     }
 
     const handleSelectionChange = () => {
-      setShowDeleteHeader(apiRef.current.getSelectedRows().size > 0);
+      setSelectedRedirects(
+        Array.from(apiRef.current.getSelectedRows().keys() || [])
+      );
     };
 
     return apiRef.current.subscribeEvent(
@@ -32,8 +35,8 @@ export default function RedirectActions() {
 
   return (
     <>
-      {showDeleteHeader ? (
-        <RedirectsDelete />
+      {selectedRedirects?.length ? (
+        <RedirectsDelete selectedRedirects={selectedRedirects} />
       ) : (
         <Box
           component="header"
