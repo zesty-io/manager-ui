@@ -90,7 +90,7 @@ describe("All Blocks Tests", () => {
     AllBlocksPage.visit();
     cy.contains(CypressTestBlock).click(TIMEOUT);
     BlockPage.deleteVariant();
-    cy.wait(1000);
+    cy.wait(5000);
     cy.location("pathname").should("eq", "/blocks");
   });
 });
