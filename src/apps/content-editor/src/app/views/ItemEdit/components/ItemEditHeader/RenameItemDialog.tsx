@@ -15,7 +15,10 @@ import { useHistory, useParams } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "../../../../../../../../shell/store/types";
 import { ContentItem } from "../../../../../../../../shell/services/types";
-import { useUpdateContentItemMutation } from "../../../../../../../../shell/services/instance";
+import {
+  useGetContentModelsQuery,
+  useUpdateContentItemMutation,
+} from "../../../../../../../../shell/services/instance";
 import { fetchItem } from "../../../../../../../../shell/store/content";
 
 type DuplicateItemProps = {
@@ -35,6 +38,7 @@ export const RenameItemDialog = ({ onClose }: DuplicateItemProps) => {
   const [newTitle, setNewTitle] = useState(item?.web?.metaTitle || "");
 
   const [updateContentItem, { isLoading }] = useUpdateContentItemMutation();
+  const { refetch: refetchContentModels } = useGetContentModelsQuery();
 
   return (
     <Dialog open fullWidth maxWidth={"xs"} onClose={onClose}>
@@ -86,6 +90,7 @@ export const RenameItemDialog = ({ onClose }: DuplicateItemProps) => {
               },
             }).then(() => {
               dispatch(fetchItem(modelZUID, itemZUID));
+              refetchContentModels();
               onClose();
             });
           }}
