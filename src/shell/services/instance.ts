@@ -30,6 +30,7 @@ import {
   GroupItem,
   Redirects,
   RedirectRequest,
+  WebFont,
 } from "./types";
 import { batchApiRequests } from "../../utility/batchApiRequests";
 
@@ -291,7 +292,7 @@ export const instanceApi = createApi({
           },
         }),
         transformResponse: getResponseData,
-        invalidatesTags: ["HeadTags", "LegacyHeadTags"],
+        invalidatesTags: ["HeadTags"],
       }
     ),
     createHeadTag: builder.mutation<
@@ -317,7 +318,7 @@ export const instanceApi = createApi({
         url: `/web/headtags/${headTagZUID}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["HeadTags", "LegacyHeadTags"],
+      invalidatesTags: ["HeadTags"],
     }),
     createContentModelFromTemplate: builder.mutation<
       any,
@@ -892,7 +893,7 @@ export const instanceApi = createApi({
       }),
       invalidatesTags: ["Redirects"],
     }),
-    getWebFonts: builder.query<any, void>({
+    getWebFonts: builder.query<WebFont[], void>({
       async queryFn(args, _queryApi, _extraOptions, fetchWithBQ) {
         try {
           const res: any = await fetchWithBQ({

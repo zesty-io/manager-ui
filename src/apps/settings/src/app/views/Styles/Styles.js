@@ -21,7 +21,7 @@ import { FieldWrapper, MainWrapper } from "../../components/Containers";
 import Box from "@mui/material/Box";
 import { notify } from "../../../../../../shell/store/notifications";
 import { saveStyleVariable } from "../../../../../../shell/store/settings";
-import { useSettingsFonts } from "../../components/useSettingsFonts";
+import { useSettingsFonts } from "../Fonts/hooks/useSettingsFonts";
 
 export default connect((state, props) => {
   const category = state.settings.catStyles?.find(

@@ -5,14 +5,14 @@ import {
   useGetHeadTagsQuery,
   useGetWebFontsQuery,
   useUpdateHeadTagsMutation,
-} from "../../../../../shell/services/instance";
-import { notify } from "../../../../../shell/store/notifications";
+} from "../../../../../../../shell/services/instance";
+import { notify } from "../../../../../../../shell/store/notifications";
 import { useDispatch } from "react-redux";
 
-export interface InstalledWebFont {
+export type InstalledWebFont = {
   ZUID: string | null;
   href: string;
-}
+};
 export type FontAndVariants = {
   family: string;
   variants: string[];
@@ -38,66 +38,72 @@ const getFontDataFromHref = (url: string): FontAndVariants => {
 
 export const useSettingsFonts = () => {
   const dispatch = useDispatch();
-  const { data: headTags, isLoading: isLoadingHeadTags } =
-    useGetHeadTagsQuery();
+
+  const {
+    data: headTags,
+    isLoading: isLoadingHeadTags,
+    isFetching: isFetchingHeadTags,
+  } = useGetHeadTagsQuery();
   const { data: webFonts, isLoading: isLoadingWebFonts } =
     useGetWebFontsQuery();
 
   const [deleteFont, { isLoading: isDeleting }] = useDeleteHeadTagMutation();
   const [updateFont, { isLoading: isUpdating }] = useUpdateHeadTagsMutation();
 
-  const { installedFonts }: { installedFonts: InstalledWebFont[] } =
-    useMemo(() => {
-      const fontMap = new Map<
-        string,
-        { ZUID: string; variants: Set<string> }
-      >();
-      const deleteZUIDs: string[] = [];
+  const { installedFonts } = useMemo(() => {
+    const fontMap = new Map<string, { ZUID: string; variants: Set<string> }>();
+    const deleteZUIDs: string[] = [];
 
-      const fontHeadTags = headTags?.filter(
-        (item) =>
-          item.type === "link" &&
-          item.attributes.href?.includes("fonts.googleapis.com/")
-      );
-      fontHeadTags?.forEach((item) => {
-        try {
-          const url = new URL(item.attributes.href);
-          const [family, variantsString = ""] =
-            url.searchParams.get("family")?.split(":") || [];
-          const variants = variantsString.split(",").filter(Boolean);
+    const fontHeadTags = headTags?.filter(
+      (item) =>
+        item?.type === "link" &&
+        item?.attributes?.href?.includes("fonts.googleapis.com/")
+    );
 
-          if (!family) return;
+    fontHeadTags?.forEach((item) => {
+      try {
+        const validHref = item?.attributes?.href?.replace(
+          "https//",
+          "https://"
+        );
+        const url = new URL(validHref);
+        const [family, variantsString = ""] =
+          url.searchParams.get("family")?.split(":") || [];
+        const variants = variantsString.split(",").filter(Boolean);
 
-          if (fontMap.has(family)) {
-            const existing = fontMap.get(family)!;
-            variants.forEach((v) => existing.variants.add(v));
-            deleteZUIDs.push(item.ZUID);
-          } else {
-            fontMap.set(family, {
-              ZUID: item.ZUID,
-              variants: new Set(variants),
-            });
-          }
-        } catch {
-          // Invalid URL - skip
+        if (!family) return;
+
+        if (fontMap.has(family)) {
+          const existing = fontMap.get(family)!;
+          variants.forEach((v) => existing.variants.add(v));
+          deleteZUIDs.push(item.ZUID);
+        } else {
+          fontMap.set(family, {
+            ZUID: item.ZUID,
+            variants: new Set(variants),
+          });
         }
-      });
-
-      if (!!deleteZUIDs?.length) {
-        deleteZUIDs?.forEach((fontZUID) => deleteFont(fontZUID));
+      } catch (error) {
+        // Invalid URL - skip
       }
+    });
 
-      const installed = Array.from(fontMap.entries()).map(
-        ([family, { ZUID, variants }]) => ({
-          ZUID,
-          href: `https://fonts.googleapis.com/css?family=${family.replace(
-            /\s/g,
-            "+"
-          )}:${Array.from(variants).join(",")}`,
-        })
-      );
-      return { installedFonts: installed };
-    }, [headTags]);
+    // Delete duplicate font family grouping
+    if (!!deleteZUIDs?.length) {
+      deleteZUIDs?.forEach((fontZUID) => deleteFont(fontZUID));
+    }
+
+    const installed = Array.from(fontMap.entries()).map(
+      ([family, { ZUID, variants }]) => ({
+        ZUID,
+        href: `https://fonts.googleapis.com/css?family=${family.replace(
+          /\s/g,
+          "+"
+        )}:${Array.from(variants).join(",")}`,
+      })
+    );
+    return { installedFonts: installed };
+  }, [headTags]);
 
   const handleFontDelete = useCallback(
     async (ZUID, variant) => {
@@ -151,7 +157,7 @@ export const useSettingsFonts = () => {
     webFonts,
     isLoading: isLoadingHeadTags || isLoadingWebFonts,
     deleteFont: handleFontDelete,
-    isDeleting: isDeleting || isUpdating,
+    isDeleting: isDeleting || isUpdating || isFetchingHeadTags,
     getFontDataFromHref,
     renderLinkTags: () => (
       <Portal container={document.head}>

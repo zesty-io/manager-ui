@@ -1,7 +1,7 @@
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { Switch, Route, Redirect, useLocation } from "react-router-dom";
 import { connect } from "react-redux";
-import { Box, Grid, Portal } from "@mui/material";
+import { Box, Grid } from "@mui/material";
 
 import { SettingsNav } from "./components/Nav";
 
@@ -19,10 +19,10 @@ import {
 } from "../../../../shell/store/settings";
 import { ResizableContainer } from "../../../../shell/components/ResizeableContainer";
 import Workflows from "./views/User/Workflows";
-import Installed from "./views/Fonts/Installed";
-import Browser from "./views/Fonts/Browser";
+
 import { HeadTags } from "./views/Robots/HeadTags";
-// import FontInstalled from "./views/Fonts/FontInstalled";
+import Browse from "./views/Fonts/Browse";
+import Installed from "./views/Fonts/Installed";
 // Makes sure that other apps using legacy theme does not get affected with the palette
 
 export default connect((state) => {
@@ -112,7 +112,7 @@ export default connect((state) => {
               />
               <Route path="/settings/instance/:category" component={Instance} />
 
-              <Route path="/settings/fonts/browse" component={Browser} />
+              <Route path="/settings/fonts/browse" component={Browse} />
               <Route path="/settings/fonts/installed" component={Installed} />
 
               <Redirect from="/settings/fonts" to="/settings/fonts/browse" />

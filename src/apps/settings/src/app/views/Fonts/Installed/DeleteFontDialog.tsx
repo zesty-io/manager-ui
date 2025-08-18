@@ -10,7 +10,7 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { Stack } from "@mui/material";
-import { useSettingsFonts } from "../../components/useSettingsFonts";
+import { useSettingsFonts } from "../hooks/useSettingsFonts";
 
 export type DeleteFontDialogProps = {
   open: boolean;
@@ -20,13 +20,13 @@ export type DeleteFontDialogProps = {
   ZUID: string;
 };
 
-const DeleteFontDialog: FC<DeleteFontDialogProps> = ({
+const DeleteFontDialog = ({
   open,
   onClose,
   family,
   variant,
   ZUID,
-}) => {
+}: DeleteFontDialogProps) => {
   const fontLabel = `${family} (${variant})`;
 
   const { deleteFont, isDeleting } = useSettingsFonts();
@@ -43,8 +43,8 @@ const DeleteFontDialog: FC<DeleteFontDialogProps> = ({
           <DeleteIcon
             color="error"
             sx={{
-              padding: "8px",
-              borderRadius: "20px",
+              padding: 1,
+              borderRadius: "50%",
               backgroundColor: "red.100",
               display: "block",
               mb: 1.5,
