@@ -113,7 +113,6 @@ export const MemoizedEditor = memo(
           options={{
             scrollBeyondLastLine: false,
             selectOnLineNumbers: true,
-            automaticLayout: true,
             wordWrap: "on",
             padding: {
               top: 10,
