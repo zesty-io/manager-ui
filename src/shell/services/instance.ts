@@ -899,10 +899,8 @@ export const instanceApi = createApi({
           const res: any = await fetchWithBQ({
             url: "https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyAWGIDvIvAF69UQZR9vIOtz88s55deGs8Y",
           });
-          // Return just the data without the status field
           return { data: res?.data?.items };
         } catch (error) {
-          // Return just the error without the status field
           return { error };
         }
       },
