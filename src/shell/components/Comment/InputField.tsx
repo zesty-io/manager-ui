@@ -2,7 +2,6 @@ import { useEffect, useRef, useState, useContext } from "react";
 import { Box, Typography, Button, Stack } from "@mui/material";
 import { Editor } from "@tinymce/tinymce-react";
 import { theme } from "@zesty-io/material";
-import { LoadingButton } from "@mui/lab";
 import { useParams } from "react-router";
 import { useDebounce } from "react-use";
 
@@ -373,7 +372,7 @@ export const InputField = ({
             >
               Cancel
             </Button>
-            <LoadingButton
+            <Button
               data-cy="SubmitNewComment"
               variant="contained"
               color="primary"
@@ -382,7 +381,7 @@ export const InputField = ({
               loading={isLoading}
             >
               {getPrimaryButtonText()}
-            </LoadingButton>
+            </Button>
           </>
         )}
       </Stack>

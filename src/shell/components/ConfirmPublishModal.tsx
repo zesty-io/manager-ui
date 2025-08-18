@@ -11,7 +11,6 @@ import {
   Typography,
 } from "@mui/material";
 import CloudUploadRoundedIcon from "@mui/icons-material/CloudUploadRounded";
-import { LoadingButton } from "@mui/lab";
 
 export type ConfirmPublishModal = {
   contentTitle: string;
@@ -80,7 +79,7 @@ export const ConfirmPublishModal = ({
         >
           Cancel
         </Button>
-        <LoadingButton
+        <Button
           loading={isPublishing}
           action={(actions) => (actionRef.current = actions)}
           variant="contained"
@@ -92,7 +91,7 @@ export const ConfirmPublishModal = ({
           Publish {altText || !!relatedItemsToPublishCount ? "Items " : "Item "}
           {!!relatedItemsToPublishCount &&
             `(${relatedItemsToPublishCount + 1})`}
-        </LoadingButton>
+        </Button>
       </DialogActions>
     </Dialog>
   );

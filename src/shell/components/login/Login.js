@@ -1,5 +1,5 @@
 import { memo, useEffect, useState } from "react";
-import { connect } from "react-redux";
+import { connect, useDispatch } from "react-redux";
 import { alpha } from "@mui/material/styles";
 import Link from "@mui/material/Link";
 import {
@@ -18,13 +18,13 @@ import {
   InputAdornment,
   IconButton,
   TextField,
+  Button,
 } from "@mui/material";
 import AlternateEmailRoundedIcon from "@mui/icons-material/AlternateEmailRounded";
 import PasswordRoundedIcon from "@mui/icons-material/PasswordRounded";
 import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
 import VisibilityOffRoundedIcon from "@mui/icons-material/VisibilityOffRounded";
 import LoginRoundedIcon from "@mui/icons-material/LoginRounded";
-import { LoadingButton } from "@mui/lab";
 import { SSOButton, SSOButtonGroup } from "@zesty-io/material";
 import zestyLogo from "../../../../public/images/zestyLogo.svg";
 
@@ -35,6 +35,7 @@ export default connect((state) => {
   };
 })(
   memo(function Login(props) {
+    const dispatch = useDispatch();
     const [loading, setLoading] = useState(false);
     const [twoFactor, setTwoFactor] = useState(false);
     const [error, setError] = useState("");
@@ -143,7 +144,7 @@ export default connect((state) => {
                   error={!!error}
                   autoComplete="off"
                 />
-                <LoadingButton
+                <Button
                   size="large"
                   type="submit"
                   startIcon={<LoginRoundedIcon />}
@@ -153,7 +154,7 @@ export default connect((state) => {
                   loading={loading}
                 >
                   Continue
-                </LoadingButton>
+                </Button>
               </Box>
             </Box>
           ) : (
@@ -172,7 +173,16 @@ export default connect((state) => {
               </Box>
               <SSOButtonGroup
                 authServiceUrl={CONFIG.SERVICE_AUTH}
-                onSuccess={() => {
+                onSuccess={(data) => {
+                  dispatch({
+                    type: "FETCH_LOGIN_SUCCESS",
+                    payload: {
+                      code: data.status,
+                      meta: {
+                        token: data.token,
+                      },
+                    },
+                  });
                   setIsAuthenticated(true);
                 }}
                 onError={(err) => {
@@ -284,7 +294,7 @@ export default connect((state) => {
                     Forgot Password?
                   </Link>
                 </Box>
-                <LoadingButton
+                <Button
                   size="large"
                   type="submit"
                   startIcon={<LoginRoundedIcon />}
@@ -292,7 +302,7 @@ export default connect((state) => {
                   loading={loading}
                 >
                   Resume Session
-                </LoadingButton>
+                </Button>
               </Box>
             </Box>
           )}

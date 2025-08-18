@@ -242,8 +242,8 @@ export const CustomNotification = forwardRef(({ id, ...props }, ref) => {
     // this will only show 1 or 2 lines to prevent exceeding on the expected height
     // depending what type of notification will be displayed.
     display: props.severity === "success" ? "block" : "-webkit-box",
-    "-webkit-line-clamp": props.heading && props.message ? "1" : "2",
-    "-webkit-box-orient": "vertical",
+    WebkitLineClamp: props.heading && props.message ? "1" : "2",
+    WebkitBoxOrient: "vertical",
   };
 
   return (

@@ -9,16 +9,17 @@ import {
 import { ContentCopyRounded } from "@mui/icons-material";
 import { useHistory, useParams } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
-import { LoadingButton } from "@mui/lab";
 
 import { AppState } from "../../../../../../../../shell/store/types";
 import { ContentItem } from "../../../../../../../../shell/services/types";
 import {
+  instanceApi,
   useCreateContentItemMutation,
   useGetContentModelFieldsQuery,
   useGetContentModelsQuery,
 } from "../../../../../../../../shell/services/instance";
 import { notify } from "../../../../../../../../shell/store/notifications";
+import { fetchItems } from "../../../../../../../../shell/store/content";
 
 type DuplicateItemProps = {
   onClose: () => void;
@@ -35,7 +36,8 @@ export const DuplicateItemDialog = ({ onClose }: DuplicateItemProps) => {
   const item = useSelector(
     (state: AppState) => state.content[itemZUID] as ContentItem
   );
-  const { data: models } = useGetContentModelsQuery();
+  const { data: models, refetch: refetchContentModels } =
+    useGetContentModelsQuery();
 
   const [createContentItem, { isLoading }] = useCreateContentItemMutation();
 
@@ -67,9 +69,13 @@ export const DuplicateItemDialog = ({ onClose }: DuplicateItemProps) => {
         web: {
           canonicalTagMode: item.web.canonicalTagMode,
           parentZUID: item.web.parentZUID,
-          metaLinkText: item.web.metaLinkText?.slice(0, 143) + " (copy)",
+          metaLinkText: !item.web.metaLinkText
+            ? null
+            : item.web.metaLinkText?.slice(0, 143) + " (copy)",
           metaTitle: item.web.metaTitle?.slice(0, 143) + " (copy)",
-          metaDescription: item.web.metaDescription?.slice(0, 153) + " (copy)",
+          metaDescription: !item.web.metaDescription
+            ? null
+            : item.web.metaDescription?.slice(0, 153) + " (copy)",
           pathPart: item.web.pathPart
             ? item.web.pathPart + `-${new Date().toISOString()}`
             : undefined,
@@ -82,6 +88,8 @@ export const DuplicateItemDialog = ({ onClose }: DuplicateItemProps) => {
     })
       .unwrap()
       .then((res) => {
+        dispatch(fetchItems(modelZUID));
+        refetchContentModels();
         onClose();
         history.push(
           `/${
@@ -104,7 +112,7 @@ export const DuplicateItemDialog = ({ onClose }: DuplicateItemProps) => {
 
   return (
     <Dialog open fullWidth maxWidth={"xs"} onClose={onClose}>
-      <DialogTitle>
+      <DialogTitle component="div">
         <Box
           sx={{
             backgroundColor: "deepOrange.100",
@@ -132,14 +140,14 @@ export const DuplicateItemDialog = ({ onClose }: DuplicateItemProps) => {
         <Button color="inherit" onClick={onClose}>
           Cancel
         </Button>
-        <LoadingButton
+        <Button
           variant="contained"
           color="primary"
           onClick={() => duplicateItem()}
           loading={isLoading}
         >
           Duplicate Item
-        </LoadingButton>
+        </Button>
       </DialogActions>
     </Dialog>
   );

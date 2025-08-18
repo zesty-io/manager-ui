@@ -306,6 +306,7 @@ export const Home = () => {
             <Stack direction="row" gap={1.5} sx={{ pb: 2 }}>
               {cards.map((card) => (
                 <Card
+                  key={card.content}
                   variant="outlined"
                   elevation={0}
                   sx={{ borderColor: "border", borderRadius: 2 }}
@@ -399,6 +400,7 @@ export const Home = () => {
         >
           {TABS.map((tab) => (
             <Tab
+              key={tab.name}
               icon={<SvgIcon component={tab.icon} fontSize="small" />}
               iconPosition="start"
               label={tab.name}

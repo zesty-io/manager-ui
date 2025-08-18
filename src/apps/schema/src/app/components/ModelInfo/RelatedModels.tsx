@@ -41,6 +41,7 @@ export const RelatedModels = () => {
           const model = models?.find((model) => model.ZUID === modelZUID);
           return (
             <Box
+              key={modelZUID}
               display="flex"
               alignItems="center"
               p={2}

@@ -2,7 +2,7 @@ import { memo, useState, useCallback } from "react";
 import { useHistory } from "react-router";
 import DoDisturbIcon from "@mui/icons-material/DoDisturb";
 import DeleteIcon from "@mui/icons-material/Delete";
-import LoadingButton from "@mui/lab/LoadingButton";
+import { Button } from "@mui/material";
 
 import { deleteFile } from "../../../../../store/files";
 
@@ -103,7 +103,7 @@ export const Delete = memo(function Delete(props) {
           >
             Cancel
           </Button>
-          <LoadingButton
+          <Button
             data-cy="DeleteContentItemConfirmButton"
             variant="contained"
             size="small"
@@ -112,7 +112,7 @@ export const Delete = memo(function Delete(props) {
             loading={deleting}
           >
             Delete
-          </LoadingButton>
+          </Button>
         </DialogActions>
       </Dialog>
     </>

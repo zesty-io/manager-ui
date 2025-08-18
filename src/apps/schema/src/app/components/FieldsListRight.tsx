@@ -11,7 +11,6 @@ import {
   Button,
 } from "@mui/material";
 import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
-import LoadingButton from "@mui/lab/LoadingButton";
 import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
 import CheckIcon from "@mui/icons-material/Check";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
@@ -227,7 +226,7 @@ export const FieldsListRight = ({ model }: Props) => {
           label="Model Parent"
         />
         {showSaveParentModelButton && (
-          <LoadingButton
+          <Button
             color="primary"
             loading={isLoading}
             variant="contained"
@@ -235,7 +234,7 @@ export const FieldsListRight = ({ model }: Props) => {
             sx={{ mt: 1.5 }}
           >
             Save
-          </LoadingButton>
+          </Button>
         )}
       </Box>
 
@@ -260,7 +259,7 @@ export const FieldsListRight = ({ model }: Props) => {
               <TextField {...params} placeholder="Select" />
             )}
           />
-          <LoadingButton
+          <Button
             color="primary"
             loading={isLoading}
             variant="contained"
@@ -268,7 +267,7 @@ export const FieldsListRight = ({ model }: Props) => {
             sx={{ mt: 1.5 }}
           >
             Save
-          </LoadingButton>
+          </Button>
         </Box>
       )} */}
 
@@ -292,7 +291,7 @@ export const FieldsListRight = ({ model }: Props) => {
         minRows={4}
       />
       {description !== model?.description && (
-        <LoadingButton
+        <Button
           color="primary"
           loading={isLoading}
           startIcon={<SaveRoundedIcon />}
@@ -302,7 +301,7 @@ export const FieldsListRight = ({ model }: Props) => {
           sx={{ mt: 1.5 }}
         >
           Save
-        </LoadingButton>
+        </Button>
       )}
       {/* <Box
         sx={{

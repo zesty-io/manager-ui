@@ -1,5 +1,4 @@
 import { FC, useCallback, useEffect, useState } from "react";
-import LoadingButton from "@mui/lab/LoadingButton";
 import {
   Button,
   Dialog,
@@ -171,7 +170,7 @@ export const ErrorDialog: FC<ErrorDialogProps> = ({ open, onClose, data }) => {
           </Box>
         </DialogContent>
         <DialogActions sx={{ p: "20px" }}>
-          <LoadingButton
+          <Button
             data-cy="RedirectsErrorDialogTryAgainButton"
             variant="text"
             color="inherit"
@@ -180,7 +179,7 @@ export const ErrorDialog: FC<ErrorDialogProps> = ({ open, onClose, data }) => {
             onClick={handleResubmit}
           >
             Try Again
-          </LoadingButton>
+          </Button>
           <Button
             data-cy="RedirectsErrorDialogDoneButton"
             variant="contained"

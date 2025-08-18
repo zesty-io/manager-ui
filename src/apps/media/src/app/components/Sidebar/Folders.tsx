@@ -99,12 +99,15 @@ export const Folders = ({ lockedToGroupId }: Props) => {
   };
 
   useEffect(() => {
-    window.addEventListener("storage", () =>
-      setHiddenGroups(JSON.parse(localStorage.getItem("zesty:navMedia:hidden")))
-    );
+    const handleStorage = () =>
+      setHiddenGroups(
+        JSON.parse(localStorage.getItem("zesty:navMedia:hidden"))
+      );
+
+    window.addEventListener("storage", handleStorage);
 
     return () => {
-      window.removeEventListener("storage", () => {});
+      window.removeEventListener("storage", handleStorage);
     };
   }, []);
 
@@ -306,39 +309,48 @@ export const Folders = ({ lockedToGroupId }: Props) => {
   /* Creating a tree structure based on the hidden items. */
   const hiddenTrees: TreeItemType[] = useMemo(() => {
     if (binGroups && hiddenGroups?.length) {
-      return hiddenGroups?.map((id: string) => {
-        let rootGroup: Group[];
-        let rootNode: Group | Bin;
-        let binId: string;
+      return hiddenGroups
+        ?.map((id: string) => {
+          let rootGroup: Group[];
+          let rootNode: Group | Bin;
+          let binId: string;
 
-        if (id.startsWith("1")) {
-          rootGroup = binGroups.find((group: any) => group[0].bin_id === id);
-          rootNode = bins.find((bin: any) => bin.id === id);
-          binId = rootNode?.id;
-        } else {
-          rootGroup = binGroups?.filter((groups) =>
-            groups?.some((group) => group.id === id)
-          )?.[0];
-          rootNode = rootGroup?.find((group) => group.id === id);
-          binId = rootNode?.bin_id;
-        }
+          if (id.startsWith("1")) {
+            rootGroup = binGroups.find((group: any) => group[0].bin_id === id);
+            rootNode = bins.find((bin: any) => bin.id === id);
+            binId = rootNode?.id;
+          } else {
+            rootGroup = binGroups?.filter((groups) =>
+              groups?.some((group) => group.id === id)
+            )?.[0];
+            rootNode = rootGroup?.find((group) => group.id === id);
+            binId = rootNode?.bin_id;
+          }
 
-        if (!rootNode) return;
+          if (!rootNode) return;
 
-        return {
-          icon: FolderIcon,
-          path: `/media/folder/${rootNode.id}`,
-          label: rootNode.name,
-          actions: renderActions({
-            id: rootNode?.id,
-            title: rootNode?.name,
-            binId,
+          return {
+            icon: FolderIcon,
             path: `/media/folder/${rootNode.id}`,
-          }),
-          children: nest(rootGroup, id, "group_id", sort, hiddenGroups, binId),
-          nodeData: rootNode,
-        };
-      });
+            label: rootNode.name,
+            actions: renderActions({
+              id: rootNode?.id,
+              title: rootNode?.name,
+              binId,
+              path: `/media/folder/${rootNode.id}`,
+            }),
+            children: nest(
+              rootGroup,
+              id,
+              "group_id",
+              sort,
+              hiddenGroups,
+              binId
+            ),
+            nodeData: rootNode,
+          };
+        })
+        .filter((item: TreeItemType) => !!item);
     } else {
       return [];
     }
@@ -431,6 +443,7 @@ export const Folders = ({ lockedToGroupId }: Props) => {
           }}
         >
           <AccordionSummary
+            data-cy="hidden-items-accordion"
             expandIcon={<ArrowDropDownRoundedIcon fontSize="small" />}
             sx={{
               "&.MuiButtonBase-root": {
@@ -470,7 +483,6 @@ export const Folders = ({ lockedToGroupId }: Props) => {
           >
             <NavTree
               id="media-hidden-nav"
-              isHiddenTree
               tree={hiddenTrees}
               selected={location.pathname}
               expandedItems={hiddenExpanded}
@@ -496,6 +508,7 @@ export const Folders = ({ lockedToGroupId }: Props) => {
       <Menu anchorEl={anchorEl} open={open} onClose={closeMenu}>
         {SortMenuItems.map((menuItem) => (
           <MenuItem
+            key={menuItem.value}
             onClick={() => {
               closeMenu();
               setSort(menuItem.value);

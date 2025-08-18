@@ -42,7 +42,6 @@ import {
   fetchItemPublishing,
   fetchItemPublishings,
 } from "../../../../../../../../shell/store/content";
-import { LoadingButton } from "@mui/lab";
 import { useGetUsersQuery } from "../../../../../../../../shell/services/accounts";
 import { formatDate } from "../../../../../../../../utility/formatDate";
 import { UnpublishDialog } from "./UnpublishDialog";
@@ -479,7 +478,7 @@ export const ItemEditHeaderActions = ({
         placement="bottom-start"
       >
         {itemState === ITEM_STATES.dirty ? (
-          <LoadingButton
+          <Button
             variant="contained"
             startIcon={<SaveRounded />}
             size="small"
@@ -491,7 +490,7 @@ export const ItemEditHeaderActions = ({
             id="SaveItemButton"
           >
             Save
-          </LoadingButton>
+          </Button>
         ) : (
           <Box display="flex" gap={1} alignItems="center" px="10px">
             <CheckCircleRounded fontSize="small" color="action" />
@@ -557,7 +556,7 @@ export const ItemEditHeaderActions = ({
                 },
               }}
             >
-              <LoadingButton
+              <Button
                 startIcon={<CloudUploadRounded />}
                 sx={{
                   color: "common.white",
@@ -578,7 +577,7 @@ export const ItemEditHeaderActions = ({
                 data-cy="PublishButton"
               >
                 {itemState === ITEM_STATES.dirty ? "Save & Publish" : "Publish"}
-              </LoadingButton>
+              </Button>
               <Button
                 sx={{
                   color: "common.white",
@@ -664,7 +663,7 @@ export const ItemEditHeaderActions = ({
                 },
               }}
             >
-              <LoadingButton
+              <Button
                 startIcon={<CloudUploadRounded />}
                 sx={{
                   color: "common.white",
@@ -680,7 +679,7 @@ export const ItemEditHeaderActions = ({
                 data-cy="PublishButton"
               >
                 Publish
-              </LoadingButton>
+              </Button>
               <Button
                 sx={{
                   color: "common.white",

@@ -1,5 +1,4 @@
 import { FC } from "react";
-import LoadingButton from "@mui/lab/LoadingButton";
 import {
   Button,
   Dialog,
@@ -166,7 +165,7 @@ export const ChangeDialog: FC<ChangeDialogProps> = ({
         <Button variant="text" color="inherit" onClick={onClose}>
           Don't Create
         </Button>
-        <LoadingButton
+        <Button
           data-cy="DeleteContentItemConfirmButton"
           variant="contained"
           color="primary"
@@ -174,7 +173,7 @@ export const ChangeDialog: FC<ChangeDialogProps> = ({
           loading={isRedirectsLoading}
         >
           Create Redirect
-        </LoadingButton>
+        </Button>
       </DialogActions>
     </Dialog>
   );

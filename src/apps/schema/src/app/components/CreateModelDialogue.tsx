@@ -17,14 +17,12 @@ import {
   TextField,
   Tooltip,
   Checkbox,
-  setRef,
 } from "@mui/material";
 import { useEffect, useReducer, useState } from "react";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import { isEmpty } from "lodash";
-import { theme } from "@zesty-io/material";
 
 import {
   useCreateContentModelMutation,
@@ -34,8 +32,7 @@ import {
 import { ContentModel, User } from "../../../../../shell/services/types";
 import { notify } from "../../../../../shell/store/notifications";
 import { useDispatch, useSelector } from "react-redux";
-import { LoadingButton } from "@mui/lab";
-import { useHistory, useLocation } from "react-router";
+import { useHistory } from "react-router";
 import { modelIconMap } from "../utils";
 import { withCursorPosition } from "../../../../../shell/components/withCursorPosition";
 import { formatPathPart } from "../../../../../utility/formatPathPart";
@@ -556,7 +553,7 @@ export const CreateModelDialogue = ({
                 <Button variant="outlined" color="inherit" onClick={onClose}>
                   Cancel
                 </Button>
-                <LoadingButton
+                <Button
                   data-cy="create-model-submit-button"
                   type="submit"
                   variant="contained"
@@ -573,7 +570,7 @@ export const CreateModelDialogue = ({
                   }
                 >
                   Create Model
-                </LoadingButton>
+                </Button>
               </DialogActions>
             </Box>
           )}

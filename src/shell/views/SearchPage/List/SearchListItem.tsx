@@ -1,11 +1,11 @@
-import { FC } from "react";
+import { FC, ReactNode } from "react";
 import { LinksContainer } from "../LinksContainer";
 import { Box, Skeleton, Stack, Typography, SvgIcon } from "@mui/material";
 import { Link } from "react-router-dom";
 import { SvgIconComponent } from "@mui/icons-material";
 
 interface SearchListItem {
-  title: string;
+  title: string | ReactNode;
   url: string;
   chips: string;
   icon: SvgIconComponent;
@@ -23,7 +23,7 @@ export const SearchListItem: FC<SearchListItem> = ({
   return (
     <Box
       component={Link}
-      to={url}
+      to={url || ""}
       style={style}
       sx={{
         boxSizing: "border-box",
@@ -82,7 +82,7 @@ export const SearchListItem: FC<SearchListItem> = ({
           }}
           width="100%"
         >
-          <Typography variant="body2" color="text.primary">
+          <Typography variant="body2" color="text.primary" fontWeight={700}>
             {loading ? (
               <Skeleton
                 variant="rectangular"
@@ -107,7 +107,7 @@ export const SearchListItem: FC<SearchListItem> = ({
             )}
           </Typography>
         </Stack>
-        <LinksContainer url={url} />
+        <LinksContainer url={url || ""} />
       </Stack>
     </Box>
   );

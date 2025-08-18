@@ -1,5 +1,4 @@
 import { FC } from "react";
-import LoadingButton from "@mui/lab/LoadingButton";
 import {
   Button,
   Dialog,
@@ -155,7 +154,7 @@ export const DeleteDialog: FC<DeleteDialogProps> = ({
         <Button variant="text" color="inherit" onClick={onClose}>
           Cancel
         </Button>
-        <LoadingButton
+        <Button
           data-cy="DeleteContentItemConfirmButton"
           variant="contained"
           color="error"
@@ -163,7 +162,7 @@ export const DeleteDialog: FC<DeleteDialogProps> = ({
           loading={isDeleting}
         >
           Delete Redirects ({redirects?.length})
-        </LoadingButton>
+        </Button>
       </DialogActions>
     </Dialog>
   );

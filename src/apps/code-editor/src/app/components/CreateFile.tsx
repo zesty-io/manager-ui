@@ -13,7 +13,6 @@ import {
   Autocomplete,
   TextField,
 } from "@mui/material";
-import LoadingButton from "@mui/lab/LoadingButton";
 import CloseIcon from "@mui/icons-material/Close";
 
 import { fileTypeOptions, scripts, stylesheets } from "./constants";
@@ -254,7 +253,7 @@ const CreateFile = memo(function CreateFile({
         <Button variant="outlined" color="inherit" onClick={onClose}>
           Cancel
         </Button>
-        <LoadingButton
+        <Button
           data-cy="CreateFileCreateButton"
           variant="contained"
           color="primary"
@@ -263,7 +262,7 @@ const CreateFile = memo(function CreateFile({
           loading={loading}
         >
           Create File
-        </LoadingButton>
+        </Button>
       </DialogActions>
     </Dialog>
   );
