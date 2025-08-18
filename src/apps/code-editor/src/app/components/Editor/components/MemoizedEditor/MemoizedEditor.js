@@ -120,9 +120,7 @@ export const MemoizedEditor = memo(
             },
           }}
           onChange={(newValue) => {
-            props.dispatch(
-              updateFileCode(props.fileZUID, props.status, newValue)
-            );
+            props.setCode(newValue);
           }}
           editorDidMount={(editor, monaco) => {
             // Line number linking feature
