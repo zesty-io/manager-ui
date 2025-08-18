@@ -12,7 +12,7 @@ export const useImageURL: () => string = () => {
     modelZUID: string;
     itemZUID: string;
   }>();
-  const { data: modelFields } = useGetContentModelFieldsQuery(modelZUID);
+  const { data: modelFields } = useGetContentModelFieldsQuery({ modelZUID });
   const [getFile] = useLazyGetFileQuery();
   const location = useLocation();
   const isCreateItemPage = location?.pathname?.split("/")?.pop() === "new";
@@ -83,6 +83,7 @@ export const useImageURL: () => string = () => {
             "gif",
             "tif",
             "webp",
+            "avif",
           ].includes(fileExtension(isZestyMediaFile ? res.url : value));
 
           if (isImage) {

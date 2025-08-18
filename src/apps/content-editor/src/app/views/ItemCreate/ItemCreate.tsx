@@ -107,7 +107,7 @@ export const ItemCreate = () => {
   const {
     isSuccess: isSuccessNewModelFields,
     isLoading: isFetchingNewModelFields,
-  } = useGetContentModelFieldsQuery(modelZUID);
+  } = useGetContentModelFieldsQuery({ modelZUID });
   const { data: statusLabels } = useGetWorkflowStatusLabelsQuery();
   const hasAllowPublishLabel = statusLabels?.some(
     (label) => label.allowPublish

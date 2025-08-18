@@ -11,7 +11,10 @@ import { useHistory, useParams } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
 
 import { AppState } from "../../../../../../../../shell/store/types";
-import { ContentItem } from "../../../../../../../../shell/services/types";
+import {
+  ContentItem,
+  Data,
+} from "../../../../../../../../shell/services/types";
 import {
   instanceApi,
   useCreateContentItemMutation,
@@ -31,7 +34,10 @@ export const DuplicateItemDialog = ({ onClose }: DuplicateItemProps) => {
     modelZUID: string;
     itemZUID: string;
   }>();
-  const { data: modelFields } = useGetContentModelFieldsQuery(modelZUID);
+  const { data: modelFields } = useGetContentModelFieldsQuery({
+    modelZUID,
+    showDeleted: false,
+  });
   const history = useHistory();
   const item = useSelector(
     (state: AppState) => state.content[itemZUID] as ContentItem

@@ -116,9 +116,12 @@ export const AIGenerator = ({
     (state: AppState) =>
       state.content[isCreateItemPage ? `new:${modelZUID}` : itemZUID]
   );
-  const { data: fields } = useGetContentModelFieldsQuery(modelZUID, {
-    skip: !modelZUID,
-  });
+  const { data: fields } = useGetContentModelFieldsQuery(
+    { modelZUID },
+    {
+      skip: !modelZUID,
+    }
+  );
   const [selectedContent, setSelectedContent] = useState<number>(null);
   const request = useRef(null);
   const [fieldData, updateFieldData] = useReducer(

@@ -26,9 +26,12 @@ export default function Content(props) {
     false
   );
   const { data: fields, isFetching: isFetchingFields } =
-    useGetContentModelFieldsQuery(props.modelZUID, {
-      skip: !props.modelZUID,
-    });
+    useGetContentModelFieldsQuery(
+      { modelZUID: props.modelZUID },
+      {
+        skip: !props.modelZUID,
+      }
+    );
 
   const hasFields = useMemo(() => {
     if (!fields) return false;

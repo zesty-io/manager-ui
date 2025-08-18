@@ -41,7 +41,7 @@ const MediaLabelsConfig: {
 const ExtensionPresets = [
   {
     label: "Images",
-    value: [".png", ".jpg", ".jpeg", ".svg", ".gif", ".tif", ".webp"],
+    value: [".png", ".jpg", ".jpeg", ".svg", ".gif", ".tif", ".webp", ".avif"],
   },
   {
     label: "Videos",
@@ -287,41 +287,77 @@ export const MediaRules = ({
                 </Box>
               )}
 
-              {Boolean(fieldData[rule.name]) && rule.name === "fileExtensions" && (
-                <Box ml={3.5} mt={2.5}>
-                  <InputLabel>Extensions *</InputLabel>
-                  <Autocomplete
-                    multiple
-                    value={fieldData[rule.name] as string[]}
-                    options={[]}
-                    freeSolo
-                    inputValue={inputValue}
-                    disableClearable
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        error={!!errors["fileExtensions"] && extensionsError}
-                        sx={{
-                          ".MuiOutlinedInput-root ": {
-                            alignItems: "baseline",
-                            minHeight: 80,
-                          },
-                        }}
-                        onKeyDown={(event) => handleKeyDown(event, rule.name)}
-                      />
+              {Boolean(fieldData[rule.name]) &&
+                rule.name === "fileExtensions" && (
+                  <Box ml={3.5} mt={2.5}>
+                    <InputLabel>Extensions *</InputLabel>
+                    <Autocomplete
+                      multiple
+                      value={fieldData[rule.name] as string[]}
+                      options={[]}
+                      freeSolo
+                      inputValue={inputValue}
+                      disableClearable
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          error={!!errors["fileExtensions"] && extensionsError}
+                          sx={{
+                            ".MuiOutlinedInput-root ": {
+                              alignItems: "baseline",
+                              minHeight: 80,
+                            },
+                          }}
+                          onKeyDown={(event) => handleKeyDown(event, rule.name)}
+                        />
+                      )}
+                      onInputChange={(event, newInputValue) =>
+                        handleInputChange(event, newInputValue, rule.name)
+                      }
+                      renderTags={(tagValue, getTagProps) =>
+                        tagValue.map((option, index) => (
+                          <Chip
+                            {...getTagProps({ index })}
+                            label={option}
+                            size="small"
+                            color="default"
+                            onDelete={() => handleDelete(option, rule.name)}
+                            clickable={false}
+                            sx={{
+                              backgroundColor: "common.white",
+                              borderColor: "grey.300",
+                              borderWidth: 1,
+                              borderStyle: "solid",
+                            }}
+                          />
+                        ))
+                      }
+                    />
+                    {errors["fileExtensions"] && extensionsError && (
+                      <Typography
+                        sx={{ mt: 0.5 }}
+                        color="error"
+                        variant="body2"
+                      >
+                        {errors["fileExtensions"]}
+                      </Typography>
                     )}
-                    onInputChange={(event, newInputValue) =>
-                      handleInputChange(event, newInputValue, rule.name)
-                    }
-                    renderTags={(tagValue, getTagProps) =>
-                      tagValue.map((option, index) => (
+                    <Box display="flex" mt={0.5} gap={0.5} alignItems="center">
+                      <Typography variant="body2">Add:</Typography>
+                      {ExtensionPresets.map((preset) => (
                         <Chip
-                          {...getTagProps({ index })}
-                          label={option}
+                          key={preset.label}
+                          label={preset.label}
                           size="small"
-                          color="default"
-                          onDelete={() => handleDelete(option, rule.name)}
-                          clickable={false}
+                          onClick={() => {
+                            const newTags = fieldData[rule.name] as string[];
+                            const tags = new Set(newTags);
+                            preset.value.forEach((tag) => tags.add(tag));
+                            onDataChange({
+                              inputName: rule.name,
+                              value: Array.from(tags),
+                            });
+                          }}
                           sx={{
                             backgroundColor: "common.white",
                             borderColor: "grey.300",
@@ -329,65 +365,34 @@ export const MediaRules = ({
                             borderStyle: "solid",
                           }}
                         />
-                      ))
-                    }
-                  />
-                  {errors["fileExtensions"] && extensionsError && (
-                    <Typography sx={{ mt: 0.5 }} color="error" variant="body2">
-                      {errors["fileExtensions"]}
-                    </Typography>
-                  )}
-                  <Box display="flex" mt={0.5} gap={0.5} alignItems="center">
-                    <Typography variant="body2">Add:</Typography>
-                    {ExtensionPresets.map((preset) => (
-                      <Chip
-                        key={preset.label}
-                        label={preset.label}
-                        size="small"
-                        onClick={() => {
-                          const newTags = fieldData[rule.name] as string[];
-                          const tags = new Set(newTags);
-                          preset.value.forEach((tag) => tags.add(tag));
-                          onDataChange({
-                            inputName: rule.name,
-                            value: Array.from(tags),
-                          });
-                        }}
-                        sx={{
-                          backgroundColor: "common.white",
-                          borderColor: "grey.300",
-                          borderWidth: 1,
-                          borderStyle: "solid",
-                        }}
-                      />
-                    ))}
+                      ))}
+                    </Box>
+                    <InputLabel
+                      sx={{
+                        mt: 2.5,
+                      }}
+                    >
+                      Custom Error Message *
+                    </InputLabel>
+                    <TextField
+                      error={!!errors["fileExtensionsErrorMessage"]}
+                      fullWidth
+                      value={fieldData.fileExtensionsErrorMessage as string}
+                      onChange={(e) => {
+                        setAutoFill(false);
+                        onDataChange({
+                          inputName: "fileExtensionsErrorMessage",
+                          value: e.target.value,
+                        });
+                      }}
+                    />
+                    {errors["fileExtensionsErrorMessage"] && (
+                      <Typography color="error" variant="body2">
+                        {errors["fileExtensionsErrorMessage"]}
+                      </Typography>
+                    )}
                   </Box>
-                  <InputLabel
-                    sx={{
-                      mt: 2.5,
-                    }}
-                  >
-                    Custom Error Message *
-                  </InputLabel>
-                  <TextField
-                    error={!!errors["fileExtensionsErrorMessage"]}
-                    fullWidth
-                    value={fieldData.fileExtensionsErrorMessage as string}
-                    onChange={(e) => {
-                      setAutoFill(false);
-                      onDataChange({
-                        inputName: "fileExtensionsErrorMessage",
-                        value: e.target.value,
-                      });
-                    }}
-                  />
-                  {errors["fileExtensionsErrorMessage"] && (
-                    <Typography color="error" variant="body2">
-                      {errors["fileExtensionsErrorMessage"]}
-                    </Typography>
-                  )}
-                </Box>
-              )}
+                )}
             </Box>
           );
         })}

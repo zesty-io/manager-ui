@@ -28,8 +28,7 @@ export const AddFieldModal = ({ onModalClose, mode, sortIndex }: Props) => {
   const params = useParams<Params>();
   const { id, fieldId } = params;
   const [localSortIndex, setLocalSortIndex] = useState<number | null>(null);
-  const { data: fields } = useGetContentModelFieldsQuery(id);
-
+  const { data: fields } = useGetContentModelFieldsQuery({ modelZUID: id });
   useEffect(() => {
     // Local copy is incremented when user clicks "add another field"
     setLocalSortIndex(sortIndex);

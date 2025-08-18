@@ -125,9 +125,12 @@ export const FieldSelectorDialog = ({
     selectFilteredItems(state, modelZUID, filters.lang, isFetchingContentItems)
   );
   const { data: relatedModelFields, isLoading: isLoadingRelatedModel } =
-    useGetContentModelFieldsQuery(modelZUID, {
-      skip: !modelZUID,
-    });
+    useGetContentModelFieldsQuery(
+      { modelZUID },
+      {
+        skip: !modelZUID,
+      }
+    );
   const { data: users, isLoading: isLoadingUsers } = useGetUsersQuery();
 
   useEffect(() => {

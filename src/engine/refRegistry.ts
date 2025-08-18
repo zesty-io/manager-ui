@@ -1,4 +1,3 @@
-// src/engine/refRegistry.ts
 export interface RefHandle {
   setValue?(value: string): void;
   click?(): void;
@@ -9,7 +8,7 @@ export interface RefHandle {
 
 export interface RefRegistryEntry {
   handle: RefHandle;
-  context?: Record<string, any>;
+  context?: () => Record<string, any>;
   options?: {
     skip?: boolean;
   };
