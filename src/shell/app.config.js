@@ -31,7 +31,6 @@ module.exports = {
       media_resolver: "",
     },
 
-    URL_MANAGER: ".manager.zesty.io",
     URL_MANAGER_PROTOCOL: "https://",
     URL_PREVIEW: "-dev.webengine.zesty.io",
     URL_PREVIEW_PROTOCOL: "https://",
@@ -40,7 +39,6 @@ module.exports = {
     URL_APPS: "https://apps.zesty.io",
 
     COOKIE_NAME: "APP_SID",
-    COOKIE_DOMAIN: ".zesty.io",
 
     GOOGLE_WEB_FONTS_KEY: "AIzaSyD075qEo9IXa4BPsSZ_YJGWlTw34T51kuk",
 
@@ -77,7 +75,6 @@ module.exports = {
       "https://us-central1-zesty-stage.cloudfunctions.net/googleAnalyticsGetPageViews",
     SERVICE_INSTANCE_INSTALLER: "https://installer-m3rbwjxm5q-uc.a.run.app",
 
-    URL_MANAGER: ".manager.stage.zesty.io",
     URL_MANAGER_PROTOCOL: "https://",
     URL_PREVIEW: "-dev.preview.stage.zesty.io",
     URL_PREVIEW_PROTOCOL: "https://",
@@ -87,7 +84,6 @@ module.exports = {
     URL_APPS: "https://apps-beta.zesty.io",
 
     COOKIE_NAME: "STAGE_APP_SID",
-    COOKIE_DOMAIN: ".zesty.io",
 
     GOOGLE_WEB_FONTS_KEY: "AIzaSyD075qEo9IXa4BPsSZ_YJGWlTw34T51kuk",
 
@@ -128,7 +124,6 @@ module.exports = {
       media_resolver: "",
     },
 
-    URL_MANAGER: ".manager.dev.zesty.io:8080",
     URL_MANAGER_PROTOCOL: "http://",
     URL_PREVIEW: "-dev.preview.dev.zesty.io",
     URL_PREVIEW_PROTOCOL: "http://",
@@ -138,7 +133,6 @@ module.exports = {
     URL_APPS: "https://apps-beta.zesty.io",
 
     COOKIE_NAME: "DEV_APP_SID",
-    COOKIE_DOMAIN: ".zesty.io",
 
     TIME_DISPLAY_FORMAT: "MMMM Do YYYY, [at] h:mm a",
     TIME_UTC_FORMAT: "YYYY-MM-DD HH:mm:ss",
@@ -177,14 +171,12 @@ module.exports = {
       media_resolver: "http://svc.zesty.localdev:3007/media-resolver-service",
     },
 
-    URL_MANAGER: ".manager.zesty.localdev:9000",
     URL_MANAGER_PROTOCOL: "http://",
     URL_PREVIEW: "-dev.preview.zesty.localdev",
     URL_PREVIEW_PROTOCOL: "https://",
     URL_ACCOUNTS: "https://accounts.zesty.localdev:9001",
 
     COOKIE_NAME: "DEV_APP_SID",
-    COOKIE_DOMAIN: ".zesty.localdev",
 
     TIME_DISPLAY_FORMAT: "MMMM Do YYYY, [at] h:mm a",
     TIME_UTC_FORMAT: "YYYY-MM-DD HH:mm:ss",
