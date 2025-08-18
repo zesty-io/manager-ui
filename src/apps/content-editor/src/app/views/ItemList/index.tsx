@@ -80,7 +80,7 @@ export const ItemList = () => {
   const { data: model, isFetching: isModelFetching } =
     useGetContentModelQuery(modelZUID);
   const { data: fields, isFetching: isFieldsFetching } =
-    useGetContentModelFieldsQuery(modelZUID);
+    useGetContentModelFieldsQuery({ modelZUID });
   const { data: languages, isLoading: isLangsLoading } = useGetLangsQuery({});
   const activeLangId =
     languages?.find((lang) => lang.code === activeLanguageCode)?.ID || 1;

@@ -12,7 +12,7 @@ export const useImageURL: () => string = () => {
     modelZUID: string;
     itemZUID: string;
   }>();
-  const { data: modelFields } = useGetContentModelFieldsQuery(modelZUID);
+  const { data: modelFields } = useGetContentModelFieldsQuery({ modelZUID });
   const [getFile] = useLazyGetFileQuery();
   const location = useLocation();
   const isCreateItemPage = location?.pathname?.split("/")?.pop() === "new";

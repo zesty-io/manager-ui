@@ -50,7 +50,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
     data: fields,
     isLoading: isFieldsLoading,
     isFetching: isFieldsFetching,
-  } = useGetContentModelFieldsQuery(id);
+  } = useGetContentModelFieldsQuery({ modelZUID: id });
   const [bulkUpdateContentModelField, { isLoading: isBulkFieldsUpdating }] =
     useBulkUpdateContentModelFieldMutation();
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);

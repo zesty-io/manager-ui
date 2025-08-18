@@ -129,10 +129,12 @@ export const FieldForm = ({
   const {
     data: selectedModelFields,
     isFetching: isFetchingSelectedModelFields,
-  } = useGetContentModelFieldsQuery(formData.relatedModelZUID as string, {
-    skip: !formData.relatedModelZUID,
-  });
-
+  } = useGetContentModelFieldsQuery(
+    { modelZUID: formData?.relatedModelZUID as string },
+    {
+      skip: !formData.relatedModelZUID,
+    }
+  );
   const isUpdateField = !isEmpty(fieldData);
   const isInbetweenField = sortIndex !== null;
   const modelsOptions: DropdownOptions[] = useMemo(() => {

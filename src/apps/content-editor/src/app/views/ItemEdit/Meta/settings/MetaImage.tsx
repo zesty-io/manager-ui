@@ -36,7 +36,7 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
       state.content[isCreateItemPage ? `new:${modelZUID}` : itemZUID]
   );
   const fieldTypeMedia = useRef(null);
-  const { data: modelFields } = useGetContentModelFieldsQuery(modelZUID);
+  const { data: modelFields } = useGetContentModelFieldsQuery({ modelZUID });
   const [
     createContentModelField,
     {
