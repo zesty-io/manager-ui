@@ -7,6 +7,7 @@ import {
   useLocation,
 } from "react-router-dom";
 import { Sentry } from "../../../utility/sentry";
+import { Severity } from "@sentry/browser";
 import { Box } from "@mui/material";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -131,6 +132,7 @@ export default memo(function Shell() {
           <Sentry.ErrorBoundary
             fallback={() => <AppError />}
             beforeCapture={(scope) => {
+              scope.setLevel(Severity.Fatal);
               scope.setTag("error_boundary", true);
             }}
           >
