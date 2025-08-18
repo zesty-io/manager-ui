@@ -77,6 +77,7 @@ const NameColumn = ({ params }: any) => {
   switch (fileExtension(params.row.name)) {
     case "jpg":
     case "jpeg":
+    case "avif":
     case "gif":
     case "webp":
     case "png":

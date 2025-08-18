@@ -226,9 +226,10 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
                 ".gif",
                 ".tif",
                 ".webp",
+                ".avif",
               ],
               fileExtensionsErrorMessage:
-                "Only files with the following extensions are allowed: .png, .jpg, .jpeg, .svg, .gif, .tif, .webp",
+                "Only files with the following extensions are allowed: .png, .jpg, .jpeg, .svg, .gif, .tif, .webp, .avif",
             }}
           />
         </FieldShell>

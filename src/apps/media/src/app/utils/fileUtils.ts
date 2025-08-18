@@ -25,6 +25,7 @@ export function isImage(file: File) {
     case "svg":
     case "webp":
     case "ico":
+    case "avif":
       return true;
   }
 
@@ -46,6 +47,7 @@ export const fileTypeToColor = (extension: string) => {
     case "js":
     case "css":
     case "ico":
+    case "avif":
       return "blue";
     case "ots":
     case "xls":
@@ -87,7 +89,7 @@ export function getExtensions(filetype: Filetype | null) {
   switch (filetype) {
     // top level types
     case "Image":
-      return ["jpg", "jpeg", "png", "gif", "svg", "webp"];
+      return ["jpg", "jpeg", "png", "gif", "svg", "webp", "avif"];
     case "Video":
       return ["mp4", "webm", "mov", "avi", "wmv", "flv", "mpg", "mpeg"];
     case "Audio":
@@ -130,6 +132,8 @@ export function getExtensions(filetype: Filetype | null) {
       return ["flv"];
     case "MPEG":
       return ["mpg", "mpeg"];
+    case "AVIF":
+      return ["avif"];
     default:
       return null;
   }
