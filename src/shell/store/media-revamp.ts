@@ -91,7 +91,8 @@ export type Filetype =
   | "AVI"
   | "WMV"
   | "FLV"
-  | "MPEG";
+  | "MPEG"
+  | "AVIF";
 
 export type DateRange = PresetDateRange | SingleDateRange | CustomDateRange;
 export type PresetDateRange = {

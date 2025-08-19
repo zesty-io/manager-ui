@@ -36,7 +36,7 @@ export const UnpublishedRelatedItem = ({
 }: UnpublishedRelatedItemProps) => {
   const [imageError, setImageError] = useState(false);
   const { data: modelFields } = useGetContentModelFieldsQuery(
-    contentItem.relatedModelZUID,
+    { modelZUID: contentItem?.relatedModelZUID },
     {
       skip: !contentItem.relatedModelZUID,
     }

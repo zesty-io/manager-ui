@@ -101,7 +101,7 @@ export const ItemListFilters = () => {
   const activeLanguageCode = params.get("lang");
   const { data: users } = useGetUsersQuery();
   const { data: fields, isFetching: isFieldsFetching } =
-    useGetContentModelFieldsQuery(modelZUID);
+    useGetContentModelFieldsQuery({ modelZUID });
   const [sortModel, setSortModel] = useContext(TableSortContext);
   const dispatch = useDispatch();
 

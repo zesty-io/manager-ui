@@ -126,6 +126,7 @@ export const FileTypePreview: FC<Props> = ({
   switch (fileExtension(src)) {
     case "jpg":
     case "jpeg":
+    case "avif":
     case "gif":
     case "webp":
       return (
