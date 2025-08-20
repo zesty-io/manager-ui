@@ -1,4 +1,4 @@
-import { FC, useMemo } from "react";
+import { FC, useEffect, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Avatar, Skeleton, Box, SxProps, Theme } from "@mui/material";
 import ImageRoundedIcon from "@mui/icons-material/ImageRounded";
@@ -18,10 +18,13 @@ export const InstanceAvatar: FC<InstanceAvatar> = ({
   onFaviconModalOpen,
   avatarSx,
 }) => {
-  const ui = useSelector((state: AppState) => state.ui);
+  const { valid } = useSelector((state: AppState) => state.auth);
   const dispatch = useDispatch();
-  const { data: headTags, isLoading: isLoadingHeadTags } =
-    useGetHeadTagsQuery();
+  const {
+    data: headTags,
+    isLoading: isLoadingHeadTags,
+    refetch: refetchHeadTags,
+  } = useGetHeadTagsQuery();
   const { data: instance, isLoading: isLoadingInstance } =
     useGetInstanceQuery();
 
@@ -39,6 +42,14 @@ export const InstanceAvatar: FC<InstanceAvatar> = ({
 
     return "";
   }, [headTags]);
+
+  useEffect(() => {
+    // Trigger refetching of headtags once user has logged in to make sure
+    // favicon gets loaded
+    if (valid) {
+      refetchHeadTags();
+    }
+  }, [valid]);
 
   if (isLoadingHeadTags || isLoadingInstance) {
     return (
