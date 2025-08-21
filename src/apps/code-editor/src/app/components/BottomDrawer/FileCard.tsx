@@ -142,6 +142,7 @@ const FileCardListItem: React.FC<FileCardListItemProps> = ({
           ...theme.typography.body2,
           color: "grey.400",
           my: gap,
+          wordBreak: "break-all",
         })}
       />
     </ListItem>

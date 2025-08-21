@@ -200,10 +200,6 @@ const ConfigureDisplayOptions = ({
     setIsCompleted(completed);
   }, [displayConfig, rootPathData, detailsPathData, rootPath]);
 
-  useEffect(() => {
-    console.debug("ConfigureDisplayOptions keyPaths:", { keyPaths });
-  }, [keyPaths]);
-
   return (
     <FormWrapper height="calc(100vh - 40px)" width="1200px">
       <DialogTitle component="div" flexGrow={0}>

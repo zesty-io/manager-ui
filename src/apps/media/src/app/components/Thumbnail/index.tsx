@@ -336,6 +336,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     case "jpg":
     case "jpeg":
     case "gif":
+    case "avif":
     case "webp":
       return (
         <Card

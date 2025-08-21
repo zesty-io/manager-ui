@@ -83,9 +83,12 @@ export const ActiveItem = memo(
       )
     );
     const { data: relatedModelFields, isLoading: isLoadingRelatedModel } =
-      useGetContentModelFieldsQuery(relatedModelData?.ZUID, {
-        skip: !relatedModelData?.ZUID,
-      });
+      useGetContentModelFieldsQuery(
+        { modelZUID: relatedModelData?.ZUID },
+        {
+          skip: !relatedModelData?.ZUID,
+        }
+      );
     const { data: users, isLoading: isLoadingUsers } = useGetUsersQuery();
     const [createPublishing, { isLoading: isPublishing }] =
       useCreateItemPublishingMutation();
