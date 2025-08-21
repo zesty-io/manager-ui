@@ -46,7 +46,7 @@ import {
 import { FieldTypeMedia } from "../../FieldTypeMedia";
 import { debounce, parseInt } from "lodash";
 import { useRegisterRef } from "../../../../../../../engine/useRegisterRef";
-import FieldTypeIntegration from "../../../../../../../shell/components/FieldTypeIntegration";
+import IntegrationFieldSelect from "../../../../../../../shell/components/FieldTypeIntegration/IntegrationFieldSelect";
 
 const AIFieldShell = withAI(FieldShell);
 
@@ -777,16 +777,13 @@ export const Field = ({
     case "integration":
       return (
         <FieldShell settings={fieldData} errors={errors}>
-          <FieldTypeIntegration
+          <IntegrationFieldSelect
             name={name}
             label={label}
-            description={fieldData?.description}
-            required={required}
-            value={value ? value : null}
-            onChange={(value) => onChange(value, name, datatype)}
-            formType="select"
             maxItems={settings?.maxValue}
-            integrationFieldConfig={fieldData?.integrationFieldConfig}
+            config={fieldData?.integrationFieldConfig}
+            value={value ? (value as Record<string, any>[]) : null}
+            onChange={(value) => onChange(value, name)}
           />
         </FieldShell>
       );

@@ -21,12 +21,10 @@ import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
-import { FormWrapper } from "./Wrappers";
-
-import { fetchApi } from "../utils";
+import { FormWrapper, FieldWrapper } from "../components/Wrappers";
 import { IntegrationRequestHeaders } from "../../../services/types";
-import { FieldWrapper } from "./Wrappers";
 import { validateUrl } from "../../../../utility/validateUrl";
+import useIntegrationField from "../useIntegrationField";
 
 const CONNECTION_STATUSES: {
   [key: string]: {
@@ -105,13 +103,11 @@ const ConnectToApi = ({
   headers: IntegrationRequestHeaders;
   setHeaders: (headers: IntegrationRequestHeaders | null) => void;
   setApiData: (data: any) => void;
-
   setActiveStep: (step: number) => void;
   closeForm?: () => void;
 }) => {
-  const [status, setStatus] = useState<
-    "connecting" | "success" | "failed" | null
-  >(null);
+  const { data, status, fetchApiData } = useIntegrationField();
+
   const [isValidUrl, setIsValidUrl] = useState(true);
   const [reqAborted, setReqAborted] = useState<boolean>(false);
 
@@ -121,36 +117,23 @@ const ConnectToApi = ({
     { key: string; value: string }[] | null
   >(keyValuePairsToArray(headers));
 
-  const handleApiConnect = useCallback(async () => {
+  const handleApiConnect = useCallback(() => {
     setReqAborted(false);
-    setStatus("connecting");
+    setApiData(null);
 
-    const headersWithValues = headersLocal.filter((i) => !i?.value);
-    const reqHeaders = !headersWithValues?.length
+    const headersWithKeys = headersLocal.filter((i) => !!i?.key);
+    const reqHeaders = !headersWithKeys?.length
       ? null
-      : arrayToKeyValuePairs(headersWithValues);
-    try {
-      const { status, data } = await fetchApi({
-        endpoint: endpointLocal,
-        headers: reqHeaders,
-      });
+      : arrayToKeyValuePairs(headersWithKeys);
 
-      if (status === "success") {
-        setApiData(data);
-        setStatus("success");
-      } else {
-        throw new Error("Failed to connect");
-      }
-    } catch (error) {
-      setApiData(null);
-      setStatus("failed");
-    }
+    fetchApiData(endpointLocal, reqHeaders);
   }, [endpointLocal, headersLocal]);
 
   const handleNext = () => {
     const reqHeaders = !headersLocal?.length
       ? null
       : arrayToKeyValuePairs(headersLocal);
+    setApiData(data);
     setHeaders(reqHeaders);
     setEndpoint(endpointLocal);
     setReqAborted(false);
@@ -158,7 +141,6 @@ const ConnectToApi = ({
   };
   const handleAbort = () => {
     setReqAborted(true);
-    setStatus(null);
     setActiveStep(0);
   };
 
@@ -226,9 +208,6 @@ const ConnectToApi = ({
                     sx={{ mr: 0.5 }}
                   />
                 ),
-                sx: {
-                  py: 1,
-                },
               },
             }}
             error={!isValidUrl}

@@ -15,6 +15,21 @@ export type ApiResponse<T> = {
   data?: T;
 };
 
+export type ApiDataProps = Record<string, any>;
+
+export type ApiDataWithIdProps = ApiDataProps & { _itemId: string };
+
+export type ListItemDataProps = {
+  type: IntegrationTypes;
+  items: ApiDataWithIdProps[];
+  selectedItems: ApiDataWithIdProps[];
+  keyPaths: IntegrationKeyPaths;
+  onSelect: (item: ApiDataWithIdProps) => void;
+  maxItems?: number;
+  onDelete?: (id: string) => void;
+  onView?: (data: any) => void;
+};
+
 export type FieldTypeIntegrationProps = {
   name: string;
   label: string;
@@ -34,11 +49,22 @@ export type DisplayOptionCardProps = {
   title: string;
   description: string;
   type: IntegrationTypes;
-  card: IntegrationKeyPaths;
+  // card: IntegrationKeyPaths;
+  card: Omit<IntegrationKeyPaths, "details"> & {
+    details?: {
+      key: string;
+      value: string | number;
+    }[];
+  };
   disabled?: boolean;
   disableMenu?: boolean;
   isSelected?: boolean;
   onSelect?: () => void;
+};
+
+export type KeyValueOption = {
+  keyPath: string;
+  value: any;
 };
 
 type ConfigTypes = "option" | "text";
@@ -100,7 +126,17 @@ export const GENERIC_DISPLAY_TYPES: DisplayOptionCardProps[] = [
       heading: "Anfernee Simons",
       subHeading: "A photo of a beautiful mountain in the state of Washington",
 
-      details: ["player.position", "player.stats.points"],
+      // details: ["position", "stats.points"],
+      details: [
+        {
+          key: "position",
+          value: 12,
+        },
+        {
+          key: "stats.points",
+          value: 22,
+        },
+      ],
     },
   },
   {

@@ -33,7 +33,7 @@ import {
 import { convertDropdownValue } from "../../utils";
 import { withCursorPosition } from "../../../../../../shell/components/withCursorPosition";
 import { Currency } from "../../../../../../shell/components/FieldTypeCurrency/currencies";
-import FieldTypeIntegration from "../../../../../../shell/components/FieldTypeIntegration";
+import IntegrationFieldConfigure from "../../../../../../shell/components/FieldTypeIntegration/IntegrationFieldConfigure";
 
 const TextFieldWithCursorPosition = withCursorPosition(TextField);
 
@@ -444,14 +444,11 @@ export const FieldFormInput = ({
         </>
       )}
       {fieldConfig.type === "config" && (
-        <FieldTypeIntegration
-          name={fieldConfig.name}
-          label="API Configuration Settings"
-          formType="configure"
+        <IntegrationFieldConfigure
+          integrationFieldConfig={integrationFieldConfig}
           onChange={(value) =>
             onDataChange({ inputName: fieldConfig.name, value })
           }
-          integrationFieldConfig={integrationFieldConfig}
           isUpdate={isUpdateField}
           error={errorMsg}
         />

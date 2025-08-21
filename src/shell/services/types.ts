@@ -81,14 +81,14 @@ export type IntegrationRequestHeaders<T extends string = string> = {
   [key: string]: T;
 };
 
-export type IntegrationKeyPaths = Partial<{
+export type IntegrationKeyPaths = {
   rootPath?: string | null;
-  heading?: string;
-  subHeading?: string;
-  thumbnail?: string;
+  heading?: string | null;
+  subHeading?: string | null;
+  thumbnail?: string | null;
   detail?: string | null;
   details?: string[] | null;
-}>;
+};
 
 export type IntegrationFieldConfig = {
   endpoint: string;
@@ -150,7 +150,7 @@ export interface Meta {
   createdByUserZUID: string;
 }
 export interface Data {
-  [key: string]: number | string | null | undefined;
+  [key: string]: number | string | null | undefined | unknown;
 }
 
 type UnorderedQuery = {

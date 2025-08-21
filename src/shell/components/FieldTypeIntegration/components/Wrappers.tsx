@@ -103,6 +103,7 @@ export const FormWrapper = ({
         flexDirection: "column",
         justifyContent: "space-between",
         alignItems: "stretch",
+        minWidth: "100%",
       }}
     >
       {children}
