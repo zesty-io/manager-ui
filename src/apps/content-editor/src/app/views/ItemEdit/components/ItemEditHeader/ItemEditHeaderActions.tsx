@@ -59,6 +59,11 @@ import { ConfirmPublishModal } from "../../../../../../../../shell/components/Co
 import { UnpublishedRelatedItem } from "./UnpublishedRelatedItem";
 import { uniqBy } from "lodash";
 import { useRedirectsDialog } from "../../../../../../../seo/src/app/components/RedirectsDialogProvider";
+import * as amplitude from "@amplitude/analytics-browser";
+import {
+  PUBLISH_ATTEMPT_WITHOUT_ALLOW_PUBLISH,
+  SCHEDULE_PUBLISH_ATTEMPT_WITHOUT_ALLOW_PUBLISH,
+} from "../../../../../../../../amplitude-events";
 
 const ITEM_STATES = {
   dirty: "dirty",
@@ -386,6 +391,7 @@ export const ItemEditHeaderActions = ({
           kind: "error",
         })
       );
+      amplitude.track(PUBLISH_ATTEMPT_WITHOUT_ALLOW_PUBLISH);
     }
   };
 
@@ -743,6 +749,7 @@ export const ItemEditHeaderActions = ({
                 kind: "error",
               })
             );
+            amplitude.track(SCHEDULE_PUBLISH_ATTEMPT_WITHOUT_ALLOW_PUBLISH);
           } else {
             setScheduledPublishDialogOpen(open);
           }
