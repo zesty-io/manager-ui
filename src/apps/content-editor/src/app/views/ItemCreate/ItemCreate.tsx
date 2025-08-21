@@ -43,8 +43,8 @@ import { useParams as useQueryParams } from "../../../../../../shell/hooks/usePa
 import { CreateContentItemDialogContext } from "../../../../../../shell/contexts/CreateContentItemDialogProvider";
 import * as amplitude from "@amplitude/analytics-browser";
 import {
-  PUBLISH_ATTEMPT_WITHOUT_ALLOW_PUBLISH,
-  SCHEDULE_PUBLISH_ATTEMPT_WITHOUT_ALLOW_PUBLISH,
+  PUBLISH_ATTEMPT_WITHOUT_ALLOW_PUBLISH_STATUS,
+  SCHEDULE_PUBLISH_ATTEMPT_WITHOUT_ALLOW_PUBLISH_STATUS,
 } from "../../../../../../amplitude-events";
 
 export type ActionAfterSave =
@@ -367,7 +367,7 @@ export const ItemCreate = () => {
                   kind: "error",
                 })
               );
-              amplitude.track(PUBLISH_ATTEMPT_WITHOUT_ALLOW_PUBLISH);
+              amplitude.track(PUBLISH_ATTEMPT_WITHOUT_ALLOW_PUBLISH_STATUS);
               history.push(
                 `/${
                   model?.type === "block" ? "blocks" : "content"
@@ -396,7 +396,9 @@ export const ItemCreate = () => {
                   model?.type === "block" ? "blocks" : "content"
                 }/${modelZUID}/${res.data.ZUID}`
               );
-              amplitude.track(SCHEDULE_PUBLISH_ATTEMPT_WITHOUT_ALLOW_PUBLISH);
+              amplitude.track(
+                SCHEDULE_PUBLISH_ATTEMPT_WITHOUT_ALLOW_PUBLISH_STATUS
+              );
             } else {
               // Open schedule publish flyout and redirect to item once done
               setIsScheduleDialogOpen(true);
@@ -415,7 +417,7 @@ export const ItemCreate = () => {
                   kind: "error",
                 })
               );
-              amplitude.track(PUBLISH_ATTEMPT_WITHOUT_ALLOW_PUBLISH);
+              amplitude.track(PUBLISH_ATTEMPT_WITHOUT_ALLOW_PUBLISH_STATUS);
             } else {
               // Publish but stay on page
               handlePublish(res.data.ZUID);
@@ -434,7 +436,9 @@ export const ItemCreate = () => {
                   kind: "error",
                 })
               );
-              amplitude.track(SCHEDULE_PUBLISH_ATTEMPT_WITHOUT_ALLOW_PUBLISH);
+              amplitude.track(
+                SCHEDULE_PUBLISH_ATTEMPT_WITHOUT_ALLOW_PUBLISH_STATUS
+              );
             } else {
               // Open schedule publish flyout but stay on page once done
               setIsScheduleDialogOpen(true);
