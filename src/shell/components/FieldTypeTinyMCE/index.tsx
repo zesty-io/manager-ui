@@ -54,6 +54,7 @@ const IMAGE_FILE_TYPES = [
   ".png",
   ".svg",
   ".ico",
+  ".avif",
 ] as const;
 const VIDEO_FILE_TYPES = [
   ".mp4",

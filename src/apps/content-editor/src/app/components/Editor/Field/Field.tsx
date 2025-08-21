@@ -100,7 +100,9 @@ export const Field = ({
   minLength,
 }: FieldProps) => {
   const dispatch = useDispatch();
-  const { data: fields } = useGetContentModelFieldsQuery(contentModelZUID);
+  const { data: fields } = useGetContentModelFieldsQuery({
+    modelZUID: contentModelZUID,
+  });
 
   const [imageModal, setImageModal] = useState(null);
   const [editorType, setEditorType] = useState<EditorType>();

@@ -109,6 +109,7 @@ export const RichTreeItem = memo(
                 // This means that a popup has taken focus and we want the tree item to remain hovered
                 // The hovered class is removed by a mutation observer on the NavTree component
                 if (
+                  event.relatedTarget.classList &&
                   ["MuiModal-backdrop", "MuiBackdrop-root"].some((className) =>
                     event.relatedTarget.classList.contains(className)
                   )

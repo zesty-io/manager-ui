@@ -25,7 +25,7 @@ export type DialogContentItemProps = {
 
 export const DialogContentItem = ({ item }: DialogContentItemProps) => {
   const { modelZUID } = useParams<{ modelZUID: string }>();
-  const { data: fields } = useGetContentModelFieldsQuery(modelZUID);
+  const { data: fields } = useGetContentModelFieldsQuery({ modelZUID });
   const instanceId = useSelector((state: AppState) => state.instance.ID);
   const ecoId = useSelector((state: AppState) => state.instance.ecoID);
   const { data: bins } = useGetBinsQuery({

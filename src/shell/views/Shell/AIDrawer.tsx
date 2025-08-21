@@ -33,6 +33,7 @@ import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import LanguageRoundedIcon from "@mui/icons-material/LanguageRounded";
 import { useGetLangsMappingQuery } from "../../services/instance";
 import {
+  codeSystemInstruction,
   contentSystemInstruction,
   suggestionSystemInstruction,
 } from "./systemInstructions";
@@ -69,6 +70,7 @@ export const AIDrawer = () => {
   const isInContentApp = /^\/content\/[^/]+\/[^/]+$/.test(pathname);
   const isInContentMeta = /^\/content\/[^/]+\/[^/]+\/meta$/.test(pathname);
   const isInBlocks = /^\/blocks\/[^/]+\/[^/]+\/?$/.test(pathname);
+  const isInCodeApp = /^\/code\/file\/.+/.test(pathname);
   const { data: langMappings } = useGetLangsMappingQuery();
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const [isInitialMount, setIsInitialMount] = useState(true);
@@ -154,12 +156,18 @@ export const AIDrawer = () => {
   const handlePrompt = (newPrompt: string) => {
     geminiGenerate({
       prompt: newPrompt,
-      systemInstruction: contentSystemInstruction(
-        Object.keys(getRefRegistry() || {}),
-        getRefRegistry(),
-        selectedTone,
-        selectedLanguage
-      ),
+      systemInstruction: isInCodeApp
+        ? codeSystemInstruction(
+            getRefRegistry()?.["code-editor"]?.context()?.fileName,
+            getRefRegistry()?.["code-editor"]?.context()?.code,
+            getRefRegistry()?.["code-editor"]?.context()?.fields
+          )
+        : contentSystemInstruction(
+            Object.keys(getRefRegistry() || {}),
+            getRefRegistry(),
+            selectedTone,
+            selectedLanguage
+          ),
       temperature: 0.5,
     });
     setResponses((prev) => [
@@ -203,7 +211,7 @@ export const AIDrawer = () => {
         bgcolor: "background.paper", // optional: give a bg to cover avatar overflow
       }}
     >
-      {!isInContentApp && !isInContentMeta && !isInBlocks && (
+      {!isInContentApp && !isInContentMeta && !isInBlocks && !isInCodeApp && (
         <>
           <Box display="flex" alignItems={"center"} gap={1}>
             <Stack
@@ -237,7 +245,7 @@ export const AIDrawer = () => {
           </Typography>
         </>
       )}
-      {(isInContentApp || isInContentMeta || isInBlocks) && (
+      {(isInContentApp || isInContentMeta || isInBlocks || isInCodeApp) && (
         <>
           <Box
             display="flex"
@@ -369,7 +377,7 @@ export const AIDrawer = () => {
                   <AnimatedText
                     key={index}
                     text={response.payload.value}
-                    animate={!isInitialMount}
+                    animate={!isInitialMount && !isInCodeApp}
                     onGrow={() => {
                       if (responsesEndRef.current) {
                         responsesEndRef.current.scrollIntoView({

@@ -106,7 +106,7 @@ export default function ItemEdit() {
     data: fields,
     isError: fieldsLoadingError,
     isLoading: isLoadingFields,
-  } = useGetContentModelFieldsQuery(modelZUID);
+  } = useGetContentModelFieldsQuery({ modelZUID });
   const [showDuoModeLS, setShowDuoModeLS] = useLocalStorage(
     "zesty:content:duoModeOpen",
     true
