@@ -44,6 +44,7 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
   year: "numeric",
   month: "short",
   day: "numeric",
+  timeZone: "UTC",
 });
 
 const timeFormatter = new Intl.DateTimeFormat("en-US", {
@@ -80,7 +81,7 @@ export const ItemList = () => {
   const { data: model, isFetching: isModelFetching } =
     useGetContentModelQuery(modelZUID);
   const { data: fields, isFetching: isFieldsFetching } =
-    useGetContentModelFieldsQuery(modelZUID);
+    useGetContentModelFieldsQuery({ modelZUID });
   const { data: languages, isLoading: isLangsLoading } = useGetLangsQuery({});
   const activeLangId =
     languages?.find((lang) => lang.code === activeLanguageCode)?.ID || 1;

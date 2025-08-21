@@ -357,12 +357,21 @@ export const instanceApi = createApi({
       invalidatesTags: ["ContentModels", "ContentNav"],
     }),
     // https://www.zesty.io/docs/instances/api-reference/content/models/#Get-Fields
-    getContentModelFields: builder.query<ContentModelField[], string>({
-      query: (modelZUID) =>
-        `content/models/${modelZUID}/fields?showDeleted=true`,
+    getContentModelFields: builder.query<
+      ContentModelField[],
+      { modelZUID: string; showDeleted?: boolean }
+    >({
+      query: ({ modelZUID, showDeleted = true }) => {
+        return {
+          url: `content/models/${modelZUID}/fields`,
+          params: {
+            showDeleted: showDeleted,
+          },
+        };
+      },
       transformResponse: (res: { data: ContentModelField[] }) =>
         res.data.sort((a, b) => a.sort - b.sort),
-      providesTags: (result, error, modelZUID) => [
+      providesTags: (result, error, { modelZUID }) => [
         { type: "ContentModelFields", id: modelZUID },
       ],
     }),

@@ -60,10 +60,12 @@ export const RelationalFieldBase = ({
       skip: !relatedModelZUID,
     });
   const { data: modelFields, isLoading: isLoadingModelFields } =
-    useGetContentModelFieldsQuery(relatedModelZUID, {
-      skip: !relatedModelZUID,
-    });
-
+    useGetContentModelFieldsQuery(
+      { modelZUID: relatedModelZUID },
+      {
+        skip: !relatedModelZUID,
+      }
+    );
   useEffect(() => {
     if (!!relatedModelZUID) {
       dispatch(fetchItems(relatedModelZUID));
