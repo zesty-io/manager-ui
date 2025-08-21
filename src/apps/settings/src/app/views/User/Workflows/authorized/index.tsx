@@ -147,7 +147,7 @@ export const AuthorizedUserPage = () => {
           Workflows
         </Typography>
         <Button
-          id="workflows-status-label-create-button"
+          data-amp-track-id="workflows-status-label-create-button"
           variant="contained"
           color="primary"
           onClick={handleOpenStatusLabelForm}
@@ -169,7 +169,7 @@ export const AuthorizedUserPage = () => {
         flexGrow={0}
       >
         <SearchBox
-          id="workflows-status-label-search-input"
+          data-amp-track-id="workflows-status-label-search-input"
           data-cy="status-label-search-box"
           placeholder="Search Statuses"
           variant="outlined"
@@ -193,7 +193,7 @@ export const AuthorizedUserPage = () => {
           <FormControlLabel
             control={
               <Switch
-                id="workflows-status-label-showDeactivated-toggle"
+                data-amp-track-id="workflows-status-label-showDeactivated-toggle"
                 size="small"
                 value="deactivated"
                 onChange={(e) => setShowDeactivated(e.target.checked)}

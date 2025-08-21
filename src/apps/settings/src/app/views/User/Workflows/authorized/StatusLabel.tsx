@@ -223,7 +223,7 @@ const MoreActionsMenu = ({
   return (
     <>
       <IconButton
-        id="workflows-status-label-menu-button"
+        data-amp-track-id="workflows-status-label-menu-button"
         size="small"
         onClick={handleOpen}
         sx={{ borderRadius: "50%" }}
@@ -232,7 +232,7 @@ const MoreActionsMenu = ({
         <MoreHorizIcon fontSize="small" color="action" />
       </IconButton>
       <Menu
-        id="workflows-status-label-menu"
+        data-amp-track-id="workflows-status-label-menu"
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
@@ -241,7 +241,7 @@ const MoreActionsMenu = ({
         transformOrigin={{ vertical: "top", horizontal: "right" }}
       >
         <MenuItem
-          id="workflows-status-label-menu-edit-button"
+          data-amp-track-id="workflows-status-label-menu-edit-button"
           onClick={openEditForm}
           data-cy="menu-item-edit"
         >
@@ -255,7 +255,7 @@ const MoreActionsMenu = ({
 
         {!isDeactivated && (
           <MenuItem
-            id="workflows-status-label-menu-deactivate-button"
+            data-amp-track-id="workflows-status-label-menu-deactivate-button"
             onClick={openDeleteDialog}
             data-cy="menu-item-deactivate"
           >

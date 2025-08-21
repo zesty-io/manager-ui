@@ -133,7 +133,7 @@ const ColorSelectInput = ({
   return (
     <>
       <Autocomplete
-        id={id}
+        data-amp-track-id={id}
         disableClearable
         autoHighlight
         fullWidth
@@ -212,7 +212,7 @@ const RolesSelectInput = ({
   return (
     <>
       <Autocomplete
-        id={id}
+        data-amp-track-id={id}
         multiple
         fullWidth
         options={sortedListData}
@@ -406,7 +406,7 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
         <Box display="flex" flexDirection="column" gap={3} p={2.5}>
           <FormInputFieldWrapper label="Name" error={formErrors?.name}>
             <OutlinedInput
-              id="workflows-create-status-label-name-inout"
+              data-amp-track-id="workflows-create-status-label-name-input"
               name="name"
               defaultValue={values?.name || ""}
               placeholder="e.g. Needs Content Review"
@@ -418,7 +418,7 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
             description="Describe what this status means in the context of your workflows"
           >
             <OutlinedInput
-              id="workflows-create-status-label-description-inout"
+              data-amp-track-id="workflows-create-status-label-description-input"
               name="description"
               defaultValue={values?.description || ""}
               multiline
@@ -462,7 +462,7 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
             sx={{ display: "flex", alignItems: "start" }}
             control={
               <Checkbox
-                id="workflows-create-status-label-allowPublish-toggle"
+                data-amp-track-id="workflows-create-status-label-allowPublish-toggle"
                 name="allowPublish"
                 defaultChecked={values?.allowPublish}
                 disableRipple
@@ -506,7 +506,7 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
           {!!ZUID && !isDeactivated && (
             <Box>
               <Button
-                id="workflows-create-status-label-deactivate-button"
+                data-amp-track-id="workflows-create-status-label-deactivate-button"
                 variant="outlined"
                 color="inherit"
                 onClick={handleDeactivation}
@@ -521,7 +521,7 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
       </DialogContent>
       <DialogActions sx={{ pt: 2 }}>
         <Button
-          id="workflows-create-status-label-cancel-button"
+          data-amp-track-id="workflows-create-status-label-cancel-button"
           onClick={onClose}
           variant="outlined"
           color="inherit"
@@ -529,7 +529,7 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
           Cancel
         </Button>
         <Button
-          id="workflows-create-status-label-submit-button"
+          data-amp-track-id="workflows-create-status-label-submit-button"
           data-cy="status-label-submit-button"
           type="submit"
           variant="contained"
