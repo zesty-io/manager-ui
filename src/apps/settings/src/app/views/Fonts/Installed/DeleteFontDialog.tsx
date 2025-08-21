@@ -38,7 +38,13 @@ const DeleteFontDialog = ({
 
   return (
     <>
-      <Dialog open={open} onClose={onClose} fullWidth maxWidth={"xs"}>
+      <Dialog
+        data-cy="DeleteFontDialog"
+        open={open}
+        onClose={onClose}
+        fullWidth
+        maxWidth={"xs"}
+      >
         <DialogTitle>
           <DeleteIcon
             color="error"
@@ -71,6 +77,7 @@ const DeleteFontDialog = ({
             </Typography>
 
             <Typography
+              data-cy="DeleteFontDialogLabel"
               variant="h5"
               color="text.primary"
               fontWeight={500}
@@ -90,6 +97,7 @@ const DeleteFontDialog = ({
             Cancel
           </Button>
           <LoadingButton
+            data-cy="DeleteFontDialogConfirmButton"
             variant="contained"
             color="error"
             onClick={onFontDelete}

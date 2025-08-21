@@ -33,6 +33,7 @@ const Installed = () => {
       <TopBar title="Installed Fonts">
         <Box display="flex" alignItems="center" justifyContent="flex-end">
           <SearchBox
+            data-cy="InstalledFontSearchInput"
             placeholder="Search Fonts"
             type="text"
             variant="outlined"
@@ -97,7 +98,6 @@ const Installed = () => {
               pb: 3,
             }}
           >
-            {" "}
             {filteredInstalledFonts?.length < 1 ? (
               <Box
                 width="100%"
@@ -124,6 +124,7 @@ const Installed = () => {
               </Box>
             ) : (
               <Box
+                data-cy="FontListContainer"
                 sx={{
                   width: "100%",
                   py: 2,

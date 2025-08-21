@@ -121,6 +121,7 @@ const FontFamilyCard = ({
   return (
     <>
       <Box
+        data-cy="FontFamilyCard"
         sx={{
           borderBottom: "1px solid",
           borderColor: "grey.200",
@@ -157,7 +158,7 @@ const FontFamilyCard = ({
                 flexWrap: "wrap",
               }}
             >
-              <FormGroup row>
+              <FormGroup row data-cy="FontFamilyVariantLists">
                 {variants?.map((item: string, index: number) => (
                   <FormControlLabel
                     key={`${family}-${item}-${ZUID || index}`}
@@ -203,6 +204,7 @@ const FontFamilyCard = ({
           </Box>
 
           <LoadingButton
+            data-cy="InstallFontButton"
             variant="contained"
             color="primary"
             onClick={handleFontInstall}

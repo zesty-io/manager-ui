@@ -50,6 +50,7 @@ const WebFontCard = ({ ZUID, href }: WebFontCardProps) => {
   return (
     <>
       <Box
+        data-cy="WebFontCard"
         display="flex"
         flexDirection="column"
         justifyContent="space-between"
@@ -63,7 +64,13 @@ const WebFontCard = ({ ZUID, href }: WebFontCardProps) => {
           overflow: "hidden",
         }}
       >
-        <Typography variant="h6" color="text.primary" fontWeight={700} noWrap>
+        <Typography
+          data-cy="WebFontCardLabel"
+          variant="h6"
+          color="text.primary"
+          fontWeight={700}
+          noWrap
+        >
           {family}
         </Typography>
 
@@ -122,6 +129,7 @@ const WebFontCard = ({ ZUID, href }: WebFontCardProps) => {
                     {FONT_PREVIEW_TEXT}
                   </Typography>
                   <Button
+                    data-cy="UninstallFontButton"
                     variant="outlined"
                     color="error"
                     onClick={() => handleDeleteFontVariant(variant)}

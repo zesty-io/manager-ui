@@ -112,6 +112,7 @@ const Browse = () => {
           columnGap={2}
         >
           <SearchBox
+            data-cy="BrowseFontSearchInput"
             placeholder="Search Fonts"
             type="text"
             variant="outlined"
@@ -211,6 +212,7 @@ const Browse = () => {
               height="100%"
               display="grid"
               alignContent="center"
+              data-cy="BrowseFontNoResultsContainer"
             >
               <NoResults
                 type="search"
@@ -224,17 +226,19 @@ const Browse = () => {
             </Box>
           ) : (
             <>
-              {activePagination?.map((itemFont, index) => (
-                <FontFamilyCard
-                  previewText={previewText}
-                  key={itemFont?.family + index}
-                  family={itemFont?.family}
-                  variants={[...itemFont?.variants]}
-                  installedVariants={itemFont?.installedVariants}
-                  ZUID={itemFont?.ZUID}
-                  activePage={activePage + 1}
-                />
-              ))}
+              <Box width="100%" data-cy="FontListContainer">
+                {activePagination?.map((itemFont, index) => (
+                  <FontFamilyCard
+                    previewText={previewText}
+                    key={itemFont?.family + index}
+                    family={itemFont?.family}
+                    variants={[...itemFont?.variants]}
+                    installedVariants={itemFont?.installedVariants}
+                    ZUID={itemFont?.ZUID}
+                    activePage={activePage + 1}
+                  />
+                ))}
+              </Box>
               <Box
                 width="100%"
                 display="flex"
