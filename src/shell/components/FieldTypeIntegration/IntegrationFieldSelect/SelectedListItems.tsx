@@ -43,7 +43,12 @@ const SelectedListItems = ({
 
   return (
     <>
-      <Box width="100%" position="relative" display="block">
+      <Box
+        width="100%"
+        position="relative"
+        display="block"
+        data-cy="integrationListValueContainer"
+      >
         {items?.map((item, index) => {
           return (
             <Draggable

@@ -23,23 +23,11 @@ import {
 } from "@mui/icons-material";
 
 import { FormWrapper, FieldWrapper } from "../components/Wrappers";
-import { DISPLAY_OPTIONS_CONFIG, ConfigProps, COLOR_MAP } from "../configs";
+import { DISPLAY_OPTIONS_CONFIG, ConfigProps } from "../configs";
 import { getKeyValue } from "../utils";
 import { IntegrationKeyPaths, IntegrationTypes } from "../../../services/types";
 import KeyPathSelector from "./KeyPathSelector";
 import DisplayCard from "../components/DisplayCard";
-
-const createKeyPathsInitialValue = (
-  config: Array<{ name: string }>,
-  values: IntegrationKeyPaths | null
-): Record<string, string> => {
-  if (!config?.length) return {};
-  return config.reduce((acc, item) => {
-    acc[item.name] =
-      (values?.[item.name as keyof IntegrationKeyPaths] as string) || "";
-    return acc;
-  }, {} as Record<string, string>);
-};
 
 const getObjectKeyPaths = <T extends object>(obj: T, prefix = ""): string[] => {
   const result: string[] = [];
@@ -244,7 +232,6 @@ const ConfigureDisplayOptions = ({
         dividers
       >
         <Box display="flex" height="100%" width="100%">
-          {/* Configuration Panel */}
           <Box
             width="50%"
             p={2.5}
@@ -284,7 +271,13 @@ const ConfigureDisplayOptions = ({
               </>
             )}
 
-            <Box width="100%" display="flex" flexDirection="column" gap={1.5}>
+            <Box
+              width="100%"
+              display="flex"
+              flexDirection="column"
+              gap={1.5}
+              data-cy="integrationConfigureOptionKeyPathContainer"
+            >
               {rootPathOptions.length > 0 &&
                 displayConfig.map((config: ConfigProps) => (
                   <FieldWrapper
@@ -302,6 +295,7 @@ const ConfigureDisplayOptions = ({
                         <List disablePadding sx={{ width: "100%" }}>
                           {detailsPathData.map((item, index) => (
                             <ListItem
+                              data-cy={`integrationDetailsSelectorRow-${index}`}
                               key={index}
                               sx={{
                                 gap: 1,
@@ -341,6 +335,7 @@ const ConfigureDisplayOptions = ({
                           ))}
                         </List>
                         <Button
+                          data-cy="integrationConfigureDisplayOptionsAddDetailButton"
                           variant="outlined"
                           color="primary"
                           size="small"
@@ -377,8 +372,6 @@ const ConfigureDisplayOptions = ({
                 ))}
             </Box>
           </Box>
-
-          {/* Preview Panel */}
           <Box
             width="50%"
             p={2.5}
@@ -395,59 +388,6 @@ const ConfigureDisplayOptions = ({
                 How the items will appear to content editors
               </Typography>
             </Box>
-
-            {/* <Paper
-              elevation={0}
-              sx={{
-                py: 0,
-                pl: 3.5,
-                pr: "40px",
-                width: "100%",
-                borderRadius: 2,
-                position: "relative",
-                display: "flex",
-                alignItems: "center",
-                my: 0.5,
-              }}
-            >
-              <Box
-                sx={{
-                  position: "absolute",
-                  left: 0,
-                  top: 0,
-                  bottom: 0,
-                  width: 28,
-                  display: "grid",
-                  placeContent: "center",
-                }}
-              >
-                <DragIndicatorRounded color="action" fontSize="small" />
-              </Box>
-
-              <DisplayCard
-                type={type}
-                heading={getKeyValue(rootData, rootPathData.heading)}
-                subHeading={getKeyValue(rootData, rootPathData.subHeading)}
-                thumbnail={getKeyValue(rootData, rootPathData.thumbnail)}
-                detail={getKeyValue(rootData, rootPathData.detail)}
-                details={detailsPathData?.map((keyPath) => ({
-                  key: keyPath || "",
-                  value: !keyPath ? "" : getKeyValue(rootData, keyPath),
-                }))}
-                showPlayIcon={false}
-              />
-
-              <Box
-                position="absolute"
-                right={0}
-                width={40}
-                height="100%"
-                pr={2}
-                sx={{ display: "grid", placeContent: "center" }}
-              >
-                <MoreHoriz color="action" />
-              </Box>
-            </Paper> */}
             <Paper
               elevation={0}
               variant="outlined"
@@ -493,6 +433,7 @@ const ConfigureDisplayOptions = ({
           Back
         </Button>
         <Button
+          data-cy="integrationConfigureDisplayOptionsDoneButton"
           variant="contained"
           startIcon={<CheckRounded />}
           disabled={!isCompleted}

@@ -109,6 +109,7 @@ const RenderRow = ({ data, index, style }: RenderRowProps) => {
 
   return (
     <ListItem
+      data-cy="integrationSelectCard"
       sx={{ ...style, px: 4 }}
       component="li"
       disablePadding
@@ -253,6 +254,7 @@ const ItemSelectionDialog = ({
 
   return (
     <Dialog
+      data-cy="integrationSelectionFormDialog"
       open={open}
       onClose={onClose}
       maxWidth="md"
@@ -306,6 +308,7 @@ const ItemSelectionDialog = ({
                 Deselect All
               </Button>
               <Button
+                data-cy="selectIntegrationFormDoneButton"
                 size="small"
                 variant="contained"
                 color="primary"
@@ -336,6 +339,7 @@ const ItemSelectionDialog = ({
           pr={5}
         >
           <TextField
+            data-cy="integrationSelectionFormSearchBox"
             inputRef={searchInputRef}
             fullWidth
             placeholder="Filter Items"
@@ -358,6 +362,7 @@ const ItemSelectionDialog = ({
 
         {searchTerm && !filteredItems.length && !loading ? (
           <Paper
+            data-cy="NoResultsContainer"
             variant="outlined"
             sx={{
               borderColor: "border",
@@ -396,6 +401,7 @@ const ItemSelectionDialog = ({
             <AutoSizer>
               {({ height, width }: { height: number; width: number }) => (
                 <FixedSizeList
+                  className="integrationSelectionFormListContainer"
                   height={height}
                   width={width}
                   itemSize={itemHeight}

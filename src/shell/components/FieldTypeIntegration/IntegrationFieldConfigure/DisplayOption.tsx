@@ -22,7 +22,6 @@ const DisplayOption = ({
     <Card
       elevation={0}
       variant="outlined"
-      data-cy={`integrationDisplayOption-${type}`}
       sx={{
         borderColor: "border",
         height: "140px",
@@ -30,6 +29,7 @@ const DisplayOption = ({
       }}
     >
       <CardActionArea
+        data-cy={`integrationDisplayOption-${type}`}
         disabled={disabled}
         onClick={onSelect}
         data-selected={isSelected ? "" : undefined}

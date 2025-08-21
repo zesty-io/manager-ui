@@ -315,7 +315,7 @@ function addSpecialField(type) {
     `[data-cy="integrationRecommendedOptionsContainer"] [data-cy="integrationDisplayOption-${type}"]`
   )
     .should("exist")
-    .should("have.class", "active");
+    .should("have.attr", "data-selected");
 
   cy.getElement('[data-cy="integrationOptionsContainer"]')
     .children()

@@ -209,7 +209,7 @@ const IntegrationFieldConfigure = ({
       ) : null}
 
       <Button
-        data-cy="IntegrationFieldConfigButton"
+        data-cy="integrationConfigureButton"
         variant="outlined"
         color="primary"
         startIcon={isConnected ? <Autorenew /> : <LinkRounded />}
