@@ -69,24 +69,6 @@ const CONNECTION_STATUSES: {
   },
 };
 
-const arrayToKeyValuePairs = (arr: any[]) => {
-  if (!arr?.length) return {};
-  return arr?.reduce((acc: any, obj: any) => {
-    acc[obj.key] = obj.value;
-    return acc;
-  }, {});
-};
-
-const keyValuePairsToArray = (
-  obj: Record<string, any>
-): { key: string; value: any }[] => {
-  if (!obj) return [];
-  return Object.entries(obj).map(([key, value]) => ({
-    key,
-    value,
-  }));
-};
-
 const ConnectToApi = ({
   activeStep,
   endpoint,
@@ -115,24 +97,23 @@ const ConnectToApi = ({
 
   const [headersLocal, setHeadersLocal] = useState<
     { key: string; value: string }[] | null
-  >(keyValuePairsToArray(headers));
-
-  const handleApiConnect = useCallback(() => {
-    setReqAborted(false);
-    setApiData(null);
-
-    const headersWithKeys = headersLocal.filter((i) => !!i?.key);
-    const reqHeaders = !headersWithKeys?.length
-      ? null
-      : arrayToKeyValuePairs(headersWithKeys);
-
-    fetchApiData(endpointLocal, reqHeaders);
-  }, [endpointLocal, headersLocal]);
+  >(
+    !headers
+      ? []
+      : Object?.entries(headers).map(([key, value]) => ({
+          key,
+          value,
+        }))
+  );
 
   const handleNext = () => {
     const reqHeaders = !headersLocal?.length
       ? null
-      : arrayToKeyValuePairs(headersLocal);
+      : headersLocal?.reduce((acc: any, obj: any) => {
+          acc[obj.key] = obj.value;
+          return acc;
+        }, {});
+
     setApiData(data);
     setHeaders(reqHeaders);
     setEndpoint(endpointLocal);
@@ -143,6 +124,22 @@ const ConnectToApi = ({
     setReqAborted(true);
     setActiveStep(0);
   };
+
+  const handleApiConnect = useCallback(() => {
+    setReqAborted(false);
+    setApiData(null);
+
+    const headersWithKeys = headersLocal.filter((i) => !!i?.key);
+
+    const reqHeaders = !headersWithKeys?.length
+      ? null
+      : headersWithKeys?.reduce((acc: any, obj: any) => {
+          acc[obj.key] = obj.value;
+          return acc;
+        }, {});
+
+    fetchApiData(endpointLocal, reqHeaders);
+  }, [endpointLocal, headersLocal]);
 
   return (
     <FormWrapper width="480px" height="600px">

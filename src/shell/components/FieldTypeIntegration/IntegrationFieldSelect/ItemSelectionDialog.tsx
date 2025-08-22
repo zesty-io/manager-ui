@@ -278,6 +278,7 @@ const ItemSelectionDialog = ({
       }}
     >
       <DialogTitle
+        component="div"
         sx={{
           borderBottom: "1px solid",
           borderColor: "border",
