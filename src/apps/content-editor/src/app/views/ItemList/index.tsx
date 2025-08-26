@@ -89,6 +89,7 @@ export const ItemList = () => {
   const items = useMemo(() => {
     return Object.values(allItems).filter(
       (item: ContentItem) =>
+        item.meta &&
         item.meta.contentModelZUID === modelZUID &&
         item.meta.langID === activeLangId
     );
