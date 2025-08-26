@@ -169,7 +169,6 @@ export const AuthorizedUserPage = () => {
         flexGrow={0}
       >
         <SearchBox
-          data-amp-track-id="workflows-status-label-search-input"
           data-cy="status-label-search-box"
           placeholder="Search Statuses"
           variant="outlined"
@@ -178,6 +177,7 @@ export const AuthorizedUserPage = () => {
           onChange={(e) => setSearchValue(e.target.value)}
           InputProps={{
             inputRef: searchInputRef,
+
             startAdornment: (
               <InputAdornment position="start">
                 <Search fontSize="small" />
@@ -187,6 +187,9 @@ export const AuthorizedUserPage = () => {
               backgroundColor: "background.paper",
               minWidth: "320px",
             },
+          }}
+          inputProps={{
+            "data-amp-track-id": "workflows-status-label-search-input",
           }}
         />
         <FormGroup>

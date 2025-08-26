@@ -266,7 +266,6 @@ export const VersionItem = memo(
               overflow="hidden"
             >
               <TextField
-                data-amp-track-id="content-status-label-add-menu-search-input"
                 ref={searchRef}
                 value={filterKeyword}
                 onChange={(evt) => setFilterKeyword(evt.currentTarget.value)}
@@ -283,6 +282,10 @@ export const VersionItem = memo(
                 sx={{
                   my: 1.5,
                   px: 1,
+                }}
+                inputProps={{
+                  "data-amp-track-id":
+                    "content-status-label-add-menu-search-input",
                 }}
               />
               {!filteredStatusLabels?.length && filterKeyword && (

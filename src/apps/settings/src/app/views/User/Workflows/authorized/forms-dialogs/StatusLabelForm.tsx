@@ -13,6 +13,9 @@ import {
   FormControlLabel,
   Checkbox,
   Autocomplete,
+  SlotProps,
+  CheckboxInputSlotPropsOverrides,
+  CheckboxOwnerState,
 } from "@mui/material";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import Brightness1Icon from "@mui/icons-material/Brightness1";
@@ -133,7 +136,6 @@ const ColorSelectInput = ({
   return (
     <>
       <Autocomplete
-        data-amp-track-id={id}
         disableClearable
         autoHighlight
         fullWidth
@@ -177,6 +179,7 @@ const ColorSelectInput = ({
         )}
       />
       <input
+        data-amp-track-id={id}
         type="hidden"
         name={name}
         value={selectedColor.value?.trim()?.toUpperCase()}
@@ -212,7 +215,6 @@ const RolesSelectInput = ({
   return (
     <>
       <Autocomplete
-        data-amp-track-id={id}
         multiple
         fullWidth
         options={sortedListData}
@@ -257,7 +259,12 @@ const RolesSelectInput = ({
           },
         }}
       />
-      <input type="hidden" name={name} value={value?.trim()} />
+      <input
+        data-amp-track-id={id}
+        type="hidden"
+        name={name}
+        value={value?.trim()}
+      />
     </>
   );
 };
@@ -406,11 +413,13 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
         <Box display="flex" flexDirection="column" gap={3} p={2.5}>
           <FormInputFieldWrapper label="Name" error={formErrors?.name}>
             <OutlinedInput
-              data-amp-track-id="workflows-create-status-label-name-input"
               name="name"
               defaultValue={values?.name || ""}
               placeholder="e.g. Needs Content Review"
               size="small"
+              inputProps={{
+                "data-amp-track-id": "workflows-create-status-label-name-input",
+              }}
             />
           </FormInputFieldWrapper>
           <FormInputFieldWrapper
@@ -418,7 +427,6 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
             description="Describe what this status means in the context of your workflows"
           >
             <OutlinedInput
-              data-amp-track-id="workflows-create-status-label-description-input"
               name="description"
               defaultValue={values?.description || ""}
               multiline
@@ -426,6 +434,10 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
               maxRows={2}
               placeholder="Ready for legal team to review for publishing"
               size="small"
+              inputProps={{
+                "data-amp-track-id":
+                  "workflows-create-status-label-description-input",
+              }}
             />
           </FormInputFieldWrapper>
           <FormInputFieldWrapper label="Color" error={formErrors?.color}>
@@ -480,6 +492,16 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
                   "&.Mui-checked": {
                     color: "primary.main",
                   },
+                }}
+                slotProps={{
+                  input: {
+                    "data-amp-track-id":
+                      "workflows-create-status-label-allowPublish-toggle",
+                  } as SlotProps<
+                    "input",
+                    CheckboxInputSlotPropsOverrides,
+                    CheckboxOwnerState
+                  >,
                 }}
               />
             }
