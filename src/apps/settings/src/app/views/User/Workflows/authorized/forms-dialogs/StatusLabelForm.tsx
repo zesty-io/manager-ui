@@ -175,11 +175,14 @@ const ColorSelectInput = ({
                 />
               ),
             }}
+            inputProps={{
+              ...params?.inputProps,
+              "data-amp-track-id": id,
+            }}
           />
         )}
       />
       <input
-        data-amp-track-id={id}
         type="hidden"
         name={name}
         value={selectedColor.value?.trim()?.toUpperCase()}
@@ -246,6 +249,10 @@ const RolesSelectInput = ({
         renderInput={(params) => (
           <TextField
             {...params}
+            inputProps={{
+              ...params?.inputProps,
+              "data-amp-track-id": id,
+            }}
             variant="outlined"
             placeholder={value ? "" : "None"}
           />
@@ -259,12 +266,7 @@ const RolesSelectInput = ({
           },
         }}
       />
-      <input
-        data-amp-track-id={id}
-        type="hidden"
-        name={name}
-        value={value?.trim()}
-      />
+      <input type="hidden" name={name} value={value?.trim()} />
     </>
   );
 };
