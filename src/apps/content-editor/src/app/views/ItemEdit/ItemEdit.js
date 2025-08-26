@@ -3,6 +3,7 @@ import {
   useEffect,
   useState,
   useMemo,
+  useCallback,
   createContext,
   useRef,
 } from "react";
@@ -300,7 +301,7 @@ export default function ItemEdit() {
     setLockState({ userZUID: user.ZUID });
   }
 
-  async function save() {
+  const save = useCallback(async () => {
     setSaveClicked(true);
 
     try {
@@ -464,7 +465,7 @@ export default function ItemEdit() {
         setSaving(false);
       }
     }
-  }
+  }, [itemZUID, fieldErrors, hasErrors, hasSEOErrors, location.pathname]);
 
   function discard() {
     dispatch({
@@ -478,6 +479,11 @@ export default function ItemEdit() {
   const isLocked =
     isMounted.current && !checkingLock && lockState.userZUID !== user.ZUID;
 
+  const handleSave = useCallback(() => {
+    return save().catch((err) => {
+      console.error("ItemEdit:onSave:error", err);
+    });
+  }, [save]);
   return (
     <Fragment>
       {!isLoadingFields && !loading && notFound ? (
@@ -642,9 +648,7 @@ export default function ItemEdit() {
                           itemZUID={itemZUID}
                           item={item}
                           user={user}
-                          onSave={() =>
-                            save().catch((err) => console.error(err))
-                          }
+                          onSave={handleSave}
                           dispatch={dispatch}
                           loading={loading || isLoadingFields}
                           saving={saving}
