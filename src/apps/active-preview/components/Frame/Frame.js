@@ -1,6 +1,6 @@
 import { Fragment, useState, useEffect } from "react";
 import cx from "classnames";
-import { Box } from "@mui/material";
+import { Box, CircularProgress, Typography } from "@mui/material";
 import iphone14 from "../../../../../public/images/iphone-14.png";
 import iphone14cam from "../../../../../public/images/iphone-14-camera.png";
 import iphone14pro from "../../../../../public/images/iphone-14-pro.png";
@@ -12,13 +12,33 @@ import pixel7cam from "../../../../../public/images/pixel-7-camera.png";
 import styles from "./Frame.less";
 export function Frame(props) {
   const [frameLoading, setFrameLoading] = useState(true);
+  const [routePath, setRoutePath] = useState("");
 
   useEffect(() => {
     setFrameLoading(true);
-  }, [props.device]);
+  }, [props.route]);
+
+  useEffect(() => {
+    if (!props.domain || !props.route) return;
+    setRoutePath(`${props.domain}${props.route}`);
+  }, [props.domain, props.route]);
 
   return (
     <Fragment>
+      {(!routePath || frameLoading) && (
+        <Box
+          height="100vh"
+          display="flex"
+          justifyContent={"center"}
+          alignItems={"center"}
+          flexDirection={"column"}
+        >
+          <CircularProgress />
+          <Typography variant="h5" fontWeight={600} mt={1.5}>
+            Finding Domain
+          </Typography>
+        </Box>
+      )}
       {props.device === "fullscreen" ? (
         <iframe
           className={cx(
@@ -26,7 +46,7 @@ export function Frame(props) {
             props.blur ? styles.Blur : null
             // frameLoading ? styles.FrameLoading : null
           )}
-          src={`${props.domain}${props.route}`}
+          src={routePath}
           scrolling="yes"
           frameBorder="0"
           onLoad={() => setFrameLoading(false)}
@@ -69,7 +89,7 @@ export function Frame(props) {
                       left: `${(100 - 100 / props.zoom) / 2}%`,
                       top: `${(100 - 100 / props.zoom) / 2}%`,
                     }}
-                    src={`${props.domain}${props.route}`}
+                    src={routePath}
                     scrolling="yes"
                     frameBorder="0"
                     onLoad={() => setFrameLoading(false)}

@@ -30,8 +30,6 @@ import { useLocalStorage } from "react-use";
 import { JSONPreview } from "./components/JSONPreview";
 import { Frame, templates } from "./components/Frame";
 
-import api from "./api";
-
 import styles from "./Preview.less";
 
 const zoomLevels = [
@@ -72,15 +70,12 @@ export function Preview(props) {
   }
 
   const input = useRef();
-
   const [loading, setLoading] = useState(true);
-  const [authenticated, setAuthenticated] = useState(true);
   // const [open, setOpen] = useState(false);
   const [rotate, setRotate] = useState(false);
-  const [instance, setInstance] = useState({});
   const [settings, setSettings] = useState([]);
   const [domain, setDomain] = useState(props.domain);
-  const [route, setRoute] = useState(props.route || "/");
+  const [route, setRoute] = useState(props.route || "");
   const [device, setDevice] = useState("fullscreen");
   const [refresh, setRefresh] = useState(Date.now());
   const [version, setVersion] = useState(0);
@@ -92,6 +87,7 @@ export function Preview(props) {
     return isInIframe() ? 0.35 : 1;
   });
   const [hasErrors, setHasErrors] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState("");
 
   const isBlockItem = route?.startsWith("/-/block/");
 
@@ -126,6 +122,13 @@ export function Preview(props) {
       }
 
       if (msg.data.source === "zesty") {
+        if (msg.data.previewUrl) {
+          setPreviewUrl(msg.data.previewUrl);
+        }
+        if (msg.data.domain) {
+          setDomain(msg.data.domain);
+        }
+
         if (msg.data.route) {
           setRoute(msg.data.route);
         }
@@ -152,24 +155,6 @@ export function Preview(props) {
 
     window.addEventListener("message", receiveMessage);
     return () => window.removeEventListener("message", receiveMessage);
-  }, [domain]);
-
-  // fetch domain
-  useEffect(() => {
-    api(`${CONFIG.API_ACCOUNTS}/instances/${ZUID}`)
-      .then((json) => {
-        setInstance(json.data);
-        setDomain(
-          `${CONFIG.URL_PREVIEW_PROTOCOL}${json.data.randomHashID}${CONFIG.URL_PREVIEW}`
-        );
-      })
-      .catch((err) => {
-        if (err.message === "unauthenticated") {
-          setAuthenticated(false);
-          setDomain("");
-        }
-      })
-      .finally(() => setLoading(false));
   }, []);
 
   const sendMessage = (action) => {
@@ -190,17 +175,16 @@ export function Preview(props) {
   };
 
   const handleOpenInNewTab = () => {
-    const newTab = window.open(
-      `${CONFIG.URL_MANAGER_PROTOCOL}${instance.ZUID}${CONFIG.URL_MANAGER}/active-preview`,
-      "_blank"
-    );
+    const newTab = window.open(previewUrl, "_blank");
 
     if (newTab) {
       newTab.addEventListener("load", () => {
         newTab.postMessage(
           {
             source: "zesty",
+            previewUrl,
             route,
+            domain,
             settings,
             version,
             dirty,
@@ -210,23 +194,6 @@ export function Preview(props) {
       });
     }
   };
-
-  if (!domain) {
-    return (
-      <Box
-        height="100vh"
-        display="flex"
-        justifyContent={"center"}
-        alignItems={"center"}
-        flexDirection={"column"}
-      >
-        <CircularProgress />
-        <Typography variant="h5" fontWeight={600} mt={1.5}>
-          Finding Domain
-        </Typography>
-      </Box>
-    );
-  }
 
   if (saving) {
     return (
@@ -242,6 +209,18 @@ export function Preview(props) {
           Saving
         </Typography>
       </Box>
+    );
+  }
+
+  if (!domain) {
+    return (
+      <div className={styles.NoDomain}>
+        <h1 className={styles.headline}>
+          {!domain
+            ? "Your session is not active. Please login to Zesty.io"
+            : "Disconnected from preview domain"}
+        </h1>
+      </div>
     );
   }
 
@@ -467,29 +446,18 @@ export function Preview(props) {
             )}
           </Dialog>
         )}
-
-        {!loading && domain && route ? (
-          route.includes(".json") ? (
-            <JSONPreview src={`${domain}${route}`} settings={settings} />
-          ) : (
-            <Frame
-              key={refresh}
-              device={device}
-              domain={domain}
-              route={route}
-              rotate={rotate}
-              blur={initialVersion === version && dirty}
-              zoom={zoom}
-            />
-          )
+        {settings && domain && route && route?.includes(".json") ? (
+          <JSONPreview src={`${domain}${route}`} settings={settings} />
         ) : (
-          <div className={styles.NoDomain}>
-            <h1 className={styles.headline}>
-              {!authenticated
-                ? "Your session is not active. Please login to Zesty.io"
-                : "Disconnected from preview domain"}
-            </h1>
-          </div>
+          <Frame
+            key={refresh}
+            device={device}
+            domain={domain}
+            route={route}
+            rotate={rotate}
+            blur={initialVersion === version && dirty}
+            zoom={zoom}
+          />
         )}
       </Box>
     </>
