@@ -197,7 +197,8 @@ export const FileModalContent: FC<Props> = ({
       dispatch(
         notify({
           kind: "error",
-          message: deleteResponse?.error?.data?.message,
+          message:
+            deleteResponse?.error?.data?.message || "Failed to delete file",
         })
       );
     });
