@@ -132,7 +132,7 @@ export const Meta = forwardRef(
     const { data: model, isFetching } = useGetContentModelQuery(modelZUID, {
       skip: !modelZUID,
     });
-    const { data: fields } = useGetContentModelFieldsQuery(modelZUID);
+    const { data: fields } = useGetContentModelFieldsQuery({ modelZUID });
     const { meta, data, web }: { meta: MetaType; data: Data; web: Web } =
       useSelector(
         (state: AppState) =>

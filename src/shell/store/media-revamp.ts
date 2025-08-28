@@ -91,7 +91,8 @@ export type Filetype =
   | "AVI"
   | "WMV"
   | "FLV"
-  | "MPEG";
+  | "MPEG"
+  | "AVIF";
 
 export type DateRange = PresetDateRange | SingleDateRange | CustomDateRange;
 export type PresetDateRange = {
@@ -172,21 +173,17 @@ const mediaSlice = createSlice({
       if (index !== -1) {
         const oldData = state.uploads[index];
         if (oldData.status === "staged") {
-          const { file, ...data } = action.payload;
-          const uploads = [...state.uploads];
-
-          uploads[index] = { ...oldData, ...data, status: "inProgress" };
-          return { ...state, uploads };
+          const { file, ...rest } = action.payload;
+          // Mutate the draft state directly. Immer will handle the immutable update.
+          state.uploads[index] = { ...oldData, ...rest, status: "inProgress" };
         }
       }
-      return state;
     },
     fileUploadDelete(state, action: { payload: SuccessfulUpload }) {
-      const uploads = state.uploads.filter(
+      state.uploads = state.uploads.filter(
         (upload) =>
           upload.status !== "success" || action.payload.id !== upload.id
       );
-      return { ...state, uploads };
     },
     fileUploadReset(state) {
       state.uploads = [];
@@ -236,22 +233,10 @@ const mediaSlice = createSlice({
             status: "success" as const,
             id: action.payload.id,
           };
-          const uploads = [...state.uploads];
-          uploads[index] = newUploadingFile;
-          return { ...state, uploads };
 
-          //uploadingFile.loading = false;
-          // uploadingFile.id = action.payload.id;
-          // uploadingFile.title = action.payload.title;
-          //uploadingFile.filename = action.payload.filename;
-          //uploadingFile.url = action.payload.url;
-          //uploadingFile.status = 'success'
-
-          // drop in-memory file object
-          // delete uploadingFile.file;
+          state.uploads[index] = newUploadingFile;
         }
       }
-      return state;
     },
     fileUploadError(state, action) {
       const fileIndex = state.uploads.findIndex(
@@ -358,6 +343,17 @@ async function getSignedUrl(filename: string, storageName: string) {
 
 export function replaceFile(newFile: UploadFile, originalFile: FileBase) {
   return async (dispatch: Dispatch, getState: () => AppState) => {
+    // By checking the state inside the thunk, we get the most up-to-date
+    // status and prevent any race conditions from the component layer.
+    const { uploads } = getState().mediaRevamp;
+    const existingUpload = uploads.find(
+      (upload) => upload.uploadID === newFile.uploadID
+    );
+
+    if (!existingUpload || existingUpload.status !== "staged") {
+      return;
+    }
+
     const bodyData = new FormData();
     const req = new XMLHttpRequest();
     const file = {
@@ -365,6 +361,8 @@ export function replaceFile(newFile: UploadFile, originalFile: FileBase) {
       loading: true,
       ...newFile,
     };
+
+    dispatch(fileUploadStart(file));
 
     bodyData.append("file", file.file, originalFile.filename);
     bodyData.append("file_id", originalFile.id);
@@ -497,14 +495,23 @@ export function replaceFile(newFile: UploadFile, originalFile: FileBase) {
 
       req.send(bodyData);
     }
-
-    dispatch(fileUploadStart(file));
   };
 }
 
 //type FileMonstrosity = {file: File } & FileAugmentation & FileBase
 export function uploadFile(fileArg: UploadFile, bin: Bin) {
   return async (dispatch: Dispatch, getState: () => AppState) => {
+    // By checking the state inside the thunk, we get the most up-to-date
+    // status and prevent any race conditions from the component layer.
+    const { uploads } = getState().mediaRevamp;
+    const existingUpload = uploads.find(
+      (upload) => upload.uploadID === fileArg.uploadID
+    );
+
+    if (!existingUpload || existingUpload.status !== "staged") {
+      return;
+    }
+
     const userZUID = getState().user.ZUID;
     const data = new FormData();
     const req = new XMLHttpRequest();
@@ -514,6 +521,8 @@ export function uploadFile(fileArg: UploadFile, bin: Bin) {
       loading: true,
       ...fileArg,
     };
+    dispatch(fileUploadStart(file));
+
     /*
     file.filename = file.file.name;
     file.uploadID = uuidv4();
@@ -676,8 +685,6 @@ export function uploadFile(fileArg: UploadFile, bin: Bin) {
 
       req.send(data);
     }
-
-    dispatch(fileUploadStart(file));
   };
 }
 export function deleteUpload(upload: SuccessfulUpload) {

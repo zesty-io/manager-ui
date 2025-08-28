@@ -5,7 +5,7 @@ import { unescape } from "lodash";
 import { Field } from "./Field";
 
 import styles from "./Editor.less";
-import { cloneDeep } from "lodash";
+import { cloneDeep, isEqual } from "lodash";
 import { useGetContentModelFieldsQuery } from "../../../../../../shell/services/instance";
 import { DYNAMIC_META_FIELD_NAMES } from "../../views/ItemEdit/Meta";
 import { FieldsLoader } from "./FieldsLoader";
@@ -36,7 +36,7 @@ export default memo(function Editor({
   const dispatch = useDispatch();
   const isNewItem = itemZUID.slice(0, 3) === "new";
   const { data: fields, isFetching: isFetchingFields } =
-    useGetContentModelFieldsQuery(modelZUID);
+    useGetContentModelFieldsQuery({ modelZUID });
   const [isLoaded, setIsLoaded] = useState(false);
   const [prevFirstContentFieldValue, setPrevFirstContentFieldValue] =
     useState(null);
@@ -215,7 +215,9 @@ export default memo(function Editor({
         };
       }
 
-      onUpdateFieldErrors(errors);
+      if (!isEqual(errors, fieldErrors)) {
+        onUpdateFieldErrors(errors);
+      }
 
       // Always dispatch the data update
       dispatch({
@@ -341,7 +343,7 @@ export default memo(function Editor({
     [
       fieldErrors,
       metaFields,
-      item,
+      item?.web?.["metaDescription"],
       prevFirstContentFieldValue,
       setPrevFirstContentFieldValue,
     ]
@@ -408,7 +410,8 @@ export default memo(function Editor({
               settings={field.settings}
               onChange={onChange}
               onSave={onSave}
-              item={item}
+              value={item?.data?.[field.name]}
+              version={item?.meta?.version}
               langID={item?.meta?.langID}
               errors={fieldErrors[field.name]}
               maxLength={

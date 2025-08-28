@@ -78,7 +78,9 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
   const { data: views } = useGetWebViewsQuery();
   const location = useLocation();
   const history = useHistory();
-  const { isSuccess: isFieldsLoaded } = useGetContentModelFieldsQuery(id);
+  const { isSuccess: isFieldsLoaded } = useGetContentModelFieldsQuery({
+    modelZUID: id,
+  });
   const [anchorEl, setAnchorEl] = useState(null);
 
   const model = models?.find((model) => model.ZUID === id);

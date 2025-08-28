@@ -116,9 +116,12 @@ export const ItemEditHeaderActions = ({
     (state: AppState) => state.models[modelZUID]
   ) as ContentModel;
   const { data: fields, isLoading: isLoadingFields } =
-    useGetContentModelFieldsQuery(modelZUID, {
-      skip: !modelZUID,
-    });
+    useGetContentModelFieldsQuery(
+      { modelZUID },
+      {
+        skip: !modelZUID,
+      }
+    );
   const { data: users, isLoading: isLoadingUsers } = useGetUsersQuery();
   const { data: itemAudit, isLoading: isLoadingAudit } = useGetAuditsQuery({
     affectedZUID: itemZUID,

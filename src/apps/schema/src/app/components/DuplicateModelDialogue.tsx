@@ -70,7 +70,9 @@ export const DuplicateModelDialogue = ({ onClose, model }: Props) => {
     }
   );
 
-  const { data: fields } = useGetContentModelFieldsQuery(model.ZUID);
+  const { data: fields } = useGetContentModelFieldsQuery({
+    modelZUID: model?.ZUID,
+  });
   const [
     createModel,
     {

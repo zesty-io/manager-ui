@@ -168,8 +168,7 @@ export const ItemRoute = ({
           helperText={
             !!pathPart &&
             isUnique &&
-            `${domain}
-                ${parent ? parent.web?.path + pathPart : `/${pathPart}`}`
+            `${domain}${parent ? parent.web?.path + pathPart : `/${pathPart}`}`
           }
           error={hasErrors(error)}
         />

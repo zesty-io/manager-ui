@@ -28,7 +28,7 @@ export const CreateVariantDialog = ({
   const [variantName, setVariantName] = useState("Untitled");
   const [isLoading, setIsLoading] = useState(false);
   const { data: fields, isFetching: isFieldsLoading } =
-    useGetContentModelFieldsQuery(model?.ZUID);
+    useGetContentModelFieldsQuery({ modelZUID: model?.ZUID });
 
   const handleVariantCreate = async () => {
     setIsLoading(true);

@@ -18,7 +18,7 @@ export const getContentTitle = (
   }
 
   const title = content?.web?.metaTitle || "Missing Meta Title";
-  const langCode = languages.find(
+  const langCode = languages?.find(
     (lang: any) => lang.ID === content?.meta?.langID
   )?.code;
   const langDisplay = langCode ? `(${langCode}) ` : null;

@@ -1,5 +1,11 @@
-import { Box, ListItemButton, Skeleton, Typography } from "@mui/material";
-import { useRef, useState } from "react";
+import {
+  Box,
+  ListItemButton,
+  Paper,
+  Skeleton,
+  Tooltip,
+  Typography,
+} from "@mui/material";
 import { useHistory, useParams } from "react-router";
 import { useSelector } from "react-redux";
 import moment from "moment-timezone";
@@ -23,96 +29,91 @@ export const BlockVariantCard = ({ block }: { block: ContentItem }) => {
   const updatedByUser = users?.find(
     (user) => user.ZUID === block.web?.createdByUserZUID
   );
-  const imageRef = useRef(null);
-  const [isErrored, setIsErrored] = useState(false);
 
   return (
-    <ListItemButton
-      divider
-      selected={
-        itemZUID === block.meta.ZUID ||
-        Object?.values(block?.siblings || {})?.includes(itemZUID)
+    <Tooltip
+      enterDelay={500}
+      enterNextDelay={500}
+      disableInteractive
+      placement="left"
+      title={
+        <Paper elevation={8}>
+          {isCapturingScreenshot ? (
+            <Skeleton variant="rectangular" width={400} height={300} />
+          ) : (
+            <Box
+              component="img"
+              width={400}
+              height={300}
+              src={(block.data?.og_image as string) || blockPlaceholder}
+              loading="lazy"
+              sx={{
+                objectFit: "contain",
+              }}
+            ></Box>
+          )}
+        </Paper>
       }
-      disableGutters
-      sx={{
-        display: "grid",
-        position: "relative",
-        overflow: "hidden",
-        gridTemplateColumns: "187px 1fr",
-        px: 2,
-        py: 1.75,
-        gap: "0px 12px",
-        "&.Mui-selected": {
-          "&:first-of-type": {
-            borderBottomColor: "primary.main",
-          },
-          "&:not(:last-of-type)": {
-            borderBottomColor: "primary.main",
+      components={{ Tooltip: Box }}
+      slotProps={{
+        popper: {
+          sx: {
+            maxWidth: "none",
           },
         },
       }}
-      onClick={() => history.push(`/blocks/${modelZUID}/${block.meta.ZUID}`)}
     >
-      {!!isCapturingScreenshot ? (
-        <Skeleton
-          variant="rectangular"
-          width={187}
-          height={120}
-          sx={{ flexShrink: 0, borderRadius: "8px" }}
-        />
-      ) : (
-        <Box
-          ref={imageRef}
-          // This make it so that if the image errored it would retry on next organic render
-          key={isErrored ? Date.now() : ""}
-          component="img"
-          width={187}
-          height={120}
-          sx={{
-            objectFit: "contain",
-            borderRadius: "8px",
-            backgroundColor: "grey.200",
-            flexShrink: 0,
-          }}
-          src={(block.data?.og_image as string) || blockPlaceholder}
-          onError={() => {
-            setIsErrored(true);
-            imageRef.current.src = blockPlaceholder;
-          }}
-        ></Box>
-      )}
-
-      <Box
+      <ListItemButton
+        divider
+        selected={
+          itemZUID === block.meta.ZUID ||
+          Object?.values(block?.siblings || {})?.includes(itemZUID)
+        }
+        disableGutters
         sx={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "flex-start",
+          position: "relative",
           overflow: "hidden",
+          px: 2,
+          py: 1.75,
+          gap: "0px 12px",
+          "&.Mui-selected": {
+            "&:first-of-type": {
+              borderBottomColor: "primary.main",
+            },
+            "&:not(:last-of-type)": {
+              borderBottomColor: "primary.main",
+            },
+          },
         }}
+        onClick={() => history.push(`/blocks/${modelZUID}/${block.meta.ZUID}`)}
       >
-        <Typography
-          noWrap
-          variant="body1"
-          fontWeight={700}
+        <Box
           sx={{
-            width: "100%",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "flex-start",
             overflow: "hidden",
-            textOverflow: "ellipsis",
           }}
         >
-          {block?.web?.metaTitle}
-        </Typography>
-        <Typography
-          variant="body2"
-          color="text.secondary"
-          mt={0.5}
-          fontWeight={600}
-        >
-          Updated on {moment(block.web?.updatedAt).format("MMMM D")} by{" "}
-          {updatedByUser?.firstName} {updatedByUser?.lastName}
-        </Typography>
-      </Box>
-    </ListItemButton>
+          <Typography
+            variant="body1"
+            fontWeight={700}
+            sx={{ wordBreak: "break-word" }}
+          >
+            {block?.web?.metaTitle}
+          </Typography>
+          <Typography
+            variant="body3"
+            color="text.secondary"
+            mt={0.5}
+            fontWeight={600}
+          >
+            Updated on {moment(block.web?.updatedAt).format("MMMM D")} by&nbsp;
+            {updatedByUser?.firstName} {updatedByUser?.lastName}
+          </Typography>
+        </Box>
+      </ListItemButton>
+    </Tooltip>
   );
 };
