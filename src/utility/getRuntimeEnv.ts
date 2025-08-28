@@ -1,9 +1,7 @@
-export default () => {
-  const isContentOneDomain = window.location.hostname.includes(".content.one");
-  // @ts-expect-error untyped
-  const env = __CONFIG__.ENV;
+type ENV = "production" | "stage" | "development" | "local";
 
-  if (isContentOneDomain) {
+export default ({ env, hostname }: { env: ENV; hostname: string }) => {
+  if (hostname.includes(".content.one")) {
     const COOKIE_DOMAIN = ".content.one";
 
     switch (env) {
