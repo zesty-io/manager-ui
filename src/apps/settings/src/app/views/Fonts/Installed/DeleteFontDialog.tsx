@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useCallback } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -10,7 +10,15 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { Stack } from "@mui/material";
-import { useSettingsFonts } from "../hooks/useSettingsFonts";
+import { useDispatch } from "react-redux";
+import { fetchFontsInstalled } from "../../../../../../../shell/store/settings";
+import {
+  useDeleteHeadTagMutation,
+  useUpdateHeadTagsMutation,
+} from "../../../../../../../shell/services/instance";
+import { useInstalledFonts } from ".";
+import { notify } from "../../../../../../../shell/store/notifications";
+import { getFontDataFromHref } from "../Browse";
 
 export type DeleteFontDialogProps = {
   open: boolean;
@@ -27,14 +35,60 @@ const DeleteFontDialog = ({
   variant,
   ZUID,
 }: DeleteFontDialogProps) => {
+  const dispatch = useDispatch();
   const fontLabel = `${family} (${variant})`;
 
-  const { deleteFont, isDeleting } = useSettingsFonts();
+  const [deleteFont, { isLoading: isDeleting }] = useDeleteHeadTagMutation();
+  const [updateFont, { isLoading: isUpdating }] = useUpdateHeadTagsMutation();
 
-  const onFontDelete = async () => {
-    await deleteFont(ZUID, variant);
-    onClose();
-  };
+  const { fonts: installedFonts } = useInstalledFonts();
+
+  const handleFontDelete = useCallback(async () => {
+    const thisFont = installedFonts?.find((font) => font?.ZUID === ZUID);
+    const { family, variants } = getFontDataFromHref(thisFont?.href);
+    const fontLabel = `${family} (${variant})`;
+    const remainingVariants = variants?.filter(
+      (itemVariant) => itemVariant !== variant
+    );
+
+    try {
+      let response: any = null;
+      if (!remainingVariants?.length) {
+        response = await deleteFont(ZUID);
+      } else {
+        const updatedHref = `https://fonts.googleapis.com/css?family=${family.replace(
+          /\s/g,
+          "+"
+        )}:${remainingVariants.join(",")}`;
+
+        response = await updateFont({
+          ZUID,
+          href: updatedHref,
+        });
+      }
+
+      if (!response?.error) {
+        dispatch(
+          notify({
+            kind: "success",
+            message: `Font "${fontLabel}" has been uninstalled`,
+          })
+        );
+      } else {
+        throw new Error(`${response?.error?.data?.error}`);
+      }
+    } catch (error) {
+      dispatch(
+        notify({
+          kind: "error",
+          message: `Failed to uninstall ${fontLabel}: ${error}`,
+        })
+      );
+    } finally {
+      dispatch(fetchFontsInstalled());
+      onClose();
+    }
+  }, [ZUID, variant]);
 
   return (
     <>
@@ -100,8 +154,8 @@ const DeleteFontDialog = ({
             data-cy="DeleteFontDialogConfirmButton"
             variant="contained"
             color="error"
-            onClick={onFontDelete}
-            loading={isDeleting}
+            onClick={handleFontDelete}
+            loading={isDeleting || isUpdating}
           >
             Remove
           </LoadingButton>

@@ -8,13 +8,38 @@ import { Typography, Button, Portal } from "@mui/material";
 import { NoResults } from "../../../../../../schema/src/app/components/NoResults";
 import SearchBox from "../../../../../../../shell/components/SearchBox";
 import FontFamilyCard from "./FontFamilyCard";
-import { useSettingsFonts } from "../hooks/useSettingsFonts";
+import { useInstalledFonts } from "../Installed";
+import { useSelector } from "react-redux";
+import { AppState } from "../../../../../../../shell/store/types";
 
 type InstalledFont = {
   ZUID: string;
   family: string;
   variants: string[];
   href: string;
+};
+
+export type FontAndVariants = {
+  family: string;
+  variants: string[];
+};
+
+export const getFontDataFromHref = (url: string): FontAndVariants => {
+  if (!url)
+    return {
+      family: "",
+      variants: [],
+    };
+  const fontUrlData = new URL(url);
+  const fontFamilyAndVariants = fontUrlData?.searchParams?.get("family");
+
+  const [family, variantsString = ""] = fontFamilyAndVariants?.split(":") || [];
+  const variants = variantsString?.split(",") || [];
+
+  return {
+    family,
+    variants,
+  };
 };
 
 const Browse = () => {
@@ -27,11 +52,10 @@ const Browse = () => {
   const [activePagination, setActivePagination] = useState([]);
   const [previewText, setPreviewText] = useState<string>("");
 
-  const { installedFonts, webFonts, isLoading, getFontDataFromHref } =
-    useSettingsFonts();
+  const webFonts = useSelector(({ settings }: AppState) => settings?.fonts);
+  const { fonts: installedFonts } = useInstalledFonts();
 
   const fontData = useMemo(() => {
-    if (isLoading) return;
     if (!webFonts?.length) {
       return [];
     } else {
@@ -59,7 +83,7 @@ const Browse = () => {
       setLoadComplete(true);
       return paginationWithZUID;
     }
-  }, [installedFonts, webFonts, isLoading]);
+  }, [installedFonts, webFonts]);
 
   const paginationData = useMemo(() => {
     if (!fontData) return [];
@@ -206,7 +230,7 @@ const Browse = () => {
               }}
             />
           </Box>
-          {!isLoading && paginationData?.length < 1 ? (
+          {!!search && paginationData?.length < 1 ? (
             <Box
               width="100%"
               height="100%"

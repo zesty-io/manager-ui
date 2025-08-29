@@ -21,7 +21,7 @@ import { FieldWrapper, MainWrapper } from "../../components/Containers";
 import Box from "@mui/material/Box";
 import { notify } from "../../../../../../shell/store/notifications";
 import { saveStyleVariable } from "../../../../../../shell/store/settings";
-import { useSettingsFonts } from "../Fonts/hooks/useSettingsFonts";
+import { useInstalledFonts } from "../Fonts/Installed";
 
 export default connect((state, props) => {
   const category = state.settings.catStyles?.find(
@@ -38,7 +38,7 @@ export default connect((state, props) => {
   const [dirtyFields, setDirtyFields] = useState([]);
   const [imageModal, setImageModal] = useState();
 
-  const { installedFonts, renderLinkTags } = useSettingsFonts();
+  const { fonts: installedFonts } = useInstalledFonts();
 
   const fontsInstalled = useMemo(() => {
     return installedFonts?.map((headTag) => {
@@ -337,7 +337,13 @@ export default connect((state, props) => {
 
   return (
     <>
-      {renderLinkTags()}
+      {!!installedFonts?.length && (
+        <Portal container={document.head}>
+          {installedFonts?.map((item) => (
+            <link rel="stylesheet" href={item?.href} key={item.ZUID} />
+          ))}
+        </Portal>
+      )}
       <TopBar
         title={props?.category?.label}
         onSave={saveSettings}

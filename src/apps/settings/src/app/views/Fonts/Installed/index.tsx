@@ -1,18 +1,98 @@
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo, useEffect } from "react";
 import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
 import { TopBar } from "../../../components/TopBar";
 import Box from "@mui/material/Box";
-import { Typography } from "@mui/material";
+import { Portal, Typography } from "@mui/material";
 import { NoResults } from "../../../../../../schema/src/app/components/NoResults";
 import SearchBox from "../../../../../../../shell/components/SearchBox";
 import WebFontCard from "./WebFontCard";
-import { useSettingsFonts } from "../hooks/useSettingsFonts";
+import { useDispatch, useSelector } from "react-redux";
+import { AppState } from "../../../../../../../shell/store/types";
+import { HeadTag } from "../../../../../../../shell/services/types";
+import { useDeleteHeadTagMutation } from "../../../../../../../shell/services/instance";
+import { fetchFontsInstalled } from "../../../../../../../shell/store/settings";
+
+export interface FontData {
+  ZUID: string;
+  family: string;
+  variants: string[];
+  href: string;
+}
+
+export const useInstalledFonts = () => {
+  const dispatch = useDispatch();
+  const fontData: HeadTag[] = useSelector(
+    ({ settings }: AppState) => settings?.fontsInstalled || []
+  );
+  const [deleteFont] = useDeleteHeadTagMutation();
+
+  const deleteDuplicateInstalls = async (ZUIDs: string[]) => {
+    try {
+      const deletePromises = ZUIDs.map((zuid) => deleteFont(zuid).unwrap());
+      await Promise.all(deletePromises);
+      dispatch(fetchFontsInstalled());
+    } catch (error) {
+      console.error("Failed to delete duplicate fonts:", error);
+    }
+  };
+
+  const { fonts } = useMemo(() => {
+    const fontMap = new Map<string, { ZUID: string; variants: Set<string> }>();
+    const duplicates: string[] = [];
+
+    fontData.forEach((item) => {
+      try {
+        const href = item.attributes.href.replace("https//", "https://");
+        const url = new URL(href);
+
+        const familyParam = url.searchParams.get("family") || "";
+        const [family, variantsString = ""] = familyParam.split(":");
+        const variants = variantsString.split(",").filter(Boolean);
+
+        if (!family) return;
+
+        if (fontMap.has(family)) {
+          const existing = fontMap.get(family)!;
+          variants.forEach((v) => existing.variants.add(v));
+          duplicates.push(item.ZUID);
+        } else {
+          fontMap.set(family, {
+            ZUID: item.ZUID,
+            variants: new Set(variants),
+          });
+        }
+      } catch (error) {
+        console.warn("Invalid font URL:", item.attributes.href);
+      }
+    });
+
+    // DELETE DUPLICATE INSTALLED FONTS
+    if (!!duplicates?.length) {
+      deleteDuplicateInstalls(duplicates);
+    }
+
+    const fonts = Array.from(fontMap.entries()).map(
+      ([family, { ZUID, variants }]) => ({
+        ZUID,
+        family,
+        variants: !variants?.size ? [] : Array.from(variants),
+        href: `https://fonts.googleapis.com/css?family=${encodeURIComponent(
+          family
+        )}:${Array.from(variants).join(",")}`,
+      })
+    );
+
+    return { fonts };
+  }, [fontData]);
+
+  return { fonts };
+};
 
 const Installed = () => {
   const searchInputRef = useRef(null);
   const [search, setSearch] = useState("");
-  const { installedFonts, renderLinkTags } = useSettingsFonts();
+  const { fonts: installedFonts } = useInstalledFonts();
 
   const filteredInstalledFonts = useMemo(() => {
     if (!installedFonts?.length) return [];
@@ -29,7 +109,13 @@ const Installed = () => {
 
   return (
     <>
-      {renderLinkTags()}
+      {!!installedFonts?.length && (
+        <Portal container={document.head}>
+          {installedFonts?.map((item) => (
+            <link rel="stylesheet" href={item?.href} key={item.ZUID} />
+          ))}
+        </Portal>
+      )}
       <TopBar title="Installed Fonts">
         <Box display="flex" alignItems="center" justifyContent="flex-end">
           <SearchBox

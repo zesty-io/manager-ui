@@ -1,16 +1,10 @@
-import { useState, useRef, useMemo } from "react";
-import InputAdornment from "@mui/material/InputAdornment";
-import SearchIcon from "@mui/icons-material/Search";
+import { useState } from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { TopBar } from "../../../components/TopBar";
 import Box from "@mui/material/Box";
 import { Typography, Button } from "@mui/material";
-
 import DeleteFontDialog from "./DeleteFontDialog";
-import { NoResults } from "../../../../../../schema/src/app/components/NoResults";
-import SearchBox from "../../../../../../../shell/components/SearchBox";
 import { capitalize } from "lodash";
-import { useSettingsFonts } from "../hooks/useSettingsFonts";
+import { getFontDataFromHref } from "../Browse";
 
 const FONT_PREVIEW_TEXT = "All their equipment and instruments are alive.";
 
@@ -37,7 +31,6 @@ const getWeightAndStyle = (fontText: string) => {
 };
 
 const WebFontCard = ({ ZUID, href }: WebFontCardProps) => {
-  const { getFontDataFromHref } = useSettingsFonts();
   const { family, variants } = getFontDataFromHref(href);
   const [deleteDialogIsOpen, setDeleteDialogIsOpen] = useState(false);
   const [fontForDelete, setFontForDelete] = useState(null);

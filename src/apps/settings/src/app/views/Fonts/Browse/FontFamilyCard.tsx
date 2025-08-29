@@ -11,6 +11,7 @@ import { notify } from "../../../../../../../shell/store/notifications";
 import { FormControlLabel, Checkbox } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "../../../../../../../shell/store/types";
+import { fetchFontsInstalled } from "../../../../../../../shell/store/settings";
 
 export type FontFamilyCardProps = {
   ZUID: string | null;
@@ -111,6 +112,8 @@ const FontFamilyCard = ({
           )}): ${error}`,
         })
       );
+    } finally {
+      dispatch(fetchFontsInstalled());
     }
   }, [ZUID, selectedVariants, installedVariants]);
 
