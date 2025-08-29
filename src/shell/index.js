@@ -35,7 +35,10 @@ import getRuntimeEnv from "../utility/getRuntimeEnv";
 
 // interploated by webpack at build time
 // must be setup before starting the store
-window.CONFIG = { ...__CONFIG__, ...getRuntimeEnv() };
+window.CONFIG = {
+  ...__CONFIG__,
+  ...getRuntimeEnv({ env: __CONFIG__.ENV, hostname: window.location.hostname }),
+};
 
 // needed for Breadcrumbs in Shell
 injectReducer(store, "navContent", navContent);
