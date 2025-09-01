@@ -847,7 +847,11 @@ export const instanceApi = createApi({
           return error;
         }
       },
-      invalidatesTags: ["ContentModels", "WebViews", "ContentModelFields"],
+      invalidatesTags: (result, error, arg) => {
+        return !!error
+          ? []
+          : ["ContentModels", "WebViews", "ContentModelFields"];
+      },
     }),
     getRedirects: builder.query<Redirects[], void>({
       query: () => `/web/redirects`,
