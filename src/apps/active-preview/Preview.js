@@ -450,7 +450,7 @@ export function Preview(props) {
           <JSONPreview src={`${domain}${route}`} settings={settings} />
         ) : (
           <Frame
-            key={refresh}
+            key={`${route}-${refresh}`}
             device={device}
             domain={domain}
             route={route}

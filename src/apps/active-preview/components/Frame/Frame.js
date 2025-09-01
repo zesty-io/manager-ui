@@ -10,54 +10,61 @@ import pixel7 from "../../../../../public/images/pixel-7.png";
 import pixel7cam from "../../../../../public/images/pixel-7-camera.png";
 
 import styles from "./Frame.less";
+
+const LoadingComponent = () => (
+  <Box
+    sx={{
+      zIndex: 2,
+      boxSizing: "border-box",
+      position: "absolute",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+      alignItems: "center",
+    }}
+  >
+    <CircularProgress />
+  </Box>
+);
 export function Frame(props) {
   const [frameLoading, setFrameLoading] = useState(true);
   const [routePath, setRoutePath] = useState("");
 
   useEffect(() => {
-    setFrameLoading(true);
-  }, [props.route]);
-
-  useEffect(() => {
     if (!props.domain || !props.route) return;
+    setFrameLoading(true);
     setRoutePath(`${props.domain}${props.route}`);
-  }, [props.domain, props.route]);
+  }, [props.domain, props.route, props.device]);
 
   return (
     <Fragment>
-      {(!routePath || frameLoading) && (
-        <Box
-          height="100vh"
-          display="flex"
-          justifyContent={"center"}
-          alignItems={"center"}
-          flexDirection={"column"}
-        >
-          <CircularProgress />
-          <Typography variant="h5" fontWeight={600} mt={1.5}>
-            Finding Domain
-          </Typography>
-        </Box>
-      )}
       {props.device === "fullscreen" ? (
-        <iframe
-          className={cx(
-            styles.Frame,
-            props.blur ? styles.Blur : null
-            // frameLoading ? styles.FrameLoading : null
-          )}
-          src={routePath}
-          scrolling="yes"
-          frameBorder="0"
-          onLoad={() => setFrameLoading(false)}
-          style={{
-            transform: `scale(${props.zoom})`,
-            width: `${100 / props.zoom}%`,
-            height: `${100 / props.zoom}%`,
-            left: `${(100 - 100 / props.zoom) / 2}%`,
-            top: `${(100 - 100 / props.zoom) / 2}%`,
-          }}
-        />
+        <>
+          <iframe
+            className={cx(
+              styles.Frame,
+              props.blur ? styles.Blur : null
+              // frameLoading ? styles.FrameLoading : null
+            )}
+            src={routePath}
+            scrolling="yes"
+            frameBorder="0"
+            onLoad={() => setFrameLoading(false)}
+            style={{
+              transform: `scale(${props.zoom})`,
+              width: `${100 / props.zoom}%`,
+              height: `${100 / props.zoom}%`,
+              left: `${(100 - 100 / props.zoom) / 2}%`,
+              top: `${(100 - 100 / props.zoom) / 2}%`,
+              opacity: frameLoading ? 0 : 1,
+            }}
+          />
+          {frameLoading && <LoadingComponent />}
+        </>
       ) : (
         <>
           {templates[props.device].template({
@@ -88,12 +95,14 @@ export function Frame(props) {
                       height: `${100 / props.zoom}%`,
                       left: `${(100 - 100 / props.zoom) / 2}%`,
                       top: `${(100 - 100 / props.zoom) / 2}%`,
+                      opacity: frameLoading ? 0 : 1,
                     }}
                     src={routePath}
                     scrolling="yes"
                     frameBorder="0"
                     onLoad={() => setFrameLoading(false)}
                   />
+                  {frameLoading && <LoadingComponent />}
                 </div>
               );
             },
