@@ -41,7 +41,7 @@ export function fetchLeads() {
             message: err.message,
           })
         );
-        throw err;
+        return [];
       });
   };
 }
