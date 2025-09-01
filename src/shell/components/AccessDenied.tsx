@@ -53,8 +53,9 @@ const ProfileInfo: FC<ProfileInfoProps> = ({
 const AccessDenied = () => {
   const history = useHistory();
   const userRole = useSelector((state: AppState) => state.userRole);
+  const { valid } = useSelector((state: AppState) => state.auth);
   const appRoute = location.pathname.split("/")[1];
-  const { isLoading, data } = useGetUsersRolesQuery();
+  const { isLoading, data } = useGetUsersRolesQuery(null, { skip: !valid });
 
   const profileList = data
     ?.filter((profile: any) =>
