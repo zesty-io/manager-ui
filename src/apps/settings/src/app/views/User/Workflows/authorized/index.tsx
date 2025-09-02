@@ -147,6 +147,7 @@ export const AuthorizedUserPage = () => {
           Workflows
         </Typography>
         <Button
+          data-amp-track-id="workflows-status-label-create-button"
           variant="contained"
           color="primary"
           onClick={handleOpenStatusLabelForm}
@@ -176,6 +177,7 @@ export const AuthorizedUserPage = () => {
           onChange={(e) => setSearchValue(e.target.value)}
           InputProps={{
             inputRef: searchInputRef,
+
             startAdornment: (
               <InputAdornment position="start">
                 <Search fontSize="small" />
@@ -186,11 +188,15 @@ export const AuthorizedUserPage = () => {
               minWidth: "320px",
             },
           }}
+          inputProps={{
+            "data-amp-track-id": "workflows-status-label-search-input",
+          }}
         />
         <FormGroup>
           <FormControlLabel
             control={
               <Switch
+                data-amp-track-id="workflows-status-label-showDeactivated-toggle"
                 size="small"
                 value="deactivated"
                 onChange={(e) => setShowDeactivated(e.target.checked)}
