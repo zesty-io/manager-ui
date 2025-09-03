@@ -223,6 +223,7 @@ const MoreActionsMenu = ({
   return (
     <>
       <IconButton
+        data-amp-track-id="workflows-status-label-menu-button"
         size="small"
         onClick={handleOpen}
         sx={{ borderRadius: "50%" }}
@@ -231,6 +232,7 @@ const MoreActionsMenu = ({
         <MoreHorizIcon fontSize="small" color="action" />
       </IconButton>
       <Menu
+        data-amp-track-id="workflows-status-label-menu"
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
@@ -238,7 +240,11 @@ const MoreActionsMenu = ({
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
         transformOrigin={{ vertical: "top", horizontal: "right" }}
       >
-        <MenuItem onClick={openEditForm} data-cy="menu-item-edit">
+        <MenuItem
+          data-amp-track-id="workflows-status-label-menu-edit-button"
+          onClick={openEditForm}
+          data-cy="menu-item-edit"
+        >
           <ListItemIcon color="action.active">
             <DriveFileRenameOutlineIcon />
           </ListItemIcon>
@@ -248,7 +254,11 @@ const MoreActionsMenu = ({
         </MenuItem>
 
         {!isDeactivated && (
-          <MenuItem onClick={openDeleteDialog} data-cy="menu-item-deactivate">
+          <MenuItem
+            data-amp-track-id="workflows-status-label-menu-deactivate-button"
+            onClick={openDeleteDialog}
+            data-cy="menu-item-deactivate"
+          >
             <ListItemIcon color="action.active">
               <PauseCircleOutlineRoundedIcon />
             </ListItemIcon>
