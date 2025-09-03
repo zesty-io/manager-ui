@@ -2,14 +2,11 @@ import { useCallback, useLayoutEffect, useMemo, useState } from "react";
 import {
   DataGridPro,
   GRID_CHECKBOX_SELECTION_COL_DEF,
-  useGridApiRef,
   GridActionsCellItem,
-  GridApi,
   GridColDef,
   GridRenderCellParams,
   GridPinnedColumnFields,
   GridValidRowModel,
-  GridRowId,
 } from "@mui/x-data-grid-pro";
 import { Box, Typography } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -33,7 +30,6 @@ const TARGET_TYPES_MAP = {
 } as const;
 
 const RedirectsTable = () => {
-  const apiRef = useGridApiRef<GridApi>();
   const { openDeleteDialog, openCreateForm } = useRedirectsDialog();
   const {
     redirects,
@@ -41,9 +37,8 @@ const RedirectsTable = () => {
     sortBy,
     httpCodeFilter,
     typeFilter,
-    selectedRedirects,
-    setSelectedRedirects,
     searchFilter,
+    apiRef,
   } = useRedirectsTable();
 
   const [initialState, setInitialState] = useState<any>();
@@ -297,10 +292,6 @@ const RedirectsTable = () => {
                   setPinnedColumns(newPinnedColumns)
                 }
                 onColumnWidthChange={saveSnapshot}
-                rowSelectionModel={selectedRedirects}
-                onRowSelectionModelChange={(selection: GridRowId[]) => {
-                  setSelectedRedirects(selection);
-                }}
                 initialState={initialState}
                 style={{
                   width: width,

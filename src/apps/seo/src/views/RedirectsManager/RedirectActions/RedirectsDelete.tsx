@@ -1,17 +1,19 @@
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import { Box, Typography, Button } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ClearIcon from "@mui/icons-material/Clear";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
 import { useRedirectsDialog } from "../../../app/components/RedirectsDialogProvider";
 import { useRedirectsTable } from "../RedirectsTable/RedirectsTableContextProvider";
+import { GridRowId } from "@mui/x-data-grid-pro";
 
-type RedirectsDeleteProps = {};
+type RedirectsDeleteProps = {
+  selectedRedirects: GridRowId[];
+};
 
-const RedirectsDelete: FC<RedirectsDeleteProps> = () => {
+const RedirectsDelete: FC<RedirectsDeleteProps> = ({ selectedRedirects }) => {
   const { openDeleteDialog } = useRedirectsDialog();
-  const { selectedRedirects, setSelectedRedirects, redirects } =
-    useRedirectsTable();
+  const { apiRef, redirects } = useRedirectsTable();
 
   const handleDelete = () => {
     const deleteData = selectedRedirects.map((ZUID: any) => ({
@@ -48,7 +50,7 @@ const RedirectsDelete: FC<RedirectsDeleteProps> = () => {
           color="inherit"
           size="small"
           disabled={!selectedRedirects?.length}
-          onClick={() => setSelectedRedirects([])}
+          onClick={() => apiRef.current?.setRowSelectionModel([])}
           startIcon={<ClearIcon />}
         >
           Deselect All
@@ -60,7 +62,9 @@ const RedirectsDelete: FC<RedirectsDeleteProps> = () => {
           size="small"
           disabled={selectedRedirects?.length === redirects?.length}
           onClick={() =>
-            setSelectedRedirects(redirects.map((row: any) => row.ZUID))
+            apiRef.current?.setRowSelectionModel(
+              redirects.map((row: any) => row.ZUID)
+            )
           }
           startIcon={<DoneAllIcon />}
         >
