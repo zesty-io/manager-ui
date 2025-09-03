@@ -7,15 +7,36 @@ import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
 import RedirectsImport from "./RedirectsImport";
 import SearchBox from "../../../../../../shell/components/SearchBox";
+import { useEffect, useState } from "react";
+import { GridRowId } from "@mui/x-data-grid-pro";
 
 export default function RedirectActions() {
   const { openCreateForm } = useRedirectsDialog();
-  const { selectedRedirects, redirects, searchFilter, setSearchFilter } =
+  const { redirects, searchFilter, setSearchFilter, apiRef } =
     useRedirectsTable();
+  const [selectedRedirects, setSelectedRedirects] = useState<GridRowId[]>([]);
+
+  useEffect(() => {
+    if (!apiRef.current || !Object.keys(apiRef.current).length) {
+      return;
+    }
+
+    const handleSelectionChange = () => {
+      setSelectedRedirects(
+        Array.from(apiRef.current.getSelectedRows().keys() || [])
+      );
+    };
+
+    return apiRef.current.subscribeEvent(
+      "rowSelectionChange",
+      handleSelectionChange
+    );
+  }, [apiRef.current]);
+
   return (
     <>
-      {!!selectedRedirects?.length ? (
-        <RedirectsDelete />
+      {selectedRedirects?.length ? (
+        <RedirectsDelete selectedRedirects={selectedRedirects} />
       ) : (
         <Box
           component="header"

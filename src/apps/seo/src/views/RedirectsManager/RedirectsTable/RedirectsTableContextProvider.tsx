@@ -4,9 +4,10 @@ import {
   ReactNode,
   useState,
   useEffect,
+  MutableRefObject,
 } from "react";
 
-import { GridRowId } from "@mui/x-data-grid-pro";
+import { GridApi, useGridApiRef } from "@mui/x-data-grid-pro";
 import { useDispatch } from "react-redux";
 import { useGetRedirectsQuery } from "../../../../../../shell/services/instance";
 import { notify } from "../../../../../../shell/store/notifications";
@@ -20,13 +21,12 @@ export type RedirectsTableContextProps = {
   sortBy: string;
   httpCodeFilter: string | null;
   typeFilter: string | null;
-  selectedRedirects: GridRowId[];
   searchFilter: string;
   setSearchFilter: (searchFilter: string) => void;
   setSortBy: (sortBy: string) => void;
   setHttpCodeFilter: (httpCodeFilter: string | null) => void;
   setTypeFilter: (typeFilter: string | null) => void;
-  setSelectedRedirects: (selectedRedirects: GridRowId[]) => void;
+  apiRef: MutableRefObject<GridApi>;
 };
 
 const RedirectsTableContext = createContext<RedirectsTableContextProps | null>(
@@ -42,7 +42,7 @@ const RedirectsTableContextProvider = ({
   const [httpCodeFilter, setHttpCodeFilter] = useState(null);
   const [typeFilter, setTypeFilter] = useState(null);
   const [searchFilter, setSearchFilter] = useState("");
-  const [selectedRedirects, setSelectedRedirects] = useState([]);
+  const apiRef = useGridApiRef<GridApi>();
 
   const dispatch = useDispatch();
 
@@ -67,13 +67,12 @@ const RedirectsTableContextProvider = ({
         sortBy,
         httpCodeFilter,
         typeFilter,
-        selectedRedirects,
         searchFilter,
         setSearchFilter,
         setSortBy,
         setHttpCodeFilter,
         setTypeFilter,
-        setSelectedRedirects,
+        apiRef,
       }}
     >
       {isLoading ? <LoadingQuote /> : children}
