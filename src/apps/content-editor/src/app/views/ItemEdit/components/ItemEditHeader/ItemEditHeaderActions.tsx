@@ -59,6 +59,11 @@ import { ConfirmPublishModal } from "../../../../../../../../shell/components/Co
 import { UnpublishedRelatedItem } from "./UnpublishedRelatedItem";
 import { uniqBy } from "lodash";
 import { useRedirectsDialog } from "../../../../../../../seo/src/app/components/RedirectsDialogProvider";
+import * as amplitude from "@amplitude/analytics-browser";
+import {
+  PUBLISH_ATTEMPT_WITHOUT_ALLOW_PUBLISH_STATUS,
+  SCHEDULE_PUBLISH_ATTEMPT_WITHOUT_ALLOW_PUBLISH_STATUS,
+} from "../../../../../../../../amplitude-events";
 
 const ITEM_STATES = {
   dirty: "dirty",
@@ -389,6 +394,7 @@ export const ItemEditHeaderActions = ({
           kind: "error",
         })
       );
+      amplitude.track(PUBLISH_ATTEMPT_WITHOUT_ALLOW_PUBLISH_STATUS);
     }
   };
 
@@ -745,6 +751,9 @@ export const ItemEditHeaderActions = ({
                 message: `Cannot Publish: "${item.web.metaTitle}". Does not have a status that allows publishing`,
                 kind: "error",
               })
+            );
+            amplitude.track(
+              SCHEDULE_PUBLISH_ATTEMPT_WITHOUT_ALLOW_PUBLISH_STATUS
             );
           } else {
             setScheduledPublishDialogOpen(open);
