@@ -76,6 +76,7 @@ describe("Content Meta", () => {
     });
 
     cy.get("#12-7893a0-w4j9gk", { timeout: 5000 }).find("input").type(today);
+    cy.wait(500); // wait for debounced input to settle
     cy.getBySelector("CreateItemSaveButton").click();
     cy.get("[data-cy=toast]").contains("Created Item");
   });
