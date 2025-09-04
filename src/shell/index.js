@@ -40,6 +40,8 @@ window.CONFIG = {
   ...getRuntimeEnv({ env: __CONFIG__.ENV, hostname: window.location.hostname }),
 };
 
+import * as amplitude from "@amplitude/analytics-browser";
+
 // needed for Breadcrumbs in Shell
 injectReducer(store, "navContent", navContent);
 
@@ -110,6 +112,12 @@ const appTheme = createTheme(theme, {
 });
 
 MonacoSetup(store);
+
+amplitude.init(window.CONFIG.AMPLITUDE_API_KEY, { autocapture: true });
+
+const preLoginIdentify = new amplitude.Identify();
+preLoginIdentify.set("env", window.CONFIG.ENV);
+amplitude.identify(preLoginIdentify);
 
 // TODO: Add a context here that will store all draft comments
 const App = Sentry.withProfiler(() => (
