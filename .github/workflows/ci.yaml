@@ -32,11 +32,11 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4.1.0
         with:
-          node-version: "16.5.0"
+          node-version: "22.18.0"
           cache: "npm"
           cache-dependency-path: package-lock.json
       - name: Install Dependencies
-        run: npm install
+        run: npm install --legacy-peer-deps
       - name: Setup Testing Environment
         run: npm run ci:test:setup
       - name: Run Tests
