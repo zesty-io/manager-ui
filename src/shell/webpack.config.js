@@ -2,6 +2,7 @@
 
 const path = require("path");
 const process = require("process");
+const fs = require("fs");
 const mkdirp = require("mkdirp");
 
 const webpack = require("webpack");
@@ -16,7 +17,7 @@ const SentryCliPlugin = require("@sentry/webpack-plugin");
 const release = require("../../etc/release");
 const CONFIG = require("./app.config");
 
-module.exports = async (env) => {
+module.exports = async (env, argv) => {
   // create build/ dir
   mkdirp.sync(path.resolve(__dirname, "../../build/"));
   // Attach release info onto config to connect with bug tracking software
@@ -41,14 +42,34 @@ module.exports = async (env) => {
     devServer: {
       host: "0.0.0.0",
       compress: true,
-      contentBase: path.resolve(__dirname, "../../build"),
-      disableHostCheck: true,
+      // contentBase: path.resolve(__dirname, "../../build"),
+      static: {
+        directory: path.resolve(__dirname, "../../build"),
+      },
+      // disableHostCheck: true,
+      allowedHosts: "all",
       historyApiFallback: {
         rewrites: [
           { from: /^\/active-preview/, to: "/activePreview.html" },
           { from: /./, to: "/index.html" },
         ],
       },
+      https: argv.https
+        ? {
+            key: fs.readFileSync(
+              path.resolve(
+                __dirname,
+                "../../etc/ssl/_.manager.dev.zesty.io.key"
+              )
+            ),
+            cert: fs.readFileSync(
+              path.resolve(
+                __dirname,
+                "../../etc/ssl/_.manager.dev.zesty.io.crt"
+              )
+            ),
+          }
+        : false,
     },
     devtool:
       process.env.NODE_ENV !== "development"
