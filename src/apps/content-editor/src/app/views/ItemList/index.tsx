@@ -39,6 +39,7 @@ import { TableSortContext } from "./TableSortProvider";
 import { fetchFields } from "../../../../../../shell/store/fields";
 import { debounce } from "lodash";
 import { SkeletonContentHeader, SkeletonItemListFilters } from "./Loader";
+import { NotFound } from "../../../../../../shell/components/NotFound";
 
 const dateFormatter = new Intl.DateTimeFormat("en-US", {
   year: "numeric",
@@ -78,8 +79,11 @@ export const ItemList = () => {
   const [params, setParams] = useParams();
   const dispatch = useDispatch();
   const activeLanguageCode = params.get("lang");
-  const { data: model, isFetching: isModelFetching } =
-    useGetContentModelQuery(modelZUID);
+  const {
+    data: model,
+    isFetching: isModelFetching,
+    error: modelError,
+  } = useGetContentModelQuery(modelZUID);
   const { data: fields, isFetching: isFieldsFetching } =
     useGetContentModelFieldsQuery({ modelZUID });
   const { data: languages, isLoading: isLangsLoading } = useGetLangsQuery({});
@@ -556,6 +560,10 @@ export const ItemList = () => {
 
     return clonedItems;
   }, [processedItems, search, sortModel, statusFilter, dateFilter, userFilter]);
+
+  if (modelError && "status" in modelError && modelError.status === 404) {
+    return <NotFound message={`Model "${modelZUID}" not found`} />;
+  }
 
   return (
     <Box
