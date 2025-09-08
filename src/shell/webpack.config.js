@@ -2,7 +2,6 @@
 
 const path = require("path");
 const process = require("process");
-const fs = require("fs");
 const mkdirp = require("mkdirp");
 
 const webpack = require("webpack");
