@@ -4,7 +4,8 @@ describe("Code Editor Sidebar", () => {
   });
 
   it("can navigate code files in the sidebar", () => {
-    cy.contains("all_field_types").click();
+    cy.getBySelector("appSidebarSearch").find("input").type("all_field_types");
+    cy.get(".MuiTreeItem-root").first().click();
     cy.location("pathname").should("eq", "/code/file/views/11-98e7d0-148d5r");
   });
 });
