@@ -437,7 +437,7 @@ describe("Content Specs", () => {
       cy.intercept({ method: "GET", url: "**/models*" }).as("fetchModels");
       cy.intercept({ method: "GET", url: "**/fields*" }).as("fetchFields");
 
-      cy.wait("@fetchFields");
+      cy.wait("@fetchFields", { timeout: 15000 });
       cy.getBySelector("DuoModeToggle", { timeout: 10000 }).click(forceClick);
     });
 

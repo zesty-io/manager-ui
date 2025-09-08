@@ -18,10 +18,12 @@ export const InstanceAvatar: FC<InstanceAvatar> = ({
   onFaviconModalOpen,
   avatarSx,
 }) => {
-  const ui = useSelector((state: AppState) => state.ui);
+  const { valid } = useSelector((state: AppState) => state.auth);
   const dispatch = useDispatch();
-  const { data: headTags, isLoading: isLoadingHeadTags } =
-    useGetHeadTagsQuery();
+  const { data: headTags, isLoading: isLoadingHeadTags } = useGetHeadTagsQuery(
+    null,
+    { skip: !valid }
+  );
   const { data: instance, isLoading: isLoadingInstance } =
     useGetInstanceQuery();
 
