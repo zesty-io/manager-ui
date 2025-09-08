@@ -145,7 +145,7 @@
     "pretty-quick": "^3.1.1",
     "react-json-view": "^1.21.3",
     "rimraf": "^3.0.2",
-    "serve": "^12.0.0",
+    "serve": "^14.2.5",
     "start-server-and-test": "^1.14.0",
     "style-loader": "^3.0.0",
     "ts-loader": "^9.3.1",
