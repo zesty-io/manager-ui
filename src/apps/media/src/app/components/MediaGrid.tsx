@@ -171,6 +171,7 @@ export const MediaGrid = ({ groups, files, hideHeaders = false }: Props) => {
             rowHeight={(index) => getRowHeight(index)}
             rowCount={grid.length / columns}
             width={width}
+            className="mediaSelectionContainer"
           >
             {Row}
           </VariableSizeGrid>

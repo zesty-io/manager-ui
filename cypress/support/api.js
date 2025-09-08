@@ -5,6 +5,7 @@ export const API_ENDPOINTS = {
   devInstance: `${
     CONFIG[process.env.NODE_ENV]?.API_INSTANCE_PROTOCOL
   }${instanceZUID}${CONFIG[process.env.NODE_ENV]?.API_INSTANCE}`,
+  mediaManager: CONFIG[process.env.NODE_ENV]?.SERVICE_MEDIA_MANAGER,
 };
 
 Cypress.Commands.add(
@@ -30,8 +31,21 @@ Cypress.Commands.add(
   }
 );
 
+Cypress.Commands.add("getModels", () => {
+  return cy.apiRequest({
+    url: `${API_ENDPOINTS.devInstance}/content/models`,
+  });
+});
+
+Cypress.Commands.add("createModel", (payload) => {
+  return cy.apiRequest({
+    url: `${API_ENDPOINTS.devInstance}/content/models`,
+    method: "POST",
+    body: payload,
+  });
+});
+
 Cypress.Commands.add("deleteModel", (zuid) => {
-  cy.log(`[CLEAN UP] Content Models`);
   return cy.apiRequest({
     url: `${API_ENDPOINTS.devInstance}/content/models/${zuid}`,
     method: "DELETE",
@@ -39,7 +53,6 @@ Cypress.Commands.add("deleteModel", (zuid) => {
 });
 
 Cypress.Commands.add("deleteModels", (models = []) => {
-  cy.log(`[CLEAN UP] Content Models`);
   cy.apiRequest({
     url: `${API_ENDPOINTS.devInstance}/content/models`,
   }).then((response) => {
@@ -54,11 +67,25 @@ Cypress.Commands.add("deleteModels", (models = []) => {
   });
 });
 
-Cypress.Commands.add("createModel", (payload) => {
+Cypress.Commands.add("createItems", (modelZUID, items) => {
   return cy.apiRequest({
-    url: `${API_ENDPOINTS.devInstance}/content/models`,
+    url: `${API_ENDPOINTS.devInstance}/content/models/${modelZUID}/items/batch`,
     method: "POST",
-    body: payload,
+    body: items,
+  });
+});
+
+Cypress.Commands.add("getItems", (modelZUID) => {
+  return cy.apiRequest({
+    url: `${API_ENDPOINTS.devInstance}/content/models/${modelZUID}/items`,
+  });
+});
+
+Cypress.Commands.add("updateItem", (modelZUID, itemZUID, data) => {
+  return cy.apiRequest({
+    url: `${API_ENDPOINTS.devInstance}/content/models/${modelZUID}/items/${itemZUID}`,
+    method: "PUT",
+    body: data,
   });
 });
 

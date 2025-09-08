@@ -25,6 +25,26 @@ declare global {
         name: string;
         listed: boolean;
       }): Chainable<any>;
+      createItems(
+        modelZUID: string,
+        items: {
+          web?: {
+            [key: string]: any;
+          };
+          meta?: {
+            [key: string]: any;
+          };
+          data?: {
+            [key: string]: any;
+          };
+        }[]
+      ): Chainable<any>;
+      getItems(modelZUID: string): Chainable<any>;
+      updateItem(
+        modelZUID: string,
+        itemZUID: string,
+        data: { [key: string]: any }
+      ): Chainable<any>;
       createStatusLabel(
         name: string,
         description: string,
@@ -36,17 +56,16 @@ declare global {
       createField(
         zuid: string,
         payload: {
-          contentModelZUID: string;
+          contentModelZUID?: string;
           datatype: string;
-          description: string;
+          description?: string;
           label: string;
           name: string;
-          required: boolean;
-          settings: {
-            defaultValue: string;
-            list: boolean;
+          required?: boolean;
+          settings?: {
+            [key: string]: any;
           };
-          sort: number;
+          sort?: number;
         }
       ): Chainable<any>;
       deleteStatusLabels(labels: string[]): Chainable<any>;

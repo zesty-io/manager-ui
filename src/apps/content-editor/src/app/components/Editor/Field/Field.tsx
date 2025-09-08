@@ -503,6 +503,7 @@ export const Field = memo(
                   onClose={() => setImageModal(null)}
                 >
                   <IconButton
+                    data-cy="closeMediaDialogBtn"
                     sx={{
                       position: "fixed",
                       right: 5,
@@ -557,6 +558,7 @@ export const Field = memo(
                 }}
               >
                 <ToggleButton
+                  data-cy="yes_no:no"
                   value={0}
                   sx={{
                     borderColor: error ? "error.main" : "rgba(0, 0, 0, 0.12)",
@@ -565,6 +567,7 @@ export const Field = memo(
                   {binaryFieldOpts[0] || "No"}{" "}
                 </ToggleButton>
                 <ToggleButton
+                  data-cy="yes_no:yes"
                   value={1}
                   sx={{
                     borderColor: error ? "error.main" : "rgba(0, 0, 0, 0.12)",

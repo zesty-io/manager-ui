@@ -110,7 +110,7 @@ export const RelationalFieldBase = ({
 
   return (
     <Box component="section">
-      <Stack gap={1}>
+      <Stack gap={1} data-cy="selection:container">
         {isLoading ? (
           [...Array(multiselect ? 5 : 1)].map((_, index) => (
             <ActiveItemLoading key={index} draggable />
