@@ -42,11 +42,9 @@ module.exports = async (env, argv) => {
     devServer: {
       host: "0.0.0.0",
       compress: true,
-      // contentBase: path.resolve(__dirname, "../../build"),
       static: {
         directory: path.resolve(__dirname, "../../build"),
       },
-      // disableHostCheck: true,
       allowedHosts: "all",
       historyApiFallback: {
         rewrites: [
@@ -54,22 +52,9 @@ module.exports = async (env, argv) => {
           { from: /./, to: "/index.html" },
         ],
       },
-      https: argv.https
-        ? {
-            key: fs.readFileSync(
-              path.resolve(
-                __dirname,
-                "../../etc/ssl/_.manager.dev.zesty.io.key"
-              )
-            ),
-            cert: fs.readFileSync(
-              path.resolve(
-                __dirname,
-                "../../etc/ssl/_.manager.dev.zesty.io.crt"
-              )
-            ),
-          }
-        : false,
+      client: {
+        webSocketURL: "auto://0.0.0.0:0/ws",
+      },
     },
     devtool:
       process.env.NODE_ENV !== "development"
@@ -262,13 +247,13 @@ module.exports = async (env, argv) => {
         },
         {
           test: /\.ttf$/,
-          use: ["file-loader"],
+          type: "asset/resource",
         },
         {
           test: /\.(png|jpe?g|gif|jp2|webp|svg)$/,
-          loader: "file-loader",
-          options: {
-            name: "[name].[ext]",
+          type: "asset/resource",
+          generator: {
+            filename: "[name].[ext]",
           },
         },
       ],
