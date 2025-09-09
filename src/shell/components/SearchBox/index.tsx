@@ -28,6 +28,10 @@ const SearchBox = (props: TextFieldProps) => {
             ...params?.InputProps,
             ...props?.InputProps,
           }}
+          inputProps={{
+            ...params?.inputProps,
+            ...props?.inputProps,
+          }}
         />
       )}
       sx={{

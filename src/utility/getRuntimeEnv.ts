@@ -1,10 +1,10 @@
-export default () => {
-  const isContentOneDomain = window.location.hostname.includes(".content.one");
+type ENV = "production" | "stage" | "development" | "local";
 
-  if (isContentOneDomain) {
+export default ({ env, hostname }: { env: ENV; hostname: string }) => {
+  if (hostname.includes(".content.one")) {
     const COOKIE_DOMAIN = ".content.one";
 
-    switch (process.env.NODE_ENV) {
+    switch (env) {
       case "production":
         return {
           URL_MANAGER: ".cms.content.one",
@@ -30,12 +30,12 @@ export default () => {
         };
 
       default:
-        throw new Error(`Invalid NODE_ENV value: ${process.env.NODE_ENV}`);
+        throw new Error(`Invalid NODE_ENV value: ${env}`);
     }
   } else {
     const COOKIE_DOMAIN = ".zesty.io";
 
-    switch (process.env.NODE_ENV) {
+    switch (env) {
       case "production":
         return {
           URL_MANAGER: ".manager.zesty.io",
@@ -61,7 +61,7 @@ export default () => {
         };
 
       default:
-        throw new Error(`Unhandled NODE_ENV value: ${process.env.NODE_ENV}`);
+        throw new Error(`Unhandled NODE_ENV value: ${env}`);
     }
   }
 };

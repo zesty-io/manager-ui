@@ -1,4 +1,11 @@
-import { useEffect, useMemo, useState, useRef, useContext } from "react";
+import {
+  useEffect,
+  useMemo,
+  useState,
+  useRef,
+  useContext,
+  useCallback,
+} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import useIsMounted from "ismounted";
 import { useHistory, useParams } from "react-router-dom";
@@ -41,6 +48,11 @@ import { FieldError } from "../../components/Editor/FieldError";
 import { AIGeneratorProvider } from "../../../../../../shell/components/withAi/AIGeneratorProvider";
 import { useParams as useQueryParams } from "../../../../../../shell/hooks/useParams";
 import { CreateContentItemDialogContext } from "../../../../../../shell/contexts/CreateContentItemDialogProvider";
+import * as amplitude from "@amplitude/analytics-browser";
+import {
+  PUBLISH_ATTEMPT_WITHOUT_ALLOW_PUBLISH_STATUS,
+  SCHEDULE_PUBLISH_ATTEMPT_WITHOUT_ALLOW_PUBLISH_STATUS,
+} from "../../../../../../amplitude-events";
 
 export type ActionAfterSave =
   | ""
@@ -192,277 +204,289 @@ export const ItemCreate = () => {
     }
   };
 
-  const save = async (action: ActionAfterSave) => {
-    setSaveClicked(true);
+  const save = useCallback(
+    async (action: ActionAfterSave) => {
+      setSaveClicked(true);
 
-    metaRef.current?.validateMetaFields?.();
-    if (hasErrors || hasSEOErrors) {
-      fieldErrorRef.current?.scrollToErrors?.();
-      return;
-    }
+      metaRef.current?.validateMetaFields?.();
+      if (hasErrors || hasSEOErrors) {
+        fieldErrorRef.current?.scrollToErrors?.();
+        return;
+      }
 
-    setSaving(true);
+      setSaving(true);
 
-    try {
-      const res: any = await dispatch(
-        createItem({
-          modelZUID,
-          itemZUID,
-          skipPathPartValidation:
-            model?.type === "dataset" || model?.type === "block",
-        })
-      );
-      if (res.err || res.error) {
-        if (
-          res.missingRequired ||
-          res.lackingCharLength ||
-          res.invalidBlockVariantValue
-        ) {
-          const missingRequiredFieldNames: string[] =
-            res.missingRequired?.reduce(
-              (acc: string[], curr: ContentModelField) => {
-                acc = [curr.name, ...acc];
-                return acc;
-              },
-              []
-            );
-
-          const errors = cloneDeep(fieldErrors);
-
-          if (missingRequiredFieldNames?.length) {
-            missingRequiredFieldNames?.forEach((fieldName) => {
-              errors[fieldName] = {
-                ...(errors[fieldName] ?? {}),
-                MISSING_REQUIRED: true,
-              };
-            });
-
-            dispatch(
-              notify({
-                message: "Missing Data in Required Fields",
-                kind: "error",
-              })
-            );
-          }
-
-          // Map min length validation errors
-          if (res.lackingCharLength?.length) {
-            res.lackingCharLength?.forEach((field: ContentModelField) => {
-              errors[field.name] = {
-                ...(errors[field.name] ?? {}),
-                LACKING_MINLENGTH: field.settings?.minCharLimit,
-              };
-            });
-          }
-
-          if (res.regexPatternMismatch?.length) {
-            res.regexPatternMismatch?.forEach((field: ContentModelField) => {
-              errors[field.name] = {
-                ...(errors[field.name] ?? {}),
-                REGEX_PATTERN_MISMATCH: field.settings?.regexMatchErrorMessage,
-              };
-            });
-          }
-
-          if (res.regexRestrictPatternMatch?.length) {
-            res.regexRestrictPatternMatch?.forEach(
-              (field: ContentModelField) => {
-                errors[field.name] = {
-                  ...(errors[field.name] ?? {}),
-                  REGEX_RESTRICT_PATTERN_MATCH:
-                    field.settings?.regexRestrictErrorMessage,
-                };
-              }
-            );
-          }
-
-          if (res.invalidRange?.length) {
-            res.invalidRange?.forEach((field: ContentModelField) => {
-              errors[field.name] = {
-                ...(errors[field.name] ?? {}),
-                INVALID_RANGE: `Value must be between ${field.settings?.minValue} and ${field.settings?.maxValue}`,
-              };
-            });
-          }
-
-          if (res.invalidBlockVariantValue?.length) {
-            res.invalidBlockVariantValue?.forEach(
-              (field: ContentModelField) => {
-                errors[field.name] = {
-                  ...(errors[field.name] ?? {}),
-                  INVALID_BLOCK_VARIANT: true,
-                };
-              }
-            );
-          }
-
-          setFieldErrors(errors);
-
-          // scroll to required field
-          fieldErrorRef.current?.scrollToErrors?.();
-        }
-
-        if (res.error) {
-          // Handles backend validation error for when the data is too long
-          if (res.error?.toLowerCase()?.includes("data too long")) {
-            const dataLongErrorMatch = res.error?.match(/'([^']*)'/);
-
-            if (dataLongErrorMatch?.[1]) {
-              const fieldName = dataLongErrorMatch[1];
-              const errors = cloneDeep(fieldErrors);
-              const oneToManyFieldNames = activeFields?.reduce(
-                (names, currItem) => {
-                  if (currItem?.datatype === "one_to_many") {
-                    return [...names, currItem?.name];
-                  }
-
-                  return names;
+      try {
+        const res: any = await dispatch(
+          createItem({
+            modelZUID,
+            itemZUID,
+            skipPathPartValidation:
+              model?.type === "dataset" || model?.type === "block",
+          })
+        );
+        if (res.err || res.error) {
+          if (
+            res.missingRequired ||
+            res.lackingCharLength ||
+            res.invalidBlockVariantValue
+          ) {
+            const missingRequiredFieldNames: string[] =
+              res.missingRequired?.reduce(
+                (acc: string[], curr: ContentModelField) => {
+                  acc = [curr.name, ...acc];
+                  return acc;
                 },
                 []
               );
 
-              errors[fieldName] = {
-                ...(errors[fieldName] ?? {}),
-                CUSTOM_ERROR: oneToManyFieldNames?.includes(fieldName)
-                  ? "Cannot save field. Please reduce the total number of items selected."
-                  : "Cannot save field. Value is too long.",
-              };
+            const errors = cloneDeep(fieldErrors);
 
-              setFieldErrors(errors);
+            if (missingRequiredFieldNames?.length) {
+              missingRequiredFieldNames?.forEach((fieldName) => {
+                errors[fieldName] = {
+                  ...(errors[fieldName] ?? {}),
+                  MISSING_REQUIRED: true,
+                };
+              });
+
+              dispatch(
+                notify({
+                  message: "Missing Data in Required Fields",
+                  kind: "error",
+                })
+              );
             }
+
+            // Map min length validation errors
+            if (res.lackingCharLength?.length) {
+              res.lackingCharLength?.forEach((field: ContentModelField) => {
+                errors[field.name] = {
+                  ...(errors[field.name] ?? {}),
+                  LACKING_MINLENGTH: field.settings?.minCharLimit,
+                };
+              });
+            }
+
+            if (res.regexPatternMismatch?.length) {
+              res.regexPatternMismatch?.forEach((field: ContentModelField) => {
+                errors[field.name] = {
+                  ...(errors[field.name] ?? {}),
+                  REGEX_PATTERN_MISMATCH:
+                    field.settings?.regexMatchErrorMessage,
+                };
+              });
+            }
+
+            if (res.regexRestrictPatternMatch?.length) {
+              res.regexRestrictPatternMatch?.forEach(
+                (field: ContentModelField) => {
+                  errors[field.name] = {
+                    ...(errors[field.name] ?? {}),
+                    REGEX_RESTRICT_PATTERN_MATCH:
+                      field.settings?.regexRestrictErrorMessage,
+                  };
+                }
+              );
+            }
+
+            if (res.invalidRange?.length) {
+              res.invalidRange?.forEach((field: ContentModelField) => {
+                errors[field.name] = {
+                  ...(errors[field.name] ?? {}),
+                  INVALID_RANGE: `Value must be between ${field.settings?.minValue} and ${field.settings?.maxValue}`,
+                };
+              });
+            }
+
+            if (res.invalidBlockVariantValue?.length) {
+              res.invalidBlockVariantValue?.forEach(
+                (field: ContentModelField) => {
+                  errors[field.name] = {
+                    ...(errors[field.name] ?? {}),
+                    INVALID_BLOCK_VARIANT: true,
+                  };
+                }
+              );
+            }
+
+            setFieldErrors(errors);
+
+            // scroll to required field
+            fieldErrorRef.current?.scrollToErrors?.();
+          }
+
+          if (res.error) {
+            // Handles backend validation error for when the data is too long
+            if (res.error?.toLowerCase()?.includes("data too long")) {
+              const dataLongErrorMatch = res.error?.match(/'([^']*)'/);
+
+              if (dataLongErrorMatch?.[1]) {
+                const fieldName = dataLongErrorMatch[1];
+                const errors = cloneDeep(fieldErrors);
+                const oneToManyFieldNames = activeFields?.reduce(
+                  (names, currItem) => {
+                    if (currItem?.datatype === "one_to_many") {
+                      return [...names, currItem?.name];
+                    }
+
+                    return names;
+                  },
+                  []
+                );
+
+                errors[fieldName] = {
+                  ...(errors[fieldName] ?? {}),
+                  CUSTOM_ERROR: oneToManyFieldNames?.includes(fieldName)
+                    ? "Cannot save field. Please reduce the total number of items selected."
+                    : "Cannot save field. Value is too long.",
+                };
+
+                setFieldErrors(errors);
+              }
+            }
+
+            dispatch(
+              notify({
+                message: `Cannot Save: ${res.error}`,
+                kind: "error",
+              })
+            );
+          }
+        } else if (res.data && res.data.ZUID) {
+          // fetch item we just saved
+          await dispatch(fetchItem(modelZUID, res.data.ZUID));
+
+          setNewItemZUID(res.data.ZUID);
+          setFieldErrors({});
+
+          switch (action) {
+            case "addNew":
+              // Do nothing, just stay on the same page
+              break;
+
+            case "publishNow":
+              if (hasAllowPublishLabel) {
+                // New items will by default have no workflow labels, therefore as long as there's a workflow label
+                // that is used to allow publish permissions, new content items should never be allowed to be published
+                // from the create new content item page
+                dispatch(
+                  notify({
+                    message: `Cannot Publish: "${item.web.metaTitle}". Does not have a status that allows publishing`,
+                    kind: "error",
+                  })
+                );
+                amplitude.track(PUBLISH_ATTEMPT_WITHOUT_ALLOW_PUBLISH_STATUS);
+                history.push(
+                  `/${
+                    model?.type === "block" ? "blocks" : "content"
+                  }/${modelZUID}/${res.data.ZUID}`
+                );
+              } else {
+                // Make an api call to publish now
+                handlePublish(res.data.ZUID);
+                setWillRedirect(true);
+              }
+              break;
+
+            case "schedulePublish":
+              if (hasAllowPublishLabel) {
+                // New items will by default have no workflow labels, therefore as long as there's a workflow label
+                // that is used to allow publish permissions, new content items should never be allowed to be published
+                // from the create new content item page
+                dispatch(
+                  notify({
+                    message: `Cannot Publish: "${item.web.metaTitle}". Does not have a status that allows publishing`,
+                    kind: "error",
+                  })
+                );
+                amplitude.track(
+                  SCHEDULE_PUBLISH_ATTEMPT_WITHOUT_ALLOW_PUBLISH_STATUS
+                );
+                history.push(
+                  `/${
+                    model?.type === "block" ? "blocks" : "content"
+                  }/${modelZUID}/${res.data.ZUID}`
+                );
+              } else {
+                // Open schedule publish flyout and redirect to item once done
+                setIsScheduleDialogOpen(true);
+                setWillRedirect(true);
+              }
+              break;
+
+            case "publishAddNew":
+              if (hasAllowPublishLabel) {
+                // New items will by default have no workflow labels, therefore as long as there's a workflow label
+                // that is used to allow publish permissions, new content items should never be allowed to be published
+                // from the create new content item page
+                dispatch(
+                  notify({
+                    message: `Cannot Publish: "${item.web.metaTitle}". Does not have a status that allows publishing`,
+                    kind: "error",
+                  })
+                );
+                amplitude.track(PUBLISH_ATTEMPT_WITHOUT_ALLOW_PUBLISH_STATUS);
+              } else {
+                // Publish but stay on page
+                handlePublish(res.data.ZUID);
+                setWillRedirect(false);
+              }
+              break;
+
+            case "schedulePublishAddNew":
+              if (hasAllowPublishLabel) {
+                // New items will by default have no workflow labels, therefore as long as there's a workflow label
+                // that is used to allow publish permissions, new content items should never be allowed to be published
+                // from the create new content item page
+                dispatch(
+                  notify({
+                    message: `Cannot Publish: "${item.web.metaTitle}". Does not have a status that allows publishing`,
+                    kind: "error",
+                  })
+                );
+                amplitude.track(
+                  SCHEDULE_PUBLISH_ATTEMPT_WITHOUT_ALLOW_PUBLISH_STATUS
+                );
+              } else {
+                // Open schedule publish flyout but stay on page once done
+                setIsScheduleDialogOpen(true);
+                setWillRedirect(false);
+              }
+              break;
+
+            default:
+              // Redirect to new item
+              handleRedirect(res.data.ZUID);
+              break;
           }
 
           dispatch(
             notify({
-              message: `Cannot Save: ${res.error}`,
-              kind: "error",
+              message: `Created Item: ${
+                item.web.metaLinkText || item.web.metaTitle
+              }`,
+              kind: "success",
+            })
+          );
+        } else {
+          dispatch(
+            notify({
+              message: "Unknown issue creating new item",
+              kind: "warn",
             })
           );
         }
-      } else if (res.data && res.data.ZUID) {
-        // fetch item we just saved
-        await dispatch(fetchItem(modelZUID, res.data.ZUID));
-
-        setNewItemZUID(res.data.ZUID);
-        setFieldErrors({});
-
-        switch (action) {
-          case "addNew":
-            // Do nothing, just stay on the same page
-            break;
-
-          case "publishNow":
-            if (hasAllowPublishLabel) {
-              // New items will by default have no workflow labels, therefore as long as there's a workflow label
-              // that is used to allow publish permissions, new content items should never be allowed to be published
-              // from the create new content item page
-              dispatch(
-                notify({
-                  message: `Cannot Publish: "${item.web.metaTitle}". Does not have a status that allows publishing`,
-                  kind: "error",
-                })
-              );
-              history.push(
-                `/${
-                  model?.type === "block" ? "blocks" : "content"
-                }/${modelZUID}/${res.data.ZUID}`
-              );
-            } else {
-              // Make an api call to publish now
-              handlePublish(res.data.ZUID);
-              setWillRedirect(true);
-            }
-            break;
-
-          case "schedulePublish":
-            if (hasAllowPublishLabel) {
-              // New items will by default have no workflow labels, therefore as long as there's a workflow label
-              // that is used to allow publish permissions, new content items should never be allowed to be published
-              // from the create new content item page
-              dispatch(
-                notify({
-                  message: `Cannot Publish: "${item.web.metaTitle}". Does not have a status that allows publishing`,
-                  kind: "error",
-                })
-              );
-              history.push(
-                `/${
-                  model?.type === "block" ? "blocks" : "content"
-                }/${modelZUID}/${res.data.ZUID}`
-              );
-            } else {
-              // Open schedule publish flyout and redirect to item once done
-              setIsScheduleDialogOpen(true);
-              setWillRedirect(true);
-            }
-            break;
-
-          case "publishAddNew":
-            if (hasAllowPublishLabel) {
-              // New items will by default have no workflow labels, therefore as long as there's a workflow label
-              // that is used to allow publish permissions, new content items should never be allowed to be published
-              // from the create new content item page
-              dispatch(
-                notify({
-                  message: `Cannot Publish: "${item.web.metaTitle}". Does not have a status that allows publishing`,
-                  kind: "error",
-                })
-              );
-            } else {
-              // Publish but stay on page
-              handlePublish(res.data.ZUID);
-              setWillRedirect(false);
-            }
-            break;
-
-          case "schedulePublishAddNew":
-            if (hasAllowPublishLabel) {
-              // New items will by default have no workflow labels, therefore as long as there's a workflow label
-              // that is used to allow publish permissions, new content items should never be allowed to be published
-              // from the create new content item page
-              dispatch(
-                notify({
-                  message: `Cannot Publish: "${item.web.metaTitle}". Does not have a status that allows publishing`,
-                  kind: "error",
-                })
-              );
-            } else {
-              // Open schedule publish flyout but stay on page once done
-              setIsScheduleDialogOpen(true);
-              setWillRedirect(false);
-            }
-            break;
-
-          default:
-            // Redirect to new item
-            handleRedirect(res.data.ZUID);
-            break;
+      } catch (err) {
+        console.error(err);
+      } finally {
+        if (isMounted.current) {
+          setSaving(false);
         }
-
-        dispatch(
-          notify({
-            message: `Created Item: ${
-              item.web.metaLinkText || item.web.metaTitle
-            }`,
-            kind: "success",
-          })
-        );
-      } else {
-        dispatch(
-          notify({
-            message: "Unknown issue creating new item",
-            kind: "warn",
-          })
-        );
       }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      if (isMounted.current) {
-        setSaving(false);
-      }
-    }
-  };
+    },
+    [itemZUID, fieldErrors, hasErrors, hasSEOErrors, location.pathname]
+  );
 
   const handlePublish = async (newItemZUID: string) => {
     createPublishing({
