@@ -173,6 +173,7 @@ export const VersionSelector = memo(
           placement="top-start"
         >
           <Button
+            data-amp-track-id="content-version-selector-open-button"
             data-cy="VersionSelector"
             sx={{
               color: "text.disabled",
