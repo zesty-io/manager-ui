@@ -54,6 +54,7 @@ import {
 import { FieldTypeMedia } from "../../FieldTypeMedia";
 import { debounce, parseInt } from "lodash";
 import { useRegisterRef } from "../../../../../../../engine/useRegisterRef";
+import { useDebouncedInput } from "../../../../../../../shell/hooks/useDebouncedInput";
 
 const AIFieldShell = withAI(FieldShell);
 
@@ -120,6 +121,10 @@ export const Field = memo(
 
     const fieldData = fields?.find((field) => field.ZUID === ZUID);
     const [rerenderKey, setRerenderKey] = useState(0);
+
+    const { local, onLocalChange } = useDebouncedInput(value, (v) => {
+      onChange(v, name);
+    });
 
     const handle = useMemo<any>(
       () => ({
@@ -256,7 +261,7 @@ export const Field = memo(
             ZUID={fieldData?.ZUID}
             name={fieldData?.name || name}
             label={fieldData?.label || label}
-            valueLength={(value as string)?.length ?? 0}
+            valueLength={(local as string)?.length ?? 0}
             settings={
               fieldData || {
                 name: name,
@@ -272,11 +277,11 @@ export const Field = memo(
             minLength={minLength}
             errors={errors}
             aiType="text"
-            value={value}
+            value={local}
           >
             <TextField
-              value={value}
-              onChange={(evt) => onChange(evt.target.value, name)}
+              value={local}
+              onChange={(e) => onLocalChange(e.target.value)}
               fullWidth
               inputProps={{
                 name: fieldData?.name || name,
@@ -290,12 +295,12 @@ export const Field = memo(
         return (
           <FieldShell
             settings={fieldData}
-            valueLength={(value as string)?.length ?? 0}
+            valueLength={(local as string)?.length ?? 0}
             errors={errors}
           >
             <TextField
-              value={value}
-              onChange={(evt) => onChange(evt.target.value, name)}
+              value={local}
+              onChange={(e) => onLocalChange(e.target.value)}
               fullWidth
               error={errors && Object.values(errors)?.some((error) => !!error)}
             />
@@ -306,14 +311,14 @@ export const Field = memo(
         return (
           <FieldShell
             settings={fieldData}
-            valueLength={(value as string)?.length ?? 0}
+            valueLength={(local as string)?.length ?? 0}
             errors={errors}
             maxLength={maxLength}
             withLengthCounter
           >
             <TextField
-              value={value}
-              onChange={(evt) => onChange(evt.target.value, name)}
+              value={local}
+              onChange={(e) => onLocalChange(e.target.value)}
               fullWidth
               type="url"
               error={errors && Object.values(errors)?.some((error) => !!error)}
@@ -345,7 +350,7 @@ export const Field = memo(
             ZUID={fieldData?.ZUID}
             name={fieldData?.name}
             label={fieldData?.label}
-            valueLength={(value as string)?.length ?? 0}
+            valueLength={(local as string)?.length ?? 0}
             settings={fieldData}
             onChange={(evt: ChangeEvent<HTMLInputElement>) =>
               onChange(evt.target.value, name)
@@ -355,11 +360,11 @@ export const Field = memo(
             aiType="word"
             maxLength={maxLength}
             minLength={minLength}
-            value={value}
+            value={local}
           >
             <TextField
-              value={value}
-              onChange={(evt) => onChange(evt.target.value, name)}
+              value={local}
+              onChange={(e) => onLocalChange(e.target.value)}
               fullWidth
               multiline
               rows={6}
@@ -386,14 +391,14 @@ export const Field = memo(
               datatype={fieldData?.datatype}
               withLengthCounter
               maxLength={maxLength}
-              value={value}
+              value={local}
             >
               <FieldTypeTinyMCE
                 key={rerenderKey}
                 name={name}
-                value={value}
+                value={local}
                 version={version}
-                onChange={onChange}
+                onChange={(value) => onLocalChange(value)}
                 onSave={onSave}
                 onCharacterCountChange={(charCount: number) =>
                   setCharacterCount(charCount)
@@ -420,7 +425,7 @@ export const Field = memo(
               ZUID={fieldData?.ZUID}
               name={fieldData?.name}
               label={fieldData?.label}
-              valueLength={(value as string)?.length ?? 0}
+              valueLength={(local as string)?.length ?? 0}
               settings={fieldData}
               onChange={onChange}
               errors={errors}
@@ -428,14 +433,14 @@ export const Field = memo(
               datatype={fieldData?.datatype}
               editorType={editorType}
               onEditorChange={(value: EditorType) => setEditorType(value)}
-              value={value}
+              value={local}
             >
               <FieldTypeEditor
                 // @ts-ignore component not typed
                 name={name}
-                value={value}
+                value={local}
                 version={version}
-                onChange={onChange}
+                onChange={(value: string) => onLocalChange(value)}
                 datatype={datatype}
                 mediaBrowser={(opts: any) => {
                   setImageModal(opts);

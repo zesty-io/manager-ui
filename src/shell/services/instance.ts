@@ -351,7 +351,11 @@ export const instanceApi = createApi({
         url: `content/models/${ZUID}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["ContentModels", "ContentNav"],
+      invalidatesTags: (result, error, ZUID) => [
+        "ContentModels",
+        "ContentNav",
+        { type: "ContentModel", id: ZUID },
+      ],
     }),
     // https://www.zesty.io/docs/instances/api-reference/content/models/#Get-Fields
     getContentModelFields: builder.query<
