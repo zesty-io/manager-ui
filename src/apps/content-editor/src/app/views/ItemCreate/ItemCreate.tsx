@@ -48,6 +48,11 @@ import { FieldError } from "../../components/Editor/FieldError";
 import { AIGeneratorProvider } from "../../../../../../shell/components/withAi/AIGeneratorProvider";
 import { useParams as useQueryParams } from "../../../../../../shell/hooks/useParams";
 import { CreateContentItemDialogContext } from "../../../../../../shell/contexts/CreateContentItemDialogProvider";
+import * as amplitude from "@amplitude/analytics-browser";
+import {
+  PUBLISH_ATTEMPT_WITHOUT_ALLOW_PUBLISH_STATUS,
+  SCHEDULE_PUBLISH_ATTEMPT_WITHOUT_ALLOW_PUBLISH_STATUS,
+} from "../../../../../../amplitude-events";
 
 export type ActionAfterSave =
   | ""
@@ -371,6 +376,7 @@ export const ItemCreate = () => {
                     kind: "error",
                   })
                 );
+                amplitude.track(PUBLISH_ATTEMPT_WITHOUT_ALLOW_PUBLISH_STATUS);
                 history.push(
                   `/${
                     model?.type === "block" ? "blocks" : "content"
@@ -393,6 +399,9 @@ export const ItemCreate = () => {
                     message: `Cannot Publish: "${item.web.metaTitle}". Does not have a status that allows publishing`,
                     kind: "error",
                   })
+                );
+                amplitude.track(
+                  SCHEDULE_PUBLISH_ATTEMPT_WITHOUT_ALLOW_PUBLISH_STATUS
                 );
                 history.push(
                   `/${
@@ -417,6 +426,7 @@ export const ItemCreate = () => {
                     kind: "error",
                   })
                 );
+                amplitude.track(PUBLISH_ATTEMPT_WITHOUT_ALLOW_PUBLISH_STATUS);
               } else {
                 // Publish but stay on page
                 handlePublish(res.data.ZUID);
@@ -434,6 +444,9 @@ export const ItemCreate = () => {
                     message: `Cannot Publish: "${item.web.metaTitle}". Does not have a status that allows publishing`,
                     kind: "error",
                   })
+                );
+                amplitude.track(
+                  SCHEDULE_PUBLISH_ATTEMPT_WITHOUT_ALLOW_PUBLISH_STATUS
                 );
               } else {
                 // Open schedule publish flyout but stay on page once done

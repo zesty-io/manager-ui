@@ -41,6 +41,8 @@ import { LoadingShell } from "./LoadingShell";
 import { registerNavigate } from "../../../engine/navigator";
 import { AIDrawer } from "./AIDrawer";
 import { useLocalStorage } from "react-use";
+import * as amplitude from "@amplitude/analytics-browser";
+import instanceZUID from "../../../utility/instanceZUID";
 
 export default memo(function Shell() {
   const dispatch = useDispatch();
@@ -76,6 +78,18 @@ export default memo(function Shell() {
       replace ? history.replace(to) : history.push(to);
     });
   }, [history]);
+
+  amplitude.setUserId(user.email);
+
+  const identifyEvent = new amplitude.Identify();
+  identifyEvent.set("instanceZUID", instance.ZUID);
+  identifyEvent.set("userZUID", user.ZUID);
+  identifyEvent.set("userID", user.ID);
+  identifyEvent.set("userEmail", user.email);
+  identifyEvent.set("userFirstName", user.firstName);
+  identifyEvent.set("userLastName", user.lastName);
+
+  amplitude.identify(identifyEvent);
 
   return (
     <Box
