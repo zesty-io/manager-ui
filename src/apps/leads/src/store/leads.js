@@ -31,6 +31,7 @@ export function fetchLeads() {
           type: "FETCH_LEADS_SUCCESS",
           payload: sortedLeads,
         });
+        return sortedLeads;
       })
       .catch((err) => {
         console.error(err);
@@ -40,6 +41,7 @@ export function fetchLeads() {
             message: err.message,
           })
         );
+        return [];
       });
   };
 }

@@ -5,6 +5,7 @@ import { notify } from "../../shell/store/notifications";
 import { v4 as uuidv4 } from "uuid";
 import { request } from "../../utility/request";
 import { mediaManagerApi } from "../services/mediaManager";
+import Cookies from "js-cookie";
 
 export type StoreFile = {
   uploadID: string;
@@ -486,12 +487,16 @@ export function replaceFile(newFile: UploadFile, originalFile: FileBase) {
       // and not the extra meta data for the zesty services
       req.send(file.file);
     } else {
-      req.withCredentials = true;
       req.open(
         "PUT",
         //@ts-expect-error
         `${CONFIG.SERVICE_MEDIA_STORAGE}/replace/${originalFile?.storage_driver}/${originalFile?.storage_name}`
       );
+
+      const token = Cookies.get(CONFIG.COOKIE_NAME);
+      if (token) {
+        req.setRequestHeader("Authorization", `Bearer ${token}`);
+      }
 
       req.send(bodyData);
     }
@@ -658,13 +663,17 @@ export function uploadFile(fileArg: UploadFile, bin: Bin) {
       // NOTE: historic method for file uploads. We may want to consider replacing
       // this with the signed url flow, regardless of file size
 
-      // This is posting to a Zesty service so it must include credentials
-      req.withCredentials = true;
       req.open(
         "POST",
         //@ts-expect-error
         `${CONFIG.SERVICE_MEDIA_STORAGE}/upload/${bin.storage_driver}/${bin.storage_name}`
       );
+
+      // This is posting to a Zesty service so it must include credentials
+      const token = Cookies.get(CONFIG.COOKIE_NAME);
+      if (token) {
+        req.setRequestHeader("Authorization", `Bearer ${token}`);
+      }
       req.addEventListener("load", () => {
         if (req.status === 201) {
           console.log(req);

@@ -1,5 +1,4 @@
-import { ThemeProvider, Box } from "@mui/material";
-import { theme } from "@zesty-io/material";
+import { Box } from "@mui/material";
 import RestrictedPage from "./RestrictedPage";
 import { useSelector } from "react-redux";
 import { AppState } from "../../../../../../../shell/store/types";
@@ -23,21 +22,19 @@ const Workflows = () => {
   const isAuthorized = AUTHORIZED_ROLES.includes(systemRoleZUID) || staff;
 
   return (
-    <ThemeProvider theme={theme}>
-      <FormDialogContextProvider>
-        <Box
-          width="100%"
-          height="100%"
-          bgcolor="grey.50"
-          display="flex"
-          flexDirection="column"
-          justifyContent="flex-start"
-          alignItems="stretch"
-        >
-          {isAuthorized ? <AuthorizedUserPage /> : <RestrictedPage />}
-        </Box>
-      </FormDialogContextProvider>
-    </ThemeProvider>
+    <FormDialogContextProvider>
+      <Box
+        width="100%"
+        height="100%"
+        bgcolor="grey.50"
+        display="flex"
+        flexDirection="column"
+        justifyContent="flex-start"
+        alignItems="stretch"
+      >
+        {isAuthorized ? <AuthorizedUserPage /> : <RestrictedPage />}
+      </Box>
+    </FormDialogContextProvider>
   );
 };
 

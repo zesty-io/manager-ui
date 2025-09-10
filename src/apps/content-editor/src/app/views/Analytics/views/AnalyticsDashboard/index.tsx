@@ -6,7 +6,6 @@ import {
   Divider,
   Skeleton,
 } from "@mui/material";
-import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "@zesty-io/material";
 import { AddRounded } from "@mui/icons-material";
 import {

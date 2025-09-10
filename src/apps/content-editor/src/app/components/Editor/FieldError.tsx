@@ -5,9 +5,8 @@ import {
   forwardRef,
   useImperativeHandle,
 } from "react";
-import { Stack, Typography, Box, ThemeProvider } from "@mui/material";
+import { Stack, Typography, Box } from "@mui/material";
 import DangerousRoundedIcon from "@mui/icons-material/DangerousRounded";
-import { theme } from "@zesty-io/material";
 import { Error } from "./Field/FieldShell";
 import { ContentModelField } from "../../../../../../shell/services/types";
 import pluralizeWord from "../../../../../../utility/pluralizeWord";
