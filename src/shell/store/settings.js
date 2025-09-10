@@ -288,10 +288,11 @@ export function fetchFontsInstalled() {
           type: "FETCH_FONTS_INSTALLED",
           payload: res.data.filter(
             (item) =>
-              item.type === "link" &&
-              item.attributes.href &&
-              item.attributes.href.indexOf("https://fonts.googleapis.com/") ===
-                0
+              item?.type === "link" &&
+              item?.attributes?.href &&
+              item?.attributes?.rel &&
+              item?.attributes?.rel === "stylesheet" &&
+              item?.attributes?.href?.includes("fonts.googleapis.com")
           ),
         });
       })

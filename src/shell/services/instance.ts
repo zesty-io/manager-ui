@@ -274,6 +274,24 @@ export const instanceApi = createApi({
       transformResponse: getResponseData,
       providesTags: ["HeadTags"],
     }),
+    updateHeadTags: builder.mutation<HeadTag[], { ZUID: string; href: string }>(
+      {
+        query: ({ ZUID, href }) => ({
+          url: `/web/headtags/${ZUID}`,
+          method: "PUT",
+          body: {
+            type: "link",
+            sort: 1,
+            attributes: {
+              rel: "stylesheet",
+              href: href,
+            },
+          },
+        }),
+        transformResponse: getResponseData,
+        invalidatesTags: ["HeadTags"],
+      }
+    ),
     createHeadTag: builder.mutation<
       HeadTag,
       {
@@ -951,4 +969,5 @@ export const {
   useDeleteRedirectMutation,
   useLazySearchContentQuery,
   useUpdateRedirectMutation,
+  useUpdateHeadTagsMutation,
 } = instanceApi;

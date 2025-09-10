@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, memo } from "react";
 import { useLocation } from "react-router";
 import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
 import FormatSizeRoundedIcon from "@mui/icons-material/FormatSizeRounded";
@@ -52,7 +52,7 @@ const USER_SETTINGS_CAT: TreeItem[] = [
   },
 ];
 
-export const SettingsNav = () => {
+export const SettingsNav = memo(() => {
   const location = useLocation();
   const [keyword, setKeyword] = useState("");
 
@@ -228,7 +228,7 @@ export const SettingsNav = () => {
       )}
     </AppSideBar>
   );
-};
+});
 
 type HeaderComponentProps = {
   title: string;
