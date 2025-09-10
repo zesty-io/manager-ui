@@ -11,7 +11,7 @@ import pixel7cam from "../../../../../public/images/pixel-7-camera.png";
 
 import styles from "./Frame.less";
 
-const LoadingComponent = () => (
+const LoadingComponent = ({ noDomain }) => (
   <Box
     sx={{
       zIndex: 2,
@@ -28,17 +28,22 @@ const LoadingComponent = () => (
     }}
   >
     <CircularProgress />
+    {!noDomain && (
+      <Typography variant="h5" fontWeight={600} mt={1.5}>
+        Finding Domain
+      </Typography>
+    )}
   </Box>
 );
 export function Frame(props) {
   const [frameLoading, setFrameLoading] = useState(true);
   const [routePath, setRoutePath] = useState("");
+  const loading = props?.isLoading || frameLoading;
 
   useEffect(() => {
-    if (!props.domain || !props.route) return;
     setFrameLoading(true);
-    setRoutePath(`${props.domain}${props.route}`);
-  }, [props.domain, props.route, props.device]);
+    setRoutePath(`${props?.domain}${props?.route}`);
+  }, [props?.domain, props?.route, props?.device]);
 
   return (
     <Fragment>
@@ -60,10 +65,10 @@ export function Frame(props) {
               height: `${100 / props.zoom}%`,
               left: `${(100 - 100 / props.zoom) / 2}%`,
               top: `${(100 - 100 / props.zoom) / 2}%`,
-              opacity: frameLoading ? 0 : 1,
+              opacity: loading ? 0 : 1,
             }}
           />
-          {frameLoading && <LoadingComponent />}
+          {loading && <LoadingComponent noDomain={props?.domain !== "error"} />}
         </>
       ) : (
         <>
@@ -83,6 +88,7 @@ export function Frame(props) {
                   }}
                 >
                   <iframe
+                    key={props.device}
                     className={cx(
                       styles.Frame,
                       props.blur ? styles.Blur : null,
@@ -95,14 +101,16 @@ export function Frame(props) {
                       height: `${100 / props.zoom}%`,
                       left: `${(100 - 100 / props.zoom) / 2}%`,
                       top: `${(100 - 100 / props.zoom) / 2}%`,
-                      opacity: frameLoading ? 0 : 1,
+                      opacity: loading ? 0 : 1,
                     }}
                     src={routePath}
                     scrolling="yes"
                     frameBorder="0"
                     onLoad={() => setFrameLoading(false)}
                   />
-                  {frameLoading && <LoadingComponent />}
+                  {loading && (
+                    <LoadingComponent noDomain={props?.domain !== "error"} />
+                  )}
                 </div>
               );
             },

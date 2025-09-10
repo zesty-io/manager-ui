@@ -30,6 +30,8 @@ import { useLocalStorage } from "react-use";
 import { JSONPreview } from "./components/JSONPreview";
 import { Frame, templates } from "./components/Frame";
 
+import api from "./api";
+
 import styles from "./Preview.less";
 
 const zoomLevels = [
@@ -71,10 +73,12 @@ export function Preview(props) {
 
   const input = useRef();
   const [loading, setLoading] = useState(true);
+  const [authenticated, setAuthenticated] = useState(true);
   // const [open, setOpen] = useState(false);
+
   const [rotate, setRotate] = useState(false);
   const [settings, setSettings] = useState([]);
-  const [domain, setDomain] = useState(props.domain);
+  const [domain, setDomain] = useState(props.domain || "");
   const [route, setRoute] = useState(props.route || "");
   const [device, setDevice] = useState("fullscreen");
   const [refresh, setRefresh] = useState(Date.now());
@@ -88,6 +92,7 @@ export function Preview(props) {
   });
   const [hasErrors, setHasErrors] = useState(false);
   const [previewUrl, setPreviewUrl] = useState("");
+  const [domainError, serDomainError] = useState(false);
 
   const isBlockItem = route?.startsWith("/-/block/");
 
@@ -125,10 +130,6 @@ export function Preview(props) {
         if (msg.data.previewUrl) {
           setPreviewUrl(msg.data.previewUrl);
         }
-        if (msg.data.domain) {
-          setDomain(msg.data.domain);
-        }
-
         if (msg.data.route) {
           setRoute(msg.data.route);
         }
@@ -155,6 +156,29 @@ export function Preview(props) {
 
     window.addEventListener("message", receiveMessage);
     return () => window.removeEventListener("message", receiveMessage);
+  }, []);
+
+  useEffect(() => {
+    try {
+      setLoading(true);
+      api(`${CONFIG.API_ACCOUNTS}/instances/${ZUID}`).then((json) => {
+        setDomain(
+          !json?.data?.randomHashID
+            ? "error"
+            : `${CONFIG.URL_PREVIEW_PROTOCOL}${json.data.randomHashID}${CONFIG.URL_PREVIEW}`
+        );
+        setAuthenticated(true);
+        serDomainError(false);
+      });
+    } catch (error) {
+      if (error.message === "unauthenticated") {
+        setAuthenticated(false);
+      }
+      setDomain("");
+      serDomainError(true);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   const sendMessage = (action) => {
@@ -184,7 +208,6 @@ export function Preview(props) {
             source: "zesty",
             previewUrl,
             route,
-            domain,
             settings,
             version,
             dirty,
@@ -212,11 +235,11 @@ export function Preview(props) {
     );
   }
 
-  if (!domain) {
+  if ((!!domainError || !authenticated) && !loading) {
     return (
       <div className={styles.NoDomain}>
         <h1 className={styles.headline}>
-          {!domain
+          {!authenticated
             ? "Your session is not active. Please login to Zesty.io"
             : "Disconnected from preview domain"}
         </h1>
@@ -450,6 +473,7 @@ export function Preview(props) {
           <JSONPreview src={`${domain}${route}`} settings={settings} />
         ) : (
           <Frame
+            isLoading={loading}
             key={`${route}-${refresh}`}
             device={device}
             domain={domain}

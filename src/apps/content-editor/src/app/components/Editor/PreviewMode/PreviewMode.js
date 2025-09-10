@@ -30,7 +30,6 @@ export default function PreviewMode(props) {
       if (!itemZUID) return;
 
       const item = content[itemZUID];
-      const domain = `${CONFIG.URL_PREVIEW_PROTOCOL}${instance?.randomHashID}${CONFIG.URL_PREVIEW}`;
       const previewUrl = `${CONFIG.URL_MANAGER_PROTOCOL}${instance.ZUID}${CONFIG.URL_MANAGER}/active-preview`;
 
       let url = "";
@@ -52,7 +51,6 @@ export default function PreviewMode(props) {
         {
           source: "zesty",
           previewUrl,
-          domain,
           route: url,
           settings: instanceSettings,
           version,
