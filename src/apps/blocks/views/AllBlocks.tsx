@@ -22,7 +22,7 @@ import SearchBox from "../../../shell/components/SearchBox";
 
 export const AllBlocks = () => {
   const [search, setSearch] = useState("");
-  const { data: models, isFetching } = useGetContentModelsQuery();
+  const { data: models, isLoading } = useGetContentModelsQuery();
   const [showCreateModelDialogue, setShowCreateModelDialogue] = useState(false);
   const searchRef = useRef(null);
   const [showOnboardingDialog, setShowOnboardingDialog] = useLocalStorage(
@@ -36,7 +36,7 @@ export const AllBlocks = () => {
       model.label?.toLowerCase().includes(search.toLowerCase())
   );
 
-  if (isFetching) {
+  if (isLoading) {
     return (
       <Box
         display="flex"
