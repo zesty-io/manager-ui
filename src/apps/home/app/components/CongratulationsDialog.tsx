@@ -6,8 +6,6 @@ import {
   DialogTitle,
   Typography,
 } from "@mui/material";
-import { ThemeProvider } from "@mui/material/styles";
-import { theme } from "@zesty-io/material";
 import { ResourcesCard } from "./ResourcesCard";
 
 interface Props {

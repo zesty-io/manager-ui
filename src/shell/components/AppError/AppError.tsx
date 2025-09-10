@@ -1,6 +1,5 @@
-import { Stack, Box, Typography, Button, ThemeProvider } from "@mui/material";
+import { Stack, Box, Typography, Button } from "@mui/material";
 import RefreshRoundedIcon from "@mui/icons-material/RefreshRounded";
-import { theme } from "@zesty-io/material";
 
 import notFound from "../../../../public/images/notFoundTransparent.png";
 
