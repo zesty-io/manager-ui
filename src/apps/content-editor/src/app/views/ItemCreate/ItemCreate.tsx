@@ -13,7 +13,7 @@ import isEmpty from "lodash/isEmpty";
 import { createSelector } from "@reduxjs/toolkit";
 import { cloneDeep, has } from "lodash";
 
-import { Box, Stack, ThemeProvider, Button } from "@mui/material";
+import { Box, Stack, Button } from "@mui/material";
 import { theme, Brain } from "@zesty-io/material";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";

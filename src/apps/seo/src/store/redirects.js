@@ -1,5 +1,6 @@
 import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
+import { instanceApi } from "../../../../shell/services/instance";
 
 export function redirects(state = {}, action) {
   switch (action.type) {
@@ -89,6 +90,7 @@ export function createRedirect(redirect) {
               created: true,
             },
           });
+          dispatch(instanceApi.util.invalidateTags(["Redirects"]));
         } else {
           // Notify user of all errors
           dispatch(

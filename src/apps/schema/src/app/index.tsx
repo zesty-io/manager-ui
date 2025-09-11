@@ -1,5 +1,4 @@
-import { Box, ThemeProvider } from "@mui/material";
-import { theme } from "@zesty-io/material";
+import { Box } from "@mui/material";
 // import { Sidebar } from "./components/Sidebar";
 import { Sidebar } from "./components/Sidebar";
 import { Redirect, Route, Switch } from "react-router";

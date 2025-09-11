@@ -50,8 +50,6 @@ export default connect((state) => {
         bgcolor: "grey.50",
         color: "grey.300",
         position: "relative",
-        outline: "2px solid cyan",
-        outlineOffset: "-2px",
       }}
     >
       <Grid
