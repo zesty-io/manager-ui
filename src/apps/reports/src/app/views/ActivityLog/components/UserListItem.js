@@ -1,4 +1,3 @@
-import moment from "moment";
 import { accountsApi } from "shell/services/accounts";
 import { MD5 } from "utility/md5";
 import {
@@ -9,6 +8,7 @@ import {
   Skeleton,
 } from "@mui/material";
 import { useHistory } from "react-router";
+import { format, isValid } from "date-fns";
 
 export const UserListItem = (props) => {
   const history = useHistory();
@@ -92,9 +92,12 @@ export const UserListItem = (props) => {
               props.actions?.filter(
                 (action) => action.actionByUserZUID === user?.ZUID
               ).length
-            } actions • Last action @ ${moment(props.action?.updatedAt).format(
-              "hh:mm A"
-            )}
+            } actions • Last action @ ${
+              props.action?.updatedAt &&
+              isValid(new Date(props.action?.updatedAt))
+                ? format(new Date(props.action?.updatedAt), "hh:mm a")
+                : "—"
+            }
           `
           )
         }

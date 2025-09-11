@@ -1,6 +1,6 @@
 import { memo, useState, useEffect, useCallback, forwardRef } from "react";
 import { connect } from "react-redux";
-import moment from "moment-timezone";
+import { formatDistanceToNow } from "date-fns";
 import cx from "classnames";
 import useOnclickOutside from "react-cool-onclickoutside";
 
@@ -191,7 +191,9 @@ export default connect((state) => {
                       </p>
                       {notice.epoch && (
                         <small className={cx(styles.Timestamp, styles.caption)}>
-                          {moment(notice.epoch).fromNow()}
+                          {formatDistanceToNow(new Date(notice.epoch), {
+                            addSuffix: true,
+                          })}
                         </small>
                       )}
                     </li>

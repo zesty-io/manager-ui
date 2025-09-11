@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from "react";
 import { ThemeProvider } from "@mui/material";
 import { theme } from "@zesty-io/material";
-import moment from "moment";
+import { addYears, isWithinInterval } from "date-fns";
 import {
   Dialog,
   DialogContent,
@@ -26,7 +26,7 @@ export const InAppAnnouncement = () => {
   const cookieOptions = {
     // @ts-ignore
     domain: __CONFIG__.COOKIE_DOMAIN,
-    expires: moment().add(1, "year").toDate(),
+    expires: addYears(new Date(), 1),
   };
 
   useEffect(() => {
@@ -43,20 +43,15 @@ export const InAppAnnouncement = () => {
 
   const latestAnnouncement = useMemo(() => {
     if (announcements?.length) {
-      const latest = [...announcements].sort((a, b) =>
-        moment(b.created_at).diff(moment(a.created_at))
-      )?.[0];
+      const latest = [...announcements].sort(
+        (a, b) =>
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      )[0];
 
-      if (
-        moment
-          .utc()
-          .isBetween(
-            moment.utc(latest?.start_date_and_time),
-            moment.utc(latest?.end_date_and_time)
-          )
-      ) {
-        return latest;
-      }
+      const now = new Date();
+      const start = new Date(latest?.start_date_and_time);
+      const end = new Date(latest?.end_date_and_time);
+      if (isWithinInterval(now, { start, end })) return latest;
     }
   }, [announcements]);
 

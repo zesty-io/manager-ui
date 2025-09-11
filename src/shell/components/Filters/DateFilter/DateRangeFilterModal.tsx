@@ -14,7 +14,7 @@ import {
 } from "@mui/x-date-pickers-pro";
 import { AdapterDateFns } from "@mui/x-date-pickers-pro/AdapterDateFns";
 import CloseIcon from "@mui/icons-material/Close";
-import moment from "moment";
+import { format, isValid, parse } from "date-fns";
 
 import { DateRangeFilterValue, DateFilterModalType } from "./types";
 
@@ -34,7 +34,7 @@ export const DateRangeFilterModal: FC<DateRangeFilterModal> = ({
   onClose,
   onDateChange,
 }) => {
-  const [selectedDateRange, setSelectedDateRange] = useState<DateRange<any>>([
+  const [selectedDateRange, setSelectedDateRange] = useState<DateRange<Date>>([
     null,
     null,
   ]);
@@ -42,24 +42,29 @@ export const DateRangeFilterModal: FC<DateRangeFilterModal> = ({
 
   useEffect(() => {
     if (date?.from && date?.to) {
-      setSelectedDateRange([new Date(date.from), new Date(date.to)]);
+      setSelectedDateRange([
+        date?.from ? parse(date.from, "yyyy-MM-dd", new Date()) : null,
+        date?.to ? parse(date.to, "yyyy-MM-dd", new Date()) : null,
+      ]);
     }
   }, [date]);
 
   useEffect(() => {
     if (dateRangeState === "finish") {
-      const date = {
-        from: moment(selectedDateRange[0]).isValid()
-          ? moment(selectedDateRange[0]).format("YYYY-MM-DD")
-          : null,
-        to: moment(selectedDateRange[1]).isValid()
-          ? moment(selectedDateRange[1]).format("YYYY-MM-DD")
-          : null,
+      const formatted: DateRangeFilterValue = {
+        from:
+          selectedDateRange[0] && isValid(selectedDateRange[0])
+            ? format(selectedDateRange[0], "yyyy-MM-dd")
+            : null,
+        to:
+          selectedDateRange[1] && isValid(selectedDateRange[1])
+            ? format(selectedDateRange[1], "yyyy-MM-dd")
+            : null,
       };
 
       onDateChange({
         type: "daterange",
-        date,
+        date: formatted,
       });
       setDateRangeState("");
       onClose();
@@ -84,7 +89,7 @@ export const DateRangeFilterModal: FC<DateRangeFilterModal> = ({
             disableHighlightToday
             value={selectedDateRange}
             onChange={(newValue, selectionState) => {
-              setSelectedDateRange(newValue);
+              setSelectedDateRange(newValue as DateRange<Date>);
               setDateRangeState(selectionState);
             }}
             data-cy="dateRange_picker"

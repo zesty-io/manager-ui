@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef, useMemo } from "react";
 import { TextField, Autocomplete, Tooltip, ListItem } from "@mui/material";
-import moment from "moment-timezone";
+import { parse, format, isValid, formatISO } from "date-fns";
+import { zonedTimeToUtc } from "date-fns-tz";
 
 import { FieldTypeDate } from "../FieldTypeDate";
 import {
@@ -12,19 +13,67 @@ import {
   TIMEZONES,
 } from "./util";
 
-const TIME_FORMAT_REGEX = /^((1[0-2]|0?[1-9]):([0-5][0-9]) ?([ap][m]))$/gi;
-
 type FieldTypeDateTimeProps = {
   required?: boolean;
   name: string;
   error?: boolean;
-  value: string;
+  value: string; // "YYYY-MM-DD HH:mm:ss.SSSSSS"
   onChange: (date: string) => void;
   showClearButton?: boolean;
   showTimezonePicker?: boolean;
   selectedTimezone?: string;
   onTimezoneChange?: (timezone: string) => void;
   disablePast?: boolean;
+};
+
+// --- helpers (local) ---
+
+/** Parse "YYYY-MM-DD" -> Date (local) */
+const parseYMD = (s?: string | null) =>
+  s ? parse(s, "yyyy-MM-dd", new Date()) : null;
+
+/** Parse "HH:mm:ss.SSSSSS" or "HH:mm:ss" -> { h, m } */
+const parseIsoTimeToHM = (
+  iso?: string | null
+): { h: number; m: number } | null => {
+  if (!iso) return null;
+  // strip fractional if present
+  const core = iso.replace(/^(\d{2}:\d{2}:\d{2})\.\d+$/, "$1");
+  const d = parse(core, "HH:mm:ss", new Date(0));
+  if (!isValid(d)) return null;
+  return { h: d.getHours(), m: d.getMinutes() };
+};
+
+/** Build a UTC Date from dateString ("YYYY-MM-DD"), isoTime ("HH:mm:ss.SSSSSS"), and a TZ id */
+const toUtcDate = (
+  dateString: string,
+  isoTime: string,
+  tz: string
+): Date | null => {
+  const base = parseYMD(dateString);
+  const hm = parseIsoTimeToHM(isoTime);
+  if (!base || !isValid(base) || !hm) return null;
+
+  const localWallTime = new Date(
+    base.getFullYear(),
+    base.getMonth(),
+    base.getDate(),
+    hm.h,
+    hm.m,
+    0,
+    0
+  );
+
+  return zonedTimeToUtc(localWallTime, tz);
+};
+
+/** Format "YYYY-MM-DD HH:mm:ss.SSSSSS" (in timezone) as ISO UTC preview */
+const toUtcIsoPreview = (value: string, tz: string) => {
+  if (!value) return null;
+  const [dStr, tStr] = value.split(" ");
+  if (!dStr || !tStr) return null;
+  const utcDate = toUtcDate(dStr, tStr, tz);
+  return utcDate ? formatISO(utcDate) : null;
 };
 
 export const FieldTypeDateTime = ({
@@ -41,7 +90,7 @@ export const FieldTypeDateTime = ({
 }: FieldTypeDateTimeProps) => {
   const timeFieldRef = useRef<HTMLDivElement>(null);
   const optionsRef = useRef<HTMLDivElement>(null);
-  const dateFieldRef = useRef(null);
+  const dateFieldRef = useRef<any>(null);
   const [timeKeyCount, setTimeKeyCount] = useState(0);
   const [isTimeFieldActive, setIsTimeFieldActive] = useState(false);
   const [inputValue, setInputValue] = useState("");
@@ -51,32 +100,29 @@ export const FieldTypeDateTime = ({
   );
 
   const [dateString, timeString] = value?.split(" ") ?? [null, null];
-  const currentSystemTimezoneID = moment.tz.guess() ?? "America/Los_Angeles";
+  const currentSystemTimezoneID =
+    Intl.DateTimeFormat().resolvedOptions().timeZone ?? "America/Los_Angeles";
 
   useEffect(() => {
-    setTimeKeyCount(timeKeyCount + 1);
+    setTimeKeyCount((n) => n + 1);
 
     if (isTimeFieldActive) {
       setTimeout(() => {
-        timeFieldRef.current?.querySelector("input").focus();
+        timeFieldRef.current?.querySelector("input")?.focus();
       });
     }
   }, [value]);
 
   useEffect(() => {
     const { time, index } = getClosestTimeSuggestion(inputValue.trim());
-
     setInvalidInput(!!inputValue.trim() ? !time : false);
 
     const timeOptionElements = optionsRef.current?.querySelectorAll(
       "li.MuiAutocomplete-option"
     );
 
-    // For closest time suggestion just scroll it into view, no highlighting needed
     if (index > 0) {
-      timeOptionElements?.[index]?.scrollIntoView({
-        block: "center",
-      });
+      timeOptionElements?.[index]?.scrollIntoView({ block: "center" });
     }
   }, [inputValue]);
 
@@ -93,31 +139,24 @@ export const FieldTypeDateTime = ({
       (tz) => tz.id === currentSystemTimezoneID
     );
     const timezoneSuggestions = [
-      {
-        ...userTimezone,
-        type: "suggestion",
-      },
+      { ...userTimezone, type: "suggestion" as const },
       {
         label: "(GMT+00:00) Coordinated Universal Time",
         id: "UTC",
-        type: "suggestion",
+        type: "suggestion" as const,
       },
     ];
-
     return [...timezoneSuggestions, ...TIMEZONES];
-  }, [TIMEZONES, currentSystemTimezoneID]);
+  }, [currentSystemTimezoneID]);
 
   const generateValuePreview = () => {
-    if (showTimezonePicker) {
-      return `Stored in UTC as ${moment
-        .utc(moment.tz(value, timezone))
-        .format()}`;
+    if (showTimezonePicker && value) {
+      const iso = toUtcIsoPreview(value, timezone);
+      return iso ? `Stored in UTC as ${iso}` : null;
     }
-
     if (dateString && timeString) {
       return `Stored as ${dateString} ${timeString}`;
     }
-
     return null;
   };
 
@@ -127,16 +166,14 @@ export const FieldTypeDateTime = ({
         disablePast={disablePast}
         name={name}
         required={required}
-        value={dateString ? moment(dateString).toDate() : null}
+        value={dateString ? parseYMD(dateString) : null}
         ref={dateFieldRef}
         showClearButton={showClearButton}
         valueFormatPreview={generateValuePreview()}
         onChange={(date) => {
           if (date) {
             onChange(
-              `${moment(date).format("yyyy-MM-DD")} ${
-                timeString ?? "00:00:00.000000"
-              }`
+              `${format(date, "yyyy-MM-dd")} ${timeString ?? "00:00:00.000000"}`
             );
           } else {
             onChange(null);
@@ -171,15 +208,12 @@ export const FieldTypeDateTime = ({
                   }
                 }}
                 getOptionDisabled={(option) => {
-                  if (disablePast) {
-                    const isSelectedDatetimePast = moment
-                      .utc(moment.tz(`${dateString} ${option.value}`, timezone))
-                      .isBefore(moment.utc());
+                  if (!disablePast) return false;
+                  if (!dateString) return false;
 
-                    return isSelectedDatetimePast;
-                  }
-
-                  return false;
+                  const utc = toUtcDate(dateString, option.value, timezone);
+                  if (!utc) return false;
+                  return utc.getTime() < Date.now();
                 }}
                 filterOptions={(e) => e}
                 isOptionEqualToValue={(option) => {
@@ -191,9 +225,7 @@ export const FieldTypeDateTime = ({
                       setInputValue(to12HrTime(timeString));
                       return;
                     }
-
                     const derivedTime = toISOString(getDerivedTime(time));
-
                     if (derivedTime.toLowerCase() === "invalid date") {
                       setInputValue(to12HrTime(timeString));
                     } else {
@@ -207,16 +239,13 @@ export const FieldTypeDateTime = ({
                     }
                   }
                 }}
-                onInputChange={(_, value) => {
-                  setInputValue(value);
-                }}
+                onInputChange={(_, v) => setInputValue(v)}
                 sx={{
                   width: 96,
                   flexShrink: 0,
                   "& .MuiAutocomplete-inputRoot": {
                     py: 0.75,
                     px: 1,
-
                     "& input.MuiOutlinedInput-input.MuiAutocomplete-input": {
                       p: 0,
                       height: 28,
@@ -226,17 +255,12 @@ export const FieldTypeDateTime = ({
                 slotProps={{
                   paper: {
                     elevation: 8,
-                    sx: {
-                      width: 184,
-                      mt: 1,
-                    },
+                    sx: { width: 184, mt: 1 },
                   },
                 }}
                 ListboxProps={{
                   ref: optionsRef,
-                  sx: {
-                    maxHeight: 180,
-                  },
+                  sx: { maxHeight: 180 },
                 }}
                 renderInput={(params) => (
                   <TextField
@@ -247,29 +271,24 @@ export const FieldTypeDateTime = ({
                     onClick={() => {
                       if (!dateString && !timeString) {
                         onChange(
-                          `${moment().format("yyyy-MM-DD")} 00:00:00.000000`
+                          `${format(new Date(), "yyyy-MM-dd")} 00:00:00.000000`
                         );
-                        dateFieldRef.current?.setDefaultDate();
+                        dateFieldRef.current?.setDefaultDate?.();
                       }
                     }}
-                    onFocus={() => {
-                      setIsTimeFieldActive(true);
-                    }}
+                    onFocus={() => setIsTimeFieldActive(true)}
                     onBlur={() => {
                       if (!inputValue) {
                         setInputValue(
                           to12HrTime(timeString ?? "00:00:00.000000")
                         );
                       }
-
                       setIsTimeFieldActive(false);
 
                       const derivedTime = toISOString(
                         getDerivedTime(inputValue)
                       );
-
                       if (derivedTime.toLowerCase() === "invalid date") {
-                        // Reset to whatever the last valid time was set to
                         setInputValue(to12HrTime(timeString));
                       } else {
                         onChange(`${dateString} ${derivedTime}`);
@@ -296,14 +315,13 @@ export const FieldTypeDateTime = ({
               disableClearable
               options={timezoneOptionsWithSuggestions}
               value={timezoneOptionsWithSuggestions.find(
-                (tz) => tz.id === timezone
+                (tz: any) => tz.id === timezone
               )}
               renderInput={(params) => <TextField {...params} />}
-              renderOption={(props, option) => (
+              renderOption={(props, option: any) => (
                 <ListItem
                   {...props}
                   key={
-                    // @ts-ignore
                     option.type === "suggestion"
                       ? `${option.id}_suggestion`
                       : option.id
@@ -312,7 +330,6 @@ export const FieldTypeDateTime = ({
                     "&.MuiListItem-root": {
                       color: "text.primary",
                       borderBottom: (theme) =>
-                        // @ts-ignore
                         option.id === "UTC" && option.type === "suggestion"
                           ? `1px solid ${theme.palette.border}`
                           : "none",
@@ -322,30 +339,24 @@ export const FieldTypeDateTime = ({
                   {option.label}
                 </ListItem>
               )}
-              onChange={(_, value) => {
-                setTimezone(value.id);
-                onTimezoneChange && onTimezoneChange(value.id);
+              onChange={(_, v: any) => {
+                setTimezone(v.id);
+                onTimezoneChange && onTimezoneChange(v.id);
               }}
-              filterOptions={(options, state) => {
+              filterOptions={(options: any[], state) => {
                 if (state.inputValue) {
-                  return options?.filter(
-                    (tz) =>
+                  return options.filter(
+                    (tz: any) =>
                       tz.label
                         .replace(" - ", " ")
                         .toLowerCase()
                         .includes(state.inputValue.toLowerCase().trim()) &&
-                      // @ts-ignore
                       tz.type !== "suggestion"
                   );
                 }
-
                 return options;
               }}
-              ListboxProps={{
-                sx: {
-                  maxHeight: 320,
-                },
-              }}
+              ListboxProps={{ sx: { maxHeight: 320 } }}
             />
           ),
         }}

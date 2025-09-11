@@ -1,7 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useCallback, useEffect, useState } from "react";
 import { useHistory } from "react-router";
-import moment from "moment-timezone";
 
 import { checkLock, lock, unlock } from "shell/store/content";
 
@@ -34,6 +33,7 @@ import {
   DialogTitle,
   Typography,
 } from "@mui/material";
+import { format, fromUnixTime, isValid } from "date-fns";
 
 /**
  * This component is designed to be a generic view lock
@@ -53,6 +53,9 @@ export function LockedView(props) {
   // of the new view name when changing views.
   const [zuid, setZuid] = useState(props.ZUID);
   const [name, setName] = useState(props.name);
+
+  const d = fromUnixTime(lockData?.timestamp);
+  const formattedDate = isValid(d) ? format(d, "MMMM do, yyyy h:mm a") : "";
 
   const onClose = useCallback(() => {
     history.goBack();
@@ -135,10 +138,8 @@ export function LockedView(props) {
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
             {lockData.firstName} {lockData.lastName} is viewing <em>{name}</em>{" "}
-            since{" "}
-            {moment.unix(lockData.timestamp).format("MMMM Do, YYYY h:mm a")}.
-            Unlock this item to ignore this warning and possibly overwrite{" "}
-            {lockData.firstName}'s changes.
+            since {formattedDate} Unlock this item to ignore this warning and
+            possibly overwrite {lockData.firstName}'s changes.
           </Typography>
         </DialogTitle>
         <DialogActions>

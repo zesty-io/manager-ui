@@ -6,7 +6,6 @@ import {
   Divider,
   Skeleton,
 } from "@mui/material";
-import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "@zesty-io/material";
 import { AddRounded } from "@mui/icons-material";
 import {
@@ -14,7 +13,6 @@ import {
   useGetContentModelQuery,
   useGetInstanceSettingsQuery,
 } from "../../../../../../../../shell/services/instance";
-import moment from "moment-timezone";
 import { useHistory } from "react-router";
 import { useState } from "react";
 import { CreateContentItemDialog } from "../../../../../../../../shell/components/CreateContentItemDialog";
@@ -38,13 +36,15 @@ import SupportAgentRoundedIcon from "@mui/icons-material/SupportAgentRounded";
 import RefreshRoundedIcon from "@mui/icons-material/RefreshRounded";
 import instanceZUID from "../../../../../../../../utility/instanceZUID";
 import { NotFound } from "../../../../../../../../shell/components/NotFound";
+// date-fns
+import { subMonths } from "date-fns";
 
 type Props = {
   loading: boolean;
 };
 
 const AnalyticsDashboard = ({ loading }: Props) => {
-  const [params, setParams] = useQueryParams();
+  const [params] = useQueryParams();
   const instance = useSelector((state: AppState) => state.instance);
   const { data: instanceSettings, isFetching: instanceSettingsFetching } =
     useGetInstanceSettingsQuery();
@@ -65,74 +65,34 @@ const AnalyticsDashboard = ({ loading }: Props) => {
       property: propertyId,
       requests: [
         {
-          // query for overall session, duration, bounce and conversion
+          // overall sessions, duration, bounce and conversions
           metrics: [
-            {
-              name: "sessions",
-            },
-            {
-              name: "averageSessionDuration",
-            },
-            {
-              name: "bounceRate",
-            },
-            {
-              name: "eventCount",
-            },
-            {
-              name: "conversions",
-            },
+            { name: "sessions" },
+            { name: "averageSessionDuration" },
+            { name: "bounceRate" },
+            { name: "eventCount" },
+            { name: "conversions" },
           ],
           dateRanges: generateDateRangesForReport(startDate, endDate),
         },
         {
-          // query for daily and total sessions
-          dimensions: [
-            {
-              name: "date",
-            },
-          ],
-          metrics: [
-            {
-              name: "sessions",
-            },
-          ],
+          // daily and total sessions
+          dimensions: [{ name: "date" }],
+          metrics: [{ name: "sessions" }],
           dateRanges: generateDateRangesForReport(startDate, endDate),
-          orderBys: [
-            {
-              dimension: {
-                dimensionName: "date",
-              },
-            },
-          ],
+          orderBys: [{ dimension: { dimensionName: "date" } }],
         },
         {
-          // query user traffic default channel
-          dimensions: [
-            {
-              name: "firstUserDefaultChannelGroup",
-            },
-          ],
-          metrics: [
-            {
-              name: "sessions",
-            },
-          ],
+          // user traffic default channel
+          dimensions: [{ name: "firstUserDefaultChannelGroup" }],
+          metrics: [{ name: "sessions" }],
           dateRanges: generateDateRangesForReport(startDate, endDate),
           metricAggregations: ["TOTAL"],
         },
         {
-          // query for new vs returning
-          dimensions: [
-            {
-              name: "newVsReturning",
-            },
-          ],
-          metrics: [
-            {
-              name: "totalUsers",
-            },
-          ],
+          // new vs returning
+          dimensions: [{ name: "newVsReturning" }],
+          metrics: [{ name: "totalUsers" }],
           dateRanges: generateDateRangesForReport(startDate, endDate),
         },
       ],
@@ -200,6 +160,7 @@ const AnalyticsDashboard = ({ loading }: Props) => {
           </Typography>
           <AnalyticsPropertySelector />
         </Box>
+
         <Box display="flex" gap={2}>
           <Box
             borderRadius={"8px"}
@@ -235,9 +196,7 @@ const AnalyticsDashboard = ({ loading }: Props) => {
               <Box mt={2}>
                 <Metric
                   loading={isLoading}
-                  valueProps={{
-                    variant: "h3",
-                  }}
+                  valueProps={{ variant: "h3" }}
                   value={
                     +(
                       findValuesForDimensions(
@@ -259,6 +218,7 @@ const AnalyticsDashboard = ({ loading }: Props) => {
                 />
               </Box>
             </Box>
+
             <ByDayLineChart
               startDate={startDate}
               endDate={endDate}
@@ -268,6 +228,7 @@ const AnalyticsDashboard = ({ loading }: Props) => {
               loading={isLoading}
             />
           </Box>
+
           <Box
             borderRadius={"8px"}
             gap={2}
@@ -288,6 +249,7 @@ const AnalyticsDashboard = ({ loading }: Props) => {
             />
           </Box>
         </Box>
+
         <Box
           display="flex"
           justifyContent={"space-between"}
@@ -421,6 +383,7 @@ const AnalyticsDashboard = ({ loading }: Props) => {
             description="A conversion is a user action that you count because you consider it important, such as a purchase, game level completion, or website or app scroll activity."
           />
         </Box>
+
         <Box mt={2}>
           <ItemsTable
             propertyId={propertyId}
@@ -436,24 +399,26 @@ const AnalyticsDashboard = ({ loading }: Props) => {
 export default AnalyticsDashboard;
 
 const AnalyticsDashboardHeader = () => {
+  const now = new Date();
+  const endDateUtc = now.toISOString().slice(0, 10);
+  const startDateUtc = subMonths(now, 1).toISOString().slice(0, 10);
+
   const { data: audit } = useGetAuditsQuery({
-    start_date: moment().utc().subtract(1, "month").format("YYYY-MM-DD"),
-    end_date: moment().utc().format("YYYY-MM-DD"),
+    start_date: startDateUtc,
+    end_date: endDateUtc,
   });
+
   const [showCreateContentItemDialog, setShowCreateContentItemDialog] =
     useState(false);
 
   const usedModelsCounts = audit
     ?.filter((a: any) => a.resourceType === "content" && a.action === 1)
     ?.map((a: any) => a?.meta?.uri?.split("/")[4])
-    .reduce((acc, value) => {
-      if (value in acc) {
-        acc[value]++;
-      } else {
-        acc[value] = 1;
-      }
+    .reduce((acc: Record<string, number>, value: string) => {
+      if (value in acc) acc[value] += 1;
+      else acc[value] = 1;
       return acc;
-    }, {});
+    }, {} as Record<string, number>);
 
   const topUsedModels = Object.entries(usedModelsCounts || {})
     ?.sort((a: any, b: any) => b[1] - a[1])

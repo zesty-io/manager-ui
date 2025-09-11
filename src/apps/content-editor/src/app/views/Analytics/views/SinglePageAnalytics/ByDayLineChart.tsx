@@ -1,5 +1,5 @@
 import { theme } from "@zesty-io/material";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { Line } from "react-chartjs-2";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import { useHistory, useParams } from "react-router";
@@ -13,8 +13,15 @@ import {
 } from "@mui/material";
 import { isEqual, last } from "lodash";
 import { ChartEvent } from "chart.js";
-import moment, { Moment } from "moment-timezone";
-import "chartjs-adapter-moment";
+import "chartjs-adapter-date-fns";
+import {
+  addDays,
+  differenceInCalendarDays,
+  format as fmt,
+  getYear,
+  isValid,
+} from "date-fns";
+
 import lineChartSkeleton from "../../../../../../../../../public/images/lineChartSkeleton.svg";
 import {
   calculatePercentageDifference,
@@ -30,8 +37,8 @@ type Params = {
 
 type Props = {
   auditData: any;
-  startDate: Moment;
-  endDate: Moment;
+  startDate: Date;
+  endDate: Date;
   dateRange0Label: string;
   dateRange1Label: string;
   data: any;
@@ -40,16 +47,14 @@ type Props = {
   loading?: boolean;
 };
 
-function getDatesArray(start: Moment, end: Moment) {
-  const diff = end.diff(start, "days");
-  const datesArray = Array.from({ length: diff + 1 }, (_, index) => {
-    return start.clone().add(index, "days").format("YYYY-MM-DD");
-  });
-
-  return datesArray;
-}
-
 const typeLabelMap = ["Views", "Avg. Engagement Time", "Bounce Rate", "Users"];
+
+function getDatesArray(start: Date, end: Date) {
+  const days = differenceInCalendarDays(end, start);
+  return Array.from({ length: days + 1 }, (_, i) =>
+    fmt(addDays(start, i), "yyyy-MM-dd")
+  );
+}
 
 export const ByDayLineChart = ({
   auditData,
@@ -64,10 +69,12 @@ export const ByDayLineChart = ({
 }: Props) => {
   const history = useHistory();
   const { modelZUID, itemZUID } = useParams<Params>();
-  const chartRef = useRef(null);
-  const [tooltipModel, setTooltipModel] = useState(null);
+  const chartRef = useRef<any>(null);
+  const [tooltipModel, setTooltipModel] = useState<any>(null);
   const [isTooltipEntered, setIsTooltipEntered] = useState(false);
   const [type, setType] = useState(0);
+
+  const dayCount = differenceInCalendarDays(endDate, startDate) + 1;
 
   const itemPublishes = useMemo(
     () =>
@@ -78,11 +85,15 @@ export const ByDayLineChart = ({
             (item.action === 4 || item.action === 6)
         )
         ?.map((item: any) => {
+          const token = String(item.meta.message).split(" ").pop();
+          const parsed =
+            token && isValid(new Date(token)) ? new Date(token) : null;
           return {
-            date: moment(item.meta.message.split(" ").pop()).format("L"),
+            date: parsed ? fmt(parsed, "yyyy-MM-dd") : null,
             version: item.meta.version,
           };
         })
+        .filter((x: any) => x.date)
         .sort((a: any, b: any) => b.version - a.version),
     [auditData, itemZUID]
   );
@@ -112,10 +123,6 @@ export const ByDayLineChart = ({
         dataIndex: index,
         x: activeElements?.[0]?.element?.x,
         y: activeElements?.[1]?.element?.y - 16,
-        // y: Math.round(
-        //   (activeElements?.[1]?.element?.y + activeElements?.[2]?.element?.y) /
-        //     2
-        // ),
       };
       if (!isEqual(tooltipModel, model)) {
         setTooltipModel(model);
@@ -132,7 +139,6 @@ export const ByDayLineChart = ({
       if (totalUsers[index] !== "0") {
         return (+et / +totalUsers[index]).toString() ?? "0";
       }
-
       return "0";
     });
   };
@@ -146,10 +152,8 @@ export const ByDayLineChart = ({
     switch (type) {
       case 1:
         return source ? convertSecondsToMinutesAndSeconds(+source) : "0m 00s";
-
       case 2:
         return source ? `${Math.floor(+source * 100)}%` : "0%";
-
       default:
         return source ? source?.toLocaleString() : "0";
     }
@@ -157,28 +161,18 @@ export const ByDayLineChart = ({
 
   const lastData = useMemo(() => {
     let result = findValuesForDimensions(data?.rows, ["date_range_0"], type);
-
-    // Calculate average engagement times
-    if (type === 1) {
-      result = getAverageEngagementTime("date_range_0");
-    }
+    if (type === 1) result = getAverageEngagementTime("date_range_0");
 
     if (result.length === 1 || result.length === 2) {
       return [result.pop()];
     }
 
-    return padArray(result, (endDate.diff(startDate, "days") + 1) * 2)?.slice(
-      endDate.diff(startDate, "days") + 1
-    );
-  }, [data, type]);
+    return padArray(result, dayCount * 2)?.slice(dayCount);
+  }, [data, type, dayCount]);
 
   const priorData = useMemo(() => {
     let result = findValuesForDimensions(data?.rows, ["date_range_1"], type);
-
-    // Calculate average engagement times
-    if (type === 1) {
-      result = getAverageEngagementTime("date_range_1");
-    }
+    if (type === 1) result = getAverageEngagementTime("date_range_1");
 
     if (shouldCompare) {
       result = findValuesForDimensions(compareData?.rows, [], type);
@@ -187,45 +181,28 @@ export const ByDayLineChart = ({
     if (result?.length === 1 || result?.length === 2) {
       return [result[0]];
     }
+
     return shouldCompare
-      ? padArray(result, (endDate.diff(startDate, "days") + 1) * 2)?.slice(
-          endDate.diff(startDate, "days") + 1
-        )
-      : padArray(result, (endDate.diff(startDate, "days") + 1) * 2)?.slice(
-          0,
-          endDate.diff(startDate, "days") + 1
-        );
-  }, [data, type, shouldCompare, compareData]);
+      ? padArray(result, dayCount * 2)?.slice(dayCount)
+      : padArray(result, dayCount * 2)?.slice(0, dayCount);
+  }, [data, type, shouldCompare, compareData, dayCount]);
 
-  const spansMoreThanOneYear = useMemo(() => {
-    let firstDate = moment(dateChartLabels[0]);
-    let lastDate = moment(dateChartLabels[dateChartLabels.length - 1]);
-
-    return firstDate.year() !== lastDate.year();
-  }, [dateChartLabels]);
+  const spansMoreThanOneYear = useMemo(
+    () => getYear(startDate) !== getYear(endDate),
+    [startDate, endDate]
+  );
 
   const itemPublishesByDayArray = useMemo(
     () =>
-      new Array(endDate.diff(startDate, "days") + 1).fill(0).map((_, i) => {
-        if (
-          itemPublishes?.find(
-            (item: any) =>
-              item.date === moment(startDate).add(i, "days").format("L")
-          )
-        ) {
-          return {
-            value: lastData[i],
-            ...itemPublishes?.find(
-              (item: any) =>
-                item.date === moment(startDate).add(i, "days").format("L")
-            ),
-          };
-        } else {
-          return null;
-        }
+      new Array(dayCount).fill(0).map((_, i) => {
+        const labelYMD = fmt(addDays(startDate, i), "yyyy-MM-dd");
+        const found = itemPublishes?.find((p: any) => p.date === labelYMD);
+        return found ? { value: lastData[i], ...found } : null;
       }),
-    [itemPublishes, startDate, endDate, lastData]
+    [itemPublishes, startDate, dayCount, lastData]
   );
+
+  const prevWindowStart = addDays(startDate, -dayCount); // prior range start (inclusive)
 
   return (
     <>
@@ -243,23 +220,17 @@ export const ByDayLineChart = ({
             <Box
               width="81px"
               height="32px"
-              sx={{
-                border: `1px solid ${theme.palette.border}`,
-              }}
+              sx={{ border: `1px solid ${theme.palette.border}` }}
             />
             <Box
               width="81px"
               height="32px"
-              sx={{
-                border: `1px solid ${theme.palette.border}`,
-              }}
+              sx={{ border: `1px solid ${theme.palette.border}` }}
             />
             <Box
               width="81px"
               height="32px"
-              sx={{
-                border: `1px solid ${theme.palette.border}`,
-              }}
+              sx={{ border: `1px solid ${theme.palette.border}` }}
             />
           </Box>
         ) : (
@@ -295,6 +266,7 @@ export const ByDayLineChart = ({
           </ButtonGroup>
         )}
       </Box>
+
       {loading ? (
         <Box>
           <Box display="flex" gap={2} my={2.5}>
@@ -373,13 +345,11 @@ export const ByDayLineChart = ({
               datasets: [
                 {
                   label: "Item Published",
-                  data: itemPublishesByDayArray.map(
-                    (item: any) => item?.value || 0
-                  ),
+                  data: itemPublishesByDayArray.map((x: any) => x?.value || 0),
                   fill: false,
                   backgroundColor: theme.palette.success.main,
                   borderColor: "transparent",
-                  pointRadius: (ctx) =>
+                  pointRadius: (ctx: any) =>
                     itemPublishesByDayArray[ctx.dataIndex] ? 4 : 0,
                   pointHoverRadius: 0,
                   datalabels: {
@@ -387,20 +357,10 @@ export const ByDayLineChart = ({
                     color: theme.palette.text.disabled,
                     align: "top",
                     offset: 4,
-                    font: {
-                      family: "Mulish",
-                      size: 12,
-                      weight: 600,
-                    },
-                    formatter: (value: any, ctx: any, ...rest) => {
-                      if (
-                        !itemPublishesByDayArray[ctx.dataIndex] ||
-                        !itemPublishesByDayArray[ctx.dataIndex]?.version
-                      )
-                        return "";
-                      return `v${
-                        itemPublishesByDayArray[ctx.dataIndex]?.version
-                      }`;
+                    font: { family: "Mulish", size: 12, weight: 600 },
+                    formatter: (_: any, ctx: any) => {
+                      const item = itemPublishesByDayArray[ctx.dataIndex];
+                      return item?.version ? `v${item.version}` : "";
                     },
                   },
                 },
@@ -412,9 +372,7 @@ export const ByDayLineChart = ({
                   borderColor: theme.palette.info.main,
                   pointRadius: lastData.length <= 2 ? 4 : 0,
                   pointHitRadius: 3,
-                  datalabels: {
-                    display: false,
-                  },
+                  datalabels: { display: false },
                   borderWidth: 2,
                 },
                 {
@@ -425,9 +383,7 @@ export const ByDayLineChart = ({
                   borderColor: theme.palette.grey[300],
                   pointRadius: priorData.length <= 2 ? 4 : 0,
                   pointHitRadius: 3,
-                  datalabels: {
-                    display: false,
-                  },
+                  datalabels: { display: false },
                   borderWidth: 2,
                 },
               ],
@@ -436,24 +392,16 @@ export const ByDayLineChart = ({
               ChartDataLabels,
               {
                 id: "verticalLine",
-                afterDraw: (chart: {
-                  tooltip?: any;
-                  scales?: any;
-                  ctx?: any;
-                }) => {
-                  // eslint-disable-next-line no-underscore-dangle
+                afterDraw: (chart: any) => {
                   if (
                     chart?.tooltip?._active &&
                     chart?.tooltip?._active?.length
                   ) {
-                    // find coordinates of tooltip
                     const activePoint = chart.tooltip._active[0];
                     const { ctx } = chart;
                     const { x } = activePoint.element;
                     const topY = chart.scales.y.top;
                     const bottomY = chart.scales.y.bottom;
-
-                    // draw vertical line
                     ctx.save();
                     ctx.beginPath();
                     ctx.moveTo(x, topY);
@@ -468,16 +416,8 @@ export const ByDayLineChart = ({
               },
             ]}
             options={{
-              hover: {
-                mode: "nearest",
-                axis: "x",
-                intersect: false,
-              },
-              layout: {
-                padding: {
-                  top: 16,
-                },
-              },
+              hover: { mode: "nearest", axis: "x", intersect: false },
+              layout: { padding: { top: 16 } },
               responsive: true,
               maintainAspectRatio: false,
               onHover: handleHover,
@@ -496,10 +436,7 @@ export const ByDayLineChart = ({
                     usePointStyle: true,
                     pointStyle: "circle",
                     boxWidth: 8,
-                    font: {
-                      family: "Mulish",
-                      size: 12,
-                    },
+                    font: { family: "Mulish", size: 12 },
                     color: theme.palette.text.primary,
                     padding: 6,
                   },
@@ -511,33 +448,25 @@ export const ByDayLineChart = ({
                     display: true,
                     text: typeLabelMap[type],
                     align: "end",
-                    font: {
-                      size: 12,
-                      family: "Mulish",
-                      weight: "600",
-                    },
+                    font: { size: 12, family: "Mulish", weight: "600" },
                     color: theme.palette.text.disabled,
                   },
                   beginAtZero: true,
                   position: "right",
                   grid: {
                     drawOnChartArea: true,
-                    color: function (context) {
-                      return context.tick.value % 1 === 0
+                    color: (ctx: any) =>
+                      ctx.tick.value % 1 === 0
                         ? theme.palette.grey[300]
-                        : "transparent";
-                    },
+                        : "transparent",
                     borderDash: [4, 4],
                     drawBorder: false,
                   },
                   ticks: {
                     color: theme.palette.text.disabled,
-                    font: {
-                      size: 12,
-                      family: "Mulish",
-                    },
+                    font: { size: 12, family: "Mulish" },
                     padding: 8,
-                    callback: function (value, index, values) {
+                    callback: (value: any) => {
                       switch (type) {
                         case 1:
                           return convertSecondsToMinutesAndSeconds(+value);
@@ -550,25 +479,18 @@ export const ByDayLineChart = ({
                   },
                 },
                 x: {
-                  grid: {
-                    drawOnChartArea: false,
-                    drawTicks: false,
-                  },
+                  grid: { drawOnChartArea: false, drawTicks: false },
                   type: "time",
                   time: {
-                    parser: "YYYY-MM-DD",
                     unit: "day",
                     displayFormats: {
-                      day: spansMoreThanOneYear ? "MMM DD YYYY" : "MMM DD",
+                      day: spansMoreThanOneYear ? "MMM dd yyyy" : "MMM dd",
                     },
                   },
                   ticks: {
                     padding: 8,
                     color: theme.palette.text.disabled,
-                    font: {
-                      size: 12,
-                      family: "Mulish",
-                    },
+                    font: { size: 12, family: "Mulish" },
                     maxTicksLimit: 5,
                     maxRotation: 0,
                     minRotation: 0,
@@ -578,6 +500,7 @@ export const ByDayLineChart = ({
               },
             }}
           />
+
           <Paper
             sx={{
               display: tooltipModel ? "block" : "none",
@@ -605,20 +528,23 @@ export const ByDayLineChart = ({
               >
                 {shouldCompare
                   ? dateRange0Label
-                  : moment(startDate)
-                      .add(tooltipModel?.dataIndex, "days")
-                      .format("ddd D MMM")}{" "}
+                  : fmt(
+                      addDays(startDate, tooltipModel?.dataIndex ?? 0),
+                      "eee d LLL"
+                    )}{" "}
                 vs{" "}
                 {shouldCompare
                   ? dateRange1Label
-                  : moment(startDate)
-                      .subtract(endDate.diff(startDate, "days") + 1, "days")
-                      .add(tooltipModel?.dataIndex, "days")
-                      .format("ddd D MMM")}
+                  : fmt(
+                      addDays(prevWindowStart, tooltipModel?.dataIndex ?? 0),
+                      "eee d LLL"
+                    )}
               </Typography>
+
               <Typography variant="h2" fontWeight={600} noWrap>
                 {getTooltipDataText(lastData?.[tooltipModel?.dataIndex])}
               </Typography>
+
               <Typography
                 variant="body3"
                 color="text.disabled"
@@ -644,13 +570,13 @@ export const ByDayLineChart = ({
                   )}
                 </Typography>
               </Typography>
+
               {itemPublishesByDayArray[tooltipModel?.dataIndex]?.version ? (
                 <Button
                   sx={{ display: "block", mt: 1.5, pointerEvents: "auto" }}
                   size="small"
                   variant="contained"
                   color="inherit"
-                  //onClick={() => history.push(`/content/${modelZUID}/${itemZUID}?version=${itemPublishesByDayArray[tooltipModel?.dataIndex]?.version}`)}
                   onClick={() =>
                     history.push(
                       `/content/${modelZUID}/${itemZUID}?version=${

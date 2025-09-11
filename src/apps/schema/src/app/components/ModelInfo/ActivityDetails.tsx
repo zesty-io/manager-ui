@@ -1,7 +1,7 @@
 import { Box, Typography, Button, Avatar } from "@mui/material";
 import { useGetContentModelsQuery } from "../../../../../../shell/services/instance";
 import { useHistory, useParams } from "react-router";
-import moment from "moment";
+import { format, isValid } from "date-fns";
 import { useGetUsersQuery } from "../../../../../../shell/services/accounts";
 import { useState } from "react";
 import { MD5 } from "../../../../../../utility/md5";
@@ -25,6 +25,19 @@ export const ActivityDetails = () => {
   );
 
   const [isCopied, setIsCopied] = useState("");
+
+  const createdDate = model?.createdAt ? new Date(model.createdAt) : null;
+  const updatedDate = model?.updatedAt ? new Date(model.updatedAt) : null;
+
+  const createdOn =
+    createdDate && isValid(createdDate)
+      ? format(createdDate, "do MMMM, yyyy 'at' h:mm a")
+      : "";
+
+  const updatedOn =
+    updatedDate && isValid(updatedDate)
+      ? format(updatedDate, "do MMMM, yyyy 'at' h:mm a")
+      : "";
 
   const handleCopy = (data: string) => {
     navigator?.clipboard
@@ -66,9 +79,7 @@ export const ActivityDetails = () => {
             <Typography color="text.primary">Created On</Typography>
           </Box>
           <Box flex={1}>
-            <Typography>
-              {moment(model?.createdAt).format("Do MMMM, YYYY [at] h:mm A")}
-            </Typography>
+            <Typography>{createdOn}</Typography>
           </Box>
         </Box>
         <Box
@@ -115,9 +126,7 @@ export const ActivityDetails = () => {
             <Typography color="text.primary">Last Updated On</Typography>
           </Box>
           <Box flex={1}>
-            <Typography>
-              {moment(model?.updatedAt).format("Do MMMM, YYYY [at] h:mm A")}
-            </Typography>
+            <Typography>{updatedOn}</Typography>
           </Box>
         </Box>
         <Box display="flex" alignItems="center" px={2} py={1.5}>

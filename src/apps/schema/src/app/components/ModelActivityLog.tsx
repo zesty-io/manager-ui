@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { Box, Stack } from "@mui/material";
-import moment from "moment";
 import { isEmpty } from "lodash";
 
 import { ActionsTimeline } from "../../../../reports/src/app/views/ActivityLog/components/ActionsTimeline";
@@ -46,14 +45,6 @@ export const ModelActivityLog = () => {
   );
 
   useEffect(() => {
-    if (
-      !searchParams.get("from") &&
-      !searchParams.get("to") &&
-      !isEmpty(modelData)
-    ) {
-      useDefaultDateParams();
-    }
-
     setInitialized(true);
   }, [modelData, location.pathname]);
 
@@ -67,11 +58,6 @@ export const ModelActivityLog = () => {
       relatedAudits?.length ? filterByParams(relatedAudits, searchParams) : [],
     [relatedAudits, searchParams]
   );
-
-  const useDefaultDateParams = () => {
-    setSearchParams(moment(modelData?.createdAt).format("YYYY-MM-DD"), "from");
-    setSearchParams(moment().format("YYYY-MM-DD"), "to");
-  };
 
   return (
     <Stack
@@ -101,7 +87,6 @@ export const ModelActivityLog = () => {
             onReset={() => {
               setSearchParams("", "action");
               setSearchParams("", "actionByUserZUID");
-              useDefaultDateParams();
             }}
           />
         </Stack>

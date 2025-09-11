@@ -1,9 +1,9 @@
 import { useMemo } from "react";
 import { faCog } from "@fortawesome/free-solid-svg-icons";
-import moment from "moment";
 import { useSelector } from "react-redux";
 import { ListItem } from "./ListItem";
 import { useGetWorkflowStatusLabelsQuery } from "../../../../../../../../shell/services/instance";
+import { format, isValid, isSameYear } from "date-fns";
 
 export const SettingsResourceListItem = (props) => {
   const { data: workflowStatusLabels } = useGetWorkflowStatusLabelsQuery({
@@ -43,6 +43,16 @@ export const SettingsResourceListItem = (props) => {
     }
   }, [props.affectedZUID, settingsData, props.message]);
 
+  const d = new Date(props.updatedAt);
+  const lastAction =
+    isValid(d) && isSameYear(d, new Date())
+      ? format(d, "MMM d, h:mm a")
+      : isValid(d)
+      ? format(d, "MMM d, yyyy, h:mm a")
+      : "";
+
+  const secondary = `Last action @ ${lastAction} • Settings`;
+
   return (
     <ListItem
       divider={props.divider}
@@ -51,11 +61,7 @@ export const SettingsResourceListItem = (props) => {
       affectedZUID={props.affectedZUID}
       icon={faCog}
       primary={primaryText}
-      secondary={`Last action @ ${
-        moment(props.updatedAt).isSame(new Date(), "year")
-          ? moment(props.updatedAt).format("MMM D, h:mm A")
-          : moment(props.updatedAt).format("ll, h:mm A")
-      } • Settings`}
+      secondary={secondary}
     />
   );
 };

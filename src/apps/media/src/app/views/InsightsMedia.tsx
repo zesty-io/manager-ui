@@ -8,7 +8,7 @@ import { useGetUsageQuery } from "../../../../../shell/services/metrics";
 import { MetricCard } from "../../../../../shell/components/MetricsCard";
 import SendRoundedIcon from "@mui/icons-material/SendRounded";
 import CloudRoundedIcon from "@mui/icons-material/CloudRounded";
-import moment from "moment";
+import { subDays, differenceInCalendarDays, formatISO } from "date-fns";
 import { InsightsTable } from "../components/InsightsTable";
 import {
   useGetAllBinFilesQuery,
@@ -24,7 +24,7 @@ const iconStyles = {
   padding: 1,
 };
 
-const date = new Date();
+const now = new Date();
 
 const dateRanges = [7, 14, 30, 90];
 
@@ -36,11 +36,12 @@ export const InsightsMedia: FC = () => {
   );
   const [dateRange, setDateRange] = useState(30);
   const hasPriorData =
-    moment(date).diff(instanceCreatedAtDate, "days") >= dateRange * 2;
-  const startDate = moment(date).subtract(dateRange, "days");
-  const endDate = moment(date);
-  const priorStartDate = moment(date).subtract(dateRange * 2, "days");
-  const priorEndDate = moment(date).subtract(dateRange, "days");
+    differenceInCalendarDays(now, new Date(instanceCreatedAtDate)) >=
+    dateRange * 2;
+  const startDate = subDays(now, dateRange);
+  const endDate = now;
+  const priorStartDate = subDays(now, dateRange * 2);
+  const priorEndDate = subDays(now, dateRange);
 
   const { data: bins, isFetching: isBinsFetching } = useGetBinsQuery({
     instanceId,
@@ -52,10 +53,10 @@ export const InsightsMedia: FC = () => {
   );
 
   const { data: priorUsage, isFetching: isPriorUsageFetching } =
-    useGetUsageQuery([priorStartDate.format(), priorEndDate.format()]);
+    useGetUsageQuery([formatISO(priorStartDate), formatISO(priorEndDate)]);
   const { data: usage, isFetching: isUsageFetching } = useGetUsageQuery([
-    startDate.format(),
-    endDate.format(),
+    formatISO(startDate),
+    formatISO(endDate),
   ]);
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);

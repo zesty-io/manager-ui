@@ -14,7 +14,6 @@ import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
 import CheckIcon from "@mui/icons-material/Check";
 import { Link as RouterLink, useHistory } from "react-router-dom";
-import moment from "moment-timezone";
 
 import { ContentModelField } from "../../../../../../../shell/services/types";
 import { FieldIcon } from "../../../../../../schema/src/app/components/Field/FieldIcon";
@@ -22,6 +21,7 @@ import {
   TYPE_TEXT,
   FieldType,
 } from "../../../../../../schema/src/app/components/configs";
+import { format } from "date-fns";
 
 type FieldTooltipBodyProps = {
   data: Partial<ContentModelField>;
@@ -82,7 +82,10 @@ export const FieldTooltipBody = ({ data }: FieldTooltipBodyProps) => {
         />
         <Stack direction="row" justifyContent="space-between">
           <Typography variant="body3" fontWeight={600} color="text.secondary">
-            Field added on {moment(data?.createdAt)?.format("MMM D, YYYY")}
+            Field added on{" "}
+            {data?.createdAt
+              ? format(new Date(data.createdAt), "MMM d, yyyy")
+              : ""}
           </Typography>
           <Link
             component={RouterLink}

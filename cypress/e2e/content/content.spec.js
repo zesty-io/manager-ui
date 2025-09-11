@@ -1,6 +1,11 @@
-import moment from "moment";
 const options = { timeout: 15000 };
 const forceClick = { force: true };
+const formatDate = (ts) =>
+  new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "2-digit",
+    year: "numeric",
+  }).format(new Date(ts));
 describe("Content Specs", () => {
   const TIMESTAMP = Date.now();
 
@@ -330,7 +335,7 @@ describe("Content Specs", () => {
 
       cy.get("#12-63ab04-0nkwcc input").should(
         "have.value",
-        moment(TIMESTAMP).format("MMM DD, YYYY")
+        formatDate(TIMESTAMP)
       );
     });
   });
@@ -363,7 +368,7 @@ describe("Content Specs", () => {
       cy.get("#12-f3db44-c8kt0q")
         .find("[data-cy='datePickerInputField']")
         .find("input")
-        .should("have.value", moment(TIMESTAMP).format("MMM DD, YYYY"));
+        .should("have.value", formatDate(TIMESTAMP));
       cy.get("#12-f3db44-c8kt0q")
         .find("[data-cy='dateTimeInputField']")
         .find("input")

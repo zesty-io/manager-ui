@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { connect } from "react-redux";
-import moment from "moment-timezone";
 import {
   Card,
   CardHeader,
@@ -14,6 +13,7 @@ import cx from "classnames";
 import SharedWidgetStyles from "../SharedWidget.less";
 import { AppLink } from "@zesty-io/core";
 import styles from "./WidgetDraftHistory.less";
+import { formatDistanceToNow, isValid } from "date-fns";
 
 export default connect((state, props) => {
   return {
@@ -110,7 +110,11 @@ export default connect((state, props) => {
                       color: "#1018288f",
                     }}
                   >
-                    {moment(log.happenedAt).fromNow()}
+                    {isValid(new Date(log.happenedAt))
+                      ? formatDistanceToNow(new Date(log.happenedAt), {
+                          addSuffix: true,
+                        })
+                      : ""}
                   </Typography>
                 </Stack>
               ))}

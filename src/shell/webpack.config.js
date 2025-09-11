@@ -10,7 +10,6 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
-const MomentLocalesPlugin = require("moment-locales-webpack-plugin");
 const SentryCliPlugin = require("@sentry/webpack-plugin");
 
 const release = require("../../etc/release");
@@ -91,7 +90,6 @@ module.exports = async (env) => {
       new NodePolyfillPlugin({
         excludeAliases: ["console"],
       }),
-      new MomentLocalesPlugin(),
       new MiniCssExtractPlugin({
         ignoreOrder: true,
         filename:
