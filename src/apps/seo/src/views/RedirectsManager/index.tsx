@@ -1,9 +1,10 @@
-import RedirectImportTable from "./RedirectImportTable";
 import { Box } from "@mui/material";
-import RedirectsTable from "./RedirectsTable";
-import RedirectActions from "./RedirectActions";
 
-const RedirectsManager = (props: any) => {
+import RedirectActions from "./RedirectActions";
+import RedirectsTable from "./RedirectsTable";
+import RedirectImportTable from "./RedirectImportTable";
+
+const RedirectsManager = () => {
   return (
     <>
       <Box
@@ -19,7 +20,6 @@ const RedirectsManager = (props: any) => {
       >
         <RedirectActions />
       </Box>
-
       <Box
         flexGrow={1}
         display="flex"
@@ -33,11 +33,8 @@ const RedirectsManager = (props: any) => {
           height: `calc(100% - 68px - 40px)`,
         }}
       >
-        {Object.keys(props.imports).length ? (
-          <RedirectImportTable {...props} />
-        ) : (
-          <RedirectsTable />
-        )}
+        <RedirectsTable />
+        <RedirectImportTable />
       </Box>
     </>
   );

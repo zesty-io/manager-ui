@@ -58,10 +58,12 @@ export const LanguageSelector = () => {
 
     // If we are at a content item level then reload newly selected language item
     const parts = location.pathname.split("/");
-    if (parts[3]) {
+    // @ts-ignore
+    const siblingZUID = item.siblings[langId];
+
+    if (parts[3] && siblingZUID) {
       const subpath = parts.slice(0, 3);
-      // @ts-ignore
-      subpath.push(item.siblings[langId]);
+      subpath.push(siblingZUID);
       history.push(`${subpath.join("/")}`);
     }
   };
