@@ -1,6 +1,5 @@
-import { Box, Typography, ThemeProvider, Stack } from "@mui/material";
+import { Box, Typography, Stack } from "@mui/material";
 import { useParams as useRouterParams } from "react-router";
-import { theme } from "@zesty-io/material";
 
 import { useGetContentModelQuery } from "../../../../../../shell/services/instance";
 import { ContentBreadcrumbs } from "../../components/ContentBreadcrumbs";

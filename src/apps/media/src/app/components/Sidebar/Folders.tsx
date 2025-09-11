@@ -8,7 +8,6 @@ import {
   AccordionSummary,
   AccordionDetails,
   Stack,
-  ThemeProvider,
   Dialog,
   DialogActions,
   DialogTitle,

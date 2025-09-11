@@ -40,13 +40,18 @@ module.exports = async (env) => {
     devServer: {
       host: "0.0.0.0",
       compress: true,
-      contentBase: path.resolve(__dirname, "../../build"),
-      disableHostCheck: true,
+      static: {
+        directory: path.resolve(__dirname, "../../build"),
+      },
+      allowedHosts: "all",
       historyApiFallback: {
         rewrites: [
           { from: /^\/active-preview/, to: "/activePreview.html" },
           { from: /./, to: "/index.html" },
         ],
+      },
+      client: {
+        webSocketURL: "auto://0.0.0.0:0/ws",
       },
     },
     devtool:
@@ -239,13 +244,13 @@ module.exports = async (env) => {
         },
         {
           test: /\.ttf$/,
-          use: ["file-loader"],
+          type: "asset/resource",
         },
         {
           test: /\.(png|jpe?g|gif|jp2|webp|svg)$/,
-          loader: "file-loader",
-          options: {
-            name: "[name].[ext]",
+          type: "asset/resource",
+          generator: {
+            filename: "[name].[ext]",
           },
         },
       ],

@@ -1,5 +1,4 @@
-import { Box, ThemeProvider } from "@mui/material";
-import { theme } from "@zesty-io/material";
+import { Box } from "@mui/material";
 import { useState } from "react";
 import { Header } from "./components/Header";
 import { MetricCards } from "./components/MetricCards";

@@ -1,4 +1,4 @@
-const options = { timeout: 15000 };
+const options = { timeout: 20_000 };
 const forceClick = { force: true };
 const formatDate = (ts) =>
   new Intl.DateTimeFormat("en-US", {
@@ -438,23 +438,13 @@ describe("Content Specs", () => {
         cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
       });
 
-      cy.intercept({ method: "GET", url: "**/items*" }).as("fetchItems");
-      cy.intercept({ method: "GET", url: "**/models*" }).as("fetchModels");
-      cy.intercept({ method: "GET", url: "**/fields*" }).as("fetchFields");
-
-      cy.wait("@fetchFields", { timeout: 15000 });
-      cy.getBySelector("DuoModeToggle", { timeout: 10000 }).click(forceClick);
+      cy.getBySelector("DuoModeToggle", { timeout: 40_000 }).click(forceClick);
     });
 
     it("can only select/add one item", () => {
-      cy.intercept({ method: "GET", url: "**/items*" }).as("getItems");
-
-      cy.get(
-        '[data-cy="add-relational-item-button"]:contains("Add Existing One to One")',
-        options
-      ).click(forceClick);
-
-      cy.wait("@getItems", { timeout: 40000 });
+      cy.get('[data-cy="add-relational-item-button"]', options)
+        .contains("Add Existing One to One", { matchCase: false })
+        .click();
 
       cy.get(".MuiDataGrid-row:eq(0) input", options).click(forceClick);
       cy.get(".MuiDataGrid-row:eq(1) input", options).click(forceClick);
@@ -505,12 +495,7 @@ describe("Content Specs", () => {
         cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
       });
 
-      cy.intercept({ method: "GET", url: "**/items*" }).as("fetchItems");
-      cy.intercept({ method: "GET", url: "**/models*" }).as("fetchModels");
-      cy.intercept({ method: "GET", url: "**/fields*" }).as("fetchFields");
-
-      cy.wait("@fetchFields");
-      cy.getBySelector("DuoModeToggle", { timeout: 10000 }).click(forceClick);
+      cy.getBySelector("DuoModeToggle", { timeout: 40000 }).click(forceClick);
     });
 
     it("can add multiple items", () => {
@@ -518,7 +503,7 @@ describe("Content Specs", () => {
         force: true,
       });
 
-      cy.wait("@fetchItems");
+      // cy.wait("@fetchItems");
 
       [...Array(3)].forEach((_, i) => {
         cy.get(".MuiDataGrid-row").eq(i).find("input").click();

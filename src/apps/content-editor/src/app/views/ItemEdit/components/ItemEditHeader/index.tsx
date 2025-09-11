@@ -8,13 +8,11 @@ import {
   Tooltip,
   Skeleton,
 } from "@mui/material";
-import { theme } from "@zesty-io/material";
 import { useHistory, useLocation, useParams } from "react-router";
 import {
   ContentItem,
   Publishing,
 } from "../../../../../../../../shell/services/types";
-import { ThemeProvider } from "@mui/material/styles";
 import {
   VerticalSplitRounded,
   QueryStatsRounded,

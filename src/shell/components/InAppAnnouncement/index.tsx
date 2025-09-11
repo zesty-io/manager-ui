@@ -1,6 +1,4 @@
 import { useEffect, useMemo } from "react";
-import { ThemeProvider } from "@mui/material";
-import { theme } from "@zesty-io/material";
 import { addYears, isWithinInterval } from "date-fns";
 import {
   Dialog,
