@@ -372,7 +372,7 @@ describe("Content Specs", () => {
       cy.get("#12-f3db44-c8kt0q")
         .find("[data-cy='dateTimeInputField']")
         .find("input")
-        .should("have.value", "12:00 am");
+        .should("have.value", "12:00 AM");
     });
 
     it("should allow a user to select a time from the dropdown", () => {
@@ -383,7 +383,7 @@ describe("Content Specs", () => {
       cy.get("#12-f3db44-c8kt0q")
         .find("[data-cy='dateTimeInputField']")
         .find("input")
-        .should("have.value", "12:15 am");
+        .should("have.value", "12:15 AM");
     });
 
     it("should allow a user to manually type in a time", () => {
@@ -407,7 +407,7 @@ describe("Content Specs", () => {
       cy.get("#12-f3db44-c8kt0q")
         .find("[data-cy='dateTimeInputField']")
         .find("input")
-        .should("have.value", "12:00 pm");
+        .should("have.value", "11:00 PM");
     });
   });
 

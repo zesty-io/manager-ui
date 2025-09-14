@@ -99,7 +99,18 @@ export const FieldTypeDateTime = ({
     selectedTimezone ?? "America/Los_Angeles"
   );
 
-  const [dateString, timeString] = value?.split(" ") ?? [null, null];
+  const [dateStringRaw, timeStringRaw] = value?.split(" ") ?? [null, null];
+
+  const normalizeIsoTime = (t?: string | null) => {
+    if (!t) return null;
+    if (/^\d{2}:\d{2}:\d{2}$/.test(t)) return `${t}.000000`; // add micros
+    if (/^\d{2}:\d{2}:\d{2}\.\d{1,6}$/.test(t)) return t.padEnd(15, "0"); // pad to 6
+    return t;
+  };
+
+  const dateString = dateStringRaw;
+  const timeString = normalizeIsoTime(timeStringRaw);
+
   const currentSystemTimezoneID =
     Intl.DateTimeFormat().resolvedOptions().timeZone ?? "America/Los_Angeles";
 
@@ -285,13 +296,13 @@ export const FieldTypeDateTime = ({
                       }
                       setIsTimeFieldActive(false);
 
-                      const derivedTime = toISOString(
-                        getDerivedTime(inputValue)
-                      );
-                      if (derivedTime.toLowerCase() === "invalid date") {
-                        setInputValue(to12HrTime(timeString));
-                      } else {
+                      try {
+                        const derivedTime = toISOString(
+                          getDerivedTime(inputValue)
+                        );
                         onChange(`${dateString} ${derivedTime}`);
+                      } catch {
+                        setInputValue(to12HrTime(timeString));
                       }
                     }}
                     sx={{

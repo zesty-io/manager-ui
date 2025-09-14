@@ -600,7 +600,6 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
         <DateFilterModal
           onClose={() => setCalendarModalType("")}
           onDateChange={({ type, date }) => {
-            console.log("testing date", date);
             handleSetSelectedDate({ type, value: date });
           }}
           type={calendarModalType}
