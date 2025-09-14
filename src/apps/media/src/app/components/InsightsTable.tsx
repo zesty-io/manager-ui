@@ -1,41 +1,24 @@
-import { FC, useState, useMemo, useRef } from "react";
+import { FC, useState } from "react";
 
 import {
   Box,
   Typography,
-  Card,
   Chip,
   CardMedia,
   IconButton,
   Tooltip,
 } from "@mui/material";
-import { useSelector } from "react-redux";
-import {
-  useGetUsageQuery,
-  useGetRequestsQuery,
-} from "../../../../../shell/services/metrics";
 import AutoSizer, { Size } from "react-virtualized-auto-sizer";
 import { DataGridPro } from "@mui/x-data-grid-pro";
-import { File, Bin } from "../../../../../shell/services/types";
 import fileBroken from "../../../../../../public/images/fileBroken.jpg";
-import { useHistory, useLocation } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { numberFormatter } from "../../../../../utility/numberFormatter";
 
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 import ReportGmailerrorredIcon from "@mui/icons-material/ReportGmailerrorred";
 import FontDownloadRoundedIcon from "@mui/icons-material/FontDownloadRounded";
 
-import {
-  fileExtension,
-  fileTypeToColor,
-  getExtensions,
-  getDateFilterFn,
-} from "../utils/fileUtils";
-import { AppState } from "../../../../../shell/store/types";
-import {
-  useGetAllBinFilesQuery,
-  useGetBinsQuery,
-} from "../../../../../shell/services/mediaManager";
+import { fileExtension, fileTypeToColor } from "../utils/fileUtils";
 import LinkRoundedIcon from "@mui/icons-material/LinkRounded";
 import CheckIcon from "@mui/icons-material/Check";
 
