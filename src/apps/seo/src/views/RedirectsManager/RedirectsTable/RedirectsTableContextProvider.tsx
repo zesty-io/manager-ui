@@ -27,6 +27,8 @@ export type RedirectsTableContextProps = {
   setHttpCodeFilter: (httpCodeFilter: string | null) => void;
   setTypeFilter: (typeFilter: string | null) => void;
   apiRef: MutableRefObject<GridApi>;
+  isTableLoaded: boolean;
+  setIsTableLoaded: (isTableLoaded: boolean) => void;
 };
 
 const RedirectsTableContext = createContext<RedirectsTableContextProps | null>(
@@ -43,6 +45,7 @@ const RedirectsTableContextProvider = ({
   const [typeFilter, setTypeFilter] = useState(null);
   const [searchFilter, setSearchFilter] = useState("");
   const apiRef = useGridApiRef<GridApi>();
+  const [isTableLoaded, setIsTableLoaded] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -73,6 +76,8 @@ const RedirectsTableContextProvider = ({
         setHttpCodeFilter,
         setTypeFilter,
         apiRef,
+        isTableLoaded,
+        setIsTableLoaded,
       }}
     >
       {isLoading ? <LoadingQuote /> : children}
