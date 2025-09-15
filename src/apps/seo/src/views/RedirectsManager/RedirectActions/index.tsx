@@ -12,12 +12,16 @@ import { GridRowId } from "@mui/x-data-grid-pro";
 
 export default function RedirectActions() {
   const { openCreateForm } = useRedirectsDialog();
-  const { redirects, searchFilter, setSearchFilter, apiRef } =
+  const { redirects, searchFilter, setSearchFilter, apiRef, isTableLoaded } =
     useRedirectsTable();
   const [selectedRedirects, setSelectedRedirects] = useState<GridRowId[]>([]);
 
   useEffect(() => {
-    if (!apiRef.current || !Object.keys(apiRef.current).length) {
+    if (
+      !isTableLoaded ||
+      !apiRef.current ||
+      !Object.keys(apiRef.current).length
+    ) {
       return;
     }
 
@@ -31,7 +35,7 @@ export default function RedirectActions() {
       "rowSelectionChange",
       handleSelectionChange
     );
-  }, [apiRef.current]);
+  }, [apiRef.current, isTableLoaded]);
 
   return (
     <>
