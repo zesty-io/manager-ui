@@ -686,3 +686,15 @@ export type UpdateStatusLabel = Omit<
 export type CreateStatusLabel = Partial<Omit<StatusLabel, "ZUID" | "sort">>;
 
 export type UpdateSortingOrder = Pick<StatusLabelQuery, "ZUID" | "sort">;
+
+export type WebFont = {
+  family: string;
+  variants: string[];
+  subsets?: string[];
+  version?: string;
+  lastModified?: string;
+  files?: Record<string, string>;
+  category?: string;
+  kind?: string;
+  menu?: string;
+};

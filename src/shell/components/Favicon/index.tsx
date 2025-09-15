@@ -2,7 +2,6 @@ import { useEffect, useReducer, useState } from "react";
 import { MemoryRouter } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { Dialog, IconButton, Button, Skeleton } from "@mui/material";
-import { ThemeProvider } from "@mui/material/styles";
 import { Close, Save, DoDisturbAlt } from "@mui/icons-material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCog } from "@fortawesome/free-solid-svg-icons";
@@ -13,7 +12,6 @@ import {
   ModalHeader,
 } from "@zesty-io/core/Modal";
 import { AppLink } from "@zesty-io/core/AppLink";
-import { theme } from "@zesty-io/material";
 
 import { MediaApp } from "../../../apps/media/src/app";
 import { notify } from "../../store/notifications";

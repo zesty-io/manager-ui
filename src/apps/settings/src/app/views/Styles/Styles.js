@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { connect } from "react-redux";
 import { FieldTypeColor, FieldTypeText } from "@zesty-io/material";
 import { FieldTypeImage } from "@zesty-io/core/FieldTypeImage";
@@ -8,6 +8,7 @@ import {
   Dialog,
   IconButton,
   Typography,
+  Portal,
 } from "@mui/material";
 
 import { MediaApp } from "../../../../../media/src/app";
@@ -18,9 +19,9 @@ import { MemoryRouter } from "react-router";
 import { TopBar } from "../../components/TopBar";
 import { FieldWrapper, MainWrapper } from "../../components/Containers";
 import Box from "@mui/material/Box";
-import { Tooltip } from "@mui/material";
 import { notify } from "../../../../../../shell/store/notifications";
 import { saveStyleVariable } from "../../../../../../shell/store/settings";
+import { useInstalledFonts } from "../Fonts/Installed";
 
 export default connect((state, props) => {
   const category = state.settings.catStyles?.find(
@@ -28,7 +29,6 @@ export default connect((state, props) => {
   );
   return {
     styles: state.settings.styles,
-    fontsInstalled: state.settings.fontsInstalled,
     category,
   };
 })(function Styles(props) {
@@ -36,8 +36,30 @@ export default connect((state, props) => {
   const [fields, setFields] = useState([]);
   const [fieldValues, setFieldValues] = useState({});
   const [dirtyFields, setDirtyFields] = useState([]);
-  const [fonts, setFonts] = useState([]);
   const [imageModal, setImageModal] = useState();
+
+  const { fonts: installedFonts } = useInstalledFonts();
+
+  const fontsInstalled = useMemo(() => {
+    return installedFonts?.map((headTag) => {
+      const url = headTag?.href;
+      const fontVariants = url.split("=")[1];
+      const font = fontVariants.split(":")[0];
+      const variants = fontVariants.split(":")[1];
+      const fontOption = {
+        label: font.replace(/\+/g, " "),
+        family: font.replace(/\+/g, " "),
+        href: url,
+      };
+      if (variants) {
+        const variantsArr = variants.split(",");
+        // We only need first variant of a font
+        fontOption.weight = variantsArr[0];
+      }
+      return fontOption;
+    });
+  }, [installedFonts]);
+
   // Set Fields and Field Values from store/URL
   useEffect(() => {
     const category = props.match.params.category
@@ -59,41 +81,6 @@ export default connect((state, props) => {
     setFieldValues(newState);
     setDirtyFields([]);
   }, [props.styles, props.match]);
-
-  // Set Font Options from installed fonts
-  useEffect(() => {
-    // inject all installed fonts
-    props.fontsInstalled.forEach(injectFontImport);
-    setFonts(
-      props.fontsInstalled.map((headTag) => {
-        const url = headTag.attributes.href;
-        const fontVariants = url.split("=")[1];
-        const font = fontVariants.split(":")[0];
-        const variants = fontVariants.split(":")[1];
-        const fontOption = {
-          label: font.replace("+", " "),
-          family: font.replace("+", " "),
-        };
-        if (variants) {
-          const variantsArr = variants.split(",");
-          // We only need first variant of a font
-          fontOption.weight = variantsArr[0];
-        }
-        return fontOption;
-      })
-    );
-  }, [props.fontsInstalled]);
-
-  function injectFontImport(font) {
-    const id = `googlefont`;
-    const style = document.createElement("style");
-    const att = document.createAttribute("id");
-    att.value = id;
-    style.setAttributeNode(att);
-    const css = `@import url('${font.attributes.href}');`;
-    style.append(css);
-    document.head.appendChild(style);
-  }
 
   function setValue(value, name) {
     setFieldValues({ ...fieldValues, [name]: value });
@@ -238,7 +225,7 @@ export default connect((state, props) => {
               size="small"
             >
               <MenuItem value="inherit">Select</MenuItem>
-              {fonts.map((option, index) => (
+              {fontsInstalled?.map((option, index) => (
                 <MenuItem
                   key={index}
                   value={
@@ -350,6 +337,13 @@ export default connect((state, props) => {
 
   return (
     <>
+      {!!installedFonts?.length && (
+        <Portal container={document.head}>
+          {installedFonts?.map((item) => (
+            <link rel="stylesheet" href={item?.href} key={item.ZUID} />
+          ))}
+        </Portal>
+      )}
       <TopBar
         title={props?.category?.label}
         onSave={saveSettings}

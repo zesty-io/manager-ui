@@ -1,11 +1,8 @@
 import { FC } from "react";
 import { ConfirmDialog } from "@zesty-io/material";
 import Button from "@mui/material/Button";
-import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import { theme } from "@zesty-io/material";
-import { ThemeProvider } from "@mui/material/styles";
 
 export type DirtyCodeModal = {
   title: string;

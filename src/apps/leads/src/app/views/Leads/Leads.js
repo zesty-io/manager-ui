@@ -12,11 +12,10 @@ import { LoadingQuote } from "../../../../../../shell/components/LoadingQuote";
 
 import styles from "./Leads.less";
 export default connect((state) => state)(function Leads(props) {
-  const [loading, setLoading] = useState();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setLoading(true);
-    props.dispatch(fetchLeads()).finally(() => {
+    Promise.resolve(props.dispatch(fetchLeads())).finally(() => {
       setLoading(false);
     });
   }, []);
