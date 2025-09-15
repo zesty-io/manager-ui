@@ -1,4 +1,5 @@
 import "./api";
+import "./dbSetup";
 
 Cypress.Commands.add("login", () => {
   const formBody = new FormData();
@@ -51,5 +52,20 @@ Cypress.Commands.add("getBySelector", (selector, ...args) => {
 Cypress.Commands.add("blockAnnouncements", () => {
   cy.intercept("/-/instant/6-90fbdcadfc-4lc0s5.json", (req) => {
     req.reply({});
+  });
+});
+
+Cypress.Commands.add("handleRetry", (reload, callBack = null) => {
+  const isRetry = Cypress.currentRetry > 0;
+  cy.location().then((loc) => {
+    if (isRetry) {
+      if (!!callBack) callBack();
+      if (!!reload) {
+        const location = Cypress.env("failedPath");
+        cy.visit(location);
+      }
+    } else {
+      Cypress.env("failedPath", loc.pathname);
+    }
   });
 });

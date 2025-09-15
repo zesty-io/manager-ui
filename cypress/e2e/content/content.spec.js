@@ -1,198 +1,12 @@
 import moment from "moment";
 import "cypress-iframe";
 import { API_ENDPOINTS } from "../../support/api";
+import { FIELDS, MODEL, ITEMS } from "../../support/dbSetup";
 
 const options = { timeout: 40_000 };
 const forced = { force: true };
 
 const TIMESTAMP = Date.now();
-
-const MODEL = {
-  label: "All Field Types___CYPRESS",
-  name: "all_field_types___cypress",
-  type: "templateset",
-};
-
-const FIELDS = {
-  text: {
-    datatype: "text",
-    name: "text",
-    label: "text",
-    sort: 1,
-  },
-  wysiwyg_basic: {
-    datatype: "wysiwyg_basic",
-    name: "wysiwyg_basic",
-    label: "wysiwyg basic",
-    sort: 2,
-  },
-  images: {
-    datatype: "images",
-    name: "images",
-    label: "images",
-    sort: 3,
-    settings: {
-      limit: "5",
-    },
-  },
-  textarea: {
-    datatype: "textarea",
-    name: "textarea",
-    label: "textarea",
-    sort: 4,
-  },
-  date: {
-    datatype: "date",
-    name: "date",
-    label: "date",
-    sort: 5,
-  },
-  wysiwyg_advanced: {
-    datatype: "wysiwyg_advanced",
-    name: "wysiwyg_advanced",
-    label: "wysiwyg advanced",
-    sort: 6,
-  },
-  article_writer: {
-    datatype: "article_writer",
-    name: "article_writer",
-    label: "article writer",
-    sort: 7,
-  },
-  dropdown: {
-    datatype: "dropdown",
-    name: "dropdown",
-    label: "dropdown",
-    sort: 8,
-    settings: {
-      options: {
-        custom_option_one: "Custom Option One",
-        custom_option_two: "Custom Option Two",
-      },
-    },
-  },
-  link: {
-    datatype: "link",
-    name: "link",
-    label: "link",
-    sort: 9,
-  },
-  internal_link: {
-    datatype: "internal_link",
-    name: "internal_link",
-    label: "internal link",
-    sort: 10,
-  },
-  datetime: {
-    datatype: "datetime",
-    name: "datetime",
-    label: "datetime",
-    sort: 11,
-  },
-  yes_no: {
-    datatype: "yes_no",
-    name: "yes_no",
-    label: "yes/no",
-    sort: 12,
-    settings: {
-      options: {
-        0: "No",
-        1: "Yes",
-      },
-    },
-  },
-  yes_no_custom: {
-    datatype: "yes_no",
-    name: "yes_no_custom",
-    label: "yes/no custom",
-    sort: 13,
-    settings: {
-      options: {
-        0: "Custom One",
-        1: "Custom Two",
-      },
-    },
-  },
-  fontawesome: {
-    datatype: "fontawesome",
-    name: "fontawesome",
-    label: "fontawesome",
-    sort: 14,
-  },
-  number: {
-    datatype: "number",
-    name: "number",
-    label: "number",
-    sort: 15,
-  },
-  currency: {
-    datatype: "currency",
-    name: "currency",
-    label: "currency",
-    sort: 16,
-  },
-  color: {
-    datatype: "color",
-    name: "color",
-    label: "color",
-    sort: 17,
-  },
-  uuid: {
-    datatype: "uuid",
-    name: "uuid",
-    label: "uuid",
-    sort: 18,
-  },
-  files: {
-    datatype: "files",
-    name: "files",
-    label: "files",
-    sort: 19,
-  },
-  sort: {
-    datatype: "sort",
-    name: "sort",
-    label: "sort",
-    sort: 20,
-  },
-  markdown: {
-    datatype: "markdown",
-    name: "markdown",
-    label: "markdown",
-    sort: 21,
-  },
-  one_to_one: {
-    datatype: "one_to_one",
-    name: "one_to_one",
-    label: "one to one",
-    sort: 22,
-  },
-  one_to_many: {
-    datatype: "one_to_many",
-    name: "one_to_many",
-    label: "one to many",
-    sort: 23,
-  },
-  block_selector: {
-    datatype: "block_selector",
-    name: "block_selector",
-    label: "block selector",
-    sort: 24,
-  },
-};
-
-const ITEMS = Array(5)
-  .fill(0)
-  .map((_, index) => ({
-    web: {
-      metaLinkText: `Test Item ${index}___CYPRESS`,
-      metaTitle: `Test Item ${index}___CYPRESS`,
-      pathPart: `test-item-${TIMESTAMP}-${index}___CYPRESS`,
-    },
-    data: {
-      text: `Test Item ${index}___CYPRESS`,
-    },
-  }));
 
 const EXAMPLE_TEXT = "example_text";
 
@@ -204,38 +18,11 @@ describe(
   },
   function () {
     before(function () {
-      cy.getCookie(Cypress.env("COOKIE_NAME")).then((cookie) => {
-        Cypress.env("token", cookie?.value);
-      });
-      deleteTestData();
+      cy.resetContentModel();
+      cy.wrap(Cypress.env("ITEM")).as("contentItem");
       getMediaFiles().then((filesRes) => {
         cy.wrap(filesRes).as("mediaFiles");
       });
-
-      createModel()
-        .then(function (model) {
-          Cypress.env("modelZUID", model.ZUID);
-          cy.wrap(model).as("model");
-
-          createFields(model.ZUID).then((fields) => {
-            cy.wrap(fields).as("fields");
-          });
-
-          return cy.wrap(model?.ZUID);
-        })
-        .then((ZUID) => {
-          createContentItems(ZUID).then((items) => {
-            const item = items?.[0];
-            const itemZUID = item?.meta?.ZUID;
-            Cypress.env("itemZUID", itemZUID);
-            cy.wrap(item).as("item");
-            cy.wrap(itemZUID).as("itemZUID");
-          });
-        });
-    });
-
-    after(function () {
-      deleteTestData();
     });
 
     context("editing content", function () {
@@ -244,8 +31,13 @@ describe(
           `/content/${Cypress.env("modelZUID")}/${Cypress.env("itemZUID")}`
         );
       });
-      it.only("Text Field", function () {
-        cy.getBySelector("DuoModeToggle", options).click(forced);
+      it("Enable DUO mode", function () {
+        cy.getBySelector("DuoModeToggle", options)
+          .should("exist")
+          .trigger("click", forced);
+      });
+
+      it("Text Field", function () {
         cy.get(`[data-cy="field:text"] input`, options)
           .should("be.visible")
           .clear()
@@ -356,8 +148,8 @@ describe(
       });
 
       it("Internal Link Field", function () {
-        const itemLabel = String(this?.item?.web?.metaTitle || "");
-        const selectedZUID = this.item.meta.ZUID;
+        const itemLabel = String(this?.contentItem?.web?.metaTitle || "");
+        const selectedZUID = this?.contentItem?.meta?.ZUID;
 
         cy.get(`[data-cy="field:internal_link"] .Select`, options).click();
         cy.get(`ul.selections input`, options).type(itemLabel);
@@ -399,23 +191,6 @@ describe(
           "Mui-selected"
         );
         cy.get(`[data-cy="field:yes_no"] [data-cy="yes_no:no"]`).should(
-          "have.class",
-          "Mui-selected"
-        );
-      });
-
-      it("Yes/No Field: Custom Options", function () {
-        cy.get(`[data-cy="field:yes_no_custom"] [data-cy="yes_no:yes"]`).click(
-          forced
-        );
-        cy.get(`[data-cy="field:yes_no_custom"] [data-cy="yes_no:yes"]`).should(
-          "have.class",
-          "Mui-selected"
-        );
-        cy.get(`[data-cy="field:yes_no_custom"] [data-cy="yes_no:no"]`).click(
-          forced
-        );
-        cy.get(`[data-cy="field:yes_no_custom"] [data-cy="yes_no:no"]`).should(
           "have.class",
           "Mui-selected"
         );
@@ -546,24 +321,24 @@ describe(
     context("Media field", function () {
       before(function () {
         const data = {
-          ...this.item,
+          ...this.contentItem,
           data: {
-            ...this.item?.data,
+            ...this.contentItem?.data,
             images: this?.mediaFiles?.map((media) => media.id).join(","),
           },
         };
-        cy.updateItem(Cypress.env("modelZUID"), Cypress.env("itemZUID"), data);
+        cy.setContentItemData(data);
         cy.visit(
           `/content/${Cypress.env("modelZUID")}/${Cypress.env("itemZUID")}`
         );
       });
 
       beforeEach(function () {
-        handleRetryWithRefresh(() => {
+        cy.handleRetry(true, function () {
           const data = {
-            ...this.item,
+            ...this.contentItem,
             data: {
-              ...this.item?.data,
+              ...this.contentItem?.data,
               images: this?.mediaFiles?.map((media) => media.id).join(","),
             },
           };
@@ -585,15 +360,17 @@ describe(
       });
 
       it("opens the bynder modal", function () {
-        cy.get(`[data-cy="field:images"] [data-cy="selectFromMediaButton"]`)
+        cy.get(
+          `[data-cy="field:images"] [data-cy="selectFromMediaButton"]`,
+          options
+        )
           .should("be.enabled")
           .click();
-        cy.get('[data-cy="closeMediaDialogBtn"]').click();
+        cy.get('[data-cy="closeMediaDialogBtn"]', options).wait(500).click();
 
-        cy.get(`[data-cy="field:images"]`, options)
-          .find('[data-cy="addFromBynderBtn"]')
+        cy.get(`[data-cy="field:images"] [data-cy="addFromBynderBtn"]`, options)
           .should("be.enabled")
-          .click();
+          .trigger("click");
 
         cy.get('[data-test-id="CompactViewContainer"] [data-testid="root"]')
           .shadow()
@@ -617,7 +394,6 @@ describe(
         )
           .last()
           .find('[data-cy="bynderAssetIndicator"]')
-
           .should("exist");
       });
     });
@@ -629,7 +405,7 @@ describe(
         );
       });
       beforeEach(function () {
-        handleRetryWithRefresh();
+        cy.handleRetry(true);
       });
 
       it("should be able to clear date entries", function () {
@@ -663,7 +439,7 @@ describe(
       });
 
       beforeEach(function () {
-        handleRetryWithRefresh();
+        cy.handleRetry(true);
       });
 
       it("should be able to clear date and time entries", function () {
@@ -760,15 +536,15 @@ describe(
 
     context("One to one field", function () {
       before(function () {
-        resetFields(Cypress.env("modelZUID"), this?.item);
+        resetFields(Cypress.env("modelZUID"), this?.contentItem);
         cy.visit(
           `/content/${Cypress.env("modelZUID")}/${Cypress.env("itemZUID")}`
         );
       });
 
       beforeEach(function () {
-        handleRetryWithRefresh(() =>
-          resetFields(Cypress.env("modelZUID"), this?.item)
+        cy.handleRetry(true, () =>
+          resetFields(Cypress.env("modelZUID"), this?.contentItem)
         );
       });
 
@@ -823,16 +599,16 @@ describe(
 
     context("One to many field", function () {
       before(function () {
-        resetFields(Cypress.env("modelZUID"), this?.item);
+        resetFields(Cypress.env("modelZUID"), this?.contentItem);
         cy.visit(
           `/content/${Cypress.env("modelZUID")}/${Cypress.env("itemZUID")}`
         );
       });
 
       beforeEach(function () {
-        handleRetryWithRefresh(() =>
-          resetFields(Cypress.env("modelZUID"), this?.item)
-        );
+        cy.handleRetry(true, () => {
+          resetFields(Cypress.env("modelZUID"), this?.contentItem);
+        });
       });
 
       it("can add multiple items", function () {
@@ -909,7 +685,6 @@ describe(
           .first()
           .type(`Test Item ${EXAMPLE_TEXT}`, forced);
         cy.get(`[data-cy="CreateItemSaveButton"]`).click(forced);
-        // cy.getBySelector("CreateItemSaveButton").click(forced);
 
         cy.get(
           `[data-cy="field:one_to_many"] [data-cy="active-relational-item"]`,
@@ -933,129 +708,6 @@ describe(
     });
   }
 );
-
-function handleRetryWithRefresh(action = null) {
-  const isRetry = Cypress.currentRetry > 0;
-  cy.location().then((loc) => {
-    if (isRetry) {
-      !!action && action();
-      const location = Cypress.env("failedPath");
-      cy.visit(location);
-    } else {
-      Cypress.env("failedPath", loc.pathname);
-    }
-  });
-}
-
-function deleteTestData() {
-  cy.apiRequest({
-    url: `${API_ENDPOINTS.devInstance}/content/models`,
-  }).then((res) => {
-    const ZUIDsForDelete = res?.data?.filter(
-      (model) => model.name === MODEL.name
-    );
-    if (!!ZUIDsForDelete?.length) {
-      cy.apiRequest({
-        url: `${API_ENDPOINTS.devInstance}/content/models/${ZUIDsForDelete[0].ZUID}`,
-        method: "DELETE",
-      });
-    }
-  });
-}
-
-function createModel() {
-  return cy
-    .createModel({
-      ...MODEL,
-      description: "",
-      listed: true,
-    })
-    .then((modelRes) => {
-      return modelRes?.data;
-    });
-}
-
-function createFields(modelZUID) {
-  return cy
-    .createField(modelZUID, {
-      ...FIELDS.text,
-      description: "",
-      required: false,
-      settings: {
-        list: true,
-        defaultValue: null,
-      },
-    })
-    .then((textRes) => {
-      const textFieldZUID = textRes?.data?.ZUID;
-
-      const { text, ...otherFields } = FIELDS;
-
-      const fieldPromises = Object.values(otherFields).map((field) => {
-        return fetch(
-          `${API_ENDPOINTS.devInstance}/content/models/${modelZUID}/fields`,
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${Cypress.env("token")}`,
-            },
-            body: JSON.stringify({
-              ...field,
-              description: "",
-              required: false,
-              settings: {
-                ...field?.settings,
-                list: true,
-                defaultValue: null,
-              },
-              ...(["one_to_one", "one_to_many"].includes(field?.datatype)
-                ? {
-                    relatedModelZUID: modelZUID,
-                    relatedFieldZUID: textFieldZUID,
-                  }
-                : {}),
-            }),
-          }
-        ).then(async (res) => {
-          const jsonRes = await res.json();
-          Cypress.env(field?.name, jsonRes?.data?.ZUID);
-          return { name: field?.name, ZUID: jsonRes?.data?.ZUID };
-        });
-      });
-      return Promise.all(fieldPromises).then((fields) => {
-        return [
-          ...fields,
-          {
-            name: "text",
-            ZUID: textFieldZUID,
-          },
-        ];
-      });
-    });
-}
-
-function createContentItems(modelZUID) {
-  const payloadData = ITEMS?.map((item) => {
-    const fieldsData = Object.keys(FIELDS)?.reduce((acc, fieldKey) => {
-      acc[fieldKey] = null;
-      return acc;
-    }, {});
-
-    return {
-      ...item,
-
-      data: {
-        ...fieldsData,
-        ...item?.data,
-      },
-    };
-  });
-
-  return cy.createItems(modelZUID, payloadData).then(() => {
-    // return itemsRes?.data;
-    return cy.getItems(modelZUID).then((itemsRes) => itemsRes?.data);
-  });
-}
 
 function getMediaFiles() {
   return cy

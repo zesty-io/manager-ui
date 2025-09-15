@@ -1,4 +1,15 @@
 const { defineConfig } = require("cypress");
+const { execSync } = require("child_process");
+
+function getGitCommitId() {
+  try {
+    return execSync("git rev-parse --short HEAD").toString().trim();
+  } catch {
+    return Date.now();
+  }
+}
+
+const gitCommitId = getGitCommitId();
 
 module.exports = defineConfig({
   projectId: "manager-ui",
@@ -9,6 +20,7 @@ module.exports = defineConfig({
   env: {
     API_AUTH: "https://auth.api.dev.zesty.io",
     COOKIE_NAME: "DEV_APP_SID",
+    COMMIT_ID: gitCommitId,
   },
   e2e: {
     // We've imported your old cypress plugins here.

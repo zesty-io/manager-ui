@@ -16,6 +16,7 @@
 // Import commands.js using ES2015 syntax:
 import "./commands";
 import "cypress-iframe";
+import "./dbSetup";
 
 // @see https://docs.cypress.io/api/cypress-api/cookies.html#Set-global-default-cookies
 // Cypress.Cookies.defaults({
@@ -45,6 +46,7 @@ before(() => {
 
   // Blocks the api call to render the announcement popup
   cy.blockAnnouncements();
+  cy.setupInitialContentModel();
 });
 
 // Before each test in spec
