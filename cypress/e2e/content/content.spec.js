@@ -499,9 +499,9 @@ describe("Content Specs", () => {
     });
 
     it("can add multiple items", () => {
-      cy.get("#12-269a28-1bkm34 [data-cy='add-relational-item-button']").click({
-        force: true,
-      });
+      cy.get(
+        "#12-269a28-1bkm34 [data-cy='add-relational-item-button']"
+      ).click();
 
       // cy.wait("@fetchItems");
 
