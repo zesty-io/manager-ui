@@ -262,12 +262,13 @@ describe(
       it("Publishes an item", function () {
         cy.get(`[data-cy="PublishButton"]`, options)
           .should("be.enabled")
-          .trigger("click", forced);
-        cy.get(`[data-cy="ConfirmPublishModal"]`, options).should("exist");
-        cy.get(`[data-cy="ConfirmPublishButton"]`, options).trigger(
-          "click",
-          forced
-        );
+          .click();
+        cy.get(
+          `[data-cy="ConfirmPublishModal"] [data-cy="ConfirmPublishButton"]`,
+          options
+        )
+          .should("be.enabled")
+          .click();
 
         cy.get(`[data-cy="ContentPublishedIndicator"]`, options).should(
           "exist"
@@ -277,13 +278,14 @@ describe(
       it("Unpublishes an item", function () {
         cy.get(`[data-cy="PublishMenuButton"]`, options)
           .should("be.enabled")
-          .trigger("click", forced);
+          .click();
         cy.get(`[data-cy="UnpublishContentButton"]`, options)
           .should("exist")
           .trigger("click", forced);
         cy.get(`[data-cy="ConfirmUnpublishButton"]`, options)
           .should("exist")
-          .trigger("click", forced);
+          .should("be.enabled")
+          .click();
 
         cy.get(`[data-cy="PublishButton"]`, options).should("exist");
       });
@@ -291,17 +293,20 @@ describe(
       it("Schedules a Publish for an item", function () {
         cy.get(`[data-cy="PublishMenuButton"]`, options)
           .should("be.enabled")
-          .trigger("click", forced);
+          .click();
 
         cy.get(`[data-cy="PublishScheduleButton"]`, options)
           .should("exist")
+          .wait(500)
           .trigger("click", forced);
 
-        cy.get(`[data-cy="SchedulePublishModal"]`, options).should("exist");
-
-        cy.get(`[data-cy="SchedulePublishButton"]`, options)
+        cy.get(
+          `[data-cy="SchedulePublishModal"] [data-cy="SchedulePublishButton"]`,
+          options
+        )
           .should("exist")
-          .trigger("click", forced);
+          .should("be.enabled")
+          .click();
 
         cy.get(`[data-cy="ContentScheduledIndicator"]`, options).should(
           "exist"
@@ -310,16 +315,24 @@ describe(
 
       it("Unschedules a Publish for an item", function () {
         cy.get(`[data-cy="PublishMenuButton"]`, options)
+          .should("exist")
           .should("be.enabled")
-          .trigger("click");
+          .wait(500)
+          .click();
 
         cy.get(`[data-cy="PublishScheduleButton"]`, options)
           .should("exist")
-          .trigger("click");
+          .wait(500)
+          .trigger("click", forced);
 
-        cy.get(`[data-cy="UnschedulePublishButton"]`, options)
+        cy.get(
+          `[data-cy="SchedulePublishModal"] [data-cy="UnschedulePublishButton"]`,
+          options
+        )
           .should("exist")
-          .trigger("click");
+          .should("be.enabled")
+          .wait(500)
+          .click();
 
         cy.get(`[data-cy="ContentScheduledIndicator"]`, options).should(
           "not.exist"
@@ -327,13 +340,21 @@ describe(
       });
 
       it("Only allows future dates to be scheduled for publish", function () {
-        cy.getBySelector("PublishMenuButton", options)
-          .trigger("mouseout")
+        cy.get(`[data-cy="PublishMenuButton"]`, options)
+          .should("exist")
+          .should("be.enabled")
+          .click();
+        cy.get(`[data-cy="PublishScheduleButton"]`, options)
+          .should("exist")
           .trigger("click", options);
-        cy.getBySelector("PublishScheduleButton").trigger("click", options);
-        cy.getBySelector("PublishScheduleModal")
-          .find("[data-cy='datePickerInputField']")
-          .trigger("click", options);
+        cy.get(`[data-cy="PublishScheduleModal"]`, options).should("exist");
+
+        cy.get(
+          `[data-cy="PublishScheduleModal"] [data-cy="datePickerInputField"]`,
+          options
+        )
+          .should("exist")
+          .click();
 
         cy.get(
           '.MuiPickersArrowSwitcher-root button[aria-label="Previous month"]'

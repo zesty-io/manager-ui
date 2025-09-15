@@ -1,6 +1,5 @@
-import { Box, ThemeProvider } from "@mui/material";
+import { Box } from "@mui/material";
 import { Sidebar } from "./components/Sidebar";
-import { theme } from "@zesty-io/material";
 import CustomApp from "./view/CustomApp";
 import { ResizableContainer } from "../../../../shell/components/ResizeableContainer";
 
