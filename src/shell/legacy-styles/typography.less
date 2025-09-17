@@ -1,0 +1,95 @@
+@import "colors.less";
+
+// font families
+@font-family-default: "Mulish", Arial, Sans-Serif;
+@font-family-secondary: Monaco, Verdana, Arial, Sans-Serif;
+@font-family-input: Arial, Sans-Serif;
+
+// font sizes
+@font-size-body: 14px;
+@font-size-caption: 12px;
+@font-size-button: 14px;
+@font-size-input: 14px;
+@font-size-sub-headline: 20px;
+@font-size-title: 24px;
+@font-size-headline: 28px;
+@font-size-display: 32px;
+@font-size-label: 14px;
+@font-size-helper-text: 10px;
+@svg-icon: 16px;
+
+// font weights
+@font-weight-light: 200;
+@font-weight-normal: 400;
+@font-weight-bold: 500;
+
+// lineheights
+@line-height-label: 20px;
+
+.display {
+  font-family: @font-family-default;
+  font-size: @font-size-display;
+  font-weight: @font-weight-light;
+  line-height: 48px;
+  letter-spacing: 0.32px;
+  &.reversed {
+    color: @zesty-white;
+  }
+}
+
+.headline {
+  font-family: @font-family-default;
+  font-size: 28px;
+  font-weight: @font-weight-light;
+  line-height: 42px;
+  letter-spacing: 0.32px;
+  &.reversed {
+    color: @zesty-white;
+  }
+}
+
+.title {
+  font-family: @font-family-default;
+  font-size: @font-size-title;
+  font-weight: normal;
+  line-height: 36px;
+  letter-spacing: 0.16px;
+  &.reversed {
+    color: @zesty-white;
+  }
+}
+
+.subheadline {
+  font-family: @font-family-default;
+  font-size: @font-size-sub-headline;
+  font-weight: @font-weight-normal;
+  line-height: 28px;
+  letter-spacing: 0.08px;
+}
+
+.bodyText {
+  font-family: @font-family-default;
+  font-size: @font-size-body;
+  font-weight: @font-weight-normal;
+  line-height: 24px;
+  letter-spacing: 0;
+  &.reversed {
+    color: @zesty-white;
+  }
+}
+
+.buttonText {
+  font-family: @font-family-default;
+  font-size: @font-size-button;
+  font-weight: @font-weight-bold;
+  line-height: 20px;
+  letter-spacing: 0.12px;
+}
+
+.caption {
+  font-family: @font-family-default;
+  font-size: @font-size-caption;
+  font-weight: @font-weight-normal;
+  line-height: 16px;
+  letter-spacing: 0px;
+}
