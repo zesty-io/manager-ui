@@ -8,24 +8,6 @@ import { checkLock, lock, unlock } from "shell/store/content";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
-import SkipPreviousIcon from "@mui/icons-material/SkipPrevious";
-
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faLock,
-  faSpinner,
-  faStepBackward,
-  faUnlock,
-} from "@fortawesome/free-solid-svg-icons";
-
-import {
-  Modal,
-  ModalHeader,
-  ModalContent,
-  ModalFooter,
-} from "@zesty-io/core/Modal";
-
-import styles from "./LockedView.less";
 import { LockRounded } from "@mui/icons-material";
 import {
   Box,

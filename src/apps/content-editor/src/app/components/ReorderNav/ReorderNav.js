@@ -1,13 +1,19 @@
 import { Component } from "react";
 import { connect } from "react-redux";
 
-import Button from "@mui/material/Button";
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogActions,
+  Typography,
+  Stack,
+  IconButton,
+} from "@mui/material";
 import FastRewindIcon from "@mui/icons-material/FastRewind";
 import SaveIcon from "@mui/icons-material/Save";
-
-import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
-
-import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 
 import DragList from "./DragComponents/DragList";
 
@@ -116,25 +122,34 @@ class ReorderNav extends Component {
   render() {
     return (
       this.props.isOpen && (
-        <Modal
-          type="global"
-          open={this.props.toggleOpen}
+        <Dialog
+          open
           onClose={this.props.toggleOpen}
           className={styles.ReorderNav}
         >
-          <ModalContent className={styles.ModalContent}>
-            <span className={styles.container}>
-              <h3>Change the order of items in your navigation</h3>
-
-              <DragList
-                handleNestChange={this.handleNestChange}
-                handleMove={this.handleMove}
-              >
-                {this.state[this.state.current]}
-              </DragList>
-            </span>
-          </ModalContent>
-          <ModalFooter className={styles.ModalFooter}>
+          <DialogTitle component="div">
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="flex-start"
+            >
+              <Typography variant="h5">
+                Change the order of items in your navigation
+              </Typography>
+              <IconButton size="small" onClick={this.props.toggleOpen}>
+                <CloseRoundedIcon fontSize="small" />
+              </IconButton>
+            </Stack>
+          </DialogTitle>
+          <DialogContent className={styles.ModalContent}>
+            <DragList
+              handleNestChange={this.handleNestChange}
+              handleMove={this.handleMove}
+            >
+              {this.state[this.state.current]}
+            </DragList>
+          </DialogContent>
+          <DialogActions className={styles.ModalFooter}>
             <Button
               variant="contained"
               onClick={() => this.setState({ current: "root" })}
@@ -152,8 +167,8 @@ class ReorderNav extends Component {
             >
               Save Changes
             </Button>
-          </ModalFooter>
-        </Modal>
+          </DialogActions>
+        </Dialog>
       )
     );
   }
