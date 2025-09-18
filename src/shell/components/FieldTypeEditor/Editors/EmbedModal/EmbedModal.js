@@ -1,6 +1,10 @@
 import React from "react";
 
-import { Modal, ModalContent, ModalFooter } from "shell/components/LegacyModal";
+import {
+  Modal,
+  ModalContent,
+  ModalFooter,
+} from "shell/components/legacy/Modal";
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { Button } from "@zesty-io/core/Button";
 import { Url } from "@zesty-io/core/Url";

@@ -10,7 +10,7 @@ import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 
-import { Button } from "shell/components/LegacyButton";
+import { Button } from "shell/components/legacy/Button";
 
 import styles from "./Modal.less";
 export const Modal = React.memo(function Modal(props) {
