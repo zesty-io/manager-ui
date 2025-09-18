@@ -7,7 +7,7 @@ import {
   ModalFooter,
 } from "shell/components/legacy/Modal";
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
-import { Button } from "@zesty-io/core/Button";
+import { Button } from "@mui/material";
 import { Input } from "@zesty-io/core/Input";
 
 import { schema } from "../react-prosemirror-schema";
@@ -89,8 +89,9 @@ export class LinkModal extends React.PureComponent {
             type="save"
             disabled={this.state.href.length === 0}
             onClick={this.onSave}
+            variant="contained"
+            color="success"
           >
-            <i className="fa fa-plus" aria-hidden="true" />
             Insert Link
           </Button>
         </ModalFooter>

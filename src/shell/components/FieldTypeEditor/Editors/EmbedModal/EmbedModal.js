@@ -6,7 +6,7 @@ import {
   ModalFooter,
 } from "shell/components/legacy/Modal";
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
-import { Button } from "@zesty-io/core/Button";
+import { Button } from "@mui/material";
 import { Url } from "@zesty-io/core/Url";
 
 import { schema } from "../react-prosemirror-schema";
@@ -94,8 +94,9 @@ export class EmbedModal extends React.Component {
             type="save"
             disabled={this.state.id.length === 0}
             onClick={this.onSave}
+            variant="contained"
+            color="success"
           >
-            <i className="fa fa-plus" aria-hidden="true" />
             Insert Embed
           </Button>
         </ModalFooter>
