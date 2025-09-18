@@ -9,7 +9,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 
 import { Drawer, DrawerHandle, DrawerContent } from "@zesty-io/core/Drawer";
-import { WithLoader } from "@zesty-io/core/WithLoader";
+import { WithLoader } from "shell/components/legacy/WithLoader";
 
 import { FileStatus } from "./components/FileStatus";
 import { LinkedSchema } from "./components/LinkedSchema";

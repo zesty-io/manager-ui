@@ -11,15 +11,17 @@ type WithLoaderProps = {
   children: React.ReactNode;
 };
 export const WithLoader = (props: WithLoaderProps) => {
-  return props.condition ? (
-    props.children
-  ) : (
-    <section
-      className={styles.Loading}
-      style={{ height: props.height, width: props.width }}
-    >
-      <h3 className={styles.Display}>{props.message}</h3>
-      <Loader />
-    </section>
-  );
+  if (props.condition) {
+    return <>{props.children}</>;
+  } else {
+    return (
+      <section
+        className={styles.Loading}
+        style={{ height: props.height, width: props.width }}
+      >
+        <h3 className={styles.Display}>{props.message}</h3>
+        <Loader />
+      </section>
+    );
+  }
 };

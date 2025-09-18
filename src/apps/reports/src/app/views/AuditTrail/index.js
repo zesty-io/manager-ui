@@ -4,7 +4,7 @@ import moment from "moment";
 
 import { notify } from "shell/store/notifications";
 
-import { WithLoader } from "@zesty-io/core/WithLoader";
+import { WithLoader } from "shell/components/legacy/WithLoader";
 import AuditControls from "./components/controls";
 import Log from "./components/log";
 // import Pagination from "components/pagination";

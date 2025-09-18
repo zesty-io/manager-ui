@@ -5,7 +5,7 @@ import {
   ModalHeader,
   ModalContent,
 } from "shell/components/legacy/Modal";
-import { WithLoader } from "@zesty-io/core/WithLoader";
+import { WithLoader } from "shell/components/legacy/WithLoader";
 
 import api from "../../api";
 

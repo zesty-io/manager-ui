@@ -16,7 +16,7 @@ import { cloneDeep, has } from "lodash";
 import { Box, Stack, Button } from "@mui/material";
 import { theme, Brain } from "@zesty-io/material";
 
-import { WithLoader } from "@zesty-io/core/WithLoader";
+import { WithLoader } from "shell/components/legacy/WithLoader";
 import { NotFound } from "../../../../../../shell/components/NotFound";
 import { Header } from "./Header";
 import { Editor } from "../../components/Editor";

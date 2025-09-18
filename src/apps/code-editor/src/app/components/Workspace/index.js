@@ -7,7 +7,7 @@ import { Redirect } from "react-router-dom";
 
 import { fetchFile } from "../../../store/files";
 
-import { WithLoader } from "@zesty-io/core/WithLoader";
+import { WithLoader } from "shell/components/legacy/WithLoader";
 
 import { Editor } from "../Editor";
 import { LockedView } from "../LockedView";

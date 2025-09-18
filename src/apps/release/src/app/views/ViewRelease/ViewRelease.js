@@ -9,7 +9,7 @@ import { fetchMembers } from "shell/store/releaseMembers";
 
 import { Header } from "./components/Header";
 import { PlanTable } from "./components/PlanTable";
-import { WithLoader } from "@zesty-io/core/WithLoader";
+import { WithLoader } from "shell/components/legacy/WithLoader";
 
 import styles from "./ViewRelease.less";
 export function ViewRelease({ isContentSubpage }) {

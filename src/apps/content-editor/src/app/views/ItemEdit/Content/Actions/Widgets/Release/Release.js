@@ -21,7 +21,7 @@ import { FormControl, FormLabel } from "@mui/material";
 import { VirtualizedAutocomplete } from "@zesty-io/material";
 
 import { AppLink } from "@zesty-io/core/AppLink";
-import { WithLoader } from "@zesty-io/core/WithLoader";
+import { WithLoader } from "shell/components/legacy/WithLoader";
 
 import { fetchReleases } from "shell/store/releases";
 import { createMember, fetchMembers } from "shell/store/releaseMembers";

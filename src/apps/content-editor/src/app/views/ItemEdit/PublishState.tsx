@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import moment from "moment";
 import { DataGridPro } from "@mui/x-data-grid-pro";
 import { Box, Button, Chip } from "@mui/material";
-import { WithLoader } from "@zesty-io/core/WithLoader";
+import { WithLoader } from "shell/components/legacy/WithLoader";
 import { instanceApi } from "../../../../../../shell/services/instance";
 
 type Params = {
