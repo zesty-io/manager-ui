@@ -11,7 +11,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 
-import { AppLink } from "@zesty-io/core/AppLink";
+import { AppLink } from "shell/components/AppLink";
 
 import {
   fetchFileVersions,

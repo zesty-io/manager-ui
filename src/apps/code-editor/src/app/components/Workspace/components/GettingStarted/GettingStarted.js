@@ -1,7 +1,7 @@
 import cx from "classnames";
 import moment from "moment";
 
-import { AppLink } from "@zesty-io/core/AppLink";
+import { AppLink } from "shell/components/AppLink";
 
 import { resolvePathPart } from "../../../../../store/files";
 import Link from "@mui/material/Link";

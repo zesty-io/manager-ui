@@ -21,7 +21,7 @@ import CardContent from "@mui/material/CardContent";
 import CardActions from "@mui/material/CardActions";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 
-import { AppLink } from "@zesty-io/core/AppLink";
+import { AppLink } from "shell/components/AppLink";
 import { AccountInfo } from "./components/AccountInfo";
 import { ChartDashboard } from "./components/ChartDashboard";
 import { UserLatest } from "./components/UserLatest";

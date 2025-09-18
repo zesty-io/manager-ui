@@ -10,7 +10,7 @@ import { Database } from "@zesty-io/material";
 import { fetchModels } from "shell/store/models";
 import { fetchNav } from "../store/navContent";
 
-import { AppLink } from "@zesty-io/core/AppLink";
+import { AppLink } from "shell/components/AppLink";
 import { WithLoader } from "shell/components/legacy/WithLoader";
 import { ContentNav } from "./components/ContentNav";
 import { LoadingQuote } from "../../../../shell/components/LoadingQuote";

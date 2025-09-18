@@ -12,7 +12,7 @@ import { Notice } from "@zesty-io/core/Notice";
 
 import { CardContent, CardFooter } from "@zesty-io/core/Card";
 import { CollapsibleCard } from "@zesty-io/core/CollapsibleCard";
-import { AppLink } from "@zesty-io/core/AppLink";
+import { AppLink } from "shell/components/AppLink";
 
 import {
   publishFile,

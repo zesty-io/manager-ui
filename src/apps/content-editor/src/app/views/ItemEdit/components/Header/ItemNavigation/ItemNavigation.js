@@ -1,6 +1,6 @@
 import cx from "classnames";
 
-import { AppLink } from "@zesty-io/core/AppLink";
+import { AppLink } from "shell/components/AppLink";
 
 import styles from "./ItemNavigation.less";
 import { apiTypes } from "../../../../../../../../schema/src/app/components/ModelApi";

@@ -7,7 +7,7 @@ import {
   faTimesCircle,
 } from "@fortawesome/free-solid-svg-icons";
 
-import { AppLink } from "@zesty-io/core/AppLink";
+import { AppLink } from "shell/components/AppLink";
 
 import { fileOpen, resolvePathPart } from "../../../store/files";
 

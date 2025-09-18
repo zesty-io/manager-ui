@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
-import { AppLink } from "@zesty-io/core/AppLink";
+import { AppLink } from "shell/components/AppLink";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faDatabase,

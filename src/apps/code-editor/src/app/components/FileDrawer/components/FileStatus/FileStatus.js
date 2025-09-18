@@ -12,7 +12,7 @@ import CardContent from "@mui/material/CardContent";
 
 import InfoIcon from "@mui/icons-material/Info";
 
-import { AppLink } from "@zesty-io/core/AppLink";
+import { AppLink } from "shell/components/AppLink";
 import { CopyButton } from "@zesty-io/material";
 
 import styles from "./FileStatus.less";
@@ -136,17 +136,18 @@ export default function FileStatus(props) {
                 <em>{props.items[0].web.path}</em>
               </Link>
             )}
-            {!props.file.contentModelZUID && props.file.fileName.includes("/") && (
-              <Link
-                underline="none"
-                color="secondary"
-                href={`${CONFIG.URL_PREVIEW_PROTOCOL}${instance.randomHashID}${CONFIG.URL_PREVIEW}/${props.file.fileName}`}
-                target="_blank"
-                title={`"WebEngine ${props.file.fileName} Link"`}
-              >
-                {`${props.file.fileName}`}
-              </Link>
-            )}
+            {!props.file.contentModelZUID &&
+              props.file.fileName.includes("/") && (
+                <Link
+                  underline="none"
+                  color="secondary"
+                  href={`${CONFIG.URL_PREVIEW_PROTOCOL}${instance.randomHashID}${CONFIG.URL_PREVIEW}/${props.file.fileName}`}
+                  target="_blank"
+                  title={`"WebEngine ${props.file.fileName} Link"`}
+                >
+                  {`${props.file.fileName}`}
+                </Link>
+              )}
           </li>
 
           <li>

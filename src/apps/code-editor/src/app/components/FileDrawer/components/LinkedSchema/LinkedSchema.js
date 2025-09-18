@@ -8,7 +8,7 @@ import CardContent from "@mui/material/CardContent";
 import CardActions from "@mui/material/CardActions";
 import StorageIcon from "@mui/icons-material/Storage";
 
-import { AppLink } from "@zesty-io/core/AppLink";
+import { AppLink } from "shell/components/AppLink";
 
 import Link from "@mui/material/Link";
 

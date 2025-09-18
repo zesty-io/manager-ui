@@ -5,7 +5,7 @@ import Link from "@mui/material/Link";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 
-import { AppLink } from "@zesty-io/core/AppLink";
+import { AppLink } from "shell/components/AppLink";
 
 import styles from "./QuickJumps.less";
 

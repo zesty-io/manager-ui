@@ -20,7 +20,7 @@ import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
 import { FormControl, FormLabel } from "@mui/material";
 import { VirtualizedAutocomplete } from "@zesty-io/material";
 
-import { AppLink } from "@zesty-io/core/AppLink";
+import { AppLink } from "shell/components/AppLink";
 import { WithLoader } from "shell/components/legacy/WithLoader";
 
 import { fetchReleases } from "shell/store/releases";

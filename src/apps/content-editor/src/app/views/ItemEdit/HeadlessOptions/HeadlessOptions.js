@@ -20,7 +20,7 @@ import Link from "@mui/material/Link";
 import { faNpm } from "@fortawesome/free-brands-svg-icons";
 import { Docs } from "@zesty-io/core/Docs";
 import Divider from "@mui/material/Divider";
-import { AppLink } from "@zesty-io/core/AppLink";
+import { AppLink } from "shell/components/AppLink";
 
 import styles from "./HeadlessOptions.less";
 export function HeadlessOptions(props) {

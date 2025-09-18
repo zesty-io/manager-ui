@@ -28,7 +28,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 // it would be nice to have a central import for all of these
 // instead of individually importing
-import { AppLink } from "@zesty-io/core/AppLink";
+import { AppLink } from "shell/components/AppLink";
 import { MediaApp } from "../../../../../../media/src/app";
 import { FieldTypeUUID } from "../../../../../../../shell/components/FieldTypeUUID";
 import { FieldTypeCurrency } from "../../../../../../../shell/components/FieldTypeCurrency";

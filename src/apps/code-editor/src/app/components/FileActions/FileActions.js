@@ -11,7 +11,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBolt, faFileCode } from "@fortawesome/free-solid-svg-icons";
 import Link from "@mui/material/Link";
 
-import { AppLink } from "@zesty-io/core/AppLink";
+import { AppLink } from "shell/components/AppLink";
 import { Notice } from "@zesty-io/core/Notice";
 
 import { DifferActions } from "./components/DifferActions";

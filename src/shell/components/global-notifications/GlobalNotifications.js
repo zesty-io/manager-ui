@@ -12,7 +12,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import { Drawer, DrawerContent } from "@zesty-io/core/Drawer";
-import { AppLink } from "@zesty-io/core/AppLink";
+import { AppLink } from "shell/components/AppLink";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import Badge from "@mui/material/Badge";

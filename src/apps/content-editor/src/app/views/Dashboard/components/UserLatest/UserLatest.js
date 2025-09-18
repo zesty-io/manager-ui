@@ -12,7 +12,7 @@ import CardHeader from "@mui/material/CardHeader";
 import CardContent from "@mui/material/CardContent";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 
-import { AppLink } from "@zesty-io/core/AppLink";
+import { AppLink } from "shell/components/AppLink";
 import { WithLoader } from "shell/components/legacy/WithLoader";
 
 import { request } from "utility/request";

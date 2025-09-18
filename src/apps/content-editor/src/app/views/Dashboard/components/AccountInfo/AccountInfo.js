@@ -15,7 +15,7 @@ import CardContent from "@mui/material/CardContent";
 import PublicIcon from "@mui/icons-material/Public";
 
 import styles from "./AccountInfo.less";
-import { AppLink } from "@zesty-io/core/AppLink";
+import { AppLink } from "shell/components/AppLink";
 import { useDomain } from "shell/hooks/use-domain";
 
 export function AccountInfo(props) {

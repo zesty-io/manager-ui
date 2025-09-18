@@ -6,7 +6,7 @@ import { Close, Save, DoDisturbAlt } from "@mui/icons-material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCog } from "@fortawesome/free-solid-svg-icons";
 import { Modal, ModalContent, ModalFooter, ModalHeader } from "../legacy/Modal";
-import { AppLink } from "@zesty-io/core/AppLink";
+import { AppLink } from "shell/components/AppLink";
 
 import { MediaApp } from "../../../apps/media/src/app";
 import { notify } from "../../store/notifications";
