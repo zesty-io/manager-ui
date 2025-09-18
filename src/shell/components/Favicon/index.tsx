@@ -223,7 +223,6 @@ export const Favicon = ({ onCloseFaviconModal }: FaviconProps) => {
 
   return (
     <>
-      {/* @ts-expect-error untyped */}
       <Modal
         open={ui.isUpdateFaviconModalOpen}
         className={styles.Modal}
@@ -314,7 +313,6 @@ export const Favicon = ({ onCloseFaviconModal }: FaviconProps) => {
             </>
           )}
         </ModalContent>
-        {/* @ts-expect-error untyped */}
         <ModalFooter className={styles.Actions}>
           <Button
             variant="contained"

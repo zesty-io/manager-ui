@@ -13,22 +13,33 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "shell/components/legacy/Button";
 
 import styles from "./Modal.less";
-export const Modal = React.memo(function Modal(props) {
+
+type ModalProps = {
+  open?: boolean;
+  type?: "local" | "global";
+  onClose?: (evt: React.MouseEvent<HTMLButtonElement> | KeyboardEvent) => void;
+  className?: string;
+  children?: React.ReactNode;
+};
+
+export const Modal = React.memo((props: ModalProps) => {
   const [open, setOpen] = useState(Boolean(props.open));
 
   const styleLocal = props.type === "local" ? styles.Local : null;
   const styleGlobal = props.type === "global" ? styles.Global : null;
   const styleOpen = open ? styles.Open : null;
 
-  const onClose = (evt) => {
+  const onClose = (
+    evt: React.MouseEvent<HTMLButtonElement> | KeyboardEvent
+  ) => {
     setOpen(false);
     if (props.onClose) {
       props.onClose(evt);
     }
   };
 
-  const onEsc = (evt) => {
-    if (evt.key === "Escape" || evt.keyCode == 27) {
+  const onEsc = (evt: KeyboardEvent) => {
+    if (evt.key === "Escape" || evt.keyCode === 27) {
       onClose(evt);
     }
   };
@@ -43,7 +54,7 @@ export const Modal = React.memo(function Modal(props) {
   // Allow consumer to update internal open state
   useEffect(() => setOpen(Boolean(props.open)), [props.open]);
 
-  const modalRef = useRef(null);
+  const modalRef = useRef<HTMLElement>(null);
   useLayoutEffect(() => {
     if (modalRef.current) {
       const modalPosition = modalRef.current.getBoundingClientRect();
@@ -63,6 +74,7 @@ export const Modal = React.memo(function Modal(props) {
         ref={modalRef}
         className={cx(styles.Modal, styleLocal, styleGlobal, props.className)}
       >
+        {/* @ts-expect-error untyped */}
         <Button className={styles.Close} onClick={onClose}>
           <FontAwesomeIcon icon={faTimes} />
         </Button>
@@ -72,7 +84,12 @@ export const Modal = React.memo(function Modal(props) {
   );
 });
 
-export const ModalHeader = React.memo(function ModalHeader(props) {
+type ModalHeaderProps = {
+  className?: string;
+  children?: React.ReactNode;
+};
+
+export const ModalHeader = React.memo((props: ModalHeaderProps) => {
   return (
     <header className={cx(styles.ModalHeader, props.className)}>
       {props.children}
@@ -80,15 +97,25 @@ export const ModalHeader = React.memo(function ModalHeader(props) {
   );
 });
 
-export const ModalContent = React.memo(function ModalContent(props) {
+type ModalContentProps = React.HTMLAttributes<HTMLElement> & {
+  children?: React.ReactNode;
+};
+
+export const ModalContent = React.memo((props: ModalContentProps) => {
+  const { className, children, ...rest } = props;
   return (
-    <main {...props} className={cx(styles.ModalContent, props.className)}>
-      {props.children}
+    <main {...rest} className={cx(styles.ModalContent, className)}>
+      {children}
     </main>
   );
 });
 
-export const ModalFooter = React.memo(function ModalFooter(props) {
+type ModalFooterProps = {
+  className?: string;
+  children?: React.ReactNode;
+};
+
+export const ModalFooter = React.memo((props: ModalFooterProps) => {
   return (
     <footer className={cx(styles.ModalFooter, props.className)}>
       {props.children}
