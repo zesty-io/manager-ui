@@ -9,7 +9,7 @@ import CardContent from "@mui/material/CardContent";
 import CardActions from "@mui/material/CardActions";
 import HistoryIcon from "@mui/icons-material/History";
 
-import { Notice } from "@zesty-io/core/Notice";
+import { Notice } from "shell/components/legacy/Notice";
 import { AppLink } from "shell/components/AppLink";
 
 import styles from "./AuditTrail.less";

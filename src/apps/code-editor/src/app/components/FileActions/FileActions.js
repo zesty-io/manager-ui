@@ -12,7 +12,7 @@ import { faBolt, faFileCode } from "@fortawesome/free-solid-svg-icons";
 import Link from "@mui/material/Link";
 
 import { AppLink } from "shell/components/AppLink";
-import { Notice } from "@zesty-io/core/Notice";
+import { Notice } from "shell/components/legacy/Notice";
 
 import { DifferActions } from "./components/DifferActions";
 import { EditorActions } from "./components/EditorActions";

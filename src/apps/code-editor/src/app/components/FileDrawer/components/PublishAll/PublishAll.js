@@ -8,7 +8,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloudUploadAlt } from "@fortawesome/free-solid-svg-icons";
 
-import { Notice } from "@zesty-io/core/Notice";
+import { Notice } from "shell/components/legacy/Notice";
 
 import { CardContent, CardFooter } from "@zesty-io/core/Card";
 import { CollapsibleCard } from "@zesty-io/core/CollapsibleCard";

@@ -8,7 +8,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
 
-import { Notice } from "@zesty-io/core/Notice";
+import { Notice } from "shell/components/legacy/Notice";
 import {
   Modal,
   ModalContent,

@@ -6,7 +6,7 @@ import Button from "@mui/material/Button";
 import DeleteIcon from "@mui/icons-material/Delete";
 import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
 
-import { Notice } from "@zesty-io/core/Notice";
+import { Notice } from "shell/components/legacy/Notice";
 import {
   Modal,
   ModalContent,
