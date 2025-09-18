@@ -9,7 +9,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
 
 import { Notice } from "@zesty-io/core/Notice";
-import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
+import { Modal, ModalContent, ModalFooter } from "shell/components/LegacyModal";
 
 import { publishAll } from "shell/store/releases";
 import { usePermission } from "shell/hooks/use-permissions";

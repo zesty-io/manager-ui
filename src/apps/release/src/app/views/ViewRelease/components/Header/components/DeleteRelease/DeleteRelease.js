@@ -7,7 +7,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
 
 import { Notice } from "@zesty-io/core/Notice";
-import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
+import { Modal, ModalContent, ModalFooter } from "shell/components/LegacyModal";
 
 import { deleteRelease } from "shell/store/releases";
 import { usePermission } from "shell/hooks/use-permissions";

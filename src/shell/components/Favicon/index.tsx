@@ -5,12 +5,7 @@ import { Dialog, IconButton, Button, Skeleton } from "@mui/material";
 import { Close, Save, DoDisturbAlt } from "@mui/icons-material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCog } from "@fortawesome/free-solid-svg-icons";
-import {
-  Modal,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-} from "@zesty-io/core/Modal";
+import { Modal, ModalContent, ModalFooter, ModalHeader } from "../LegacyModal";
 import { AppLink } from "@zesty-io/core/AppLink";
 
 import { MediaApp } from "../../../apps/media/src/app";
@@ -228,6 +223,7 @@ export const Favicon = ({ onCloseFaviconModal }: FaviconProps) => {
 
   return (
     <>
+      {/* @ts-expect-error untyped */}
       <Modal
         open={ui.isUpdateFaviconModalOpen}
         className={styles.Modal}
@@ -318,6 +314,7 @@ export const Favicon = ({ onCloseFaviconModal }: FaviconProps) => {
             </>
           )}
         </ModalContent>
+        {/* @ts-expect-error untyped */}
         <ModalFooter className={styles.Actions}>
           <Button
             variant="contained"

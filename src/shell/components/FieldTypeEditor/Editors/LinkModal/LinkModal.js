@@ -1,7 +1,7 @@
 import React from "react";
 import { toggleMark } from "prosemirror-commands";
 
-import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
+import { Modal, ModalContent, ModalFooter } from "shell/components/LegacyModal";
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { Button } from "@zesty-io/core/Button";
 import { Input } from "@zesty-io/core/Input";

@@ -1,0 +1,229 @@
+@import "shell/legacy-styles/typography.less";
+@import "shell/legacy-styles/colors.less";
+
+@btnDefault: @zesty-gray;
+@btnDefaultText: @white;
+@btnSave: @zesty-green;
+@btnCancel: @zesty-light-gray;
+@btnWarn: @zesty-red;
+@btnAlt: @zesty-orange;
+
+/*
+Button options following Zeplin's stylesheet
+https://app.zeplin.io/project/5bb69f5bdfef6551f65f76e8/screen/5bbe83aa23bfd05fb6a9bff7
+
+EXAMPLE: <Button kind="outlined" type="save" size="small">
+
+KIND: defaults, outlined, reversed, flat
+TYPE: save, secondary, cancel, warn
+SIZE: compact, small
+*/
+
+.Button {
+  .bgd-default();
+  box-shadow: @boxShadow;
+  font-weight: @font-weight-bold;
+  color: @white;
+  align-items: center;
+  border: 0;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: 24px;
+  letter-spacing: 0.1px;
+  padding: 8px 16px;
+  justify-content: flex-start;
+  text-transform: uppercase;
+  text-align: left;
+
+  // icon
+  .icon {
+    margin-right: 8px;
+    font-size: 13px;
+  }
+  svg {
+    width: 12px !important;
+  }
+
+  &:hover,
+  &:focus {
+    box-shadow: @boxShadowHover;
+    outline: none;
+  }
+
+  //DEFAULT TYPE
+  &.save {
+    .bgd-primary();
+  }
+  &.secondary {
+    .bgd-secondary();
+  }
+
+  &.cancel {
+    background-color: @c-cancel;
+    color: @white;
+  }
+  &.warn {
+    .bgd-warn();
+  }
+  &.alt {
+    background-color: @btnAlt;
+    border-bottom-color: darken(@btnAlt, 10%);
+    border-right-color: darken(@btnAlt, 10%);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    .disabled();
+  }
+  &:active {
+    box-shadow: none;
+  }
+
+  // OUTLINE KIND
+  &.outlined {
+    background-color: transparent;
+    color: @c-default;
+    border: 1px solid @c-default;
+    box-shadow: none;
+
+    &:hover {
+      box-shadow: none;
+      border: 1px solid;
+      .bgd-default();
+      color: @white;
+    }
+
+    &:disabled {
+      .disabled();
+    }
+
+    // OUTLINED TYPE
+    &.save {
+      color: @zesty-green;
+      border-color: @zesty-green;
+      border: 1px @zesty-green solid;
+      &:hover {
+        .bgd-primary();
+        color: @white;
+      }
+    }
+
+    &.secondary {
+      color: @c-secondary;
+      border-color: @c-secondary;
+      border: 1px @c-secondary solid;
+      &:hover {
+        .bgd-secondary();
+        color: @white;
+      }
+    }
+
+    &.cancel {
+      color: @zesty-dark-blue;
+      border-color: @zesty-dark-blue;
+      &:hover {
+        background-color: @zesty-dark-blue;
+        color: @white;
+      }
+    }
+    &.warn {
+      color: @zesty-red;
+      border-color: @zesty-red;
+      &:hover {
+        .bgd-warn();
+        color: @white;
+      }
+      &:disabled {
+        .disabled();
+        color: @white;
+        border: 1px @c-disabled solid;
+      }
+    }
+  }
+
+  //REVERSED KIND
+  &.reversed {
+    background-color: @white;
+    color: inherit;
+
+    // REVERSED TYPE
+    &.save {
+      color: @zesty-green;
+      &:disabled {
+        .disabled();
+        color: @white;
+        border: 1px @c-disabled solid;
+      }
+    }
+    &.secondary {
+      color: @c-secondary;
+      &:disabled {
+        .disabled();
+        color: @white;
+        border: 1px @c-disabled solid;
+      }
+    }
+    &.warn {
+      color: @zesty-red;
+      &:disabled {
+        .disabled();
+        color: @white;
+        border: 1px @c-disabled solid;
+      }
+    }
+    &.cancel {
+      color: @zesty-dark-blue;
+      &:disabled {
+        .disabled();
+        color: @white;
+        border: 1px @c-disabled solid;
+      }
+    }
+  }
+
+  //FLAT KIND
+  &.flat {
+    background: none;
+    border: none;
+    box-shadow: none;
+    color: @c-default;
+
+    //FLAT TYPE
+    &.save {
+      color: @zesty-green;
+      &:hover {
+        box-shadow: none;
+        color: darken(@zesty-green, 5%);
+      }
+    }
+    &.secondary {
+      color: @c-secondary;
+      &:hover {
+        box-shadow: none;
+        color: darken(@c-secondary, 5%);
+      }
+    }
+    &.warn {
+      color: @zesty-red;
+
+      &:hover {
+        box-shadow: none;
+        color: darken(@c-warn, 5%);
+      }
+    }
+  }
+
+  // BUTTON SIZE
+  &.compact {
+    padding: 0px 4px;
+    font-size: 0.9em;
+  }
+
+  &.small {
+    padding: 4px 10px;
+    font-size: 0.9em;
+  }
+}

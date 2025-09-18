@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { Modal, ModalHeader, ModalContent } from "@zesty-io/core/Modal";
+import { Modal, ModalHeader, ModalContent } from "shell/components/LegacyModal";
 import { WithLoader } from "@zesty-io/core/WithLoader";
 
 import api from "../../api";
