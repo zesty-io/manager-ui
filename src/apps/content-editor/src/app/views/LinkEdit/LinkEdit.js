@@ -16,7 +16,7 @@ import CardContent from "@mui/material/CardContent";
 import CardActions from "@mui/material/CardActions";
 
 import { WithLoader } from "shell/components/legacy/WithLoader";
-import { FieldTypeInternalLink } from "@zesty-io/core/FieldTypeInternalLink";
+import { FieldTypeInternalLink } from "shell/components/FieldTypeInternalLink";
 import { FieldTypeText, FieldTypeUrl } from "@zesty-io/material";
 
 import { ConfirmDialog } from "@zesty-io/material";
