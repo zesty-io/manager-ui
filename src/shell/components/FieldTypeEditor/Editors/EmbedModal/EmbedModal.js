@@ -5,16 +5,12 @@ import {
   ModalContent,
   ModalFooter,
 } from "shell/components/legacy/Modal";
-import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
-import { Button } from "@mui/material";
-import { Url } from "@zesty-io/core/Url";
+import { Button, TextField, InputLabel, Link } from "@mui/material";
 
 import { schema } from "../react-prosemirror-schema";
 
 import styles from "./EmbedModal.less";
 export class EmbedModal extends React.Component {
-  embed = React.createRef();
-
   state = {
     id: "",
   };
@@ -29,7 +25,6 @@ export class EmbedModal extends React.Component {
   }
 
   componentDidMount() {
-    this.embed.current.querySelector("input").focus();
     window.addEventListener("keypress", this.onEnter);
   }
 
@@ -73,20 +68,26 @@ export class EmbedModal extends React.Component {
             <h1>
               <i className="fa fa-exclamation-triangle" aria-hidden="true" />
               &nbsp;
-              <Url href="https://twitframe.com/" target="_blank">
+              <Link
+                href="https://twitframe.com/"
+                target="_blank"
+                underline="none"
+              >
                 Twitframe
-              </Url>{" "}
+              </Link>{" "}
               embeds require the full URL for the tweet you would like to embed.
             </h1>
           )}
-          <FieldTypeText
-            innerRef={this.embed}
-            label={`Enter unique ${this.props.options.service} ID`}
+          <InputLabel sx={{ my: 0.5 }}>
+            Enter unique {this.props.options.service} ID
+          </InputLabel>
+          <TextField
+            required
+            autoFocus
+            fullWidth
             name="embed"
             placeholder="e.g. puXYPrrsrA"
-            required={true}
-            autoFocus={true}
-            onChange={(id) => this.setState({ id })}
+            onChange={(evt) => this.setState({ id: evt.target.value })}
           />
         </ModalContent>
         <ModalFooter>
