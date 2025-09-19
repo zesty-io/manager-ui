@@ -14,7 +14,7 @@ import {
 import { fetchAuditTrailPublish } from "shell/store/logs";
 import cx from "classnames";
 import SharedWidgetStyles from "../SharedWidget.less";
-import { AppLink } from "@zesty-io/core";
+import { AppLink } from "shell/components/AppLink";
 import styles from "./WidgetPublishHistory.less";
 
 export default connect((state) => {

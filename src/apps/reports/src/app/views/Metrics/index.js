@@ -20,7 +20,7 @@ import CardHeader from "@mui/material/CardHeader";
 import CardContent from "@mui/material/CardContent";
 
 import { Pie, Bar } from "react-chartjs-2";
-import { Notice } from "@zesty-io/core";
+import { Notice } from "shell/components/legacy/Notice";
 
 import {
   useGetUsageQuery,

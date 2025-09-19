@@ -12,7 +12,7 @@ import {
 import { fetchAuditTrailDrafting } from "shell/store/logs";
 import cx from "classnames";
 import SharedWidgetStyles from "../SharedWidget.less";
-import { AppLink } from "@zesty-io/core";
+import { AppLink } from "shell/components/AppLink";
 import styles from "./WidgetDraftHistory.less";
 
 export default connect((state, props) => {
