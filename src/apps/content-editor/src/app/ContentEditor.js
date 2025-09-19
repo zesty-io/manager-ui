@@ -25,7 +25,7 @@ import { CSVImport } from "./views/CSVImport";
 import ReleaseApp from "../../../release/src";
 
 // Vendor styles for codemirror, prosemirror and flatpickr
-import "@zesty-io/core/vendor.css";
+import "shell/components/legacy/vendor.css";
 
 import styles from "./ContentEditor.less";
 import Analytics from "./views/Analytics";
