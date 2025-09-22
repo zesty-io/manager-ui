@@ -161,12 +161,13 @@ export default connect((state) => {
             open={drawerOpen}
             variant="persistent"
             anchor="right"
-            elevation={16}
             onClose={() => setDrawerOpen(false)}
             hideBackdrop
             slotProps={{
               paper: {
                 className: styles.Drawer,
+                elevation: 16,
+
                 sx: {
                   width: 450,
                   height: "calc(100vh - 40px)",
