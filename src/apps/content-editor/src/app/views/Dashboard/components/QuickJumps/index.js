@@ -1,1 +1,0 @@
-export { QuickJumps } from "./QuickJumps";
