@@ -11,19 +11,21 @@ import {
   faCheckCircle,
 } from "@fortawesome/free-solid-svg-icons";
 
-import { Drawer, DrawerContent } from "@zesty-io/core/Drawer";
 import { AppLink } from "shell/components/AppLink";
-import Typography from "@mui/material/Typography";
-import Stack from "@mui/material/Stack";
-import Badge from "@mui/material/Badge";
-import IconButton from "@mui/material/IconButton";
+import {
+  Typography,
+  Stack,
+  Badge,
+  IconButton,
+  Alert,
+  Drawer,
+  Box,
+} from "@mui/material";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 
 import styles from "./GlobalNotifications.less";
-import { Alert, Button } from "@mui/material";
 
 import WarningRoundedIcon from "@mui/icons-material/WarningRounded";
-import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import CloseIcon from "@mui/icons-material/Close";
@@ -34,6 +36,7 @@ import {
   enqueueSnackbar,
   useSnackbar,
 } from "notistack";
+import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 
 const alertDetails = {
   warn: {
@@ -155,21 +158,32 @@ export default connect((state) => {
           </IconButton>
 
           <Drawer
-            className={styles.Drawer}
-            position="right"
-            offset="0px"
-            width="450px"
-            height="calc(100vh - 40px)"
             open={drawerOpen}
+            variant="persistent"
+            anchor="right"
+            elevation={16}
+            onClose={() => setDrawerOpen(false)}
+            hideBackdrop
+            slotProps={{
+              paper: {
+                className: styles.Drawer,
+                sx: {
+                  width: 450,
+                  height: "calc(100vh - 40px)",
+                  top: "unset",
+                  bottom: 0,
+                },
+              },
+            }}
           >
-            <DrawerContent className={styles.DrawerContent}>
-              <header>
-                <h1 className={styles.display}>My Notifications</h1>
+            <Box className={styles.DrawerContent}>
+              <Box component="header">
+                <Typography variant="h1">My Notifications</Typography>
                 <AppLink to="/reports/audit-trail">View All Logs</AppLink>
-              </header>
+              </Box>
 
               {!props.notifications.length && (
-                <h2 className={styles.headline}>No actions taken</h2>
+                <Typography variant="h2">No actions taken</Typography>
               )}
 
               <ul>
@@ -198,7 +212,7 @@ export default connect((state) => {
                   );
                 })}
               </ul>
-            </DrawerContent>
+            </Box>
           </Drawer>
         </aside>
       </SnackbarProvider>
