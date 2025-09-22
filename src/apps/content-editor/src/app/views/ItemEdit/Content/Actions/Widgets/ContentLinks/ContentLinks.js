@@ -9,8 +9,8 @@ import {
   Stack,
 } from "@mui/material";
 
-import { PreviewUrl } from "../../../../components/Header/PreviewUrl";
-import { LiveUrl } from "../../../../components/Header/LiveUrl";
+import { PreviewUrl } from "./PreviewUrl";
+import { LiveUrl } from "./LiveUrl";
 import { InstantUrl } from "./InstantUrl";
 
 import styles from "./ContentLinks.less";
