@@ -123,6 +123,7 @@ class ReorderNav extends Component {
     return (
       this.props.isOpen && (
         <Dialog
+          data-cy="reorder_nav_modal"
           open
           onClose={this.props.toggleOpen}
           className={styles.ReorderNav}
@@ -136,7 +137,11 @@ class ReorderNav extends Component {
               <Typography variant="h5">
                 Change the order of items in your navigation
               </Typography>
-              <IconButton size="small" onClick={this.props.toggleOpen}>
+              <IconButton
+                data-cy="close_reorder_nav"
+                size="small"
+                onClick={this.props.toggleOpen}
+              >
                 <CloseRoundedIcon fontSize="small" />
               </IconButton>
             </Stack>

@@ -15,8 +15,8 @@ describe("Navigation through content editor", () => {
 
   it("Opens the reorder nav modal", () => {
     cy.getBySelector("reorder_nav").should("exist").click();
-    cy.get(".ModalAligner--ptdt- article main ul.sort--taGo4").should("exist");
-    cy.get(".ModalAligner--ptdt-.Open--M5j6S button.Close--kVpCO").click();
+    cy.getBySelector("reorder_nav_modal").should("exist");
+    cy.getBySelector("close_reorder_nav").click();
   });
 
   it("Should not navigate to the create item page if no model is selected", () => {
