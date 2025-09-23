@@ -1,22 +1,8 @@
 import { MouseEvent, useEffect, useRef, useMemo, useState } from "react";
-import {
-  Box,
-  Button,
-  Typography,
-  IconButton,
-  Menu,
-  MenuItem,
-  ListItemText,
-  ListItemIcon,
-  Stack,
-} from "@mui/material";
+import { Box, Button, Typography, IconButton, Stack } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
-import CreateNewFolderIcon from "@mui/icons-material/CreateNewFolder";
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
-import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
-import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import VisibilityIcon from "@mui/icons-material/Visibility";
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
 import DriveFolderUploadRoundedIcon from "@mui/icons-material/DriveFolderUploadRounded";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -26,9 +12,7 @@ import CreateNewFolderRoundedIcon from "@mui/icons-material/CreateNewFolderRound
 import { useHistory } from "react-router";
 import { useLocalStorage } from "react-use";
 
-import { RenameFolderDialog } from "./RenameFolderDialog";
 import { NewFolderDialog } from "./NewFolderDialog";
-import { DeleteFolderDialog } from "./DeleteFolderDialog";
 import { UploadButton } from "./UploadButton";
 import { useDispatch, useSelector } from "react-redux";
 import { MoveFileDialog } from "./FileModal/MoveFileDialog";
