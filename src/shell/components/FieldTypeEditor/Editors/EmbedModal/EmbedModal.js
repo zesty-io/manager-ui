@@ -3,7 +3,8 @@ import React from "react";
 import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { Button } from "@zesty-io/core/Button";
-import { Url } from "@zesty-io/core/Url";
+import { WarningRounded } from "@mui/icons-material";
+import { Stack, Typography } from "@mui/material";
 
 import { schema } from "../react-prosemirror-schema";
 
@@ -66,14 +67,13 @@ export class EmbedModal extends React.Component {
       >
         <ModalContent>
           {this.props.options.service === "Twitframe" && (
-            <h1>
-              <i className="fa fa-exclamation-triangle" aria-hidden="true" />
-              &nbsp;
-              <Url href="https://twitframe.com/" target="_blank">
-                Twitframe
-              </Url>{" "}
-              embeds require the full URL for the tweet you would like to embed.
-            </h1>
+            <Stack direction="row" spacing={1}>
+              <WarningRounded />
+              <Typography variant="h5">
+                Twitframe embeds require the full URL for the tweet you would
+                like to embed.
+              </Typography>
+            </Stack>
           )}
           <FieldTypeText
             innerRef={this.embed}
