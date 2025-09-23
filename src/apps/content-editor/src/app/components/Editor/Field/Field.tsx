@@ -148,7 +148,7 @@ export const Field = memo(
           if (datatype === "number" || datatype === "yes_no") {
             onChange(Number(val), name);
           } else {
-            onChange(val, name);
+            onLocalChange(val);
           }
 
           setRerenderKey((prevKey: number) => prevKey + 1);
@@ -175,7 +175,6 @@ export const Field = memo(
       {
         skip: [
           "uuid",
-          "images",
           "files",
           "internal_link",
           "one_to_one",

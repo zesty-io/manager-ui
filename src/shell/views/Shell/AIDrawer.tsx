@@ -5,6 +5,7 @@ import {
   Autocomplete,
   Box,
   Button,
+  CircularProgress,
   FormControlLabel,
   FormGroup,
   IconButton,
@@ -76,6 +77,13 @@ export const AIDrawer = () => {
   const [isInitialMount, setIsInitialMount] = useState(true);
   const promptInputRef = useRef<HTMLInputElement>(null);
 
+  const zuidMatch = pathname.match(
+    /^\/content\/([^/]+)\/([^/]+)(?:\/(meta|seo))?$/
+  );
+  const { modelZUID, itemZUID } = zuidMatch
+    ? { modelZUID: zuidMatch[1], itemZUID: zuidMatch[2] }
+    : { modelZUID: undefined, itemZUID: undefined };
+
   const [responsesLS, setResponsesLS] = useLocalStorage<any[]>(
     `ai-drawer-responses-${pathname}`,
     []
@@ -122,8 +130,11 @@ export const AIDrawer = () => {
     if (!aiResponse) return;
 
     try {
-      const cleaned = aiResponse.data.replace(/```json|```/g, "").trim();
-      const parsed = JSON.parse(cleaned);
+      const cleaned =
+        typeof aiResponse.data === "string"
+          ? aiResponse.data.replace(/```json|```/g, "").trim()
+          : null;
+      const parsed = cleaned ? JSON.parse(cleaned) : aiResponse.data;
       const responsesArray = Array.isArray(parsed) ? parsed : [parsed];
 
       setResponses((prev) => [...prev, ...responsesArray]);
@@ -154,20 +165,23 @@ export const AIDrawer = () => {
   }, [aiResponse]);
 
   const handlePrompt = (newPrompt: string) => {
+    const registryKeys = Object.keys(getRefRegistry() || {});
+    const refRegistry = getRefRegistry();
+
     geminiGenerate({
       prompt: newPrompt,
-      systemInstruction: isInCodeApp
-        ? codeSystemInstruction(
-            getRefRegistry()?.["code-editor"]?.context()?.fileName,
-            getRefRegistry()?.["code-editor"]?.context()?.code,
-            getRefRegistry()?.["code-editor"]?.context()?.fields
-          )
-        : contentSystemInstruction(
-            Object.keys(getRefRegistry() || {}),
-            getRefRegistry(),
-            selectedTone,
-            selectedLanguage
-          ),
+      tone: selectedTone.value,
+      language: selectedLanguage.value,
+      modelZuid: modelZUID,
+      itemZuid: itemZUID,
+      registryKeys: Object.keys(getRefRegistry() || {}),
+      regRegistry: registryKeys.map(
+        (x) => `"${x}": "${JSON.stringify(refRegistry[x].context())}"`
+      ),
+      filename:
+        getRefRegistry()?.["code-editor"]?.context()?.fileName || undefined,
+      code: getRefRegistry()?.["code-editor"]?.context()?.code || undefined,
+      fields: getRefRegistry()?.["code-editor"]?.context()?.fields || undefined,
       temperature: 0.5,
     });
     setResponses((prev) => [
@@ -374,18 +388,22 @@ export const AIDrawer = () => {
                   >
                     {response.payload.refKey}
                   </Typography>
-                  <AnimatedText
-                    key={index}
-                    text={response.payload.value}
-                    animate={!isInitialMount && !isInCodeApp}
-                    onGrow={() => {
-                      if (responsesEndRef.current) {
-                        responsesEndRef.current.scrollIntoView({
-                          behavior: "smooth",
-                        });
-                      }
-                    }}
-                  />
+                  {response.payload.value.startsWith("3-") ? (
+                    <GeneratedImage src={response.payload.value} />
+                  ) : (
+                    <AnimatedText
+                      key={index}
+                      text={response.payload.value}
+                      animate={!isInitialMount && !isInCodeApp}
+                      onGrow={() => {
+                        if (responsesEndRef.current) {
+                          responsesEndRef.current.scrollIntoView({
+                            behavior: "smooth",
+                          });
+                        }
+                      }}
+                    />
+                  )}
                   {response.type === "SET_VALUE" && (
                     <Box display="flex" justifyContent="flex-end">
                       <Button
@@ -630,4 +648,37 @@ export const AnimatedText = ({ text, animate, onGrow }: AnimatedTextProps) => {
   }, []);
 
   return <Typography variant="body2">{displayedText}</Typography>;
+};
+
+const GeneratedImage = ({ src }: { src: string }) => {
+  const [loading, setLoading] = useState(true);
+
+  return (
+    <Box position="relative" width={200} height={200}>
+      {loading && (
+        <Box
+          position="absolute"
+          top="50%"
+          left="50%"
+          sx={{ transform: "translate(-50%, -50%)" }}
+        >
+          <CircularProgress size={40} />
+        </Box>
+      )}
+      <Box
+        component="img"
+        display="block"
+        width="100%"
+        height="100%"
+        sx={{ objectFit: "cover" }}
+        src={`${
+          // @ts-ignore
+          CONFIG.SERVICE_MEDIA_RESOLVER
+        }/resolve/${src}/getimage/?w=200&h=200&type=fit`}
+        onLoad={() => setLoading(false)}
+        onError={() => setLoading(false)} // hide spinner if image fails
+        style={{ visibility: loading ? "hidden" : "visible" }}
+      />
+    </Box>
+  );
 };
