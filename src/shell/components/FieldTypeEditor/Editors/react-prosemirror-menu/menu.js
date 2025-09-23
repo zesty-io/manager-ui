@@ -85,7 +85,7 @@ export function menu(options) {
         title: "Add or remove link",
         content: icons.link,
         active: markActive(schema.marks.link),
-        // enable: (state) => !state.selection.empty,
+        enable: (state) => !state.selection.empty,
         run(state, dispatch, view) {
           // Remove existing links
           if (markActive(schema.marks.link)(state)) {
