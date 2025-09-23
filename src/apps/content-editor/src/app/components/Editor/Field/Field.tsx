@@ -175,7 +175,6 @@ export const Field = memo(
       {
         skip: [
           "uuid",
-          "images",
           "files",
           "internal_link",
           "one_to_one",
