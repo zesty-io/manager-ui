@@ -148,7 +148,7 @@ export const Field = memo(
           if (datatype === "number" || datatype === "yes_no") {
             onChange(Number(val), name);
           } else {
-            onChange(val, name);
+            onLocalChange(val);
           }
 
           setRerenderKey((prevKey: number) => prevKey + 1);
