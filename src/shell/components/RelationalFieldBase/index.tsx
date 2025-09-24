@@ -66,6 +66,12 @@ export const RelationalFieldBase = ({
         skip: !relatedModelZUID,
       }
     );
+
+  useEffect(() => {
+    // Ensures that the values always synced
+    setItemZUIDs(value?.split(",") || []);
+  }, [value]);
+
   useEffect(() => {
     if (!!relatedModelZUID) {
       dispatch(fetchItems(relatedModelZUID));
@@ -77,7 +83,6 @@ export const RelationalFieldBase = ({
       const newItemZUIDs = [...itemZUIDs, newlyCreatedItemZUID];
 
       onChange(!!newItemZUIDs?.length ? newItemZUIDs.join(",") : null, name);
-      setItemZUIDs(!!newItemZUIDs?.length ? newItemZUIDs : null);
       setInitiatorZUID(null);
       setNewlyCreatedItemZUID(null);
     }
@@ -129,9 +134,6 @@ export const RelationalFieldBase = ({
                 onMoveCard={handleMoveCard}
                 onDropCard={handleReorder}
                 onRemoveCard={(itemZUID) => {
-                  setItemZUIDs((prev) =>
-                    prev.filter((zuid) => zuid !== itemZUID)
-                  );
                   onChange(
                     itemZUIDs.filter((zuid) => zuid !== itemZUID).join(","),
                     name
@@ -213,7 +215,7 @@ export const RelationalFieldBase = ({
               !!selectedZUIDs?.length ? selectedZUIDs.join(",") : null,
               name
             );
-            setItemZUIDs(!!selectedZUIDs?.length ? selectedZUIDs : null);
+            // setItemZUIDs(!!selectedZUIDs?.length ? selectedZUIDs : null);
             closeFieldSelectorDialog();
           }}
           replace={replace}
