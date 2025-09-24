@@ -26,9 +26,12 @@ export const cloudFunctionsApi = createApi({
     geminiGeneration: builder.mutation<any, any>({
       query: (body) => {
         return {
-          url: `ask-gemini`,
+          url: `mcp-remote-client`,
           method: "POST",
           body,
+          headers: {
+            "X-Instance-Zuid": instanceZUID,
+          },
         };
       },
     }),
