@@ -649,6 +649,14 @@ export const FieldSelectorDialog = ({
                     ),
                     columnHeaders: () => null,
                   }}
+                  slotProps={{
+                    main: {
+                      "data-cy": `selection:container`,
+                    },
+                    row: {
+                      "data-cy": `selection:row`,
+                    },
+                  }}
                   rowHeight={64}
                   hideFooter
                   filterModel={{

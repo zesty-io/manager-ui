@@ -291,6 +291,7 @@ export const Header = ({
               )}
               {addImagesCallback && (
                 <Button
+                  data-cy="mediaSelectionDoneButton"
                   variant="contained"
                   size="small"
                   color="primary"

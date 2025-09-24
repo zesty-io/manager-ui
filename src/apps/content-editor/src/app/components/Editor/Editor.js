@@ -391,10 +391,15 @@ export default memo(function Editor({
   if (!isLoaded) return null;
 
   return (
-    <div className={styles.Fields}>
+    <div className={styles.Fields} data-cy="editor-field-container">
       {activeFields?.map((field) => {
         return (
-          <div key={`${field.ZUID}`} id={field.ZUID} className={styles.Field}>
+          <div
+            key={`${field.ZUID}`}
+            id={field.ZUID}
+            className={styles.Field}
+            data-cy={`field:${field.name}`}
+          >
             <Field
               ZUID={field.ZUID}
               contentModelZUID={field.contentModelZUID}
