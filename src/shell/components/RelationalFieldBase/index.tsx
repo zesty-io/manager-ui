@@ -215,7 +215,6 @@ export const RelationalFieldBase = ({
               !!selectedZUIDs?.length ? selectedZUIDs.join(",") : null,
               name
             );
-            // setItemZUIDs(!!selectedZUIDs?.length ? selectedZUIDs : null);
             closeFieldSelectorDialog();
           }}
           replace={replace}
