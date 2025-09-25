@@ -1,9 +1,9 @@
 // assumes no Head Tags as starting state
 describe("Head Tags", () => {
   it("creates and deletes new head tag", () => {
-    cy.visit(
-      `/content/${Cypress.env("modelZUID")}/${Cypress.env("itemZUID")}/head`
-    );
+    cy.waitOn("/v1/content/models*", () => {
+      cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19/head");
+    });
 
     cy.contains("Create Head Tag", { timeout: 10000 }).click();
 
@@ -17,6 +17,7 @@ describe("Head Tags", () => {
       .find('[data-value="script"]')
       .click({ force: true });
 
+    //cy.get("[data-cy=tagCard]:last-child")
     cy.get("[data-cy=newTagCard]")
       .last()
       .contains("Value")

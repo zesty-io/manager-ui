@@ -14,8 +14,20 @@
 const path = require("path");
 const dotenv = require("dotenv");
 const os = require("os");
+const child_process = require("child_process");
 
 module.exports = (on, config) => {
+  const { getInstance } = require("./DBmanager/services")(on, config);
+  const beforeRunScripts = [];
+
+  on("before:run", async () => {
+    await getInstance(config.env.INSTANCE_ZUID).then((instance) => {
+      config.env.SITE_ID = instance?.ID;
+      config.env.ECO_ID = instance?.ecoID;
+    });
+    await Promise.all(beforeRunScripts?.map((fn) => fn()));
+  });
+
   on("task", {
     log(message) {
       console.log(message);
@@ -34,5 +46,11 @@ module.exports = (on, config) => {
     config.env.email = ciEnvConfig.TEST_USER_EMAIL;
     config.env.password = ciEnvConfig.TEST_USER_PASSWORD;
   }
+
+  const beforeRun = (fn) => {
+    beforeRunScripts.push(fn);
+  };
+
+  require("./DBmanager/index.js")(on, config, beforeRun);
   return config;
 };
