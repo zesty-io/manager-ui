@@ -66,15 +66,6 @@ export class EmbedModal extends React.Component {
         }}
       >
         <ModalContent>
-          {this.props.options.service === "Twitframe" && (
-            <Stack direction="row" spacing={1}>
-              <WarningRounded />
-              <Typography variant="h5">
-                Twitframe embeds require the full URL for the tweet you would
-                like to embed.
-              </Typography>
-            </Stack>
-          )}
           <FieldTypeText
             innerRef={this.embed}
             label={`Enter unique ${this.props.options.service} ID`}
