@@ -3,8 +3,6 @@ import React from "react";
 import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { Button } from "@zesty-io/core/Button";
-import { WarningRounded } from "@mui/icons-material";
-import { Stack, Typography } from "@mui/material";
 
 import { schema } from "../react-prosemirror-schema";
 
