@@ -15,6 +15,8 @@ const path = require("path");
 const dotenv = require("dotenv");
 const os = require("os");
 
+const content = require("./seeds/content");
+
 module.exports = (on, config) => {
   on("task", {
     log(message) {
@@ -34,5 +36,10 @@ module.exports = (on, config) => {
     config.env.email = ciEnvConfig.TEST_USER_EMAIL;
     config.env.password = ciEnvConfig.TEST_USER_PASSWORD;
   }
+
+  on("task", {
+    "seed:content": content,
+  });
+
   return config;
 };
