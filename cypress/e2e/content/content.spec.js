@@ -4,6 +4,10 @@ const forceClick = { force: true };
 describe("Content Specs", () => {
   const TIMESTAMP = Date.now();
 
+  before(() => {
+    cy.task("seed:content");
+  });
+
   describe("editing content", () => {
     before(() => {
       cy.waitOn("/v1/content/models*", () => {
@@ -13,10 +17,11 @@ describe("Content Specs", () => {
     });
 
     it("Text Field", () => {
-      cy.get("#12-13d590-9v2nr2 input")
+      cy.get(`[data-cy="field:text"] input`, options)
+        .should("be.visible")
         .clear()
-        .type(`${TIMESTAMP}`)
-        .should("have.value", `${TIMESTAMP}`);
+        .type(`${EXAMPLE_TEXT}`)
+        .should("have.value", `${EXAMPLE_TEXT}`);
     });
 
     it("WYSIWYG Basic Field", () => {
