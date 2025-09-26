@@ -124,6 +124,7 @@
     "@types/react-window": "^1.8.5",
     "@types/tinymce": "^4.6.8",
     "@types/uuid": "^8.3.4",
+    "@zesty-io/sdk": "^1.1.2",
     "babel-loader": "^8.2.2",
     "copy-webpack-plugin": "^9.0.0",
     "cross-env": "^7.0.2",
