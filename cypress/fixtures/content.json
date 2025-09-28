@@ -1,10 +1,9 @@
 {
   "model": {
-    "label": "[E2E]:Content@{{config.env.COMMIT_ID}}",
-    "metaTitle": "[E2E]:Content@{{config.env.COMMIT_ID}}",
-    "type": "templateset",
-    "name": "_e2e__content_{{config.env.COMMIT_ID}}",
-    "sort": 0,
+    "label": "[E2E]:Content@{{commitId}}-{{timeStamp}}",
+    "metaTitle": "[E2E]:Content@{{commitId}}-{{timeStamp}}",
+    "type": "pageset",
+    "name": "_e2e__content_{{commitId}}_{{timeStamp}}",
     "listed": true
   },
   "fields": [
@@ -186,6 +185,23 @@
     },
     {
       "contentModelZUID": "",
+      "datatype": "yes_no",
+      "name": "yes_no_with_custom_values",
+      "label": "YES / NO with Custom Values",
+      "sort": 12,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": true,
+        "options": {
+          "0": "Custom Two",
+          "1": "Custom One"
+        }
+      }
+    },
+    {
+      "contentModelZUID": "",
       "datatype": "fontawesome",
       "name": "fontawesome",
       "label": "fontawesome",
@@ -303,8 +319,8 @@
       "label": "one to one",
       "sort": 22,
       "required": false,
-      "relatedModelZUID": "{{common.model.ZUID}}",
-      "relatedFieldZUID": "{{common.fields[0].ZUID}}",
+      "relatedModelZUID": "{{context.model.ZUID}}",
+      "relatedFieldZUID": "{{context.fields[0].ZUID}}",
       "settings": {
         "list": true,
         "options": {}
@@ -317,8 +333,8 @@
       "label": "one to many",
       "sort": 23,
       "required": false,
-      "relatedModelZUID": "{{common.model.ZUID}}",
-      "relatedFieldZUID": "{{common.fields[0].ZUID}}",
+      "relatedModelZUID": "{{context.model.ZUID}}",
+      "relatedFieldZUID": "{{context.fields[0].ZUID}}",
       "settings": {
         "list": true,
         "options": {}
@@ -331,8 +347,6 @@
       "label": "block selector",
       "sort": 24,
       "required": false,
-      "relatedModelZUID": null,
-      "relatedFieldZUID": null,
       "settings": {
         "list": true,
         "options": {}
@@ -348,13 +362,15 @@
         "metaLinkText": "{{model.label}}",
         "metaTitle": "{{model.label}}",
         "parentZUID": "0",
-        "pathPart": "{{model.ZUID}}-0"
+        "pathPart": "{{model.label}}"
       },
       "data": {
         "internal_link": "{{model.ZUID}}",
         "text": "text",
         "wysiwyg_basic": "wysiwyg_basic",
-        "yes_no": 0
+        "yes_no": 0,
+        "link": "https://www.zesty.io/",
+        "images": "{{baseUrl}}images/defaultImg.png,{{baseUrl}}images/onboardingIcon.svg,{{baseUrl}}images/zestyLogo.svg,{{baseUrl}}images/blocksOnboarding3.png"
       }
     }
   ]
