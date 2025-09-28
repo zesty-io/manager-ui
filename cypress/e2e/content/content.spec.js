@@ -5,13 +5,25 @@ describe("Content Specs", () => {
   const TIMESTAMP = Date.now();
 
   before(() => {
-    cy.task("seed:content");
+    cy.task("seed:content", {
+      path: "../../fixtures/common.json",
+    }).then((data) => {
+      cy.task("seed:content", {
+        path: "../../fixtures/content.json",
+        context: data,
+      }).then(({ model, items }) => {
+        Cypress.env("modelZUID", model?.ZUID);
+        Cypress.env("itemZUID", items[0]?.meta?.ZUID);
+      });
+    });
   });
 
   describe("editing content", () => {
     before(() => {
       cy.waitOn("/v1/content/models*", () => {
-        cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
+        cy.visit(
+          `/content/${Cypress.env("modelZUID")}/${Cypress.env("itemZUID")}`
+        );
       });
       cy.getBySelector("DuoModeToggle").click(forceClick);
     });
@@ -20,12 +32,12 @@ describe("Content Specs", () => {
       cy.get(`[data-cy="field:text"] input`, options)
         .should("be.visible")
         .clear()
-        .type(`${EXAMPLE_TEXT}`)
-        .should("have.value", `${EXAMPLE_TEXT}`);
+        .type(`${TIMESTAMP}`)
+        .should("have.value", `${TIMESTAMP}`);
     });
 
     it("WYSIWYG Basic Field", () => {
-      cy.get("#12-6d41d0-n10vtc").should("exist");
+      cy.get('[data-cy="field:wysiwyg_basic"]').should("exist");
       cy.iframe("#wysiwyg_basic_ifr")
         .should("be.visible")
         .click()
@@ -35,7 +47,7 @@ describe("Content Specs", () => {
 
     // TODO: implement add image functionality, select and verify image ZUID is in field
     it.skip("Image Field", () => {
-      cy.get("#12-1c94d4-pg8dvx").should("exist");
+      cy.get('[data-cy="field:images"]').should("exist");
     });
 
     it("Textarea Field", () => {
@@ -44,7 +56,9 @@ describe("Content Specs", () => {
         one visible. The visible one is the one we are interested in.
         https://github.com/mui/material-ui/pull/15436
       */
-      cy.get("#12-b5d7b4-n81s15 textarea:not([readonly]):not([hidden])")
+      cy.get(
+        '[data-cy="field:textarea"] textarea:not([readonly]):not([hidden])'
+      )
         .click()
         .clear()
         .type(`${TIMESTAMP}`)
@@ -52,7 +66,7 @@ describe("Content Specs", () => {
     });
 
     it("WYSIWYG Advanced Field", () => {
-      cy.get("#12-be261c-4q7s81").should("exist");
+      cy.get('[data-cy="field:wysiwyg_advanced"]').should("exist");
 
       cy.iframe("#wysiwyg_advanced_ifr")
         .should("be.visible")
@@ -62,36 +76,40 @@ describe("Content Specs", () => {
     });
 
     it("Article Writer Field", () => {
-      cy.get("#12-fc9e18-wh9l82 .ProseMirror")
+      cy.get('[data-cy="field:article_writer"] .ProseMirror')
         .clear()
         .type(`${TIMESTAMP}`)
         .contains(`${TIMESTAMP}`);
     });
 
     it("Markdown Field", () => {
-      cy.get("#12-796b3c-8n93rc textarea")
+      cy.get("[data-cy='field:markdown'] textarea")
         .clear()
         .type(TIMESTAMP)
         .should("have.value", TIMESTAMP);
     });
 
     it("Dropdown Field", () => {
-      cy.get("#12-f3152c-kjz88l").find(".MuiAutocomplete-root input").click();
+      cy.get("[data-cy='field:dropdown']")
+        .find(".MuiAutocomplete-root input")
+        .click();
 
       cy.get(".MuiAutocomplete-option").first().click();
-      cy.get("#12-f3152c-kjz88l")
+      cy.get("[data-cy='field:dropdown']")
         .find(".MuiAutocomplete-root input")
         .should("have.value", "Custom Option One");
 
-      cy.get("#12-f3152c-kjz88l").find(".MuiAutocomplete-root input").click();
+      cy.get("[data-cy='field:dropdown']")
+        .find(".MuiAutocomplete-root input")
+        .click();
       cy.get(".MuiAutocomplete-option").last().click();
-      cy.get("#12-f3152c-kjz88l")
+      cy.get("[data-cy='field:dropdown']")
         .find(".MuiAutocomplete-root input")
         .should("have.value", "Custom Option Two");
     });
 
     it("Url Field", () => {
-      cy.get("#12-8ed554-nxmbw8 input")
+      cy.get("[data-cy='field:link'] input")
         .clear()
         .type(`http://www.zesty.pw/${TIMESTAMP}`)
         .should("have.value", `http://www.zesty.pw/${TIMESTAMP}`);
@@ -131,42 +149,46 @@ describe("Content Specs", () => {
     // TODO: Need to confirm toggling of value
     it("Yes/No Field", () => {
       // Click the "Yes" button to select it
-      cy.get("#12-575f7c-trw1w3 button").contains("Yes").click({ force: true });
+      cy.get("[data-cy='field:yes_no'] button")
+        .contains("Yes")
+        .click({ force: true });
 
       // Check if the "Yes" button has the ".Mui-selected" class
-      cy.get("#12-575f7c-trw1w3 button")
+      cy.get("[data-cy='field:yes_no'] button")
         .contains("Yes")
         .should("have.class", "Mui-selected");
 
       // Click the "No" button to select it
-      cy.get("#12-575f7c-trw1w3 button").contains("No").click();
+      cy.get("[data-cy='field:yes_no'] button").contains("No").click();
 
       // Check if the "No" button has the ".Mui-selected" class
-      cy.get("#12-575f7c-trw1w3 button")
+      cy.get("[data-cy='field:yes_no'] button")
         .contains("No")
         .should("have.class", "Mui-selected");
     });
 
     it("Yes/No Field: Does not allow user to deselect value", () => {
       // Click the "No" button to deselect it
-      cy.get("#12-575f7c-trw1w3 button").contains("No").click();
+      cy.get("[data-cy='field:yes_no'] button").contains("No").click();
 
       // Check again if neither "Yes" nor "No" buttons have the ".Mui-selected" class
-      cy.get("#12-575f7c-trw1w3 button")
+      cy.get("[data-cy='field:yes_no'] button")
         .contains("Yes")
         .should("not.have.class", "Mui-selected");
-      cy.get("#12-575f7c-trw1w3 button")
+      cy.get("[data-cy='field:yes_no'] button")
         .contains("No")
         .should("have.class", "Mui-selected");
     });
 
     // TODO: Need to confirm toggling of value
     it("Yes/No Field: Custom Options", () => {
-      cy.get("#12-8178cc-z37vq1 button").contains("Custom One").click();
+      cy.get("[data-cy='field:yes_no_with_custom_values'] button")
+        .contains("Custom One")
+        .click();
     });
 
     it("Fontawesome Field", () => {
-      cy.get("#12-57a878-5nqndp input")
+      cy.get("[data-cy='field:fontawesome'] input")
         .focus()
         .clear()
         .type(`fa fa-link`)
@@ -176,7 +198,7 @@ describe("Content Specs", () => {
     it("Number Field", () => {
       // NOTE: the timestamp is too large for the 'small int' column in the DB
       // limit is 4294967295
-      cy.get("#12-9b96ec-tll2gn input[type=text]")
+      cy.get("[data-cy='field:number'] input[type=text]")
         .focus()
         /*
           input type='number 'cannot be empty so rather than whitespace, it'd have a value of 0
@@ -188,7 +210,7 @@ describe("Content Specs", () => {
     });
 
     it("Currency Field", () => {
-      cy.get("#12-b35c68-jd1s8s input")
+      cy.get("[data-cy='field:currency'] input")
         .focus()
         .type("{selectall}")
         .type("100.00")
@@ -196,7 +218,7 @@ describe("Content Specs", () => {
     });
 
     it("Color Field", () => {
-      cy.get('#12-eb8684-zwq6hk input[type="color"]').should("exist");
+      cy.get("[data-cy='field:color'] input[type='color']").should("exist");
       //.type("#59CD2F", {force:true})
       // .then($input => {
       //   $input.value = "#59CD2F";
@@ -206,43 +228,54 @@ describe("Content Specs", () => {
     });
 
     it("UUID Field", () => {
-      cy.get("#12-f72938-8n8vqs input[readonly]")
+      cy.get("[data-cy='field:uuid'] input[readonly]")
         // This is a unique value generated on item creation and should never change
-        .should("have.value", "731a0b2f-e3f9-44bf-b142-59488c0834e9");
+        .invoke("val")
+        .should("not.be.empty");
     });
 
     // TODO: implement file selection; select file and confirm it's ZUID set
     it.skip("File Field", () => {
-      cy.get("#12-178fe8-nf6mfn").should("exist");
+      cy.get("[data-cy='field:files']").should("exist");
     });
 
     it("Sort Field", () => {
-      cy.get("#12-4e1914-kcqznz input[type='text']")
+      cy.get("[data-cy='field:sort'] input[type='text']")
         .clear()
         .type("{rightArrow}12");
 
-      cy.get("#12-4e1914-kcqznz button").eq(1).click();
+      cy.get("[data-cy='field:sort'] button").eq(1).click();
 
-      cy.get("#12-4e1914-kcqznz input[type='text']").should("have.value", "11");
+      cy.get("[data-cy='field:sort'] input[type='text']").should(
+        "have.value",
+        "11"
+      );
 
-      cy.get("#12-4e1914-kcqznz button").last().click();
+      cy.get("[data-cy='field:sort'] button").last().click();
 
-      cy.get("#12-4e1914-kcqznz input[type='text']").should("have.value", "12");
+      cy.get("[data-cy='field:sort'] input[type='text']").should(
+        "have.value",
+        "12"
+      );
     });
 
     // Skipping relationship tests due to current fetching flow limitation
     it.skip("One to many Field", () => {
-      // cy.get("#12-269a28-1bkm34 input").clear();
+      // cy.get("[data-cy='field:one_to_many'] input").clear();
 
       // Adds new relationship
       cy.waitOn("/v1/content/models/6-e3d0e0-965qp6/items*", () => {
-        cy.get("#12-269a28-1bkm34 .MuiAutocomplete-popupIndicator").click();
+        cy.get(
+          "[data-cy='field:one_to_many'] .MuiAutocomplete-popupIndicator"
+        ).click();
       });
 
       cy.get("[role=listbox] [data-option-index=1]").click({ force: true });
 
       // Removes new relationship
-      cy.get("#12-269a28-1bkm34 .MuiAutocomplete-popupIndicator").click();
+      cy.get(
+        "[data-cy='field:one_to_many'] .MuiAutocomplete-popupIndicator"
+      ).click();
       cy.get("[role=listbox] [data-option-index=1]").click({ force: true });
     });
 
@@ -251,12 +284,15 @@ describe("Content Specs", () => {
       cy.intercept(
         "/v1/content/models/6-675028-84dq4s/items?lang=en-US&limit=100&page=1"
       ).as("loadRelatedItems");
-      cy.get("#12-edee00-6zb866 input").clear();
+      cy.get("[data-cy='field:one_to_one'] input").clear();
       cy.wait("@loadRelatedItems");
 
       cy.get("[role=presentation] [data-option-index=1]").click();
 
-      cy.get("#12-edee00-6zb866 input").should("have.value", "zesty.pw");
+      cy.get("[data-cy='field:one_to_one'] input").should(
+        "have.value",
+        "zesty.pw"
+      );
     });
 
     it("Saves Content updates", () => {
@@ -271,39 +307,46 @@ describe("Content Specs", () => {
   describe("Media field", () => {
     before(() => {
       cy.waitOn("/v1/content/models*", () => {
-        cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
+        cy.visit(
+          `/content/${Cypress.env("modelZUID")}/${Cypress.env("itemZUID")}`
+        );
       });
     });
 
-    it("renders an image with a url from a template", () => {
-      cy.get("#12-1c94d4-pg8dvx")
+    it("renders an image with a url from a template", function () {
+      cy.get('[data-cy="field:images"]')
         .find('[data-cy="file-preview"]')
-        .eq(3)
+        .eq(0)
         .find("img")
-        .should(
-          "have.attr",
-          "src",
-          "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/SNice.svg/1200px-SNice.svg.png?width=80&optimize=high"
-        );
+        .should("have.attr", "src")
+        .and("contain", "/images/defaultImg.png");
     });
 
     it("opens the bynder modal", () => {
-      cy.get("#12-1c94d4-pg8dvx").find('[data-cy="addFromBynderBtn"]').click();
-      cy.get('[data-test-id="CompactViewContainer"]')
-        .find('[data-testid="root"]')
-        .should("exist");
-
-      // Close modal
-      cy.get('[data-test-id="CompactViewContainer"]')
-        .find('[data-testid="root"]')
-        .shadow()
-        .find('button[title="Close"]')
+      cy.get(
+        `[data-cy="field:images"] [data-cy="selectFromMediaButton"]`,
+        options
+      )
+        .should("be.enabled")
         .click();
+      cy.get('[data-cy="closeMediaDialogBtn"]', options).click();
+      cy.get('[data-cy="field:images"]')
+        .find('[data-cy="addFromBynderBtn"]')
+        .click();
+
+      cy.get('[data-test-id="CompactViewContainer"] [data-testid="root"]')
+        .shadow()
+        .as("shadow");
+      cy.get("@shadow")
+        .find('.card-list div [data-testid="asset-card"] button:eq(0)')
+        .click();
+      cy.get("@shadow").find('[data-testid="add-button"]').click();
+
       cy.get('[data-test-id="CompactViewContainer"]').should("not.exist");
     });
 
     it("renders bynder asset previews", () => {
-      cy.get("#12-1c94d4-pg8dvx")
+      cy.get('[data-cy="field:images"]')
         .find('[data-cy="mediaItem"]')
         .last()
         .find('[data-cy="bynderAssetIndicator"]')
@@ -314,26 +357,28 @@ describe("Content Specs", () => {
   describe("Date Field", () => {
     before(() => {
       cy.waitOn("/v1/content/models*", () => {
-        cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
+        cy.visit(
+          `/content/${Cypress.env("modelZUID")}/${Cypress.env("itemZUID")}`
+        );
       });
     });
 
     it("should be able to clear date entries", () => {
-      cy.get("#12-63ab04-0nkwcc", { timeout: 10000 })
+      cy.get("[data-cy='field:date']", { timeout: 30000 })
         .find("[data-cy='dateFieldClearButton']")
         .click();
-      cy.get("#12-63ab04-0nkwcc")
+      cy.get("[data-cy='field:date']")
         .find("[data-cy='datePickerInputField']")
         .find("input")
         .should("have.value", "");
     });
 
     it("should be able to auto-fill empty date fields on click", () => {
-      cy.get("#12-63ab04-0nkwcc")
+      cy.get("[data-cy='field:date']")
         .find('[data-cy="datePickerInputField"]')
         .click();
 
-      cy.get("#12-63ab04-0nkwcc input").should(
+      cy.get("[data-cy='field:date'] input").should(
         "have.value",
         moment(TIMESTAMP).format("MMM DD, YYYY")
       );
@@ -343,68 +388,70 @@ describe("Content Specs", () => {
   describe("Date & Time Field", () => {
     before(() => {
       cy.waitOn("/v1/content/models*", () => {
-        cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
+        cy.visit(
+          `/content/${Cypress.env("modelZUID")}/${Cypress.env("itemZUID")}`
+        );
       });
     });
 
     it("should be able to clear date and time entries", () => {
-      cy.get("#12-f3db44-c8kt0q", { timeout: 10000 })
+      cy.get("[data-cy='field:datetime']", { timeout: 30000 })
         .find("[data-cy='dateFieldClearButton']")
         .click();
-      cy.get("#12-f3db44-c8kt0q")
+      cy.get("[data-cy='field:datetime']")
         .find("[data-cy='datePickerInputField']")
         .find("input")
         .should("have.value", "");
-      cy.get("#12-f3db44-c8kt0q")
+      cy.get("[data-cy='field:datetime']")
         .find("[data-cy='dateTimeInputField']")
         .find("input")
         .should("have.value", "");
     });
 
     it("should be able to auto-fill the date and time when field is empty", () => {
-      cy.get("#12-f3db44-c8kt0q")
+      cy.get("[data-cy='field:datetime']")
         .find("[data-cy='dateTimeInputField']")
         .click();
-      cy.get("#12-f3db44-c8kt0q")
+      cy.get("[data-cy='field:datetime']")
         .find("[data-cy='datePickerInputField']")
         .find("input")
         .should("have.value", moment(TIMESTAMP).format("MMM DD, YYYY"));
-      cy.get("#12-f3db44-c8kt0q")
+      cy.get("[data-cy='field:datetime']")
         .find("[data-cy='dateTimeInputField']")
         .find("input")
         .should("have.value", "12:00 am");
     });
 
     it("should allow a user to select a time from the dropdown", () => {
-      cy.get("#12-f3db44-c8kt0q")
+      cy.get("[data-cy='field:datetime']")
         .find("[data-cy='dateTimeInputField']")
         .click();
       cy.get(".MuiAutocomplete-listbox>.MuiAutocomplete-option").eq(1).click();
-      cy.get("#12-f3db44-c8kt0q")
+      cy.get("[data-cy='field:datetime']")
         .find("[data-cy='dateTimeInputField']")
         .find("input")
         .should("have.value", "12:15 am");
     });
 
     it("should allow a user to manually type in a time", () => {
-      cy.get("#12-f3db44-c8kt0q")
+      cy.get("[data-cy='field:datetime']")
         .find("[data-cy='dateTimeInputField']")
         .find("input")
         .type("{selectAll}{del}11:00 pm")
         .blur();
-      cy.get("#12-f3db44-c8kt0q")
+      cy.get("[data-cy='field:datetime']")
         .find("[data-cy='dateTimeInputField']")
         .find("input")
         .should("have.value", "11:00 pm");
     });
 
     it("should reset to last saved valid time when user types in an invalid time", () => {
-      cy.get("#12-f3db44-c8kt0q")
+      cy.get("[data-cy='field:datetime']")
         .find("[data-cy='dateTimeInputField']")
         .find("input")
         .type("{selectAll}{del}asdasdasdasdas")
         .blur();
-      cy.get("#12-f3db44-c8kt0q")
+      cy.get("[data-cy='field:datetime']")
         .find("[data-cy='dateTimeInputField']")
         .find("input")
         .should("have.value", "12:00 pm");
@@ -413,17 +460,26 @@ describe("Content Specs", () => {
 
   describe("Block Selector Field", () => {
     before(() => {
+      cy.task("seed:content", {
+        path: "../../fixtures/block.json",
+        context: {},
+      }).then(({ model, items }) => {
+        cy.wrap(model).as("block");
+        cy.wrap(items).as("blockItems");
+      });
       cy.waitOn("/v1/content/models*", () => {
-        cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
+        cy.visit(
+          `/content/${Cypress.env("modelZUID")}/${Cypress.env("itemZUID")}`
+        );
       });
     });
 
-    it("Sets a block variant", () => {
+    it("Sets a block variant", function () {
       cy.getBySelector("BlockSelectorModelField", { timeout: 10000 })
         .find("input")
         .click();
       cy.get(".MuiAutocomplete-popper .MuiAutocomplete-option")
-        .contains("Test Block Do Not Delete")
+        .contains(this?.block?.label, { matchCase: false })
         .click();
 
       cy.getBySelector("BlockSelectorVariantField", { timeout: 10000 }).click();
@@ -435,7 +491,9 @@ describe("Content Specs", () => {
   context("One to one field", () => {
     before(() => {
       cy.waitOn("/v1/content/models*", () => {
-        cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
+        cy.visit(
+          `/content/${Cypress.env("modelZUID")}/${Cypress.env("itemZUID")}`
+        );
       });
 
       cy.getBySelector("DuoModeToggle", { timeout: 40_000 }).click(forceClick);
@@ -460,7 +518,7 @@ describe("Content Specs", () => {
 
     it("can publish an item", () => {
       cy.get(
-        "#12-edee00-6zb866 [data-cy='active-relational-item-more-button']"
+        "[data-cy='field:one_to_one'] [data-cy='active-relational-item-more-button']"
       ).click();
       cy.getBySelector("active-relational-item-publish-now-button").click();
       cy.getBySelector("ConfirmPublishModal").should("exist");
@@ -469,7 +527,7 @@ describe("Content Specs", () => {
 
     it("can schedule publish an item", () => {
       cy.get(
-        "#12-edee00-6zb866 [data-cy='active-relational-item-more-button']"
+        "[data-cy='field:one_to_one'] [data-cy='active-relational-item-more-button']"
       ).click();
       cy.getBySelector(
         "active-relational-item-schedule-publish-button"
@@ -480,28 +538,32 @@ describe("Content Specs", () => {
 
     it("can remove the selected item", () => {
       cy.get(
-        "#12-edee00-6zb866 [data-cy='active-relational-item-more-button']"
+        "[data-cy='field:one_to_one'] [data-cy='active-relational-item-more-button']"
       ).click();
       cy.getBySelector("active-relational-item-remove-item-button").click();
-      cy.get("#12-edee00-6zb866 [data-cy='active-relational-item']").should(
-        "not.exist"
-      );
+      cy.get(
+        "[data-cy='field:one_to_one'] [data-cy='active-relational-item']"
+      ).should("not.exist");
     });
   });
 
   context("One to many field", () => {
     before(() => {
       cy.waitOn("/v1/content/models*", () => {
-        cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
+        cy.visit(
+          `/content/${Cypress.env("modelZUID")}/${Cypress.env("itemZUID")}`
+        );
       });
 
       cy.getBySelector("DuoModeToggle", { timeout: 40000 }).click(forceClick);
     });
 
     it("can add multiple items", () => {
-      cy.get("#12-269a28-1bkm34 [data-cy='add-relational-item-button']").click({
-        force: true,
-      });
+      cy.get(
+        "[data-cy='field:one_to_many'] [data-cy='add-relational-item-button']"
+      )
+        .should("be.enabled")
+        .click();
 
       // cy.wait("@fetchItems");
 
@@ -510,50 +572,53 @@ describe("Content Specs", () => {
       });
       cy.getBySelector("selected-count").contains("3 selected");
       cy.getBySelector("done-selecting-item-button").click();
-      cy.get("#12-269a28-1bkm34 [data-cy='active-relational-item']").should(
-        "have.length",
-        3
-      );
+      cy.get(
+        "[data-cy='field:one_to_many'] [data-cy='active-relational-item']"
+      ).should("have.length", 3);
     });
 
     it("can remove the selected item", () => {
-      cy.get("#12-269a28-1bkm34 [data-cy='active-relational-item-more-button']")
+      cy.get(
+        "[data-cy='field:one_to_many'] [data-cy='active-relational-item-more-button']"
+      )
         .first()
         .click(forceClick);
       cy.getBySelector("active-relational-item-remove-item-button").click(
         forceClick
       );
-      cy.get("#12-269a28-1bkm34 [data-cy='active-relational-item']").should(
-        "have.length",
-        2
-      );
+      cy.get(
+        "[data-cy='field:one_to_many'] [data-cy='active-relational-item']"
+      ).should("have.length", 2);
     });
 
     it("can create & add new item", () => {
+      cy.get("[data-cy='field:one_to_many']").scrollIntoView();
       cy.get(
-        "#12-269a28-1bkm34 [data-cy='create-new-relational-item-button']"
-      ).click({
-        force: true,
-      });
+        "[data-cy='field:one_to_many'] [data-cy='create-new-relational-item-button']"
+      )
+        .should("be.enabled")
+        .click();
 
-      cy.get("#12-d6e4c1d797-sjv628", { retries: 1 })
+      cy.get("#createNewItemDialog [data-cy='field:text']", options)
         .find("input")
         .type(`Test Item ${TIMESTAMP}`);
-      cy.get("#12-aaa5ce87e3-89whjq")
+      cy.get("#createNewItemDialog [data-cy='field:textarea']")
         .find("textarea")
         .first()
-        .type(`Test Item ${TIMESTAMP}`);
+        .type(`Test Item ${TIMESTAMP}`, { force: true });
       cy.getBySelector("CreateItemSaveButton").click();
 
-      cy.get("#12-269a28-1bkm34 [data-cy='active-relational-item']", {
-        retries: 1,
-      }).should("have.length", 3);
+      cy.get(
+        "[data-cy='field:one_to_many'] [data-cy='active-relational-item']"
+      ).should("have.length", 3);
     });
 
     it("preserves selected items while filtering", () => {
-      cy.get("#12-269a28-1bkm34 [data-cy='add-relational-item-button']").click({
-        force: true,
-      });
+      cy.get(
+        "[data-cy='field:one_to_many'] [data-cy='add-relational-item-button']"
+      )
+        .should("be.enabled")
+        .click();
 
       cy.getBySelector("relational-fields-search-input")
         .find("input")
