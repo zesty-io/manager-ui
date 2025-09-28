@@ -483,6 +483,7 @@ export const FieldTypeMedia = forwardRef(
     return (
       <>
         <Stack
+          data-cy="mediaItem-container"
           gap={1}
           sx={{
             border: (theme) =>
@@ -525,6 +526,7 @@ export const FieldTypeMedia = forwardRef(
                 </Button>
               )}
               <Button
+                data-cy="selectFromMediaButton"
                 size="large"
                 variant="outlined"
                 onClick={() => {
