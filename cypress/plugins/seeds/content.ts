@@ -1,18 +1,43 @@
-import { readFileSync } from "fs";
+import { readFileSync, existsSync } from "fs";
 import { join } from "path";
 import { getSDK, lookupValue } from "./utils";
+import {
+  ContentItem,
+  ContentModel,
+  ContentModelField,
+} from "../../../src/shell/services/types";
+
+export type SeedContentTask = {
+  model: ContentModel;
+  fields?: ContentModelField[];
+  items: ContentItem[];
+};
+
+const initialData = {
+  model: {},
+  fields: [],
+  items: [],
+};
 
 module.exports = function content(config) {
   const { formatPathPart } = require("../../../src/utility/formatPathPart");
 
   async function setUp(path: string, context: Record<string, any> = {}) {
-    const jsonString = readFileSync(join(__dirname, path), "utf8");
+    const [filePath, target = null] = path.split("#");
+    const fullFilePath = join(__dirname, "../../fixtures/", filePath);
+    if (!existsSync(fullFilePath)) throw new Error("Invalid file path");
+    const jsonString = readFileSync(fullFilePath, "utf8");
     const json = JSON.parse(jsonString);
-    const sdk = await getSDK(config);
+    const jsonData = !target ? json : json?.[target];
 
-    const jsonModel = json?.model;
-    const jsonFields = json?.fields;
-    const jsonItems = json?.items;
+    if (!jsonData)
+      throw new Error(`Target '#${target}' not found in ${fullFilePath}`);
+    if (!jsonData?.model)
+      throw new Error("Seed data must contain a model definition");
+
+    const jsonModel = jsonData?.model;
+    const jsonFields = jsonData?.fields;
+    const jsonItems = jsonData?.items;
 
     const LOOKUP_CONTEXT = {
       env: config.env,
@@ -23,6 +48,8 @@ module.exports = function content(config) {
       fields: [],
       context,
     };
+
+    const sdk = await getSDK(config);
 
     // 1) Create Schema
     const modelPayload = lookupValue(jsonModel, LOOKUP_CONTEXT);
@@ -92,6 +119,6 @@ module.exports = function content(config) {
     }: {
       path: string;
       context?: Record<string, any>;
-    }) => setUp(path, context),
+    }): Promise<SeedContentTask> => setUp(path, context),
   };
 };

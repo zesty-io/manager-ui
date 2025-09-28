@@ -6,10 +6,10 @@ describe("Content Specs", () => {
 
   before(() => {
     cy.task("seed:content", {
-      path: "../../fixtures/common.json",
+      path: "./content.json#common",
     }).then((data) => {
       cy.task("seed:content", {
-        path: "../../fixtures/content.json",
+        path: "./content.json#content",
         context: data,
       }).then(({ model, items }) => {
         Cypress.env("modelZUID", model?.ZUID);
@@ -461,7 +461,7 @@ describe("Content Specs", () => {
   describe("Block Selector Field", () => {
     before(() => {
       cy.task("seed:content", {
-        path: "../../fixtures/block.json",
+        path: "./content.json#block",
         context: {},
       }).then(({ model, items }) => {
         cy.wrap(model).as("block");
