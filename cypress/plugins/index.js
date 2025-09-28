@@ -14,17 +14,19 @@
 const path = require("path");
 const dotenv = require("dotenv");
 const os = require("os");
-
+const { readFileSync } = require("fs");
 const content = require("./seeds/content");
 
 module.exports = (on, config) => {
+  const contentTasks = content(config);
+
   on("task", {
     log(message) {
       console.log(message);
       return null;
     },
+    ...contentTasks,
   });
-
   // `on` is used to hook into various events Cypress emits
   // `config` is the resolved Cypress config
   if (os.userInfo().username === "runner") {
@@ -35,11 +37,15 @@ module.exports = (on, config) => {
     // source the user credentials from the ci environment config
     config.env.email = ciEnvConfig.TEST_USER_EMAIL;
     config.env.password = ciEnvConfig.TEST_USER_PASSWORD;
+  } else {
+    const jsonString = readFileSync(
+      path.join(__dirname, "../../cypress.env.json"),
+      "utf8"
+    );
+    const { email, password } = JSON.parse(jsonString);
+    config.env.email = email;
+    config.env.password = password;
   }
-
-  on("task", {
-    "seed:content": content,
-  });
 
   return config;
 };
