@@ -1,4 +1,10 @@
-import { useCallback, useLayoutEffect, useMemo, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useState,
+} from "react";
 import {
   DataGridPro,
   GRID_CHECKBOX_SELECTION_COL_DEF,
@@ -39,6 +45,7 @@ const RedirectsTable = () => {
     typeFilter,
     searchFilter,
     apiRef,
+    setIsTableLoaded,
   } = useRedirectsTable();
 
   const [initialState, setInitialState] = useState<any>();
@@ -260,6 +267,10 @@ const RedirectsTable = () => {
       saveSnapshot();
     };
   }, [saveSnapshot, columns, GRID_CHECKBOX_SELECTION_COL_DEF]);
+
+  useEffect(() => {
+    setIsTableLoaded(true);
+  }, []);
 
   return (
     <>

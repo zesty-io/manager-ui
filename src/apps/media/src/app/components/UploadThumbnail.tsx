@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { useParams } from "react-router";
 
 import { Thumbnail } from "./Thumbnail";
 import { FC } from "react";
@@ -9,7 +8,6 @@ import { Box } from "@mui/material";
 import { mediaManagerApi } from "../../../../../shell/services/mediaManager";
 import {
   uploadFile,
-  UploadFile,
   Upload,
   fileUploadSetFilename,
   deleteUpload,
