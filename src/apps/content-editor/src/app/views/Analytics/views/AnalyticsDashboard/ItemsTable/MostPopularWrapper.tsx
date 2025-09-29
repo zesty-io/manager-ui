@@ -1,12 +1,11 @@
-import { Moment } from "moment-timezone";
 import { useGetAnalyticsPropertyDataByQueryQuery } from "../../../../../../../../../shell/services/analytics";
 import { findTopDimensions, generateDateRangesForReport } from "../../../utils";
 import { ItemsTableContent } from "./ItemsTable";
 
 type Props = {
   propertyId: string;
-  startDate: Moment;
-  endDate: Moment;
+  startDate: Date;
+  endDate: Date;
 };
 
 export const MostPopularWrapper = ({
@@ -20,36 +19,25 @@ export const MostPopularWrapper = ({
         property: propertyId,
         requests: [
           {
-            dimensions: [
-              {
-                name: "pagePath",
-              },
-            ],
-            metrics: [
-              {
-                name: "screenPageViews",
-              },
-            ],
+            dimensions: [{ name: "pagePath" }],
+            metrics: [{ name: "screenPageViews" }],
             dateRanges: generateDateRangesForReport(startDate, endDate),
             limit: "10",
             orderBys: [
               {
-                metric: {
-                  metricName: "screenPageViews",
-                },
+                metric: { metricName: "screenPageViews" },
                 desc: true,
               },
             ],
           },
         ],
       },
-      {
-        skip: !propertyId,
-      }
+      { skip: !propertyId }
     );
+
   const paths =
     findTopDimensions(pathsData?.reports?.[0]?.rows, ["date_range_0"], 10)?.map(
-      (row, index) => row[0].value
+      (row) => row[0].value
     ) || [];
 
   return (

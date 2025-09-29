@@ -39,7 +39,7 @@ import { FieldTypeDateTime } from "../../../../../../shell/components/FieldTypeD
 import { FieldTypeColor } from "../../../../../../shell/components/FieldTypeColor";
 import { FieldTypeSort } from "../../../../../../shell/components/FieldTypeSort";
 import { RelationalFieldBase } from "../../../../../../shell/components/RelationalFieldBase";
-import moment from "moment";
+import { parse, format, isValid } from "date-fns";
 import { parseInt } from "lodash";
 
 type DefaultValueInputProps = {
@@ -439,9 +439,11 @@ export const DefaultValueInput = ({
           data-cy="DefaultValueInput"
           name={"defaultValue"}
           required
-          value={value ? moment(value as string).toDate() : null}
+          value={
+            value ? parse(value as string, "yyyy-MM-dd", new Date()) : null
+          }
           onChange={(date) => {
-            onChange(date ? moment(date).format("yyyy-MM-DD") : null);
+            onChange(date && isValid(date) ? format(date, "yyyy-MM-dd") : null);
           }}
           error={error}
         />

@@ -1,6 +1,6 @@
 import { useState, FC, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import moment from "moment";
+import { differenceInCalendarDays } from "date-fns";
 
 import { Box, IconButton, Avatar, Stack, Link, ListItem } from "@mui/material";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
@@ -39,8 +39,8 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
   const ui = useSelector((state: AppState) => state.ui);
   const dispatch = useDispatch();
   const is15DaysFromCreation =
-    instance?.createdAt &&
-    moment().diff(moment(instance?.createdAt), "days") <= 15;
+    !!instance?.createdAt &&
+    differenceInCalendarDays(new Date(), new Date(instance.createdAt)) <= 15;
 
   return (
     <>

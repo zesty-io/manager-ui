@@ -17,7 +17,7 @@ import {
   useGetWebViewsQuery,
 } from "../../../../../shell/services/instance";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
-import moment from "moment";
+import { format, isValid } from "date-fns";
 import {
   InfoRounded,
   ApiRounded,
@@ -54,16 +54,6 @@ const TABS = [
   },
 ];
 
-moment.updateLocale("en", {
-  relativeTime: {
-    past: (string) => {
-      return string === "right now" ? string : string + " ago";
-    },
-    s: "right now",
-    ss: "right now",
-  },
-});
-
 type Params = {
   id: string;
 };
@@ -86,6 +76,12 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
   const model = models?.find((model) => model.ZUID === id);
   const view = views?.find((view) => view?.contentModelZUID === model?.ZUID);
   const canCreateModel = model?.name.toLowerCase() !== "clippings";
+
+  const updatedAt = model?.updatedAt ? new Date(model.updatedAt) : null;
+  const lastUpdated =
+    updatedAt && isValid(updatedAt)
+      ? format(updatedAt, "do MMMM yyyy 'at' h:mm a")
+      : "";
 
   return (
     <>
@@ -126,8 +122,7 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
                 whiteSpace="pre"
               >{`${modelNameMap[model?.type]} Model  •  `}</Typography>
               <Typography variant="body3" color="text.secondary">
-                Last Updated:{" "}
-                {moment(model?.updatedAt).format("Do MMMM YYYY [at] h:mm A")}
+                Last Updated: {lastUpdated}
               </Typography>
             </Stack>
           </Stack>

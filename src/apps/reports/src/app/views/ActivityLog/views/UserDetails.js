@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { Box, Button, Stack } from "@mui/material";
 import { useParams } from "shell/hooks/useParams";
-import moment from "moment";
+import { format, isValid } from "date-fns";
 import { Filters } from "../components/Filters";
 import { ResourceList } from "../components/ResourceList";
 import { ActivityByResource } from "../components/ActivityByResource";
@@ -32,8 +32,12 @@ export const UserDetails = () => {
       const userCreatedDate = usersRoles?.find(
         (userRole) => userRole.ZUID === zuid
       )?.createdAt;
-      setParams(moment(userCreatedDate).format("YYYY-MM-DD"), "from");
-      setParams(moment().format("YYYY-MM-DD"), "to");
+      const from = userCreatedDate ? new Date(userCreatedDate) : new Date();
+      setParams(
+        format(isValid(from) ? from : new Date(), "yyyy-MM-dd"),
+        "from"
+      );
+      setParams(format(new Date(), "yyyy-MM-dd"), "to");
     }
     /*
       Initialized get sets to true after setting date params to then be utilized to determine 

@@ -1,5 +1,5 @@
 import { GridFilterOperator } from "@mui/x-data-grid-pro";
-import moment from "moment";
+import { format, isValid } from "date-fns";
 
 export const keywordSearchFilterOperator: GridFilterOperator = {
   label: "contains",
@@ -8,6 +8,12 @@ export const keywordSearchFilterOperator: GridFilterOperator = {
     if (!filterItem.value) {
       return null;
     }
+
+    const fmtLower = (value?: string) => {
+      if (!value) return "";
+      const d = new Date(value);
+      return isValid(d) ? format(d, "MMM d, yyyy h:mm a").toLowerCase() : "";
+    };
 
     return (params): boolean => {
       const row = params;
@@ -27,16 +33,9 @@ export const keywordSearchFilterOperator: GridFilterOperator = {
         version?.publishData?.publishedByName?.toLowerCase() || "";
       const scheduledBy =
         version?.scheduleData?.scheduledByName?.toLowerCase() || "";
-      const createdAt = version?.itemData?.meta?.createdAt
-        ? moment(version.itemData.meta.createdAt)
-            .format("MMM D, YYYY h:mm A")
-            .toLowerCase()
-        : "";
-      const updatedAt = version?.itemData?.meta?.updatedAt
-        ? moment(version.itemData.meta.updatedAt)
-            .format("MMM D, YYYY h:mm A")
-            .toLowerCase()
-        : "";
+
+      const createdAt = fmtLower(version?.itemData?.meta?.createdAt);
+      const updatedAt = fmtLower(version?.itemData?.meta?.updatedAt);
 
       const versionMatch =
         createdBy.includes(searchValue) ||

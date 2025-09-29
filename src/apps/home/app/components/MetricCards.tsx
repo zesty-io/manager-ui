@@ -4,7 +4,7 @@ import ImageRoundedIcon from "@mui/icons-material/ImageRounded";
 import ScheduleRoundedIcon from "@mui/icons-material/ScheduleRounded";
 import RemoveRedEyeRoundedIcon from "@mui/icons-material/RemoveRedEyeRounded";
 import { metricsApi } from "../../../../shell/services/metrics";
-import moment from "moment";
+import { subDays, differenceInCalendarDays, formatISO, format } from "date-fns";
 import { useGetAuditsQuery } from "../../../../shell/services/instance";
 import { uniqBy } from "lodash";
 import { MetricCard } from "../../../../shell/components/MetricsCard";
@@ -27,35 +27,37 @@ export const MetricCards = ({ dateRange }: Props) => {
     (state: any) => state.instance.createdAt
   );
   const hasPriorData =
-    moment(date).diff(instanceCreatedAtDate, "days") >= dateRange * 2;
+    differenceInCalendarDays(date, new Date(instanceCreatedAtDate)) >=
+    dateRange * 2;
 
-  const startDate = moment(date).subtract(dateRange, "days");
-  const endDate = moment(date);
-  const priorStartDate = moment(date).subtract(dateRange * 2, "days");
-  const priorEndDate = moment(date).subtract(dateRange, "days");
+  const startDate = subDays(date, dateRange);
+  const endDate = date;
+  const priorStartDate = subDays(date, dateRange * 2);
+  const priorEndDate = subDays(date, dateRange);
 
   const { data: priorRequests, isFetching: isPriorRequestsFetching } =
     metricsApi.useGetRequestsQuery([
-      priorStartDate.format(),
-      priorEndDate.format(),
+      formatISO(priorStartDate),
+      formatISO(priorEndDate),
     ]);
+
   const { data: requests, isFetching: isRequestsFetching } =
-    metricsApi.useGetRequestsQuery([startDate.format(), endDate.format()]);
+    metricsApi.useGetRequestsQuery([formatISO(startDate), formatISO(endDate)]);
   const { data: priorUsage, isFetching: isPriorUsageFetching } =
     metricsApi.useGetUsageQuery([
-      priorStartDate.format(),
-      priorEndDate.format(),
+      formatISO(priorStartDate),
+      formatISO(priorEndDate),
     ]);
   const { data: usage, isFetching: isUsageFetching } =
-    metricsApi.useGetUsageQuery([startDate.format(), endDate.format()]);
+    metricsApi.useGetUsageQuery([formatISO(startDate), formatISO(endDate)]);
   const { data: priorAudit, isFetching: isPriorAuditFetching } =
     useGetAuditsQuery({
-      start_date: priorStartDate.format("L"),
-      end_date: priorEndDate.format("L"),
+      start_date: format(priorStartDate, "MM/dd/yyyy"),
+      end_date: format(priorEndDate, "MM/dd/yyyy"),
     });
   const { data: audit, isFetching: isAuditFetching } = useGetAuditsQuery({
-    start_date: startDate.format("L"),
-    end_date: endDate.format("L"),
+    start_date: format(startDate, "MM/dd/yyyy"),
+    end_date: format(endDate, "MM/dd/yyyy"),
   });
   const requestsFetching = isPriorRequestsFetching || isRequestsFetching;
   const usageFetching = isPriorUsageFetching || isUsageFetching;

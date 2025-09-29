@@ -1,11 +1,11 @@
-import { Moment } from "moment-timezone";
+import { format as fmt } from "date-fns";
 import { useGetAnalyticsPagePathsByFilterQuery } from "../../../../../../../../../shell/services/analytics";
 import { ItemsTableContent } from "./ItemsTable";
 
 type Props = {
   propertyId: string;
-  startDate: Moment;
-  endDate: Moment;
+  startDate: Date;
+  endDate: Date;
 };
 
 export const GainersLosersWrapper = ({
@@ -14,18 +14,20 @@ export const GainersLosersWrapper = ({
   endDate,
   isLosers,
 }: Props & { isLosers: boolean }) => {
+  const pid = propertyId?.split("/")?.pop();
+  const startStr = startDate ? fmt(startDate, "yyyy-MM-dd") : "";
+  const endStr = endDate ? fmt(endDate, "yyyy-MM-dd") : "";
+
   const { data: paths, isFetching } = useGetAnalyticsPagePathsByFilterQuery(
     {
       filter: isLosers ? "loser" : "gainer",
-      propertyId: propertyId?.split("/")?.pop(),
-      startDate: startDate?.format("YYYY-MM-DD"),
-      endDate: endDate?.format("YYYY-MM-DD"),
+      propertyId: pid,
+      startDate: startStr,
+      endDate: endStr,
       limit: 10,
       order: isLosers ? "asc" : "desc",
     },
-    {
-      skip: !propertyId,
-    }
+    { skip: !pid || !startStr || !endStr }
   );
 
   return (

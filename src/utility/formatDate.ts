@@ -1,48 +1,48 @@
-import moment from "moment-timezone";
+import { format as dfFormat, isSameDay, subDays, getYear } from "date-fns";
+import { utcToZonedTime } from "date-fns-tz";
 
 export const formatDate = (
   dateString: string,
   showPastYear?: boolean
 ): string => {
-  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  try {
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
+    const input = new Date(dateString);
+    if (isNaN(input.getTime())) return "Invalid Date";
 
-  // Handle the case where timeZone is undefined
-  if (!timeZone) {
-    console.error("Time zone is not defined.");
-    return moment(dateString).format("MMM D, h:mm A");
-  }
+    // Convert to the user's TZ for comparisons/formatting
+    const zoned = utcToZonedTime(input, timeZone);
+    const nowZoned = utcToZonedTime(new Date(), timeZone);
 
-  const inputDate = moment(dateString).tz(timeZone);
-
-  // Check if inputDate is valid
-  if (!inputDate.isValid()) {
-    console.error("Invalid date string:", dateString);
-    return "Invalid Date";
-  }
-
-  const currentDate = moment().tz(timeZone);
-  let formattedDate;
-
-  // Check for today or yesterday
-  if (inputDate.isSame(currentDate, "day")) {
-    formattedDate = "Today";
-  } else if (inputDate.isSame(currentDate.subtract(1, "day"), "day")) {
-    formattedDate = "Yesterday";
-  } else {
-    if (showPastYear) {
-      const currentYear = moment().year();
-      const inputYear = inputDate.year();
-      formattedDate =
-        inputYear === currentYear
-          ? inputDate.format("MMM D")
-          : inputDate.format("MMM D, YYYY");
+    let dateLabel: string;
+    if (isSameDay(zoned, nowZoned)) {
+      dateLabel = "Today";
+    } else if (isSameDay(zoned, subDays(nowZoned, 1))) {
+      dateLabel = "Yesterday";
+    } else if (showPastYear) {
+      dateLabel =
+        getYear(zoned) === getYear(nowZoned)
+          ? dfFormat(zoned, "MMM d")
+          : dfFormat(zoned, "MMM d, yyyy");
     } else {
-      formattedDate = inputDate.format("MMM D");
+      dateLabel = dfFormat(zoned, "MMM d");
     }
+
+    // Get TZ abbreviation via Intl parts (e.g., "PDT")
+    const tzName =
+      new Intl.DateTimeFormat("en-US", {
+        timeZone,
+        timeZoneName: "short",
+      })
+        .formatToParts(zoned)
+        .find((p) => p.type === "timeZoneName")?.value || "";
+
+    const timeLabel = dfFormat(zoned, "h:mm a");
+    return `${dateLabel}, ${timeLabel} ${tzName}`;
+  } catch (e) {
+    // Fallback: best-effort local formatting
+    const d = new Date(dateString);
+    if (isNaN(d.getTime())) return "Invalid Date";
+    return dfFormat(d, "MMM d, h:mm a");
   }
-
-  // Get the timezone abbreviation
-  const tzAbbreviation = inputDate.format("z");
-
-  return `${formattedDate}, ${inputDate.format("h:mm A")} ${tzAbbreviation}`;
 };

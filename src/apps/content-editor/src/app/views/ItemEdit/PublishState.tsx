@@ -1,10 +1,10 @@
 import React, { useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
-import moment from "moment";
 import { DataGridPro } from "@mui/x-data-grid-pro";
 import { Box, Button, Chip } from "@mui/material";
 import { WithLoader } from "@zesty-io/core/WithLoader";
 import { instanceApi } from "../../../../../../shell/services/instance";
+import { isValid, format } from "date-fns";
 
 type Params = {
   modelZUID: string;
@@ -47,16 +47,21 @@ export const PublishState = ({ reloadItem }: Props) => {
         field: "publishAt",
         headerName: "Go Online",
         flex: 1,
-        valueGetter: (value: any, row: any) => {
-          return `${moment(row.publishAt).format("ll, h:mm A")}`;
+        valueGetter: (_: any, row: any) => {
+          if (!row.publishAt) return null;
+          const d = new Date(row.publishAt);
+          return isValid(d) ? format(d, "MMM dd yyyy, h:mm a") : "";
         },
       },
       {
         field: "unpublishAt",
         headerName: "Go Offline",
         flex: 1,
-        valueGetter: (value: any, row: any) =>
-          row.unpublishAt ? moment(row.unpublishAt).format("lll") : null,
+        valueGetter: (_: any, row: any) => {
+          if (!row.unpublishAt) return null;
+          const d = new Date(row.unpublishAt);
+          return isValid(d) ? format(d, "MMM dd yyyy, h:mm a") : "";
+        },
       },
       {
         field: "ZUID",
@@ -67,8 +72,11 @@ export const PublishState = ({ reloadItem }: Props) => {
         field: "createdAt",
         headerName: "Created At",
         flex: 1,
-        valueGetter: (value: any, row: any) =>
-          moment(row.createdAt).format("lll"),
+        valueGetter: (_: any, row: any) => {
+          if (!row.createdAt) return null;
+          const d = new Date(row.createdAt);
+          return isValid(d) ? format(d, "MMM dd yyyy, h:mm a") : "";
+        },
       },
       {
         field: "actions",

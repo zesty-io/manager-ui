@@ -1,7 +1,7 @@
 import { FC, useMemo } from "react";
 import { Create } from "@mui/icons-material";
 import { useSelector } from "react-redux";
-import moment from "moment-timezone";
+import { formatDistanceToNow, isValid } from "date-fns";
 
 import { ContentItem } from "../../../services/types";
 import {
@@ -71,15 +71,22 @@ export const Content: FC<Content> = ({
     modelData?.label ||
     contentData?.meta.contentModelZUID;
   const appChip = "Content";
+
+  const rel = (dt?: string) => {
+    if (!dt) return "";
+    const d = new Date(dt);
+    return isValid(d) ? formatDistanceToNow(d, { addSuffix: true }) : "";
+  };
+
   const actionDate = auditData?.[0]?.happenedAt;
-  const dateInfo = moment(actionDate).fromNow();
+  const dateInfo = rel(actionDate);
   const firstName = auditData?.[0]?.firstName;
   const lastName = auditData?.[0]?.lastName;
   const userInfo =
     firstName || lastName ? `${firstName} ${lastName}` : "Unknown User";
   const userDateChip = auditData?.[0]
     ? `${dateInfo} by ${userInfo}`
-    : moment(data?.web?.createdAt)?.fromNow();
+    : rel(data?.web?.createdAt);
   const chips = [titleChip, appChip, userDateChip].join(" • ");
 
   // Create url if meta data exists

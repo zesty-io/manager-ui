@@ -17,7 +17,7 @@ import DriveFileRenameOutlineRoundedIcon from "@mui/icons-material/DriveFileRena
 import LinkRoundedIcon from "@mui/icons-material/LinkRounded";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
 import RestartAltRoundedIcon from "@mui/icons-material/RestartAltRounded";
-import moment from "moment";
+import { formatDistanceToNow, isValid } from "date-fns";
 import { useLocation, useParams } from "react-router";
 import { useSelector } from "react-redux";
 
@@ -89,6 +89,12 @@ export const CommentItem = ({
   const loggedInUser: User = useSelector((state: AppState) => state.user);
 
   const isLoggedInUserCommentCreator = loggedInUser?.ZUID === creator?.ZUID;
+
+  const createdDate = createdOn ? new Date(createdOn) : null;
+  const createdAgo =
+    createdDate && isValid(createdDate)
+      ? formatDistanceToNow(createdDate, { addSuffix: true })
+      : "";
 
   useEffect(() => {
     if (commentBodyRef.current) {
@@ -186,7 +192,7 @@ export const CommentItem = ({
                   fontWeight={600}
                   color="text.secondary"
                 >
-                  {moment(createdOn).fromNow()}
+                  {createdAgo}
                 </Typography>
               </Stack>
             </Stack>
