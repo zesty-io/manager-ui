@@ -145,7 +145,7 @@ export function menu(options) {
       title: "Embed Content",
       content: "Embed",
       classname: "dropdown-menu-list",
-      children: ["Instagram", "YouTube", "Twitframe"].reduce((acc, service) => {
+      children: ["Instagram", "YouTube", "Twitter"].reduce((acc, service) => {
         acc[service] = {
           title: `${service}`,
           content: `${service}`,

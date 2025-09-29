@@ -62,16 +62,18 @@ export const iframe = {
           },
         ];
         break;
-      case "Twitframe":
+      case "Twitter":
         return [
           "iframe",
           {
             ...node.attrs,
             src:
               node.attrs.src ||
-              `https://twitframe.com/show?url=${encodeURI(node.attrs.id)}`,
-            height: node.attrs.height || "315px",
-            width: node.attrs.width || "560px",
+              `https://platform.twitter.com/embed/Tweet.html?id=${encodeURI(
+                node.attrs.id
+              )}`,
+            height: node.attrs.height || "530px",
+            width: node.attrs.width || "420px",
           },
         ];
         break;

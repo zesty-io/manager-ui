@@ -5,7 +5,7 @@ import {
   ModalContent,
   ModalFooter,
 } from "shell/components/legacy/Modal";
-import { Button, TextField, InputLabel, Link } from "@mui/material";
+import { Button, TextField, InputLabel } from "@mui/material";
 
 import { schema } from "../react-prosemirror-schema";
 
@@ -64,20 +64,6 @@ export class EmbedModal extends React.Component {
         }}
       >
         <ModalContent>
-          {this.props.options.service === "Twitframe" && (
-            <h1>
-              <i className="fa fa-exclamation-triangle" aria-hidden="true" />
-              &nbsp;
-              <Link
-                href="https://twitframe.com/"
-                target="_blank"
-                underline="none"
-              >
-                Twitframe
-              </Link>{" "}
-              embeds require the full URL for the tweet you would like to embed.
-            </h1>
-          )}
           <InputLabel sx={{ my: 0.5 }}>
             Enter unique {this.props.options.service} ID
           </InputLabel>
