@@ -1,6 +1,6 @@
 import { FC, useMemo } from "react";
 import { SvgIconComponent, CodeRounded } from "@mui/icons-material";
-import moment from "moment-timezone";
+import { formatDistanceToNow, isValid } from "date-fns";
 
 import { File } from "../../../hooks/useSearchCodeFilesByKeyword";
 import { SearchListItem } from "./SearchListItem";
@@ -11,6 +11,7 @@ interface Code {
   loading?: boolean;
   style: any;
 }
+
 export const Code: FC<Code> = ({
   data,
   style,
@@ -22,16 +23,21 @@ export const Code: FC<Code> = ({
   );
 
   const chips = useMemo(() => {
+    const rel = (dt?: string) => {
+      if (!dt) return "";
+      const d = new Date(dt);
+      return isValid(d) ? formatDistanceToNow(d, { addSuffix: true }) : "";
+    };
+
     if (fileAudit?.length) {
       const audit = fileAudit[0];
-      const time = moment(audit?.happenedAt)?.fromNow();
+      const time = rel(audit?.happenedAt);
       const name = `${audit?.firstName} ${audit?.lastName}`;
-
       return `Code File • ${time} by ${name}`;
     }
 
-    return `Code File • ${moment(data?.createdAt)?.fromNow()}`;
-  }, [fileAudit]);
+    return `Code File • ${rel(data?.createdAt)}`;
+  }, [fileAudit, data?.createdAt]);
 
   const loading = loadingFileAudit || parentIsLoading;
 

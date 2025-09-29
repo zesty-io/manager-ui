@@ -1,4 +1,5 @@
-import moment from "moment";
+import { format, addMonths, addDays, startOfDay } from "date-fns";
+
 describe("Reports > Activity Log > Home", () => {
   describe("Tabs", () => {
     it("Highlights tabs depending on URL", () => {
@@ -46,21 +47,27 @@ describe("Reports > Activity Log > Home", () => {
   describe("Filters", () => {
     it("Sets default date url parameters if none are set", () => {
       cy.visit("/reports/activity-log/resources");
+      const today = new Date();
+      const threeMonthsAgo = addMonths(today, -3);
       cy.location("search").should(
         "eq",
-        `?from=${moment()
-          .add(-3, "months")
-          .format("YYYY-MM-DD")}&to=${moment().format("YYYY-MM-DD")}`
+        `?from=${format(threeMonthsAgo, "yyyy-MM-dd")}&to=${format(
+          today,
+          "yyyy-MM-dd"
+        )}`
       );
     });
 
     it("Does not set default date url parameters if they are set", () => {
       cy.visit("/reports/activity-log/resources?from=2020-07-14&to=2020-07-16");
+      const today = new Date();
+      const threeMonthsAgo = addMonths(today, -3);
       cy.location("search").should(
         "not.eq",
-        `?from=${moment()
-          .add(-3, "months")
-          .format("YYYY-MM-DD")}&to=${moment().format("YYYY-MM-DD")}`
+        `?from=${format(threeMonthsAgo, "yyyy-MM-dd")}&to=${format(
+          today,
+          "yyyy-MM-dd"
+        )}`
       );
     });
 
@@ -96,19 +103,8 @@ describe("Reports > Activity Log > Home", () => {
        * instead of having to determine how many times to click the next month arrow everytime
        * to get to the current date.
        */
-      const from = moment("2022-07-14")
-        .hours(0)
-        .minute(0)
-        .second(0)
-        .millisecond(0)
-        .format("x");
-      const to = moment("2022-07-14")
-        .add(1, "day")
-        .hours(0)
-        .minute(0)
-        .second(0)
-        .millisecond(0)
-        .format("x");
+      const from = startOfDay(new Date("2022-07-14")).getTime();
+      const to = startOfDay(addDays(new Date("2022-07-14"), 1)).getTime();
 
       // Set daterange filter
       cy.getBySelector("dateRange_selected").should("exist").click();
@@ -124,10 +120,11 @@ describe("Reports > Activity Log > Home", () => {
       cy.getBySelector("resourceType_default").should("exist").click();
       cy.getBySelector("filter_value_content").should("exist").click();
 
-      const expectedFromDate = moment("2022-07-14").format("YYYY-MM-DD");
-      const expectedToDate = moment("2022-07-14")
-        .add(1, "day")
-        .format("YYYY-MM-DD");
+      const expectedFromDate = format(new Date("2022-07-14"), "yyyy-MM-dd");
+      const expectedToDate = format(
+        addDays(new Date("2022-07-14"), 1),
+        "yyyy-MM-dd"
+      );
 
       cy.location("search").should(
         "eq",
@@ -205,19 +202,8 @@ describe("Reports > Activity Log > Home", () => {
        * instead of having to determine how many times to click the next month arrow everytime
        * to get to the current date.
        */
-      const from = moment("2022-07-14")
-        .hours(0)
-        .minute(0)
-        .second(0)
-        .millisecond(0)
-        .format("x");
-      const to = moment("2022-07-14")
-        .add(1, "day")
-        .hours(0)
-        .minute(0)
-        .second(0)
-        .millisecond(0)
-        .format("x");
+      const from = startOfDay(new Date("2022-07-14")).getTime();
+      const to = startOfDay(addDays(new Date("2022-07-14"), 1)).getTime();
 
       // Set daterange filter
       cy.getBySelector("dateRange_selected").should("exist").click();
@@ -253,11 +239,15 @@ describe("Reports > Activity Log > Home", () => {
     it("Resets filters", () => {
       cy.visit("/reports/activity-log/resources?from=2099-01-01&to=2099-01-02");
       cy.contains("RESET FILTERS").click();
+
+      const today = new Date();
+      const threeMonthsAgo = addMonths(today, -3);
       cy.location("search").should(
         "eq",
-        `?from=${moment()
-          .add(-3, "months")
-          .format("YYYY-MM-DD")}&to=${moment().format("YYYY-MM-DD")}`
+        `?from=${format(threeMonthsAgo, "yyyy-MM-dd")}&to=${format(
+          today,
+          "yyyy-MM-dd"
+        )}`
       );
     });
   });

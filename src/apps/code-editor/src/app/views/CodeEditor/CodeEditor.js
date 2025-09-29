@@ -10,7 +10,6 @@ import Workspace from "../../components/Workspace";
 import { fetchFiles } from "../../../store/files";
 import SideBar from "../../components/SideBar";
 import { Route } from "react-router";
-import { GettingStarted } from "../../components/Workspace/components/GettingStarted";
 import { RecentFiles } from "../../components/RecentFiles";
 import CreateFile from "../../components/CreateFile";
 

@@ -1,6 +1,6 @@
 import { faCode } from "@fortawesome/free-solid-svg-icons";
 import { useSelector } from "react-redux";
-import moment from "moment";
+import { format, isValid, isSameYear } from "date-fns";
 import { ListItem } from "./ListItem";
 
 const fileTypeName = {
@@ -14,6 +14,17 @@ export const FileResourceListItem = (props) => {
     Object.values(state.files).find((item) => item.ZUID === props.affectedZUID)
   );
 
+  const d = new Date(props.updatedAt);
+  const lastAction = isValid(d)
+    ? isSameYear(d, new Date())
+      ? format(d, "MMM d, h:mm a")
+      : format(d, "MMM d, yyyy, h:mm a")
+    : "";
+
+  const secondary = `Last action @ ${lastAction}${
+    fileData ? ` • ${fileTypeName?.[fileData?.type] || fileData?.type}` : ""
+  }`;
+
   return (
     <ListItem
       divider={props.divider}
@@ -24,13 +35,7 @@ export const FileResourceListItem = (props) => {
       primary={
         !fileData ? `${props.affectedZUID} (Deleted)` : fileData?.fileName
       }
-      secondary={`Last action @ ${
-        moment(props.updatedAt).isSame(new Date(), "year")
-          ? moment(props.updatedAt).format("MMM D, h:mm A")
-          : moment(props.updatedAt).format("ll, h:mm A")
-      }${
-        fileData ? ` • ${fileTypeName?.[fileData?.type] || fileData?.type}` : ""
-      }`}
+      secondary={secondary}
     />
   );
 };

@@ -1,8 +1,9 @@
 import { useMemo, FC, useEffect, useState } from "react";
 import { Box, FormControl, Skeleton } from "@mui/material";
-import moment from "moment";
 import { uniqBy, isEqual } from "lodash";
 import { useLocation } from "react-router-dom";
+import { parse, format, isValid } from "date-fns";
+
 import { useParams } from "../../../../../../../shell/hooks/useParams";
 import { accountsApi } from "../../../../../../../shell/services/accounts";
 import { Audit } from "../../../../../../../shell/services/types";
@@ -14,76 +15,31 @@ import {
 } from "../../../../../../../shell/components/Filters";
 
 const RESOURCE_TYPES = [
-  {
-    text: "Block Variants",
-    value: "block",
-  },
-  {
-    text: "Code Files and Snippets",
-    value: "code",
-  },
-  {
-    text: "Content Items",
-    value: "content",
-  },
-  {
-    text: "Models",
-    value: "schema",
-  },
-  {
-    text: "Settings",
-    value: "settings",
-  },
+  { text: "Block Variants", value: "block" },
+  { text: "Code Files and Snippets", value: "code" },
+  { text: "Content Items", value: "content" },
+  { text: "Models", value: "schema" },
+  { text: "Settings", value: "settings" },
 ];
+
 const HAPPENED_AT = [
-  {
-    text: "Most Recent",
-    value: "",
-  },
-  {
-    text: "Oldest First",
-    value: "happenedAt",
-  },
+  { text: "Most Recent", value: "" },
+  { text: "Oldest First", value: "happenedAt" },
 ];
+
 const USER_ACTIVITY = [
-  {
-    text: "Most Active",
-    value: "",
-  },
-  {
-    text: "Most Recently Active",
-    value: "happenedAt",
-  },
-  {
-    text: "Least Active",
-    value: "leastActive",
-  },
+  { text: "Most Active", value: "" },
+  { text: "Most Recently Active", value: "happenedAt" },
+  { text: "Least Active", value: "leastActive" },
 ];
+
 const ACTION = [
-  {
-    text: "Created",
-    value: "1",
-  },
-  {
-    text: "Modified",
-    value: "2",
-  },
-  {
-    text: "Deleted",
-    value: "3",
-  },
-  {
-    text: "Published",
-    value: "4",
-  },
-  {
-    text: "Unpublished",
-    value: "5",
-  },
-  {
-    text: "Scheduled",
-    value: "6",
-  },
+  { text: "Created", value: "1" },
+  { text: "Modified", value: "2" },
+  { text: "Deleted", value: "3" },
+  { text: "Published", value: "4" },
+  { text: "Unpublished", value: "5" },
+  { text: "Scheduled", value: "6" },
 ];
 
 type Filter =
@@ -93,11 +49,24 @@ type Filter =
   | "actionByUserZUID"
   | "action"
   | "userRole";
+
 interface FiltersProps {
   showSkeletons: boolean;
   filters: Filter[];
   actions: Audit[];
 }
+
+const stripToYMD = (s?: string | null) => (s ? String(s).slice(0, 10) : null);
+
+const parseYMD = (s?: string | null) => {
+  const ymd = stripToYMD(s);
+  return ymd ? parse(ymd, "yyyy-MM-dd", new Date()) : null;
+};
+
+const fmtYMD = (s?: string | null): string | null => {
+  const d = parseYMD(s);
+  return d && isValid(d) ? format(d, "yyyy-MM-dd") : null;
+};
 export const Filters: FC<FiltersProps> = ({
   actions,
   filters,
@@ -106,12 +75,15 @@ export const Filters: FC<FiltersProps> = ({
   const [params, setParams] = useParams();
   const location = useLocation();
   const { data: usersRoles } = accountsApi.useGetUsersRolesQuery();
+
   const [defaultDateRange, setDefaultDateRange] =
-    useState<DateRangeFilterValue>({ from: null, to: null });
+    useState<DateRangeFilterValue>({
+      from: null,
+      to: null,
+    });
 
   const uniqueUserActions = useMemo(() => {
     const uniqueUsers = uniqBy(actions, "actionByUserZUID");
-
     return uniqueUsers?.map((user) => ({
       firstName: user.firstName,
       lastName: user.lastName,
@@ -123,7 +95,6 @@ export const Filters: FC<FiltersProps> = ({
   const uniqueUsersRoles = useMemo(() => {
     if (usersRoles?.length) {
       const uniqueRoles = uniqBy(usersRoles, "role.ZUID");
-
       return uniqueRoles?.map((role) => ({
         text: role.role.name,
         value: role.role.name,
@@ -134,15 +105,15 @@ export const Filters: FC<FiltersProps> = ({
   const dateRange: DateRangeFilterValue = useMemo(() => {
     if (Boolean(params.get("from")) && Boolean(params.get("to"))) {
       const currentDateRange = {
-        from: moment(params.get("from")).format("YYYY-MM-DD"),
-        to: moment(params.get("to")).format("YYYY-MM-DD"),
+        from: fmtYMD(params.get("from")),
+        to: fmtYMD(params.get("to")),
       };
 
       if (
         location?.pathname.includes("schema") &&
         isEqual(currentDateRange, defaultDateRange)
       ) {
-        // Don't show the date on the date range filter if it's the same with the default date
+        // Hide the date on the filter if it's the same as the default date
         return { from: null, to: null };
       }
 
@@ -150,10 +121,10 @@ export const Filters: FC<FiltersProps> = ({
     }
 
     return { from: null, to: null };
-  }, [params, defaultDateRange]);
+  }, [params, defaultDateRange, location?.pathname]);
 
   useEffect(() => {
-    // Store a copy of the default date range which will be used to reset the date range
+    // Store a copy of the default date range (used to reset when cleared)
     if (
       Boolean(params.get("from")) &&
       Boolean(params.get("to")) &&
@@ -161,11 +132,11 @@ export const Filters: FC<FiltersProps> = ({
       !defaultDateRange.to
     ) {
       setDefaultDateRange({
-        from: moment(params.get("from")).format("YYYY-MM-DD"),
-        to: moment(params.get("to")).format("YYYY-MM-DD"),
+        from: fmtYMD(params.get("from")),
+        to: fmtYMD(params.get("to")),
       });
     }
-  }, [params]);
+  }, [params, defaultDateRange.from, defaultDateRange.to]);
 
   const getFilter = (filter: Filter) => {
     switch (filter) {
@@ -235,24 +206,21 @@ export const Filters: FC<FiltersProps> = ({
           />
         );
       default:
-        break;
+        return null;
     }
   };
 
   const handleDateRangeFilterChanged = (range: DateRangeFilterValue) => {
     if (!range.to && !range.from) {
-      // Reset the date range filter to the default value when user input date range is cleared
-      setParams(
-        moment(defaultDateRange.from).isValid() ? defaultDateRange.from : "",
-        "from"
-      );
-      setParams(
-        moment(defaultDateRange.to).isValid() ? defaultDateRange.to : "",
-        "to"
-      );
+      // Reset to default date range when cleared
+      const defFrom = fmtYMD(defaultDateRange.from);
+      const defTo = fmtYMD(defaultDateRange.to);
+
+      setParams(defFrom ?? "", "from");
+      setParams(defTo ?? "", "to");
     } else {
-      setParams(range.from, "from");
-      setParams(range.to, "to");
+      setParams(range.from as any, "from");
+      setParams(range.to as any, "to");
     }
   };
 

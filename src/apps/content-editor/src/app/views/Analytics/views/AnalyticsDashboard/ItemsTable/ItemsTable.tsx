@@ -13,7 +13,8 @@ import {
   useGetAnalyticsPropertiesQuery,
   useGetAnalyticsPropertyDataByQueryQuery,
 } from "../../../../../../../../../shell/services/analytics";
-import { Moment } from "moment-timezone";
+import { differenceInCalendarDays, format as fmt } from "date-fns";
+
 import {
   findTopDimensions,
   findValuesForDimensions,
@@ -29,26 +30,11 @@ import { LatestPublishesWrapper } from "./LatestPublishesWrapper";
 import { RecentEditsWrapper } from "./RecentEditsWrapper";
 
 const tableTabs = [
-  {
-    name: "Most Popular",
-    icon: LocalFireDepartmentRounded,
-  },
-  {
-    name: "Gainers",
-    icon: TrendingUpRounded,
-  },
-  {
-    name: "Losers",
-    icon: TrendingDownRounded,
-  },
-  {
-    name: "Latest Publishes",
-    icon: CloudUploadRounded,
-  },
-  {
-    name: "Recent Edits",
-    icon: EditRounded,
-  },
+  { name: "Most Popular", icon: LocalFireDepartmentRounded },
+  { name: "Gainers", icon: TrendingUpRounded },
+  { name: "Losers", icon: TrendingDownRounded },
+  { name: "Latest Publishes", icon: CloudUploadRounded },
+  { name: "Recent Edits", icon: EditRounded },
 ];
 
 const columns = [
@@ -77,8 +63,8 @@ const columns = [
 
 type Props = {
   propertyId: string;
-  startDate: Moment;
-  endDate: Moment;
+  startDate: Date;
+  endDate: Date;
 };
 
 export const ItemsTable = ({ propertyId, startDate, endDate }: Props) => {
@@ -92,18 +78,12 @@ export const ItemsTable = ({ propertyId, startDate, endDate }: Props) => {
             key={index}
             variant="outlined"
             color={selectedTab === index ? "primary" : "inherit"}
-            sx={{
-              backgroundColor: "background.paper",
-              height: "28px",
-            }}
+            sx={{ backgroundColor: "background.paper", height: "28px" }}
             startIcon={
               <SvgIcon
                 component={tab.icon}
                 color={selectedTab !== index ? "action" : undefined}
-                sx={{
-                  height: 18,
-                  width: 18,
-                }}
+                sx={{ height: 18, width: 18 }}
               />
             }
             onClick={() => setSelectedTab(index)}
@@ -112,6 +92,7 @@ export const ItemsTable = ({ propertyId, startDate, endDate }: Props) => {
           </Button>
         ))}
       </Box>
+
       {selectedTab === 0 && (
         <MostPopularWrapper
           propertyId={propertyId}
@@ -132,7 +113,7 @@ export const ItemsTable = ({ propertyId, startDate, endDate }: Props) => {
           propertyId={propertyId}
           startDate={startDate}
           endDate={endDate}
-          isLosers={true}
+          isLosers
         />
       )}
       {selectedTab === 3 && (
@@ -177,21 +158,11 @@ export const ItemsTableContent = ({
       property: propertyId,
       requests: [
         {
-          dimensions: [
-            {
-              name: "pagePath",
-            },
-          ],
+          dimensions: [{ name: "pagePath" }],
           metrics: [
-            {
-              name: "totalUsers",
-            },
-            {
-              name: "averageSessionDuration",
-            },
-            {
-              name: "screenPageViews",
-            },
+            { name: "totalUsers" },
+            { name: "averageSessionDuration" },
+            { name: "screenPageViews" },
           ],
           dateRanges: generateDateRangesForReport(startDate, endDate),
           dimensionFilter: {
@@ -199,10 +170,7 @@ export const ItemsTableContent = ({
               expressions: paths?.map((path) => ({
                 filter: {
                   fieldName: "pagePath",
-                  stringFilter: {
-                    matchType: "EXACT",
-                    value: path,
-                  },
+                  stringFilter: { matchType: "EXACT", value: path },
                 },
               })),
             },
@@ -210,59 +178,29 @@ export const ItemsTableContent = ({
           keepEmptyRows: true,
         },
         {
-          dimensions: [
-            {
-              name: "date",
-            },
-            {
-              name: "pagePath",
-            },
-          ],
-          metrics: [
-            {
-              name: "screenPageViews",
-            },
-          ],
+          dimensions: [{ name: "date" }, { name: "pagePath" }],
+          metrics: [{ name: "screenPageViews" }],
           dateRanges: generateDateRangesForReport(startDate, endDate),
           dimensionFilter: {
             orGroup: {
               expressions: paths?.map((path) => ({
                 filter: {
                   fieldName: "pagePath",
-                  stringFilter: {
-                    matchType: "EXACT",
-                    value: path,
-                  },
+                  stringFilter: { matchType: "EXACT", value: path },
                 },
               })),
             },
           },
-          orderBys: [
-            {
-              dimension: {
-                dimensionName: "date",
-              },
-            },
-          ],
+          orderBys: [{ dimension: { dimensionName: "date" } }],
         },
         {
-          dimensions: [
-            {
-              name: "pagePath",
-            },
-            {
-              name: "firstUserSource",
-            },
-          ],
-          metrics: [
-            {
-              name: "screenPageViews",
-            },
-          ],
+          dimensions: [{ name: "pagePath" }, { name: "firstUserSource" }],
+          metrics: [{ name: "screenPageViews" }],
+          // this request expects string dates
           dateRanges: [
             {
-              startDate: startDate?.format("YYYY-MM-DD"),
-              endDate: endDate?.format("YYYY-MM-DD"),
+              startDate: fmt(startDate, "yyyy-MM-dd"),
+              endDate: fmt(endDate, "yyyy-MM-dd"),
             },
           ],
           dimensionFilter: {
@@ -270,10 +208,7 @@ export const ItemsTableContent = ({
               expressions: paths?.map((path) => ({
                 filter: {
                   fieldName: "pagePath",
-                  stringFilter: {
-                    matchType: "EXACT",
-                    value: path,
-                  },
+                  stringFilter: { matchType: "EXACT", value: path },
                 },
               })),
             },
@@ -281,12 +216,12 @@ export const ItemsTableContent = ({
         },
       ],
     },
-    {
-      skip: !paths?.length,
-    }
+    { skip: !paths?.length }
   );
 
   const [mainReport, screenPageViewsReport, sourceReport] = data?.reports || [];
+
+  const spanDays = differenceInCalendarDays(endDate, startDate) + 1;
 
   const rows =
     paths?.map((path, index) => ({
@@ -326,8 +261,8 @@ export const ItemsTableContent = ({
           ["date_range_0", path],
           0
         ),
-        (endDate.diff(startDate, "days") + 1) * 2
-      )?.slice(endDate.diff(startDate, "days") + 1),
+        spanDays * 2
+      )?.slice(spanDays),
       topSource: findTopDimensions(sourceReport?.rows, [path], 1)?.[0]?.[1]
         ?.value,
       topSourceValue: +(
@@ -349,11 +284,11 @@ export const ItemsTableContent = ({
         <DataGridPro
           rows={
             isFetching || showSkeleton
-              ? new Array(10).fill(null).map((x, i) => ({ id: i }))
+              ? new Array(10).fill(null).map((_, i) => ({ id: i }))
               : rows
           }
-          // @ts-expect-error - missing types for headerAlign and align on DataGridPro
-          columns={isRecentEdits ? columns?.slice(0, 1) : columns}
+          // @ts-expect-error - headerAlign/align typing gap in DataGridPro
+          columns={isRecentEdits ? columns.slice(0, 1) : columns}
           hideFooter
           disableColumnMenu
           disableSelectionOnClick
@@ -366,13 +301,9 @@ export const ItemsTableContent = ({
             ".MuiDataGrid-columnHeader": {
               backgroundColor: "grey.100",
             },
-            ".MuiDataGrid-row": {
-              cursor: "pointer",
-            },
-            // Hides all rows that are empty (no data)
-            ".MuiDataGrid-row:has(> :first-child:empty)": {
-              display: "none",
-            },
+            ".MuiDataGrid-row": { cursor: "pointer" },
+            // hide empty skeleton rows
+            ".MuiDataGrid-row:has(> :first-child:empty)": { display: "none" },
           }}
         />
       )}

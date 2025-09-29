@@ -15,7 +15,7 @@ import Divider from "@mui/material/Divider";
 import { AppState } from "../../../../../../shell/store/types";
 import { DateRange } from "../../../../../../shell/store/media-revamp";
 import { getDateFilter } from "../../utils/fileUtils";
-import moment from "moment-timezone";
+import { format as fmt } from "date-fns";
 import { DateFilterModal } from "../DateFilterModal";
 import { useParams } from "../../../../../../shell/hooks/useParams";
 
@@ -41,10 +41,7 @@ export const DateRangeFilter: FC = () => {
       setParams(null, "dateFilter");
       return;
     }
-    const format = (date: string) => {
-      const s = moment(date).format("YYYY-MM-DD");
-      return s;
-    };
+    const format = (date: string | Date) => fmt(new Date(date), "yyyy-MM-dd");
     switch (dateRange.type) {
       case "on": {
         setParams(format(dateRange.value), "to");

@@ -1,6 +1,5 @@
 import { memo, useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import moment from "moment";
 import { Stack, Collapse, Paper, Typography, Box } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
@@ -89,8 +88,10 @@ const BottomDrawer = memo(function BottomDrawer({ file }: BottomDrawerProps) {
 
         setLogs(
           logsResponse.data
-            .sort((a: Log, b: Log) =>
-              moment(a.createdAt).unix() > moment(b.createdAt).unix() ? -1 : 1
+            .sort(
+              (a: Log, b: Log) =>
+                new Date(b.createdAt).getTime() -
+                new Date(a.createdAt).getTime()
             )
             .slice(0, 10)
         );

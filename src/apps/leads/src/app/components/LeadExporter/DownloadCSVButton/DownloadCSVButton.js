@@ -1,10 +1,15 @@
 import { Component } from "react";
 import csvDownload from "json-to-csv-export";
-import * as moment from "moment";
 import { connect } from "react-redux";
+import {
+  format,
+  parseISO,
+  isValid,
+  min as dateMin,
+  max as dateMax,
+} from "date-fns";
 
 import Button from "@mui/material/Button";
-
 import DownloadIcon from "@mui/icons-material/Download";
 
 import { DATE_PRESETS } from "../TableDateFilter/TableDateFilter.model";
@@ -48,29 +53,37 @@ export default connect((state) => {
 
     /**
      * Sets the date portion of the CSV file
-     *
-     * Utilizes the start and end date in the Store
-     * @returns {string} The date portion in 'YYYY-MM-DD_YYYY-MM-DD' format
+     * Returns 'YYYY-MM-DD_YYYY-MM-DD'
      */
     setFilenameDate() {
-      // If the user has selected "ALL", determine the minimum and maximum dates
+      const toDate = (v) => {
+        if (v instanceof Date) return v;
+        const iso = parseISO(String(v));
+        return isValid(iso) ? iso : new Date(v);
+      };
+
       if (this.props.filter.dateRange === DATE_PRESETS.ALL) {
-        let earliestDate = moment();
-        let latestDate = moment();
-        this.props.leads.forEach((lead) => {
-          if (moment(lead.dateCreated).isBefore(earliestDate)) {
-            earliestDate = lead.dateCreated;
-          } else if (moment(lead.dateCreated).isAfter(latestDate)) {
-            latestDate = lead.dateCreated;
-          }
-        });
-        return `${moment(earliestDate).format("YYYY-MM-DD")}_${moment(
-          latestDate
-        ).format("YYYY-MM-DD")}`;
+        const dates = (this.props.leads || [])
+          .map((lead) => toDate(lead?.dateCreated))
+          .filter((d) => isValid(d));
+
+        if (!dates.length) {
+          const today = new Date();
+          const ymd = format(today, "yyyy-MM-dd");
+          return `${ymd}_${ymd}`;
+        }
+
+        const earliest = dateMin(dates);
+        const latest = dateMax(dates);
+
+        return `${format(earliest, "yyyy-MM-dd")}_${format(
+          latest,
+          "yyyy-MM-dd"
+        )}`;
       } else {
-        return `${moment(this.props.filter.startDate).format(
-          "YYYY-MM-DD"
-        )}_${moment(this.props.filter.endDate).format("YYYY-MM-DD")}`;
+        const start = toDate(this.props.filter.startDate);
+        const end = toDate(this.props.filter.endDate);
+        return `${format(start, "yyyy-MM-dd")}_${format(end, "yyyy-MM-dd")}`;
       }
     }
 

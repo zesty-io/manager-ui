@@ -1,5 +1,4 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import moment from "moment";
 
 import instanceZUID from "../../utility/instanceZUID";
 import { getResponseData, prepareHeaders } from "./util";
@@ -121,8 +120,9 @@ export const accountsApi = createApi({
       query: ({ itemZUID, resourceZUID }) =>
         `/instances/${instanceZUID}/comments?resource=${itemZUID}&scope=${resourceZUID}&showResolved=true`,
       transformResponse: (response: any) =>
-        response.data?.sort((a: any, b: any) =>
-          moment(b.createdAt).diff(a.createdAt)
+        response.data?.sort(
+          (a: any, b: any) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         ),
       providesTags: (_, __, { resourceZUID }) => [
         { type: "Comments", id: resourceZUID },

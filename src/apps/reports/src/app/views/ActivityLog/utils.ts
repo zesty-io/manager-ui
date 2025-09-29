@@ -1,18 +1,24 @@
-import moment from "moment";
+import { format as fmt, isValid as isValidDate } from "date-fns";
 
 // This assumes the date passed in the param has a format of YYYY-MM-DD
 export const toUTC = (originalDate: string) => {
-  if (!originalDate || !moment(originalDate).isValid) return;
+  if (!originalDate) return;
 
-  const [year, month, date] = originalDate.split("-");
+  const [yearStr, monthStr, dayStr] = originalDate.split("-");
+  const year = Number(yearStr);
+  const month = Number(monthStr);
+  const day = Number(dayStr);
 
-  if (isNaN(Number(year)) || isNaN(Number(month)) || isNaN(Number(date)))
+  if (
+    !Number.isFinite(year) ||
+    !Number.isFinite(month) ||
+    !Number.isFinite(day)
+  )
     return;
 
-  return moment()
-    .year(Number(year))
-    .month(Number(month) - 1)
-    .date(Number(date))
-    .utc()
-    .format("L");
+  // Create a UTC date at 00:00:00 UTC for the provided Y-M-D
+  const utcDate = new Date(Date.UTC(year, month - 1, day));
+  if (!isValidDate(utcDate)) return;
+
+  return fmt(utcDate, "P");
 };
