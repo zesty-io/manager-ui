@@ -19,7 +19,6 @@ import BottomDrawer from "../BottomDrawer";
 import { Differ } from "../Differ";
 import { fetchFields } from "../../../../../../shell/store/fields";
 import { notify } from "../../../../../../shell/store/notifications";
-import moment from "moment-timezone";
 
 const BOTTOM_DRAWER_HEIGHT = "48px";
 
@@ -37,9 +36,11 @@ const Workspace = connect((state, props) => {
       (log) =>
         log?.action === 4 && log?.meta?.version === file?.publishedVersion
     )
-    .sort((a, b) =>
-      moment(a.createdAt).unix() > moment(b.createdAt).unix() ? -1 : 1
-    )?.[0];
+    .sort((a, b) => {
+      const ta = new Date(a.createdAt).getTime();
+      const tb = new Date(b.createdAt).getTime();
+      return tb - ta;
+    })?.[0];
 
   const fields =
     file && file?.contentModelZUID

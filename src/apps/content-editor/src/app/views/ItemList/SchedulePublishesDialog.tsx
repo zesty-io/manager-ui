@@ -13,11 +13,12 @@ import {
 } from "@mui/material";
 import ScheduleRoundedIcon from "@mui/icons-material/ScheduleRounded";
 import WarningRoundedIcon from "@mui/icons-material/WarningRounded";
-import moment from "moment-timezone";
 import { ContentItem } from "../../../../../../shell/services/types";
 import { FieldTypeDateTime } from "../../../../../../shell/components/FieldTypeDateTime";
 import { DialogContentItem } from "./DialogContentItem";
 import pluralizeWord from "../../../../../../utility/pluralizeWord";
+import { format as fmt } from "date-fns";
+import { formatInTimeZone, zonedTimeToUtc } from "date-fns-tz";
 
 type SchedulePublishesModalProps = {
   items: ContentItem[];
@@ -31,25 +32,31 @@ export const SchedulePublishesModal = ({
   onConfirm,
   loading,
 }: SchedulePublishesModalProps) => {
+  // Start at next top of the hour (local)
+  const now = new Date();
+  const nextTopOfHour = new Date(now);
+  nextTopOfHour.setMinutes(0, 0, 0);
+  nextTopOfHour.setHours(nextTopOfHour.getHours() + 1);
+
   const [publishDateTime, setPublishDateTime] = useState(
-    moment().minute(0).second(0).add(1, "hours").format("yyyy-MM-DD HH:mm:ss")
-  );
-  const [publishTimezone, setPublishTimezone] = useState(
-    moment.tz.guess() ?? "America/Los_Angeles"
+    fmt(nextTopOfHour, "yyyy-MM-dd HH:mm:ss")
   );
 
-  const isSelectedDatetimePast = moment
-    .utc(moment.tz(publishDateTime, publishTimezone))
-    .isBefore(moment.utc());
+  const tzGuess =
+    Intl.DateTimeFormat().resolvedOptions().timeZone || "America/Los_Angeles";
+  const [publishTimezone, setPublishTimezone] = useState(tzGuess);
+
+  // Normalize (strip microseconds if present) and convert to UTC
+  const normalizedLocal = String(publishDateTime).replace(/\.\d+$/, "");
+  const selectedUtc = zonedTimeToUtc(normalizedLocal, publishTimezone);
+
+  const isSelectedDatetimePast = selectedUtc.getTime() <= Date.now();
 
   return (
     <Dialog
       open
       PaperProps={{
-        sx: {
-          maxWidth: 640,
-          width: 640,
-        },
+        sx: { maxWidth: 640, width: 640 },
       }}
     >
       <DialogTitle>
@@ -58,8 +65,8 @@ export const SchedulePublishesModal = ({
             sx={{
               backgroundColor: "warning.light",
               borderRadius: "100%",
-              width: "40px",
-              height: "40px",
+              width: 40,
+              height: 40,
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
@@ -93,19 +100,16 @@ export const SchedulePublishesModal = ({
             value={publishDateTime}
             selectedTimezone={publishTimezone}
             onChange={(datetime: any) => {
-              setPublishDateTime(datetime);
+              const normalized = String(datetime).replace(/\.\d+$/, "");
+              setPublishDateTime(normalized);
             }}
-            onTimezoneChange={(timezone: any) => {
-              setPublishTimezone(timezone);
-            }}
+            onTimezoneChange={(timezone: any) => setPublishTimezone(timezone)}
           />
           {isSelectedDatetimePast && (
             <Alert
               severity="warning"
               icon={<WarningRoundedIcon fontSize="inherit" />}
-              sx={{
-                mt: 2.5,
-              }}
+              sx={{ mt: 2.5 }}
             >
               Since the selected time is a current or past date, this will be
               immediately published.
@@ -137,12 +141,13 @@ export const SchedulePublishesModal = ({
             if (isSelectedDatetimePast) {
               onConfirm(items);
             } else {
-              onConfirm(
-                items,
-                moment
-                  .utc(moment.tz(publishDateTime, publishTimezone))
-                  .format("YYYY-MM-DD HH:mm:ss")
+              // Send UTC string without timezone: "YYYY-MM-DD HH:mm:ss"
+              const out = formatInTimeZone(
+                selectedUtc,
+                "UTC",
+                "yyyy-MM-dd HH:mm:ss"
               );
+              onConfirm(items, out);
             }
           }}
         >

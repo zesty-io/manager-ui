@@ -1,4 +1,15 @@
-import moment from "moment-timezone";
+import {
+  isSameDay,
+  isWithinInterval,
+  startOfDay,
+  endOfDay,
+  subDays,
+  subMonths,
+  isValid,
+  isBefore,
+  isAfter,
+  isEqual,
+} from "date-fns";
 
 import { DateFilterValue, DateRangeFilterValue, PresetType } from "./types";
 
@@ -12,103 +23,110 @@ export const getDateFilterFnByValues = ({
   to: string;
 }) => {
   const isPreset = !!preset;
-  const isBefore = !!to && !!!from;
-  const isAfter = !!from && !!!to;
+  const isBeforeFlag = !!to && !from;
+  const isAfterFlag = !!from && !to;
   const isOn = !!to && !!from && to === from;
   const isRange = !!to && !!from && to !== from;
-  let dateFilterFn: (date: string) => boolean;
 
-  if (isPreset) {
-    dateFilterFn = getDateFilterFn({
-      type: "preset",
-      value: preset,
-    });
-  }
+  if (isPreset) return getDateFilterFn({ type: "preset", value: preset });
+  if (isBeforeFlag) return getDateFilterFn({ type: "before", value: to });
+  if (isAfterFlag) return getDateFilterFn({ type: "after", value: from });
+  if (isOn) return getDateFilterFn({ type: "on", value: from });
+  if (isRange)
+    return getDateFilterFn({ type: "daterange", value: { from, to } });
 
-  if (isBefore) {
-    dateFilterFn = getDateFilterFn({ type: "before", value: to });
-  }
-
-  if (isAfter) {
-    dateFilterFn = getDateFilterFn({ type: "after", value: from });
-  }
-
-  if (isOn) {
-    dateFilterFn = getDateFilterFn({ type: "on", value: from });
-  }
-
-  if (isRange) {
-    dateFilterFn = getDateFilterFn({
-      type: "daterange",
-      value: { from: from, to: to },
-    });
-  }
-
-  return dateFilterFn;
+  return undefined;
 };
 
+const toDate = (input: string | Date) =>
+  input instanceof Date ? input : new Date(input);
+
 export const getDateFilterFn = ({ type, value }: DateFilterValue) => {
+  const today = new Date();
+
   switch (type) {
-    case "preset":
-      switch (value as PresetType) {
-        case "today":
-          return (date: string) => moment(date).isSame(moment(), "day");
+    case "preset": {
+      const v = value as PresetType;
 
-        case "yesterday":
-          return (date: string) =>
-            moment(date).isSame(moment().subtract(1, "days"), "day");
+      if (v === "today")
+        return (date: string) => isSameDay(toDate(date), today);
 
-        case "last_7_days":
-          return (date: string) =>
-            moment(date).isSameOrAfter(moment().subtract(7, "days"), "day");
+      if (v === "yesterday")
+        return (date: string) => isSameDay(toDate(date), subDays(today, 1));
 
-        case "last_14_days":
-          return (date: string) =>
-            moment(date).isSameOrAfter(moment().subtract(14, "days"), "day");
+      if (v === "last_7_days")
+        return (date: string) =>
+          isWithinInterval(toDate(date), {
+            start: startOfDay(subDays(today, 7)),
+            end: endOfDay(today),
+          });
 
-        case "last_30_days":
-          return (date: string) =>
-            moment(date).isSameOrAfter(moment().subtract(30, "days"), "day");
+      if (v === "last_14_days")
+        return (date: string) =>
+          isWithinInterval(toDate(date), {
+            start: startOfDay(subDays(today, 14)),
+            end: endOfDay(today),
+          });
 
-        case "last_3_months":
-          return (date: string) =>
-            moment(date).isSameOrAfter(moment().subtract(3, "months"), "day");
+      if (v === "last_30_days")
+        return (date: string) =>
+          isWithinInterval(toDate(date), {
+            start: startOfDay(subDays(today, 30)),
+            end: endOfDay(today),
+          });
 
-        case "last_12_months":
-          return (date: string) =>
-            moment(date).isSameOrAfter(moment().subtract(12, "months"), "day");
+      if (v === "last_3_months")
+        return (date: string) =>
+          isWithinInterval(toDate(date), {
+            start: startOfDay(subMonths(today, 3)),
+            end: endOfDay(today),
+          });
 
-        // should never happen
-        default:
-          return (date: string) => true;
-      }
+      if (v === "last_12_months")
+        return (date: string) =>
+          isWithinInterval(toDate(date), {
+            start: startOfDay(subMonths(today, 12)),
+            end: endOfDay(today),
+          });
 
-    case "on":
-      return (date: string) =>
-        moment(date).isSame(moment(value as string), "day");
+      return () => true;
+    }
 
-    case "before":
-      return (date: string) =>
-        moment(date).isSameOrBefore(moment(value as string), "day");
+    case "on": {
+      const d = toDate(value as string);
+      return (date: string) => isSameDay(toDate(date), d);
+    }
 
-    case "after":
-      return (date: string) =>
-        moment(date).isSameOrAfter(moment(value as string), "day");
-
-    case "daterange":
+    case "before": {
+      const d = endOfDay(toDate(value as string));
       return (date: string) => {
-        const _value = value as DateRangeFilterValue;
-
-        return moment(date).isBetween(
-          moment(_value.from),
-          moment(_value.to),
-          "day",
-          "[]"
-        );
+        const dt = toDate(date);
+        return isBefore(dt, d) || isEqual(dt, d);
       };
+    }
 
-    // should never happen
+    case "after": {
+      const d = startOfDay(toDate(value as string));
+      return (date: string) => {
+        const dt = toDate(date);
+        return isAfter(dt, d) || isEqual(dt, d);
+      };
+    }
+
+    case "daterange": {
+      const { from, to } = value as DateRangeFilterValue;
+      const fromDate = toDate(from);
+      const toDateVal = toDate(to);
+      if (!isValid(fromDate) || !isValid(toDateVal)) return () => true;
+
+      return (date: string) =>
+        isWithinInterval(toDate(date), {
+          start: startOfDay(fromDate),
+          end: endOfDay(toDateVal),
+        });
+    }
+
     default:
-      return (date: string) => true;
+      return () => true;
   }
 };

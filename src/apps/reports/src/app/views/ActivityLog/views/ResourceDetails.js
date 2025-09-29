@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { Box, Button, Stack, SvgIcon, Typography } from "@mui/material";
 import { useParams } from "shell/hooks/useParams";
-import moment from "moment";
+import { format, subMonths, isValid } from "date-fns";
 import { instanceApi } from "shell/services/instance";
 import { ScheduleRounded, CategoryRounded } from "@mui/icons-material";
 import { useSelector } from "react-redux";
@@ -75,20 +75,20 @@ export const ResourceDetails = () => {
 
   // Sets date parameters from when the resource was created
   const setDefaultDateParams = () => {
-    let fromDate;
-    if (contentData) {
-      fromDate = moment(contentData?.meta?.createdAt);
-    } else if (modelData) {
-      fromDate = moment(modelData?.createdAt);
-    } else if (fileData) {
-      fromDate = moment(fileData?.createdAt);
-    } else if (settingsData) {
-      fromDate = moment(settingsData?.createdAt);
-    } else {
-      fromDate = moment().add(-3, "months");
-    }
-    setParams(fromDate.format("YYYY-MM-DD"), "from");
-    setParams(moment().format("YYYY-MM-DD"), "to");
+    const createdAt =
+      contentData?.meta?.createdAt ??
+      modelData?.createdAt ??
+      fileData?.createdAt ??
+      settingsData?.createdAt ??
+      null;
+
+    const today = new Date();
+    const candidate = createdAt ? new Date(createdAt) : null;
+    const fromDate =
+      candidate && isValid(candidate) ? candidate : subMonths(today, 3);
+
+    setParams(format(fromDate, "yyyy-MM-dd"), "from");
+    setParams(format(today, "yyyy-MM-dd"), "to");
   };
 
   const {

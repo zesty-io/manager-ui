@@ -1,7 +1,7 @@
-import moment from "moment";
 import HistoryIcon from "@mui/icons-material/History";
 import { Alert, List } from "@mui/material";
 import { FileCard, FileCardListItem } from "./FileCard";
+import { format, isValid } from "date-fns";
 
 export type LogEntry = {
   ZUID: string;
@@ -35,17 +35,19 @@ export default function AuditTrail({ logs }: AuditTrailProps) {
         </Alert>
       )}
       <List dense>
-        {logs?.map((log) => (
-          <FileCardListItem key={log.ZUID}>
-            {`${moment(log.createdAt).format("YYYY-MM-DD")} ${log.firstName} ${
-              log.lastName
-            }`}
-            {log.firstName === "Unknown" && log.lastName === "User"
-              ? `(${log.actionByUserZUID})`
-              : null}
-            {`: ${log.meta.message}`}
-          </FileCardListItem>
-        ))}
+        {logs?.map((log) => {
+          const d = new Date(log.createdAt);
+          const dateStr = isValid(d) ? format(d, "yyyy-MM-dd") : log.createdAt;
+          return (
+            <FileCardListItem key={log.ZUID}>
+              {`${dateStr} ${log.firstName} ${log.lastName}`}
+              {log.firstName === "Unknown" && log.lastName === "User"
+                ? `(${log.actionByUserZUID})`
+                : null}
+              {`: ${log.meta.message}`}
+            </FileCardListItem>
+          );
+        })}
       </List>
     </FileCard>
   );

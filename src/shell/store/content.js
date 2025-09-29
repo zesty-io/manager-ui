@@ -1,4 +1,3 @@
-import moment from "moment-timezone";
 import cloneDeep from "lodash/cloneDeep";
 
 import { notify } from "shell/store/notifications";
@@ -243,7 +242,7 @@ export function generateItem(modelZUID, data = {}, web = {}) {
         langID: 1,
         contentModelZUID: modelZUID,
         createdByUserZUID: state.user.user_zuid,
-        createdAt: moment().utc().format("YYYY-MM-DDTHH:MM:SSZ"),
+        createdAt: new Date().toISOString(),
       },
     };
 
@@ -1160,26 +1159,28 @@ function parsePublishState(records) {
       If `publishAt` is set but unpublishAt is not you only need to determine if `nowGMT` is after `publishAt`. a.k.a is it live
       If both `publishAt` and `unpublishAt` are set you need determine all 3 states.
     **/
-    const nowGMT = moment.utc();
-    const publishAtGMT = moment(record.publishAt);
-    const unpublishAtGMT = moment(record.unpublishAt);
+    const nowMs = Date.now();
+    const publishAtMs = record.publishAt ? Date.parse(record.publishAt) : NaN;
+    const unpublishAtMs = record.unpublishAt
+      ? Date.parse(record.unpublishAt)
+      : NaN;
 
     // Current time is before publishAt so it is scheduled
-    if (nowGMT.isBefore(publishAtGMT)) {
+    if (Number.isFinite(publishAtMs) && nowMs < publishAtMs) {
       record.isScheduled = true;
 
       // We don't null out `publishAt` so even if it is set we need to confirm
       // there is not a `unpublishAt` set and if so whether it has been passed
-      if (unpublishAtGMT && nowGMT.isAfter(unpublishAtGMT)) {
+      if (Number.isFinite(unpublishAtMs) && nowMs > unpublishAtMs) {
         record.isScheduled = false;
       }
 
       // Current time is after publishAt so it is published
-    } else if (nowGMT.isAfter(publishAtGMT)) {
+    } else if (Number.isFinite(publishAtMs) && nowMs >= publishAtMs) {
       record.isPublished = true;
 
       // Current time has passed unpublishAt so it is un-published
-      if (unpublishAtGMT && nowGMT.isAfter(unpublishAtGMT)) {
+      if (Number.isFinite(unpublishAtMs) && nowMs > unpublishAtMs) {
         record.isPublished = false;
       }
     } else {

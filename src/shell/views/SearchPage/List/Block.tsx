@@ -1,7 +1,7 @@
 import { FC, useMemo } from "react";
 import { Block as BlockIcon } from "@zesty-io/material";
 import { SvgIconComponent } from "@mui/icons-material";
-import moment from "moment-timezone";
+import { isValid, formatDistanceToNow } from "date-fns";
 
 import { ContentModel } from "../../../services/types";
 import { SearchListItem } from "./SearchListItem";
@@ -32,6 +32,11 @@ export const Block: FC<Block> = ({
   loading: parentIsLoading = false,
 }) => {
   const isVariant = data?.type === "block" && !!data?.contentModelZUID;
+  const createdRelative = useMemo(() => {
+    if (!data?.createdAt) return "";
+    const d = new Date(data.createdAt);
+    return isValid(d) ? formatDistanceToNow(d, { addSuffix: true }) : "";
+  }, [data?.createdAt]);
 
   const chips = useMemo(() => {
     const preFix =
@@ -42,9 +47,7 @@ export const Block: FC<Block> = ({
     const userName = !data?.createdByUserName
       ? ""
       : ` by ${data?.createdByUserName}`;
-    return `${preFix}Block • created ${moment(
-      data?.createdAt
-    )?.fromNow()}${userName}`;
+    return `${preFix}Block • created ${createdRelative}${userName}`;
   }, [data]);
 
   const titlePrefix = !!data?.lang ? `(${data?.lang}) ` : "";

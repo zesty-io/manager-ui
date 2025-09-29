@@ -15,10 +15,8 @@ import {
 } from "react";
 import Button from "@mui/material/Button";
 import { Typography, Stack, Box, TextField } from "@mui/material";
-import format from "date-fns/format";
+import { format, isValid } from "date-fns";
 import CalendarTodayRoundedIcon from "@mui/icons-material/CalendarTodayRounded";
-import moment from "moment";
-import { parseInt } from "lodash";
 
 export interface FieldTypeDateProps extends DatePickerProps<Date> {
   name: string;
@@ -263,7 +261,9 @@ export const FieldTypeDate = memo(
           {(valueFormatPreview || props.value) && (
             <Typography variant="body3" color="text.secondary" sx={{ mt: 0.5 }}>
               {valueFormatPreview ??
-                `Stored as ${moment(props.value).format("yyyy-MM-DD")}`}
+                (props.value && isValid(props.value)
+                  ? `Stored as ${format(props.value, "yyyy-MM-dd")}`
+                  : "")}
             </Typography>
           )}
         </LocalizationProvider>

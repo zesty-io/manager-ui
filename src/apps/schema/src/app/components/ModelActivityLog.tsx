@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { Box, Stack } from "@mui/material";
-import moment from "moment";
+import { isValid } from "date-fns";
 import { isEmpty } from "lodash";
 
 import { ActionsTimeline } from "../../../../reports/src/app/views/ActivityLog/components/ActionsTimeline";
@@ -15,6 +15,7 @@ import {
 import { useParams as useSearchParams } from "../../../../../shell/hooks/useParams";
 import { filterByParams } from "../../../../../utility/filterByParams";
 import { toUTC } from "../../../../reports/src/app/views/ActivityLog/utils";
+import { formatInTimeZone } from "date-fns-tz";
 
 type Params = {
   id: string;
@@ -67,10 +68,17 @@ export const ModelActivityLog = () => {
       relatedAudits?.length ? filterByParams(relatedAudits, searchParams) : [],
     [relatedAudits, searchParams]
   );
-
   const useDefaultDateParams = () => {
-    setSearchParams(moment(modelData?.createdAt).format("YYYY-MM-DD"), "from");
-    setSearchParams(moment().format("YYYY-MM-DD"), "to");
+    const created = modelData?.createdAt ? new Date(modelData.createdAt) : null;
+
+    const ymdUTC = (d: Date) => formatInTimeZone(d, "UTC", "yyyy-MM-dd");
+
+    const from =
+      created && isValid(created) ? ymdUTC(created) : ymdUTC(new Date());
+    const to = ymdUTC(new Date());
+
+    setSearchParams(from, "from");
+    setSearchParams(to, "to");
   };
 
   return (

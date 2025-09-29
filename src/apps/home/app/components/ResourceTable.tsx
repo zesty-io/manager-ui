@@ -1,4 +1,3 @@
-import moment from "moment";
 import { DataGridPro, GridRenderCellParams } from "@mui/x-data-grid-pro";
 import {
   useGetAuditsQuery,
@@ -17,6 +16,7 @@ import AutoSizer, { Size } from "react-virtualized-auto-sizer";
 import { EmptyState } from "./EmptyState";
 import { resolveUrlFromAudit } from "../../../../utility/resolveResourceUrlFromAudit";
 import { Audit } from "../../../../shell/services/types";
+import { format, subDays } from "date-fns";
 
 interface Props {
   dateRange: number;
@@ -127,8 +127,8 @@ const VersionCell = ({ affectedZUID, resourceType }: any) => {
 
 export const ResourceTable = ({ dateRange }: Props) => {
   const { data: audit, isFetching: isAuditFetching } = useGetAuditsQuery({
-    start_date: moment().subtract(dateRange, "days").format("L"),
-    end_date: moment().format("L"),
+    start_date: format(subDays(new Date(), dateRange), "MM/dd/yyyy"),
+    end_date: format(new Date(), "MM/dd/yyyy"),
   });
 
   const history = useHistory();
