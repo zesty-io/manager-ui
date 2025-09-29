@@ -5,7 +5,7 @@ import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import ToggleButton from "@mui/material/ToggleButton";
 import Link from "@mui/material/Link";
 import { FieldTypeText } from "@zesty-io/material";
-import { WithLoader } from "@zesty-io/core/WithLoader";
+import { WithLoader } from "shell/components/legacy/WithLoader";
 import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
 import { TopBar } from "../../components/TopBar";

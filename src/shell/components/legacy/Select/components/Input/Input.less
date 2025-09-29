@@ -1,0 +1,48 @@
+@import "../../../typography.less";
+@import "../../../colors.less";
+
+.Input {
+  background-color: @white;
+  border-radius: 3px;
+  border: @selectBorder;
+  color: @zesty-dark-blue;
+  display: block;
+  padding: 8px 12px;
+
+  font-family: @font-family-input;
+  font-size: @font-size-input;
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: 0px;
+
+  &:hover,
+  &:active,
+  &:focus {
+    color: @zesty-dark-blue;
+    outline: none;
+    border: solid 1px @zesty-tab-blue;
+  }
+
+  &:disabled {
+    background-color: rgba(0, 0, 0, 0.06);
+    opacity: 0.4;
+  }
+  &:disabled:hover,
+  &:disabled:active,
+  &:disabled:focus {
+    border: @selectBorder;
+  }
+
+  &:required {
+    box-shadow: none;
+  }
+
+  &:focus:required:invalid,
+  &.error {
+    border: solid 1px @zesty-red;
+  }
+}
+.ErrorMsg {
+  font-size: 12px;
+  color: @zesty-red;
+}

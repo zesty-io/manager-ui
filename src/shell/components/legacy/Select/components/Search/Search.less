@@ -1,0 +1,25 @@
+@import "../../../typography.less";
+@import "../../../colors.less";
+
+.Search {
+  display: flex;
+  flex-direction: row;
+  margin: 8px 0 4px 0;
+
+  align-items: center;
+  position: relative;
+
+  .Input {
+    border-radius: 28px;
+    -webkit-appearance: none;
+    &:focus ~ .RoundedSearchIcon {
+      display: none;
+    }
+  }
+  .RoundedSearchIcon {
+    box-shadow: none;
+    color: @zesty-gray;
+    position: absolute;
+    right: 16px;
+  }
+}

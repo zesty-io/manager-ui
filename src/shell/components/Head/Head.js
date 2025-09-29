@@ -5,7 +5,7 @@ import cx from "classnames";
 import { Button, Box } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 
-import { Notice } from "@zesty-io/core/Notice";
+import { Notice } from "shell/components/legacy/Notice";
 
 import { HeadTag } from "./HeadTag";
 import { Preview } from "./Preview";

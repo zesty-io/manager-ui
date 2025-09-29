@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import debounce from "lodash/debounce";
 
-import { Select, Option } from "@zesty-io/core/Select";
+import { Select, Option } from "shell/components/legacy/Select";
 
 import styles from "./FieldTypeInternalLink.less";
 export const FieldTypeInternalLink = React.memo(function FieldTypeInternalLink(

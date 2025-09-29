@@ -1,9 +1,6 @@
 import { useSelector } from "react-redux";
 
-import { AppLink } from "@zesty-io/core/AppLink";
-
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLink } from "@fortawesome/free-solid-svg-icons";
+import { AppLink } from "shell/components/AppLink";
 
 import styles from "./ListReleases.less";
 import { format } from "date-fns";

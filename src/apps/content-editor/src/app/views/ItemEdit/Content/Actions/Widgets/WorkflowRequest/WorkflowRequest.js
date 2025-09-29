@@ -1,27 +1,27 @@
 import { memo, useState } from "react";
 
-import FormGroup from "@mui/material/FormGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
-import Button from "@mui/material/Button";
-import CircularProgress from "@mui/material/CircularProgress";
+import {
+  FormGroup,
+  FormControlLabel,
+  Checkbox,
+  Button,
+  CircularProgress,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  AccordionActions,
+  Typography,
+  Box,
+  TextField,
+} from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
-import Accordion from "@mui/material/Accordion";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import AccordionDetails from "@mui/material/AccordionDetails";
-import AccordionActions from "@mui/material/AccordionActions";
-import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import EmailIcon from "@mui/icons-material/Email";
-import Box from "@mui/material/Box";
 
 import useIsMounted from "ismounted";
 import { useDispatch, useSelector } from "react-redux";
 
-import { Textarea } from "@zesty-io/core/Textarea";
 import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
-import styles from "./WorkflowRequests.less";
 
 export default memo(function WorkflowRequest({ itemTitle, fields }) {
   const dispatch = useDispatch();
@@ -215,12 +215,14 @@ ${
               ))}
             </Box>
 
-            <Textarea
-              className={styles.TextArea}
+            <TextField
+              multiline
+              fullWidth
               name="message"
               placeholder="Workflow request message"
               value={message}
               onChange={(evt) => setMessage(evt.target.value)}
+              rows={4}
             />
           </Box>
         </AccordionDetails>
