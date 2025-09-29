@@ -114,6 +114,10 @@ export const ItemParent = ({ onChange }: ItemParentProps) => {
       dispatch(searchItems(filterTerm))
         // @ts-expect-error untyped
         .then((res) => {
+          if (!res?.data || !Array.isArray(res?.data)) {
+            return;
+          }
+
           setOptions(
             getParentOptions(item?.meta?.langID, item?.web?.path, {
               ...items,
