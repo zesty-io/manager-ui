@@ -9,6 +9,8 @@ import { cloneDeep, isEqual } from "lodash";
 import { useGetContentModelFieldsQuery } from "../../../../../../shell/services/instance";
 import { DYNAMIC_META_FIELD_NAMES } from "../../views/ItemEdit/Meta";
 import { FieldsLoader } from "./FieldsLoader";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 
 export const MaxLengths = {
   text: 150,
@@ -392,36 +394,38 @@ export default memo(function Editor({
 
   return (
     <div className={styles.Fields}>
-      {activeFields?.map((field) => {
-        return (
-          <div key={`${field.ZUID}`} id={field.ZUID} className={styles.Field}>
-            <Field
-              ZUID={field.ZUID}
-              contentModelZUID={field.contentModelZUID}
-              active={active === field.ZUID}
-              name={field.name}
-              label={field.label}
-              description={field.description}
-              required={field.required}
-              relatedFieldZUID={field.relatedFieldZUID}
-              relatedModelZUID={field.relatedModelZUID}
-              datatype={field.datatype}
-              options={field.options}
-              settings={field.settings}
-              onChange={onChange}
-              onSave={onSave}
-              value={item?.data?.[field.name]}
-              version={item?.meta?.version}
-              langID={item?.meta?.langID}
-              errors={fieldErrors[field.name]}
-              maxLength={
-                field.settings?.maxCharLimit ?? MaxLengths[field.datatype]
-              }
-              minLength={field.settings?.minCharLimit ?? 0}
-            />
-          </div>
-        );
-      })}
+      <DndProvider backend={HTML5Backend}>
+        {activeFields?.map((field) => {
+          return (
+            <div key={`${field.ZUID}`} id={field.ZUID} className={styles.Field}>
+              <Field
+                ZUID={field.ZUID}
+                contentModelZUID={field.contentModelZUID}
+                active={active === field.ZUID}
+                name={field.name}
+                label={field.label}
+                description={field.description}
+                required={field.required}
+                relatedFieldZUID={field.relatedFieldZUID}
+                relatedModelZUID={field.relatedModelZUID}
+                datatype={field.datatype}
+                options={field.options}
+                settings={field.settings}
+                onChange={onChange}
+                onSave={onSave}
+                value={item?.data?.[field.name]}
+                version={item?.meta?.version}
+                langID={item?.meta?.langID}
+                errors={fieldErrors[field.name]}
+                maxLength={
+                  field.settings?.maxCharLimit ?? MaxLengths[field.datatype]
+                }
+                minLength={field.settings?.minCharLimit ?? 0}
+              />
+            </div>
+          );
+        })}
+      </DndProvider>
     </div>
   );
 });
