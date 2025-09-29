@@ -10,6 +10,9 @@
     "sourceMap": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "types": ["react"]
+    "types": ["react"],
+    "paths": {
+      "shell/*": ["./src/shell/*"]
+    }
   }
 }

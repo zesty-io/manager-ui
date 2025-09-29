@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import TopReq from "./TopReq";
 
-import { WithLoader } from "@zesty-io/core/WithLoader";
+import { WithLoader } from "shell/components/legacy/WithLoader";
 
 import { CopyButton } from "@zesty-io/material";
 
@@ -20,7 +20,7 @@ import CardHeader from "@mui/material/CardHeader";
 import CardContent from "@mui/material/CardContent";
 
 import { Pie, Bar } from "react-chartjs-2";
-import { Notice } from "@zesty-io/core";
+import { Notice } from "shell/components/legacy/Notice";
 
 import {
   useGetUsageQuery,

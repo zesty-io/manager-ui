@@ -30,9 +30,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import PersonSearchIcon from "@mui/icons-material/PersonSearch";
 
-import { Loader } from "@zesty-io/core/Loader";
-
-import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
+import { Loader } from "shell/components/legacy/Loader";
 
 import { searchItems } from "shell/store/content";
 import { notify } from "shell/store/notifications";

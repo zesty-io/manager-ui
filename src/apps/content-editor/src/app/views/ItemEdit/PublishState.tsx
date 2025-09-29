@@ -2,7 +2,7 @@ import React, { useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { DataGridPro } from "@mui/x-data-grid-pro";
 import { Box, Button, Chip } from "@mui/material";
-import { WithLoader } from "@zesty-io/core/WithLoader";
+import { WithLoader } from "shell/components/legacy/WithLoader";
 import { instanceApi } from "../../../../../../shell/services/instance";
 import { isValid, format } from "date-fns";
 

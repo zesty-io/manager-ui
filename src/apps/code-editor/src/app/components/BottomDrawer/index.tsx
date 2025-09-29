@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { Stack, Collapse, Paper, Typography, Box } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-import { WithLoader } from "@zesty-io/core/WithLoader";
+import { WithLoader } from "shell/components/legacy/WithLoader";
 
 import AuditTrail, { LogEntry } from "./AuditTrail";
 import FileStatus from "./FileStatus";

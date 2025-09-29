@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { Switch, useRouteMatch } from "react-router-dom";
 import { Grid, Typography, Box } from "@mui/material";
 
-import { WithLoader } from "@zesty-io/core/WithLoader";
+import { WithLoader } from "shell/components/legacy/WithLoader";
 
 import Workspace from "../../components/Workspace";
 
