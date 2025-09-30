@@ -14,10 +14,10 @@
 const path = require("path");
 const dotenv = require("dotenv");
 const os = require("os");
-const { readFileSync } = require("fs");
 const content = require("./seeds/content");
 
 module.exports = (on, config) => {
+  config.env.INSTANCE_ZUID = new URL(config.baseUrl).host.split(".")[0];
   const contentTasks = content(config);
 
   on("task", {
@@ -37,14 +37,6 @@ module.exports = (on, config) => {
     // source the user credentials from the ci environment config
     config.env.email = ciEnvConfig.TEST_USER_EMAIL;
     config.env.password = ciEnvConfig.TEST_USER_PASSWORD;
-  } else {
-    const jsonString = readFileSync(
-      path.join(__dirname, "../../cypress.env.json"),
-      "utf8"
-    );
-    const { email, password } = JSON.parse(jsonString);
-    config.env.email = email;
-    config.env.password = password;
   }
 
   return config;
