@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory, useParams } from "react-router";
-
+import { Link as RouterLink } from "react-router-dom";
 import { createMember } from "shell/store/releaseMembers";
 import { fetchVersions } from "shell/store/contentVersions";
 
@@ -9,7 +9,6 @@ import { Button, Select, MenuItem } from "@mui/material";
 import FastRewindIcon from "@mui/icons-material/FastRewind";
 
 import ContentSearch from "shell/components/LegacyContentSearch";
-import { AppLink } from "@zesty-io/core/AppLink";
 
 import { PublishAll } from "./components/PublishAll";
 import { DeleteRelease } from "./components/DeleteRelease";
@@ -37,11 +36,15 @@ export function Header({ plan, isContentSubpage }) {
 
   return (
     <header data-cy="ReleaseHeader" className={styles.Header}>
-      <AppLink to={isContentSubpage ? `/content/releases` : `/release`}>
-        <Button variant="contained" className={styles.BackBtn}>
-          <FastRewindIcon fontSize="small" />
-        </Button>
-      </AppLink>
+      <Button
+        component={RouterLink}
+        to={isContentSubpage ? `/content/releases` : `/release`}
+        variant="contained"
+        className={styles.BackBtn}
+      >
+        <FastRewindIcon fontSize="small" />
+      </Button>
+
       <PublishAll />
       <Select
         name="release"

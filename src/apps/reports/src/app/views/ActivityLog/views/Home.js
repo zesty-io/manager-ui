@@ -21,7 +21,7 @@ import {
 
 import { instanceApi } from "shell/services/instance";
 import { useParams } from "shell/hooks/useParams";
-import moment from "moment";
+import { format, subMonths } from "date-fns";
 import { accountsApi } from "shell/services/accounts";
 import { ActionsTimeline } from "../components/ActionsTimeline";
 import { filterByParams } from "utility/filterByParams";
@@ -104,8 +104,9 @@ export const Home = () => {
 
   // Sets date parameters to 3 months
   const setDefaultDateParams = () => {
-    setParams(moment().add(-3, "months").format("YYYY-MM-DD"), "from");
-    setParams(moment().format("YYYY-MM-DD"), "to");
+    const today = new Date();
+    setParams(format(subMonths(today, 3), "yyyy-MM-dd"), "from");
+    setParams(format(today, "yyyy-MM-dd"), "to");
   };
 
   const filteredActions = useMemo(

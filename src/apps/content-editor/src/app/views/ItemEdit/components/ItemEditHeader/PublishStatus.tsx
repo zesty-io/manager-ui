@@ -1,7 +1,6 @@
 import { Stack, Typography, Tooltip } from "@mui/material";
 import { CheckCircleRounded, ScheduleRounded } from "@mui/icons-material";
 import { useParams } from "react-router";
-import moment from "moment";
 
 import { useGetItemPublishingsQuery } from "../../../../../../../../shell/services/instance";
 import { formatDate } from "../../../../../../../../utility/formatDate";
@@ -28,7 +27,7 @@ export const PublishStatus = ({ currentVersion }: PublishStatusProps) => {
   const scheduledPublishing = itemPublishings?.find(
     (item) =>
       !item._active &&
-      moment.utc(item.publishAt).isAfter(moment.utc()) &&
+      new Date(item.publishAt).getTime() > Date.now() &&
       !item.unpublishAt
   );
 

@@ -19,7 +19,6 @@ import FolderIcon from "@mui/icons-material/Folder";
 import fileBroken from "../../../../../../public/images/fileBroken.jpg";
 import { useHistory, useLocation } from "react-router-dom";
 import { numberFormatter } from "../../../../../utility/numberFormatter";
-import moment from "moment";
 import {
   fileExtension,
   fileTypeToColor,
@@ -51,6 +50,7 @@ import defaultImg from "../../../../../../public/images/defaultImg.png";
 import jsIcon from "../../../../../../public/images/jsIcon.svg";
 import htmlIcon from "../../../../../../public/images/htmlIcon.svg";
 import cssIcon from "../../../../../../public/images/cssIcon.svg";
+import { format, isValid } from "date-fns";
 
 interface Props {
   files?: File[];
@@ -723,11 +723,11 @@ export const MediaList: FC<Props> = ({ files, groups }) => {
       width: 200,
       sortable: false,
       renderCell: (params: any) => {
+        const d = new Date(params.row.created_at);
         return (
           <Box display="flex" height="100%" alignItems="center">
             <Typography variant="body2">
-              {params.row.created_at &&
-                moment(params.row.created_at).format("MMMM Do YYYY")}
+              {isValid(d) && <>{format(d, "MMMM do yyyy")}</>}
             </Typography>
           </Box>
         );

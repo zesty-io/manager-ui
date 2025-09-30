@@ -123,7 +123,6 @@ export function getUserLogs() {
     });
 
     // FIXME The API is not return all the logs within the specified time frame
-    // const now = moment();
     // const end = now.format("YYYY-MM-DD");
     // const start = now.subtract(30, "days").format("YYYY-MM-DD");
     // `start_date=${start}&end_date=${end}`

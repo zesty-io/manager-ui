@@ -21,9 +21,9 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import CloseIcon from "@mui/icons-material/Close";
-import moment from "moment";
 import { upperFirst } from "lodash";
 import { useHistory, useLocation } from "react-router";
+import { format, parse } from "date-fns";
 
 import { useGetUsersQuery } from "../../../services/accounts";
 import {
@@ -209,7 +209,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
           type,
           value:
             typeof value === "object"
-              ? moment(value as Date).format("YYYY-MM-DD")
+              ? format(value as Date, "yyyy-MM-dd")
               : value,
         },
       });
@@ -243,8 +243,8 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
 
       return (
         <MenuItem value="custom_date_value" selected>
-          {moment(dates.from).format("MMM D, YYYY")} to{" "}
-          {moment(dates.to).format("MMM D, YYYY")}
+          {format(parse(dates.from, "yyyy-MM-dd", new Date()), "MMM d, yyyy")}{" "}
+          to {format(parse(dates.to, "yyyy-MM-dd", new Date()), "MMM d, yyyy")}
         </MenuItem>
       );
     }
@@ -253,7 +253,10 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
     return (
       <MenuItem value="custom_date_value" selected>
         {upperFirst(searchData.date?.type)}{" "}
-        {moment(searchData.date?.value as string).format("MMM D, YYYY")}
+        {format(
+          parse(searchData.date?.value as string, "yyyy-MM-dd", new Date()),
+          "MMM d, yyyy"
+        )}
       </MenuItem>
     );
   };

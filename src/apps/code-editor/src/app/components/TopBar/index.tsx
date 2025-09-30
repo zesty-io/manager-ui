@@ -13,7 +13,7 @@ import { Box, Typography, Link } from "@mui/material";
 import WidgetsRoundedIcon from "@mui/icons-material/WidgetsRounded";
 import FlashOnRoundedIcon from "@mui/icons-material/FlashOnRounded";
 import RestoreOutlinedIcon from "@mui/icons-material/RestoreOutlined";
-import { Notice } from "@zesty-io/core/Notice";
+import { Notice } from "shell/components/legacy/Notice";
 import { DifferActions } from "./DifferActions";
 import { EditorActions } from "./EditorActions";
 import ElectricBoltOutlinedIcon from "@mui/icons-material/ElectricBoltOutlined";

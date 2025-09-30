@@ -1,13 +1,5 @@
-import moment from "moment";
 import { API_ENDPOINTS } from "../../support/api";
 const TIMEOUT = { timeout: 15_000 };
-const yesterdayTimestamp = moment()
-  .hour(0)
-  .minute(0)
-  .second(0)
-  .millisecond(0)
-  .subtract(1, "day")
-  .format("x");
 
 const SUFFIX = "---TEST";
 

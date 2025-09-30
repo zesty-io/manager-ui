@@ -2,7 +2,6 @@ import { Stack, IconButton, Typography, Menu, MenuItem } from "@mui/material";
 import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
-import moment from "moment";
 import { theme } from "@zesty-io/material";
 
 import { ContentModel } from "../../../../../../shell/services/types";
@@ -85,7 +84,9 @@ export const ModelList = ({ title, models, type, app = "schema" }: Props) => {
           return b.label.localeCompare(a.label);
 
         case "modified":
-          return moment(b.updatedAt).diff(moment(a.updatedAt));
+          const da = new Date(a.updatedAt ?? 0);
+          const db = new Date(b.updatedAt ?? 0);
+          return db.getTime() - da.getTime();
       }
     });
   }, [sort, mappedModels]);

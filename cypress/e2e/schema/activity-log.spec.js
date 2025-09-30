@@ -1,6 +1,6 @@
-import moment from "moment";
+import { format } from "date-fns";
 
-const now = moment().format("YYYY-MM-DD");
+const now = format(new Date(), "yyyy-MM-dd"); // local date
 
 describe("Schema: Activity Log Tab", () => {
   it("Sets default date url params", () => {

@@ -4,7 +4,7 @@ import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes, faPlus } from "@fortawesome/free-solid-svg-icons";
 
-import { Button } from "@zesty-io/core/Button";
+import { Button } from "shell/components/legacy/Button";
 
 import styles from "./FieldTypeImage.less";
 export class FieldTypeImage extends React.PureComponent {

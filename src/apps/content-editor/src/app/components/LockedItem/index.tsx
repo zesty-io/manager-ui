@@ -9,7 +9,7 @@ import {
   Box,
 } from "@mui/material";
 import { LockOpenRounded, LockRounded } from "@mui/icons-material";
-import moment from "moment";
+import { format, fromUnixTime, isValid } from "date-fns";
 
 type LockedItemProps = {
   itemName: string;
@@ -27,6 +27,8 @@ export const LockedItem = ({
   onCancel,
   onUnlock,
 }: LockedItemProps) => {
+  const d = fromUnixTime(Number(viewTimestamp));
+  const viewedAt = isValid(d) ? format(d, "MMMM do, yyyy h:mm a") : "";
   return (
     <Dialog
       open
@@ -61,11 +63,7 @@ export const LockedItem = ({
             <Typography variant="body2" color="text.secondary">
               {currentViewerFirstName} {currentViewerLastName} is viewing this
               item since&nbsp;
-              {!!viewTimestamp &&
-                moment
-                  .unix(Number(viewTimestamp))
-                  .format("MMMM D, YYYY h:mm a")}
-              . Unlock this item to ignore this warning and possibly
+              {viewedAt}. Unlock this item to ignore this warning and possibly
               overwrite&nbsp;
               {currentViewerFirstName}'s changes.
             </Typography>

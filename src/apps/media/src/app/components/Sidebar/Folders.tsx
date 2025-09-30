@@ -30,7 +30,6 @@ import { useLocalStorage } from "react-use";
 import { useSelector } from "react-redux";
 import { MouseEvent, useEffect, useMemo, useState } from "react";
 import { useHistory, useLocation } from "react-router";
-import moment from "moment-timezone";
 
 import {
   mediaManagerApi,
@@ -172,7 +171,7 @@ export const Folders = ({ lockedToGroupId }: Props) => {
     } else {
       return rawItems
         .sort((a, b) => a.label.localeCompare(b.label))
-        .sort((a, b) => moment(b.createdAt).diff(a.createdAt));
+        .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt));
     }
   };
 

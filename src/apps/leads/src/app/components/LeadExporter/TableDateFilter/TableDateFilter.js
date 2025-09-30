@@ -1,8 +1,7 @@
-import * as moment from "moment";
 import { Component } from "react";
 import { connect } from "react-redux";
-
 import { FormControl, FormLabel, Select, MenuItem } from "@mui/material";
+import { format, subDays, parseISO, isValid } from "date-fns";
 
 import { DATE_PRESETS } from "./TableDateFilter.model";
 import {
@@ -22,10 +21,20 @@ const datePresets = [
   { value: DATE_PRESETS.CUSTOM, text: "Custom" },
 ];
 
+// Normalize any incoming value to a Date for the picker
+function toPickerDate(v) {
+  if (!v) return null;
+  if (v instanceof Date) return isValid(v) ? v : null;
+
+  const iso = parseISO(String(v));
+  if (isValid(iso)) return iso;
+
+  const d = new Date(String(v));
+  return isValid(d) ? d : null;
+}
+
 export default connect((state) => {
-  return {
-    filter: state.filter,
-  };
+  return { filter: state.filter };
 })(
   class TableDateFilter extends Component {
     state = {
@@ -34,83 +43,79 @@ export default connect((state) => {
       datePickerIsVisible: false,
     };
 
+    // "YYYY-MM-DD"
+    fmtYMD = (d) => format(d, "yyyy-MM-dd");
+
     /**
      * Sets the Leads "End Date" filter
-     * Dispatches the Set Filter End Date action
-     * @param {event} The date input's On Change event
      */
     setEndDate = (value) => {
-      this.props.dispatch(setFilterEndDate(moment(value).format("YYYY-MM-DD")));
+      this.props.dispatch(setFilterEndDate(value ? this.fmtYMD(value) : ""));
     };
 
     /**
      * Sets the Leads "Start Date" filter
-     * Dispatches the Set Filter Start Date action
-     * @param {event} The date input's On Change event
      */
     setStartDate = (value) => {
-      this.props.dispatch(
-        setFilterStartDate(moment(value).format("YYYY-MM-DD"))
-      );
+      this.props.dispatch(setFilterStartDate(value ? this.fmtYMD(value) : ""));
     };
 
     /**
      * Triggered when the date range is changed
-     *
-     * Emits the SetFilterEndDate and SetFilterStartDate for each case
      */
     onDateRangeChange = (value) => {
       // Hide the datepicker by default
-      this.setState({
-        datePickerIsVisible: false,
-      });
+      this.setState({ datePickerIsVisible: false });
+
+      const today = new Date();
+
       switch (value) {
-        case DATE_PRESETS.THIRTY:
+        case DATE_PRESETS.THIRTY: {
           this.props.dispatch(setFilterDateRange(DATE_PRESETS.THIRTY));
-          this.props.dispatch(setFilterEndDate(moment().format("YYYY-MM-DD")));
+          this.props.dispatch(setFilterEndDate(this.fmtYMD(today)));
           this.props.dispatch(
-            setFilterStartDate(
-              moment().subtract(30, "days").format("YYYY-MM-DD")
-            )
+            setFilterStartDate(this.fmtYMD(subDays(today, 30)))
           );
           break;
-        case DATE_PRESETS.SIXTY:
+        }
+        case DATE_PRESETS.SIXTY: {
           this.props.dispatch(setFilterDateRange(DATE_PRESETS.SIXTY));
-          this.props.dispatch(setFilterEndDate(moment().format("YYYY-MM-DD")));
+          this.props.dispatch(setFilterEndDate(this.fmtYMD(today)));
           this.props.dispatch(
-            setFilterStartDate(
-              moment().subtract(60, "days").format("YYYY-MM-DD")
-            )
+            setFilterStartDate(this.fmtYMD(subDays(today, 60)))
           );
           break;
-        case DATE_PRESETS.NINETY:
+        }
+        case DATE_PRESETS.NINETY: {
           this.props.dispatch(setFilterDateRange(DATE_PRESETS.NINETY));
-          this.props.dispatch(setFilterEndDate(moment().format("YYYY-MM-DD")));
+          this.props.dispatch(setFilterEndDate(this.fmtYMD(today)));
           this.props.dispatch(
-            setFilterStartDate(
-              moment().subtract(90, "days").format("YYYY-MM-DD")
-            )
+            setFilterStartDate(this.fmtYMD(subDays(today, 90)))
           );
           break;
-        case DATE_PRESETS.ALL:
+        }
+        case DATE_PRESETS.ALL: {
           this.props.dispatch(setFilterDateRange(DATE_PRESETS.ALL));
           this.props.dispatch(setFilterEndDate(""));
           this.props.dispatch(setFilterStartDate(""));
           break;
-        case DATE_PRESETS.CUSTOM:
+        }
+        case DATE_PRESETS.CUSTOM: {
           this.props.dispatch(setFilterDateRange(DATE_PRESETS.CUSTOM));
-          this.props.dispatch(setFilterEndDate(new Date()));
-          this.props.dispatch(setFilterStartDate(new Date()));
-          this.setState({
-            datePickerIsVisible: true,
-          });
+          // initialize both to today; user can edit via pickers
+          this.props.dispatch(setFilterEndDate(this.fmtYMD(today)));
+          this.props.dispatch(setFilterStartDate(this.fmtYMD(today)));
+          this.setState({ datePickerIsVisible: true });
           break;
+        }
         default:
           break;
       }
     };
 
     render() {
+      const { filter } = this.props;
+
       return (
         <div>
           <FormControl fullWidth size="small">
@@ -128,6 +133,7 @@ export default connect((state) => {
               ))}
             </Select>
           </FormControl>
+
           <div
             className={styles.customDateWrapper}
             style={this.state.datePickerIsVisible ? {} : { display: "none" }}
@@ -136,23 +142,16 @@ export default connect((state) => {
               <FieldTypeDate
                 name="start-date"
                 label="Start Date"
-                value={
-                  this.props.filter.startDate
-                    ? moment(this.props.filter.startDate).toDate()
-                    : null
-                }
+                value={toPickerDate(filter.startDate)}
                 onChange={this.setStartDate}
               />
             </div>
+
             <div className={styles.customDate}>
               <FieldTypeDate
                 name="end-date"
                 label="End Date"
-                value={
-                  this.props.filter.endDate
-                    ? moment(this.props.filter.endDate).toDate()
-                    : null
-                }
+                value={toPickerDate(filter.endDate)}
                 onChange={this.setEndDate}
               />
             </div>

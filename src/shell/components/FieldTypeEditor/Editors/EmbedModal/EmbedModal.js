@@ -1,16 +1,16 @@
 import React from "react";
 
-import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
-import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
-import { Button } from "@zesty-io/core/Button";
-import { Url } from "@zesty-io/core/Url";
+import {
+  Modal,
+  ModalContent,
+  ModalFooter,
+} from "shell/components/legacy/Modal";
+import { Button, TextField, InputLabel } from "@mui/material";
 
 import { schema } from "../react-prosemirror-schema";
 
 import styles from "./EmbedModal.less";
 export class EmbedModal extends React.Component {
-  embed = React.createRef();
-
   state = {
     id: "",
   };
@@ -25,7 +25,6 @@ export class EmbedModal extends React.Component {
   }
 
   componentDidMount() {
-    this.embed.current.querySelector("input").focus();
     window.addEventListener("keypress", this.onEnter);
   }
 
@@ -65,24 +64,16 @@ export class EmbedModal extends React.Component {
         }}
       >
         <ModalContent>
-          {this.props.options.service === "Twitframe" && (
-            <h1>
-              <i className="fa fa-exclamation-triangle" aria-hidden="true" />
-              &nbsp;
-              <Url href="https://twitframe.com/" target="_blank">
-                Twitframe
-              </Url>{" "}
-              embeds require the full URL for the tweet you would like to embed.
-            </h1>
-          )}
-          <FieldTypeText
-            innerRef={this.embed}
-            label={`Enter unique ${this.props.options.service} ID`}
+          <InputLabel sx={{ my: 0.5 }}>
+            Enter unique {this.props.options.service} ID
+          </InputLabel>
+          <TextField
+            required
+            autoFocus
+            fullWidth
             name="embed"
             placeholder="e.g. puXYPrrsrA"
-            required={true}
-            autoFocus={true}
-            onChange={(id) => this.setState({ id })}
+            onChange={(evt) => this.setState({ id: evt.target.value })}
           />
         </ModalContent>
         <ModalFooter>
@@ -90,8 +81,9 @@ export class EmbedModal extends React.Component {
             type="save"
             disabled={this.state.id.length === 0}
             onClick={this.onSave}
+            variant="contained"
+            color="success"
           >
-            <i className="fa fa-plus" aria-hidden="true" />
             Insert Embed
           </Button>
         </ModalFooter>

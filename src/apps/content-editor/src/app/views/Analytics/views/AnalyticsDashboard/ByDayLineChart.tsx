@@ -10,10 +10,16 @@ import {
   ButtonGroup,
   Skeleton,
 } from "@mui/material";
-import { isEqual, last } from "lodash";
 import { ChartEvent } from "chart.js";
-import moment, { Moment } from "moment-timezone";
-import "chartjs-adapter-moment";
+import {
+  addDays,
+  differenceInCalendarDays,
+  format as fmt,
+  getYear,
+} from "date-fns";
+
+import "chartjs-adapter-date-fns";
+
 import lineChartSkeleton2 from "../../../../../../../../../public/images/lineChartSkeleton2.svg";
 import {
   calculatePercentageDifference,
@@ -21,27 +27,18 @@ import {
   padArray,
 } from "../../utils";
 
-type Params = {
-  modelZUID: string;
-  itemZUID: string;
-};
-
 type Props = {
-  startDate: Moment;
-  endDate: Moment;
+  startDate: Date;
+  endDate: Date;
   dateRange0Label: string;
   dateRange1Label: string;
   data: any;
   loading?: boolean;
 };
 
-function getDatesArray(start: Moment, end: Moment) {
-  const diff = end.diff(start, "days");
-  const datesArray = Array.from({ length: diff + 1 }, (_, index) => {
-    return start.clone().add(index, "days").format("YYYY-MM-DD");
-  });
-
-  return datesArray;
+function getDatesArray(start: Date, end: Date) {
+  const diff = differenceInCalendarDays(end, start);
+  return Array.from({ length: diff + 1 }, (_, i) => addDays(start, i));
 }
 
 export const ByDayLineChart = ({
@@ -52,8 +49,8 @@ export const ByDayLineChart = ({
   data,
   loading = true,
 }: Props) => {
-  const chartRef = useRef(null);
-  const [tooltipModel, setTooltipModel] = useState(null);
+  const chartRef = useRef<any>(null);
+  const [tooltipModel, setTooltipModel] = useState<any>(null);
   const [isTooltipEntered, setIsTooltipEntered] = useState(false);
 
   const handleHover = (event: ChartEvent, chartElement: Array<any>) => {
@@ -63,27 +60,28 @@ export const ByDayLineChart = ({
     }
 
     const chart = chartRef.current;
-    const activeElement = chart.getElementsAtEventForMode(
-      event.native,
+    const activeElement = chart?.getElementsAtEventForMode(
+      event.native!,
       "nearest",
       { intersect: true },
       false
-    )[0];
+    )?.[0];
+
     const datasetIndex = activeElement?.datasetIndex;
     const index = activeElement?.index;
-    if (
-      typeof datasetIndex === "number" &&
-      typeof index === "number"
-      // datasetIndex === 0 &&
-      // itemPublishesByDayArray[index]?.version
-    ) {
+
+    if (typeof datasetIndex === "number" && typeof index === "number") {
       const model = {
         datasetIndex,
         dataIndex: index,
-        x: event.x - 180,
-        y: event.y - 100,
+        x: (event as any).x - 180,
+        y: (event as any).y - 100,
       };
-      if (!isEqual(tooltipModel, model)) {
+      if (
+        !tooltipModel ||
+        model.dataIndex !== tooltipModel.dataIndex ||
+        model.datasetIndex !== tooltipModel.datasetIndex
+      ) {
         setTooltipModel(model);
         setIsTooltipEntered(true);
       }
@@ -95,34 +93,26 @@ export const ByDayLineChart = ({
     [startDate, endDate]
   );
 
+  const daysSpan = differenceInCalendarDays(endDate, startDate) + 1;
+
   const lastData = useMemo(() => {
     const result = findValuesForDimensions(data?.rows, ["date_range_0"]);
-    if (result.length === 1 || result.length === 2) {
-      return [result.pop()];
-    }
-
-    return padArray(result, (endDate.diff(startDate, "days") + 1) * 2)?.slice(
-      endDate.diff(startDate, "days") + 1
-    );
-  }, [data]);
+    if (result.length === 1 || result.length === 2)
+      return [result[result.length - 1]];
+    return padArray(result, daysSpan * 2).slice(daysSpan);
+  }, [data, daysSpan]);
 
   const priorData = useMemo(() => {
     const result = findValuesForDimensions(data?.rows, ["date_range_1"]);
-    if (result?.length === 1 || result?.length === 2) {
-      return [result[0]];
-    }
-
-    return padArray(result, (endDate.diff(startDate, "days") + 1) * 2)?.slice(
-      0,
-      endDate.diff(startDate, "days") + 1
-    );
-  }, [data]);
+    if (result.length === 1 || result.length === 2) return [result[0]];
+    return padArray(result, daysSpan * 2).slice(0, daysSpan);
+  }, [data, daysSpan]);
 
   const spansMoreThanOneYear = useMemo(() => {
-    let firstDate = moment(dateChartLabels[0]);
-    let lastDate = moment(dateChartLabels[dateChartLabels.length - 1]);
-
-    return firstDate.year() !== lastDate.year();
+    if (!dateChartLabels.length) return false;
+    const first = dateChartLabels[0];
+    const last = dateChartLabels[dateChartLabels.length - 1];
+    return getYear(first) !== getYear(last);
   }, [dateChartLabels]);
 
   if (loading) {
@@ -138,7 +128,7 @@ export const ByDayLineChart = ({
       <Line
         ref={chartRef}
         data={{
-          labels: dateChartLabels,
+          labels: dateChartLabels, // Dates, not strings
           datasets: [
             {
               label: dateRange0Label,
@@ -147,9 +137,7 @@ export const ByDayLineChart = ({
               backgroundColor: theme.palette.info.main,
               borderColor: theme.palette.info.main,
               pointRadius: lastData.length <= 2 ? 4 : 0,
-              datalabels: {
-                display: false,
-              },
+              datalabels: { display: false },
               borderWidth: 2,
             },
             {
@@ -159,25 +147,19 @@ export const ByDayLineChart = ({
               backgroundColor: theme.palette.grey[300],
               borderColor: theme.palette.grey[300],
               pointRadius: priorData.length <= 2 ? 4 : 0,
-              datalabels: {
-                display: false,
-              },
+              datalabels: { display: false },
               borderWidth: 2,
             },
           ],
         }}
         plugins={[ChartDataLabels]}
         options={{
-          layout: {
-            padding: 0,
-          },
+          layout: { padding: 0 },
           responsive: true,
           maintainAspectRatio: false,
           onHover: handleHover,
           plugins: {
-            tooltip: {
-              enabled: false,
-            },
+            tooltip: { enabled: false },
             legend: {
               display: true,
               position: "top",
@@ -186,19 +168,13 @@ export const ByDayLineChart = ({
                 usePointStyle: true,
                 pointStyle: "circle",
                 boxWidth: 4.5,
-                font: {
-                  family: "Mulish",
-                  size: 12,
-                },
+                font: { family: "Mulish", size: 12 },
                 color: theme.palette.text.primary,
               },
             },
           },
           scales: {
-            y: {
-              display: false,
-              beginAtZero: true,
-            },
+            y: { display: false, beginAtZero: true },
             x: {
               grid: {
                 drawOnChartArea: false,
@@ -207,19 +183,16 @@ export const ByDayLineChart = ({
               },
               type: "time",
               time: {
-                parser: "YYYY-MM-DD",
+                // no parser needed when labels are Date objects
                 unit: "day",
                 displayFormats: {
-                  day: spansMoreThanOneYear ? "MMM D YYYY" : "MMM D",
+                  day: spansMoreThanOneYear ? "MMM d yyyy" : "MMM d",
                 },
               },
               ticks: {
                 padding: 0,
                 color: theme.palette.text.disabled,
-                font: {
-                  size: 12,
-                  family: "Mulish",
-                },
+                font: { size: 12, family: "Mulish" },
                 maxTicksLimit: 5,
                 maxRotation: 0,
                 minRotation: 0,
@@ -229,6 +202,7 @@ export const ByDayLineChart = ({
           },
         }}
       />
+
       <Paper
         sx={{
           display: tooltipModel ? "block" : "none",
@@ -248,14 +222,15 @@ export const ByDayLineChart = ({
             Sessions
           </Typography>
           <Typography variant="body1" color="text.secondary" sx={{ mt: 0.5 }}>
-            {moment(startDate)
-              .add(tooltipModel?.dataIndex, "days")
-              .format("ddd D MMM")}{" "}
+            {fmt(addDays(startDate, tooltipModel?.dataIndex ?? 0), "eee d MMM")}{" "}
             vs{" "}
-            {moment(startDate)
-              .subtract(endDate.diff(startDate, "days") + 1, "days")
-              .add(tooltipModel?.dataIndex, "days")
-              .format("ddd D MMM")}
+            {fmt(
+              addDays(
+                addDays(startDate, -daysSpan),
+                tooltipModel?.dataIndex ?? 0
+              ),
+              "eee d MMM"
+            )}
           </Typography>
           <Typography variant="h2" fontWeight={600}>
             {lastData?.[tooltipModel?.dataIndex]?.toLocaleString()}
@@ -266,13 +241,13 @@ export const ByDayLineChart = ({
             fontWeight={600}
             sx={{ mt: 1 }}
           >
-            {priorData?.[tooltipModel?.dataIndex]?.toLocaleString() + " "}
+            {priorData?.[tooltipModel?.dataIndex]?.toLocaleString()}{" "}
             <Typography
               variant="body3"
               color={
                 calculatePercentageDifference(
-                  +priorData?.[tooltipModel?.dataIndex],
-                  +lastData?.[tooltipModel?.dataIndex]
+                  +(priorData?.[tooltipModel?.dataIndex] ?? 0),
+                  +(lastData?.[tooltipModel?.dataIndex] ?? 0)
                 ).startsWith("-")
                   ? "error.main"
                   : "success.main"
@@ -280,8 +255,8 @@ export const ByDayLineChart = ({
               fontWeight={600}
             >
               {calculatePercentageDifference(
-                +priorData?.[tooltipModel?.dataIndex],
-                +lastData?.[tooltipModel?.dataIndex]
+                +(priorData?.[tooltipModel?.dataIndex] ?? 0),
+                +(lastData?.[tooltipModel?.dataIndex] ?? 0)
               )}
             </Typography>
           </Typography>
