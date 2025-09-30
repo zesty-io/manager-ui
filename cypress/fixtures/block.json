@@ -1,0 +1,169 @@
+{
+  "model": {
+    "label": "[E2E]:Block@{{commitId}}-{{timeStamp}}",
+    "metaTitle": "[E2E]:Block@{{commitId}}-{{timeStamp}}",
+    "name": "_e2e__block_{{commitId}}-{{timeStamp}}",
+    "type": "block",
+    "listed": true
+  },
+  "fields": [
+    {
+      "contentModelZUID": "{{model.ZUID}}",
+      "name": "text",
+      "label": "Text",
+      "description": "",
+      "datatype": "text",
+      "sort": 1,
+      "required": false,
+      "settings": {
+        "defaultValue": null,
+        "list": true
+      },
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null
+    },
+    {
+      "contentModelZUID": "{{model.ZUID}}",
+      "datatype": "textarea",
+      "name": "textarea",
+      "label": "textarea",
+      "sort": 2,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": true,
+        "options": {}
+      }
+    },
+    {
+      "contentModelZUID": "{{model.ZUID}}",
+      "name": "link",
+      "label": "Link",
+      "description": "",
+      "datatype": "link",
+      "sort": 3,
+      "required": false,
+      "settings": {
+        "defaultValue": null,
+        "list": true
+      },
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null
+    },
+    {
+      "contentModelZUID": "{{model.ZUID}}",
+      "name": "markdown",
+      "label": "Markdown",
+      "description": "",
+      "datatype": "markdown",
+      "sort": 4,
+      "required": false,
+      "settings": {
+        "defaultValue": null,
+        "list": true
+      },
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null
+    },
+    {
+      "contentModelZUID": "{{model.ZUID}}",
+      "name": "images",
+      "label": "Images",
+      "description": "",
+      "datatype": "images",
+      "sort": 4,
+      "required": false,
+      "settings": {
+        "defaultValue": null,
+        "list": true,
+        "limit": 5
+      },
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null
+    },
+    {
+      "contentModelZUID": "{{model.ZUID}}",
+      "name": "og_image",
+      "label": "Meta Image",
+      "description": "This field allows you to set an open graph image via the SEO tab. An Open Graph (OG) image is an image that appears on a social media post when a web page is shared.",
+      "datatype": "images",
+      "sort": 9999,
+      "required": false,
+      "settings": {
+        "defaultValue": null,
+        "list": false
+      },
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null
+    }
+  ],
+  "items": [
+    {
+      "meta": {
+        "contentModelZUID": "{{model.ZUID}}"
+      },
+      "web": {
+        "metaTitle": "0001",
+        "canonicalTagMode": 1
+      },
+      "data:": {
+        "text": "Test Auditing - Text",
+        "textarea": "Test Auditing - Textarea",
+        "link": "https://media-api.zesty.org/",
+        "markdown": "Test Auditing - Markdown",
+        "images": "{{baseUrl}}images/defaultImg.png"
+      }
+    },
+    {
+      "meta": {
+        "contentModelZUID": "{{model.ZUID}}"
+      },
+      "web": {
+        "canonicalTagMode": 1,
+        "metaTitle": "0002"
+      },
+      "data": {
+        "images": "{{baseUrl}}images/blocksOnboarding3.png",
+        "link": "https://www.zesty.io/",
+        "markdown": "All Field Types - Markdown",
+        "text": "All Field Types - Text",
+        "textarea": "All Field Types - Textarea"
+      }
+    },
+    {
+      "meta": {
+        "contentModelZUID": "{{model.ZUID}}"
+      },
+      "web": {
+        "canonicalTagMode": 1,
+        "metaTitle": "0003"
+      },
+      "data": {
+        "images": "{{baseUrl}}images/zestyLogo.svg",
+        "link": "https://instances-api.zesty.org/",
+        "markdown": "Cypress E2E - Markdown",
+        "og_image": "https://storage.googleapis.com/zesty-dev-instance-screenshots/375tcfqp-dev.preview.dev.zesty.io!-!block!block_model.html!variant=7-8099b6a6bc-gw5ldz&version=3&_bypassError=true&preview=global_1280_720.png",
+        "text": "Cypress E2E - Text",
+        "textarea": "Cypress E2E - Textarea"
+      }
+    },
+    {
+      "meta": {
+        "contentModelZUID": "{{model.ZUID}}"
+      },
+      "web": {
+        "canonicalTagMode": 1,
+        "metaTitle": "0004"
+      },
+      "data": {
+        "images": "{{baseUrl}}images/defaultImg.png",
+        "link": "https://accounts-api.zesty.org/",
+        "markdown": "New Model - Markdown",
+        "og_image": "https://storage.googleapis.com/zesty-dev-instance-screenshots/375tcfqp-dev.preview.dev.zesty.io!-!block!block_model.html!variant=7-baebe39995-g8lq7h&version=3&_bypassError=true&preview=global_1280_720.png",
+        "text": "New Model - Text",
+        "textarea": "New Model - Textarea"
+      }
+    }
+  ]
+}
