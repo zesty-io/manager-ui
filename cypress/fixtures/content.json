@@ -1,745 +1,377 @@
 {
-  "content": {
-    "model": {
-      "label": "[E2E]:Content@{{commitId}}-{{timeStamp}}",
-      "metaTitle": "[E2E]:Content@{{commitId}}-{{timeStamp}}",
-      "type": "pageset",
-      "name": "_e2e__content_{{commitId}}_{{timeStamp}}",
-      "listed": true
-    },
-    "fields": [
-      {
-        "contentModelZUID": "",
-        "datatype": "text",
-        "name": "text",
-        "label": "text",
-        "sort": 1,
-        "required": false,
-        "relatedModelZUID": null,
-        "relatedFieldZUID": null,
-        "settings": {
-          "list": true,
-          "options": {},
-          "limit": "5"
-        }
-      },
-      {
-        "contentModelZUID": "",
-        "datatype": "textarea",
-        "name": "textarea",
-        "label": "textarea",
-        "sort": 2,
-        "required": false,
-        "relatedModelZUID": null,
-        "relatedFieldZUID": null,
-        "settings": {
-          "list": true,
-          "options": {}
-        }
-      },
-      {
-        "contentModelZUID": "",
-        "datatype": "wysiwyg_basic",
-        "name": "wysiwyg_basic",
-        "label": "wysiwyg basic",
-        "sort": 3,
-        "required": false,
-        "relatedModelZUID": null,
-        "relatedFieldZUID": null,
-        "settings": {
-          "list": true,
-          "options": {}
-        }
-      },
-      {
-        "contentModelZUID": "",
-        "datatype": "wysiwyg_advanced",
-        "name": "wysiwyg_advanced",
-        "label": "wysiwyg advanced",
-        "sort": 4,
-        "required": false,
-        "relatedModelZUID": null,
-        "relatedFieldZUID": null,
-        "settings": {
-          "list": true,
-          "options": {}
-        }
-      },
-      {
-        "contentModelZUID": "",
-        "datatype": "date",
-        "name": "date",
-        "label": "date",
-        "sort": 5,
-        "required": false,
-        "relatedModelZUID": null,
-        "relatedFieldZUID": null,
-        "settings": {
-          "list": true,
-          "options": {}
-        }
-      },
-      {
-        "contentModelZUID": "",
-        "datatype": "images",
-        "name": "images",
-        "label": "images",
-        "sort": 6,
-        "required": false,
-        "relatedModelZUID": null,
-        "relatedFieldZUID": null,
-        "settings": {
-          "list": true,
-          "options": {},
-          "limit": "5"
-        }
-      },
-      {
-        "contentModelZUID": "",
-        "datatype": "article_writer",
-        "name": "article_writer",
-        "label": "article writer",
-        "sort": 7,
-        "required": false,
-        "relatedModelZUID": null,
-        "relatedFieldZUID": null,
-        "settings": {
-          "list": true,
-          "options": {}
-        }
-      },
-      {
-        "contentModelZUID": "",
-        "datatype": "dropdown",
-        "name": "dropdown",
-        "label": "dropdown",
-        "sort": 8,
-        "required": false,
-        "relatedModelZUID": null,
-        "relatedFieldZUID": null,
-        "settings": {
-          "list": true,
-          "options": {
-            "custom_option_one": "Custom Option One",
-            "custom_option_two": "Custom Option Two"
-          }
-        }
-      },
-      {
-        "contentModelZUID": "",
-        "datatype": "link",
-        "name": "link",
-        "label": "link",
-        "sort": 9,
-        "required": false,
-        "relatedModelZUID": null,
-        "relatedFieldZUID": null,
-        "settings": {
-          "list": true,
-          "options": {}
-        }
-      },
-      {
-        "contentModelZUID": "",
-        "datatype": "internal_link",
-        "name": "internal_link",
-        "label": "internal link",
-        "sort": 10,
-        "required": false,
-        "relatedModelZUID": null,
-        "relatedFieldZUID": null,
-        "settings": {
-          "list": true,
-          "options": {}
-        }
-      },
-      {
-        "contentModelZUID": "",
-        "datatype": "datetime",
-        "name": "datetime",
-        "label": "datetime",
-        "sort": 11,
-        "required": false,
-        "relatedModelZUID": null,
-        "relatedFieldZUID": null,
-        "settings": {
-          "list": true,
-          "options": {}
-        }
-      },
-      {
-        "contentModelZUID": "",
-        "datatype": "yes_no",
-        "name": "yes_no",
-        "label": "yes/no",
-        "sort": 12,
-        "required": false,
-        "relatedModelZUID": null,
-        "relatedFieldZUID": null,
-        "settings": {
-          "list": true,
-          "options": {
-            "0": "No",
-            "1": "Yes"
-          }
-        }
-      },
-      {
-        "contentModelZUID": "",
-        "datatype": "yes_no",
-        "name": "yes_no_with_custom_values",
-        "label": "YES / NO with Custom Values",
-        "sort": 12,
-        "required": false,
-        "relatedModelZUID": null,
-        "relatedFieldZUID": null,
-        "settings": {
-          "list": true,
-          "options": {
-            "0": "Custom Two",
-            "1": "Custom One"
-          }
-        }
-      },
-      {
-        "contentModelZUID": "",
-        "datatype": "fontawesome",
-        "name": "fontawesome",
-        "label": "fontawesome",
-        "sort": 14,
-        "required": false,
-        "relatedModelZUID": null,
-        "relatedFieldZUID": null,
-        "settings": {
-          "list": true,
-          "options": {}
-        }
-      },
-      {
-        "contentModelZUID": "",
-        "datatype": "number",
-        "name": "number",
-        "label": "number",
-        "sort": 15,
-        "required": false,
-        "relatedModelZUID": null,
-        "relatedFieldZUID": null,
-        "settings": {
-          "list": true,
-          "options": {}
-        }
-      },
-      {
-        "contentModelZUID": "",
-        "datatype": "currency",
-        "name": "currency",
-        "label": "currency",
-        "sort": 16,
-        "required": false,
-        "relatedModelZUID": null,
-        "relatedFieldZUID": null,
-        "settings": {
-          "list": true,
-          "options": {}
-        }
-      },
-      {
-        "contentModelZUID": "",
-        "datatype": "color",
-        "name": "color",
-        "label": "color",
-        "sort": 17,
-        "required": false,
-        "relatedModelZUID": null,
-        "relatedFieldZUID": null,
-        "settings": {
-          "list": true,
-          "options": {}
-        }
-      },
-      {
-        "contentModelZUID": "",
-        "datatype": "uuid",
-        "name": "uuid",
-        "label": "uuid",
-        "sort": 18,
-        "required": false,
-        "relatedModelZUID": null,
-        "relatedFieldZUID": null,
-        "settings": {
-          "list": true,
-          "options": {}
-        }
-      },
-      {
-        "contentModelZUID": "",
-        "datatype": "files",
-        "name": "files",
-        "label": "files",
-        "sort": 19,
-        "required": false,
-        "relatedModelZUID": null,
-        "relatedFieldZUID": null,
-        "settings": {
-          "list": true,
-          "options": {}
-        }
-      },
-      {
-        "contentModelZUID": "",
-        "datatype": "sort",
-        "name": "sort",
-        "label": "sort",
-        "sort": 20,
-        "required": false,
-        "relatedModelZUID": null,
-        "relatedFieldZUID": null,
-        "settings": {
-          "list": true,
-          "options": {}
-        }
-      },
-      {
-        "contentModelZUID": "",
-        "datatype": "markdown",
-        "name": "markdown",
-        "label": "markdown",
-        "sort": 21,
-        "required": false,
-        "relatedModelZUID": null,
-        "relatedFieldZUID": null,
-        "settings": {
-          "list": true,
-          "options": {}
-        }
-      },
-      {
-        "contentModelZUID": "",
-        "datatype": "one_to_one",
-        "name": "one_to_one",
-        "label": "one to one",
-        "sort": 22,
-        "required": false,
-        "relatedModelZUID": "{{context.model.ZUID}}",
-        "relatedFieldZUID": "{{context.fields[0].ZUID}}",
-        "settings": {
-          "list": true,
-          "options": {}
-        }
-      },
-      {
-        "contentModelZUID": "",
-        "datatype": "one_to_many",
-        "name": "one_to_many",
-        "label": "one to many",
-        "sort": 23,
-        "required": false,
-        "relatedModelZUID": "{{context.model.ZUID}}",
-        "relatedFieldZUID": "{{context.fields[0].ZUID}}",
-        "settings": {
-          "list": true,
-          "options": {}
-        }
-      },
-      {
-        "contentModelZUID": "",
-        "datatype": "block_selector",
-        "name": "block_selector",
-        "label": "block selector",
-        "sort": 24,
-        "required": false,
-        "settings": {
-          "list": true,
-          "options": {}
-        }
-      }
-    ],
-    "items": [
-      {
-        "meta": {
-          "sort": 0
-        },
-        "web": {
-          "metaLinkText": "{{model.label}}",
-          "metaTitle": "{{model.label}}",
-          "parentZUID": "0",
-          "pathPart": "{{model.label}}"
-        },
-        "data": {
-          "internal_link": "{{model.ZUID}}",
-          "text": "text",
-          "wysiwyg_basic": "wysiwyg_basic",
-          "yes_no": 0,
-          "link": "https://www.zesty.io/",
-          "images": "{{baseUrl}}images/defaultImg.png,{{baseUrl}}images/onboardingIcon.svg,{{baseUrl}}images/zestyLogo.svg,{{baseUrl}}images/blocksOnboarding3.png"
-        }
-      }
-    ]
+  "model": {
+    "label": "[E2E]:Content@{{commitId}}-{{timeStamp}}",
+    "metaTitle": "[E2E]:Content@{{commitId}}-{{timeStamp}}",
+    "type": "pageset",
+    "name": "_e2e__content_{{commitId}}_{{timeStamp}}",
+    "listed": true
   },
-  "block": {
-    "model": {
-      "label": "[E2E]:Block@{{commitId}}-{{timeStamp}}",
-      "metaTitle": "[E2E]:Block@{{commitId}}-{{timeStamp}}",
-      "name": "_e2e__block_{{commitId}}-{{timeStamp}}",
-      "type": "block",
-      "listed": true
+  "fields": [
+    {
+      "contentModelZUID": "",
+      "datatype": "text",
+      "name": "text",
+      "label": "text",
+      "sort": 1,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": true,
+        "options": {},
+        "limit": "5"
+      }
     },
-    "fields": [
-      {
-        "contentModelZUID": "{{model.ZUID}}",
-        "name": "text",
-        "label": "Text",
-        "description": "",
-        "datatype": "text",
-        "sort": 1,
-        "required": false,
-        "settings": {
-          "defaultValue": null,
-          "list": true
-        },
-        "relatedModelZUID": null,
-        "relatedFieldZUID": null
-      },
-      {
-        "contentModelZUID": "{{model.ZUID}}",
-        "datatype": "textarea",
-        "name": "textarea",
-        "label": "textarea",
-        "sort": 2,
-        "required": false,
-        "relatedModelZUID": null,
-        "relatedFieldZUID": null,
-        "settings": {
-          "list": true,
-          "options": {}
-        }
-      },
-      {
-        "contentModelZUID": "{{model.ZUID}}",
-        "name": "link",
-        "label": "Link",
-        "description": "",
-        "datatype": "link",
-        "sort": 3,
-        "required": false,
-        "settings": {
-          "defaultValue": null,
-          "list": true
-        },
-        "relatedModelZUID": null,
-        "relatedFieldZUID": null
-      },
-      {
-        "contentModelZUID": "{{model.ZUID}}",
-        "name": "markdown",
-        "label": "Markdown",
-        "description": "",
-        "datatype": "markdown",
-        "sort": 4,
-        "required": false,
-        "settings": {
-          "defaultValue": null,
-          "list": true
-        },
-        "relatedModelZUID": null,
-        "relatedFieldZUID": null
-      },
-      {
-        "contentModelZUID": "{{model.ZUID}}",
-        "name": "images",
-        "label": "Images",
-        "description": "",
-        "datatype": "images",
-        "sort": 4,
-        "required": false,
-        "settings": {
-          "defaultValue": null,
-          "list": true,
-          "limit": 5
-        },
-        "relatedModelZUID": null,
-        "relatedFieldZUID": null
-      },
-      {
-        "contentModelZUID": "{{model.ZUID}}",
-        "name": "og_image",
-        "label": "Meta Image",
-        "description": "This field allows you to set an open graph image via the SEO tab. An Open Graph (OG) image is an image that appears on a social media post when a web page is shared.",
-        "datatype": "images",
-        "sort": 9999,
-        "required": false,
-        "settings": {
-          "defaultValue": null,
-          "list": false
-        },
-        "relatedModelZUID": null,
-        "relatedFieldZUID": null
+    {
+      "contentModelZUID": "",
+      "datatype": "textarea",
+      "name": "textarea",
+      "label": "textarea",
+      "sort": 2,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": true,
+        "options": {}
       }
-    ],
-    "items": [
-      {
-        "meta": {
-          "contentModelZUID": "{{model.ZUID}}"
-        },
-        "web": {
-          "metaTitle": "0001",
-          "canonicalTagMode": 1
-        },
-        "data:": {
-          "text": "Test Auditing - Text",
-          "textarea": "Test Auditing - Textarea",
-          "link": "https://media-api.zesty.org/",
-          "markdown": "Test Auditing - Markdown",
-          "images": "{{baseUrl}}images/defaultImg.png"
-        }
-      },
-      {
-        "meta": {
-          "contentModelZUID": "{{model.ZUID}}"
-        },
-        "web": {
-          "canonicalTagMode": 1,
-          "metaTitle": "0002"
-        },
-        "data": {
-          "images": "{{baseUrl}}images/blocksOnboarding3.png",
-          "link": "https://www.zesty.io/",
-          "markdown": "All Field Types - Markdown",
-          "text": "All Field Types - Text",
-          "textarea": "All Field Types - Textarea"
-        }
-      },
-      {
-        "meta": {
-          "contentModelZUID": "{{model.ZUID}}"
-        },
-        "web": {
-          "canonicalTagMode": 1,
-          "metaTitle": "0003"
-        },
-        "data": {
-          "images": "{{baseUrl}}images/zestyLogo.svg",
-          "link": "https://instances-api.zesty.org/",
-          "markdown": "Cypress E2E - Markdown",
-          "og_image": "https://storage.googleapis.com/zesty-dev-instance-screenshots/375tcfqp-dev.preview.dev.zesty.io!-!block!block_model.html!variant=7-8099b6a6bc-gw5ldz&version=3&_bypassError=true&preview=global_1280_720.png",
-          "text": "Cypress E2E - Text",
-          "textarea": "Cypress E2E - Textarea"
-        }
-      },
-      {
-        "meta": {
-          "contentModelZUID": "{{model.ZUID}}"
-        },
-        "web": {
-          "canonicalTagMode": 1,
-          "metaTitle": "0004"
-        },
-        "data": {
-          "images": "{{baseUrl}}images/defaultImg.png",
-          "link": "https://accounts-api.zesty.org/",
-          "markdown": "New Model - Markdown",
-          "og_image": "https://storage.googleapis.com/zesty-dev-instance-screenshots/375tcfqp-dev.preview.dev.zesty.io!-!block!block_model.html!variant=7-baebe39995-g8lq7h&version=3&_bypassError=true&preview=global_1280_720.png",
-          "text": "New Model - Text",
-          "textarea": "New Model - Textarea"
-        }
-      }
-    ]
-  },
-  "common": {
-    "model": {
-      "label": "[E2E]:Common@{{commitId}}-{{timeStamp}}",
-      "metaTitle": "[E2E]:Common@{{commitId}}-{{timeStamp}}",
-      "type": "pageset",
-      "name": "_e2e__common_{{commitId}}_{{timeStamp}}",
-      "listed": true
     },
-    "fields": [
-      {
-        "name": "text",
-        "label": "Text",
-        "description": "",
-        "datatype": "text",
-        "sort": 0,
-        "required": false,
-        "settings": {
-          "defaultValue": null,
-          "list": true
-        },
-        "relatedModelZUID": null,
-        "relatedFieldZUID": null
-      },
-      {
-        "contentModelZUID": "",
-        "datatype": "textarea",
-        "name": "textarea",
-        "label": "textarea",
-        "sort": 1,
-        "required": false,
-        "relatedModelZUID": null,
-        "relatedFieldZUID": null,
-        "settings": {
-          "list": true,
-          "options": {}
-        }
-      },
-      {
-        "name": "wysiwyg_basic",
-        "label": "WYSIWYG Basic",
-        "description": "",
-        "datatype": "wysiwyg_basic",
-        "sort": 2,
-        "required": false,
-        "settings": {
-          "defaultValue": null,
-          "list": true
-        },
-        "relatedModelZUID": null,
-        "relatedFieldZUID": null
-      },
-      {
-        "name": "yes_no",
-        "label": "Yes/No",
-        "description": "",
-        "datatype": "yes_no",
-        "sort": 3,
-        "required": false,
-        "settings": {
-          "defaultValue": null,
-          "list": true,
-          "options": {
-            "0": "No",
-            "1": "Yes"
-          }
-        },
-        "relatedModelZUID": null,
-        "relatedFieldZUID": null
-      },
-      {
-        "name": "images",
-        "label": "Images",
-        "description": "",
-        "datatype": "images",
-        "sort": 4,
-        "required": false,
-        "settings": {
-          "defaultValue": null,
-          "group_id": "",
-          "limit": "",
-          "list": true
-        },
-        "relatedModelZUID": null,
-        "relatedFieldZUID": null
-      },
-      {
-        "name": "link",
-        "label": "Link",
-        "description": "",
-        "datatype": "link",
-        "sort": 5,
-        "required": false,
-        "settings": {
-          "defaultValue": null,
-          "list": true
-        },
-        "relatedModelZUID": null,
-        "relatedFieldZUID": null
+    {
+      "contentModelZUID": "",
+      "datatype": "wysiwyg_basic",
+      "name": "wysiwyg_basic",
+      "label": "wysiwyg basic",
+      "sort": 3,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": true,
+        "options": {}
       }
-    ],
-    "items": [
-      {
-        "meta": {
-          "sort": 0
-        },
-        "web": {
-          "metaLinkText": "New Model {{timeStamp}}",
-          "metaTitle": "New Model {{timeStamp}}",
-          "metaDescription": "",
-          "pathPart": "new-model-{{timeStamp}}"
-        },
-        "data": {
-          "images": "",
-          "link": "https://www.zesty.io/",
-          "text": "Common Model",
-          "wysiwyg_basic": "New model and items",
-          "yes_no": 0
-        }
-      },
-      {
-        "meta": {
-          "sort": 1
-        },
-        "web": {
-          "canonicalTagMode": 1,
-          "metaLinkText": "Test Auditing {{timeStamp}}",
-          "metaTitle": "Test Auditing {{timeStamp}}",
-          "metaDescription": "This is a test MM",
-          "pathPart": "test-auditing-{{timeStamp}}"
-        },
-        "data": {
-          "images": "",
-          "link": "www.google.com",
-          "text": "Test Auditing",
-          "wysiwyg_basic": "Common model and items",
-          "yes_no": 1
-        }
-      },
-      {
-        "meta": {
-          "sort": 2
-        },
-        "web": {
-          "canonicalTagMode": 1,
-          "metaLinkText": "Cypress Test {{timeStamp}}",
-          "metaTitle": "Cypress Test {{timeStamp}}",
-          "metaDescription": "10 Open 455 ClosedAuthor Labels Milestones Reviews Assignee SortFixed: CV migration adds date columns after versioned columns#487 opened an hour ago by protomet",
-          "pathPart": "cypress-test-{{timeStamp}}"
-        },
-        "data": {
-          "images": null,
-          "link": "https://www.zesty.io/",
-          "text": "Cypress Test {{timeStamp}}",
-          "wysiwyg_basic": "Cypress Test {{timeStamp}}",
-          "yes_no": 0
-        }
-      },
-      {
-        "meta": {
-          "sort": 3
-        },
-        "web": {
-          "canonicalTagMode": 1,
-          "metaLinkText": "New all fields-{{timeStamp}}",
-          "metaTitle": "New all fields-{{timeStamp}}",
-          "metaDescription": "",
-          "pathPart": "new-all-fields-{{timeStamp}}"
-        },
-        "data": {
-          "images": null,
-          "link": "www.facebook.com",
-          "text": "New all fields {{timeStamp}}",
-          "wysiwyg_basic": "",
-          "yes_no": 0
-        }
-      },
-      {
-        "meta": {
-          "sort": 4
-        },
-        "web": {
-          "canonicalTagMode": 1,
-          "metaLinkText": "Test Page Cypress {{timeStamp}}",
-          "metaTitle": "Test Page Cypress {{timeStamp}}",
-          "metaDescription": "",
-          "pathPart": "test-page-cypress-{{timeStamp}}"
-        },
-        "data": {
-          "images": "",
-          "link": null,
-          "text": "Test page Cypress {{timeStamp}}",
-          "wysiwyg_basic": "",
-          "yes_no": 0
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "wysiwyg_advanced",
+      "name": "wysiwyg_advanced",
+      "label": "wysiwyg advanced",
+      "sort": 4,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": true,
+        "options": {}
+      }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "date",
+      "name": "date",
+      "label": "date",
+      "sort": 5,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": true,
+        "options": {}
+      }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "images",
+      "name": "images",
+      "label": "images",
+      "sort": 6,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": true,
+        "options": {},
+        "limit": "5"
+      }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "article_writer",
+      "name": "article_writer",
+      "label": "article writer",
+      "sort": 7,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": true,
+        "options": {}
+      }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "dropdown",
+      "name": "dropdown",
+      "label": "dropdown",
+      "sort": 8,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": true,
+        "options": {
+          "custom_option_one": "Custom Option One",
+          "custom_option_two": "Custom Option Two"
         }
       }
-    ]
-  }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "link",
+      "name": "link",
+      "label": "link",
+      "sort": 9,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": true,
+        "options": {}
+      }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "internal_link",
+      "name": "internal_link",
+      "label": "internal link",
+      "sort": 10,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": true,
+        "options": {}
+      }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "datetime",
+      "name": "datetime",
+      "label": "datetime",
+      "sort": 11,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": true,
+        "options": {}
+      }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "yes_no",
+      "name": "yes_no",
+      "label": "yes/no",
+      "sort": 12,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": true,
+        "options": {
+          "0": "No",
+          "1": "Yes"
+        }
+      }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "yes_no",
+      "name": "yes_no_with_custom_values",
+      "label": "YES / NO with Custom Values",
+      "sort": 12,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": true,
+        "options": {
+          "0": "Custom Two",
+          "1": "Custom One"
+        }
+      }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "fontawesome",
+      "name": "fontawesome",
+      "label": "fontawesome",
+      "sort": 14,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": true,
+        "options": {}
+      }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "number",
+      "name": "number",
+      "label": "number",
+      "sort": 15,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": true,
+        "options": {}
+      }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "currency",
+      "name": "currency",
+      "label": "currency",
+      "sort": 16,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": true,
+        "options": {}
+      }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "color",
+      "name": "color",
+      "label": "color",
+      "sort": 17,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": true,
+        "options": {}
+      }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "uuid",
+      "name": "uuid",
+      "label": "uuid",
+      "sort": 18,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": true,
+        "options": {}
+      }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "files",
+      "name": "files",
+      "label": "files",
+      "sort": 19,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": true,
+        "options": {}
+      }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "sort",
+      "name": "sort",
+      "label": "sort",
+      "sort": 20,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": true,
+        "options": {}
+      }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "markdown",
+      "name": "markdown",
+      "label": "markdown",
+      "sort": 21,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": true,
+        "options": {}
+      }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "one_to_one",
+      "name": "one_to_one",
+      "label": "one to one",
+      "sort": 22,
+      "required": false,
+      "relatedModelZUID": "{{context.model.ZUID}}",
+      "relatedFieldZUID": "{{context.fields[0].ZUID}}",
+      "settings": {
+        "list": true,
+        "options": {}
+      }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "one_to_many",
+      "name": "one_to_many",
+      "label": "one to many",
+      "sort": 23,
+      "required": false,
+      "relatedModelZUID": "{{context.model.ZUID}}",
+      "relatedFieldZUID": "{{context.fields[0].ZUID}}",
+      "settings": {
+        "list": true,
+        "options": {}
+      }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "block_selector",
+      "name": "block_selector",
+      "label": "block selector",
+      "sort": 24,
+      "required": false,
+      "settings": {
+        "list": true,
+        "options": {}
+      }
+    }
+  ],
+  "items": [
+    {
+      "meta": {
+        "sort": 0
+      },
+      "web": {
+        "metaLinkText": "{{model.label}}",
+        "metaTitle": "{{model.label}}",
+        "parentZUID": "0",
+        "pathPart": "{{model.label}}"
+      },
+      "data": {
+        "internal_link": "{{model.ZUID}}",
+        "text": "text",
+        "wysiwyg_basic": "wysiwyg_basic",
+        "yes_no": 0,
+        "link": "https://www.zesty.io/",
+        "images": "{{baseUrl}}images/defaultImg.png,{{baseUrl}}images/onboardingIcon.svg,{{baseUrl}}images/zestyLogo.svg,{{baseUrl}}images/blocksOnboarding3.png"
+      }
+    }
+  ]
 }
