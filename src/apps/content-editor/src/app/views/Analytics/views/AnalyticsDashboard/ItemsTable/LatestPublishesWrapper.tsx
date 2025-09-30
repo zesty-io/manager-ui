@@ -5,12 +5,11 @@ import {
 } from "../../../../../../../../../shell/services/instance";
 import { ContentItem } from "../../../../../../../../../shell/services/types";
 import { ItemsTableContent } from "./ItemsTable";
-import { Moment } from "moment-timezone";
 
 type Props = {
   propertyId: string;
-  startDate: Moment;
-  endDate: Moment;
+  startDate: Date;
+  endDate: Date;
 };
 
 export const LatestPublishesWrapper = ({

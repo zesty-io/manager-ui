@@ -85,7 +85,7 @@ export function menu(options) {
         title: "Add or remove link",
         content: icons.link,
         active: markActive(schema.marks.link),
-        enable: (state) => !state.selection.empty,
+        // enable: (state) => !state.selection.empty,
         run(state, dispatch, view) {
           // Remove existing links
           if (markActive(schema.marks.link)(state)) {
@@ -145,7 +145,7 @@ export function menu(options) {
       title: "Embed Content",
       content: "Embed",
       classname: "dropdown-menu-list",
-      children: ["Instagram", "YouTube", "Twitframe"].reduce((acc, service) => {
+      children: ["Instagram", "YouTube", "Twitter"].reduce((acc, service) => {
         acc[service] = {
           title: `${service}`,
           content: `${service}`,

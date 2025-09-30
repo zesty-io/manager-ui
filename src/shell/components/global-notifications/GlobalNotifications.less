@@ -1,5 +1,5 @@
-@import "~@zesty-io/core/colors.less";
-@import "~@zesty-io/core/typography.less";
+@import "shell/components/legacy/colors.less";
+@import "shell/components/legacy/typography.less";
 
 .Notifications {
   display: flex;
@@ -85,48 +85,48 @@
     align-items: center;
     justify-content: center;
   }
+}
 
-  .Drawer {
-    bottom: 0;
-    top: 40px;
-    box-shadow: 0px 0px 12px lighten(@zesty-dark-blue, 20%);
-    background-color: #fff;
+.Drawer {
+  bottom: 0;
+  top: 40px;
+  box-shadow: 0px 0px 12px lighten(@zesty-dark-blue, 20%);
+  background-color: #fff;
 
-    .DrawerContent {
-      padding: 0 16px 16px 16px;
+  .DrawerContent {
+    padding: 0 16px 16px 16px;
 
-      header {
-        background-color: #fff;
-        padding: 16px 0 32px;
-        position: sticky;
-        top: 0;
-      }
+    header {
+      background-color: #fff;
+      padding: 16px 0 32px;
+      position: sticky;
+      top: 0;
+    }
 
-      ul {
-        list-style-type: none;
+    ul {
+      list-style-type: none;
 
-        .Notification {
-          margin: 12px 0;
+      .Notification {
+        margin: 12px 0;
 
-          .Icon {
-            margin-right: 8px;
-          }
-          .Icon.save,
-          .Icon.success {
-            color: @zesty-green;
-          }
-          .Icon.warn,
-          .Icon.error {
-            color: @zesty-red;
-          }
-          .Message {
-            display: flex;
-            align-items: center;
-            line-height: 16px;
-          }
-          .Timestamp {
-            margin-left: 24px;
-          }
+        .Icon {
+          margin-right: 8px;
+        }
+        .Icon.save,
+        .Icon.success {
+          color: @zesty-green;
+        }
+        .Icon.warn,
+        .Icon.error {
+          color: @zesty-red;
+        }
+        .Message {
+          display: flex;
+          align-items: center;
+          line-height: 16px;
+        }
+        .Timestamp {
+          margin-left: 24px;
         }
       }
     }

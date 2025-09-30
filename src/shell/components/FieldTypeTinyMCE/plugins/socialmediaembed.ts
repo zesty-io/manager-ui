@@ -15,7 +15,7 @@ tinymce.PluginManager.add("socialmediaembed", (editor) => {
             items: [
               { text: "Instagram", value: "instagram" },
               { text: "YouTube", value: "youtube" },
-              { text: "Twitframe", value: "twitframe" },
+              { text: "Twitter", value: "twitter" },
             ],
           },
           {
@@ -47,10 +47,10 @@ tinymce.PluginManager.add("socialmediaembed", (editor) => {
           case "youtube":
             iframe = `<iframe src="https://www.youtube.com/embed/${data.id}?modestbranding=1&rel=0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen" height="315px" width="560px"></iframe>`;
             break;
-          case "twitframe":
-            iframe = `<iframe src="https://twitframe.com/show?url=${encodeURI(
+          case "twitter":
+            iframe = `<iframe src="https://platform.twitter.com/embed/Tweet.html?id=${encodeURI(
               data.id
-            )}" height="315px" width="560px"></iframe>`;
+            )}" height="530px" width="420px" allow="autoplay; encrypted-media; picture-in-picture; fullscreen"></iframe>`;
             break;
           default:
             iframe = `<iframe src="" height="315px" width="560px"></iframe>`;

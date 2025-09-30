@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { Route } from "react-router-dom";
 
-import { WithLoader } from "@zesty-io/core/WithLoader";
+import { WithLoader } from "shell/components/legacy/WithLoader";
 import { LeadExporter } from "../../components/LeadExporter";
 import { LeadsTable } from "../../components/LeadsTable";
 import { GetStarted } from "../GetStarted";

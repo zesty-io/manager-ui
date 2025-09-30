@@ -7,7 +7,6 @@ import {
 } from "@mui/icons-material";
 import { Database } from "@zesty-io/material";
 import { useSelector } from "react-redux";
-import moment from "moment";
 
 import {
   useGetContentItemQuery,
@@ -21,6 +20,7 @@ import {
   modelIconMap,
 } from "../../../../../../schema/src/app/utils";
 import { AppState } from "../../../../../../../shell/store/types";
+import { isValid, format } from "date-fns";
 
 type ResourceHeaderTitleProps = {
   affectedZUID: string;
@@ -64,11 +64,14 @@ export const ResourceHeaderTitle = ({
     isLoadingWorkflowStatusLabels;
 
   const headerData = useMemo(() => {
+    const d = updatedAt ? new Date(updatedAt) : null;
     const data = {
       title: "",
       subTitle: [
         `
-        Last Updated: ${moment(updatedAt).format("Do MMMM YYYY [at] h:mm A")}
+        Last Updated: ${
+          d && isValid(d) ? format(d, "do MMMM yyyy 'at' h:mm a") : ""
+        }
       `,
       ],
       icon: SettingsRounded,

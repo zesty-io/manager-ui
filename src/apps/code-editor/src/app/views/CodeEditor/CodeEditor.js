@@ -3,14 +3,13 @@ import { connect } from "react-redux";
 import { Switch, useRouteMatch } from "react-router-dom";
 import { Grid, Typography, Box } from "@mui/material";
 
-import { WithLoader } from "@zesty-io/core/WithLoader";
+import { WithLoader } from "shell/components/legacy/WithLoader";
 
 import Workspace from "../../components/Workspace";
 
 import { fetchFiles } from "../../../store/files";
 import SideBar from "../../components/SideBar";
 import { Route } from "react-router";
-import { GettingStarted } from "../../components/Workspace/components/GettingStarted";
 import { RecentFiles } from "../../components/RecentFiles";
 import CreateFile from "../../components/CreateFile";
 

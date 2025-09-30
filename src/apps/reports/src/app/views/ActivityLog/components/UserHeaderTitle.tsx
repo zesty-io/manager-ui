@@ -3,11 +3,11 @@ import { useParams } from "react-router";
 import { Stack, Typography, SvgIcon, Skeleton, Avatar } from "@mui/material";
 import { ScheduleRounded, GroupRounded } from "@mui/icons-material";
 import { useHistory } from "react-router";
-import moment from "moment";
 
 import { CustomBreadcrumbs } from "../../../../../../../shell/components/CustomBreadcrumbs";
 import { useGetUsersRolesQuery } from "../../../../../../../shell/services/accounts";
 import { MD5 } from "../../../../../../../utility/md5";
+import { format } from "date-fns";
 
 const Crumbs = [
   {
@@ -40,7 +40,6 @@ export const UserHeaderTitle = ({
   const headerData = useMemo(() => {
     if (usersRoles) {
       const user = usersRoles?.find((userRole) => userRole.ZUID === id);
-
       return {
         name: `${user?.firstName} ${user?.lastName}` ?? "",
         imageUrl: `https://www.gravatar.com/avatar/${MD5(
@@ -49,7 +48,11 @@ export const UserHeaderTitle = ({
         subTitle: [
           user?.role?.name,
           `${actionCount} Action${actionCount === 1 ? "" : "s"}`,
-          `Last action @ ${moment(latestActionDateTime).format("hh:mm A")}`,
+          `Last action @ ${
+            latestActionDateTime
+              ? format(new Date(latestActionDateTime), "hh:mm a")
+              : "N/A"
+          }`,
         ],
       };
     }

@@ -1,0 +1,55 @@
+@import "shell/components/legacy/colors.less";
+
+.ModalAligner {
+  background-color: @modalBackground;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  left: 0;
+  top: 0;
+  z-index: 130;
+
+  // Defaults to closed
+  display: none;
+
+  &.Open {
+    display: block;
+  }
+
+  &.Local {
+    position: relative;
+    height: 0; // modal is position absolute so it's height is determined by content
+  }
+  &.Global {
+    position: fixed;
+  }
+}
+.Modal {
+  background-color: @zesty-white;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  max-width: 50%;
+  margin: 5% auto 0;
+  min-width: 462px;
+  padding: 32px;
+  position: relative;
+  width: max-content;
+
+  &.Local {
+    position: absolute;
+    margin: 0;
+  }
+
+  .Close {
+    margin: 0;
+    padding: 8px 10px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    border-radius: 0px 0px 0px 4px;
+  }
+}
+.ModalFooter {
+  margin-top: 16px;
+}

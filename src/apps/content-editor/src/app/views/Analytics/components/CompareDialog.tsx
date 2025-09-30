@@ -25,7 +25,7 @@ import {
 } from "../../../../../../../shell/services/instance";
 import { NoSearchResults } from "../../../../../../../shell/components/NoSearchResults";
 import CompareArrowsRoundedIcon from "@mui/icons-material/CompareArrowsRounded";
-import moment from "moment-timezone";
+import { formatDistanceToNow, isValid } from "date-fns";
 import { useSelector } from "react-redux";
 import { User } from "../../../../../../../shell/services/types";
 import { useGetUsersQuery } from "../../../../../../../shell/services/accounts";
@@ -269,6 +269,14 @@ const PublishingItem = ({ publishing, divider, onClick }: any) => {
 
   if (!showSkeleton && !itemData?.web?.path) return null;
 
+  const publishDate = publishing?.publishAt
+    ? new Date(publishing.publishAt)
+    : null;
+  const relativeTime =
+    publishDate && isValid(publishDate)
+      ? formatDistanceToNow(publishDate, { addSuffix: true })
+      : "";
+
   return (
     <ListItemButton
       key={publishing.ZUID}
@@ -322,9 +330,7 @@ const PublishingItem = ({ publishing, divider, onClick }: any) => {
           showSkeleton ? (
             <Skeleton variant="rectangular" height={10} width={425} />
           ) : (
-            `${modelData?.label} • ${moment(
-              publishing?.publishAt
-            ).fromNow()} • by ${userInfo}`
+            `${modelData?.label} • ${relativeTime} • by ${userInfo}`
           )
         }
         secondaryTypographyProps={{

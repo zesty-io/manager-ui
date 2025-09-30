@@ -1,24 +1,29 @@
 import React from "react";
 import { toggleMark } from "prosemirror-commands";
 
-import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
-import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
-import { Button } from "@zesty-io/core/Button";
-import { Input } from "@zesty-io/core/Input";
+import {
+  Modal,
+  ModalContent,
+  ModalFooter,
+} from "shell/components/legacy/Modal";
+import {
+  Button,
+  TextField,
+  InputLabel,
+  Checkbox,
+  FormControlLabel,
+} from "@mui/material";
 
 import { schema } from "../react-prosemirror-schema";
 
 import styles from "./LinkModal.less";
 export class LinkModal extends React.PureComponent {
-  url = React.createRef();
-
   state = {
     target: "_blank",
     href: "",
   };
 
   componentDidMount() {
-    this.url.current.querySelector("input").focus();
     window.addEventListener("keypress", this.onEnter);
   }
 
@@ -57,36 +62,46 @@ export class LinkModal extends React.PureComponent {
         }}
       >
         <ModalContent>
-          <FieldTypeText
-            innerRef={this.url}
-            label="What url should this link to?"
+          <InputLabel sx={{ mb: 0.5 }}>
+            What url should this link to?
+          </InputLabel>
+          <TextField
+            required
+            autoFocus
+            fullWidth
             name="linkUrl"
             placeholder="https://"
-            required={true}
-            autoFocus={true}
-            onChange={(href) => this.setState({ href })}
+            onChange={(evt) => this.setState({ href: evt.target.value })}
           />
-          <label>
-            Open link in a new browser window?{" "}
-            <Input
-              name="linkTarget"
-              type="checkbox"
-              checked={this.state.target === "_blank" ? true : false}
-              onChange={() =>
-                this.setState({
-                  target: this.state.target === "_blank" ? "_self" : "_blank",
-                })
-              }
-            />
-          </label>
+          <FormControlLabel
+            label="Open link in a new browser window?"
+            labelPlacement="start"
+            slotProps={{
+              typography: {
+                color: "text.primary",
+              },
+            }}
+            control={
+              <Checkbox
+                name="linkTarget"
+                checked={this.state.target === "_blank"}
+                onChange={() =>
+                  this.setState({
+                    target: this.state.target === "_blank" ? "_self" : "_blank",
+                  })
+                }
+              />
+            }
+          />
         </ModalContent>
         <ModalFooter>
           <Button
             type="save"
             disabled={this.state.href.length === 0}
             onClick={this.onSave}
+            variant="contained"
+            color="success"
           >
-            <i className="fa fa-plus" aria-hidden="true" />
             Insert Link
           </Button>
         </ModalFooter>

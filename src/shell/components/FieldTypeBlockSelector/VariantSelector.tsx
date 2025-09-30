@@ -11,7 +11,7 @@ import {
   Tooltip,
 } from "@mui/material";
 import { Search } from "@mui/icons-material";
-import moment from "moment";
+import { format, isValid } from "date-fns";
 
 import { ContentItem } from "../../services/types";
 import { useGetUsersQuery } from "../../services/accounts";
@@ -129,89 +129,97 @@ export const VariantSelector = ({
             blockModelZUID={blockModelZUID}
           />
         ) : filteredVariants?.length ? (
-          filteredVariants?.map((variant, index) => (
-            <MenuItem
-              ref={(node) => (variantsRef.current[index] = node)}
-              data-cy={`Variant_${index}`}
-              key={variant?.meta?.ZUID}
-              divider={index + 1 < variants?.length}
-              onClick={() => onVariantSelected(variant?.meta?.ZUID)}
-              sx={{
-                display: "flex",
-                px: 2,
-                py: 1.75,
-                gap: 1.5,
-                borderColor: "border",
+          filteredVariants?.map((variant, index) => {
+            const d = variant.web?.updatedAt
+              ? new Date(variant.web.updatedAt)
+              : null;
+            const updatedOn = d && isValid(d) ? format(d, "MMMM d") : "";
+            return (
+              <MenuItem
+                ref={(node) => (variantsRef.current[index] = node)}
+                data-cy={`Variant_${index}`}
+                key={variant?.meta?.ZUID}
+                divider={index + 1 < variants?.length}
+                onClick={() => onVariantSelected(variant?.meta?.ZUID)}
+                sx={{
+                  display: "flex",
+                  px: 2,
+                  py: 1.75,
+                  gap: 1.5,
+                  borderColor: "border",
 
-                "&.hover": {
-                  "-webkit-text-decoration": "none",
-                  textDecoration: "none",
-                  bgcolor: "rgba(16, 24, 40, 0.04)",
-                },
-              }}
-            >
-              <Tooltip
-                enterDelay={500}
-                enterNextDelay={500}
-                disableInteractive
-                placement="left"
-                title={
+                  "&.hover": {
+                    "-webkit-text-decoration": "none",
+                    textDecoration: "none",
+                    bgcolor: "rgba(16, 24, 40, 0.04)",
+                  },
+                }}
+              >
+                <Tooltip
+                  enterDelay={500}
+                  enterNextDelay={500}
+                  disableInteractive
+                  placement="left"
+                  title={
+                    <Box
+                      component="img"
+                      width={468}
+                      src={
+                        (variant?.data?.og_image as string) || blockPlaceholder
+                      }
+                      loading="lazy"
+                      borderRadius={2}
+                      sx={{
+                        objectFit: "contain",
+                      }}
+                    ></Box>
+                  }
+                  components={{ Tooltip: Box }}
+                  slotProps={{
+                    popper: {
+                      sx: {
+                        maxWidth: "none",
+                      },
+                    },
+                    tooltip: {
+                      sx: {
+                        mr: 1,
+                      },
+                    },
+                  }}
+                >
                   <Box
                     component="img"
-                    width={468}
+                    width={125}
                     src={
                       (variant?.data?.og_image as string) || blockPlaceholder
                     }
                     loading="lazy"
-                    borderRadius={2}
                     sx={{
                       objectFit: "contain",
                     }}
                   ></Box>
-                }
-                components={{ Tooltip: Box }}
-                slotProps={{
-                  popper: {
-                    sx: {
-                      maxWidth: "none",
-                    },
-                  },
-                  tooltip: {
-                    sx: {
-                      mr: 1,
-                    },
-                  },
-                }}
-              >
-                <Box
-                  component="img"
-                  width={125}
-                  src={(variant?.data?.og_image as string) || blockPlaceholder}
-                  loading="lazy"
-                  sx={{
-                    objectFit: "contain",
-                  }}
-                ></Box>
-              </Tooltip>
-              <Stack width={267}>
-                <Typography noWrap variant="body1" fontWeight={700}>
-                  {variant?.web?.metaTitle}
-                </Typography>
-                <Typography
-                  variant="body3"
-                  color="text.secondary"
-                  mt={0.5}
-                  fontWeight={600}
-                  sx={{
-                    textWrap: "wrap",
-                  }}
-                >
-                  Updated on {moment(variant.web?.updatedAt).format("MMMM D")}{" "}
-                  by {getUserName(variant?.web?.createdByUserZUID)}
-                </Typography>
-              </Stack>
-            </MenuItem>
-          ))
+                </Tooltip>
+                <Stack width={267}>
+                  <Typography noWrap variant="body1" fontWeight={700}>
+                    {variant?.web?.metaTitle}
+                  </Typography>
+                  <Typography
+                    variant="body3"
+                    color="text.secondary"
+                    mt={0.5}
+                    fontWeight={600}
+                    sx={{
+                      textWrap: "wrap",
+                    }}
+                  >
+                    Updated on {updatedOn} by{" "}
+                    {getUserName(variant?.web?.createdByUserZUID)}
+                  </Typography>
+                </Stack>
+              </MenuItem>
+            );
+          })
         ) : (
           <Box my={4}>
             <NoSearchResults

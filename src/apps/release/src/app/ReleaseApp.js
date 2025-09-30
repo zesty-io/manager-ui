@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { Route, Switch, useHistory, useLocation } from "react-router";
 import cx from "classnames";
 
-import { WithLoader } from "@zesty-io/core/WithLoader";
+import { WithLoader } from "shell/components/legacy/WithLoader";
 
 import { fetchReleases } from "shell/store/releases";
 import { fetchMembers } from "shell/store/releaseMembers";

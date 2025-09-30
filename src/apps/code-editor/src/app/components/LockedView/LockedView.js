@@ -1,31 +1,12 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useCallback, useEffect, useState } from "react";
 import { useHistory } from "react-router";
-import moment from "moment-timezone";
 
 import { checkLock, lock, unlock } from "shell/store/content";
 
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
-import SkipPreviousIcon from "@mui/icons-material/SkipPrevious";
-
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faLock,
-  faSpinner,
-  faStepBackward,
-  faUnlock,
-} from "@fortawesome/free-solid-svg-icons";
-
-import {
-  Modal,
-  ModalHeader,
-  ModalContent,
-  ModalFooter,
-} from "@zesty-io/core/Modal";
-
-import styles from "./LockedView.less";
 import { LockRounded } from "@mui/icons-material";
 import {
   Box,
@@ -34,6 +15,7 @@ import {
   DialogTitle,
   Typography,
 } from "@mui/material";
+import { format, fromUnixTime, isValid } from "date-fns";
 
 /**
  * This component is designed to be a generic view lock
@@ -53,6 +35,9 @@ export function LockedView(props) {
   // of the new view name when changing views.
   const [zuid, setZuid] = useState(props.ZUID);
   const [name, setName] = useState(props.name);
+
+  const d = fromUnixTime(lockData?.timestamp);
+  const formattedDate = isValid(d) ? format(d, "MMMM do, yyyy h:mm a") : "";
 
   const onClose = useCallback(() => {
     history.goBack();
@@ -135,10 +120,8 @@ export function LockedView(props) {
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
             {lockData.firstName} {lockData.lastName} is viewing <em>{name}</em>{" "}
-            since{" "}
-            {moment.unix(lockData.timestamp).format("MMMM Do, YYYY h:mm a")}.
-            Unlock this item to ignore this warning and possibly overwrite{" "}
-            {lockData.firstName}'s changes.
+            since {formattedDate} Unlock this item to ignore this warning and
+            possibly overwrite {lockData.firstName}'s changes.
           </Typography>
         </DialogTitle>
         <DialogActions>

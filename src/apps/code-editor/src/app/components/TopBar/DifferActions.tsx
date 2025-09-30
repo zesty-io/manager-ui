@@ -1,10 +1,11 @@
 import { memo, useState, useEffect } from "react";
-import moment from "moment-timezone";
+
 import { useHistory } from "react-router";
 import { Select, Button, MenuItem, Box, Typography } from "@mui/material";
 import HistoryIcon from "@mui/icons-material/History";
 import SaveIcon from "@mui/icons-material/Save";
 import EastIcon from "@mui/icons-material/East";
+import { format, isValid } from "date-fns";
 
 import {
   fetchFileVersions,
@@ -89,20 +90,15 @@ export const DifferActions = memo(function DifferActions(
 
         let versions = res.data
           .filter((v: { status: string }) => v.status === props.status)
-          .sort((a: { createdAt: string }, b: { createdAt: string }) => {
-            let timeA = moment(a.createdAt).valueOf();
-            let timeB = moment(b.createdAt).valueOf();
-
-            if (timeA > timeB) {
-              return -1;
+          .sort(
+            (a: { createdAt: string }, b: { createdAt: string }): number => {
+              const da = new Date(a.createdAt);
+              const db = new Date(b.createdAt);
+              const ta = isValid(da) ? da.getTime() : 0;
+              const tb = isValid(db) ? db.getTime() : 0;
+              return tb - ta; // newest first
             }
-            if (timeA < timeB) {
-              return 1;
-            }
-
-            // names must be equal
-            return 0;
-          });
+          );
         versions.unshift({
           code: props.code,
           version: "local",
@@ -143,6 +139,10 @@ export const DifferActions = memo(function DifferActions(
   ]);
 
   const options = versions.map((version) => {
+    const d = new Date(version.createdAt);
+    const pretty = isValid(d)
+      ? format(d, "MMM do yyyy, 'at' h:mm a")
+      : version.createdAt;
     let html = (
       <Box display="flex" alignItems="center" columnGap={0.5}>
         {version.version === props.publishedVersion ? (
@@ -156,7 +156,7 @@ export const DifferActions = memo(function DifferActions(
           {`Version ${version.version}`}
         </Typography>
         <Typography variant="caption" component="span">
-          [{moment(version.createdAt).format("MMM Do YYYY, [at] h:mm a")}]
+          [{pretty}]
         </Typography>
       </Box>
     );

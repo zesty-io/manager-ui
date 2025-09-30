@@ -2,7 +2,7 @@ import { useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import cx from "classnames";
-import moment from "moment-timezone";
+import { format, formatDistanceToNow } from "date-fns";
 
 import { updateMember, deleteMember } from "shell/store/releaseMembers";
 
@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
-import { AppLink } from "@zesty-io/core/AppLink";
+import { AppLink } from "shell/components/AppLink";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faDatabase,
@@ -75,9 +75,11 @@ export function PlanStep(props) {
             <small>
               {" "}
               [
-              {moment(content.meta.createdAt).format(
-                "MMM Do YYYY, [at] h:mm a"
-              )}
+              {content.meta.createdAt &&
+                format(
+                  new Date(content.meta.createdAt),
+                  "MMM do yyyy, 'at' h:mm a"
+                )}
               ]{" "}
             </small>
           </p>
@@ -179,9 +181,12 @@ export function PlanStep(props) {
 
       <td>
         {item?.publishing?.isPublished
-          ? `Version ${item?.publishing.version} was published ${moment(
-              item?.publishing.publishAt
-            ).fromNow()}`
+          ? `Version ${
+              item?.publishing.version
+            } was published ${formatDistanceToNow(
+              new Date(item?.publishing.publishAt),
+              { addSuffix: true }
+            )}`
           : "Never published"}
       </td>
 
