@@ -1,5 +1,4 @@
 import * as Sentry from "@sentry/react";
-import { browserTracingIntegration } from "@sentry/browser";
 import history from "utility/history";
 
 // window.CONFIG not available so we use the webpack injected variable
