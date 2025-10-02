@@ -1,4 +1,5 @@
 import * as Sentry from "@sentry/react";
+import { browserSessionIntegration } from "@sentry/browser";
 import history from "utility/history";
 
 // window.CONFIG not available so we use the webpack injected variable
@@ -10,12 +11,13 @@ if (["stage", "production"].includes(__CONFIG__?.ENV)) {
       Sentry.reactRouterV5BrowserTracingIntegration({
         history,
       }),
+      browserSessionIntegration(),
     ],
     dsn: "https://2e83c3767c484794a56832affe2d26d9@o162121.ingest.sentry.io/5441698",
-    autoSessionTracking: true,
     tracesSampleRate: 1.0,
     normalizeDepth: 10, // increases depth of redux state tree sent
     maxBreadcrumbs: 50, // reduce for performance purposes
+    enableLogs: true,
   });
 }
 
