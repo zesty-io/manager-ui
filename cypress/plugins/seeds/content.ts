@@ -1,6 +1,6 @@
 import { readFileSync, existsSync } from "fs";
 import { join } from "path";
-import { getSDK, lookupValue } from "./utils";
+import { getSDK } from "./utils";
 import {
   ContentItem,
   ContentModel,
@@ -14,90 +14,63 @@ export type SeedContentTask = {
 };
 
 module.exports = function content(config) {
-  const { formatPathPart } = require("../../../src/utility/formatPathPart");
-
-  async function setUp(path: string, context: Record<string, any> = {}) {
-    const filePath = join(__dirname, "../../fixtures/", path);
-
-    if (!existsSync(filePath)) {
-      throw new Error("Seeding Error: Invalid file path");
-    }
-    const jsonString = readFileSync(filePath, "utf8");
+  async function setUp(): Promise<SeedContentTask> {
+    const jsonString = readFileSync(
+      join(__dirname, "../../fixtures/content.json"),
+      "utf8"
+    );
     const json = JSON.parse(jsonString);
 
-    if (!json?.model) {
-      throw new Error(
-        "Seeding Error: Seed data must contain a model definition"
-      );
-    }
-
-    const LOOKUP_CONTEXT = {
-      env: config.env,
-      baseUrl: config?.baseUrl,
-      timeStamp: Date.now(),
-      commitId: config.env.COMMIT_ID,
-      context,
-    };
-
     const sdk = await getSDK(config);
+    const timeStamp = Date.now();
 
     // 1) Create Schema
-    const modelPayload = lookupValue(json.model, LOOKUP_CONTEXT);
+    const modelPayload = {
+      ...json.model,
+      label: `${json.model.label} | ${timeStamp}`,
+      metaTitle: `${json.model.metaTitle} | ${timeStamp}`,
+      name: `${json.model.name}_${timeStamp}`,
+    };
     const modelResponse = await sdk.instance.createModel(modelPayload);
-    const model = !modelResponse?.data ? {} : modelResponse?.data;
+    const model = modelResponse?.data;
 
     // 2) Create Fields
-    let fields = [];
-    if (!Array.isArray(json?.fields) && json?.fields) {
-      throw new Error("Seeding Error: Invalid fields");
-    } else {
-      fields = await Promise.all(
-        json.fields.map((field) => {
-          const fieldPayload = lookupValue(field, { ...LOOKUP_CONTEXT, model });
-          return sdk.instance
-            .createField(model?.ZUID, fieldPayload)
-            .then((res) => ({
-              ZUID: !res?.data ? null : res?.data?.ZUID,
-              ...fieldPayload,
-            }));
-        })
-      );
-    }
+    let fields = await Promise.all(
+      json.fields.map((field) => {
+        return sdk.instance.createField(model?.ZUID, field).then((res) => ({
+          ...field,
+          ZUID: res?.data?.ZUID || null,
+        }));
+      })
+    );
 
     // 3) Create Items
-    let items = [];
-    if (!Array.isArray(json?.items) && json?.items) {
-      throw new Error("Seeding Error: Invalid items");
-    } else {
-      items = await Promise.all(
-        json.items.map((item) => {
-          const payload = lookupValue(item, {
-            ...LOOKUP_CONTEXT,
-            model,
-            fields,
-          });
-          const pathPart = payload?.web?.pathPart
-            ? formatPathPart(payload?.web?.pathPart)
-            : null;
-          const itemPayload = {
+    let items = await Promise.all(
+      json.items.map((item) => {
+        const payload = {
+          ...item,
+          web: {
+            ...item.web,
+            metaTitle: `${item?.web?.metaTitle}-${timeStamp}`,
+            metaLinkText: `${item?.web?.metaLinkText}-${timeStamp}`,
+            ...(model?.type === "block"
+              ? {}
+              : {
+                  pathPart: `${item?.web?.pathPart}-${timeStamp}`,
+                }),
+          },
+        };
+        return sdk.instance.createItem(model?.ZUID, payload).then((res) => {
+          return {
             ...payload,
-            web: payload?.web && {
-              ...payload.web,
-              ...(model?.type === "block" ? {} : pathPart),
+            meta: {
+              ...payload?.meta,
+              ZUID: res?.data?.ZUID || null,
             },
           };
-          return sdk.instance
-            .createItem(model?.ZUID, itemPayload)
-            .then((res) => ({
-              ...itemPayload,
-              meta: {
-                ...itemPayload?.meta,
-                ZUID: !res?.data ? null : res?.data?.ZUID,
-              },
-            }));
-        })
-      );
-    }
+        });
+      })
+    );
 
     return {
       model,
@@ -107,12 +80,6 @@ module.exports = function content(config) {
   }
 
   return {
-    "seed:content": ({
-      path,
-      context = {},
-    }: {
-      path: string;
-      context?: Record<string, any>;
-    }): Promise<SeedContentTask> => setUp(path, context),
+    "seed:content": setUp,
   };
 };

@@ -1,9 +1,9 @@
 {
   "model": {
-    "label": "[E2E]:Content@{{commitId}}-{{timeStamp}}",
-    "metaTitle": "[E2E]:Content@{{commitId}}-{{timeStamp}}",
+    "label": "E2E | Content",
+    "metaTitle": "E2E | Content",
     "type": "pageset",
-    "name": "_e2e__content_{{commitId}}_{{timeStamp}}",
+    "name": "e2e_content",
     "listed": true
   },
   "fields": [
@@ -319,8 +319,8 @@
       "label": "one to one",
       "sort": 22,
       "required": false,
-      "relatedModelZUID": "{{context.model.ZUID}}",
-      "relatedFieldZUID": "{{context.fields[0].ZUID}}",
+      "relatedModelZUID": "6-a8bae2f4d7-rffln5",
+      "relatedFieldZUID": "12-d6e4c1d797-sjv628",
       "settings": {
         "list": true,
         "options": {}
@@ -333,8 +333,8 @@
       "label": "one to many",
       "sort": 23,
       "required": false,
-      "relatedModelZUID": "{{context.model.ZUID}}",
-      "relatedFieldZUID": "{{context.fields[0].ZUID}}",
+      "relatedModelZUID": "6-a8bae2f4d7-rffln5",
+      "relatedFieldZUID": "12-d6e4c1d797-sjv628",
       "settings": {
         "list": true,
         "options": {}
@@ -359,18 +359,17 @@
         "sort": 0
       },
       "web": {
-        "metaLinkText": "{{model.label}}",
-        "metaTitle": "{{model.label}}",
-        "parentZUID": "0",
-        "pathPart": "{{model.label}}"
+        "metaLinkText": "E2E | Content",
+        "metaTitle": "E2E | Content",
+        "pathPart": "e2e-content"
       },
       "data": {
-        "internal_link": "{{model.ZUID}}",
+        "internal_link": "6-556370-8sh47g",
         "text": "text",
         "wysiwyg_basic": "wysiwyg_basic",
         "yes_no": 0,
         "link": "https://www.zesty.io/",
-        "images": "{{baseUrl}}images/defaultImg.png,{{baseUrl}}images/onboardingIcon.svg,{{baseUrl}}images/zestyLogo.svg,{{baseUrl}}images/blocksOnboarding3.png"
+        "images": "3-6e3cefc-neo39,3-7d9231d-i4iv9,3-b138798-i992x,3-6d7e8b3-4dv81"
       }
     }
   ]

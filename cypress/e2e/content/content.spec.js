@@ -10,16 +10,9 @@ describe("Content Specs", () => {
   const TIMESTAMP = Date.now();
 
   before(() => {
-    cy.task("seed:content", {
-      path: "./common.json",
-    }).then((data) => {
-      cy.task("seed:content", {
-        path: "./content.json",
-        context: data,
-      }).then(({ model, items }) => {
-        Cypress.env("modelZUID", model?.ZUID);
-        Cypress.env("itemZUID", items[0]?.meta?.ZUID);
-      });
+    cy.task("seed:content").then(({ model, items }) => {
+      Cypress.env("modelZUID", model?.ZUID);
+      Cypress.env("itemZUID", items[0]?.meta?.ZUID);
     });
   });
 
@@ -324,7 +317,10 @@ describe("Content Specs", () => {
         .eq(0)
         .find("img")
         .should("have.attr", "src")
-        .and("contain", "/images/defaultImg.png");
+        .and(
+          "contain",
+          "https://8xbq19z1.media.zestyio.com/San-Diego-At-Night.png"
+        );
     });
 
     it("opens the bynder modal", () => {
@@ -465,13 +461,6 @@ describe("Content Specs", () => {
 
   describe("Block Selector Field", () => {
     before(() => {
-      cy.task("seed:content", {
-        path: "./block.json",
-        context: {},
-      }).then(({ model, items }) => {
-        cy.wrap(model).as("block");
-        cy.wrap(items).as("blockItems");
-      });
       cy.waitOn("/v1/content/models*", () => {
         cy.visit(
           `/content/${Cypress.env("modelZUID")}/${Cypress.env("itemZUID")}`
@@ -484,7 +473,7 @@ describe("Content Specs", () => {
         .find("input")
         .click();
       cy.get(".MuiAutocomplete-popper .MuiAutocomplete-option")
-        .contains(this?.block?.label, { matchCase: false })
+        .contains("Starter Block", { matchCase: false })
         .click();
 
       cy.getBySelector("BlockSelectorVariantField", { timeout: 10000 }).click();
@@ -604,13 +593,15 @@ describe("Content Specs", () => {
         .should("be.enabled")
         .click();
 
-      cy.get("#createNewItemDialog [data-cy='field:text']", options)
+      cy.get(
+        "#createNewItemDialog [data-cy='field:node-sdk_updateItem_1733876716599']"
+      )
         .find("input")
         .type(`Test Item ${TIMESTAMP}`);
-      cy.get("#createNewItemDialog [data-cy='field:textarea']")
+      cy.get("#createNewItemDialog [data-cy='field:description']")
         .find("textarea")
         .first()
-        .type(`Test Item ${TIMESTAMP}`, { force: true });
+        .type(`Test Item ${TIMESTAMP}`);
       cy.getBySelector("CreateItemSaveButton").click();
 
       cy.get(
