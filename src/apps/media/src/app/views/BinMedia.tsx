@@ -207,7 +207,13 @@ export const BinMedia = ({
                   {binFiles?.length} matches found
                 </Typography>
               )}
-              <DnDProvider currentBinId={id} currentGroupId="">
+              <DnDProvider
+                currentBinId={id}
+                currentGroupId=""
+                sx={{
+                  overflowY: "scroll",
+                }}
+              >
                 {!isFilesFetching && !binFiles?.length && !binGroups?.length ? (
                   <>
                     {unsortedBinFiles?.length ? (

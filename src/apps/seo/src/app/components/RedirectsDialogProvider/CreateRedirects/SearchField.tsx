@@ -1,7 +1,7 @@
 import * as React from "react";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
-import { FixedSizeList as ListBox } from "react-window";
+import { List, RowComponentProps } from "react-window";
 import Typography from "@mui/material/Typography";
 import { Box, Paper, createFilterOptions, Skeleton } from "@mui/material";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
@@ -10,7 +10,6 @@ import SearchIcon from "@mui/icons-material/Search";
 import { ContentItemProps, TARGET_ERRORS } from "../constants";
 import { InputAdornment } from "@mui/material";
 import DescriptionIcon from "@mui/icons-material/Description";
-import AutoSizer from "react-virtualized-auto-sizer";
 
 export const ListOption: React.FC<
   ContentItemProps & { isListItem?: boolean }
@@ -92,6 +91,10 @@ const ListboxComponent = React.forwardRef<
 
   const rowHeight = 56;
 
+  const Row = ({ index, style, data }: RowComponentProps<{ data: any[] }>) => {
+    return <li style={style}>{data[index]}</li>;
+  };
+
   return (
     <div
       ref={ref}
@@ -99,20 +102,15 @@ const ListboxComponent = React.forwardRef<
       style={{ width: "100%", height: `${rowHeight * 5}px` }}
       {...other}
     >
-      <AutoSizer>
-        {({ width, height }: { width: number; height: number }) => (
-          <ListBox
-            height={height}
-            width={width}
-            itemCount={items.length}
-            itemSize={rowHeight}
-            overscanCount={5}
-            innerElementType="ul"
-          >
-            {({ index, style }) => <li style={style}>{items[index]}</li>}
-          </ListBox>
-        )}
-      </AutoSizer>
+      <ul>
+        <List
+          rowCount={items.length}
+          rowHeight={rowHeight}
+          overscanCount={5}
+          rowProps={{ data: items }}
+          rowComponent={Row}
+        />
+      </ul>
     </div>
   );
 });

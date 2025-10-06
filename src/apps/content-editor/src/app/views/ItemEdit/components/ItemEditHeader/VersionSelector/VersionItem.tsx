@@ -30,7 +30,6 @@ import {
 import { useSelector } from "react-redux";
 import { useDebounce, useUnmount } from "react-use";
 import { useHistory, useParams } from "react-router";
-import { areEqual } from "react-window";
 import { isEqual } from "lodash";
 
 import {
@@ -406,8 +405,7 @@ export const VersionItem = memo(
         </Stack>
       );
     }
-  ),
-  areEqual
+  )
 );
 
 VersionItem.displayName = "VersionItem";
