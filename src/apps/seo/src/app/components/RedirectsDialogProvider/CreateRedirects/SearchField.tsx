@@ -91,7 +91,7 @@ const ListboxComponent = React.forwardRef<
 
   const rowHeight = 56;
 
-  const Row = ({ index, style, data }: RowComponentProps<{ data: any[] }>) => {
+  const Row = ({ index, style, data }: any) => {
     return <li style={style}>{data[index]}</li>;
   };
 

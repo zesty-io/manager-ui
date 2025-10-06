@@ -11,13 +11,7 @@ type RowProps = {
 };
 
 export const Row = memo(
-  ({
-    index,
-    style,
-    versions,
-    activeVersion,
-    handleLoadVersion,
-  }: RowComponentProps<RowProps>) => {
+  ({ index, style, versions, activeVersion, handleLoadVersion }: any) => {
     const data = { versions, activeVersion, handleLoadVersion };
     const version = data?.versions[index];
 

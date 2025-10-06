@@ -265,13 +265,7 @@ export const InstancesList = () => {
 interface ListRowProps {
   data: ListRowData[];
 }
-const Row = ({
-  index,
-  data,
-  style,
-}: RowComponentProps<{
-  data: ListRowData[];
-}>) => {
+const Row = ({ index, data, style }: any) => {
   const instance = data[index];
 
   const handleSwitchInstance = (ZUID: string) => {

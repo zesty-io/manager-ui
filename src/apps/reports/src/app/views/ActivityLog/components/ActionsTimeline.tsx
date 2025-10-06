@@ -46,7 +46,7 @@ export const ActionsTimeline: FC<ActionsTimelineProps> = ({
   const todayLabel = format(new Date(), "MMMM d, yyyy");
   const yesterdayLabel = format(subDays(new Date(), 1), "MMMM d, yyyy");
 
-  const Row = ({ index, data, style }: RowComponentProps<ListRowProps>) => {
+  const Row = ({ index, data, style }: any) => {
     const action = data[index];
 
     if (typeof action === "string") {
