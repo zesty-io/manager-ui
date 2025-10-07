@@ -98,7 +98,7 @@ export const ItemRoute = ({
               dispatch(
                 notify({
                   kind: "warn",
-                  message: `API failed to return data ${res.status}`,
+                  message: `API failed to return data ${res ? res.status : ""}`,
                 })
               );
             }
