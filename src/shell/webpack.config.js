@@ -53,6 +53,10 @@ module.exports = async (env) => {
       client: {
         webSocketURL: "auto://0.0.0.0:0/ws",
       },
+      headers: {
+        "Content-Security-Policy": "connect-src 'self' *.api.dev.zesty.io",
+        "X-Frame-Options": "deny",
+      },
     },
     devtool:
       process.env.NODE_ENV !== "development"
