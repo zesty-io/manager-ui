@@ -9,7 +9,17 @@ const TEST_DATA = {
 
 describe("Actions in content editor", () => {
   before(() => {
-    cleanTestData();
+    // cleanTestData();
+    cy.task("seed:content", {
+      fixturePath: "content/default.json",
+      overrides: {
+        model: {
+          label: "content/action.spec",
+        },
+      },
+    }).then(({ model }) => {
+      Cypress.env("modelZUID", model?.ZUID);
+    });
   });
 
   const timestamp = Date.now();
@@ -303,12 +313,13 @@ describe("Actions in content editor", () => {
   it.only("Creates a new content item using AI-generated data", () => {
     cy.waitOn("/v1/content/models*", () => {
       cy.waitOn("/v1/content/models/*/fields?showDeleted=true", () => {
-        cy.visit("/content/6-a1a600-k0b6f0/new");
+        // cy.visit(`/content/6-a1a600-k0b6f0/new`);
+        cy.visit(`/content/${Cypress.env("modelZUID")}/new`);
       });
     });
 
     // Generate AI content for single line text
-    cy.get("#12-0c3934-8dz720", { timeout: 30_000 })
+    cy.get("[data-cy='field:text']", { timeout: 30_000 })
       .find("[data-cy='AIOpen']")
       .click();
     cy.getBySelector("AITopicField").type("biking");
@@ -318,7 +329,7 @@ describe("Actions in content editor", () => {
     cy.get("[data-cy='AIApprove']", { timeout: 50_000 }).click();
 
     // Generate AI content for wysiwyg
-    cy.get("#12-717920-6z46t7", { timeout: 30_000 })
+    cy.get("[data-cy='field:wysiwyg_basic']", { timeout: 30_000 })
       .find("[data-cy='AIOpen']")
       .click();
     cy.getBySelector("AITopicField").type("biking");

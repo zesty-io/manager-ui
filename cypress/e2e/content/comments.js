@@ -5,24 +5,28 @@ const commentBox = '#commentInputField[contenteditable="true"]';
 
 describe("Content Item: Comments", () => {
   before(() => {
-    cleanComments();
-    cy.waitOn("/v1/content/models*", () => {
-      cy.waitOn("/v1/comments*", () => {
-        cy.visit(
-          "/content/6-556370-8sh47g/7-b939a4-457q19/comment/12-6d41d0-n10vtc"
-        );
-      });
+    cy.task("seed:content", {
+      fixturePath: "content/default.json",
+      overrides: {
+        model: {
+          label: "content/comment.spec",
+        },
+      },
+    }).then(({ model, fields, items }) => {
+      Cypress.env("modelZUID", model?.ZUID);
+      Cypress.env("itemZUID", items?.[0]?.meta?.ZUID);
+
+      cy.visit(
+        `/content/${model?.ZUID}/${items?.[0]?.meta?.ZUID}/comment/${fields[0]?.ZUID}`
+      );
     });
   });
 
   it("Creates an initial comment", () => {
-    cy.intercept("/v1/comments/*").as("getAllComments");
     cy.get(commentBox, { timeout: 50000 }).should("exist");
-    cy.get(commentBox).focus();
-    cy.get(commentBox).type("This is a new comment.");
+    cy.get(commentBox).focus().type("{selectAll}{del}This is a new comment.");
     cy.get('[data-cy="SubmitNewComment"]').click();
 
-    cy.wait("@getAllComments");
     cy.get('[data-cy="CommentItem"]').should("have.length", 1);
   });
 

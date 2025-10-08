@@ -1,16 +1,55 @@
 describe("Navigation through content editor", () => {
+  let CHILD_NAV;
   before(() => {
+    cy.task("seed:content", {
+      fixturePath: "content/default.json",
+      overrides: {
+        model: {
+          label: "content/navigation.spec",
+          type: "templateset",
+        },
+      },
+    }).then(({ model, items }) => {
+      Cypress.env("modelZUID", model?.ZUID);
+      Cypress.env("itemZUID", items?.[0]?.meta?.ZUID);
+      cy.wrap(model).as("model");
+
+      cy.task("seed:content", {
+        fixturePath: "content/default.json",
+        overrides: {
+          model: {
+            label: "navigation-child",
+            type: "pageset",
+          },
+          items: [
+            {
+              meta: {
+                sort: 0,
+              },
+              web: {
+                parentZUID: items?.[0]?.meta?.ZUID,
+              },
+            },
+          ],
+        },
+      }).then(function ({ model, items }) {
+        CHILD_NAV = {
+          model,
+          items,
+        };
+      });
+    });
     cy.waitOn("/v1/env/nav", () => {
       cy.visit("/content");
     });
   });
 
-  it("Opens homepage item", () => {
+  it("Opens a page item", function () {
     cy.getBySelector("pages_nav")
-      .find("li p[aria-label='Homepage']")
+      .find(`li p[aria-label='${this.model.label}']`)
       .should("exist")
-      .click();
-    cy.get("#12-0c3934-8dz720").should("exist");
+      .click({ force: true });
+    cy.get('[data-cy="field:text"]', { timeout: 15000 }).should("exist");
   });
 
   it("Opens the reorder nav modal", () => {
@@ -33,13 +72,17 @@ describe("Navigation through content editor", () => {
     cy.getBySelector("create_new_content_item_dialog").should("exist");
     cy.getBySelector("create_new_content_item_input")
       .find("input")
-      .type("group with visible");
+      // .type("group with visible");
+      .type("content/navigation.spec");
     cy.get(".MuiAutocomplete-listbox .MuiAutocomplete-option")
       .first()
       .should("exist")
       .click();
     cy.getBySelector("create_new_content_item_btn").click();
-    cy.location("pathname").should("eq", "/content/6-0c960c-d1n0kx/new");
+    cy.location("pathname").should(
+      "eq",
+      `/content/${Cypress.env("modelZUID")}/${Cypress.env("itemZUID")}`
+    );
   });
 
   // To be re-added on another release
@@ -100,18 +143,24 @@ describe("Navigation through content editor", () => {
     cy.get("[data-cy=globalAccountAvatar] menu").should("not.exist");
   });
 
-  it("can navigate content item files in the sidebar", () => {
-    cy.contains("All Field Types").click();
-    cy.location("pathname").should(
-      "eq",
-      "/content/6-556370-8sh47g/7-b939a4-457q19"
-    );
+  it("can navigate content item files in the sidebar", function () {
+    cy.contains(CHILD_NAV?.model?.label, { matchCase: false }).click({
+      force: true,
+    });
+    cy.contains("Don't Save", { matchCase: false }).click({
+      force: true,
+    });
+    cy.location("pathname").should("eq", `/content/${CHILD_NAV?.model?.ZUID}`);
   });
 
   it("should be able to directly create a new content item from the sidebar item", () => {
-    cy.contains(".MuiTreeItem-root", "Articles")
+    cy.reload();
+    cy.contains(".MuiTreeItem-root", CHILD_NAV?.model?.label)
       .find("[data-cy='tree-item-add-new-content']")
       .click({ force: true });
-    cy.location("pathname").should("eq", "/content/6-a8bae2f4d7-rffln5/new");
+    cy.location("pathname").should(
+      "eq",
+      `/content/${CHILD_NAV?.model?.ZUID}/new`
+    );
   });
 });

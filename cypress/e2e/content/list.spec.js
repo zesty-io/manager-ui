@@ -50,7 +50,7 @@ describe("Content List Navigation", () => {
   before(() => {
     cy.waitOn("/v1/content/models*", () => {
       cy.waitOn("/bin/*", () => {
-        cy.visit("/content/6-0c960c-d1n0kx");
+        cy.visit(`/content/${Cypress.env("modelZUID")}`);
       });
     });
   });
@@ -89,8 +89,25 @@ describe("Content List Navigation", () => {
 
 describe("Content List Actions", () => {
   before(() => {
-    cy.waitOn("/v1/content/models*", () => {
-      cy.visit("/content/6-a8bae2f4d7-rffln5");
+    cy.task("get:common").then((common) => {
+      cy.task("seed:content", {
+        fixturePath: "content/common.json",
+        overrides: {
+          model: { label: `content/list.spec` },
+          items: [
+            {
+              meta: {
+                sort: 0,
+              },
+              data: {
+                internal_link: common.items[0].meta.ZUID,
+              },
+            },
+          ],
+        },
+      }).then(({ model }) => {
+        cy.visit(`/content/${model?.ZUID}`);
+      });
     });
   });
 
@@ -122,8 +139,13 @@ describe("Content List Actions", () => {
     cy.intercept("POST", "/v1/content/models/*/items/publishings/batch").as(
       "batchPublish"
     );
-    cy.get("input[type=checkbox]").eq(1).click();
-    cy.get("input[type=checkbox]").eq(2).click();
+    cy.get(".MuiDataGrid-main", { timeout: 15000 })
+      .should("exist")
+      .within(() => {
+        cy.get("input[type=checkbox]").eq(1).click();
+        cy.get("input[type=checkbox]").eq(2).click();
+      });
+
     cy.getBySelector("MultiPageTablePublish").click();
     cy.getBySelector("ConfirmPublishButton").click();
 

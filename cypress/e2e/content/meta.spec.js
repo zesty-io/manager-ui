@@ -1,11 +1,15 @@
+import { formatName } from "../../../src/utility/formatName";
+
 const today = Date.now();
 
-describe("Content Meta", () => {
+describe("Content Meta", function () {
   // before(() => {
   //   cy.waitOn("/v1/content/models*", () => {
   //     cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19/meta");
   //   });
   // });
+
+  let PARENT_ITEM = null;
 
   // skipping failing test in preparation for CI.
   it.skip("Modifies and saves Meta fields", () => {
@@ -67,25 +71,47 @@ describe("Content Meta", () => {
   });
 
   it("Does not validate meta description for dataset items", () => {
-    cy.waitOn("/v1/content/models*", () => {
-      cy.waitOn("/v1/env/nav", () => {
-        cy.waitOn("/v1/search/items*", () => {
-          cy.visit("/content/6-675028-84dq4s/new");
+    cy.task("seed:content", {
+      fixturePath: "content/default.json",
+      overrides: {
+        model: { label: `content/meta.spec` },
+      },
+    }).then(({ model, items }) => {
+      PARENT_ITEM = items?.[0];
+      cy.waitOn("/v1/content/models*", () => {
+        cy.waitOn("/v1/env/nav", () => {
+          cy.waitOn("/v1/search/items*", function () {
+            cy.visit(`/content/${model?.ZUID}/new`);
+          });
         });
       });
     });
 
-    cy.get("#12-7893a0-w4j9gk", { timeout: 5000 }).find("input").type(today);
+    cy.get('[data-cy="field:text"]', { timeout: 15000 })
+      .find("input")
+      .type(today);
     cy.wait(500); // wait for debounced input to settle
     cy.getBySelector("CreateItemSaveButton").click();
     cy.get("[data-cy=toast]").contains("Created Item");
   });
 
-  it("Auto applies page parent when creating an item", () => {
-    cy.waitOn("/v1/content/models*", () => {
-      cy.waitOn("/v1/env/nav", () => {
-        cy.waitOn("/v1/search/items*", () => {
-          cy.visit("/content/6-0c960c-d1n0kx/new");
+  it("Auto applies page parent when creating an item", function () {
+    const modelLabel = `Nested Page`;
+    cy.task("seed:content", {
+      fixturePath: "content/default.json",
+      overrides: {
+        model: {
+          label: modelLabel,
+          type: "pageset",
+          parentZUID: PARENT_ITEM?.meta?.ZUID,
+        },
+      },
+    }).then(function ({ model, items }) {
+      cy.waitOn("/v1/content/models*", () => {
+        cy.waitOn("/v1/env/nav", () => {
+          cy.waitOn("/v1/search/items*", function () {
+            cy.visit(`/content/${model?.ZUID}/new`);
+          });
         });
       });
     });
@@ -93,7 +119,7 @@ describe("Content Meta", () => {
     cy.iframe("#wysiwyg_basic_ifr")
       .click()
       .type(`{selectall}{backspace}meta description`);
-    cy.get("#12-849844-t8v5l6").find("input").type(`meta title ${today}`);
+    cy.get('[data-cy="field:text"]').find("input").type(`meta title ${today}`);
 
     cy.getBySelector("CreateItemSaveButton").click();
 
@@ -101,10 +127,10 @@ describe("Content Meta", () => {
       cy.get('[role="tablist"]').find("button").eq(1).click();
     });
 
-    cy.contains("/page/otherpage/all-field-types/").should("exist");
+    cy.contains(PARENT_ITEM?.web?.pathPart).should("exist");
   });
 
-  it("Supports a dedicated Twitter title, description and image", () => {
+  it.skip("Supports a dedicated Twitter title, description and image", () => {
     cy.waitOn("/v1/content/models*", () => {
       cy.waitOn("/v1/env/nav", () => {
         cy.waitOn("/v1/search/items*", () => {

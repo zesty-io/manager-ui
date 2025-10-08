@@ -9,14 +9,12 @@ const formatDate = (ts) =>
 describe("Content Specs", { keystrokeDelay: 40 }, () => {
   const TIMESTAMP = Date.now();
   before(() => {
-    cy.task("seed:content", {
-      fixturePath: "content/common.json",
-    }).then((common) => {
+    cy.task("get:common").then((common) => {
       cy.task("seed:content", {
         fixturePath: "content/content.json",
         overrides: {
           model: {
-            label: `Content/content.spec`,
+            label: `content/content.spec`,
           },
           fields: [
             {
@@ -32,16 +30,11 @@ describe("Content Specs", { keystrokeDelay: 40 }, () => {
           ],
           items: [
             {
-              web: {
-                metaTitle: "Content",
+              meta: {
+                sort: 0,
               },
               data: {
                 internal_link: common?.model?.ZUID,
-                text: "text",
-                wysiwyg_basic: "wysiwyg_basic",
-                yes_no: 0,
-                link: "https://www.zesty.io/",
-                images: `${window.origin}/images/defaultImg.png,${window.origin}/images/onboardingIcon.svg,${window.origin}/images/zestyLogo.svg,${window.origin}/images/blocksOnboarding3.png`,
               },
             },
           ],
@@ -357,7 +350,7 @@ describe("Content Specs", { keystrokeDelay: 40 }, () => {
         .and("contain", "/images/defaultImg.png");
     });
 
-    it.skip("opens the bynder modal", () => {
+    it("opens the bynder modal", () => {
       cy.get(
         `[data-cy="field:images"] [data-cy="selectFromMediaButton"]`,
         options
@@ -380,7 +373,7 @@ describe("Content Specs", { keystrokeDelay: 40 }, () => {
       cy.get('[data-test-id="CompactViewContainer"]').should("not.exist");
     });
 
-    it.skip("renders bynder asset previews", () => {
+    it("renders bynder asset previews", () => {
       cy.get('[data-cy="field:images"]')
         .find('[data-cy="mediaItem"]')
         .last()
@@ -495,16 +488,8 @@ describe("Content Specs", { keystrokeDelay: 40 }, () => {
 
   describe("Block Selector Field", () => {
     before(() => {
-      // cy.runTask(
-      //   "seed:content",
-      //   {
-      //     path: "content/block.json",
-      //     context: {},
-      //   },
-      //   "block"
-      // );
       cy.task("seed:content", {
-        fixturePath: "content/content.json",
+        fixturePath: "content/default.json",
         overrides: {
           model: {
             type: "block",
