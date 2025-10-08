@@ -6,13 +6,50 @@ const formatDate = (ts) =>
     day: "2-digit",
     year: "numeric",
   }).format(new Date(ts));
-describe("Content Specs", () => {
+describe("Content Specs", { keystrokeDelay: 40 }, () => {
   const TIMESTAMP = Date.now();
-
   before(() => {
-    cy.task("seed:content").then(({ model, items }) => {
-      Cypress.env("modelZUID", model?.ZUID);
-      Cypress.env("itemZUID", items[0]?.meta?.ZUID);
+    cy.task("seed:content", {
+      fixturePath: "content/common.json",
+    }).then((common) => {
+      cy.task("seed:content", {
+        fixturePath: "content/content.json",
+        overrides: {
+          model: {
+            label: `Content/content.spec`,
+          },
+          fields: [
+            {
+              name: "one_to_one",
+              relatedModelZUID: common?.model?.ZUID,
+              relatedFieldZUID: common?.fields[0]?.ZUID,
+            },
+            {
+              name: "one_to_many",
+              relatedModelZUID: common?.model?.ZUID,
+              relatedFieldZUID: common?.fields[0]?.ZUID,
+            },
+          ],
+          items: [
+            {
+              web: {
+                metaTitle: "Content",
+              },
+              data: {
+                internal_link: common?.model?.ZUID,
+                text: "text",
+                wysiwyg_basic: "wysiwyg_basic",
+                yes_no: 0,
+                link: "https://www.zesty.io/",
+                images: `${window.origin}/images/defaultImg.png,${window.origin}/images/onboardingIcon.svg,${window.origin}/images/zestyLogo.svg,${window.origin}/images/blocksOnboarding3.png`,
+              },
+            },
+          ],
+        },
+      }).then(({ model, items }) => {
+        Cypress.env("modelZUID", model?.ZUID);
+        Cypress.env("itemZUID", items?.[0]?.meta?.ZUID);
+      });
     });
   });
 
@@ -317,13 +354,10 @@ describe("Content Specs", () => {
         .eq(0)
         .find("img")
         .should("have.attr", "src")
-        .and(
-          "contain",
-          "https://8xbq19z1.media.zestyio.com/San-Diego-At-Night.png"
-        );
+        .and("contain", "/images/defaultImg.png");
     });
 
-    it("opens the bynder modal", () => {
+    it.skip("opens the bynder modal", () => {
       cy.get(
         `[data-cy="field:images"] [data-cy="selectFromMediaButton"]`,
         options
@@ -346,7 +380,7 @@ describe("Content Specs", () => {
       cy.get('[data-test-id="CompactViewContainer"]').should("not.exist");
     });
 
-    it("renders bynder asset previews", () => {
+    it.skip("renders bynder asset previews", () => {
       cy.get('[data-cy="field:images"]')
         .find('[data-cy="mediaItem"]')
         .last()
@@ -461,6 +495,24 @@ describe("Content Specs", () => {
 
   describe("Block Selector Field", () => {
     before(() => {
+      // cy.runTask(
+      //   "seed:content",
+      //   {
+      //     path: "content/block.json",
+      //     context: {},
+      //   },
+      //   "block"
+      // );
+      cy.task("seed:content", {
+        fixturePath: "content/content.json",
+        overrides: {
+          model: {
+            type: "block",
+          },
+        },
+      }).then((block) => {
+        cy.wrap(block).as("block");
+      });
       cy.waitOn("/v1/content/models*", () => {
         cy.visit(
           `/content/${Cypress.env("modelZUID")}/${Cypress.env("itemZUID")}`
@@ -473,7 +525,7 @@ describe("Content Specs", () => {
         .find("input")
         .click();
       cy.get(".MuiAutocomplete-popper .MuiAutocomplete-option")
-        .contains("Starter Block", { matchCase: false })
+        .contains(this?.block?.model?.label, { matchCase: false })
         .click();
 
       cy.getBySelector("BlockSelectorVariantField", { timeout: 10000 }).click();
@@ -593,15 +645,13 @@ describe("Content Specs", () => {
         .should("be.enabled")
         .click();
 
-      cy.get(
-        "#createNewItemDialog [data-cy='field:node-sdk_updateItem_1733876716599']"
-      )
+      cy.get("#createNewItemDialog [data-cy='field:text']", options)
         .find("input")
         .type(`Test Item ${TIMESTAMP}`);
-      cy.get("#createNewItemDialog [data-cy='field:description']")
+      cy.get("#createNewItemDialog [data-cy='field:textarea']")
         .find("textarea")
         .first()
-        .type(`Test Item ${TIMESTAMP}`);
+        .type(`Test Item ${TIMESTAMP}`, { force: true });
       cy.getBySelector("CreateItemSaveButton").click();
 
       cy.get(

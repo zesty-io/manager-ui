@@ -1,13 +1,19 @@
 import SDK from "@zesty-io/sdk";
 
 const sdkCache = new Map();
-let tokenPromise = null;
+let authToken = null;
 
 export async function getAuthToken(config) {
-  if (!tokenPromise) {
-    const auth = new SDK.Auth({ authURL: config.env.API_AUTH });
+  const auth = new SDK.Auth({ authURL: config.env.SERVICE_AUTH });
+  let isValidToken = true;
 
-    tokenPromise = auth
+  if (authToken) {
+    const tokenStatus = await auth.verifyToken(authToken);
+    isValidToken = !!tokenStatus?.verified;
+  }
+
+  if (!authToken || !isValidToken) {
+    authToken = await auth
       .login(config.env.email, config.env.password)
       .then((res) => {
         if (!res?.token) {
@@ -16,12 +22,12 @@ export async function getAuthToken(config) {
         return res.token;
       })
       .catch((error) => {
-        tokenPromise = null;
+        authToken = null;
         throw new Error(`Authentication error: ${error.message}`);
       });
   }
 
-  return tokenPromise;
+  return authToken;
 }
 
 export async function getSDK(config) {
@@ -32,9 +38,9 @@ export async function getSDK(config) {
 
     const sdkInstance = new SDK(config.env.INSTANCE_ZUID, token, {
       accountsAPIURL: config.env.API_ACCOUNTS,
-      authURL: config.env.API_AUTH,
+      authURL: config.env.SERVICE_AUTH,
       instancesAPIURL: config.env.API_INSTANCE_URL,
-      mediaAPIURL: config.env.MEDIA_MANAGER_URL,
+      mediaAPIURL: config.env.SERVICE_MEDIA_MANAGER,
     });
 
     sdkCache.set(cacheKey, sdkInstance);

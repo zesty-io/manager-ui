@@ -18,6 +18,8 @@ const content = require("./seeds/content");
 
 module.exports = (on, config) => {
   config.env.INSTANCE_ZUID = new URL(config.baseUrl).host.split(".")[0];
+  config.env.API_INSTANCE_URL = `${config.env.API_INSTANCE_PROTOCOL}${config.env.INSTANCE_ZUID}${config.env.API_INSTANCE}`;
+
   const contentTasks = content(config);
 
   on("task", {

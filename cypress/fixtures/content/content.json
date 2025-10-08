@@ -1,0 +1,369 @@
+{
+  "model": {
+    "label": "Content",
+    "type": "pageset",
+    "listed": true
+  },
+  "fields": [
+    {
+      "contentModelZUID": "",
+      "datatype": "text",
+      "name": "text",
+      "label": "text",
+      "sort": 1,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": true,
+        "options": {},
+        "limit": "5"
+      }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "textarea",
+      "name": "textarea",
+      "label": "textarea",
+      "sort": 2,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": true,
+        "options": {}
+      }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "wysiwyg_basic",
+      "name": "wysiwyg_basic",
+      "label": "wysiwyg basic",
+      "sort": 3,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": true,
+        "options": {}
+      }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "wysiwyg_advanced",
+      "name": "wysiwyg_advanced",
+      "label": "wysiwyg advanced",
+      "sort": 4,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": true,
+        "options": {}
+      }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "date",
+      "name": "date",
+      "label": "date",
+      "sort": 5,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": true,
+        "options": {}
+      }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "images",
+      "name": "images",
+      "label": "images",
+      "sort": 6,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": true,
+        "options": {},
+        "limit": "5"
+      }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "article_writer",
+      "name": "article_writer",
+      "label": "article writer",
+      "sort": 7,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": true,
+        "options": {}
+      }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "dropdown",
+      "name": "dropdown",
+      "label": "dropdown",
+      "sort": 8,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": true,
+        "options": {
+          "custom_option_one": "Custom Option One",
+          "custom_option_two": "Custom Option Two"
+        }
+      }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "link",
+      "name": "link",
+      "label": "link",
+      "sort": 9,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": true,
+        "options": {}
+      }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "internal_link",
+      "name": "internal_link",
+      "label": "internal link",
+      "sort": 10,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": true,
+        "options": {}
+      }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "datetime",
+      "name": "datetime",
+      "label": "datetime",
+      "sort": 11,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": true,
+        "options": {}
+      }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "yes_no",
+      "name": "yes_no",
+      "label": "yes/no",
+      "sort": 12,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": true,
+        "options": {
+          "0": "No",
+          "1": "Yes"
+        }
+      }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "yes_no",
+      "name": "yes_no_with_custom_values",
+      "label": "YES / NO with Custom Values",
+      "sort": 12,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": true,
+        "options": {
+          "0": "Custom Two",
+          "1": "Custom One"
+        }
+      }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "fontawesome",
+      "name": "fontawesome",
+      "label": "fontawesome",
+      "sort": 14,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": true,
+        "options": {}
+      }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "number",
+      "name": "number",
+      "label": "number",
+      "sort": 15,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": true,
+        "options": {}
+      }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "currency",
+      "name": "currency",
+      "label": "currency",
+      "sort": 16,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": true,
+        "options": {}
+      }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "color",
+      "name": "color",
+      "label": "color",
+      "sort": 17,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": true,
+        "options": {}
+      }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "uuid",
+      "name": "uuid",
+      "label": "uuid",
+      "sort": 18,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": true,
+        "options": {}
+      }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "files",
+      "name": "files",
+      "label": "files",
+      "sort": 19,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": true,
+        "options": {}
+      }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "sort",
+      "name": "sort",
+      "label": "sort",
+      "sort": 20,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": true,
+        "options": {}
+      }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "markdown",
+      "name": "markdown",
+      "label": "markdown",
+      "sort": 21,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": true,
+        "options": {}
+      }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "one_to_one",
+      "name": "one_to_one",
+      "label": "one to one",
+      "sort": 22,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": true,
+        "options": {}
+      }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "one_to_many",
+      "name": "one_to_many",
+      "label": "one to many",
+      "sort": 23,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": true,
+        "options": {}
+      }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "block_selector",
+      "name": "block_selector",
+      "label": "block selector",
+      "sort": 24,
+      "required": false,
+      "settings": {
+        "list": true,
+        "options": {}
+      }
+    }
+  ],
+  "items": [
+    {
+      "web": {
+        "metaTitle": "Content"
+      },
+      "data": {
+        "internal_link": "",
+        "text": "text",
+        "wysiwyg_basic": "wysiwyg_basic",
+        "yes_no": 0,
+        "link": "https://www.zesty.io/",
+        "images": "./images/defaultImg.png,./images/onboardingIcon.svg,./images/zestyLogo.svg,./images/blocksOnboarding3.png"
+      }
+    }
+  ]
+}

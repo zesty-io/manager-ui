@@ -1,5 +1,6 @@
 const { defineConfig } = require("cypress");
 const { execSync } = require("child_process");
+const APP_CONFIG = require("./src/shell/app.config");
 
 module.exports = defineConfig({
   projectId: "manager-ui",
@@ -8,11 +9,7 @@ module.exports = defineConfig({
   video: false,
   defaultCommandTimeout: 15000,
   env: {
-    API_AUTH: "https://auth.api.dev.zesty.io",
-    COOKIE_NAME: "DEV_APP_SID",
-    API_INSTANCE_URL: "https://8-f48cf3a682-7fthvk.api.dev.zesty.io/v1",
-    MEDIA_MANAGER_URL: "https://media-manager.api.dev.zesty.io",
-    API_ACCOUNTS: "https://accounts.api.dev.zesty.io/v1",
+    ...APP_CONFIG["development"],
     COMMIT_ID: execSync("git rev-parse --short HEAD").toString().trim(),
   },
   e2e: {
@@ -29,7 +26,7 @@ module.exports = defineConfig({
 
       return require("./cypress/plugins/index.js")(on, config);
     },
-    baseUrl: "http://8-f48cf3a682-7fthvk.manager.dev.zesty.io:8080/",
+    baseUrl: "http://8-a6c1d4df82-6sw1rs.manager.dev.zesty.io:8080/",
     specPattern: "cypress/e2e/**/*.{js,jsx,ts,tsx}",
     testIsolation: false,
   },

@@ -8,7 +8,7 @@ Cypress.Commands.add("login", () => {
 
   return cy
     .request({
-      url: `${Cypress.env("API_AUTH")}/login`,
+      url: `${Cypress.env("SERVICE_AUTH")}/login`,
       method: "POST",
       credentials: "include",
       body: formBody,

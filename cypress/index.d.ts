@@ -3,6 +3,7 @@ import {
   ContentModel,
   ContentModelField,
 } from "../src/shell/services/types";
+import { ContentSeed } from "./plugins/seeds/content";
 import "./support/commands";
 
 declare global {
@@ -59,12 +60,11 @@ declare global {
       deleteModels(models: string[]): Chainable<any>;
       task(
         event: "seed:content",
-        { path, context }: { path: string; context: any }
-      ): Chainable<{
-        model: Partial<ContentModel>;
-        fields: Partial<ContentModelField>;
-        items: Partial<ContentItem>;
-      }>;
+        {
+          fixturePath,
+          overrides,
+        }: { fixturePath: string; overrides?: Partial<ContentSeed> }
+      ): Chainable<ContentSeed>;
     }
   }
 }
