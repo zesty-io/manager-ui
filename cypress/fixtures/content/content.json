@@ -1,12 +1,11 @@
 {
   "model": {
-    "label": "Content",
-    "type": "pageset",
+    "label": "content",
+    "type": "templateset",
     "listed": true
   },
   "fields": [
     {
-      "contentModelZUID": "",
       "datatype": "text",
       "name": "text",
       "label": "text",
@@ -21,7 +20,6 @@
       }
     },
     {
-      "contentModelZUID": "",
       "datatype": "textarea",
       "name": "textarea",
       "label": "textarea",
@@ -35,7 +33,6 @@
       }
     },
     {
-      "contentModelZUID": "",
       "datatype": "wysiwyg_basic",
       "name": "wysiwyg_basic",
       "label": "wysiwyg basic",
@@ -49,7 +46,6 @@
       }
     },
     {
-      "contentModelZUID": "",
       "datatype": "wysiwyg_advanced",
       "name": "wysiwyg_advanced",
       "label": "wysiwyg advanced",
@@ -63,7 +59,6 @@
       }
     },
     {
-      "contentModelZUID": "",
       "datatype": "date",
       "name": "date",
       "label": "date",
@@ -77,7 +72,6 @@
       }
     },
     {
-      "contentModelZUID": "",
       "datatype": "images",
       "name": "images",
       "label": "images",
@@ -92,7 +86,6 @@
       }
     },
     {
-      "contentModelZUID": "",
       "datatype": "article_writer",
       "name": "article_writer",
       "label": "article writer",
@@ -106,7 +99,6 @@
       }
     },
     {
-      "contentModelZUID": "",
       "datatype": "dropdown",
       "name": "dropdown",
       "label": "dropdown",
@@ -123,7 +115,6 @@
       }
     },
     {
-      "contentModelZUID": "",
       "datatype": "link",
       "name": "link",
       "label": "link",
@@ -137,7 +128,6 @@
       }
     },
     {
-      "contentModelZUID": "",
       "datatype": "internal_link",
       "name": "internal_link",
       "label": "internal link",
@@ -151,7 +141,6 @@
       }
     },
     {
-      "contentModelZUID": "",
       "datatype": "datetime",
       "name": "datetime",
       "label": "datetime",
@@ -165,7 +154,6 @@
       }
     },
     {
-      "contentModelZUID": "",
       "datatype": "yes_no",
       "name": "yes_no",
       "label": "yes/no",
@@ -182,7 +170,6 @@
       }
     },
     {
-      "contentModelZUID": "",
       "datatype": "yes_no",
       "name": "yes_no_with_custom_values",
       "label": "YES / NO with Custom Values",
@@ -199,7 +186,6 @@
       }
     },
     {
-      "contentModelZUID": "",
       "datatype": "fontawesome",
       "name": "fontawesome",
       "label": "fontawesome",
@@ -213,7 +199,6 @@
       }
     },
     {
-      "contentModelZUID": "",
       "datatype": "number",
       "name": "number",
       "label": "number",
@@ -227,7 +212,6 @@
       }
     },
     {
-      "contentModelZUID": "",
       "datatype": "currency",
       "name": "currency",
       "label": "currency",
@@ -241,7 +225,6 @@
       }
     },
     {
-      "contentModelZUID": "",
       "datatype": "color",
       "name": "color",
       "label": "color",
@@ -255,7 +238,6 @@
       }
     },
     {
-      "contentModelZUID": "",
       "datatype": "uuid",
       "name": "uuid",
       "label": "uuid",
@@ -269,7 +251,6 @@
       }
     },
     {
-      "contentModelZUID": "",
       "datatype": "files",
       "name": "files",
       "label": "files",
@@ -283,7 +264,6 @@
       }
     },
     {
-      "contentModelZUID": "",
       "datatype": "sort",
       "name": "sort",
       "label": "sort",
@@ -297,7 +277,6 @@
       }
     },
     {
-      "contentModelZUID": "",
       "datatype": "markdown",
       "name": "markdown",
       "label": "markdown",
@@ -311,7 +290,6 @@
       }
     },
     {
-      "contentModelZUID": "",
       "datatype": "one_to_one",
       "name": "one_to_one",
       "label": "one to one",
@@ -325,7 +303,6 @@
       }
     },
     {
-      "contentModelZUID": "",
       "datatype": "one_to_many",
       "name": "one_to_many",
       "label": "one to many",
@@ -339,7 +316,6 @@
       }
     },
     {
-      "contentModelZUID": "",
       "datatype": "block_selector",
       "name": "block_selector",
       "label": "block selector",
@@ -353,16 +329,37 @@
   ],
   "items": [
     {
+      "meta": {
+        "sort": 0
+      },
       "web": {
-        "metaTitle": "Content"
+        "metaTitle": "content"
       },
       "data": {
         "internal_link": "",
         "text": "text",
-        "wysiwyg_basic": "wysiwyg_basic",
+        "wysiwyg_basic": "wysiwyg basic",
         "yes_no": 0,
         "link": "https://www.zesty.io/",
-        "images": "./images/defaultImg.png,./images/onboardingIcon.svg,./images/zestyLogo.svg,./images/blocksOnboarding3.png"
+        "images": "https://8-f48cf3a682-7fthvk.manager.zesty.io/images/defaultImg.png,https://8-f48cf3a682-7fthvk.manager.zesty.io/images/onboardingIcon.svg,https://8-f48cf3a682-7fthvk.manager.zesty.io/images/zestyLogo.svg,https://8-f48cf3a682-7fthvk.manager.zesty.io/images/blocksOnboarding3.png",
+        "textarea": "textarea",
+        "wysiwyg_advanced": null,
+        "date": null,
+        "article_writer": null,
+        "dropdown": null,
+        "datetime": null,
+        "yes_no_with_custom_values": null,
+        "fontawesome": null,
+        "number": null,
+        "currency": null,
+        "color": null,
+        "uuid": null,
+        "files": null,
+        "sort": null,
+        "markdown": null,
+        "one_to_one": null,
+        "one_to_many": null,
+        "block_selector": null
       }
     }
   ]

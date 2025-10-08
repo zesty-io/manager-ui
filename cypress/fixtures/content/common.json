@@ -1,6 +1,6 @@
 {
   "model": {
-    "label": "E2E | Common",
+    "label": "COMMON",
     "type": "pageset",
     "listed": true
   },
@@ -20,7 +20,6 @@
       "relatedFieldZUID": null
     },
     {
-      "contentModelZUID": "",
       "datatype": "textarea",
       "name": "textarea",
       "label": "textarea",
@@ -99,7 +98,7 @@
   "items": [
     {
       "meta": {
-        "sort": 1
+        "sort": 0
       },
       "web": {
         "canonicalTagMode": 1,
@@ -108,16 +107,17 @@
         "metaDescription": "Item 1"
       },
       "data": {
-        "images": "",
-        "link": "www.google.com",
+        "images": "https://8-f48cf3a682-7fthvk.manager.zesty.io/images/defaultImg.png",
+        "link": "https://docs.zesty.io/docs/getting-started-with-zesty",
         "text": "Item 1",
+        "textarea": "Item 1",
         "wysiwyg_basic": "Item 1",
         "yes_no": 1
       }
     },
     {
       "meta": {
-        "sort": 2
+        "sort": 1
       },
       "web": {
         "canonicalTagMode": 1,
@@ -126,10 +126,30 @@
         "metaDescription": "Item 2"
       },
       "data": {
-        "images": null,
-        "link": "https://www.zesty.io/",
+        "images": "https://8-f48cf3a682-7fthvk.manager.zesty.io/images/onboardingIcon.svg",
+        "link": "https://docs.zesty.io/docs/product-overview",
         "text": "Item 2",
+        "textarea": "Item 2",
         "wysiwyg_basic": "Item 2",
+        "yes_no": 0
+      }
+    },
+    {
+      "meta": {
+        "sort": 2
+      },
+      "web": {
+        "canonicalTagMode": 1,
+        "metaLinkText": "Item 3",
+        "metaTitle": "Item 3",
+        "metaDescription": "Item 3"
+      },
+      "data": {
+        "images": "https://8-f48cf3a682-7fthvk.manager.zesty.io/images/zestyLogo.svg",
+        "link": "https://docs.zesty.io/docs/quick-start-guide",
+        "text": "Item 3",
+        "textarea": "Item 3",
+        "wysiwyg_basic": "Item 3",
         "yes_no": 0
       }
     },
@@ -139,33 +159,16 @@
       },
       "web": {
         "canonicalTagMode": 1,
-        "metaLinkText": "Item 3",
-        "metaTitle": "Item 3",
-        "metaDescription": "Item 3"
-      },
-      "data": {
-        "images": null,
-        "link": "www.facebook.com",
-        "text": "Item 3",
-        "wysiwyg_basic": "",
-        "yes_no": 0
-      }
-    },
-    {
-      "meta": {
-        "sort": 4
-      },
-      "web": {
-        "canonicalTagMode": 1,
         "metaLinkText": "Item 4",
         "metaTitle": "Item 4",
         "metaDescription": "Item 4"
       },
       "data": {
-        "images": "",
-        "link": null,
+        "images": "https://8-f48cf3a682-7fthvk.manager.zesty.io/images/blocksOnboarding3.png",
+        "link": "https://docs.zesty.io/docs/glossary",
         "text": "Item 4",
-        "wysiwyg_basic": "",
+        "textarea": "Item 4",
+        "wysiwyg_basic": "Item 4",
         "yes_no": 0
       }
     }
