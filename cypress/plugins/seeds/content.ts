@@ -1,4 +1,4 @@
-import { readFileSync, existsSync } from "fs";
+import { readFileSync } from "fs";
 import { join } from "path";
 import { getSDK } from "./utils";
 import {
@@ -17,6 +17,8 @@ module.exports = function content(config) {
   const { formatName } = require("../../../src/utility/formatName");
   const { formatPathPart } = require("../../../src/utility/formatPathPart");
 
+  let COMMON: ContentSeed;
+
   async function seedContent(
     fixturePath: string,
     overrides: Partial<ContentSeed> = {}
@@ -31,13 +33,12 @@ module.exports = function content(config) {
     const itemsOverrides = overrides?.items?.length ? overrides?.items : [];
 
     const sdk = await getSDK(config);
+
     const timeStamp = Date.now();
-
-    const labelSuffix = `${config.env.COMMIT_ID} | ${timeStamp}`;
-
-    const modelLabel = `E2E | ${
+    const labelSuffix = ` : e2e-${config.env.COMMIT_ID}-${timeStamp}`;
+    const modelLabel = `${
       modelOverrides?.label || json.model.label
-    } | ${labelSuffix}`;
+    }${labelSuffix}`;
 
     // 1) Create Schema
     const modelPayload = {
@@ -50,15 +51,20 @@ module.exports = function content(config) {
     const modelResponse = await sdk.instance.createModel(modelPayload);
     const model = modelResponse?.data;
 
-    console.debug("createModel:", { modelPayload, modelResponse });
-
     // 2) Create Fields
     const jsonFields = !fieldsOverrides?.length
       ? json?.fields
-      : json?.fields.map((field) => ({
-          ...field,
-          ...fieldsOverrides.find((ov) => ov.name === field.name),
-        }));
+      : json?.fields.map((field) => {
+          const override = fieldsOverrides.find((ov) => ov.name === field.name);
+          return {
+            ...field,
+            ...override,
+            settings: {
+              ...field?.settings,
+              ...override?.settings,
+            },
+          };
+        });
     let fields = await Promise.all(
       jsonFields?.map((field) => {
         return sdk.instance.createField(model?.ZUID, field).then((res) => ({
@@ -68,20 +74,32 @@ module.exports = function content(config) {
       })
     );
 
-    console.debug("createFields:", { jsonFields, fields });
-
-    // 3) Create Items
     const jsonItems = !itemsOverrides?.length
       ? json.items
-      : json.items.map((item) => ({
-          ...item,
-          ...itemsOverrides.find(
-            (ov) => ov?.web?.metaTitle === item?.web?.metaTitle
-          ),
-        }));
+      : json.items.map((item) => {
+          const override = itemsOverrides.find(
+            (ov) => ov?.meta?.sort === item?.meta?.sort
+          );
+          return {
+            meta: {
+              ...item?.meta,
+              ...override?.meta,
+            },
+            web: {
+              ...item?.web,
+              ...override?.web,
+            },
+            data: {
+              ...item?.data,
+              ...override?.data,
+            },
+          };
+        });
     let items = await Promise.all(
       jsonItems?.map((item) => {
-        const itemLabel = `${item?.web?.metaTitle} | ${timeStamp}`;
+        const itemLabel = !item?.web?.metaTitle
+          ? modelLabel
+          : `${item?.web?.metaTitle}${labelSuffix}`;
         const payload = {
           ...item,
           web: {
@@ -107,13 +125,19 @@ module.exports = function content(config) {
       })
     );
 
-    console.debug("createItems:", { jsonItems, items });
-
     return {
       model,
       fields,
       items,
     };
+  }
+
+  async function getCommon() {
+    if (!COMMON?.model || !COMMON?.fields?.length || !COMMON?.items?.length) {
+      const commonData = await seedContent("content/common.json");
+      COMMON = commonData;
+    }
+    return COMMON;
   }
 
   return {
@@ -124,5 +148,6 @@ module.exports = function content(config) {
       fixturePath: string;
       overrides?: ContentSeed;
     }) => seedContent(fixturePath, overrides),
+    "get:common": getCommon,
   };
 };

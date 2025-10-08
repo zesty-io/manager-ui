@@ -65,6 +65,7 @@ declare global {
           overrides,
         }: { fixturePath: string; overrides?: Partial<ContentSeed> }
       ): Chainable<ContentSeed>;
+      task(event: "get:common"): Chainable<ContentSeed>;
     }
   }
 }
