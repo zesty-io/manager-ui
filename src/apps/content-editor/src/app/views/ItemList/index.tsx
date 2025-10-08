@@ -34,7 +34,10 @@ import {
   ContentItemWithDirtyAndPublishing,
   ContentModelFieldDataType,
 } from "../../../../../../shell/services/types";
-import { fetchItems } from "../../../../../../shell/store/content";
+import {
+  fetchItems,
+  fetchItemPublishings,
+} from "../../../../../../shell/store/content";
 import { TableSortContext } from "./TableSortProvider";
 import { fetchFields } from "../../../../../../shell/store/fields";
 import { debounce } from "lodash";
@@ -180,6 +183,7 @@ export const ItemList = () => {
         })
         // @ts-ignore
       ).then(() => {
+        dispatch(fetchItemPublishings());
         setIsModelItemsFetching(false);
       });
     }
