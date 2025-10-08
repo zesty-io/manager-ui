@@ -1,0 +1,157 @@
+@import "../colors.less";
+@import "../typography.less";
+
+.selector {
+  cursor: pointer;
+  position: relative;
+  line-height: 40px;
+  min-width: 100px;
+  display: flex;
+
+  &.show {
+    .selections {
+      display: block;
+    }
+  }
+
+  &.error {
+    .selection {
+      .content {
+        border-color: @zesty-red;
+      }
+    }
+  }
+
+  .selection {
+    border: none;
+    color: @zesty-grey;
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    padding: 0;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    &:active,
+    &:hover,
+    &:focus {
+      .content {
+        border: solid 1px @zesty-grey;
+      }
+    }
+
+    .chevron {
+      border-radius: 0 3px 3px 0;
+      flex-basis: 32px;
+      justify-content: center;
+      align-items: center;
+      display: flex;
+
+      .chevronIcon {
+        width: 16px;
+      }
+    }
+    .icon-chevron-down {
+      display: none;
+    }
+
+    .content {
+      align-items: center;
+      border-radius: 3px 0 0 3px;
+      background-color: @white;
+      border: @selectBorder;
+      color: @zesty-dark-blue;
+      display: block;
+      flex: 1;
+      overflow: hidden;
+      padding: 7px 8px 6px 10px;
+      text-overflow: ellipsis;
+
+      font-family: Verdana, Arial, sans-serif;
+      font-size: 12px;
+      font-weight: 400;
+      line-height: 24px;
+      letter-spacing: 0px;
+      min-height: 23px;
+    }
+  }
+
+  .selections {
+    border-radius: 4px;
+    border: solid 1px @nav-background-color;
+    background-color: @white;
+    display: none;
+    min-width: calc(100% - 2px);
+    min-height: 2.6rem;
+    position: absolute;
+    top: 40px;
+    z-index: 110; // ensure selects stack above tips
+
+    .Filter {
+      margin: 0;
+      input {
+        border-radius: 3px 0 0 0;
+        flex: 1;
+      }
+      button {
+        border-radius: 0 3px 0 0;
+        padding: 0;
+        flex-basis: 32px;
+        justify-content: center;
+        align-items: center;
+        display: flex;
+
+        i {
+          font-size: inherit;
+        }
+      }
+    }
+
+    .Loader {
+      align-items: center;
+      display: flex;
+      flex-direction: row;
+      margin: 4px;
+    }
+
+    .options {
+      max-height: 600px;
+      overflow-y: auto;
+    }
+
+    .filter button {
+      line-height: 2rem;
+      margin: 0;
+    }
+
+    hr {
+      border: 0;
+      width: 100%;
+      margin: 0;
+      border-top: 2px solid @zesty-field-blue;
+    }
+
+    li {
+      color: @zesty-dark-blue;
+      cursor: pointer;
+      padding: 8px 16px;
+
+      font-family: Verdana, Arial, sans-serif;
+      font-size: 12px;
+      font-weight: 400;
+      line-height: 24px;
+      letter-spacing: 0px;
+    }
+    li:active,
+    li:hover,
+    li:focus,
+    li:active strong,
+    li:hover strong,
+    li:focus strong {
+      background-color: @appBkgColor;
+    }
+  }
+  svg {
+    font-size: @svg-icon;
+  }
+}

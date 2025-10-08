@@ -1,7 +1,7 @@
 import { FC, useMemo } from "react";
 import { Database } from "@zesty-io/material";
 import { SvgIconComponent } from "@mui/icons-material";
-import moment from "moment-timezone";
+import { formatDistanceToNow, isValid } from "date-fns";
 
 import { ContentModel } from "../../../services/types";
 import { SearchListItem } from "./SearchListItem";
@@ -23,15 +23,23 @@ export const Model: FC<Model> = ({
   );
 
   const chips = useMemo(() => {
+    const rel = (dt?: string) => {
+      if (!dt) return "";
+      const d = new Date(dt); // switch to parseISO(dt) if you hit parsing issues
+      return isValid(d) ? formatDistanceToNow(d, { addSuffix: true }) : "";
+    };
+
     if (modelAudit?.length) {
       const audit = modelAudit[0];
-      return `Schema • ${moment(audit?.happenedAt)?.fromNow()} by ${
-        audit?.firstName
-      } ${audit?.lastName}`;
+      const time = rel(audit?.happenedAt);
+      const name = [audit?.firstName, audit?.lastName]
+        .filter(Boolean)
+        .join(" ");
+      return `Schema • ${time}${name ? ` by ${name}` : ""}`;
     }
 
-    return `Schema • ${moment(data?.createdAt)?.fromNow()}`;
-  }, [modelAudit]);
+    return `Schema • ${rel(data?.createdAt)}`;
+  }, [modelAudit, data?.createdAt]);
 
   const loading = loadingModelAudit || parentIsLoading;
 

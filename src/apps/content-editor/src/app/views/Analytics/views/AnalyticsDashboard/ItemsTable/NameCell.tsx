@@ -11,7 +11,6 @@ import {
   OpenInNewRounded,
   WarningRounded,
 } from "@mui/icons-material";
-import moment from "moment-timezone";
 import {
   useGetAllPublishingsQuery,
   useGetContentModelQuery,
@@ -19,46 +18,25 @@ import {
 } from "../../../../../../../../../shell/services/instance";
 import { useGetUsersQuery } from "../../../../../../../../../shell/services/accounts";
 import { startCase } from "lodash";
-import { useState } from "react";
 import { useSelector } from "react-redux";
+import { format, parseISO, isValid as isValidDate } from "date-fns";
 
 const SOURCE_DETAIL_MAP = {
-  "(direct)": {
-    color: "info.dark",
-    bgcolor: "blue.100",
-    icon: InboxRounded,
-  },
-  google: {
-    color: "error.dark",
-    bgcolor: "red.100",
-    icon: SearchRounded,
-  },
-  bing: {
-    color: "error.dark",
-    bgcolor: "red.100",
-    icon: SearchRounded,
-  },
-  instagram: {
-    color: "#6727BB",
-    bgcolor: "#EBE9FE",
-    icon: Instagram,
-  },
-  facebook: {
-    color: "#1574EA",
-    bgcolor: "#E0F2FE",
-    icon: Facebook,
-  },
-  twitter: {
-    color: "#1DA0F0",
-    bgcolor: "#E0F2FE",
-    icon: Twitter,
-  },
-  youtube: {
-    color: "#FE0000",
-    bgcolor: "#FEE4E2",
-    icon: YouTube,
-  },
+  "(direct)": { color: "info.dark", bgcolor: "blue.100", icon: InboxRounded },
+  google: { color: "error.dark", bgcolor: "red.100", icon: SearchRounded },
+  bing: { color: "error.dark", bgcolor: "red.100", icon: SearchRounded },
+  instagram: { color: "#6727BB", bgcolor: "#EBE9FE", icon: Instagram },
+  facebook: { color: "#1574EA", bgcolor: "#E0F2FE", icon: Facebook },
+  twitter: { color: "#1DA0F0", bgcolor: "#E0F2FE", icon: Twitter },
+  youtube: { color: "#FE0000", bgcolor: "#FEE4E2", icon: YouTube },
 } as const;
+
+const fmtShort = (d?: string) => {
+  if (!d) return "";
+  const parsed = parseISO(d);
+  const dateObj = isValidDate(parsed) ? parsed : new Date(d);
+  return isValidDate(dateObj) ? format(dateObj, "MMM d") : "";
+};
 
 export const NameCell = ({
   path,
@@ -79,21 +57,23 @@ export const NameCell = ({
     limit: 1,
   });
   const foundItem = item?.[0]?.web?.path === path ? item?.[0] : null;
+
   const { data: publishings, isFetching: isPublishingFetching } =
     useGetAllPublishingsQuery();
   const foundPublishing = publishings?.find(
-    (publishing) => publishing.itemZUID === foundItem?.meta?.ZUID
+    (p) => p.itemZUID === foundItem?.meta?.ZUID
   );
+
   const { data: users, isFetching: isUsersFetching } = useGetUsersQuery();
   const foundUser = users?.find(
-    (user) => user.ZUID === foundPublishing?.publishedByUserZUID
+    (u) => u.ZUID === foundPublishing?.publishedByUserZUID
   );
+
   const { data: model, isFetching: isModelsFetching } = useGetContentModelQuery(
     foundItem?.meta?.contentModelZUID,
-    {
-      skip: !foundItem?.meta?.contentModelZUID,
-    }
+    { skip: !foundItem?.meta?.contentModelZUID }
   );
+
   const languages = useSelector((state: any) => state.languages);
   const langCode = languages.find(
     (lang: any) => lang.ID === foundItem?.meta?.langID
@@ -110,20 +90,17 @@ export const NameCell = ({
     isModelsFetching;
 
   const getImage = () => {
-    const ogImage = Object.keys(foundItem?.data)?.find(
-      (value) =>
-        value === "ogimage" ||
-        value === "ogImage" ||
-        value === "og_image" ||
-        value === "og:image"
+    const ogImage = Object.keys(foundItem?.data || {}).find(
+      (v) =>
+        v === "ogimage" ||
+        v === "ogImage" ||
+        v === "og_image" ||
+        v === "og:image"
     );
-    if (ogImage) {
-      return foundItem?.data?.[ogImage];
-    } else {
-      return Object.values(foundItem?.data)?.find(
-        (value) => typeof value === "string" && value.startsWith("3-")
-      );
-    }
+    if (ogImage) return foundItem?.data?.[ogImage];
+    return Object.values(foundItem?.data || {}).find(
+      (v) => typeof v === "string" && v.startsWith("3-")
+    );
   };
 
   if (isFetching || !path) {
@@ -146,184 +123,161 @@ export const NameCell = ({
             variant="rectangular"
             width="100%"
             height="12px"
-            sx={{
-              bgcolor: "grey.200",
-              mb: 1,
-            }}
+            sx={{ bgcolor: "grey.200", mb: 1 }}
           />
           <Skeleton variant="rectangular" width="80%" height="12px" />
         </Box>
       </Box>
     );
-  } else {
-    return (
-      <Box
-        display="flex"
-        height="40px"
-        width="100%"
-        alignItems="center"
-        gap={1}
-        onClick={() => {
-          if (foundItem) {
-            history.push(
-              `/content/${foundItem?.meta?.contentModelZUID}/${foundItem?.meta?.ZUID}`
-            );
-          } else {
-            window.open(externalLink);
-          }
-        }}
-      >
-        <Box height="40px" width="40px" bgcolor="info.main" borderRadius="4px">
-          {Object.values(foundItem?.data || {})?.some(
-            (value) => typeof value === "string" && value.startsWith("3-")
-          ) && (
-            <img
-              width="100%"
-              height="100%"
-              style={{
-                objectFit: "cover",
-                minWidth: "40px",
-                borderRadius: "4px",
-              }}
-              src={`${
-                // @ts-ignore
-                CONFIG.SERVICE_MEDIA_RESOLVER
-              }/resolve/${getImage()}/getimage/?w=${200}&h=${200}&type=fit`}
-              onError={(event) => {
-                event.currentTarget.style.display = "none";
-              }}
-            />
-          )}
+  }
+
+  return (
+    <Box
+      display="flex"
+      height="40px"
+      width="100%"
+      alignItems="center"
+      gap={1}
+      onClick={() => {
+        if (foundItem) {
+          history.push(
+            `/content/${foundItem?.meta?.contentModelZUID}/${foundItem?.meta?.ZUID}`
+          );
+        } else if (externalLink) {
+          window.open(externalLink);
+        }
+      }}
+    >
+      <Box height="40px" width="40px" bgcolor="info.main" borderRadius="4px">
+        {Object.values(foundItem?.data || {}).some(
+          (v) => typeof v === "string" && v.startsWith("3-")
+        ) && (
+          <img
+            width="100%"
+            height="100%"
+            style={{
+              objectFit: "cover",
+              minWidth: "40px",
+              borderRadius: "4px",
+            }}
+            src={`${
+              // @ts-ignore
+              CONFIG.SERVICE_MEDIA_RESOLVER
+            }/resolve/${getImage()}/getimage/?w=200&h=200&type=fit`}
+            onError={(e) => {
+              e.currentTarget.style.display = "none";
+            }}
+          />
+        )}
+      </Box>
+
+      <Box>
+        <Box display="flex" gap={0.5} alignItems="center">
+          <Typography
+            variant="body2"
+            fontWeight={600}
+            mb={0.25}
+            noWrap
+            maxWidth="420px"
+          >
+            {hasSiblings ? langDisplay : ""}
+            {foundItem?.web?.metaTitle || foundItem?.web?.metaLinkText || path}
+          </Typography>
+          <OpenInNewRounded
+            onClick={(e) => {
+              e.stopPropagation();
+              if (externalLink) window.open(externalLink);
+            }}
+            color="action"
+            sx={{ width: 16, height: 16 }}
+          />
         </Box>
-        <Box>
-          <Box display="flex" gap={0.5} alignItems="center">
-            <Typography
-              variant="body2"
-              fontWeight={600}
-              mb={0.25}
-              noWrap
-              maxWidth="420px"
-            >
-              {hasSiblings ? langDisplay : ""}
-              {foundItem?.web?.metaTitle ||
-                foundItem?.web?.metaLinkText ||
-                path}
+
+        {foundItem ? (
+          <Box display="flex" gap={1.5}>
+            <Typography variant="body3" fontWeight={600} color="text.secondary">
+              {fmtShort(foundPublishing?.publishAt)}
             </Typography>
-            <OpenInNewRounded
-              onClick={(e) => {
-                e.stopPropagation();
-                window.open(externalLink);
-              }}
-              color="action"
-              sx={{
-                width: "16px",
-                height: "16px",
-              }}
-            />
-          </Box>
-          {foundItem ? (
-            <Box display="flex" gap={1.5}>
-              <Typography
-                variant="body3"
-                fontWeight={600}
-                color="text.secondary"
-              >
-                {moment(foundPublishing?.publishAt).format("MMM D")}
-              </Typography>
-              <Typography
-                variant="body3"
-                fontWeight={600}
-                color="text.secondary"
-              >
-                {foundUser
-                  ? `${foundUser.firstName} ${foundUser.lastName}`
-                  : "Unknown User"}
-              </Typography>
-              <Typography
-                variant="body3"
-                fontWeight={600}
-                color="text.secondary"
-              >
-                {model?.label}
-              </Typography>
-              {topSource && (
-                <Box display="flex" alignItems="center">
-                  <Box
-                    display="flex"
-                    alignItems="center"
-                    gap={0.25}
-                    px={0.5}
-                    py={0.25}
-                    bgcolor={
-                      SOURCE_DETAIL_MAP[topSource]?.bgcolor || "yellow.50"
+            <Typography variant="body3" fontWeight={600} color="text.secondary">
+              {foundUser
+                ? `${foundUser.firstName} ${foundUser.lastName}`
+                : "Unknown User"}
+            </Typography>
+            <Typography variant="body3" fontWeight={600} color="text.secondary">
+              {model?.label}
+            </Typography>
+
+            {topSource && (
+              <Box display="flex" alignItems="center">
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  gap={0.25}
+                  px={0.5}
+                  py={0.25}
+                  bgcolor={SOURCE_DETAIL_MAP[topSource]?.bgcolor || "yellow.50"}
+                  sx={{ borderRadius: "2px 0 0 2px" }}
+                >
+                  <SvgIcon
+                    component={
+                      SOURCE_DETAIL_MAP[topSource]?.icon || LanguageRounded
                     }
                     sx={{
-                      borderRadius: "2px 0 0 2px",
+                      width: 8,
+                      height: 8,
+                      color:
+                        SOURCE_DETAIL_MAP[topSource]?.color || "warning.main",
                     }}
-                  >
-                    <SvgIcon
-                      component={
-                        SOURCE_DETAIL_MAP[topSource]?.icon || LanguageRounded
-                      }
-                      sx={{
-                        width: "8px",
-                        height: "8px",
-                        color:
-                          SOURCE_DETAIL_MAP[topSource]?.color || "warning.main",
-                      }}
-                    />
-                    <Typography
-                      fontSize="10px"
-                      fontWeight={600}
-                      lineHeight="12px"
-                      color={
-                        SOURCE_DETAIL_MAP[topSource]?.color || "warning.main"
-                      }
-                    >
-                      {startCase(topSource)}
-                    </Typography>
-                  </Box>
-                  <Box
-                    px={0.5}
-                    py={0.25}
-                    bgcolor={
+                  />
+                  <Typography
+                    fontSize="10px"
+                    fontWeight={600}
+                    lineHeight="12px"
+                    color={
                       SOURCE_DETAIL_MAP[topSource]?.color || "warning.main"
                     }
-                    sx={{
-                      borderRadius: "0 2px 2px 0",
-                    }}
                   >
-                    <Typography
-                      fontSize="8px"
-                      fontWeight={600}
-                      lineHeight="12px"
-                      color="common.white"
-                    >
-                      {isNaN(
-                        Math.floor((topSourceValue / screenPageViews) * 100)
-                      )
-                        ? 0
-                        : Math.floor((topSourceValue / screenPageViews) * 100)}
-                      %
-                    </Typography>
-                  </Box>
+                    {startCase(topSource)}
+                  </Typography>
                 </Box>
-              )}
-            </Box>
-          ) : (
-            <Box display="flex" gap={0.5} alignItems="center">
-              <WarningRounded sx={{ width: 12, height: 12 }} color="warning" />
-              <Typography
-                variant="body3"
-                fontWeight={600}
-                color="text.secondary"
-              >
-                This item does not exist in your instance
-              </Typography>
-            </Box>
-          )}
-        </Box>
+                <Box
+                  px={0.5}
+                  py={0.25}
+                  bgcolor={
+                    SOURCE_DETAIL_MAP[topSource]?.color || "warning.main"
+                  }
+                  sx={{ borderRadius: "0 2px 2px 0" }}
+                >
+                  <Typography
+                    fontSize="8px"
+                    fontWeight={600}
+                    lineHeight="12px"
+                    color="common.white"
+                  >
+                    {isNaN(
+                      Math.floor(
+                        (topSourceValue / (screenPageViews || 0)) * 100
+                      )
+                    )
+                      ? 0
+                      : Math.floor(
+                          (topSourceValue / (screenPageViews || 1)) * 100
+                        )}
+                    %
+                  </Typography>
+                </Box>
+              </Box>
+            )}
+          </Box>
+        ) : (
+          <Box display="flex" gap={0.5} alignItems="center">
+            <WarningRounded sx={{ width: 12, height: 12 }} color="warning" />
+            <Typography variant="body3" fontWeight={600} color="text.secondary">
+              This item does not exist in your instance
+            </Typography>
+          </Box>
+        )}
       </Box>
-    );
-  }
+    </Box>
+  );
 };

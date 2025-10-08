@@ -3,7 +3,7 @@ import { MonacoDiffEditor } from "react-monaco-editor";
 
 import { resolveMonacoLang } from "../../../store/files";
 
-import { WithLoader } from "@zesty-io/core/WithLoader";
+import { WithLoader } from "shell/components/legacy/WithLoader";
 
 /**
  * We memoize this component because we need to short circuit the redux->react->component update cycle

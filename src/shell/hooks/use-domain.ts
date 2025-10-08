@@ -1,7 +1,6 @@
 "use strict";
 
 import { useStore } from "react-redux";
-import moment from "moment-timezone";
 
 import { Domain } from "../services/types";
 
@@ -30,7 +29,10 @@ export const useDomain: UseDomain = () => {
 
     const prodDomains = domains
       .filter((domain) => domain.branch !== "dev")
-      .sort((a, b) => moment(b.updatedAt).diff(moment(a.updatedAt)));
+      .sort(
+        (a, b) =>
+          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+      );
 
     const customDomain = prodDomains.find(
       (domain) => !domain.domain.includes(".zesty.dev")

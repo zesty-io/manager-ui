@@ -20,7 +20,7 @@ import AddIcon from "@mui/icons-material/Add";
 import LinkIcon from "@mui/icons-material/Link";
 import IosShareIcon from "@mui/icons-material/IosShare";
 
-import { FieldTypeInternalLink } from "@zesty-io/core/FieldTypeInternalLink";
+import { FieldTypeInternalLink } from "shell/components/FieldTypeInternalLink";
 
 import { FieldTypeText, FieldTypeUrl } from "@zesty-io/material";
 

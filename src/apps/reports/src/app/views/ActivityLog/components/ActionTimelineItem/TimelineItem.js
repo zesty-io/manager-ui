@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import moment from "moment";
+import { format, isValid, parse } from "date-fns";
 import { default as MuiTimelineItem } from "@mui/lab/TimelineItem";
 import TimelineSeparator from "@mui/lab/TimelineSeparator";
 import TimelineConnector from "@mui/lab/TimelineConnector";
@@ -93,13 +93,10 @@ export const TimelineItem = (props) => {
           return "Unpublished";
         case 6:
           const [publishAt] = props.action?.meta?.message.split(" ").slice(-1);
-          const happenedAt = props.action?.happenedAt;
-          const convertedDate = moment(publishAt).isValid()
-            ? moment(publishAt)
-            : moment(happenedAt);
-          return `Scheduled to Publish on  ${convertedDate.format(
-            "MMMM DD [at] hh:mm A"
-          )}`;
+          const d = new Date(publishAt || props.action?.happenedAt);
+          return isValid(d)
+            ? `Scheduled to Publish on ${format(d, "MMMM dd 'at' hh:mm a")}`
+            : "Scheduled to Publish";
         default:
           return props.action?.meta?.message;
       }
@@ -151,7 +148,11 @@ export const TimelineItem = (props) => {
               sx={{ my: 1 }}
             />
           ) : (
-            moment(props.action?.happenedAt).format("h:mm A")
+            <>
+              {isValid(new Date(props.action?.happenedAt))
+                ? format(new Date(props.action?.happenedAt), "hh:mm a")
+                : "—"}
+            </>
           )}
         </Typography>
         <Typography

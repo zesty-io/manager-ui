@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import moment from "moment";
 import { faDatabase } from "@fortawesome/free-solid-svg-icons";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchModel } from "shell/store/models";
 import { ListItem } from "./ListItem";
+import { format, isValid, isSameYear } from "date-fns";
 
 export const ModelResourceListItem = (props) => {
   const dispatch = useDispatch();
@@ -23,6 +23,16 @@ export const ModelResourceListItem = (props) => {
     }
   }, [modelData, modelError]);
 
+  const d = new Date(props.updatedAt);
+  const lastAction =
+    isValid(d) && isSameYear(d, new Date())
+      ? format(d, "MMM d, h:mm a")
+      : isValid(d)
+      ? format(d, "MMM d, yyyy, h:mm a")
+      : "";
+
+  const secondary = `Last action @ ${lastAction} • Content Model`;
+
   return (
     <ListItem
       divider={props.divider}
@@ -33,11 +43,7 @@ export const ModelResourceListItem = (props) => {
       primary={
         modelError ? `${props.affectedZUID} (Deleted)` : modelData?.label
       }
-      secondary={`Last action @ ${
-        moment(props.updatedAt).isSame(new Date(), "year")
-          ? moment(props.updatedAt).format("MMM D, h:mm A")
-          : moment(props.updatedAt).format("ll, h:mm A")
-      } • Content Model`}
+      secondary={secondary}
       showSkeletons={isLoading}
     />
   );

@@ -2,30 +2,11 @@ import { useState, memo, useMemo, useRef, useEffect } from "react";
 import { Button, Tooltip, Chip, MenuList, Popover } from "@mui/material";
 import { KeyboardArrowDownRounded } from "@mui/icons-material";
 import { useParams } from "react-router";
-import moment from "moment";
 import { useDispatch } from "react-redux";
 import { VariableSizeList } from "react-window";
-import AutoSizer from "react-virtualized-auto-sizer";
 
 import { Row } from "./Row";
 import { BG_COLOR_MAPPING } from "./VersionItem";
-
-const formatDateTime = (dateTimeString: string) => {
-  if (!dateTimeString) return "";
-
-  const momentDate = moment(dateTimeString);
-  const now = moment();
-
-  if (momentDate.isSame(now, "day")) {
-    return `Today ${momentDate.format("h:mm A")}`;
-  } else if (momentDate.isSame(now.clone().subtract(1, "day"), "day")) {
-    return `Yesterday ${momentDate.format("h:mm A")}`;
-  } else if (momentDate.isSame(now.clone().add(1, "day"), "day")) {
-    return `Tomorrow ${momentDate.format("h:mm A")}`;
-  } else {
-    return momentDate.format("MMM D h:mm A");
-  }
-};
 
 import {
   useGetContentItemVersionsQuery,
@@ -35,6 +16,7 @@ import {
 } from "../../../../../../../../../shell/services/instance";
 import { Version } from "./VersionItem";
 import { WorkflowStatusLabel } from "../../../../../../../../../shell/services/types";
+import { format, isValid } from "date-fns";
 
 export let ROW_HEIGHTS: Record<number, number> = {};
 export const DEFAULT_ROW_HEIGHT = 66;
@@ -84,12 +66,14 @@ export const VersionSelector = memo(
       const activeVersion = itemPublishings?.find(
         (itemPublishing) => itemPublishing._active
       );
-      const scheduledVersion = itemPublishings?.find(
-        (item) =>
-          !item._active &&
-          moment.utc(item.publishAt).isAfter(moment.utc()) &&
-          !item.unpublishAt
-      );
+
+      const now = Date.now();
+      const scheduledVersion = itemPublishings?.find((item) => {
+        if (item._active) return false;
+        if (item.unpublishAt) return false;
+        const t = item.publishAt ? new Date(item.publishAt).getTime() : NaN;
+        return Number.isFinite(t) && t > now;
+      });
 
       return versions.map((v) => {
         let labels: WorkflowStatusLabel[] = [];
@@ -114,7 +98,9 @@ export const VersionSelector = memo(
           itemVersion: v.meta?.version,
           itemWorkflowZUID,
           labels,
-          createdAt: formatDateTime(v.web?.createdAt),
+          createdAt: isValid(new Date(v.web?.createdAt))
+            ? format(new Date(v.web?.createdAt), "MMM d yyyy, h:mm a")
+            : "",
           isPublished: activeVersion?.version === v.meta?.version,
           isScheduled: scheduledVersion?.version === v.meta?.version,
         };

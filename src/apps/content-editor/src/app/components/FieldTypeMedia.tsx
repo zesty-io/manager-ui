@@ -101,8 +101,9 @@ export const FieldTypeMedia = forwardRef(
       (setting) => setting.key === "bynder_token"
     );
     // Checks if the bynder portal and token are set
-    const isBynderSessionValid =
-      localStorage.getItem("cvrt") && localStorage.getItem("cvad");
+    const isBynderSessionValid = useMemo(() => {
+      return bynderPortalUrlSetting?.value && bynderTokenSetting?.value;
+    }, [bynderPortalUrlSetting, bynderTokenSetting]);
 
     useEffect(() => {
       setLocalImageZUIDs(images);

@@ -8,7 +8,6 @@ import {
 } from "react";
 import ReactDOM from "react-dom";
 import { useDispatch } from "react-redux";
-import moment from "moment-timezone";
 
 import { EditorType, FieldShell, Error } from "./FieldShell";
 
@@ -28,7 +27,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 // it would be nice to have a central import for all of these
 // instead of individually importing
-import { AppLink } from "@zesty-io/core/AppLink";
+import { AppLink } from "shell/components/AppLink";
 import { MediaApp } from "../../../../../../media/src/app";
 import { FieldTypeUUID } from "../../../../../../../shell/components/FieldTypeUUID";
 import { FieldTypeCurrency } from "../../../../../../../shell/components/FieldTypeCurrency";
@@ -55,6 +54,7 @@ import { FieldTypeMedia } from "../../FieldTypeMedia";
 import { debounce, parseInt } from "lodash";
 import { useRegisterRef } from "../../../../../../../engine/useRegisterRef";
 import { useDebouncedInput } from "../../../../../../../shell/hooks/useDebouncedInput";
+import { format as fmt } from "date-fns";
 
 const AIFieldShell = withAI(FieldShell);
 
@@ -726,14 +726,11 @@ export const Field = memo(
             <FieldTypeDate
               name={name}
               required={required}
-              value={value ? moment(value).toDate() : null}
+              // By appending "T00:00:00", we force JS to parse it as local midnight,
+              value={value ? new Date(value + "T00:00:00") : null}
               // format="MMM dd, yyyy"
               onChange={(date) => {
-                onChange(
-                  date ? moment(date).format("yyyy-MM-DD") : null,
-                  name,
-                  datatype
-                );
+                onChange(date ? fmt(date, "yyyy-MM-dd") : null, name, datatype);
               }}
               error={errors && Object.values(errors)?.some((error) => !!error)}
             />

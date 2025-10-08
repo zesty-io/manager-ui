@@ -10,7 +10,7 @@ import {
   useGetContentModelsQuery,
 } from "../../../../../shell/services/instance";
 import { ContentModel, ModelType } from "../../../../../shell/services/types";
-import moment from "moment-timezone";
+import { formatDistanceToNow, isValid } from "date-fns";
 import { useMemo, useState, useReducer } from "react";
 import AutoSizer, { Size } from "react-virtualized-auto-sizer";
 import { useHistory } from "react-router";
@@ -180,7 +180,10 @@ export const ModelsTable = ({ search, onEmptySearch }: Props) => {
       field: "updatedAt",
       headerName: "Updated",
       width: 120,
-      valueFormatter: (value: any) => moment(value).fromNow(),
+      valueFormatter: (value: any) => {
+        const d = new Date(value);
+        return isValid(d) ? formatDistanceToNow(d, { addSuffix: true }) : "";
+      },
     },
     {
       field: "fields",

@@ -1,6 +1,11 @@
-import moment from "moment";
 const options = { timeout: 20_000 };
 const forceClick = { force: true };
+const formatDate = (ts) =>
+  new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "2-digit",
+    year: "numeric",
+  }).format(new Date(ts));
 describe("Content Specs", () => {
   const TIMESTAMP = Date.now();
 
@@ -330,7 +335,7 @@ describe("Content Specs", () => {
 
       cy.get("#12-63ab04-0nkwcc input").should(
         "have.value",
-        moment(TIMESTAMP).format("MMM DD, YYYY")
+        formatDate(TIMESTAMP)
       );
     });
   });
@@ -363,11 +368,11 @@ describe("Content Specs", () => {
       cy.get("#12-f3db44-c8kt0q")
         .find("[data-cy='datePickerInputField']")
         .find("input")
-        .should("have.value", moment(TIMESTAMP).format("MMM DD, YYYY"));
+        .should("have.value", formatDate(TIMESTAMP));
       cy.get("#12-f3db44-c8kt0q")
         .find("[data-cy='dateTimeInputField']")
         .find("input")
-        .should("have.value", "12:00 am");
+        .should("have.value", "12:00 AM");
     });
 
     it("should allow a user to select a time from the dropdown", () => {
@@ -378,7 +383,7 @@ describe("Content Specs", () => {
       cy.get("#12-f3db44-c8kt0q")
         .find("[data-cy='dateTimeInputField']")
         .find("input")
-        .should("have.value", "12:15 am");
+        .should("have.value", "12:15 AM");
     });
 
     it("should allow a user to manually type in a time", () => {
@@ -402,7 +407,7 @@ describe("Content Specs", () => {
       cy.get("#12-f3db44-c8kt0q")
         .find("[data-cy='dateTimeInputField']")
         .find("input")
-        .should("have.value", "12:00 pm");
+        .should("have.value", "11:00 PM");
     });
   });
 
@@ -494,9 +499,9 @@ describe("Content Specs", () => {
     });
 
     it("can add multiple items", () => {
-      cy.get("#12-269a28-1bkm34 [data-cy='add-relational-item-button']").click({
-        force: true,
-      });
+      cy.get(
+        "#12-269a28-1bkm34 [data-cy='add-relational-item-button']"
+      ).click();
 
       // cy.wait("@fetchItems");
 

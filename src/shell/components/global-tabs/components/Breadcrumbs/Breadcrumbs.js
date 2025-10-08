@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHome, faAngleRight } from "@fortawesome/free-solid-svg-icons";
 
-import { AppLink } from "@zesty-io/core/AppLink";
+import { AppLink } from "shell/components/AppLink";
 
 import styles from "./Breadcrumbs.less";
 const crawlParents = (nav, ZUID, crumbs, content) => {

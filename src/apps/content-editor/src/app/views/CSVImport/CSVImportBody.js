@@ -9,10 +9,7 @@ import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faUpload } from "@fortawesome/free-solid-svg-icons";
-
-import { Notice } from "@zesty-io/core";
+import { Notice } from "shell/components/legacy/Notice";
 
 import { Columns } from "./Columns";
 import { CsvSettings } from "./CsvSettings";

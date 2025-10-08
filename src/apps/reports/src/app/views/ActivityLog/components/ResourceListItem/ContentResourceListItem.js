@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import moment from "moment";
+import { format, isValid, isSameYear } from "date-fns";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
 import { useSelector, useDispatch } from "react-redux";
 import { searchItems } from "shell/store/content";
@@ -71,13 +71,13 @@ export const ContentResourceListItem = (props) => {
   }, [contentData, langs, contentError, props.affectedZUID]);
 
   const secondaryText = useMemo(() => {
-    const chips = [
-      `Last action @ ${
-        moment(props.updatedAt).isSame(new Date(), "year")
-          ? moment(props.updatedAt).format("MMM D, h:mm A")
-          : moment(props.updatedAt).format("ll, h:mm A")
-      }`,
-    ];
+    const d = new Date(props.updatedAt);
+    const lastAction = isValid(d)
+      ? isSameYear(d, new Date())
+        ? format(d, "MMM d, h:mm a")
+        : format(d, "MMM d, yyyy, h:mm a")
+      : "—";
+    const chips = [`Last action @ ${lastAction}`];
     if (modelData) {
       chips.push(modelTypeName[modelData?.type]);
     }

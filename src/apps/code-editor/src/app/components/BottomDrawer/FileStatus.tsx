@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import moment from "moment";
+import { formatDistanceToNow, isValid } from "date-fns";
 import InfoIcon from "@mui/icons-material/Info";
 import { CopyButton } from "@zesty-io/material";
 import FlashOnIcon from "@mui/icons-material/FlashOn";
@@ -48,6 +48,11 @@ export default function FileStatus({ file, items }: FileStatusProps) {
   //@ts-expect-error
   const urlPreview = CONFIG.URL_PREVIEW_FULL;
   const urlFileName = file?.fileName?.trim()?.replace(/^\/+/, "");
+
+  const edited = new Date(file.updatedAt);
+  const editedText = isValid(edited)
+    ? formatDistanceToNow(edited, { addSuffix: true })
+    : "";
 
   const getWebLinkData = () => {
     const { fileName, type, ZUID, contentModelZUID } = file;
@@ -184,9 +189,7 @@ export default function FileStatus({ file, items }: FileStatusProps) {
         <FileCardListItem>
           Viewing:&nbsp;Version {file.version}
         </FileCardListItem>
-        <FileCardListItem>
-          Last edited:&nbsp;{moment(file.updatedAt).fromNow()}
-        </FileCardListItem>
+        <FileCardListItem>Last edited:&nbsp;{editedText}</FileCardListItem>
 
         <Divider sx={{ my: 1, border: "none" }} />
       </List>

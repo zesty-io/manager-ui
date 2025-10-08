@@ -1,4 +1,4 @@
-import moment from "moment";
+import { parse, format, isValid } from "date-fns";
 
 const TIME_STRINGS = [
   "12:00 am",
@@ -98,6 +98,7 @@ const TIME_STRINGS = [
   "11:30 pm",
   "11:45 pm",
 ] as const;
+
 export const TIMEZONES = [
   {
     label: "(GMT+00:00) Coordinated Universal Time",
@@ -1469,19 +1470,20 @@ export const TIMEZONES = [
   },
 ] as const;
 
-// Specify exact ISO format. This ensures consistent parsing across different browsers.
-const ISO_FORMAT = "YYYY-MM-DD h:mm a";
+// reference date to anchor time-only parsing/formatting
+const REF_DATE = new Date("2024-01-01T00:00:00");
 
+/** Converts "h:mm a" to "HH:mm:ss.SSSSSS" */
 export const toISOString = (timeString: string) => {
-  return moment(`2024-01-01 ${timeString}`, ISO_FORMAT).format(
-    "HH:mm:ss.SSSSSS"
-  );
+  const d = parse(`${timeString}`, "h:mm a", REF_DATE);
+  // date-fns only carries millisecond precision; microseconds will be padded with zeros.
+  return format(d, "HH:mm:ss.SSSSSS");
 };
 
+/** Converts "HH:mm:ss.SSSSSS" to "h:mm a" */
 export const to12HrTime = (isoTime: string) => {
-  return moment(`2024-01-01 ${isoTime}`, "YYYY-MM-DD HH:mm:ss.SSSSSS").format(
-    "h:mm a"
-  );
+  const d = parse(isoTime, "HH:mm:ss.SSSSSS", REF_DATE);
+  return format(d, "h:mm a");
 };
 
 const generateTimeOptions = () => {
@@ -1493,69 +1495,88 @@ const generateTimeOptions = () => {
 
 export const TIME_OPTIONS = [...generateTimeOptions()] as const;
 
+/** Normalize a user input like "9:3 p" -> "9:30 pm" (best-effort) */
 export const getDerivedTime = (userInput: string) => {
-  if (!userInput) {
-    return "";
+  if (!userInput) return "";
+
+  const raw = userInput.trim().toLowerCase();
+
+  // grab first HH and optional MM at the start; ignore any seconds/micros after
+  const m = raw.match(/^(\d{1,2})(?::(\d{1,2}))?/);
+  if (!m) return "";
+
+  let hour = parseInt(m[1], 10);
+  let minute = m[2] ? parseInt(m[2], 10) : 0;
+
+  // find explicit am/pm if present anywhere
+  const ampmMatch = raw.match(/(?<![a-z])(?:a\.?m?\.?|p\.?m?\.?)\s*$/i);
+  let ampm = ampmMatch
+    ? ampmMatch[0].toLowerCase().startsWith("a")
+      ? "am"
+      : "pm"
+    : "";
+
+  // if no explicit am/pm, infer from hour (7–11 -> am, otherwise pm)
+  if (!ampm) ampm = hour >= 7 && hour <= 11 ? "am" : "pm";
+
+  // normalize 24h input to 12h display
+  if (hour === 0) {
+    hour = 12;
+    ampm = "am";
+  } else if (hour > 12) {
+    hour = hour - 12;
+    ampm = "pm";
   }
 
-  const matchedPeriodOfTime = userInput.match(
-    /(?<![a-zA-Z])(?:a\.?m?\.?|p\.?m?\.?)$/i
-  );
-  let periodOfTimeValue = matchedPeriodOfTime?.[0]?.trim();
-  const timeInput = userInput.slice(
-    0,
-    matchedPeriodOfTime?.["index"] ?? undefined
-  );
-  const hourInput = timeInput?.split(":")?.[0]?.trim();
-  let minuteInput = timeInput?.split(":")?.[1]?.trim();
+  // clamp/minute padding
+  if (minute < 0 || minute > 59 || hour < 1 || hour > 12) return "";
+  const mm = String(minute).padStart(2, "0");
 
-  // Rounds off minutes so it's always 2 digits
-  if (!minuteInput) {
-    minuteInput = "00";
-  } else if (minuteInput.length === 1) {
-    minuteInput = `${minuteInput}0`;
-  }
-
-  // Determines wether we'll try to match am or pm times
-  if (!periodOfTimeValue) {
-    periodOfTimeValue = +hourInput >= 7 && +hourInput <= 11 ? "am" : "pm";
-  } else if (periodOfTimeValue.startsWith("a")) {
-    periodOfTimeValue = "am";
-  } else if (periodOfTimeValue.startsWith("p")) {
-    periodOfTimeValue = "pm";
-  }
-
-  return `${hourInput}:${minuteInput} ${periodOfTimeValue}`;
+  return `${hour}:${mm} ${ampm}`;
 };
 
+/** minutes since midnight, 0..1439; returns null if parse fails */
+const minutesSinceMidnight = (hhmm: string): number | null => {
+  const d = parse(hhmm, "h:mm a", REF_DATE);
+  if (isNaN(d.getTime())) return null;
+  return d.getHours() * 60 + d.getMinutes();
+};
+
+/** circular distance in minutes on a 24h clock (wraps around midnight) */
+const circularMinuteDistance = (a: number, b: number) => {
+  const diff = Math.abs(a - b);
+  return Math.min(diff, 1440 - diff);
+};
+
+/**
+ * Returns closest suggestion within ±7 minutes (420s), wrapping correctly across midnight.
+ * Falls back to null if the input can’t be interpreted.
+ */
 export const getClosestTimeSuggestion = (input: string) => {
-  if (!input) {
-    return { time: null, index: -1 };
-  }
+  if (!input) return { time: null, index: -1 };
 
   const derivedTime = getDerivedTime(input);
+  const target = minutesSinceMidnight(derivedTime);
+  if (target === null) return { time: null, index: -1 };
 
-  const matchedTimeIndex = TIME_OPTIONS.findIndex((time) => {
-    const timeToTest = new Date(`01/01/2024 ${derivedTime}`).getTime() / 1000;
+  const thresholdMinutes = 7;
 
-    // Makes sure that 11:53 pm to 11:59 pm are being matched to 12:00 am since it is the closest time option
-    if (
-      timeToTest >= 1704124380 &&
-      timeToTest <= 1704124740 &&
-      time.inputValue === "12:00 am"
-    ) {
-      return time.inputValue;
+  let bestIndex = -1;
+  let bestDist = Number.POSITIVE_INFINITY;
+
+  TIME_OPTIONS.forEach((opt, idx) => {
+    const m = minutesSinceMidnight(opt.inputValue);
+    if (m === null) return;
+    const dist = circularMinuteDistance(m, target);
+    if (dist < bestDist) {
+      bestDist = dist;
+      bestIndex = idx;
     }
-
-    return (
-      Math.abs(
-        new Date(`01/01/2024 ${time.inputValue}`).getTime() / 1000 - timeToTest
-      ) <= 420
-    );
   });
 
-  return {
-    time: matchedTimeIndex >= 0 ? TIME_OPTIONS[matchedTimeIndex] : null,
-    index: matchedTimeIndex,
-  };
+  if (bestIndex >= 0 && bestDist <= thresholdMinutes) {
+    return { time: TIME_OPTIONS[bestIndex], index: bestIndex };
+  }
+
+  return { time: null, index: -1 };
 };

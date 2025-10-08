@@ -10,8 +10,8 @@ import { Database } from "@zesty-io/material";
 import { fetchModels } from "shell/store/models";
 import { fetchNav } from "../store/navContent";
 
-import { AppLink } from "@zesty-io/core/AppLink";
-import { WithLoader } from "@zesty-io/core/WithLoader";
+import { AppLink } from "shell/components/AppLink";
+import { WithLoader } from "shell/components/legacy/WithLoader";
 import { ContentNav } from "./components/ContentNav";
 import { LoadingQuote } from "../../../../shell/components/LoadingQuote";
 
@@ -25,7 +25,7 @@ import { CSVImport } from "./views/CSVImport";
 import ReleaseApp from "../../../release/src";
 
 // Vendor styles for codemirror, prosemirror and flatpickr
-import "@zesty-io/core/vendor.css";
+import "shell/components/legacy/vendor.css";
 
 import styles from "./ContentEditor.less";
 import Analytics from "./views/Analytics";
