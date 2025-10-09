@@ -100,34 +100,44 @@ class CSVImportBody extends Component {
   };
 
   parseCSV = (csv) => {
-    const records = parse(csv, {
-      skip_empty_lines: true,
-      skip_lines_with_empty_values: true,
-    });
+    try {
+      const records = parse(csv, {
+        skip_empty_lines: true,
+        skip_lines_with_empty_values: true,
+      });
 
-    // Handle empty csv imports
-    if (!records.length) {
-      return this.setState({
-        warn: "You have imported an empty CSV file",
+      // Handle empty csv imports
+      if (!records.length) {
+        return this.setState({
+          warn: "You have imported an empty CSV file",
+          cols: [],
+          records: [],
+        });
+      }
+
+      // build an array of object to reference data across columns
+      const columnsWithValues = records.slice(1).reduce((acc, item, i) => {
+        const rec = item.reduce((ac, it, i) => {
+          ac[records[0][i]] = it;
+          return ac;
+        }, {});
+        acc.push(rec);
+        return acc;
+      }, []);
+
+      this.setState({
+        cols: records[0],
+        records: columnsWithValues,
+      });
+    } catch (error) {
+      this.setState({
+        warn: error.message.includes("Invalid Record Length")
+          ? "There's a column number mismatch on the CSV file"
+          : error.message,
         cols: [],
         records: [],
       });
     }
-
-    // build an array of object to reference data across columns
-    const columnsWithValues = records.slice(1).reduce((acc, item, i) => {
-      const rec = item.reduce((ac, it, i) => {
-        ac[records[0][i]] = it;
-        return ac;
-      }, {});
-      acc.push(rec);
-      return acc;
-    }, []);
-
-    this.setState({
-      cols: records[0],
-      records: columnsWithValues,
-    });
   };
 
   handleFieldToCSVMap = (fieldName, csvCol) => {
