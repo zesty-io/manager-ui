@@ -175,6 +175,7 @@ export const ItemList = () => {
   useEffect(() => {
     if (activeLanguageCode) {
       setIsModelItemsFetching(true);
+      dispatch(fetchItemPublishings());
       dispatch(
         fetchItems(modelZUID, {
           limit: 1000,
@@ -183,7 +184,6 @@ export const ItemList = () => {
         })
         // @ts-ignore
       ).then(() => {
-        dispatch(fetchItemPublishings());
         setIsModelItemsFetching(false);
       });
     }
