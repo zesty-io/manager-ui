@@ -18,14 +18,13 @@ const content = require("./seeds/content");
 
 module.exports = (on, config) => {
   config.env.INSTANCE_ZUID = new URL(config.baseUrl).host.split(".")[0];
-  const contentTasks = content(config);
 
   on("task", {
     log(message) {
       console.log(message);
       return null;
     },
-    ...contentTasks,
+    ...content(config),
   });
   // `on` is used to hook into various events Cypress emits
   // `config` is the resolved Cypress config

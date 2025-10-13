@@ -1,9 +1,8 @@
 {
   "model": {
-    "label": "E2E | Content",
-    "metaTitle": "E2E | Content",
+    "label": "E2E: Content",
+    "metaTitle": "E2E: Content",
     "type": "pageset",
-    "name": "e2e_content",
     "listed": true
   },
   "fields": [
@@ -359,12 +358,11 @@
         "sort": 0
       },
       "web": {
-        "metaLinkText": "E2E | Content",
-        "metaTitle": "E2E | Content",
-        "pathPart": "e2e-content"
+        "metaLinkText": "E2E: Content",
+        "metaTitle": "E2E: Content"
       },
       "data": {
-        "internal_link": "6-556370-8sh47g",
+        "internal_link": "7-a2c992ecb6-v6j9zt",
         "text": "text",
         "wysiwyg_basic": "wysiwyg_basic",
         "yes_no": 0,

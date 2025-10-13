@@ -7,7 +7,7 @@ export async function getAuthToken(config) {
   if (!tokenPromise) {
     const auth = new SDK.Auth({ authURL: config.env.API_AUTH });
 
-    tokenPromise = auth
+    tokenPromise = await auth
       .login(config.env.email, config.env.password)
       .then((res) => {
         if (!res?.token) {

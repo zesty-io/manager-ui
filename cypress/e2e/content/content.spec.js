@@ -10,8 +10,11 @@ describe("Content Specs", () => {
   const TIMESTAMP = Date.now();
 
   before(() => {
+    // Seed content
     cy.task("seed:content").then(({ model, items }) => {
+      //Set modelZUID as Cypress env variable for global test access
       Cypress.env("modelZUID", model?.ZUID);
+      //Set itemZUID as Cypress env variable for global test access
       Cypress.env("itemZUID", items[0]?.meta?.ZUID);
     });
   });

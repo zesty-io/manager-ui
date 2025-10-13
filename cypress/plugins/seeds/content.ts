@@ -14,7 +14,10 @@ export type SeedContentTask = {
 };
 
 module.exports = function content(config) {
-  async function setUp(): Promise<SeedContentTask> {
+  const { formatPathPart } = require("../../../src/utility/formatPathPart");
+  const { formatName } = require("../../../src/utility/formatName");
+
+  async function seedContent(): Promise<SeedContentTask> {
     const jsonString = readFileSync(
       join(__dirname, "../../fixtures/content.json"),
       "utf8"
@@ -25,11 +28,14 @@ module.exports = function content(config) {
     const timeStamp = Date.now();
 
     // 1) Create Schema
+    // Append commit id for spec tracking
+    // append timestamp to prevent naming conflicts
+    const modelLabel = `${json.model.label} | ${config.env.COMMIT_ID} | ${timeStamp}`;
     const modelPayload = {
       ...json.model,
-      label: `${json.model.label} | ${timeStamp}`,
-      metaTitle: `${json.model.metaTitle} | ${timeStamp}`,
-      name: `${json.model.name}_${timeStamp}`,
+      label: modelLabel,
+      metaTitle: modelLabel,
+      name: formatName(modelLabel),
     };
     const modelResponse = await sdk.instance.createModel(modelPayload);
     const model = modelResponse?.data;
@@ -46,17 +52,25 @@ module.exports = function content(config) {
 
     // 3) Create Items
     let items = await Promise.all(
-      json.items.map((item) => {
+      json.items.map((item, index) => {
+        // Append commit id to item labels for spec tracking
+        // append timestamp to prevent naming conflicts
+        const itemLabel = `${item.web.metaTitle}-${config.env.COMMIT_ID}-${timeStamp}`;
         const payload = {
           ...item,
+          meta: {
+            ...item.meta,
+            sort: item.meta?.sort ?? index,
+          },
           web: {
             ...item.web,
-            metaTitle: `${item?.web?.metaTitle}-${timeStamp}`,
-            metaLinkText: `${item?.web?.metaLinkText}-${timeStamp}`,
+            metaTitle: itemLabel,
+            metaLinkText: itemLabel,
+            // only include pathpart if not a block type model
             ...(model?.type === "block"
               ? {}
               : {
-                  pathPart: `${item?.web?.pathPart}-${timeStamp}`,
+                  pathPart: formatPathPart(itemLabel),
                 }),
           },
         };
@@ -71,7 +85,7 @@ module.exports = function content(config) {
         });
       })
     );
-
+    // Return model, fields, and items for testing
     return {
       model,
       fields,
@@ -79,7 +93,8 @@ module.exports = function content(config) {
     };
   }
 
+  // CONTENT TASK MAPPING
   return {
-    "seed:content": setUp,
+    "seed:content": seedContent,
   };
 };
