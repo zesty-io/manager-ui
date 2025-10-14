@@ -1,6 +1,6 @@
-import { readFileSync, existsSync } from "fs";
+import { readFileSync } from "fs";
 import { join } from "path";
-import { getSDK } from "./utils";
+
 import {
   ContentItem,
   ContentModel,
@@ -16,7 +16,7 @@ export type SeedContentTask = {
 module.exports = function content(config) {
   const { formatPathPart } = require("../../../src/utility/formatPathPart");
   const { formatName } = require("../../../src/utility/formatName");
-
+  const { getSDK } = require("./utils");
   async function seedContent(): Promise<SeedContentTask> {
     const jsonString = readFileSync(
       join(__dirname, "../../fixtures/content.json"),

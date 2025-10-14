@@ -262,8 +262,6 @@ describe("Content Specs", () => {
 
     // Skipping relationship tests due to current fetching flow limitation
     it.skip("One to many Field", () => {
-      // cy.get("[data-cy='field:one_to_many'] input").clear();
-
       // Adds new relationship
       cy.waitOn("/v1/content/models/6-e3d0e0-965qp6/items*", () => {
         cy.get(
@@ -368,7 +366,7 @@ describe("Content Specs", () => {
     });
 
     it("should be able to clear date entries", () => {
-      cy.get("[data-cy='field:date']", { timeout: 30000 })
+      cy.get("[data-cy='field:date']")
         .find("[data-cy='dateFieldClearButton']")
         .click();
       cy.get("[data-cy='field:date']")
@@ -399,7 +397,7 @@ describe("Content Specs", () => {
     });
 
     it("should be able to clear date and time entries", () => {
-      cy.get("[data-cy='field:datetime']", { timeout: 30000 })
+      cy.get("[data-cy='field:datetime']")
         .find("[data-cy='dateFieldClearButton']")
         .click();
       cy.get("[data-cy='field:datetime']")

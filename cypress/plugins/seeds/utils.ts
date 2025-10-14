@@ -1,4 +1,4 @@
-import SDK from "@zesty-io/sdk";
+const SDK = require("@zesty-io/sdk");
 
 const sdkCache = new Map();
 let tokenPromise = null;
