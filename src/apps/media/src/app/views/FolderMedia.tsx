@@ -206,6 +206,9 @@ export const FolderMedia = ({
               <DnDProvider
                 currentBinId={groupData?.bin_id}
                 currentGroupId={groupData?.id}
+                sx={{
+                  overflowY: "scroll",
+                }}
               >
                 {!isFetching && !groupFiles?.length && !subgroups?.length ? (
                   <>

@@ -1,5 +1,5 @@
 import { useMemo, FC, CSSProperties } from "react";
-import { FixedSizeList as List } from "react-window";
+import { List, type RowComponentProps } from "react-window";
 import { Typography, Skeleton, Box } from "@mui/material";
 import AutoSizer, { Size } from "react-virtualized-auto-sizer";
 import { format, subDays } from "date-fns";
@@ -46,7 +46,7 @@ export const ActionsTimeline: FC<ActionsTimelineProps> = ({
   const todayLabel = format(new Date(), "MMMM d, yyyy");
   const yesterdayLabel = format(subDays(new Date(), 1), "MMMM d, yyyy");
 
-  const Row = ({ index, data, style }: ListRowProps) => {
+  const Row = ({ index, data, style }: any) => {
     const action = data[index];
 
     if (typeof action === "string") {
@@ -101,19 +101,14 @@ export const ActionsTimeline: FC<ActionsTimelineProps> = ({
 
   return (
     <Box data-cy="resource_list" flex={1}>
-      <AutoSizer>
-        {({ height, width }: Size) => (
-          <List
-            height={height}
-            itemCount={showSkeletons ? 10 : actionsWithHeaders.length}
-            itemSize={79}
-            width={width}
-            itemData={showSkeletons ? skeletonDataset : actionsWithHeaders}
-          >
-            {Row}
-          </List>
-        )}
-      </AutoSizer>
+      <List
+        rowCount={showSkeletons ? 10 : actionsWithHeaders.length}
+        rowHeight={79}
+        rowProps={{
+          data: showSkeletons ? skeletonDataset : actionsWithHeaders,
+        }}
+        rowComponent={Row}
+      />
     </Box>
   );
 };
