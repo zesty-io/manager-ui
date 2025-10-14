@@ -1,9 +1,12 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { useSelector } from "react-redux";
 import { Box } from "@mui/material";
 
 export default function PreviewMode(props) {
   const origin = window.location.origin;
+  const preview = useRef(null);
+  const [isLoaded, setIsLoaded] = useState(false);
+
   const instance = useSelector((state) => state.instance);
   const content = useSelector((state) => state.content);
   const instanceSettings = useSelector((state) => state.settings.instance);
@@ -12,12 +15,10 @@ export default function PreviewMode(props) {
       (setting) => setting.key === "preview_lock_password" && setting.value
     )
   );
-
-  const preview = useRef(null);
-
   // Sends message to preview window to update route
-  function route(itemZUID, version, dirty, hasErrors) {
-    if (preview.current) {
+  const route = useCallback(
+    (itemZUID, version, dirty, hasErrors, model) => {
+      if (!preview.current) return;
       // if not a string or a string that is not a content item zuid
       // then see if location contains a routable content item
       // only 7- resources are capable of having a path
@@ -26,58 +27,101 @@ export default function PreviewMode(props) {
           .split("/")
           .find((part) => part.slice(0, 2) === "7-");
       }
+      if (!itemZUID) return;
 
-      if (itemZUID) {
-        const item = content[itemZUID];
+      const item = content[itemZUID];
+      const previewUrl = `${CONFIG.URL_MANAGER_PROTOCOL}${instance.ZUID}${CONFIG.URL_MANAGER}/active-preview`;
 
-        let url = "";
+      let url = "";
 
-        if (props?.model?.type === "block") {
-          url = `/-/block/${props?.model?.name}.html?variant=${item?.meta?.ZUID}&version=${props.version}&preview=global`;
-        } else {
-          url = item?.web?.path
-            ? `${item.web.path}`
-            : `/-/instant/${item?.meta?.ZUID}.json`;
-
-          url = `${url}?_bypassError=true&__version=${props.version}`;
-        }
-
-        if (previewLock) {
-          url = `${url}&zpw=${previewLock.value}`;
-        }
-
-        preview.current.contentWindow.postMessage(
-          {
-            source: "zesty",
-            route: url,
-            settings: instanceSettings,
-            version: version,
-            dirty: dirty,
-            hasErrors,
-          },
-          origin
-        );
+      if (model?.type === "block") {
+        url = `/-/block/${model.name}.html?variant=${item?.meta?.ZUID}&version=${version}&preview=global`;
+      } else {
+        url = item?.web?.path
+          ? item.web.path
+          : `/-/instant/${item?.meta?.ZUID}.json`;
+        url += `?_bypassError=true&__version=${version}`;
       }
-    }
-  }
 
+      if (previewLock) {
+        url += `&zpw=${previewLock.value}`;
+      }
+
+      preview.current.contentWindow.postMessage(
+        {
+          source: "zesty",
+          previewUrl,
+          route: url,
+          settings: instanceSettings,
+          version,
+          dirty,
+          hasErrors,
+        },
+        origin
+      );
+    },
+    [content, instance, instanceSettings, previewLock, origin]
+  );
+
+  // On iframe load, set isLoaded and send initial route message
   useEffect(() => {
-    if (preview.current) {
-      // ActivePreview iframe is loading, send route when ready
-      preview.current.addEventListener("load", () => {
-        route(props.itemZUID, props.version, props.dirty, props.hasErrors);
-      });
+    const iframe = preview?.current;
+    if (!iframe) return;
 
-      // ActivePreview iframe is loaded, send route updates
-      const doc =
-        preview.current.contentDocument ||
-        preview.current.contentWindow.document;
-      if (doc.readyState === "complete") {
-        route(props.itemZUID, props.version, props.dirty, props.hasErrors);
-      }
+    const onLoad = () => {
+      route(
+        props.itemZUID,
+        props.version,
+        props.dirty,
+        props.hasErrors,
+        props.model
+      );
+      setIsLoaded(true);
+    };
+
+    iframe.addEventListener("load", onLoad);
+
+    // If iframe already loaded, trigger immediately
+    const doc = iframe.contentDocument || iframe.contentWindow?.document;
+    if (doc?.readyState === "complete") {
+      onLoad();
     }
-  }, [props.itemZUID, props.version, props.dirty, props.hasErrors]);
 
+    return () => {
+      iframe.removeEventListener("load", onLoad);
+    };
+  }, [
+    props.itemZUID,
+    props.version,
+    props.dirty,
+    props.hasErrors,
+    props.model,
+    preview?.current,
+    route,
+  ]);
+
+  // On prop changes or isLoaded, update route
+  useEffect(() => {
+    if (isLoaded) {
+      route(
+        props.itemZUID,
+        props.version,
+        props.dirty,
+        props.hasErrors,
+        props.model
+      );
+    }
+  }, [
+    props.itemZUID,
+    props.version,
+    props.dirty,
+    props.hasErrors,
+    props.model,
+    isLoaded,
+    route,
+  ]);
+
+  // Listen for postMessages from iframe
   useEffect(() => {
     const handleMessage = (event) => {
       if (event.data.source === "zesty") {
@@ -102,22 +146,17 @@ export default function PreviewMode(props) {
   }, []);
 
   return (
-    // <div data-cy="DuoModeContainer" className={styles.DMContainer}>
-
     <Box
       height="100%"
       width="100%"
-      sx={{
-        border: (theme) => `1px solid ${theme.palette.border}`,
+      sx={(theme) => ({
+        border: `1px solid ${theme.palette.border}`,
         borderRadius: "8px",
-      }}
+      })}
       component="iframe"
       ref={preview}
       src={`${CONFIG.URL_MANAGER_PROTOCOL}${instance.ZUID}${CONFIG.URL_MANAGER}/active-preview`}
-      // src={`https://${instance.ZUID}${CONFIG.URL_MANAGER}/active-preview`}
       frameBorder="0"
-    ></Box>
-
-    // </div>
+    />
   );
 }
