@@ -6,8 +6,6 @@ import {
   KeyboardArrowDownRounded,
   AddRounded,
 } from "@mui/icons-material";
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
 import { useDispatch } from "react-redux";
 
 import { ActiveItem } from "./ActiveItem";
@@ -121,7 +119,7 @@ export const RelationalFieldBase = ({
             <ActiveItemLoading key={index} draggable />
           ))
         ) : (
-          <DndProvider backend={HTML5Backend}>
+          <>
             {itemZUIDs?.slice(0, showAll ? undefined : 5)?.map((val, index) => (
               <ActiveItem
                 key={val}
@@ -146,7 +144,7 @@ export const RelationalFieldBase = ({
                 }}
               />
             ))}
-          </DndProvider>
+          </>
         )}
       </Stack>
       {itemZUIDs?.length > 5 && (
