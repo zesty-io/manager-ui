@@ -188,12 +188,6 @@ export const BlockTabs = (props: any) => {
                 </Box>
               </Box>
             )}
-          {createVariantDialogOpen && (
-            <CreateVariantDialog
-              onClose={() => setCreateVariantDialogOpen(false)}
-              model={props?.model}
-            />
-          )}
         </>
       )}
       {value === 1 && (
@@ -213,6 +207,12 @@ export const BlockTabs = (props: any) => {
         </Box>
       )}
       {value === 2 && <CodeSample />}
+      {createVariantDialogOpen && (
+        <CreateVariantDialog
+          onClose={() => setCreateVariantDialogOpen(false)}
+          model={props?.model}
+        />
+      )}
     </>
   );
 };

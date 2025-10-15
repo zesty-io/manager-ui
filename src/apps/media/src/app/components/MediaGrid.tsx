@@ -1,5 +1,5 @@
 import { useEffect, useRef, useMemo, useCallback, useState } from "react";
-import { VariableSizeGrid } from "react-window";
+import { Grid } from "react-window";
 import { Box, Typography } from "@mui/material";
 import { Folder } from "./Folder";
 import { File, Group } from "../../../../../shell/services/types";
@@ -20,20 +20,10 @@ export const MediaGrid = ({ groups, files, hideHeaders = false }: Props) => {
   const location = useLocation();
   const history = useHistory();
   const [columns, setColumns] = useState(4);
-  const listRef = useRef<VariableSizeGrid>();
 
   const onResize = (size: Size) => {
     setColumns(Math.floor(size.width / (225 + 16)));
-    if (listRef.current != null) {
-      listRef.current.resetAfterIndices({ columnIndex: 0, rowIndex: 0 });
-    }
   };
-
-  useEffect(() => {
-    if (listRef.current) {
-      listRef.current.resetAfterIndices({ columnIndex: 0, rowIndex: 0 });
-    }
-  }, [groups, files]);
 
   const grid = useMemo(() => {
     let tmp: string[] = [];
@@ -161,21 +151,15 @@ export const MediaGrid = ({ groups, files, hideHeaders = false }: Props) => {
 
   return (
     <Box sx={{ pl: 4, width: "100%", height: "100%" }}>
-      <AutoSizer onResize={onResize}>
-        {({ width, height }: Size) => (
-          <VariableSizeGrid
-            height={height}
-            ref={listRef}
-            columnCount={columns}
-            columnWidth={(index) => (width - 16) / columns}
-            rowHeight={(index) => getRowHeight(index)}
-            rowCount={grid.length / columns}
-            width={width}
-          >
-            {Row}
-          </VariableSizeGrid>
-        )}
-      </AutoSizer>
+      <Grid
+        columnCount={columns}
+        columnWidth={`${100 / columns}%`}
+        rowHeight={(index) => getRowHeight(index)}
+        rowCount={grid.length / columns}
+        cellComponent={Row}
+        cellProps={{}}
+        onResize={onResize}
+      />
     </Box>
   );
 };
