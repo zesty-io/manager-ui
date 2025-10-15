@@ -7,6 +7,8 @@ import { AllModels } from "./views/AllModels";
 import { SearchModels } from "./views/SearchModels";
 import { SchemaCreateWizard } from "./components/SchemaCreateWizard";
 import { ResizableContainer } from "../../../../shell/components/ResizeableContainer";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 
 export const SchemaApp = () => {
   return (
@@ -30,17 +32,19 @@ export const SchemaApp = () => {
       >
         <Sidebar />
       </ResizableContainer>
-      <Switch>
-        <Route exact path="/schema" render={() => <AllModels />} />
-        <Route path="/schema/search" render={() => <SearchModels />} />
-        <Route
-          exact
-          path="/schema/start"
-          render={() => <SchemaCreateWizard />}
-        />
-        <Redirect from="/schema/new" to="/schema" />
-        <Route path="/schema/:id" render={() => <Model />} />
-      </Switch>
+      <DndProvider backend={HTML5Backend}>
+        <Switch>
+          <Route exact path="/schema" render={() => <AllModels />} />
+          <Route path="/schema/search" render={() => <SearchModels />} />
+          <Route
+            exact
+            path="/schema/start"
+            render={() => <SchemaCreateWizard />}
+          />
+          <Redirect from="/schema/new" to="/schema" />
+          <Route path="/schema/:id" render={() => <Model />} />
+        </Switch>
+      </DndProvider>
     </Box>
   );
 };

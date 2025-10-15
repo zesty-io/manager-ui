@@ -34,6 +34,8 @@ import { StagedChangesProvider } from "./views/ItemList/StagedChangesContext";
 import { SelectedItemsProvider } from "./views/ItemList/SelectedItemsContext";
 import { TableSortProvider } from "./views/ItemList/TableSortProvider";
 import { useParams } from "../../../../shell/hooks/useParams";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 
 // Makes sure that other apps using legacy theme does not get affected with the palette
 
@@ -98,40 +100,42 @@ export default function ContentEditor() {
       ) : (
         <div className={cx(styles.Content)}>
           <div className={styles.ContentWrap}>
-            <Switch>
-              {/* <Route path="/content/releases" component={ReleaseApp} /> */}
-              <Route exact path="/content" component={Analytics} />
-              <Route exact path="/content/link/new" component={LinkCreate} />
-              <Route
-                exact
-                path="/content/:modelZUID/new"
-                component={ItemCreate}
-              />
-              <Route path="/content/link/:linkZUID" component={LinkEdit} />
-              <Route
-                exact
-                path="/content/:modelZUID/import"
-                component={CSVImport}
-              />
-              <Route
-                path="/content/:modelZUID/:itemZUID"
-                component={ItemEdit}
-              />
-              <Route
-                exact
-                path="/content/:modelZUID"
-                render={() => (
-                  <StagedChangesProvider>
-                    <SelectedItemsProvider>
-                      <TableSortProvider>
-                        <ItemList />
-                      </TableSortProvider>
-                    </SelectedItemsProvider>
-                  </StagedChangesProvider>
-                )}
-              />
-              <Route path="*" component={NotFound} />
-            </Switch>
+            <DndProvider backend={HTML5Backend}>
+              <Switch>
+                {/* <Route path="/content/releases" component={ReleaseApp} /> */}
+                <Route exact path="/content" component={Analytics} />
+                <Route exact path="/content/link/new" component={LinkCreate} />
+                <Route
+                  exact
+                  path="/content/:modelZUID/new"
+                  component={ItemCreate}
+                />
+                <Route path="/content/link/:linkZUID" component={LinkEdit} />
+                <Route
+                  exact
+                  path="/content/:modelZUID/import"
+                  component={CSVImport}
+                />
+                <Route
+                  path="/content/:modelZUID/:itemZUID"
+                  component={ItemEdit}
+                />
+                <Route
+                  exact
+                  path="/content/:modelZUID"
+                  render={() => (
+                    <StagedChangesProvider>
+                      <SelectedItemsProvider>
+                        <TableSortProvider>
+                          <ItemList />
+                        </TableSortProvider>
+                      </SelectedItemsProvider>
+                    </StagedChangesProvider>
+                  )}
+                />
+                <Route path="*" component={NotFound} />
+              </Switch>
+            </DndProvider>
           </div>
         </div>
       )}
