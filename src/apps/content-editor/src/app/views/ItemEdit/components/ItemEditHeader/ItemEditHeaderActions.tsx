@@ -379,7 +379,7 @@ export const ItemEditHeaderActions = ({
           ),
         ]);
 
-        // Map through all publish results and dispatch error notification if any failed
+        // Loop through all publish results and dispatch error notification if any failed
         publishPromises.forEach((promise: any) => {
           if ("error" in promise.value) {
             dispatch(
