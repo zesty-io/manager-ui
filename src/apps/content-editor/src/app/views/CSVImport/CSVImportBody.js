@@ -2,7 +2,7 @@ import { Component, PureComponent } from "react";
 import { connect } from "react-redux";
 import parse from "csv-parse/lib/es5/sync";
 import chunk from "lodash/chunk";
-import { VariableSizeList } from "react-window";
+import { List } from "react-window";
 import cx from "classnames";
 
 import Button from "@mui/material/Button";
@@ -19,6 +19,7 @@ import { notify } from "shell/store/notifications";
 import { fetchFields } from "shell/store/fields";
 
 import styles from "./CSVImport.less";
+import { Box } from "@mui/material";
 class CSVImportBody extends Component {
   state = {
     modelZUID: this.props.modelZUID,
@@ -405,20 +406,23 @@ class CSVImportBody extends Component {
             />
           )}
         </div>
-        <VariableSizeList
-          className={styles.Bottom}
-          itemCount={recordsWithColumns.length}
-          itemData={{
-            data: recordsWithColumns,
-            // if import is complete, records shown are errors only
-            error: this.state.complete,
-          }}
-          itemSize={(index) => (index === 0 ? 71 : 61)}
-          height={this.state.height}
-          width="100%"
+        <Box
+          sx={{ height: this.state.height, width: "100%", overflowY: "scroll" }}
         >
-          {Row}
-        </VariableSizeList>
+          <List
+            className={styles.Bottom}
+            rowCount={recordsWithColumns.length}
+            rowProps={{
+              data: {
+                data: recordsWithColumns,
+                // if import is complete, records shown are errors only
+                error: this.state.complete,
+              },
+            }}
+            rowHeight={(index) => (index === 0 ? 71 : 61)}
+            rowComponent={Row}
+          />
+        </Box>
       </main>
     );
   }

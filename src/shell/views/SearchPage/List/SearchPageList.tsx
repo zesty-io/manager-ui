@@ -1,6 +1,6 @@
 import { FC, useCallback } from "react";
 import Stack from "@mui/material/Stack";
-import { FixedSizeList, ListChildComponentProps } from "react-window";
+import { List } from "react-window";
 import AutoSizer, { Size } from "react-virtualized-auto-sizer";
 
 import {
@@ -30,7 +30,7 @@ export const SearchPageList: FC<SearchPageList> = ({
     ? new Array(10) // arbitrary length array of junk data
     : backendResults;
   const Row = useCallback(
-    ({ index, style }: ListChildComponentProps) => {
+    ({ index, style }) => {
       if (!loading) {
         const result = backendResults[index];
 
@@ -109,24 +109,12 @@ export const SearchPageList: FC<SearchPageList> = ({
   );
 
   return (
-    <Stack
-      direction="column"
-      sx={{ width: "100%", height: "100%" }}
-      data-cy="SearchPageList"
-    >
-      <AutoSizer>
-        {({ height, width }: Size) => (
-          <FixedSizeList
-            itemSize={72}
-            width={width}
-            itemCount={results.length}
-            height={height}
-            style={{ borderRadius: "8px" }}
-          >
-            {Row}
-          </FixedSizeList>
-        )}
-      </AutoSizer>
-    </Stack>
+    <List
+      rowHeight={72}
+      rowCount={results.length}
+      style={{ borderRadius: "8px" }}
+      rowComponent={Row}
+      rowProps={{}}
+    />
   );
 };

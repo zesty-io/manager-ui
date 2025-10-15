@@ -151,6 +151,9 @@ export const AllMedia = ({
             isDefaultBin
             currentBinId={defaultBin?.id}
             currentGroupId=""
+            sx={{
+              overflowY: "scroll",
+            }}
           >
             {!isFilesFetching && !isBinsFetching && !files?.length ? (
               <>
