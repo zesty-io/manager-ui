@@ -53,6 +53,14 @@ module.exports = async (env) => {
       client: {
         webSocketURL: "auto://0.0.0.0:0/ws",
       },
+      headers: {
+        "Content-Security-Policy":
+          "connect-src 'self' *.amplitude.com *.zesty.io *.a.run.app *.tiny.cloud *.getbynder.com *.bynder.com d8ejoa1fys2rk.cloudfront.net *.sentry.io www.googleapis.com us-central1-zesty-dev.cloudfunctions.net",
+        // *.a.run.app - zesty cloudrun apps
+        // d8ejoa1fys2rk.cloudfront.net - bynder modules
+        // googleapis.com - google fonts
+        // us-central1-zesty-dev.cloudfunctions.net - zesty cloud functions
+      },
     },
     devtool:
       process.env.NODE_ENV !== "development"
