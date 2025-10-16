@@ -334,6 +334,7 @@ export const SearchPage: FC = () => {
             flex: 1,
             overflowY: "scroll",
           }}
+          data-cy="SearchPageList"
         >
           <SearchPageList results={filteredResults} loading={isLoading} />
         </Box>

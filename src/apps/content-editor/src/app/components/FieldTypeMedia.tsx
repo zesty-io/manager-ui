@@ -5,7 +5,6 @@ import {
   useState,
   useImperativeHandle,
   forwardRef,
-  useRef,
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -52,7 +51,6 @@ import { FileTypePreview } from "../../../../media/src/app/components/FileModal/
 import { useGetInstanceSettingsQuery } from "../../../../../shell/services/instance";
 import { ReplaceFileModal } from "../../../../media/src/app/components/FileModal/ReplaceFileModal";
 import openBynder from "../../../../../utility/openBynder";
-import { useDrag, useDrop } from "react-dnd";
 
 type FieldTypeMediaProps = {
   images: string[];
@@ -556,7 +554,6 @@ export const FieldTypeMedia = forwardRef(
             </Box>
           )}
         </Stack>
-
         {selectionError && (
           <Typography variant="body2" color="error.dark" mt={0.5}>
             {selectionError}
@@ -609,7 +606,7 @@ export const MediaItem = ({
   isBynderSessionValid,
   hideActionButtons,
 }: MediaItemProps) => {
-  const lastHoveredIndexRef = useRef(null);
+  const [isDragging, setIsDragging] = useState(false);
   const [isDraggable, setIsDraggable] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const { data, isFetching } = useGetFileQuery(imageZUID, {
@@ -661,6 +658,28 @@ export const MediaItem = ({
 
   const isURL = imageZUID.substr(0, 4) === "http";
 
+  const handleDragStart = (e: React.DragEvent) => {
+    setIsDragging(true);
+    setDraggedIndex(index);
+  };
+
+  const handleDrag = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
+  const handleDragEnd = () => {
+    setIsDragging(false);
+    onReorder();
+  };
+
+  const handleDragEnter = (e: React.DragEvent) => {
+    setHoveredIndex(index);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
   const handleUpdateMutation = (renamedFilename?: string) => {
     let constructedFileType = "";
     if (fileExtension(data.filename))
@@ -676,46 +695,20 @@ export const MediaItem = ({
     });
   };
 
-  const [{ isDragging }, drag, preview] = useDrag({
-    type: "FIELD_TYPE_MEDIA",
-    item: () => {
-      setDraggedIndex(index);
-      return { index, imageZUID };
-    },
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
-    }),
-    end: () => {
-      onReorder();
-      lastHoveredIndexRef.current = null;
-    },
-  });
-
-  const [{ isOver }, drop] = useDrop({
-    accept: "FIELD_TYPE_MEDIA",
-    hover: (item: { index: number; imageZUID: string }, monitor) => {
-      if (
-        lastHoveredIndexRef.current !== index &&
-        monitor.isOver({ shallow: true })
-      ) {
-        setHoveredIndex(index);
-        lastHoveredIndexRef.current = index;
-      }
-    },
-    collect: (monitor) => ({
-      isOver: monitor.isOver(),
-    }),
-  });
   return (
     <>
       <Box
-        ref={(node) => drop(preview(node as HTMLElement))}
         data-cy="mediaItem"
         display="grid"
         gridTemplateColumns={
           hideDrag ? "min-content 1fr" : "repeat(2, min-content) 1fr"
         }
         draggable={isDraggable}
+        onDragStart={handleDragStart}
+        onDrag={handleDrag}
+        onDragEnter={handleDragEnter}
+        onDragEnd={handleDragEnd}
+        onDragOver={handleDragOver}
         onClick={() => {
           if (isURL) return;
 
@@ -762,7 +755,6 @@ export const MediaItem = ({
         )}
         {!hideDrag && (
           <IconButton
-            ref={drag}
             disableRipple
             size="small"
             sx={{
