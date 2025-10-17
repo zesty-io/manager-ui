@@ -100,7 +100,7 @@ module.exports = async (env) => {
         org: "zestyio",
         dryRun: process.env.NODE_ENV === "development" ? true : false,
         reactComponentAnnotation: {
-          enabled: true,
+          enabled: process.env.NODE_ENV !== "development",
         },
       }),
       new NodePolyfillPlugin({
