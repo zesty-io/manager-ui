@@ -710,7 +710,7 @@ export const MediaItem = ({
         onDragEnd={handleDragEnd}
         onDragOver={handleDragOver}
         onClick={() => {
-          if (isURL) return;
+          if (isURL || !data) return;
 
           onPreview && onPreview(imageZUID);
         }}
@@ -829,7 +829,7 @@ export const MediaItem = ({
               ) : (
                 <></>
               )}
-              {!isURL && (
+              {!isURL && data && (
                 <Tooltip title="Edit File" placement="bottom" enterDelay={800}>
                   <IconButton size="small">
                     <EditRounded fontSize="small" />
@@ -868,7 +868,7 @@ export const MediaItem = ({
                   horizontal: "right",
                 }}
               >
-                {!isURL && !isBynderAsset && (
+                {!isURL && !isBynderAsset && data && (
                   <Box>
                     <MenuItem
                       onClick={(event) => {
@@ -907,17 +907,19 @@ export const MediaItem = ({
                     </MenuItem>
                   </Box>
                 )}
-                <MenuItem
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    handleCopyClick(isURL ? imageZUID : data?.url, false);
-                  }}
-                >
-                  <ListItemIcon>
-                    {isCopied ? <CheckRounded /> : <LinkRounded />}
-                  </ListItemIcon>
-                  <ListItemText>Copy File Url</ListItemText>
-                </MenuItem>
+                {data && (
+                  <MenuItem
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      handleCopyClick(isURL ? imageZUID : data?.url, false);
+                    }}
+                  >
+                    <ListItemIcon>
+                      {isCopied ? <CheckRounded /> : <LinkRounded />}
+                    </ListItemIcon>
+                    <ListItemText>Copy File Url</ListItemText>
+                  </MenuItem>
+                )}
                 <MenuItem
                   onClick={(event) => {
                     event.stopPropagation();
