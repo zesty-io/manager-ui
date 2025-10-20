@@ -1,6 +1,6 @@
 import { Fragment, useState, useEffect } from "react";
 import cx from "classnames";
-import { Box } from "@mui/material";
+import { Box, CircularProgress, Typography } from "@mui/material";
 import iphone14 from "../../../../../public/images/iphone-14.png";
 import iphone14cam from "../../../../../public/images/iphone-14-camera.png";
 import iphone14pro from "../../../../../public/images/iphone-14-pro.png";
@@ -10,34 +10,66 @@ import pixel7 from "../../../../../public/images/pixel-7.png";
 import pixel7cam from "../../../../../public/images/pixel-7-camera.png";
 
 import styles from "./Frame.less";
+
+const LoadingComponent = ({ noDomain }) => (
+  <Box
+    sx={{
+      zIndex: 2,
+      boxSizing: "border-box",
+      position: "absolute",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+      alignItems: "center",
+    }}
+  >
+    <CircularProgress />
+    {!noDomain && (
+      <Typography variant="h5" fontWeight={600} mt={1.5}>
+        Finding Domain
+      </Typography>
+    )}
+  </Box>
+);
 export function Frame(props) {
   const [frameLoading, setFrameLoading] = useState(true);
+  const [routePath, setRoutePath] = useState("");
+  const loading = props?.isLoading || frameLoading;
 
   useEffect(() => {
     setFrameLoading(true);
-  }, [props.device]);
+    setRoutePath(`${props?.domain}${props?.route}`);
+  }, [props?.domain, props?.route, props?.device]);
 
   return (
     <Fragment>
       {props.device === "fullscreen" ? (
-        <iframe
-          className={cx(
-            styles.Frame,
-            props.blur ? styles.Blur : null
-            // frameLoading ? styles.FrameLoading : null
-          )}
-          src={`${props.domain}${props.route}`}
-          scrolling="yes"
-          frameBorder="0"
-          onLoad={() => setFrameLoading(false)}
-          style={{
-            transform: `scale(${props.zoom})`,
-            width: `${100 / props.zoom}%`,
-            height: `${100 / props.zoom}%`,
-            left: `${(100 - 100 / props.zoom) / 2}%`,
-            top: `${(100 - 100 / props.zoom) / 2}%`,
-          }}
-        />
+        <>
+          <iframe
+            className={cx(
+              styles.Frame,
+              props.blur ? styles.Blur : null
+              // frameLoading ? styles.FrameLoading : null
+            )}
+            src={routePath}
+            scrolling="yes"
+            frameBorder="0"
+            onLoad={() => setFrameLoading(false)}
+            style={{
+              transform: `scale(${props.zoom})`,
+              width: `${100 / props.zoom}%`,
+              height: `${100 / props.zoom}%`,
+              left: `${(100 - 100 / props.zoom) / 2}%`,
+              top: `${(100 - 100 / props.zoom) / 2}%`,
+              opacity: loading ? 0 : 1,
+            }}
+          />
+          {loading && <LoadingComponent noDomain={props?.domain !== "error"} />}
+        </>
       ) : (
         <>
           {templates[props.device].template({
@@ -56,6 +88,7 @@ export function Frame(props) {
                   }}
                 >
                   <iframe
+                    key={props.device}
                     className={cx(
                       styles.Frame,
                       props.blur ? styles.Blur : null,
@@ -68,12 +101,16 @@ export function Frame(props) {
                       height: `${100 / props.zoom}%`,
                       left: `${(100 - 100 / props.zoom) / 2}%`,
                       top: `${(100 - 100 / props.zoom) / 2}%`,
+                      opacity: loading ? 0 : 1,
                     }}
-                    src={`${props.domain}${props.route}`}
+                    src={routePath}
                     scrolling="yes"
                     frameBorder="0"
                     onLoad={() => setFrameLoading(false)}
                   />
+                  {loading && (
+                    <LoadingComponent noDomain={props?.domain !== "error"} />
+                  )}
                 </div>
               );
             },
