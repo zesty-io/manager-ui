@@ -1,4 +1,4 @@
-import {
+import React, {
   useCallback,
   useEffect,
   useMemo,
@@ -42,7 +42,7 @@ import {
 } from "../../../../../shell/services/mediaManager";
 import { fileUploadStage } from "../../../../../shell/store/media-revamp";
 import { useDropzone } from "react-dropzone";
-import { IconButton, ImageSync, theme } from "@zesty-io/material";
+import { IconButton, ImageSync } from "@zesty-io/material";
 import { FileModal } from "../../../../media/src/app/components/FileModal";
 import RenameFileModal from "../../../../media/src/app/components/FileModal/RenameFileModal";
 import { fileExtension } from "../../../../media/src/app/utils/fileUtils";
@@ -53,7 +53,7 @@ import { useGetInstanceSettingsQuery } from "../../../../../shell/services/insta
 import { ReplaceFileModal } from "../../../../media/src/app/components/FileModal/ReplaceFileModal";
 import openBynder from "../../../../../utility/openBynder";
 import { useDrag, useDrop } from "react-dnd";
-
+import DndContextProvider from "shell/components/DndContextProvider";
 type FieldTypeMediaProps = {
   images: string[];
   limit: number;
@@ -486,34 +486,37 @@ export const FieldTypeMedia = forwardRef(
     return (
       <>
         <Stack
+          id={name}
           gap={1}
           sx={{
             border: (theme) =>
               hasError ? `1px solid ${theme.palette.error.main}` : "none",
           }}
         >
-          {sortedImages.map((image, index) => {
-            const isBynderAsset = image.includes("bynder.com");
+          <DndContextProvider id={name}>
+            {sortedImages.map((image, index) => {
+              const isBynderAsset = image.includes("bynder.com");
 
-            return (
-              <MediaItem
-                key={image}
-                imageZUID={image}
-                index={index}
-                setDraggedIndex={setDraggedIndex}
-                setHoveredIndex={setHoveredIndex}
-                onReorder={handleReorder}
-                onPreview={(imageZUID: string) => setShowFileModal(imageZUID)}
-                onRemove={removeImage}
-                onReplace={(imageZUID) => {
-                  setImageToReplace(imageZUID);
-                }}
-                hideDrag={hideDrag || limit === 1}
-                isBynderAsset={isBynderAsset}
-                isBynderSessionValid={!!isBynderSessionValid}
-              />
-            );
-          })}
+              return (
+                <MediaItem
+                  key={image}
+                  imageZUID={image}
+                  index={index}
+                  setDraggedIndex={setDraggedIndex}
+                  setHoveredIndex={setHoveredIndex}
+                  onReorder={handleReorder}
+                  onPreview={(imageZUID: string) => setShowFileModal(imageZUID)}
+                  onRemove={removeImage}
+                  onReplace={(imageZUID) => {
+                    setImageToReplace(imageZUID);
+                  }}
+                  hideDrag={hideDrag || limit === 1}
+                  isBynderAsset={isBynderAsset}
+                  isBynderSessionValid={!!isBynderSessionValid}
+                />
+              );
+            })}
+          </DndContextProvider>
           {limit > images.length && (
             <Box display="flex" gap={1}>
               {!isBynderSessionValid && (
@@ -556,7 +559,6 @@ export const FieldTypeMedia = forwardRef(
             </Box>
           )}
         </Stack>
-
         {selectionError && (
           <Typography variant="body2" color="error.dark" mt={0.5}>
             {selectionError}
@@ -676,40 +678,44 @@ export const MediaItem = ({
     });
   };
 
-  const [{ isDragging }, drag, preview] = useDrag({
-    type: "FIELD_TYPE_MEDIA",
-    item: () => {
-      setDraggedIndex(index);
-      return { index, imageZUID };
-    },
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
-    }),
-    end: () => {
-      onReorder();
-      lastHoveredIndexRef.current = null;
-    },
-  });
+  const [{ isDragging }, drag, preview] = !!hideDrag
+    ? [{ isDragging: false }, null, null]
+    : useDrag({
+        type: "FIELD_TYPE_MEDIA",
+        item: () => {
+          setDraggedIndex(index);
+          return { index, imageZUID };
+        },
+        collect: (monitor) => ({
+          isDragging: monitor.isDragging(),
+        }),
+        end: () => {
+          onReorder();
+          lastHoveredIndexRef.current = null;
+        },
+      });
 
-  const [{ isOver }, drop] = useDrop({
-    accept: "FIELD_TYPE_MEDIA",
-    hover: (item: { index: number; imageZUID: string }, monitor) => {
-      if (
-        lastHoveredIndexRef.current !== index &&
-        monitor.isOver({ shallow: true })
-      ) {
-        setHoveredIndex(index);
-        lastHoveredIndexRef.current = index;
-      }
-    },
-    collect: (monitor) => ({
-      isOver: monitor.isOver(),
-    }),
-  });
+  const [_, drop] = !!hideDrag
+    ? [null, null]
+    : useDrop({
+        accept: "FIELD_TYPE_MEDIA",
+        hover: (item: { index: number; imageZUID: string }, monitor) => {
+          if (
+            lastHoveredIndexRef.current !== index &&
+            monitor.isOver({ shallow: true })
+          ) {
+            setHoveredIndex(index);
+            lastHoveredIndexRef.current = index;
+          }
+        },
+        collect: (monitor) => ({
+          isOver: monitor.isOver(),
+        }),
+      });
   return (
     <>
       <Box
-        ref={(node) => drop(preview(node as HTMLElement))}
+        ref={!!hideDrag ? null : (node) => drop(preview(node as HTMLElement))}
         data-cy="mediaItem"
         display="grid"
         gridTemplateColumns={
@@ -762,8 +768,10 @@ export const MediaItem = ({
         )}
         {!hideDrag && (
           <IconButton
-            ref={drag}
+            ref={!!hideDrag ? null : drag}
             disableRipple
+            disableFocusRipple
+            disableTouchRipple
             size="small"
             sx={{
               cursor: "grab",
