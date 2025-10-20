@@ -41,7 +41,7 @@ module.exports = function content(config) {
     const model = modelResponse?.data;
 
     // 2) Create Fields
-    let fields = await Promise.all(
+    const fields = await Promise.all(
       json.fields.map((field) => {
         return sdk.instance.createField(model?.ZUID, field).then((res) => ({
           ...field,
@@ -51,7 +51,7 @@ module.exports = function content(config) {
     );
 
     // 3) Create Items
-    let items = await Promise.all(
+    const items = await Promise.all(
       json.items.map((item, index) => {
         // Append commit id to item labels for spec tracking
         // append timestamp to prevent naming conflicts
