@@ -3,7 +3,7 @@ import { Button, Tooltip, Chip, MenuList, Popover } from "@mui/material";
 import { KeyboardArrowDownRounded } from "@mui/icons-material";
 import { useParams } from "react-router";
 import { useDispatch } from "react-redux";
-import { VariableSizeList } from "react-window";
+import { List, useDynamicRowHeight } from "react-window";
 
 import { Row } from "./Row";
 import { BG_COLOR_MAPPING } from "./VersionItem";
@@ -32,6 +32,9 @@ export const VersionSelector = memo(
     const rowHeights = useRef(null);
     const [anchorEl, setAnchorEl] = useState<HTMLElement>(null);
     const [listHeight, setListHeight] = useState(DEFAULT_LIST_HEIGHT);
+    const rowHeight = useDynamicRowHeight({
+      defaultRowHeight: DEFAULT_ROW_HEIGHT,
+    });
     const { modelZUID, itemZUID } = useParams<{
       modelZUID: string;
       itemZUID: string;
@@ -128,26 +131,6 @@ export const VersionSelector = memo(
         });
         setAnchorEl(null);
       }
-    };
-
-    const setRowHeight = (index: number, size: number) => {
-      if (ROW_HEIGHTS[index] !== size) {
-        ROW_HEIGHTS = { ...ROW_HEIGHTS, [index]: size };
-        listRef.current?.resetAfterIndex(index);
-      }
-    };
-
-    const getRowHeight = (index: number) => {
-      setTimeout(() => {
-        const totalHeight = +Object.values(ROW_HEIGHTS).reduce(
-          (acc: number, curr: number) => acc + curr,
-          0
-        );
-
-        setListHeight(totalHeight < 540 ? totalHeight : 540);
-      });
-
-      return ROW_HEIGHTS[index] || DEFAULT_ROW_HEIGHT;
     };
 
     return (
@@ -253,24 +236,20 @@ export const VersionSelector = memo(
             },
           }}
         >
-          <VariableSizeList
-            ref={listRef}
-            height={listHeight}
-            width={379}
-            itemCount={mappedVersions?.length}
-            itemData={
-              {
-                versions: mappedVersions,
-                activeVersion,
-                handleLoadVersion,
-                setRowHeight,
-              } as any
-            }
-            itemSize={getRowHeight}
-            innerElementType={MenuList}
-          >
-            {Row}
-          </VariableSizeList>
+          <MenuList>
+            <List
+              rowCount={mappedVersions?.length}
+              rowProps={
+                {
+                  versions: mappedVersions,
+                  activeVersion,
+                  handleLoadVersion,
+                } as any
+              }
+              rowHeight={rowHeight}
+              rowComponent={Row}
+            />
+          </MenuList>
         </Popover>
       </>
     );

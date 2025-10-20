@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { uniqBy } from "lodash";
-import { FixedSizeList as List } from "react-window";
+import { List } from "react-window";
 import { ResourceListItem } from "./ResourceListItem";
 import { useParams } from "shell/hooks/useParams";
 import { useWindowSize } from "react-use";
@@ -42,13 +42,10 @@ export const ResourceList = (props) => {
 
   return (
     <List
-      height={height - 284}
-      itemCount={props.showSkeletons ? 10 : sortedResources.length}
-      itemSize={77}
-      width={"100%"}
-      itemData={sortedResources}
-    >
-      {Row}
-    </List>
+      rowCount={props.showSkeletons ? 10 : sortedResources.length}
+      rowHeight={77}
+      rowProps={{ data: sortedResources }}
+      rowComponent={Row}
+    />
   );
 };

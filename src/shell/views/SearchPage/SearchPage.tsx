@@ -327,15 +327,14 @@ export const SearchPage: FC = () => {
       ) : (
         <Box
           sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "flex-start",
             px: 3,
             py: 0,
             gap: 2,
             backgroundColor: "grey.50",
-            height: "100%",
+            flex: 1,
+            overflowY: "scroll",
           }}
+          data-cy="SearchPageList"
         >
           <SearchPageList results={filteredResults} loading={isLoading} />
         </Box>

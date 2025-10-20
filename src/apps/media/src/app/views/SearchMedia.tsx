@@ -197,12 +197,7 @@ export const SearchMedia = ({
           <CircularProgress />
         </Box>
       ) : sortedGroups?.length || userFilteredFiles?.length ? (
-        <Box
-          sx={{
-            height: "100%",
-            width: "100%",
-          }}
-        >
+        <>
           <Header
             title={term}
             hideUpload
@@ -212,12 +207,19 @@ export const SearchMedia = ({
             showBackButton
           />
           <Controls />
-          {currentMediaView === "grid" ? (
-            <MediaGrid files={userFilteredFiles} groups={sortedGroups} />
-          ) : (
-            <MediaList files={userFilteredFiles} />
-          )}
-        </Box>
+          <Box
+            sx={{
+              overflowY: "scroll",
+              flex: 1,
+            }}
+          >
+            {currentMediaView === "grid" ? (
+              <MediaGrid files={userFilteredFiles} groups={sortedGroups} />
+            ) : (
+              <MediaList files={userFilteredFiles} />
+            )}
+          </Box>
+        </>
       ) : (
         <SearchEmptyState searchTerm={term} />
       )}
