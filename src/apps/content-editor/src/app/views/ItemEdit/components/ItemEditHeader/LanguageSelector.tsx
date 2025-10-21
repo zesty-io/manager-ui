@@ -72,7 +72,9 @@ export const LanguageSelector = () => {
   useEffect(() => {
     if (!isLoadingLanguages) {
       const lang = languages?.find((lang) => lang.ID === item?.meta?.langID);
-      if (lang) setActiveLanguage(lang);
+      if (lang) {
+        setActiveLanguage(lang);
+      }
     }
   }, [item?.meta?.langID, languages, isLoadingLanguages]);
 

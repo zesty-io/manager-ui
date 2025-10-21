@@ -98,8 +98,9 @@ export const DuplicateItemDialog = ({ onClose }: DuplicateItemProps) => {
       .unwrap()
       .then((res) => {
         refetchContentModels();
-        Promise.resolve(dispatch(fetchItems(modelZUID))).then(
-          (fetchItemsResponse: any) => {
+        dispatch(fetchItems(modelZUID))
+          //@ts-ignore
+          .then((fetchItemsResponse: any) => {
             const createdItem = fetchItemsResponse?.data?.find(
               (item: ContentItem) => item?.meta?.ZUID === res.data.ZUID
             );
@@ -113,8 +114,7 @@ export const DuplicateItemDialog = ({ onClose }: DuplicateItemProps) => {
                   : "content"
               }/${modelZUID}/${itemLangZUID}`
             );
-          }
-        );
+          });
         onClose();
       })
       .catch((error) => {
