@@ -678,44 +678,56 @@ export const MediaItem = ({
     });
   };
 
-  const [{ isDragging }, drag, preview] = !!hideDrag
-    ? [{ isDragging: false }, null, null]
-    : useDrag({
-        type: "FIELD_TYPE_MEDIA",
-        item: () => {
-          setDraggedIndex(index);
-          return { index, imageZUID };
-        },
-        collect: (monitor) => ({
-          isDragging: monitor.isDragging(),
-        }),
-        end: () => {
-          onReorder();
-          lastHoveredIndexRef.current = null;
-        },
-      });
+  const [{ isDragging }, drag, preview] = useDrag(
+    {
+      type: "FIELD_TYPE_MEDIA",
+      item: () => {
+        setDraggedIndex?.(index);
+        return { index, imageZUID };
+      },
+      collect: (monitor) => ({
+        isDragging: monitor.isDragging(),
+      }),
+      end: () => {
+        onReorder?.();
+        lastHoveredIndexRef.current = null;
+      },
+    },
+    [index, imageZUID, onReorder, setDraggedIndex]
+  );
 
-  const [_, drop] = !!hideDrag
-    ? [null, null]
-    : useDrop({
-        accept: "FIELD_TYPE_MEDIA",
-        hover: (item: { index: number; imageZUID: string }, monitor) => {
-          if (
-            lastHoveredIndexRef.current !== index &&
-            monitor.isOver({ shallow: true })
-          ) {
-            setHoveredIndex(index);
-            lastHoveredIndexRef.current = index;
-          }
-        },
-        collect: (monitor) => ({
-          isOver: monitor.isOver(),
-        }),
-      });
+  const [, drop] = useDrop(
+    {
+      accept: "FIELD_TYPE_MEDIA",
+      hover: (item: { index: number; imageZUID: string }, monitor) => {
+        if (
+          !monitor.isOver({ shallow: true }) ||
+          lastHoveredIndexRef.current === index
+        ) {
+          return;
+        }
+        setHoveredIndex?.(index);
+        lastHoveredIndexRef.current = index;
+      },
+    },
+    [index, setHoveredIndex]
+  );
+
+  const dragDropRef = useCallback(
+    (node: HTMLElement | null) => {
+      if (hideDrag) return;
+
+      drag(node);
+      drop(node);
+      preview(node);
+    },
+    [drag, drop, preview, hideDrag]
+  );
+
   return (
     <>
       <Box
-        ref={!!hideDrag ? null : (node) => drop(preview(node as HTMLElement))}
+        ref={hideDrag ? null : dragDropRef}
         data-cy="mediaItem"
         display="grid"
         gridTemplateColumns={

@@ -3,7 +3,7 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 
 const DndContextProvider = memo(
-  ({ id, children }: { id?: string; children: React.ReactNode }) => {
+  ({ id, children }: { id: string; children: React.ReactNode }) => {
     const [context, setContext] = useState(null);
 
     useEffect(() => {
@@ -17,5 +17,7 @@ const DndContextProvider = memo(
     ) : null;
   }
 );
+
+DndContextProvider.displayName = "DndContextProvider";
 
 export default DndContextProvider;

@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useContext, useRef } from "react";
+import { useEffect, useState, useCallback, useContext } from "react";
 import { Box, Button, Stack } from "@mui/material";
 import {
   LinkRounded,
@@ -6,6 +6,8 @@ import {
   KeyboardArrowDownRounded,
   AddRounded,
 } from "@mui/icons-material";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 import { useDispatch } from "react-redux";
 
 import { ActiveItem } from "./ActiveItem";
@@ -19,8 +21,6 @@ import { ActiveItemLoading } from "./ActiveItem/ActiveItemLoading";
 import { CreateNewItemDialog } from "./CreateNewItemDialog";
 import { useParams } from "../../hooks/useParams";
 import { CreateContentItemDialogContext } from "../../contexts/CreateContentItemDialogProvider";
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
 
 type RelationalFieldBaseProps = {
   name: string;
@@ -121,7 +121,7 @@ export const RelationalFieldBase = ({
             <ActiveItemLoading key={index} draggable />
           ))
         ) : (
-          <DndProvider backend={HTML5Backend} key={name}>
+          <DndProvider backend={HTML5Backend}>
             {itemZUIDs?.slice(0, showAll ? undefined : 5)?.map((val, index) => (
               <ActiveItem
                 key={val}
