@@ -13,10 +13,9 @@ import { useSelector, useDispatch } from "react-redux";
 import { AppState } from "../../../../../../../../shell/store/types";
 import {
   ContentItem,
-  Data,
+  Language,
 } from "../../../../../../../../shell/services/types";
 import {
-  instanceApi,
   useCreateContentItemMutation,
   useGetContentModelFieldsQuery,
   useGetContentModelsQuery,
@@ -42,6 +41,10 @@ export const DuplicateItemDialog = ({ onClose }: DuplicateItemProps) => {
   const item = useSelector(
     (state: AppState) => state.content[itemZUID] as ContentItem
   );
+  const languages = useSelector((state: AppState) => state.languages);
+  const langCode =
+    languages?.find((lang: Language) => lang?.ID === item?.meta?.langID)
+      ?.code || languages?.find((lang: Language) => lang?.default)?.code;
   const { data: models, refetch: refetchContentModels } =
     useGetContentModelsQuery();
 
@@ -94,16 +97,25 @@ export const DuplicateItemDialog = ({ onClose }: DuplicateItemProps) => {
     })
       .unwrap()
       .then((res) => {
-        dispatch(fetchItems(modelZUID));
         refetchContentModels();
-        onClose();
-        history.push(
-          `/${
-            models?.find((model) => model?.ZUID === modelZUID)?.type === "block"
-              ? "blocks"
-              : "content"
-          }/${modelZUID}/${res.data.ZUID}`
+        Promise.resolve(dispatch(fetchItems(modelZUID))).then(
+          (fetchItemsResponse: any) => {
+            const createdItem = fetchItemsResponse?.data?.find(
+              (item: ContentItem) => item?.meta?.ZUID === res.data.ZUID
+            );
+            const itemLangZUID =
+              createdItem?.siblings?.[langCode] || res?.data?.ZUID;
+            history.push(
+              `/${
+                models?.find((model) => model?.ZUID === modelZUID)?.type ===
+                "block"
+                  ? "blocks"
+                  : "content"
+              }/${modelZUID}/${itemLangZUID}`
+            );
+          }
         );
+        onClose();
       })
       .catch((error) => {
         console.error("Failed to duplicate item", error);
