@@ -158,11 +158,14 @@ export const ItemEditHeaderActions = ({
     );
 
   useEffect(() => {
+    // Automatically opens the create redirect modal
+    // when there are changes to the url path part
     if (
       !isLoadingVersions &&
       !isFetchingVersions &&
       !isFetching &&
-      !!isCheckingPathUpdate
+      !!isCheckingPathUpdate &&
+      Array.isArray(itemVersions)
     ) {
       const publishedItemVersions = itemVersions
         ?.filter((ver) => !!ver?.publishAt)
@@ -180,7 +183,10 @@ export const ItemEditHeaderActions = ({
           );
         });
 
-      if (publishedItemVersions?.length < 2) return;
+      if (publishedItemVersions?.length < 2) {
+        return;
+      }
+
       const activeVersion = publishedItemVersions[0];
       const previousVersion = publishedItemVersions[1];
       const pathHasChanged =
