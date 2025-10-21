@@ -4,7 +4,6 @@ import { Brain } from "@zesty-io/material";
 import { ComponentType, useState } from "react";
 import { useSelector } from "react-redux";
 import { keyframes } from "@emotion/react";
-import moment from "moment-timezone";
 
 import { AppState } from "../../store/types";
 import instanceZUID from "../../../utility/instanceZUID";
@@ -19,16 +18,6 @@ const rotateAnimation = keyframes`
 	}
 `;
 
-// This date is used determine if the AI feature is enabled
-const enabledDate = "2023-01-13";
-// This array is used to determine if the AI feature is enabled for a specific instance ZUID
-const enabledZUIDs = [
-  "8-ccaa9ae88b-j7gv1p",
-  "8-da90a8a6fd-mz0q4d",
-  "8-8afecde885-314dm",
-  "8-dad89bd3a5-q7wz9h",
-];
-
 const paragraphFormat = (text: string) => {
   return `<p>${text
     .split(/\n/)
@@ -41,9 +30,6 @@ export const withAI = (WrappedComponent: ComponentType) =>
     const instanceCreatedAt = useSelector(
       (state: AppState) => state.instance.createdAt
     );
-    const isEnabled =
-      moment(instanceCreatedAt).isSameOrAfter(moment(enabledDate)) ||
-      enabledZUIDs.includes(instanceZUID);
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
     const [focused, setFocused] = useState(false);
     const [key, setKey] = useState(0);

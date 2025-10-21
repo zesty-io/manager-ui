@@ -1,6 +1,5 @@
 import { useEffect, useMemo } from "react";
 import { useParams } from "react-router";
-import moment from "moment-timezone";
 
 import { useParams as useSearchParams } from "../../../../../shell/hooks/useParams";
 import { EmptyState } from "../components/EmptyState";
@@ -150,7 +149,7 @@ export const FolderMedia = ({
       default:
         return [...unsortedSubGroups]
           .sort((a, b) => a.name.localeCompare(b.name))
-          .sort((a, b) => moment(b.created_at).diff(a.created_at));
+          .sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at));
     }
   }, [unsortedSubGroups, sortOrder, filetypeFilter, dateRangeFilter]);
 
@@ -194,18 +193,22 @@ export const FolderMedia = ({
           ) : (
             <>
               <Controls />
-              {(filetypeFilter || dateRangeFilter) && groupFiles?.length > 0 && (
-                <Typography
-                  color="text.secondary"
-                  variant="h6"
-                  sx={{ pl: 3, pt: 2, pb: 1.5 }}
-                >
-                  {groupFiles?.length} matches found
-                </Typography>
-              )}
+              {(filetypeFilter || dateRangeFilter) &&
+                groupFiles?.length > 0 && (
+                  <Typography
+                    color="text.secondary"
+                    variant="h6"
+                    sx={{ pl: 3, pt: 2, pb: 1.5 }}
+                  >
+                    {groupFiles?.length} matches found
+                  </Typography>
+                )}
               <DnDProvider
                 currentBinId={groupData?.bin_id}
                 currentGroupId={groupData?.id}
+                sx={{
+                  overflowY: "scroll",
+                }}
               >
                 {!isFetching && !groupFiles?.length && !subgroups?.length ? (
                   <>

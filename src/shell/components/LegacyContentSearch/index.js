@@ -8,7 +8,6 @@ import {
   useCallback,
 } from "react";
 import { connect, useDispatch } from "react-redux";
-import moment from "moment-timezone";
 import debounce from "lodash/debounce";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -31,9 +30,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import PersonSearchIcon from "@mui/icons-material/PersonSearch";
 
-import { Loader } from "@zesty-io/core/Loader";
-
-import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
+import { Loader } from "shell/components/legacy/Loader";
 
 import { searchItems } from "shell/store/content";
 import { notify } from "shell/store/notifications";
@@ -221,22 +218,16 @@ const List = connect((state) => {
       return 0;
     },
     edited: (a, b) => {
-      if (moment(a.meta.updatedAt) > moment(b.meta.updatedAt)) {
-        return -1;
-      }
-      if (moment(a.meta.updatedAt) < moment(b.meta.updatedAt)) {
-        return 1;
-      }
-      return 0;
+      return (
+        new Date(b.meta.updatedAt).getTime() -
+        new Date(a.meta.updatedAt).getTime()
+      );
     },
     created: (a, b) => {
-      if (moment(a.web.createdAt) > moment(b.web.createdAt)) {
-        return -1;
-      }
-      if (moment(a.web.createdAt) < moment(b.web.createdAt)) {
-        return 1;
-      }
-      return 0;
+      return (
+        new Date(b.web.createdAt).getTime() -
+        new Date(a.web.createdAt).getTime()
+      );
     },
     user: (a, b) => {
       if (a.web.createdByUserZUID > b.web.createdByUserZUID) {
@@ -368,6 +359,21 @@ const ListOption = (props) => {
     (lang) => lang.ID === props.opt?.meta?.langID
   );
 
+  const createdDate = props.opt?.web?.createdAt
+    ? new Date(props.opt.web.createdAt)
+    : null;
+  const createdOn =
+    createdDate && isValid(createdDate)
+      ? format(createdDate, "MMM d, yyyy h:mm a")
+      : "";
+  const editedDate = props.opt?.meta?.updatedAt
+    ? new Date(props.opt.meta.updatedAt)
+    : null;
+  const editedAgo =
+    editedDate && isValid(editedDate)
+      ? formatDistanceToNow(editedDate, { addSuffix: true })
+      : "";
+
   let modelIcon;
   const model = props.models[props.opt.meta.contentModelZUID];
   if (model && model?.type) {
@@ -434,14 +440,12 @@ const ListOption = (props) => {
       {/* meta */}
       <p className={styles.caption}>{`Created by ${
         createdBy
-          ? createdBy.firstName + " " + createdBy.lastName
+          ? `${createdBy.firstName} ${createdBy.lastName}`
           : "Unknown User"
-      } on ${moment(props.opt?.web?.createdAt).format(
-        CONFIG.TIME_DISPLAY_FORMAT
-      )}`}</p>
-      <p className={styles.caption}>{`Version ${
-        props.opt?.meta?.version
-      } was edited ${moment(props.opt?.meta?.updatedAt).from()}`}</p>
+      } on ${createdOn}`}</p>
+      <p
+        className={styles.caption}
+      >{`Version ${props.opt?.meta?.version} was edited ${editedAgo}`}</p>
     </li>
   );
 };

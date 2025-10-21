@@ -30,7 +30,6 @@ import {
 } from "../../../../../../shell/services/mediaManager";
 import { fileExtension } from "../../utils/fileUtils";
 import { RenameFileModal } from "./RenameFileModal";
-import moment from "moment";
 import { fileTypeToColor } from "../../utils/fileUtils";
 
 import DriveFileRenameOutlineRoundedIcon from "@mui/icons-material/DriveFileRenameOutlineRounded";
@@ -43,6 +42,7 @@ import { MoveFileDialog } from "./MoveFileDialog";
 import { useDispatch } from "react-redux";
 import { notify } from "../../../../../../shell/store/notifications";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query";
+import { format } from "date-fns";
 
 interface Props {
   id?: string;
@@ -513,21 +513,20 @@ export const FileModalContent: FC<Props> = ({
             </Box>
             <Box sx={{ pl: 2 }}>
               <Typography variant="body2">
-                {moment(createdAt).format("LL")}
+                {createdAt && format(new Date(createdAt), "PPP")}
               </Typography>
               <Typography variant="body2" sx={{ color: "text.secondary" }}>
-                {moment(createdAt).calendar(null, {
-                  lastDay: "[Yesterday][,] h:mm A ",
-                  sameDay: "[Today][,] h:mm A ",
-                  lastWeek: "ddd[,] h:mm A ",
-                  sameElse: "ddd[,] h:mm A ",
-                })}
-                {new Date(createdAt)
-                  .toLocaleDateString("en-US", {
-                    day: "2-digit",
-                    timeZoneName: "short",
-                  })
-                  .slice(4)}
+                {createdAt && (
+                  <>
+                    {format(new Date(createdAt), "EEE, h:mm a")}{" "}
+                    {new Date(createdAt)
+                      .toLocaleTimeString("en-US", {
+                        timeZoneName: "short",
+                      })
+                      .split(" ")
+                      .pop()}
+                  </>
+                )}
               </Typography>
             </Box>
           </Box>
@@ -547,21 +546,20 @@ export const FileModalContent: FC<Props> = ({
               </Box>
               <Box sx={{ pl: 2 }}>
                 <Typography variant="body2">
-                  {moment(updatedAt).format("LL")}
+                  {updatedAt && format(new Date(updatedAt), "PPP")}
                 </Typography>
                 <Typography variant="body2" sx={{ color: "text.secondary" }}>
-                  {moment(updatedAt).calendar(null, {
-                    lastDay: "[Yesterday][,] h:mm A ",
-                    sameDay: "[Today][,] h:mm A ",
-                    lastWeek: "ddd[,] h:mm A ",
-                    sameElse: "ddd[,] h:mm A ",
-                  })}
-                  {new Date(updatedAt)
-                    .toLocaleDateString("en-US", {
-                      day: "2-digit",
-                      timeZoneName: "short",
-                    })
-                    .slice(4)}
+                  {updatedAt && (
+                    <>
+                      {format(new Date(updatedAt), "EEE, h:mm a")}{" "}
+                      {new Date(updatedAt)
+                        .toLocaleTimeString("en-US", {
+                          timeZoneName: "short",
+                        })
+                        .split(" ")
+                        .pop()}
+                    </>
+                  )}
                 </Typography>
               </Box>
             </Box>

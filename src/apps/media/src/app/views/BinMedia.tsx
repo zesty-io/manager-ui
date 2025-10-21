@@ -1,6 +1,5 @@
 import { useEffect, useMemo } from "react";
 import { useParams } from "react-router";
-import moment from "moment-timezone";
 
 import { EmptyState } from "../components/EmptyState";
 import {
@@ -28,6 +27,7 @@ import {
 } from "../utils/fileUtils";
 import { Filetype } from "../../../../../shell/store/media-revamp";
 import { useParams as useSearchParams } from "../../../../../shell/hooks/useParams";
+import { compareDesc, isValid, parseISO } from "date-fns";
 
 type Params = { id: string };
 
@@ -35,6 +35,22 @@ interface Props {
   addImagesCallback?: (selectedFiles: File[]) => void;
   setCurrentFilesCallback: (files: File[]) => void;
 }
+
+const compareCreatedAtDesc = (
+  a: { created_at?: any },
+  b: { created_at?: any }
+) => {
+  const da = new Date(a.created_at);
+  const db = new Date(b.created_at);
+
+  const va = isValid(da);
+  const vb = isValid(db);
+
+  if (va && vb) return compareDesc(da, db);
+  if (va) return -1;
+  if (vb) return 1;
+  return 0;
+};
 
 export const BinMedia = ({
   addImagesCallback,
@@ -139,7 +155,7 @@ export const BinMedia = ({
       default:
         return [...unsortedBinGroups]
           .sort((a, b) => a.name.localeCompare(b.name))
-          .sort((a, b) => moment(b.created_at).diff(a.created_at));
+          .sort((a, b) => compareCreatedAtDesc(a, b));
     }
   }, [unsortedBinGroups, sortOrder, binData, filetypeFilter, dateRangeFilter]);
 
@@ -191,7 +207,13 @@ export const BinMedia = ({
                   {binFiles?.length} matches found
                 </Typography>
               )}
-              <DnDProvider currentBinId={id} currentGroupId="">
+              <DnDProvider
+                currentBinId={id}
+                currentGroupId=""
+                sx={{
+                  overflowY: "scroll",
+                }}
+              >
                 {!isFilesFetching && !binFiles?.length && !binGroups?.length ? (
                   <>
                     {unsortedBinFiles?.length ? (

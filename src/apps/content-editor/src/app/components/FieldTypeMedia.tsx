@@ -99,8 +99,9 @@ export const FieldTypeMedia = forwardRef(
       (setting) => setting.key === "bynder_token"
     );
     // Checks if the bynder portal and token are set
-    const isBynderSessionValid =
-      localStorage.getItem("cvrt") && localStorage.getItem("cvad");
+    const isBynderSessionValid = useMemo(() => {
+      return bynderPortalUrlSetting?.value && bynderTokenSetting?.value;
+    }, [bynderPortalUrlSetting, bynderTokenSetting]);
 
     useEffect(() => {
       setLocalImageZUIDs(images);
@@ -709,7 +710,7 @@ export const MediaItem = ({
         onDragEnd={handleDragEnd}
         onDragOver={handleDragOver}
         onClick={() => {
-          if (isURL) return;
+          if (isURL || !data) return;
 
           onPreview && onPreview(imageZUID);
         }}
@@ -828,7 +829,7 @@ export const MediaItem = ({
               ) : (
                 <></>
               )}
-              {!isURL && (
+              {!isURL && data && (
                 <Tooltip title="Edit File" placement="bottom" enterDelay={800}>
                   <IconButton size="small">
                     <EditRounded fontSize="small" />
@@ -867,7 +868,7 @@ export const MediaItem = ({
                   horizontal: "right",
                 }}
               >
-                {!isURL && !isBynderAsset && (
+                {!isURL && !isBynderAsset && data && (
                   <Box>
                     <MenuItem
                       onClick={(event) => {
@@ -906,17 +907,19 @@ export const MediaItem = ({
                     </MenuItem>
                   </Box>
                 )}
-                <MenuItem
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    handleCopyClick(isURL ? imageZUID : data?.url, false);
-                  }}
-                >
-                  <ListItemIcon>
-                    {isCopied ? <CheckRounded /> : <LinkRounded />}
-                  </ListItemIcon>
-                  <ListItemText>Copy File Url</ListItemText>
-                </MenuItem>
+                {data && (
+                  <MenuItem
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      handleCopyClick(isURL ? imageZUID : data?.url, false);
+                    }}
+                  >
+                    <ListItemIcon>
+                      {isCopied ? <CheckRounded /> : <LinkRounded />}
+                    </ListItemIcon>
+                    <ListItemText>Copy File Url</ListItemText>
+                  </MenuItem>
+                )}
                 <MenuItem
                   onClick={(event) => {
                     event.stopPropagation();

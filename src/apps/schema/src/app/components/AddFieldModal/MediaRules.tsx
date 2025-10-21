@@ -240,7 +240,7 @@ export const MediaRules = ({
                       }
 
                       if (rule.name === "group_id") {
-                        defaultValue = groups[0].value;
+                        defaultValue = groups?.length ? groups[0].value : null;
                       }
 
                       if (rule.name === "fileExtensions") {
@@ -260,6 +260,7 @@ export const MediaRules = ({
                       }
                     }}
                     checked={Boolean(fieldData[rule.name])}
+                    disabled={rule.name === "group_id" && !groups?.length}
                   />
                 }
                 label={

@@ -1,10 +1,7 @@
 import { useSelector } from "react-redux";
-
+import { Link as RouterLink } from "react-router-dom";
 import Button from "@mui/material/Button";
-
 import AddIcon from "@mui/icons-material/Add";
-
-import { AppLink } from "@zesty-io/core/AppLink";
 
 import { Release } from "./Release";
 
@@ -15,19 +12,16 @@ export function ListReleases({ isContentSubpage }) {
   return (
     <>
       <section className={styles.ReleaseHeader}>
-        <AppLink
-          className={styles.Create}
+        <Button
+          component={RouterLink}
+          variant="contained"
+          data-cy="release-createBtn"
+          size="large"
+          startIcon={<AddIcon />}
           to={isContentSubpage ? `/content/releases/create` : `/release/create`}
         >
-          <Button
-            variant="contained"
-            data-cy="release-createBtn"
-            size="large"
-            startIcon={<AddIcon />}
-          >
-            Create Release
-          </Button>
-        </AppLink>
+          Create Release
+        </Button>
       </section>
 
       <table data-cy="ReleaseTable" className={styles.ReleaseTable}>

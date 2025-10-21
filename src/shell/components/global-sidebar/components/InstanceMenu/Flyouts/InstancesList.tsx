@@ -18,8 +18,7 @@ import StarIcon from "@mui/icons-material/Star";
 import GridViewRoundedIcon from "@mui/icons-material/GridViewRounded";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import { cloneDeep } from "lodash";
-import { FixedSizeList } from "react-window";
-import AutoSizer, { Size } from "react-virtualized-auto-sizer";
+import { List, type RowComponentProps } from "react-window";
 import ManageSearchRoundedIcon from "@mui/icons-material/ManageSearchRounded";
 
 import { AppState } from "../../../../../store/types";
@@ -242,31 +241,21 @@ export const InstancesList = () => {
             </Button>
           </Stack>
         ) : (
-          <Box
-            height="100%"
+          <MenuList
             sx={{
-              ".MuiList-root": {
-                marginTop: "8px",
-                marginBottom: "8px",
-                padding: 0,
-              },
+              height: "445px",
+              marginTop: "8px",
+              marginBottom: "8px",
+              padding: 0,
             }}
           >
-            <AutoSizer>
-              {({ height, width }: Size) => (
-                <FixedSizeList
-                  height={height}
-                  width={width}
-                  itemCount={listData?.length}
-                  itemSize={36}
-                  itemData={listData}
-                  innerElementType={MenuList}
-                >
-                  {Row}
-                </FixedSizeList>
-              )}
-            </AutoSizer>
-          </Box>
+            <List
+              rowCount={listData?.length}
+              rowHeight={36}
+              rowProps={{ data: listData }}
+              rowComponent={Row}
+            />
+          </MenuList>
         )}
       </Stack>
     </CascadingMenuItem>
@@ -274,11 +263,9 @@ export const InstancesList = () => {
 };
 
 interface ListRowProps {
-  index: number;
   data: ListRowData[];
-  style: CSSProperties;
 }
-const Row = ({ index, data, style }: ListRowProps) => {
+const Row = ({ index, data, style }: any) => {
   const instance = data[index];
 
   const handleSwitchInstance = (ZUID: string) => {

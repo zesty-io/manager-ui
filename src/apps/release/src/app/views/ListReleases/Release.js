@@ -1,12 +1,9 @@
 import { useSelector } from "react-redux";
-import moment from "moment";
 
-import { AppLink } from "@zesty-io/core/AppLink";
-
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLink } from "@fortawesome/free-solid-svg-icons";
+import { AppLink } from "shell/components/AppLink";
 
 import styles from "./ListReleases.less";
+import { format } from "date-fns";
 
 export function Release(props) {
   const members = useSelector((state) => state.releaseMembers.data);
@@ -25,7 +22,11 @@ export function Release(props) {
         </AppLink>
       </td>
       <td>
-        {moment(props.release.createdAt).format("hh:mm A on MMMM Do, YYYY Z")}
+        {props.release.createdAt &&
+          format(
+            new Date(props.release.createdAt),
+            "hh:mm a 'on' MMMM do, yyyy XXX"
+          )}
       </td>
       <td>{members[props.release.ZUID]?.length}</td>
       <td>{props.release.description}</td>

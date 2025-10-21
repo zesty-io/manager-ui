@@ -1,7 +1,7 @@
 import { FC, useMemo } from "react";
 import { Paper, Box, Grid, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
-import moment from "moment";
+import { formatDistanceToNow, isValid } from "date-fns";
 import { NoResults } from "../../../../../schema/src/app/components/NoResults";
 import { FileTypes } from "../constants";
 
@@ -75,7 +75,9 @@ const FileRowItem: FC<FileProps & { isLast: boolean }> = ({
         </Grid>
         <Grid size={4}>
           <Typography variant="body1" color="common.white">
-            {moment(lastSaved).fromNow()}
+            {isValid(new Date(lastSaved))
+              ? formatDistanceToNow(new Date(lastSaved), { addSuffix: true })
+              : "—"}
           </Typography>
         </Grid>
       </Grid>

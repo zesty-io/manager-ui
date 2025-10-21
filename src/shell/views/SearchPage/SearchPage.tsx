@@ -1,9 +1,8 @@
 import { FC, useMemo, useEffect } from "react";
 import { Typography, Box, Stack, Skeleton } from "@mui/material";
-import moment from "moment-timezone";
 import { cloneDeep, isEmpty } from "lodash";
 import { useSelector } from "react-redux";
-
+import { parseISO, isValid } from "date-fns";
 import { useParams } from "../../../shell/hooks/useParams";
 import { NoSearchResults } from "../../components/NoSearchResults";
 import {
@@ -89,6 +88,12 @@ export const SearchPage: FC = () => {
       isMounted = false;
     };
   }, [keyword]);
+
+  const toTime = (s?: string) => {
+    if (!s) return -Infinity;
+    const d = parseISO(s);
+    return isValid(d) ? d.getTime() : -Infinity;
+  };
 
   // Combine results from contents, models, code files, media files and media folders
   const results: SearchPageItem[] = useMemo(() => {
@@ -191,24 +196,24 @@ export const SearchPage: FC = () => {
     switch (sortBy) {
       case "":
       case "modified":
-        return consolidatedResults?.sort((a, b) => {
-          return moment(b.updatedAt).diff(moment(a.updatedAt));
-        });
+        return consolidatedResults?.sort(
+          (a, b) => toTime(b.updatedAt) - toTime(a.updatedAt)
+        );
 
       case "created":
-        return consolidatedResults?.sort((a, b) => {
-          return moment(b.createdAt).diff(moment(a.createdAt));
-        });
+        return consolidatedResults?.sort(
+          (a, b) => toTime(b.createdAt) - toTime(a.createdAt)
+        );
 
       case "AtoZ":
-        return consolidatedResults?.sort((a, b) => {
-          return a.title?.localeCompare(b.title);
-        });
+        return consolidatedResults?.sort((a, b) =>
+          (a.title || "").localeCompare(b.title || "")
+        );
 
       case "ZtoA":
-        return consolidatedResults?.sort((a, b) => {
-          return b.title?.localeCompare(a.title);
-        });
+        return consolidatedResults?.sort((a, b) =>
+          (b.title || "").localeCompare(a.title || "")
+        );
 
       default:
         return consolidatedResults;
@@ -322,15 +327,14 @@ export const SearchPage: FC = () => {
       ) : (
         <Box
           sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "flex-start",
             px: 3,
             py: 0,
             gap: 2,
             backgroundColor: "grey.50",
-            height: "100%",
+            flex: 1,
+            overflowY: "scroll",
           }}
+          data-cy="SearchPageList"
         >
           <SearchPageList results={filteredResults} loading={isLoading} />
         </Box>

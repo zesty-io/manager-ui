@@ -38,7 +38,6 @@ import { DialogHeader } from "./DialogHeader";
 import { fetchItems } from "../../../store/content";
 import { AppState } from "../../../store/types";
 import { ContentItem } from "../../../services/types";
-import moment from "moment";
 import { getDateFilterFnByValues } from "../../Filters/DateFilter/getDateFilter";
 import { statusFilterOperator } from "./statusFilter";
 import { userFilterOperator } from "./userFilter";
@@ -337,11 +336,19 @@ export const FieldSelectorDialog = ({
         dateB = dateB ? new Date(dateB).getTime() : Number.NEGATIVE_INFINITY;
 
         return dateB - dateA;
-        // return moment(dateB).diff(moment(dateA));
       } else if (filters.sortOrder === "createdOn") {
-        return moment(b?.item?.meta.createdAt).diff(a?.item?.meta.createdAt);
-        // new Date(b?.item?.meta.createdAt).getTime() -
-        // new Date(a?.item?.meta.createdAt).getTime()
+        const aDate = a?.item?.meta?.createdAt
+          ? new Date(a.item.meta.createdAt).getTime()
+          : null;
+        const bDate = b?.item?.meta?.createdAt
+          ? new Date(b.item.meta.createdAt).getTime()
+          : null;
+
+        if (aDate == null && bDate == null) return 0;
+        if (aDate == null) return 1;
+        if (bDate == null) return -1;
+
+        return bDate - aDate; // newest first
       } else if (filters.sortOrder === "version") {
         const aIsPublished = a?.item?.publishing?.publishAt;
         const bIsPublished = b?.item?.publishing?.publishAt;

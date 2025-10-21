@@ -1,6 +1,18 @@
 import { File } from "../../../../../shell/services/types";
 import { Filetype, DateRange } from "../../../../../shell/store/media-revamp";
-import moment from "moment-timezone";
+import {
+  parse,
+  isValid,
+  isSameDay,
+  isAfter,
+  isBefore,
+  subDays,
+  subMonths,
+  startOfDay,
+  endOfDay,
+  isWithinInterval,
+} from "date-fns";
+
 export function fileExtension(url: string) {
   let extension = "No Extension";
   if (url?.includes(".")) {
@@ -13,9 +25,7 @@ export function fileExtension(url: string) {
 
 export function isImage(file: File) {
   if (!file) return false;
-  if (file.url && file.url.indexOf("blob:") !== -1) {
-    return true;
-  }
+  if (file.url && file.url.indexOf("blob:") !== -1) return true;
 
   switch (fileExtension(file.url)) {
     case "jpg":
@@ -27,9 +37,9 @@ export function isImage(file: File) {
     case "ico":
     case "avif":
       return true;
+    default:
+      return false;
   }
-
-  return false;
 }
 
 export const fileTypeToColor = (extension: string) => {
@@ -139,57 +149,124 @@ export function getExtensions(filetype: Filetype | null) {
   }
 }
 
+const parseYMD = (s?: string | null) =>
+  s ? parse(s, "yyyy-MM-dd", new Date()) : null;
+
+const validLocal = (s?: string | null) => {
+  const d = parseYMD(s);
+  return d && isValid(d) ? d : null;
+};
+
+const sameDay = (a: Date, b: Date) => isSameDay(startOfDay(a), startOfDay(b));
+const onOrAfterDay = (a: Date, b: Date) =>
+  sameDay(a, b) || isAfter(startOfDay(a), startOfDay(b));
+const onOrBeforeDay = (a: Date, b: Date) =>
+  sameDay(a, b) || isBefore(startOfDay(a), startOfDay(b));
+
 export function getDateFilterFn(dateRangeFilter: DateRange) {
   const { value, type } = dateRangeFilter;
+  const today = startOfDay(new Date());
+
   switch (type) {
-    case "preset":
+    case "preset": {
       switch (value) {
         case "today":
-          return (date: string) => moment(date).isSame(moment(), "day");
-        case "yesterday":
-          return (date: string) =>
-            moment(date).isSame(moment().subtract(1, "days"), "day");
-        case "last 7 days":
-          return (date: string) =>
-            moment(date).isSameOrAfter(moment().subtract(7, "days"), "day");
-        case "last 30 days":
-          return (date: string) =>
-            moment(date).isSameOrAfter(moment().subtract(30, "days"), "day");
-        case "last 3 months":
-          return (date: string) =>
-            moment(date).isSameOrAfter(moment().subtract(3, "months"), "day");
-        case "last 12 months":
-          return (date: string) =>
-            moment(date).isSameOrAfter(moment().subtract(12, "months"), "day");
-        // should never happen
+          return (date: string) => {
+            const d = validLocal(date);
+            return d ? sameDay(d, today) : false;
+          };
+        case "yesterday": {
+          const y = startOfDay(subDays(today, 1));
+          return (date: string) => {
+            const d = validLocal(date);
+            return d ? sameDay(d, y) : false;
+          };
+        }
+        case "last 7 days": {
+          const from = startOfDay(subDays(today, 7));
+          const to = endOfDay(today);
+          return (date: string) => {
+            const d = validLocal(date);
+            return d ? isWithinInterval(d, { start: from, end: to }) : false;
+          };
+        }
+        case "last 30 days": {
+          const from = startOfDay(subDays(today, 30));
+          const to = endOfDay(today);
+          return (date: string) => {
+            const d = validLocal(date);
+            return d ? isWithinInterval(d, { start: from, end: to }) : false;
+          };
+        }
+        case "last 3 months": {
+          const from = startOfDay(subMonths(today, 3));
+          const to = endOfDay(today);
+          return (date: string) => {
+            const d = validLocal(date);
+            return d ? isWithinInterval(d, { start: from, end: to }) : false;
+          };
+        }
+        case "last 12 months": {
+          const from = startOfDay(subMonths(today, 12));
+          const to = endOfDay(today);
+          return (date: string) => {
+            const d = validLocal(date);
+            return d ? isWithinInterval(d, { start: from, end: to }) : false;
+          };
+        }
         default:
-          return (date: string) => true;
+          return () => true; // should never happen
       }
-    case "on":
-      return (date: string) => moment(date).isSame(moment(value), "day");
-    case "before":
-      return (date: string) =>
-        moment(date).isSameOrBefore(moment(value), "day");
-    case "after":
-      return (date: string) => moment(date).isSameOrAfter(moment(value), "day");
-    case "range":
-      return (date: string) => {
-        const [start, end] = value;
-        return (
-          moment(date).isSameOrAfter(moment(start), "day") &&
-          moment(date).isSameOrBefore(moment(end), "day")
-        );
-      };
+    }
 
-    // should never happen
+    case "on": {
+      const target = validLocal(value as string | null);
+      return (date: string) => {
+        const d = validLocal(date);
+        return d && target ? sameDay(d, target) : false;
+      };
+    }
+
+    case "before": {
+      const cutoff = validLocal(value as string | null);
+      return (date: string) => {
+        const d = validLocal(date);
+        return d && cutoff ? onOrBeforeDay(d, cutoff) : false;
+      };
+    }
+
+    case "after": {
+      const cutoff = validLocal(value as string | null);
+      return (date: string) => {
+        const d = validLocal(date);
+        return d && cutoff ? onOrAfterDay(d, cutoff) : false;
+      };
+    }
+
+    case "range": {
+      const [start, end] = value as [string | null, string | null];
+      const from = validLocal(start);
+      const to = validLocal(end);
+      return (date: string) => {
+        const d = validLocal(date);
+        if (!d || !from || !to) return false;
+        return isWithinInterval(d, {
+          start: startOfDay(from),
+          end: endOfDay(to),
+        });
+      };
+    }
+
     default:
-      return (date: string) => true;
+      return () => true; // should never happen
   }
 }
 
-type GetDateFilter = (params: URLSearchParams) => DateRange;
+// ---------- query param -> DateRange ----------
+type GetDateFilter = (params: URLSearchParams) => DateRange | undefined;
+
 export const getDateFilter: GetDateFilter = (params) => {
-  // TODO check for malformed date ranges
+  // presets
   if (params.has("dateFilter")) {
     const preset = params.get("dateFilter");
     const presetMap = {
@@ -200,33 +277,28 @@ export const getDateFilter: GetDateFilter = (params) => {
       last3months: "last 3 months",
       last12months: "last 12 months",
     } as const;
-    if (preset in presetMap) {
+
+    if (preset && preset in presetMap) {
       return {
         type: "preset",
         value: presetMap[preset as keyof typeof presetMap],
       };
     }
-  } else if (params.has("to") && params.has("from")) {
-    if (params.get("to") === params.get("from")) {
-      return {
-        type: "on",
-        value: params.get("to"),
-      };
-    } else {
-      return {
-        type: "range",
-        value: [params.get("from"), params.get("to")],
-      };
-    }
-  } else if (params.has("to")) {
-    return {
-      type: "before",
-      value: params.get("to"),
-    };
-  } else if (params.has("from")) {
-    return {
-      type: "after",
-      value: params.get("from"),
-    };
   }
+
+  const from = params.get("from");
+  const to = params.get("to");
+
+  if (to && from) {
+    if (to === from) {
+      return { type: "on", value: to };
+    }
+    return { type: "range", value: [from, to] };
+  } else if (to) {
+    return { type: "before", value: to };
+  } else if (from) {
+    return { type: "after", value: from };
+  }
+
+  return undefined;
 };

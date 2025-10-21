@@ -10,7 +10,6 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
-const MomentLocalesPlugin = require("moment-locales-webpack-plugin");
 const SentryCliPlugin = require("@sentry/webpack-plugin");
 
 const release = require("../../etc/release");
@@ -54,6 +53,14 @@ module.exports = async (env) => {
       client: {
         webSocketURL: "auto://0.0.0.0:0/ws",
       },
+      headers: {
+        "Content-Security-Policy":
+          "connect-src 'self' *.amplitude.com *.zesty.io *.a.run.app *.tiny.cloud *.getbynder.com *.bynder.com d8ejoa1fys2rk.cloudfront.net *.sentry.io www.googleapis.com us-central1-zesty-dev.cloudfunctions.net us-central1-zesty-stage.cloudfunctions.net us-central1-zesty-prod.cloudfunctions.net",
+        // *.a.run.app - zesty cloudrun apps
+        // d8ejoa1fys2rk.cloudfront.net - bynder modules
+        // googleapis.com - google fonts
+        // us-central1-zesty-dev.cloudfunctions.net - zesty cloud functions
+      },
     },
     devtool:
       process.env.NODE_ENV !== "development"
@@ -96,7 +103,6 @@ module.exports = async (env) => {
       new NodePolyfillPlugin({
         excludeAliases: ["console"],
       }),
-      new MomentLocalesPlugin(),
       new MiniCssExtractPlugin({
         ignoreOrder: true,
         filename:

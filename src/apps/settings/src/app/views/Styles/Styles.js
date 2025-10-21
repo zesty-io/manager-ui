@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { connect } from "react-redux";
 import { FieldTypeColor, FieldTypeText } from "@zesty-io/material";
-import { FieldTypeImage } from "@zesty-io/core/FieldTypeImage";
+import { FieldTypeImage } from "shell/components/FieldTypeImage";
 import {
   Select,
   MenuItem,

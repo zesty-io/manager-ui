@@ -1,8 +1,8 @@
 import { useMemo, FC, CSSProperties } from "react";
-import { FixedSizeList as List } from "react-window";
-import moment from "moment";
+import { List, type RowComponentProps } from "react-window";
 import { Typography, Skeleton, Box } from "@mui/material";
 import AutoSizer, { Size } from "react-virtualized-auto-sizer";
+import { format, subDays } from "date-fns";
 
 import { ActionTimelineItem } from "./ActionTimelineItem";
 import { TimelineItem } from "./ActionTimelineItem/TimelineItem";
@@ -25,13 +25,16 @@ export const ActionsTimeline: FC<ActionsTimelineProps> = ({
   actions,
 }) => {
   const actionsWithHeaders = useMemo(() => {
-    let arr: ActionsWithHeaders = [];
+    const arr: ActionsWithHeaders = [];
+    const seen = new Set<string>();
 
     actions?.forEach((action) => {
-      const formattedDate = moment(action.happenedAt).format("LL");
+      const d = new Date(action.happenedAt);
+      const formattedDate = format(d, "MMMM d, yyyy");
 
-      if (!arr.includes(formattedDate)) {
+      if (!seen.has(formattedDate)) {
         arr.push(formattedDate);
+        seen.add(formattedDate);
       }
 
       arr.push(action);
@@ -40,21 +43,28 @@ export const ActionsTimeline: FC<ActionsTimelineProps> = ({
     return arr;
   }, [actions]);
 
-  const Row = ({ index, data, style }: ListRowProps) => {
+  const todayLabel = format(new Date(), "MMMM d, yyyy");
+  const yesterdayLabel = format(subDays(new Date(), 1), "MMMM d, yyyy");
+
+  const Row = ({ index, data, style }: any) => {
     const action = data[index];
 
     if (typeof action === "string") {
+      const headerText = showSkeletons
+        ? null
+        : action === todayLabel
+        ? "Today"
+        : action === yesterdayLabel
+        ? "Yesterday"
+        : action;
+
       return (
         <Box sx={style}>
           <Typography variant="h5" fontWeight={600}>
             {showSkeletons ? (
               <Skeleton variant="rectangular" width={120} />
-            ) : moment().isSame(action, "day") ? (
-              "Today"
-            ) : moment().add(-1, "days").isSame(action, "day") ? (
-              "Yesterday"
             ) : (
-              action
+              headerText
             )}
           </Typography>
         </Box>
@@ -91,19 +101,14 @@ export const ActionsTimeline: FC<ActionsTimelineProps> = ({
 
   return (
     <Box data-cy="resource_list" flex={1}>
-      <AutoSizer>
-        {({ height, width }: Size) => (
-          <List
-            height={height}
-            itemCount={showSkeletons ? 10 : actionsWithHeaders.length}
-            itemSize={79}
-            width={width}
-            itemData={showSkeletons ? skeletonDataset : actionsWithHeaders}
-          >
-            {Row}
-          </List>
-        )}
-      </AutoSizer>
+      <List
+        rowCount={showSkeletons ? 10 : actionsWithHeaders.length}
+        rowHeight={79}
+        rowProps={{
+          data: showSkeletons ? skeletonDataset : actionsWithHeaders,
+        }}
+        rowComponent={Row}
+      />
     </Box>
   );
 };

@@ -14,7 +14,7 @@ import {
 } from "@mui/x-date-pickers-pro";
 import { AdapterDateFns } from "@mui/x-date-pickers-pro/AdapterDateFns";
 import CloseIcon from "@mui/icons-material/Close";
-import moment from "moment";
+import { format, parse, isValid } from "date-fns";
 
 import { FilterButton } from "./FilterButton";
 
@@ -28,6 +28,10 @@ interface DateRangeFilterProps {
   headerTitle?: string;
   inactiveButtonText?: string;
 }
+
+const parseYMDLocal = (s?: string | null) =>
+  s ? parse(s, "yyyy-MM-dd", new Date()) : null;
+
 export const DateRangeFilter: FC<DateRangeFilterProps> = ({
   value,
   onChange,
@@ -35,7 +39,7 @@ export const DateRangeFilter: FC<DateRangeFilterProps> = ({
   inactiveButtonText = "Date range",
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedDateRange, setSelectedDateRange] = useState<DateRange<any>>([
+  const [selectedDateRange, setSelectedDateRange] = useState<DateRange<Date>>([
     null,
     null,
   ]);
@@ -44,29 +48,37 @@ export const DateRangeFilter: FC<DateRangeFilterProps> = ({
   useEffect(() => {
     if (dateRangeState === "finish") {
       onChange({
-        from: moment(selectedDateRange[0]).isValid()
-          ? moment(selectedDateRange[0]).format("YYYY-MM-DD")
+        from: selectedDateRange[0]
+          ? format(selectedDateRange[0], "yyyy-MM-dd")
           : null,
-        to: moment(selectedDateRange[1]).isValid()
-          ? moment(selectedDateRange[1]).format("YYYY-MM-DD")
+        to: selectedDateRange[1]
+          ? format(selectedDateRange[1], "yyyy-MM-dd")
           : null,
       });
 
       setDateRangeState("");
       setIsModalOpen(false);
     }
-  }, [dateRangeState]);
+  }, [dateRangeState, onChange, selectedDateRange]);
 
   useEffect(() => {
     if (value.from && value.to) {
-      setSelectedDateRange([new Date(value.from), new Date(value.to)]);
+      const from = parseYMDLocal(value.from);
+      const to = parseYMDLocal(value.to);
+      setSelectedDateRange([
+        from && isValid(from) ? from : null,
+        to && isValid(to) ? to : null,
+      ]);
+    } else {
+      setSelectedDateRange([null, null]);
     }
   }, [value]);
 
   const isFilterActive = Boolean(value?.from && value?.to);
   const buttonText = isFilterActive
-    ? `${moment(value.from).format("MMM D, YYYY")} to ${moment(value.to).format(
-        "MMM D, YYYY"
+    ? `${format(parseYMDLocal(value.from)!, "MMM d, yyyy")} to ${format(
+        parseYMDLocal(value.to)!,
+        "MMM d, yyyy"
       )}`
     : inactiveButtonText;
 

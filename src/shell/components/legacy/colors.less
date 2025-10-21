@@ -1,0 +1,100 @@
+@appBkgColor: #f2f4fb;
+@appColor: #333;
+@globalMenuBkgColor: #171b26;
+@secondaryMenuBkgColor: rgb(60, 70, 94);
+@mainViewBkgColor: rgb(199, 212, 234);
+@secondaryViewBkgColor: lighten(rgb(199, 212, 234), 3%);
+
+@zesty-dark-blue: #1b202c;
+@zesty-light-blue: #c3cddf;
+@zesty-field-blue: #c7d4ea;
+@zesty-tab-blue: #697a91;
+@zesty-background-blue: #d6e8f5;
+@zesty-grey: #5b667d;
+@zesty-gray: @zesty-grey;
+@zesty-light-grey: #a7afbf;
+@zesty-light-gray: @zesty-light-grey;
+@zesty-orange: #f17829;
+@zesty-red: #e53c05;
+@zesty-green: #75bf25;
+@zesty-blue: #497edf;
+@zesty-teal: #6a9293;
+@zesty-yellow: #fffde2;
+@zesty-white: #eff5ff;
+@nav-background-color: #404759;
+@nav-border-color: #3c465e;
+@zesty-tab-color: darken(@zesty-grey, 7%);
+@zesty-highlight: @zesty-yellow;
+@zesty-black: #000;
+@bright-gray: #efefef;
+
+@smoke-grey: #f7f7f7;
+@black: @zesty-black;
+@white: #fff;
+
+// Colors
+
+@c-default: #404759;
+@c-secondary: @zesty-blue;
+@c-warn: @zesty-red;
+@c-disabled: #1a202c;
+@c-cancel: #6e7480;
+
+.disabled {
+  background-color: @btnDisabled;
+  color: @zesty-light-grey;
+}
+
+// Backgrounds Colors
+.bgd-primary {
+  background-color: @zesty-green;
+}
+.bgd-secondary {
+  background-color: @c-secondary;
+}
+.bgd-default {
+  background-color: @c-default;
+}
+.bgd-warn {
+  background-color: @c-warn;
+}
+.bgd-disabled {
+  background-color: @btnDisabled;
+}
+
+.bgd-transparent {
+  background-color: transparent;
+}
+
+// missing variables
+@zesty-white-blue: #fff;
+@zesty-dark: #000;
+@zesty-dark-grey: #f7f7f7;
+
+// Copying down from v1.0.0
+@globalMenuBkgColor: #171b26;
+@secondaryMenuBkgColor: rgb(60, 70, 94);
+@mainViewBkgColor: rgb(199, 212, 234);
+@secondaryViewBkgColor: lighten(rgb(199, 212, 234), 3%);
+@zesty-yellow: #fffde2;
+
+// Helpers
+@btnDisabled: #fafafa;
+@boxShadow: inset 0 -2px 2px 0 rgba(26, 32, 44, 0.24),
+  inset 0 0 2px 0 rgba(26, 32, 44, 0.12);
+@boxShadowHover: 0 2px 2px 0 rgba(0, 0, 0, 0.24),
+  0 0 2px 0 rgba(26, 32, 44, 0.12);
+@selectBorder: solid 1px rgba(0, 0, 0, 0.12);
+@modalBackground: rgba(26, 32, 44, 0.6);
+
+@accent-content: @zesty-orange;
+@accent-code: @zesty-green;
+@accent-schema: @zesty-blue;
+@accent-default: @zesty-gray;
+@accent-media: @accent-default;
+@accent-analytics: @accent-default;
+@accent-settings: @accent-default;
+@accent-audit: @accent-default;
+@accent-seo: @accent-default;
+@accent-leads: @accent-default;
+@accent-releases: @accent-default;

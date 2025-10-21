@@ -1,4 +1,4 @@
-import moment, { Moment } from "moment-timezone";
+import { subMonths } from "date-fns";
 import {
   useGetAuditsQuery,
   useGetContentItemsQuery,
@@ -9,8 +9,8 @@ import { ItemsTableContent } from "./ItemsTable";
 
 type Props = {
   propertyId: string;
-  startDate: Moment;
-  endDate: Moment;
+  startDate: Date;
+  endDate: Date;
 };
 
 export const RecentEditsWrapper = ({
@@ -18,35 +18,41 @@ export const RecentEditsWrapper = ({
   startDate,
   endDate,
 }: Props) => {
+  const end = new Date();
+  const endStr = end.toISOString().slice(0, 10);
+  const start = subMonths(end, 1);
+  const startStr = start.toISOString().slice(0, 10);
+
   const { data: auditData } = useGetAuditsQuery({
-    start_date: moment().utc().subtract(1, "month").format("YYYY-MM-DD"),
-    end_date: moment().utc().format("YYYY-MM-DD"),
+    start_date: startStr,
+    end_date: endStr,
   });
 
   const itemEdits = auditData?.filter(
     (item: any) => item.action === 2 && item.resourceType === "content"
   );
 
-  const itemZUIDs = uniqBy(itemEdits, "affectedZUID")
-    ?.slice(0, 20)
-    ?.map((item: any) => item.affectedZUID);
+  const itemZUIDs =
+    uniqBy(itemEdits, "affectedZUID")
+      ?.slice(0, 20)
+      ?.map((i: any) => i.affectedZUID) || [];
 
   const {
     data: items,
     isFetching,
     isUninitialized,
   } = useGetContentItemsQuery(itemZUIDs, {
-    skip: !itemZUIDs?.length,
+    skip: !itemZUIDs.length,
   });
 
-  const sortedPaths = itemZUIDs
-    ?.map(
-      (itemZUID) =>
-        items?.success?.find(
-          (item: ContentItem) => itemZUID === item?.meta?.ZUID
-        )?.web?.path
-    )
-    ?.filter((i) => i);
+  const sortedPaths =
+    itemZUIDs
+      ?.map(
+        (zuid) =>
+          items?.success?.find((item: ContentItem) => zuid === item?.meta?.ZUID)
+            ?.web?.path
+      )
+      ?.filter(Boolean) || [];
 
   return (
     <ItemsTableContent
