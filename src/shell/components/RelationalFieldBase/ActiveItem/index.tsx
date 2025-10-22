@@ -162,7 +162,10 @@ export const ActiveItem = memo(
 
     // Ensure item is fetched if it wasn't included in the initial 100-item fetch
     useEffect(() => {
-      if (contentItem || !relatedModelData?.ZUID || !itemZUID) return;
+      if (contentItem || !relatedModelData?.ZUID || !itemZUID) {
+        return;
+      }
+
       dispatch(fetchItem(relatedModelData.ZUID, itemZUID));
     }, [contentItem]);
 
