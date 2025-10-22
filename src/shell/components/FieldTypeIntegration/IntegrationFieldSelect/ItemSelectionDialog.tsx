@@ -16,7 +16,10 @@ import {
   Typography,
 } from "@mui/material";
 import AutoSizer from "react-virtualized-auto-sizer";
-import { FixedSizeList, ListChildComponentProps } from "react-window";
+import {
+  List,
+  CellComponentProps as ListChildComponentProps,
+} from "react-window";
 import { Check, Close, DataObject, Search } from "@mui/icons-material";
 import {
   IntegrationFieldConfig,
@@ -67,6 +70,8 @@ type RenderRowDataProps = {
 };
 
 type RenderRowProps = Omit<ListChildComponentProps, "data"> & {
+  index?: number;
+  style?: React.CSSProperties;
   data: RenderRowDataProps;
 };
 
@@ -401,21 +406,20 @@ const ItemSelectionDialog = ({
           >
             <AutoSizer>
               {({ height, width }: { height: number; width: number }) => (
-                <FixedSizeList
+                <List
                   className="integrationSelectionFormListContainer"
-                  height={height}
-                  width={width}
-                  itemSize={itemHeight}
-                  itemCount={filteredItems.length}
-                  overscanCount={5}
-                  itemData={listData}
+                  rowComponent={RenderRow}
+                  rowCount={filteredItems.length}
+                  rowHeight={itemHeight}
+                  rowProps={{ data: listData }}
                   style={{
                     overflowY: "scroll",
                     overflowX: "hidden",
+                    width: width,
+                    height: height,
+                    maxHeight: null,
                   }}
-                >
-                  {RenderRow}
-                </FixedSizeList>
+                />
               )}
             </AutoSizer>
           </Box>
