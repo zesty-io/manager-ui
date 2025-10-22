@@ -1,5 +1,5 @@
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { AppLink } from "shell/components/AppLink";
 import { unescape } from "lodash";
 import { Field } from "./Field";
@@ -40,6 +40,12 @@ export default memo(function Editor({
   const [isLoaded, setIsLoaded] = useState(false);
   const [prevFirstContentFieldValue, setPrevFirstContentFieldValue] =
     useState(null);
+  const languages = useSelector((state) => state.languages);
+  const contentItems = useSelector((state) => state.content);
+  const langCode =
+    languages?.find((lang) => lang?.ID === item?.meta?.langID)?.code ||
+    languages?.find((lang) => lang?.default)?.code ||
+    "en-US";
 
   const metaFields = useMemo(() => {
     if (fields?.length) {
@@ -393,6 +399,13 @@ export default memo(function Editor({
   return (
     <div className={styles.Fields}>
       {activeFields?.map((field) => {
+        const fieldItem = contentItems?.[item?.data?.[field.name]];
+        const fieldValue = ["one_to_one", "one_to_many"].includes(
+          field.datatype
+        )
+          ? fieldItem?.siblings?.[langCode]
+          : item?.data?.[field.name];
+
         return (
           <div key={`${field.ZUID}`} id={field.ZUID} className={styles.Field}>
             <Field
@@ -410,7 +423,7 @@ export default memo(function Editor({
               settings={field.settings}
               onChange={onChange}
               onSave={onSave}
-              value={item?.data?.[field.name]}
+              value={fieldValue}
               version={item?.meta?.version}
               langID={item?.meta?.langID}
               errors={fieldErrors[field.name]}
