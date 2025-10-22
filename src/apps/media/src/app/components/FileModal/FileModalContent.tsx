@@ -441,7 +441,9 @@ export const FileModalContent: FC<Props> = ({
             }}
           />
         </Box>
-        {["jpg", "jpeg", "png", "webp"].includes(fileExtension(filename)) && (
+        {["jpg", "jpeg", "png", "webp", "avif"].includes(
+          fileExtension(filename)
+        ) && (
           <Button
             sx={{ mt: 1.5 }}
             onClick={() => setShowEdit(true)}
