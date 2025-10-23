@@ -48,13 +48,13 @@ export const Redirects = () => {
   }>();
   const {
     data: redirects,
-    isLoading: isLoadingRedirects,
+    isLoading,
     isFetching: isFetchingRedirects,
   } = useGetRedirectsQuery();
-  const { options, isLoading: isLoadingOptions } = useContentItems();
+  // const { options, isLoading: isLoadingOptions } = useContentItems();
   const { web } = useSelector((state: AppState) => state.content[itemZUID]);
 
-  const isLoading = isLoadingRedirects || isLoadingOptions;
+  // const isLoading = isLoadingRedirects || isLoadingOptions;
 
   const redirectsHere = useMemo(() => {
     if (!redirects?.length || !web?.path) return [];
@@ -287,8 +287,8 @@ export const Redirects = () => {
 
                 <ContentRedirects
                   itemZUID={itemZUID}
-                  isLoading={isLoading}
-                  options={options}
+                  // isLoading={isLoading}
+                  // options={options}
                   redirects={redirects}
                 />
               </>

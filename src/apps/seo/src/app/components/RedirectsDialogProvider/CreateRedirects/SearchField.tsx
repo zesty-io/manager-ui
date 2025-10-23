@@ -10,110 +10,113 @@ import SearchIcon from "@mui/icons-material/Search";
 import { ContentItemProps, TARGET_ERRORS } from "../constants";
 import { InputAdornment } from "@mui/material";
 import DescriptionIcon from "@mui/icons-material/Description";
+import { useContentItems } from "../useContentItems";
+import { debounce } from "lodash";
 
-export const ListOption: React.FC<
-  ContentItemProps & { isListItem?: boolean }
-> = ({
-  label,
-  path,
-  ZUID,
-  langCode,
-  isPublished,
-  isListItem = true,
-  type,
-  onDelete = () => {},
-  ...props
-}) => {
-  return (
-    <Box
-      key={ZUID}
-      {...props}
-      display="flex"
-      flexDirection="row"
-      justifyContent="space-between"
-      alignItems="center"
-      flexGrow={1}
-      columnGap="12px"
-      {...(isListItem
-        ? { px: "16px", py: "8px" }
-        : { pl: "8px", width: "100%", height: "52px" })}
-    >
-      {type === "pageset" ? (
-        <DescriptionIcon fontSize="small" color="action" />
-      ) : (
-        <FormatListBulletedIcon fontSize="small" color="action" />
-      )}
+export const ListOption = React.memo(
+  ({
+    label,
+    path,
+    ZUID,
+    langCode,
+    isPublished,
+    isListItem = true,
+    type,
+    onDelete = () => {},
+    ...props
+  }: ContentItemProps & { isListItem?: boolean }) => {
+    return (
       <Box
+        key={ZUID}
+        {...props}
         display="flex"
-        flexDirection="column"
+        flexDirection="row"
         justifyContent="space-between"
-        alignItems="stretch"
+        alignItems="center"
         flexGrow={1}
-        sx={{
-          overflow: "hidden",
-          position: "relative",
-          boxSizing: "border-box",
-        }}
+        columnGap="12px"
+        {...(isListItem
+          ? { px: "16px", py: "8px" }
+          : { pl: "8px", width: "100%", height: "52px" })}
       >
-        <Typography
-          variant="body2"
-          color="text.primary"
-          noWrap
-          textOverflow="ellipsis"
-          overflow="hidden"
-          fontWeight={500}
-          px="2px"
+        {type === "pageset" ? (
+          <DescriptionIcon fontSize="small" color="action" />
+        ) : (
+          <FormatListBulletedIcon fontSize="small" color="action" />
+        )}
+        <Box
+          display="flex"
+          flexDirection="column"
+          justifyContent="space-between"
+          alignItems="stretch"
+          flexGrow={1}
+          sx={{
+            overflow: "hidden",
+            position: "relative",
+            boxSizing: "border-box",
+          }}
         >
-          {`(${langCode}) ${label?.trim()}`}
-        </Typography>
-        <Typography
-          variant="body2"
-          color="info.dark"
-          noWrap
-          textOverflow="ellipsis"
-          maxWidth="100%"
-          overflow="hidden"
-          px="2px"
-        >
-          {path}
-        </Typography>
+          <Typography
+            variant="body2"
+            color="text.primary"
+            noWrap
+            textOverflow="ellipsis"
+            overflow="hidden"
+            fontWeight={500}
+            px="2px"
+          >
+            {`(${langCode}) ${label?.trim()}`}
+          </Typography>
+          <Typography
+            variant="body2"
+            color="info.dark"
+            noWrap
+            textOverflow="ellipsis"
+            maxWidth="100%"
+            overflow="hidden"
+            px="2px"
+          >
+            {path}
+          </Typography>
+        </Box>
       </Box>
-    </Box>
-  );
-};
+    );
+  }
+);
 
-const ListboxComponent = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLElement>
->(function ListboxComponent(props, ref) {
-  const { children, ...other } = props;
-  const items = React.Children.toArray(children);
+const ListboxComponent = React.memo(
+  React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLElement>>(
+    function ListboxComponent(props, ref) {
+      const { children, ...other } = props;
+      const items = React.Children.toArray(children);
 
-  const rowHeight = 56;
+      const rowHeight = 56;
 
-  const Row = ({ index, style, data }: any) => {
-    return <li style={style}>{data[index]}</li>;
-  };
+      const Row = ({ index, style, data }: any) => {
+        return <li style={style}>{data[index]}</li>;
+      };
 
-  return (
-    <div
-      ref={ref}
-      data-cy="RedirectsTargetOptionsContainer"
-      style={{ width: "100%", height: `${rowHeight * 5}px` }}
-      {...other}
-    >
-      <ul>
-        <List
-          rowCount={items.length}
-          rowHeight={rowHeight}
-          overscanCount={5}
-          rowProps={{ data: items }}
-          rowComponent={Row}
-        />
-      </ul>
-    </div>
-  );
-});
+      return (
+        <div
+          ref={ref}
+          data-cy="RedirectsTargetOptionsContainer"
+          style={{ width: "100%", height: `${rowHeight * 5}px` }}
+          {...other}
+        >
+          <ul>
+            <List
+              rowCount={items.length}
+              rowHeight={rowHeight}
+              overscanCount={5}
+              rowProps={{ data: items }}
+              rowComponent={Row}
+            />
+          </ul>
+        </div>
+      );
+    }
+  )
+);
 
 type SearchFieldProps = {
   options: ContentItemProps[];
@@ -122,6 +125,7 @@ type SearchFieldProps = {
   defaultValue?: string;
   onChange: (value: ContentItemProps) => void;
   readOnly?: boolean;
+  onSearch: (value: string) => void;
 };
 
 const SearchField: React.FC<SearchFieldProps> = ({
@@ -131,7 +135,9 @@ const SearchField: React.FC<SearchFieldProps> = ({
   defaultValue,
   onChange,
   readOnly = false,
+  onSearch,
 }) => {
+  // const { options, setSearchTerm } = useContentItems();
   const textInputRef = React.useRef(null);
   const [open, setOpen] = React.useState(false);
   const filterOptions = createFilterOptions({
@@ -139,6 +145,14 @@ const SearchField: React.FC<SearchFieldProps> = ({
     stringify: (option: any) =>
       `${option?.label}\n${option?.path}\n${option?.ZUID}`,
   });
+
+  const handleDebouncedInput = React.useCallback(
+    debounce((value: string) => {
+      // console.log("debounced input", value);
+      onSearch(value);
+    }, 500),
+    []
+  );
 
   React.useEffect(() => {
     if (!defaultValue) return;
@@ -180,7 +194,9 @@ const SearchField: React.FC<SearchFieldProps> = ({
           loading={loading}
           loadingText={<ListOptionSkeleton count={4} />}
           value={value}
-          filterOptions={filterOptions}
+          // filterOptions={filterOptions}
+          filterOptions={(x) => x}
+          onInputChange={(evt, value) => handleDebouncedInput(value)}
           onClickCapture={(e) => {
             if (!!value) {
               setOpen(true);

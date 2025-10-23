@@ -32,6 +32,7 @@ export type ContentRedirectModalProps = {
   loading: boolean;
   currentItem: ContentItemProps | null;
   options: ContentItemProps[];
+  onSearch: (value: string) => void;
 };
 
 export const validateUrl = (url: string) => {
@@ -55,6 +56,7 @@ export const ContentRedirectModal: FC<ContentRedirectModalProps> = ({
   loading,
   currentItem,
   options,
+  onSearch,
 }) => {
   const dispatch = useDispatch();
   const [targetInternal, setTargetInternal] = useState<ContentItemProps>(null);
@@ -240,6 +242,7 @@ export const ContentRedirectModal: FC<ContentRedirectModalProps> = ({
                     value={targetInternal}
                     defaultValue={targetPath}
                     onChange={setTargetInternal}
+                    onSearch={onSearch}
                   />
                 ) : (
                   <PathField

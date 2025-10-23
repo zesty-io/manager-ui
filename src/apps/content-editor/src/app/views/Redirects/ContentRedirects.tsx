@@ -26,6 +26,7 @@ import { useDeleteRedirectMutation } from "../../../../../../shell/services/inst
 import DescriptionIcon from "@mui/icons-material/Description";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import { ListOptionSkeleton } from "../../../../../seo/src/app/components/RedirectsDialogProvider/CreateRedirects/SearchField";
+import { useContentItems } from "../../../../../seo/src/app/components/RedirectsDialogProvider/useContentItems";
 
 const REDIRECTED = {
   button: "Stop Redirecting",
@@ -51,8 +52,8 @@ export type ChangeRedirectProps = {
 
 export type ContentRedirectsProps = {
   itemZUID: string;
-  isLoading: boolean;
-  options: ContentItemProps[] | [];
+  // isLoading: boolean;
+  // options: ContentItemProps[] | [];
   redirects?: Redirects[] | [];
 };
 
@@ -157,10 +158,11 @@ const RedirectItem = ({
 
 const ContentRedirects: FC<ContentRedirectsProps> = ({
   itemZUID,
-  isLoading,
-  options = [],
+  // isLoading,
+  // options = [],
   redirects = [],
 }) => {
+  const { options, isLoading, setSearchTerm } = useContentItems();
   const [isOpen, setIsOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isRedirected, setIsRedirected] = useState(false);
@@ -264,6 +266,7 @@ const ContentRedirects: FC<ContentRedirectsProps> = ({
           options={options}
           loading={isLoading}
           currentItem={currentItem}
+          onSearch={setSearchTerm}
         />
       )}
       {isDeleteModalOpen && (

@@ -94,7 +94,7 @@ const CreateForm: FC<CreateFormProps> = ({
     updateRedirect,
   } = useRedirectsDialog();
 
-  const { options, isLoading } = useContentItems();
+  const { options, isLoading, setSearchTerm } = useContentItems();
 
   const isDisabled =
     !paths?.map((item) => item?.path?.trim())?.filter(Boolean)?.length ||
@@ -465,6 +465,7 @@ const CreateForm: FC<CreateFormProps> = ({
                 defaultValue={targetPath}
                 onChange={setTargetInternal}
                 readOnly={isInternal}
+                onSearch={setSearchTerm}
               />
             ) : (
               <PathField

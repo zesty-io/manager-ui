@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import {
   useGetAllPublishingsQuery,
   useGetContentModelsQuery,
@@ -14,12 +14,13 @@ import { ContentItemProps } from "./constants";
 import { PublishingsMap } from "./CreateRedirects/CreateForm";
 
 const useContentItems = () => {
+  const [searchTerm, setSearchTerm] = useState("");
   const { data: contentItems, isLoading: isLoadingContentItems } =
     useSearchContentQuery({
-      query: "",
+      query: searchTerm,
       order: "created",
       dir: "desc",
-      limit: 10000,
+      limit: 10,
     });
 
   const { data: publishings, isLoading: isLoadingPublishings } =
@@ -77,6 +78,7 @@ const useContentItems = () => {
   }, [models, isLoadingModels]);
 
   const options = useMemo(() => {
+    console.log("recalculate options");
     if (isLoading) return [];
 
     const parseContentItems = contentItems
@@ -113,6 +115,7 @@ const useContentItems = () => {
   return {
     options,
     isLoading,
+    setSearchTerm,
   };
 };
 
