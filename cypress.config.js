@@ -1,4 +1,5 @@
 const { defineConfig } = require("cypress");
+const { execSync } = require("child_process");
 
 module.exports = defineConfig({
   projectId: "manager-ui",
@@ -9,6 +10,10 @@ module.exports = defineConfig({
   env: {
     API_AUTH: "https://auth.api.dev.zesty.io",
     COOKIE_NAME: "DEV_APP_SID",
+    API_INSTANCE_URL: "https://8-f48cf3a682-7fthvk.api.dev.zesty.io/v1",
+    MEDIA_MANAGER_URL: "https://media-manager.api.dev.zesty.io",
+    API_ACCOUNTS: "https://accounts.api.dev.zesty.io/v1",
+    COMMIT_ID: execSync("git rev-parse --short HEAD").toString().trim(),
   },
   e2e: {
     // We've imported your old cypress plugins here.

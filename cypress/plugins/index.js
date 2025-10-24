@@ -14,15 +14,18 @@
 const path = require("path");
 const dotenv = require("dotenv");
 const os = require("os");
+const content = require("./seeds/content");
 
 module.exports = (on, config) => {
+  config.env.INSTANCE_ZUID = new URL(config.baseUrl).host.split(".")[0];
+
   on("task", {
     log(message) {
       console.log(message);
       return null;
     },
+    ...content(config),
   });
-
   // `on` is used to hook into various events Cypress emits
   // `config` is the resolved Cypress config
   if (os.userInfo().username === "runner") {
@@ -34,5 +37,6 @@ module.exports = (on, config) => {
     config.env.email = ciEnvConfig.TEST_USER_EMAIL;
     config.env.password = ciEnvConfig.TEST_USER_PASSWORD;
   }
+
   return config;
 };

@@ -1,3 +1,8 @@
+import {
+  ContentItem,
+  ContentModel,
+  ContentModelField,
+} from "../src/shell/services/types";
 import "./support/commands";
 
 declare global {
@@ -52,6 +57,11 @@ declare global {
       deleteStatusLabels(labels: string[]): Chainable<any>;
       deleteModel(zuid: string): Chainable<any>;
       deleteModels(models: string[]): Chainable<any>;
+      task(event: "seed:content"): Chainable<{
+        model: Partial<ContentModel>;
+        fields: Partial<ContentModelField>;
+        items: Partial<ContentItem>;
+      }>;
     }
   }
 }
