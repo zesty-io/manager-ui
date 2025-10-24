@@ -1,16 +1,15 @@
 import * as React from "react";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
-import { List, RowComponentProps } from "react-window";
+import { List } from "react-window";
 import Typography from "@mui/material/Typography";
-import { Box, Paper, createFilterOptions, Skeleton } from "@mui/material";
+import { Box, Paper, Skeleton } from "@mui/material";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 
 import SearchIcon from "@mui/icons-material/Search";
 import { ContentItemProps, TARGET_ERRORS } from "../constants";
 import { InputAdornment } from "@mui/material";
 import DescriptionIcon from "@mui/icons-material/Description";
-import { useContentItems } from "../useContentItems";
 import { debounce } from "lodash";
 
 export const ListOption = React.memo(
@@ -137,25 +136,21 @@ const SearchField: React.FC<SearchFieldProps> = ({
   readOnly = false,
   onSearch,
 }) => {
-  // const { options, setSearchTerm } = useContentItems();
   const textInputRef = React.useRef(null);
   const [open, setOpen] = React.useState(false);
-  const filterOptions = createFilterOptions({
-    matchFrom: "any",
-    stringify: (option: any) =>
-      `${option?.label}\n${option?.path}\n${option?.ZUID}`,
-  });
 
   const handleDebouncedInput = React.useCallback(
     debounce((value: string) => {
-      // console.log("debounced input", value);
       onSearch(value);
     }, 500),
     []
   );
 
   React.useEffect(() => {
-    if (!defaultValue) return;
+    if (!defaultValue) {
+      return;
+    }
+
     if (!loading && !!options) {
       const foundValue = options?.find((item) => item?.ZUID === defaultValue);
       onChange(foundValue);
@@ -194,7 +189,6 @@ const SearchField: React.FC<SearchFieldProps> = ({
           loading={loading}
           loadingText={<ListOptionSkeleton count={4} />}
           value={value}
-          // filterOptions={filterOptions}
           filterOptions={(x) => x}
           onInputChange={(evt, value) => handleDebouncedInput(value)}
           onClickCapture={(e) => {

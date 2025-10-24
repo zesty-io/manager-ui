@@ -15,12 +15,12 @@ import { PublishingsMap } from "./CreateRedirects/CreateForm";
 
 const useContentItems = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const { data: contentItems, isLoading: isLoadingContentItems } =
+  const { data: contentItems, isFetching: isFetchingContentItems } =
     useSearchContentQuery({
       query: searchTerm,
       order: "created",
       dir: "desc",
-      limit: 10,
+      limit: 5,
     });
 
   const { data: publishings, isLoading: isLoadingPublishings } =
@@ -34,7 +34,7 @@ const useContentItems = () => {
   const isLoading =
     !!isLoadingPublishings ||
     !!isLoadingLanguages ||
-    !!isLoadingContentItems ||
+    !!isFetchingContentItems ||
     !!isLoadingModels;
 
   const publishingMap: PublishingsMap = useMemo(() => {
@@ -78,7 +78,6 @@ const useContentItems = () => {
   }, [models, isLoadingModels]);
 
   const options = useMemo(() => {
-    console.log("recalculate options");
     if (isLoading) return [];
 
     const parseContentItems = contentItems
