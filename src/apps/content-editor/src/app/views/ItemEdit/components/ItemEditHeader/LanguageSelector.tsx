@@ -52,7 +52,6 @@ export const LanguageSelector = () => {
   const item = useSelector(
     (state: AppState) => state.content[itemZUID] as ContentItem
   );
-  const [activeLanguage, setActiveLanguage] = useState({ code: "en-US" });
 
   const onSelect = (langId: string) => {
     dispatch(selectLang(langId));
@@ -69,14 +68,11 @@ export const LanguageSelector = () => {
     }
   };
 
-  useEffect(() => {
-    if (!isLoadingLanguages) {
-      const lang = languages?.find((lang) => lang.ID === item?.meta?.langID);
-      if (lang) {
-        setActiveLanguage(lang);
-      }
-    }
-  }, [item?.meta?.langID, languages, isLoadingLanguages]);
+  const activeLanguage = languages?.find(
+    (lang) => lang.ID === item?.meta?.langID
+  ) || {
+    code: "en-US",
+  };
 
   if (isLoadingLanguages) {
     return (

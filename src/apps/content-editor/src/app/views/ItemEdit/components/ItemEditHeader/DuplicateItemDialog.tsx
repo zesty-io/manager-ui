@@ -41,10 +41,8 @@ export const DuplicateItemDialog = ({ onClose }: DuplicateItemProps) => {
   const item = useSelector(
     (state: AppState) => state.content[itemZUID] as ContentItem
   );
-  const languages = useSelector((state: AppState) => state.languages);
-  const langCode =
-    languages?.find((lang: Language) => lang?.ID === item?.meta?.langID)
-      ?.code || languages?.find((lang: Language) => lang?.default)?.code;
+  const langCode = useSelector((state: AppState) => state?.user?.selected_lang);
+
   const { data: models, refetch: refetchContentModels } =
     useGetContentModelsQuery();
 
