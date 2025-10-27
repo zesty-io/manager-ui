@@ -176,7 +176,7 @@ export const AIDrawer = () => {
       modelZuid: modelZUID,
       itemZuid: itemZUID,
       registryKeys: Object.keys(getRefRegistry() || {}),
-      regRegistry: registryKeys.map(
+      refRegistry: registryKeys.map(
         (x) => `"${x}": "${JSON.stringify(refRegistry[x].context())}"`
       ),
       filename:
