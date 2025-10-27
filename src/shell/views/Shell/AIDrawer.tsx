@@ -22,6 +22,7 @@ import { useEffect, useRef, useState } from "react";
 import { useGeminiGenerationMutation } from "../../services/cloudFunctions";
 import { enqueueAction } from "../../../engine/queue";
 import {
+  ArrowForward,
   ArrowUpwardRounded,
   AutoFixHighRounded,
   ChevronRightRounded,
@@ -376,6 +377,27 @@ export const AIDrawer = () => {
                     />
                   </Button>
                 );
+              } else if (response.type === "NAVIGATE") {
+                return (
+                  <Box display="flex" justifyContent="flex-end">
+                    <Button
+                      size="xsmall"
+                      variant="contained"
+                      sx={{ ml: "auto", mt: 0.5 }}
+                      onClick={() => {
+                        enqueueAction({
+                          type: response.type,
+                          payload: {
+                            path: response.payload.path,
+                          },
+                        });
+                      }}
+                      endIcon={<ArrowForward fontSize="small" />}
+                    >
+                      Navigate
+                    </Button>
+                  </Box>
+                );
               }
 
               return (
@@ -388,7 +410,7 @@ export const AIDrawer = () => {
                   >
                     {response.payload.refKey}
                   </Typography>
-                  {response.payload.value.startsWith("3-") ? (
+                  {response.payload?.value?.startsWith("3-") ? (
                     <GeneratedImage src={response.payload.value} />
                   ) : (
                     <AnimatedText
