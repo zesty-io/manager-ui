@@ -43,6 +43,7 @@ class CSVImportBody extends Component {
       sitemapPriority: -1,
       canonicalTagMode: 0,
     },
+    fieldMaps: {},
   };
 
   chunkSize = 30;
@@ -145,7 +146,7 @@ class CSVImportBody extends Component {
     if (fieldName === "none") {
       // filter out the field association if it exists in the fieldMap
       if (this.state.fieldMaps[csvCol]) {
-        let removedFieldMap = { ...this.state.fieldsMaps };
+        let removedFieldMap = { ...this.state.fieldMaps };
         delete removedFieldMap[csvCol];
         return this.setState({ fieldMaps: removedFieldMap }, () => {
           this.mapFieldsToCols();
@@ -346,6 +347,7 @@ class CSVImportBody extends Component {
         fields: this.state.fields,
         cols: this.state.cols,
         handleMap: this.handleFieldToCSVMap,
+        fieldMaps: this.state.fieldMaps,
       },
       ...records,
     ];
@@ -438,6 +440,7 @@ class Row extends PureComponent {
           handleMap={item.handleMap}
           fields={item.fields}
           cols={item.cols}
+          fieldMaps={item.fieldMaps}
         />
       );
     }
