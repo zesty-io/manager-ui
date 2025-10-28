@@ -117,7 +117,7 @@ export const BlockModel = () => {
               size="small"
               startIcon={<AddRoundedIcon />}
               onClick={() => setShowCreateVariantDialog(true)}
-              data-cy="create-variant-button"
+              data-cy="create-variant-button-header"
             >
               Create Variant
             </Button>
