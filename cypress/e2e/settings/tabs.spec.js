@@ -27,26 +27,26 @@ describe("Tabs actions", () => {
       cy.visit("/code/file/views/11-e55790-f19nwx");
     });
     // Active tab should always be visible
-    cy.get('[data-cy="UnpinnedTab"]').should("exist");
+    cy.getBySelector("UnpinnedTab").should("exist");
     // Click the pin button on the active tab
     cy.get('[data-testid="PushPinOutlinedIcon"]').should("exist");
     cy.get('[data-testid="PushPinOutlinedIcon"]').click();
     // Active tab should show pinned state
     cy.get('[data-testid="PushPinIcon"]');
-    cy.get('[data-cy="PinnedTab-0"]').find('[data-testid="PushPinIcon"]');
+    cy.getBySelector("PinnedTab-0").find('[data-testid="PushPinIcon"]');
   });
 
   it("Unpins tabs", () => {
     // Unpin the tab
-    cy.get('[data-cy="PinnedTab-0"]')
+    cy.getBySelector("PinnedTab-0")
       .find('[data-testid="PushPinIcon"]')
       .parent()
       .click();
     // Ensure it is unpinned
-    cy.get('[data-cy="UnpinnedTab"]')
+    cy.getBySelector("UnpinnedTab")
       .find('[data-testid="PushPinIcon"]')
       .should("not.exist");
-    cy.get('[data-cy="UnpinnedTab"]')
+    cy.getBySelector("UnpinnedTab")
       .find('[data-testid="PushPinOutlinedIcon"]')
       .should("exist");
   });
@@ -59,19 +59,19 @@ describe("Tabs actions", () => {
     // Pin the tab
     cy.get('[data-testid="PushPinOutlinedIcon"]').parent().click();
     // Ensure that it is pinned
-    cy.get('[data-cy="PinnedTab-0"]')
+    cy.getBySelector("PinnedTab-0")
       .find('[data-testid="PushPinIcon"]')
       .should("exist");
-    cy.get('[data-cy="PinnedTab-0"]')
+    cy.getBySelector("PinnedTab-0")
       .find('[data-testid="PushPinOutlinedIcon"]')
       .should("not.exist");
     // Navigate to second page
     cy.visit("/content");
     // Ensure active tab is unpinnned
-    cy.get('[data-cy="UnpinnedTab"]')
+    cy.getBySelector("UnpinnedTab")
       .find('[data-testid="PushPinIcon"]')
       .should("not.exist");
-    cy.get('[data-cy="UnpinnedTab"]')
+    cy.getBySelector("UnpinnedTab")
       .find('[data-testid="PushPinOutlinedIcon"]')
       .should("exist");
     // Ensure the original tab is still pinned
@@ -89,10 +89,10 @@ describe("Tabs actions", () => {
     cy.waitOn("/v1/web/views/11-e55790-f19nwx", () => {
       cy.visit("/code/file/views/11-e55790-f19nwx");
     });
-    cy.get('[data-cy="PinnedTab-0"]')
+    cy.getBySelector("PinnedTab-0")
       .find('[data-testid="PushPinIcon"]')
       .should("exist");
-    cy.get('[data-cy="PinnedTab-0"]')
+    cy.getBySelector("PinnedTab-0")
       .find('[data-testid="PushPinOutlinedIcon"]')
       .should("not.exist");
 
@@ -100,15 +100,15 @@ describe("Tabs actions", () => {
     cy.waitOn("/launchpad", () => {
       cy.visit("/launchpad");
     });
-    cy.get('[data-cy="UnpinnedTab"]').should("exist");
+    cy.getBySelector("UnpinnedTab").should("exist");
     // Verify that the 1st pinned tab still exists
-    cy.get('[data-cy="PinnedTab-0"]').should("exist");
+    cy.getBySelector("PinnedTab-0").should("exist");
     cy.get('[data-testid="PushPinOutlinedIcon"]')
       .should("exist")
       .parent()
       .trigger("mouseover")
       .click();
-    cy.get('[data-cy="PinnedTab-1"]')
+    cy.getBySelector("PinnedTab-1")
       .find('[data-testid="PushPinIcon"]')
       .should("exist");
 
@@ -118,16 +118,16 @@ describe("Tabs actions", () => {
     cy.waitOn("/redirects", () => {
       cy.visit("/redirects");
     });
-    cy.get('[data-cy="UnpinnedTab"]').should("exist");
+    cy.getBySelector("UnpinnedTab").should("exist");
     // Verify that the other tabs still exist
-    cy.get('[data-cy="PinnedTab-0"]').should("exist");
-    cy.get('[data-cy="PinnedTab-1"]').should("exist");
+    cy.getBySelector("PinnedTab-0").should("exist");
+    cy.getBySelector("PinnedTab-1").should("exist");
     cy.get('[data-testid="PushPinOutlinedIcon"]')
       .should("exist")
       .parent()
       .trigger("mouseover")
       .click();
-    cy.get('[data-cy="PinnedTab-2"]')
+    cy.getBySelector("PinnedTab-2")
       .find('[data-testid="PushPinIcon"]')
       .should("exist");
 
@@ -137,16 +137,16 @@ describe("Tabs actions", () => {
     cy.waitOn("/leads", () => {
       cy.visit("/leads");
     });
-    cy.get('[data-cy="UnpinnedTab"]').should("exist");
+    cy.getBySelector("UnpinnedTab").should("exist");
     // Verify that the other tabs still exist
-    cy.get('[data-cy="PinnedTab-0"]').should("exist");
-    cy.get('[data-cy="PinnedTab-1"]').should("exist");
+    cy.getBySelector("PinnedTab-0").should("exist");
+    cy.getBySelector("PinnedTab-1").should("exist");
     cy.get('[data-testid="PushPinOutlinedIcon"]')
       .should("exist")
       .parent()
       .trigger("mouseover")
       .click();
-    cy.get('[data-cy="PinnedTab-2"]')
+    cy.getBySelector("PinnedTab-2")
       .find('[data-testid="PushPinIcon"]')
       .should("exist");
 
@@ -156,72 +156,70 @@ describe("Tabs actions", () => {
     cy.waitOn("/media", () => {
       cy.visit("/media");
     });
-    cy.get('[data-cy="UnpinnedTab"]').should("exist");
+    cy.getBySelector("UnpinnedTab").should("exist");
     // Verify that the other tabs still exist, we only have 4 pinned tabs at this point since the other 1 will go to the dropdown menu
-    cy.get('[data-cy="PinnedTab-0"]').should("exist");
-    cy.get('[data-cy="PinnedTab-1"]').should("exist");
+    cy.getBySelector("PinnedTab-0").should("exist");
+    cy.getBySelector("PinnedTab-1").should("exist");
     cy.get('[data-testid="PushPinOutlinedIcon"]')
       .should("exist")
       .parent()
       .trigger("mouseover")
       .click();
-    cy.get('[data-cy="PinnedTab-2"]')
+    cy.getBySelector("PinnedTab-2")
       .find('[data-testid="PushPinIcon"]')
       .should("exist");
 
     cy.wait(1000); // Makes sure that the pinned tabs have been properly saved to indexdb before navigating to a new url
 
     // Ensure dropdown menu exists
-    cy.get('[data-cy="TabsDropdownButton"').should("exist");
-    cy.get('[data-cy="TabsDropdownButton"').click();
-    cy.get('[data-cy="TabsDropdownMenu"').should("exist");
+    cy.getBySelector("TabsDropdownButton").should("exist");
+    cy.getBySelector("TabsDropdownButton").click();
+    cy.getBySelector("TabsDropdownMenu").should("exist");
 
     // Search pins
-    cy.get('[data-cy="TabsDropdownMenu"')
+    cy.getBySelector("TabsDropdownMenu")
       .find("input[type=text]")
       .type("custom");
 
     // Force click outside the dropdown menu to close it
-    cy.get('[data-cy="PinnedTab-0"').click({ force: true });
+    cy.getBySelector("PinnedTab-0").click({ force: true });
 
     // Resize the viewport and assert that the dropdown is gone
     cy.viewport(3440, 720);
-    cy.get('[data-cy="TabsDropdownButton"').should("not.exist");
+    cy.getBySelector("TabsDropdownButton").should("not.exist");
   });
 
   it("should put a selected tab from the dropdown menu as the first tab item", () => {
     // Verify that all pinned topbar tabs are loaded
-    cy.get('[data-cy="PinnedTab-0"]').should("exist");
-    cy.get('[data-cy="PinnedTab-1"]').should("exist");
-    cy.get('[data-cy="PinnedTab-2"]').should("exist");
-    cy.get('[data-cy="PinnedTab-3"]').should("exist");
+    cy.getBySelector("PinnedTab-0").should("exist");
+    cy.getBySelector("PinnedTab-1").should("exist");
+    cy.getBySelector("PinnedTab-2").should("exist");
+    cy.getBySelector("PinnedTab-3").should("exist");
 
     cy.viewport(1280, 720);
+    cy.reload();
 
     // Open dropdown menu
-    cy.get('[data-cy="TabsDropdownButton"').should("exist").click();
+    cy.getBySelector("TabsDropdownButton").should("exist").click();
 
     // Search for a pinned tab
-    cy.get('[data-cy="TabsDropdownMenu"')
+    cy.getBySelector("TabsDropdownMenu")
       .find("input[type=text]")
       .type("bevs.csv");
 
     // Click the pinned tab
-    cy.get('[data-cy="TabsDropdownMenu"').find("a").should("exist").click();
+    cy.getBySelector("TabsDropdownMenu").find("a").should("exist").click();
 
     // Ensure that the tab was moved
-    cy.get('[data-cy="PinnedTab-0"]').should(
-      "have.text",
-      "customtype/bevs.csv"
-    );
+    cy.getBySelector("PinnedTab-0").should("have.text", "customtype/bevs.csv");
   });
 
   it("should put an active tab to the left when screen is resized to prevent putting it to the dropdown menu", () => {
     // Verify that all pinned tabs are loaded
-    cy.get('[data-cy="PinnedTab-0"]').should("exist");
-    cy.get('[data-cy="PinnedTab-1"]').should("exist");
-    cy.get('[data-cy="PinnedTab-2"]').should("exist");
-    cy.get('[data-cy="PinnedTab-3"]').should("exist");
+    cy.getBySelector("PinnedTab-0").should("exist");
+    cy.getBySelector("PinnedTab-1").should("exist");
+    cy.getBySelector("PinnedTab-2").should("exist");
+    cy.getBySelector("PinnedTab-3").should("exist");
 
     cy.waitOn("/launchpad", () => {
       cy.visit("/launchpad");
@@ -233,9 +231,9 @@ describe("Tabs actions", () => {
 
     cy.viewport(1280, 720);
 
-    cy.get('[data-cy="TabsDropdownButton"').should("exist");
+    cy.getBySelector("TabsDropdownButton").should("exist");
 
     // Ensure that the tab was moved to the first pinned location
-    cy.get('[data-cy="PinnedTab-0"]').should("have.text", "Launchpad");
+    cy.getBySelector("PinnedTab-0").should("have.text", "Launchpad");
   });
 });
