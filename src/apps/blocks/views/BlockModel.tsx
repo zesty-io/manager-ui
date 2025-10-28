@@ -22,6 +22,7 @@ import { fetchFields } from "../../../shell/store/fields";
 import { useParams as useSearchParams } from "../../../shell/hooks/useParams";
 import { ContentItem } from "shell/services/types";
 import SearchBox from "shell/components/SearchBox";
+import blockPlaceholder from "../../../../public/images/blockPlaceholder.png";
 
 export const BlockModel = () => {
   const dispatch = useDispatch();
@@ -218,6 +219,7 @@ const BlockVariantCard = ({ item, onClick }: BlockVariantCardProps) => {
           <Box
             component="img"
             src={item.data.og_image as string}
+            minHeight={146}
             maxHeight={146}
             width="100%"
             sx={{ objectFit: "contain" }}
@@ -227,7 +229,14 @@ const BlockVariantCard = ({ item, onClick }: BlockVariantCardProps) => {
           />
         )}
         {noImage && (
-          <Box height={146} width="100%" sx={{ backgroundColor: "grey.300" }} />
+          <Box
+            minHeight={146}
+            maxHeight={146}
+            width="100%"
+            component="img"
+            sx={{ objectFit: "contain" }}
+            src={blockPlaceholder}
+          />
         )}
       </Box>
       <Box
