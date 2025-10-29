@@ -160,6 +160,15 @@ export const ActiveItem = memo(
       };
     }, [contentItems, itemZUID, relatedModelData, users]);
 
+    // Ensure item is fetched if it wasn't included in the initial 100-item fetch
+    useEffect(() => {
+      if (contentItem || !relatedModelData?.ZUID || !itemZUID) {
+        return;
+      }
+
+      dispatch(fetchItem(relatedModelData.ZUID, itemZUID));
+    }, [contentItem]);
+
     const imageFieldName = useMemo(() => {
       if (!relatedModelFields?.length) return null;
 
@@ -240,12 +249,6 @@ export const ActiveItem = memo(
     if (isLoadingRelatedModel || isLoadingUsers) {
       return <ActiveItemLoading draggable={draggable} />;
     }
-
-    // Ensure item is fetched if it wasn't included in the initial 100-item fetch
-    useEffect(() => {
-      if (contentItem || !relatedModelData?.ZUID || !itemZUID) return;
-      dispatch(fetchItem(relatedModelData.ZUID, itemZUID));
-    }, [contentItem]);
 
     return (
       <>

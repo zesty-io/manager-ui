@@ -10,7 +10,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
-const SentryCliPlugin = require("@sentry/webpack-plugin");
+const { sentryWebpackPlugin } = require("@sentry/webpack-plugin");
 
 const release = require("../../etc/release");
 const CONFIG = require("./app.config");
@@ -90,7 +90,7 @@ module.exports = async (env) => {
       fullySpecified: false,
     },
     plugins: [
-      new SentryCliPlugin({
+      sentryWebpackPlugin({
         include: "./build",
         ignoreFile: ".sentrycliignore",
         ignore: ["node_modules", "webpack.config.js"],
@@ -99,6 +99,9 @@ module.exports = async (env) => {
         project: "manager-ui",
         org: "zestyio",
         dryRun: process.env.NODE_ENV === "development" ? true : false,
+        reactComponentAnnotation: {
+          enabled: process.env.NODE_ENV !== "development",
+        },
       }),
       new NodePolyfillPlugin({
         excludeAliases: ["console"],

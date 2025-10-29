@@ -407,7 +407,12 @@ export default memo(function Editor({
           : item?.data?.[field.name];
 
         return (
-          <div key={`${field.ZUID}`} id={field.ZUID} className={styles.Field}>
+          <div
+            key={`${field.ZUID}`}
+            id={field.ZUID}
+            className={styles.Field}
+            data-cy={`field:${field.name}`}
+          >
             <Field
               ZUID={field.ZUID}
               contentModelZUID={field.contentModelZUID}
