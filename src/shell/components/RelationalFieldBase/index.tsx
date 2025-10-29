@@ -8,7 +8,7 @@ import {
 } from "@mui/icons-material";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { ActiveItem } from "./ActiveItem";
 import { FieldSelectorDialog } from "./FieldSelectorDialog";
@@ -16,11 +16,13 @@ import {
   useGetContentModelQuery,
   useGetContentModelFieldsQuery,
 } from "../../services/instance";
-import { fetchItems } from "../../store/content";
+import { fetchItem, fetchItems } from "../../store/content";
 import { ActiveItemLoading } from "./ActiveItem/ActiveItemLoading";
 import { CreateNewItemDialog } from "./CreateNewItemDialog";
 import { useParams } from "../../hooks/useParams";
 import { CreateContentItemDialogContext } from "../../contexts/CreateContentItemDialogProvider";
+import { Language } from "shell/services/types";
+import { AppState } from "shell/store/types";
 
 type RelationalFieldBaseProps = {
   name: string;
@@ -31,6 +33,9 @@ type RelationalFieldBaseProps = {
   relatedFieldZUID: string;
   onChange: (value: string, name: string) => void;
   multiselect?: boolean;
+  langID?: number | null;
+  contentItemZUID?: string;
+  contentVersion?: number;
 };
 export const RelationalFieldBase = ({
   name,
@@ -41,6 +46,9 @@ export const RelationalFieldBase = ({
   relatedFieldZUID,
   onChange,
   multiselect,
+  langID = null,
+  contentItemZUID,
+  contentVersion,
 }: RelationalFieldBaseProps) => {
   const dispatch = useDispatch();
   const [params] = useParams();
@@ -48,6 +56,9 @@ export const RelationalFieldBase = ({
   const [showAll, setShowAll] = useState(false);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null);
   const [replace, setReplace] = useState<string | null>(null);
+  const [isUpdatingLocaleValue, setIsUpdatingLocaleValue] =
+    useState<boolean>(false);
+  const languages = useSelector((state: AppState) => state.languages);
   const [
     initiatorZUID,
     setInitiatorZUID,
@@ -66,6 +77,50 @@ export const RelationalFieldBase = ({
         skip: !relatedModelZUID,
       }
     );
+
+  const updateItemLocale = useCallback(async () => {
+    //update locale if version <= 1
+    //item's default language is inherited
+    if (contentVersion <= 1 || !contentVersion) {
+      const valueArray = value?.split(",") || [];
+      const langCode =
+        languages?.find((lang: Language) => lang?.ID === langID)?.code ||
+        "en-US";
+
+      setIsUpdatingLocaleValue(true);
+      const langItems = await Promise.all(
+        valueArray
+          ?.map((itemVal) =>
+            dispatch(fetchItem(relatedModelZUID, itemVal))
+              //@ts-ignore
+              .then((resItem) => {
+                const itemData = resItem?.data;
+                return itemData?.siblings?.[langCode] || itemVal;
+              })
+          )
+          ?.filter(Boolean)
+      );
+      //trigger onchange event to update state
+      onChange(langItems?.join(","), name);
+      dispatch({
+        type: "UNMARK_ITEMS_DIRTY",
+        items: [contentItemZUID],
+      });
+      setIsUpdatingLocaleValue(false);
+    }
+  }, [
+    contentVersion,
+    value,
+    contentItemZUID,
+    languages,
+    langID,
+    relatedModelZUID,
+    name,
+  ]);
+
+  useEffect(() => {
+    updateItemLocale();
+  }, []);
 
   useEffect(() => {
     // Ensures that the values always synced
@@ -111,7 +166,8 @@ export const RelationalFieldBase = ({
   };
 
   const isRenderedAsDialog = params.get("isDialog") === "true";
-  const isLoading = isLoadingModelData || isLoadingModelFields;
+  const isLoading =
+    isLoadingModelData || isLoadingModelFields || isUpdatingLocaleValue;
 
   return (
     <Box component="section">

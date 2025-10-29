@@ -40,12 +40,6 @@ export default memo(function Editor({
   const [isLoaded, setIsLoaded] = useState(false);
   const [prevFirstContentFieldValue, setPrevFirstContentFieldValue] =
     useState(null);
-  const languages = useSelector((state) => state.languages);
-  const contentItems = useSelector((state) => state.content);
-  const langCode =
-    languages?.find((lang) => lang?.ID === item?.meta?.langID)?.code ||
-    languages?.find((lang) => lang?.default)?.code ||
-    "en-US";
 
   const metaFields = useMemo(() => {
     if (fields?.length) {
@@ -399,13 +393,6 @@ export default memo(function Editor({
   return (
     <div className={styles.Fields}>
       {activeFields?.map((field) => {
-        const fieldItem = contentItems?.[item?.data?.[field.name]];
-        const fieldValue = ["one_to_one", "one_to_many"].includes(
-          field.datatype
-        )
-          ? fieldItem?.siblings?.[langCode]
-          : item?.data?.[field.name];
-
         return (
           <div
             key={`${field.ZUID}`}
@@ -428,7 +415,7 @@ export default memo(function Editor({
               settings={field.settings}
               onChange={onChange}
               onSave={onSave}
-              value={fieldValue}
+              value={item?.data?.[field.name]}
               version={item?.meta?.version}
               langID={item?.meta?.langID}
               errors={fieldErrors[field.name]}
@@ -436,6 +423,7 @@ export default memo(function Editor({
                 field.settings?.maxCharLimit ?? MaxLengths[field.datatype]
               }
               minLength={field.settings?.minCharLimit ?? 0}
+              itemZUID={item?.meta?.ZUID}
             />
           </div>
         );

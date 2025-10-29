@@ -89,6 +89,7 @@ type FieldProps = {
   errors: Error;
   maxLength: number;
   minLength: number;
+  itemZUID?: string;
 };
 
 export const Field = memo(
@@ -110,6 +111,7 @@ export const Field = memo(
     maxLength,
     minLength,
     version,
+    itemZUID,
   }: FieldProps) => {
     const dispatch = useDispatch();
     const { data: fields } = useGetContentModelFieldsQuery({
@@ -655,6 +657,9 @@ export const Field = memo(
               relatedFieldZUID={relatedFieldZUID}
               onChange={onChange}
               fieldLabel={fieldData?.label}
+              langID={langID}
+              contentItemZUID={itemZUID}
+              contentVersion={version}
             />
           </FieldShell>
         );
@@ -671,6 +676,9 @@ export const Field = memo(
               relatedFieldZUID={relatedFieldZUID}
               onChange={onChange}
               fieldLabel={fieldData?.label}
+              langID={langID}
+              contentItemZUID={itemZUID}
+              contentVersion={version}
             />
           </FieldShell>
         );
