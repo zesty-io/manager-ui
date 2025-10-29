@@ -81,6 +81,7 @@ export const FieldTypeMedia = forwardRef(
     }: FieldTypeMediaProps,
     ref
   ) => {
+    const dndContainerRef = useRef(null);
     const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
     const [localImageZUIDs, setLocalImageZUIDs] = useState<string[]>(images);
@@ -487,15 +488,17 @@ export const FieldTypeMedia = forwardRef(
       <>
         <Stack
           id={name}
+          ref={dndContainerRef}
+          data-cy="mediaItem-container"
           gap={1}
           sx={{
             border: (theme) =>
               hasError ? `1px solid ${theme.palette.error.main}` : "none",
           }}
         >
-          <DndContextProvider id={name}>
+          <DndContextProvider containerRef={dndContainerRef}>
             {sortedImages.map((image, index) => {
-              const isBynderAsset = image.includes("bynder.com");
+              const isBynderAsset = image?.includes("bynder.com");
 
               return (
                 <MediaItem
@@ -531,6 +534,7 @@ export const FieldTypeMedia = forwardRef(
                 </Button>
               )}
               <Button
+                data-cy="selectFromMediaButton"
                 size="large"
                 variant="outlined"
                 onClick={() => {
@@ -661,7 +665,7 @@ export const MediaItem = ({
       });
   };
 
-  const isURL = imageZUID.substr(0, 4) === "http";
+  const isURL = imageZUID?.substr(0, 4) === "http";
 
   const handleUpdateMutation = (renamedFilename?: string) => {
     let constructedFileType = "";
@@ -678,40 +682,44 @@ export const MediaItem = ({
     });
   };
 
-  const [{ isDragging }, drag, preview] = useDrag(
-    {
-      type: "FIELD_TYPE_MEDIA",
-      item: () => {
-        setDraggedIndex?.(index);
-        return { index, imageZUID };
-      },
-      collect: (monitor) => ({
-        isDragging: monitor.isDragging(),
-      }),
-      end: () => {
-        onReorder?.();
-        lastHoveredIndexRef.current = null;
-      },
-    },
-    [index, imageZUID, onReorder, setDraggedIndex]
-  );
+  const [{ isDragging }, drag, preview] = hideDrag
+    ? [{ isDragging: false }, null, null]
+    : useDrag(
+        {
+          type: "FIELD_TYPE_MEDIA",
+          item: () => {
+            setDraggedIndex?.(index);
+            return { index, imageZUID };
+          },
+          collect: (monitor) => ({
+            isDragging: monitor.isDragging(),
+          }),
+          end: () => {
+            onReorder?.();
+            lastHoveredIndexRef.current = null;
+          },
+        },
+        [index, imageZUID, onReorder, setDraggedIndex]
+      );
 
-  const [, drop] = useDrop(
-    {
-      accept: "FIELD_TYPE_MEDIA",
-      hover: (item: { index: number; imageZUID: string }, monitor) => {
-        if (
-          !monitor.isOver({ shallow: true }) ||
-          lastHoveredIndexRef.current === index
-        ) {
-          return;
-        }
-        setHoveredIndex?.(index);
-        lastHoveredIndexRef.current = index;
-      },
-    },
-    [index, setHoveredIndex]
-  );
+  const [, drop] = hideDrag
+    ? [, null]
+    : useDrop(
+        {
+          accept: "FIELD_TYPE_MEDIA",
+          hover: (item: { index: number; imageZUID: string }, monitor) => {
+            if (
+              !monitor.isOver({ shallow: true }) ||
+              lastHoveredIndexRef.current === index
+            ) {
+              return;
+            }
+            setHoveredIndex?.(index);
+            lastHoveredIndexRef.current = index;
+          },
+        },
+        [index, setHoveredIndex]
+      );
 
   const dragDropRef = useCallback(
     (node: HTMLElement | null) => {
