@@ -28,9 +28,9 @@ export const handlers: Record<ActionType, (payload: any) => Promise<void>> = {
     h.blur?.();
   },
 
-  NAVIGATE: async ({ url, replace = false }: PayloadMap["NAVIGATE"]) => {
+  NAVIGATE: async ({ path, replace = false }: PayloadMap["NAVIGATE"]) => {
     const navigate = getNavigate();
-    navigate(url, { replace });
+    navigate(path, { replace });
   },
 
   CUSTOM: async ({ refKey, event, data }: any) => {
