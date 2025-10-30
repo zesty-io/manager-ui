@@ -26,6 +26,7 @@ import {
 import { FieldWrapper } from "../../../../../seo/src/app/components/RedirectsDialogProvider/CreateRedirects/CreateForm";
 import SearchField from "../../../../../seo/src/app/components/RedirectsDialogProvider/CreateRedirects/SearchField";
 import PathField from "../../../../../seo/src/app/components/RedirectsDialogProvider/CreateRedirects/PathField";
+import { searchItems } from "shell/store/content";
 export type ContentRedirectModalProps = {
   open: boolean;
   onClose: () => void;
@@ -112,6 +113,10 @@ export const ContentRedirectModal: FC<ContentRedirectModalProps> = ({
     const isValidUrl = validateUrl(url);
     setInvalidTarget(!isValidUrl);
     return isValidUrl;
+  };
+
+  const handleSearch = (term: string) => {
+    dispatch(searchItems(term));
   };
 
   return (
@@ -240,6 +245,7 @@ export const ContentRedirectModal: FC<ContentRedirectModalProps> = ({
                     value={targetInternal}
                     defaultValue={targetPath}
                     onChange={setTargetInternal}
+                    onSearch={handleSearch}
                   />
                 ) : (
                   <PathField

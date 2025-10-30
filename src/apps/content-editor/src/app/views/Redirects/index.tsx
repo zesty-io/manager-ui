@@ -19,12 +19,14 @@ import { AppState } from "../../../../../../shell/store/types";
 import { useParams } from "react-router";
 import { useDomain } from "../../../../../../shell/hooks/use-domain";
 import { DeleteRedirectModal } from "./DeleteRedirectModal";
-import { RedirectsTargetType } from "../../../../../../shell/services/types";
+import {
+  ContentItemWithDirtyAndPublishing,
+  RedirectsTargetType,
+} from "../../../../../../shell/services/types";
 import { useRedirectsDialog } from "../../../../../seo/src/app/components/RedirectsDialogProvider";
 import AddIcon from "@mui/icons-material/Add";
 import AutoSizer from "react-virtualized-auto-sizer";
 import ContentRedirects, { ContentRedirectsSkeleton } from "./ContentRedirects";
-import { useContentItems } from "../../../../../seo/src/app/components/RedirectsDialogProvider/useContentItems";
 
 type Row = {
   id: string;
@@ -51,10 +53,38 @@ export const Redirects = () => {
     isLoading: isLoadingRedirects,
     isFetching: isFetchingRedirects,
   } = useGetRedirectsQuery();
-  const { options, isLoading: isLoadingOptions } = useContentItems();
-  const { web } = useSelector((state: AppState) => state.content[itemZUID]);
 
-  const isLoading = isLoadingRedirects || isLoadingOptions;
+  const { web } = useSelector((state: AppState) => state.content[itemZUID]);
+  const contentItems = useSelector((state: AppState) => state.content);
+  const contentModels = useSelector((state: AppState) => state.models);
+  const languages = useSelector((state: any) => state.languages);
+
+  const options = useMemo(() => {
+    return Object.values(contentItems)
+      .filter((item) => item?.meta?.ZUID && item?.web?.path)
+      .sort((a, b) => {
+        const dateA = new Date(a.meta.createdAt).getTime();
+        const dateB = new Date(b.meta.createdAt).getTime();
+        return dateB - dateA;
+      })
+      .map((item: ContentItemWithDirtyAndPublishing) => {
+        const web = item.web;
+        const meta = item.meta;
+        const publishing = item.publishing;
+        return {
+          ZUID: meta?.ZUID,
+          label: web?.metaTitle || web?.metaLinkText || web?.path || "",
+          langCode:
+            languages.find((lang: any) => lang.ID === meta?.langID)?.code ||
+            "en-US",
+          path: web?.path,
+          type: contentModels[meta?.contentModelZUID]?.type || "",
+          isPublished: publishing?.isPublished || false,
+        };
+      });
+  }, [contentItems, contentModels, languages]);
+
+  const isLoading = isLoadingRedirects;
 
   const redirectsHere = useMemo(() => {
     if (!redirects?.length || !web?.path) return [];
