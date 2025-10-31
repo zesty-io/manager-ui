@@ -36,7 +36,7 @@ import {
 } from "../../../../../../shell/services/types";
 import {
   fetchItems,
-  fetchItemPublishings,
+  fetchModelItemsPublishings,
 } from "../../../../../../shell/store/content";
 import { TableSortContext } from "./TableSortProvider";
 import { fetchFields } from "../../../../../../shell/store/fields";
@@ -173,9 +173,8 @@ export const ItemList = () => {
   }, [modelZUID]);
 
   useEffect(() => {
-    if (activeLanguageCode) {
+    if (activeLanguageCode && modelZUID) {
       setIsModelItemsFetching(true);
-      dispatch(fetchItemPublishings());
       dispatch(
         fetchItems(modelZUID, {
           limit: 1000,
@@ -184,7 +183,13 @@ export const ItemList = () => {
         })
         // @ts-ignore
       ).then(() => {
-        setIsModelItemsFetching(false);
+        //Ensure fetchItems completes before calling fetchPublishings to guarantee proper item mapping.
+        dispatch(fetchModelItemsPublishings({ modelZUID }))
+          // @ts-ignore
+          .then((res) => {
+            //Only set the loading status to false after fetchPublishing has finished to ensure the status is accurate.
+            setIsModelItemsFetching(false);
+          });
       });
     }
   }, [modelZUID, activeLanguageCode]);
