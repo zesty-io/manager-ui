@@ -977,7 +977,7 @@ export function fetchItemPublishings() {
   return (dispatch) => {
     return dispatch({
       type: "FETCH_RESOURCE",
-      uri: `${CONFIG.API_INSTANCE}/content/items/publishings?limit=100000`,
+      uri: `${CONFIG.API_INSTANCE}/content/items/publishings?limit=20000`,
       handler: (res) => {
         if (res.status === 200) {
           dispatch({
@@ -1004,6 +1004,51 @@ export function fetchItemPublishings() {
             }`,
           })
         );
+      },
+    });
+  };
+}
+export function fetchModelItemsPublishings({
+  modelZUID,
+  limit = 10000,
+  showDeleted = false,
+  showDeletedItems = false,
+  showActiveOnly = false,
+}) {
+  return (dispatch) => {
+    console.debug("dispatch", { dispatch });
+    return dispatch({
+      type: "FETCH_RESOURCE",
+      uri: `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items/publishings?limit=${limit}&showDeleted=${showDeleted}&showDeletedItems=${showDeletedItems}&showActiveOnly=${showActiveOnly}`,
+      handler: (res) => {
+        if (res.status === 200) {
+          dispatch({
+            type: "FETCH_ITEMS_PUBLISHING",
+            data: parsePublishState(res.data),
+          });
+          return res.data;
+        } else {
+          dispatch(
+            notify({
+              kind: "warn",
+              message: `${res.status}:Failed to fetch model items publishings${
+                res.error ? ": " + res.error : ""
+              }`,
+            })
+          );
+          return [];
+        }
+      },
+      error: (err) => {
+        dispatch(
+          notify({
+            kind: "warn",
+            message: `Failed to fetch model items publishings: ${
+              err?.message || err || ""
+            }`,
+          })
+        );
+        return [];
       },
     });
   };
