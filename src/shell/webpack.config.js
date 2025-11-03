@@ -55,7 +55,7 @@ module.exports = async (env) => {
       },
       headers: {
         "Content-Security-Policy":
-          "connect-src 'self' *.amplitude.com *.zesty.io *.a.run.app *.tiny.cloud *.getbynder.com *.bynder.com d8ejoa1fys2rk.cloudfront.net *.sentry.io www.googleapis.com us-central1-zesty-dev.cloudfunctions.net us-central1-zesty-stage.cloudfunctions.net us-central1-zesty-prod.cloudfunctions.net",
+          "connect-src 'self' *.zesty.io *.a.run.app us-central1-zesty-dev.cloudfunctions.net us-central1-zesty-stage.cloudfunctions.net us-central1-zesty-prod.cloudfunctions.net *.sentry.io www.googleapis.com *.amplitude.com *.tiny.cloud *.getbynder.com *.bynder.com d8ejoa1fys2rk.cloudfront.net dam.redshieldtoolkit.org;",
         // *.a.run.app - zesty cloudrun apps
         // d8ejoa1fys2rk.cloudfront.net - bynder modules
         // googleapis.com - google fonts
