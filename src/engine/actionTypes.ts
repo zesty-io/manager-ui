@@ -11,7 +11,7 @@ export interface PayloadMap {
   CLICK: { refKey: string };
   FOCUS: { refKey: string };
   BLUR: { refKey: string };
-  NAVIGATE: { url: string; replace?: boolean };
+  NAVIGATE: { path: string; replace?: boolean };
   CUSTOM: { refKey: string; event: string; data?: any };
 }
 

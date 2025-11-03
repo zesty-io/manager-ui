@@ -20,19 +20,19 @@ const TEST_REDIRECTS_DATA = [
     path: "aaa/---test",
     code: 301,
     targetType: "page",
-    target: "All Field Types",
+    target: "7-b939a4-457q19",
   },
   {
     path: "bbb/---test",
     code: 301,
     targetType: "page",
-    target: "All Field Types",
+    target: "7-b939a4-457q19",
   },
   {
     path: "ccc/---test",
     code: 301,
     targetType: "external",
-    target: "All Field Types",
+    target: "7-b939a4-457q19",
   },
   {
     path: "xxx/---test",

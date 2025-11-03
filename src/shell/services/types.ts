@@ -10,6 +10,7 @@ export interface Publishing {
   version: number;
   versionZUID: string;
   _active: boolean;
+  isPublished: boolean;
 }
 
 export interface Bin {
