@@ -977,7 +977,7 @@ export function fetchItemPublishings() {
   return (dispatch) => {
     return dispatch({
       type: "FETCH_RESOURCE",
-      uri: `${CONFIG.API_INSTANCE}/content/items/publishings?limit=20000`,
+      uri: `${CONFIG.API_INSTANCE}/content/items/publishings?limit=80000`,
       handler: (res) => {
         if (res.status === 200) {
           dispatch({
@@ -1016,7 +1016,6 @@ export function fetchModelItemsPublishings({
   showActiveOnly = false,
 }) {
   return (dispatch) => {
-    console.debug("dispatch", { dispatch });
     return dispatch({
       type: "FETCH_RESOURCE",
       uri: `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items/publishings?limit=${limit}&showDeleted=${showDeleted}&showDeletedItems=${showDeletedItems}&showActiveOnly=${showActiveOnly}`,
