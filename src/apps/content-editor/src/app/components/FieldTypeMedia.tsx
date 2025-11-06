@@ -81,7 +81,6 @@ export const FieldTypeMedia = forwardRef(
     }: FieldTypeMediaProps,
     ref
   ) => {
-    const dndContainerRef = useRef(null);
     const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
     const [localImageZUIDs, setLocalImageZUIDs] = useState<string[]>(images);
@@ -487,8 +486,6 @@ export const FieldTypeMedia = forwardRef(
     return (
       <>
         <Stack
-          id={name}
-          ref={dndContainerRef}
           data-cy="mediaItem-container"
           gap={1}
           sx={{
@@ -496,7 +493,7 @@ export const FieldTypeMedia = forwardRef(
               hasError ? `1px solid ${theme.palette.error.main}` : "none",
           }}
         >
-          <DndContextProvider containerRef={dndContainerRef}>
+          <DndContextProvider>
             {sortedImages.map((image, index) => {
               const isBynderAsset = image?.includes("bynder.com");
 
@@ -750,15 +747,11 @@ export const MediaItem = ({
         alignItems="center"
         sx={{
           border: (theme) => `1px solid ${theme.palette.border}`,
-          borderRadius: "8px",
-          "&:hover": {
-            backgroundColor: "action.hover",
-            cursor: "pointer",
-          },
+          borderRadius: 2,
           backgroundColor: "background.paper",
-          ...(isDragging && {
-            opacity: 0.01,
-          }),
+          overflow: "hidden",
+          opacity: isDragging ? 0 : 1,
+          transform: "translate(0, 0)",
         }}
         position="relative"
       >
