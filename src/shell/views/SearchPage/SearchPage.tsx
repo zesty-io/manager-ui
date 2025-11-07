@@ -48,17 +48,14 @@ export const SearchPage: FC = () => {
   const keyword = params.get("q") || "";
   const instanceId = useSelector((state: any) => state.instance.ID);
   const ecoId = useSelector((state: any) => state.instance.ecoID);
+  const allModels = useSelector((state: any) => state.models);
   const {
     data: contents,
     isFetching: isFetchingContent,
     isError: isContentFetchingFailed,
   } = useSearchContentQuery({ query: keyword, order: "created", dir: "desc" });
   const [models, setModelKeyword] = useSearchModelsByKeyword();
-  const {
-    blocks,
-    setBlockKeyword,
-    isLoading: isLoadingBlocksResults,
-  } = useSearchBlocksByKeyword();
+
   const [codeFiles, setCodeFileKeyword] = useSearchCodeFilesByKeywords();
   const [mediaFolders, setMediaFolderKeyword] =
     useSearchMediaFoldersByKeyword();
@@ -71,8 +68,13 @@ export const SearchPage: FC = () => {
       }
     );
   const { data: langs } = useGetLangsQuery({});
-  const isLoading =
-    isFetchingContent || isFetchingMedia || isLoadingBlocksResults;
+
+  const { blocks, setBlockKeyword } = useSearchBlocksByKeyword(
+    contents,
+    isFetchingContent
+  );
+
+  const isLoading = isFetchingContent || isFetchingMedia;
 
   useEffect(() => {
     let isMounted = true;
@@ -98,11 +100,20 @@ export const SearchPage: FC = () => {
   // Combine results from contents, models, code files, media files and media folders
   const results: SearchPageItem[] = useMemo(() => {
     const sortBy = params.get("sort") || "";
+
+    const blockModelZUIDs = Object.values(allModels)
+      ?.filter((model: ContentModel) => model.type === "block")
+      ?.map((model: ContentModel) => model?.ZUID);
+
+    //Filter out redundant block model items
+    const filteredContents = contents?.filter(
+      (item) => !blockModelZUIDs?.includes(item?.meta?.contentModelZUID)
+    );
     // Content data needs to be reset to [] when api call fails
     const contentResults: SearchPageItem[] =
-      isContentFetchingFailed || isEmpty(contents)
+      isContentFetchingFailed || isEmpty(filteredContents)
         ? []
-        : contents?.map((content) => {
+        : filteredContents?.map((content) => {
             return {
               ZUID: content.meta?.ZUID,
               title: content.web?.metaTitle,

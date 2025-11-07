@@ -16,8 +16,9 @@ export type BlockModel = Partial<ContentModel> & {
   createdAt?: string;
   updatedAt?: string;
   lang?: string;
-  langID?: number;
+  langID: number | null;
   title?: string;
+  url?: string | null;
 };
 
 type Block = {

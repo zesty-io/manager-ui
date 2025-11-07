@@ -21,10 +21,6 @@ import { isEmpty } from "lodash";
 import { theme } from "@zesty-io/material";
 
 import { useMetaKey } from "../../../shell/hooks/useMetaKey";
-import {
-  useGetContentModelsQuery,
-  useSearchContentQuery,
-} from "../../services/instance";
 import { notify } from "../../store/notifications";
 import { AdvancedSearch } from "./components/AdvancedSearch";
 import useRecentSearches from "../../hooks/useRecentSearches";
@@ -32,7 +28,7 @@ import { GlobalSearchItem } from "./components/GlobalSearchItem";
 import { getContentTitle, getItemIcon } from "./utils";
 import { useSearchModelsByKeyword } from "../../hooks/useSearchModelsByKeyword";
 import { useSearchCodeFilesByKeywords } from "../../hooks/useSearchCodeFilesByKeyword";
-import { ResourceType } from "../../services/types";
+import { ContentItem, Language, ResourceType } from "../../services/types";
 import { SearchAccelerator } from "./components/SearchAccelerator";
 import { SEARCH_ACCELERATORS } from "./components/config";
 import { useGetActiveApp } from "../../hooks/useGetActiveApp";
@@ -47,6 +43,10 @@ import { KeywordSearchItem } from "./components/KeywordSearchItem";
 import { useParams } from "../../hooks/useParams";
 import { withCursorPosition } from "../../components/withCursorPosition";
 import { useSearchBlocksByKeyword } from "../../hooks/useSearchBlocksByKeyword";
+import { AppState } from "shell/store/types";
+import { fetchModels } from "shell/store/models";
+import { useDebounce } from "react-use";
+import { searchItems } from "shell/store/content";
 
 // List of dropdown options that are NOT suggestions
 const AdditionalDropdownOptions = [
@@ -81,11 +81,7 @@ export const GlobalSearch = () => {
   const [isAdvancedSearchOpen, setIsAdvancedSearchOpen] = useState(false);
   const [recentSearches, addSearchTerm, deleteSearchTerm] = useRecentSearches();
   const [models, setModelKeyword] = useSearchModelsByKeyword();
-  const {
-    blocks,
-    setBlockKeyword,
-    isLoading: isFetchingBlocksResults,
-  } = useSearchBlocksByKeyword();
+
   const [codeFiles, setFileKeyword] = useSearchCodeFilesByKeywords();
   const [mediaFolders, setMediaFolderKeyword] =
     useSearchMediaFoldersByKeyword();
@@ -97,22 +93,29 @@ export const GlobalSearch = () => {
   const dispatch = useDispatch();
   const [params, setParams] = useParams();
   const textfieldRef = useRef<HTMLDivElement>();
-  const { data: allModels } = useGetContentModelsQuery();
+  const allModels = useSelector((state: AppState) => state?.models);
+  const [searchedContents, setSearchedContents] = useState<ContentItem[] | []>(
+    []
+  );
+  const [isFetchingContentSearchResults, setIsFetchingContentSearchResults] =
+    useState(false);
 
-  const apiQueryTerm = useMemo(() => {
-    if (!!typedSearchAccelerator && !!searchKeyword) {
-      // Remove the accelerator from the keyword
-      return searchKeyword.replace(typedAcceleratorRegex, "")?.trim();
-    }
+  const [apiQueryTerm, setApiQueryTerm] = useState("");
 
-    return searchKeyword;
-  }, [searchKeyword]);
-
-  const {
-    data: contents,
-    isError: isContentFetchingFailed,
-    isFetching: isFetchingContentSearchResults,
-  } = useSearchContentQuery({ query: apiQueryTerm });
+  //debounce to reduce API calls during user input.
+  useDebounce(
+    () => {
+      if (!!typedSearchAccelerator && !!searchKeyword) {
+        // Remove the accelerator from the keyword
+        setApiQueryTerm(
+          searchKeyword.replace(typedAcceleratorRegex, "")?.trim()
+        );
+      }
+      setApiQueryTerm(searchKeyword);
+    },
+    700,
+    [searchKeyword]
+  );
 
   const { data: bins } = useGetBinsQuery({ instanceId, ecoId });
   const { data: mediaFiles, isFetching: isFetchingMediaSearchResults } =
@@ -128,35 +131,57 @@ export const GlobalSearch = () => {
       { skip: !bins?.length }
     );
 
+  const { blocks, setBlockKeyword } = useSearchBlocksByKeyword({
+    isLoading: isFetchingContentSearchResults,
+  });
+
   const isLoading =
     isFetchingAllMediaFiles ||
     isFetchingMediaSearchResults ||
-    isFetchingContentSearchResults ||
-    isFetchingBlocksResults;
+    isFetchingContentSearchResults;
+
+  useEffect(() => {
+    //Update models in store to provide access to other search hooks
+    dispatch(fetchModels());
+  }, []);
+
+  useEffect(() => {
+    if (isEmpty(apiQueryTerm)) return setSearchedContents([]);
+    setIsFetchingContentSearchResults(true);
+    //Update contents in store to provide access to other search hooks
+    dispatch(searchItems(apiQueryTerm))
+      //@ts-ignore
+      .then((res) => {
+        if (!!res?.data?.length) {
+          setSearchedContents(res?.data);
+        } else {
+          setSearchedContents([]);
+        }
+        setIsFetchingContentSearchResults(false);
+      });
+  }, [apiQueryTerm]);
 
   const suggestions: Suggestion[] = useMemo(() => {
+    //Filter out redundant block model items
+    const filteredContents = searchedContents?.filter(
+      (item: ContentItem) =>
+        allModels?.[item?.meta?.contentModelZUID]?.type !== "block"
+    );
     // Content data needs to be reset to [] when api call fails
-    const contentSuggestions: Suggestion[] =
-      isContentFetchingFailed || isEmpty(contents)
-        ? []
-        : contents?.map((content) => {
-            return {
-              type: "content",
-              ZUID: content.meta?.ZUID,
-              title: getContentTitle(content, languages),
-              updatedAt: content.meta?.updatedAt,
-              url: isEmpty(content.meta)
-                ? ""
-                : `/${
-                    allModels?.find(
-                      (model) => model.ZUID === content.meta.contentModelZUID
-                    )?.type === "block"
-                      ? "blocks"
-                      : "content"
-                  }/${content.meta.contentModelZUID}/${content.meta.ZUID}`,
-              noUrlErrorMessage: "Selected item is missing meta data",
-            };
-          });
+    const contentSuggestions: Suggestion[] = isEmpty(filteredContents)
+      ? []
+      : filteredContents?.map((content) => {
+          return {
+            type: "content",
+            ZUID: content.meta?.ZUID,
+            title: getContentTitle(content, languages),
+            updatedAt: content.meta?.updatedAt,
+            url: isEmpty(content.meta)
+              ? ""
+              : `/content/${content.meta.contentModelZUID}/${content.meta.ZUID}`,
+            noUrlErrorMessage: "Selected item is missing meta data",
+          };
+        });
 
     const modelSuggestions: Suggestion[] =
       models?.map((model) => {
@@ -171,12 +196,17 @@ export const GlobalSearch = () => {
 
     const blocksSuggestions: Suggestion[] =
       blocks?.map((block) => {
+        const langCode = languages?.find(
+          (lang: Language) => lang?.ID === block?.langID
+        )?.code;
+        const titlePrefix = !!langCode ? `(${langCode}) ` : "";
+
         return {
           type: "block",
           ZUID: block?.ZUID,
-          title: block?.label,
+          title: block?.title, //`${titlePrefix}${block?.label}`,
           updatedAt: block?.updatedAt,
-          url: `/blocks/${block?.ZUID}`,
+          url: block?.url,
         };
       }) || [];
 
@@ -265,13 +295,12 @@ export const GlobalSearch = () => {
         new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
     );
   }, [
-    contents,
+    searchedContents,
     models,
     blocks,
     codeFiles,
     mediaFiles,
     mediaFolders,
-    isContentFetchingFailed,
     chipSearchAccelerator,
     allMediaFiles,
   ]);
@@ -356,7 +385,7 @@ export const GlobalSearch = () => {
     });
     const url = `/search?${searchParams.toString()}`;
 
-    // Do not save term as a recent keyword if it's empty
+    // Do not save term as a recent keyword if it's empty1
     if (!!queryTerm.trim()) {
       // If the user has selected a search accelerator, also save it in
       // the format of `[in:RESOURCE_TYPE]`
