@@ -196,15 +196,10 @@ export const GlobalSearch = () => {
 
     const blocksSuggestions: Suggestion[] =
       blocks?.map((block) => {
-        const langCode = languages?.find(
-          (lang: Language) => lang?.ID === block?.langID
-        )?.code;
-        const titlePrefix = !!langCode ? `(${langCode}) ` : "";
-
         return {
           type: "block",
           ZUID: block?.ZUID,
-          title: block?.title, //`${titlePrefix}${block?.label}`,
+          title: block?.title,
           updatedAt: block?.updatedAt,
           url: block?.url,
         };

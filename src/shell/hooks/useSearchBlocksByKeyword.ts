@@ -186,8 +186,6 @@ export const useSearchBlocksByKeyword = ({
     isLoading,
     variants,
     blocks,
-    languages,
-    users,
     normalizedSearchTerm,
     showAll,
     languageMap,
@@ -203,7 +201,9 @@ export const useSearchBlocksByKeyword = ({
     if (showAll && !!blocks?.length) {
       setIsFetchingVariants(true);
       Promise.all(
-        blocks?.map((block) => dispatch(fetchItems(block?.ZUID)))
+        blocks?.map((block) =>
+          dispatch(fetchItems(block?.ZUID, { limit: 1000 }))
+        )
       ).then(() => {
         setIsFetchingVariants(false);
       });
