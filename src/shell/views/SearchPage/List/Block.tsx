@@ -1,4 +1,4 @@
-import { FC, useMemo } from "react";
+import { FC } from "react";
 import { Block as BlockIcon } from "@zesty-io/material";
 import { SvgIconComponent } from "@mui/icons-material";
 import { isValid, formatDistanceToNow } from "date-fns";
@@ -17,8 +17,9 @@ export type BlockModel = Partial<ContentModel> & {
   updatedAt?: string;
   lang?: string;
   langID: number | null;
-  title?: string;
-  url?: string | null;
+  title: string;
+  chipText: string;
+  url: string | null;
 };
 
 type Block = {
@@ -32,36 +33,20 @@ export const Block: FC<Block> = ({
   style,
   loading: parentIsLoading = false,
 }) => {
-  const isVariant = data?.type === "block" && !!data?.contentModelZUID;
-  const createdRelative = useMemo(() => {
-    if (!data?.createdAt) return "";
-    const d = new Date(data.createdAt);
-    return isValid(d) ? formatDistanceToNow(d, { addSuffix: true }) : "";
-  }, [data?.createdAt]);
-
-  const chips = useMemo(() => {
-    const preFix =
-      !!isVariant && !!data?.contentModelLabel
-        ? `${data?.contentModelLabel} • `
-        : "";
-
-    const userName = !data?.createdByUserName
-      ? ""
-      : ` by ${data?.createdByUserName}`;
-    return `${preFix}Block • created ${createdRelative}${userName}`;
-  }, [data]);
-
-  const titlePrefix = !!data?.lang ? `(${data?.lang}) ` : "";
-  const urlPath = isVariant
-    ? `${data?.contentModelZUID}/${data?.ZUID}`
-    : data?.ZUID;
+  const dateTimeRaw = new Date(data?.createdAt);
+  const dateTime = isValid(dateTimeRaw)
+    ? formatDistanceToNow(dateTimeRaw, { addSuffix: true })
+    : "";
+  const chips = `${data?.chipText} • ${dateTime} by ${
+    data?.createdByUserName || "unknown"
+  }`;
 
   const loading = parentIsLoading;
 
   return (
     <SearchListItem
-      title={`${titlePrefix}${data?.label}`}
-      url={`/blocks/${urlPath}`}
+      title={data?.title}
+      url={data?.url}
       chips={chips}
       icon={BlockIcon as SvgIconComponent}
       style={style}

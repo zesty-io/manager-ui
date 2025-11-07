@@ -69,10 +69,9 @@ export const SearchPage: FC = () => {
     );
   const { data: langs } = useGetLangsQuery({});
 
-  const { blocks, setBlockKeyword } = useSearchBlocksByKeyword(
-    contents,
-    isFetchingContent
-  );
+  const { blocks, setBlockKeyword } = useSearchBlocksByKeyword({
+    isLoading: isFetchingContent,
+  });
 
   const isLoading = isFetchingContent || isFetchingMedia;
 
@@ -101,13 +100,10 @@ export const SearchPage: FC = () => {
   const results: SearchPageItem[] = useMemo(() => {
     const sortBy = params.get("sort") || "";
 
-    const blockModelZUIDs = Object.values(allModels)
-      ?.filter((model: ContentModel) => model.type === "block")
-      ?.map((model: ContentModel) => model?.ZUID);
-
     //Filter out redundant block model items
     const filteredContents = contents?.filter(
-      (item) => !blockModelZUIDs?.includes(item?.meta?.contentModelZUID)
+      (item: ContentItem) =>
+        allModels?.[item?.meta?.contentModelZUID]?.type !== "block"
     );
     // Content data needs to be reset to [] when api call fails
     const contentResults: SearchPageItem[] =
@@ -230,6 +226,7 @@ export const SearchPage: FC = () => {
         return consolidatedResults;
     }
   }, [
+    allModels,
     contents,
     models,
     blocks,

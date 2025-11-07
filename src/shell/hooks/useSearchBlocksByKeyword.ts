@@ -1,11 +1,17 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { ContentItem, ContentModel, Language, User } from "../services/types";
 import { BlockModel } from "../../shell/views/SearchPage/List/Block";
 import { AppState } from "shell/store/types";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchItems } from "shell/store/content";
 
 type UsersMap = Record<string, string>;
+
 type LanguageMap = Record<string, { code: string }>;
+
+type SearchBlocksByKeywordProps = {
+  isLoading: boolean;
+};
 
 type SearchResult = {
   blocks: BlockModel[];
@@ -22,36 +28,31 @@ const toProperCase = (str?: string): string => {
     .trim();
 };
 
-export const useSearchBlocksByKeyword = (
-  contents?: ContentItem[],
-  isLoading?: boolean
-): SearchResult => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [blockVariants, setBlockVariants] = useState([]);
+const blockKeywords: string[] = [
+  "block",
+  "blocks",
+  "block model",
+  "block models",
+  "blocks models",
+];
 
-  const modelsRaw: ContentModel[] = useSelector(
-    (state: AppState) => state?.models
-  );
+export const useSearchBlocksByKeyword = ({
+  isLoading,
+}: SearchBlocksByKeywordProps): SearchResult => {
+  const dispatch = useDispatch();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isFetchingVariants, setIsFetchingVariants] = useState(false);
+
   const users: User[] = useSelector((state: AppState) => state?.users);
   const languages: Language[] = useSelector(
     (state: AppState) => state?.languages
   );
-
-  const normalizedSearch = searchTerm.toLowerCase()?.trim();
-
-  const blockModels = useMemo<BlockModel[]>(() => {
-    if (!Object.values(modelsRaw)?.length) return [];
-    return Object.values(modelsRaw)
-      ?.filter((block: ContentModel) => block?.type === "block")
-      .map((block) => block as unknown as BlockModel);
-  }, [modelsRaw]);
-
-  const blockModelsMap = useMemo(
-    () =>
-      !!blockModels?.length &&
-      Object.fromEntries(blockModels?.map((model) => [model?.ZUID, model])),
-    [blockModels]
+  const defaultLanguage = languages?.find(
+    (lang: Language) => lang?.default && lang?.active
   );
+
+  const models = useSelector((state: AppState) => state?.models);
+  const contents = useSelector((state: AppState) => state?.content);
 
   const usersMap = useMemo<UsersMap>(
     () =>
@@ -72,96 +73,145 @@ export const useSearchBlocksByKeyword = (
     [languages]
   );
 
-  useEffect(() => {
-    if (!normalizedSearch) return;
-    const blockModelZUIDs = blockModels?.map((block) => block?.ZUID);
-    const langIDs = Object.keys(languageMap);
-    const variants = !contents?.length
-      ? []
-      : contents?.filter(
-          (content: ContentItem) =>
-            blockModelZUIDs?.includes(content?.meta?.contentModelZUID) &&
-            langIDs?.includes(String(content?.meta?.langID))
-        );
-    setBlockVariants(variants);
-  }, [normalizedSearch, blockModels, languageMap, contents]);
+  const normalizedSearchTerm = searchTerm.toLowerCase()?.trim();
+  const showAll = blockKeywords.includes(normalizedSearchTerm);
+
+  const blocks = useMemo<BlockModel[]>(() => {
+    const modelsArray = models ? Object.values(models) : [];
+    if (!modelsArray?.length) return [];
+
+    return (
+      modelsArray
+        .filter((model: ContentModel) => model?.type === "block")
+        .map((model) => model as unknown as BlockModel) || []
+    );
+  }, [models]);
+
+  const variants = useMemo<ContentItem[] | []>(() => {
+    const contentItems = contents ? Object.values(contents) : [];
+    if (!contentItems?.length || !blocks?.length || isFetchingVariants) {
+      return [];
+    }
+
+    const blockModelZUIDs = new Set(blocks.map((block) => block?.ZUID));
+    const validLangIDs = new Set(languages.map((lang) => lang?.ID));
+
+    return contentItems.filter(
+      (content: ContentItem) =>
+        blockModelZUIDs.has(content?.meta?.contentModelZUID) &&
+        validLangIDs.has(content?.meta?.langID)
+    );
+  }, [contents, blocks, languages, isFetchingVariants]);
 
   const parsedBlocks: BlockModel[] = useMemo(() => {
     if (isLoading) return [];
 
-    const processedModels: BlockModel[] = !blockModels?.length
+    const processedBlocks: BlockModel[] = !blocks
       ? []
-      : blockModels?.map((model: BlockModel) => ({
-          ZUID: model?.ZUID,
-          label: model?.label,
-          type: model?.type,
-          contentModelLabel: "",
-          contentModelZUID: "",
-          updatedAt: model?.updatedAt,
-          createdAt: model?.createdAt,
-          createdByUserZUID: model?.createdByUserZUID,
-          langID: null,
-          url: `/blocks/${model?.ZUID}`,
-        }));
-
-    const processedContent = !blockVariants?.length
-      ? []
-      : blockVariants?.map((item) => {
-          const parentModel =
-            blockModelsMap?.[item?.meta?.contentModelZUID] || null;
+      : blocks.map((model: BlockModel) => {
           return {
-            ZUID: item?.meta?.ZUID,
-            label: item?.web?.metaTitle || item?.web?.metaLinkText,
-            type: !parentModel ? null : parentModel?.type,
-            contentModelZUID: item?.meta?.contentModelZUID,
-            contentModelLabel: !parentModel
-              ? null
-              : parentModel?.label || parentModel?.metaTitle,
-            updatedAt: item?.meta?.updatedAt || item?.web?.updatedAt,
-            createdAt: item?.meta?.createdAt || item?.web?.createdAt,
-            createdByUserZUID:
-              item?.meta?.createdByUserZUID || item?.web?.createdByUserZUID,
-            langID: item?.meta?.langID,
-            url: `/blocks/${item?.meta?.contentModelZUID}/${item?.meta?.ZUID}`,
+            ZUID: model?.ZUID,
+            label: model?.label,
+            title: model?.label,
+            chipText: "Blocks",
+            type: model?.type,
+            contentModelLabel: "",
+            contentModelZUID: "",
+            updatedAt: model?.updatedAt,
+            createdAt: model?.createdAt,
+            createdByUserZUID: model?.createdByUserZUID,
+            langID: defaultLanguage?.ID,
+            url: `/blocks/${model?.ZUID}`,
           };
         });
 
-    return [...processedModels, ...processedContent]
-      .map((item) => ({
+    const processedVariants = variants.map((item) => {
+      const blockModelsMap = blocks.length
+        ? Object.fromEntries(blocks.map((model) => [model?.ZUID, model]))
+        : {};
+      const parentModel =
+        blockModelsMap?.[item?.meta?.contentModelZUID] || null;
+      const titlePrefix = !item?.meta?.langID
+        ? ""
+        : `(${languageMap?.[item?.meta?.langID]?.code}) `;
+      const chipText = parentModel?.label || parentModel?.metaTitle || null;
+      return {
+        ZUID: item?.meta?.ZUID,
+        label: item?.web?.metaTitle || item?.web?.metaLinkText,
+        title: `${titlePrefix}${
+          item?.web?.metaTitle || item?.web?.metaLinkText
+        }`,
+        chipText: !chipText ? "Blocks" : `${chipText} • Blocks`,
+        type: parentModel?.type || null,
+        contentModelZUID: item?.meta?.contentModelZUID,
+        contentModelLabel: parentModel?.label || parentModel?.metaTitle || null,
+        updatedAt: item?.meta?.updatedAt || item?.web?.updatedAt,
+        createdAt: item?.meta?.createdAt || item?.web?.createdAt,
+        createdByUserZUID:
+          item?.meta?.createdByUserZUID || item?.web?.createdByUserZUID,
+        langID: item?.meta?.langID,
+        url: `/blocks/${item?.meta?.contentModelZUID}/${item?.meta?.ZUID}`,
+      };
+    });
+
+    const allBlocks = [...processedBlocks, ...processedVariants].map((item) => {
+      return {
         ...item,
-        lang: languageMap[item.langID]?.code,
         createdByUserName: toProperCase(usersMap[item.createdByUserZUID] || ""),
-        title: item.label,
-      }))
-      .filter((item) => {
-        if (!normalizedSearch) return true;
+      };
+    });
 
-        const searchFields = [
-          item.ZUID,
-          item.label,
-          item.createdByUserName,
-          item.title,
-          item.contentModelZUID,
-          item.type,
-          item.contentModelLabel,
-        ]
-          .join("\n")
-          .toLowerCase();
+    // If search is empty or it's a block keyword, return all items
+    if (!normalizedSearchTerm || showAll) {
+      return allBlocks;
+    }
 
-        return searchFields.includes(normalizedSearch);
-      });
+    // Filter based on search term
+    return allBlocks?.filter((block) => {
+      const searchFields = [
+        block?.ZUID,
+        block?.label,
+        block?.createdByUserName,
+        block?.title,
+        block?.contentModelZUID,
+        block?.type,
+        block?.contentModelLabel,
+      ]
+        .join("\n")
+        .toLowerCase();
+
+      return searchFields.includes(normalizedSearchTerm);
+    });
   }, [
     isLoading,
-    blockVariants,
-    blockModels,
+    variants,
+    blocks,
+    languages,
+    users,
+    normalizedSearchTerm,
+    showAll,
     languageMap,
     usersMap,
-    blockModelsMap,
-    normalizedSearch,
   ]);
+
+  const setBlockKeyword = useCallback((term: string) => {
+    setSearchTerm(term);
+  }, []);
+
+  useEffect(() => {
+    // Fetch all block models and variants if user searches for "blockKeywords"
+    if (showAll && !!blocks?.length) {
+      setIsFetchingVariants(true);
+      Promise.all(
+        blocks?.map((block) => dispatch(fetchItems(block?.ZUID)))
+      ).then(() => {
+        setIsFetchingVariants(false);
+      });
+    }
+  }, [showAll, blocks]);
 
   return {
     blocks: parsedBlocks,
-    setBlockKeyword: setSearchTerm,
+    setBlockKeyword,
   };
 };
