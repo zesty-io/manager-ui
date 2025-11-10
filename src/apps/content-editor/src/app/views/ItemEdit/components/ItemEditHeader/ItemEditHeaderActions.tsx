@@ -40,7 +40,7 @@ import { AppState } from "../../../../../../../../shell/store/types";
 import { useMetaKey } from "../../../../../../../../shell/hooks/useMetaKey";
 import {
   fetchItemPublishing,
-  fetchItemPublishings,
+  fetchModelItemsPublishings,
 } from "../../../../../../../../shell/store/content";
 import { useGetUsersQuery } from "../../../../../../../../shell/services/accounts";
 import { formatDate } from "../../../../../../../../utility/formatDate";
@@ -386,7 +386,11 @@ export const ItemEditHeaderActions = ({
         ]);
 
         // Retain non rtk-query fetch of item publishing for legacy code
-        dispatch(fetchItemPublishings());
+        await dispatch(
+          fetchModelItemsPublishings({
+            modelZUID,
+          })
+        );
         refetchVersions();
       } finally {
         setIsCheckingPathUpdate(true);

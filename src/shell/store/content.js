@@ -977,7 +977,8 @@ export function fetchItemPublishings() {
   return (dispatch) => {
     return dispatch({
       type: "FETCH_RESOURCE",
-      uri: `${CONFIG.API_INSTANCE}/content/items/publishings?limit=80000`,
+      // reduce initial limit since publishings will be fetched per model
+      uri: `${CONFIG.API_INSTANCE}/content/items/publishings?limit=10000`,
       handler: (res) => {
         if (res.status === 200) {
           dispatch({
@@ -1008,48 +1009,69 @@ export function fetchItemPublishings() {
     });
   };
 }
+
 export function fetchModelItemsPublishings({
   modelZUID,
-  limit = 10000,
+  limit = 10000, //set 10k limit as optimal threshold for 2-second response times
   showDeleted = false,
   showDeletedItems = false,
   showActiveOnly = false,
 }) {
-  return (dispatch) => {
-    return dispatch({
-      type: "FETCH_RESOURCE",
-      uri: `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items/publishings?limit=${limit}&showDeleted=${showDeleted}&showDeletedItems=${showDeletedItems}&showActiveOnly=${showActiveOnly}`,
-      handler: (res) => {
-        if (res.status === 200) {
-          dispatch({
-            type: "FETCH_ITEMS_PUBLISHING",
-            data: parsePublishState(res.data),
-          });
-          return res.data;
-        } else {
-          dispatch(
-            notify({
-              kind: "warn",
-              message: `${res.status}:Failed to fetch model items publishings${
-                res.error ? ": " + res.error : ""
-              }`,
-            })
-          );
-          return [];
+  const params = new URLSearchParams({
+    limit: limit.toString(),
+    showDeleted: showDeleted.toString(),
+    showDeletedItems: showDeletedItems.toString(),
+    showActiveOnly: showActiveOnly.toString(),
+  });
+
+  return async (dispatch) => {
+    const allData = [];
+
+    try {
+      //paginate requests to prevent large dataset performance issues
+      for (let page = 1; ; page++) {
+        params.set("page", page.toString());
+
+        const uri = `${
+          CONFIG.API_INSTANCE
+        }/content/models/${modelZUID}/items/publishings?${params?.toString()}`;
+        const res = await dispatch({ type: "FETCH_RESOURCE", uri });
+
+        if (res?.error) {
+          throw new Error(res.error);
         }
-      },
-      error: (err) => {
-        dispatch(
-          notify({
-            kind: "warn",
-            message: `Failed to fetch model items publishings: ${
-              err?.message || err || ""
-            }`,
-          })
-        );
-        return [];
-      },
-    });
+
+        // stop if response data is empty
+        if (!res?.data?.length) {
+          break;
+        }
+
+        allData.push(...res.data);
+
+        // stop if response data less than the request limit
+        if (res.data.length < limit) {
+          break;
+        }
+      }
+
+      // update store
+      if (allData.length) {
+        dispatch({
+          type: "FETCH_ITEMS_PUBLISHING",
+          data: parsePublishState(allData),
+        });
+      }
+
+      return allData;
+    } catch (error) {
+      dispatch(
+        notify({
+          kind: "warn",
+          message: `Failed to fetch all model items publishings: ${error.message}`,
+        })
+      );
+      return [];
+    }
   };
 }
 

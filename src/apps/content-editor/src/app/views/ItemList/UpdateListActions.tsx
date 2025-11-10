@@ -36,7 +36,7 @@ import { usePermission } from "../../../../../../shell/hooks/use-permissions";
 import { ContentItem } from "../../../../../../shell/services/types";
 import {
   fetchItem,
-  fetchItemPublishings,
+  fetchModelItemsPublishings,
 } from "../../../../../../shell/store/content";
 
 type UpdateListActionsProps = {
@@ -368,7 +368,11 @@ export const UpdateListActions = ({ items }: UpdateListActionsProps) => {
             })
               .unwrap()
               .then(async () => {
-                await dispatch(fetchItemPublishings());
+                await dispatch(
+                  fetchModelItemsPublishings({
+                    modelZUID,
+                  })
+                );
                 setItemsToPublish([]);
                 clearStagedChanges({});
                 setSelectedItems([]);
@@ -412,7 +416,11 @@ export const UpdateListActions = ({ items }: UpdateListActionsProps) => {
             })
               .unwrap()
               .then(async (response) => {
-                await dispatch(fetchItemPublishings());
+                await dispatch(
+                  fetchModelItemsPublishings({
+                    modelZUID,
+                  })
+                );
                 setItemsToSchedule([]);
                 clearStagedChanges({});
                 setSelectedItems([]);

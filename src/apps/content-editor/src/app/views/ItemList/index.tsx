@@ -123,6 +123,9 @@ export const ItemList = () => {
   }, [params]);
   const userFilter = params.get("user");
 
+  const isFetchingData =
+    isModelFetching || isFieldsFetching || isLangsLoading || isUsersFetching;
+
   const fieldMap = useMemo(() => {
     if (!fields?.length) return new Map<string, any>();
     return new Map(
@@ -173,7 +176,7 @@ export const ItemList = () => {
   }, [modelZUID]);
 
   useEffect(() => {
-    if (activeLanguageCode && modelZUID) {
+    if (activeLanguageCode && modelZUID && !isFetchingData) {
       setIsModelItemsFetching(true);
       dispatch(
         fetchItems(modelZUID, {
@@ -184,15 +187,19 @@ export const ItemList = () => {
         // @ts-ignore
       ).then(() => {
         //Ensure fetchItems completes before calling fetchPublishings to guarantee proper item mapping.
-        dispatch(fetchModelItemsPublishings({ modelZUID }))
+        dispatch(
+          fetchModelItemsPublishings({
+            modelZUID,
+          })
+        )
           // @ts-ignore
-          .then((res) => {
+          .finally(() => {
             //Only set the loading status to false after fetchPublishing has finished to ensure the status is accurate.
             setIsModelItemsFetching(false);
           });
       });
     }
-  }, [modelZUID, activeLanguageCode]);
+  }, [modelZUID, activeLanguageCode, isFetchingData]);
 
   useEffect(() => {
     // if languages and no language param, set the user selected lang or first language as the active language
