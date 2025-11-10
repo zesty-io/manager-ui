@@ -78,7 +78,9 @@ export const useSearchBlocksByKeyword = ({
 
   const blocks = useMemo<BlockModel[]>(() => {
     const modelsArray = models ? Object.values(models) : [];
-    if (!modelsArray?.length) return [];
+    if (!modelsArray?.length) {
+      return [];
+    }
 
     return (
       modelsArray
@@ -204,7 +206,7 @@ export const useSearchBlocksByKeyword = ({
         blocks?.map((block) =>
           dispatch(fetchItems(block?.ZUID, { limit: 1000 }))
         )
-      ).then(() => {
+      ).finally(() => {
         setIsFetchingVariants(false);
       });
     }

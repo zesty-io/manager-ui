@@ -1,5 +1,5 @@
 import { isEmpty } from "lodash";
-import { Database } from "@zesty-io/material";
+import { Block, Database } from "@zesty-io/material";
 import {
   Create,
   SvgIconComponent,
@@ -40,6 +40,9 @@ export const getItemIcon = (type: ResourceType, subType?: string) => {
 
     case "code":
       icon = CodeRounded;
+      break;
+    case "block":
+      icon = Block as SvgIconComponent;
       break;
 
     case "media":

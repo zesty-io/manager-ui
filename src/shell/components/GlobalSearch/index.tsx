@@ -146,7 +146,9 @@ export const GlobalSearch = () => {
   }, []);
 
   useEffect(() => {
-    if (isEmpty(apiQueryTerm)) return setSearchedContents([]);
+    if (isEmpty(apiQueryTerm)) {
+      return setSearchedContents([]);
+    }
     setIsFetchingContentSearchResults(true);
     //Update contents in store to provide access to other search hooks
     dispatch(searchItems(apiQueryTerm))
@@ -157,6 +159,8 @@ export const GlobalSearch = () => {
         } else {
           setSearchedContents([]);
         }
+      })
+      .finally(() => {
         setIsFetchingContentSearchResults(false);
       });
   }, [apiQueryTerm]);
@@ -380,7 +384,7 @@ export const GlobalSearch = () => {
     });
     const url = `/search?${searchParams.toString()}`;
 
-    // Do not save term as a recent keyword if it's empty1
+    // Do not save term as a recent keyword if it's empty
     if (!!queryTerm.trim()) {
       // If the user has selected a search accelerator, also save it in
       // the format of `[in:RESOURCE_TYPE]`

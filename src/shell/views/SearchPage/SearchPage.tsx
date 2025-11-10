@@ -32,6 +32,7 @@ import {
 import { useSearchMediaFoldersByKeyword } from "../../hooks/useSearchMediaFoldersByKeyword";
 import { BlockModel } from "./List/Block";
 import { useSearchBlocksByKeyword } from "../../hooks/useSearchBlocksByKeyword";
+import { AppState } from "shell/store/types";
 export interface SearchPageItem {
   ZUID: string;
   title: string;
@@ -46,9 +47,9 @@ export interface SearchPageItem {
 export const SearchPage: FC = () => {
   const [params, setParams] = useParams();
   const keyword = params.get("q") || "";
-  const instanceId = useSelector((state: any) => state.instance.ID);
-  const ecoId = useSelector((state: any) => state.instance.ecoID);
-  const allModels = useSelector((state: any) => state.models);
+  const instanceId = useSelector((state: AppState) => state.instance.ID);
+  const ecoId = useSelector((state: AppState) => state.instance.ecoID);
+  const allModels = useSelector((state: AppState) => state.models);
   const {
     data: contents,
     isFetching: isFetchingContent,
