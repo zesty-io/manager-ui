@@ -30,7 +30,7 @@ import {
   checkLock,
   lock,
   unlock,
-  fetchModelItemsPublishings,
+  fetchAllModelPublishings,
 } from "shell/store/content";
 import { selectLang } from "shell/store/user";
 import { PendingEditsModal } from "../../components/PendingEditsModal";
@@ -463,7 +463,7 @@ export default function ItemEdit() {
       if (isMounted.current) {
         await Promise.resolve(
           dispatch(
-            fetchModelItemsPublishings({
+            fetchAllModelPublishings({
               modelZUID,
             })
           )

@@ -39,8 +39,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "../../../../../../../../shell/store/types";
 import { useMetaKey } from "../../../../../../../../shell/hooks/useMetaKey";
 import {
+  fetchAllModelPublishings,
   fetchItemPublishing,
-  fetchModelItemsPublishings,
 } from "../../../../../../../../shell/store/content";
 import { useGetUsersQuery } from "../../../../../../../../shell/services/accounts";
 import { formatDate } from "../../../../../../../../utility/formatDate";
@@ -387,7 +387,7 @@ export const ItemEditHeaderActions = ({
 
         // Retain non rtk-query fetch of item publishing for legacy code
         await dispatch(
-          fetchModelItemsPublishings({
+          fetchAllModelPublishings({
             modelZUID,
           })
         );

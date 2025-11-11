@@ -35,8 +35,8 @@ import { useDispatch } from "react-redux";
 import { usePermission } from "../../../../../../shell/hooks/use-permissions";
 import { ContentItem } from "../../../../../../shell/services/types";
 import {
+  fetchAllModelPublishings,
   fetchItem,
-  fetchModelItemsPublishings,
 } from "../../../../../../shell/store/content";
 
 type UpdateListActionsProps = {
@@ -369,7 +369,7 @@ export const UpdateListActions = ({ items }: UpdateListActionsProps) => {
               .unwrap()
               .then(async () => {
                 await dispatch(
-                  fetchModelItemsPublishings({
+                  fetchAllModelPublishings({
                     modelZUID,
                   })
                 );
@@ -417,7 +417,7 @@ export const UpdateListActions = ({ items }: UpdateListActionsProps) => {
               .unwrap()
               .then(async (response) => {
                 await dispatch(
-                  fetchModelItemsPublishings({
+                  fetchAllModelPublishings({
                     modelZUID,
                   })
                 );

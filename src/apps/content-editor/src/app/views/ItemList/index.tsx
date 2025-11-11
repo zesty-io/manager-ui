@@ -35,8 +35,8 @@ import {
   ContentModelFieldDataType,
 } from "../../../../../../shell/services/types";
 import {
+  fetchAllModelPublishings,
   fetchItems,
-  fetchModelItemsPublishings,
 } from "../../../../../../shell/store/content";
 import { TableSortContext } from "./TableSortProvider";
 import { fetchFields } from "../../../../../../shell/store/fields";
@@ -178,25 +178,21 @@ export const ItemList = () => {
   useEffect(() => {
     if (activeLanguageCode && modelZUID && !isFetchingData) {
       setIsModelItemsFetching(true);
-      dispatch(
-        fetchItems(modelZUID, {
-          limit: 1000,
-          page: 1,
-          lang: activeLanguageCode,
-        })
-        // @ts-ignore
-      ).then(() => {
-        //Ensure fetchItems completes before calling fetchPublishings to guarantee proper item mapping.
+      Promise.all([
         dispatch(
-          fetchModelItemsPublishings({
+          fetchItems(modelZUID, {
+            limit: 1000,
+            page: 1,
+            lang: activeLanguageCode,
+          })
+        ),
+        dispatch(
+          fetchAllModelPublishings({
             modelZUID,
           })
-        )
-          // @ts-ignore
-          .finally(() => {
-            //Only set the loading status to false after fetchPublishing has finished to ensure the status is accurate.
-            setIsModelItemsFetching(false);
-          });
+        ),
+      ]).finally(() => {
+        setIsModelItemsFetching(false);
       });
     }
   }, [modelZUID, activeLanguageCode, isFetchingData]);

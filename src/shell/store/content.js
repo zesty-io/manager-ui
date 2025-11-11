@@ -1010,67 +1010,61 @@ export function fetchItemPublishings() {
   };
 }
 
-export function fetchModelItemsPublishings({
+export function fetchAllModelPublishings({
   modelZUID,
-  limit = 10000, //set 10k limit as optimal threshold for 2-second response times
-  showDeleted = false,
-  showDeletedItems = false,
-  showActiveOnly = false,
+  limit = 10000, // 10k limit for optimal 2-second response times
+  showDeleted = null,
+  showDeletedItems = null,
+  showActiveOnly = null,
 }) {
-  const params = new URLSearchParams({
-    limit: limit.toString(),
-    showDeleted: showDeleted.toString(),
-    showDeletedItems: showDeletedItems.toString(),
-    showActiveOnly: showActiveOnly.toString(),
-  });
-
   return async (dispatch) => {
-    const allData = [];
-
     try {
-      //paginate requests to prevent large dataset performance issues
-      for (let page = 1; ; page++) {
-        params.set("page", page.toString());
+      const allData = [];
+      let currentPage = 1;
+      while (true) {
+        const params = new URLSearchParams({
+          limit,
+          page: currentPage,
+          ...(showDeleted && { showDeleted }),
+          ...(showDeletedItems && { showDeletedItems }),
+          ...(showActiveOnly && { showActiveOnly }),
+        });
 
         const uri = `${
           CONFIG.API_INSTANCE
         }/content/models/${modelZUID}/items/publishings?${params?.toString()}`;
-        const res = await dispatch({ type: "FETCH_RESOURCE", uri });
+        const response = await dispatch({ type: "FETCH_RESOURCE", uri });
 
-        if (res?.error) {
-          throw new Error(res.error);
+        if (response?.error) {
+          throw new Error(response.error);
         }
 
-        // stop if response data is empty
-        if (!res?.data?.length) {
+        if (!response?.data?.length) {
           break;
         }
 
-        allData.push(...res.data);
+        allData.push(...response.data);
 
-        // stop if response data less than the request limit
-        if (res.data.length < limit) {
+        // Stop if we've reached the last page
+        if (response.data.length < limit) {
           break;
         }
+        //set next page
+        currentPage++;
       }
-
-      // update store
-      if (allData.length) {
+      if (allData.length > 0) {
         dispatch({
           type: "FETCH_ITEMS_PUBLISHING",
           data: parsePublishState(allData),
         });
       }
-
-      return allData;
     } catch (error) {
       dispatch(
         notify({
           kind: "warn",
-          message: `Failed to fetch all model items publishings: ${error.message}`,
+          message: `Failed to fetch model items publishings: ${error.message}`,
         })
       );
-      return [];
     }
   };
 }
