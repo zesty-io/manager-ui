@@ -46,6 +46,7 @@ export default connect((state) => {
           if (res.status !== 200) {
             setNoPermission(true);
           } else {
+            setNoPermission(false);
             document.title = `Manager - ${res.data?.name} - Zesty`;
             CONFIG.URL_PREVIEW_FULL = `${CONFIG.URL_PREVIEW_PROTOCOL}${res.data?.randomHashID}${CONFIG.URL_PREVIEW}`;
 

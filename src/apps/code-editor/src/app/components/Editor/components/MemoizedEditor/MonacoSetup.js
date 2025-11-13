@@ -28,27 +28,42 @@ export function MonacoSetup(store) {
    */
   monaco.languages.registerCompletionItemProvider("parsley", {
     triggerCharacters: ["."],
-    provideCompletionItems: (model) => {
-      // Pull the contentModelZUID attached to the specific file model
-      const query = new URLSearchParams(model.uri.query);
-
-      // Use reference to store to get latet state to ensure we have all fields to filter by
+    provideCompletionItems: (model, position) => {
       const state = store.getState();
-      const fields = Object.values(state.fields);
-      const modelFields = fields.filter(
-        (field) => field.contentModelZUID === query.get("contentModelZUID")
-      );
+
+      const prevWord = model.getWordAtPosition({
+        lineNumber: position.lineNumber,
+        column: Math.max(1, position.column - 1),
+      })?.word;
+
+      let fields = [];
+
+      if (prevWord === "globals") {
+        // globals.<field> → use the globals model (clippings)
+        const globalsModel = Object.values(state.models).find(
+          (m) => m.name === "clippings"
+        );
+        if (!globalsModel) return { suggestions: [] };
+        fields = Object.values(state.fields).filter(
+          (f) => f.contentModelZUID === globalsModel.ZUID
+        );
+      } else {
+        // <model>.<field> → use the current file's contentModelZUID from the model URI
+        const query = new URLSearchParams(model.uri.query);
+        const contentModelZUID = query.get("contentModelZUID");
+        fields = Object.values(state.fields).filter(
+          (f) => f.contentModelZUID === contentModelZUID
+        );
+      }
 
       return {
-        suggestions: modelFields.map((field) => {
-          return {
-            label: field.name,
-            kind: monaco.languages.CompletionItemKind.Property,
-            documentation: `${field.description}`,
-            detail: field.label,
-            insertText: field.name,
-          };
-        }),
+        suggestions: fields.map((f) => ({
+          label: f.name,
+          kind: monaco.languages.CompletionItemKind.Property,
+          insertText: f.name,
+          documentation: f.description || "",
+          detail: f.label || "",
+        })),
       };
     },
   });
