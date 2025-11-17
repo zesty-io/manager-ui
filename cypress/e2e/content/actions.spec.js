@@ -6,9 +6,27 @@ const SUFFIX = "---TEST";
 const TEST_DATA = {
   newItem: `new_item${SUFFIX}`,
 };
+const HOMEPAGE = {
+  modelZUID: "6-a1a600-k0b6f0",
+  itemZUID: "7-a1be38-1b42ht",
+};
 
 describe("Actions in content editor", () => {
   before(() => {
+    cy.task("seed:content", "fixtures/actions.json").then(
+      ({ model, fields, items }) => {
+        //Set modelZUID as Cypress env variable for global test access
+        Cypress.env("modelZUID", model?.ZUID);
+        //Set itemZUID as Cypress env variable for global test access
+        Cypress.env("itemZUID", items[0]?.meta?.ZUID);
+
+        // Delete fontawesome field to test deactivated fields scenario
+        const fontAwesomeField = fields?.find(
+          (field) => field.datatype === "fontawesome"
+        );
+        deleteFields(Cypress.env("modelZUID"), [fontAwesomeField?.ZUID]);
+      }
+    );
     cleanTestData();
   });
 
@@ -16,10 +34,15 @@ describe("Actions in content editor", () => {
 
   it("Must not save when missing required Field", () => {
     cy.waitOn("/v1/content/models*", () => {
-      cy.visit("/content/6-556370-8sh47g/7-82a5c7ffb0-07vj1c");
+      cy.visit(
+        `/content/${Cypress.env("modelZUID")}/${Cypress.env("itemZUID")}`
+      );
     });
 
-    cy.get("#12-13d590-9v2nr2 input", TIMEOUT).clear().should("have.value", "");
+    cy.get(`[data-cy="field:markdown"] textarea`, TIMEOUT)
+      .clear()
+      .should("have.value", "")
+      .wait(500);
     cy.get("#SaveItemButton", TIMEOUT).trigger("click");
 
     cy.get("[data-cy=toast]", TIMEOUT).contains(
@@ -30,10 +53,15 @@ describe("Actions in content editor", () => {
 
   it("Must not save when exceeding or lacking characters", () => {
     cy.waitOn("/v1/content/models*", () => {
-      cy.visit("/content/6-a4f5f1beaa-zc5l6v/7-ce9ca8cfb0-cc1mnz");
+      cy.visit(
+        `/content/${Cypress.env("modelZUID")}/${Cypress.env("itemZUID")}`
+      );
     });
 
-    cy.get("#12-e6a5cfe3f6-k94nbg input", TIMEOUT).clear().type("aa");
+    cy.get(`[data-cy="field:text"] input`, TIMEOUT)
+      .clear()
+      .type("aa")
+      .wait(500);
     cy.get("#SaveItemButton", TIMEOUT).trigger("click");
     cy.getBySelector("FieldErrorsList").should("exist");
     cy.getBySelector("FieldErrorsList")
@@ -41,9 +69,10 @@ describe("Actions in content editor", () => {
       .find("li")
       .first()
       .contains("Requires 8 more characters.");
-    cy.get("#12-e6a5cfe3f6-k94nbg input")
+    cy.get(`[data-cy="field:text"] input`)
       .clear()
-      .type("Lorem ipsum dolor sit amet, consect");
+      .type("Lorem ipsum dolor sit amet, consect")
+      .wait(500);
     cy.get("#SaveItemButton", TIMEOUT).trigger("click");
     cy.getBySelector("FieldErrorsList").should("exist");
     cy.getBySelector("FieldErrorsList")
@@ -51,22 +80,25 @@ describe("Actions in content editor", () => {
       .find("li")
       .first()
       .contains("Exceeding by 5 characters.");
-    cy.get("#12-e6a5cfe3f6-k94nbg input", TIMEOUT)
+    cy.get(`[data-cy="field:text"] input`, TIMEOUT)
       .clear({ force: true })
-      .wait(500)
-      .type("Lorem ipsum");
+      .type("Lorem ipsum")
+      .wait(500);
     cy.get("#SaveItemButton", TIMEOUT).click();
     cy.get("[data-cy=toast]", TIMEOUT).contains(
-      "Item Saved: New Schema All Fields"
+      "Item Saved: E2E: Content - Actions",
+      { matchCase: false }
     );
   });
 
   it("Must not save when regex is not matched", () => {
     cy.waitOn("/v1/content/models*", () => {
-      cy.visit("/content/6-a4f5f1beaa-zc5l6v/7-ce9ca8cfb0-cc1mnz");
+      cy.visit(
+        `/content/${Cypress.env("modelZUID")}/${Cypress.env("itemZUID")}`
+      );
     });
 
-    cy.get("#12-b6d09d92d0-7911ld textarea", TIMEOUT)
+    cy.get(`[data-cy="field:textarea"] textarea:eq(0)`, TIMEOUT)
       .first()
       .clear()
       .type("aa");
@@ -77,14 +109,15 @@ describe("Actions in content editor", () => {
       .find("li")
       .first()
       .contains("Must be an email (e.g. hello@zesty.io)");
-    cy.get("#12-b6d09d92d0-7911ld  textarea")
+    cy.get(`[data-cy="field:textarea"]  textarea:eq(0)`)
       .first()
       .clear()
-      .wait(500)
-      .type("hello@zesty.io");
-    cy.get("#SaveItemButton", TIMEOUT).click();
+      .type("hello@zesty.io")
+      .wait(500);
+    cy.get("#SaveItemButton", TIMEOUT).trigger("click");
     cy.get("[data-cy=toast]", TIMEOUT).contains(
-      "Item Saved: New Schema All Fields"
+      "Item Saved: E2E: Content - Actions",
+      { matchCase: false }
     );
   });
 
@@ -93,32 +126,28 @@ describe("Actions in content editor", () => {
    * */
   it("Save when missing required deactivated field", () => {
     cy.waitOn("/v1/content/models*", () => {
-      cy.visit("/content/6-0c960c-d1n0kx/7-c882ba84ce-c4smnp");
+      cy.visit(
+        `/content/${Cypress.env("modelZUID")}/${Cypress.env("itemZUID")}`
+      );
     });
 
     // Test deactivated field is not in DOM
-    cy.get("#12-f8efe4e0f5-xj7pj6 input").should("not.exist");
+    cy.get(`[data-cy="field:fontawesome"] input`).should("not.exist");
 
     // Make an edit to enable save button
-    cy.get("#12-849844-t8v5l6 input", TIMEOUT)
+    cy.get(`[data-cy="field:text"] input`, TIMEOUT)
       .clear()
-      .wait(500)
-      .type(TEST_DATA?.newItem);
+      .type(TEST_DATA?.newItem)
+      .wait(500);
 
-    // save to api
-    cy.waitOn(
-      "/v1/content/models/6-0c960c-d1n0kx/items/7-c882ba84ce-c4smnp",
-      () => {
-        cy.get("#SaveItemButton").click({ force: true, ...TIMEOUT });
-      }
-    );
+    cy.get("#SaveItemButton", TIMEOUT).trigger("click");
 
     cy.get("[data-cy=toast]", TIMEOUT).contains("Item Saved");
   });
 
   it("Saves homepage item metadata", () => {
     cy.waitOn("/v1/content/models*", () => {
-      cy.visit("/content/6-a1a600-k0b6f0/7-a1be38-1b42ht/meta");
+      cy.visit(`/content/${HOMEPAGE.modelZUID}/${HOMEPAGE.itemZUID}/meta`);
     });
 
     cy.get("textarea", TIMEOUT)
@@ -128,7 +157,7 @@ describe("Actions in content editor", () => {
       .should("have.value", "This is an item meta description");
 
     cy.waitOn(
-      "/v1/content/models/6-a1a600-k0b6f0/items/7-a1be38-1b42ht",
+      `/v1/content/models/${HOMEPAGE.modelZUID}/items/${HOMEPAGE.itemZUID}`,
       () => {
         cy.get("#SaveItemButton", TIMEOUT).trigger("click");
       }
@@ -150,9 +179,9 @@ describe("Actions in content editor", () => {
 
   it("Unpublishes an item", () => {
     cy.getBySelector("ContentPublishedIndicator").should("exist");
-    cy.getBySelector("PublishMenuButton", TIMEOUT).click();
-    cy.getBySelector("UnpublishContentButton", TIMEOUT).click();
-    cy.getBySelector("ConfirmUnpublishButton").click();
+    cy.getBySelector("PublishMenuButton", TIMEOUT).should("exist").click();
+    cy.getBySelector("UnpublishContentButton", TIMEOUT).should("exist").click();
+    cy.getBySelector("ConfirmUnpublishButton").should("exist").click();
 
     cy.intercept("GET", "**/publishings").as("publish");
     cy.wait("@publish");
@@ -162,25 +191,25 @@ describe("Actions in content editor", () => {
 
   it("Schedules a Publish for an item", () => {
     cy.waitOn("/v1/content/models*", () => {
-      cy.visit("/content/6-a1a600-k0b6f0/7-a1be38-1b42ht/meta");
+      cy.visit(`/content/${HOMEPAGE.modelZUID}/${HOMEPAGE.itemZUID}/meta`);
     });
 
     cy.getBySelector("PublishMenuButton", TIMEOUT).click();
-    cy.getBySelector("PublishScheduleButton").click();
-    cy.getBySelector("SchedulePublishButton").click();
+    cy.getBySelector("PublishScheduleButton").should("exist").click();
+    cy.getBySelector("SchedulePublishButton").should("exist").click();
     cy.getBySelector("ContentScheduledIndicator").should("exist");
   });
 
   it("Unschedules a Publish for an item", () => {
-    cy.getBySelector("PublishMenuButton", TIMEOUT).click();
-    cy.getBySelector("PublishScheduleButton").click();
-    cy.getBySelector("UnschedulePublishButton").click();
+    cy.getBySelector("PublishMenuButton", TIMEOUT).should("exist").click();
+    cy.getBySelector("PublishScheduleButton").should("exist").click();
+    cy.getBySelector("UnschedulePublishButton").should("exist").click();
     cy.getBySelector("ContentScheduledIndicator").should("not.exist");
   });
 
   it("Only allows future dates to be scheduled for publish", () => {
     cy.waitOn("/v1/content/models*", () => {
-      cy.visit("/content/6-a1a600-k0b6f0/7-a1be38-1b42ht/meta");
+      cy.visit(`/content/${HOMEPAGE.modelZUID}/${HOMEPAGE.itemZUID}/meta`);
     });
 
     cy.getBySelector("PublishMenuButton", TIMEOUT).click();
@@ -200,7 +229,7 @@ describe("Actions in content editor", () => {
 
   it("Fills in default values for a new item", () => {
     cy.waitOn("/v1/content/models*", () => {
-      cy.visit("/content/6-a1a600-k0b6f0/new");
+      cy.visit(`/content/${HOMEPAGE.modelZUID}/new`);
     });
 
     cy.get("#12-0c3934-8dz720 input", TIMEOUT).should(
@@ -217,7 +246,7 @@ describe("Actions in content editor", () => {
 
   it("Fills in default values for a new item", () => {
     cy.waitOn("/v1/content/models*", () => {
-      cy.visit("/content/6-a1a600-k0b6f0/new");
+      cy.visit(`/content/${HOMEPAGE.modelZUID}/new`);
     });
 
     cy.get("#12-0c3934-8dz720 input", TIMEOUT).should(
@@ -233,7 +262,7 @@ describe("Actions in content editor", () => {
   it("Creates a new item", () => {
     cleanTestData();
     cy.waitOn("/v1/content/models*", () => {
-      cy.visit("/content/6-a1a600-k0b6f0/new");
+      cy.visit(`/content/${HOMEPAGE.modelZUID}/new`);
     });
 
     cy.get("input[name=title]", TIMEOUT)
@@ -256,7 +285,7 @@ describe("Actions in content editor", () => {
 
   it("Displays a new item in the list", () => {
     cy.waitOn("/v1/content/models*", () => {
-      cy.visit("/content/6-a1a600-k0b6f0");
+      cy.visit(`/content/${HOMEPAGE.modelZUID}`);
     });
 
     cy.contains(TEST_DATA?.newItem, { timeout: 50_000 }).should("exist");
@@ -269,7 +298,7 @@ describe("Actions in content editor", () => {
     cy.getBySelector("DeleteContentItemConfirmButton").click();
 
     cy.waitOn("/v1/content/models*", () => {
-      cy.visit("/content/6-a1a600-k0b6f0");
+      cy.visit(`/content/${HOMEPAGE.modelZUID}`);
     });
 
     cy.contains(TEST_DATA?.newItem).should("not.exist");
@@ -300,15 +329,15 @@ describe("Actions in content editor", () => {
   //   // cy.contains("The item has been purged from the CDN cache", { timeout: 5000 }).should("exist");
   // });
 
-  it.only("Creates a new content item using AI-generated data", () => {
+  it("Creates a new content item using AI-generated data", () => {
     cy.waitOn("/v1/content/models*", () => {
       cy.waitOn("/v1/content/models/*/fields?showDeleted=true", () => {
-        cy.visit("/content/6-a1a600-k0b6f0/new");
+        cy.visit(`/content/${HOMEPAGE.modelZUID}/new`);
       });
     });
 
     // Generate AI content for single line text
-    cy.get("#12-0c3934-8dz720", { timeout: 30_000 })
+    cy.get(`[data-cy="field:title"]`, { timeout: 30_000 })
       .find("[data-cy='AIOpen']")
       .click();
     cy.getBySelector("AITopicField").type("biking");
@@ -318,7 +347,7 @@ describe("Actions in content editor", () => {
     cy.get("[data-cy='AIApprove']", { timeout: 50_000 }).click();
 
     // Generate AI content for wysiwyg
-    cy.get("#12-717920-6z46t7", { timeout: 30_000 })
+    cy.get(`[data-cy="field:content"]`, { timeout: 30_000 })
       .find("[data-cy='AIOpen']")
       .click();
     cy.getBySelector("AITopicField").type("biking");
@@ -358,16 +387,25 @@ describe("Actions in content editor", () => {
 
 function cleanTestData() {
   cy.apiRequest({
-    url: `${API_ENDPOINTS.devInstance}/content/models/6-a1a600-k0b6f0/items?limit=5000&page=1&lang=en-US`,
+    url: `${API_ENDPOINTS.devInstance}/content/models/${HOMEPAGE.modelZUID}/items?limit=5000&page=1&lang=en-US`,
   }).then((response) => {
     const zuids = response?.data
       ?.filter((resData) => resData?.data?.title?.includes(SUFFIX))
       ?.map((item) => item?.meta?.ZUID);
 
     cy.apiRequest({
-      url: `${API_ENDPOINTS.devInstance}/content/models/6-a1a600-k0b6f0/items/batch`,
+      url: `${API_ENDPOINTS.devInstance}/content/models/${HOMEPAGE.modelZUID}/items/batch`,
       method: "DELETE",
       body: JSON.stringify(zuids),
+    });
+  });
+}
+
+function deleteFields(modelZUID, fieldZUIDs) {
+  fieldZUIDs.forEach((fieldZUID) => {
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/content/models/${modelZUID}/fields/${fieldZUID}`,
+      method: "DELETE",
     });
   });
 }
