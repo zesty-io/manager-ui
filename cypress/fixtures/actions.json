@@ -1,0 +1,188 @@
+{
+  "model": {
+    "label": "E2E: Content - Actions",
+    "metaTitle": "E2E: Content - Actions",
+    "type": "pageset",
+    "listed": true
+  },
+  "fields": [
+    {
+      "label": "Text",
+      "name": "text",
+      "datatype": "text",
+      "required": true,
+      "settings": {
+        "list": true,
+        "defaultValue": "Sample text",
+        "maxCharLimit": 30,
+        "minCharLimit": 10
+      }
+    },
+    {
+      "datatype": "textarea",
+      "name": "textarea",
+      "label": "textarea",
+      "required": true,
+      "sort": 2,
+      "settings": {
+        "list": true,
+        "defaultValue": "test_email@zesty.io",
+        "regexMatchErrorMessage": "Must be an email (e.g. hello@zesty.io)",
+        "regexMatchPattern": "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?"
+      }
+    },
+    {
+      "datatype": "markdown",
+      "name": "markdown",
+      "label": "markdown",
+      "required": true,
+      "settings": {
+        "list": true,
+        "defaultValue": "markdown"
+      }
+    },
+    {
+      "datatype": "wysiwyg_basic",
+      "name": "wysiwyg_basic",
+      "label": "wysiwyg basic",
+      "sort": 3,
+      "settings": {
+        "list": true,
+        "defaultValue": "What is Zesty.io?"
+      }
+    },
+    {
+      "label": "Dropdown",
+      "name": "dropdown",
+      "datatype": "dropdown",
+      "settings": {
+        "list": true,
+        "options": {
+          "First Option": 1,
+          "Second Option": 2
+        }
+      }
+    },
+    {
+      "label": "Yes/No",
+      "name": "yes_no",
+      "datatype": "yes_no",
+      "settings": {
+        "list": true,
+        "options": {
+          "0": "No",
+          "1": "Yes"
+        }
+      }
+    },
+    {
+      "label": "Images",
+      "name": "images",
+      "datatype": "images",
+      "settings": {
+        "list": true,
+        "limit": 5
+      }
+    },
+    {
+      "label": "One to One",
+      "name": "one_to_one",
+      "datatype": "one_to_one",
+      "relatedModelZUID": "6-a8bae2f4d7-rffln5",
+      "relatedFieldZUID": "12-d6e4c1d797-sjv628",
+      "settings": {
+        "list": true
+      }
+    },
+    {
+      "label": "Fontawesome",
+      "name": "fontawesome",
+      "datatype": "fontawesome",
+      "settings": {
+        "list": true
+      }
+    }
+  ],
+  "items": [
+    {
+      "web": {
+        "metaTitle": "E2E: Content - Actions",
+        "metaLinkText": "E2E: Content - Actions"
+      },
+      "data": {
+        "text": "Mitchell Wilder",
+        "textarea": "test_email@zesty.io",
+        "markdown": "markdown",
+        "wysiwyg_basic": "Ullamco cupidatat pariatur sit ad non non. Lorem quis officia enim duis eiusmod aliqua aliqua tempor officia voluptate exercitation enim ad consequat. Ipsum velit reprehenderit consequat commodo mollit Lorem tempor laborum amet esse. Magna laborum id laborum labore nostrud. Culpa ullamco officia laborum reprehenderit laborum excepteur voluptate voluptate elit.\r\n",
+        "yes_no": 0,
+        "dropdown": 1,
+        "images": "3-6d7e8b3-4dv81",
+        "fontawesome": ""
+      }
+    },
+    {
+      "web": {
+        "metaTitle": "Common Item 2",
+        "metaLinkText": "Common Item 2"
+      },
+      "data": {
+        "text": "Annabelle Monroe",
+        "textarea": "673 Locust Street, Klagetoh, Alaska, 1340",
+        "markdown": "markdown",
+        "wysiwyg_basic": "Elit tempor laborum consequat nisi. Magna est deserunt duis ipsum anim pariatur fugiat officia ea laborum veniam reprehenderit. Irure dolor proident anim officia veniam nisi. Pariatur consequat nisi id est proident eu sint Lorem anim sit pariatur. Consequat et voluptate amet elit enim in velit laboris. Pariatur aliquip elit esse sunt magna in est esse adipisicing anim. Esse laboris ex cupidatat ut incididunt veniam officia officia elit.\r\n",
+        "yes_no": 0,
+        "dropdown": 0,
+        "images": "3-6e3cefc-neo39,3-7d9231d-i4iv9,3-b138798-i992x,3-6d7e8b3-4dv81",
+        "fontawesome": ""
+      }
+    },
+    {
+      "web": {
+        "metaTitle": "Common Item 3",
+        "metaLinkText": "Common Item 3"
+      },
+      "data": {
+        "text": "Vilma Cantu",
+        "textarea": "508 Williamsburg Street, Buxton, Utah, 4962",
+        "markdown": "markdown",
+        "wysiwyg_basic": "Culpa amet consectetur culpa ipsum duis laboris et consectetur laboris sit amet aute. Esse nulla sint velit quis qui incididunt laboris sit mollit elit sint pariatur. Quis voluptate nulla enim excepteur elit duis quis sit. Ut mollit ut minim esse anim voluptate irure qui elit laborum. Pariatur et sit duis irure consectetur adipisicing sit excepteur aliquip sunt magna. Nisi culpa veniam occaecat eiusmod incididunt veniam eiusmod est ad ea duis qui. Deserunt ea exercitation non pariatur nostrud voluptate consequat aliquip in quis mollit duis eu laboris.\r\n",
+        "yes_no": 0,
+        "dropdown": 1,
+        "images": "3-6e3cefc-neo39",
+        "fontawesome": ""
+      }
+    },
+    {
+      "web": {
+        "metaTitle": "Common Item 4",
+        "metaLinkText": "Common Item 4"
+      },
+      "data": {
+        "text": "Mercedes Noel",
+        "textarea": "715 Irving Street, Carlos, Maryland, 5696",
+        "markdown": "markdown",
+        "wysiwyg_basic": "Occaecat laborum excepteur nulla officia mollit reprehenderit. Officia culpa esse labore do mollit elit. Eiusmod magna do dolor labore ex occaecat fugiat duis labore qui.\r\n",
+        "yes_no": 0,
+        "dropdown": 0,
+        "images": "3-b138798-i992x",
+        "fontawesome": ""
+      }
+    },
+    {
+      "web": {
+        "metaTitle": "Common Item 5",
+        "metaLinkText": "Common Item 5"
+      },
+      "data": {
+        "text": "Chrystal Johns",
+        "textarea": "403 Euclid Avenue, Imperial, Iowa, 2366",
+        "markdown": "markdown",
+        "wysiwyg_basic": "Commodo minim labore ex laborum veniam deserunt consectetur nisi eiusmod consectetur ad do. Aute consectetur proident pariatur aute. Quis ullamco elit veniam labore ullamco dolor pariatur id. Nisi dolore laborum amet quis voluptate nisi.\r\n",
+        "yes_no": 0,
+        "dropdown": 1,
+        "images": "3-7d9231d-i4iv9",
+        "fontawesome": ""
+      }
+    }
+  ]
+}

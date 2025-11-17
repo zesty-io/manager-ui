@@ -17,11 +17,8 @@ module.exports = function content(config) {
   const { formatPathPart } = require("../../../src/utility/formatPathPart");
   const { formatName } = require("../../../src/utility/formatName");
   const { getSDK } = require("./utils");
-  async function seedContent(): Promise<SeedContentTask> {
-    const jsonString = readFileSync(
-      join(__dirname, "../../fixtures/content.json"),
-      "utf8"
-    );
+  async function seedContent(path: string): Promise<SeedContentTask> {
+    const jsonString = readFileSync(join(__dirname, "../../", path), "utf8");
     const json = JSON.parse(jsonString);
 
     const sdk = await getSDK(config);
@@ -95,6 +92,6 @@ module.exports = function content(config) {
 
   // CONTENT TASK MAPPING
   return {
-    "seed:content": seedContent,
+    "seed:content": (path: string) => seedContent(path),
   };
 };
