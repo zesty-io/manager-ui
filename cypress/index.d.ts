@@ -57,7 +57,10 @@ declare global {
       deleteStatusLabels(labels: string[]): Chainable<any>;
       deleteModel(zuid: string): Chainable<any>;
       deleteModels(models: string[]): Chainable<any>;
-      task(event: "seed:content"): Chainable<{
+      task(
+        event: "seed:content",
+        path: string
+      ): Chainable<{
         model: Partial<ContentModel>;
         fields: Partial<ContentModelField>;
         items: Partial<ContentItem>;
