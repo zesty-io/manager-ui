@@ -47,7 +47,19 @@ module.exports = async (env) => {
       historyApiFallback: {
         rewrites: [
           { from: /^\/active-preview/, to: "/activePreview.html" },
-          { from: /./, to: "/index.html" },
+          {
+            from: /./,
+            to: (context) => {
+              const host = (context.request?.headers?.host || "")
+                .split(":")[0]
+                .toLowerCase();
+
+              if (host.endsWith("zesty.io")) return "/index-zesty.html";
+              if (host.endsWith("content.one")) return "/index-content.html";
+
+              return "/index-zesty.html";
+            },
+          },
         ],
       },
       client: {
@@ -183,8 +195,14 @@ module.exports = async (env) => {
       new HtmlWebpackPlugin({
         inject: false,
         chunks: ["main"],
-        template: "src/index.html",
-        filename: "index.html",
+        template: "src/index-zesty.html",
+        filename: "index-zesty.html",
+      }),
+      new HtmlWebpackPlugin({
+        inject: false,
+        chunks: ["main"],
+        template: "src/index-content.html",
+        filename: "index-content.html",
       }),
 
       new HtmlWebpackPlugin({

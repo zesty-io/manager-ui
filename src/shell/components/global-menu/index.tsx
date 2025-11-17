@@ -9,6 +9,7 @@ import {
   ListItemText,
   Box,
   Skeleton,
+  alpha,
 } from "@mui/material";
 import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
 import EditIcon from "@mui/icons-material/Edit";
@@ -48,7 +49,6 @@ export default memo(function GlobalMenu() {
     release: RocketLaunchIcon,
     apps: ExtensionIcon,
   };
-  const activeBgColor = "rgba(255, 93, 10, 0.08)";
 
   const MenuItemIcon = ({ product }: { product: Products }) => {
     const SpecificIcon = icons[product];
@@ -126,14 +126,18 @@ export default memo(function GlobalMenu() {
                 pl: isActive ? 1.25 : 1.5,
                 py: 0.75,
                 height: "36px",
-                backgroundColor: isActive ? activeBgColor : "transparent",
+                backgroundColor: (theme) =>
+                  isActive
+                    ? alpha(theme.palette.primary.main, 0.08)
+                    : "transparent",
                 borderLeft: isActive ? "2px solid" : "none",
                 borderColor: "primary.main",
                 svg: {
                   color: isActive ? "primary.main" : "grey.400",
                 },
                 "&:hover": {
-                  backgroundColor: activeBgColor,
+                  backgroundColor: (theme) =>
+                    alpha(theme.palette.primary.main, 0.08),
                 },
                 "& .MuiListItemIcon-root": {
                   minWidth: 0,
