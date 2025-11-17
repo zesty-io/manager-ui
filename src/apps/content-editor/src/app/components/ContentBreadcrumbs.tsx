@@ -142,8 +142,6 @@ export const ContentBreadcrumbs = () => {
     );
   }
 
-  console.log("breadcrumbData", breadcrumbData);
-
   return (
     <CustomBreadcrumbs
       items={[

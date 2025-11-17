@@ -215,7 +215,7 @@ const BlockVariantCard = ({ item, onClick }: BlockVariantCardProps) => {
       onClick={onClick}
     >
       <Box px={1} pt={1} pb={1.75}>
-        {!noImage && (
+        {!noImage ? (
           <Box
             component="img"
             src={item.data.og_image as string}
@@ -227,8 +227,7 @@ const BlockVariantCard = ({ item, onClick }: BlockVariantCardProps) => {
               setNoImage(true);
             }}
           />
-        )}
-        {noImage && (
+        ) : (
           <Box
             minHeight={146}
             maxHeight={146}
