@@ -3,8 +3,9 @@ import { useMemo } from "react";
 import { useLocalStorage } from "react-use";
 
 import zestyLogoPulse from "../../../../public/images/zestyLogoOnlyPulsate.svg";
+import contentOneLogoOnly from "../../../../public/images/contentOneLogoOnly.webp";
+import { isContentOne } from "../../../utility/isContentOne";
 
-// @ts-expect-error randomQuote is added to window and untyped
 const QUOTE: Quote = window.randomQuote;
 
 type Quote = {
@@ -45,7 +46,7 @@ export const LoadingQuote = ({ loadNewQuote }: LoadingQuoteProps) => {
     >
       <Box
         component="img"
-        src={zestyLogoPulse}
+        src={isContentOne() ? contentOneLogoOnly : zestyLogoPulse}
         loading="lazy"
         alt="Displaying Zesty.io logo while application loads"
         sx={{
