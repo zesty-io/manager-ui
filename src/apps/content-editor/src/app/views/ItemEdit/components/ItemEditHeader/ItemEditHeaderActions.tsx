@@ -362,7 +362,7 @@ export const ItemEditHeaderActions = ({
         await Promise.all(deleteScheduledPromises);
 
         // Proceed with publishing
-        await Promise.allSettled([
+        const publishPromises = await Promise.allSettled([
           createPublishing({
             modelZUID,
             itemZUID,
@@ -384,6 +384,18 @@ export const ItemEditHeaderActions = ({
             })
           ),
         ]);
+
+        // Loop through all publish results and dispatch error notification if any failed
+        publishPromises.forEach((promise: any) => {
+          if ("error" in promise.value) {
+            dispatch(
+              notify({
+                message: promise.value.error.data?.error,
+                kind: "error",
+              })
+            );
+          }
+        });
 
         // Retain non rtk-query fetch of item publishing for legacy code
         dispatch(fetchItemPublishings());
