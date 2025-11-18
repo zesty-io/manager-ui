@@ -28,6 +28,7 @@ import { ContentInsights } from "./ContentInsights";
 import {
   useGetContentModelQuery,
   useGetContentModelFieldsQuery,
+  useGetInstanceSettingsQuery,
 } from "../../../../../../../shell/services/instance";
 import { AppState } from "../../../../../../../shell/store/types";
 import { Error } from "../../../components/Editor/Field/FieldShell";
@@ -133,6 +134,8 @@ export const Meta = forwardRef(
       skip: !modelZUID,
     });
     const { data: fields } = useGetContentModelFieldsQuery({ modelZUID });
+    const { data: instanceSettings, isFetching: instanceSettingsFetching } =
+      useGetInstanceSettingsQuery();
     const { meta, data, web }: { meta: MetaType; data: Data; web: Web } =
       useSelector(
         (state: AppState) =>
@@ -146,6 +149,9 @@ export const Meta = forwardRef(
       useState<(typeof FlowType)[keyof typeof FlowType]>(null);
     const metaDescriptionButtonRef = useRef(null);
     const metaTitleButtonRef = useRef(null);
+    const showSEOPreview =
+      instanceSettings?.find((setting) => setting.key === "disable_seo_preview")
+        ?.value !== "1" && model?.type !== "dataset";
 
     // @ts-expect-error untyped
     const siteName = useMemo(() => dispatch(fetchGlobalItem())?.site_name, []);
@@ -717,7 +723,7 @@ export const Meta = forwardRef(
             }}
           >
             <Box maxWidth={620}>
-              {model?.type !== "dataset" && (
+              {showSEOPreview && (
                 <>
                   <SocialMediaPreview />
                   <Divider sx={{ my: 1.5 }} />
