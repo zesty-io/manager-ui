@@ -20,16 +20,30 @@ export const Comment = ({ resourceZUID }: CommentProps) => {
   const history = useHistory();
   const location = useLocation();
   const [_, __, ___, setCommentZUIDtoEdit] = useContext(CommentContext);
+  const [isInView, setIsInView] = useState(false);
   const { itemZUID, resourceZUID: activeResourceZUID } =
     useParams<PathParams>();
   const { data: comment, isLoading: isLoadingComment } =
     useGetCommentByResourceQuery(
       { itemZUID, resourceZUID },
-      { skip: !resourceZUID }
+      { skip: !resourceZUID || !isInView }
     );
   const buttonContainerRef = useRef<HTMLDivElement>();
   const [isCommentListOpen, setIsCommentListOpen] = useState(false);
   const [isButtonAutoscroll, setIsButtonAutoscroll] = useState(true);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setIsInView(true);
+        observer.disconnect();
+      }
+    });
+
+    observer.observe(buttonContainerRef.current);
+
+    return () => observer.disconnect();
+  }, []);
 
   const parentComment = useMemo(() => {
     return comment?.find((comment) => comment.resourceZUID === itemZUID);
