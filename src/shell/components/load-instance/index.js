@@ -17,6 +17,7 @@ import { fetchFiles } from "../../../apps/code-editor/src/store/files";
 import { fetchSettings } from "shell/store/settings";
 import { NoInstancePermission } from "./NoInstancePermission";
 import { useGetCurrentUserRolesQuery } from "../../services/accounts";
+import { isContentOne } from "../../../utility/isContentOne";
 
 export default connect((state) => {
   return {
@@ -47,7 +48,8 @@ export default connect((state) => {
             setNoPermission(true);
           } else {
             setNoPermission(false);
-            document.title = `Manager - ${res.data?.name} - Zesty`;
+            const appName = isContentOne() ? "Content.one" : "Zesty.io";
+            document.title = `Manager - ${res.data?.name} - ${appName}`;
             CONFIG.URL_PREVIEW_FULL = `${CONFIG.URL_PREVIEW_PROTOCOL}${res.data?.randomHashID}${CONFIG.URL_PREVIEW}`;
 
             // All other API calls should only be made if user has access to this instance
