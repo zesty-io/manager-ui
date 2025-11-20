@@ -232,14 +232,14 @@ describe("Actions in content editor", () => {
       cy.visit(`/content/${HOMEPAGE.modelZUID}/new`);
     });
 
-    cy.get("#12-0c3934-8dz720 input", TIMEOUT).should(
+    cy.get('[data-cy="field:title"] input', TIMEOUT).should(
       "have.value",
       "default single line text field"
     );
-    cy.get("#12-d39a38-85sqdt", TIMEOUT).contains(
+    cy.get('[data-cy="field:image"]', TIMEOUT).contains(
       "zesty-io-logo-horizontal-dark.png"
     );
-    cy.get("#12-bcd1dcc5f4-2rpm9p", TIMEOUT).contains(
+    cy.get('[data-cy="field:habibi"]', TIMEOUT).contains(
       "5 Tricks to Teach Your Pitbull: Fun & Easy Tips for You & Your Dog!"
     );
   });
@@ -249,12 +249,14 @@ describe("Actions in content editor", () => {
       cy.visit(`/content/${HOMEPAGE.modelZUID}/new`);
     });
 
-    cy.get("#12-0c3934-8dz720 input", TIMEOUT).should(
+    cy.get('[data-cy="field:title"] input', TIMEOUT).should(
       "have.value",
       "default single line text field"
     );
-    cy.get("#12-d39a38-85sqdt").contains("zesty-io-logo-horizontal-dark.png");
-    cy.get("#12-bcd1dcc5f4-2rpm9p").contains(
+    cy.get('[data-cy="field:image"]', TIMEOUT).contains(
+      "zesty-io-logo-horizontal-dark.png"
+    );
+    cy.get('[data-cy="field:habibi"]', TIMEOUT).contains(
       "5 Tricks to Teach Your Pitbull: Fun & Easy Tips for You & Your Dog!"
     );
   });
