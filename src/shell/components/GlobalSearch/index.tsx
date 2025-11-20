@@ -28,7 +28,7 @@ import { GlobalSearchItem } from "./components/GlobalSearchItem";
 import { getContentTitle, getItemIcon } from "./utils";
 import { useSearchModelsByKeyword } from "../../hooks/useSearchModelsByKeyword";
 import { useSearchCodeFilesByKeywords } from "../../hooks/useSearchCodeFilesByKeyword";
-import { ContentItem, Language, ResourceType } from "../../services/types";
+import { ContentItem, ResourceType } from "../../services/types";
 import { SearchAccelerator } from "./components/SearchAccelerator";
 import { SEARCH_ACCELERATORS } from "./components/config";
 import { useGetActiveApp } from "../../hooks/useGetActiveApp";
@@ -43,9 +43,8 @@ import { KeywordSearchItem } from "./components/KeywordSearchItem";
 import { useParams } from "../../hooks/useParams";
 import { withCursorPosition } from "../../components/withCursorPosition";
 import { useSearchBlocksByKeyword } from "../../hooks/useSearchBlocksByKeyword";
-import { AppState } from "shell/store/types";
 import { fetchModels } from "shell/store/models";
-import { useDebounce } from "react-use";
+import { AppState } from "shell/store/types";
 import { searchItems } from "shell/store/content";
 
 // List of dropdown options that are NOT suggestions
@@ -94,28 +93,18 @@ export const GlobalSearch = () => {
   const [params, setParams] = useParams();
   const textfieldRef = useRef<HTMLDivElement>();
   const allModels = useSelector((state: AppState) => state?.models);
-  const [searchedContents, setSearchedContents] = useState<ContentItem[] | []>(
-    []
-  );
+  const [contents, setContents] = useState<ContentItem[]>([]);
   const [isFetchingContentSearchResults, setIsFetchingContentSearchResults] =
     useState(false);
 
-  const [apiQueryTerm, setApiQueryTerm] = useState("");
+  const apiQueryTerm = useMemo(() => {
+    if (!!typedSearchAccelerator && !!searchKeyword) {
+      // Remove the accelerator from the keyword
+      return searchKeyword.replace(typedAcceleratorRegex, "")?.trim();
+    }
 
-  //debounce to reduce API calls during user input.
-  useDebounce(
-    () => {
-      if (!!typedSearchAccelerator && !!searchKeyword) {
-        // Remove the accelerator from the keyword
-        setApiQueryTerm(
-          searchKeyword.replace(typedAcceleratorRegex, "")?.trim()
-        );
-      }
-      setApiQueryTerm(searchKeyword);
-    },
-    700,
-    [searchKeyword]
-  );
+    return searchKeyword;
+  }, [searchKeyword]);
 
   const { data: bins } = useGetBinsQuery({ instanceId, ecoId });
   const { data: mediaFiles, isFetching: isFetchingMediaSearchResults } =
@@ -147,7 +136,7 @@ export const GlobalSearch = () => {
 
   useEffect(() => {
     if (isEmpty(apiQueryTerm)) {
-      return setSearchedContents([]);
+      return setContents([]);
     }
     setIsFetchingContentSearchResults(true);
     //Update contents in store to provide access to other search hooks
@@ -155,10 +144,13 @@ export const GlobalSearch = () => {
       //@ts-ignore
       .then((res) => {
         if (!!res?.data?.length) {
-          setSearchedContents(res?.data);
+          setContents(res?.data);
         } else {
-          setSearchedContents([]);
+          setContents([]);
         }
+      })
+      .catch(() => {
+        setContents([]);
       })
       .finally(() => {
         setIsFetchingContentSearchResults(false);
@@ -166,8 +158,7 @@ export const GlobalSearch = () => {
   }, [apiQueryTerm]);
 
   const suggestions: Suggestion[] = useMemo(() => {
-    //Filter out redundant block model items
-    const filteredContents = searchedContents?.filter(
+    const filteredContents = contents?.filter(
       (item: ContentItem) =>
         allModels?.[item?.meta?.contentModelZUID]?.type !== "block"
     );
@@ -203,9 +194,9 @@ export const GlobalSearch = () => {
         return {
           type: "block",
           ZUID: block?.ZUID,
-          title: block?.title,
+          title: block?.label,
           updatedAt: block?.updatedAt,
-          url: block?.url,
+          url: `/blocks/${block?.ZUID}`,
         };
       }) || [];
 
@@ -294,7 +285,7 @@ export const GlobalSearch = () => {
         new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
     );
   }, [
-    searchedContents,
+    contents,
     models,
     blocks,
     codeFiles,
@@ -302,6 +293,7 @@ export const GlobalSearch = () => {
     mediaFolders,
     chipSearchAccelerator,
     allMediaFiles,
+    allModels,
   ]);
 
   const options = useMemo(() => {
