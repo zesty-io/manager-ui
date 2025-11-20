@@ -33,6 +33,10 @@ export const Comment = ({ resourceZUID }: CommentProps) => {
   const [isButtonAutoscroll, setIsButtonAutoscroll] = useState(true);
 
   useEffect(() => {
+    if (!buttonContainerRef.current) {
+      return;
+    }
+
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
         setIsInView(true);
@@ -43,7 +47,7 @@ export const Comment = ({ resourceZUID }: CommentProps) => {
     observer.observe(buttonContainerRef.current);
 
     return () => observer.disconnect();
-  }, []);
+  }, [buttonContainerRef]);
 
   const parentComment = useMemo(() => {
     return comment?.find((comment) => comment.resourceZUID === itemZUID);
