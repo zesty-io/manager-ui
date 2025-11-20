@@ -812,6 +812,8 @@ describe("Schema: Fields", () => {
     // Check if field exists
     cy.getBySelector(`Field_${fieldName}`).should("exist");
 
+    cy.wait(100);
+
     // Open update modal
     cy.getBySelector(`${SELECTORS.FIELD_MENU_BTN}_${fieldName}`)
       .should("exist")
