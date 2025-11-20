@@ -14,6 +14,8 @@ import { Favicon } from "../Favicon";
 import zestyLogo from "../../../../public/images/zestyLogo.svg";
 import zestyLogoOnly from "../../../../public/images/zestyLogoOnly.svg";
 import zestyLogoOnlyGrey from "../../../../public/images/zestyLogoOnlyGrey.svg";
+import contentOneLogo from "../../../../public/images/contentOneLogo.webp";
+import contentOneLogoOnly from "../../../../public/images/contentOneLogoOnly.webp";
 import githubLogoSmall from "../../../../public/images/githubLogoSmall.svg";
 import InviteMembersModal from "../InviteMembersModal";
 import { User } from "../../services/types";
@@ -24,6 +26,7 @@ import { actions } from "../../store/ui";
 import { OnboardingCall } from "./components/OnboardingCall";
 import { GlobalAccountMenu } from "../GlobalAccountMenu";
 import { GlobalDocsMenu } from "../GlobalDocsMenu";
+import { isContentOne } from "../../../utility/isContentOne";
 
 interface GlobalSidebarProps {
   openNav: boolean;
@@ -41,6 +44,10 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
   const is15DaysFromCreation =
     !!instance?.createdAt &&
     differenceInCalendarDays(new Date(), new Date(instance.createdAt)) <= 15;
+
+  const logo = isContentOne() ? contentOneLogo : zestyLogo;
+  const logoOnly = isContentOne() ? contentOneLogoOnly : zestyLogoOnly;
+  const logoOnlyGrey = isContentOne() ? contentOneLogoOnly : zestyLogoOnlyGrey;
 
   return (
     <>
@@ -82,7 +89,7 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
           {openNav && (
             <Box
               component="img"
-              src={zestyLogoOnlyGrey}
+              src={logoOnlyGrey}
               alt="Zesty Logo"
               width={20}
               height={20}
@@ -112,7 +119,10 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
             }}
           >
             <img
-              src={openNav ? zestyLogo : zestyLogoOnly}
+              src={openNav ? logo : logoOnly}
+              style={{
+                objectFit: "contain",
+              }}
               alt="Zesty Logo"
               width={openNav ? 84 : 20}
               height={openNav ? 24 : 20}

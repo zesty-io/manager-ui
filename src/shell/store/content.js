@@ -977,7 +977,8 @@ export function fetchItemPublishings() {
   return (dispatch) => {
     return dispatch({
       type: "FETCH_RESOURCE",
-      uri: `${CONFIG.API_INSTANCE}/content/items/publishings?limit=100000`,
+      // reduce initial limit since publishings will be fetched per model
+      uri: `${CONFIG.API_INSTANCE}/content/items/publishings?limit=10000`,
       handler: (res) => {
         if (res.status === 200) {
           dispatch({
@@ -1006,6 +1007,65 @@ export function fetchItemPublishings() {
         );
       },
     });
+  };
+}
+
+export function fetchAllModelPublishings({
+  modelZUID,
+  limit = 10000, // 10k limit for optimal 2-second response times
+  showDeleted = null,
+  showDeletedItems = null,
+  showActiveOnly = null,
+}) {
+  return async (dispatch) => {
+    try {
+      const allData = [];
+      let currentPage = 1;
+      while (true) {
+        const params = new URLSearchParams({
+          limit,
+          page: currentPage,
+          ...(showDeleted && { showDeleted }),
+          ...(showDeletedItems && { showDeletedItems }),
+          ...(showActiveOnly && { showActiveOnly }),
+        });
+
+        const uri = `${
+          CONFIG.API_INSTANCE
+        }/content/models/${modelZUID}/items/publishings?${params?.toString()}`;
+        const response = await dispatch({ type: "FETCH_RESOURCE", uri });
+
+        if (response?.error) {
+          throw new Error(response.error);
+        }
+
+        if (!response?.data?.length) {
+          break;
+        }
+
+        allData.push(...response.data);
+
+        // Stop if we've reached the last page
+        if (response.data.length < limit) {
+          break;
+        }
+        //set next page
+        currentPage++;
+      }
+      if (allData.length > 0) {
+        dispatch({
+          type: "FETCH_ITEMS_PUBLISHING",
+          data: parsePublishState(allData),
+        });
+      }
+    } catch (error) {
+      dispatch(
+        notify({
+          kind: "warn",
+          message: `Failed to fetch model items publishings: ${error.message}`,
+        })
+      );
+    }
   };
 }
 
