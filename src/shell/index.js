@@ -61,9 +61,9 @@ const appTheme = createTheme(theme, {
   palette: {
     ...(isContentOne() && {
       primary: {
-        main: "#3F51B5",
-        dark: "#303F9F",
-        light: "#7986CB",
+        main: "#4255BD",
+        dark: "#283371",
+        light: "#8E99D7",
       },
     }),
     success: {
