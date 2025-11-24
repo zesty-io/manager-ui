@@ -1,7 +1,15 @@
 import { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router";
-import { Box, CircularProgress, Typography, Button } from "@mui/material";
+import {
+  Box,
+  CircularProgress,
+  Typography,
+  Button,
+  TextField,
+  InputAdornment,
+} from "@mui/material";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
+import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import {
   useGetContentModelItemsQuery,
   useGetContentModelsQuery,
@@ -12,22 +20,22 @@ import { fetchModels } from "../../../shell/store/models";
 import { useDispatch } from "react-redux";
 import { fetchFields } from "../../../shell/store/fields";
 import { useParams as useSearchParams } from "../../../shell/hooks/useParams";
+import { ContentItem } from "shell/services/types";
+import SearchBox from "shell/components/SearchBox";
+import blockPlaceholder from "../../../../public/images/blockPlaceholder.png";
 
 export const BlockModel = () => {
   const dispatch = useDispatch();
+  const history = useHistory();
   const { modelZUID } = useParams<{
     modelZUID: string;
   }>();
-  const history = useHistory();
   const [params] = useSearchParams();
-  const [renderFlag, setRenderFlag] = useState(false);
   const [showCreateVariantDialog, setShowCreateVariantDialog] = useState(false);
-  const { data, isFetching, error, isUninitialized } =
+  const [search, setSearch] = useState("");
+  const { data, isLoading, error, isUninitialized } =
     useGetContentModelItemsQuery({
       modelZUID,
-      params: {
-        limit: 1,
-      },
     });
 
   const { data: models } = useGetContentModelsQuery();
@@ -39,45 +47,109 @@ export const BlockModel = () => {
   }, []);
 
   useEffect(() => {
-    if (data?.length && !isFetching && !error) {
-      history.push(`/blocks/${modelZUID}/${data?.[0]?.meta?.ZUID}`);
-    }
-
-    if (!isFetching && !isUninitialized && !data?.length) {
-      setRenderFlag(true);
-    }
-  }, [data, isFetching, error, history]);
-
-  useEffect(() => {
     setShowCreateVariantDialog(!!params?.get("createVariant"));
   }, [params]);
 
   const model = models?.find((model) => model.ZUID === modelZUID);
 
-  if (renderFlag) {
+  if (isLoading || isUninitialized) {
     return (
-      <>
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        height="100%"
+        width="100%"
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  return (
+    <>
+      <Box
+        width="100%"
+        display="flex"
+        flexDirection="column"
+        sx={{ backgroundColor: "grey.50" }}
+      >
         <Box
-          width="100%"
           display="flex"
-          flexDirection="column"
-          sx={{ backgroundColor: "grey.50" }}
+          justifyContent="space-between"
+          alignItems="center"
+          px={4}
+          pt={4}
+          pb={1.75}
+          sx={{
+            borderBottom: (theme) => `2px solid ${theme.palette.border}`,
+            backgroundColor: "background.paper",
+          }}
         >
+          <Typography variant="h3" fontWeight="700">
+            {model?.label}
+          </Typography>
+          <Box display={"flex"} alignItems="center" gap={2}>
+            <SearchBox
+              data-cy="search-blocks-input"
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              size="small"
+              sx={{
+                width: "240px",
+                "& .MuiOutlinedInput-notchedOutline": {
+                  border: 0,
+                },
+              }}
+              InputProps={{
+                sx: {
+                  backgroundColor: "grey.50",
+                },
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchRoundedIcon fontSize="small" color="action" />
+                  </InputAdornment>
+                ),
+              }}
+              placeholder="Search Variants"
+            />
+            <Button
+              variant="contained"
+              size="small"
+              startIcon={<AddRoundedIcon />}
+              onClick={() => setShowCreateVariantDialog(true)}
+              data-cy="create-variant-button-header"
+            >
+              Create Variant
+            </Button>
+          </Box>
+        </Box>
+        {data?.length ? (
           <Box
+            px={4.5}
+            py={4}
             display="flex"
-            justifyContent="space-between"
-            px={4}
-            pt={4}
-            pb={1.75}
+            gap={2}
+            flexWrap={"wrap"}
             sx={{
-              borderBottom: (theme) => `2px solid ${theme.palette.border}`,
-              backgroundColor: "background.paper",
+              overflowY: "scroll",
             }}
           >
-            <Typography variant="h3" fontWeight="700">
-              {model?.label}
-            </Typography>
+            {data
+              ?.filter?.((item) =>
+                item.web.metaTitle.toLowerCase().includes(search.toLowerCase())
+              )
+              ?.map((item) => (
+                <BlockVariantCard
+                  key={item.meta.ZUID}
+                  item={item}
+                  onClick={() => {
+                    history.push(`/blocks/${modelZUID}/${item.meta.ZUID}`);
+                  }}
+                />
+              ))}
           </Box>
+        ) : (
           <Box
             display="flex"
             height="100%"
@@ -112,26 +184,72 @@ export const BlockModel = () => {
               />
             </Box>
           </Box>
-        </Box>
-        {showCreateVariantDialog && (
-          <CreateVariantDialog
-            onClose={() => setShowCreateVariantDialog(false)}
-            model={model}
-          />
         )}
-      </>
-    );
-  }
+      </Box>
+      {showCreateVariantDialog && (
+        <CreateVariantDialog
+          onClose={() => setShowCreateVariantDialog(false)}
+          model={model}
+        />
+      )}
+    </>
+  );
+};
 
+type BlockVariantCardProps = {
+  item: ContentItem;
+  onClick: () => void;
+};
+
+const BlockVariantCard = ({ item, onClick }: BlockVariantCardProps) => {
+  const [noImage, setNoImage] = useState(false);
   return (
     <Box
-      display="flex"
-      justifyContent="center"
-      alignItems="center"
-      height="100%"
-      width="100%"
+      key={item.meta.ZUID}
+      width={265}
+      sx={{
+        border: (theme) => `1px solid ${theme.palette.border}`,
+        boxSizing: "border-box",
+        cursor: "pointer",
+      }}
+      onClick={onClick}
     >
-      <CircularProgress />
+      <Box px={1} pt={1} pb={1.75}>
+        {!noImage ? (
+          <Box
+            component="img"
+            src={item.data.og_image as string}
+            minHeight={146}
+            maxHeight={146}
+            width="100%"
+            sx={{ objectFit: "contain" }}
+            onError={(e: any) => {
+              setNoImage(true);
+            }}
+          />
+        ) : (
+          <Box
+            minHeight={146}
+            maxHeight={146}
+            width="100%"
+            component="img"
+            sx={{ objectFit: "contain" }}
+            src={blockPlaceholder}
+          />
+        )}
+      </Box>
+      <Box
+        py={2}
+        px={1}
+        sx={{
+          backgroundColor: "background.paper",
+        }}
+        height={52}
+      >
+        <Typography noWrap variant="body2">
+          {item.web.metaTitle}
+        </Typography>
+      </Box>
     </Box>
   );
 };

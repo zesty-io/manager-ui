@@ -11,10 +11,7 @@ describe("Blocks sidebar", () => {
 
   it("can navigate blocks in the sidebar", () => {
     cy.contains("Test Block Do Not Delete").click();
-    cy.location("pathname").should(
-      "eq",
-      "/blocks/6-d8b088cc9c-gwk3w7/7-ee94b5e98d-ss015b"
-    );
+    cy.location("pathname").should("eq", "/blocks/6-d8b088cc9c-gwk3w7");
   });
 
   it("should be able to show the more options menu", () => {
