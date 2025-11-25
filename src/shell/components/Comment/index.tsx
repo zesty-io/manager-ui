@@ -7,6 +7,7 @@ import { useParams, useHistory, useLocation } from "react-router";
 import { CommentsList } from "./CommentsList";
 import { useGetCommentByResourceQuery } from "../../services/accounts";
 import { CommentContext } from "../../contexts/CommentProvider";
+import { useIsInView } from "shell/hooks/useIsInView";
 
 type PathParams = {
   modelZUID: string;
@@ -20,7 +21,8 @@ export const Comment = ({ resourceZUID }: CommentProps) => {
   const history = useHistory();
   const location = useLocation();
   const [_, __, ___, setCommentZUIDtoEdit] = useContext(CommentContext);
-  const [isInView, setIsInView] = useState(false);
+  const buttonContainerRef = useRef<HTMLDivElement>();
+  const isInView = useIsInView(buttonContainerRef);
   const { itemZUID, resourceZUID: activeResourceZUID } =
     useParams<PathParams>();
   const { data: comment, isLoading: isLoadingComment } =
@@ -28,26 +30,8 @@ export const Comment = ({ resourceZUID }: CommentProps) => {
       { itemZUID, resourceZUID },
       { skip: !resourceZUID || !isInView }
     );
-  const buttonContainerRef = useRef<HTMLDivElement>();
   const [isCommentListOpen, setIsCommentListOpen] = useState(false);
   const [isButtonAutoscroll, setIsButtonAutoscroll] = useState(true);
-
-  useEffect(() => {
-    if (!buttonContainerRef.current) {
-      return;
-    }
-
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        setIsInView(true);
-        observer.disconnect();
-      }
-    });
-
-    observer.observe(buttonContainerRef.current);
-
-    return () => observer.disconnect();
-  }, [buttonContainerRef]);
 
   const parentComment = useMemo(() => {
     return comment?.find((comment) => comment.resourceZUID === itemZUID);
