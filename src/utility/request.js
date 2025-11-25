@@ -100,7 +100,7 @@ export function request(url, opts = {}) {
         throw err;
       } else {
         // Network errors
-        store.dispatch(notify({ message: err.message, kind: "warn" }));
+        store.dispatch(notify({ message: err.message || "", kind: "warn" }));
         return Promise.reject(
           err instanceof Error
             ? err
