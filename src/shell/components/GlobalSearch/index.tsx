@@ -531,7 +531,7 @@ export const GlobalSearch = () => {
                 dispatch(
                   notify({
                     kind: "warn",
-                    message: newVal.noUrlErrorMessage,
+                    message: newVal.noUrlErrorMessage || "Invalid URL",
                   })
                 );
               }

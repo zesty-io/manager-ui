@@ -187,7 +187,8 @@ export function pollTwoFactor() {
         dispatch(
           notify({
             kind: "warn",
-            message: err.message,
+            message:
+              err.message || "Failed to validate Two Factor authentication",
           })
         );
 

@@ -361,7 +361,7 @@ export function fetchItems(modelZUID, options = {}) {
           dispatch(
             notify({
               kind: "warn",
-              message: res.error,
+              message: res.error || "Failed to fetch items",
             })
           );
         }

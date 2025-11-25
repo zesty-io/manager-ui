@@ -36,7 +36,7 @@ export function fetchUsers() {
       .catch((error) => {
         dispatch(
           notify({
-            message: error.message,
+            message: error.message || "Failed to fetch users",
             kind: "error",
           })
         );

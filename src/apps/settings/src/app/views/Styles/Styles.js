@@ -131,7 +131,7 @@ export default connect((state, props) => {
         props.dispatch(
           notify({
             kind: "warn",
-            message: err.message,
+            message: err.message || "Failed to save settings",
           })
         );
       });

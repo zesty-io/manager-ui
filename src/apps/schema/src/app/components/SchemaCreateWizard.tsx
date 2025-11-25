@@ -74,7 +74,12 @@ export const SchemaCreateWizard = () => {
       .unwrap()
       .then((res) => dispatch(fetchModels()))
       .catch((res) => {
-        dispatch(notify({ kind: "error", message: res?.data?.message }));
+        dispatch(
+          notify({
+            kind: "error",
+            message: res?.data?.message || "Failed to create model",
+          })
+        );
       });
   };
 

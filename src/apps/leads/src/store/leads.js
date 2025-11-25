@@ -38,7 +38,7 @@ export function fetchLeads() {
         dispatch(
           notify({
             kind: "warn",
-            message: err.message,
+            message: err.message || "Failed to fetch leads",
           })
         );
         return [];
@@ -66,7 +66,7 @@ export function deleteLead(leadZuid) {
         dispatch(
           notify({
             kind: "error",
-            message: err.message,
+            message: err.message || "Failed to delete lead",
           })
         );
       });

@@ -34,7 +34,7 @@ export function fetchParents() {
         dispatch(
           notify({
             kind: "warn",
-            message: err.message,
+            message: err.message || "Failed to fetch parents",
           })
         );
       });

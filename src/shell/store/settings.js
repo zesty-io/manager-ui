@@ -148,7 +148,7 @@ export function fetchSettings() {
         dispatch(
           notify({
             kind: "warn",
-            message: err.message,
+            message: err.message || "Failed to fetch settings",
           })
         );
       });
@@ -171,7 +171,7 @@ export function fetchStylesCategories() {
         dispatch(
           notify({
             kind: "warn",
-            message: err.message,
+            message: err.message || "Failed to fetch styles categories",
           })
         );
       });
@@ -193,7 +193,7 @@ export function fetchStylesVariables() {
         dispatch(
           notify({
             kind: "warn",
-            message: err.message,
+            message: err.message || "Failed to fetch styles variables",
           })
         );
       });

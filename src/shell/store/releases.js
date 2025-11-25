@@ -284,7 +284,7 @@ export function createRelease(payload) {
           dispatch(
             notify({
               kind: "warn",
-              message: res.error,
+              message: res.error || "Failed creating a release",
             })
           );
         }

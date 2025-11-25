@@ -299,7 +299,7 @@ export function fetchFiles(type) {
         dispatch(
           notify({
             kind: "warn",
-            message: err.message,
+            message: err.message || "Failed to load files",
           })
         );
       });
@@ -502,7 +502,7 @@ export function saveFile(ZUID, status, code = null) {
         dispatch(
           notify({
             kind: "warn",
-            message: err.message,
+            message: err.message || "Failed to save file",
           })
         );
       });
@@ -570,7 +570,7 @@ export function publishFile(fileZUID, fileStatus) {
         dispatch(
           notify({
             kind: "warn",
-            message: err.message,
+            message: err.message || "Failed to publish file",
           })
         );
       });

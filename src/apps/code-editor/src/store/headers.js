@@ -71,7 +71,7 @@ export function saveSort(type, headers) {
           dispatch(
             notify({
               kind: "warn",
-              message: res.error,
+              message: res.error || "Failed to save sort order",
             })
           );
         }

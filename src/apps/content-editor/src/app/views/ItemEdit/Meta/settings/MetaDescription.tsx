@@ -2,7 +2,6 @@ import { useState, useEffect, ChangeEvent } from "react";
 import { connect, useDispatch } from "react-redux";
 import { TextField, Box } from "@mui/material";
 
-import { notify } from "../../../../../../../../shell/store/notifications";
 import { FieldShell } from "../../../../components/Editor/Field/FieldShell";
 import { MaxLengths } from "..";
 import { hasErrors } from "./util";

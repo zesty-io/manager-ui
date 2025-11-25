@@ -390,7 +390,9 @@ export const ItemEditHeaderActions = ({
           if ("error" in promise.value) {
             dispatch(
               notify({
-                message: promise.value.error.data?.error,
+                message:
+                  promise.value.error.data?.error ||
+                  "Failed to publish content item.",
                 kind: "error",
               })
             );
