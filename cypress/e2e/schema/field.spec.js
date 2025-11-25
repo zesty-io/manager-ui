@@ -784,7 +784,7 @@ describe("Schema: Fields", () => {
     cy.get(`[data-cy-status=Field_${fieldName}_active]`).should("exist");
   });
 
-  it.only("Can deactivate a field via edit modal", () => {
+  it("Can deactivate a field via edit modal", () => {
     cy.intercept("**/fields?showDeleted=true").as("getFields");
     cy.intercept("/v1/content/models/**").as("updateField");
 
@@ -829,7 +829,7 @@ describe("Schema: Fields", () => {
 
     cy.wait("@updateField");
     cy.wait("@getFields");
-    cy.wait(3000);
+    cy.reload();
 
     // Verify field is deactivated
     cy.get(`[data-cy-status=Field_${fieldName}_inactive]`).should("exist");
