@@ -24,7 +24,9 @@ import {
 } from "../../../../../shell/components/Filters/DateFilter";
 
 const FieldsCell = ({ ZUID }: any) => {
-  const { data, isLoading } = useGetContentModelFieldsQuery(ZUID);
+  const { data, isLoading } = useGetContentModelFieldsQuery({
+    modelZUID: ZUID,
+  });
   if (isLoading) {
     return (
       <Box display="flex" height="100%" alignItems="center">
