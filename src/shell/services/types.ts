@@ -446,7 +446,8 @@ type ContentNavItemType =
   | "internal"
   | "item"
   | "pageset"
-  | "redirect";
+  | "redirect"
+  | "block";
 
 export interface ContentNavItem {
   ZUID: string;

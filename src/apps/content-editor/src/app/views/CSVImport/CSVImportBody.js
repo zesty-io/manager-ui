@@ -374,7 +374,8 @@ class CSVImportBody extends Component {
             disabled={
               this.state.complete ||
               this.state.inFlight ||
-              !this.state.fieldMaps
+              !this.state.fieldMaps ||
+              !this.state.mappedItems?.length
             }
             onClick={this.handleCreateItems}
             startIcon={<AddIcon />}

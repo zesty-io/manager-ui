@@ -17,6 +17,7 @@ import { ContentNavItem } from "../../../../../shell/services/types";
 import { MODEL_ICON } from "../../../../../shell/constants";
 import { Link } from "react-router-dom";
 import { CustomBreadcrumbs } from "../../../../../shell/components/CustomBreadcrumbs";
+import { useSelector } from "react-redux";
 
 export const ContentBreadcrumbs = () => {
   const { data: nav, isLoading: isNavLoading } = useGetContentNavItemsQuery();
@@ -26,6 +27,8 @@ export const ContentBreadcrumbs = () => {
   }>();
   const history = useHistory();
   const location = useLocation();
+  const models = useSelector((state: any) => state.models);
+  const isInBlocksView = location?.pathname?.includes("/blocks/");
 
   const breadcrumbData = useMemo(() => {
     const isInMultipageTableView = !["new", "import"].includes(
@@ -47,6 +50,17 @@ export const ContentBreadcrumbs = () => {
     if (!activeItem) {
       activeItem = nav?.find((item) => item.ZUID === modelZUID);
       if (activeItem) {
+        crumbs.push(activeItem);
+      } else if (models[modelZUID]?.type === "block") {
+        const model = models[modelZUID];
+        activeItem = {
+          ZUID: model.ZUID,
+          contentModelZUID: model.ZUID,
+          label: model.label,
+          parentZUID: model.parentZUID,
+          sort: model.sort,
+          type: model.type,
+        };
         crumbs.push(activeItem);
       } else {
         return [];
@@ -74,6 +88,8 @@ export const ContentBreadcrumbs = () => {
       onClick: () => {
         if (item.type === "item") {
           history.push(`/content/${item.contentModelZUID}/${item.ZUID}`);
+        } else if (item.type === "block") {
+          history.push(`/blocks/${item.ZUID}`);
         } else {
           history.push(`/content/${item.contentModelZUID}`);
         }
@@ -129,27 +145,31 @@ export const ContentBreadcrumbs = () => {
   return (
     <CustomBreadcrumbs
       items={[
-        {
-          node: (
-            <Link
-              style={{
-                display: "flex",
-              }}
-              to={`/content/${
-                nav?.find((item) => item.label === "Homepage")?.contentModelZUID
-              }/${nav?.find((item) => item.label === "Homepage")?.ZUID}`}
-            >
-              <Home color="action" fontSize="small" />
-            </Link>
-          ),
-          onClick: () => {
-            history.push(
-              `/content/${
-                nav?.find((item) => item.label === "Homepage")?.contentModelZUID
-              }/${nav?.find((item) => item.label === "Homepage")?.ZUID}`
-            );
-          },
-        },
+        ...(!isInBlocksView
+          ? [
+              {
+                node: (
+                  <Link
+                    style={{ display: "flex" }}
+                    to={`/content/${
+                      nav?.find((item) => item.label === "Homepage")
+                        ?.contentModelZUID
+                    }/${nav?.find((item) => item.label === "Homepage")?.ZUID}`}
+                  >
+                    <Home color="action" fontSize="small" />
+                  </Link>
+                ),
+                onClick: () => {
+                  history.push(
+                    `/content/${
+                      nav?.find((item) => item.label === "Homepage")
+                        ?.contentModelZUID
+                    }/${nav?.find((item) => item.label === "Homepage")?.ZUID}`
+                  );
+                },
+              },
+            ]
+          : []),
         ...breadcrumbData,
       ]}
     />
