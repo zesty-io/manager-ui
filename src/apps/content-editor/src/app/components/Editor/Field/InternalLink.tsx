@@ -30,8 +30,7 @@ export const InternalLink = ({
   useEffect(() => {
     // Resolve the itemZUID in case it isn't in the store cache
     if (
-      // make sure that internalLinkRelatedItem from store has meta data
-      !internalLinkRelatedItem?.meta?.ZUID &&
+      !internalLinkRelatedItem &&
       zuid.isValid(value) &&
       zuid.matches(value, zuid.prefix["SITE_CONTENT_ITEM"])
     ) {
