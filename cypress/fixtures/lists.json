@@ -1,7 +1,6 @@
 {
   "model": {
-    "label": "E2E: Content - List",
-    "metaTitle": "E2E: Content - List",
+    "label": "Content - List",
     "type": "pageset",
     "listed": true
   },
@@ -75,8 +74,8 @@
   "items": [
     {
       "web": {
-        "metaTitle": "Content Item 1",
-        "metaLinkText": "Content Item 1"
+        "metaTitle": "List Item 1",
+        "metaLinkText": "List Item 1"
       },
       "data": {
         "text": "text 1",
@@ -89,8 +88,8 @@
     },
     {
       "web": {
-        "metaTitle": "Content Item 2",
-        "metaLinkText": "Content Item 2"
+        "metaTitle": "List Item 2",
+        "metaLinkText": "List Item 2"
       },
       "data": {
         "text": "text 2",
@@ -103,8 +102,8 @@
     },
     {
       "web": {
-        "metaTitle": "Content Item 3",
-        "metaLinkText": "Content Item 3"
+        "metaTitle": "List Item 3",
+        "metaLinkText": "List Item 3"
       },
       "data": {
         "text": "text 3",
@@ -117,8 +116,8 @@
     },
     {
       "web": {
-        "metaTitle": "Content Item 4",
-        "metaLinkText": "Content Item 4"
+        "metaTitle": "List Item 4",
+        "metaLinkText": "List Item 4"
       },
       "data": {
         "text": "text 4",
@@ -131,8 +130,8 @@
     },
     {
       "web": {
-        "metaTitle": "Content Item 5",
-        "metaLinkText": "Content Item 5"
+        "metaTitle": "List Item 5",
+        "metaLinkText": "List Item 5"
       },
       "data": {
         "text": "text 5",
