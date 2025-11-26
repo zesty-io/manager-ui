@@ -1,21 +1,34 @@
 describe("Content List Filters", () => {
+  let contentItems = [];
   before(() => {
+    cy.task("seed:content", "fixtures/lists.json").then(
+      ({ model, fields, items }) => {
+        Cypress.env("modelZUID", model?.ZUID);
+        Cypress.env("itemZUID", items[0]?.meta?.ZUID);
+        contentItems = items;
+      }
+    );
+
     cy.waitOn("/v1/content/models*", () => {
-      cy.visit("/content/6-0c960c-d1n0kx");
+      cy.visit(`/content/${Cypress.env("modelZUID")}`);
     });
   });
 
-  it("Filters list items based on search term", () => {
-    cy.getBySelector("MultiPageTableSearchField").type("turkey");
-    cy.get(".MuiDataGrid-cell").contains("Turkey Run");
-    cy.getBySelector("MultiPageTableSearchField").type("{selectAll}{del}");
+  it("Filters list items based on search term", function () {
+    cy.getBySelector("MultiPageTableSearchField").type(
+      contentItems[1].data.text
+    );
+    cy.get(".MuiDataGrid-cell").contains(contentItems[1].data.text);
+    cy.getBySelector("MultiPageTableSearchField")
+      .type("{selectAll}{del}")
+      .wait(500);
   });
 
   it("Filters items based on date saved", () => {
     cy.getBySelector("date_default").click();
-    cy.get(".MuiMenuItem-root").eq(1).click();
+    cy.get('[data-cy="DateFilterMenu"] ul li:eq(1)').should("exist").click();
     cy.getBySelector("NoResults").should("exist");
-    cy.getBySelector("date_clearFilter").click();
+    cy.getBySelector("date_clearFilter").should("exist").click();
     cy.getBySelector("NoResults").should("not.exist");
   });
 
@@ -35,14 +48,15 @@ describe("Content List Filters", () => {
     cy.getBySelector("NoResults").should("not.exist");
   });
 
-  it("Sorts list items", () => {
+  it("Sorts list items", function () {
     cy.getBySelector("sortByFilter_default").click();
-    cy.getBySelector("dateCreatedFilterOption").click();
-    cy.get(".MuiDataGrid-cell[data-colindex='3']").contains(
-      "Parent pre selection with fast typing"
-    );
+    cy.getBySelector("createdOnFilterOption").click();
+
+    cy.get(".MuiDataGrid-cell[data-colindex='2']")
+      .should("exist")
+      .contains(contentItems[4].data.text, { matchCase: false });
     cy.getBySelector("sortByFilter_default").click();
-    cy.getBySelector("dateSavedFilterOption").click();
+    cy.getBySelector("createdOnFilterOption").click();
   });
 });
 
@@ -50,7 +64,7 @@ describe("Content List Navigation", () => {
   before(() => {
     cy.waitOn("/v1/content/models*", () => {
       cy.waitOn("/bin/*", () => {
-        cy.visit("/content/6-0c960c-d1n0kx");
+        cy.visit(`/content/${Cypress.env("modelZUID")}`);
       });
     });
   });
@@ -58,26 +72,26 @@ describe("Content List Navigation", () => {
   it("Opens the content item on click", () => {
     cy.get(".MuiDataGrid-cell[data-colindex='1']").first().click();
     cy.getBySelector("DuoModeToggle").should("exist");
-    cy.getBySelector("breadcrumbs").find(".MuiBreadcrumbs-li").eq(2).click();
-    cy.url().should("include", "/content/6-0c960c-d1n0kx");
+    cy.getBySelector("breadcrumbs").find(".MuiBreadcrumbs-li").eq(1).click();
+    cy.url().should("include", `/content/${Cypress.env("modelZUID")}`);
   });
 
   it("Navigates to the import csv page", () => {
     cy.getBySelector("MultiPageTableMoreMenu").click();
     cy.getBySelector("ImportCSVNavButton").click();
-    cy.url().should("include", "/content/6-0c960c-d1n0kx/import");
+    cy.url().should("include", `/content/${Cypress.env("modelZUID")}`);
   });
 
   it("Navigates to edit the model page", () => {
     cy.getBySelector("MultiPageTableMoreMenu").click();
     cy.getBySelector("EditModelNavButton").click();
-    cy.url().should("include", "/schema/6-0c960c-d1n0kx/fields");
+    cy.url().should("include", `/schema/${Cypress.env("modelZUID")}/fields`);
   });
 
   it("Navigates to edit the template page", () => {
     cy.waitOn("/v1/content/models*", () => {
       cy.waitOn("/bin/*", () => {
-        cy.visit("/content/6-0c960c-d1n0kx");
+        cy.visit(`/content/${Cypress.env("modelZUID")}`);
       });
     });
 
@@ -90,26 +104,25 @@ describe("Content List Navigation", () => {
 describe("Content List Actions", () => {
   before(() => {
     cy.waitOn("/v1/content/models*", () => {
-      cy.visit("/content/6-a8bae2f4d7-rffln5");
+      cy.visit(`/content/${Cypress.env("modelZUID")}`);
     });
   });
 
   it("Saves bulk edits", () => {
     cy.intercept("PUT", "/v1/content/models/*/items/batch").as("batchSave");
-    cy.getBySelector("sortCell").first().find("button").first().click();
-    cy.getBySelector("sortCell").eq(1).find("button").first().click();
+    cy.get('.MuiDataGrid-row:eq(0) [data-field="yes_no"] button:eq(1)').click();
+    cy.get('.MuiDataGrid-row:eq(1) [data-field="yes_no"] button:eq(1)').click();
     cy.getBySelector("MultiPageTableSaveChanges").click();
 
     cy.wait("@batchSave").its("response.statusCode").should("equal", 200);
   });
-
   it("Saves and publishes bulk edits", () => {
     cy.intercept("PUT", "/v1/content/models/*/items/batch").as("batchSave");
     cy.intercept("POST", "/v1/content/models/*/items/publishings/batch").as(
       "batchPublish"
     );
-    cy.getBySelector("sortCell").first().find("button").first().click();
-    cy.getBySelector("sortCell").eq(1).find("button").first().click();
+    cy.get('.MuiDataGrid-row:eq(0) [data-field="yes_no"] button:eq(1)').click();
+    cy.get('.MuiDataGrid-row:eq(1) [data-field="yes_no"] button:eq(1)').click();
     cy.getBySelector("MultiPageTablePublish").click();
     cy.getBySelector("ConfirmPublishButton").click();
 
@@ -117,7 +130,7 @@ describe("Content List Actions", () => {
     cy.wait("@batchPublish").its("response.statusCode").should("equal", 201);
   });
 
-  it.only("Selects items and publishes", () => {
+  it("Selects items and publishes", () => {
     cy.intercept("PUT", "/v1/content/models/*/items/batch").as("batchSave");
     cy.intercept("POST", "/v1/content/models/*/items/publishings/batch").as(
       "batchPublish"
@@ -133,6 +146,6 @@ describe("Content List Actions", () => {
   it("Opens the create new item view", () => {
     cy.getBySelector("AddItemButton").click();
     cy.getBySelector("CreateItemSaveButton").should("exist");
-    cy.url().should("include", "/content/6-e3d0e0-965qp6/new");
+    cy.url().should("include", `/content/${Cypress.env("modelZUID")}/new`);
   });
 });
