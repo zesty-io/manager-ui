@@ -1,17 +1,14 @@
 import { API_ENDPOINTS } from "../../support/api";
-const TIMEOUT = { timeout: 15_000 };
 
-const SUFFIX = "---TEST";
-
+const timestamp = Date.now();
 const TEST_DATA = {
-  newItem: `new_item${SUFFIX}`,
-};
-const HOMEPAGE = {
-  modelZUID: "6-a1a600-k0b6f0",
-  itemZUID: "7-a1be38-1b42ht",
+  new: `New Item:${timestamp}`,
+  ai: `AI Generated:${timestamp}`,
 };
 
 describe("Actions in content editor", () => {
+  let CONTENT_ITEMS = null;
+  let FIELDS = null;
   before(() => {
     cy.task("seed:content", "fixtures/actions.json").then(
       ({ model, fields, items }) => {
@@ -19,50 +16,42 @@ describe("Actions in content editor", () => {
         Cypress.env("modelZUID", model?.ZUID);
         //Set itemZUID as Cypress env variable for global test access
         Cypress.env("itemZUID", items[0]?.meta?.ZUID);
-
+        CONTENT_ITEMS = items;
+        FIELDS = fields;
         // Delete fontawesome field to test deactivated fields scenario
-        const fontAwesomeField = fields?.find(
-          (field) => field.datatype === "fontawesome"
-        );
-        deleteFields(Cypress.env("modelZUID"), [fontAwesomeField?.ZUID]);
+        const fontAwesomeField =
+          Array.isArray(fields) &&
+          fields?.find((field) => field.datatype === "fontawesome");
+        cy.apiRequest({
+          url: `${API_ENDPOINTS.devInstance}/content/models/${model?.ZUID}/fields/${fontAwesomeField?.ZUID}`,
+          method: "DELETE",
+        });
       }
     );
-    cleanTestData();
   });
 
-  const timestamp = Date.now();
-
   it("Must not save when missing required Field", () => {
-    cy.waitOn("/v1/content/models*", () => {
+    cy.waitOn("/v1/content/models**", () => {
       cy.visit(
         `/content/${Cypress.env("modelZUID")}/${Cypress.env("itemZUID")}`
       );
     });
 
-    cy.get(`[data-cy="field:markdown"] textarea`, TIMEOUT)
+    cy.get(`[data-cy="field:markdown"] textarea`)
       .clear()
       .should("have.value", "")
       .wait(500);
-    cy.get("#SaveItemButton", TIMEOUT).trigger("click");
+    cy.get("#SaveItemButton").trigger("click");
 
-    cy.get("[data-cy=toast]", TIMEOUT).contains(
-      "Missing Data in Required Fields",
-      TIMEOUT
-    );
+    cy.get("[data-cy=toast]").contains("Missing Data in Required Fields", {
+      matchCase: false,
+    });
+    cy.get(`[data-cy="field:markdown"] textarea`).clear().type("markdown");
   });
 
   it("Must not save when exceeding or lacking characters", () => {
-    cy.waitOn("/v1/content/models*", () => {
-      cy.visit(
-        `/content/${Cypress.env("modelZUID")}/${Cypress.env("itemZUID")}`
-      );
-    });
-
-    cy.get(`[data-cy="field:text"] input`, TIMEOUT)
-      .clear()
-      .type("aa")
-      .wait(500);
-    cy.get("#SaveItemButton", TIMEOUT).trigger("click");
+    cy.get(`[data-cy="field:text"] input`).clear().type("aa").wait(500);
+    cy.get("#SaveItemButton").trigger("click");
     cy.getBySelector("FieldErrorsList").should("exist");
     cy.getBySelector("FieldErrorsList")
       .find("ol")
@@ -73,36 +62,30 @@ describe("Actions in content editor", () => {
       .clear()
       .type("Lorem ipsum dolor sit amet, consect")
       .wait(500);
-    cy.get("#SaveItemButton", TIMEOUT).trigger("click");
+    cy.get("#SaveItemButton").trigger("click");
     cy.getBySelector("FieldErrorsList").should("exist");
     cy.getBySelector("FieldErrorsList")
       .find("ol")
       .find("li")
       .first()
       .contains("Exceeding by 5 characters.");
-    cy.get(`[data-cy="field:text"] input`, TIMEOUT)
-      .clear({ force: true })
+    cy.get(`[data-cy="field:text"] input`)
+      .clear()
       .type("Lorem ipsum")
       .wait(500);
-    cy.get("#SaveItemButton", TIMEOUT).click();
-    cy.get("[data-cy=toast]", TIMEOUT).contains(
-      "Item Saved: E2E: Content - Actions",
-      { matchCase: false }
+    cy.get("#SaveItemButton").click();
+    cy.get("[data-cy=toast]").contains(
+      `Item Saved: ${CONTENT_ITEMS?.[0].web.metaTitle}`,
+      {
+        matchCase: false,
+      }
     );
+    cy.get(`[data-cy="field:text"] input`).clear().type("Mitchell Wilder");
   });
 
   it("Must not save when regex is not matched", () => {
-    cy.waitOn("/v1/content/models*", () => {
-      cy.visit(
-        `/content/${Cypress.env("modelZUID")}/${Cypress.env("itemZUID")}`
-      );
-    });
-
-    cy.get(`[data-cy="field:textarea"] textarea:eq(0)`, TIMEOUT)
-      .first()
-      .clear()
-      .type("aa");
-    cy.get("#SaveItemButton", TIMEOUT).trigger("click");
+    cy.get(`[data-cy="field:textarea"] textarea:eq(0)`).clear().type("aa");
+    cy.get("#SaveItemButton").trigger("click");
     cy.getBySelector("FieldErrorsList").should("exist");
     cy.getBySelector("FieldErrorsList")
       .find("ol")
@@ -114,108 +97,137 @@ describe("Actions in content editor", () => {
       .clear()
       .type("hello@zesty.io")
       .wait(500);
-    cy.get("#SaveItemButton", TIMEOUT).trigger("click");
-    cy.get("[data-cy=toast]", TIMEOUT).contains(
-      "Item Saved: E2E: Content - Actions",
-      { matchCase: false }
+    cy.get("#SaveItemButton").trigger("click");
+    cy.get("[data-cy=toast]").contains(
+      `Item Saved: ${CONTENT_ITEMS?.[0].web.metaTitle}`,
+      {
+        matchCase: false,
+      }
     );
+    cy.get(`[data-cy="field:textarea"] textarea:eq(0)`)
+      .clear()
+      .type("test_email@zesty.io");
   });
 
   /**
    *  NOTE: this depends upon `toggle` field on the schema being marked as being required and deactivated. Because it's deactivated it doesn't render in the content editor and the expectation is the content item should save. there fore there is nothing to do and confirm that this item saves successfully. Adding this notes because nothing really happens inside this test but it's important this test remains.
    * */
   it("Save when missing required deactivated field", () => {
-    cy.waitOn("/v1/content/models*", () => {
-      cy.visit(
-        `/content/${Cypress.env("modelZUID")}/${Cypress.env("itemZUID")}`
-      );
-    });
-
     // Test deactivated field is not in DOM
     cy.get(`[data-cy="field:fontawesome"] input`).should("not.exist");
 
     // Make an edit to enable save button
-    cy.get(`[data-cy="field:text"] input`, TIMEOUT)
+    cy.get(`[data-cy="field:text"] input`)
       .clear()
-      .type(TEST_DATA?.newItem)
+      .type(TEST_DATA?.new)
       .wait(500);
 
-    cy.get("#SaveItemButton", TIMEOUT).trigger("click");
+    cy.get("#SaveItemButton").trigger("click");
 
-    cy.get("[data-cy=toast]", TIMEOUT).contains("Item Saved");
+    cy.get("[data-cy=toast]").contains("Item Saved");
   });
 
-  it("Saves homepage item metadata", () => {
-    cy.waitOn("/v1/content/models*", () => {
-      cy.visit(`/content/${HOMEPAGE.modelZUID}/${HOMEPAGE.itemZUID}/meta`);
+  it("Saves page item metadata", () => {
+    cy.waitOn("/v1/content/models**", () => {
+      cy.visit(
+        `/content/${Cypress.env("modelZUID")}/${Cypress.env("itemZUID")}/meta`
+      );
     });
 
-    cy.get("textarea", TIMEOUT)
+    cy.get("textarea")
       .first()
       .wait(500)
-      .type("{selectall}{backspace}This is an item meta description", TIMEOUT)
+      .type("{selectall}{backspace}This is an item meta description")
       .should("have.value", "This is an item meta description");
 
+    cy.get('[data-cy="itemRoute"] input').type("/");
+    cy.get(".MuiAutocomplete-listbox li:eq(0)").click();
+
     cy.waitOn(
-      `/v1/content/models/${HOMEPAGE.modelZUID}/items/${HOMEPAGE.itemZUID}`,
+      `/v1/content/models/${Cypress.env("modelZUID")}/items/${Cypress.env(
+        "itemZUID"
+      )}`,
       () => {
-        cy.get("#SaveItemButton", TIMEOUT).trigger("click");
+        cy.get("#SaveItemButton").trigger("click");
       }
     );
 
-    cy.get("[data-cy=toast]", TIMEOUT).contains("Item Saved");
+    cy.get("[data-cy=toast]").contains("Item Saved");
   });
 
   it("Publishes an item", () => {
-    cy.getBySelector("PublishButton", TIMEOUT).click();
-    cy.getBySelector("ConfirmPublishModal").should("exist");
-    cy.getBySelector("ConfirmPublishButton").click();
+    cy.waitOn("/v1/content/models**", () => {
+      cy.visit(
+        `/content/${Cypress.env("modelZUID")}/${CONTENT_ITEMS?.[4]?.meta?.ZUID}`
+      );
+    });
+    cy.intercept("**/publishings").as("publish");
+    cy.getBySelector("PublishButton")
+      .should("exist")
+      .should("be.enabled")
+      .click();
+    cy.getBySelector("ConfirmPublishModal").should("exist").wait(500);
+    cy.getBySelector("ConfirmPublishButton").should("exist").click();
 
-    cy.intercept("GET", "**/publishings").as("publish");
     cy.wait("@publish");
-
     cy.getBySelector("ContentPublishedIndicator").should("exist");
   });
 
   it("Unpublishes an item", () => {
-    cy.getBySelector("ContentPublishedIndicator").should("exist");
-    cy.getBySelector("PublishMenuButton", TIMEOUT).should("exist").click();
-    cy.getBySelector("UnpublishContentButton", TIMEOUT).should("exist").click();
+    cy.intercept("**/publishings/**").as("publish");
+    cy.getBySelector("PublishMenuButton")
+      .should("exist")
+      .should("be.enabled")
+      .click();
+    cy.getBySelector("UnpublishContentButton").should("exist").click();
+    cy.get(".MuiDialog-root").should("exist").wait(500);
     cy.getBySelector("ConfirmUnpublishButton").should("exist").click();
 
-    cy.intercept("GET", "**/publishings").as("publish");
     cy.wait("@publish");
-
-    cy.getBySelector("PublishButton", TIMEOUT).should("exist");
+    cy.getBySelector("PublishButton").should("exist");
   });
 
   it("Schedules a Publish for an item", () => {
-    cy.waitOn("/v1/content/models*", () => {
-      cy.visit(`/content/${HOMEPAGE.modelZUID}/${HOMEPAGE.itemZUID}/meta`);
+    cy.waitOn("/v1/content/models**", () => {
+      cy.visit(
+        `/content/${Cypress.env("modelZUID")}/${CONTENT_ITEMS?.[4]?.meta?.ZUID}`
+      );
     });
-
-    cy.getBySelector("PublishMenuButton", TIMEOUT).click();
+    cy.intercept("**/publishings").as("publish");
+    cy.getBySelector("PublishMenuButton")
+      .should("exist")
+      .should("be.enabled")
+      .click();
     cy.getBySelector("PublishScheduleButton").should("exist").click();
+    cy.getBySelector("SchedulePublishModal").should("exist").wait(500);
     cy.getBySelector("SchedulePublishButton").should("exist").click();
+    cy.wait("@publish");
     cy.getBySelector("ContentScheduledIndicator").should("exist");
   });
 
   it("Unschedules a Publish for an item", () => {
-    cy.getBySelector("PublishMenuButton", TIMEOUT).should("exist").click();
+    cy.intercept("**/publishings**").as("publish");
+    cy.getBySelector("PublishMenuButton")
+      .should("exist")
+      .should("be.enabled")
+      .click();
     cy.getBySelector("PublishScheduleButton").should("exist").click();
+    cy.getBySelector("SchedulePublishModal").should("exist").wait(500);
     cy.getBySelector("UnschedulePublishButton").should("exist").click();
+    cy.wait("@publish");
     cy.getBySelector("ContentScheduledIndicator").should("not.exist");
   });
 
   it("Only allows future dates to be scheduled for publish", () => {
-    cy.waitOn("/v1/content/models*", () => {
-      cy.visit(`/content/${HOMEPAGE.modelZUID}/${HOMEPAGE.itemZUID}/meta`);
-    });
-
-    cy.getBySelector("PublishMenuButton", TIMEOUT).click();
-    cy.getBySelector("PublishScheduleButton").click();
+    cy.getBySelector("PublishMenuButton")
+      .should("exist")
+      .should("be.enabled")
+      .click();
+    cy.getBySelector("PublishScheduleButton").should("exist").click();
+    cy.getBySelector("PublishScheduleModal").should("exist").wait(500);
     cy.getBySelector("PublishScheduleModal")
       .find("[data-cy='datePickerInputField']")
+      .should("exist")
       .click();
 
     cy.get(
@@ -224,100 +236,84 @@ describe("Actions in content editor", () => {
     cy.get(
       '.MuiPickersArrowSwitcher-root button[aria-label="Next month"]'
     ).should("not.be.disabled");
-    cy.getBySelector("CancelSchedulePublishButton").click();
+    cy.getBySelector("CancelSchedulePublishButton").should("exist").click();
   });
 
   it("Fills in default values for a new item", () => {
-    cy.waitOn("/v1/content/models*", () => {
-      cy.visit(`/content/${HOMEPAGE.modelZUID}/new`);
+    cy.waitOn("/v1/content/models**", () => {
+      cy.visit(`/content/${Cypress.env("modelZUID")}/new`);
     });
 
-    cy.get('[data-cy="field:title"] input', TIMEOUT).should(
+    cy.get('[data-cy="field:text"] input').should(
       "have.value",
-      "default single line text field"
+      FIELDS.find((field) => field.name === "text").settings.defaultValue
     );
-    cy.get('[data-cy="field:image"]', TIMEOUT).contains(
-      "zesty-io-logo-horizontal-dark.png"
-    );
-    cy.get('[data-cy="field:habibi"]', TIMEOUT).contains(
-      "5 Tricks to Teach Your Pitbull: Fun & Easy Tips for You & Your Dog!"
-    );
-  });
-
-  it("Fills in default values for a new item", () => {
-    cy.waitOn("/v1/content/models*", () => {
-      cy.visit(`/content/${HOMEPAGE.modelZUID}/new`);
-    });
-
-    cy.get('[data-cy="field:title"] input', TIMEOUT).should(
+    cy.get('[data-cy="field:textarea"] textarea:eq(0)').should(
       "have.value",
-      "default single line text field"
+      FIELDS.find((field) => field.name === "textarea").settings.defaultValue
     );
-    cy.get('[data-cy="field:image"]', TIMEOUT).contains(
-      "zesty-io-logo-horizontal-dark.png"
-    );
-    cy.get('[data-cy="field:habibi"]', TIMEOUT).contains(
-      "5 Tricks to Teach Your Pitbull: Fun & Easy Tips for You & Your Dog!"
+    cy.get('[data-cy="field:markdown"] textarea').should(
+      "have.value",
+      FIELDS.find((field) => field.name === "markdown").settings.defaultValue
     );
   });
 
   it("Creates a new item", () => {
-    cleanTestData();
-    cy.waitOn("/v1/content/models*", () => {
-      cy.visit(`/content/${HOMEPAGE.modelZUID}/new`);
+    cy.waitOn("/v1/content/models**", () => {
+      cy.visit(`/content/${Cypress.env("modelZUID")}/new`);
     });
 
-    cy.get("input[name=title]", TIMEOUT)
-      .wait(500)
-      .type(TEST_DATA?.newItem, TIMEOUT);
+    cy.get('[data-cy="field:text"] input').clear();
+    cy.get('[data-cy="field:text"] input').should("have.value", "");
+    cy.get('[data-cy="field:text"] input').type(TEST_DATA?.new);
     cy.getBySelector("ManualMetaFlow").click();
     cy.getBySelector("metaDescription")
       .find("textarea")
       .first()
       .wait(500)
-      .type(TEST_DATA?.newItem);
-    cy.getBySelector("CreateItemSaveButton", TIMEOUT).click();
+      .type(TEST_DATA?.new);
+    cy.getBySelector("CreateItemSaveButton").click();
 
-    cy.contains("Created Item", TIMEOUT).should("exist");
+    cy.get("[data-cy=toast]")
+      .contains(`Created Item: ${TEST_DATA?.new}`, { matchCase: false })
+      .should("exist");
   });
 
   it("Saved item becomes publishable", () => {
-    cy.get("#PublishButton", TIMEOUT).should("exist");
+    cy.get("#PublishButton").should("exist");
   });
 
   it("Displays a new item in the list", () => {
-    cy.waitOn("/v1/content/models*", () => {
-      cy.visit(`/content/${HOMEPAGE.modelZUID}`);
+    cy.waitOn("/v1/content/models**", () => {
+      cy.visit(`/content/${Cypress.env("modelZUID")}`);
     });
 
-    cy.contains(TEST_DATA?.newItem, { timeout: 50_000 }).should("exist");
+    cy.contains(TEST_DATA?.new).should("exist");
   });
 
   it("Deletes an item", () => {
-    cy.contains(TEST_DATA?.newItem, TIMEOUT).click();
-    cy.getBySelector("ContentItemMoreButton", TIMEOUT).click();
+    cy.contains(TEST_DATA?.new).should("exist").click();
+    cy.getBySelector("ContentItemMoreButton").click();
     cy.getBySelector("DeleteContentItem").click();
-    cy.getBySelector("DeleteContentItemConfirmButton").click();
+    cy.getBySelector("DeleteContentItemConfirmButton").should("exist").click();
 
-    cy.waitOn("/v1/content/models*", () => {
-      cy.visit(`/content/${HOMEPAGE.modelZUID}`);
+    cy.waitOn("/v1/content/models**", () => {
+      cy.visit(`/content/${Cypress.env("modelZUID")}`);
     });
 
-    cy.contains(TEST_DATA?.newItem).should("not.exist");
+    cy.contains(TEST_DATA?.new).should("not.exist");
   });
 
   // TODO: Workflow request doesn't work
   it.skip("Makes a workflow request", () => {
-    cy.get("#MainNavigation", TIMEOUT).contains("Homepage").click();
-    cy.get("#WorkflowRequestButton").click();
+    cy.get("#MainNavigation").contains("Homepage").click();
+    cy.get("#WorkflowRequestButton").should("exist").click();
     cy.contains("Grant Test").click();
-    cy.get("#WorkflowRequestSendButton").click();
+    cy.get("#WorkflowRequestSendButton").should("exist").click();
     // these waits are due to a delay
     // dealing with these specific endpoints
     // the local environment is slow
-    cy.contains("Successfully sent workflow request", { timeout: 5000 }).should(
-      "exist"
-    );
+    cy.contains("Successfully sent workflow request").should("exist");
   });
 
   // it("Refreshes the CDN cache", () => {
@@ -332,31 +328,38 @@ describe("Actions in content editor", () => {
   // });
 
   it("Creates a new content item using AI-generated data", () => {
-    cy.waitOn("/v1/content/models*", () => {
+    cy.waitOn("/v1/content/models**", () => {
       cy.waitOn("/v1/content/models/*/fields?showDeleted=true", () => {
-        cy.visit(`/content/${HOMEPAGE.modelZUID}/new`);
+        cy.visit(`/content/${Cypress.env("modelZUID")}/new`);
       });
     });
 
-    // Generate AI content for single line text
-    cy.get(`[data-cy="field:title"]`, { timeout: 30_000 })
+    // Increase timeout to account for longer AI generation times.
+    const aiDataGenerationTimeout = { timeout: 60_000 };
+
+    cy.get('[data-cy="field:text"] input').clear();
+    cy.get('[data-cy="field:text"] input').should("have.value", "");
+    cy.get('[data-cy="field:text"] input').type(TEST_DATA?.ai);
+
+    // Generate AI content for markdown
+    cy.get(`[data-cy="field:markdown"]`).find("[data-cy='AIOpen']").click();
+    cy.getBySelector("AITopicField").type("biking");
+    cy.getBySelector("AIAudienceField").type("young adults");
+    cy.getBySelector("AIGenerate").click();
+
+    cy.get("[data-cy='AIApprove']", aiDataGenerationTimeout).click();
+
+    // Generate AI content for wysiwyg_basic
+    cy.get(`[data-cy="field:wysiwyg_basic"]`)
       .find("[data-cy='AIOpen']")
       .click();
     cy.getBySelector("AITopicField").type("biking");
     cy.getBySelector("AIAudienceField").type("young adults");
     cy.getBySelector("AIGenerate").click();
 
-    cy.get("[data-cy='AIApprove']", { timeout: 50_000 }).click();
-
-    // Generate AI content for wysiwyg
-    cy.get(`[data-cy="field:content"]`, { timeout: 30_000 })
-      .find("[data-cy='AIOpen']")
+    cy.get("[data-cy='AIApprove']", aiDataGenerationTimeout)
+      .should("exist")
       .click();
-    cy.getBySelector("AITopicField").type("biking");
-    cy.getBySelector("AIAudienceField").type("young adults");
-    cy.get("[data-cy='AIGenerate']", { timeout: 30_000 }).click();
-
-    cy.get("[data-cy='AIApprove']", { timeout: 50_000 }).click();
 
     // Select AI-assisted metadata generation flow
     cy.getBySelector("ManualMetaFlow").click();
@@ -364,11 +367,11 @@ describe("Actions in content editor", () => {
     // Generate AI content for meta title
     cy.getBySelector("metaTitle").find("input").clear();
     cy.getBySelector("metaTitle").find("[data-cy='AIOpen']").click();
-    cy.get("[data-cy='AIGenerate']", { timeout: 30_000 }).click();
+    cy.get("[data-cy='AIGenerate']").click();
 
-    cy.get("[data-cy='AISuggestion1']", { timeout: 30_000 }).click();
+    cy.get("[data-cy='AISuggestion1']", aiDataGenerationTimeout).click();
 
-    cy.get("[data-cy='AIApprove']", { timeout: 50_000 }).click();
+    cy.get("[data-cy='AIApprove']", aiDataGenerationTimeout).click();
 
     // Generate AI content for meta description
     cy.getBySelector("metaDescription")
@@ -377,37 +380,12 @@ describe("Actions in content editor", () => {
     cy.getBySelector("metaDescription").find("[data-cy='AIOpen']").click();
     cy.getBySelector("AIGenerate").click();
 
-    cy.get("[data-cy='AISuggestion1']", { timeout: 50_000 }).click();
+    cy.get("[data-cy='AISuggestion1']", aiDataGenerationTimeout).click();
 
-    cy.get("[data-cy='AIApprove']", { timeout: 50_000 }).click();
+    cy.get("[data-cy='AIApprove']", aiDataGenerationTimeout).click();
 
     cy.getBySelector("CreateItemSaveButton").click();
 
-    cy.contains("Created Item", { timeout: 15000 }).should("exist");
+    cy.contains("Created Item", aiDataGenerationTimeout).should("exist");
   });
 });
-
-function cleanTestData() {
-  cy.apiRequest({
-    url: `${API_ENDPOINTS.devInstance}/content/models/${HOMEPAGE.modelZUID}/items?limit=5000&page=1&lang=en-US`,
-  }).then((response) => {
-    const zuids = response?.data
-      ?.filter((resData) => resData?.data?.title?.includes(SUFFIX))
-      ?.map((item) => item?.meta?.ZUID);
-
-    cy.apiRequest({
-      url: `${API_ENDPOINTS.devInstance}/content/models/${HOMEPAGE.modelZUID}/items/batch`,
-      method: "DELETE",
-      body: JSON.stringify(zuids),
-    });
-  });
-}
-
-function deleteFields(modelZUID, fieldZUIDs) {
-  fieldZUIDs.forEach((fieldZUID) => {
-    cy.apiRequest({
-      url: `${API_ENDPOINTS.devInstance}/content/models/${modelZUID}/fields/${fieldZUID}`,
-      method: "DELETE",
-    });
-  });
-}

@@ -17,17 +17,20 @@ module.exports = function content(config) {
   const { formatPathPart } = require("../../../src/utility/formatPathPart");
   const { formatName } = require("../../../src/utility/formatName");
   const { getSDK } = require("./utils");
+
   async function seedContent(path: string): Promise<SeedContentTask> {
     const jsonString = readFileSync(join(__dirname, "../../", path), "utf8");
     const json = JSON.parse(jsonString);
 
     const sdk = await getSDK(config);
-    const timeStamp = Date.now();
+    const { COMMIT_ID, SPEC } = config?.env;
+    const SPEC_ID = `${COMMIT_ID} | ${Date.now()}`;
 
     // 1) Create Schema
     // Append commit id for spec tracking
     // append timestamp to prevent naming conflicts
-    const modelLabel = `${json.model.label} | ${config.env.COMMIT_ID} | ${timeStamp}`;
+    const specLabel = !SPEC?.file ? "" : `${SPEC?.folder}-${SPEC?.file}`;
+    const modelLabel = `E2E: ${specLabel || json?.model?.label} | ${SPEC_ID}`;
     const modelPayload = {
       ...json.model,
       label: modelLabel,
@@ -52,12 +55,13 @@ module.exports = function content(config) {
       json.items.map((item, index) => {
         // Append commit id to item labels for spec tracking
         // append timestamp to prevent naming conflicts
-        const itemLabel = `${item.web.metaTitle}-${config.env.COMMIT_ID}-${timeStamp}`;
+        const itemLabel = `${item?.web?.metaTitle} | ${SPEC_ID}`;
         const payload = {
           ...item,
           meta: {
             ...item.meta,
             sort: item.meta?.sort ?? index,
+            contentModelZUID: model?.ZUID,
           },
           web: {
             ...item.web,
