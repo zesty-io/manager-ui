@@ -1,0 +1,147 @@
+{
+  "model": {
+    "label": "E2E: Content - List",
+    "metaTitle": "E2E: Content - List",
+    "type": "pageset",
+    "listed": true
+  },
+  "fields": [
+    {
+      "label": "Text",
+      "name": "text",
+      "datatype": "text",
+      "required": false,
+      "sort": 0,
+      "settings": {
+        "list": true
+      }
+    },
+    {
+      "label": "Yes/No",
+      "name": "yes_no",
+      "datatype": "yes_no",
+      "sort": 1,
+      "settings": {
+        "list": true,
+        "options": {
+          "0": "No",
+          "1": "Yes"
+        }
+      }
+    },
+    {
+      "label": "Dropdown",
+      "name": "dropdown",
+      "datatype": "dropdown",
+      "sort": 2,
+      "settings": {
+        "list": true,
+        "options": {
+          "Option 1": "Option 1",
+          "Option 2": "Option 2"
+        }
+      }
+    },
+    {
+      "datatype": "textarea",
+      "name": "textarea",
+      "label": "textarea",
+      "required": false,
+      "sort": 3,
+      "settings": {
+        "list": true
+      }
+    },
+    {
+      "datatype": "markdown",
+      "name": "markdown",
+      "label": "markdown",
+      "required": false,
+      "sort": 4,
+      "settings": {
+        "list": true
+      }
+    },
+    {
+      "datatype": "wysiwyg_basic",
+      "name": "wysiwyg_basic",
+      "label": "wysiwyg basic",
+      "sort": 5,
+      "settings": {
+        "list": true
+      }
+    }
+  ],
+  "items": [
+    {
+      "web": {
+        "metaTitle": "Content Item 1",
+        "metaLinkText": "Content Item 1"
+      },
+      "data": {
+        "text": "text 1",
+        "textarea": "textarea 1",
+        "markdown": "markdown 1",
+        "wysiwyg_basic": "<p>wysiwyg_basic 1</p>",
+        "yes_no": 0,
+        "dropdown": "Option 1"
+      }
+    },
+    {
+      "web": {
+        "metaTitle": "Content Item 2",
+        "metaLinkText": "Content Item 2"
+      },
+      "data": {
+        "text": "text 2",
+        "textarea": "textarea 2",
+        "markdown": "markdown 2",
+        "wysiwyg_basic": "<p>wysiwyg_basic 2</p>",
+        "yes_no": 0,
+        "dropdown": "Option 1"
+      }
+    },
+    {
+      "web": {
+        "metaTitle": "Content Item 3",
+        "metaLinkText": "Content Item 3"
+      },
+      "data": {
+        "text": "text 3",
+        "textarea": "textarea 3",
+        "markdown": "markdown 3",
+        "wysiwyg_basic": "<p>wysiwyg_basic 3</p>",
+        "yes_no": 0,
+        "dropdown": "Option 1"
+      }
+    },
+    {
+      "web": {
+        "metaTitle": "Content Item 4",
+        "metaLinkText": "Content Item 4"
+      },
+      "data": {
+        "text": "text 4",
+        "textarea": "textarea 4",
+        "markdown": "markdown 4",
+        "wysiwyg_basic": "<p>wysiwyg_basic 4</p>",
+        "yes_no": 0,
+        "dropdown": "Option 1"
+      }
+    },
+    {
+      "web": {
+        "metaTitle": "Content Item 5",
+        "metaLinkText": "Content Item 5"
+      },
+      "data": {
+        "text": "text 5",
+        "textarea": "textarea 5",
+        "markdown": "markdown 5",
+        "wysiwyg_basic": "<p>wysiwyg_basic 5</p>",
+        "yes_no": 0,
+        "dropdown": "Option 1"
+      }
+    }
+  ]
+}
