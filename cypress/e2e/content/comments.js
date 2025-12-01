@@ -4,25 +4,44 @@ const forceClick = { force: true };
 const commentBox = '#commentInputField[contenteditable="true"]';
 
 describe("Content Item: Comments", () => {
+  let MODEL, ITEMS, FIELDS;
+
   before(() => {
     cleanComments();
-    cy.waitOn("/v1/content/models*", () => {
+
+    cy.task("seed:content", "fixtures/common-fields.json").then(
+      ({ model, fields, items }) => {
+        //Set modelZUID as Cypress env variable for global test access
+        Cypress.env("modelZUID", model?.ZUID);
+        //Set itemZUID as Cypress env variable for global test access
+        Cypress.env("itemZUID", items[0]?.meta?.ZUID);
+        MODEL = model;
+        ITEMS = items;
+        FIELDS = fields;
+      }
+    );
+    cy.waitOn("/v1/content/models**", () => {
       cy.waitOn("/v1/comments*", () => {
         cy.visit(
-          "/content/6-556370-8sh47g/7-b939a4-457q19/comment/12-6d41d0-n10vtc"
+          // "/content/6-556370-8sh47g/7-b939a4-457q19/comment/12-6d41d0-n10vtc"
+          `/content/${Cypress.env("modelZUID")}/${Cypress.env(
+            "itemZUID"
+          )}/comment/${FIELDS[0]?.ZUID}`
         );
       });
     });
   });
 
   it("Creates an initial comment", () => {
-    cy.intercept("/v1/comments/*").as("getAllComments");
+    // cy.get('[data-cy="field:textarea"] [data-cy="OpenCommentsButton"]')
+    //   .should("exist")
+    //   .click();
     cy.get(commentBox, { timeout: 50000 }).should("exist");
-    cy.get(commentBox).focus();
-    cy.get(commentBox).type("This is a new comment.");
+
+    cy.get(commentBox).focus().type("{selectAll}{del}This is a new comment.");
+
     cy.get('[data-cy="SubmitNewComment"]').click();
 
-    cy.wait("@getAllComments");
     cy.get('[data-cy="CommentItem"]').should("have.length", 1);
   });
 
