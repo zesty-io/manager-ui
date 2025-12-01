@@ -7,9 +7,7 @@ describe("Content Item: Comments", () => {
   let MODEL, ITEMS, FIELDS;
 
   before(() => {
-    cleanComments();
-
-    cy.task("seed:content", "fixtures/common-fields.json").then(
+    cy.task("seed:content", "fixtures/list.json").then(
       ({ model, fields, items }) => {
         //Set modelZUID as Cypress env variable for global test access
         Cypress.env("modelZUID", model?.ZUID);
@@ -23,7 +21,6 @@ describe("Content Item: Comments", () => {
     cy.waitOn("/v1/content/models**", () => {
       cy.waitOn("/v1/comments*", () => {
         cy.visit(
-          // "/content/6-556370-8sh47g/7-b939a4-457q19/comment/12-6d41d0-n10vtc"
           `/content/${Cypress.env("modelZUID")}/${Cypress.env(
             "itemZUID"
           )}/comment/${FIELDS[0]?.ZUID}`
@@ -33,9 +30,6 @@ describe("Content Item: Comments", () => {
   });
 
   it("Creates an initial comment", () => {
-    // cy.get('[data-cy="field:textarea"] [data-cy="OpenCommentsButton"]')
-    //   .should("exist")
-    //   .click();
     cy.get(commentBox, { timeout: 50000 }).should("exist");
 
     cy.get(commentBox).focus().type("{selectAll}{del}This is a new comment.");
@@ -123,18 +117,3 @@ describe("Content Item: Comments", () => {
     );
   });
 });
-
-function cleanComments() {
-  cy.apiRequest({
-    url: `https://accounts.api.dev.zesty.io/v1/instances/8-f48cf3a682-7fthvk/comments?resource=7-b939a4-457q19&scope=12-6d41d0-n10vtc&showResolved=true`,
-    method: "GET",
-  }).then((response) => {
-    const zuids = response?.data?.map((item) => item?.ZUID);
-    zuids.forEach((zuid) => {
-      cy.apiRequest({
-        url: `https://accounts.api.dev.zesty.io/v1/comments/${zuid}`,
-        method: "DELETE",
-      });
-    });
-  });
-}

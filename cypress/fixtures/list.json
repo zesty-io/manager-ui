@@ -1,7 +1,6 @@
 {
   "model": {
-    "label": "E2E: Content - Actions",
-    "metaTitle": "E2E: Content - Actions",
+    "label": "Content - List",
     "type": "pageset",
     "listed": true
   },
@@ -114,14 +113,14 @@
   "items": [
     {
       "web": {
-        "metaTitle": "Simple Content Item",
-        "metaLinkText": "Simple Content Item"
+        "metaTitle": "Content Item",
+        "metaLinkText": "Content Item"
       },
       "data": {
         "text": "Mitchell Wilder",
         "textarea": "test_email@zesty.io",
         "markdown": "markdown",
-        "wysiwyg_basic": "<p>Ullamco cupidatat pariatur sit ad non non. Lorem quis officia enim duis eiusmod aliqua aliqua tempor officia voluptate exercitation enim ad consequat. Ipsum velit reprehenderit consequat commodo mollit Lorem tempor laborum amet esse. Magna laborum id laborum labore nostrud. Culpa ullamco officia laborum reprehenderit laborum excepteur voluptate voluptate elit.</p>",
+        "wysiwyg_basic": "<p>Ullamco cupidatat pariatur sit ad non non.</p>",
         "yes_no": 0,
         "dropdown": "Option 1",
         "images": "3-6d7e8b3-4dv81",
