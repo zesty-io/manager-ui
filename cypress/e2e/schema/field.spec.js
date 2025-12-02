@@ -829,8 +829,6 @@ describe("Schema: Fields", () => {
 
     cy.wait("@updateField");
     cy.wait("@getFields");
-    cy.reload();
-    cy.wait(3000);
 
     // Verify field is deactivated
     cy.get(`[data-cy-status=Field_${fieldName}_inactive]`).should("exist");
