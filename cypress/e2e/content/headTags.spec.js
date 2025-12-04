@@ -1,13 +1,23 @@
 // assumes no Head Tags as starting state
 describe("Head Tags", () => {
+  before(() => {
+    cy.task("seed:content", "fixtures/item.json").then(
+      ({ model, fields, items }) => {
+        Cypress.env("modelZUID", model?.ZUID);
+        Cypress.env("itemZUID", items[0]?.meta?.ZUID);
+      }
+    );
+  });
   it("creates and deletes new head tag", () => {
     cy.waitOn("/v1/content/models*", () => {
-      cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19/head");
+      cy.visit(
+        `/content/${Cypress.env("modelZUID")}/${Cypress.env("itemZUID")}/head`
+      );
     });
 
-    cy.contains("Create Head Tag", { timeout: 10000 }).click();
+    cy.contains("Create Head Tag").click();
 
-    cy.get("[data-cy=newTagCard]")
+    cy.getBySelector("newTagCard")
       .last()
       .find(".MuiSelect-select")
       .click({ force: true });
@@ -17,8 +27,7 @@ describe("Head Tags", () => {
       .find('[data-value="script"]')
       .click({ force: true });
 
-    //cy.get("[data-cy=tagCard]:last-child")
-    cy.get("[data-cy=newTagCard]")
+    cy.getBySelector("newTagCard")
       .last()
       .contains("Value")
       .parent()
@@ -26,7 +35,7 @@ describe("Head Tags", () => {
       .clear()
       .type("Changing the value of content");
 
-    cy.get("[data-cy=newTagCard]")
+    cy.getBySelector("newTagCard")
       .last()
       .contains("Attribute")
       .parent()
@@ -35,11 +44,11 @@ describe("Head Tags", () => {
       .type("newAttr");
 
     // Saves Head Tag
-    cy.get("[data-cy=newTagCard]").last().find("#SaveItemButton").click();
+    cy.getBySelector("newTagCard").last().find("#SaveItemButton").click();
     cy.contains("New head tag created");
 
     // Deletes Head Tag
-    cy.get("[data-cy=tagCard]")
+    cy.getBySelector("tagCard")
       .last()
       .contains("Delete Head Tag")
       .invoke("show")
