@@ -1,15 +1,40 @@
 const today = Date.now();
 
 describe("Content Meta", () => {
-  // before(() => {
-  //   cy.waitOn("/v1/content/models*", () => {
-  //     cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19/meta");
-  //   });
-  // });
+  before(() => {
+    // Create two content items to serve as parent and child
+    cy.task("seed:content", "fixtures/content.json").then(
+      ({ model, fields, items }) => {
+        MODEL["parent"] = model;
+        FIELDS["parent"] = fields;
+        ITEMS["parent"] = items;
+        Cypress.env("ParentModelZUID", model?.ZUID);
+        Cypress.env("ParentItemZUID", items[0]?.meta?.ZUID);
+      }
+    );
+    cy.task("seed:content", "fixtures/meta.json").then(
+      ({ model, fields, items }) => {
+        MODEL["child"] = model;
+        FIELDS["child"] = fields;
+        ITEMS["child"] = items;
+        Cypress.env("ChildModelZUID", model?.ZUID);
+        Cypress.env("ChildItemZUID", items[0]?.meta?.ZUID);
+      }
+    );
+  });
 
-  // skipping failing test in preparation for CI.
-  it.skip("Modifies and saves Meta fields", () => {
-    cy.get("[data-cy=itemParent]").should("exist");
+  it("Modifies and saves Meta fields", () => {
+    cy.waitOn("/v1/content/models**", () => {
+      cy.waitOn("/v1/search/items*", () => {
+        cy.visit(
+          `/content/${Cypress.env("ChildModelZUID")}/${Cypress.env(
+            "ChildItemZUID"
+          )}/meta`
+        );
+      });
+    });
+
+    cy.get("#parentZUID").should("exist");
     cy.get("[data-cy=metaLinkText]").should("exist");
     cy.get("[data-cy=metaTitle]").should("exist");
     cy.get("[data-cy=metaDescription]").should("exist");
@@ -17,11 +42,9 @@ describe("Content Meta", () => {
     cy.get("[data-cy=sitemapPriority]").should("exist");
     cy.get("[data-cy=canonicalTag]").should("exist");
 
-    cy.get("[data-cy=itemParent] .Select").click();
-    cy.get('[data-value="7-f40360-7vcf5h"]').click();
+    cy.get("#parentZUID input").type(Cypress.env("ParentItemZUID"));
+    cy.get("ul.MuiAutocomplete-listbox").find("li").eq(0).click();
     // select another parent, but switch it back to root level
-    cy.get("[data-cy=itemParent] .Select").click();
-    cy.get("[data-cy=itemParent]").find('[data-value="0"]').first().click();
 
     cy.get("[data-cy=metaLinkText]")
       .find("input")
@@ -42,40 +65,47 @@ describe("Content Meta", () => {
       .type("new Meta Title");
 
     cy.get("[data-cy=metaDescription]")
-      .find("textarea")
+      .find("textarea:eq(0)")
       .click()
       .clear()
       .type("new Meta Description");
 
     cy.get("[data-cy=metaKeywords]")
-      .find("textarea")
+      .find("textarea:eq(0)")
       .click()
       .clear()
       .type("key, words, here");
 
     cy.get("[data-cy=sitemapPriority] >  div").click();
-    cy.get('[data-value="-1"]').click();
+    cy.get('[data-option-index="0"]').click();
 
     cy.get("[data-cy=canonicalTag] >  div").click();
-    cy.get('[data-value="1"]').last().click();
+    cy.get('[data-option-index="1"]').last().click();
 
     cy.get("[data-cy=canonicalTag] >  div").click();
-    cy.get('[data-value="0"]').last().click();
+    cy.get('[data-option-index="0"]').last().click();
+
+    cy.get("#parentZUID input").clear().wait(500).type("e2e");
+    cy.get("ul.MuiAutocomplete-listbox").find("li").eq(0).click();
 
     cy.get("#SaveItemButton").click();
-    cy.contains("Saved a new ").should("exist");
+    cy.get("[data-cy=toast]").contains("Item Saved", {
+      matchCase: false,
+    });
   });
 
   it("Does not validate meta description for dataset items", () => {
     cy.waitOn("/v1/content/models*", () => {
       cy.waitOn("/v1/env/nav", () => {
         cy.waitOn("/v1/search/items*", () => {
-          cy.visit("/content/6-675028-84dq4s/new");
+          cy.visit(`/content/${Cypress.env("ChildModelZUID")}/new`);
         });
       });
     });
 
-    cy.get("#12-7893a0-w4j9gk", { timeout: 5000 }).find("input").type(today);
+    cy.get('[data-cy="field:text"]', { timeout: 5000 })
+      .find("input")
+      .type(today);
     cy.wait(500); // wait for debounced input to settle
     cy.getBySelector("CreateItemSaveButton").click();
     cy.get("[data-cy=toast]").contains("Created Item");
@@ -85,7 +115,7 @@ describe("Content Meta", () => {
     cy.waitOn("/v1/content/models*", () => {
       cy.waitOn("/v1/env/nav", () => {
         cy.waitOn("/v1/search/items*", () => {
-          cy.visit("/content/6-0c960c-d1n0kx/new");
+          cy.visit(`/content/${Cypress.env("ChildModelZUID")}/new`);
         });
       });
     });
@@ -93,22 +123,30 @@ describe("Content Meta", () => {
     cy.iframe("#wysiwyg_basic_ifr")
       .click()
       .type(`{selectall}{backspace}meta description`);
-    cy.get("#12-849844-t8v5l6").find("input").type(`meta title ${today}`);
-
-    cy.getBySelector("CreateItemSaveButton").click();
+    cy.get('[data-cy="field:text"]')
+      .find("input")
+      .clear()
+      .wait(500)
+      .type(`meta title ${today}`);
 
     cy.waitOn("/v1/content/models*", () => {
-      cy.get('[role="tablist"]').find("button").eq(1).click();
+      cy.getBySelector("CreateItemSaveButton").wait(500).click();
     });
 
-    cy.contains("/page/otherpage/all-field-types/").should("exist");
+    cy.get('.MuiTabs-root:eq(0) [role="tablist"]').find("button").eq(1).click();
+
+    cy.contains("/e2e-", { matchCase: false }).should("exist");
   });
 
   it("Supports a dedicated Twitter title, description and image", () => {
     cy.waitOn("/v1/content/models*", () => {
       cy.waitOn("/v1/env/nav", () => {
         cy.waitOn("/v1/search/items*", () => {
-          cy.visit("/content/6-b6cde1aa9f-wftv50/7-92ab81c5a8-bhvb0l/meta");
+          cy.visit(
+            `/content/${Cypress.env("ChildModelZUID")}/${Cypress.env(
+              "ChildItemZUID"
+            )}/meta`
+          );
         });
       });
     });
