@@ -33,7 +33,10 @@ import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import LanguageRoundedIcon from "@mui/icons-material/LanguageRounded";
-import { useGetLangsMappingQuery } from "../../services/instance";
+import {
+  useGetLangsMappingQuery,
+  useGetContentModelsQuery,
+} from "../../services/instance";
 import {
   codeSystemInstruction,
   contentSystemInstruction,
@@ -111,6 +114,7 @@ export const AIDrawer = () => {
 
   const [geminiGenerate, { isLoading, isError, data: aiResponse }] =
     useGeminiGenerationMutation();
+  const { refetch: refetchContentModels } = useGetContentModelsQuery();
 
   const responsesEndRef = useRef(null);
 
@@ -149,6 +153,11 @@ export const AIDrawer = () => {
               value: response.payload.value,
             },
           });
+        }
+
+        // Makes sure that the subapp sidebar data is refreshed
+        if (response.type === "NAVIGATE") {
+          refetchContentModels();
         }
       });
     } catch (error) {
