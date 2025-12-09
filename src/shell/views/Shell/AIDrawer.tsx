@@ -157,7 +157,9 @@ export const AIDrawer = () => {
 
         // Makes sure that the subapp sidebar data is refreshed
         if (response.type === "NAVIGATE") {
-          refetchContentModels();
+          if (response.payload.path.includes("blocks")) {
+            refetchContentModels();
+          }
         }
       });
     } catch (error) {
