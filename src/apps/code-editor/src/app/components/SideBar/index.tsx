@@ -286,7 +286,7 @@ export const SideBar: FC<SideBarProps> = ({
 const NoResults = ({ keyword }: { keyword: string }) => (
   <Stack gap={1.5} alignItems="center" justifyContent="center" p={1.5}>
     <img
-      src="/noSearchResults.svg"
+      src="/images/noSearchResults.svg"
       alt="No search results"
       width="70"
       height="64"
