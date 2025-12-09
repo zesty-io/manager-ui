@@ -1482,8 +1482,14 @@ export const toISOString = (timeString: string) => {
 
 /** Converts "HH:mm:ss.SSSSSS" to "h:mm a" */
 export const to12HrTime = (isoTime: string) => {
-  const d = parse(isoTime, "HH:mm:ss.SSSSSS", REF_DATE);
-  return format(d, "h:mm a");
+  try {
+    const d = parse(isoTime, "HH:mm:ss.SSSSSS", REF_DATE);
+    return format(d, "h:mm a");
+  } catch (error) {
+    console.error(error);
+
+    return "";
+  }
 };
 
 const generateTimeOptions = () => {
