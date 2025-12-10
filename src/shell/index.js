@@ -41,6 +41,7 @@ window.CONFIG = {
 };
 
 import * as amplitude from "@amplitude/analytics-browser";
+import { isContentOne } from "../utility/isContentOne";
 
 // needed for Breadcrumbs in Shell
 injectReducer(store, "navContent", navContent);
@@ -58,6 +59,13 @@ window.CONFIG.API_INSTANCE = `${window.CONFIG.API_INSTANCE_PROTOCOL}${instanceZU
 
 const appTheme = createTheme(theme, {
   palette: {
+    ...(isContentOne() && {
+      primary: {
+        main: "#3F51B5",
+        dark: "#303F9F",
+        light: "#7986CB",
+      },
+    }),
     success: {
       contrastText: "#fff",
     },

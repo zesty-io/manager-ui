@@ -20,6 +20,7 @@ import {
 import { Database, Block, ShuffleVariant } from "@zesty-io/material";
 import { capitalize, isEqual } from "lodash";
 import { store } from "../store/index";
+import { isContentOne } from "../../utility/isContentOne";
 
 export type Tab = {
   pathname: string;
@@ -662,6 +663,7 @@ export function setDocumentTitle(location: TabLocation, queryData: any) {
   return (dispatch: Dispatch, getState: () => AppState) => {
     const state = getState();
     const instanceName = state.instance.name;
+    const appName = isContentOne() ? "Content.one" : "Zesty.io";
 
     const { pathname, search } = location;
     const parsedPath = parsePath({ pathname, search });
@@ -679,25 +681,19 @@ export function setDocumentTitle(location: TabLocation, queryData: any) {
       item = "";
     }
 
-    let title = [app, item, "Zesty.io", instanceName, "Manager"]
+    let title = [app, item, appName, instanceName, "Manager"]
 
       .filter((elem) => elem)
       .join(" - ");
 
     if (parsedPath.path === "/schema") {
-      title = [app, "All Models", "Zesty.io", instanceName, "Manager"]
+      title = [app, "All Models", appName, instanceName, "Manager"]
         .filter((elem) => elem)
         .join(" - ");
     }
 
     if (keyword) {
-      title = [
-        app,
-        `Search for "${keyword}"`,
-        "Zesty.io",
-        instanceName,
-        "Manager",
-      ]
+      title = [app, `Search for "${keyword}"`, appName, instanceName, "Manager"]
         .filter((elem) => elem)
         .join(" - ");
     }

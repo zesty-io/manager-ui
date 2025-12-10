@@ -141,7 +141,7 @@ export const ItemEditHeader = ({
       >
         <Box display="flex" justifyContent="space-between" gap={4}>
           <Box>
-            {type !== "block" && <ContentBreadcrumbs />}
+            <ContentBreadcrumbs />
             {isLoadingItem &&
             (!modelLabel || !item || !Object.keys(item?.web).length) ? (
               <Stack>
