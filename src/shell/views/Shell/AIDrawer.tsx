@@ -154,13 +154,6 @@ export const AIDrawer = () => {
             },
           });
         }
-
-        // Makes sure that the subapp sidebar data is refreshed
-        if (response.type === "NAVIGATE") {
-          if (response.payload.path.includes("blocks")) {
-            refetchContentModels();
-          }
-        }
       });
     } catch (error) {
       console.error("Error parsing AI response", error);
@@ -396,6 +389,7 @@ export const AIDrawer = () => {
                       variant="contained"
                       sx={{ ml: "auto", mt: 0.5 }}
                       onClick={() => {
+                        refetchContentModels();
                         enqueueAction({
                           type: response.type,
                           payload: {
