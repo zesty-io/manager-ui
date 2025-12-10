@@ -3,11 +3,11 @@ import AddCommentRoundedIcon from "@mui/icons-material/AddCommentRounded";
 import CommentRoundedIcon from "@mui/icons-material/CommentRounded";
 import { useState, useRef, useEffect, useMemo, useContext } from "react";
 import { useParams, useHistory, useLocation } from "react-router";
+import { useIntersection } from "react-use";
 
 import { CommentsList } from "./CommentsList";
 import { useGetCommentByResourceQuery } from "../../services/accounts";
 import { CommentContext } from "../../contexts/CommentProvider";
-import { useIsInView } from "shell/hooks/useIsInView";
 
 type PathParams = {
   modelZUID: string;
@@ -22,7 +22,10 @@ export const Comment = ({ resourceZUID }: CommentProps) => {
   const location = useLocation();
   const [_, __, ___, setCommentZUIDtoEdit] = useContext(CommentContext);
   const buttonContainerRef = useRef<HTMLDivElement>();
-  const isInView = useIsInView(buttonContainerRef);
+  const intersection = useIntersection(buttonContainerRef, {
+    threshold: 1,
+  });
+  const isInView = intersection && intersection.intersectionRatio >= 1;
   const { itemZUID, resourceZUID: activeResourceZUID } =
     useParams<PathParams>();
   const { data: comment, isLoading: isLoadingComment } =
