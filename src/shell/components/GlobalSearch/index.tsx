@@ -524,8 +524,11 @@ export const GlobalSearch = () => {
               }
 
               goToSearchPage(newVal);
-            } else {
-              if (newVal?.url) {
+            } else if (
+              typeof newVal === "object" &&
+              Object.keys(newVal)?.length
+            ) {
+              if (newVal.url) {
                 history.push(newVal.url);
               } else {
                 dispatch(
