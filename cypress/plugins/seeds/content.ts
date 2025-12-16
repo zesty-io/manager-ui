@@ -17,6 +17,7 @@ module.exports = function content(config) {
   const { formatPathPart } = require("../../../src/utility/formatPathPart");
   const { formatName } = require("../../../src/utility/formatName");
   const { getSDK } = require("./utils");
+
   async function seedContent(path: string): Promise<SeedContentTask> {
     const jsonString = readFileSync(join(__dirname, "../../", path), "utf8");
     const json = JSON.parse(jsonString);

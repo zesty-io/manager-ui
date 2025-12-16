@@ -14,7 +14,7 @@ describe("Content List Filters", () => {
     });
   });
 
-  it("Filters list items based on search term", function () {
+  it("Filters list items based on search term", () => {
     cy.getBySelector("MultiPageTableSearchField").type(
       contentItems[1].data.text
     );
@@ -26,7 +26,11 @@ describe("Content List Filters", () => {
 
   it("Filters items based on date saved", () => {
     cy.getBySelector("date_default").click();
-    cy.get('[data-cy="DateFilterMenu"] ul li:eq(1)').should("exist").click();
+    cy.getBySelector("DateFilterMenu")
+      .find("ul li")
+      .eq(1)
+      .should("exist")
+      .click();
     cy.getBySelector("NoResults").should("exist");
     cy.getBySelector("date_clearFilter").should("exist").click();
     cy.getBySelector("NoResults").should("not.exist");
@@ -48,13 +52,13 @@ describe("Content List Filters", () => {
     cy.getBySelector("NoResults").should("not.exist");
   });
 
-  it("Sorts list items", function () {
+  it("Sorts list items", () => {
     cy.getBySelector("sortByFilter_default").click();
     cy.getBySelector("createdOnFilterOption").click();
 
     cy.get(".MuiDataGrid-cell[data-colindex='2']")
       .should("exist")
-      .contains(contentItems[4].data.text, { matchCase: false });
+      .contains(contentItems[4].data.text);
     cy.getBySelector("sortByFilter_default").click();
     cy.getBySelector("createdOnFilterOption").click();
   });
@@ -110,8 +114,20 @@ describe("Content List Actions", () => {
 
   it("Saves bulk edits", () => {
     cy.intercept("PUT", "/v1/content/models/*/items/batch").as("batchSave");
-    cy.get('.MuiDataGrid-row:eq(0) [data-field="yes_no"] button:eq(1)').click();
-    cy.get('.MuiDataGrid-row:eq(1) [data-field="yes_no"] button:eq(1)').click();
+
+    cy.getBySelector("listItemTable")
+      .find(".listItemTableRow")
+      .eq(0)
+      .find('[data-field="yes_no"] button')
+      .eq(1)
+      .click();
+    cy.getBySelector("listItemTable")
+      .find(".listItemTableRow")
+      .eq(1)
+      .find('[data-field="yes_no"] button')
+      .eq(1)
+      .click();
+
     cy.getBySelector("MultiPageTableSaveChanges").click();
 
     cy.wait("@batchSave").its("response.statusCode").should("equal", 200);
@@ -121,8 +137,19 @@ describe("Content List Actions", () => {
     cy.intercept("POST", "/v1/content/models/*/items/publishings/batch").as(
       "batchPublish"
     );
-    cy.get('.MuiDataGrid-row:eq(0) [data-field="yes_no"] button:eq(1)').click();
-    cy.get('.MuiDataGrid-row:eq(1) [data-field="yes_no"] button:eq(1)').click();
+    cy.getBySelector("listItemTable")
+      .find(".listItemTableRow")
+      .eq(0)
+      .find('[data-field="yes_no"] button')
+      .eq(1)
+      .click();
+
+    cy.getBySelector("listItemTable")
+      .find(".listItemTableRow")
+      .eq(1)
+      .find('[data-field="yes_no"] button')
+      .eq(1)
+      .click();
     cy.getBySelector("MultiPageTablePublish").click();
     cy.getBySelector("ConfirmPublishButton").click();
 
@@ -135,8 +162,16 @@ describe("Content List Actions", () => {
     cy.intercept("POST", "/v1/content/models/*/items/publishings/batch").as(
       "batchPublish"
     );
-    cy.get("input[type=checkbox]").eq(1).click();
-    cy.get("input[type=checkbox]").eq(2).click();
+    cy.getBySelector("listItemTable")
+      .find("input[type=checkbox]")
+      .eq(1)
+      .click();
+
+    cy.getBySelector("listItemTable")
+      .find("input[type=checkbox]")
+      .eq(2)
+      .click();
+
     cy.getBySelector("MultiPageTablePublish").click();
     cy.getBySelector("ConfirmPublishButton").click();
 
