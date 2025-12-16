@@ -1,35 +1,35 @@
 const today = Date.now();
 
 describe("Content Meta", () => {
+  let MODEL, FIELDS, ITEM;
   before(() => {
     // Create two content items to serve as parent and child
-    cy.task("seed:content", "fixtures/content.json").then(
-      ({ model, fields, items }) => {
-        MODEL["parent"] = model;
-        FIELDS["parent"] = fields;
-        ITEMS["parent"] = items;
-        Cypress.env("ParentModelZUID", model?.ZUID);
-        Cypress.env("ParentItemZUID", items[0]?.meta?.ZUID);
-      }
-    );
+    // cy.task("seed:content", "fixtures/content.json").then(
+    //   ({ model, fields, items }) => {
+    //     MODEL["parent"] = model;
+    //     FIELDS["parent"] = fields;
+    //     ITEMS["parent"] = items;
+    //     Cypress.env("ParentModelZUID", model?.ZUID);
+    //     Cypress.env("ParentItemZUID", items[0]?.meta?.ZUID);
+    //   }
+    // );
     cy.task("seed:content", "fixtures/meta.json").then(
       ({ model, fields, items }) => {
-        MODEL["child"] = model;
-        FIELDS["child"] = fields;
-        ITEMS["child"] = items;
-        Cypress.env("ChildModelZUID", model?.ZUID);
-        Cypress.env("ChildItemZUID", items[0]?.meta?.ZUID);
+        ITEM = items?.[0];
+        // MODEL["child"] = model;
+        // FIELDS["child"] = fields;
+        // ITEMS["child"] = items;
+        Cypress.env("modelZUID", model?.ZUID);
+        Cypress.env("itemZUID", items[0]?.meta?.ZUID);
       }
     );
   });
 
   it("Modifies and saves Meta fields", () => {
     cy.waitOn("/v1/content/models**", () => {
-      cy.waitOn("/v1/search/items*", () => {
+      cy.waitOn("/v1/search/items**", () => {
         cy.visit(
-          `/content/${Cypress.env("ChildModelZUID")}/${Cypress.env(
-            "ChildItemZUID"
-          )}/meta`
+          `/content/${Cypress.env("modelZUID")}/${Cypress.env("itemZUID")}/meta`
         );
       });
     });
@@ -42,21 +42,39 @@ describe("Content Meta", () => {
     cy.get("[data-cy=sitemapPriority]").should("exist");
     cy.get("[data-cy=canonicalTag]").should("exist");
 
-    cy.get("#parentZUID input").type(Cypress.env("ParentItemZUID"));
+    // cy.get("#parentZUID input").type(`{selectall}{backspace}`);
+    // cy.get("#parentZUID input").wait(500).should("be.empty");
+    cy.get("#parentZUID input").click();
+    cy.get("#parentZUID input").type(`xxxxxx{selectall}{backspace}`).clear();
+    cy.get("#parentZUID input").should("be.empty");
+    cy.get("#parentZUID input").type("/");
+    cy.wait(1000);
     cy.get("ul.MuiAutocomplete-listbox").find("li").eq(0).click();
+    cy.wait(1000);
     // select another parent, but switch it back to root level
+
+    // cy.get("#parentZUID input").type(
+    //   `{selectall}{backspace}${ITEM?.web?.parentZUID}`
+    // );
+    cy.get("#parentZUID input").click();
+    cy.get("#parentZUID input").type(`xxxx{selectall}{backspace}`).clear();
+    cy.get("#parentZUID input").should("be.empty");
+    cy.waitOn("/v1/search/items**", () => {
+      cy.get("#parentZUID input").type(ITEM?.web?.parentZUID);
+    });
+
+    cy.wait(10000);
+    cy.get("ul.MuiAutocomplete-listbox").find("li").eq(0).click();
+    cy.wait(1000);
 
     cy.get("[data-cy=metaLinkText]")
       .find("input")
       .click()
-      .clear()
-      .type("All Field Types");
 
-    cy.get("[data-cy=itemRoute]")
-      .find("input")
-      .click()
       .clear()
-      .type("new path part");
+      .type("new Meta LinkText");
+
+    cy.get("#pathPart input").click().clear().type("new path part");
 
     cy.get("[data-cy=metaTitle]")
       .find("input")
@@ -85,9 +103,6 @@ describe("Content Meta", () => {
     cy.get("[data-cy=canonicalTag] >  div").click();
     cy.get('[data-option-index="0"]').last().click();
 
-    cy.get("#parentZUID input").clear().wait(500).type("e2e");
-    cy.get("ul.MuiAutocomplete-listbox").find("li").eq(0).click();
-
     cy.get("#SaveItemButton").click();
     cy.get("[data-cy=toast]").contains("Item Saved", {
       matchCase: false,
@@ -98,7 +113,7 @@ describe("Content Meta", () => {
     cy.waitOn("/v1/content/models*", () => {
       cy.waitOn("/v1/env/nav", () => {
         cy.waitOn("/v1/search/items*", () => {
-          cy.visit(`/content/${Cypress.env("ChildModelZUID")}/new`);
+          cy.visit(`/content/${Cypress.env("modelZUID")}/new`);
         });
       });
     });
@@ -115,7 +130,7 @@ describe("Content Meta", () => {
     cy.waitOn("/v1/content/models*", () => {
       cy.waitOn("/v1/env/nav", () => {
         cy.waitOn("/v1/search/items*", () => {
-          cy.visit(`/content/${Cypress.env("ChildModelZUID")}/new`);
+          cy.visit(`/content/${Cypress.env("modelZUID")}/new`);
         });
       });
     });
@@ -143,8 +158,8 @@ describe("Content Meta", () => {
       cy.waitOn("/v1/env/nav", () => {
         cy.waitOn("/v1/search/items*", () => {
           cy.visit(
-            `/content/${Cypress.env("ChildModelZUID")}/${Cypress.env(
-              "ChildItemZUID"
+            `/content/${Cypress.env("modelZUID")}/${Cypress.env(
+              "itemZUID"
             )}/meta`
           );
         });

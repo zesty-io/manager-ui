@@ -1,8 +1,9 @@
 {
   "model": {
-    "label": "Content - Item",
+    "label": "Content - Meta",
     "type": "pageset",
-    "listed": true
+    "listed": true,
+    "parentZUID": "7-a1be38-1b42ht"
   },
   "fields": [
     {
@@ -71,8 +72,9 @@
   "items": [
     {
       "web": {
-        "metaTitle": "Content Item",
-        "metaLinkText": "Content Item"
+        "metaTitle": "Content Meta",
+        "metaLinkText": "Content Meta",
+        "parentZUID": "7-a4f3fbdc8b-0ljsqw"
       },
       "data": {
         "text": "text",
