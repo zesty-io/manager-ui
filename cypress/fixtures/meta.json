@@ -3,7 +3,7 @@
     "label": "Content - Meta",
     "type": "pageset",
     "listed": true,
-    "parentZUID": "7-a1be38-1b42ht"
+    "parentZUID": "7-f88ad8bcc3-1z83ht"
   },
   "fields": [
     {
@@ -67,6 +67,34 @@
           "1": "Yes"
         }
       }
+    },
+    {
+      "label": "TC Title",
+      "name": "tc_title",
+      "datatype": "text",
+      "sort": 6,
+      "settings": {
+        "list": true
+      }
+    },
+    {
+      "datatype": "textarea",
+      "name": "tc_description",
+      "label": "TC Description",
+      "sort": 7,
+      "settings": {
+        "list": true
+      }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "images",
+      "name": "tc_image",
+      "label": "TC Image",
+      "sort": 8,
+      "settings": {
+        "list": true
+      }
     }
   ],
   "items": [
@@ -74,7 +102,7 @@
       "web": {
         "metaTitle": "Content Meta",
         "metaLinkText": "Content Meta",
-        "parentZUID": "7-a4f3fbdc8b-0ljsqw"
+        "parentZUID": "7-f88ad8bcc3-1z83ht"
       },
       "data": {
         "text": "text",
@@ -82,7 +110,10 @@
         "markdown": "markdown",
         "wysiwyg_basic": "<p>wysiwyg_basic</p>",
         "yes_no": "0",
-        "dropdown": "Option 1"
+        "dropdown": "Option 1",
+        "tc_description": null,
+        "tc_image": "https://wave-trial.getbynder.com/m/45b0d3ba0b271504/original/kim-cruickshanks-176374.jpg",
+        "tc_title": null
       }
     }
   ]
