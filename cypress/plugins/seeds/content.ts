@@ -23,14 +23,12 @@ module.exports = function content(config) {
     const json = JSON.parse(jsonString);
 
     const sdk = await getSDK(config);
-    const { COMMIT_ID, SPEC } = config?.env;
-    const SPEC_ID = `${COMMIT_ID} | ${Date.now()}`;
+    const timeStamp = Date.now();
 
     // 1) Create Schema
     // Append commit id for spec tracking
     // append timestamp to prevent naming conflicts
-    const specLabel = !SPEC?.file ? "" : `${SPEC?.folder}-${SPEC?.file}`;
-    const modelLabel = `E2E: ${specLabel || json?.model?.label} | ${SPEC_ID}`;
+    const modelLabel = `E2E: ${json.model.label} | ${config.env.COMMIT_ID} | ${timeStamp}`;
     const modelPayload = {
       ...json.model,
       label: modelLabel,
@@ -55,7 +53,7 @@ module.exports = function content(config) {
       json.items.map((item, index) => {
         // Append commit id to item labels for spec tracking
         // append timestamp to prevent naming conflicts
-        const itemLabel = `${item?.web?.metaTitle} | ${SPEC_ID}`;
+        const itemLabel = `E2E: ${item.web.metaTitle} | ${config.env.COMMIT_ID} | ${timeStamp}`;
         const payload = {
           ...item,
           meta: {
