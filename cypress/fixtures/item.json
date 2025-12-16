@@ -1,6 +1,6 @@
 {
   "model": {
-    "label": "Content - List",
+    "label": "Item",
     "type": "pageset",
     "listed": true
   },
@@ -113,8 +113,8 @@
   "items": [
     {
       "web": {
-        "metaTitle": "Content Item",
-        "metaLinkText": "Content Item"
+        "metaTitle": "Item",
+        "metaLinkText": "Item"
       },
       "data": {
         "text": "Mitchell Wilder",

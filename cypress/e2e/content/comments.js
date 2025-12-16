@@ -1,59 +1,57 @@
-const options = { timeout: 15000 };
 const forceClick = { force: true };
 
 const commentBox = '#commentInputField[contenteditable="true"]';
 
 describe("Content Item: Comments", () => {
-  let MODEL, ITEMS, FIELDS;
+  let FIELDS;
 
   before(() => {
-    cy.task("seed:content", "fixtures/list.json").then(
+    cy.task("seed:content", "fixtures/item.json").then(
       ({ model, fields, items }) => {
-        //Set modelZUID as Cypress env variable for global test access
         Cypress.env("modelZUID", model?.ZUID);
-        //Set itemZUID as Cypress env variable for global test access
         Cypress.env("itemZUID", items[0]?.meta?.ZUID);
-        MODEL = model;
-        ITEMS = items;
         FIELDS = fields;
       }
     );
     cy.waitOn("/v1/content/models**", () => {
-      cy.waitOn("/v1/comments*", () => {
-        cy.visit(
-          `/content/${Cypress.env("modelZUID")}/${Cypress.env(
-            "itemZUID"
-          )}/comment/${FIELDS[0]?.ZUID}`
-        );
-      });
+      cy.visit(
+        `/content/${Cypress.env("modelZUID")}/${Cypress.env(
+          "itemZUID"
+        )}/comment/${FIELDS[0]?.ZUID}`
+      );
     });
   });
 
   it("Creates an initial comment", () => {
-    cy.get(commentBox, { timeout: 50000 }).should("exist");
-
+    cy.intercept("/v1/comments").as("getAllComments");
+    cy.get(commentBox).should("exist");
     cy.get(commentBox).focus().type("{selectAll}{del}This is a new comment.");
-
-    cy.get('[data-cy="SubmitNewComment"]').click();
-
-    cy.get('[data-cy="CommentItem"]').should("have.length", 1);
+    cy.getBySelector("SubmitNewComment")
+      .should("exist")
+      .should("be.enabled")
+      .click();
+    cy.wait("@getAllComments");
+    cy.getBySelector("CommentItem").should("have.length", 1);
   });
 
   it("Replies to a comment", () => {
     cy.intercept("/v1/comments/*?showReplies=true&showResolved=true").as(
       "getReplies"
     );
-    cy.get(commentBox, options).type("Hello, this is a new reply!");
-    cy.get('[data-cy="SubmitNewComment"]').click();
+    cy.get(commentBox).type("Hello, this is a new reply!");
+    cy.getBySelector("SubmitNewComment")
+      .should("exist")
+      .should("be.enabled")
+      .click();
 
     cy.wait("@getReplies");
-    cy.get('[data-cy="CommentItem"]').should("have.length", 2);
+    cy.getBySelector("CommentItem").should("have.length", 2);
   });
 
   it("Updates an existing comment", () => {
     const UPDATED_TEXT = "I am updating this comment now.";
 
-    cy.getBySelector("CommentMenuButton", options).first().click(forceClick);
+    cy.getBySelector("CommentMenuButton").first().click(forceClick);
     cy.getBySelector("EditCommentButton").click();
     cy.get(commentBox).type(`{selectall}{backspace}${UPDATED_TEXT}`);
     cy.getBySelector("SubmitNewComment").click();
@@ -78,7 +76,7 @@ describe("Content Item: Comments", () => {
   });
 
   it("Reopens a comment when there is a new reply", () => {
-    cy.get(commentBox, options).type("Reopening ticket.");
+    cy.get(commentBox).type("Reopening ticket.");
     cy.getBySelector("SubmitNewComment").click();
     cy.intercept("/v1/comments/*?showReplies=true&showResolved=true").as(
       "getReplies"
@@ -95,19 +93,20 @@ describe("Content Item: Comments", () => {
     cy.intercept("DELETE", "/v1/comments/*").as("deleteComment");
     cy.intercept("/v1/instances/*/comments?resource=*").as("getComments");
 
-    cy.get('[data-cy="CommentItem"]', { timeout: 40000 }).should("exist");
+    cy.getBySelector("CommentItem").should("exist");
 
     const beforeDeleteCount = Cypress.$('[data-cy="CommentItem"]').length;
 
     cy.log("beforeDeleteCount: ", beforeDeleteCount);
 
-    cy.get('[data-cy="CommentItem"]:eq(0) [data-cy="CommentMenuButton"]').click(
-      forceClick
-    );
+    cy.getBySelector("CommentItem")
+      .eq(0)
+      .find('[data-cy="CommentMenuButton"]')
+      .click(forceClick);
 
-    cy.get('[data-cy="DeleteCommentButton"]').click();
+    cy.getBySelector("DeleteCommentButton").click();
 
-    cy.get('[data-cy="ConfirmDeleteCommentButton"]', options).click();
+    cy.getBySelector("ConfirmDeleteCommentButton").click();
 
     cy.wait(["@deleteComment", "@getComments"]).spread(
       (deleteComment, getComments) => {
