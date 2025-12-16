@@ -1,24 +1,12 @@
 const today = Date.now();
 
 describe("Content Meta", () => {
-  let MODEL, FIELDS, ITEM;
+  let ITEM;
   before(() => {
-    // Create two content items to serve as parent and child
-    // cy.task("seed:content", "fixtures/content.json").then(
-    //   ({ model, fields, items }) => {
-    //     MODEL["parent"] = model;
-    //     FIELDS["parent"] = fields;
-    //     ITEMS["parent"] = items;
-    //     Cypress.env("ParentModelZUID", model?.ZUID);
-    //     Cypress.env("ParentItemZUID", items[0]?.meta?.ZUID);
-    //   }
-    // );
     cy.task("seed:content", "fixtures/meta.json").then(
       ({ model, fields, items }) => {
         ITEM = items?.[0];
-        // MODEL["child"] = model;
-        // FIELDS["child"] = fields;
-        // ITEMS["child"] = items;
+        console.debug("ITEM: ", ITEM);
         Cypress.env("modelZUID", model?.ZUID);
         Cypress.env("itemZUID", items[0]?.meta?.ZUID);
       }
@@ -34,77 +22,82 @@ describe("Content Meta", () => {
       });
     });
 
-    cy.get("#parentZUID").should("exist");
-    cy.get("[data-cy=metaLinkText]").should("exist");
-    cy.get("[data-cy=metaTitle]").should("exist");
-    cy.get("[data-cy=metaDescription]").should("exist");
-    cy.get("[data-cy=metaKeywords]").should("exist");
-    cy.get("[data-cy=sitemapPriority]").should("exist");
-    cy.get("[data-cy=canonicalTag]").should("exist");
+    cy.intercept(`/v1/search/items*`).as("searchQuery");
 
-    // cy.get("#parentZUID input").type(`{selectall}{backspace}`);
-    // cy.get("#parentZUID input").wait(500).should("be.empty");
-    cy.get("#parentZUID input").click();
-    cy.get("#parentZUID input").type(`xxxxxx{selectall}{backspace}`).clear();
-    cy.get("#parentZUID input").should("be.empty");
-    cy.get("#parentZUID input").type("/");
-    cy.wait(1000);
-    cy.get("ul.MuiAutocomplete-listbox").find("li").eq(0).click();
-    cy.wait(1000);
-    // select another parent, but switch it back to root level
+    cy.getBySelector("parentZUID").should("exist");
+    cy.getBySelector("metaLinkText").should("exist");
+    cy.getBySelector("metaTitle").should("exist");
+    cy.getBySelector("metaDescription").should("exist");
+    cy.getBySelector("metaKeywords").should("exist");
+    cy.getBySelector("sitemapPriority").should("exist");
+    cy.getBySelector("canonicalTag").should("exist");
 
-    // cy.get("#parentZUID input").type(
-    //   `{selectall}{backspace}${ITEM?.web?.parentZUID}`
-    // );
-    cy.get("#parentZUID input").click();
-    cy.get("#parentZUID input").type(`xxxx{selectall}{backspace}`).clear();
-    cy.get("#parentZUID input").should("be.empty");
-    cy.waitOn("/v1/search/items**", () => {
-      cy.get("#parentZUID input").type(ITEM?.web?.parentZUID);
-    });
-
-    cy.wait(10000);
-    cy.get("ul.MuiAutocomplete-listbox").find("li").eq(0).click();
-    cy.wait(1000);
-
-    cy.get("[data-cy=metaLinkText]")
+    cy.getBySelector("parentZUID")
       .find("input")
       .click()
+      .clear()
+      .type(`test-text{selectall}{backspace}/`);
 
+    cy.get("ul.MuiAutocomplete-listbox")
+      .find("li")
+      .eq(1)
+      .click({ force: true });
+
+    cy.getBySelector("parentZUID")
+      .find("input")
+      .click()
+      .clear()
+      .type(ITEM?.web?.parentZUID);
+
+    cy.wait("@searchQuery");
+
+    cy.get(
+      `[data-cy="parent:${ITEM?.web?.parentZUID}"][aria-selected="false"]`
+    ).click();
+
+    cy.getBySelector("metaLinkText")
+      .find("input")
+      .click()
       .clear()
       .type("new Meta LinkText");
 
-    cy.get("#pathPart input").click().clear().type("new path part");
+    cy.getBySelector("pathPart")
+      .find("input")
+      .click()
+      .clear()
+      .type(`new path part ${today}`);
 
-    cy.get("[data-cy=metaTitle]")
+    cy.getBySelector("metaTitle")
       .find("input")
       .click()
       .clear()
       .type("new Meta Title");
 
-    cy.get("[data-cy=metaDescription]")
-      .find("textarea:eq(0)")
+    cy.getBySelector("metaDescription")
+      .find("textarea")
+      .first()
       .click()
       .clear()
       .type("new Meta Description");
 
-    cy.get("[data-cy=metaKeywords]")
-      .find("textarea:eq(0)")
+    cy.getBySelector("metaKeywords")
+      .find("textarea")
+      .first()
       .click()
       .clear()
       .type("key, words, here");
 
-    cy.get("[data-cy=sitemapPriority] >  div").click();
+    cy.getBySelector("sitemapPriority").find("div").first().click();
     cy.get('[data-option-index="0"]').click();
 
-    cy.get("[data-cy=canonicalTag] >  div").click();
+    cy.getBySelector("canonicalTag").find("div").first().click();
     cy.get('[data-option-index="1"]').last().click();
 
-    cy.get("[data-cy=canonicalTag] >  div").click();
+    cy.getBySelector("canonicalTag").find("div").first().click();
     cy.get('[data-option-index="0"]').last().click();
 
-    cy.get("#SaveItemButton").click();
-    cy.get("[data-cy=toast]").contains("Item Saved", {
+    cy.getBySelector("SaveItemButton").click();
+    cy.getBySelector("toast").contains("Item Saved", {
       matchCase: false,
     });
   });
@@ -118,12 +111,10 @@ describe("Content Meta", () => {
       });
     });
 
-    cy.get('[data-cy="field:text"]', { timeout: 5000 })
-      .find("input")
-      .type(today);
+    cy.getBySelector(`"field:text"`).find("input").type(today);
     cy.wait(500); // wait for debounced input to settle
     cy.getBySelector("CreateItemSaveButton").click();
-    cy.get("[data-cy=toast]").contains("Created Item");
+    cy.getBySelector("toast").contains("Created Item");
   });
 
   it("Auto applies page parent when creating an item", () => {
@@ -138,19 +129,16 @@ describe("Content Meta", () => {
     cy.iframe("#wysiwyg_basic_ifr")
       .click()
       .type(`{selectall}{backspace}meta description`);
-    cy.get('[data-cy="field:text"]')
+    cy.getBySelector(`"field:text"`)
       .find("input")
       .clear()
-      .wait(500)
-      .type(`meta title ${today}`);
+      .type(`{selectall}{backspace} meta title ${today}`);
 
-    cy.waitOn("/v1/content/models*", () => {
-      cy.getBySelector("CreateItemSaveButton").wait(500).click();
-    });
+    cy.getBySelector("ManualMetaFlow").click();
 
-    cy.get('.MuiTabs-root:eq(0) [role="tablist"]').find("button").eq(1).click();
-
-    cy.contains("/e2e-", { matchCase: false }).should("exist");
+    cy.getBySelector("itemRoute")
+      .find("input")
+      .should("contain.value", "/cypress/e2e/");
   });
 
   it("Supports a dedicated Twitter title, description and image", () => {
