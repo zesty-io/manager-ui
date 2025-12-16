@@ -7,7 +7,6 @@ module.exports = defineConfig({
   viewportHeight: 1080,
   video: false,
   defaultCommandTimeout: 15000,
-  experimentalInteractiveRunEvents: true,
   env: {
     API_AUTH: "https://auth.api.dev.zesty.io",
     COOKIE_NAME: "DEV_APP_SID",
@@ -26,14 +25,6 @@ module.exports = defineConfig({
         }
 
         return launchOptions;
-      });
-      // Get spec info to be used for the model's label/name
-      on("before:spec", (spec) => {
-        const pathPart = spec.relative.split("/");
-        config.env.SPEC = {
-          folder: pathPart[pathPart?.length - 2],
-          file: pathPart[pathPart?.length - 1].replace(/\.spec\.js/g, ""),
-        };
       });
 
       return require("./cypress/plugins/index.js")(on, config);
