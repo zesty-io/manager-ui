@@ -519,6 +519,7 @@ export const ItemEditHeaderActions = ({
             loading={saving}
             disabled={!canUpdate}
             id="SaveItemButton"
+            data-cy="SaveItemButton"
           >
             Save
           </Button>
