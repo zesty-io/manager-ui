@@ -38,7 +38,7 @@ describe("Content Meta", () => {
       .clear()
       .type(`test-text{selectall}{backspace}/`);
 
-    cy.get("ul.MuiAutocomplete-listbox")
+    cy.getBySelector("itemRouteListBox")
       .find("li")
       .eq(1)
       .click({ force: true });
