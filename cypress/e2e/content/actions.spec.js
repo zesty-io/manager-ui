@@ -38,19 +38,22 @@ describe("Actions in content editor", () => {
       );
     });
 
-    cy.get(`[data-cy="field:markdown"]`)
+    cy.getBySelector(`"field:markdown"`)
       .find("textarea")
       .click()
       .clear()
       .wait(500)
       .should("have.value", "");
 
-    cy.get("#SaveItemButton").trigger("click");
+    cy.getBySelector("SaveItemButton")
+      .should("exist")
+      .should("be.enabled")
+      .trigger("click");
 
-    cy.get("[data-cy=toast]").contains("Missing Data in Required Fields", {
+    cy.getBySelector("toast").contains("Missing Data in Required Fields", {
       matchCase: false,
     });
-    cy.get(`[data-cy="field:markdown"]`)
+    cy.getBySelector(`"field:markdown"`)
       .find("textarea")
       .click()
       .clear()
@@ -58,46 +61,55 @@ describe("Actions in content editor", () => {
   });
 
   it("Must not save when exceeding or lacking characters", () => {
-    cy.get(`[data-cy="field:text"]`)
+    cy.getBySelector(`"field:text"`)
       .find("input")
       .click()
       .clear()
       .type("aa")
       .wait(500);
-    cy.get("#SaveItemButton").trigger("click");
+    cy.getBySelector("SaveItemButton")
+      .should("exist")
+      .should("be.enabled")
+      .trigger("click");
     cy.getBySelector("FieldErrorsList").should("exist");
     cy.getBySelector("FieldErrorsList")
       .find("ol")
       .find("li")
       .first()
       .contains("Requires 8 more characters.");
-    cy.get(`[data-cy="field:text"]`)
+    cy.getBySelector(`"field:text"`)
       .find("input")
       .click()
       .clear()
       .type("Lorem ipsum dolor sit amet, consect")
       .wait(500);
-    cy.get("#SaveItemButton").trigger("click");
+    cy.getBySelector("SaveItemButton")
+      .should("exist")
+      .should("be.enabled")
+      .trigger("click");
     cy.getBySelector("FieldErrorsList").should("exist");
     cy.getBySelector("FieldErrorsList")
       .find("ol")
       .find("li")
       .first()
       .contains("Exceeding by 5 characters.");
-    cy.get(`[data-cy="field:text"]`)
+    cy.getBySelector(`"field:text"`)
       .find("input")
       .click()
       .clear()
       .type("Lorem ipsum")
       .wait(500);
-    cy.get("#SaveItemButton").click();
-    cy.get("[data-cy=toast]").contains(
+    cy.getBySelector("SaveItemButton")
+      .should("exist")
+      .should("be.enabled")
+      .trigger("click");
+    cy.getBySelector("toast").contains(
       `Item Saved: ${CONTENT_ITEMS?.[0].web.metaTitle}`,
       {
         matchCase: false,
       }
     );
-    cy.get(`[data-cy="field:text"]`)
+    cy.getBySelector(`"field:text"`)
       .find("input")
       .click()
       .clear()
@@ -105,34 +117,40 @@ describe("Actions in content editor", () => {
   });
 
   it("Must not save when regex is not matched", () => {
-    cy.get(`[data-cy="field:textarea"]`)
+    cy.getBySelector(`"field:textarea"`)
       .find("textarea")
       .first()
       .click()
       .clear()
       .type("aa");
-    cy.get("#SaveItemButton").trigger("click");
+    cy.getBySelector("SaveItemButton")
+      .should("exist")
+      .should("be.enabled")
+      .trigger("click");
     cy.getBySelector("FieldErrorsList").should("exist");
     cy.getBySelector("FieldErrorsList")
       .find("ol")
       .find("li")
       .first()
       .contains("Must be an email (e.g. hello@zesty.io)");
-    cy.get(`[data-cy="field:textarea"]`)
+    cy.getBySelector(`"field:textarea"`)
       .find("textarea")
       .first()
       .click()
       .clear()
       .type("hello@zesty.io")
       .wait(500);
-    cy.get("#SaveItemButton").trigger("click");
-    cy.get("[data-cy=toast]").contains(
+    cy.getBySelector("SaveItemButton")
+      .should("exist")
+      .should("be.enabled")
+      .trigger("click");
+    cy.getBySelector("toast").contains(
       `Item Saved: ${CONTENT_ITEMS?.[0].web.metaTitle}`,
       {
         matchCase: false,
       }
     );
-    cy.get(`[data-cy="field:textarea"]`)
+    cy.getBySelector(`"field:textarea"`)
       .find("textarea")
       .first()
       .click()
@@ -148,15 +166,18 @@ describe("Actions in content editor", () => {
     cy.get(`[data-cy="field:fontawesome"] input`).should("not.exist");
 
     // Make an edit to enable save button
-    cy.get(`[data-cy="field:text"]`)
+    cy.getBySelector(`"field:text"`)
       .find("input")
       .click()
       .clear()
       .type(TEST_DATA?.new);
 
-    cy.get("#SaveItemButton").trigger("click");
+    cy.getBySelector("SaveItemButton")
+      .should("exist")
+      .should("be.enabled")
+      .trigger("click");
 
-    cy.get("[data-cy=toast]").contains("Item Saved");
+    cy.getBySelector("toast").contains("Item Saved");
   });
 
   it("Saves page item metadata", () => {
@@ -166,44 +187,49 @@ describe("Actions in content editor", () => {
       );
     });
 
-    cy.get("textarea")
+    cy.getBySelector("metaDescription")
+      .find("textarea")
       .first()
       .click()
+      .clear()
       .type("{selectall}{backspace}This is an item meta description")
       .should("have.value", "This is an item meta description");
 
-    cy.get('[data-cy="itemRoute"]').find("input").type("/");
-    cy.get(".MuiAutocomplete-listbox li:eq(0)").click();
+    cy.getBySelector("itemRoute").find("input").click().clear().type("/");
+    cy.getBySelector("itemRouteListBox").find("li").first().click();
 
     cy.waitOn(
       `/v1/content/models/${Cypress.env("modelZUID")}/items/${Cypress.env(
         "itemZUID"
       )}`,
       () => {
-        cy.get("#SaveItemButton").trigger("click");
+        cy.getBySelector("SaveItemButton")
+          .should("exist")
+          .should("be.enabled")
+          .trigger("click");
       }
     );
 
-    cy.get("[data-cy=toast]").contains("Item Saved");
+    cy.getBySelector("toast").contains("Item Saved");
   });
 
   it("Publishes an item", () => {
-    const { models, search, items, publishings, publishItem } = awaitRequests();
+    const { items, publishItem, publishings } = awaitRequests();
     cy.visit(
       `/content/${Cypress.env("modelZUID")}/${CONTENT_ITEMS?.[4]?.meta?.ZUID}`
     );
 
     // Apply extended timeout for potentially slow-loading item and publishing data
-    cy.wait([models, search, items, publishings], { requestTimeout });
+    cy.wait([items, publishings], { requestTimeout });
 
     cy.getBySelector("PublishButton").should("exist").should("be.enabled");
-    cy.getBySelector("PublishButton").click();
+    cy.getBySelector("PublishButton").trigger("click");
 
     cy.getBySelector("ConfirmPublishModal")
       .should("exist")
       .within(() => {
         cy.getBySelector("ConfirmPublishButton").should("exist");
-        cy.getBySelector("ConfirmPublishButton").click();
+        cy.getBySelector("ConfirmPublishButton").trigger("click");
       });
 
     cy.wait(publishItem);
@@ -213,23 +239,27 @@ describe("Actions in content editor", () => {
   });
 
   it("Unpublishes an item", () => {
-    cy.get(`[data-cy="field:text"]`).find("input").click();
-    const { deletePublishedItem, publishings } = awaitRequests();
+    const { items, deletePublishedItem, publishings } = awaitRequests();
+    cy.visit(
+      `/content/${Cypress.env("modelZUID")}/${CONTENT_ITEMS?.[4]?.meta?.ZUID}`
+    );
+    cy.wait([items, publishings], { requestTimeout });
+
     cy.getBySelector("PublishMenuButton").should("exist").should("be.enabled");
-    cy.getBySelector("PublishMenuButton").click();
+    cy.getBySelector("PublishMenuButton").trigger("click");
 
     cy.getBySelector("publishingMenu")
       .should("exist")
       .within(() => {
         cy.getBySelector("UnpublishContentButton").should("exist");
-        cy.getBySelector("UnpublishContentButton").click();
+        cy.getBySelector("UnpublishContentButton").trigger("click");
       });
 
     cy.getBySelector("unpublishDialog")
       .should("exist")
       .within(() => {
         cy.getBySelector("ConfirmUnpublishButton").should("exist");
-        cy.getBySelector("ConfirmUnpublishButton").click();
+        cy.getBySelector("ConfirmUnpublishButton").trigger("click");
       });
 
     cy.wait(deletePublishedItem);
@@ -239,29 +269,29 @@ describe("Actions in content editor", () => {
   });
 
   it("Schedules a Publish for an item", () => {
-    const { models, search, items, publishings, publishItem } = awaitRequests();
+    const { items, publishItem, publishings } = awaitRequests();
     cy.visit(
       `/content/${Cypress.env("modelZUID")}/${CONTENT_ITEMS?.[4]?.meta?.ZUID}`
     );
 
     // Apply extended timeout for potentially slow-loading item and publishing data
-    cy.wait([models, search, items, publishings], { requestTimeout });
+    cy.wait([items, publishings], { requestTimeout });
 
     cy.getBySelector("PublishMenuButton").should("exist").should("be.enabled");
-    cy.getBySelector("PublishMenuButton").click();
+    cy.getBySelector("PublishMenuButton").trigger("click");
 
     cy.getBySelector("publishingMenu")
       .should("exist")
       .within(() => {
         cy.getBySelector("PublishScheduleButton").should("exist");
-        cy.getBySelector("PublishScheduleButton").click();
+        cy.getBySelector("PublishScheduleButton").trigger("click");
       });
 
     cy.getBySelector("SchedulePublishModal")
       .should("exist")
       .within(() => {
         cy.getBySelector("SchedulePublishButton").should("exist");
-        cy.getBySelector("SchedulePublishButton").click();
+        cy.getBySelector("SchedulePublishButton").trigger("click");
       });
 
     cy.wait(publishItem);
@@ -274,20 +304,20 @@ describe("Actions in content editor", () => {
     const { deletePublishedItem, publishings } = awaitRequests();
 
     cy.getBySelector("PublishMenuButton").should("exist").should("be.enabled");
-    cy.getBySelector("PublishMenuButton").click();
+    cy.getBySelector("PublishMenuButton").trigger("click");
 
     cy.getBySelector("publishingMenu")
       .should("exist")
       .within(() => {
         cy.getBySelector("PublishScheduleButton").should("exist");
-        cy.getBySelector("PublishScheduleButton").click();
+        cy.getBySelector("PublishScheduleButton").trigger("click");
       });
 
     cy.getBySelector("SchedulePublishModal")
       .should("exist")
       .within(() => {
         cy.getBySelector("UnschedulePublishButton").should("exist");
-        cy.getBySelector("UnschedulePublishButton").click();
+        cy.getBySelector("UnschedulePublishButton").trigger("click");
       });
 
     cy.wait(deletePublishedItem);
@@ -298,20 +328,20 @@ describe("Actions in content editor", () => {
 
   it("Only allows future dates to be scheduled for publish", () => {
     cy.getBySelector("PublishMenuButton").should("exist").should("be.enabled");
-    cy.getBySelector("PublishMenuButton").click();
+    cy.getBySelector("PublishMenuButton").trigger("click");
 
     cy.getBySelector("publishingMenu")
       .should("exist")
       .within(() => {
         cy.getBySelector("PublishScheduleButton").should("exist");
-        cy.getBySelector("PublishScheduleButton").click();
+        cy.getBySelector("PublishScheduleButton").trigger("click");
       });
 
     cy.getBySelector("PublishScheduleModal")
       .should("exist")
       .within(() => {
         cy.getBySelector("datePickerInputField").should("exist");
-        cy.getBySelector("datePickerInputField").click();
+        cy.getBySelector("datePickerInputField").trigger("click");
       });
 
     cy.get(
@@ -323,7 +353,7 @@ describe("Actions in content editor", () => {
     ).should("not.be.disabled");
 
     cy.getBySelector("CancelSchedulePublishButton").should("exist");
-    cy.getBySelector("CancelSchedulePublishButton").click();
+    cy.getBySelector("CancelSchedulePublishButton").trigger("click");
   });
 
   it("Fills in default values for a new item", () => {
@@ -331,20 +361,20 @@ describe("Actions in content editor", () => {
       cy.visit(`/content/${Cypress.env("modelZUID")}/new`);
     });
 
-    cy.get('[data-cy="field:text"]')
+    cy.getBySelector(`"field:text"`)
       .find("input")
       .should(
         "have.value",
         FIELDS.find((field) => field.name === "text").settings.defaultValue
       );
-    cy.get('[data-cy="field:textarea"]')
+    cy.getBySelector(`"field:textarea"`)
       .find("textarea")
       .first()
       .should(
         "have.value",
         FIELDS.find((field) => field.name === "textarea").settings.defaultValue
       );
-    cy.get('[data-cy="field:markdown"]')
+    cy.getBySelector(`"field:markdown"`)
       .find("textarea")
       .should(
         "have.value",
@@ -357,7 +387,7 @@ describe("Actions in content editor", () => {
       cy.visit(`/content/${Cypress.env("modelZUID")}/new`);
     });
 
-    cy.get('[data-cy="field:text"]')
+    cy.getBySelector(`"field:text"`)
       .find("input")
       .click()
       .clear()
@@ -371,7 +401,7 @@ describe("Actions in content editor", () => {
       .type(TEST_DATA?.new);
     cy.getBySelector("CreateItemSaveButton").click();
 
-    cy.get("[data-cy=toast]")
+    cy.getBySelector("toast")
       .contains(`Created Item: ${TEST_DATA?.new}`, { matchCase: false })
       .should("exist");
   });
@@ -434,14 +464,14 @@ describe("Actions in content editor", () => {
     // Increase timeout to account for longer AI generation times.
     const aiDataGenerationTimeout = { timeout: 60_000 };
 
-    cy.get('[data-cy="field:text"]')
+    cy.getBySelector(`"field:text"`)
       .find("input")
       .click()
       .clear()
       .type(TEST_DATA?.ai);
 
     // Generate AI content for markdown
-    cy.get(`[data-cy="field:markdown"]`).find("[data-cy='AIOpen']").click();
+    cy.getBySelector(`"field:markdown"`).find("[data-cy='AIOpen']").click();
     cy.getBySelector("AITopicField").type("biking");
     cy.getBySelector("AIAudienceField").type("young adults");
     cy.getBySelector("AIGenerate").click();
@@ -449,7 +479,7 @@ describe("Actions in content editor", () => {
     cy.get("[data-cy='AIApprove']", aiDataGenerationTimeout).click();
 
     // Generate AI content for wysiwyg_basic
-    cy.get(`[data-cy="field:wysiwyg_basic"]`)
+    cy.getBySelector(`"field:wysiwyg_basic"`)
       .find("[data-cy='AIOpen']")
       .click();
     cy.getBySelector("AITopicField").type("biking");
@@ -491,9 +521,7 @@ describe("Actions in content editor", () => {
 });
 
 function awaitRequests() {
-  cy.intercept("GET", "/v1/content/models**").as("models");
-  cy.intercept("GET", "/v1/search/items*").as("search");
-  cy.intercept("GET", "/v1/content/models/*/items/*/publishings*").as(
+  cy.intercept("GET", "/v1/content/models/*/items/*/publishings").as(
     "publishings"
   );
   cy.intercept("GET", "/v1/content/models/*/items*").as("items");
@@ -505,8 +533,6 @@ function awaitRequests() {
   );
 
   return {
-    models: "@models",
-    search: "@search",
     publishings: "@publishings",
     items: "@items",
     publishItem: "@publishItem",
