@@ -903,6 +903,7 @@ const PublishingMenu = ({
   }>();
   return (
     <Menu
+      data-cy="publishingMenu"
       onClose={() => onClose()}
       anchorOrigin={{
         vertical: "bottom",
