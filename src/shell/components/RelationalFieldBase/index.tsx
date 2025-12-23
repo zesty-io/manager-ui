@@ -6,7 +6,6 @@ import {
   KeyboardArrowDownRounded,
   AddRounded,
 } from "@mui/icons-material";
-import { useDispatch } from "react-redux";
 
 import { ActiveItem } from "./ActiveItem";
 import { FieldSelectorDialog } from "./FieldSelectorDialog";
@@ -14,7 +13,6 @@ import {
   useGetContentModelQuery,
   useGetContentModelFieldsQuery,
 } from "../../services/instance";
-import { fetchItems } from "../../store/content";
 import { ActiveItemLoading } from "./ActiveItem/ActiveItemLoading";
 import { CreateNewItemDialog } from "./CreateNewItemDialog";
 import { useParams } from "../../hooks/useParams";
@@ -41,7 +39,6 @@ export const RelationalFieldBase = ({
   onChange,
   multiselect,
 }: RelationalFieldBaseProps) => {
-  const dispatch = useDispatch();
   const [params] = useParams();
   const [itemZUIDs, setItemZUIDs] = useState<string[]>(value?.split(",") || []);
   const [showAll, setShowAll] = useState(false);
