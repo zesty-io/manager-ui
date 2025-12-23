@@ -72,12 +72,6 @@ export const RelationalFieldBase = ({
   }, [value]);
 
   useEffect(() => {
-    if (!!relatedModelZUID) {
-      dispatch(fetchItems(relatedModelZUID));
-    }
-  }, [relatedModelZUID]);
-
-  useEffect(() => {
     if (!!newlyCreatedItemZUID && initiatorZUID === fieldZUID) {
       const newItemZUIDs = [...itemZUIDs, newlyCreatedItemZUID];
 
