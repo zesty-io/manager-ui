@@ -29,6 +29,7 @@ import SchemaApp from "../../../apps/schema/src";
 import SeoApp from "../../../apps/seo/src";
 import SettingsApp from "../../../apps/settings/src";
 import HomeApp from "../../../apps/home";
+import StudioApp from "../../../apps/studio";
 import MarketplaceApp from "../../../apps/marketplace/src";
 import { BlocksApp } from "../../../apps/blocks";
 import { AppState } from "../../store/types";
@@ -169,6 +170,14 @@ export default memo(function Shell() {
                               key={product}
                               path="/content"
                               component={ContentApp}
+                            />
+                          );
+                        case "studio":
+                          return (
+                            <Route
+                              key={product}
+                              path="/studio"
+                              component={StudioApp}
                             />
                           );
                         case "blocks":

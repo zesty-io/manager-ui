@@ -77,6 +77,8 @@ type ItemEditHeaderActionsProps = {
   onSave: () => void;
   hasError: boolean;
   isLoadingItem?: boolean;
+  modelZUIDOverride?: string;
+  itemZUIDOverride?: string;
 };
 
 export const ItemEditHeaderActions = ({
@@ -84,15 +86,19 @@ export const ItemEditHeaderActions = ({
   onSave,
   hasError,
   isLoadingItem,
+  modelZUIDOverride,
+  itemZUIDOverride,
 }: ItemEditHeaderActionsProps) => {
   const { modelZUID, itemZUID } = useParams<{
     modelZUID: string;
     itemZUID: string;
   }>();
+  const resolvedModelZUID = modelZUIDOverride || modelZUID;
+  const resolvedItemZUID = itemZUIDOverride || itemZUID;
   const { openChangeDialog } = useRedirectsDialog();
   const dispatch = useDispatch();
-  const canPublish = usePermission("PUBLISH", itemZUID);
-  const canUpdate = usePermission("UPDATE", itemZUID);
+  const canPublish = usePermission("PUBLISH", resolvedItemZUID);
+  const canUpdate = usePermission("UPDATE", resolvedItemZUID);
   const [publishMenu, setPublishMenu] = useState<null | HTMLElement>(null);
   const [publishAfterSave, setPublishAfterSave] = useState(false);
   const [unpublishDialogOpen, setUnpublishDialogOpen] = useState(false);
@@ -109,22 +115,22 @@ export const ItemEditHeaderActions = ({
   const [isCheckingPathUpdate, setIsCheckingPathUpdate] = useState(false);
   const item = useSelector(
     (state: AppState) =>
-      state.content[itemZUID] as ContentItemWithDirtyAndPublishing
+      state.content[resolvedItemZUID] as ContentItemWithDirtyAndPublishing
   );
   const items = useSelector((state: AppState) => state.content);
   const model = useSelector(
-    (state: AppState) => state.models[modelZUID]
+    (state: AppState) => state.models[resolvedModelZUID]
   ) as ContentModel;
   const { data: fields, isLoading: isLoadingFields } =
     useGetContentModelFieldsQuery(
-      { modelZUID },
+      { modelZUID: resolvedModelZUID },
       {
-        skip: !modelZUID,
+        skip: !resolvedModelZUID,
       }
     );
   const { data: users, isLoading: isLoadingUsers } = useGetUsersQuery();
   const { data: itemAudit, isLoading: isLoadingAudit } = useGetAuditsQuery({
-    affectedZUID: itemZUID,
+    affectedZUID: resolvedItemZUID,
   });
   const [createPublishing] = useCreateItemPublishingMutation();
   const [deleteItemPublishing, { isLoading: unpublishing }] =
@@ -133,8 +139,8 @@ export const ItemEditHeaderActions = ({
     (audit) => audit.action === 2 || audit.action === 1
   );
   const { data: itemPublishings, isFetching } = useGetItemPublishingsQuery({
-    modelZUID,
-    itemZUID,
+    modelZUID: resolvedModelZUID,
+    itemZUID: resolvedItemZUID,
   });
 
   const {
@@ -143,8 +149,8 @@ export const ItemEditHeaderActions = ({
     isLoading: isLoadingVersions,
     refetch: refetchVersions,
   } = useGetContentItemVersionsQuery({
-    modelZUID,
-    itemZUID,
+    modelZUID: resolvedModelZUID,
+    itemZUID: resolvedItemZUID,
   });
 
   const activePublishing = itemPublishings?.find(
@@ -153,8 +159,8 @@ export const ItemEditHeaderActions = ({
   const { data: statusLabels } = useGetWorkflowStatusLabelsQuery();
   const { data: itemWorkflowStatus, isLoading: isLoadingItemWorkflowStatus } =
     useGetItemWorkflowStatusQuery(
-      { itemZUID, modelZUID },
-      { skip: !itemZUID || !modelZUID }
+      { itemZUID: resolvedItemZUID, modelZUID: resolvedModelZUID },
+      { skip: !resolvedItemZUID || !resolvedModelZUID }
     );
 
   useEffect(() => {
@@ -343,8 +349,8 @@ export const ItemEditHeaderActions = ({
           // Delete main item's scheduled publishing if it exists
           itemState === ITEM_STATES.scheduled &&
             deleteItemPublishing({
-              modelZUID,
-              itemZUID,
+              modelZUID: resolvedModelZUID,
+              itemZUID: resolvedItemZUID,
               publishingZUID: item?.scheduling?.ZUID,
             }),
           // Delete related items' scheduled publishings if they exist
@@ -364,8 +370,8 @@ export const ItemEditHeaderActions = ({
         // Proceed with publishing
         const publishPromises = await Promise.allSettled([
           createPublishing({
-            modelZUID,
-            itemZUID,
+            modelZUID: resolvedModelZUID,
+            itemZUID: resolvedItemZUID,
             body: {
               version: item?.meta.version,
               publishAt: "now",
@@ -400,7 +406,7 @@ export const ItemEditHeaderActions = ({
         // Retain non rtk-query fetch of item publishing for legacy code
         await dispatch(
           fetchAllModelPublishings({
-            modelZUID,
+            modelZUID: resolvedModelZUID,
           })
         );
         refetchVersions();
@@ -422,12 +428,12 @@ export const ItemEditHeaderActions = ({
 
   const handleUnpublish = async () => {
     deleteItemPublishing({
-      modelZUID,
-      itemZUID,
+      modelZUID: resolvedModelZUID,
+      itemZUID: resolvedItemZUID,
       publishingZUID: activePublishing?.ZUID,
     }).then(() => {
       // Retain non rtk-query fetch of item publishing for legacy code
-      dispatch(fetchItemPublishing(modelZUID, itemZUID));
+      dispatch(fetchItemPublishing(resolvedModelZUID, resolvedItemZUID));
       setUnpublishDialogOpen(false);
     });
   };
@@ -786,6 +792,8 @@ export const ItemEditHeaderActions = ({
           setPublishAfterUnschedule(true);
         }}
         handlePublish={() => setIsConfirmPublishModalOpen(true)}
+        modelZUID={resolvedModelZUID}
+        itemZUID={resolvedItemZUID}
       />
       {unpublishDialogOpen && (
         <UnpublishDialog
@@ -882,6 +890,8 @@ type PublishingMenuProps = {
   setScheduledPublishDialogOpen: (value: boolean) => void;
   setPublishAfterUnschedule: () => void;
   handlePublish: () => void;
+  modelZUID: string;
+  itemZUID: string;
 };
 
 const PublishingMenu = ({
@@ -895,12 +905,10 @@ const PublishingMenu = ({
   setScheduledPublishDialogOpen,
   setPublishAfterUnschedule,
   handlePublish,
+  modelZUID,
+  itemZUID,
 }: PublishingMenuProps) => {
   const history = useHistory();
-  const { modelZUID, itemZUID } = useParams<{
-    modelZUID: string;
-    itemZUID: string;
-  }>();
   return (
     <Menu
       onClose={() => onClose()}

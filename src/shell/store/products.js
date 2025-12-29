@@ -1,6 +1,6 @@
 export function products(
   state = {
-    products: ["content", "media"],
+    products: ["content", "studio", "media"],
     isLoadingProducts: true,
   },
   action
@@ -34,6 +34,7 @@ export function fetchProducts() {
         data = [
           "launchpad",
           "content",
+          "studio",
           "blocks",
           "schema",
           "media",
@@ -51,6 +52,7 @@ export function fetchProducts() {
         data = [
           "launchpad",
           "content",
+          "studio",
           "blocks",
           "schema",
           "media",
@@ -67,6 +69,7 @@ export function fetchProducts() {
         data = [
           "launchpad",
           "content",
+          "studio",
           "blocks",
           "media",
           "leads",
@@ -79,6 +82,7 @@ export function fetchProducts() {
         data = [
           "launchpad",
           "content",
+          "studio",
           "blocks",
           "media",
           "leads",
@@ -88,7 +92,7 @@ export function fetchProducts() {
         ];
         break;
       case "31-71cfc74-c0ntr1b0t0r":
-        data = ["launchpad", "content", "blocks", "media", "apps"];
+        data = ["launchpad", "content", "studio", "blocks", "media", "apps"];
         break;
       case "31-71cfc74-m3d14":
         data = ["media"];
@@ -101,6 +105,7 @@ export function fetchProducts() {
       data = [
         "launchpad",
         "content",
+        "studio",
         "blocks",
         "schema",
         "media",

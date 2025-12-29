@@ -1,0 +1,750 @@
+import { ArrowBackRounded, CloseRounded } from "@mui/icons-material";
+import {
+  Box,
+  Button,
+  Dialog,
+  Divider,
+  Drawer,
+  IconButton,
+  Stack,
+  Typography,
+} from "@mui/material";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useHistory, useLocation } from "react-router";
+import { cloneDeep } from "lodash";
+import { AppState } from "../../../../../../shell/store/types";
+import {
+  fetchAllModelPublishings,
+  fetchItem,
+  saveItem,
+} from "../../../../../../shell/store/content";
+import { fetchModel } from "../../../../../../shell/store/models";
+import { fetchAuditTrailDrafting } from "../../../../../../shell/store/logs";
+import { notify } from "../../../../../../shell/store/notifications";
+import { useGetContentModelFieldsQuery } from "../../../../../../shell/services/instance";
+import { ItemEditHeaderActions } from "./components/ItemEditHeader/ItemEditHeaderActions";
+import { VersionSelector } from "./components/ItemEditHeader/VersionSelector";
+import { LanguageSelector } from "./components/ItemEditHeader/LanguageSelector";
+import { ContentInfo } from "./Content/Actions/Widgets/ContentInfo";
+import Editor from "../../components/Editor/Editor";
+import { FieldError } from "../../components/Editor/FieldError";
+import RedirectsDialogContextProvider from "../../../../../seo/src/app/components/RedirectsDialogProvider";
+
+const drawerWidth = 440;
+
+type StudioWrapperProps = {
+  modelZUID: string;
+  itemZUID: string;
+  path?: string;
+};
+
+type SelectedElement = {
+  id: string;
+  dataset: Record<string, string>;
+  weType?: string;
+  itemZuid?: string;
+  modelZuid?: string;
+};
+
+export const StudioWrapper = ({
+  modelZUID,
+  itemZUID,
+  path,
+}: StudioWrapperProps) => {
+  const dispatch = useDispatch();
+
+  const iframeRef = useRef<HTMLIFrameElement | null>(null);
+  const [selectedElement, setSelectedElement] =
+    useState<SelectedElement | null>(null);
+  const [panelMode, setPanelMode] = useState<"info" | "edit">("info");
+  const [studioSaving, setStudioSaving] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, any>>({});
+  const [saveClicked, setSaveClicked] = useState(false);
+  const fieldErrorRef = useRef<any>(null);
+  const [isFetchingItem, setIsFetchingItem] = useState(false);
+  const [isFetchingModel, setIsFetchingModel] = useState(false);
+  const history = useHistory();
+  const location = useLocation();
+
+  const instance = useSelector((state: AppState) => state.instance);
+  const previewLock = useSelector((state: AppState) =>
+    state.settings.instance.find(
+      (setting: any) => setting.key === "preview_lock_password" && setting.value
+    )
+  );
+  const contentItems = useSelector((state: AppState) => state.content);
+  const modelsState = useSelector((state: AppState) => state.models);
+  const item = contentItems[itemZUID];
+  const model = modelsState[modelZUID];
+
+  const iframeSrc = useMemo(() => {
+    const path = item?.web?.path || "/";
+    const instanceHash = instance?.randomHashID ?? "";
+    // @ts-expect-error Config is provided globally at runtime
+    const baseUrl = `${CONFIG.URL_PREVIEW_PROTOCOL}${instanceHash}${CONFIG.URL_PREVIEW}${path}`;
+    const queryParams = new URLSearchParams();
+
+    if (previewLock) {
+      queryParams.set("zpw", previewLock.value);
+    }
+
+    const query = queryParams.toString();
+
+    return query ? `${baseUrl}?${query}` : baseUrl;
+  }, [instance?.randomHashID, item?.web?.path, previewLock]);
+  const selectedItemZUID = selectedElement?.itemZuid || itemZUID;
+  const selectedModelZUID = selectedElement?.modelZuid || modelZUID;
+
+  const selectedItem = selectedItemZUID
+    ? contentItems[selectedItemZUID] || null
+    : null;
+
+  const selectedModel = selectedModelZUID
+    ? modelsState[selectedModelZUID] || null
+    : null;
+
+  const { data: fields = [] as any[], isFetching: isFetchingFields } =
+    useGetContentModelFieldsQuery({
+      modelZUID: selectedModelZUID,
+    });
+
+  const activeFields = useMemo(() => {
+    if (fields?.length) {
+      return fields.filter(
+        (field: any) => !field.deletedAt && !["og_image"].includes(field.name)
+      );
+    }
+
+    return [];
+  }, [fields]);
+
+  const hasErrors = useMemo(() => {
+    const errorList = Object.values(fieldErrors)
+      ?.map((error) => {
+        return Object.values(error) ?? [];
+      })
+      ?.flat()
+      .some((error) => !!error);
+
+    if (!errorList) {
+      setSaveClicked(false);
+    }
+
+    return errorList;
+  }, [fieldErrors]);
+
+  const onUpdateFieldErrors = useCallback((errors: Record<string, any>) => {
+    setFieldErrors(errors);
+  }, []);
+
+  useEffect(() => {
+    if (!item) {
+      setIsFetchingItem(true);
+      Promise.resolve(dispatch(fetchItem(modelZUID, itemZUID))).finally(() =>
+        setIsFetchingItem(false)
+      );
+    } else {
+      setIsFetchingItem(false);
+    }
+  }, [dispatch, item, itemZUID, modelZUID]);
+
+  useEffect(() => {
+    if (!model) {
+      setIsFetchingModel(true);
+      Promise.resolve(dispatch(fetchModel(modelZUID))).finally(() =>
+        setIsFetchingModel(false)
+      );
+    } else {
+      setIsFetchingModel(false);
+    }
+  }, [dispatch, model, modelZUID]);
+
+  const editorItem = selectedItem || null;
+  const editorModel = selectedModel || null;
+
+  const isSelectedItemLoading =
+    isFetchingItem ||
+    isFetchingModel ||
+    isFetchingFields ||
+    !editorItem ||
+    !editorModel ||
+    (selectedElement?.itemZuid &&
+      selectedElement.itemZuid !== itemZUID &&
+      !selectedItem);
+  const isSaving = studioSaving;
+
+  const selectedItemLabel = useMemo(
+    () =>
+      selectedItem?.web?.metaTitle ||
+      selectedItem?.web?.metaLinkText ||
+      selectedItemZUID,
+    [
+      selectedItem?.web?.metaLinkText,
+      selectedItem?.web?.metaTitle,
+      selectedItemZUID,
+    ]
+  );
+
+  const selectedFieldKey = selectedElement?.dataset?.weFieldKey;
+  const selectedFieldValue = selectedFieldKey
+    ? editorItem?.data?.[selectedFieldKey]
+    : undefined;
+  const activeVersion = editorItem?.meta?.version ?? 0;
+
+  const handleClose = () => {
+    if (location.pathname.startsWith("/studio")) {
+      history.push("/launchpad");
+    } else {
+      history.push("/launchpad");
+    }
+  };
+
+  const postCommandToBridge = useCallback(
+    (cmd: {
+      action: string;
+      id?: string;
+      className?: string;
+      style?: Record<string, string>;
+      css?: string;
+      value?: string;
+      html?: string; // NEW: for wysiwyg_advanced
+    }) => {
+      const iframeWindow = iframeRef.current?.contentWindow;
+      if (!iframeWindow) return;
+
+      iframeWindow.postMessage(
+        {
+          source: "zesty-studio-host",
+          message: {
+            type: "COMMAND",
+            payload: cmd,
+          },
+        },
+        "*" // TODO: restrict to preview origin in prod
+      );
+    },
+    []
+  );
+
+  const clearSelection = useCallback(() => {
+    if (selectedElement?.id) {
+      postCommandToBridge({
+        action: "removeClass",
+        id: selectedElement.id,
+        className: "studio-selected",
+      });
+      postCommandToBridge({
+        action: "disableEditing",
+        id: selectedElement.id,
+      });
+    }
+    setSelectedElement(null);
+    setPanelMode("info");
+  }, [postCommandToBridge, selectedElement]);
+
+  // Sync selected field value -> iframe for text / textarea / wysiwyg_advanced
+  useEffect(() => {
+    if (!selectedElement?.id || !selectedFieldKey || !selectedElement.weType) {
+      return;
+    }
+
+    const weType = selectedElement.weType;
+
+    const nextValue =
+      typeof selectedFieldValue === "string"
+        ? selectedFieldValue
+        : selectedFieldValue == null
+        ? ""
+        : String(selectedFieldValue);
+
+    if (["text", "textarea"].includes(weType)) {
+      postCommandToBridge({
+        action: "setText",
+        id: selectedElement.id,
+        value: nextValue,
+      });
+    } else if (weType === "wysiwyg_advanced") {
+      postCommandToBridge({
+        action: "setHtml",
+        id: selectedElement.id,
+        html: nextValue,
+      });
+    }
+  }, [
+    postCommandToBridge,
+    selectedElement?.id,
+    selectedElement?.weType,
+    selectedFieldKey,
+    selectedFieldValue,
+  ]);
+
+  const handleSave = useCallback(async () => {
+    if (!selectedItemZUID) return;
+    setSaveClicked(true);
+    setStudioSaving(true);
+
+    try {
+      const res = (await dispatch(
+        saveItem({
+          itemZUID: selectedItemZUID,
+          skipContentItemValidation: false,
+        })
+      )) as any;
+
+      if (res?.err === "VALIDATION_ERROR") {
+        const errors = cloneDeep(fieldErrors);
+
+        res?.missingRequired?.forEach((field: any) => {
+          errors[field.name] = {
+            ...(errors[field.name] ?? {}),
+            MISSING_REQUIRED: true,
+          };
+        });
+
+        res?.lackingCharLength?.forEach((field: any) => {
+          errors[field.name] = {
+            ...(errors[field.name] ?? {}),
+            LACKING_MINLENGTH: field.settings?.minCharLimit,
+          };
+        });
+
+        res?.regexPatternMismatch?.forEach((field: any) => {
+          errors[field.name] = {
+            ...(errors[field.name] ?? {}),
+            REGEX_PATTERN_MISMATCH: field.settings?.regexMatchErrorMessage,
+          };
+        });
+
+        res?.regexRestrictPatternMatch?.forEach((field: any) => {
+          errors[field.name] = {
+            ...(errors[field.name] ?? {}),
+            REGEX_RESTRICT_PATTERN_MATCH:
+              field.settings?.regexRestrictErrorMessage,
+          };
+        });
+
+        res?.invalidRange?.forEach((field: any) => {
+          errors[field.name] = {
+            ...(errors[field.name] ?? {}),
+            INVALID_RANGE: `Value must be between ${field.settings?.minValue} and ${field.settings?.maxValue}`,
+          };
+        });
+
+        res?.invalidBlockVariantValue?.forEach((field: any) => {
+          errors[field.name] = {
+            ...(errors[field.name] ?? {}),
+            INVALID_BLOCK_VARIANT: true,
+          };
+        });
+
+        setFieldErrors(errors);
+
+        dispatch(
+          notify({
+            kind: "error",
+            message: `Cannot Save: ${selectedItemLabel} - missing or invalid data`,
+          })
+        );
+        return res;
+      }
+
+      if (res?.status === 400) {
+        if (res.error?.toLowerCase()?.includes("data too long")) {
+          const dataLongErrorMatch = res.error?.match(/'([^']*)'/);
+
+          if (dataLongErrorMatch?.[1]) {
+            const fieldName = dataLongErrorMatch[1];
+            const errors = cloneDeep(fieldErrors);
+            const oneToManyFieldNames = activeFields?.reduce(
+              (names: string[], currItem: any) => {
+                if (currItem?.datatype === "one_to_many") {
+                  return [...names, currItem?.name];
+                }
+
+                return names;
+              },
+              []
+            );
+
+            errors[fieldName] = {
+              ...(errors[fieldName] ?? {}),
+              CUSTOM_ERROR: oneToManyFieldNames?.includes(fieldName)
+                ? "Cannot save field. Please reduce the total number of items selected."
+                : "Cannot save field. Value is too long.",
+            };
+
+            setFieldErrors(errors);
+          }
+        }
+
+        dispatch(
+          notify({
+            kind: "error",
+            message: `Cannot Save: ${selectedItemLabel}${
+              res.error ? ` - ${res.error}` : ""
+            }`,
+          })
+        );
+        return res;
+      }
+
+      // @ts-ignore
+      if (res?.status === 200) {
+        dispatch(
+          notify({
+            kind: "success",
+            message: `Item Saved: ${selectedItemLabel}`,
+          })
+        );
+
+        await Promise.all([
+          dispatch(fetchAuditTrailDrafting(selectedItemZUID)),
+          dispatch(fetchAllModelPublishings({ modelZUID: selectedModelZUID })),
+        ]);
+      }
+
+      return res;
+    } catch (err) {
+      dispatch(
+        notify({
+          kind: "error",
+          message: `Cannot Save: ${selectedItemLabel}`,
+        })
+      );
+      throw err;
+    } finally {
+      setStudioSaving(false);
+    }
+  }, [
+    activeFields,
+    dispatch,
+    fieldErrors,
+    selectedItemLabel,
+    selectedItemZUID,
+    selectedModelZUID,
+  ]);
+
+  useEffect(() => {
+    if (!selectedElement?.itemZuid || !selectedElement?.modelZuid) {
+      return;
+    }
+
+    if (
+      selectedElement.itemZuid !== itemZUID &&
+      !contentItems[selectedElement.itemZuid]
+    ) {
+      setIsFetchingItem(true);
+      Promise.resolve(
+        dispatch(fetchItem(selectedElement.modelZuid, selectedElement.itemZuid))
+      ).finally(() => setIsFetchingItem(false));
+    }
+
+    if (
+      selectedElement.modelZuid !== modelZUID &&
+      !modelsState[selectedElement.modelZuid]
+    ) {
+      setIsFetchingModel(true);
+      Promise.resolve(dispatch(fetchModel(selectedElement.modelZuid))).finally(
+        () => setIsFetchingModel(false)
+      );
+    }
+  }, [
+    contentItems,
+    dispatch,
+    itemZUID,
+    modelZUID,
+    modelsState,
+    selectedElement,
+  ]);
+
+  useEffect(() => {
+    function handleMessage(evt: MessageEvent<any>) {
+      const data = evt.data;
+      if (!data || data.source !== "zesty-webengine-bridge") {
+        return;
+      }
+
+      const msg = data.message;
+      if (!msg) return;
+
+      if (msg.type === "BRIDGE_READY") {
+        postCommandToBridge({
+          action: "injectCss",
+          css: `
+            we[data-we-type] {
+              position: relative;
+            }
+
+            /* WYSIWYG regions should behave like block containers */
+            we[data-we-type="wysiwyg_advanced"] {
+              display: block;
+            }
+            .studio-hover {
+              outline: 1px dashed #00bcd4;
+              outline-offset: 2px;
+            }
+            .studio-selected {
+              outline: 2px solid #ff9800;
+              outline-offset: 2px;
+              background-color: rgba(255,152,0,0.06);
+            }
+          `,
+        });
+        return;
+      }
+
+      if (msg.type === "DOM_EVENT") {
+        const { eventType, element, value } = msg;
+        if (!element) return;
+
+        const id: string | undefined = element.id;
+        const dataset: Record<string, string> =
+          (element.dataset as Record<string, string>) || {};
+        const weType = dataset.weType;
+        const itemZuid = dataset.weItemZuid;
+        const modelZuid = dataset.weModelZuid;
+
+        switch (eventType) {
+          case "click": {
+            if (!id) return;
+
+            if (selectedElement?.id && selectedElement.id !== id) {
+              postCommandToBridge({
+                action: "removeClass",
+                id: selectedElement.id,
+                className: "studio-selected",
+              });
+              postCommandToBridge({
+                action: "disableEditing",
+                id: selectedElement.id,
+              });
+            }
+
+            setSelectedElement({
+              id,
+              dataset,
+              weType,
+              itemZuid,
+              modelZuid,
+            });
+            setPanelMode("edit");
+            postCommandToBridge({
+              action: "addClass",
+              id,
+              className: "studio-selected",
+            });
+
+            // Enable inline editing for text / textarea / wysiwyg_advanced
+            if (["text", "textarea", "wysiwyg_advanced"].includes(weType)) {
+              postCommandToBridge({
+                action: "enableEditing",
+                id,
+              });
+            }
+
+            break;
+          }
+
+          case "mouseover": {
+            if (!id) return;
+            postCommandToBridge({
+              action: "addClass",
+              id,
+              className: "studio-hover",
+            });
+            break;
+          }
+
+          case "mouseout": {
+            if (!id) return;
+            postCommandToBridge({
+              action: "removeClass",
+              id,
+              className: "studio-hover",
+            });
+            break;
+          }
+
+          case "input": {
+            if (!id) return;
+            // value comes from bridge:
+            // - text/textarea: normalized text
+            // - wysiwyg_advanced: innerHTML
+            const nextValue: string = typeof value === "string" ? value : "";
+
+            dispatch({
+              type: "SET_ITEM_DATA",
+              itemZUID: dataset.weItemZuid,
+              key: dataset.weFieldKey,
+              // convert empty strings to null if you want later
+              value: nextValue,
+            });
+            break;
+          }
+
+          default:
+            break;
+        }
+      }
+    }
+
+    window.addEventListener("message", handleMessage);
+    return () => {
+      window.removeEventListener("message", handleMessage);
+    };
+  }, [postCommandToBridge, selectedElement, dispatch]);
+
+  const renderInfoPanel = () => (
+    <Box display="flex" flexDirection="column" gap={2}>
+      <ContentInfo
+        itemZUID={selectedItemZUID}
+        modelZUID={selectedModelZUID}
+        isLoadingItem={isSelectedItemLoading}
+      />
+    </Box>
+  );
+
+  const renderEditorPanel = () => (
+    <Box display="flex" flexDirection="column" gap={2}>
+      {selectedItemZUID === itemZUID && saveClicked && hasErrors && (
+        <FieldError
+          ref={fieldErrorRef}
+          errors={fieldErrors}
+          fields={activeFields}
+        />
+      )}
+      <Editor
+        // @ts-ignore
+        active={selectedElement?.id || undefined}
+        item={editorItem}
+        model={editorModel}
+        onSave={handleSave}
+        itemZUID={selectedItemZUID}
+        modelZUID={selectedModelZUID}
+        onUpdateFieldErrors={onUpdateFieldErrors}
+        fieldErrors={fieldErrors}
+        isLoadingItem={isSelectedItemLoading}
+      />
+    </Box>
+  );
+
+  return (
+    <Dialog
+      open
+      fullScreen
+      onClose={handleClose}
+      PaperProps={{
+        sx: {
+          overflow: "hidden",
+          bgcolor: "grey.900",
+        },
+      }}
+    >
+      <Box display="flex" height="100%" width="100%">
+        <Box
+          flex="1"
+          minWidth={0}
+          ref={iframeRef}
+          component="iframe"
+          src={iframeSrc}
+          sx={{
+            border: "none",
+            height: "100%",
+            bgcolor: "grey.900",
+          }}
+        />
+        <Drawer
+          variant="permanent"
+          anchor="right"
+          PaperProps={{
+            sx: {
+              position: "relative",
+              width: drawerWidth,
+              boxSizing: "border-box",
+              borderLeft: (theme) => `1px solid ${theme.palette.border}`,
+            },
+          }}
+        >
+          <Box
+            height="100%"
+            display="flex"
+            flexDirection="column"
+            p={3}
+            gap={2}
+          >
+            <Stack
+              direction="row"
+              alignItems="center"
+              justifyContent="space-between"
+              spacing={1}
+            >
+              <Stack direction="row" alignItems="center" spacing={1}>
+                {panelMode === "edit" ? (
+                  <IconButton
+                    aria-label="Back to info"
+                    onClick={clearSelection}
+                    disabled={isSaving}
+                    size="small"
+                  >
+                    <ArrowBackRounded />
+                  </IconButton>
+                ) : (
+                  <Box sx={{ width: 32 }} />
+                )}
+                <Typography variant="subtitle1" fontWeight="600">
+                  Studio
+                </Typography>
+              </Stack>
+              <Stack direction="row" gap={1} alignItems="center">
+                {panelMode === "edit" ? (
+                  <RedirectsDialogContextProvider>
+                    <ItemEditHeaderActions
+                      saving={isSaving}
+                      onSave={handleSave}
+                      hasError={hasErrors}
+                      isLoadingItem={isSelectedItemLoading}
+                      modelZUIDOverride={selectedModelZUID}
+                      itemZUIDOverride={selectedItemZUID}
+                    />
+                  </RedirectsDialogContextProvider>
+                ) : (
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    onClick={() => setPanelMode("edit")}
+                    disabled={isSaving}
+                  >
+                    Edit content
+                  </Button>
+                )}
+                <IconButton
+                  aria-label="Close Studio preview"
+                  onClick={handleClose}
+                  size="small"
+                >
+                  <CloseRounded />
+                </IconButton>
+              </Stack>
+            </Stack>
+            <Stack direction="row" alignItems="center" gap={1}>
+              {/* <LanguageSelector
+                modelZUIDOverride={selectedModelZUID}
+                itemZUIDOverride={selectedItemZUID}
+              /> */}
+              <VersionSelector
+                activeVersion={activeVersion}
+                modelZUIDOverride={selectedModelZUID}
+                itemZUIDOverride={selectedItemZUID}
+              />
+            </Stack>
+            <Divider />
+            <Box flex="1" overflow="auto" pr={1}>
+              {panelMode === "edit" ? renderEditorPanel() : renderInfoPanel()}
+            </Box>
+          </Box>
+        </Drawer>
+      </Box>
+    </Dialog>
+  );
+};

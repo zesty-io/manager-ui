@@ -178,6 +178,17 @@ export const instanceApi = createApi({
       query: (ZUID) => `search/items?q=${ZUID}&order=created&dir=DESC&limit=1`,
       transformResponse: (response: { data: any[] }) => response?.data?.[0],
     }),
+    getContentItemByPath: builder.query<ContentItem, string>({
+      query: (path) => ({
+        url: `search/items`,
+        params: {
+          q: "/page/",
+          limit: 1,
+        },
+      }),
+      transformResponse: (response: { data: any[] }) => response?.data?.[0],
+      keepUnusedDataFor: 0,
+    }),
     getContentItems: builder.query<any, any[]>({
       async queryFn(args, _queryApi, _extraOptions, fetchWithBQ) {
         try {
@@ -914,6 +925,7 @@ export const {
   useCreateItemPublishingMutation,
   useDeleteItemPublishingMutation,
   useGetContentItemQuery,
+  useGetContentItemByPathQuery,
   useGetContentItemsQuery,
   useGetContentModelQuery,
   useGetContentModelsQuery,

@@ -24,9 +24,15 @@ const DEFAULT_LIST_HEIGHT = 540;
 
 type VersionSelectorProps = {
   activeVersion: number;
+  modelZUIDOverride?: string;
+  itemZUIDOverride?: string;
 };
 export const VersionSelector = memo(
-  ({ activeVersion }: VersionSelectorProps) => {
+  ({
+    activeVersion,
+    modelZUIDOverride,
+    itemZUIDOverride,
+  }: VersionSelectorProps) => {
     const dispatch = useDispatch();
     const listRef = useRef(null);
     const rowHeights = useRef(null);
@@ -39,28 +45,30 @@ export const VersionSelector = memo(
       modelZUID: string;
       itemZUID: string;
     }>();
+    const resolvedModelZUID = modelZUIDOverride || modelZUID;
+    const resolvedItemZUID = itemZUIDOverride || itemZUID;
     const { data: statusLabels, isLoading: isLoadingStatusLabels } =
       useGetWorkflowStatusLabelsQuery();
     const { data: itemWorkflowStatus, isLoading: isLoadingItemWorkflowStatus } =
       useGetItemWorkflowStatusQuery(
-        { itemZUID, modelZUID },
-        { skip: !itemZUID || !modelZUID }
+        { itemZUID: resolvedItemZUID, modelZUID: resolvedModelZUID },
+        { skip: !resolvedItemZUID || !resolvedModelZUID }
       );
     const { data: itemPublishings, isLoading: isLoadingItemPublishings } =
       useGetItemPublishingsQuery(
         {
-          modelZUID,
-          itemZUID,
+          modelZUID: resolvedModelZUID,
+          itemZUID: resolvedItemZUID,
         },
-        { skip: !modelZUID || !itemZUID }
+        { skip: !resolvedModelZUID || !resolvedItemZUID }
       );
     const { data: versions, isLoading: isLoadingVersions } =
       useGetContentItemVersionsQuery(
         {
-          modelZUID,
-          itemZUID,
+          modelZUID: resolvedModelZUID,
+          itemZUID: resolvedItemZUID,
         },
-        { skip: !modelZUID || !itemZUID }
+        { skip: !resolvedModelZUID || !resolvedItemZUID }
       );
 
     const mappedVersions: Version[] = useMemo(() => {

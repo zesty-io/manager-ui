@@ -22,6 +22,7 @@ import {
   ManageAccountsRounded,
   ContentCopyRounded,
   WebRounded,
+  DesignServicesRounded,
 } from "@mui/icons-material";
 import { ShuffleVariant } from "@zesty-io/material";
 import { useSelector } from "react-redux";
@@ -82,6 +83,11 @@ const tabs = [
     icon: WebRounded,
     value: "freestyle",
   },
+  {
+    label: "Studio",
+    icon: DesignServicesRounded,
+    value: "studio",
+  },
 ];
 
 type HeaderProps = {
@@ -122,6 +128,15 @@ export const ItemEditHeader = ({
   );
 
   const headerTitle = item?.web?.metaTitle || item?.web?.metaLinkText || "";
+  const resolveStudioPath = () => {
+    if (item?.web?.path) return item.web.path;
+    if (item?.web?.pathPart === "zesty_home") return "/";
+    if (item?.web?.pathPart)
+      return item.web.pathPart.startsWith("/")
+        ? item.web.pathPart
+        : `/${item.web.pathPart}`;
+    return "/";
+  };
 
   return (
     <>
@@ -256,13 +271,20 @@ export const ItemEditHeader = ({
                     location.pathname.includes(tab.value)
                 )?.value || ""
               }
-              onChange={(event, value) =>
+              onChange={(event, value) => {
+                if (value === "studio") {
+                  history.push(
+                    `/studio?path=${encodeURIComponent(resolveStudioPath())}`
+                  );
+                  return;
+                }
+
                 history.push(
                   value
                     ? `/content/${modelZUID}/${itemZUID}/${value}`
                     : `/content/${modelZUID}/${itemZUID}`
-                )
-              }
+                );
+              }}
               sx={{
                 position: "relative",
                 top: "2px",

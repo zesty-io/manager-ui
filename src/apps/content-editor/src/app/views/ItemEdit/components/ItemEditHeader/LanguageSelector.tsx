@@ -28,7 +28,15 @@ const getCountryCode = (langCode: string) => {
   return countryCode;
 };
 
-export const LanguageSelector = () => {
+type LanguageSelectorProps = {
+  modelZUIDOverride?: string;
+  itemZUIDOverride?: string;
+};
+
+export const LanguageSelector = ({
+  modelZUIDOverride,
+  itemZUIDOverride,
+}: LanguageSelectorProps) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const location = useLocation();
@@ -36,21 +44,23 @@ export const LanguageSelector = () => {
     modelZUID: string;
     itemZUID: string;
   }>();
+  const resolvedModelZUID = modelZUIDOverride || modelZUID;
+  const resolvedItemZUID = itemZUIDOverride || itemZUID;
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const { data: versions } = useGetContentItemVersionsQuery({
-    modelZUID,
-    itemZUID,
+    modelZUID: resolvedModelZUID,
+    itemZUID: resolvedItemZUID,
   });
   const { data: itemPublishings } = useGetItemPublishingsQuery({
-    modelZUID,
-    itemZUID,
+    modelZUID: resolvedModelZUID,
+    itemZUID: resolvedItemZUID,
   });
   const { data: languages, isLoading: isLoadingLanguages } = useGetLangsQuery(
     {}
   );
 
   const item = useSelector(
-    (state: AppState) => state.content[itemZUID] as ContentItem
+    (state: AppState) => state.content[resolvedItemZUID] as ContentItem
   );
 
   const onSelect = (langId: string) => {
@@ -62,8 +72,10 @@ export const LanguageSelector = () => {
     const siblingZUID = item.siblings[langId];
 
     if (parts[3] && siblingZUID) {
-      const subpath = parts.slice(0, 3);
-      subpath.push(siblingZUID);
+      const subpath = [...parts];
+      // route shape: /content/:model/:item/...
+      subpath[2] = resolvedModelZUID;
+      subpath[3] = siblingZUID;
       history.push(`${subpath.join("/")}`);
     }
   };

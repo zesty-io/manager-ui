@@ -19,6 +19,7 @@ import RecentActorsIcon from "@mui/icons-material/RecentActors";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import SettingsIcon from "@mui/icons-material/Settings";
 import ExtensionIcon from "@mui/icons-material/Extension";
+import DesignServicesRoundedIcon from "@mui/icons-material/DesignServicesRounded";
 import { Database, Block, ShuffleVariant } from "@zesty-io/material";
 
 import { AppState } from "../../store/types";
@@ -39,6 +40,7 @@ export default memo(function GlobalMenu() {
     launchpad: RocketLaunchIcon,
     content: EditIcon,
     blocks: Block,
+    studio: DesignServicesRoundedIcon,
     media: ImageIcon,
     schema: Database,
     code: CodeIcon,
@@ -110,6 +112,7 @@ export default memo(function GlobalMenu() {
           .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
           .join(" ");
         const isActive = slug === product;
+        const linkTo = product === "studio" ? "/studio?path=/" : `/${product}`;
 
         return (
           <Link
@@ -117,7 +120,7 @@ export default memo(function GlobalMenu() {
             style={{
               textDecoration: "none",
             }}
-            to={`/${product}`}
+            to={linkTo}
             title={`${name} App`}
           >
             <ListItem
