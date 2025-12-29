@@ -4,25 +4,8 @@ import { Route, Switch, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 import { StudioWrapper } from "../content-editor/src/app/views/ItemEdit/StudioWrapper";
-import { searchItems } from "../../shell/store/content";
 import { AppState } from "../../shell/store/types";
-
-const normalizePath = (path: string) => {
-  if (!path) return "/";
-  const decoded = decodeURIComponent(path.trim());
-  if (!decoded) return "/";
-  if (decoded === "/") return "/";
-  return decoded.startsWith("/") ? decoded : `/${decoded}`;
-};
-
-const getItemPath = (item: any) => {
-  const path = item?.web?.path;
-  const pathPart = item?.web?.pathPart;
-  if (path) return path;
-  if (pathPart === "zesty_home") return "/";
-  if (pathPart) return pathPart.startsWith("/") ? pathPart : `/${pathPart}`;
-  return null;
-};
+import { normalizePath, resolveItemByPath } from "./utils/pathResolver";
 
 const StudioLanding = () => {
   const { search } = useLocation();
@@ -36,39 +19,42 @@ const StudioLanding = () => {
   );
 
   const [isSearching, setIsSearching] = useState(false);
-  const [hasSearched, setHasSearched] = useState(false);
   const [hasError, setHasError] = useState(false);
-
-  const contentItemByPath = useMemo(() => {
-    const items = Object.values(contentItems || {});
-    return (
-      items.find((item: any) => getItemPath(item) === normalizedPathParam) ||
-      null
-    );
-  }, [contentItems, normalizedPathParam]);
+  const [resolvedItem, setResolvedItem] = useState<any>(null);
 
   useEffect(() => {
-    setHasSearched(false);
+    let isMounted = true;
     setHasError(false);
-    setIsSearching(false);
-  }, [normalizedPathParam]);
-
-  useEffect(() => {
-    if (contentItemByPath || hasSearched) return;
     setIsSearching(true);
-    setHasSearched(true);
 
-    Promise.resolve(dispatch(searchItems(normalizedPathParam)))
-      .catch(() => setHasError(true))
-      .finally(() => setIsSearching(false));
-  }, [contentItemByPath, dispatch, normalizedPathParam, hasSearched]);
+    resolveItemByPath({
+      path: normalizedPathParam,
+      contentItems,
+      dispatch,
+    })
+      .then((item) => {
+        if (!isMounted) return;
+        setResolvedItem(item || null);
+      })
+      .catch(() => {
+        if (!isMounted) return;
+        setHasError(true);
+      })
+      .finally(() => {
+        if (!isMounted) return;
+        setIsSearching(false);
+      });
 
-  const targetModelZUID = contentItemByPath?.meta?.contentModelZUID || null;
-  const targetItemZUID = contentItemByPath?.meta?.ZUID || null;
+    return () => {
+      isMounted = false;
+    };
+  }, [contentItems, dispatch, normalizedPathParam]);
+
+  const targetModelZUID = resolvedItem?.meta?.contentModelZUID || null;
+  const targetItemZUID = resolvedItem?.meta?.ZUID || null;
 
   const isLoading = isSearching;
-  const notFound =
-    hasSearched && !isSearching && !contentItemByPath && !!normalizedPathParam;
+  const notFound = !isSearching && !resolvedItem && !!normalizedPathParam;
 
   if (isLoading) {
     return (

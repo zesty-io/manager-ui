@@ -31,11 +31,13 @@ const getCountryCode = (langCode: string) => {
 type LanguageSelectorProps = {
   modelZUIDOverride?: string;
   itemZUIDOverride?: string;
+  onChange?: (payload: { langCode: string; siblingZUID?: string }) => void;
 };
 
 export const LanguageSelector = ({
   modelZUIDOverride,
   itemZUIDOverride,
+  onChange,
 }: LanguageSelectorProps) => {
   const dispatch = useDispatch();
   const history = useHistory();
@@ -47,11 +49,11 @@ export const LanguageSelector = ({
   const resolvedModelZUID = modelZUIDOverride || modelZUID;
   const resolvedItemZUID = itemZUIDOverride || itemZUID;
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const { data: versions } = useGetContentItemVersionsQuery({
+  const { data: _versions } = useGetContentItemVersionsQuery({
     modelZUID: resolvedModelZUID,
     itemZUID: resolvedItemZUID,
   });
-  const { data: itemPublishings } = useGetItemPublishingsQuery({
+  const { data: _itemPublishings } = useGetItemPublishingsQuery({
     modelZUID: resolvedModelZUID,
     itemZUID: resolvedItemZUID,
   });
@@ -63,13 +65,21 @@ export const LanguageSelector = ({
     (state: AppState) => state.content[resolvedItemZUID] as ContentItem
   );
 
-  const onSelect = (langId: string) => {
-    dispatch(selectLang(langId));
+  const onSelect = (langCode: string) => {
+    if (onChange) {
+      // @ts-ignore
+      const siblingZUID = item?.siblings?.[langCode];
+      onChange({ langCode, siblingZUID });
+      setAnchorEl(null);
+      return;
+    }
+
+    dispatch(selectLang(langCode));
 
     // If we are at a content item level then reload newly selected language item
     const parts = location.pathname.split("/");
     // @ts-ignore
-    const siblingZUID = item.siblings[langId];
+    const siblingZUID = item.siblings[langCode];
 
     if (parts[3] && siblingZUID) {
       const subpath = [...parts];

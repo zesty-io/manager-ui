@@ -34,6 +34,11 @@ import Editor from "../../components/Editor/Editor";
 import { FieldError } from "../../components/Editor/FieldError";
 import RedirectsDialogContextProvider from "../../../../../seo/src/app/components/RedirectsDialogProvider";
 import contentOneLogo from "../../../../../../../public/images/contentOneLogo.webp";
+import {
+  getItemPath,
+  normalizePath,
+  resolveItemByPath,
+} from "../../../../../studio/utils/pathResolver";
 
 const drawerWidth = 440;
 
@@ -52,6 +57,8 @@ type SelectedElement = {
 
 export const StudioWrapper = ({ modelZUID, itemZUID }: StudioWrapperProps) => {
   const dispatch = useDispatch();
+  const [currentItemZUID, setCurrentItemZUID] = useState(itemZUID);
+  const [currentModelZUID, setCurrentModelZUID] = useState(modelZUID);
 
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const [selectedElement, setSelectedElement] =
@@ -74,8 +81,8 @@ export const StudioWrapper = ({ modelZUID, itemZUID }: StudioWrapperProps) => {
   );
   const contentItems = useSelector((state: AppState) => state.content);
   const modelsState = useSelector((state: AppState) => state.models);
-  const item = contentItems[itemZUID];
-  const model = modelsState[modelZUID];
+  const item = contentItems[currentItemZUID];
+  const model = modelsState[currentModelZUID];
 
   const iframeSrc = useMemo(() => {
     const path = item?.web?.path || "/";
@@ -94,8 +101,8 @@ export const StudioWrapper = ({ modelZUID, itemZUID }: StudioWrapperProps) => {
   }, [instance?.randomHashID, item?.web?.path, previewLock]);
   const [previewUrl, setPreviewUrl] = useState(iframeSrc);
   const [isNavigating, setIsNavigating] = useState(false);
-  const selectedItemZUID = selectedElement?.itemZuid || itemZUID;
-  const selectedModelZUID = selectedElement?.modelZuid || modelZUID;
+  const selectedItemZUID = selectedElement?.itemZuid || currentItemZUID;
+  const selectedModelZUID = selectedElement?.modelZuid || currentModelZUID;
 
   const selectedItem = selectedItemZUID
     ? contentItems[selectedItemZUID] || null
@@ -104,6 +111,32 @@ export const StudioWrapper = ({ modelZUID, itemZUID }: StudioWrapperProps) => {
   const selectedModel = selectedModelZUID
     ? modelsState[selectedModelZUID] || null
     : null;
+
+  const updateItemByPath = useCallback(
+    async (path: string) => {
+      const resolved = await resolveItemByPath({
+        path,
+        contentItems,
+        dispatch,
+      });
+
+      if (resolved?.meta?.ZUID && resolved?.meta?.contentModelZUID) {
+        setCurrentItemZUID(resolved.meta.ZUID);
+        setCurrentModelZUID(resolved.meta.contentModelZUID);
+        setSelectedElement(null);
+      }
+    },
+    [contentItems, dispatch]
+  );
+
+  const updateStudioUrl = useCallback(
+    (path: string) => {
+      if (!location.pathname.startsWith("/studio")) return;
+      const normalized = normalizePath(path || "/");
+      history.replace(`/studio?path=${encodeURIComponent(normalized)}`);
+    },
+    [history, location.pathname]
+  );
 
   const { data: fields = [] as any[], isFetching: isFetchingFields } =
     useGetContentModelFieldsQuery({
@@ -142,24 +175,24 @@ export const StudioWrapper = ({ modelZUID, itemZUID }: StudioWrapperProps) => {
   useEffect(() => {
     if (!item) {
       setIsFetchingItem(true);
-      Promise.resolve(dispatch(fetchItem(modelZUID, itemZUID))).finally(() =>
-        setIsFetchingItem(false)
-      );
+      Promise.resolve(
+        dispatch(fetchItem(currentModelZUID, currentItemZUID))
+      ).finally(() => setIsFetchingItem(false));
     } else {
       setIsFetchingItem(false);
     }
-  }, [dispatch, item, itemZUID, modelZUID]);
+  }, [dispatch, item, currentItemZUID, currentModelZUID]);
 
   useEffect(() => {
     if (!model) {
       setIsFetchingModel(true);
-      Promise.resolve(dispatch(fetchModel(modelZUID))).finally(() =>
+      Promise.resolve(dispatch(fetchModel(currentModelZUID))).finally(() =>
         setIsFetchingModel(false)
       );
     } else {
       setIsFetchingModel(false);
     }
-  }, [dispatch, model, modelZUID]);
+  }, [dispatch, model, currentModelZUID]);
 
   const editorItem = selectedItem || null;
   const editorModel = selectedModel || null;
@@ -171,7 +204,7 @@ export const StudioWrapper = ({ modelZUID, itemZUID }: StudioWrapperProps) => {
     !editorItem ||
     !editorModel ||
     (selectedElement?.itemZuid &&
-      selectedElement.itemZuid !== itemZUID &&
+      selectedElement.itemZuid !== currentItemZUID &&
       !selectedItem);
   const isSaving = studioSaving;
 
@@ -441,7 +474,7 @@ export const StudioWrapper = ({ modelZUID, itemZUID }: StudioWrapperProps) => {
     }
 
     if (
-      selectedElement.itemZuid !== itemZUID &&
+      selectedElement.itemZuid !== currentItemZUID &&
       !contentItems[selectedElement.itemZuid]
     ) {
       setIsFetchingItem(true);
@@ -451,7 +484,7 @@ export const StudioWrapper = ({ modelZUID, itemZUID }: StudioWrapperProps) => {
     }
 
     if (
-      selectedElement.modelZuid !== modelZUID &&
+      selectedElement.modelZuid !== currentModelZUID &&
       !modelsState[selectedElement.modelZuid]
     ) {
       setIsFetchingModel(true);
@@ -462,8 +495,8 @@ export const StudioWrapper = ({ modelZUID, itemZUID }: StudioWrapperProps) => {
   }, [
     contentItems,
     dispatch,
-    itemZUID,
-    modelZUID,
+    currentItemZUID,
+    currentModelZUID,
     modelsState,
     selectedElement,
   ]);
@@ -617,7 +650,7 @@ export const StudioWrapper = ({ modelZUID, itemZUID }: StudioWrapperProps) => {
 
   const renderEditorPanel = () => (
     <Box display="flex" flexDirection="column" gap={2}>
-      {selectedItemZUID === itemZUID && saveClicked && hasErrors && (
+      {selectedItemZUID === currentItemZUID && saveClicked && hasErrors && (
         <FieldError
           ref={fieldErrorRef}
           errors={fieldErrors}
@@ -664,7 +697,7 @@ export const StudioWrapper = ({ modelZUID, itemZUID }: StudioWrapperProps) => {
             px: 3,
             display: "flex",
             alignItems: "center",
-            gap: 1.5,
+            gap: 1,
             borderBottom: (theme) => `1px solid ${theme.palette.border}`,
             backgroundColor: (theme) => theme.palette.grey[50],
           }}
@@ -687,6 +720,11 @@ export const StudioWrapper = ({ modelZUID, itemZUID }: StudioWrapperProps) => {
                 const updatedUrl = new URL(previewUrl);
                 setIsNavigating(true);
                 iframeRef.current?.setAttribute("src", updatedUrl.toString());
+                const normalizedPath = normalizePath(
+                  updatedUrl.pathname || "/"
+                );
+                updateStudioUrl(normalizedPath);
+                updateItemByPath(normalizedPath);
               } catch (err) {
                 dispatch(
                   notify({
@@ -698,6 +736,39 @@ export const StudioWrapper = ({ modelZUID, itemZUID }: StudioWrapperProps) => {
             }}
             sx={{
               backgroundColor: (theme) => theme.palette.grey[100],
+            }}
+          />
+          <LanguageSelector
+            modelZUIDOverride={currentModelZUID}
+            itemZUIDOverride={currentItemZUID}
+            onChange={({ langCode, siblingZUID }) => {
+              if (!langCode || !siblingZUID) return;
+              const siblingItem = contentItems[siblingZUID];
+              const localizedPath = siblingItem
+                ? getItemPath(siblingItem)
+                : null;
+              if (!localizedPath) return;
+
+              try {
+                const updatedUrl = new URL(previewUrl);
+                updatedUrl.pathname = localizedPath;
+                setPreviewUrl(updatedUrl.toString());
+                setIsNavigating(true);
+                iframeRef.current?.setAttribute("src", updatedUrl.toString());
+                updateStudioUrl(localizedPath);
+                setCurrentItemZUID(siblingZUID);
+                setCurrentModelZUID(
+                  siblingItem?.meta?.contentModelZUID || currentModelZUID
+                );
+                updateItemByPath(localizedPath);
+              } catch (err) {
+                dispatch(
+                  notify({
+                    kind: "warn",
+                    message: "Invalid URL. Please check and try again.",
+                  })
+                );
+              }
             }}
           />
         </Box>
