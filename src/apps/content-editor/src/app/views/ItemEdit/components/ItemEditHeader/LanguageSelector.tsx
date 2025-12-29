@@ -32,12 +32,14 @@ type LanguageSelectorProps = {
   modelZUIDOverride?: string;
   itemZUIDOverride?: string;
   onChange?: (payload: { langCode: string; siblingZUID?: string }) => void;
+  disabled?: boolean;
 };
 
 export const LanguageSelector = ({
   modelZUIDOverride,
   itemZUIDOverride,
   onChange,
+  disabled = false,
 }: LanguageSelectorProps) => {
   const dispatch = useDispatch();
   const history = useHistory();
@@ -127,6 +129,7 @@ export const LanguageSelector = ({
           endIcon={<KeyboardArrowDownRounded color="action" />}
           onClick={(e) => setAnchorEl(e.currentTarget)}
           data-cy="language-selector"
+          disabled={disabled}
         >
           <Box component="span" color="text.primary">
             {getFlagEmoji(getCountryCode(activeLanguage?.code))}
@@ -161,6 +164,7 @@ export const LanguageSelector = ({
               setAnchorEl(null);
               onSelect(language.code);
             }}
+            disabled={disabled}
           >
             {getFlagEmoji(getCountryCode(language.code))}{" "}
             {language.code.split("-")[0]?.toUpperCase()} (

@@ -45,6 +45,8 @@ const drawerWidth = 440;
 type StudioWrapperProps = {
   modelZUID: string;
   itemZUID: string;
+  initialPreviewPath?: string;
+  initialUnresolved?: boolean;
 };
 
 type SelectedElement = {
@@ -55,10 +57,16 @@ type SelectedElement = {
   modelZuid?: string;
 };
 
-export const StudioWrapper = ({ modelZUID, itemZUID }: StudioWrapperProps) => {
+export const StudioWrapper = ({
+  modelZUID,
+  itemZUID,
+  initialPreviewPath,
+  initialUnresolved = false,
+}: StudioWrapperProps) => {
   const dispatch = useDispatch();
   const [currentItemZUID, setCurrentItemZUID] = useState(itemZUID);
   const [currentModelZUID, setCurrentModelZUID] = useState(modelZUID);
+  const [unresolvedPath, setUnresolvedPath] = useState(initialUnresolved);
 
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const [selectedElement, setSelectedElement] =
@@ -84,8 +92,12 @@ export const StudioWrapper = ({ modelZUID, itemZUID }: StudioWrapperProps) => {
   const item = contentItems[currentItemZUID];
   const model = modelsState[currentModelZUID];
 
+  const [previewPath, setPreviewPath] = useState(
+    initialPreviewPath || item?.web?.path || "/"
+  );
+
   const iframeSrc = useMemo(() => {
-    const path = item?.web?.path || "/";
+    const path = previewPath || "/";
     const instanceHash = instance?.randomHashID ?? "";
     // @ts-expect-error Config is provided globally at runtime
     const baseUrl = `${CONFIG.URL_PREVIEW_PROTOCOL}${instanceHash}${CONFIG.URL_PREVIEW}${path}`;
@@ -98,7 +110,7 @@ export const StudioWrapper = ({ modelZUID, itemZUID }: StudioWrapperProps) => {
     const query = queryParams.toString();
 
     return query ? `${baseUrl}?${query}` : baseUrl;
-  }, [instance?.randomHashID, item?.web?.path, previewLock]);
+  }, [instance?.randomHashID, previewPath, previewLock]);
   const [previewUrl, setPreviewUrl] = useState(iframeSrc);
   const [isNavigating, setIsNavigating] = useState(false);
   const selectedItemZUID = selectedElement?.itemZuid || currentItemZUID;
@@ -121,9 +133,14 @@ export const StudioWrapper = ({ modelZUID, itemZUID }: StudioWrapperProps) => {
       });
 
       if (resolved?.meta?.ZUID && resolved?.meta?.contentModelZUID) {
+        const normalized = normalizePath(path || "/");
+        setPreviewPath(normalized);
         setCurrentItemZUID(resolved.meta.ZUID);
         setCurrentModelZUID(resolved.meta.contentModelZUID);
         setSelectedElement(null);
+        setUnresolvedPath(false);
+      } else {
+        setUnresolvedPath(true);
       }
     },
     [contentItems, dispatch]
@@ -723,6 +740,7 @@ export const StudioWrapper = ({ modelZUID, itemZUID }: StudioWrapperProps) => {
                 const normalizedPath = normalizePath(
                   updatedUrl.pathname || "/"
                 );
+                setPreviewPath(normalizedPath);
                 updateStudioUrl(normalizedPath);
                 updateItemByPath(normalizedPath);
               } catch (err) {
@@ -755,6 +773,7 @@ export const StudioWrapper = ({ modelZUID, itemZUID }: StudioWrapperProps) => {
                 setPreviewUrl(updatedUrl.toString());
                 setIsNavigating(true);
                 iframeRef.current?.setAttribute("src", updatedUrl.toString());
+                setPreviewPath(localizedPath);
                 updateStudioUrl(localizedPath);
                 setCurrentItemZUID(siblingZUID);
                 setCurrentModelZUID(
@@ -770,6 +789,7 @@ export const StudioWrapper = ({ modelZUID, itemZUID }: StudioWrapperProps) => {
                 );
               }
             }}
+            disabled={unresolvedPath}
           />
         </Box>
         <Box display="flex" flex="1" minHeight={0} width="100%">
@@ -890,7 +910,26 @@ export const StudioWrapper = ({ modelZUID, itemZUID }: StudioWrapperProps) => {
               </Stack>
               <Divider />
               <Box flex="1" overflow="auto" pr={1}>
-                {panelMode === "edit" ? renderEditorPanel() : renderInfoPanel()}
+                {unresolvedPath ? (
+                  <Box
+                    display="flex"
+                    flexDirection="column"
+                    gap={1}
+                    color="text.secondary"
+                  >
+                    <Typography variant="subtitle1" fontWeight="600">
+                      Preview only
+                    </Typography>
+                    <Typography variant="body2">
+                      No CMS item is associated with this path. Language
+                      switching and editing are disabled.
+                    </Typography>
+                  </Box>
+                ) : panelMode === "edit" ? (
+                  renderEditorPanel()
+                ) : (
+                  renderInfoPanel()
+                )}
               </Box>
             </Box>
           </Drawer>
