@@ -6,6 +6,9 @@ import {
   Divider,
   Drawer,
   IconButton,
+  InputAdornment,
+  CircularProgress,
+  OutlinedInput,
   Stack,
   Typography,
 } from "@mui/material";
@@ -30,13 +33,13 @@ import { ContentInfo } from "./Content/Actions/Widgets/ContentInfo";
 import Editor from "../../components/Editor/Editor";
 import { FieldError } from "../../components/Editor/FieldError";
 import RedirectsDialogContextProvider from "../../../../../seo/src/app/components/RedirectsDialogProvider";
+import contentOneLogo from "../../../../../../../public/images/contentOneLogo.webp";
 
 const drawerWidth = 440;
 
 type StudioWrapperProps = {
   modelZUID: string;
   itemZUID: string;
-  path?: string;
 };
 
 type SelectedElement = {
@@ -47,11 +50,7 @@ type SelectedElement = {
   modelZuid?: string;
 };
 
-export const StudioWrapper = ({
-  modelZUID,
-  itemZUID,
-  path,
-}: StudioWrapperProps) => {
+export const StudioWrapper = ({ modelZUID, itemZUID }: StudioWrapperProps) => {
   const dispatch = useDispatch();
 
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
@@ -93,6 +92,8 @@ export const StudioWrapper = ({
 
     return query ? `${baseUrl}?${query}` : baseUrl;
   }, [instance?.randomHashID, item?.web?.path, previewLock]);
+  const [previewUrl, setPreviewUrl] = useState(iframeSrc);
+  const [isNavigating, setIsNavigating] = useState(false);
   const selectedItemZUID = selectedElement?.itemZuid || itemZUID;
   const selectedModelZUID = selectedElement?.modelZuid || modelZUID;
 
@@ -199,6 +200,15 @@ export const StudioWrapper = ({
       history.push("/launchpad");
     }
   };
+
+  useEffect(() => {
+    const iframeEl = iframeRef.current;
+    if (!iframeEl) return;
+
+    const handleLoad = () => setIsNavigating(false);
+    iframeEl.addEventListener("load", handleLoad);
+    return () => iframeEl.removeEventListener("load", handleLoad);
+  }, []);
 
   const postCommandToBridge = useCallback(
     (cmd: {
@@ -641,109 +651,179 @@ export const StudioWrapper = ({
         },
       }}
     >
-      <Box display="flex" height="100%" width="100%">
+      <Box
+        display="flex"
+        flexDirection="column"
+        height="100%"
+        width="100%"
+        position="relative"
+      >
         <Box
-          flex="1"
-          minWidth={0}
-          ref={iframeRef}
-          component="iframe"
-          src={iframeSrc}
           sx={{
-            border: "none",
-            height: "100%",
-            bgcolor: "grey.900",
-          }}
-        />
-        <Drawer
-          variant="permanent"
-          anchor="right"
-          PaperProps={{
-            sx: {
-              position: "relative",
-              width: drawerWidth,
-              boxSizing: "border-box",
-              borderLeft: (theme) => `1px solid ${theme.palette.border}`,
-            },
+            py: 1,
+            px: 3,
+            display: "flex",
+            alignItems: "center",
+            gap: 1.5,
+            borderBottom: (theme) => `1px solid ${theme.palette.border}`,
+            backgroundColor: (theme) => theme.palette.grey[50],
           }}
         >
           <Box
-            height="100%"
-            display="flex"
-            flexDirection="column"
-            p={3}
-            gap={2}
-          >
-            <Stack
-              direction="row"
-              alignItems="center"
-              justifyContent="space-between"
-              spacing={1}
-            >
-              <Stack direction="row" alignItems="center" spacing={1}>
-                {panelMode === "edit" ? (
-                  <IconButton
-                    aria-label="Back to info"
-                    onClick={clearSelection}
-                    disabled={isSaving}
-                    size="small"
-                  >
-                    <ArrowBackRounded />
-                  </IconButton>
-                ) : (
-                  <Box sx={{ width: 32 }} />
-                )}
-                <Typography variant="subtitle1" fontWeight="600">
-                  Studio
-                </Typography>
-              </Stack>
-              <Stack direction="row" gap={1} alignItems="center">
-                {panelMode === "edit" ? (
-                  <RedirectsDialogContextProvider>
-                    <ItemEditHeaderActions
-                      saving={isSaving}
-                      onSave={handleSave}
-                      hasError={hasErrors}
-                      isLoadingItem={isSelectedItemLoading}
-                      modelZUIDOverride={selectedModelZUID}
-                      itemZUIDOverride={selectedItemZUID}
-                    />
-                  </RedirectsDialogContextProvider>
-                ) : (
-                  <Button
-                    size="small"
-                    variant="outlined"
-                    onClick={() => setPanelMode("edit")}
-                    disabled={isSaving}
-                  >
-                    Edit content
-                  </Button>
-                )}
-                <IconButton
-                  aria-label="Close Studio preview"
-                  onClick={handleClose}
-                  size="small"
-                >
-                  <CloseRounded />
-                </IconButton>
-              </Stack>
-            </Stack>
-            <Stack direction="row" alignItems="center" gap={1}>
-              {/* <LanguageSelector
-                modelZUIDOverride={selectedModelZUID}
-                itemZUIDOverride={selectedItemZUID}
-              /> */}
-              <VersionSelector
-                activeVersion={activeVersion}
-                modelZUIDOverride={selectedModelZUID}
-                itemZUIDOverride={selectedItemZUID}
-              />
-            </Stack>
-            <Divider />
-            <Box flex="1" overflow="auto" pr={1}>
-              {panelMode === "edit" ? renderEditorPanel() : renderInfoPanel()}
-            </Box>
+            component="img"
+            src={contentOneLogo}
+            alt="Content One"
+            sx={{ width: 107 }}
+          />
+          <OutlinedInput
+            fullWidth
+            size="small"
+            value={previewUrl}
+            onChange={(e) => setPreviewUrl(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key !== "Enter") return;
+              e.preventDefault();
+              try {
+                const updatedUrl = new URL(previewUrl);
+                setIsNavigating(true);
+                iframeRef.current?.setAttribute("src", updatedUrl.toString());
+              } catch (err) {
+                dispatch(
+                  notify({
+                    kind: "warn",
+                    message: "Invalid URL. Please check and try again.",
+                  })
+                );
+              }
+            }}
+            sx={{
+              backgroundColor: (theme) => theme.palette.grey[100],
+            }}
+          />
+        </Box>
+        <Box display="flex" flex="1" minHeight={0} width="100%">
+          <Box position="relative" flex="1" minWidth={0}>
+            <Box
+              flex="1"
+              minWidth={0}
+              ref={iframeRef}
+              component="iframe"
+              src={iframeSrc}
+              onLoad={() => setIsNavigating(false)}
+              sx={{
+                border: "none",
+                height: "100%",
+                width: "100%",
+                bgcolor: "grey.900",
+              }}
+            />
+            {isNavigating && (
+              <Box
+                component="div"
+                sx={{
+                  position: "absolute",
+                  top: 12,
+                  right: 12,
+                }}
+                display="flex"
+                alignItems="center"
+                gap={1}
+              >
+                <CircularProgress size={24} />
+              </Box>
+            )}
           </Box>
-        </Drawer>
+          <Drawer
+            variant="permanent"
+            anchor="right"
+            PaperProps={{
+              sx: {
+                position: "relative",
+                width: drawerWidth,
+                boxSizing: "border-box",
+                borderLeft: (theme) => `1px solid ${theme.palette.border}`,
+              },
+            }}
+          >
+            <Box
+              height="100%"
+              display="flex"
+              flexDirection="column"
+              p={3}
+              gap={2}
+            >
+              <Stack
+                direction="row"
+                alignItems="center"
+                justifyContent="space-between"
+                spacing={1}
+              >
+                <Stack direction="row" alignItems="center" spacing={1}>
+                  {panelMode === "edit" ? (
+                    <IconButton
+                      aria-label="Back to info"
+                      onClick={clearSelection}
+                      disabled={isSaving}
+                      size="small"
+                    >
+                      <ArrowBackRounded />
+                    </IconButton>
+                  ) : (
+                    <Box sx={{ width: 32 }} />
+                  )}
+                  <Typography variant="subtitle1" fontWeight="600">
+                    Studio
+                  </Typography>
+                </Stack>
+                <Stack direction="row" gap={1} alignItems="center">
+                  {panelMode === "edit" ? (
+                    <RedirectsDialogContextProvider>
+                      <ItemEditHeaderActions
+                        saving={isSaving}
+                        onSave={handleSave}
+                        hasError={hasErrors}
+                        isLoadingItem={isSelectedItemLoading}
+                        modelZUIDOverride={selectedModelZUID}
+                        itemZUIDOverride={selectedItemZUID}
+                      />
+                    </RedirectsDialogContextProvider>
+                  ) : (
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      onClick={() => setPanelMode("edit")}
+                      disabled={isSaving}
+                    >
+                      Edit content
+                    </Button>
+                  )}
+                  <IconButton
+                    aria-label="Close Studio preview"
+                    onClick={handleClose}
+                    size="small"
+                  >
+                    <CloseRounded />
+                  </IconButton>
+                </Stack>
+              </Stack>
+              <Stack direction="row" alignItems="center" gap={1}>
+                {/* <LanguageSelector
+                  modelZUIDOverride={selectedModelZUID}
+                  itemZUIDOverride={selectedItemZUID}
+                /> */}
+                <VersionSelector
+                  activeVersion={activeVersion}
+                  modelZUIDOverride={selectedModelZUID}
+                  itemZUIDOverride={selectedItemZUID}
+                />
+              </Stack>
+              <Divider />
+              <Box flex="1" overflow="auto" pr={1}>
+                {panelMode === "edit" ? renderEditorPanel() : renderInfoPanel()}
+              </Box>
+            </Box>
+          </Drawer>
+        </Box>
       </Box>
     </Dialog>
   );

@@ -1,9 +1,11 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Alert, CircularProgress, Stack, Typography } from "@mui/material";
 import { Route, Switch, useLocation } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 
 import { StudioWrapper } from "../content-editor/src/app/views/ItemEdit/StudioWrapper";
-import { useGetContentItemByPathQuery } from "../../shell/services/instance";
+import { searchItems } from "../../shell/store/content";
+import { AppState } from "../../shell/store/types";
 
 const normalizePath = (path: string) => {
   if (!path) return "/";
@@ -13,8 +15,19 @@ const normalizePath = (path: string) => {
   return decoded.startsWith("/") ? decoded : `/${decoded}`;
 };
 
+const getItemPath = (item: any) => {
+  const path = item?.web?.path;
+  const pathPart = item?.web?.pathPart;
+  if (path) return path;
+  if (pathPart === "zesty_home") return "/";
+  if (pathPart) return pathPart.startsWith("/") ? pathPart : `/${pathPart}`;
+  return null;
+};
+
 const StudioLanding = () => {
   const { search } = useLocation();
+  const dispatch = useDispatch();
+  const contentItems = useSelector((state: AppState) => state.content);
   const searchParams = useMemo(() => new URLSearchParams(search), [search]);
   const rawPathParam = searchParams.get("path") || "/";
   const normalizedPathParam = useMemo(
@@ -22,22 +35,40 @@ const StudioLanding = () => {
     [rawPathParam]
   );
 
-  const {
-    data: contentItemByPath,
-    isFetching: isFetchingPathItem,
-    isError: isPathError,
-  } = useGetContentItemByPathQuery(normalizedPathParam);
+  const [isSearching, setIsSearching] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
+  const [hasError, setHasError] = useState(false);
+
+  const contentItemByPath = useMemo(() => {
+    const items = Object.values(contentItems || {});
+    return (
+      items.find((item: any) => getItemPath(item) === normalizedPathParam) ||
+      null
+    );
+  }, [contentItems, normalizedPathParam]);
+
+  useEffect(() => {
+    setHasSearched(false);
+    setHasError(false);
+    setIsSearching(false);
+  }, [normalizedPathParam]);
+
+  useEffect(() => {
+    if (contentItemByPath || hasSearched) return;
+    setIsSearching(true);
+    setHasSearched(true);
+
+    Promise.resolve(dispatch(searchItems(normalizedPathParam)))
+      .catch(() => setHasError(true))
+      .finally(() => setIsSearching(false));
+  }, [contentItemByPath, dispatch, normalizedPathParam, hasSearched]);
 
   const targetModelZUID = contentItemByPath?.meta?.contentModelZUID || null;
   const targetItemZUID = contentItemByPath?.meta?.ZUID || null;
 
-  const isLoading = isFetchingPathItem;
-  const hasError = isPathError;
+  const isLoading = isSearching;
   const notFound =
-    !isFetchingPathItem &&
-    !isPathError &&
-    !contentItemByPath &&
-    !!normalizedPathParam;
+    hasSearched && !isSearching && !contentItemByPath && !!normalizedPathParam;
 
   if (isLoading) {
     return (
@@ -81,11 +112,7 @@ const StudioLanding = () => {
   }
 
   return (
-    <StudioWrapper
-      modelZUID={targetModelZUID}
-      itemZUID={targetItemZUID}
-      path={normalizedPathParam}
-    />
+    <StudioWrapper modelZUID={targetModelZUID} itemZUID={targetItemZUID} />
   );
 };
 
