@@ -154,7 +154,7 @@ export const StudioWrapper = ({
     (path: string) => {
       if (!location.pathname.startsWith("/studio")) return;
       const normalized = normalizePath(path || "/");
-      history.replace(`/studio?path=${encodeURIComponent(normalized)}`);
+      history.push(`/studio?path=${encodeURIComponent(normalized)}`);
     },
     [history, location.pathname]
   );
@@ -547,6 +547,26 @@ export const StudioWrapper = ({
             }
           `,
         });
+        return;
+      }
+
+      if (msg.type === "PATH_CHANGE") {
+        const loc = msg.location || {};
+        const href = (loc.href as string) || "";
+        const path = (loc.path as string) || "/";
+
+        if (href) {
+          setPreviewUrl(href);
+        }
+
+        const normalizedPath = normalizePath(path || "/");
+
+        setPreviewPath(normalizedPath);
+        updateStudioUrl(normalizedPath);
+        updateItemByPath(normalizedPath);
+
+        setSelectedElement(null);
+        setPanelMode("info");
         return;
       }
 
