@@ -904,6 +904,7 @@ export const StudioWrapper = ({
                     direction="row"
                     alignItems="center"
                     justifyContent="space-between"
+                    mb={2}
                   >
                     <Button
                       variant="text"
@@ -924,7 +925,22 @@ export const StudioWrapper = ({
                       />
                     </RedirectsDialogContextProvider>
                   </Stack>
-                ) : null}
+                ) : (
+                  <Button
+                    variant="outlined"
+                    size="large"
+                    fullWidth
+                    color="primary"
+                    sx={{ mb: 2 }}
+                    onClick={() =>
+                      history.push(
+                        `/content/${currentModelZUID}/${currentItemZUID}`
+                      )
+                    }
+                  >
+                    Edit in Zesty Manager
+                  </Button>
+                )}
                 <Box
                   mt={2}
                   display="flex"
