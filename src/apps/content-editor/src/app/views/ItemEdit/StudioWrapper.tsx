@@ -73,6 +73,7 @@ export const StudioWrapper = ({
   const [selectedElement, setSelectedElement] =
     useState<SelectedElement | null>(null);
   const [panelMode, setPanelMode] = useState<"info" | "edit">("info");
+  const [filteredFieldKey, setFilteredFieldKey] = useState<string | null>(null);
   const [studioSaving, setStudioSaving] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, any>>({});
   const [saveClicked, setSaveClicked] = useState(false);
@@ -141,10 +142,12 @@ export const StudioWrapper = ({
         setCurrentItemZUID(resolved.meta.ZUID);
         setCurrentModelZUID(resolved.meta.contentModelZUID);
         setSelectedElement(null);
+        setFilteredFieldKey(null);
         setUnresolvedPath(false);
         setPanelMode("info");
       } else {
         setUnresolvedPath(true);
+        setFilteredFieldKey(null);
       }
     },
     [contentItems, dispatch]
@@ -296,6 +299,7 @@ export const StudioWrapper = ({
       });
     }
     setSelectedElement(null);
+    setFilteredFieldKey(null);
     setPanelMode("info");
   }, [postCommandToBridge, selectedElement]);
 
@@ -566,6 +570,7 @@ export const StudioWrapper = ({
         updateItemByPath(normalizedPath);
 
         setSelectedElement(null);
+        setFilteredFieldKey(null);
         setPanelMode("info");
         return;
       }
@@ -604,6 +609,8 @@ export const StudioWrapper = ({
               itemZuid,
               modelZuid,
             });
+            const fieldKey = dataset.weFieldKey || null;
+            setFilteredFieldKey(fieldKey);
             setPanelMode("edit");
             postCommandToBridge({
               action: "addClass",
@@ -704,7 +711,18 @@ export const StudioWrapper = ({
         onUpdateFieldErrors={onUpdateFieldErrors}
         fieldErrors={fieldErrors}
         isLoadingItem={isSelectedItemLoading}
+        visibleFieldName={filteredFieldKey || undefined}
       />
+      {filteredFieldKey ? (
+        <Button
+          variant="outlined"
+          size="large"
+          fullWidth
+          onClick={() => setFilteredFieldKey(null)}
+        >
+          View All Related Fields
+        </Button>
+      ) : null}
     </Box>
   );
 
