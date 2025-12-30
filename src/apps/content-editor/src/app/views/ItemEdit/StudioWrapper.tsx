@@ -32,7 +32,7 @@ import { ContentInfo } from "./Content/Actions/Widgets/ContentInfo";
 import Editor from "../../components/Editor/Editor";
 import { FieldError } from "../../components/Editor/FieldError";
 import RedirectsDialogContextProvider from "../../../../../seo/src/app/components/RedirectsDialogProvider";
-import contentOneLogo from "../../../../../../../public/images/contentOneLogo.webp";
+import contentOneLogo from "../../../../../../../public/images/contentOneLogoOnly.webp";
 import {
   getItemPath,
   normalizePath,
@@ -724,7 +724,7 @@ export const StudioWrapper = ({
             component="img"
             src={contentOneLogo}
             alt="Content One"
-            sx={{ width: 107 }}
+            sx={{ height: 32 }}
           />
           <OutlinedInput
             fullWidth
@@ -757,41 +757,43 @@ export const StudioWrapper = ({
               backgroundColor: (theme) => theme.palette.grey[100],
             }}
           />
-          <LanguageSelector
-            modelZUIDOverride={currentModelZUID}
-            itemZUIDOverride={currentItemZUID}
-            onChange={({ langCode, siblingZUID }) => {
-              if (!langCode || !siblingZUID) return;
-              const siblingItem = contentItems[siblingZUID];
-              const localizedPath = siblingItem
-                ? getItemPath(siblingItem)
-                : null;
-              if (!localizedPath) return;
+          <Box minWidth={96}>
+            <LanguageSelector
+              modelZUIDOverride={currentModelZUID}
+              itemZUIDOverride={currentItemZUID}
+              onChange={({ langCode, siblingZUID }) => {
+                if (!langCode || !siblingZUID) return;
+                const siblingItem = contentItems[siblingZUID];
+                const localizedPath = siblingItem
+                  ? getItemPath(siblingItem)
+                  : null;
+                if (!localizedPath) return;
 
-              try {
-                const updatedUrl = new URL(previewUrl);
-                updatedUrl.pathname = localizedPath;
-                setPreviewUrl(updatedUrl.toString());
-                setIsNavigating(true);
-                iframeRef.current?.setAttribute("src", updatedUrl.toString());
-                setPreviewPath(localizedPath);
-                updateStudioUrl(localizedPath);
-                setCurrentItemZUID(siblingZUID);
-                setCurrentModelZUID(
-                  siblingItem?.meta?.contentModelZUID || currentModelZUID
-                );
-                updateItemByPath(localizedPath);
-              } catch (err) {
-                dispatch(
-                  notify({
-                    kind: "warn",
-                    message: "Invalid URL. Please check and try again.",
-                  })
-                );
-              }
-            }}
-            disabled={unresolvedPath}
-          />
+                try {
+                  const updatedUrl = new URL(previewUrl);
+                  updatedUrl.pathname = localizedPath;
+                  setPreviewUrl(updatedUrl.toString());
+                  setIsNavigating(true);
+                  iframeRef.current?.setAttribute("src", updatedUrl.toString());
+                  setPreviewPath(localizedPath);
+                  updateStudioUrl(localizedPath);
+                  setCurrentItemZUID(siblingZUID);
+                  setCurrentModelZUID(
+                    siblingItem?.meta?.contentModelZUID || currentModelZUID
+                  );
+                  updateItemByPath(localizedPath);
+                } catch (err) {
+                  dispatch(
+                    notify({
+                      kind: "warn",
+                      message: "Invalid URL. Please check and try again.",
+                    })
+                  );
+                }
+              }}
+              disabled={unresolvedPath}
+            />
+          </Box>
         </Box>
         <Box display="flex" flex="1" minHeight={0} width="100%">
           <Box position="relative" flex="1" minWidth={0}>
@@ -830,6 +832,7 @@ export const StudioWrapper = ({
             anchor="right"
             PaperProps={{
               sx: {
+                overflow: "hidden",
                 position: "relative",
                 width: drawerWidth,
                 boxSizing: "border-box",
@@ -897,9 +900,14 @@ export const StudioWrapper = ({
               </Box>
               {panelMode === "edit" ? (
                 <Box mt="auto">
-                  <Stack direction="row" alignItems="center" spacing={1}>
+                  <Stack
+                    direction="row"
+                    alignItems="center"
+                    justifyContent="space-between"
+                  >
                     <Button
                       variant="text"
+                      color="inherit"
                       onClick={clearSelection}
                       disabled={isSaving}
                     >
