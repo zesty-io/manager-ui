@@ -859,13 +859,17 @@ export const StudioWrapper = ({
                   </Box>
                 </Stack>
                 <Stack direction="row" gap={1} alignItems="center">
-                  <IconButton
-                    aria-label="Close Studio preview"
-                    onClick={clearSelection}
-                    size="small"
-                  >
-                    <CloseRounded />
-                  </IconButton>
+                  {panelMode === "edit" ? (
+                    <IconButton
+                      aria-label="Close Studio preview"
+                      onClick={clearSelection}
+                      size="small"
+                    >
+                      <CloseRounded />
+                    </IconButton>
+                  ) : (
+                    <Box sx={{ width: 32 }} />
+                  )}
                 </Stack>
               </Stack>
               <Box flex="1" overflow="auto" pr={1}>
@@ -890,8 +894,8 @@ export const StudioWrapper = ({
                   renderInfoPanel()
                 )}
               </Box>
-              {panelMode === "edit" ? (
-                <Box mt="auto">
+              <Box mt="auto">
+                {panelMode === "edit" ? (
                   <Stack
                     direction="row"
                     alignItems="center"
@@ -916,29 +920,29 @@ export const StudioWrapper = ({
                       />
                     </RedirectsDialogContextProvider>
                   </Stack>
+                ) : null}
+                <Box
+                  mt={2}
+                  display="flex"
+                  flexDirection="column"
+                  alignItems="center"
+                  gap={1}
+                >
                   <Box
-                    mt={2}
-                    display="flex"
-                    flexDirection="column"
-                    alignItems="center"
-                    gap={1}
+                    component="img"
+                    src={contentOneLogo}
+                    alt="Content One"
+                    sx={{ height: 24 }}
+                  />
+                  <Typography
+                    variant="body3"
+                    color="text.secondary"
+                    textAlign="center"
                   >
-                    <Box
-                      component="img"
-                      src={contentOneLogo}
-                      alt="Content One"
-                      sx={{ height: 24 }}
-                    />
-                    <Typography
-                      variant="body3"
-                      color="text.secondary"
-                      textAlign="center"
-                    >
-                      Agentic Studio by Content.One
-                    </Typography>
-                  </Box>
+                    Agentic Studio by Content.One
+                  </Typography>
                 </Box>
-              ) : null}
+              </Box>
             </Box>
           </Drawer>
         </Box>
