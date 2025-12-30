@@ -125,6 +125,7 @@ export const StudioWrapper = ({
     ? modelsState[selectedModelZUID] || null
     : null;
   const panelTitle = selectedItem?.web?.metaTitle || "Studio";
+  const headerTitle = unresolvedPath ? "Preview only" : panelTitle;
 
   const updateItemByPath = useCallback(
     async (path: string) => {
@@ -852,15 +853,17 @@ export const StudioWrapper = ({
               >
                 <Stack>
                   <Typography variant="subtitle1" fontWeight="600">
-                    {panelTitle}
+                    {headerTitle}
                   </Typography>
-                  <Box>
-                    <VersionSelector
-                      activeVersion={activeVersion}
-                      modelZUIDOverride={selectedModelZUID}
-                      itemZUIDOverride={selectedItemZUID}
-                    />
-                  </Box>
+                  {!unresolvedPath ? (
+                    <Box>
+                      <VersionSelector
+                        activeVersion={activeVersion}
+                        modelZUIDOverride={selectedModelZUID}
+                        itemZUIDOverride={selectedItemZUID}
+                      />
+                    </Box>
+                  ) : null}
                 </Stack>
                 <Stack direction="row" gap={1} alignItems="center">
                   {panelMode === "edit" ? (
@@ -884,12 +887,9 @@ export const StudioWrapper = ({
                     gap={1}
                     color="text.secondary"
                   >
-                    <Typography variant="subtitle1" fontWeight="600">
-                      Preview only
-                    </Typography>
                     <Typography variant="body2">
-                      No CMS item is associated with this path. Language
-                      switching and editing are disabled.
+                      No CMS item is associated with this path. Editing is
+                      disabled.
                     </Typography>
                   </Box>
                 ) : panelMode === "edit" ? (
@@ -932,6 +932,7 @@ export const StudioWrapper = ({
                     fullWidth
                     color="primary"
                     sx={{ mb: 2 }}
+                    disabled={unresolvedPath}
                     onClick={() =>
                       history.push(
                         `/content/${currentModelZUID}/${currentItemZUID}`

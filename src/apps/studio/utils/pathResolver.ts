@@ -6,7 +6,10 @@ export const normalizePath = (path?: string) => {
   const decoded = decodeURIComponent(path.trim());
   if (!decoded) return "/";
   if (decoded === "/") return "/";
-  return decoded.startsWith("/") ? decoded : `/${decoded}`;
+  const withLeading = decoded.startsWith("/") ? decoded : `/${decoded}`;
+  const trimmedTrailing = withLeading.replace(/\/+$/, "");
+  if (!trimmedTrailing) return "/";
+  return `${trimmedTrailing}/`;
 };
 
 export const getItemPath = (item: any) => {
