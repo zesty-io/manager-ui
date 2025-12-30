@@ -32,7 +32,8 @@ import { ContentInfo } from "./Content/Actions/Widgets/ContentInfo";
 import Editor from "../../components/Editor/Editor";
 import { FieldError } from "../../components/Editor/FieldError";
 import RedirectsDialogContextProvider from "../../../../../seo/src/app/components/RedirectsDialogProvider";
-import contentOneLogo from "../../../../../../../public/images/contentOneLogoOnly.webp";
+import contentOneLogoOnly from "../../../../../../../public/images/contentOneLogoOnly.webp";
+import contentOneLogo from "../../../../../../../public/images/contentOneLogo.webp";
 import {
   getItemPath,
   normalizePath,
@@ -722,7 +723,7 @@ export const StudioWrapper = ({
         >
           <Box
             component="img"
-            src={contentOneLogo}
+            src={contentOneLogoOnly}
             alt="Content One"
             sx={{ height: 32 }}
           />
@@ -924,6 +925,27 @@ export const StudioWrapper = ({
                       />
                     </RedirectsDialogContextProvider>
                   </Stack>
+                  <Box
+                    mt={2}
+                    display="flex"
+                    flexDirection="column"
+                    alignItems="center"
+                    gap={1}
+                  >
+                    <Box
+                      component="img"
+                      src={contentOneLogo}
+                      alt="Content One"
+                      sx={{ height: 24 }}
+                    />
+                    <Typography
+                      variant="body3"
+                      color="text.secondary"
+                      textAlign="center"
+                    >
+                      Agentic Studio by Content.One
+                    </Typography>
+                  </Box>
                 </Box>
               ) : null}
             </Box>
