@@ -1,4 +1,4 @@
-import { ArrowBackRounded, CloseRounded } from "@mui/icons-material";
+import { CloseRounded } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -6,7 +6,6 @@ import {
   Divider,
   Drawer,
   IconButton,
-  InputAdornment,
   CircularProgress,
   OutlinedInput,
   Stack,
@@ -123,6 +122,7 @@ export const StudioWrapper = ({
   const selectedModel = selectedModelZUID
     ? modelsState[selectedModelZUID] || null
     : null;
+  const panelTitle = selectedItem?.web?.metaTitle || "Studio";
 
   const updateItemByPath = useCallback(
     async (path: string) => {
@@ -851,44 +851,11 @@ export const StudioWrapper = ({
                 spacing={1}
               >
                 <Stack direction="row" alignItems="center" spacing={1}>
-                  {panelMode === "edit" ? (
-                    <IconButton
-                      aria-label="Back to info"
-                      onClick={clearSelection}
-                      disabled={isSaving}
-                      size="small"
-                    >
-                      <ArrowBackRounded />
-                    </IconButton>
-                  ) : (
-                    <Box sx={{ width: 32 }} />
-                  )}
                   <Typography variant="subtitle1" fontWeight="600">
-                    Studio
+                    {panelTitle}
                   </Typography>
                 </Stack>
                 <Stack direction="row" gap={1} alignItems="center">
-                  {panelMode === "edit" ? (
-                    <RedirectsDialogContextProvider>
-                      <ItemEditHeaderActions
-                        saving={isSaving}
-                        onSave={handleSave}
-                        hasError={hasErrors}
-                        isLoadingItem={isSelectedItemLoading}
-                        modelZUIDOverride={selectedModelZUID}
-                        itemZUIDOverride={selectedItemZUID}
-                      />
-                    </RedirectsDialogContextProvider>
-                  ) : (
-                    <Button
-                      size="small"
-                      variant="outlined"
-                      onClick={() => setPanelMode("edit")}
-                      disabled={isSaving}
-                    >
-                      Edit content
-                    </Button>
-                  )}
                   <IconButton
                     aria-label="Close Studio preview"
                     onClick={handleClose}
@@ -928,6 +895,29 @@ export const StudioWrapper = ({
                   renderInfoPanel()
                 )}
               </Box>
+              {panelMode === "edit" ? (
+                <Box mt="auto">
+                  <Stack direction="row" alignItems="center" spacing={1}>
+                    <Button
+                      variant="text"
+                      onClick={clearSelection}
+                      disabled={isSaving}
+                    >
+                      Cancel
+                    </Button>
+                    <RedirectsDialogContextProvider>
+                      <ItemEditHeaderActions
+                        saving={isSaving}
+                        onSave={handleSave}
+                        hasError={hasErrors}
+                        isLoadingItem={isSelectedItemLoading}
+                        modelZUIDOverride={selectedModelZUID}
+                        itemZUIDOverride={selectedItemZUID}
+                      />
+                    </RedirectsDialogContextProvider>
+                  </Stack>
+                </Box>
+              ) : null}
             </Box>
           </Drawer>
         </Box>
