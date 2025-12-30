@@ -543,6 +543,7 @@ export const StudioWrapper = ({
             .studio-hover {
               outline: 1px dashed #00bcd4;
               outline-offset: 2px;
+              cursor: pointer;
             }
             .studio-selected {
               outline: 2px solid #ff9800;
