@@ -898,10 +898,6 @@ export const StudioWrapper = ({
                 </Stack>
               </Stack>
               <Stack direction="row" alignItems="center" gap={1}>
-                {/* <LanguageSelector
-                  modelZUIDOverride={selectedModelZUID}
-                  itemZUIDOverride={selectedItemZUID}
-                /> */}
                 <VersionSelector
                   activeVersion={activeVersion}
                   modelZUIDOverride={selectedModelZUID}
