@@ -139,6 +139,7 @@ export const StudioWrapper = ({
         setCurrentModelZUID(resolved.meta.contentModelZUID);
         setSelectedElement(null);
         setUnresolvedPath(false);
+        setPanelMode("info");
       } else {
         setUnresolvedPath(true);
       }
