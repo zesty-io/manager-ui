@@ -245,14 +245,6 @@ export const StudioWrapper = ({
     : undefined;
   const activeVersion = editorItem?.meta?.version ?? 0;
 
-  const handleClose = () => {
-    if (location.pathname.startsWith("/studio")) {
-      history.push("/launchpad");
-    } else {
-      history.push("/launchpad");
-    }
-  };
-
   useEffect(() => {
     const iframeEl = iframeRef.current;
     if (!iframeEl) return;
@@ -695,7 +687,6 @@ export const StudioWrapper = ({
     <Dialog
       open
       fullScreen
-      onClose={handleClose}
       PaperProps={{
         sx: {
           overflow: "hidden",
@@ -870,7 +861,7 @@ export const StudioWrapper = ({
                 <Stack direction="row" gap={1} alignItems="center">
                   <IconButton
                     aria-label="Close Studio preview"
-                    onClick={handleClose}
+                    onClick={clearSelection}
                     size="small"
                   >
                     <CloseRounded />
