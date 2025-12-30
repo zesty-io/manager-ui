@@ -1,5 +1,6 @@
 import { CloseRounded } from "@mui/icons-material";
 import {
+  Alert,
   Box,
   Button,
   Dialog,
@@ -651,6 +652,9 @@ export const StudioWrapper = ({
 
   const renderInfoPanel = () => (
     <Box display="flex" flexDirection="column" gap={2}>
+      <Alert severity="info" variant="standard">
+        Select items on the canvas to make edits
+      </Alert>
       <ContentInfo
         itemZUID={selectedItemZUID}
         modelZUID={selectedModelZUID}
