@@ -834,6 +834,7 @@ export const StudioWrapper = ({
                 width: drawerWidth,
                 boxSizing: "border-box",
                 borderLeft: (theme) => `1px solid ${theme.palette.border}`,
+                backgroundColor: (theme) => theme.palette.grey[50],
               },
             }}
           >
@@ -850,10 +851,17 @@ export const StudioWrapper = ({
                 justifyContent="space-between"
                 spacing={1}
               >
-                <Stack direction="row" alignItems="center" spacing={1}>
+                <Stack>
                   <Typography variant="subtitle1" fontWeight="600">
                     {panelTitle}
                   </Typography>
+                  <Box>
+                    <VersionSelector
+                      activeVersion={activeVersion}
+                      modelZUIDOverride={selectedModelZUID}
+                      itemZUIDOverride={selectedItemZUID}
+                    />
+                  </Box>
                 </Stack>
                 <Stack direction="row" gap={1} alignItems="center">
                   <IconButton
@@ -865,14 +873,6 @@ export const StudioWrapper = ({
                   </IconButton>
                 </Stack>
               </Stack>
-              <Stack direction="row" alignItems="center" gap={1}>
-                <VersionSelector
-                  activeVersion={activeVersion}
-                  modelZUIDOverride={selectedModelZUID}
-                  itemZUIDOverride={selectedItemZUID}
-                />
-              </Stack>
-              <Divider />
               <Box flex="1" overflow="auto" pr={1}>
                 {unresolvedPath ? (
                   <Box
