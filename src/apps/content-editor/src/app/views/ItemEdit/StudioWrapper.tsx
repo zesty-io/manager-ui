@@ -154,7 +154,7 @@ export const StudioWrapper = ({
     (path: string) => {
       if (!location.pathname.startsWith("/studio")) return;
       const normalized = normalizePath(path || "/");
-      history.push(`/studio?path=${encodeURIComponent(normalized)}`);
+      history.replace(`/studio?path=${encodeURIComponent(normalized)}`);
     },
     [history, location.pathname]
   );
