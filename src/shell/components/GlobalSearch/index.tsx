@@ -261,7 +261,7 @@ export const GlobalSearch = () => {
     }
 
     return consolidatedResults
-      .filter((result) => !!result || Object.keys(result).length)
+      .filter((result) => !!result && Object.keys(result).length)
       .sort(
         (a, b) =>
           new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
