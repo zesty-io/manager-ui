@@ -260,10 +260,12 @@ export const GlobalSearch = () => {
         break;
     }
 
-    return consolidatedResults.sort(
-      (a, b) =>
-        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-    );
+    return consolidatedResults
+      .filter((result) => !!result || Object.keys(result).length)
+      .sort(
+        (a, b) =>
+          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+      );
   }, [
     contents,
     models,
