@@ -501,10 +501,7 @@ export const GlobalSearch = () => {
             /** This is when the user selects any of the suggestions */
 
             // null represents "X" button clicked
-            if (
-              !newVal ||
-              (typeof newVal === "object" && !Object.keys(newVal)?.length)
-            ) {
+            if (!newVal) {
               setSearchKeyword("");
               return;
             }
@@ -528,7 +525,7 @@ export const GlobalSearch = () => {
 
               goToSearchPage(newVal);
             } else {
-              if (newVal.url) {
+              if (newVal?.url) {
                 history.push(newVal.url);
               } else {
                 dispatch(
