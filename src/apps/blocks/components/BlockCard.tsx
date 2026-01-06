@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, Tooltip } from "@mui/material";
 import { ContentModel } from "../../../shell/services/types";
 import { useGetContentModelItemsQuery } from "../../../shell/services/instance";
 import blockPlaceholder from "../../../../public/images/blockPlaceholder.png";
@@ -48,18 +48,20 @@ export const BlockCard = ({ model }: BlockCardProps) => {
           }}
         />
       </Box>
-      <Box
-        bgcolor="white"
-        py={2}
-        px={1}
-        sx={{
-          borderRadius: "0 0 4px 4px",
-        }}
-      >
-        <Typography variant="body2" noWrap>
-          {model.label}
-        </Typography>
-      </Box>
+      <Tooltip title={model.label} enterDelay={1000} enterNextDelay={500}>
+        <Box
+          bgcolor="white"
+          py={2}
+          px={1}
+          sx={{
+            borderRadius: "0 0 4px 4px",
+          }}
+        >
+          <Typography variant="body2" noWrap>
+            {model.label}
+          </Typography>
+        </Box>
+      </Tooltip>
     </Box>
   );
 };
