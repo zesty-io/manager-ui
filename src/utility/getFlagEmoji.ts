@@ -1,4 +1,8 @@
 export default (countryCode: string) => {
+  if (countryCode.length !== 2) {
+    return "";
+  }
+
   // Convert country code to flag emoji.
   // Unicode flag emojis are made up of regional indicator symbols, which are a sequence of two letters.
   const baseOffset = 0x1f1e6;
