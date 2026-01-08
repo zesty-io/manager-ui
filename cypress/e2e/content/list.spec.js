@@ -19,20 +19,24 @@ describe("Content List Filters", () => {
       contentItems[1].data.text
     );
     cy.get(".MuiDataGrid-cell").contains(contentItems[1].data.text);
-    cy.getBySelector("MultiPageTableSearchField")
-      .type("{selectAll}{del}")
-      .wait(500);
+    cy.getBySelector("MultiPageTableSearchField").clear();
   });
 
   it("Filters items based on date saved", () => {
-    cy.getBySelector("date_default").click();
+    cy.getBySelector("MultiPageTableSearchField")
+      .find("input")
+      .should("be.empty");
+    cy.getBySelector("date_default").click({ force: true });
     cy.getBySelector("DateFilterMenu")
       .find("ul li")
-      .eq(1)
+      .contains("Yesterday")
       .should("exist")
-      .click();
+      .click({ force: true });
     cy.getBySelector("NoResults").should("exist");
-    cy.getBySelector("date_clearFilter").should("exist").click();
+    cy.getBySelector("date_clearFilter")
+      .should("exist")
+      .should("be.enabled")
+      .click({ force: true });
     cy.getBySelector("NoResults").should("not.exist");
   });
 
