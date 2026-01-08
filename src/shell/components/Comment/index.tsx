@@ -3,6 +3,7 @@ import AddCommentRoundedIcon from "@mui/icons-material/AddCommentRounded";
 import CommentRoundedIcon from "@mui/icons-material/CommentRounded";
 import { useState, useRef, useEffect, useMemo, useContext } from "react";
 import { useParams, useHistory, useLocation } from "react-router";
+import { useIntersection } from "react-use";
 
 import { CommentsList } from "./CommentsList";
 import { useGetCommentByResourceQuery } from "../../services/accounts";
@@ -20,14 +21,18 @@ export const Comment = ({ resourceZUID }: CommentProps) => {
   const history = useHistory();
   const location = useLocation();
   const [_, __, ___, setCommentZUIDtoEdit] = useContext(CommentContext);
+  const buttonContainerRef = useRef<HTMLDivElement>();
+  const intersection = useIntersection(buttonContainerRef, {
+    threshold: 1,
+  });
+  const isInView = intersection && intersection.intersectionRatio >= 1;
   const { itemZUID, resourceZUID: activeResourceZUID } =
     useParams<PathParams>();
   const { data: comment, isLoading: isLoadingComment } =
     useGetCommentByResourceQuery(
       { itemZUID, resourceZUID },
-      { skip: !resourceZUID }
+      { skip: !resourceZUID || !isInView }
     );
-  const buttonContainerRef = useRef<HTMLDivElement>();
   const [isCommentListOpen, setIsCommentListOpen] = useState(false);
   const [isButtonAutoscroll, setIsButtonAutoscroll] = useState(true);
 
