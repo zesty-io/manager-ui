@@ -14,19 +14,15 @@ import {
 } from "../../../../../../../../shell/services/instance";
 import { useHistory, useLocation, useParams } from "react-router";
 import { KeyboardArrowDownRounded } from "@mui/icons-material";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ContentItem } from "../../../../../../../../shell/services/types";
 import { AppState } from "../../../../../../../../shell/store/types";
 import { selectLang } from "../../../../../../../../shell/store/user";
-import getFlagEmoji from "../../../../../../../../utility/getFlagEmoji";
-
-const getCountryCode = (langCode: string) => {
-  const splitTag = langCode.split("-");
-  const countryCode =
-    splitTag.length === 2 ? splitTag[1] : langCode.toUpperCase();
-  return countryCode;
-};
+import {
+  Flag,
+  getCountryCode,
+} from "../../../../../../../../shell/components/Flag";
 
 export const LanguageSelector = () => {
   const dispatch = useDispatch();
@@ -107,7 +103,7 @@ export const LanguageSelector = () => {
           data-cy="language-selector"
         >
           <Box component="span" color="text.primary">
-            {getFlagEmoji(getCountryCode(activeLanguage?.code))}
+            <Flag countryCode={getCountryCode(activeLanguage?.code)} />
           </Box>{" "}
           {activeLanguage?.code?.split("-")[0]?.toUpperCase()} (
           {getCountryCode(activeLanguage?.code)})
@@ -140,7 +136,7 @@ export const LanguageSelector = () => {
               onSelect(language.code);
             }}
           >
-            {getFlagEmoji(getCountryCode(language.code))}{" "}
+            <Flag countryCode={getCountryCode(language.code)} />{" "}
             {language.code.split("-")[0]?.toUpperCase()} (
             {getCountryCode(language.code)})
           </MenuItem>
