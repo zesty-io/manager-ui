@@ -22,6 +22,11 @@ describe("Content Item: Comments", () => {
     });
   });
 
+  beforeEach(() => {
+    // Workaround for Cypress issue with IntersectionObserver
+    cy.viewport(1440, 900);
+  });
+
   it("Creates an initial comment", () => {
     cy.intercept("/v1/comments").as("getAllComments");
     cy.get(commentBox).should("exist");
