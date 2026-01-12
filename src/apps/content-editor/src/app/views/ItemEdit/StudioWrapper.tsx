@@ -800,6 +800,8 @@ export const StudioWrapper = ({
               onChange={({ langCode, siblingZUID }) => {
                 if (!langCode || !siblingZUID) return;
                 const siblingItem = contentItems[siblingZUID];
+
+                // i need to update this to be done implictly
                 const localizedPath = siblingItem
                   ? getItemPath(siblingItem)
                   : null;
