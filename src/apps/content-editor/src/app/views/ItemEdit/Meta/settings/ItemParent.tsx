@@ -265,6 +265,13 @@ export const ItemParent = ({ onChange }: ItemParentProps) => {
               {value.text}
             </ListItem>
           )}
+          slotProps={{
+            listbox: {
+              ...({
+                "data-cy": "itemRouteListBox",
+              } as React.HTMLAttributes<HTMLUListElement>),
+            },
+          }}
           getOptionLabel={(option) => option.text}
           onInputChange={(_, filterTerm) => {
             if (filterTerm !== "/") {

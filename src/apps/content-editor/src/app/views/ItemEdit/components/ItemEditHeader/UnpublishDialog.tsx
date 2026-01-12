@@ -22,7 +22,13 @@ export const UnpublishDialog = ({
   loading,
 }: UnpublishDialogProps) => {
   return (
-    <Dialog open fullWidth maxWidth={"xs"} onClose={onClose}>
+    <Dialog
+      open
+      fullWidth
+      maxWidth={"xs"}
+      onClose={onClose}
+      data-cy="unpublishDialog"
+    >
       <DialogTitle>
         <Box
           sx={{

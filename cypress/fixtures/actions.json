@@ -1,0 +1,198 @@
+{
+  "model": {
+    "label": "Content - Actions",
+    "type": "pageset",
+    "listed": true
+  },
+  "fields": [
+    {
+      "label": "Text",
+      "name": "text",
+      "datatype": "text",
+      "required": true,
+      "sort": 0,
+      "settings": {
+        "list": true,
+        "defaultValue": "Sample text",
+        "maxCharLimit": 30,
+        "minCharLimit": 10
+      }
+    },
+    {
+      "datatype": "textarea",
+      "name": "textarea",
+      "label": "textarea",
+      "required": true,
+      "sort": 1,
+      "settings": {
+        "list": true,
+        "defaultValue": "test_email@zesty.io",
+        "regexMatchErrorMessage": "Must be an email (e.g. hello@zesty.io)",
+        "regexMatchPattern": "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?"
+      }
+    },
+    {
+      "datatype": "markdown",
+      "name": "markdown",
+      "label": "markdown",
+      "required": true,
+      "sort": 2,
+      "settings": {
+        "list": true,
+        "defaultValue": "markdown"
+      }
+    },
+    {
+      "datatype": "wysiwyg_basic",
+      "name": "wysiwyg_basic",
+      "label": "wysiwyg basic",
+      "sort": 3,
+      "settings": {
+        "list": true,
+        "defaultValue": "What is Zesty.io?"
+      }
+    },
+    {
+      "label": "Dropdown",
+      "name": "dropdown",
+      "datatype": "dropdown",
+      "sort": 4,
+      "settings": {
+        "list": true,
+        "defaultValue": "Option 1",
+        "options": {
+          "Option 1": "Option 1",
+          "Option 2": "Option 2"
+        }
+      }
+    },
+    {
+      "label": "Yes/No",
+      "name": "yes_no",
+      "datatype": "yes_no",
+      "sort": 5,
+      "settings": {
+        "list": true,
+        "defaultValue": 1,
+        "options": {
+          "0": "No",
+          "1": "Yes"
+        }
+      }
+    },
+    {
+      "label": "Images",
+      "name": "images",
+      "datatype": "images",
+      "sort": 6,
+      "settings": {
+        "list": true,
+        "defaultValue": "3-7d9231d-i4iv9",
+        "limit": 5
+      }
+    },
+    {
+      "label": "One to One",
+      "name": "one_to_one",
+      "datatype": "one_to_one",
+      "sort": 7,
+      "relatedModelZUID": "6-a8bae2f4d7-rffln5",
+      "relatedFieldZUID": "12-d6e4c1d797-sjv628",
+      "settings": {
+        "list": true,
+        "defaultValue": "7-feb2e9c4e2-4hm7c2"
+      }
+    },
+    {
+      "label": "Fontawesome",
+      "name": "fontawesome",
+      "datatype": "fontawesome",
+      "sort": 8,
+      "settings": {
+        "list": true
+      }
+    }
+  ],
+  "items": [
+    {
+      "web": {
+        "metaTitle": "Action Item 1",
+        "metaLinkText": "Action Item 1"
+      },
+      "data": {
+        "text": "Mitchell Wilder",
+        "textarea": "test_email@zesty.io",
+        "markdown": "markdown",
+        "wysiwyg_basic": "<p>Ullamco cupidatat pariatur sit ad non non.</p>",
+        "yes_no": 0,
+        "dropdown": "Option 1",
+        "images": "3-6d7e8b3-4dv81",
+        "fontawesome": "fontawesome"
+      }
+    },
+    {
+      "web": {
+        "metaTitle": "Action Item 2",
+        "metaLinkText": "Action Item 2"
+      },
+      "data": {
+        "text": "Annabelle Monroe",
+        "textarea": "673 Locust Street, Klagetoh, Alaska, 1340",
+        "markdown": "markdown",
+        "wysiwyg_basic": "<p>Elit tempor laborum consequat nisi.</p>",
+        "yes_no": 0,
+        "dropdown": "Option 1",
+        "images": "3-6e3cefc-neo39,3-7d9231d-i4iv9,3-b138798-i992x,3-6d7e8b3-4dv81",
+        "fontawesome": "fontawesome"
+      }
+    },
+    {
+      "web": {
+        "metaTitle": "Action Item 3",
+        "metaLinkText": "Action Item 3"
+      },
+      "data": {
+        "text": "Vilma Cantu",
+        "textarea": "508 Williamsburg Street, Buxton, Utah, 4962",
+        "markdown": "markdown",
+        "wysiwyg_basic": "<p>Culpa amet consectetur culpa ipsum duis laboris et consectetur laboris sit amet aute.</p>",
+        "yes_no": 0,
+        "dropdown": "Option 1",
+        "images": "3-6e3cefc-neo39",
+        "fontawesome": "fontawesome"
+      }
+    },
+    {
+      "web": {
+        "metaTitle": "Action Item 4",
+        "metaLinkText": "Action Item 4"
+      },
+      "data": {
+        "text": "Mercedes Noel",
+        "textarea": "715 Irving Street, Carlos, Maryland, 5696",
+        "markdown": "markdown",
+        "wysiwyg_basic": "<p>Occaecat laborum excepteur nulla officia mollit reprehenderit. Officia culpa esse labore do mollit elit.</p>",
+        "yes_no": 0,
+        "dropdown": "Option 1",
+        "images": "3-b138798-i992x",
+        "fontawesome": "fontawesome"
+      }
+    },
+    {
+      "web": {
+        "metaTitle": "Action Item 5",
+        "metaLinkText": "Action Item 5"
+      },
+      "data": {
+        "text": "Chrystal Johns",
+        "textarea": "test_email@zesty.io",
+        "markdown": "markdown",
+        "wysiwyg_basic": "",
+        "yes_no": 0,
+        "dropdown": "Option 1",
+        "images": "3-7d9231d-i4iv9",
+        "fontawesome": "fontawesome"
+      }
+    }
+  ]
+}
