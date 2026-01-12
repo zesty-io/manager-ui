@@ -14,7 +14,8 @@ const { sentryWebpackPlugin } = require("@sentry/webpack-plugin");
 
 const release = require("../../etc/release");
 const CONFIG = require("./app.config");
-const isCoverage = process.env.CYPRESS_COVERAGE === "true";
+const isCoverage = true;
+const coverageBabelPlugins = isCoverage ? ["istanbul"] : [];
 
 module.exports = async (env) => {
   // create build/ dir
@@ -232,11 +233,34 @@ module.exports = async (env) => {
     },
     module: {
       rules: [
-        {
-          test: /\.ts$|tsx/,
-          use: "ts-loader",
-          exclude: /node_modules/,
-        },
+        ...(isCoverage
+          ? [
+              {
+                test: /\.ts$|tsx/,
+                exclude: /node_modules/,
+                use: [
+                  {
+                    loader: "babel-loader",
+                    options: {
+                      cacheCompression: false,
+                      cacheDirectory: true,
+                      plugins: [
+                        "@babel/plugin-transform-runtime",
+                        ...coverageBabelPlugins,
+                      ],
+                    },
+                  },
+                  "ts-loader",
+                ],
+              },
+            ]
+          : [
+              {
+                test: /\.ts$|tsx/,
+                use: "ts-loader",
+                exclude: /node_modules/,
+              },
+            ]),
         {
           test: /\.less$/,
           use: [
@@ -268,7 +292,10 @@ module.exports = async (env) => {
                 "@babel/preset-env",
                 ["@babel/preset-react", { runtime: "automatic" }],
               ],
-              plugins: ["@babel/plugin-transform-runtime"],
+              plugins: [
+                "@babel/plugin-transform-runtime",
+                ...coverageBabelPlugins,
+              ],
             },
           },
         },
@@ -283,21 +310,6 @@ module.exports = async (env) => {
             filename: "[name].[ext]",
           },
         },
-        ...(isCoverage
-          ? [
-              {
-                test: /\.(js|jsx|ts|tsx)$/,
-                exclude: [/node_modules/, /cypress/],
-                use: {
-                  loader: "istanbul-instrumenter-loader",
-                  options: {
-                    esModules: true,
-                  },
-                },
-                enforce: "post",
-              },
-            ]
-          : []),
       ],
     },
   };

@@ -46,6 +46,7 @@ jobs:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
       - name: Coverage Summary
         run: npx nyc report --reporter=text-summary --reporter=text
+        if: ${{ always() }}
       - name: Upload Screenshots
         if: ${{ failure() }}
         run: ./ci/scripts/upload_debug_screenshots_to_gcp.sh
