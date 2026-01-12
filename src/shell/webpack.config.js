@@ -14,6 +14,7 @@ const { sentryWebpackPlugin } = require("@sentry/webpack-plugin");
 
 const release = require("../../etc/release");
 const CONFIG = require("./app.config");
+const isCoverage = process.env.CYPRESS_COVERAGE === "true";
 
 module.exports = async (env) => {
   // create build/ dir
@@ -282,6 +283,21 @@ module.exports = async (env) => {
             filename: "[name].[ext]",
           },
         },
+        ...(isCoverage
+          ? [
+              {
+                test: /\.(js|jsx|ts|tsx)$/,
+                exclude: [/node_modules/, /cypress/],
+                use: {
+                  loader: "istanbul-instrumenter-loader",
+                  options: {
+                    esModules: true,
+                  },
+                },
+                enforce: "post",
+              },
+            ]
+          : []),
       ],
     },
   };
