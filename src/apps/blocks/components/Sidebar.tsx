@@ -11,7 +11,9 @@ import { CreateModelDialogue } from "../../schema/src/app/components/CreateModel
 import noSearchResults from "../../../../public/images/noSearchResults.svg";
 
 export const Sidebar = () => {
-  const { data: models, isLoading } = useGetContentModelsQuery();
+  const { data: models, isLoading } = useGetContentModelsQuery(null, {
+    refetchOnMountOrArgChange: true,
+  });
   const history = useHistory();
   const [filter, setFilter] = useState("");
   const [isCreateModelDialogueOpen, setIsCreateModelDialogueOpen] =

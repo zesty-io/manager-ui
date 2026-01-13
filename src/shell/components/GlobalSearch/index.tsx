@@ -21,10 +21,6 @@ import { isEmpty } from "lodash";
 import { theme } from "@zesty-io/material";
 
 import { useMetaKey } from "../../../shell/hooks/useMetaKey";
-import {
-  useGetContentModelsQuery,
-  useSearchContentQuery,
-} from "../../services/instance";
 import { notify } from "../../store/notifications";
 import { AdvancedSearch } from "./components/AdvancedSearch";
 import useRecentSearches from "../../hooks/useRecentSearches";
@@ -32,7 +28,7 @@ import { GlobalSearchItem } from "./components/GlobalSearchItem";
 import { getContentTitle, getItemIcon } from "./utils";
 import { useSearchModelsByKeyword } from "../../hooks/useSearchModelsByKeyword";
 import { useSearchCodeFilesByKeywords } from "../../hooks/useSearchCodeFilesByKeyword";
-import { ResourceType } from "../../services/types";
+import { ContentItem, ResourceType } from "../../services/types";
 import { SearchAccelerator } from "./components/SearchAccelerator";
 import { SEARCH_ACCELERATORS } from "./components/config";
 import { useGetActiveApp } from "../../hooks/useGetActiveApp";
@@ -47,6 +43,9 @@ import { KeywordSearchItem } from "./components/KeywordSearchItem";
 import { useParams } from "../../hooks/useParams";
 import { withCursorPosition } from "../../components/withCursorPosition";
 import { useSearchBlocksByKeyword } from "../../hooks/useSearchBlocksByKeyword";
+import { fetchModels } from "shell/store/models";
+import { AppState } from "shell/store/types";
+import { searchItems } from "shell/store/content";
 
 // List of dropdown options that are NOT suggestions
 const AdditionalDropdownOptions = [
@@ -81,11 +80,7 @@ export const GlobalSearch = () => {
   const [isAdvancedSearchOpen, setIsAdvancedSearchOpen] = useState(false);
   const [recentSearches, addSearchTerm, deleteSearchTerm] = useRecentSearches();
   const [models, setModelKeyword] = useSearchModelsByKeyword();
-  const {
-    blocks,
-    setBlockKeyword,
-    isLoading: isFetchingBlocksResults,
-  } = useSearchBlocksByKeyword();
+
   const [codeFiles, setFileKeyword] = useSearchCodeFilesByKeywords();
   const [mediaFolders, setMediaFolderKeyword] =
     useSearchMediaFoldersByKeyword();
@@ -97,7 +92,10 @@ export const GlobalSearch = () => {
   const dispatch = useDispatch();
   const [params, setParams] = useParams();
   const textfieldRef = useRef<HTMLDivElement>();
-  const { data: allModels } = useGetContentModelsQuery();
+  const allModels = useSelector((state: AppState) => state?.models);
+  const [contents, setContents] = useState<ContentItem[]>([]);
+  const [isFetchingContentSearchResults, setIsFetchingContentSearchResults] =
+    useState(false);
 
   const apiQueryTerm = useMemo(() => {
     if (!!typedSearchAccelerator && !!searchKeyword) {
@@ -107,12 +105,6 @@ export const GlobalSearch = () => {
 
     return searchKeyword;
   }, [searchKeyword]);
-
-  const {
-    data: contents,
-    isError: isContentFetchingFailed,
-    isFetching: isFetchingContentSearchResults,
-  } = useSearchContentQuery({ query: apiQueryTerm });
 
   const { data: bins } = useGetBinsQuery({ instanceId, ecoId });
   const { data: mediaFiles, isFetching: isFetchingMediaSearchResults } =
@@ -128,35 +120,63 @@ export const GlobalSearch = () => {
       { skip: !bins?.length }
     );
 
+  const { blocks, setBlockKeyword } = useSearchBlocksByKeyword({
+    isLoading: isFetchingContentSearchResults,
+  });
+
   const isLoading =
     isFetchingAllMediaFiles ||
     isFetchingMediaSearchResults ||
-    isFetchingContentSearchResults ||
-    isFetchingBlocksResults;
+    isFetchingContentSearchResults;
+
+  useEffect(() => {
+    //Update models in store to provide access to other search hooks
+    dispatch(fetchModels());
+  }, []);
+
+  useEffect(() => {
+    if (isEmpty(apiQueryTerm)) {
+      return setContents([]);
+    }
+    setIsFetchingContentSearchResults(true);
+    //Update contents in store to provide access to other search hooks
+    dispatch(searchItems(apiQueryTerm))
+      //@ts-ignore
+      .then((res) => {
+        if (!!res?.data?.length) {
+          setContents(res?.data);
+        } else {
+          setContents([]);
+        }
+      })
+      .catch(() => {
+        setContents([]);
+      })
+      .finally(() => {
+        setIsFetchingContentSearchResults(false);
+      });
+  }, [apiQueryTerm]);
 
   const suggestions: Suggestion[] = useMemo(() => {
+    const filteredContents = contents?.filter(
+      (item: ContentItem) =>
+        allModels?.[item?.meta?.contentModelZUID]?.type !== "block"
+    );
     // Content data needs to be reset to [] when api call fails
-    const contentSuggestions: Suggestion[] =
-      isContentFetchingFailed || isEmpty(contents)
-        ? []
-        : contents?.map((content) => {
-            return {
-              type: "content",
-              ZUID: content.meta?.ZUID,
-              title: getContentTitle(content, languages),
-              updatedAt: content.meta?.updatedAt,
-              url: isEmpty(content.meta)
-                ? ""
-                : `/${
-                    allModels?.find(
-                      (model) => model.ZUID === content.meta.contentModelZUID
-                    )?.type === "block"
-                      ? "blocks"
-                      : "content"
-                  }/${content.meta.contentModelZUID}/${content.meta.ZUID}`,
-              noUrlErrorMessage: "Selected item is missing meta data",
-            };
-          });
+    const contentSuggestions: Suggestion[] = isEmpty(filteredContents)
+      ? []
+      : filteredContents?.map((content) => {
+          return {
+            type: "content",
+            ZUID: content.meta?.ZUID,
+            title: getContentTitle(content, languages),
+            updatedAt: content.meta?.updatedAt,
+            url: isEmpty(content.meta)
+              ? ""
+              : `/content/${content.meta.contentModelZUID}/${content.meta.ZUID}`,
+            noUrlErrorMessage: "Selected item is missing meta data",
+          };
+        });
 
     const modelSuggestions: Suggestion[] =
       models?.map((model) => {
@@ -271,9 +291,9 @@ export const GlobalSearch = () => {
     codeFiles,
     mediaFiles,
     mediaFolders,
-    isContentFetchingFailed,
     chipSearchAccelerator,
     allMediaFiles,
+    allModels,
   ]);
 
   const options = useMemo(() => {

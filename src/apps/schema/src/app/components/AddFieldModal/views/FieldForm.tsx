@@ -647,10 +647,14 @@ export const FieldForm = ({
             fieldStateOnSaveAction === "deactivate" &&
             !fieldData?.deletedAt
           ) {
-            deleteContentModelField({
-              modelZUID: id,
-              fieldZUID: fieldData?.ZUID,
-            });
+            // added a delay to temporarily fix an issue with field not being deleted properly
+            // likely related to api response caching
+            setTimeout(() => {
+              deleteContentModelField({
+                modelZUID: id,
+                fieldZUID: fieldData?.ZUID,
+              });
+            }, 1000);
           }
         })
         .catch((error) => {
