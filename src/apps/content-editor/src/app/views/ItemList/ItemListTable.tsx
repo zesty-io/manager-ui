@@ -382,6 +382,7 @@ export const ItemListTable = memo(
       <AutoSizer>
         {({ width, height }: Size) => (
           <DataGridPro
+            data-cy="listItemTable"
             apiRef={apiRef}
             loading={loading}
             rows={loading ? [] : rows}
@@ -449,6 +450,9 @@ export const ItemListTable = memo(
               loadingOverlay: {
                 variant: "skeleton",
                 noRowsVariant: "skeleton",
+              },
+              row: {
+                "data-cy": "itemListRow",
               },
             }}
             getRowClassName={(params) => {
