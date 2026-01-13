@@ -1,17 +1,24 @@
-const options = { timeout: 15000 };
 const forceClick = { force: true };
 
 const commentBox = '#commentInputField[contenteditable="true"]';
 
 describe("Content Item: Comments", () => {
+  let FIELDS;
+
   before(() => {
-    cleanComments();
-    cy.waitOn("/v1/content/models*", () => {
-      cy.waitOn("/v1/comments*", () => {
-        cy.visit(
-          "/content/6-556370-8sh47g/7-b939a4-457q19/comment/12-6d41d0-n10vtc"
-        );
-      });
+    cy.task("seed:content", "fixtures/item.json").then(
+      ({ model, fields, items }) => {
+        Cypress.env("modelZUID", model?.ZUID);
+        Cypress.env("itemZUID", items[0]?.meta?.ZUID);
+        FIELDS = fields;
+      }
+    );
+    cy.waitOn("/v1/content/models**", () => {
+      cy.visit(
+        `/content/${Cypress.env("modelZUID")}/${Cypress.env(
+          "itemZUID"
+        )}/comment/${FIELDS[0]?.ZUID}`
+      );
     });
   });
 
@@ -21,31 +28,35 @@ describe("Content Item: Comments", () => {
   });
 
   it("Creates an initial comment", () => {
-    cy.intercept("/v1/comments/*").as("getAllComments");
-    cy.get(commentBox, { timeout: 50000 }).should("exist");
-    cy.get(commentBox).focus();
-    cy.get(commentBox).type("This is a new comment.");
-    cy.get('[data-cy="SubmitNewComment"]').click();
-
+    cy.intercept("/v1/comments").as("getAllComments");
+    cy.get(commentBox).should("exist");
+    cy.get(commentBox).focus().type("{selectAll}{del}This is a new comment.");
+    cy.getBySelector("SubmitNewComment")
+      .should("exist")
+      .should("be.enabled")
+      .click();
     cy.wait("@getAllComments");
-    cy.get('[data-cy="CommentItem"]').should("have.length", 1);
+    cy.getBySelector("CommentItem").should("have.length", 1);
   });
 
   it("Replies to a comment", () => {
     cy.intercept("/v1/comments/*?showReplies=true&showResolved=true").as(
       "getReplies"
     );
-    cy.get(commentBox, options).type("Hello, this is a new reply!");
-    cy.get('[data-cy="SubmitNewComment"]').click();
+    cy.get(commentBox).type("Hello, this is a new reply!");
+    cy.getBySelector("SubmitNewComment")
+      .should("exist")
+      .should("be.enabled")
+      .click();
 
     cy.wait("@getReplies");
-    cy.get('[data-cy="CommentItem"]').should("have.length", 2);
+    cy.getBySelector("CommentItem").should("have.length", 2);
   });
 
   it("Updates an existing comment", () => {
     const UPDATED_TEXT = "I am updating this comment now.";
 
-    cy.getBySelector("CommentMenuButton", options).first().click(forceClick);
+    cy.getBySelector("CommentMenuButton").first().click(forceClick);
     cy.getBySelector("EditCommentButton").click();
     cy.get(commentBox).type(`{selectall}{backspace}${UPDATED_TEXT}`);
     cy.getBySelector("SubmitNewComment").click();
@@ -70,7 +81,7 @@ describe("Content Item: Comments", () => {
   });
 
   it("Reopens a comment when there is a new reply", () => {
-    cy.get(commentBox, options).type("Reopening ticket.");
+    cy.get(commentBox).type("Reopening ticket.");
     cy.getBySelector("SubmitNewComment").click();
     cy.intercept("/v1/comments/*?showReplies=true&showResolved=true").as(
       "getReplies"
@@ -87,19 +98,20 @@ describe("Content Item: Comments", () => {
     cy.intercept("DELETE", "/v1/comments/*").as("deleteComment");
     cy.intercept("/v1/instances/*/comments?resource=*").as("getComments");
 
-    cy.get('[data-cy="CommentItem"]', { timeout: 40000 }).should("exist");
+    cy.getBySelector("CommentItem").should("exist");
 
     const beforeDeleteCount = Cypress.$('[data-cy="CommentItem"]').length;
 
     cy.log("beforeDeleteCount: ", beforeDeleteCount);
 
-    cy.get('[data-cy="CommentItem"]:eq(0) [data-cy="CommentMenuButton"]').click(
-      forceClick
-    );
+    cy.getBySelector("CommentItem")
+      .eq(0)
+      .find('[data-cy="CommentMenuButton"]')
+      .click(forceClick);
 
-    cy.get('[data-cy="DeleteCommentButton"]').click();
+    cy.getBySelector("DeleteCommentButton").click();
 
-    cy.get('[data-cy="ConfirmDeleteCommentButton"]', options).click();
+    cy.getBySelector("ConfirmDeleteCommentButton").click();
 
     cy.wait(["@deleteComment", "@getComments"]).spread(
       (deleteComment, getComments) => {
@@ -109,18 +121,3 @@ describe("Content Item: Comments", () => {
     );
   });
 });
-
-function cleanComments() {
-  cy.apiRequest({
-    url: `https://accounts.api.dev.zesty.io/v1/instances/8-f48cf3a682-7fthvk/comments?resource=7-b939a4-457q19&scope=12-6d41d0-n10vtc&showResolved=true`,
-    method: "GET",
-  }).then((response) => {
-    const zuids = response?.data?.map((item) => item?.ZUID);
-    zuids.forEach((zuid) => {
-      cy.apiRequest({
-        url: `https://accounts.api.dev.zesty.io/v1/comments/${zuid}`,
-        method: "DELETE",
-      });
-    });
-  });
-}
