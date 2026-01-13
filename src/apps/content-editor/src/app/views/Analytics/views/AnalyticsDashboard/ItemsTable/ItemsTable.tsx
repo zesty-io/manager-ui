@@ -303,7 +303,9 @@ export const ItemsTableContent = ({
             },
             ".MuiDataGrid-row": { cursor: "pointer" },
             // hide empty skeleton rows
-            ".MuiDataGrid-row:has(> :first-child:empty)": { display: "none" },
+            ".MuiDataGrid-row:has(.MuiDataGrid-cell:first-child:empty)": {
+              display: "none",
+            },
           }}
         />
       )}
