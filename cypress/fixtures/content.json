@@ -1,7 +1,7 @@
 {
   "model": {
-    "label": "E2E: Content",
-    "metaTitle": "E2E: Content",
+    "label": "Content",
+    "metaTitle": "Content",
     "type": "pageset",
     "listed": true
   },
@@ -358,8 +358,8 @@
         "sort": 0
       },
       "web": {
-        "metaLinkText": "E2E: Content",
-        "metaTitle": "E2E: Content"
+        "metaLinkText": "Content",
+        "metaTitle": "Content"
       },
       "data": {
         "internal_link": "7-a2c992ecb6-v6j9zt",
