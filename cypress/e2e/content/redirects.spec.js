@@ -64,11 +64,11 @@ describe("Content item redirects", () => {
         "itemZUID"
       )}/redirects`
     );
-    cy.getElement(".MuiDataGrid-row").should("have.length", 2);
+    cy.get(".MuiDataGrid-row").should("have.length", 2);
   });
 
   it("should be able to edit a redirect", () => {
-    cy.getElement(".MuiDataGrid-cell")
+    cy.get(".MuiDataGrid-cell")
       .contains(`${CURRENT_CONTENT?.name}/${REDIRECTS[0].path}`, {
         matchCase: false,
       })
@@ -88,7 +88,7 @@ describe("Content item redirects", () => {
   });
 
   it("should be able to delete a redirect", () => {
-    cy.getElement(".MuiDataGrid-cell")
+    cy.get(".MuiDataGrid-cell")
       .contains(`${CURRENT_CONTENT?.name}/${REDIRECTS[0].path}/updated`, {
         matchCase: false,
       })
@@ -98,7 +98,7 @@ describe("Content item redirects", () => {
     cy.getBySelector("DeleteRedirect").click();
     cy.getBySelector("ConfirmDeleteRedirect").click();
 
-    cy.getElement(".MuiDataGrid-cell")
+    cy.get(".MuiDataGrid-cell")
       .contains(`${CURRENT_CONTENT?.name}/${REDIRECTS[0].path}/updated`)
       .should("have.length", 0);
   });
@@ -109,16 +109,16 @@ describe("Content item redirects", () => {
         "itemZUID"
       )}/redirects`
     );
-    cy.getElement('[data-cy="AddIncomingRedirectButton"]').click();
+    cy.get('[data-cy="AddIncomingRedirectButton"]').click();
 
-    cy.getElement('[data-cy="RedirectsFieldPath"]:eq(0) input')
+    cy.get('[data-cy="RedirectsFieldPath"]:eq(0) input')
       .clear()
 
       .type(`${CURRENT_CONTENT?.name}/${ADD_REDIRECTS.path}`);
 
-    cy.getElement('[data-cy="RedirectsCreateButton"]').click();
+    cy.get('[data-cy="RedirectsCreateButton"]').click();
 
-    cy.getElement(".MuiDataGrid-row").should("have.length", 2);
+    cy.get(".MuiDataGrid-row").should("have.length", 2);
   });
 
   it("Redirect Content Item", () => {
@@ -127,50 +127,50 @@ describe("Content item redirects", () => {
         "itemZUID"
       )}/redirects`
     );
-    cy.getElement('[data-cy="RedirectContentItemButton"]').click();
+    cy.get('[data-cy="RedirectContentItemButton"]').click();
 
-    cy.getElement('[data-cy="RedirectsSearchFieldInputField"]')
+    cy.get('[data-cy="RedirectsSearchFieldInputField"]')
       .clear()
       .type(REDIRECT_ITEMS[0]?.web.metaTitle);
 
-    cy.getElement('[data-cy="RedirectsTargetOptionsContainer"] ul li')
+    cy.get('[data-cy="RedirectsTargetOptionsContainer"] ul li')
       .contains(REDIRECT_ITEMS[0]?.web.metaTitle, {
         matchCase: false,
       })
       .click();
 
-    cy.getElement('[data-cy="RedirectContentItemConfirmButton"]').click();
+    cy.get('[data-cy="RedirectContentItemConfirmButton"]').click();
 
-    cy.getElement('[data-cy="ContentRedirectHeader"]').should(
+    cy.get('[data-cy="ContentRedirectHeader"]').should(
       "contain",
       "This Content Item is Currently Being Redirected"
     );
 
-    cy.getElement('[data-cy="RedirectContentItemButton"]').should(
+    cy.get('[data-cy="RedirectContentItemButton"]').should(
       "contain",
       "Stop Redirecting"
     );
 
-    cy.getElement('[data-cy="RedirectTargetUrl"]').should(
+    cy.get('[data-cy="RedirectTargetUrl"]').should(
       "contain",
       REDIRECT_ITEMS[0]?.web?.pathPart
     );
   });
 
   it("Stop Content Item Redirect", () => {
-    cy.getElement('[data-cy="RedirectContentItemButton"]').click();
-    cy.getElement('[data-cy="StopRedirectContentItemConfirmButton"]').click();
+    cy.get('[data-cy="RedirectContentItemButton"]').click();
+    cy.get('[data-cy="StopRedirectContentItemConfirmButton"]').click();
 
-    cy.getElement('[data-cy="toast"]').should("contain", "1 Redirect Deleted", {
+    cy.get('[data-cy="toast"]').should("contain", "1 Redirect Deleted", {
       matchCase: false,
     });
 
-    cy.getElement('[data-cy="ContentRedirectHeader"]').should(
+    cy.get('[data-cy="ContentRedirectHeader"]').should(
       "contain",
       "Redirect this Content Item"
     );
 
-    cy.getElement('[data-cy="RedirectContentItemButton"]').should(
+    cy.get('[data-cy="RedirectContentItemButton"]').should(
       "contain",
       "Redirect this Content Item"
     );
@@ -205,7 +205,3 @@ function createTestRedirects(ZUID, path) {
     });
   });
 }
-
-Cypress.Commands.add("getElement", (selector) => {
-  return cy.get(selector, { timeout: 20_000 });
-});
