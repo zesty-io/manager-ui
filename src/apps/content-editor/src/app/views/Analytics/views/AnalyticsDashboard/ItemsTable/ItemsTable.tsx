@@ -301,9 +301,17 @@ export const ItemsTableContent = ({
             ".MuiDataGrid-columnHeader": {
               backgroundColor: "grey.100",
             },
-            ".MuiDataGrid-row": { cursor: "pointer" },
+            ".MuiDataGrid-row": {
+              cursor: "pointer",
+
+              "& .MuiDataGrid-cell": {
+                alignContent: "center",
+              },
+            },
             // hide empty skeleton rows
-            ".MuiDataGrid-row:has(> :first-child:empty)": { display: "none" },
+            ".MuiDataGrid-row:has(.MuiDataGrid-cell:first-child:empty)": {
+              display: "none",
+            },
           }}
         />
       )}
