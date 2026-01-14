@@ -247,6 +247,7 @@ export const ItemListFilters = () => {
               key={field.ZUID}
               onClick={() => handleUpdateSortOrder(field.name)}
               selected={activeSortOrder === field.name}
+              data-cy={`sort:${field.name}`}
             >
               <Typography variant="inherit" noWrap>
                 {field.label}
