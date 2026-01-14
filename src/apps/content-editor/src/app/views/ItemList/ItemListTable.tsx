@@ -452,7 +452,7 @@ export const ItemListTable = memo(
                 noRowsVariant: "skeleton",
               },
               row: {
-                "data-cy": "listItemTableRow",
+                "data-cy": "itemListRow",
               },
             }}
             getRowClassName={(params) => {

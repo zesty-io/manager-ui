@@ -120,13 +120,13 @@ describe("Content List Actions", () => {
     cy.intercept("PUT", "/v1/content/models/*/items/batch").as("batchSave");
 
     cy.getBySelector("listItemTable")
-      .find(".listItemTableRow")
+      .find('[data-cy="itemListRow"]')
       .eq(0)
       .find('[data-field="yes_no"] button')
       .eq(1)
       .click();
     cy.getBySelector("listItemTable")
-      .find(".listItemTableRow")
+      .find('[data-cy="itemListRow"]')
       .eq(1)
       .find('[data-field="yes_no"] button')
       .eq(1)
@@ -142,14 +142,14 @@ describe("Content List Actions", () => {
       "batchPublish"
     );
     cy.getBySelector("listItemTable")
-      .find(".listItemTableRow")
+      .find('[data-cy="itemListRow"]')
       .eq(0)
       .find('[data-field="yes_no"] button')
       .eq(1)
       .click();
 
     cy.getBySelector("listItemTable")
-      .find(".listItemTableRow")
+      .find('[data-cy="itemListRow"]')
       .eq(1)
       .find('[data-field="yes_no"] button')
       .eq(1)
