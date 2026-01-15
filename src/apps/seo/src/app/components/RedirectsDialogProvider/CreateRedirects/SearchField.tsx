@@ -10,6 +10,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import { ContentItemProps, TARGET_ERRORS } from "../constants";
 import { InputAdornment } from "@mui/material";
 import DescriptionIcon from "@mui/icons-material/Description";
+import { debounce } from "lodash";
 
 export const ListOption: React.FC<
   ContentItemProps & { isListItem?: boolean }
@@ -117,28 +118,53 @@ const ListboxComponent = React.forwardRef<
 
 type SearchFieldProps = {
   options: ContentItemProps[];
-  loading: boolean;
+  loading?: boolean;
   value: ContentItemProps;
   defaultValue?: string;
   onChange: (value: ContentItemProps) => void;
   readOnly?: boolean;
+  onSearch?: (term: string) => void;
 };
 
 const SearchField: React.FC<SearchFieldProps> = ({
   options,
-  loading,
+  loading = false,
   value,
   defaultValue,
   onChange,
   readOnly = false,
+  onSearch,
 }) => {
   const textInputRef = React.useRef(null);
   const [open, setOpen] = React.useState(false);
-  const filterOptions = createFilterOptions({
+
+  const defaultFilter = createFilterOptions<ContentItemProps>({
     matchFrom: "any",
-    stringify: (option: any) =>
+    stringify: (option: ContentItemProps) =>
       `${option?.label}\n${option?.path}\n${option?.ZUID}`,
   });
+
+  const filterOptions = (
+    opts: ContentItemProps[],
+    state: Parameters<typeof defaultFilter>[1]
+  ) => {
+    const filtered = defaultFilter(opts, state);
+
+    /*
+      Limit the rendered items to 100 items max to avoid performance issues
+      and require the user to type more to narrow down results
+     */
+    return filtered.slice(0, 100);
+  };
+
+  const handleDebouncedInput = React.useCallback(
+    debounce((value: string) => {
+      if (value && onSearch) {
+        onSearch(value);
+      }
+    }, 500),
+    []
+  );
 
   React.useEffect(() => {
     if (!defaultValue) return;
@@ -181,6 +207,7 @@ const SearchField: React.FC<SearchFieldProps> = ({
           loadingText={<ListOptionSkeleton count={4} />}
           value={value}
           filterOptions={filterOptions}
+          onInputChange={(evt, value) => handleDebouncedInput(value)}
           onClickCapture={(e) => {
             if (!!value) {
               setOpen(true);

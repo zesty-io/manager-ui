@@ -77,7 +77,7 @@ export const Header = ({ dateRange, onDateRangeChange }: Props) => {
           px: 3,
           py: 2,
           background: (theme) =>
-            `linear-gradient(91.57deg, ${theme.palette.deepOrange?.[500]} 0%, ${theme.palette.deepOrange?.[600]} 100%)`,
+            `linear-gradient(91.57deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
         }}
       >
         <Typography variant="h4" fontWeight={600}>

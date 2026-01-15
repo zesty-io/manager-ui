@@ -134,7 +134,7 @@ export const ItemRoute = ({
   }, [item?.web]);
 
   return (
-    <Box id="pathPart">
+    <Box id="pathPart" data-cy="pathPart">
       <FieldShell
         settings={{
           label: "URL Path Part",

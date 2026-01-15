@@ -10,6 +10,7 @@ export interface Publishing {
   version: number;
   versionZUID: string;
   _active: boolean;
+  isPublished: boolean;
 }
 
 export interface Bin {
@@ -479,7 +480,8 @@ type ContentNavItemType =
   | "internal"
   | "item"
   | "pageset"
-  | "redirect";
+  | "redirect"
+  | "block";
 
 export interface ContentNavItem {
   ZUID: string;

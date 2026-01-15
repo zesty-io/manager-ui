@@ -8,7 +8,7 @@ import {
   Stack,
   Box,
 } from "@mui/material";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { DialogContent, TextField, MenuItem, Tooltip } from "@mui/material";
 import ShuffleIcon from "@mui/icons-material/Shuffle";
 import AddIcon from "@mui/icons-material/Add";
@@ -26,6 +26,7 @@ import {
 import { CreateFormDefaultValues, useRedirectsDialog } from "..";
 
 import {
+  ContentItemWithDirtyAndPublishing,
   Publishing,
   RedirectsCodes,
   RedirectsTargetType,
@@ -34,7 +35,8 @@ import { notify } from "../../../../../../../shell/store/notifications";
 import InfoIcon from "@mui/icons-material/Info";
 import NotInterestedIcon from "@mui/icons-material/NotInterested";
 import SearchField from "./SearchField";
-import { useContentItems } from "../useContentItems";
+import { AppState } from "shell/store/types";
+import { searchItems } from "shell/store/content";
 
 type CreateFormProps = {
   open: boolean;
@@ -94,7 +96,34 @@ const CreateForm: FC<CreateFormProps> = ({
     updateRedirect,
   } = useRedirectsDialog();
 
-  const { options, isLoading } = useContentItems();
+  const contentItems = useSelector((state: AppState) => state.content);
+  const contentModels = useSelector((state: AppState) => state.models);
+  const languages = useSelector((state: any) => state.languages);
+
+  const options = useMemo(() => {
+    return Object.values(contentItems)
+      .filter((item) => item?.meta?.ZUID && item?.web?.path)
+      .sort((a, b) => {
+        const dateA = new Date(a.meta.createdAt).getTime();
+        const dateB = new Date(b.meta.createdAt).getTime();
+        return dateB - dateA;
+      })
+      .map((item: ContentItemWithDirtyAndPublishing) => {
+        const web = item.web;
+        const meta = item.meta;
+        const publishing = item.publishing;
+        return {
+          ZUID: meta?.ZUID,
+          label: web?.metaTitle || web?.metaLinkText || web?.path || "",
+          langCode:
+            languages.find((lang: any) => lang.ID === meta?.langID)?.code ||
+            "en-US",
+          path: web?.path,
+          type: contentModels[meta?.contentModelZUID]?.type || "",
+          isPublished: publishing?.isPublished || false,
+        };
+      });
+  }, [contentItems, contentModels, languages]);
 
   const isDisabled =
     !paths?.map((item) => item?.path?.trim())?.filter(Boolean)?.length ||
@@ -114,6 +143,10 @@ const CreateForm: FC<CreateFormProps> = ({
     setTargetType("page");
     setTargetInternal(null);
     setTargetPath("");
+  };
+
+  const handleSearch = (term: string) => {
+    dispatch(searchItems(term));
   };
 
   const handleSubmit = async (submitType: "multiple" | "single") => {
@@ -460,11 +493,11 @@ const CreateForm: FC<CreateFormProps> = ({
             {targetType === "page" ? (
               <SearchField
                 options={options}
-                loading={isLoading}
                 value={targetInternal}
                 defaultValue={targetPath}
                 onChange={setTargetInternal}
                 readOnly={isInternal}
+                onSearch={handleSearch}
               />
             ) : (
               <PathField

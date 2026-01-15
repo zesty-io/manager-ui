@@ -6,9 +6,6 @@ import {
   KeyboardArrowDownRounded,
   AddRounded,
 } from "@mui/icons-material";
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
-import { useDispatch } from "react-redux";
 
 import { ActiveItem } from "./ActiveItem";
 import { FieldSelectorDialog } from "./FieldSelectorDialog";
@@ -16,11 +13,11 @@ import {
   useGetContentModelQuery,
   useGetContentModelFieldsQuery,
 } from "../../services/instance";
-import { fetchItems } from "../../store/content";
 import { ActiveItemLoading } from "./ActiveItem/ActiveItemLoading";
 import { CreateNewItemDialog } from "./CreateNewItemDialog";
 import { useParams } from "../../hooks/useParams";
 import { CreateContentItemDialogContext } from "../../contexts/CreateContentItemDialogProvider";
+import DndContextProvider from "../DndContextProvider";
 
 type RelationalFieldBaseProps = {
   name: string;
@@ -42,7 +39,6 @@ export const RelationalFieldBase = ({
   onChange,
   multiselect,
 }: RelationalFieldBaseProps) => {
-  const dispatch = useDispatch();
   const [params] = useParams();
   const [itemZUIDs, setItemZUIDs] = useState<string[]>(value?.split(",") || []);
   const [showAll, setShowAll] = useState(false);
@@ -71,12 +67,6 @@ export const RelationalFieldBase = ({
     // Ensures that the values always synced
     setItemZUIDs(value?.split(",") || []);
   }, [value]);
-
-  useEffect(() => {
-    if (!!relatedModelZUID) {
-      dispatch(fetchItems(relatedModelZUID));
-    }
-  }, [relatedModelZUID]);
 
   useEffect(() => {
     if (!!newlyCreatedItemZUID && initiatorZUID === fieldZUID) {
@@ -121,7 +111,7 @@ export const RelationalFieldBase = ({
             <ActiveItemLoading key={index} draggable />
           ))
         ) : (
-          <DndProvider backend={HTML5Backend}>
+          <DndContextProvider>
             {itemZUIDs?.slice(0, showAll ? undefined : 5)?.map((val, index) => (
               <ActiveItem
                 key={val}
@@ -146,7 +136,7 @@ export const RelationalFieldBase = ({
                 }}
               />
             ))}
-          </DndProvider>
+          </DndContextProvider>
         )}
       </Stack>
       {itemZUIDs?.length > 5 && (

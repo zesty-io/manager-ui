@@ -35,8 +35,8 @@ import {
   ContentModelFieldDataType,
 } from "../../../../../../shell/services/types";
 import {
+  fetchAllModelPublishings,
   fetchItems,
-  fetchItemPublishings,
 } from "../../../../../../shell/store/content";
 import { TableSortContext } from "./TableSortProvider";
 import { fetchFields } from "../../../../../../shell/store/fields";
@@ -123,6 +123,9 @@ export const ItemList = () => {
   }, [params]);
   const userFilter = params.get("user");
 
+  const isFetchingData =
+    isModelFetching || isFieldsFetching || isLangsLoading || isUsersFetching;
+
   const fieldMap = useMemo(() => {
     if (!fields?.length) return new Map<string, any>();
     return new Map(
@@ -173,21 +176,26 @@ export const ItemList = () => {
   }, [modelZUID]);
 
   useEffect(() => {
-    if (activeLanguageCode) {
+    if (activeLanguageCode && modelZUID && !isFetchingData) {
       setIsModelItemsFetching(true);
-      dispatch(fetchItemPublishings());
-      dispatch(
-        fetchItems(modelZUID, {
-          limit: 1000,
-          page: 1,
-          lang: activeLanguageCode,
-        })
-        // @ts-ignore
-      ).then(() => {
+      Promise.all([
+        dispatch(
+          fetchItems(modelZUID, {
+            limit: 1000,
+            page: 1,
+            lang: activeLanguageCode,
+          })
+        ),
+        dispatch(
+          fetchAllModelPublishings({
+            modelZUID,
+          })
+        ),
+      ]).finally(() => {
         setIsModelItemsFetching(false);
       });
     }
-  }, [modelZUID, activeLanguageCode]);
+  }, [modelZUID, activeLanguageCode, isFetchingData]);
 
   useEffect(() => {
     // if languages and no language param, set the user selected lang or first language as the active language

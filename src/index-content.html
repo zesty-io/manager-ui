@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Content.one CMS</title>
+
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="application-name" content="Content.one" />
+    <meta name="apple-mobile-web-app-title" content="Content.one" />
+    <meta name="theme-color" content="#171b26" />
+    <meta name="msapplication-navbutton-color" content="#171b26" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="msapplication-starturl" content="/" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"
+    />
+
+    <link rel="manifest" href="/manifest.webmanifest" />
+
+    <link rel="icon" type="image/webp" href="/images/contentOneLogoOnly.webp" />
+    <link
+      rel="mask-icon"
+      type="image/webp"
+      href="/images/contentOneLogoOnly.webp"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;500;600;700"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Roboto+Mono"
+    />
+
+    <link rel="stylesheet" href="/styles/initial-loading-screen.css" />
+
+    <style type="text/css">
+      * {
+        margin: 0;
+        padding: 0;
+        overscroll-behavior: none;
+      }
+      html,
+      body {
+        background-color: #ffffff;
+        color: #101828;
+        font-family: "Mulish", Arial, sans-serif;
+        font-size: 16px;
+        height: 100%;
+        width: 100%;
+      }
+    </style>
+    <style>
+      /* Media nav sidebar custom styles */
+      .rv-sticky-node-list {
+        margin-left: 8px;
+        width: calc(100% - 8px) !important;
+      }
+    </style>
+
+    <script src="/initial-loading.js"></script>
+    <script>
+      if ("serviceWorker" in navigator) {
+        // FIXME: currently causing more harm than good
+        // window.addEventListener("load", function() {
+        //   navigator.serviceWorker.register("/sw.js");
+        // });
+
+        navigator.serviceWorker
+          .getRegistrations()
+          .then(function (registrations) {
+            for (let registration of registrations) {
+              registration.unregister();
+            }
+          });
+      }
+    </script>
+    <script src="https://ucv.bynder.com/5.0.5/modules/compactview/bynder-compactview-3-latest.js"></script>
+
+    <%= htmlWebpackPlugin.tags.headTags %>
+  </head>
+  <body>
+    <main id="root">
+      <!-- App load screen -->
+      <div class="initial-loading-screen">
+        <nav class="global-sidebar">
+          <section>
+            <div class="nav-header">
+              <div>
+                <div class="skeleton"></div>
+                <img
+                  src="/images/contentOneLogoOnly.webp"
+                  loading="lazy"
+                  alt="Content One logo"
+                />
+              </div>
+              <div>
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+                <div class="skeleton"></div>
+              </div>
+            </div>
+            <ul class="nav-items">
+              <li>
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </li>
+              <li>
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </li>
+              <li>
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </li>
+              <li>
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </li>
+              <li>
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </li>
+              <li>
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </li>
+              <li>
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </li>
+              <li>
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </li>
+              <li>
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </li>
+              <li>
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </li>
+            </ul>
+          </section>
+
+          <div class="nav-footer">
+            <div class="github">
+              <img
+                src="/images/contentOneLogo.webp"
+                alt="Full Content One Logo"
+                loading="lazy"
+                style="object-fit: contain"
+              />
+              <img
+                src="/images/contentOneLogoOnly.webp"
+                alt="Content One Logo"
+                loading="lazy"
+              />
+              <div>
+                <img
+                  src="/images/githubLogoSmall.svg"
+                  alt="Github Logo"
+                  loading="lazy"
+                />
+                <div class="skeleton text"></div>
+              </div>
+            </div>
+            <div class="accounts">
+              <div class="skeleton circle"></div>
+              <div>
+                <div class="skeleton text"></div>
+                <div class="skeleton text"></div>
+              </div>
+            </div>
+          </div>
+        </nav>
+
+        <section class="subapp">
+          <div class="global-topbar">
+            <div class="left">
+              <div class="search">
+                <div>
+                  <div class="skeleton light circle"></div>
+                  <div class="skeleton light text"></div>
+                </div>
+
+                <div class="skeleton light"></div>
+              </div>
+              <div class="topbar-item">
+                <div class="skeleton light circle"></div>
+                <div class="skeleton light text"></div>
+                <div class="skeleton light"></div>
+              </div>
+            </div>
+
+            <div class="right">
+              <div class="skeleton light"></div>
+              <div class="skeleton light"></div>
+            </div>
+          </div>
+
+          <div class="subapp-sidebar">
+            <div class="app-title">
+              <div class="skeleton text"></div>
+              <div class="skeleton"></div>
+            </div>
+            <div class="app-search skeleton"></div>
+            <div class="app-sub-menu">
+              <div class="skeleton circle"></div>
+              <div class="skeleton text"></div>
+            </div>
+            <div class="nav-tree-title">
+              <div class="skeleton text"></div>
+            </div>
+            <div class="nav-tree">
+              <div class="nav-tree-item">
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </div>
+              <div class="nav-tree-item">
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </div>
+              <div class="nav-tree-item">
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </div>
+              <div class="nav-tree-item">
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </div>
+              <div class="nav-tree-item">
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </div>
+              <div class="nav-tree-item">
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </div>
+              <div class="nav-tree-item">
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </div>
+              <div class="nav-tree-item">
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </div>
+              <div class="nav-tree-item">
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </div>
+              <div class="nav-tree-item">
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </div>
+            </div>
+            <div class="nav-tree-title">
+              <div class="skeleton text"></div>
+            </div>
+            <div class="nav-tree">
+              <div class="nav-tree-item">
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </div>
+              <div class="nav-tree-item">
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </div>
+              <div class="nav-tree-item">
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </div>
+              <div class="nav-tree-item">
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </div>
+              <div class="nav-tree-item">
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </div>
+              <div class="nav-tree-item">
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </div>
+              <div class="nav-tree-item">
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </div>
+              <div class="nav-tree-item">
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </div>
+              <div class="nav-tree-item">
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </div>
+              <div class="nav-tree-item">
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="quote">
+            <img
+              class="logo"
+              src="/images/contentOneLogoOnly.webp"
+              alt="Displaying Content One logo while application loads"
+              height="100px"
+              width="100px"
+            />
+            <div>
+              <h3 class="text">
+                <script>
+                  document.write(
+                    `"${window.randomQuote?.quote || "Content is king."}"`
+                  );
+                </script>
+              </h3>
+              <h5 class="quotee">
+                <script>
+                  document.write(
+                    `— ${window.randomQuote?.quotee || "Bill Gates"}`
+                  );
+                </script>
+              </h5>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+    <!-- High z-index to beat the TinyMCE toolbar which has 1300-->
+    <div id="modalMount" style="position: relative; z-index: 1301"></div>
+    <%= htmlWebpackPlugin.tags.bodyTags %>
+  </body>
+</html>

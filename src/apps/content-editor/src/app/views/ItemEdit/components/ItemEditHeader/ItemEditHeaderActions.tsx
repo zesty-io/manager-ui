@@ -39,8 +39,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "../../../../../../../../shell/store/types";
 import { useMetaKey } from "../../../../../../../../shell/hooks/useMetaKey";
 import {
+  fetchAllModelPublishings,
   fetchItemPublishing,
-  fetchItemPublishings,
 } from "../../../../../../../../shell/store/content";
 import { useGetUsersQuery } from "../../../../../../../../shell/services/accounts";
 import { formatDate } from "../../../../../../../../utility/formatDate";
@@ -362,7 +362,7 @@ export const ItemEditHeaderActions = ({
         await Promise.all(deleteScheduledPromises);
 
         // Proceed with publishing
-        await Promise.allSettled([
+        const publishPromises = await Promise.allSettled([
           createPublishing({
             modelZUID,
             itemZUID,
@@ -385,8 +385,24 @@ export const ItemEditHeaderActions = ({
           ),
         ]);
 
+        // Loop through all publish results and dispatch error notification if any failed
+        publishPromises.forEach((promise: any) => {
+          if ("error" in promise.value) {
+            dispatch(
+              notify({
+                message: promise.value.error.data?.error,
+                kind: "error",
+              })
+            );
+          }
+        });
+
         // Retain non rtk-query fetch of item publishing for legacy code
-        dispatch(fetchItemPublishings());
+        await dispatch(
+          fetchAllModelPublishings({
+            modelZUID,
+          })
+        );
         refetchVersions();
       } finally {
         setIsCheckingPathUpdate(true);
@@ -503,6 +519,7 @@ export const ItemEditHeaderActions = ({
             loading={saving}
             disabled={!canUpdate}
             id="SaveItemButton"
+            data-cy="SaveItemButton"
           >
             Save
           </Button>
@@ -887,6 +904,7 @@ const PublishingMenu = ({
   }>();
   return (
     <Menu
+      data-cy="publishingMenu"
       onClose={() => onClose()}
       anchorOrigin={{
         vertical: "bottom",
