@@ -98,14 +98,11 @@ jobs:
                 if (!data) {
                   return `| \`${file}\` | n/a | n/a | n/a | n/a |`;
                 }
-                return [
-                  `| \`${file}\` |`,
-                  formatPct(data.lines),
-                  formatPct(data.statements),
-                  formatPct(data.branches),
-                  formatPct(data.functions),
-                  "|",
-                ].join(" ");
+                return `| \`${file}\` | ${formatPct(data.lines)} | ${formatPct(
+                  data.statements
+                )} | ${formatPct(data.branches)} | ${formatPct(
+                  data.functions
+                )} |`;
               })
               .join("\n");
 
@@ -113,8 +110,16 @@ jobs:
               "<!-- coverage-report -->",
               "## Coverage Report",
               "",
-              `Overall: Lines ${formatPct(totals.lines)}, Statements ${formatPct(totals.statements)}, Branches ${formatPct(totals.branches)}, Functions ${formatPct(totals.functions)}`,
+              "### Overall Coverage",
+              "| Lines | Statements | Branches | Functions |",
+              "| --- | --- | --- | --- |",
+              `| ${formatPct(totals.lines)} | ${formatPct(
+                totals.statements
+              )} | ${formatPct(totals.branches)} | ${formatPct(
+                totals.functions
+              )} |`,
               "",
+              "### Changed Files Coverage",
               "| File | Lines | Statements | Branches | Functions |",
               "| --- | --- | --- | --- | --- |",
               rows || "| _No changed files found_ | - | - | - | - |",
