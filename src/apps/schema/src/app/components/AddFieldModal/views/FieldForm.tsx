@@ -234,7 +234,7 @@ export const FieldForm = ({
           formFields[field.name] = fieldData.settings?.[field.name] ?? null;
         } else if (field.name === "integrationFieldConfig") {
           formFields["integrationFieldConfig"] =
-            fieldData?.["integrationFieldConfig"] ?? null;
+            fieldData?.settings?.["integrationFieldConfig"] ?? null;
         } else {
           formFields[field.name] = fieldData[field.name] as FormValue;
         }
@@ -642,7 +642,7 @@ export const FieldForm = ({
     }
 
     if (type === "integration") {
-      body.integrationFieldConfig =
+      body.settings.integrationFieldConfig =
         formData?.integrationFieldConfig as IntegrationFieldConfig;
     }
 
@@ -868,7 +868,7 @@ export const FieldForm = ({
 
               if (fieldConfig.name === "integrationFieldConfig") {
                 integrationFieldConfig = isUpdateField
-                  ? fieldData?.integrationFieldConfig
+                  ? fieldData?.settings?.integrationFieldConfig
                   : (formData[
                       "integrationFieldConfig"
                     ] as IntegrationFieldConfig);

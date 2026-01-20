@@ -793,7 +793,7 @@ export const Field = memo(
               name={name}
               label={label}
               maxItems={settings?.maxValue}
-              config={fieldData?.integrationFieldConfig}
+              config={settings?.integrationFieldConfig}
               value={value ? (value as Record<string, any>[]) : null}
               onChange={(value) => onChange(value, name)}
             />
