@@ -42,30 +42,31 @@
       "options": null,
       "fieldOptions": null,
       "datatypeOptions": null,
-      "integrationFieldConfig": {
-        "endpoint": "https://test.api.com/api/v1/generic.json",
-        "headers": null,
-        "type": "image",
-        "keyPaths": {
-          "heading": "name",
-          "subHeading": "team",
-          "thumbnail": "playerImage",
-          "rootPath": null,
-          "details": [
-            "playerId",
-            "team",
-            "jerseyNo",
-            "position",
-            "height",
-            "weight"
-          ]
-        }
-      },
+
       "settings": {
         "defaultValue": null,
         "list": true,
         "minValue": 1,
-        "maxValue": 5
+        "maxValue": 5,
+        "integrationFieldConfig": {
+          "endpoint": "https://test.api.com/api/v1/generic.json",
+          "headers": null,
+          "type": "image",
+          "keyPaths": {
+            "heading": "name",
+            "subHeading": "team",
+            "thumbnail": "playerImage",
+            "rootPath": null,
+            "details": [
+              "playerId",
+              "team",
+              "jerseyNo",
+              "position",
+              "height",
+              "weight"
+            ]
+          }
+        }
       },
       "createdAt": "2025-06-18T07:36:49Z",
       "updatedAt": "2025-06-18T07:36:49Z"
