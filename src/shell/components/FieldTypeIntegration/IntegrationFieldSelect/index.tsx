@@ -1,7 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import { Box, Button } from "@mui/material";
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
 import { ApiDataProps, ApiDataWithIdProps } from "../configs";
 import {
   IntegrationFieldConfig,
@@ -12,6 +10,7 @@ import ItemSelectionDialog from "./ItemSelectionDialog";
 import SelectedListItems from "./SelectedListItems";
 import { getKeyValue } from "../utils";
 import useIntegrationField from "../useIntegrationField";
+import DndContextProvider from "shell/components/DndContextProvider";
 
 const getItemId = (item: ApiDataProps, keyPaths: IntegrationKeyPaths) => {
   const validValues = Object.values(keyPaths)
@@ -101,13 +100,13 @@ const IntegrationFieldSelect = ({
 
   return (
     <Box width="100%">
-      <DndProvider backend={HTML5Backend}>
+      <DndContextProvider>
         <SelectedListItems
           items={selectedItems}
           config={config}
           onChange={handleSave}
         />
-      </DndProvider>
+      </DndContextProvider>
 
       <Button
         data-cy="integrationSelectItemsButton"
