@@ -241,6 +241,7 @@ export interface FieldSettings {
   currency?: string;
   fileExtensions?: string[];
   fileExtensionsErrorMessage?: string;
+  integrationFieldConfig?: IntegrationFieldConfig;
 }
 
 export type ContentModelFieldValue =
@@ -295,7 +296,6 @@ export interface ContentModelField {
   createdAt: string;
   updatedAt: string;
   deletedAt: string;
-  integrationFieldConfig?: IntegrationFieldConfig;
 }
 
 export interface WebView {
