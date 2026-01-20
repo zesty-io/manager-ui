@@ -36,7 +36,6 @@ import RedirectsDialogContextProvider from "../../../../../seo/src/app/component
 import contentOneLogoOnly from "../../../../../../../public/images/contentOneLogoOnly.webp";
 import contentOneLogo from "../../../../../../../public/images/contentOneLogo.webp";
 import {
-  getItemPath,
   normalizePath,
   resolveItemByPath,
 } from "../../../../../studio/utils/pathResolver";
@@ -797,15 +796,20 @@ export const StudioWrapper = ({
             <LanguageSelector
               modelZUIDOverride={currentModelZUID}
               itemZUIDOverride={currentItemZUID}
-              onChange={({ langCode, siblingZUID }) => {
-                if (!langCode || !siblingZUID) return;
-                const siblingItem = contentItems[siblingZUID];
-
-                // i need to update this to be done implictly
-                const localizedPath = siblingItem
-                  ? getItemPath(siblingItem)
-                  : null;
-                if (!localizedPath) return;
+              onChange={({ langCode }) => {
+                if (!langCode) return;
+                const normalizedPath = normalizePath(previewPath);
+                const pathSegments = normalizedPath.split("/").filter(Boolean);
+                const isLangSegment =
+                  pathSegments.length > 0 &&
+                  /^[a-z]{2}(?:-[a-z]{2})?$/i.test(pathSegments[0]);
+                const basePath = isLangSegment
+                  ? normalizePath(`/${pathSegments.slice(1).join("/")}`)
+                  : normalizedPath;
+                const localizedPath =
+                  langCode === "en-US"
+                    ? basePath
+                    : normalizePath(`/${langCode.toLowerCase()}${basePath}`);
 
                 try {
                   const updatedUrl = new URL(previewUrl);
@@ -815,10 +819,6 @@ export const StudioWrapper = ({
                   iframeRef.current?.setAttribute("src", updatedUrl.toString());
                   setPreviewPath(localizedPath);
                   updateStudioUrl(localizedPath);
-                  setCurrentItemZUID(siblingZUID);
-                  setCurrentModelZUID(
-                    siblingItem?.meta?.contentModelZUID || currentModelZUID
-                  );
                   updateItemByPath(localizedPath);
                 } catch (err) {
                   dispatch(
