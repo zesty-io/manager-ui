@@ -15,9 +15,12 @@ const path = require("path");
 const dotenv = require("dotenv");
 const os = require("os");
 const content = require("./seeds/content");
+const codeCoverageTask = require("@cypress/code-coverage/task");
 
 module.exports = (on, config) => {
   config.env.INSTANCE_ZUID = new URL(config.baseUrl).host.split(".")[0];
+
+  codeCoverageTask(on, config);
 
   on("task", {
     log(message) {

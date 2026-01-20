@@ -122,7 +122,7 @@ export default memo(function Shell() {
           sx={{
             zIndex: 30,
             backgroundColor: "background.paper",
-            // Makes sure that tinyMCE is not overlapped when in fullscreen mode
+            // Makes sure that tinyMCE does not get overlapped when in fullscreen mode
             "&:has(div.tox-fullscreen)": {
               zIndex: (theme) => theme.zIndex.appBar + 1,
             },
