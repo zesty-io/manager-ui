@@ -11,6 +11,7 @@
 /build
 *dist/
 *node_modules/
+coverage/
 
 .vscode
 .DS_Store
