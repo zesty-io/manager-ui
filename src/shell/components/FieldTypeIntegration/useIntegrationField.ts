@@ -8,10 +8,22 @@ const useIntegrationField = () => {
   >(null);
 
   const hasFetchedRef = useRef(false);
+  const currentEndpointRef = useRef<string>("");
 
   const fetchApiData = useCallback(
     async (endpoint: string, headers?: IntegrationRequestHeaders) => {
-      if (!endpoint || hasFetchedRef.current) return;
+      if (!endpoint) return;
+
+      // Reset if endpoint has changed
+      if (currentEndpointRef.current !== endpoint) {
+        hasFetchedRef.current = false;
+        currentEndpointRef.current = endpoint;
+        setStatus(null);
+        setApiData(null);
+      }
+
+      // Prevent duplicate fetches for the same endpoint
+      if (hasFetchedRef.current) return;
 
       hasFetchedRef.current = true;
       setStatus("connecting");
@@ -42,6 +54,7 @@ const useIntegrationField = () => {
   useEffect(() => {
     return () => {
       hasFetchedRef.current = false;
+      currentEndpointRef.current = "";
     };
   }, []);
 

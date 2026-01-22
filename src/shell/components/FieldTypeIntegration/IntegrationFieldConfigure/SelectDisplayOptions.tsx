@@ -114,10 +114,6 @@ const SelectDisplayOptions = ({
           overflowX: "hidden",
           flexGrow: 1,
           position: "relative",
-          "&::-webkit-scrollbar-thumb, & *::-webkit-scrollbar-thumb": {
-            backgroundColor: "grey.300",
-            borderRadius: "4px",
-          },
         }}
       >
         <Box

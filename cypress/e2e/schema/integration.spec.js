@@ -324,6 +324,8 @@ function addSpecialField(type) {
       }")`
     ).click(forceClick);
   });
+
+  cy.get('[data-cy="integrationConfigureDisplayOptionsDoneButton"]').click();
 }
 
 function addGenericField(type) {
