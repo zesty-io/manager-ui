@@ -2,6 +2,8 @@ import {
   ContentItem,
   ContentModel,
   ContentModelField,
+  CreateStatusLabel,
+  WorkflowStatusLabel,
 } from "../src/shell/services/types";
 import "./support/commands";
 
@@ -65,6 +67,11 @@ declare global {
         fields: Partial<ContentModelField>;
         items: Partial<ContentItem>;
       }>;
+      task(event: "cleanup:labels"): Chainable<string[]>;
+      task(
+        event: "api:createLabel",
+        data: CreateStatusLabel
+      ): Chainable<WorkflowStatusLabel>;
     }
   }
 }
