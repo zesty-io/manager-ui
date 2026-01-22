@@ -134,7 +134,7 @@ export const VersionSelector = memo(
       if (!!versionToLoad) {
         dispatch({
           type: "LOAD_ITEM_VERSION",
-          itemZUID,
+          itemZUID: resolvedItemZUID,
           data: versionToLoad,
         });
         setAnchorEl(null);

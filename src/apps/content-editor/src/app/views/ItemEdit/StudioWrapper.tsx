@@ -1,18 +1,4 @@
-import { CloseRounded, RefreshRounded } from "@mui/icons-material";
-import {
-  Alert,
-  Box,
-  Button,
-  Dialog,
-  Divider,
-  Drawer,
-  IconButton,
-  CircularProgress,
-  InputAdornment,
-  OutlinedInput,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Alert, Box, Button, Dialog } from "@mui/material";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory, useLocation } from "react-router";
@@ -27,13 +13,9 @@ import { fetchModel } from "../../../../../../shell/store/models";
 import { fetchAuditTrailDrafting } from "../../../../../../shell/store/logs";
 import { notify } from "../../../../../../shell/store/notifications";
 import { useGetContentModelFieldsQuery } from "../../../../../../shell/services/instance";
-import { ItemEditHeaderActions } from "./components/ItemEditHeader/ItemEditHeaderActions";
-import { VersionSelector } from "./components/ItemEditHeader/VersionSelector";
-import { LanguageSelector } from "./components/ItemEditHeader/LanguageSelector";
 import { ContentInfo } from "./Content/Actions/Widgets/ContentInfo";
 import Editor from "../../components/Editor/Editor";
 import { FieldError } from "../../components/Editor/FieldError";
-import RedirectsDialogContextProvider from "../../../../../seo/src/app/components/RedirectsDialogProvider";
 import contentOneLogoOnly from "../../../../../../../public/images/contentOneLogoOnly.webp";
 import contentOneLogo from "../../../../../../../public/images/contentOneLogo.webp";
 import {
@@ -41,6 +23,9 @@ import {
   resolveItemByPath,
 } from "../../../../../studio/utils/pathResolver";
 import { Sentry } from "../../../../../../utility/sentry";
+import { StudioHeader } from "./components/StudioWrapper/StudioHeader";
+import { StudioPreview } from "./components/StudioWrapper/StudioPreview";
+import { StudioSidePanel } from "./components/StudioWrapper/StudioSidePanel";
 
 const drawerWidth = 440;
 
@@ -180,6 +165,71 @@ export const StudioWrapper = ({
     },
     [history, location.pathname]
   );
+
+  const handlePreviewSubmit = useCallback(() => {
+    try {
+      const updatedUrl = new URL(previewUrl);
+      setIsNavigating(true);
+      iframeRef.current?.setAttribute("src", updatedUrl.toString());
+      const normalizedPath = normalizePath(updatedUrl.pathname || "/");
+      setPreviewPath(normalizedPath);
+      updateStudioUrl(normalizedPath);
+      updateItemByPath(normalizedPath);
+    } catch (err) {
+      dispatch(
+        notify({
+          kind: "warn",
+          message: "Invalid URL. Please check and try again.",
+        })
+      );
+    }
+  }, [dispatch, previewUrl, updateItemByPath, updateStudioUrl]);
+
+  const handlePreviewRefresh = useCallback(() => {
+    if (!previewUrl) return;
+    setIsNavigating(true);
+    iframeRef.current?.setAttribute("src", previewUrl);
+  }, [previewUrl]);
+
+  const handleLanguageChange = useCallback(
+    (langCode: string) => {
+      const normalizedPath = normalizePath(previewPath);
+      const pathSegments = normalizedPath.split("/").filter(Boolean);
+      const isLangSegment =
+        pathSegments.length > 0 &&
+        /^[a-z]{2}(?:-[a-z]{2})?$/i.test(pathSegments[0]);
+      const basePath = isLangSegment
+        ? normalizePath(`/${pathSegments.slice(1).join("/")}`)
+        : normalizedPath;
+      const localizedPath =
+        langCode === "en-US"
+          ? basePath
+          : normalizePath(`/${langCode.toLowerCase()}${basePath}`);
+
+      try {
+        const updatedUrl = new URL(previewUrl);
+        updatedUrl.pathname = localizedPath;
+        setPreviewUrl(updatedUrl.toString());
+        setIsNavigating(true);
+        iframeRef.current?.setAttribute("src", updatedUrl.toString());
+        setPreviewPath(localizedPath);
+        updateStudioUrl(localizedPath);
+        updateItemByPath(localizedPath);
+      } catch (err) {
+        dispatch(
+          notify({
+            kind: "warn",
+            message: "Invalid URL. Please check and try again.",
+          })
+        );
+      }
+    },
+    [dispatch, previewPath, previewUrl, updateItemByPath, updateStudioUrl]
+  );
+
+  const handleEditInManager = useCallback(() => {
+    history.push(`/content/${currentModelZUID}/${currentItemZUID}`);
+  }, [currentModelZUID, currentItemZUID, history]);
 
   const { data: fields = [] as any[], isFetching: isFetchingFields } =
     useGetContentModelFieldsQuery({
@@ -793,284 +843,42 @@ export const StudioWrapper = ({
         width="100%"
         position="relative"
       >
-        <Box
-          sx={{
-            py: 1,
-            px: 3,
-            display: "flex",
-            alignItems: "center",
-            gap: 1,
-            borderBottom: (theme) => `1px solid ${theme.palette.border}`,
-            backgroundColor: (theme) => theme.palette.grey[50],
-          }}
-        >
-          <Box
-            component="img"
-            src={contentOneLogoOnly}
-            alt="Content One"
-            sx={{ height: 32 }}
-          />
-          <OutlinedInput
-            fullWidth
-            size="small"
-            value={previewUrl}
-            onChange={(e) => setPreviewUrl(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key !== "Enter") return;
-              e.preventDefault();
-              try {
-                const updatedUrl = new URL(previewUrl);
-                setIsNavigating(true);
-                iframeRef.current?.setAttribute("src", updatedUrl.toString());
-                const normalizedPath = normalizePath(
-                  updatedUrl.pathname || "/"
-                );
-                setPreviewPath(normalizedPath);
-                updateStudioUrl(normalizedPath);
-                updateItemByPath(normalizedPath);
-              } catch (err) {
-                dispatch(
-                  notify({
-                    kind: "warn",
-                    message: "Invalid URL. Please check and try again.",
-                  })
-                );
-              }
-            }}
-            sx={{
-              backgroundColor: (theme) => theme.palette.grey[100],
-            }}
-            endAdornment={
-              <InputAdornment position="end">
-                <IconButton
-                  size="xsmall"
-                  aria-label="Refresh preview"
-                  onClick={() => {
-                    if (!previewUrl) return;
-                    setIsNavigating(true);
-                    iframeRef.current?.setAttribute("src", previewUrl);
-                  }}
-                >
-                  <RefreshRounded fontSize="small" />
-                </IconButton>
-              </InputAdornment>
-            }
-          />
-          <Box minWidth={96}>
-            <LanguageSelector
-              modelZUIDOverride={currentModelZUID}
-              itemZUIDOverride={currentItemZUID}
-              onChange={({ langCode }) => {
-                if (!langCode) return;
-                const normalizedPath = normalizePath(previewPath);
-                const pathSegments = normalizedPath.split("/").filter(Boolean);
-                const isLangSegment =
-                  pathSegments.length > 0 &&
-                  /^[a-z]{2}(?:-[a-z]{2})?$/i.test(pathSegments[0]);
-                const basePath = isLangSegment
-                  ? normalizePath(`/${pathSegments.slice(1).join("/")}`)
-                  : normalizedPath;
-                const localizedPath =
-                  langCode === "en-US"
-                    ? basePath
-                    : normalizePath(`/${langCode.toLowerCase()}${basePath}`);
-
-                try {
-                  const updatedUrl = new URL(previewUrl);
-                  updatedUrl.pathname = localizedPath;
-                  setPreviewUrl(updatedUrl.toString());
-                  setIsNavigating(true);
-                  iframeRef.current?.setAttribute("src", updatedUrl.toString());
-                  setPreviewPath(localizedPath);
-                  updateStudioUrl(localizedPath);
-                  updateItemByPath(localizedPath);
-                } catch (err) {
-                  dispatch(
-                    notify({
-                      kind: "warn",
-                      message: "Invalid URL. Please check and try again.",
-                    })
-                  );
-                }
-              }}
-              disabled={unresolvedPath}
-            />
-          </Box>
-        </Box>
+        <StudioHeader
+          previewUrl={previewUrl}
+          onPreviewUrlChange={setPreviewUrl}
+          onPreviewUrlSubmit={handlePreviewSubmit}
+          onRefresh={handlePreviewRefresh}
+          onLanguageChange={handleLanguageChange}
+          currentModelZUID={currentModelZUID}
+          currentItemZUID={currentItemZUID}
+          unresolvedPath={unresolvedPath}
+          logoSrc={contentOneLogoOnly}
+        />
         <Box display="flex" flex="1" minHeight={0} width="100%">
-          <Box position="relative" flex="1" minWidth={0}>
-            <Box
-              flex="1"
-              minWidth={0}
-              ref={iframeRef}
-              component="iframe"
-              src={iframeSrc}
-              onLoad={() => setIsNavigating(false)}
-              sx={{
-                border: "none",
-                height: "100%",
-                width: "100%",
-                bgcolor: "grey.900",
-              }}
-            />
-            {isNavigating && (
-              <Box
-                component="div"
-                sx={{
-                  position: "absolute",
-                  top: 12,
-                  right: 12,
-                }}
-                display="flex"
-                alignItems="center"
-                gap={1}
-              >
-                <CircularProgress size={24} />
-              </Box>
-            )}
-          </Box>
-          <Drawer
-            variant="permanent"
-            anchor="right"
-            PaperProps={{
-              sx: {
-                overflow: "hidden",
-                position: "relative",
-                width: drawerWidth,
-                boxSizing: "border-box",
-                borderLeft: (theme) => `1px solid ${theme.palette.border}`,
-                backgroundColor: (theme) => theme.palette.grey[50],
-              },
-            }}
-          >
-            <Box
-              height="100%"
-              display="flex"
-              flexDirection="column"
-              p={3}
-              gap={2}
-            >
-              <Stack
-                direction="row"
-                alignItems="center"
-                justifyContent="space-between"
-                spacing={1}
-              >
-                <Stack>
-                  <Typography variant="subtitle1" fontWeight="600">
-                    {headerTitle}
-                  </Typography>
-                  {!unresolvedPath ? (
-                    <Box>
-                      <VersionSelector
-                        activeVersion={activeVersion}
-                        modelZUIDOverride={selectedModelZUID}
-                        itemZUIDOverride={selectedItemZUID}
-                      />
-                    </Box>
-                  ) : null}
-                </Stack>
-                <Stack direction="row" gap={1} alignItems="center">
-                  {panelMode === "edit" ? (
-                    <IconButton
-                      aria-label="Close Studio preview"
-                      onClick={clearSelection}
-                      size="small"
-                    >
-                      <CloseRounded />
-                    </IconButton>
-                  ) : (
-                    <Box sx={{ width: 32 }} />
-                  )}
-                </Stack>
-              </Stack>
-              <Box flex="1" overflow="auto" pr={1}>
-                {unresolvedPath ? (
-                  <Box
-                    display="flex"
-                    flexDirection="column"
-                    gap={1}
-                    color="text.secondary"
-                  >
-                    <Typography variant="body2">
-                      No CMS item is associated with this path. Editing is
-                      disabled.
-                    </Typography>
-                  </Box>
-                ) : panelMode === "edit" ? (
-                  renderEditorPanel()
-                ) : (
-                  renderInfoPanel()
-                )}
-              </Box>
-              <Box mt="auto">
-                {panelMode === "edit" ? (
-                  <Stack
-                    direction="row"
-                    alignItems="center"
-                    justifyContent="space-between"
-                    mb={2}
-                  >
-                    <Button
-                      variant="text"
-                      color="inherit"
-                      onClick={clearSelection}
-                      disabled={isSaving}
-                    >
-                      Cancel
-                    </Button>
-                    <RedirectsDialogContextProvider>
-                      <ItemEditHeaderActions
-                        saving={isSaving}
-                        onSave={handleSave}
-                        hasError={hasErrors}
-                        isLoadingItem={isSelectedItemLoading}
-                        modelZUIDOverride={selectedModelZUID}
-                        itemZUIDOverride={selectedItemZUID}
-                      />
-                    </RedirectsDialogContextProvider>
-                  </Stack>
-                ) : (
-                  <Button
-                    variant="outlined"
-                    size="large"
-                    fullWidth
-                    color="primary"
-                    sx={{ mb: 2 }}
-                    disabled={unresolvedPath}
-                    onClick={() =>
-                      history.push(
-                        `/content/${currentModelZUID}/${currentItemZUID}`
-                      )
-                    }
-                  >
-                    Edit in Zesty Manager
-                  </Button>
-                )}
-                <Box
-                  mt={2}
-                  display="flex"
-                  flexDirection="column"
-                  alignItems="center"
-                  gap={1}
-                >
-                  <Box
-                    component="img"
-                    src={contentOneLogo}
-                    alt="Content One"
-                    sx={{ height: 24 }}
-                  />
-                  <Typography
-                    variant="body3"
-                    color="text.secondary"
-                    textAlign="center"
-                  >
-                    Agentic Studio by Content.One
-                  </Typography>
-                </Box>
-              </Box>
-            </Box>
-          </Drawer>
+          <StudioPreview
+            iframeRef={iframeRef}
+            iframeSrc={iframeSrc}
+            isNavigating={isNavigating}
+            onLoad={() => setIsNavigating(false)}
+          />
+          <StudioSidePanel
+            headerTitle={headerTitle}
+            unresolvedPath={unresolvedPath}
+            panelMode={panelMode}
+            clearSelection={clearSelection}
+            activeVersion={activeVersion}
+            selectedModelZUID={selectedModelZUID}
+            selectedItemZUID={selectedItemZUID}
+            isSaving={isSaving}
+            hasErrors={hasErrors}
+            isSelectedItemLoading={isSelectedItemLoading}
+            onEditInManager={handleEditInManager}
+            onSave={handleSave}
+            editorPanel={renderEditorPanel()}
+            infoPanel={renderInfoPanel()}
+            drawerWidth={drawerWidth}
+            logoSrc={contentOneLogo}
+          />
         </Box>
       </Box>
     </Dialog>
