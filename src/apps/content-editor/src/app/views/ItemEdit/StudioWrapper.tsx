@@ -40,6 +40,7 @@ import {
   normalizePath,
   resolveItemByPath,
 } from "../../../../../studio/utils/pathResolver";
+import { Sentry } from "../../../../../../utility/sentry";
 
 const drawerWidth = 440;
 
@@ -573,6 +574,35 @@ export const StudioWrapper = ({
         setSelectedElement(null);
         setFilteredFieldKey(null);
         setPanelMode("info");
+        return;
+      }
+
+      if (msg.type === "BRIDGE_ERROR") {
+        const bridgeError = msg.error || {};
+        const error = new Error(bridgeError.message || "Bridge error");
+        if (bridgeError.stack) {
+          (error as any).stack = bridgeError.stack;
+        }
+
+        dispatch(
+          notify({
+            kind: "error",
+            message: `Preview error: ${bridgeError.message || "Bridge error"}`,
+          })
+        );
+
+        Sentry.withScope((scope) => {
+          scope.setLevel("error");
+          scope.setTag("bridge.kind", msg.kind || "error");
+          scope.setContext("bridge.error", {
+            filename: bridgeError.filename || null,
+            lineno: bridgeError.lineno || null,
+            colno: bridgeError.colno || null,
+            stack: bridgeError.stack || null,
+          });
+          scope.setExtra("bridge.message", bridgeError.message || "");
+          Sentry.captureException(error);
+        });
         return;
       }
 
