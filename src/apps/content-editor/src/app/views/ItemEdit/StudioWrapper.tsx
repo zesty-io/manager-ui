@@ -1,4 +1,4 @@
-import { CloseRounded } from "@mui/icons-material";
+import { CloseRounded, RefreshRounded } from "@mui/icons-material";
 import {
   Alert,
   Box,
@@ -8,6 +8,7 @@ import {
   Drawer,
   IconButton,
   CircularProgress,
+  InputAdornment,
   OutlinedInput,
   Stack,
   Typography,
@@ -791,6 +792,21 @@ export const StudioWrapper = ({
             sx={{
               backgroundColor: (theme) => theme.palette.grey[100],
             }}
+            endAdornment={
+              <InputAdornment position="end">
+                <IconButton
+                  size="xsmall"
+                  aria-label="Refresh preview"
+                  onClick={() => {
+                    if (!previewUrl) return;
+                    setIsNavigating(true);
+                    iframeRef.current?.setAttribute("src", previewUrl);
+                  }}
+                >
+                  <RefreshRounded fontSize="small" />
+                </IconButton>
+              </InputAdornment>
+            }
           />
           <Box minWidth={96}>
             <LanguageSelector
