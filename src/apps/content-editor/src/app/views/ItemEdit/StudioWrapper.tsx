@@ -159,6 +159,24 @@ export const StudioWrapper = ({
       if (!location.pathname.startsWith("/studio")) return;
       const normalized = normalizePath(path || "/");
       history.replace(`/studio?path=${encodeURIComponent(normalized)}`);
+
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage(
+          {
+            source: "zesty-studio-host",
+            message: {
+              type: "PATH_CHANGE",
+              location: {
+                path: normalized,
+                search: window.location.search,
+                hash: window.location.hash,
+                href: window.location.href,
+              },
+            },
+          },
+          "*"
+        );
+      }
     },
     [history, location.pathname]
   );
