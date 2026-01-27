@@ -7,30 +7,31 @@ const useIntegrationField = () => {
     "connecting" | "success" | "failed" | null
   >(null);
 
-  const hasFetchedRef = useRef(false);
   const currentEndpointRef = useRef<string>("");
+
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const fetchApiData = useCallback(
     async (endpoint: string, headers?: IntegrationRequestHeaders) => {
       if (!endpoint) return;
 
-      // Reset if endpoint has changed
-      if (currentEndpointRef.current !== endpoint) {
-        hasFetchedRef.current = false;
-        currentEndpointRef.current = endpoint;
-        setStatus(null);
-        setApiData(null);
-      }
+      // If same endpoint + already successful, do nothing
+      // if (currentEndpointRef.current === endpoint && status === "success") {
+      //   return;
+      // }
 
-      // Prevent duplicate fetches for the same endpoint
-      if (hasFetchedRef.current) return;
+      // Abort previous request if any
+      abortControllerRef.current?.abort();
+      abortControllerRef.current = new AbortController();
 
-      hasFetchedRef.current = true;
+      currentEndpointRef.current = endpoint;
       setStatus("connecting");
+      setApiData(null);
 
       try {
         const response = await fetch(endpoint, {
           ...(headers ? { headers } : {}),
+          signal: abortControllerRef.current.signal,
         });
 
         if (response.ok) {
@@ -43,8 +44,10 @@ const useIntegrationField = () => {
           );
         }
       } catch (err) {
+        if (err.name === "AbortError") return;
         setApiData(null);
         setStatus("failed");
+        currentEndpointRef.current = "";
         console.error("API fetch error:", err);
       }
     },
@@ -53,7 +56,7 @@ const useIntegrationField = () => {
 
   useEffect(() => {
     return () => {
-      hasFetchedRef.current = false;
+      abortControllerRef.current?.abort();
       currentEndpointRef.current = "";
     };
   }, []);
