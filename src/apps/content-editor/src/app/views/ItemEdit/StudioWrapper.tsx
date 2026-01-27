@@ -37,7 +37,7 @@ type StudioWrapperProps = {
 };
 
 type SelectedElement = {
-  id: string;
+  fieldZuid: string;
   dataset: Record<string, string>;
   weType?: string;
   itemZuid?: string;
@@ -59,7 +59,9 @@ export const StudioWrapper = ({
   const [selectedElement, setSelectedElement] =
     useState<SelectedElement | null>(null);
   const [panelMode, setPanelMode] = useState<"info" | "edit">("info");
-  const [filteredFieldKey, setFilteredFieldKey] = useState<string | null>(null);
+  const [filteredFieldName, setFilteredFieldName] = useState<string | null>(
+    null
+  );
   const [studioSaving, setStudioSaving] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, any>>({});
   const [saveClicked, setSaveClicked] = useState(false);
@@ -90,6 +92,8 @@ export const StudioWrapper = ({
     // @ts-expect-error Config is provided globally at runtime
     const baseUrl = `${CONFIG.URL_PREVIEW_PROTOCOL}${instanceHash}${CONFIG.URL_PREVIEW}${path}`;
     const queryParams = new URLSearchParams();
+
+    queryParams.set("studio", "on");
 
     if (previewLock) {
       queryParams.set("zpw", previewLock.value);
@@ -128,12 +132,12 @@ export const StudioWrapper = ({
         setCurrentItemZUID(resolved.meta.ZUID);
         setCurrentModelZUID(resolved.meta.contentModelZUID);
         setSelectedElement(null);
-        setFilteredFieldKey(null);
+        setFilteredFieldName(null);
         setUnresolvedPath(false);
         setPanelMode("info");
       } else {
         setUnresolvedPath(true);
-        setFilteredFieldKey(null);
+        setFilteredFieldName(null);
       }
     },
     [contentItems, dispatch]
@@ -246,6 +250,16 @@ export const StudioWrapper = ({
     return [];
   }, [fields]);
 
+  const fieldNameByZuid = useMemo(() => {
+    const map = new Map<string, string>();
+    activeFields.forEach((field: any) => {
+      if (field?.ZUID && field?.name) {
+        map.set(field.ZUID, field.name);
+      }
+    });
+    return map;
+  }, [activeFields]);
+
   const hasErrors = useMemo(() => {
     const errorList = Object.values(fieldErrors)
       ?.map((error) => {
@@ -313,10 +327,6 @@ export const StudioWrapper = ({
     ]
   );
 
-  const selectedFieldKey = selectedElement?.dataset?.weFieldKey;
-  const selectedFieldValue = selectedFieldKey
-    ? editorItem?.data?.[selectedFieldKey]
-    : undefined;
   const activeVersion = editorItem?.meta?.version ?? 0;
 
   useEffect(() => {
@@ -331,12 +341,13 @@ export const StudioWrapper = ({
   const postCommandToBridge = useCallback(
     (cmd: {
       action: string;
-      id?: string;
+      fieldZuid?: string;
       className?: string;
       style?: Record<string, string>;
       css?: string;
       value?: string;
       html?: string; // NEW: for wysiwyg_advanced
+      itemZuid?: string;
     }) => {
       const iframeWindow = iframeRef.current?.contentWindow;
       if (!iframeWindow) return;
@@ -356,57 +367,60 @@ export const StudioWrapper = ({
   );
 
   const clearSelection = useCallback(() => {
-    if (selectedElement?.id) {
+    if (selectedElement?.fieldZuid) {
       postCommandToBridge({
         action: "removeClass",
-        id: selectedElement.id,
+        fieldZuid: selectedElement.fieldZuid,
         className: "studio-selected",
       });
       postCommandToBridge({
         action: "disableEditing",
-        id: selectedElement.id,
+        fieldZuid: selectedElement.fieldZuid,
       });
     }
     setSelectedElement(null);
-    setFilteredFieldKey(null);
+    setFilteredFieldName(null);
     setPanelMode("info");
   }, [postCommandToBridge, selectedElement]);
 
-  // Sync selected field value -> iframe for text / textarea / wysiwyg_advanced
+  // Sync item field values -> iframe for text / textarea / wysiwyg_advanced
   useEffect(() => {
-    if (!selectedElement?.id || !selectedFieldKey || !selectedElement.weType) {
-      return;
-    }
+    if (!editorItem || !selectedItemZUID || !activeFields?.length) return;
 
-    const weType = selectedElement.weType;
+    const supportedTypes = new Set(["text", "textarea", "wysiwyg_advanced"]);
 
-    const nextValue =
-      typeof selectedFieldValue === "string"
-        ? selectedFieldValue
-        : selectedFieldValue == null
-        ? ""
-        : String(selectedFieldValue);
+    activeFields.forEach((field: any) => {
+      if (!supportedTypes.has(field?.datatype)) return;
+      const fieldZuid = field?.ZUID;
+      const fieldName = field?.name;
+      if (!fieldZuid) return;
+      if (!fieldName) return;
 
-    if (["text", "textarea"].includes(weType)) {
-      postCommandToBridge({
-        action: "setText",
-        id: selectedElement.id,
-        value: nextValue,
-      });
-    } else if (weType === "wysiwyg_advanced") {
-      postCommandToBridge({
-        action: "setHtml",
-        id: selectedElement.id,
-        html: nextValue,
-      });
-    }
-  }, [
-    postCommandToBridge,
-    selectedElement?.id,
-    selectedElement?.weType,
-    selectedFieldKey,
-    selectedFieldValue,
-  ]);
+      const rawValue = editorItem?.data?.[fieldName];
+      const nextValue =
+        typeof rawValue === "string"
+          ? rawValue
+          : rawValue == null
+          ? ""
+          : String(rawValue);
+
+      if (field.datatype === "wysiwyg_advanced") {
+        postCommandToBridge({
+          action: "setHtmlByField",
+          itemZuid: selectedItemZUID,
+          fieldZuid,
+          html: nextValue,
+        });
+      } else {
+        postCommandToBridge({
+          action: "setTextByField",
+          itemZuid: selectedItemZUID,
+          fieldZuid,
+          value: nextValue,
+        });
+      }
+    });
+  }, [activeFields, editorItem, postCommandToBridge, selectedItemZUID]);
 
   const handleSave = useCallback(async () => {
     if (!selectedItemZUID) return;
@@ -589,6 +603,7 @@ export const StudioWrapper = ({
 
   useEffect(() => {
     function handleMessage(evt: MessageEvent<any>) {
+      console.log("i got message", evt);
       const data = evt.data;
       if (!data || data.source !== "zesty-webengine-bridge") {
         return;
@@ -640,7 +655,7 @@ export const StudioWrapper = ({
         updateItemByPath(normalizedPath);
 
         setSelectedElement(null);
-        setFilteredFieldKey(null);
+        setFilteredFieldName(null);
         setPanelMode("info");
         return;
       }
@@ -678,50 +693,57 @@ export const StudioWrapper = ({
         const { eventType, element, value } = msg;
         if (!element) return;
 
-        const id: string | undefined = element.id;
         const dataset: Record<string, string> =
           (element.dataset as Record<string, string>) || {};
+        const fieldZuid: string | undefined = dataset.weFieldZuid;
         const weType = dataset.weType;
         const itemZuid = dataset.weItemZuid;
         const modelZuid = dataset.weModelZuid;
 
         switch (eventType) {
           case "click": {
-            if (!id) return;
+            if (!fieldZuid) return;
 
-            if (selectedElement?.id && selectedElement.id !== id) {
+            if (
+              selectedElement?.fieldZuid &&
+              selectedElement.fieldZuid !== fieldZuid
+            ) {
               postCommandToBridge({
                 action: "removeClass",
-                id: selectedElement.id,
+                fieldZuid: selectedElement.fieldZuid,
                 className: "studio-selected",
+                itemZuid: selectedElement.itemZuid,
               });
               postCommandToBridge({
                 action: "disableEditing",
-                id: selectedElement.id,
+                fieldZuid: selectedElement.fieldZuid,
+                itemZuid: selectedElement.itemZuid,
               });
             }
 
             setSelectedElement({
-              id,
+              fieldZuid,
               dataset,
               weType,
               itemZuid,
               modelZuid,
             });
-            const fieldKey = dataset.weFieldKey || null;
-            setFilteredFieldKey(fieldKey);
+            const fieldName = fieldNameByZuid.get(fieldZuid) || null;
+            setFilteredFieldName(fieldName);
             setPanelMode("edit");
             postCommandToBridge({
               action: "addClass",
-              id,
+              fieldZuid,
               className: "studio-selected",
+              itemZuid,
             });
 
             // Enable inline editing for text / textarea / wysiwyg_advanced
             if (["text", "textarea", "wysiwyg_advanced"].includes(weType)) {
               postCommandToBridge({
                 action: "enableEditing",
-                id,
+                fieldZuid,
+                itemZuid,
               });
             }
 
@@ -729,36 +751,41 @@ export const StudioWrapper = ({
           }
 
           case "mouseover": {
-            if (!id) return;
+            console.log("testing field");
+            if (!fieldZuid) return;
             postCommandToBridge({
               action: "addClass",
-              id,
+              fieldZuid,
               className: "studio-hover",
+              itemZuid,
             });
             break;
           }
 
           case "mouseout": {
-            if (!id) return;
+            if (!fieldZuid) return;
             postCommandToBridge({
               action: "removeClass",
-              id,
+              fieldZuid,
               className: "studio-hover",
+              itemZuid,
             });
             break;
           }
 
           case "input": {
-            if (!id) return;
+            if (!fieldZuid) return;
             // value comes from bridge:
             // - text/textarea: normalized text
             // - wysiwyg_advanced: innerHTML
             const nextValue: string = typeof value === "string" ? value : "";
+            const fieldName = fieldNameByZuid.get(fieldZuid);
+            if (!fieldName) return;
 
             dispatch({
               type: "SET_ITEM_DATA",
               itemZUID: dataset.weItemZuid,
-              key: dataset.weFieldKey,
+              key: fieldName,
               // convert empty strings to null if you want later
               value: nextValue,
             });
@@ -775,7 +802,7 @@ export const StudioWrapper = ({
     return () => {
       window.removeEventListener("message", handleMessage);
     };
-  }, [postCommandToBridge, selectedElement, dispatch]);
+  }, [postCommandToBridge, selectedElement, dispatch, fieldNameByZuid]);
 
   const renderInfoPanel = () => (
     <Box display="flex" flexDirection="column" gap={2}>
@@ -801,7 +828,7 @@ export const StudioWrapper = ({
       )}
       <Editor
         // @ts-ignore
-        active={selectedElement?.id || undefined}
+        active={selectedElement?.fieldZuid || undefined}
         item={editorItem}
         model={editorModel}
         onSave={handleSave}
@@ -810,14 +837,14 @@ export const StudioWrapper = ({
         onUpdateFieldErrors={onUpdateFieldErrors}
         fieldErrors={fieldErrors}
         isLoadingItem={isSelectedItemLoading}
-        visibleFieldName={filteredFieldKey || undefined}
+        visibleFieldName={filteredFieldName || undefined}
       />
-      {filteredFieldKey ? (
+      {filteredFieldName ? (
         <Button
           variant="outlined"
           size="large"
           fullWidth
-          onClick={() => setFilteredFieldKey(null)}
+          onClick={() => setFilteredFieldName(null)}
         >
           View All Related Fields
         </Button>
