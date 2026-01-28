@@ -104,7 +104,9 @@ export const ItemEditHeader = ({
   const history = useHistory();
   const [showDuplicateItemDialog, setShowDuplicateItemDialog] = useState(false);
   const { data: installedApps } = useGetInstalledAppsQuery();
-  const { data: contentModels } = useGetContentModelsQuery();
+  const { data: contentModels } = useGetContentModelsQuery(null, {
+    refetchOnMountOrArgChange: true,
+  });
 
   const item = useSelector(
     (state: AppState) =>
@@ -239,7 +241,7 @@ export const ItemEditHeader = ({
             <PublishStatus currentVersion={item?.web?.version} />
           </Stack>
         </Box>
-        {type !== "block" && (
+        {!!type && type !== "block" && (
           <Box
             display="flex"
             justifyContent="space-between"
