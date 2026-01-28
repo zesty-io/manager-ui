@@ -19,7 +19,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
-import { useGeminiGenerationMutation } from "../../services/cloudFunctions";
+import { useGeminiGenerationMutation } from "../../services/mcp";
 import { enqueueAction } from "../../../engine/queue";
 import {
   ArrowForward,
