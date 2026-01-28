@@ -417,15 +417,27 @@ export const StudioWrapper = () => {
         action: "removeClass",
         fieldZuid: selectedElement.fieldZuid,
         className: "studio-selected",
+        itemZuid: selectedElement.itemZuid,
       });
       postCommandToBridge({
         action: "disableEditing",
         fieldZuid: selectedElement.fieldZuid,
+        itemZuid: selectedElement.itemZuid,
       });
     }
     setSelectedElement(null);
     setFilteredFieldName(null);
     setPanelMode("info");
+  }, [postCommandToBridge, selectedElement]);
+
+  const clearHighlightOnly = useCallback(() => {
+    if (!selectedElement?.fieldZuid) return;
+    postCommandToBridge({
+      action: "removeClass",
+      fieldZuid: selectedElement.fieldZuid,
+      className: "studio-selected",
+      itemZuid: selectedElement.itemZuid,
+    });
   }, [postCommandToBridge, selectedElement]);
 
   // Sync item field values -> iframe for text / textarea / wysiwyg_advanced
@@ -902,7 +914,10 @@ export const StudioWrapper = () => {
           variant="outlined"
           size="large"
           fullWidth
-          onClick={() => setFilteredFieldName(null)}
+          onClick={() => {
+            clearHighlightOnly();
+            setFilteredFieldName(null);
+          }}
         >
           View All Related Fields
         </Button>
