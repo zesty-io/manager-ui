@@ -847,9 +847,21 @@ export const StudioWrapper = () => {
     };
   }, [postCommandToBridge, selectedElement, dispatch, fieldNameByZuid]);
 
-  const renderInfoPanel = () => (
-    console.log("im in here", currentItemZUID, currentModelZUID),
-    (
+  const renderInfoPanel = () => {
+    if (!isResolved) {
+      return (
+        <Box
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          minHeight={120}
+        >
+          <CircularProgress size={24} />
+        </Box>
+      );
+    }
+
+    return (
       <Box display="flex" flexDirection="column" gap={2}>
         <Alert severity="info" variant="standard">
           Select items on the canvas to make edits
@@ -860,8 +872,8 @@ export const StudioWrapper = () => {
           isLoadingItem={isFetchingItem || isFetchingModel}
         />
       </Box>
-    )
-  );
+    );
+  };
 
   const renderEditorPanel = () => (
     <Box display="flex" flexDirection="column" gap={2}>
@@ -912,63 +924,51 @@ export const StudioWrapper = () => {
         },
       }}
     >
-      {isResolved ? (
-        <Box
-          display="flex"
-          flexDirection="column"
-          height="100%"
-          width="100%"
-          position="relative"
-        >
-          <StudioHeader
-            previewUrl={previewUrl}
-            onPreviewUrlChange={setPreviewUrl}
-            onPreviewUrlSubmit={handlePreviewSubmit}
-            onRefresh={handlePreviewRefresh}
-            onLanguageChange={handleLanguageChange}
-            currentModelZUID={currentModelZUID}
-            currentItemZUID={currentItemZUID}
-            unresolvedPath={unresolvedPath}
-            logoSrc={contentOneLogoOnly}
+      <Box
+        display="flex"
+        flexDirection="column"
+        height="100%"
+        width="100%"
+        position="relative"
+      >
+        <StudioHeader
+          previewUrl={previewUrl}
+          onPreviewUrlChange={setPreviewUrl}
+          onPreviewUrlSubmit={handlePreviewSubmit}
+          onRefresh={handlePreviewRefresh}
+          onLanguageChange={handleLanguageChange}
+          currentModelZUID={currentModelZUID}
+          currentItemZUID={currentItemZUID}
+          unresolvedPath={unresolvedPath}
+          logoSrc={contentOneLogoOnly}
+        />
+        <Box display="flex" flex="1" minHeight={0} width="100%">
+          <StudioPreview
+            iframeRef={iframeRef}
+            iframeSrc={iframeSrc}
+            isNavigating={isNavigating}
+            onLoad={() => setIsNavigating(false)}
           />
-          <Box display="flex" flex="1" minHeight={0} width="100%">
-            <StudioPreview
-              iframeRef={iframeRef}
-              iframeSrc={iframeSrc}
-              isNavigating={isNavigating}
-              onLoad={() => setIsNavigating(false)}
-            />
-            <StudioSidePanel
-              headerTitle={headerTitle}
-              unresolvedPath={unresolvedPath}
-              panelMode={panelMode}
-              clearSelection={clearSelection}
-              activeVersion={activeVersion}
-              selectedModelZUID={selectedModelZUID}
-              selectedItemZUID={selectedItemZUID}
-              isSaving={isSaving}
-              hasErrors={hasErrors}
-              isSelectedItemLoading={isSelectedItemLoading}
-              onEditInManager={handleEditInManager}
-              onSave={handleSave}
-              editorPanel={renderEditorPanel()}
-              infoPanel={renderInfoPanel()}
-              drawerWidth={drawerWidth}
-              logoSrc={contentOneLogo}
-            />
-          </Box>
+          <StudioSidePanel
+            headerTitle={headerTitle}
+            unresolvedPath={unresolvedPath}
+            panelMode={panelMode}
+            clearSelection={clearSelection}
+            activeVersion={activeVersion}
+            selectedModelZUID={selectedModelZUID}
+            selectedItemZUID={selectedItemZUID}
+            isSaving={isSaving}
+            hasErrors={hasErrors}
+            isSelectedItemLoading={isSelectedItemLoading}
+            onEditInManager={handleEditInManager}
+            onSave={handleSave}
+            editorPanel={renderEditorPanel()}
+            infoPanel={renderInfoPanel()}
+            drawerWidth={drawerWidth}
+            logoSrc={contentOneLogo}
+          />
         </Box>
-      ) : (
-        <Box
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-          height="100%"
-          width="100%"
-        >
-          <CircularProgress />
-        </Box>
-      )}
+      </Box>
     </Dialog>
   );
 };
