@@ -1,4 +1,4 @@
-import { Alert, Box, Button, Dialog } from "@mui/material";
+import { Alert, Box, Button, CircularProgress, Dialog } from "@mui/material";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory, useLocation } from "react-router";
@@ -19,6 +19,7 @@ import { FieldError } from "../../components/Editor/FieldError";
 import contentOneLogoOnly from "../../../../../../../public/images/contentOneLogoOnly.webp";
 import contentOneLogo from "../../../../../../../public/images/contentOneLogo.webp";
 import {
+  findItemByPath,
   normalizePath,
   resolveItemByPath,
 } from "../../../../../studio/utils/pathResolver";
@@ -29,13 +30,6 @@ import { StudioSidePanel } from "./components/StudioWrapper/StudioSidePanel";
 
 const drawerWidth = 440;
 
-type StudioWrapperProps = {
-  modelZUID: string;
-  itemZUID: string;
-  initialPreviewPath?: string;
-  initialUnresolved?: boolean;
-};
-
 type SelectedElement = {
   fieldZuid: string;
   dataset: Record<string, string>;
@@ -44,16 +38,8 @@ type SelectedElement = {
   modelZuid?: string;
 };
 
-export const StudioWrapper = ({
-  modelZUID,
-  itemZUID,
-  initialPreviewPath,
-  initialUnresolved = false,
-}: StudioWrapperProps) => {
+export const StudioWrapper = () => {
   const dispatch = useDispatch();
-  const [currentItemZUID, setCurrentItemZUID] = useState(itemZUID);
-  const [currentModelZUID, setCurrentModelZUID] = useState(modelZUID);
-  const [unresolvedPath, setUnresolvedPath] = useState(initialUnresolved);
 
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const [selectedElement, setSelectedElement] =
@@ -71,6 +57,16 @@ export const StudioWrapper = ({
   const history = useHistory();
   const location = useLocation();
 
+  const searchParams = useMemo(
+    () => new URLSearchParams(location.search),
+    [location.search]
+  );
+  const rawPathParam = searchParams.get("path") || "/";
+  const normalizedPathParam = useMemo(
+    () => normalizePath(rawPathParam || "/"),
+    [rawPathParam]
+  );
+
   const instance = useSelector((state: AppState) => state.instance);
   const previewLock = useSelector((state: AppState) =>
     state.settings.instance.find(
@@ -79,11 +75,23 @@ export const StudioWrapper = ({
   );
   const contentItems = useSelector((state: AppState) => state.content);
   const modelsState = useSelector((state: AppState) => state.models);
-  const item = contentItems[currentItemZUID];
-  const model = modelsState[currentModelZUID];
+
+  const resolvedFromCache = useMemo(
+    () => findItemByPath(normalizedPathParam, contentItems),
+    [contentItems, normalizedPathParam]
+  );
+
+  const [currentItemZUID, setCurrentItemZUID] = useState("");
+  const [currentModelZUID, setCurrentModelZUID] = useState("");
+  const [unresolvedPath, setUnresolvedPath] = useState(
+    !resolvedFromCache && !!normalizedPathParam
+  );
+
+  const item = currentItemZUID ? contentItems[currentItemZUID] : null;
+  const model = currentModelZUID ? modelsState[currentModelZUID] : null;
 
   const [previewPath, setPreviewPath] = useState(
-    initialPreviewPath || item?.web?.path || "/"
+    normalizedPathParam || item?.web?.path || "/"
   );
 
   const iframeSrc = useMemo(() => {
@@ -142,6 +150,37 @@ export const StudioWrapper = ({
     },
     [contentItems, dispatch]
   );
+
+  const lastResolvedPathRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!normalizedPathParam) return;
+    if (lastResolvedPathRef.current === normalizedPathParam) return;
+    lastResolvedPathRef.current = normalizedPathParam;
+    setPreviewPath(normalizedPathParam);
+    updateItemByPath(normalizedPathParam);
+  }, [normalizedPathParam, updateItemByPath]);
+
+  useEffect(() => {
+    if (
+      !resolvedFromCache?.meta?.ZUID ||
+      !resolvedFromCache?.meta?.contentModelZUID
+    ) {
+      return;
+    }
+    if (
+      resolvedFromCache.meta.ZUID === currentItemZUID &&
+      resolvedFromCache.meta.contentModelZUID === currentModelZUID
+    ) {
+      if (unresolvedPath) setUnresolvedPath(false);
+      return;
+    }
+    setCurrentItemZUID(resolvedFromCache.meta.ZUID);
+    setCurrentModelZUID(resolvedFromCache.meta.contentModelZUID);
+    setSelectedElement(null);
+    setFilteredFieldName(null);
+    setUnresolvedPath(false);
+    setPanelMode("info");
+  }, [currentItemZUID, currentModelZUID, resolvedFromCache, unresolvedPath]);
 
   const updateStudioUrl = useCallback(
     (path: string) => {
@@ -232,13 +271,17 @@ export const StudioWrapper = ({
   );
 
   const handleEditInManager = useCallback(() => {
+    if (!currentModelZUID || !currentItemZUID) return;
     history.push(`/content/${currentModelZUID}/${currentItemZUID}`);
   }, [currentModelZUID, currentItemZUID, history]);
 
   const { data: fields = [] as any[], isFetching: isFetchingFields } =
-    useGetContentModelFieldsQuery({
-      modelZUID: selectedModelZUID,
-    });
+    useGetContentModelFieldsQuery(
+      {
+        modelZUID: selectedModelZUID,
+      },
+      { skip: !selectedModelZUID }
+    );
 
   const activeFields = useMemo(() => {
     if (fields?.length) {
@@ -280,6 +323,7 @@ export const StudioWrapper = ({
   }, []);
 
   useEffect(() => {
+    if (!currentModelZUID || !currentItemZUID) return;
     if (!item) {
       setIsFetchingItem(true);
       Promise.resolve(
@@ -291,6 +335,7 @@ export const StudioWrapper = ({
   }, [dispatch, item, currentItemZUID, currentModelZUID]);
 
   useEffect(() => {
+    if (!currentModelZUID) return;
     if (!model) {
       setIsFetchingModel(true);
       Promise.resolve(dispatch(fetchModel(currentModelZUID))).finally(() =>
@@ -603,7 +648,6 @@ export const StudioWrapper = ({
 
   useEffect(() => {
     function handleMessage(evt: MessageEvent<any>) {
-      console.log("i got message", evt);
       const data = evt.data;
       if (!data || data.source !== "zesty-webengine-bridge") {
         return;
@@ -751,7 +795,6 @@ export const StudioWrapper = ({
           }
 
           case "mouseover": {
-            console.log("testing field");
             if (!fieldZuid) return;
             postCommandToBridge({
               action: "addClass",
@@ -805,16 +848,19 @@ export const StudioWrapper = ({
   }, [postCommandToBridge, selectedElement, dispatch, fieldNameByZuid]);
 
   const renderInfoPanel = () => (
-    <Box display="flex" flexDirection="column" gap={2}>
-      <Alert severity="info" variant="standard">
-        Select items on the canvas to make edits
-      </Alert>
-      <ContentInfo
-        itemZUID={selectedItemZUID}
-        modelZUID={selectedModelZUID}
-        isLoadingItem={isSelectedItemLoading}
-      />
-    </Box>
+    console.log("im in here", currentItemZUID, currentModelZUID),
+    (
+      <Box display="flex" flexDirection="column" gap={2}>
+        <Alert severity="info" variant="standard">
+          Select items on the canvas to make edits
+        </Alert>
+        <ContentInfo
+          itemZUID={currentItemZUID}
+          modelZUID={currentModelZUID}
+          isLoadingItem={isFetchingItem || isFetchingModel}
+        />
+      </Box>
+    )
   );
 
   const renderEditorPanel = () => (
@@ -852,6 +898,8 @@ export const StudioWrapper = ({
     </Box>
   );
 
+  const isResolved = !!currentItemZUID && !!currentModelZUID;
+
   return (
     <Dialog
       open
@@ -860,54 +908,67 @@ export const StudioWrapper = ({
         sx: {
           overflow: "hidden",
           bgcolor: "grey.900",
+          borderRadius: 0,
         },
       }}
     >
-      <Box
-        display="flex"
-        flexDirection="column"
-        height="100%"
-        width="100%"
-        position="relative"
-      >
-        <StudioHeader
-          previewUrl={previewUrl}
-          onPreviewUrlChange={setPreviewUrl}
-          onPreviewUrlSubmit={handlePreviewSubmit}
-          onRefresh={handlePreviewRefresh}
-          onLanguageChange={handleLanguageChange}
-          currentModelZUID={currentModelZUID}
-          currentItemZUID={currentItemZUID}
-          unresolvedPath={unresolvedPath}
-          logoSrc={contentOneLogoOnly}
-        />
-        <Box display="flex" flex="1" minHeight={0} width="100%">
-          <StudioPreview
-            iframeRef={iframeRef}
-            iframeSrc={iframeSrc}
-            isNavigating={isNavigating}
-            onLoad={() => setIsNavigating(false)}
-          />
-          <StudioSidePanel
-            headerTitle={headerTitle}
+      {isResolved ? (
+        <Box
+          display="flex"
+          flexDirection="column"
+          height="100%"
+          width="100%"
+          position="relative"
+        >
+          <StudioHeader
+            previewUrl={previewUrl}
+            onPreviewUrlChange={setPreviewUrl}
+            onPreviewUrlSubmit={handlePreviewSubmit}
+            onRefresh={handlePreviewRefresh}
+            onLanguageChange={handleLanguageChange}
+            currentModelZUID={currentModelZUID}
+            currentItemZUID={currentItemZUID}
             unresolvedPath={unresolvedPath}
-            panelMode={panelMode}
-            clearSelection={clearSelection}
-            activeVersion={activeVersion}
-            selectedModelZUID={selectedModelZUID}
-            selectedItemZUID={selectedItemZUID}
-            isSaving={isSaving}
-            hasErrors={hasErrors}
-            isSelectedItemLoading={isSelectedItemLoading}
-            onEditInManager={handleEditInManager}
-            onSave={handleSave}
-            editorPanel={renderEditorPanel()}
-            infoPanel={renderInfoPanel()}
-            drawerWidth={drawerWidth}
-            logoSrc={contentOneLogo}
+            logoSrc={contentOneLogoOnly}
           />
+          <Box display="flex" flex="1" minHeight={0} width="100%">
+            <StudioPreview
+              iframeRef={iframeRef}
+              iframeSrc={iframeSrc}
+              isNavigating={isNavigating}
+              onLoad={() => setIsNavigating(false)}
+            />
+            <StudioSidePanel
+              headerTitle={headerTitle}
+              unresolvedPath={unresolvedPath}
+              panelMode={panelMode}
+              clearSelection={clearSelection}
+              activeVersion={activeVersion}
+              selectedModelZUID={selectedModelZUID}
+              selectedItemZUID={selectedItemZUID}
+              isSaving={isSaving}
+              hasErrors={hasErrors}
+              isSelectedItemLoading={isSelectedItemLoading}
+              onEditInManager={handleEditInManager}
+              onSave={handleSave}
+              editorPanel={renderEditorPanel()}
+              infoPanel={renderInfoPanel()}
+              drawerWidth={drawerWidth}
+              logoSrc={contentOneLogo}
+            />
+          </Box>
         </Box>
-      </Box>
+      ) : (
+        <Box
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          height="100%"
+          width="100%"
+        >
+          <CircularProgress />
+        </Box>
+      )}
     </Dialog>
   );
 };
