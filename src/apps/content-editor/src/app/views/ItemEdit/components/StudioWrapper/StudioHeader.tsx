@@ -1,13 +1,7 @@
-import { RefreshRounded } from "@mui/icons-material";
-import { Box, IconButton, InputAdornment, OutlinedInput } from "@mui/material";
-import { KeyboardEvent } from "react";
+import { Box } from "@mui/material";
 import { LanguageSelector } from "../ItemEditHeader/LanguageSelector";
 
 type StudioHeaderProps = {
-  previewUrl: string;
-  onPreviewUrlChange: (next: string) => void;
-  onPreviewUrlSubmit: () => void;
-  onRefresh: () => void;
   onLanguageChange: (langCode: string) => void;
   currentModelZUID: string;
   currentItemZUID: string;
@@ -16,22 +10,12 @@ type StudioHeaderProps = {
 };
 
 export const StudioHeader = ({
-  previewUrl,
-  onPreviewUrlChange,
-  onPreviewUrlSubmit,
-  onRefresh,
   onLanguageChange,
   currentModelZUID,
   currentItemZUID,
   unresolvedPath,
   logoSrc,
 }: StudioHeaderProps) => {
-  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.key !== "Enter") return;
-    event.preventDefault();
-    onPreviewUrlSubmit();
-  };
-
   return (
     <Box
       sx={{
@@ -50,27 +34,7 @@ export const StudioHeader = ({
         alt="Content One"
         sx={{ height: 32 }}
       />
-      <OutlinedInput
-        fullWidth
-        size="small"
-        value={previewUrl}
-        onChange={(event) => onPreviewUrlChange(event.target.value)}
-        onKeyDown={handleKeyDown}
-        sx={{
-          backgroundColor: (theme) => theme.palette.grey[100],
-        }}
-        endAdornment={
-          <InputAdornment position="end">
-            <IconButton
-              size="xsmall"
-              aria-label="Refresh preview"
-              onClick={onRefresh}
-            >
-              <RefreshRounded fontSize="small" />
-            </IconButton>
-          </InputAdornment>
-        }
-      />
+      <Box flex="1" />
       <Box minWidth={96}>
         <LanguageSelector
           modelZUIDOverride={currentModelZUID}

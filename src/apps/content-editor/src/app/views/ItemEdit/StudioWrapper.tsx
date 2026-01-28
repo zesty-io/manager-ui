@@ -209,31 +209,6 @@ export const StudioWrapper = () => {
     [history, location.pathname]
   );
 
-  const handlePreviewSubmit = useCallback(() => {
-    try {
-      const updatedUrl = new URL(previewUrl);
-      setIsNavigating(true);
-      iframeRef.current?.setAttribute("src", updatedUrl.toString());
-      const normalizedPath = normalizePath(updatedUrl.pathname || "/");
-      setPreviewPath(normalizedPath);
-      updateStudioUrl(normalizedPath);
-      updateItemByPath(normalizedPath);
-    } catch (err) {
-      dispatch(
-        notify({
-          kind: "warn",
-          message: "Invalid URL. Please check and try again.",
-        })
-      );
-    }
-  }, [dispatch, previewUrl, updateItemByPath, updateStudioUrl]);
-
-  const handlePreviewRefresh = useCallback(() => {
-    if (!previewUrl) return;
-    setIsNavigating(true);
-    iframeRef.current?.setAttribute("src", previewUrl);
-  }, [previewUrl]);
-
   const handleLanguageChange = useCallback(
     (langCode: string) => {
       const normalizedPath = normalizePath(previewPath);
@@ -947,10 +922,6 @@ export const StudioWrapper = () => {
         position="relative"
       >
         <StudioHeader
-          previewUrl={previewUrl}
-          onPreviewUrlChange={setPreviewUrl}
-          onPreviewUrlSubmit={handlePreviewSubmit}
-          onRefresh={handlePreviewRefresh}
           onLanguageChange={handleLanguageChange}
           currentModelZUID={currentModelZUID}
           currentItemZUID={currentItemZUID}
