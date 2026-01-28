@@ -25,9 +25,16 @@ export const ViewsCell = ({
     limit: 1,
   });
   const foundItem = item?.[0]?.web?.path === path ? item?.[0] : null;
-  if (isFetching || !path)
+
+  if (isFetching || !path) {
     return (
-      <Box width="100%" textAlign="right">
+      <Box
+        width="100%"
+        textAlign="right"
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+      >
         <Skeleton
           height="12px"
           width="100%"
@@ -37,6 +44,7 @@ export const ViewsCell = ({
         <img src={lineChartSkeleton3} height="13px" width="73px" />
       </Box>
     );
+  }
 
   const paddedSessionsByDay = !screenPageViewsByDay.length
     ? [0, 0]
