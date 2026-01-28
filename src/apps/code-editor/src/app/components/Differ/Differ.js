@@ -27,6 +27,7 @@ export const Differ = memo(
       <>
         <TopBar
           contentModelZUID={props?.contentModelZUID}
+          contentModelType={props?.contentModelType}
           fileZUID={props?.fileZUID}
           fileType={props?.fileType}
           fileName={props?.fileName}
