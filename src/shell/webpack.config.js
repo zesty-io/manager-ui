@@ -14,6 +14,8 @@ const { sentryWebpackPlugin } = require("@sentry/webpack-plugin");
 
 const release = require("../../etc/release");
 const CONFIG = require("./app.config");
+const isCoverage = true;
+const coverageBabelPlugins = isCoverage ? ["istanbul"] : [];
 
 module.exports = async (env) => {
   // create build/ dir
@@ -67,7 +69,7 @@ module.exports = async (env) => {
       },
       headers: {
         "Content-Security-Policy":
-          "connect-src 'self' *.zesty.io *.a.run.app us-central1-zesty-dev.cloudfunctions.net us-central1-zesty-stage.cloudfunctions.net us-central1-zesty-prod.cloudfunctions.net *.sentry.io www.googleapis.com *.amplitude.com *.tiny.cloud *.getbynder.com *.bynder.com d8ejoa1fys2rk.cloudfront.net dam.redshieldtoolkit.org brand.frontdoor.com;",
+          "connect-src 'self' *.zesty.io *.a.run.app us-central1-zesty-dev.cloudfunctions.net us-central1-zesty-stage.cloudfunctions.net us-central1-zesty-prod.cloudfunctions.net *.sentry.io www.googleapis.com *.amplitude.com *.tiny.cloud *.getbynder.com *.bynder.com d8ejoa1fys2rk.cloudfront.net dam.redshieldtoolkit.org brand.frontdoor.com mcp-remote-387953501748.us-central1.run.app mcp-remote-109811026457.us-central1.run.app mcp.content.one;",
         // *.a.run.app - zesty cloudrun apps
         // d8ejoa1fys2rk.cloudfront.net - bynder modules
         // googleapis.com - google fonts
@@ -231,11 +233,34 @@ module.exports = async (env) => {
     },
     module: {
       rules: [
-        {
-          test: /\.ts$|tsx/,
-          use: "ts-loader",
-          exclude: /node_modules/,
-        },
+        ...(isCoverage
+          ? [
+              {
+                test: /\.ts$|tsx/,
+                exclude: /node_modules/,
+                use: [
+                  {
+                    loader: "babel-loader",
+                    options: {
+                      cacheCompression: false,
+                      cacheDirectory: true,
+                      plugins: [
+                        "@babel/plugin-transform-runtime",
+                        ...coverageBabelPlugins,
+                      ],
+                    },
+                  },
+                  "ts-loader",
+                ],
+              },
+            ]
+          : [
+              {
+                test: /\.ts$|tsx/,
+                use: "ts-loader",
+                exclude: /node_modules/,
+              },
+            ]),
         {
           test: /\.less$/,
           use: [
@@ -267,7 +292,10 @@ module.exports = async (env) => {
                 "@babel/preset-env",
                 ["@babel/preset-react", { runtime: "automatic" }],
               ],
-              plugins: ["@babel/plugin-transform-runtime"],
+              plugins: [
+                "@babel/plugin-transform-runtime",
+                ...coverageBabelPlugins,
+              ],
             },
           },
         },

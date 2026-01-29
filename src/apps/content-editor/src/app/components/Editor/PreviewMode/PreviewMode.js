@@ -121,17 +121,36 @@ export default function PreviewMode(props) {
     route,
   ]);
 
+  // Storing these as a ref to make sure we're always invoking the latest state
+  // of these functions
+  const onSaveRef = useRef(props.onSave);
+  const onCloseRef = useRef(props.onClose);
+
+  useEffect(() => {
+    onSaveRef.current = props.onSave;
+  }, [props.onSave]);
+
+  useEffect(() => {
+    onCloseRef.current = props.onClose;
+  }, [props.onClose]);
+
   // Listen for postMessages from iframe
   useEffect(() => {
     const handleMessage = (event) => {
       if (event.data.source === "zesty") {
         switch (event.data.action) {
           case "close":
-            props.onClose();
+            if (onCloseRef.current) {
+              onCloseRef.current();
+            }
             break;
+
           case "save":
-            props.onSave();
+            if (onSaveRef.current) {
+              onSaveRef.current();
+            }
             break;
+
           default:
             break;
         }

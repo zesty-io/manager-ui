@@ -34,6 +34,7 @@ import {
 } from "@mui/icons-material";
 import { alpha } from "@mui/material/styles";
 import { Bynder, FileReplace } from "@zesty-io/material";
+import { useIntersection } from "react-use";
 
 import {
   useGetBinsQuery,
@@ -54,6 +55,7 @@ import { ReplaceFileModal } from "../../../../media/src/app/components/FileModal
 import openBynder from "../../../../../utility/openBynder";
 import { useDrag, useDrop } from "react-dnd";
 import DndContextProvider from "shell/components/DndContextProvider";
+
 type FieldTypeMediaProps = {
   images: string[];
   limit: number;
@@ -613,10 +615,15 @@ export const MediaItem = ({
   hideActionButtons,
 }: MediaItemProps) => {
   const lastHoveredIndexRef = useRef(null);
+  const mediaItemContainerRef = useRef(null);
   const [isDraggable, setIsDraggable] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const intersection = useIntersection(mediaItemContainerRef, {
+    threshold: 1,
+  });
+  const isInView = intersection && intersection.intersectionRatio >= 1;
   const { data, isFetching } = useGetFileQuery(imageZUID, {
-    skip: imageZUID?.substr(0, 4) === "http",
+    skip: imageZUID?.substr(0, 4) === "http" || !isInView,
   });
   const [showRenameFileModal, setShowRenameFileModal] = useState(false);
   const [isReplaceFileModalOpen, setIsReplaceFileModalOpen] = useState(false);
@@ -730,7 +737,7 @@ export const MediaItem = ({
   );
 
   return (
-    <>
+    <Box ref={mediaItemContainerRef}>
       <Box
         ref={hideDrag ? null : dragDropRef}
         data-cy="mediaItem"
@@ -986,7 +993,7 @@ export const MediaItem = ({
           onCancel={() => setIsReplaceFileModalOpen(false)}
         />
       )}
-    </>
+    </Box>
   );
 };
 

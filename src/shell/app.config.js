@@ -12,6 +12,7 @@ module.exports = {
 
     CLOUD_FUNCTIONS_DOMAIN: "https://us-central1-zesty-prod.cloudfunctions.net",
     INSTANCE_SCREENSHOTS_BUCKET: "zesty-prod-instance-screenshots",
+    MCP_DOMAIN: "https://mcp.content.one",
 
     SERVICE_AUTH: "https://auth.api.zesty.io",
     SERVICE_EMAIL: "https://email.zesty.io/send",
@@ -62,6 +63,7 @@ module.exports = {
     CLOUD_FUNCTIONS_DOMAIN:
       "https://us-central1-zesty-stage.cloudfunctions.net",
     INSTANCE_SCREENSHOTS_BUCKET: "zesty-stage-instance-screenshots",
+    MCP_DOMAIN: "https://mcp-remote-109811026457.us-central1.run.app",
 
     SERVICE_AUTH: "https://auth.api.stage.zesty.io",
     SERVICE_EMAIL: "https://email.zesty.io/send",
@@ -107,6 +109,7 @@ module.exports = {
 
     CLOUD_FUNCTIONS_DOMAIN: "https://us-central1-zesty-dev.cloudfunctions.net",
     INSTANCE_SCREENSHOTS_BUCKET: "zesty-dev-instance-screenshots",
+    MCP_DOMAIN: "https://mcp-remote-387953501748.us-central1.run.app",
 
     SERVICE_AUTH: "https://auth.api.dev.zesty.io",
     SERVICE_EMAIL: "https://email.zesty.io/send",
@@ -153,6 +156,7 @@ module.exports = {
     API_ANALYTICS: "https://analytics-api-m3rbwjxm5q-uc.a.run.app",
 
     CLOUD_FUNCTIONS_DOMAIN: "https://us-central1-zesty-dev.cloudfunctions.net",
+    MCP_DOMAIN: "https://mcp-remote-387953501748.us-central1.run.app",
 
     SERVICE_AUTH: "http://auth.api.zesty.localdev:3011",
     SERVICE_EMAIL: "",
