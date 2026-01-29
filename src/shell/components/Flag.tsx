@@ -12,7 +12,11 @@ export const getCountryCode = (langCode: string) => {
 
 export const Flag = ({ countryCode }: { countryCode: string }) => {
   const flagEmoji = useMemo(() => {
-    if (!countryCode || countryCode.length !== 2) {
+    if (!countryCode) {
+      return null;
+    }
+
+    if (countryCode.length !== 2) {
       throw new Error(
         `Country code must be exactly 2 characters, instead received "${countryCode}".`
       );
