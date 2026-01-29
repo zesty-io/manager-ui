@@ -15,11 +15,6 @@ const useIntegrationField = () => {
     async (endpoint: string, headers?: IntegrationRequestHeaders) => {
       if (!endpoint) return;
 
-      // If same endpoint + already successful, do nothing
-      // if (currentEndpointRef.current === endpoint && status === "success") {
-      //   return;
-      // }
-
       // Abort previous request if any
       abortControllerRef.current?.abort();
       abortControllerRef.current = new AbortController();
@@ -56,8 +51,9 @@ const useIntegrationField = () => {
 
   useEffect(() => {
     return () => {
-      abortControllerRef.current?.abort();
       currentEndpointRef.current = "";
+      setApiData(null);
+      setStatus(null);
     };
   }, []);
 
