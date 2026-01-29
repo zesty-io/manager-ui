@@ -315,6 +315,7 @@ describe("Content Specs", () => {
     });
 
     it("renders an image with a url from a template", function () {
+      cy.get('[data-cy="field:images"]').scrollIntoView();
       cy.get('[data-cy="field:images"]')
         .find('[data-cy="file-preview"]')
         .eq(0)
