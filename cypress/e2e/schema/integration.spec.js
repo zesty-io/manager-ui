@@ -270,6 +270,34 @@ function connectToEndpoint(endpoint, type, apiData) {
   cy.get('[data-cy="integrationFormDialog"]').should("exist");
   cy.get('[data-cy="integrationEndpointInput"] input').clear().type(endpoint);
 
+  if (type === "simple") {
+    it("Add HTTP Headers", () => {
+      cy.get('[data-cy="addHeaderButton"]').click();
+      cy.get('[data-cy="addHeaderButton"]').click();
+      cy.get('[data-cy="addHeaderButton"]').click();
+
+      cy.get('[data-cy="integrationHeadersContainer"]')
+        .children()
+        .should("have.length", 5);
+    });
+
+    it("Remove HTTP Headers", () => {
+      cy.get(
+        '[data-cy="integrationHeadersContainerRow-3"] [data-cy="removeHeaderButton"]'
+      ).click();
+      cy.get(
+        '[data-cy="integrationHeadersContainerRow-2"] [data-cy="removeHeaderButton"]'
+      ).click();
+      cy.get(
+        '[data-cy="integrationHeadersContainerRow-1"] [data-cy="removeHeaderButton"]'
+      ).click();
+
+      cy.get('[data-cy="integrationHeadersContainer"]')
+        .children()
+        .should("have.length", 1);
+    });
+  }
+
   cy.get('[data-cy="integrationConnectButton"]').click();
 
   cy.get('[data-cy="integrationConnectionStatusContainer"]').should("exist");
