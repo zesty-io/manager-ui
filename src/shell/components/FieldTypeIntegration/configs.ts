@@ -49,7 +49,6 @@ export type DisplayOptionCardProps = {
   title: string;
   description: string;
   type: IntegrationTypes;
-  // card: IntegrationKeyPaths;
   card: Omit<IntegrationKeyPaths, "details"> & {
     details?: {
       key: string;
@@ -123,10 +122,8 @@ export const GENERIC_DISPLAY_TYPES: DisplayOptionCardProps[] = [
     description: "Display items with multiple details",
     type: "details",
     card: {
-      heading: "Anfernee Simons",
-      subHeading: "A photo of a beautiful mountain in the state of Washington",
-
-      // details: ["position", "stats.points"],
+      heading: "John Simons",
+      subHeading: "",
       details: [
         {
           key: "position",
@@ -144,7 +141,7 @@ export const GENERIC_DISPLAY_TYPES: DisplayOptionCardProps[] = [
     description: "Display items with a heading and subheading",
     type: "simple",
     card: {
-      heading: "Lebron James",
+      heading: "Michael James",
     },
   },
 ];
@@ -163,11 +160,10 @@ export const SPECIAL_DISPLAY_TYPES: DisplayOptionCardProps[] = [
   {
     title: "Youtube Card",
     description: "Display videos from Youtube",
-
     type: "youtube",
     card: {
       heading: "Chugging through Sri Lanka's tea plantations",
-      subHeading: "13:10 • 92M views • 1 day ago",
+      subHeading: "13:10 • 92M views • 1 month ago",
       thumbnail: "/images/integration-sample-video.png",
     },
   },
