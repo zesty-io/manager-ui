@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import {
   Button,
   Box,
@@ -11,6 +11,7 @@ import {
   Link,
   Divider,
   Paper,
+  IconButton,
 } from "@mui/material";
 import DataObjectRoundedIcon from "@mui/icons-material/DataObjectRounded";
 import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
@@ -21,6 +22,8 @@ import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
+import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import { FormWrapper, FieldWrapper } from "../components/Wrappers";
 import { IntegrationRequestHeaders } from "../../../services/types";
 import { validateUrl } from "../../../../utility/validateUrl";
@@ -88,6 +91,7 @@ const ConnectToApi = ({
   setActiveStep: (step: number) => void;
   closeForm?: () => void;
 }) => {
+  const focusRef = useRef<string>("url");
   const { data, status, fetchApiData } = useIntegrationField();
 
   const [isValidUrl, setIsValidUrl] = useState(true);
@@ -96,20 +100,26 @@ const ConnectToApi = ({
   const [endpointLocal, setEndpointLocal] = useState<string>(endpoint || "");
 
   const [headersLocal, setHeadersLocal] = useState<
-    { key: string; value: string }[] | null
-  >(
-    !headers
-      ? []
-      : Object?.entries(headers).map(([key, value]) => ({
-          key,
-          value,
-        }))
-  );
+    Record<string, { key: string; value: string }>
+  >(() => {
+    if (!headers || Object.keys(headers).length === 0) {
+      const id = Date.now().toString();
+      return { [id]: { key: "", value: "" } };
+    }
+
+    return Object.entries(headers).reduce((acc, [key, value]) => {
+      const id = Date.now() + Math.random().toString(36).substr(2, 9);
+      acc[id] = { key, value: String(value) };
+      return acc;
+    }, {} as Record<string, { key: string; value: string }>);
+  });
 
   const handleNext = () => {
-    const reqHeaders = !headersLocal?.length
+    const headersLocalValues = Object.values(headersLocal);
+    const headersWithKeys = headersLocalValues.filter((i) => !!i?.key);
+    const reqHeaders = !headersWithKeys?.length
       ? null
-      : headersLocal?.reduce((acc: any, obj: any) => {
+      : headersWithKeys?.reduce((acc: any, obj: any) => {
           acc[obj.key] = obj.value;
           return acc;
         }, {});
@@ -128,21 +138,19 @@ const ConnectToApi = ({
   const handleApiConnect = useCallback(() => {
     setReqAborted(false);
     setApiData(null);
-
-    const headersWithKeys = headersLocal.filter((i) => !!i?.key);
-
+    const headersLocalValues = Object.values(headersLocal);
+    const headersWithKeys = headersLocalValues.filter((i) => !!i?.key);
     const reqHeaders = !headersWithKeys?.length
       ? null
       : headersWithKeys?.reduce((acc: any, obj: any) => {
           acc[obj.key] = obj.value;
           return acc;
         }, {});
-
     fetchApiData(endpointLocal, reqHeaders);
   }, [endpointLocal, headersLocal]);
 
   return (
-    <FormWrapper width="480px" height="600px">
+    <FormWrapper width="480px" height="fit-content">
       <DialogTitle component="div">
         <DataObjectRoundedIcon
           color="primary"
@@ -188,7 +196,7 @@ const ConnectToApi = ({
             data-cy="integrationEndpointInput"
             fullWidth
             size="small"
-            autoFocus
+            autoFocus={focusRef?.current === "url"}
             placeholder="https://api.example.com/endpoint"
             value={endpointLocal}
             onInput={(e: any) => {
@@ -217,7 +225,7 @@ const ConnectToApi = ({
         </FieldWrapper>
         <Divider orientation="horizontal" sx={{ my: 1, border: "none" }} />
         <FieldWrapper
-          label="Headers (if applicable)"
+          label="HTTP Headers (optional)"
           toolTip="Authentication Headers"
         >
           <Grid
@@ -227,55 +235,103 @@ const ConnectToApi = ({
             width="100%"
             data-cy="integrationHeadersContainer"
           >
-            {[...new Array(5)].map((_, i) => (
-              <Grid
-                data-cy={`integrationHeadersContainerRow-${i}`}
-                key={`header-${i}`}
-                container
-                size={16}
-                spacing={1}
-                columns={16}
-                width="100%"
+            {Object.entries(headersLocal)?.map((entry, i) => {
+              const entryId: string = entry[0];
+              const headerKey = entry[1]?.key || "";
+              const headerValue = entry[1]?.value || "";
+              return (
+                <Grid
+                  data-cy={`integrationHeadersContainerRow-${i}`}
+                  key={`header-${entryId}`}
+                  container
+                  size={16}
+                  spacing={1}
+                  columns={16}
+                  width="100%"
+                >
+                  <Grid size={8}>
+                    <TextField
+                      autoFocus={entryId === focusRef?.current}
+                      className="keyInput"
+                      fullWidth
+                      size="small"
+                      placeholder="Key"
+                      value={headerKey}
+                      onChange={(e: any) => {
+                        setHeadersLocal({
+                          ...headersLocal,
+                          [entryId]: {
+                            ...headersLocal?.[entryId],
+                            key: e.target.value,
+                          },
+                        });
+                      }}
+                    />
+                  </Grid>
+                  <Grid
+                    size={8}
+                    display="flex"
+                    flexDirection="row"
+                    justifyContent="space-between"
+                    alignItems="center"
+                  >
+                    <TextField
+                      className="valueInput"
+                      size="small"
+                      placeholder="Value"
+                      value={headerValue}
+                      onChange={(e: any) => {
+                        setHeadersLocal({
+                          ...headersLocal,
+                          [entryId]: {
+                            ...headersLocal?.[entryId],
+                            value: e.target.value,
+                          },
+                        });
+                      }}
+                      sx={{ flexGrow: 1 }}
+                    />
+                    {i > 0 && (
+                      <IconButton
+                        data-cy="removeHeaderButton"
+                        sx={{ flexGrow: 0 }}
+                        onClick={() => {
+                          setHeadersLocal((prev) => {
+                            if (!prev[entryId]) return prev;
+                            const updated = { ...prev };
+                            delete updated[entryId];
+                            return updated;
+                          });
+                        }}
+                      >
+                        <CloseOutlinedIcon />
+                      </IconButton>
+                    )}
+                  </Grid>
+                </Grid>
+              );
+            })}
+            <Grid size={16}>
+              <Button
+                data-cy="addHeaderButton"
+                fullWidth
+                variant="outlined"
+                startIcon={<AddCircleIcon />}
+                onClick={() => {
+                  const keyId: string = Date.now().toString();
+                  focusRef.current = keyId;
+                  setHeadersLocal({
+                    ...headersLocal,
+                    [keyId]: {
+                      key: "",
+                      value: "",
+                    },
+                  });
+                }}
               >
-                <Grid size={8}>
-                  <TextField
-                    className="keyInput"
-                    fullWidth
-                    size="small"
-                    placeholder="Key"
-                    value={headersLocal?.[i]?.key || ""}
-                    onChange={(e) => {
-                      const newHeaders = headersLocal
-                        ? [...headersLocal]
-                        : null;
-                      newHeaders[i] = {
-                        ...newHeaders[i],
-                        key: e.target.value,
-                        value: headersLocal?.[i]?.value || "",
-                      };
-                      setHeadersLocal(newHeaders);
-                    }}
-                  />
-                </Grid>
-                <Grid size={8}>
-                  <TextField
-                    className="valueInput"
-                    fullWidth
-                    size="small"
-                    placeholder="Value"
-                    value={headersLocal?.[i]?.value || ""}
-                    onChange={(e) => {
-                      const newHeaders = headersLocal ? [...headersLocal] : [];
-                      newHeaders[i] = {
-                        ...newHeaders[i],
-                        value: e.target.value || "",
-                      };
-                      setHeadersLocal(newHeaders);
-                    }}
-                  />
-                </Grid>
-              </Grid>
-            ))}
+                Add HTTP Header
+              </Button>
+            </Grid>
           </Grid>
         </FieldWrapper>
       </DialogContent>
