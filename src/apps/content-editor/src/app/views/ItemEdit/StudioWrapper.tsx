@@ -16,6 +16,7 @@ import { useGetContentModelFieldsQuery } from "../../../../../../shell/services/
 import { ContentInfo } from "./Content/Actions/Widgets/ContentInfo";
 import Editor from "../../components/Editor/Editor";
 import { FieldError } from "../../components/Editor/FieldError";
+import { PendingEditsModal } from "../../components/PendingEditsModal";
 import contentOneLogoOnly from "../../../../../../../public/images/contentOneLogoOnly.webp";
 import contentOneLogo from "../../../../../../../public/images/contentOneLogo.webp";
 import {
@@ -90,28 +91,35 @@ export const StudioWrapper = () => {
   const item = currentItemZUID ? contentItems[currentItemZUID] : null;
   const model = currentModelZUID ? modelsState[currentModelZUID] : null;
 
+  const buildIframeSrc = useCallback(
+    (path: string) => {
+      const normalized = normalizePath(path || "/");
+      const instanceHash = instance?.randomHashID ?? "";
+      // @ts-expect-error Config is provided globally at runtime
+      const baseUrl = `${CONFIG.URL_PREVIEW_PROTOCOL}${instanceHash}${CONFIG.URL_PREVIEW}${normalized}`;
+      const queryParams = new URLSearchParams();
+
+      queryParams.set("studio", "on");
+
+      if (previewLock) {
+        queryParams.set("zpw", previewLock.value);
+      }
+
+      const query = queryParams.toString();
+
+      return query ? `${baseUrl}?${query}` : baseUrl;
+    },
+    [instance?.randomHashID, previewLock]
+  );
+
   const [previewPath, setPreviewPath] = useState(
     normalizedPathParam || item?.web?.path || "/"
   );
 
-  const iframeSrc = useMemo(() => {
-    const path = previewPath || "/";
-    const instanceHash = instance?.randomHashID ?? "";
-    // @ts-expect-error Config is provided globally at runtime
-    const baseUrl = `${CONFIG.URL_PREVIEW_PROTOCOL}${instanceHash}${CONFIG.URL_PREVIEW}${path}`;
-    const queryParams = new URLSearchParams();
-
-    queryParams.set("studio", "on");
-
-    if (previewLock) {
-      queryParams.set("zpw", previewLock.value);
-    }
-
-    const query = queryParams.toString();
-
-    return query ? `${baseUrl}?${query}` : baseUrl;
-  }, [instance?.randomHashID, previewPath, previewLock]);
-  const [previewUrl, setPreviewUrl] = useState(iframeSrc);
+  const iframeSrc = useMemo(
+    () => buildIframeSrc(previewPath),
+    [buildIframeSrc, previewPath]
+  );
   const [isNavigating, setIsNavigating] = useState(false);
   const selectedItemZUID = selectedElement?.itemZuid || currentItemZUID;
   const selectedModelZUID = selectedElement?.modelZuid || currentModelZUID;
@@ -127,38 +135,48 @@ export const StudioWrapper = () => {
   const headerTitle = unresolvedPath ? "Preview only" : panelTitle;
 
   const updateItemByPath = useCallback(
-    async (path: string) => {
+    async (path: string, options?: { onApplied?: () => void }) => {
+      const { onApplied } = options ?? {};
       const resolved = await resolveItemByPath({
         path,
         contentItems,
         dispatch,
       });
 
-      if (resolved?.meta?.ZUID && resolved?.meta?.contentModelZUID) {
-        const normalized = normalizePath(path || "/");
-        setPreviewPath(normalized);
-        setCurrentItemZUID(resolved.meta.ZUID);
-        setCurrentModelZUID(resolved.meta.contentModelZUID);
-        setSelectedElement(null);
-        setFilteredFieldName(null);
-        setUnresolvedPath(false);
-        setPanelMode("info");
-      } else {
-        setUnresolvedPath(true);
-        setFilteredFieldName(null);
-      }
-    },
-    [contentItems, dispatch]
-  );
+      const applyResolved = () => {
+        if (resolved?.meta?.ZUID && resolved?.meta?.contentModelZUID) {
+          const normalized = normalizePath(path || "/");
+          onApplied?.();
+          setPreviewPath(normalized);
+          setCurrentItemZUID(resolved.meta.ZUID);
+          setCurrentModelZUID(resolved.meta.contentModelZUID);
+          setUnresolvedPath(false);
+        } else {
+          onApplied?.();
+          setUnresolvedPath(true);
+        }
+      };
 
-  const lastResolvedPathRef = useRef<string | null>(null);
-  useEffect(() => {
-    if (!normalizedPathParam) return;
-    if (lastResolvedPathRef.current === normalizedPathParam) return;
-    lastResolvedPathRef.current = normalizedPathParam;
-    setPreviewPath(normalizedPathParam);
-    updateItemByPath(normalizedPathParam);
-  }, [normalizedPathParam, updateItemByPath]);
+      if (
+        selectedItem?.dirty &&
+        resolved?.meta?.ZUID &&
+        resolved.meta.ZUID !== selectedItemZUID
+      ) {
+        const openModal = (window as any).openContentNavigationModal;
+        if (typeof openModal === "function") {
+          openModal((shouldProceed: boolean) => {
+            if (shouldProceed) {
+              applyResolved();
+            }
+          });
+          return;
+        }
+      }
+
+      applyResolved();
+    },
+    [contentItems, dispatch, selectedItem?.dirty, selectedItemZUID]
+  );
 
   useEffect(() => {
     if (
@@ -207,42 +225,6 @@ export const StudioWrapper = () => {
       }
     },
     [history, location.pathname]
-  );
-
-  const handleLanguageChange = useCallback(
-    (langCode: string) => {
-      const normalizedPath = normalizePath(previewPath);
-      const pathSegments = normalizedPath.split("/").filter(Boolean);
-      const isLangSegment =
-        pathSegments.length > 0 &&
-        /^[a-z]{2}(?:-[a-z]{2})?$/i.test(pathSegments[0]);
-      const basePath = isLangSegment
-        ? normalizePath(`/${pathSegments.slice(1).join("/")}`)
-        : normalizedPath;
-      const localizedPath =
-        langCode === "en-US"
-          ? basePath
-          : normalizePath(`/${langCode.toLowerCase()}${basePath}`);
-
-      try {
-        const updatedUrl = new URL(previewUrl);
-        updatedUrl.pathname = localizedPath;
-        setPreviewUrl(updatedUrl.toString());
-        setIsNavigating(true);
-        iframeRef.current?.setAttribute("src", updatedUrl.toString());
-        setPreviewPath(localizedPath);
-        updateStudioUrl(localizedPath);
-        updateItemByPath(localizedPath);
-      } catch (err) {
-        dispatch(
-          notify({
-            kind: "warn",
-            message: "Invalid URL. Please check and try again.",
-          })
-        );
-      }
-    },
-    [dispatch, previewPath, previewUrl, updateItemByPath, updateStudioUrl]
   );
 
   const handleEditInManager = useCallback(() => {
@@ -405,6 +387,88 @@ export const StudioWrapper = () => {
     setPanelMode("info");
   }, [postCommandToBridge, selectedElement]);
 
+  const handleLanguageChange = useCallback(
+    (langCode: string) => {
+      const normalizedPath = normalizePath(previewPath);
+      const pathSegments = normalizedPath.split("/").filter(Boolean);
+      const isLangSegment =
+        pathSegments.length > 0 &&
+        /^[a-z]{2}(?:-[a-z]{2})?$/i.test(pathSegments[0]);
+      const basePath = isLangSegment
+        ? normalizePath(`/${pathSegments.slice(1).join("/")}`)
+        : normalizedPath;
+      const localizedPath =
+        langCode === "en-US"
+          ? basePath
+          : normalizePath(`/${langCode.toLowerCase()}${basePath}`);
+
+      const nextSrc = buildIframeSrc(localizedPath);
+      if (!nextSrc) {
+        dispatch(
+          notify({
+            kind: "warn",
+            message: "Invalid URL. Please check and try again.",
+          })
+        );
+        return;
+      }
+      updateItemByPath(localizedPath, {
+        onApplied: () => {
+          clearSelection();
+          setIsNavigating(true);
+          updateStudioUrl(localizedPath);
+        },
+      });
+    },
+    [
+      buildIframeSrc,
+      clearSelection,
+      dispatch,
+      previewPath,
+      updateItemByPath,
+      updateStudioUrl,
+    ]
+  );
+
+  const lastResolvedPathRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!normalizedPathParam) return;
+    if (lastResolvedPathRef.current === normalizedPathParam) return;
+    lastResolvedPathRef.current = normalizedPathParam;
+    const normalized = normalizePath(normalizedPathParam);
+    setIsNavigating(true);
+    setPreviewPath(normalized);
+    updateItemByPath(normalized, { onApplied: clearSelection });
+  }, [normalizedPathParam, updateItemByPath, clearSelection]);
+
+  const discardPendingEdits = useCallback(() => {
+    if (!selectedItemZUID || !selectedModelZUID) return Promise.resolve();
+    dispatch({
+      type: "UNMARK_ITEMS_DIRTY",
+      items: [selectedItemZUID],
+    });
+    return dispatch(fetchItem(selectedModelZUID, selectedItemZUID));
+  }, [dispatch, selectedItemZUID, selectedModelZUID]);
+
+  const requestClearSelection = useCallback(() => {
+    if (!selectedItem?.dirty) {
+      clearSelection();
+      return;
+    }
+
+    const openModal = (window as any).openContentNavigationModal;
+    if (typeof openModal === "function") {
+      openModal((shouldProceed: boolean) => {
+        if (shouldProceed) {
+          clearSelection();
+        }
+      });
+      return;
+    }
+
+    clearSelection();
+  }, [clearSelection, selectedItem?.dirty]);
+
   const clearHighlightOnly = useCallback(() => {
     if (!selectedElement?.fieldZuid) return;
     postCommandToBridge({
@@ -414,6 +478,62 @@ export const StudioWrapper = () => {
       itemZuid: selectedElement.itemZuid,
     });
   }, [postCommandToBridge, selectedElement]);
+
+  const applySelection = useCallback(
+    (next: {
+      fieldZuid: string;
+      dataset: Record<string, string>;
+      weType?: string;
+      itemZuid?: string;
+      modelZuid?: string;
+    }) => {
+      const { fieldZuid, dataset, weType, itemZuid, modelZuid } = next;
+
+      if (
+        selectedElement?.fieldZuid &&
+        selectedElement.fieldZuid !== fieldZuid
+      ) {
+        postCommandToBridge({
+          action: "removeClass",
+          fieldZuid: selectedElement.fieldZuid,
+          className: "studio-selected",
+          itemZuid: selectedElement.itemZuid,
+        });
+        postCommandToBridge({
+          action: "disableEditing",
+          fieldZuid: selectedElement.fieldZuid,
+          itemZuid: selectedElement.itemZuid,
+        });
+      }
+
+      setSelectedElement({
+        fieldZuid,
+        dataset,
+        weType,
+        itemZuid,
+        modelZuid,
+      });
+      const fieldName = fieldNameByZuid.get(fieldZuid) || null;
+      setFilteredFieldName(fieldName);
+      setPanelMode("edit");
+      postCommandToBridge({
+        action: "addClass",
+        fieldZuid,
+        className: "studio-selected",
+        itemZuid,
+      });
+
+      // Enable inline editing for text / textarea / wysiwyg_advanced
+      if (["text", "textarea", "wysiwyg_advanced"].includes(weType)) {
+        postCommandToBridge({
+          action: "enableEditing",
+          fieldZuid,
+          itemZuid,
+        });
+      }
+    },
+    [fieldNameByZuid, postCommandToBridge, selectedElement]
+  );
 
   // Sync item field values -> iframe for text / textarea / wysiwyg_advanced
   useEffect(() => {
@@ -672,22 +792,11 @@ export const StudioWrapper = () => {
 
       if (msg.type === "PATH_CHANGE") {
         const loc = msg.location || {};
-        const href = (loc.href as string) || "";
         const path = (loc.path as string) || "/";
 
-        if (href) {
-          setPreviewUrl(href);
-        }
-
         const normalizedPath = normalizePath(path || "/");
-
-        setPreviewPath(normalizedPath);
         updateStudioUrl(normalizedPath);
-        updateItemByPath(normalizedPath);
-
-        setSelectedElement(null);
-        setFilteredFieldName(null);
-        setPanelMode("info");
+        updateItemByPath(normalizedPath, { onApplied: clearSelection });
         return;
       }
 
@@ -735,48 +844,35 @@ export const StudioWrapper = () => {
           case "click": {
             if (!fieldZuid) return;
 
-            if (
-              selectedElement?.fieldZuid &&
-              selectedElement.fieldZuid !== fieldZuid
-            ) {
-              postCommandToBridge({
-                action: "removeClass",
-                fieldZuid: selectedElement.fieldZuid,
-                className: "studio-selected",
-                itemZuid: selectedElement.itemZuid,
-              });
-              postCommandToBridge({
-                action: "disableEditing",
-                fieldZuid: selectedElement.fieldZuid,
-                itemZuid: selectedElement.itemZuid,
-              });
+            const isChangingItem =
+              Boolean(itemZuid) &&
+              Boolean(selectedItemZUID) &&
+              itemZuid !== selectedItemZUID;
+            if (isChangingItem && selectedItem?.dirty) {
+              const openModal = (window as any).openContentNavigationModal;
+              if (typeof openModal === "function") {
+                openModal((shouldProceed: boolean) => {
+                  if (shouldProceed) {
+                    applySelection({
+                      fieldZuid,
+                      dataset,
+                      weType,
+                      itemZuid,
+                      modelZuid,
+                    });
+                  }
+                });
+                return;
+              }
             }
 
-            setSelectedElement({
+            applySelection({
               fieldZuid,
               dataset,
               weType,
               itemZuid,
               modelZuid,
             });
-            const fieldName = fieldNameByZuid.get(fieldZuid) || null;
-            setFilteredFieldName(fieldName);
-            setPanelMode("edit");
-            postCommandToBridge({
-              action: "addClass",
-              fieldZuid,
-              className: "studio-selected",
-              itemZuid,
-            });
-
-            // Enable inline editing for text / textarea / wysiwyg_advanced
-            if (["text", "textarea", "wysiwyg_advanced"].includes(weType)) {
-              postCommandToBridge({
-                action: "enableEditing",
-                fieldZuid,
-                itemZuid,
-              });
-            }
 
             break;
           }
@@ -832,7 +928,16 @@ export const StudioWrapper = () => {
     return () => {
       window.removeEventListener("message", handleMessage);
     };
-  }, [postCommandToBridge, selectedElement, dispatch, fieldNameByZuid]);
+  }, [
+    applySelection,
+    clearSelection,
+    dispatch,
+    fieldNameByZuid,
+    postCommandToBridge,
+    selectedElement,
+    selectedItem?.dirty,
+    selectedItemZUID,
+  ]);
 
   const renderInfoPanel = () => {
     if (!isResolved) {
@@ -939,7 +1044,7 @@ export const StudioWrapper = () => {
             headerTitle={headerTitle}
             unresolvedPath={unresolvedPath}
             panelMode={panelMode}
-            clearSelection={clearSelection}
+            clearSelection={requestClearSelection}
             activeVersion={activeVersion}
             selectedModelZUID={selectedModelZUID}
             selectedItemZUID={selectedItemZUID}
@@ -954,6 +1059,13 @@ export const StudioWrapper = () => {
             logoSrc={contentOneLogo}
           />
         </Box>
+        <PendingEditsModal
+          show={Boolean(selectedItem?.dirty)}
+          loading={isSaving}
+          onSave={handleSave}
+          // @ts-ignore
+          onDiscard={discardPendingEdits}
+        />
       </Box>
     </Dialog>
   );
