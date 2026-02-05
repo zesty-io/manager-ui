@@ -480,7 +480,7 @@ export const AIDrawer = () => {
             onChange={(e) => setPrompt(e.target.value)}
             value={prompt}
             onKeyPress={(e) => {
-              if (e.key === "Enter") {
+              if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
                 handlePrompt(prompt);
               }
