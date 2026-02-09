@@ -19,7 +19,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
-import { useGeminiGenerationMutation } from "../../services/cloudFunctions";
+import { useGeminiGenerationMutation } from "../../services/mcp";
 import { enqueueAction } from "../../../engine/queue";
 import {
   ArrowForward,
@@ -480,7 +480,7 @@ export const AIDrawer = () => {
             onChange={(e) => setPrompt(e.target.value)}
             value={prompt}
             onKeyPress={(e) => {
-              if (e.key === "Enter") {
+              if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
                 handlePrompt(prompt);
               }
