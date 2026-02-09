@@ -2,6 +2,9 @@ import {
   ContentItem,
   ContentModel,
   ContentModelField,
+  WebView,
+  Stylesheet,
+  Script,
 } from "../src/shell/services/types";
 import "./support/commands";
 
@@ -65,6 +68,12 @@ declare global {
         fields: Partial<ContentModelField>;
         items: Partial<ContentItem>;
       }>;
+      task(
+        event: "seed:code",
+        path: string
+      ): Chainable<
+        Partial<WebView> | Partial<Script> | Partial<Stylesheet> | null
+      >;
     }
   }
 }
