@@ -12,7 +12,7 @@ import {
 import { fetchModel } from "../../../../../../shell/store/models";
 import { fetchAuditTrailDrafting } from "../../../../../../shell/store/logs";
 import { notify } from "../../../../../../shell/store/notifications";
-import { useGetContentModelFieldsQuery } from "../../../../../../shell/services/instance";
+import { fetchFields } from "../../../../../../shell/store/fields";
 import { ContentInfo } from "./Content/Actions/Widgets/ContentInfo";
 import Editor from "../../components/Editor/Editor";
 import { FieldError } from "../../components/Editor/FieldError";
@@ -55,6 +55,7 @@ export const StudioWrapper = () => {
   const fieldErrorRef = useRef<any>(null);
   const [isFetchingItem, setIsFetchingItem] = useState(false);
   const [isFetchingModel, setIsFetchingModel] = useState(false);
+  const [isFetchingFields, setIsFetchingFields] = useState(false);
   const history = useHistory();
   const location = useLocation();
 
@@ -76,6 +77,7 @@ export const StudioWrapper = () => {
   );
   const contentItems = useSelector((state: AppState) => state.content);
   const modelsState = useSelector((state: AppState) => state.models);
+  const fieldsState = useSelector((state: AppState) => state.fields);
 
   const resolvedFromCache = useMemo(
     () => findItemByPath(normalizedPathParam, contentItems),
@@ -232,13 +234,24 @@ export const StudioWrapper = () => {
     history.push(`/content/${currentModelZUID}/${currentItemZUID}`);
   }, [currentModelZUID, currentItemZUID, history]);
 
-  const { data: fields = [] as any[], isFetching: isFetchingFields } =
-    useGetContentModelFieldsQuery(
-      {
-        modelZUID: selectedModelZUID,
-      },
-      { skip: !selectedModelZUID }
+  const fields = useMemo(() => {
+    if (!selectedModelZUID) return [];
+    return Object.keys(fieldsState)
+      .filter(
+        (fieldZUID) =>
+          fieldsState[fieldZUID]?.contentModelZUID === selectedModelZUID
+      )
+      .map((fieldZUID) => fieldsState[fieldZUID])
+      .sort((a, b) => (a?.sort ?? 0) - (b?.sort ?? 0));
+  }, [fieldsState, selectedModelZUID]);
+
+  useEffect(() => {
+    if (!selectedModelZUID) return;
+    setIsFetchingFields(true);
+    Promise.resolve(dispatch(fetchFields(selectedModelZUID))).finally(() =>
+      setIsFetchingFields(false)
     );
+  }, [dispatch, selectedModelZUID]);
 
   const activeFields = useMemo(() => {
     if (fields?.length) {
@@ -259,6 +272,12 @@ export const StudioWrapper = () => {
     });
     return map;
   }, [activeFields]);
+
+  useEffect(() => {
+    if (!selectedElement?.fieldZuid) return;
+    const nextName = fieldNameByZuid.get(selectedElement.fieldZuid) || null;
+    setFilteredFieldName(nextName);
+  }, [fieldNameByZuid, selectedElement]);
 
   const hasErrors = useMemo(() => {
     const errorList = Object.values(fieldErrors)
