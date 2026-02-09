@@ -15,6 +15,7 @@ const path = require("path");
 const dotenv = require("dotenv");
 const os = require("os");
 const content = require("./seeds/content");
+const code = require("./seeds/code");
 const codeCoverageTask = require("@cypress/code-coverage/task");
 
 module.exports = (on, config) => {
@@ -28,6 +29,7 @@ module.exports = (on, config) => {
       return null;
     },
     ...content(config),
+    ...code(config),
   });
   // `on` is used to hook into various events Cypress emits
   // `config` is the resolved Cypress config
