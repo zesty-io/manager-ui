@@ -44,6 +44,7 @@ interface TopBarProps {
   isLive: boolean;
   code: string;
   contentModelZUID?: string;
+  contentModelType: string;
   isDirty: boolean;
   updatedAt?: string;
   updatedBy?: string;
@@ -187,9 +188,13 @@ const TopBar = memo(function TopBar(props: TopBarProps) {
                       <IconButton
                         size="small"
                         sx={{ color: "grey.400" }}
-                        onClick={() =>
-                          history.push(`/content/${props.contentModelZUID}`)
-                        }
+                        onClick={() => {
+                          if (props.contentModelType === "block") {
+                            history.push(`/blocks/${props.contentModelZUID}`);
+                          } else {
+                            history.push(`/content/${props.contentModelZUID}`);
+                          }
+                        }}
                       >
                         <VerticalSplitRoundedIcon fontSize="small" />
                       </IconButton>
