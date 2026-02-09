@@ -281,7 +281,8 @@ export const StudioWrapper = () => {
 
   useEffect(() => {
     if (!currentModelZUID || !currentItemZUID) return;
-    if (!item) {
+    const currentItemInStore = contentItems[currentItemZUID]?.meta?.ZUID;
+    if (!currentItemInStore) {
       setIsFetchingItem(true);
       Promise.resolve(
         dispatch(fetchItem(currentModelZUID, currentItemZUID))
@@ -330,6 +331,38 @@ export const StudioWrapper = () => {
   );
 
   const activeVersion = editorItem?.meta?.version ?? 0;
+  const lastVersionRef = useRef<{ itemZUID: string; version: number } | null>(
+    null
+  );
+
+  useEffect(() => {
+    if (!selectedItemZUID || !editorItem) return;
+    if (typeof editorItem?.meta?.version !== "number") return;
+
+    const nextVersion = editorItem.meta.version;
+    const prev = lastVersionRef.current;
+
+    if (!prev || prev.itemZUID !== selectedItemZUID) {
+      lastVersionRef.current = {
+        itemZUID: selectedItemZUID,
+        version: nextVersion,
+      };
+      return;
+    }
+
+    if (prev.version !== nextVersion) {
+      if (!studioSaving) {
+        dispatch({
+          type: "MARK_ITEM_DIRTY",
+          itemZUID: selectedItemZUID,
+        });
+      }
+      lastVersionRef.current = {
+        itemZUID: selectedItemZUID,
+        version: nextVersion,
+      };
+    }
+  }, [dispatch, editorItem, selectedItemZUID, studioSaving]);
 
   useEffect(() => {
     const iframeEl = iframeRef.current;
@@ -721,21 +754,22 @@ export const StudioWrapper = () => {
   ]);
 
   useEffect(() => {
-    if (!selectedElement?.itemZuid || !selectedElement?.modelZuid) {
-      return;
-    }
+    const selectedItemZuid = selectedElement?.itemZuid;
+    if (!selectedItemZuid) return;
 
-    if (
-      selectedElement.itemZuid !== currentItemZUID &&
-      !contentItems[selectedElement.itemZuid]
-    ) {
+    const resolvedModelZuid = selectedElement?.modelZuid;
+
+    const selectedItemInStore = contentItems[selectedItemZuid]?.meta?.ZUID;
+
+    if (resolvedModelZuid && !selectedItemInStore) {
       setIsFetchingItem(true);
       Promise.resolve(
-        dispatch(fetchItem(selectedElement.modelZuid, selectedElement.itemZuid))
+        dispatch(fetchItem(resolvedModelZuid, selectedItemZuid))
       ).finally(() => setIsFetchingItem(false));
     }
 
     if (
+      selectedElement?.modelZuid &&
       selectedElement.modelZuid !== currentModelZUID &&
       !modelsState[selectedElement.modelZuid]
     ) {
