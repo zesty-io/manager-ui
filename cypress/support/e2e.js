@@ -16,6 +16,7 @@
 // Import commands.js using ES2015 syntax:
 import "./commands";
 import "cypress-iframe";
+import "@cypress/code-coverage/support";
 
 // @see https://docs.cypress.io/api/cypress-api/cookies.html#Set-global-default-cookies
 // Cypress.Cookies.defaults({

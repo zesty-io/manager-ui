@@ -8,7 +8,7 @@ import {
   IconButton,
   Tooltip,
 } from "@mui/material";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   useGetUsageQuery,
   useGetRequestsQuery,
@@ -51,6 +51,10 @@ import jsIcon from "../../../../../../public/images/jsIcon.svg";
 import htmlIcon from "../../../../../../public/images/htmlIcon.svg";
 import cssIcon from "../../../../../../public/images/cssIcon.svg";
 import { format, isValid } from "date-fns";
+import {
+  selectFile,
+  clearSelectedFiles,
+} from "../../../../../shell/store/media-revamp";
 
 interface Props {
   files?: File[];
@@ -669,6 +673,14 @@ export const MediaList: FC<Props> = ({ files, groups }) => {
   const [lazyLoading, setLazyLoading] = useState(true);
   const [isImageError, setIsImageError] = useState(false);
   const [items, setItems] = useState([]);
+  const dispatch = useDispatch();
+  const selectedFiles = useSelector(
+    (state: AppState) => state.mediaRevamp.selectedFiles
+  );
+  const isSelectDialog = useSelector(
+    (state: AppState) => state.mediaRevamp.isSelectDialog
+  );
+  const isSelecting = isSelectDialog || selectedFiles?.length;
 
   const location = useLocation();
   const history = useHistory();
@@ -774,6 +786,9 @@ export const MediaList: FC<Props> = ({ files, groups }) => {
                 ".MuiDataGrid-row": {
                   cursor: "pointer",
                 },
+                ".MuiDataGrid-columnHeaderCheckbox > *": {
+                  visibility: "hidden",
+                },
                 border: "none",
               }}
               style={{
@@ -786,7 +801,23 @@ export const MediaList: FC<Props> = ({ files, groups }) => {
               hideFooter
               disableColumnFilter
               disableColumnMenu
+              checkboxSelection={Boolean(isSelecting)}
+              disableRowSelectionOnClick={!isSelecting}
+              isRowSelectable={(params) => params.row.type !== "folder"}
+              rowSelectionModel={selectedFiles.map((file) => file.id)}
+              onRowSelectionModelChange={(newSelection) => {
+                const selection = new Set(newSelection);
+                dispatch(clearSelectedFiles());
+                items.forEach((row: any) => {
+                  if (row.type !== "folder" && selection.has(row.id)) {
+                    dispatch(selectFile(row));
+                  }
+                });
+              }}
               onRowClick={(params: any) => {
+                if (isSelecting && params.row.type !== "folder") {
+                  return;
+                }
                 if (params.row.type === "folder") {
                   history.replace(`/media/folder/${params.row.id}`);
                 } else {

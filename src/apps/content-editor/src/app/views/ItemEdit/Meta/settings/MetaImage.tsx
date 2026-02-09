@@ -176,8 +176,8 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
 
   useEffect(() => {
     // Automatically opens the media browser when the og_image field has no value
-    if (autoOpenMediaBrowser && "og_image" in item?.data) {
-      if (!item?.data?.["og_image"]) {
+    if (autoOpenMediaBrowser && item?.data && "og_image" in item.data) {
+      if (!item.data["og_image"]) {
         fieldTypeMedia.current?.triggerOpenMediaBrowser();
       }
       setAutoOpenMediaBrowser(false);
@@ -186,8 +186,9 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
 
   // If there is already a field named og_image and it is storing a value
   if (
-    "og_image" in item?.data &&
-    (!!item?.data?.og_image || showOGImageField)
+    item?.data &&
+    "og_image" in item.data &&
+    (!!item.data.og_image || showOGImageField)
   ) {
     const ogImageValue = item.data.og_image;
 
