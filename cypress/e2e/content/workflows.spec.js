@@ -44,7 +44,6 @@ describe("Content Item Workflows", () => {
         Cypress.env("modelZUID", model?.ZUID);
         Cypress.env("itemZUID", items[0]?.meta?.ZUID);
         ITEM = items?.[0];
-        console.debug("ITEM: ", ITEM);
       })
       .then(() => {
         cy.visit(
