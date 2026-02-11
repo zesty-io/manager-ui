@@ -24,7 +24,8 @@ export type FieldType =
   | "fontawesome"
   | "wysiwyg_advanced"
   | "article_writer"
-  | "block_selector"; // TODO: Will need to confirm if this type is already supported by the api
+  | "block_selector"
+  | "repeater_field"; // TODO: Will need to confirm if this type is already supported by the api
 interface FieldListData {
   type: FieldType;
   name: string;
@@ -337,6 +338,17 @@ const FIELD_COPY_CONFIG: { [key: string]: FieldListData[] } = {
       proTip: "UUID are always unique and are non editable.",
       subHeaderText: "Use to set unique ids to each content item",
     },
+    {
+      type: "repeater_field",
+      name: "Repeater Field",
+      shortDescription: "Titles, names, and headings",
+      description:
+        "The Repeater Field allows you to create a group of fields for repeating content. Useful for multiple items, such as slides, team members, or FAQs.",
+      commonUses: ["Slides", "Testimonials", "Recipes", "Event Times"],
+      proTip:
+        "Use a Repeater Field to manage lists or sections with a shared structure but unique content like recipes or testimonials.",
+      subHeaderText: "Used for groups of static fields",
+    },
   ],
 };
 
@@ -364,6 +376,7 @@ const TYPE_TEXT: Record<FieldType, string> = {
   wysiwyg_basic: "WYSIWYG",
   yes_no: "Boolean",
   block_selector: "Block Selector",
+  repeater_field: "Repeater Field",
 };
 
 const COMMON_FIELDS: InputField[] = [
@@ -714,6 +727,10 @@ const FORM_CONFIG: Record<FieldType, FormConfig> = {
     rules: [...COMMON_RULES],
   },
   block_selector: {
+    details: [...COMMON_FIELDS],
+    rules: [],
+  },
+  repeater_field: {
     details: [...COMMON_FIELDS],
     rules: [],
   },
