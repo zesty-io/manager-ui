@@ -340,8 +340,8 @@ const FIELD_COPY_CONFIG: { [key: string]: FieldListData[] } = {
     },
     {
       type: "repeater_field",
-      name: "Repeater Field",
-      shortDescription: "Titles, names, and headings",
+      name: "Repeater",
+      shortDescription: "A repeating list of grouped fields",
       description:
         "The Repeater Field allows you to create a group of fields for repeating content. Useful for multiple items, such as slides, team members, or FAQs.",
       commonUses: ["Slides", "Testimonials", "Recipes", "Event Times"],
