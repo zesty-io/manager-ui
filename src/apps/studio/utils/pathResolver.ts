@@ -45,8 +45,13 @@ export const resolveItemByPath = async ({
 }) => {
   const normalized = normalizePath(path);
   const cached = findItemByPath(normalized, contentItems);
-  if (cached) return cached;
+  if (cached) {
+    // @ts-ignore
+    await dispatch(searchItems(normalized, { limit: 1, field: "path" }));
+    return cached;
+  }
 
-  await dispatch(searchItems(normalized));
+  // @ts-ignore
+  await dispatch(searchItems(normalized, { limit: 1, field: "path" }));
   return findItemByPath(normalized, contentItems);
 };
