@@ -376,7 +376,7 @@ const TYPE_TEXT: Record<FieldType, string> = {
   wysiwyg_basic: "WYSIWYG",
   yes_no: "Boolean",
   block_selector: "Block Selector",
-  repeater_field: "Repeater Field",
+  repeater_field: "Repeater",
 };
 
 const COMMON_FIELDS: InputField[] = [
