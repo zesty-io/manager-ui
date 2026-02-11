@@ -80,6 +80,7 @@ export const FieldItem = ({
               primary: {
                 fontWeight: 700,
                 variant: "body2",
+                color: "text.primary",
               },
               secondary: {
                 variant: "body3",

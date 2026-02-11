@@ -5,6 +5,7 @@ import {
   ListItemText,
   Box,
   Typography,
+  Stack,
 } from "@mui/material";
 
 import { FieldIcon } from "../Field/FieldIcon";
@@ -46,29 +47,39 @@ export const TooltipBody = ({
           <FieldIcon type={fieldType} />
         </ListItemIcon>
         <ListItemText
-          primary={headerText}
+          primary={fieldName}
           secondary="FAQ"
-          primaryTypographyProps={{
-            fontSize: 14,
-            fontWeight: 700,
-            color: "text.primary",
+          slotProps={{
+            primary: {
+              fontWeight: 700,
+              color: "text.primary",
+              variant: "body2",
+            },
+            secondary: {
+              variant: "body3",
+            },
           }}
-          secondaryTypographyProps={{
-            variant: "body3",
+          sx={{
+            my: 0.5,
           }}
         />
       </ListItem>
-      <Box px={2} py={1}>
-        <Typography
-          variant="body3"
-          color="text.secondary"
-          whiteSpace="pre-line"
-          fontWeight={400}
-        >
-          {description}
-        </Typography>
-        <Box py={2}>
-          <Typography variant="body2" fontWeight="700" pb={1}>
+      <Stack>
+        <Box px={2} py={1}>
+          <Typography variant="body2" fontWeight="700" pb={0.5}>
+            {headerText}
+          </Typography>
+          <Typography
+            variant="body3"
+            color="text.secondary"
+            whiteSpace="pre-line"
+            fontWeight={400}
+          >
+            {description}
+          </Typography>
+        </Box>
+        <Box px={2} py={1}>
+          <Typography variant="body2" fontWeight="700" pb={0.5}>
             Common Uses
           </Typography>
           <Box pl={3} component="ul">
@@ -87,13 +98,36 @@ export const TooltipBody = ({
             ))}
           </Box>
         </Box>
-        <Typography variant="body2" fontWeight="700" pb={1}>
-          Pro Tip
-        </Typography>
-        <Typography fontWeight={400} variant="body3" color="text.secondary">
-          {proTip}
-        </Typography>
-      </Box>
+        {fieldType === "repeater_field" && (
+          <Box px={2} py={1}>
+            <Typography variant="body2" fontWeight="700" pb={0.5}>
+              How is the Data Stored?
+            </Typography>
+            <Typography
+              fontWeight={400}
+              variant="body3"
+              color="text.secondary"
+              mb={0.5}
+            >
+              Data is stored as a JSON array of objects, which can be accessed
+              easily, both directly and through Parsley with each statement.
+            </Typography>
+            <Typography fontWeight={400} variant="body3" color="text.secondary">
+              {
+                'e.g. [{quote: "ACME has solved all my needs", name: "Jane Doe"}, {quote: "I love ACME!", name: "John Doe"}]'
+              }
+            </Typography>
+          </Box>
+        )}
+        <Box px={2} py={1}>
+          <Typography variant="body2" fontWeight="700" pb={0.5}>
+            Pro Tip
+          </Typography>
+          <Typography fontWeight={400} variant="body3" color="text.secondary">
+            {proTip}
+          </Typography>
+        </Box>
+      </Stack>
     </Paper>
   );
 };
