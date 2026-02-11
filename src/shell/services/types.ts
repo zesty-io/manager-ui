@@ -241,7 +241,9 @@ export type ContentModelFieldDataType =
   | "internal_link"
   | "yes_no"
   | "color"
-  | "sort";
+  | "sort"
+  | "block_selector"
+  | "repeater_field";
 
 export interface ContentModelField {
   ZUID: string;
