@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, Stack } from "@mui/material";
 
 import {
   TYPE_TEXT,
@@ -17,7 +17,7 @@ export const Learn = ({ type }: Props) => {
   const data = FIELD_COPY_CONFIG[category]?.find((item) => item.type === type);
 
   return (
-    <Box data-cy="LearnTab">
+    <Stack data-cy="LearnTab" gap={1.25}>
       <Box>
         <Typography variant="h5" fontWeight={600} mb={0.5}>
           {stringStartsWithVowel(TYPE_TEXT[type])
@@ -32,7 +32,7 @@ export const Learn = ({ type }: Props) => {
           {data?.description}
         </Typography>
       </Box>
-      <Box my={2.5}>
+      <Box>
         <Typography variant="h6" fontWeight={600} mb={0.5}>
           Common Uses
         </Typography>
@@ -49,6 +49,22 @@ export const Learn = ({ type }: Props) => {
           ))}
         </Box>
       </Box>
+      {type === "repeater_field" && (
+        <Box>
+          <Typography variant="h6" fontWeight={600} mb={0.5}>
+            How is the Data Stored?
+          </Typography>
+          <Typography variant="body1" color="text.secondary" mb={0.5}>
+            Data is stored as a JSON array of objects, which can be accessed
+            easily, both directly and through Parsley with each statement.
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            {
+              'e.g. [{quote: "ACME has solved all my needs", name: "Jane Doe"}, {quote: "I love ACME!", name: "John Doe"}]'
+            }
+          </Typography>
+        </Box>
+      )}
       <Box>
         <Typography variant="h6" fontWeight={600} mb={0.5}>
           Pro Tip
@@ -57,6 +73,6 @@ export const Learn = ({ type }: Props) => {
           {data?.proTip}
         </Typography>
       </Box>
-    </Box>
+    </Stack>
   );
 };
