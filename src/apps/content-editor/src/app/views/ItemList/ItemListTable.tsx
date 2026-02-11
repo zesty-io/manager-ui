@@ -256,6 +256,14 @@ const fieldTypeColumnConfigMap = {
     filterable: true,
     renderCell: (params: GridRenderCellParams) => <SortCell params={params} />,
   },
+  block_selector: {
+    width: 200,
+    filterable: true,
+  },
+  repeater_field: {
+    width: 200,
+    filterable: true,
+  },
 } as const;
 
 export const ItemListTable = memo(
