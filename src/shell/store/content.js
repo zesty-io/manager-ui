@@ -300,7 +300,11 @@ export function searchItems(
   return (dispatch) => {
     return dispatch({
       type: "FETCH_RESOURCE",
-      uri: `${CONFIG.API_INSTANCE}/search/items?q=${term}&order=${query.order}&dir=${query.dir}&limit=${query.limit}`,
+      uri: `${CONFIG.API_INSTANCE}/search/items?q=${term}&order=${
+        query.order
+      }&dir=${query.dir}&limit=${query.limit}${
+        query.field ? `&field=${query.field}` : ""
+      }`,
       handler: (res) => {
         if (res.status === 200 && Array.isArray(res.data)) {
           dispatch({
