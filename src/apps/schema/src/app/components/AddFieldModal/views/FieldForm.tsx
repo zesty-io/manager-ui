@@ -828,7 +828,9 @@ export const FieldForm = ({
           borderTop: 0,
         }}
       >
-        {activeTab === "repeater_fields" && <RepeaterFields />}
+        {activeTab === "repeater_fields" && (
+          <RepeaterFields name={name} onAddField={() => {}} />
+        )}
 
         {activeTab === "details" && (
           <Grid
