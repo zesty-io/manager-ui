@@ -25,6 +25,7 @@ import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
 import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
 import PauseCircleOutlineRoundedIcon from "@mui/icons-material/PauseCircleOutlineRounded";
 import PlayCircleFilledRoundedIcon from "@mui/icons-material/PlayCircleFilledRounded";
+import VerticalSplitRoundedIcon from "@mui/icons-material/VerticalSplitRounded";
 
 import { FieldIcon } from "../../Field/FieldIcon";
 import {
@@ -63,8 +64,9 @@ import {
   Currency,
   currencies,
 } from "../../../../../../../shell/components/FieldTypeCurrency/currencies";
+import { RepeaterFields } from "../RepeaterFields";
 
-type ActiveTab = "details" | "rules" | "learn";
+type ActiveTab = "details" | "rules" | "learn" | "repeater_fields";
 type Params = {
   id: string;
 };
@@ -95,7 +97,11 @@ export const FieldForm = ({
   sortIndex,
   onCreateAnotherField,
 }: Props) => {
-  const [activeTab, setActiveTab] = useState<ActiveTab>("details");
+  const isUpdateField = !isEmpty(fieldData);
+  const showRepeaterFieldsTab = type === "repeater_field" && isUpdateField;
+  const [activeTab, setActiveTab] = useState<ActiveTab>(
+    showRepeaterFieldsTab ? "repeater_fields" : "details"
+  );
   const [isSubmitClicked, setIsSubmitClicked] = useState(false);
   const [fieldStateOnSaveAction, setFieldStateOnSaveAction] = useState<
     "deactivate" | "reactivate"
@@ -135,7 +141,6 @@ export const FieldForm = ({
       skip: !formData.relatedModelZUID,
     }
   );
-  const isUpdateField = !isEmpty(fieldData);
   const isInbetweenField = sortIndex !== null;
   const modelsOptions: DropdownOptions[] = useMemo(() => {
     return allModels
@@ -782,6 +787,15 @@ export const FieldForm = ({
             top: "2px",
           }}
         >
+          {showRepeaterFieldsTab && (
+            <Tab
+              data-cy="RepeaterFieldsTabBtn"
+              value="repeater_fields"
+              label="Fields"
+              icon={<VerticalSplitRoundedIcon fontSize="small" />}
+              iconPosition="start"
+            />
+          )}
           <Tab
             data-cy="DetailsTabBtn"
             value="details"
@@ -814,6 +828,8 @@ export const FieldForm = ({
           borderTop: 0,
         }}
       >
+        {activeTab === "repeater_fields" && <RepeaterFields />}
+
         {activeTab === "details" && (
           <Grid
             data-cy="DetailsTab"
