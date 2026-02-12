@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { getResponseData, prepareHeaders } from "./util";
+import { prepareHeaders } from "./util";
 import instanceZUID from "../../utility/instanceZUID";
+import { IntegrationRequestHeaders } from "./types";
 
 //Define service using a base URL and expected endpoints
 export const cloudFunctionsApi = createApi({
@@ -65,6 +66,23 @@ export const cloudFunctionsApi = createApi({
         };
       },
     }),
+    getExternalApi: builder.mutation<
+      any,
+      { url: string; headers: IntegrationRequestHeaders; signal: AbortSignal }
+    >({
+      query: ({ url, headers = {}, signal = null }) => {
+        const encodedURL = encodeURI(url);
+        return {
+          url: `getURL`,
+          method: "POST",
+          params: {
+            url: encodedURL,
+          },
+          body: headers,
+          ...(!!signal && { signal }),
+        };
+      },
+    }),
   }),
 });
 
@@ -76,4 +94,5 @@ export const {
   useCreateScreenshotMutation,
   useDownloadCsvQuery,
   useLazyDownloadCsvQuery,
+  useGetExternalApiMutation,
 } = cloudFunctionsApi;

@@ -96,6 +96,7 @@ export const FormWrapper = ({
       sx={{
         width: width,
         height: height,
+        maxHeight: "calc(100vh - 40px)",
         borderRadius: 2,
         position: "relative",
         boxSizing: "border-box",

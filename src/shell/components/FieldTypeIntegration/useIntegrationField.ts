@@ -1,18 +1,20 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { IntegrationRequestHeaders } from "../../services/types";
+import { useGetExternalApiMutation } from "shell/services/cloudFunctions";
 
 const useIntegrationField = () => {
   const [apiData, setApiData] = useState<any>(null);
   const [status, setStatus] = useState<
     "connecting" | "success" | "failed" | null
   >(null);
+  const [getExternalApi, { data }] = useGetExternalApiMutation();
 
   const currentEndpointRef = useRef<string>("");
 
   const abortControllerRef = useRef<AbortController | null>(null);
 
   const fetchApiData = useCallback(
-    async (endpoint: string, headers?: IntegrationRequestHeaders) => {
+    async (endpoint: string, headers: IntegrationRequestHeaders = null) => {
       if (!endpoint) return;
 
       // Abort previous request if any
@@ -24,18 +26,19 @@ const useIntegrationField = () => {
       setApiData(null);
 
       try {
-        const response = await fetch(endpoint, {
-          ...(headers ? { headers } : {}),
+        const response: any = await getExternalApi({
+          url: endpoint,
+          headers: !headers ? {} : headers,
           signal: abortControllerRef.current.signal,
         });
 
-        if (response.ok) {
-          const responseData = await response.json();
+        if (!response?.error) {
+          const responseData = await response.data;
           setApiData(responseData);
           setStatus("success");
         } else {
           throw new Error(
-            `Failed to fetch data: ${response.status} ${response.statusText}`
+            `Failed to fetch data: ${response.status} ${response.data.message}`
           );
         }
       } catch (err) {
