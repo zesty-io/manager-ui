@@ -3,16 +3,16 @@ import { LanguageSelector } from "../ItemEditHeader/LanguageSelector";
 
 type StudioHeaderProps = {
   onLanguageChange: (langCode: string) => void;
-  currentModelZUID: string;
-  currentItemZUID: string;
+  pageModelZUID: string;
+  pageItemZUID: string;
   unresolvedPath: boolean;
   logoSrc: string;
 };
 
 export const StudioHeader = ({
   onLanguageChange,
-  currentModelZUID,
-  currentItemZUID,
+  pageModelZUID,
+  pageItemZUID,
   unresolvedPath,
   logoSrc,
 }: StudioHeaderProps) => {
@@ -37,8 +37,8 @@ export const StudioHeader = ({
       <Box flex="1" />
       <Box minWidth={96}>
         <LanguageSelector
-          modelZUIDOverride={currentModelZUID}
-          itemZUIDOverride={currentItemZUID}
+          modelZUIDOverride={pageModelZUID}
+          itemZUIDOverride={pageItemZUID}
           onChange={({ langCode }) => {
             if (!langCode) return;
             onLanguageChange(langCode);

@@ -84,14 +84,14 @@ export const StudioWrapper = () => {
     [contentItems, normalizedPathParam]
   );
 
-  const [currentItemZUID, setCurrentItemZUID] = useState("");
-  const [currentModelZUID, setCurrentModelZUID] = useState("");
+  const [pageItemZUID, setPageItemZUID] = useState("");
+  const [pageModelZUID, setPageModelZUID] = useState("");
   const [unresolvedPath, setUnresolvedPath] = useState(
     !resolvedFromCache && !!normalizedPathParam
   );
 
-  const item = currentItemZUID ? contentItems[currentItemZUID] : null;
-  const model = currentModelZUID ? modelsState[currentModelZUID] : null;
+  const pageItem = pageItemZUID ? contentItems[pageItemZUID] : null;
+  const pageModel = pageModelZUID ? modelsState[pageModelZUID] : null;
 
   const buildIframeSrc = useCallback(
     (path: string) => {
@@ -115,7 +115,7 @@ export const StudioWrapper = () => {
   );
 
   const [previewPath, setPreviewPath] = useState(
-    normalizedPathParam || item?.web?.path || "/"
+    normalizedPathParam || pageItem?.web?.path || "/"
   );
 
   const iframeSrc = useMemo(
@@ -123,8 +123,8 @@ export const StudioWrapper = () => {
     [buildIframeSrc, previewPath]
   );
   const [isNavigating, setIsNavigating] = useState(false);
-  const selectedItemZUID = selectedElement?.itemZuid || currentItemZUID;
-  const selectedModelZUID = selectedElement?.modelZuid || currentModelZUID;
+  const selectedItemZUID = selectedElement?.itemZuid || pageItemZUID;
+  const selectedModelZUID = selectedElement?.modelZuid || pageModelZUID;
 
   const selectedItem = selectedItemZUID
     ? contentItems[selectedItemZUID] || null
@@ -134,9 +134,9 @@ export const StudioWrapper = () => {
     ? modelsState[selectedModelZUID] || null
     : null;
   const panelTitle =
-    item?.web?.metaTitle || item?.web?.metaLinkText || "Studio";
+    pageItem?.web?.metaTitle || pageItem?.web?.metaLinkText || "Studio";
   const currentVersion =
-    typeof item?.meta?.version === "number" ? item.meta.version : null;
+    typeof pageItem?.meta?.version === "number" ? pageItem.meta.version : null;
   const headerTitle = unresolvedPath
     ? "Preview only"
     : `${panelTitle}${currentVersion !== null ? ` · v${currentVersion}` : ""}`;
@@ -155,8 +155,8 @@ export const StudioWrapper = () => {
           const normalized = normalizePath(path || "/");
           onApplied?.();
           setPreviewPath(normalized);
-          setCurrentItemZUID(resolved.meta.ZUID);
-          setCurrentModelZUID(resolved.meta.contentModelZUID);
+          setPageItemZUID(resolved.meta.ZUID);
+          setPageModelZUID(resolved.meta.contentModelZUID);
           setUnresolvedPath(false);
         } else {
           onApplied?.();
@@ -193,19 +193,19 @@ export const StudioWrapper = () => {
       return;
     }
     if (
-      resolvedFromCache.meta.ZUID === currentItemZUID &&
-      resolvedFromCache.meta.contentModelZUID === currentModelZUID
+      resolvedFromCache.meta.ZUID === pageItemZUID &&
+      resolvedFromCache.meta.contentModelZUID === pageModelZUID
     ) {
       if (unresolvedPath) setUnresolvedPath(false);
       return;
     }
-    setCurrentItemZUID(resolvedFromCache.meta.ZUID);
-    setCurrentModelZUID(resolvedFromCache.meta.contentModelZUID);
+    setPageItemZUID(resolvedFromCache.meta.ZUID);
+    setPageModelZUID(resolvedFromCache.meta.contentModelZUID);
     setSelectedElement(null);
     setFilteredFieldName(null);
     setUnresolvedPath(false);
     setPanelMode("info");
-  }, [currentItemZUID, currentModelZUID, resolvedFromCache, unresolvedPath]);
+  }, [pageItemZUID, pageModelZUID, resolvedFromCache, unresolvedPath]);
 
   const updateStudioUrl = useCallback(
     (path: string) => {
@@ -235,9 +235,9 @@ export const StudioWrapper = () => {
   );
 
   const handleEditInManager = useCallback(() => {
-    if (!currentModelZUID || !currentItemZUID) return;
-    history.push(`/content/${currentModelZUID}/${currentItemZUID}`);
-  }, [currentModelZUID, currentItemZUID, history]);
+    if (!pageModelZUID || !pageItemZUID) return;
+    history.push(`/content/${pageModelZUID}/${pageItemZUID}`);
+  }, [pageModelZUID, pageItemZUID, history]);
 
   const fields = useMemo(() => {
     if (!selectedModelZUID) return [];
@@ -304,29 +304,29 @@ export const StudioWrapper = () => {
   }, []);
 
   useEffect(() => {
-    if (!currentModelZUID || !currentItemZUID) return;
-    const currentItemInStore = contentItems[currentItemZUID]?.meta?.ZUID;
+    if (!pageModelZUID || !pageItemZUID) return;
+    const currentItemInStore = contentItems[pageItemZUID]?.meta?.ZUID;
     if (!currentItemInStore) {
       setIsFetchingItem(true);
-      Promise.resolve(
-        dispatch(fetchItem(currentModelZUID, currentItemZUID))
-      ).finally(() => setIsFetchingItem(false));
+      Promise.resolve(dispatch(fetchItem(pageModelZUID, pageItemZUID))).finally(
+        () => setIsFetchingItem(false)
+      );
     } else {
       setIsFetchingItem(false);
     }
-  }, [dispatch, item, currentItemZUID, currentModelZUID]);
+  }, [dispatch, pageItem, pageItemZUID, pageModelZUID]);
 
   useEffect(() => {
-    if (!currentModelZUID) return;
-    if (!model) {
+    if (!pageModelZUID) return;
+    if (!pageModel) {
       setIsFetchingModel(true);
-      Promise.resolve(dispatch(fetchModel(currentModelZUID))).finally(() =>
+      Promise.resolve(dispatch(fetchModel(pageModelZUID))).finally(() =>
         setIsFetchingModel(false)
       );
     } else {
       setIsFetchingModel(false);
     }
-  }, [dispatch, model, currentModelZUID]);
+  }, [dispatch, pageModel, pageModelZUID]);
 
   const editorItem = selectedItem || null;
   const editorModel = selectedModel || null;
@@ -338,7 +338,7 @@ export const StudioWrapper = () => {
     !editorItem ||
     !editorModel ||
     (selectedElement?.itemZuid &&
-      selectedElement.itemZuid !== currentItemZUID &&
+      selectedElement.itemZuid !== pageItemZUID &&
       !selectedItem);
   const isSaving = studioSaving;
 
@@ -794,7 +794,7 @@ export const StudioWrapper = () => {
 
     if (
       selectedElement?.modelZuid &&
-      selectedElement.modelZuid !== currentModelZUID &&
+      selectedElement.modelZuid !== pageModelZUID &&
       !modelsState[selectedElement.modelZuid]
     ) {
       setIsFetchingModel(true);
@@ -805,8 +805,8 @@ export const StudioWrapper = () => {
   }, [
     contentItems,
     dispatch,
-    currentItemZUID,
-    currentModelZUID,
+    pageItemZUID,
+    pageModelZUID,
     modelsState,
     selectedElement,
   ]);
@@ -1017,8 +1017,8 @@ export const StudioWrapper = () => {
           Select items on the canvas to make edits
         </Alert>
         <ContentInfo
-          itemZUID={currentItemZUID}
-          modelZUID={currentModelZUID}
+          itemZUID={pageItemZUID}
+          modelZUID={pageModelZUID}
           isLoadingItem={isFetchingItem || isFetchingModel}
         />
       </Box>
@@ -1027,7 +1027,7 @@ export const StudioWrapper = () => {
 
   const renderEditorPanel = () => (
     <Box display="flex" flexDirection="column" gap={2}>
-      {selectedItemZUID === currentItemZUID && saveClicked && hasErrors && (
+      {selectedItemZUID === pageItemZUID && saveClicked && hasErrors && (
         <FieldError
           ref={fieldErrorRef}
           errors={fieldErrors}
@@ -1063,7 +1063,7 @@ export const StudioWrapper = () => {
     </Box>
   );
 
-  const isResolved = !!currentItemZUID && !!currentModelZUID;
+  const isResolved = !!pageItemZUID && !!pageModelZUID;
 
   return (
     <Dialog
@@ -1086,8 +1086,8 @@ export const StudioWrapper = () => {
       >
         <StudioHeader
           onLanguageChange={handleLanguageChange}
-          currentModelZUID={currentModelZUID}
-          currentItemZUID={currentItemZUID}
+          pageModelZUID={pageModelZUID}
+          pageItemZUID={pageItemZUID}
           unresolvedPath={unresolvedPath}
           logoSrc={contentOneLogoOnly}
         />
