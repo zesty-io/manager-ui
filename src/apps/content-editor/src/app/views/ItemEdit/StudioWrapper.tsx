@@ -135,11 +135,9 @@ export const StudioWrapper = () => {
     : null;
   const panelTitle =
     pageItem?.web?.metaTitle || pageItem?.web?.metaLinkText || "Studio";
-  const currentVersion =
+  const pageItemVersion =
     typeof pageItem?.meta?.version === "number" ? pageItem.meta.version : null;
-  const headerTitle = unresolvedPath
-    ? "Preview only"
-    : `${panelTitle}${currentVersion !== null ? ` · v${currentVersion}` : ""}`;
+  const headerTitle = unresolvedPath ? "Preview only" : panelTitle;
 
   const updateItemByPath = useCallback(
     async (path: string, options?: { onApplied?: () => void }) => {
@@ -1100,6 +1098,7 @@ export const StudioWrapper = () => {
           />
           <StudioSidePanel
             headerTitle={headerTitle}
+            pageItemVersion={pageItemVersion}
             unresolvedPath={unresolvedPath}
             panelMode={panelMode}
             clearSelection={requestClearSelection}

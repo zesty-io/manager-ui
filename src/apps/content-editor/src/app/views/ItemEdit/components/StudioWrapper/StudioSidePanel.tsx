@@ -14,6 +14,7 @@ import { VersionSelector } from "../ItemEditHeader/VersionSelector";
 
 type StudioSidePanelProps = {
   headerTitle: string;
+  pageItemVersion: number | null;
   unresolvedPath: boolean;
   panelMode: "info" | "edit";
   clearSelection: () => void;
@@ -33,6 +34,7 @@ type StudioSidePanelProps = {
 
 export const StudioSidePanel = ({
   headerTitle,
+  pageItemVersion,
   unresolvedPath,
   panelMode,
   clearSelection,
@@ -71,9 +73,16 @@ export const StudioSidePanel = ({
         spacing={1}
       >
         <Stack>
-          <Typography variant="subtitle1" fontWeight="600">
-            {headerTitle}
-          </Typography>
+          <Stack direction="row" alignItems="center" gap={1}>
+            <Typography variant="subtitle1" fontWeight="600">
+              {headerTitle}
+            </Typography>
+            {pageItemVersion !== null && !unresolvedPath ? (
+              <Typography variant="body2" color="text.secondary">
+                v{pageItemVersion}
+              </Typography>
+            ) : null}
+          </Stack>
           {panelMode === "edit" && !unresolvedPath ? (
             <Box>
               <VersionSelector
