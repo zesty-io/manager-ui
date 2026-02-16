@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { FIELD_COPY_CONFIG, FieldListData } from "../../configs";
+import { FIELD_COPY_CONFIG, FieldListData, FieldType } from "../../configs";
 import { FieldItem } from "../FieldItem";
 
 const repeaterFields = {
@@ -28,31 +28,21 @@ const repeaterFields = {
 type RepeaterFieldsSelectionProps = {
   handleClose: () => void;
   name: string;
+  handleFieldSelection: ({
+    type,
+    name,
+  }: {
+    type: FieldType;
+    name: string;
+  }) => void;
 };
 export const RepeaterFieldsSelection = ({
   handleClose,
   name,
+  handleFieldSelection,
 }: RepeaterFieldsSelectionProps) => {
   return (
-    <Dialog
-      open
-      onClose={handleClose}
-      fullScreen
-      sx={{
-        my: 2.5,
-      }}
-      slotProps={{
-        paper: {
-          sx: {
-            width: 900,
-            maxWidth: "100%",
-            maxHeight: "min(100%, 1000px)",
-            minHeight: "680px",
-            m: 0,
-          },
-        },
-      }}
-    >
+    <>
       <DialogTitle component="div">
         <Stack
           direction="row"
@@ -121,7 +111,12 @@ export const RepeaterFieldsSelection = ({
                       description={field.description}
                       commonUses={field.commonUses}
                       proTip={field.proTip}
-                      onFieldClick={() => {}}
+                      onFieldClick={() =>
+                        handleFieldSelection({
+                          type: field.type,
+                          name: field.name,
+                        })
+                      }
                     />
                   );
                 })}
@@ -130,6 +125,6 @@ export const RepeaterFieldsSelection = ({
           )
         )}
       </DialogContent>
-    </Dialog>
+    </>
   );
 };
