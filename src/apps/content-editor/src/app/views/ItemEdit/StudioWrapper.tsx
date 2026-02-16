@@ -133,8 +133,13 @@ export const StudioWrapper = () => {
   const selectedModel = selectedModelZUID
     ? modelsState[selectedModelZUID] || null
     : null;
-  const panelTitle = selectedItem?.web?.metaTitle || "Studio";
-  const headerTitle = unresolvedPath ? "Preview only" : panelTitle;
+  const panelTitle =
+    item?.web?.metaTitle || item?.web?.metaLinkText || "Studio";
+  const currentVersion =
+    typeof item?.meta?.version === "number" ? item.meta.version : null;
+  const headerTitle = unresolvedPath
+    ? "Preview only"
+    : `${panelTitle}${currentVersion !== null ? ` · v${currentVersion}` : ""}`;
 
   const updateItemByPath = useCallback(
     async (path: string, options?: { onApplied?: () => void }) => {
