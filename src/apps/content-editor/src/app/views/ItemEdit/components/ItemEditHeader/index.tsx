@@ -273,9 +273,7 @@ export const ItemEditHeader = ({
               }
               onChange={(event, value) => {
                 if (value === "studio") {
-                  history.push(
-                    `/studio?path=${encodeURIComponent(resolveStudioPath())}`
-                  );
+                  history.push(`/studio?path=${resolveStudioPath()}`);
                   return;
                 }
 

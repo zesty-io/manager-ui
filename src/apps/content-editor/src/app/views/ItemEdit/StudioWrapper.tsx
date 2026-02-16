@@ -206,7 +206,7 @@ export const StudioWrapper = () => {
     (path: string) => {
       if (!location.pathname.startsWith("/studio")) return;
       const normalized = normalizePath(path || "/");
-      history.replace(`/studio?path=${encodeURIComponent(normalized)}`);
+      history.replace(`/studio?path=${normalized}`);
 
       if (window.parent && window.parent !== window) {
         window.parent.postMessage(
