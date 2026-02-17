@@ -122,6 +122,7 @@ export default memo(function GlobalMenu() {
             }}
             to={linkTo}
             title={`${name} App`}
+            data-cy={`${name}App`}
           >
             <ListItem
               sx={{

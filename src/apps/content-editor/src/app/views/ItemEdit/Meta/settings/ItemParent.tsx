@@ -244,7 +244,7 @@ export const ItemParent = ({ onChange }: ItemParentProps) => {
   ]);
 
   return (
-    <Box id="parentZUID">
+    <Box id="parentZUID" data-cy="parentZUID">
       <FieldShell
         settings={{
           label: "Page Parent",
@@ -261,10 +261,21 @@ export const ItemParent = ({ onChange }: ItemParentProps) => {
           fullWidth
           renderInput={(params) => <TextField {...params} />}
           renderOption={(props, value) => (
-            <ListItem {...props} key={value?.value}>
+            <ListItem
+              {...props}
+              key={value?.value}
+              data-cy={`parent:${value?.value}`}
+            >
               {value.text}
             </ListItem>
           )}
+          slotProps={{
+            listbox: {
+              ...({
+                "data-cy": "itemRouteListBox",
+              } as React.HTMLAttributes<HTMLUListElement>),
+            },
+          }}
           getOptionLabel={(option) => option.text}
           onInputChange={(_, filterTerm) => {
             if (filterTerm !== "/") {

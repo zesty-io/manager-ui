@@ -525,6 +525,7 @@ export const ItemEditHeaderActions = ({
             loading={saving}
             disabled={!canUpdate}
             id="SaveItemButton"
+            data-cy="SaveItemButton"
           >
             Save
           </Button>
@@ -911,6 +912,7 @@ const PublishingMenu = ({
   const history = useHistory();
   return (
     <Menu
+      data-cy="publishingMenu"
       onClose={() => onClose()}
       anchorOrigin={{
         vertical: "bottom",

@@ -50,14 +50,19 @@ export const SelectModelParentInput = ({
           ?.filter((item) => item.contentModelZUID !== id)
           ?.sort((a, b) => a.label.localeCompare(b.label));
       } else {
-        return _navItems
-          ?.filter(
-            (item) =>
-              item.contentModelZUID !== id &&
-              currentItem &&
-              currentItem.ZUID !== item.parentZUID
-          )
-          ?.sort((a, b) => a.label.localeCompare(b.label));
+        if (!currentItem) {
+          // This would mean that we're creating a NEW model, therefore we would want to show all options
+          return _navItems?.sort((a, b) => a.label.localeCompare(b.label));
+        } else {
+          return _navItems
+            ?.filter(
+              (item) =>
+                item.contentModelZUID !== id &&
+                currentItem &&
+                currentItem.ZUID !== item.parentZUID
+            )
+            ?.sort((a, b) => a.label.localeCompare(b.label));
+        }
       }
     }
 

@@ -1,0 +1,48 @@
+{
+  "model": {
+    "label": "Item",
+    "metaTitle": "Item",
+    "type": "templateset",
+    "listed": true,
+    "parentZUID": "7-f88ad8bcc3-1z83ht"
+  },
+  "fields": [
+    {
+      "contentModelZUID": "",
+      "datatype": "text",
+      "name": "text",
+      "label": "text",
+      "sort": 0,
+      "settings": {
+        "list": true
+      }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "textarea",
+      "name": "textarea",
+      "label": "textarea",
+      "sort": 1,
+
+      "settings": {
+        "list": true
+      }
+    }
+  ],
+  "items": [
+    {
+      "meta": {
+        "sort": 0
+      },
+      "web": {
+        "metaLinkText": "Item",
+        "metaTitle": "Item",
+        "parentZUID": "7-f88ad8bcc3-1z83ht"
+      },
+      "data": {
+        "text": "text",
+        "textarea": "textarea"
+      }
+    }
+  ]
+}

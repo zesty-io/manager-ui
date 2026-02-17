@@ -128,7 +128,23 @@ export function content(state = {}, action) {
 
     case "REMOVE_ITEM":
       let removed = { ...state };
+      const itemToRemove = removed[action.itemZUID];
+      // Get the item ZUIDs of all the siblings for multi-lang instances
+      const siblingItems = itemToRemove?.siblings
+        ? Object.values(itemToRemove.siblings)?.filter(
+            (item) => item !== action.itemZUID
+          )
+        : [];
+
+      // Remove the actual item
       delete removed[action.itemZUID];
+      // Remove siblings in a diff language for multi-lang instances
+      if (siblingItems.length) {
+        siblingItems.forEach((itemZUID) => {
+          delete removed[itemZUID];
+        });
+      }
+
       return removed;
 
     case "SET_ITEM_WEB":

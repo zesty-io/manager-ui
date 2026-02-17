@@ -1,16 +1,28 @@
 describe("Navigation through content editor", () => {
+  let ITEM;
   before(() => {
+    cy.task("seed:content", "fixtures/navigation.json").then(
+      ({ model, items }) => {
+        Cypress.env("modelZUID", model?.ZUID);
+        Cypress.env("itemZUID", items[0]?.meta?.ZUID);
+        ITEM = items?.[0];
+      }
+    );
+
     cy.waitOn("/v1/env/nav", () => {
       cy.visit("/content");
     });
   });
 
-  it("Opens homepage item", () => {
-    cy.getBySelector("pages_nav")
-      .find("li p[aria-label='Homepage']")
-      .should("exist")
-      .click();
-    cy.get("#12-0c3934-8dz720").should("exist");
+  it("Opens Content Item", () => {
+    cy.waitOn("**/content/models/**", () => {
+      cy.getBySelector("pages_nav")
+        .find("li")
+        .contains(ITEM?.web?.metaTitle)
+        .click();
+    });
+
+    cy.get('[data-cy="field:text"]').should("exist");
   });
 
   it("Opens the reorder nav modal", () => {
@@ -38,57 +50,70 @@ describe("Navigation through content editor", () => {
       .first()
       .should("exist")
       .click();
+
     cy.getBySelector("create_new_content_item_btn").click();
     cy.location("pathname").should("eq", "/content/6-0c960c-d1n0kx/new");
   });
 
-  // To be re-added on another release
-  it.skip("Check Content Nav Collapsed functionality", () => {
-    cy.get("[data-cy=contentNavButton]")
-      .siblings("div")
-      .then((btn) => {
-        if (btn.is(":visible")) {
-          cy.get("[data-cy=contentNavButton]")
-            .siblings("div")
-            .should("be.visible");
-        } else {
-          cy.get("[data-cy=contentNavButton]")
-            .siblings("div")
-            .should("not.be.visible");
-        }
+  it("Check Content Nav Collapsed functionality", () => {
+    cy.waitOn("/v1/env/nav", () => {
+      cy.visit("/content/6-bac9f3bcbe-b7s4bv/7-f88ad8bcc3-1z83ht");
+    });
+    // Verify the child items are visible
+    cy.getBySelector("pages_nav")
+      .find("li")
+      .contains(ITEM?.web?.metaTitle, { matchCase: false })
+      .scrollIntoView()
+      .should("be.visible")
+      .click({ force: true });
+
+    cy.get('[id="pages_nav-/content/6-bac9f3bcbe-b7s4bv/7-f88ad8bcc3-1z83ht"]')
+      .should("be.visible")
+      .click({ force: true });
+
+    // Collapse the E2E item
+    cy.get('[id="pages_nav-/content/6-bac9f3bcbe-b7s4bv/7-f88ad8bcc3-1z83ht"]')
+      .scrollIntoView()
+      .within(() => {
+        cy.get(".MuiTreeItem-content .MuiTreeItem-iconContainer")
+          .first()
+          .should("be.visible")
+          .click({ force: true });
+
+        // Verify the child items are no longer visible
+        cy.get("li")
+          .contains(ITEM?.web?.metaTitle, { matchCase: false })
+          .should("not.be.visible");
       });
   });
 
-  // To be re-added on another release
-  it.skip("Check Content Nav Collapse persist when clicking on other Applications ", () => {
-    cy.get("[data-cy=contentNavButton]")
-      .siblings("div")
-      .then((btn) => {
-        if (btn.is(":visible")) {
-          cy.get("[data-cy=contentNavButton]")
-            .siblings("div")
-            .should("be.visible");
+  it("Check Content Nav Collapse persist when clicking on other Applications ", () => {
+    // expand the E2E item
+    cy.get('[id="pages_nav-/content/6-bac9f3bcbe-b7s4bv/7-f88ad8bcc3-1z83ht"]')
+      .scrollIntoView()
+      .within(() => {
+        cy.get(".MuiTreeItem-content .MuiTreeItem-iconContainer")
+          .first()
+          .should("be.visible")
+          .click({ force: true });
+      });
 
-          cy.visit("/code");
+    //navigate to other app
+    cy.getBySelector("CodeApp").click();
 
-          cy.waitOn("/v1/content/models*", () => {
-            cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
-          });
+    //go back to content app
+    cy.waitOn("/v1/content/models*", () => {
+      cy.getBySelector("ContentApp").click();
+    });
 
-          cy.get("[data-cy=contentNavButton]")
-            .siblings("div")
-            .should("be.visible");
-        } else {
-          cy.visit("/code");
-
-          cy.waitOn("/v1/content/models*", () => {
-            cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
-          });
-
-          cy.get("[data-cy=contentNavButton]")
-            .siblings("div")
-            .should("not.be.visible");
-        }
+    // verify that child item is visible
+    cy.get('[id="pages_nav-/content/6-bac9f3bcbe-b7s4bv/7-f88ad8bcc3-1z83ht"]')
+      .scrollIntoView()
+      .within(() => {
+        cy.get("li")
+          .contains(ITEM?.web?.metaTitle, { matchCase: false })
+          .scrollIntoView()
+          .should("be.visible");
       });
   });
 

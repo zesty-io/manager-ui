@@ -11,12 +11,14 @@ describe("Content Specs", () => {
 
   before(() => {
     // Seed content
-    cy.task("seed:content").then(({ model, items }) => {
-      //Set modelZUID as Cypress env variable for global test access
-      Cypress.env("modelZUID", model?.ZUID);
-      //Set itemZUID as Cypress env variable for global test access
-      Cypress.env("itemZUID", items[0]?.meta?.ZUID);
-    });
+    cy.task("seed:content", "fixtures/content.json").then(
+      ({ model, items }) => {
+        //Set modelZUID as Cypress env variable for global test access
+        Cypress.env("modelZUID", model?.ZUID);
+        //Set itemZUID as Cypress env variable for global test access
+        Cypress.env("itemZUID", items[0]?.meta?.ZUID);
+      }
+    );
   });
 
   describe("editing content", () => {
@@ -313,6 +315,7 @@ describe("Content Specs", () => {
     });
 
     it("renders an image with a url from a template", function () {
+      cy.get('[data-cy="field:images"]').scrollIntoView();
       cy.get('[data-cy="field:images"]')
         .find('[data-cy="file-preview"]')
         .eq(0)

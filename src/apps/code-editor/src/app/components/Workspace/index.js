@@ -154,6 +154,7 @@ const Workspace = connect((state, props) => {
                     fileZUID={file?.ZUID}
                     fileType={file?.fileType}
                     contentModelZUID={file?.contentModelZUID}
+                    contentModelType={file?.type}
                     currentCode={file?.code}
                     publishedVersion={file?.publishedVersion}
                     status={props.status}
@@ -175,6 +176,7 @@ const Workspace = connect((state, props) => {
                     dispatch={props?.dispatch}
                     fileName={file.fileName}
                     contentModelZUID={file?.contentModelZUID}
+                    contentModelType={file?.type}
                     publishedVersion={file.publishedVersion}
                     fields={fields}
                     code={file?.code}

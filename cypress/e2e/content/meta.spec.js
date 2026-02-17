@@ -1,91 +1,127 @@
 const today = Date.now();
 
 describe("Content Meta", () => {
-  // before(() => {
-  //   cy.waitOn("/v1/content/models*", () => {
-  //     cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19/meta");
-  //   });
-  // });
+  let ITEM;
+  before(() => {
+    cy.task("seed:content", "fixtures/meta.json").then(
+      ({ model, fields, items }) => {
+        ITEM = items?.[0];
+        console.debug("ITEM: ", ITEM);
+        Cypress.env("modelZUID", model?.ZUID);
+        Cypress.env("itemZUID", items[0]?.meta?.ZUID);
+      }
+    );
+  });
 
-  // skipping failing test in preparation for CI.
-  it.skip("Modifies and saves Meta fields", () => {
-    cy.get("[data-cy=itemParent]").should("exist");
-    cy.get("[data-cy=metaLinkText]").should("exist");
-    cy.get("[data-cy=metaTitle]").should("exist");
-    cy.get("[data-cy=metaDescription]").should("exist");
-    cy.get("[data-cy=metaKeywords]").should("exist");
-    cy.get("[data-cy=sitemapPriority]").should("exist");
-    cy.get("[data-cy=canonicalTag]").should("exist");
+  it("Modifies and saves Meta fields", () => {
+    cy.waitOn("/v1/content/models**", () => {
+      cy.waitOn("/v1/search/items**", () => {
+        cy.visit(
+          `/content/${Cypress.env("modelZUID")}/${Cypress.env("itemZUID")}/meta`
+        );
+      });
+    });
 
-    cy.get("[data-cy=itemParent] .Select").click();
-    cy.get('[data-value="7-f40360-7vcf5h"]').click();
-    // select another parent, but switch it back to root level
-    cy.get("[data-cy=itemParent] .Select").click();
-    cy.get("[data-cy=itemParent]").find('[data-value="0"]').first().click();
+    cy.intercept(`/v1/search/items*`).as("searchQuery");
 
-    cy.get("[data-cy=metaLinkText]")
+    cy.getBySelector("parentZUID").should("exist");
+    cy.getBySelector("metaLinkText").should("exist");
+    cy.getBySelector("metaTitle").should("exist");
+    cy.getBySelector("metaDescription").should("exist");
+    cy.getBySelector("metaKeywords").should("exist");
+    cy.getBySelector("sitemapPriority").should("exist");
+    cy.getBySelector("canonicalTag").should("exist");
+
+    cy.getBySelector("parentZUID")
       .find("input")
       .click()
       .clear()
-      .type("All Field Types");
+      .type(`test-text{selectall}{backspace}/`);
 
-    cy.get("[data-cy=itemRoute]")
+    cy.getBySelector("itemRouteListBox")
+      .find("li")
+      .eq(1)
+      .click({ force: true });
+
+    cy.getBySelector("parentZUID")
       .find("input")
       .click()
       .clear()
-      .type("new path part");
+      .type(ITEM?.web?.parentZUID);
 
-    cy.get("[data-cy=metaTitle]")
+    cy.wait("@searchQuery");
+
+    cy.get(
+      `[data-cy="parent:${ITEM?.web?.parentZUID}"][aria-selected="false"]`
+    ).click();
+
+    cy.getBySelector("metaLinkText")
+      .find("input")
+      .click()
+      .clear()
+      .type("new Meta LinkText");
+
+    cy.getBySelector("pathPart")
+      .find("input")
+      .click()
+      .clear()
+      .type(`new path part ${today}`);
+
+    cy.getBySelector("metaTitle")
       .find("input")
       .click()
       .clear()
       .type("new Meta Title");
 
-    cy.get("[data-cy=metaDescription]")
+    cy.getBySelector("metaDescription")
       .find("textarea")
+      .first()
       .click()
       .clear()
       .type("new Meta Description");
 
-    cy.get("[data-cy=metaKeywords]")
+    cy.getBySelector("metaKeywords")
       .find("textarea")
+      .first()
       .click()
       .clear()
       .type("key, words, here");
 
-    cy.get("[data-cy=sitemapPriority] >  div").click();
-    cy.get('[data-value="-1"]').click();
+    cy.getBySelector("sitemapPriority").find("div").first().click();
+    cy.get('[data-option-index="0"]').click();
 
-    cy.get("[data-cy=canonicalTag] >  div").click();
-    cy.get('[data-value="1"]').last().click();
+    cy.getBySelector("canonicalTag").find("div").first().click();
+    cy.get('[data-option-index="1"]').last().click();
 
-    cy.get("[data-cy=canonicalTag] >  div").click();
-    cy.get('[data-value="0"]').last().click();
+    cy.getBySelector("canonicalTag").find("div").first().click();
+    cy.get('[data-option-index="0"]').last().click();
 
-    cy.get("#SaveItemButton").click();
-    cy.contains("Saved a new ").should("exist");
+    cy.getBySelector("SaveItemButton").click();
+    cy.getBySelector("toast").contains("Item Saved", {
+      matchCase: false,
+    });
   });
 
   it("Does not validate meta description for dataset items", () => {
     cy.waitOn("/v1/content/models*", () => {
       cy.waitOn("/v1/env/nav", () => {
         cy.waitOn("/v1/search/items*", () => {
-          cy.visit("/content/6-675028-84dq4s/new");
+          cy.visit(`/content/${Cypress.env("modelZUID")}/new`);
         });
       });
     });
 
-    cy.get("#12-7893a0-w4j9gk", { timeout: 5000 }).find("input").type(today);
+    cy.getBySelector(`"field:text"`).find("input").type(today);
     cy.wait(500); // wait for debounced input to settle
     cy.getBySelector("CreateItemSaveButton").click();
-    cy.get("[data-cy=toast]").contains("Created Item");
+    cy.getBySelector("toast").contains("Created Item");
   });
 
   it("Auto applies page parent when creating an item", () => {
     cy.waitOn("/v1/content/models*", () => {
       cy.waitOn("/v1/env/nav", () => {
         cy.waitOn("/v1/search/items*", () => {
-          cy.visit("/content/6-0c960c-d1n0kx/new");
+          cy.visit(`/content/${Cypress.env("modelZUID")}/new`);
         });
       });
     });
@@ -93,22 +129,27 @@ describe("Content Meta", () => {
     cy.iframe("#wysiwyg_basic_ifr")
       .click()
       .type(`{selectall}{backspace}meta description`);
-    cy.get("#12-849844-t8v5l6").find("input").type(`meta title ${today}`);
+    cy.getBySelector(`"field:text"`)
+      .find("input")
+      .clear()
+      .type(`{selectall}{backspace} meta title ${today}`);
 
-    cy.getBySelector("CreateItemSaveButton").click();
+    cy.getBySelector("ManualMetaFlow").click();
 
-    cy.waitOn("/v1/content/models*", () => {
-      cy.get('[role="tablist"]').find("button").eq(1).click();
-    });
-
-    cy.contains("/page/otherpage/all-field-types/").should("exist");
+    cy.getBySelector("itemRoute")
+      .find("input")
+      .should("contain.value", "/cypress/e2e/");
   });
 
   it("Supports a dedicated Twitter title, description and image", () => {
     cy.waitOn("/v1/content/models*", () => {
       cy.waitOn("/v1/env/nav", () => {
         cy.waitOn("/v1/search/items*", () => {
-          cy.visit("/content/6-b6cde1aa9f-wftv50/7-92ab81c5a8-bhvb0l/meta");
+          cy.visit(
+            `/content/${Cypress.env("modelZUID")}/${Cypress.env(
+              "itemZUID"
+            )}/meta`
+          );
         });
       });
     });

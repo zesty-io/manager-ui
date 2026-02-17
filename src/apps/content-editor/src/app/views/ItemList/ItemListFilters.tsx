@@ -12,7 +12,7 @@ import {
   FilterButton,
   UserFilter,
 } from "../../../../../../shell/components/Filters";
-import { useEffect, useMemo, useState, useContext } from "react";
+import { useMemo, useState, useContext } from "react";
 import { useParams } from "../../../../../../shell/hooks/useParams";
 import {
   ChevronRightOutlined,
@@ -29,6 +29,7 @@ import { CascadingMenuItem } from "../../../../../../shell/components/CascadingM
 import { TableSortContext } from "./TableSortProvider";
 import { selectLang } from "../../../../../../shell/store/user";
 import { useDispatch } from "react-redux";
+import { Flag, getCountryCode } from "shell/components/Flag";
 
 const SORT_ORDER = {
   lastSaved: "Last Saved",
@@ -65,29 +66,6 @@ const FILTERABLE_DATA_TYPES = [
   "internal_link",
   "sort",
 ] as const;
-
-const getCountryCode = (langCode: string) => {
-  if (!langCode) return "";
-  const splitTag = langCode.split("-");
-  const countryCode =
-    splitTag.length === 2 ? splitTag[1] : langCode.toUpperCase();
-  return countryCode;
-};
-
-const getFlagEmojiFromIETFTag = (langCode: string) => {
-  if (!langCode) {
-    return "";
-  }
-  const countryCode = getCountryCode(langCode);
-
-  // Convert country code to flag emoji.
-  // Unicode flag emojis are made up of regional indicator symbols, which are a sequence of two letters.
-  const baseOffset = 0x1f1e6;
-  return (
-    String.fromCodePoint(baseOffset + (countryCode.charCodeAt(0) - 65)) +
-    String.fromCodePoint(baseOffset + (countryCode.charCodeAt(1) - 65))
-  );
-};
 
 export const ItemListFilters = () => {
   const { modelZUID } = useRouterParams<{ modelZUID: string }>();
@@ -247,6 +225,7 @@ export const ItemListFilters = () => {
               key={field.ZUID}
               onClick={() => handleUpdateSortOrder(field.name)}
               selected={activeSortOrder === field.name}
+              data-cy={`sort:${field.name}`}
             >
               <Typography variant="inherit" noWrap>
                 {field.label}
@@ -333,7 +312,7 @@ export const ItemListFilters = () => {
         }
       >
         <Box component="span" color="text.primary">
-          {getFlagEmojiFromIETFTag(activeLanguageCode)}
+          <Flag countryCode={getCountryCode(activeLanguageCode)} />
         </Box>{" "}
         {activeLanguageCode?.split("-")[0]?.toUpperCase()} (
         {getCountryCode(activeLanguageCode)})
@@ -366,7 +345,7 @@ export const ItemListFilters = () => {
               dispatch(selectLang(language.code));
             }}
           >
-            {getFlagEmojiFromIETFTag(language.code)}{" "}
+            <Flag countryCode={getCountryCode(language.code)} />{" "}
             {language.code.split("-")[0]?.toUpperCase()} (
             {getCountryCode(language.code)})
           </MenuItem>

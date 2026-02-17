@@ -45,10 +45,9 @@ export const ReplaceFileModal = ({
   const { data: currentUserRoles } = useGetCurrentUserRolesQuery();
   const uploads = useSelector((state: AppState) => state.mediaRevamp.uploads);
   const filesToUpload = uploads.filter((upload) => upload.status !== "failed");
-
   const canReplaceImage = currentUserRoles
     ?.filter((role) => role.entityZUID === instanceZUID)
-    ?.some((role) => ["admin", "owner"].includes(role.name?.toLowerCase()));
+    ?.some((role) => role.systemRole.delete);
 
   const acceptedExtension =
     fileExtension(originalFile?.url) === "jpg" ||
