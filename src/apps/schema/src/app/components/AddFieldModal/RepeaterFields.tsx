@@ -2,8 +2,7 @@ import { Typography, Button, Dialog } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { useEffect, useState } from "react";
 import { RepeaterFieldsSelection } from "./views/RepeaterFieldsSelection";
-import { FieldForm } from "./views/FieldForm";
-import { FieldType } from "../configs";
+import { FieldBody, FieldForm } from "./views/FieldForm";
 import { useGetContentModelFieldsQuery } from "shell/services/instance";
 import { useParams } from "react-router";
 import { ContentModelFieldDataType } from "shell/services/types";
@@ -13,10 +12,10 @@ type Params = {
   id: string;
 };
 type RepeaterFieldProps = {
-  onAddField: () => void;
+  onAddSubField: (payload: FieldBody) => void;
   name: string;
 };
-export const RepeaterFields = ({ onAddField, name }: RepeaterFieldProps) => {
+export const RepeaterFields = ({ onAddSubField, name }: RepeaterFieldProps) => {
   const params = useParams<Params>();
   const { id } = params;
   const { data: fields } = useGetContentModelFieldsQuery({ modelZUID: id });
@@ -86,6 +85,10 @@ export const RepeaterFields = ({ onAddField, name }: RepeaterFieldProps) => {
               onModalClose={() => setOpenedView(null)}
               onBackClick={() => setOpenedView("selection")}
               onCreateAnotherField={() => setOpenedView("selection")}
+              customCreateFieldHandler={(payload) => {
+                onAddSubField(payload);
+                setOpenedView(null);
+              }}
             />
           )}
         </Dialog>

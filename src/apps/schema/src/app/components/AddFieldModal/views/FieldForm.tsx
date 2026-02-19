@@ -66,6 +66,10 @@ import {
 } from "../../../../../../../shell/components/FieldTypeCurrency/currencies";
 import { RepeaterFields } from "../RepeaterFields";
 
+export type FieldBody = Omit<
+  ContentModelField,
+  "ZUID" | "datatypeOptions" | "createdAt" | "updatedAt" | "deletedAt"
+>;
 type ActiveTab = "details" | "rules" | "learn" | "repeater_fields";
 type Params = {
   id: string;
@@ -86,6 +90,7 @@ interface Props {
   fieldData?: ContentModelField;
   sortIndex?: number | null;
   onCreateAnotherField?: () => void;
+  customCreateFieldHandler?: (payload: FieldBody) => void;
 }
 export const FieldForm = ({
   type,
@@ -96,6 +101,7 @@ export const FieldForm = ({
   fieldData,
   sortIndex,
   onCreateAnotherField,
+  customCreateFieldHandler,
 }: Props) => {
   const isUpdateField = !isEmpty(fieldData);
   const showRepeaterFieldsTab = type === "repeater_field" && isUpdateField;
@@ -279,6 +285,13 @@ export const FieldForm = ({
         }
       }
     });
+
+    if (type === "repeater_field") {
+      formFields = {
+        ...formFields,
+        subFields: [],
+      };
+    }
 
     setFormData(formFields);
     setErrors(errors);
@@ -555,10 +568,7 @@ export const FieldForm = ({
     }
 
     // Common field values
-    let body: Omit<
-      ContentModelField,
-      "ZUID" | "datatypeOptions" | "createdAt" | "updatedAt" | "deletedAt"
-    > = {
+    let body: FieldBody = {
       contentModelZUID: id,
       name: formData.name as string,
       label: formData.label as string,
@@ -671,6 +681,11 @@ export const FieldForm = ({
             })
           );
         });
+    } else if (
+      customCreateFieldHandler &&
+      typeof customCreateFieldHandler === "function"
+    ) {
+      customCreateFieldHandler(body);
     } else {
       // We want to skip field cache invalidation when creating an in-between field
       // We'll let the bulk update rtk query do the invalidation after this call
@@ -829,7 +844,15 @@ export const FieldForm = ({
         }}
       >
         {activeTab === "repeater_fields" && (
-          <RepeaterFields name={name} onAddField={() => {}} />
+          <RepeaterFields
+            name={name}
+            onAddSubField={(field) => {
+              setFormData((prevData) => ({
+                ...prevData,
+                subFields: [...((prevData.subFields as any[]) || []), field],
+              }));
+            }}
+          />
         )}
 
         {activeTab === "details" && (
