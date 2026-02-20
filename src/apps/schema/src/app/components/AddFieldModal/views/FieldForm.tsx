@@ -850,11 +850,8 @@ export const FieldForm = ({
             name={fieldData.name}
             label={fieldData.label}
             fields={formData.subFields as FieldBody[]}
-            onAddSubField={(field) => {
-              setFormData((prevData) => ({
-                ...prevData,
-                subFields: [...((prevData.subFields as any[]) || []), field],
-              }));
+            onChange={(fields) => {
+              handleFieldDataChange({ inputName: "subFields", value: fields });
             }}
           />
         )}

@@ -16,7 +16,6 @@ import CheckIcon from "@mui/icons-material/Check";
 import DriveFileRenameOutlineRoundedIcon from "@mui/icons-material/DriveFileRenameOutlineRounded";
 import WidgetsRoundedIcon from "@mui/icons-material/WidgetsRounded";
 import HighlightOffRoundedIcon from "@mui/icons-material/HighlightOffRounded";
-import PlayCircleOutlineRoundedIcon from "@mui/icons-material/PlayCircleOutlineRounded";
 
 import { FieldIcon } from "../../../Field/FieldIcon";
 import { TYPE_TEXT, FieldType } from "../../../configs";
@@ -27,8 +26,13 @@ import { ContentModelField } from "shell/services/types";
 type SubFieldProps = {
   field: FieldBody;
   parentName: string;
+  onRemoveField: () => void;
 };
-export const SubField = ({ field, parentName }: SubFieldProps) => {
+export const SubField = ({
+  field,
+  parentName,
+  onRemoveField,
+}: SubFieldProps) => {
   const [isFieldLabelCopied, setIsFieldLabelCopied] = useState(false);
   const [isZuidCopied, setIsZuidCopied] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -181,20 +185,7 @@ export const SubField = ({ field, parentName }: SubFieldProps) => {
             data-cy={`DeactivateReactivateFieldDropdown_${field.name}`}
             onClick={(e) => {
               e.stopPropagation();
-
-              // const { ZUID } = field as ContentModelField;
-
-              // if (isDeactivated) {
-              //   undeleteContentModelField({
-              //     modelZUID,
-              //     fieldZUID: ZUID,
-              //   });
-              // } else {
-              //   deleteContentModelField({
-              //     modelZUID,
-              //     fieldZUID: ZUID,
-              //   });
-              // }
+              onRemoveField();
             }}
           >
             <ListItemIcon>

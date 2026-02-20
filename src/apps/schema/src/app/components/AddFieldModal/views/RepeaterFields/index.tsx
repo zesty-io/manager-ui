@@ -8,18 +8,19 @@ import { useParams } from "react-router";
 import { ContentModelFieldDataType } from "shell/services/types";
 import { useVisibility } from "../../VisibilityProvider";
 import { SubField } from "./SubField";
+import DndContextProvider from "shell/components/DndContextProvider";
 
 type Params = {
   id: string;
 };
 type RepeaterFieldProps = {
   fields: FieldBody[];
-  onAddSubField: (payload: FieldBody) => void;
+  onChange: (fields: FieldBody[]) => void;
   name: string;
   label: string;
 };
 export const RepeaterFields = ({
-  onAddSubField,
+  onChange,
   name,
   fields,
   label,
@@ -43,16 +44,33 @@ export const RepeaterFields = ({
     hide(openedView !== null);
   }, [openedView]);
 
+  const handleAddField = (newField: FieldBody) => {
+    const _fields = [...fields];
+
+    _fields.push(newField);
+    onChange(_fields);
+  };
+
+  const handleRemoveField = (field: FieldBody) => {
+    const _fields = [...fields];
+
+    _fields.splice(_fields.indexOf(field), 1);
+    onChange(_fields);
+  };
+
   return (
     <>
       <Stack gap={1}>
-        {fields?.map((field) => (
-          <SubField
-            key={`${field.datatype}-${field.label}`}
-            field={field}
-            parentName={name}
-          />
-        ))}
+        <DndContextProvider>
+          {fields?.map((field) => (
+            <SubField
+              key={`${field.datatype}-${field.label}`}
+              field={field}
+              parentName={name}
+              onRemoveField={() => handleRemoveField(field)}
+            />
+          ))}
+        </DndContextProvider>
 
         <Button
           variant="outlined"
@@ -108,7 +126,7 @@ export const RepeaterFields = ({
               onBackClick={() => setOpenedView("selection")}
               onCreateAnotherField={() => setOpenedView("selection")}
               customCreateFieldHandler={(payload) => {
-                onAddSubField(payload);
+                handleAddField(payload);
                 setOpenedView(null);
               }}
             />
