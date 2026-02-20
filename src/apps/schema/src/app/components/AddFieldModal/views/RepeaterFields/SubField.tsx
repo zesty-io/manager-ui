@@ -16,6 +16,7 @@ import CheckIcon from "@mui/icons-material/Check";
 import DriveFileRenameOutlineRoundedIcon from "@mui/icons-material/DriveFileRenameOutlineRounded";
 import WidgetsRoundedIcon from "@mui/icons-material/WidgetsRounded";
 import HighlightOffRoundedIcon from "@mui/icons-material/HighlightOffRounded";
+import { useDrag, useDrop } from "react-dnd";
 
 import { FieldIcon } from "../../../Field/FieldIcon";
 import { TYPE_TEXT, FieldType } from "../../../configs";
@@ -27,11 +28,17 @@ type SubFieldProps = {
   field: FieldBody;
   parentName: string;
   onRemoveField: () => void;
+  onMoveField: (draggedField: FieldBody, dropIndex: number) => void;
+  onDropField: () => void;
+  index: number;
 };
 export const SubField = ({
   field,
   parentName,
   onRemoveField,
+  onMoveField,
+  onDropField,
+  index,
 }: SubFieldProps) => {
   const [isFieldLabelCopied, setIsFieldLabelCopied] = useState(false);
   const [isZuidCopied, setIsZuidCopied] = useState(false);
@@ -62,16 +69,34 @@ export const SubField = ({
   const handleOpenEditModalField = (e: React.MouseEvent) => {
     e.stopPropagation();
 
-    // const { ZUID } = field as ContentModelField;
-
-    // if (ZUID) {
-    //   history.push(`${location.pathname}/${ZUID}`);
-    //   setAnchorEl(null);
-    // }
+    // TODO: Handle open edit modal
   };
+
+  const [{ isDragging }, drag, preview] = useDrag({
+    type: "relationalItem",
+    item: {
+      field,
+      index,
+    },
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+  });
+  const [_, drop] = useDrop({
+    accept: "relationalItem",
+    hover: ({ field: draggedField, index: draggedIndex }) => {
+      if (draggedIndex !== index) {
+        onMoveField(draggedField, index);
+      }
+    },
+    drop: () => {
+      onDropField();
+    },
+  });
 
   return (
     <Stack
+      ref={(node) => drop(preview(node))}
       draggable
       direction="row"
       minHeight="40px"
@@ -84,6 +109,9 @@ export const SubField = ({
       pr={1}
       pl={0.5}
       gap={1}
+      sx={{
+        opacity: isDragging ? 0.5 : 1,
+      }}
     >
       <Box
         display="grid"
@@ -91,6 +119,7 @@ export const SubField = ({
         alignItems="center"
       >
         <IconButton
+          ref={drag}
           className="drag-handle"
           size="small"
           disableRipple

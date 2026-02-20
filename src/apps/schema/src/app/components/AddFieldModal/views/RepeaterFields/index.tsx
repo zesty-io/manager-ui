@@ -1,6 +1,6 @@
 import { Typography, Button, Dialog, Stack } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useMemo } from "react";
 import { RepeaterFieldsSelection } from "./RepeaterFieldsSelection";
 import { FieldBody, FieldForm } from "../FieldForm";
 import { useGetContentModelFieldsQuery } from "shell/services/instance";
@@ -30,6 +30,8 @@ export const RepeaterFields = ({
   const { data: contentModelFields } = useGetContentModelFieldsQuery({
     modelZUID: id,
   });
+  const { hide } = useVisibility();
+  const [localFields, setLocalFields] = useState<FieldBody[]>(fields);
   const [openedView, setOpenedView] = useState<"selection" | "form" | null>(
     null
   );
@@ -37,37 +39,76 @@ export const RepeaterFields = ({
     fieldType: "",
     fieldName: "",
   });
-  const { hide } = useVisibility();
-  // const [localSortIndex, setLocalSortIndex] = useState<number | null>(null);
+
+  const highestSortValue = useMemo(() => {
+    // The calculation defaults to -1 for empty lists, ensuring that the next field added starts at sort index 0
+    if (!localFields?.length) return -1;
+
+    return (
+      localFields?.reduce(
+        (max, field) => (field.sort > max ? field.sort : max),
+        -1
+      ) ?? -1
+    );
+  }, [localFields]);
 
   useEffect(() => {
     hide(openedView !== null);
   }, [openedView]);
 
+  useEffect(() => {
+    setLocalFields(fields);
+  }, [fields]);
+
   const handleAddField = (newField: FieldBody) => {
-    const _fields = [...fields];
+    const _fields = [...localFields];
 
     _fields.push(newField);
     onChange(_fields);
   };
 
   const handleRemoveField = (field: FieldBody) => {
-    const _fields = [...fields];
+    const _fields = [...localFields];
 
     _fields.splice(_fields.indexOf(field), 1);
     onChange(_fields);
   };
 
+  const handleMoveField = useCallback(
+    (draggedField: FieldBody, dropIndex: number) => {
+      const _fields = [...localFields];
+      const fieldIndex = _fields.indexOf(draggedField);
+
+      _fields.splice(fieldIndex, 1);
+      _fields.splice(dropIndex, 0, draggedField);
+
+      setLocalFields(_fields);
+    },
+    [localFields]
+  );
+
+  const handleReorder = useCallback(() => {
+    const sortedFields = localFields?.map((field, index) => ({
+      ...field,
+      sort: index,
+    }));
+
+    onChange(sortedFields);
+  }, [localFields, onChange]);
+
   return (
     <>
       <Stack gap={1}>
         <DndContextProvider>
-          {fields?.map((field) => (
+          {localFields?.map((field, index) => (
             <SubField
               key={`${field.datatype}-${field.label}`}
+              index={index}
               field={field}
               parentName={name}
               onRemoveField={() => handleRemoveField(field)}
+              onMoveField={handleMoveField}
+              onDropField={handleReorder}
             />
           ))}
         </DndContextProvider>
@@ -129,6 +170,7 @@ export const RepeaterFields = ({
                 handleAddField(payload);
                 setOpenedView(null);
               }}
+              sortIndex={highestSortValue + 1}
             />
           )}
         </Dialog>
