@@ -64,7 +64,7 @@ import {
   Currency,
   currencies,
 } from "../../../../../../../shell/components/FieldTypeCurrency/currencies";
-import { RepeaterFields } from "../RepeaterFields";
+import { RepeaterFields } from "./RepeaterFields";
 
 export type FieldBody = Omit<
   ContentModelField,
@@ -74,7 +74,9 @@ type ActiveTab = "details" | "rules" | "learn" | "repeater_fields";
 type Params = {
   id: string;
 };
-export type FormValue = Exclude<ContentModelFieldValue, FieldSettings>;
+export type FormValue =
+  | Exclude<ContentModelFieldValue, FieldSettings>
+  | FieldBody[];
 export interface FormData {
   [key: string]: FormValue;
 }
@@ -845,7 +847,9 @@ export const FieldForm = ({
       >
         {activeTab === "repeater_fields" && (
           <RepeaterFields
-            name={name}
+            name={fieldData.name}
+            label={fieldData.label}
+            fields={formData.subFields as FieldBody[]}
             onAddSubField={(field) => {
               setFormData((prevData) => ({
                 ...prevData,

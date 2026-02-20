@@ -10,8 +10,8 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { FIELD_COPY_CONFIG, FieldListData, FieldType } from "../../configs";
-import { FieldItem } from "../FieldItem";
+import { FIELD_COPY_CONFIG, FieldListData, FieldType } from "../../../configs";
+import { FieldItem } from "../../FieldItem";
 
 const repeaterFields = {
   text: FIELD_COPY_CONFIG.text,
