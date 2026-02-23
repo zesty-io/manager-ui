@@ -22,7 +22,6 @@ import {
   ManageAccountsRounded,
   ContentCopyRounded,
   WebRounded,
-  DesignServicesRounded,
 } from "@mui/icons-material";
 import { ShuffleVariant } from "@zesty-io/material";
 import { useSelector } from "react-redux";
@@ -83,11 +82,11 @@ const tabs = [
     icon: WebRounded,
     value: "freestyle",
   },
-  {
-    label: "Studio",
-    icon: DesignServicesRounded,
-    value: "studio",
-  },
+  // {
+  //   label: "Studio",
+  //   icon: DesignServicesRounded,
+  //   value: "studio",
+  // },
 ];
 
 type HeaderProps = {
