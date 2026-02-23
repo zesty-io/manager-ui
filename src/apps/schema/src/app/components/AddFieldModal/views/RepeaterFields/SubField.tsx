@@ -30,6 +30,7 @@ type SubFieldProps = {
   onRemoveField: () => void;
   onMoveField: (draggedField: FieldBody, dropIndex: number) => void;
   onDropField: () => void;
+  onEditField: (field: FieldBody) => void;
   index: number;
 };
 export const SubField = ({
@@ -39,6 +40,7 @@ export const SubField = ({
   onMoveField,
   onDropField,
   index,
+  onEditField,
 }: SubFieldProps) => {
   const [isFieldLabelCopied, setIsFieldLabelCopied] = useState(false);
   const [isZuidCopied, setIsZuidCopied] = useState(false);
@@ -68,8 +70,8 @@ export const SubField = ({
 
   const handleOpenEditModalField = (e: React.MouseEvent) => {
     e.stopPropagation();
-
-    // TODO: Handle open edit modal
+    setAnchorEl(null);
+    onEditField(field);
   };
 
   const [{ isDragging }, drag, preview] = useDrag({
@@ -111,7 +113,13 @@ export const SubField = ({
       gap={1}
       sx={{
         opacity: isDragging ? 0.5 : 1,
+
+        "&:hover": {
+          backgroundColor: "action.hover",
+          cursor: "pointer",
+        },
       }}
+      onClick={handleOpenEditModalField}
     >
       <Box
         display="grid"

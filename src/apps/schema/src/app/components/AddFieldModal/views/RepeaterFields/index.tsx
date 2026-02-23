@@ -5,7 +5,10 @@ import { RepeaterFieldsSelection } from "./RepeaterFieldsSelection";
 import { FieldBody, FieldForm } from "../FieldForm";
 import { useGetContentModelFieldsQuery } from "shell/services/instance";
 import { useParams } from "react-router";
-import { ContentModelFieldDataType } from "shell/services/types";
+import {
+  ContentModelField,
+  ContentModelFieldDataType,
+} from "shell/services/types";
 import { useVisibility } from "../../VisibilityProvider";
 import { SubField } from "./SubField";
 import DndContextProvider from "shell/components/DndContextProvider";
@@ -32,13 +35,14 @@ export const RepeaterFields = ({
   });
   const { hide } = useVisibility();
   const [localFields, setLocalFields] = useState<FieldBody[]>(fields);
-  const [openedView, setOpenedView] = useState<"selection" | "form" | null>(
-    null
-  );
+  const [openedView, setOpenedView] = useState<
+    "selection" | "newFieldForm" | "updateFieldForm" | null
+  >(null);
   const [selectedField, setSelectedField] = useState({
     fieldType: "",
     fieldName: "",
   });
+  const [fieldToUpdate, setFieldToUpdate] = useState<FieldBody | null>(null);
 
   const highestSortValue = useMemo(() => {
     // The calculation defaults to -1 for empty lists, ensuring that the next field added starts at sort index 0
@@ -96,6 +100,23 @@ export const RepeaterFields = ({
     onChange(sortedFields);
   }, [localFields, onChange]);
 
+  const handleUpdateField = (payload: ContentModelField) => {
+    const _fields = [...localFields];
+    const fieldIndex = _fields.indexOf(fieldToUpdate);
+    const {
+      ZUID,
+      datatypeOptions,
+      createdAt,
+      updatedAt,
+      deletedAt,
+      ...filteredPayload
+    } = payload;
+
+    _fields.splice(fieldIndex, 1, filteredPayload);
+    setFieldToUpdate(null);
+    onChange(_fields);
+  };
+
   return (
     <>
       <Stack gap={1}>
@@ -109,6 +130,10 @@ export const RepeaterFields = ({
               onRemoveField={() => handleRemoveField(field)}
               onMoveField={handleMoveField}
               onDropField={handleReorder}
+              onEditField={(field) => {
+                setFieldToUpdate(field);
+                setOpenedView("updateFieldForm");
+              }}
             />
           ))}
         </DndContextProvider>
@@ -154,11 +179,11 @@ export const RepeaterFields = ({
                   fieldType: selectedField.type,
                   fieldName: selectedField.name,
                 });
-                setOpenedView("form");
+                setOpenedView("newFieldForm");
               }}
             />
           )}
-          {openedView === "form" && (
+          {openedView === "newFieldForm" && (
             <FieldForm
               fields={contentModelFields}
               type={selectedField?.fieldType as ContentModelFieldDataType}
@@ -171,6 +196,32 @@ export const RepeaterFields = ({
                 setOpenedView(null);
               }}
               sortIndex={highestSortValue + 1}
+            />
+          )}
+          {openedView === "updateFieldForm" && (
+            <FieldForm
+              fields={contentModelFields}
+              type={fieldToUpdate?.datatype as ContentModelFieldDataType}
+              name={fieldToUpdate?.label}
+              onModalClose={() => setOpenedView(null)}
+              onBackClick={() => setOpenedView(null)}
+              fieldData={
+                fieldToUpdate
+                  ? {
+                      ...fieldToUpdate,
+                      ZUID: "",
+                      datatypeOptions: "",
+                      createdAt: "",
+                      updatedAt: "",
+                      deletedAt: "",
+                    }
+                  : undefined
+              }
+              sortIndex={null}
+              customUpdateFieldHandler={(payload) => {
+                handleUpdateField(payload);
+                setOpenedView(null);
+              }}
             />
           )}
         </Dialog>

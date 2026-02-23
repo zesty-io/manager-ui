@@ -93,6 +93,7 @@ interface Props {
   sortIndex?: number | null;
   onCreateAnotherField?: () => void;
   customCreateFieldHandler?: (payload: FieldBody) => void;
+  customUpdateFieldHandler?: (payload: ContentModelField) => void;
 }
 export const FieldForm = ({
   type,
@@ -104,6 +105,7 @@ export const FieldForm = ({
   sortIndex,
   onCreateAnotherField,
   customCreateFieldHandler,
+  customUpdateFieldHandler,
 }: Props) => {
   const isUpdateField = !isEmpty(fieldData);
   const showRepeaterFieldsTab = type === "repeater_field" && isUpdateField;
@@ -646,6 +648,11 @@ export const FieldForm = ({
         ...fieldData,
         ...body,
       };
+
+      if (customUpdateFieldHandler) {
+        customUpdateFieldHandler(updateBody);
+        return;
+      }
 
       updateContentModelField({
         modelZUID: id,
