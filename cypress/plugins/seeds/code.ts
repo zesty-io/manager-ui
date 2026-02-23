@@ -15,20 +15,9 @@ module.exports = function code(config) {
 
     const sdk = await getSDK(config);
     const timeStamp = Date.now();
-    const filename = `/e2e/${config.env.COMMIT_ID}/${timeStamp}/${json.filename}`;
+    const filename = `/__e2e__/${config.env.COMMIT_ID}/${timeStamp} | ${json?.filename}`;
 
     let responseData = null;
-
-    if (json?.type === "snippet") {
-      await sdk.instance
-        .createView({
-          ...json,
-          filename,
-        })
-        .then((res) => {
-          responseData = res?.data;
-        });
-    }
 
     if (json.type === "text/javascript") {
       const token = await getAuthToken();
@@ -42,11 +31,18 @@ module.exports = function code(config) {
         const resJson = await res.json();
         responseData = resJson?.data;
       });
-    }
-
-    if (STYLESHEET_TYPES.includes(json.type)) {
+    } else if (STYLESHEET_TYPES.includes(json.type)) {
       await sdk.instance
         .createStylesheet({
+          ...json,
+          filename,
+        })
+        .then((res) => {
+          responseData = res?.data;
+        });
+    } else {
+      await sdk.instance
+        .createView({
           ...json,
           filename,
         })
