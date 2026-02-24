@@ -45,18 +45,6 @@ export const RepeaterFields = ({
   });
   const [fieldToUpdate, setFieldToUpdate] = useState<FieldBody | null>(null);
 
-  const highestSortValue = useMemo(() => {
-    // The calculation defaults to -1 for empty lists, ensuring that the next field added starts at sort index 0
-    if (!localFields?.length) return -1;
-
-    return (
-      localFields?.reduce(
-        (max, field) => (field.sort > max ? field.sort : max),
-        -1
-      ) ?? -1
-    );
-  }, [localFields]);
-
   useEffect(() => {
     hide(openedView !== null);
   }, [openedView]);
@@ -185,6 +173,7 @@ export const RepeaterFields = ({
           {openedView === "newFieldForm" && (
             <SubFieldForm
               fields={contentModelFields}
+              subFields={localFields}
               type={selectedField?.fieldType as ContentModelFieldDataType}
               name={selectedField?.fieldName}
               onModalClose={() => setOpenedView(null)}
@@ -195,6 +184,7 @@ export const RepeaterFields = ({
           {openedView === "updateFieldForm" && (
             <SubFieldForm
               fields={contentModelFields}
+              subFields={localFields}
               type={fieldToUpdate?.datatype as ContentModelFieldDataType}
               name={fieldToUpdate?.label}
               onModalClose={() => setOpenedView(null)}
