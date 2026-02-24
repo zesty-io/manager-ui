@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState } from "react";
 import { useParams } from "react-router";
 import {
   Box,
@@ -28,9 +28,6 @@ import {
 import {
   FieldFormProvider,
   useFieldForm,
-  FormData,
-  Errors,
-  FormValue,
   FieldBody,
 } from "../../../contexts/FieldFormProvider";
 import { FIELD_COPY_CONFIG, FORM_CONFIG, TYPE_TEXT } from "../../../configs";
@@ -41,7 +38,7 @@ import { useMediaRules } from "../../../hooks/useMediaRules";
 import { FieldIcon } from "../../../Field/FieldIcon";
 import { getCategory } from "../../../../utils";
 
-interface Props {
+type SubFieldFormProps = {
   type: ContentModelFieldDataType;
   name: string;
   onModalClose: () => void;
@@ -49,7 +46,7 @@ interface Props {
   fields: ContentModelField[];
   fieldData?: ContentModelField;
   onSubmit: (payload: FieldBody, createAnotherField?: boolean) => void;
-}
+};
 
 type ActiveTab = "details" | "rules" | "learn";
 type Params = {
@@ -63,7 +60,7 @@ const SubFieldFormContent = ({
   onModalClose,
   onBackClick,
   onSubmit,
-}: Props) => {
+}: SubFieldFormProps) => {
   const isUpdateField = !isEmpty(fieldData);
   const [activeTab, setActiveTab] = useState<ActiveTab>("details");
   const [isSubmitClicked, setIsSubmitClicked] = useState(false);
@@ -366,7 +363,7 @@ const SubFieldFormContent = ({
   );
 };
 
-export const SubFieldForm = (props: Props) => {
+export const SubFieldForm = (props: SubFieldFormProps) => {
   return (
     <FieldFormProvider
       type={props.type}

@@ -2,10 +2,11 @@ import {
   createContext,
   useContext,
   useState,
-  useMemo,
   useCallback,
   useEffect,
 } from "react";
+import isEmpty from "lodash/isEmpty";
+
 import {
   ContentModelField,
   ContentModelFieldDataType,
@@ -16,9 +17,7 @@ import {
 import { FORM_CONFIG } from "../configs";
 import { convertLabelValue, getErrorMessage } from "../../utils";
 import { MaxLengths } from "../../../../../content-editor/src/app/components/Editor/Editor";
-
 import { useGetContentModelsQuery } from "../../../../../../shell/services/instance";
-import isEmpty from "lodash/isEmpty";
 
 export type FieldBody = Omit<
   ContentModelField,
@@ -29,13 +28,13 @@ export type FormValue =
   | Exclude<ContentModelFieldValue, FieldSettings>
   | FieldBody[];
 
-export interface FormData {
+export type FormData = {
   [key: string]: FormValue;
-}
+};
 
-export interface Errors {
+export type Errors = {
   [key: string]: string | [string, string][];
-}
+};
 
 type FieldFormContextType = {
   formData: FormData;

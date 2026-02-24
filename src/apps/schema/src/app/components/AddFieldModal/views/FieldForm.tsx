@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "react-router";
 import { useDispatch } from "react-redux";
 import {
@@ -11,9 +11,6 @@ import {
   Tabs,
   Tab,
   Button,
-  Grid,
-  ListItem,
-  InputAdornment,
 } from "@mui/material";
 import { isEmpty } from "lodash";
 import CloseIcon from "@mui/icons-material/Close";
@@ -23,27 +20,15 @@ import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import RuleRoundedIcon from "@mui/icons-material/RuleRounded";
 import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
 import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
-import PauseCircleOutlineRoundedIcon from "@mui/icons-material/PauseCircleOutlineRounded";
-import PlayCircleFilledRoundedIcon from "@mui/icons-material/PlayCircleFilledRounded";
 import VerticalSplitRoundedIcon from "@mui/icons-material/VerticalSplitRounded";
 
 import { FieldIcon } from "../../Field/FieldIcon";
-import {
-  FieldFormInput,
-  DropdownOptions,
-  AutocompleteConfig,
-} from "../FieldFormInput";
 import { useMediaRules } from "../../hooks/useMediaRules";
-import {
-  getCategory,
-  convertLabelValue,
-  getErrorMessage,
-} from "../../../utils";
+import { getCategory } from "../../../utils";
 import {
   useCreateContentModelFieldMutation,
   useUpdateContentModelFieldMutation,
   useBulkUpdateContentModelFieldMutation,
-  useGetContentModelsQuery,
   useDeleteContentModelFieldMutation,
   useUndeleteContentModelFieldMutation,
 } from "../../../../../../../shell/services/instance";
@@ -60,20 +45,13 @@ export { FieldFormProvider, useFieldForm };
 export type { FormData, Errors, FormValue, FieldBody };
 import {
   ContentModelField,
-  FieldSettings,
-  ContentModelFieldValue,
   FieldSettingsOptions,
   ContentModelFieldDataType,
 } from "../../../../../../../shell/services/types";
-import { FIELD_COPY_CONFIG, TYPE_TEXT, FORM_CONFIG } from "../../configs";
+import { FIELD_COPY_CONFIG, TYPE_TEXT } from "../../configs";
 import { Learn } from "../Learn";
 import { notify } from "../../../../../../../shell/store/notifications";
 import { Rules } from "./Rules";
-import { MaxLengths } from "../../../../../../content-editor/src/app/components/Editor/Editor";
-import {
-  Currency,
-  currencies,
-} from "../../../../../../../shell/components/FieldTypeCurrency/currencies";
 import { RepeaterFields } from "./RepeaterFields";
 import { Details } from "../Details";
 
@@ -81,7 +59,7 @@ type ActiveTab = "details" | "rules" | "learn" | "repeater_fields";
 type Params = {
   id: string;
 };
-interface Props {
+type FieldFormProps = {
   type: ContentModelFieldDataType;
   name: string;
   onModalClose: () => void;
@@ -90,18 +68,6 @@ interface Props {
   fieldData?: ContentModelField;
   sortIndex?: number | null;
   onCreateAnotherField?: () => void;
-}
-
-export const FieldForm = (props: Props) => {
-  return (
-    <FieldFormProvider
-      type={props.type}
-      fields={props.fields}
-      fieldData={props.fieldData}
-    >
-      <FieldFormContent {...props} />
-    </FieldFormProvider>
-  );
 };
 
 const FieldFormContent = ({
@@ -113,7 +79,7 @@ const FieldFormContent = ({
   fieldData,
   sortIndex,
   onCreateAnotherField,
-}: Props) => {
+}: FieldFormProps) => {
   const isUpdateField = !isEmpty(fieldData);
   const showRepeaterFieldsTab = type === "repeater_field" && isUpdateField;
   const [activeTab, setActiveTab] = useState<ActiveTab>(
@@ -130,7 +96,6 @@ const FieldFormContent = ({
   const {
     formData,
     errors,
-    setErrors,
     handleFieldDataChange,
     isDefaultValueEnabled,
     setIsDefaultValueEnabled,
@@ -610,5 +575,17 @@ const FieldFormContent = ({
         </DialogActions>
       )}
     </>
+  );
+};
+
+export const FieldForm = (props: FieldFormProps) => {
+  return (
+    <FieldFormProvider
+      type={props.type}
+      fields={props.fields}
+      fieldData={props.fieldData}
+    >
+      <FieldFormContent {...props} />
+    </FieldFormProvider>
   );
 };

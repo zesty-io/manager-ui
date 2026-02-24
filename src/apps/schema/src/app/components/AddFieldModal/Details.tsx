@@ -14,7 +14,7 @@ import {
   ContentModelField,
   ContentModelFieldDataType,
 } from "../../../../../../shell/services/types";
-import { Errors, FieldBody, FormData } from "./views/FieldForm";
+import { Errors, FormData } from "./views/FieldForm";
 import { FORM_CONFIG } from "../configs";
 import {
   AutocompleteConfig,
