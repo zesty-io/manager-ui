@@ -2,7 +2,7 @@ import { Typography, Button, Dialog, Stack } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { useCallback, useEffect, useState, useMemo } from "react";
 import { RepeaterFieldsSelection } from "./RepeaterFieldsSelection";
-import { FieldBody, FieldForm } from "../FieldForm";
+import { SubFieldForm } from "./SubFieldForm";
 import { useGetContentModelFieldsQuery } from "shell/services/instance";
 import { useParams } from "react-router";
 import {
@@ -12,6 +12,7 @@ import {
 import { useVisibility } from "../../VisibilityProvider";
 import { SubField } from "./SubField";
 import DndContextProvider from "shell/components/DndContextProvider";
+import { FieldBody } from "../FieldForm";
 
 type Params = {
   id: string;
@@ -64,11 +65,15 @@ export const RepeaterFields = ({
     setLocalFields(fields);
   }, [fields]);
 
-  const handleAddField = (newField: FieldBody) => {
+  const handleAddField = (
+    newField: FieldBody,
+    createAnotherField?: boolean
+  ) => {
     const _fields = [...localFields];
 
     _fields.push(newField);
     onChange(_fields);
+    setOpenedView(createAnotherField ? "selection" : null);
   };
 
   const handleRemoveField = (field: FieldBody) => {
@@ -100,19 +105,13 @@ export const RepeaterFields = ({
     onChange(sortedFields);
   }, [localFields, onChange]);
 
-  const handleUpdateField = (payload: ContentModelField) => {
+  const handleUpdateField = (payload: FieldBody) => {
     const _fields = [...localFields];
     const fieldIndex = _fields.indexOf(fieldToUpdate);
-    const {
-      ZUID,
-      datatypeOptions,
-      createdAt,
-      updatedAt,
-      deletedAt,
-      ...filteredPayload
-    } = payload;
 
-    _fields.splice(fieldIndex, 1, filteredPayload);
+    _fields.splice(fieldIndex, 1, payload);
+
+    setOpenedView(null);
     setFieldToUpdate(null);
     onChange(_fields);
   };
@@ -184,22 +183,17 @@ export const RepeaterFields = ({
             />
           )}
           {openedView === "newFieldForm" && (
-            <FieldForm
+            <SubFieldForm
               fields={contentModelFields}
               type={selectedField?.fieldType as ContentModelFieldDataType}
               name={selectedField?.fieldName}
               onModalClose={() => setOpenedView(null)}
               onBackClick={() => setOpenedView("selection")}
-              onCreateAnotherField={() => setOpenedView("selection")}
-              customCreateFieldHandler={(payload) => {
-                handleAddField(payload);
-                setOpenedView(null);
-              }}
-              sortIndex={highestSortValue + 1}
+              onSubmit={handleAddField}
             />
           )}
           {openedView === "updateFieldForm" && (
-            <FieldForm
+            <SubFieldForm
               fields={contentModelFields}
               type={fieldToUpdate?.datatype as ContentModelFieldDataType}
               name={fieldToUpdate?.label}
@@ -217,11 +211,7 @@ export const RepeaterFields = ({
                     }
                   : undefined
               }
-              sortIndex={null}
-              customUpdateFieldHandler={(payload) => {
-                handleUpdateField(payload);
-                setOpenedView(null);
-              }}
+              onSubmit={handleUpdateField}
             />
           )}
         </Dialog>
