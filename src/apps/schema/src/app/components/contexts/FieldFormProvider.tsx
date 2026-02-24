@@ -62,7 +62,7 @@ export const FieldFormProvider = ({
 }: {
   children: React.ReactNode;
   type: ContentModelFieldDataType;
-  fields: ContentModelField[];
+  fields: ContentModelField[] | FieldBody[];
   fieldData?: ContentModelField;
 }) => {
   const isUpdateField = !isEmpty(fieldData);

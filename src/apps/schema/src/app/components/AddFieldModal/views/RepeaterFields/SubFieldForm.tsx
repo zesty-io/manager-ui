@@ -46,6 +46,7 @@ type SubFieldFormProps = {
   fields: ContentModelField[];
   fieldData?: ContentModelField;
   onSubmit: (payload: FieldBody, createAnotherField?: boolean) => void;
+  subFields: FieldBody[];
 };
 
 type ActiveTab = "details" | "rules" | "learn";
@@ -367,7 +368,7 @@ export const SubFieldForm = (props: SubFieldFormProps) => {
   return (
     <FieldFormProvider
       type={props.type}
-      fields={props.fields}
+      fields={props.subFields}
       fieldData={props.fieldData}
     >
       <SubFieldFormContent {...props} />
