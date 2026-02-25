@@ -55,6 +55,7 @@ import { debounce, parseInt } from "lodash";
 import { useRegisterRef } from "../../../../../../../engine/useRegisterRef";
 import { useDebouncedInput } from "../../../../../../../shell/hooks/useDebouncedInput";
 import { format as fmt } from "date-fns";
+import { FieldTypeRepeater } from "shell/components/FieldTypeRepeater";
 
 const AIFieldShell = withAI(FieldShell);
 
@@ -785,6 +786,9 @@ export const Field = memo(
             />
           </FieldShell>
         );
+
+      case "repeater_field":
+        return <FieldTypeRepeater />;
 
       default:
         return (
