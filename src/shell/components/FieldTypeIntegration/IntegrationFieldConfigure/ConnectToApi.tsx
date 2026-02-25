@@ -140,13 +140,15 @@ const ConnectToApi = ({
     setApiData(null);
     const headersLocalValues = Object.values(headersLocal);
     const headersWithKeys = headersLocalValues.filter((i) => !!i?.key);
-    const reqHeaders = !headersWithKeys?.length
-      ? null
-      : headersWithKeys?.reduce((acc: any, obj: any) => {
-          acc[obj.key] = obj.value;
-          return acc;
-        }, {});
-    fetchApiData(endpointLocal, reqHeaders);
+    const options = !headersWithKeys?.length
+      ? {}
+      : {
+          headers: headersWithKeys?.reduce((acc: any, obj: any) => {
+            acc[obj.key] = obj.value;
+            return acc;
+          }, {}),
+        };
+    fetchApiData(endpointLocal, options);
   }, [endpointLocal, headersLocal]);
 
   return (

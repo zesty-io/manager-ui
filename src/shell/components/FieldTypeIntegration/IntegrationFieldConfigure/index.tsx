@@ -88,7 +88,13 @@ const IntegrationFieldConfigure = ({
       return;
 
     hasFetchedInitialData.current = true;
-    fetchApiData(endpoint, headers);
+    const options = !headers
+      ? {}
+      : {
+          headers,
+        };
+
+    fetchApiData(endpoint, options);
   }, [isUpdate, endpoint, headers, isFetchingApiData, apiData, fetchApiData]);
 
   useEffect(() => {

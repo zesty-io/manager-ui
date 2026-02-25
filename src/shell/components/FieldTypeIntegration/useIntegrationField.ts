@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { IntegrationRequestHeaders } from "../../services/types";
 import { useGetExternalApiMutation } from "shell/services/cloudFunctions";
 
 const useIntegrationField = () => {
@@ -14,7 +13,7 @@ const useIntegrationField = () => {
   const abortControllerRef = useRef<AbortController | null>(null);
 
   const fetchApiData = useCallback(
-    async (endpoint: string, headers: IntegrationRequestHeaders = null) => {
+    async (endpoint: string, options: any = null) => {
       if (!endpoint) return;
 
       // Abort previous request if any
@@ -28,8 +27,8 @@ const useIntegrationField = () => {
       try {
         const response: any = await getExternalApi({
           url: endpoint,
-          headers: !headers ? {} : headers,
-          signal: abortControllerRef.current.signal,
+          options,
+          signal: abortControllerRef?.current?.signal,
         });
 
         if (!response?.error) {

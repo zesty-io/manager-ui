@@ -58,7 +58,12 @@ const IntegrationFieldSelect = ({
   const isLoading = status === "connecting";
 
   const launchSelector = () => {
-    fetchApiData(config?.endpoint, config?.headers);
+    const options = !config?.headers
+      ? {}
+      : {
+          headers: config?.headers,
+        };
+    fetchApiData(config?.endpoint, options);
     setOpen(true);
   };
 

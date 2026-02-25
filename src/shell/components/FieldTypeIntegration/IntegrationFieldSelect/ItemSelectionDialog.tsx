@@ -265,19 +265,14 @@ const ItemSelectionDialog = ({
       maxWidth="md"
       fullWidth
       slotProps={{
-        container: {
-          sx: {
-            alignItems: "flex-start",
-          },
-        },
         paper: {
           ref: drawerContainerRef,
           sx: {
-            minHeight: "860px",
             height: "calc(100vh - 40px)",
             maxHeight: "1080px",
             my: 2.5,
             position: "relative",
+            border: "2px solid green",
           },
         },
       }}
@@ -331,7 +326,14 @@ const ItemSelectionDialog = ({
         </Box>
       </DialogTitle>
 
-      <DialogContent sx={{ p: 0, bgcolor: "grey.50", position: "relative" }}>
+      <DialogContent
+        sx={{
+          p: 0,
+          bgcolor: "grey.50",
+          position: "relative",
+          // minHeight: "600px",
+        }}
+      >
         <Box
           position="absolute"
           top={0}

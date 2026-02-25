@@ -68,9 +68,9 @@ export const cloudFunctionsApi = createApi({
     }),
     getExternalApi: builder.mutation<
       any,
-      { url: string; headers: IntegrationRequestHeaders; signal: AbortSignal }
+      { url: string; options: any; signal: AbortSignal }
     >({
-      query: ({ url, headers = {}, signal = null }) => {
+      query: ({ url, options = {}, signal = null }) => {
         const encodedURL = encodeURI(url);
         return {
           url: `getURL`,
@@ -78,7 +78,7 @@ export const cloudFunctionsApi = createApi({
           params: {
             url: encodedURL,
           },
-          body: headers,
+          body: options,
           ...(!!signal && { signal }),
         };
       },

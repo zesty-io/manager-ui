@@ -261,7 +261,18 @@ const fieldTypeColumnConfigMap = {
     filterable: true,
     renderCell: (params: any) =>
       params.value && (
-        <Typography variant="body2">{params.value?.toUpperCase()}</Typography>
+        <Box
+          height="100%"
+          width="100%"
+          display="flex"
+          flexDirection="row"
+          justifyContent="flex-start"
+          alignItems="center"
+        >
+          <Typography variant="body2" noWrap>
+            {params.value?.toUpperCase()}
+          </Typography>
+        </Box>
       ),
   },
 } as const;
