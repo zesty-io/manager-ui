@@ -73,7 +73,7 @@ export const cloudFunctionsApi = createApi({
       query: ({ url, options = {}, signal = null }) => {
         const encodedURL = encodeURI(url);
         return {
-          url: `getURL`,
+          url: `get-url`,
           method: "POST",
           params: {
             url: encodedURL,
