@@ -113,56 +113,22 @@ export const FieldTypeRepeater = () => {
   const columns: GridColDef[] = React.useMemo(() => {
     const hasSelectedRows = rowSelectionModel.length > 0;
 
-    const _baseColumns: GridColDef[] = baseColumns.map((col) => ({
+    return baseColumns.map((col) => ({
       ...col,
       headerName: hasSelectedRows ? "" : col.headerName,
       renderHeader: hasSelectedRows
         ? (): React.ReactNode => null
         : col.renderHeader,
+      disableColumnMenu: hasSelectedRows ? true : col.disableColumnMenu,
+      sortable: hasSelectedRows ? false : col.sortable,
     }));
-
-    const deleteActionColumn: GridColDef = {
-      field: "__delete_action_column__", // Unique field name
-      headerName: "", // No header text
-      sortable: false,
-      filterable: false,
-      disableColumnMenu: true,
-      width: 60,
-      renderHeader: (): React.ReactNode =>
-        hasSelectedRows ? (
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "flex-end", // Push icon to the right within its cell
-              width: "100%",
-            }}
-          >
-            <IconButton
-              color="primary"
-              onClick={() => {}}
-              aria-label="Delete selected rows"
-              size="small"
-            >
-              <DeleteIcon />
-            </IconButton>
-          </Box>
-        ) : null,
-    };
-
-    return [..._baseColumns, deleteActionColumn];
   }, [baseColumns, rowSelectionModel]);
 
   return (
     <Box
       sx={{
-        // display: "flex",
-        // flexDirection: "column",
-        // minWidth: 0, // Essential for Flex children
-        // flexGrow: 1, // Occupy available space
-        // overflow: "hidden", // The "Kill Switch" for horizontal overflow
-        // position: "relative", // Keeps the internal DataGrid calculations local
         height: 400,
+        position: "relative",
         "*": {
           scrollbarWidth: "auto",
           msOverflowStyle: "auto",
@@ -172,6 +138,23 @@ export const FieldTypeRepeater = () => {
         },
       }}
     >
+      {rowSelectionModel.length > 0 && (
+        <IconButton
+          onClick={() => {
+            // Action for deletion can be added here
+            console.log("Delete rows:", rowSelectionModel);
+          }}
+          size="small"
+          sx={{
+            position: "absolute",
+            top: 10,
+            right: 12,
+            zIndex: 100,
+          }}
+        >
+          <DeleteIcon />
+        </IconButton>
+      )}
       <AutoSizer>
         {({ width, height }: Size) => (
           <DataGridPro
@@ -180,11 +163,9 @@ export const FieldTypeRepeater = () => {
             columns={columns}
             checkboxSelection
             hideFooter
-            // initialState={{
-            //   pinnedColumns: {
-            //     right: ["__delete_action_column__"],
-            //   },
-            // }}
+            pinnedColumns={{
+              left: ["__check__"],
+            }}
             rowSelectionModel={rowSelectionModel}
             onRowSelectionModelChange={(newModel) =>
               setRowSelectionModel(newModel)
@@ -192,8 +173,14 @@ export const FieldTypeRepeater = () => {
             style={{ width, height }}
             sx={{
               width: "100%",
+              backgroundColor: "common.white",
+
               "& .MuiDataGrid-columnHeaderCheckbox": {
                 padding: 0,
+              },
+
+              "& .MuiDataGrid-scrollbarFiller": {
+                backgroundColor: "grey.100",
               },
             }}
           />
