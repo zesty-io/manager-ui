@@ -812,7 +812,7 @@ export const StudioWrapper = () => {
   useEffect(() => {
     function handleMessage(evt: MessageEvent<any>) {
       const data = evt.data;
-      if (!data || data.source !== "zesty-webengine-bridge") {
+      if (!data || data.source !== "studio-bridge") {
         return;
       }
 
