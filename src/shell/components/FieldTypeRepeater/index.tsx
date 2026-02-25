@@ -10,6 +10,7 @@ import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AutoSizer, { Size } from "react-virtualized-auto-sizer";
+import { AddRowFooter } from "./AddRowFooter";
 
 const data = [
   {
@@ -72,6 +73,7 @@ export const FieldTypeRepeater = () => {
   const [rowSelectionModel, setRowSelectionModel] =
     React.useState<GridRowSelectionModel>([]);
 
+  // TODO: Need to copy column config on ItemListTable
   const baseColumns: GridColDef[] = [
     {
       field: "title",
@@ -162,7 +164,7 @@ export const FieldTypeRepeater = () => {
             apiRef={apiRef}
             columns={columns}
             checkboxSelection
-            hideFooter
+            rowHeight={56}
             pinnedColumns={{
               left: ["__check__"],
             }}
@@ -170,9 +172,14 @@ export const FieldTypeRepeater = () => {
             onRowSelectionModelChange={(newModel) =>
               setRowSelectionModel(newModel)
             }
-            style={{ width, height }}
+            slots={{
+              footer: () => (
+                <AddRowFooter fieldName="test" onAddRow={() => {}} />
+              ),
+            }}
             sx={{
-              width: "100%",
+              width,
+              height,
               backgroundColor: "common.white",
 
               "& .MuiDataGrid-columnHeaderCheckbox": {
