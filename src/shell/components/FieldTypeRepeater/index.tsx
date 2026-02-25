@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState, useMemo } from "react";
 import {
   DataGridPro,
   GridColDef,
@@ -11,6 +11,11 @@ import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AutoSizer, { Size } from "react-virtualized-auto-sizer";
 import { AddRowFooter } from "./AddRowFooter";
+
+const HEADER_HEIGHT = 56;
+const ROW_HEIGHT = 56;
+const FOOTER_HEIGHT = 44;
+const MAX_VISIBLE_ROWS = 10;
 
 const data = [
   {
@@ -69,9 +74,11 @@ const data = [
 ];
 
 export const FieldTypeRepeater = () => {
+  // TODO: For testing only. Dummy data
+  const [dummyRows, setDummyRows] = useState(data);
   const apiRef = useGridApiRef();
   const [rowSelectionModel, setRowSelectionModel] =
-    React.useState<GridRowSelectionModel>([]);
+    useState<GridRowSelectionModel>([]);
 
   // TODO: Need to copy column config on ItemListTable
   const baseColumns: GridColDef[] = [
@@ -107,12 +114,16 @@ export const FieldTypeRepeater = () => {
     },
   ];
 
-  const rows = data.map((item, index) => ({
-    ...item,
-    id: index,
-  }));
+  const rows = useMemo(
+    () =>
+      dummyRows.map((item, index) => ({
+        ...item,
+        id: index,
+      })),
+    [dummyRows]
+  );
 
-  const columns: GridColDef[] = React.useMemo(() => {
+  const columns: GridColDef[] = useMemo(() => {
     const hasSelectedRows = rowSelectionModel.length > 0;
 
     return baseColumns.map((col) => ({
@@ -126,11 +137,22 @@ export const FieldTypeRepeater = () => {
     }));
   }, [baseColumns, rowSelectionModel]);
 
+  const calculatedHeight = useMemo(() => {
+    const visibleRows = Math.min(rows.length, MAX_VISIBLE_ROWS);
+    // Add 15px for horizontal scrollbar buffer if we have rows
+    const hScrollBuffer = rows.length > 0 ? 15 : 0;
+    return (
+      HEADER_HEIGHT + visibleRows * ROW_HEIGHT + FOOTER_HEIGHT + hScrollBuffer
+    );
+  }, [rows.length]);
+
   return (
     <Box
       sx={{
-        height: 400,
+        height: calculatedHeight,
         position: "relative",
+
+        // An ancestor has removed all scrollbars so we're re-enabling them here
         "*": {
           scrollbarWidth: "auto",
           msOverflowStyle: "auto",
@@ -144,7 +166,10 @@ export const FieldTypeRepeater = () => {
         <IconButton
           onClick={() => {
             // Action for deletion can be added here
-            console.log("Delete rows:", rowSelectionModel);
+            setDummyRows((prev) =>
+              prev.filter((_, index) => !rowSelectionModel.includes(index))
+            );
+            setRowSelectionModel([]);
           }}
           size="small"
           sx={{
@@ -164,7 +189,8 @@ export const FieldTypeRepeater = () => {
             apiRef={apiRef}
             columns={columns}
             checkboxSelection
-            rowHeight={56}
+            rowHeight={ROW_HEIGHT}
+            columnHeaderHeight={HEADER_HEIGHT}
             pinnedColumns={{
               left: ["__check__"],
             }}
@@ -174,7 +200,13 @@ export const FieldTypeRepeater = () => {
             }
             slots={{
               footer: () => (
-                <AddRowFooter fieldName="test" onAddRow={() => {}} />
+                <AddRowFooter
+                  fieldName="test"
+                  onAddRow={() => {
+                    // TODO: For testing only
+                    setDummyRows((prev) => [...prev, data[0]]);
+                  }}
+                />
               ),
             }}
             sx={{
@@ -188,6 +220,15 @@ export const FieldTypeRepeater = () => {
 
               "& .MuiDataGrid-scrollbarFiller": {
                 backgroundColor: "grey.100",
+              },
+
+              // Hide scrollbar for virtual scroller to avoid double scrollbars when a row is dynamically added
+              "& .MuiDataGrid-virtualScroller": {
+                scrollbarWidth: "none",
+                msOverflowStyle: "none",
+                "&::-webkit-scrollbar": {
+                  display: "none",
+                },
               },
             }}
           />
