@@ -44,7 +44,7 @@ type ItemListTableProps = {
   noRowsOverlay: () => JSX.Element;
 };
 
-const CURRENCY_OBJECT: Record<string, Currency> = currencies.reduce(
+export const CURRENCY_OBJECT: Record<string, Currency> = currencies.reduce(
   (acc, curr) => {
     return {
       ...acc,
@@ -56,7 +56,7 @@ const CURRENCY_OBJECT: Record<string, Currency> = currencies.reduce(
   {}
 );
 
-const getHtmlText = (html: string) => {
+export const getHtmlText = (html: string) => {
   if (!html) return "";
 
   const rawData = html;
