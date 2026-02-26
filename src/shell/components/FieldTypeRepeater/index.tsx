@@ -18,6 +18,8 @@ import {
 } from "../../../apps/content-editor/src/app/views/ItemList/ItemListTable";
 import { ImageCell } from "../../../apps/content-editor/src/app/views/ItemList/TableCells/ImageCell";
 import { Link, Typography } from "@mui/material";
+import { ContentModelField } from "shell/services/types";
+import { RowDialog } from "./RowDialog";
 
 const HEADER_HEIGHT = 56;
 const ROW_HEIGHT = 56;
@@ -168,12 +170,16 @@ const fieldTypeColumnConfigMap: Record<string, Partial<GridColDef>> = {
   },
 };
 
-export const FieldTypeRepeater = () => {
+type FieldTypeRepeaterProps = {
+  field: ContentModelField;
+};
+export const FieldTypeRepeater = ({ field }: FieldTypeRepeaterProps) => {
   // TODO: For testing only. Dummy data
   const [dummyRows, setDummyRows] = useState(data);
   const apiRef = useGridApiRef();
   const [rowSelectionModel, setRowSelectionModel] =
     useState<GridRowSelectionModel>([]);
+  const [rowDialog, setRowDialog] = useState<"add" | "edit" | null>(null);
 
   // TODO: Need to copy column config on ItemListTable
   const baseColumns: GridColDef[] = useMemo(() => {
@@ -218,93 +224,99 @@ export const FieldTypeRepeater = () => {
   }, [rows.length]);
 
   return (
-    <Box
-      sx={{
-        height: calculatedHeight,
-        position: "relative",
+    <>
+      <Box
+        sx={{
+          height: calculatedHeight,
+          position: "relative",
 
-        // An ancestor has removed all scrollbars so we're re-enabling them here
-        "*": {
-          scrollbarWidth: "auto",
-          msOverflowStyle: "auto",
-          "&::-webkit-scrollbar": {
-            display: "auto",
+          // An ancestor has removed all scrollbars so we're re-enabling them here
+          "*": {
+            scrollbarWidth: "auto",
+            msOverflowStyle: "auto",
+            "&::-webkit-scrollbar": {
+              display: "auto",
+            },
           },
-        },
-      }}
-    >
-      {rowSelectionModel.length > 0 && (
-        <IconButton
-          onClick={() => {
-            // Action for deletion can be added here
-            setDummyRows((prev) =>
-              prev.filter((_, index) => !rowSelectionModel.includes(index))
-            );
-            setRowSelectionModel([]);
-          }}
-          size="small"
-          sx={{
-            position: "absolute",
-            top: 10,
-            right: 12,
-            zIndex: 100,
-          }}
-        >
-          <DeleteIcon />
-        </IconButton>
-      )}
-      <AutoSizer>
-        {({ width, height }: Size) => (
-          <DataGridPro
-            rows={rows}
-            apiRef={apiRef}
-            columns={columns}
-            checkboxSelection
-            rowHeight={ROW_HEIGHT}
-            columnHeaderHeight={HEADER_HEIGHT}
-            pinnedColumns={{
-              left: ["__check__"],
+        }}
+      >
+        {rowSelectionModel.length > 0 && (
+          <IconButton
+            onClick={() => {
+              // Action for deletion can be added here
+              setDummyRows((prev) =>
+                prev.filter((_, index) => !rowSelectionModel.includes(index))
+              );
+              setRowSelectionModel([]);
             }}
-            rowSelectionModel={rowSelectionModel}
-            onRowSelectionModelChange={(newModel) =>
-              setRowSelectionModel(newModel)
-            }
-            slots={{
-              footer: () => (
-                <AddRowFooter
-                  fieldName="test"
-                  onAddRow={() => {
-                    // TODO: For testing only
-                    setDummyRows((prev) => [...prev, data[0]]);
-                  }}
-                />
-              ),
-            }}
+            size="small"
             sx={{
-              width,
-              height,
-              backgroundColor: "common.white",
-
-              "& .MuiDataGrid-columnHeaderCheckbox": {
-                padding: 0,
-              },
-
-              "& .MuiDataGrid-scrollbarFiller": {
-                backgroundColor: "grey.100",
-              },
-
-              // Hide scrollbar for virtual scroller to avoid double scrollbars when a row is dynamically added
-              "& .MuiDataGrid-virtualScroller": {
-                scrollbarWidth: "none",
-                msOverflowStyle: "none",
-                "&::-webkit-scrollbar": {
-                  display: "none",
-                },
-              },
+              position: "absolute",
+              top: 10,
+              right: 12,
+              zIndex: 100,
             }}
-          />
+          >
+            <DeleteIcon />
+          </IconButton>
         )}
-      </AutoSizer>
-    </Box>
+        <AutoSizer>
+          {({ width, height }: Size) => (
+            <DataGridPro
+              rows={rows}
+              apiRef={apiRef}
+              columns={columns}
+              checkboxSelection
+              disableRowSelectionOnClick
+              rowHeight={ROW_HEIGHT}
+              columnHeaderHeight={HEADER_HEIGHT}
+              pinnedColumns={{
+                left: ["__check__"],
+              }}
+              rowSelectionModel={rowSelectionModel}
+              onRowSelectionModelChange={(newModel) =>
+                setRowSelectionModel(newModel)
+              }
+              onRowClick={(params) => {
+                console.log(params);
+              }}
+              slots={{
+                footer: () => (
+                  <AddRowFooter
+                    fieldName={field.label}
+                    onAddRow={() => setRowDialog("add")}
+                  />
+                ),
+              }}
+              sx={{
+                width,
+                height,
+                backgroundColor: "common.white",
+
+                "& .MuiDataGrid-columnHeaderCheckbox": {
+                  padding: 0,
+                },
+
+                "& .MuiDataGrid-scrollbarFiller": {
+                  backgroundColor: "grey.100",
+                },
+
+                // Hide scrollbar for virtual scroller to avoid double scrollbars when a row is dynamically added
+                "& .MuiDataGrid-virtualScroller": {
+                  scrollbarWidth: "none",
+                  msOverflowStyle: "none",
+                  "&::-webkit-scrollbar": {
+                    display: "none",
+                  },
+                },
+              }}
+            />
+          )}
+        </AutoSizer>
+      </Box>
+      {rowDialog && (
+        <RowDialog onClose={() => setRowDialog(null)} name={field.label} />
+      )}
+    </>
   );
 };
