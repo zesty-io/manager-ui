@@ -788,7 +788,11 @@ export const Field = memo(
         );
 
       case "repeater_field":
-        return <FieldTypeRepeater />;
+        return (
+          <FieldShell settings={fieldData} errors={errors}>
+            <FieldTypeRepeater />
+          </FieldShell>
+        );
 
       default:
         return (
