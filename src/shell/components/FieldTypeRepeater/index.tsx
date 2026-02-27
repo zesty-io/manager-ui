@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   DataGridPro,
   GridColDef,
@@ -6,7 +6,6 @@ import {
   GridRowSelectionModel,
   useGridApiRef,
 } from "@mui/x-data-grid-pro";
-// import { useDemoData } from "@mui/x-data-grid-generator";
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -20,19 +19,20 @@ import { ImageCell } from "../../../apps/content-editor/src/app/views/ItemList/T
 import { Link, Typography } from "@mui/material";
 import { ContentModelField } from "shell/services/types";
 import { RowDialog } from "./RowDialog";
+import { useDispatch } from "react-redux";
+import { notify } from "shell/store/notifications";
 
 const HEADER_HEIGHT = 56;
 const ROW_HEIGHT = 56;
 const FOOTER_HEIGHT = 44;
 const MAX_VISIBLE_ROWS = 10;
 
-const data = [
+const dummyFieldValues = [
   {
     text: "1709819194221",
     textarea: "1709819194221",
     markdown: "1709819194221",
-    wysiwyg_basic:
-      '<p data-pm-slice="0 0 []">66</p>\n<p>Zesty.io is a <a href="/test">cloud</a> web content management system (WCMS) that is API driven with open-source user interfaces. Our software is built to automate the configuration, optimization, and distribution of digital content so marketing teams and developers can focus on creating excellent digital experiences.</p>\n<h2>What makes Zesty.io different?</h2>\n<p>We architected Zesty.io to meet the needs of any content usage such as a traditional website CMS, a Headless CMS API interface, a modern JamStack implementation, or a combination of solutions. This means Zesty.io can power content beyond websites into new digital mediums like smart devices, video game data, and mobile applications. As a cloud service, we are constantly improving our technology, often daily, with updates that positively affect all users and experiences built on the platform.</p>\n<p></p>\n<ul>\n<li>\n<p>Easy CMS</p>\n</li>\n<li>\n<p>Web Presentations</p>\n</li>\n<li>\n<p>Asset Sharing</p>\n</li>\n<li>\n<p>Fast Delivery</p>\n</li>\n<li>\n<p>Headless Applications</p>\n</li>\n</ul>\n<p><a href="https://8xbq19z1.manage.zesty.io/content-instance">Cloud Content Instance</a></p>\n<h2>The Core Technology Behind Zesty.io</h2>\n<p>Zesty.io was born in the cloud. The primary infrastructure lives on Google Cloud Platform and uses Fastly for edge caching. Core code of the system is built in Golang and NodeJS. User interfaces are built in React. Zesty.io was originally built in PHP with a custom Mootools user interface.</p>\n<hr>\n<p></p>\n<h2>Developer Documentation</h2>\n<p>Start exploring documentation on the left or jump to a URL above to read experience documentation.</p>\n<ul>\n<li>\n<p>​Instances API​</p>\n</li>\n<li>\n<p>​Accounts API​</p>\n</li>\n<li>\n<p>​Headless Zesty​</p>\n</li>\n</ul>\n<h2>About Zesty.io</h2>\n<p>Zesty.io was founded in 2010 by Randy Apuzzo and Andy Fleming in the basement of Randy\'s Little Italy loft in San Diego, California. Prior to that, Randy had been building custom websites and software for various businesses since 2004. Randy and Andy leveraged Randy\'s customer base to test and build different aspects of the platform out. In 2011, Andy left his full time job to work with Randy to build out Zesty.io, bootstrapped on the heels of their consulting work.</p>\n<p>Zesty.io\'s unique configuration allowed it to power content on both e-commerce and informational websites. The headless nature of Zesty.io enabled Randy and Andy to quickly transition customers from Wordpress, Joomla, and Magento. To continue bootstrapping development of the software, they partnered with marketing agencies in San Diego, Sacramento, and Las Vegas. Their partners relationships helped fuel development of Zesty.io until 2014, when they raised capital from San Diego based technology angel investors. During the capital raise, Gerry Widmer joined the team and set the platform\'s focus on servicing mid-market and enterprise needs. Zesty.io has doubled in size and usage every year since.</p>\n<p><img title="San Diego At Night" src="https://8xbq19z1.media.zestyio.com/San-Diego-At-Night.png"></p>\n<p></p>\n<p>1709819194221</p>\n<p data-pm-slice="0 0 []">66</p>\n<p>Zesty.io is a <a href="/test">cloud</a> web content management system (WCMS) that is API driven with open-source user interfaces. Our software is built to automate the configuration, optimization, and distribution of digital content so marketing teams and developers can focus on creating excellent digital experiences.</p>\n<h2>What makes Zesty.io different?</h2>\n<p>We architected Zesty.io to meet the needs of any content usage such as a traditional website CMS, a Headless CMS API interface, a modern JamStack implementation, or a combination of solutions. This means Zesty.io can power content beyond websites into new digital mediums like smart devices, video game data, and mobile applications. As a cloud service, we are constantly improving our technology, often daily, with updates that positively affect all users and experiences built on the platform.</p>\n<p></p>\n<ul>\n<li>\n<p>Easy CMS</p>\n</li>\n<li>\n<p>Web Presentations</p>\n</li>\n<li>\n<p>Asset Sharing</p>\n</li>\n<li>\n<p>Fast Delivery</p>\n</li>\n<li>\n<p>Headless Applications</p>\n</li>\n</ul>\n<p><a href="https://8xbq19z1.manage.zesty.io/content-instance">Cloud Content Instance</a></p>\n<h2>The Core Technology Behind Zesty.io</h2>\n<p>Zesty.io was born in the cloud. The primary infrastructure lives on Google Cloud Platform and uses Fastly for edge caching. Core code of the system is built in Golang and NodeJS. User interfaces are built in React. Zesty.io was originally built in PHP with a custom Mootools user interface.</p>\n<hr>\n<p></p>\n<h2>Developer Documentation</h2>\n<p>Start exploring documentation on the left or jump to a URL above to read experience documentation.</p>\n<ul>\n<li>\n<p>​Instances API​</p>\n</li>\n<li>\n<p>​Accounts API​</p>\n</li>\n<li>\n<p>​Headless Zesty​</p>\n</li>\n</ul>\n<h2>About Zesty.io</h2>\n<p>Zesty.io was founded in 2010 by Randy Apuzzo and Andy Fleming in the basement of Randy\'s Little Italy loft in San Diego, California. Prior to that, Randy had been building custom websites and software for various businesses since 2004. Randy and Andy leveraged Randy\'s customer base to test and build different aspects of the platform out. In 2011, Andy left his full time job to work with Randy to build out Zesty.io, bootstrapped on the heels of their consulting work.</p>\n<p>Zesty.io\'s unique configuration allowed it to power content on both e-commerce and informational websites. The headless nature of Zesty.io enabled Randy and Andy to quickly transition customers from Wordpress, Joomla, and Magento. To continue bootstrapping development of the software, they partnered with marketing agencies in San Diego, Sacramento, and Las Vegas. Their partners relationships helped fuel development of Zesty.io until 2014, when they raised capital from San Diego based technology angel investors. During the capital raise, Gerry Widmer joined the team and set the platform\'s focus on servicing mid-market and enterprise needs. Zesty.io has doubled in size and usage every year since.</p>\n<p><img title="San Diego At Night" src="https://8xbq19z1.media.zestyio.com/San-Diego-At-Night.png"></p>\n<p></p>\n<p>1709819194221</p>\n<p data-pm-slice="0 0 []">66</p>\n<p>Zesty.io is a <a href="/test">cloud</a> web content management system (WCMS) that is API driven with open-source user interfaces. Our software is built to automate the configuration, optimization, and distribution of digital content so marketing teams and developers can focus on creating excellent digital experiences.</p>\n<h2>What makes Zesty.io different?</h2>\n<p>We architected Zesty.io to meet the needs of any content usage such as a traditional website CMS, a Headless CMS API interface, a modern JamStack implementation, or a combination of solutions. This means Zesty.io can power content beyond websites into new digital mediums like smart devices, video game data, and mobile applications. As a cloud service, we are constantly improving our technology, often daily, with updates that positively affect all users and experiences built on the platform.</p>\n<p></p>\n<ul>\n<li>\n<p>Easy CMS</p>\n</li>\n<li>\n<p>Web Presentations</p>\n</li>\n<li>\n<p>Asset Sharing</p>\n</li>\n<li>\n<p>Fast Delivery</p>\n</li>\n<li>\n<p>Headless Applications</p>\n</li>\n</ul>\n<p><a href="https://8xbq19z1.manage.zesty.io/content-instance">Cloud Content Instance</a></p>\n<h2>The Core Technology Behind Zesty.io</h2>\n<p>Zesty.io was born in the cloud. The primary infrastructure lives on Google Cloud Platform and uses Fastly for edge caching. Core code of the system is built in Golang and NodeJS. User interfaces are built in React. Zesty.io was originally built in PHP with a custom Mootools user interface.</p>\n<hr>\n<p></p>\n<h2>Developer Documentation</h2>\n<p>Start exploring documentation on the left or jump to a URL above to read experience documentation.</p>\n<ul>\n<li>\n<p>​Instances API​</p>\n</li>\n<li>\n<p>​Accounts API​</p>\n</li>\n<li>\n<p>​Headless Zesty​</p>\n</li>\n</ul>\n<h2>About Zesty.io</h2>\n<p>Zesty.io was founded in 2010 by Randy Apuzzo and Andy Fleming in the basement of Randy\'s Little Italy loft in San Diego, California. Prior to that, Randy had been building custom websites and software for various businesses since 2004. Randy and Andy leveraged Randy\'s customer base to test and build different aspects of the platform out. In 2011, Andy left his full time job to work with Randy to build out Zesty.io, bootstrapped on the heels of their consulting work.</p>\n<p>Zesty.io\'s unique configuration allowed it to power content on both e-commerce and informational websites. The headless nature of Zesty.io enabled Randy and Andy to quickly transition customers from Wordpress, Joomla, and Magento. To continue bootstrapping development of the software, they partnered with marketing agencies in San Diego, Sacramento, and Las Vegas. Their partners relationships helped fuel development of Zesty.io until 2014, when they raised capital from San Diego based technology angel investors. During the capital raise, Gerry Widmer joined the team and set the platform\'s focus on servicing mid-market and enterprise needs. Zesty.io has doubled in size and usage every year since.</p>\n<p><img title="San Diego At Night" src="https://8xbq19z1.media.zestyio.com/San-Diego-At-Night.png"></p>\n<p></p>\n<p>1709819194221</p>\n<p data-pm-slice="0 0 []">66</p>\n<p>Zesty.io is a <a href="/test">cloud</a> web content management system (WCMS) that is API driven with open-source user interfaces. Our software is built to automate the configuration, optimization, and distribution of digital content so marketing teams and developers can focus on creating excellent digital experiences.</p>\n<h2>What makes Zesty.io different?</h2>\n<p>We architected Zesty.io to meet the needs of any content usage such as a traditional website CMS, a Headless CMS API interface, a modern JamStack implementation, or a combination of solutions. This means Zesty.io can power content beyond websites into new digital mediums like smart devices, video game data, and mobile applications. As a cloud service, we are constantly improving our technology, often daily, with updates that positively affect all users and experiences built on the platform.</p>\n<p></p>\n<ul>\n<li>\n<p>Easy CMS</p>\n</li>\n<li>\n<p>Web Presentations</p>\n</li>\n<li>\n<p>Asset Sharing</p>\n</li>\n<li>\n<p>Fast Delivery</p>\n</li>\n<li>\n<p>Headless Applications</p>\n</li>\n</ul>\n<p><a href="https://8xbq19z1.manage.zesty.io/content-instance">Cloud Content Instance</a></p>\n<h2>The Core Technology Behind Zesty.io</h2>\n<p>Zesty.io was born in the cloud. The primary infrastructure lives on Google Cloud Platform and uses Fastly for edge caching. Core code of the system is built in Golang and NodeJS. User interfaces are built in React. Zesty.io was originally built in PHP with a custom Mootools user interface.</p>\n<hr>\n<p></p>\n<h2>Developer Documentation</h2>\n<p>Start exploring documentation on the left or jump to a URL above to read experience documentation.</p>\n<ul>\n<li>\n<p>​Instances API​</p>\n</li>\n<li>\n<p>​Accounts API​</p>\n</li>\n<li>\n<p>​Headless Zesty​</p>\n</li>\n</ul>\n<h2>About Zesty.io</h2>\n<p>Zesty.io was founded in 2010 by Randy Apuzzo and Andy Fleming in the basement of Randy\'s Little Italy loft in San Diego, California. Prior to that, Randy had been building custom websites and software for various businesses since 2004. Randy and Andy leveraged Randy\'s customer base to test and build different aspects of the platform out. In 2011, Andy left his full time job to work with Randy to build out Zesty.io, bootstrapped on the heels of their consulting work.</p>\n<p>Zesty.io\'s unique configuration allowed it to power content on both e-commerce and informational websites. The headless nature of Zesty.io enabled Randy and Andy to quickly transition customers from Wordpress, Joomla, and Magento. To continue bootstrapping development of the software, they partnered with marketing agencies in San Diego, Sacramento, and Las Vegas. Their partners relationships helped fuel development of Zesty.io until 2014, when they raised capital from San Diego based technology angel investors. During the capital raise, Gerry Widmer joined the team and set the platform\'s focus on servicing mid-market and enterprise needs. Zesty.io has doubled in size and usage every year since.</p>\n<p><img title="San Diego At Night" src="https://8xbq19z1.media.zestyio.com/San-Diego-At-Night.png"></p>\n<p></p>\n<p>1709819194221</p>\n<p data-pm-slice="0 0 []">66</p>\n<p>Zesty.io is a <a href="/test">cloud</a> web content management system (WCMS) that is API driven with open-source user interfaces. Our software is built to automate the configuration, optimization, and distribution of digital content so marketing teams and developers can focus on creating excellent digital experiences.</p>\n<h2>What makes Zesty.io different?</h2>\n<p>We architected Zesty.io to meet the needs of any content usage such as a traditional website CMS, a Headless CMS API interface, a modern JamStack implementation, or a combination of solutions. This means Zesty.io can power content beyond websites into new digital mediums like smart devices, video game data, and mobile applications. As a cloud service, we are constantly improving our technology, often daily, with updates that positively affect all users and experiences built on the platform.</p>\n<p></p>\n<ul>\n<li>\n<p>Easy CMS</p>\n</li>\n<li>\n<p>Web Presentations</p>\n</li>\n<li>\n<p>Asset Sharing</p>\n</li>\n<li>\n<p>Fast Delivery</p>\n</li>\n<li>\n<p>Headless Applications</p>\n</li>\n</ul>\n<p><a href="https://8xbq19z1.manage.zesty.io/content-instance">Cloud Content Instance</a></p>\n<h2>The Core Technology Behind Zesty.io</h2>\n<p>Zesty.io was born in the cloud. The primary infrastructure lives on Google Cloud Platform and uses Fastly for edge caching. Core code of the system is built in Golang and NodeJS. User interfaces are built in React. Zesty.io was originally built in PHP with a custom Mootools user interface.</p>\n<hr>\n<p></p>\n<h2>Developer Documentation</h2>\n<p>Start exploring documentation on the left or jump to a URL above to read experience documentation.</p>\n<ul>\n<li>\n<p>​Instances API​</p>\n</li>\n<li>\n<p>​Accounts API​</p>\n</li>\n<li>\n<p>​Headless Zesty​</p>\n</li>\n</ul>\n<h2>About Zesty.io</h2>\n<p>Zesty.io was founded in 2010 by Randy Apuzzo and Andy Fleming in the basement of Randy\'s Little Italy loft in San Diego, California. Prior to that, Randy had been building custom websites and software for various businesses since 2004. Randy and Andy leveraged Randy\'s customer base to test and build different aspects of the platform out. In 2011, Andy left his full time job to work with Randy to build out Zesty.io, bootstrapped on the heels of their consulting work.</p>\n<p>Zesty.io\'s unique configuration allowed it to power content on both e-commerce and informational websites. The headless nature of Zesty.io enabled Randy and Andy to quickly transition customers from Wordpress, Joomla, and Magento. To continue bootstrapping development of the software, they partnered with marketing agencies in San Diego, Sacramento, and Las Vegas. Their partners relationships helped fuel development of Zesty.io until 2014, when they raised capital from San Diego based technology angel investors. During the capital raise, Gerry Widmer joined the team and set the platform\'s focus on servicing mid-market and enterprise needs. Zesty.io has doubled in size and usage every year since.</p>\n<p><img title="San Diego At Night" src="https://8xbq19z1.media.zestyio.com/San-Diego-At-Night.png"></p>\n<p></p>\n<p>1709819194221</p>\n<p data-pm-slice="0 0 []">66</p>\n<p>Zesty.io is a <a href="/test">cloud</a> web content management system (WCMS) that is API driven with open-source user interfaces. Our software is built to automate the configuration, optimization, and distribution of digital content so marketing teams and developers can focus on creating excellent digital experiences.</p>\n<h2>What makes Zesty.io different?</h2>\n<p>We architected Zesty.io to meet the needs of any content usage such as a traditional website CMS, a Headless CMS API interface, a modern JamStack implementation, or a combination of solutions. This means Zesty.io can power content beyond websites into new digital mediums like smart devices, video game data, and mobile applications. As a cloud service, we are constantly improving our technology, often daily, with updates that positively affect all users and experiences built on the platform.</p>\n<p></p>\n<ul>\n<li>\n<p>Easy CMS</p>\n</li>\n<li>\n<p>Web Presentations</p>\n</li>\n<li>\n<p>Asset Sharing</p>\n</li>\n<li>\n<p>Fast Delivery</p>\n</li>\n<li>\n<p>Headless Applications</p>\n</li>\n</ul>\n<p><a href="https://8xbq19z1.manage.zesty.io/content-instance">Cloud Content Instance</a></p>\n<h2>The Core Technology Behind Zesty.io</h2>\n<p>Zesty.io was born in the cloud. The primary infrastructure lives on Google Cloud Platform and uses Fastly for edge caching. Core code of the system is built in Golang and NodeJS. User interfaces are built in React. Zesty.io was originally built in PHP with a custom Mootools user interface.</p>\n<hr>\n<p></p>\n<h2>Developer Documentation</h2>\n<p>Start exploring documentation on the left or jump to a URL above to read experience documentation.</p>\n<ul>\n<li>\n<p>​Instances API​</p>\n</li>\n<li>\n<p>​Accounts API​</p>\n</li>\n<li>\n<p>​Headless Zesty​</p>\n</li>\n</ul>\n<h2>About Zesty.io</h2>\n<p>Zesty.io was founded in 2010 by Randy Apuzzo and Andy Fleming in the basement of Randy\'s Little Italy loft in San Diego, California. Prior to that, Randy had been building custom websites and software for various businesses since 2004. Randy and Andy leveraged Randy\'s customer base to test and build different aspects of the platform out. In 2011, Andy left his full time job to work with Randy to build out Zesty.io, bootstrapped on the heels of their consulting work.</p>\n<p>Zesty.io\'s unique configuration allowed it to power content on both e-commerce and informational websites. The headless nature of Zesty.io enabled Randy and Andy to quickly transition customers from Wordpress, Joomla, and Magento. To continue bootstrapping development of the software, they partnered with marketing agencies in San Diego, Sacramento, and Las Vegas. Their partners relationships helped fuel development of Zesty.io until 2014, when they raised capital from San Diego based technology angel investors. During the capital raise, Gerry Widmer joined the team and set the platform\'s focus on servicing mid-market and enterprise needs. Zesty.io has doubled in size and usage every year since.</p>\n<p><img title="San Diego At Night" src="https://8xbq19z1.media.zestyio.com/San-Diego-At-Night.png"></p>\n<p></p>\n<p>1709819194221</p>\n<p data-pm-slice="0 0 []">66</p>\n<p>Zesty.io is a <a href="/test">cloud</a> web content management system (WCMS) that is API driven with open-source user interfaces. Our software is built to automate the configuration, optimization, and distribution of digital content so marketing teams and developers can focus on creating excellent digital experiences.</p>\n<h2>What makes Zesty.io different?</h2>\n<p>We architected Zesty.io to meet the needs of any content usage such as a traditional website CMS, a Headless CMS API interface, a modern JamStack implementation, or a combination of solutions. This means Zesty.io can power content beyond websites into new digital mediums like smart devices, video game data, and mobile applications. As a cloud service, we are constantly improving our technology, often daily, with updates that positively affect all users and experiences built on the platform.</p>\n<p></p>\n<ul>\n<li>\n<p>Easy CMS</p>\n</li>\n<li>\n<p>Web Presentations</p>\n</li>\n<li>\n<p>Asset Sharing</p>\n</li>\n<li>\n<p>Fast Delivery</p>\n</li>\n<li>\n<p>Headless Applications</p>\n</li>\n</ul>\n<p><a href="https://8xbq19z1.manage.zesty.io/content-instance">Cloud Content Instance</a></p>\n<h2>The Core Technology Behind Zesty.io</h2>\n<p>Zesty.io was born in the cloud. The primary infrastructure lives on Google Cloud Platform and uses Fastly for edge caching. Core code of the system is built in Golang and NodeJS. User interfaces are built in React. Zesty.io was originally built in PHP with a custom Mootools user interface.</p>\n<hr>\n<p></p>\n<h2>Developer Documentation</h2>\n<p>Start exploring documentation on the left or jump to a URL above to read experience documentation.</p>\n<ul>\n<li>\n<p>​Instances API​</p>\n</li>\n<li>\n<p>​Accounts API​</p>\n</li>\n<li>\n<p>​Headless Zesty​</p>\n</li>\n</ul>\n<h2>About Zesty.io</h2>\n<p>Zesty.io was founded in 2010 by Randy Apuzzo and Andy Fleming in the basement of Randy\'s Little Italy loft in San Diego, California. Prior to that, Randy had been building custom websites and software for various businesses since 2004. Randy and Andy leveraged Randy\'s customer base to test and build different aspects of the platform out. In 2011, Andy left his full time job to work with Randy to build out Zesty.io, bootstrapped on the heels of their consulting work.</p>\n<p>Zesty.io\'s unique configuration allowed it to power content on both e-commerce and informational websites. The headless nature of Zesty.io enabled Randy and Andy to quickly transition customers from Wordpress, Joomla, and Magento. To continue bootstrapping development of the software, they partnered with marketing agencies in San Diego, Sacramento, and Las Vegas. Their partners relationships helped fuel development of Zesty.io until 2014, when they raised capital from San Diego based technology angel investors. During the capital raise, Gerry Widmer joined the team and set the platform\'s focus on servicing mid-market and enterprise needs. Zesty.io has doubled in size and usage every year since.</p>\n<p></p>\n<p data-pm-slice="0 0 []">66</p>\n<p>Zesty.io is a <a href="/test">cloud</a> web content management system (WCMS) that is API driven with open-source user interfaces. Our software is built to automate the configuration, optimization, and distribution of digital content so marketing teams and developers can focus on creating excellent digital experiences.</p>\n<h2>What makes Zesty.io different?</h2>\n<p>We architected Zesty.io to meet the needs of any content usage such as a traditional website CMS, a Headless CMS API interface, a modern JamStack implementation, or a combination of solutions. This means Zesty.io can power content beyond websites into new digital mediums like smart devices, video game data, and mobile applications. As a cloud service, we are constantly improving our technology, often daily, with updates that positively affect all users and experiences built on the platform.</p>\n<p></p>\n<ul>\n<li>\n<p>Easy CMS</p>\n</li>\n<li>\n<p>Web Presentations</p>\n</li>\n<li>\n<p>Asset Sharing</p>\n</li>\n<li>\n<p>Fast Delivery</p>\n</li>\n<li>\n<p>Headless Applications</p>\n</li>\n</ul>\n<p><a href="https://8xbq19z1.manage.zesty.io/content-instance">Cloud Content Instance</a></p>\n<h2>The Core Technology Behind Zesty.io</h2>\n<p>Zesty.io was born in the cloud. The primary infrastructure lives on Google Cloud Platform and uses Fastly for edge caching. Core code of the system is built in Golang and NodeJS. User interfaces are built in React. Zesty.io was originally built in PHP with a custom Mootools user interface.</p>\n<hr>\n<p></p>\n<h2>Developer Documentation</h2>\n<p>Start exploring documentation on the left or jump to a URL above to read experience documentation.</p>\n<ul>\n<li>\n<p>​Instances API​</p>\n</li>\n<li>\n<p>​Accounts API​</p>\n</li>\n<li>\n<p>​Headless Zesty​</p>\n</li>\n</ul>\n<h2>About Zesty.io</h2>\n<p>Zesty.io was founded in 2010 by Randy Apuzzo and Andy Fleming in the basement of Randy\'s Little Italy loft in San Diego, California. Prior to that, Randy had been building custom websites and software for various businesses since 2004. Randy and Andy leveraged Randy\'s customer base to test and build different aspects of the platform out. In 2011, Andy left his full time job to work with Randy to build out Zesty.io, bootstrapped on the heels of their consulting work.</p>\n<p>Zesty.io\'s unique configuration allowed it to power content on both e-commerce and informational websites. The headless nature of Zesty.io enabled Randy and Andy to quickly transition customers from Wordpress, Joomla, and Magento. To continue bootstrapping development of the software, they partnered with marketing agencies in San Diego, Sacramento, and Las Vegas. Their partners relationships helped fuel development of Zesty.io until 2014, when they raised capital from San Diego based technology angel investors. During the capital raise, Gerry Widmer joined the team and set the platform\'s focus on servicing mid-market and enterprise needs. Zesty.io has doubled in size and usage every year since.</p>\n<p><img title="San Diego At Night" src="https://8xbq19z1.media.zestyio.com/San-Diego-At-Night.png"></p>\n<p></p>\n<p>1709819194221</p>\n<p data-pm-slice="0 0 []">66</p>\n<p>Zesty.io is a <a href="/test">cloud</a> web content management system (WCMS) that is API driven with open-source user interfaces. Our software is built to automate the configuration, optimization, and distribution of digital content so marketing teams and developers can focus on creating excellent digital experiences.</p>\n<h2>What makes Zesty.io different?</h2>\n<p>We architected Zesty.io to meet the needs of any content usage such as a traditional website CMS, a Headless CMS API interface, a modern JamStack implementation, or a combination of solutions. This means Zesty.io can power content beyond websites into new digital mediums like smart devices, video game data, and mobile applications. As a cloud service, we are constantly improving our technology, often daily, with updates that positively affect all users and experiences built on the platform.</p>\n<p></p>\n<ul>\n<li>\n<p>Easy CMS</p>\n</li>\n<li>\n<p>Web Presentations</p>\n</li>\n<li>\n<p>Asset Sharing</p>\n</li>\n<li>\n<p>Fast Delivery</p>\n</li>\n<li>\n<p>Headless Applications</p>\n</li>\n</ul>\n<p><a href="https://8xbq19z1.manage.zesty.io/content-instance">Cloud Content Instance</a></p>\n<h2>The Core Technology Behind Zesty.io</h2>\n<p>Zesty.io was born in the cloud. The primary infrastructure lives on Google Cloud Platform and uses Fastly for edge caching. Core code of the system is built in Golang and NodeJS. User interfaces are built in React. Zesty.io was originally built in PHP with a custom Mootools user interface.</p>\n<hr>\n<p></p>\n<h2>Developer Documentation</h2>\n<p>Start exploring documentation on the left or jump to a URL above to read experience documentation.</p>\n<ul>\n<li>\n<p>​Instances API​</p>\n</li>\n<li>\n<p>​Accounts API​</p>\n</li>\n<li>\n<p>​Headless Zesty​</p>\n</li>\n</ul>\n<h2>About Zesty.io</h2>\n<p>Zesty.io was founded in 2010 by Randy Apuzzo and Andy Fleming in the basement of Randy\'s Little Italy loft in San Diego, California. Prior to that, Randy had been building custom websites and software for various businesses since 2004. Randy and Andy leveraged Randy\'s customer base to test and build different aspects of the platform out. In 2011, Andy left his full time job to work with Randy to build out Zesty.io, bootstrapped on the heels of their consulting work.</p>\n<p>Zesty.io\'s unique configuration allowed it to power content on both e-commerce and informational websites. The headless nature of Zesty.io enabled Randy and Andy to quickly transition customers from Wordpress, Joomla, and Magento. To continue bootstrapping development of the software, they partnered with marketing agencies in San Diego, Sacramento, and Las Vegas. Their partners relationships helped fuel development of Zesty.io until 2014, when they raised capital from San Diego based technology angel investors. During the capital raise, Gerry Widmer joined the team and set the platform\'s focus on servicing mid-market and enterprise needs. Zesty.io has doubled in size and usage every year since.</p>\n<p><img title="San Diego At Night" src="https://8xbq19z1.media.zestyio.com/San-Diego-At-Night.png"></p>\n<p></p>\n<p>1709819194221</p>\n<p data-pm-slice="0 0 []">66</p>\n<p>Zesty.io is a <a href="/test">cloud</a> web content management system (WCMS) that is API driven with open-source user interfaces. Our software is built to automate the configuration, optimization, and distribution of digital content so marketing teams and developers can focus on creating excellent digital experiences.</p>\n<h2>What makes Zesty.io different?</h2>\n<p>We architected Zesty.io to meet the needs of any content usage such as a traditional website CMS, a Headless CMS API interface, a modern JamStack implementation, or a combination of solutions. This means Zesty.io can power content beyond websites into new digital mediums like smart devices, video game data, and mobile applications. As a cloud service, we are constantly improving our technology, often daily, with updates that positively affect all users and experiences built on the platform.</p>\n<p></p>\n<ul>\n<li>\n<p>Easy CMS</p>\n</li>\n<li>\n<p>Web Presentations</p>\n</li>\n<li>\n<p>Asset Sharing</p>\n</li>\n<li>\n<p>Fast Delivery</p>\n</li>\n<li>\n<p>Headless Applications</p>\n</li>\n</ul>\n<p><a href="https://8xbq19z1.manage.zesty.io/content-instance">Cloud Content Instance</a></p>\n<h2>The Core Technology Behind Zesty.io</h2>\n<p>Zesty.io was born in the cloud. The primary infrastructure lives on Google Cloud Platform and uses Fastly for edge caching. Core code of the system is built in Golang and NodeJS. User interfaces are built in React. Zesty.io was originally built in PHP with a custom Mootools user interface.</p>\n<hr>\n<p></p>\n<h2>Developer Documentation</h2>\n<p>Start exploring documentation on the left or jump to a URL above to read experience documentation.</p>\n<ul>\n<li>\n<p>​Instances API​</p>\n</li>\n<li>\n<p>​Accounts API​</p>\n</li>\n<li>\n<p>​Headless Zesty​</p>\n</li>\n</ul>\n<h2>About Zesty.io</h2>\n<p>Zesty.io was founded in 2010 by Randy Apuzzo and Andy Fleming in the basement of Randy\'s Little Italy loft in San Diego, California. Prior to that, Randy had been building custom websites and software for various businesses since 2004. Randy and Andy leveraged Randy\'s customer base to test and build different aspects of the platform out. In 2011, Andy left his full time job to work with Randy to build out Zesty.io, bootstrapped on the heels of their consulting work.</p>\n<p>Zesty.io\'s unique configuration allowed it to power content on both e-commerce and informational websites. The headless nature of Zesty.io enabled Randy and Andy to quickly transition customers from Wordpress, Joomla, and Magento. To continue bootstrapping development of the software, they partnered with marketing agencies in San Diego, Sacramento, and Las Vegas. Their partners relationships helped fuel development of Zesty.io until 2014, when they raised capital from San Diego based technology angel investors. During the capital raise, Gerry Widmer joined the team and set the platform\'s focus on servicing mid-market and enterprise needs. Zesty.io has doubled in size and usage every year since.</p>\n<p><img title="San Diego At Night" src="https://8xbq19z1.media.zestyio.com/San-Diego-At-Night.png"></p>\n<p></p>\n<p>1709819194221</p>\n<p data-pm-slice="0 0 []">66</p>\n<p>Zesty.io is a <a href="/test">cloud</a> web content management system (WCMS) that is API driven with open-source user interfaces. Our software is built to automate the configuration, optimization, and distribution of digital content so marketing teams and developers can focus on creating excellent digital experiences.</p>\n<h2>What makes Zesty.io different?</h2>\n<p>We architected Zesty.io to meet the needs of any content usage such as a traditional website CMS, a Headless CMS API interface, a modern JamStack implementation, or a combination of solutions. This means Zesty.io can power content beyond websites into new digital mediums like smart devices, video game data, and mobile applications. As a cloud service, we are constantly improving our technology, often daily, with updates that positively affect all users and experiences built on the platform.</p>\n<p></p>\n<ul>\n<li>\n<p>Easy CMS</p>\n</li>\n<li>\n<p>Web Presentations</p>\n</li>\n<li>\n<p>Asset Sharing</p>\n</li>\n<li>\n<p>Fast Delivery</p>\n</li>\n<li>\n<p>Headless Applications</p>\n</li>\n</ul>\n<p><a href="https://8xbq19z1.manage.zesty.io/content-instance">Cloud Content Instance</a></p>\n<h2>The Core Technology Behind Zesty.io</h2>\n<p>Zesty.io was born in the cloud. The primary infrastructure lives on Google Cloud Platform and uses Fastly for edge caching. Core code of the system is built in Golang and NodeJS. User interfaces are built in React. Zesty.io was originally built in PHP with a custom Mootools user interface.</p>\n<hr>\n<p></p>\n<h2>Developer Documentation</h2>\n<p>Start exploring documentation on the left or jump to a URL above to read experience documentation.</p>\n<ul>\n<li>\n<p>​Instances API​</p>\n</li>\n<li>\n<p>​Accounts API​</p>\n</li>\n<li>\n<p>​Headless Zesty​</p>\n</li>\n</ul>\n<h2>About Zesty.io</h2>\n<p>Zesty.io was founded in 2010 by Randy Apuzzo and Andy Fleming in the basement of Randy\'s Little Italy loft in San Diego, California. Prior to that, Randy had been building custom websites and software for various businesses since 2004. Randy and Andy leveraged Randy\'s customer base to test and build different aspects of the platform out. In 2011, Andy left his full time job to work with Randy to build out Zesty.io, bootstrapped on the heels of their consulting work.</p>\n<p>Zesty.io\'s unique configuration allowed it to power content on both e-commerce and informational websites. The headless nature of Zesty.io enabled Randy and Andy to quickly transition customers from Wordpress, Joomla, and Magento. To continue bootstrapping development of the software, they partnered with marketing agencies in San Diego, Sacramento, and Las Vegas. Their partners relationships helped fuel development of Zesty.io until 2014, when they raised capital from San Diego based technology angel investors. During the capital raise, Gerry Widmer joined the team and set the platform\'s focus on servicing mid-market and enterprise needs. Zesty.io has doubled in size and usage every year since.</p>\n<p><img title="San Diego At Night" src="https://8xbq19z1.media.zestyio.com/San-Diego-At-Night.png"></p>\n<p></p>\n<p>1709819194221</p>\n<p data-pm-slice="0 0 []">66</p>\n<p>Zesty.io is a <a href="/test">cloud</a> web content management system (WCMS) that is API driven with open-source user interfaces. Our software is built to automate the configuration, optimization, and distribution of digital content so marketing teams and developers can focus on creating excellent digital experiences.</p>\n<h2>What makes Zesty.io different?</h2>\n<p>We architected Zesty.io to meet the needs of any content usage such as a traditional website CMS, a Headless CMS API interface, a modern JamStack implementation, or a combination of solutions. This means Zesty.io can power content beyond websites into new digital mediums like smart devices, video game data, and mobile applications. As a cloud service, we are constantly improving our technology, often daily, with updates that positively affect all users and experiences built on the platform.</p>\n<p></p>\n<ul>\n<li>\n<p>Easy CMS</p>\n</li>\n<li>\n<p>Web Presentations</p>\n</li>\n<li>\n<p>Asset Sharing</p>\n</li>\n<li>\n<p>Fast Delivery</p>\n</li>\n<li>\n<p>Headless Applications</p>\n</li>\n</ul>\n<p><a href="https://8xbq19z1.manage.zesty.io/content-instance">Cloud Content Instance</a></p>\n<h2>The Core Technology Behind Zesty.io</h2>\n<p>Zesty.io was born in the cloud. The primary infrastructure lives on Google Cloud Platform and uses Fastly for edge caching. Core code of the system is built in Golang and NodeJS. User interfaces are built in React. Zesty.io was originally built in PHP with a custom Mootools user interface.</p>\n<hr>\n<p></p>\n<h2>Developer Documentation</h2>\n<p>Start exploring documentation on the left or jump to a URL above to read experience documentation.</p>\n<ul>\n<li>\n<p>​Instances API​</p>\n</li>\n<li>\n<p>​Accounts API​</p>\n</li>\n<li>\n<p>​Headless Zesty​</p>\n</li>\n</ul>\n<h2>About Zesty.io</h2>\n<p>Zesty.io was founded in 2010 by Randy Apuzzo and Andy Fleming in the basement of Randy\'s Little Italy loft in San Diego, California. Prior to that, Randy had been building custom websites and software for various businesses since 2004. Randy and Andy leveraged Randy\'s customer base to test and build different aspects of the platform out. In 2011, Andy left his full time job to work with Randy to build out Zesty.io, bootstrapped on the heels of their consulting work.</p>\n<p>Zesty.io\'s unique configuration allowed it to power content on both e-commerce and informational websites. The headless nature of Zesty.io enabled Randy and Andy to quickly transition customers from Wordpress, Joomla, and Magento. To continue bootstrapping development of the software, they partnered with marketing agencies in San Diego, Sacramento, and Las Vegas. Their partners relationships helped fuel development of Zesty.io until 2014, when they raised capital from San Diego based technology angel investors. During the capital raise, Gerry Widmer joined the team and set the platform\'s focus on servicing mid-market and enterprise needs. Zesty.io has doubled in size and usage every year since.</p>\n<p><img title="San Diego At Night" src="https://8xbq19z1.media.zestyio.com/San-Diego-At-Night.png"></p>\n<p></p>\n<p>1709819194221</p>\n<p data-pm-slice="0 0 []">66</p>\n<p>Zesty.io is a <a href="/test">cloud</a> web content management system (WCMS) that is API driven with open-source user interfaces. Our software is built to automate the configuration, optimization, and distribution of digital content so marketing teams and developers can focus on creating excellent digital experiences.</p>\n<h2>What makes Zesty.io different?</h2>\n<p>We architected Zesty.io to meet the needs of any content usage such as a traditional website CMS, a Headless CMS API interface, a modern JamStack implementation, or a combination of solutions. This means Zesty.io can power content beyond websites into new digital mediums like smart devices, video game data, and mobile applications. As a cloud service, we are constantly improving our technology, often daily, with updates that positively affect all users and experiences built on the platform.</p>\n<p></p>\n<ul>\n<li>\n<p>Easy CMS</p>\n</li>\n<li>\n<p>Web Presentations</p>\n</li>\n<li>\n<p>Asset Sharing</p>\n</li>\n<li>\n<p>Fast Delivery</p>\n</li>\n<li>\n<p>Headless Applications</p>\n</li>\n</ul>\n<p><a href="https://8xbq19z1.manage.zesty.io/content-instance">Cloud Content Instance</a></p>\n<h2>The Core Technology Behind Zesty.io</h2>\n<p>Zesty.io was born in the cloud. The primary infrastructure lives on Google Cloud Platform and uses Fastly for edge caching. Core code of the system is built in Golang and NodeJS. User interfaces are built in React. Zesty.io was originally built in PHP with a custom Mootools user interface.</p>\n<hr>\n<p></p>\n<h2>Developer Documentation</h2>\n<p>Start exploring documentation on the left or jump to a URL above to read experience documentation.</p>\n<ul>\n<li>\n<p>​Instances API​</p>\n</li>\n<li>\n<p>​Accounts API​</p>\n</li>\n<li>\n<p>​Headless Zesty​</p>\n</li>\n</ul>\n<h2>About Zesty.io</h2>\n<p>Zesty.io was founded in 2010 by Randy Apuzzo and Andy Fleming in the basement of Randy\'s Little Italy loft in San Diego, California. Prior to that, Randy had been building custom websites and software for various businesses since 2004. Randy and Andy leveraged Randy\'s customer base to test and build different aspects of the platform out. In 2011, Andy left his full time job to work with Randy to build out Zesty.io, bootstrapped on the heels of their consulting work.</p>\n<p>Zesty.io\'s unique configuration allowed it to power content on both e-commerce and informational websites. The headless nature of Zesty.io enabled Randy and Andy to quickly transition customers from Wordpress, Joomla, and Magento. To continue bootstrapping development of the software, they partnered with marketing agencies in San Diego, Sacramento, and Las Vegas. Their partners relationships helped fuel development of Zesty.io until 2014, when they raised capital from San Diego based technology angel investors. During the capital raise, Gerry Widmer joined the team and set the platform\'s focus on servicing mid-market and enterprise needs. Zesty.io has doubled in size and usage every year since.</p>\n<p><img title="San Diego At Night" src="https://8xbq19z1.media.zestyio.com/San-Diego-At-Night.png"></p>\n<p></p>\n<p>1709819194221</p>\n<p data-pm-slice="0 0 []">66</p>\n<p>Zesty.io is a <a href="/test">cloud</a> web content management system (WCMS) that is API driven with open-source user interfaces. Our software is built to automate the configuration, optimization, and distribution of digital content so marketing teams and developers can focus on creating excellent digital experiences.</p>\n<h2>What makes Zesty.io different?</h2>\n<p>We architected Zesty.io to meet the needs of any content usage such as a traditional website CMS, a Headless CMS API interface, a modern JamStack implementation, or a combination of solutions. This means Zesty.io can power content beyond websites into new digital mediums like smart devices, video game data, and mobile applications. As a cloud service, we are constantly improving our technology, often daily, with updates that positively affect all users and experiences built on the platform.</p>\n<p></p>\n<ul>\n<li>\n<p>Easy CMS</p>\n</li>\n<li>\n<p>Web Presentations</p>\n</li>\n<li>\n<p>Asset Sharing</p>\n</li>\n<li>\n<p>Fast Delivery</p>\n</li>\n<li>\n<p>Headless Applications</p>\n</li>\n</ul>\n<p><a href="https://8xbq19z1.manage.zesty.io/content-instance">Cloud Content Instance</a></p>\n<h2>The Core Technology Behind Zesty.io</h2>\n<p>Zesty.io was born in the cloud. The primary infrastructure lives on Google Cloud Platform and uses Fastly for edge caching. Core code of the system is built in Golang and NodeJS. User interfaces are built in React. Zesty.io was originally built in PHP with a custom Mootools user interface.</p>\n<hr>\n<p></p>\n<h2>Developer Documentation</h2>\n<p>Start exploring documentation on the left or jump to a URL above to read experience documentation.</p>\n<ul>\n<li>\n<p>​Instances API​</p>\n</li>\n<li>\n<p>​Accounts API​</p>\n</li>\n<li>\n<p>​Headless Zesty​</p>\n</li>\n</ul>\n<h2>About Zesty.io</h2>\n<p>Zesty.io was founded in 2010 by Randy Apuzzo and Andy Fleming in the basement of Randy\'s Little Italy loft in San Diego, California. Prior to that, Randy had been building custom websites and software for various businesses since 2004. Randy and Andy leveraged Randy\'s customer base to test and build different aspects of the platform out. In 2011, Andy left his full time job to work with Randy to build out Zesty.io, bootstrapped on the heels of their consulting work.</p>\n<p>Zesty.io\'s unique configuration allowed it to power content on both e-commerce and informational websites. The headless nature of Zesty.io enabled Randy and Andy to quickly transition customers from Wordpress, Joomla, and Magento. To continue bootstrapping development of the software, they partnered with marketing agencies in San Diego, Sacramento, and Las Vegas. Their partners relationships helped fuel development of Zesty.io until 2014, when they raised capital from San Diego based technology angel investors. During the capital raise, Gerry Widmer joined the team and set the platform\'s focus on servicing mid-market and enterprise needs. Zesty.io has doubled in size and usage every year since.</p>\n<p><img title="San Diego At Night" src="https://8xbq19z1.media.zestyio.com/San-Diego-At-Night.png"></p>\n<p></p>\n<p>1709819194221</p>\n<p data-pm-slice="0 0 []">66</p>\n<p>Zesty.io is a <a href="/test">cloud</a> web content management system (WCMS) that is API driven with open-source user interfaces. Our software is built to automate the configuration, optimization, and distribution of digital content so marketing teams and developers can focus on creating excellent digital experiences.</p>\n<h2>What makes Zesty.io different?</h2>\n<p>We architected Zesty.io to meet the needs of any content usage such as a traditional website CMS, a Headless CMS API interface, a modern JamStack implementation, or a combination of solutions. This means Zesty.io can power content beyond websites into new digital mediums like smart devices, video game data, and mobile applications. As a cloud service, we are constantly improving our technology, often daily, with updates that positively affect all users and experiences built on the platform.</p>\n<p></p>\n<ul>\n<li>\n<p>Easy CMS</p>\n</li>\n<li>\n<p>Web Presentations</p>\n</li>\n<li>\n<p>Asset Sharing</p>\n</li>\n<li>\n<p>Fast Delivery</p>\n</li>\n<li>\n<p>Headless Applications</p>\n</li>\n</ul>\n<p><a href="https://8xbq19z1.manage.zesty.io/content-instance">Cloud Content Instance</a></p>\n<h2>The Core Technology Behind Zesty.io</h2>\n<p>Zesty.io was born in the cloud. The primary infrastructure lives on Google Cloud Platform and uses Fastly for edge caching. Core code of the system is built in Golang and NodeJS. User interfaces are built in React. Zesty.io was originally built in PHP with a custom Mootools user interface.</p>\n<hr>\n<p></p>\n<h2>Developer Documentation</h2>\n<p>Start exploring documentation on the left or jump to a URL above to read experience documentation.</p>\n<ul>\n<li>\n<p>​Instances API​</p>\n</li>\n<li>\n<p>​Accounts API​</p>\n</li>\n<li>\n<p>​Headless Zesty​</p>\n</li>\n</ul>\n<h2>About Zesty.io</h2>\n<p>Zesty.io was founded in 2010 by Randy Apuzzo and Andy Fleming in the basement of Randy\'s Little Italy loft in San Diego, California. Prior to that, Randy had been building custom websites and software for various businesses since 2004. Randy and Andy leveraged Randy\'s customer base to test and build different aspects of the platform out. In 2011, Andy left his full time job to work with Randy to build out Zesty.io, bootstrapped on the heels of their consulting work.</p>\n<p>Zesty.io\'s unique configuration allowed it to power content on both e-commerce and informational websites. The headless nature of Zesty.io enabled Randy and Andy to quickly transition customers from Wordpress, Joomla, and Magento. To continue bootstrapping development of the software, they partnered with marketing agencies in San Diego, Sacramento, and Las Vegas. Their partners relationships helped fuel development of Zesty.io until 2014, when they raised capital from San Diego based technology angel investors. During the capital raise, Gerry Widmer joined the team and set the platform\'s focus on servicing mid-market and enterprise needs. Zesty.io has doubled in size and usage every year since.</p>\n<p><img title="San Diego At Night" src="https://8xbq19z1.media.zestyio.com/San-Diego-At-Night.png"></p>\n<p></p>\n<p>1709819194221</p>\n<p data-pm-slice="0 0 []">66</p>\n<p>Zesty.io is a <a href="/test">cloud</a> web content management system (WCMS) that is API driven with open-source user interfaces. Our software is built to automate the configuration, optimization, and distribution of digital content so marketing teams and developers can focus on creating excellent digital experiences.</p>\n<h2>What makes Zesty.io different?</h2>\n<p>We architected Zesty.io to meet the needs of any content usage such as a traditional website CMS, a Headless CMS API interface, a modern JamStack implementation, or a combination of solutions. This means Zesty.io can power content beyond websites into new digital mediums like smart devices, video game data, and mobile applications. As a cloud service, we are constantly improving our technology, often daily, with updates that positively affect all users and experiences built on the platform.</p>\n<p></p>\n<ul>\n<li>\n<p>Easy CMS</p>\n</li>\n<li>\n<p>Web Presentations</p>\n</li>\n<li>\n<p>Asset Sharing</p>\n</li>\n<li>\n<p>Fast Delivery</p>\n</li>\n<li>\n<p>Headless Applications</p>\n</li>\n</ul>\n<p><a href="https://8xbq19z1.manage.zesty.io/content-instance">Cloud Content Instance</a></p>\n<h2>The Core Technology Behind Zesty.io</h2>\n<p>Zesty.io was born in the cloud. The primary infrastructure lives on Google Cloud Platform and uses Fastly for edge caching. Core code of the system is built in Golang and NodeJS. User interfaces are built in React. Zesty.io was originally built in PHP with a custom Mootools user interface.</p>\n<hr>\n<p></p>\n<h2>Developer Documentation</h2>\n<p>Start exploring documentation on the left or jump to a URL above to read experience documentation.</p>\n<ul>\n<li>\n<p>​Instances API​</p>\n</li>\n<li>\n<p>​Accounts API​</p>\n</li>\n<li>\n<p>​Headless Zesty​</p>\n</li>\n</ul>\n<h2>About Zesty.io</h2>\n<p>Zesty.io was founded in 2010 by Randy Apuzzo and Andy Fleming in the basement of Randy\'s Little Italy loft in San Diego, California. Prior to that, Randy had been building custom websites and software for various businesses since 2004. Randy and Andy leveraged Randy\'s customer base to test and build different aspects of the platform out. In 2011, Andy left his full time job to work with Randy to build out Zesty.io, bootstrapped on the heels of their consulting work.</p>\n<p>Zesty.io\'s unique configuration allowed it to power content on both e-commerce and informational websites. The headless nature of Zesty.io enabled Randy and Andy to quickly transition customers from Wordpress, Joomla, and Magento. To continue bootstrapping development of the software, they partnered with marketing agencies in San Diego, Sacramento, and Las Vegas. Their partners relationships helped fuel development of Zesty.io until 2014, when they raised capital from San Diego based technology angel investors. During the capital raise, Gerry Widmer joined the team and set the platform\'s focus on servicing mid-market and enterprise needs. Zesty.io has doubled in size and usage every year since.</p>\n<p><img title="San Diego At Night" src="https://8xbq19z1.media.zestyio.com/San-Diego-At-Night.png"></p>\n<p></p>\n<p>1709819194221</p>\n<p data-pm-slice="0 0 []">66</p>\n<p>Zesty.io is a <a href="/test">cloud</a> web content management system (WCMS) that is API driven with open-source user interfaces. Our software is built to automate the configuration, optimization, and distribution of digital content so marketing teams and developers can focus on creating excellent digital experiences.</p>\n<h2>What makes Zesty.io different?</h2>\n<p>We architected Zesty.io to meet the needs of any content usage such as a traditional website CMS, a Headless CMS API interface, a modern JamStack implementation, or a combination of solutions. This means Zesty.io can power content beyond websites into new digital mediums like smart devices, video game data, and mobile applications. As a cloud service, we are constantly improving our technology, often daily, with updates that positively affect all users and experiences built on the platform.</p>\n<p></p>\n<ul>\n<li>\n<p>Easy CMS</p>\n</li>\n<li>\n<p>Web Presentations</p>\n</li>\n<li>\n<p>Asset Sharing</p>\n</li>\n<li>\n<p>Fast Delivery</p>\n</li>\n<li>\n<p>Headless Applications</p>\n</li>\n</ul>\n<p><a href="https://8xbq19z1.manage.zesty.io/content-instance">Cloud Content Instance</a></p>\n<h2>The Core Technology Behind Zesty.io</h2>\n<p>Zesty.io was born in the cloud. The primary infrastructure lives on Google Cloud Platform and uses Fastly for edge caching. Core code of the system is built in Golang and NodeJS. User interfaces are built in React. Zesty.io was originally built in PHP with a custom Mootools user interface.</p>\n<hr>\n<p></p>\n<h2>Developer Documentation</h2>\n<p>Start exploring documentation on the left or jump to a URL above to read experience documentation.</p>\n<ul>\n<li>\n<p>​Instances API​</p>\n</li>\n<li>\n<p>​Accounts API​</p>\n</li>\n<li>\n<p>​Headless Zesty​</p>\n</li>\n</ul>\n<h2>About Zesty.io</h2>\n<p>Zesty.io was founded in 2010 by Randy Apuzzo and Andy Fleming in the basement of Randy\'s Little Italy loft in San Diego, California. Prior to that, Randy had been building custom websites and software for various businesses since 2004. Randy and Andy leveraged Randy\'s customer base to test and build different aspects of the platform out. In 2011, Andy left his full time job to work with Randy to build out Zesty.io, bootstrapped on the heels of their consulting work.</p>\n<p>Zesty.io\'s unique configuration allowed it to power content on both e-commerce and informational websites. The headless nature of Zesty.io enabled Randy and Andy to quickly transition customers from Wordpress, Joomla, and Magento. To continue bootstrapping development of the software, they partnered with marketing agencies in San Diego, Sacramento, and Las Vegas. Their partners relationships helped fuel development of Zesty.io until 2014, when they raised capital from San Diego based technology angel investors. During the capital raise, Gerry Widmer joined the team and set the platform\'s focus on servicing mid-market and enterprise needs. Zesty.io has doubled in size and usage every year since.</p>\n<p><img title="San Diego At Night" src="https://8xbq19z1.media.zestyio.com/San-Diego-At-Night.png"></p>\n<p></p>\n<p>1709819194221</p>\n<p data-pm-slice="0 0 []">66</p>\n<p>Zesty.io is a <a href="/test">cloud</a> web content management system (WCMS) that is API driven with open-source user interfaces. Our software is built to automate the configuration, optimization, and distribution of digital content so marketing teams and developers can focus on creating excellent digital experiences.</p>\n<h2>What makes Zesty.io different?</h2>\n<p>We architected Zesty.io to meet the needs of any content usage such as a traditional website CMS, a Headless CMS API interface, a modern JamStack implementation, or a combination of solutions. This means Zesty.io can power content beyond websites into new digital mediums like smart devices, video game data, and mobile applications. As a cloud service, we are constantly improving our technology, often daily, with updates that positively affect all users and experiences built on the platform.</p>\n<p></p>\n<ul>\n<li>\n<p>Easy CMS</p>\n</li>\n<li>\n<p>Web Presentations</p>\n</li>\n<li>\n<p>Asset Sharing</p>\n</li>\n<li>\n<p>Fast Delivery</p>\n</li>\n<li>\n<p>Headless Applications</p>\n</li>\n</ul>\n<p><a href="https://8xbq19z1.manage.zesty.io/content-instance">Cloud Content Instance</a></p>\n<h2>The Core Technology Behind Zesty.io</h2>\n<p>Zesty.io was born in the cloud. The primary infrastructure lives on Google Cloud Platform and uses Fastly for edge caching. Core code of the system is built in Golang and NodeJS. User interfaces are built in React. Zesty.io was originally built in PHP with a custom Mootools user interface.</p>\n<hr>\n<p></p>\n<h2>Developer Documentation</h2>\n<p>Start exploring documentation on the left or jump to a URL above to read experience documentation.</p>\n<ul>\n<li>\n<p>​Instances API​</p>\n</li>\n<li>\n<p>​Accounts API​</p>\n</li>\n<li>\n<p>​Headless Zesty​</p>\n</li>\n</ul>\n<h2>About Zesty.io</h2>\n<p>Zesty.io was founded in 2010 by Randy Apuzzo and Andy Fleming in the basement of Randy\'s Little Italy loft in San Diego, California. Prior to that, Randy had been building custom websites and software for various businesses since 2004. Randy and Andy leveraged Randy\'s customer base to test and build different aspects of the platform out. In 2011, Andy left his full time job to work with Randy to build out Zesty.io, bootstrapped on the heels of their consulting work.</p>\n<p>Zesty.io\'s unique configuration allowed it to power content on both e-commerce and informational websites. The headless nature of Zesty.io enabled Randy and Andy to quickly transition customers from Wordpress, Joomla, and Magento. To continue bootstrapping development of the software, they partnered with marketing agencies in San Diego, Sacramento, and Las Vegas. Their partners relationships helped fuel development of Zesty.io until 2014, when they raised capital from San Diego based technology angel investors. During the capital raise, Gerry Widmer joined the team and set the platform\'s focus on servicing mid-market and enterprise needs. Zesty.io has doubled in size and usage every year since.</p>\n<p><img title="San Diego At Night" src="https://8xbq19z1.media.zestyio.com/San-Diego-At-Night.png"></p>\n<p></p>\n<p>1709819194221</p>\n<p data-pm-slice="0 0 []">66</p>\n<p>Zesty.io is a <a href="/test">cloud</a> web content management system (WCMS) that is API driven with open-source user interfaces. Our software is built to automate the configuration, optimization, and distribution of digital content so marketing teams and developers can focus on creating excellent digital experiences.</p>\n<h2>What makes Zesty.io different?</h2>\n<p>We architected Zesty.io to meet the needs of any content usage such as a traditional website CMS, a Headless CMS API interface, a modern JamStack implementation, or a combination of solutions. This means Zesty.io can power content beyond websites into new digital mediums like smart devices, video game data, and mobile applications. As a cloud service, we are constantly improving our technology, often daily, with updates that positively affect all users and experiences built on the platform.</p>\n<p></p>\n<ul>\n<li>\n<p>Easy CMS</p>\n</li>\n<li>\n<p>Web Presentations</p>\n</li>\n<li>\n<p>Asset Sharing</p>\n</li>\n<li>\n<p>Fast Delivery</p>\n</li>\n<li>\n<p>Headless Applications</p>\n</li>\n</ul>\n<p><a href="https://8xbq19z1.manage.zesty.io/content-instance">Cloud Content Instance</a></p>\n<h2>The Core Technology Behind Zesty.io</h2>\n<p>Zesty.io was born in the cloud. The primary infrastructure lives on Google Cloud Platform and uses Fastly for edge caching. Core code of the system is built in Golang and NodeJS. User interfaces are built in React. Zesty.io was originally built in PHP with a custom Mootools user interface.</p>\n<hr>\n<p></p>\n<h2>Developer Documentation</h2>\n<p>Start exploring documentation on the left or jump to a URL above to read experience documentation.</p>\n<ul>\n<li>\n<p>​Instances API​</p>\n</li>\n<li>\n<p>​Accounts API​</p>\n</li>\n<li>\n<p>​Headless Zesty​</p>\n</li>\n</ul>\n<h2>About Zesty.io</h2>\n<p>Zesty.io was founded in 2010 by Randy Apuzzo and Andy Fleming in the basement of Randy\'s Little Italy loft in San Diego, California. Prior to that, Randy had been building custom websites and software for various businesses since 2004. Randy and Andy leveraged Randy\'s customer base to test and build different aspects of the platform out. In 2011, Andy left his full time job to work with Randy to build out Zesty.io, bootstrapped on the heels of their consulting work.</p>\n<p>Zesty.io\'s unique configuration allowed it to power content on both e-commerce and informational websites. The headless nature of Zesty.io enabled Randy and Andy to quickly transition customers from Wordpress, Joomla, and Magento. To continue bootstrapping development of the software, they partnered with marketing agencies in San Diego, Sacramento, and Las Vegas. Their partners relationships helped fuel development of Zesty.io until 2014, when they raised capital from San Diego based technology angel investors. During the capital raise, Gerry Widmer joined the team and set the platform\'s focus on servicing mid-market and enterprise needs. Zesty.io has doubled in size and usage every year since.</p>\n<p><img title="San Diego At Night" src="https://8xbq19z1.media.zestyio.com/San-Diego-At-Night.png"></p>\n<p></p>\n<p>1709819194221</p>\n<p data-pm-slice="0 0 []">66</p>\n<p>Zesty.io is a <a href="/test">cloud</a> web content management system (WCMS) that is API driven with open-source user interfaces. Our software is built to automate the configuration, optimization, and distribution of digital content so marketing teams and developers can focus on creating excellent digital experiences.</p>\n<h2>What makes Zesty.io different?</h2>\n<p>We architected Zesty.io to meet the needs of any content usage such as a traditional website CMS, a Headless CMS API interface, a modern JamStack implementation, or a combination of solutions. This means Zesty.io can power content beyond websites into new digital mediums like smart devices, video game data, and mobile applications. As a cloud service, we are constantly improving our technology, often daily, with updates that positively affect all users and experiences built on the platform.</p>\n<p></p>\n<ul>\n<li>\n<p>Easy CMS</p>\n</li>\n<li>\n<p>Web Presentations</p>\n</li>\n<li>\n<p>Asset Sharing</p>\n</li>\n<li>\n<p>Fast Delivery</p>\n</li>\n<li>\n<p>Headless Applications</p>\n</li>\n</ul>\n<p><a href="https://8xbq19z1.manage.zesty.io/content-instance">Cloud Content Instance</a></p>\n<h2>The Core Technology Behind Zesty.io</h2>\n<p>Zesty.io was born in the cloud. The primary infrastructure lives on Google Cloud Platform and uses Fastly for edge caching. Core code of the system is built in Golang and NodeJS. User interfaces are built in React. Zesty.io was originally built in PHP with a custom Mootools user interface.</p>\n<hr>\n<p></p>\n<h2>Developer Documentation</h2>\n<p>Start exploring documentation on the left or jump to a URL above to read experience documentation.</p>\n<ul>\n<li>\n<p>​Instances API​</p>\n</li>\n<li>\n<p>​Accounts API​</p>\n</li>\n<li>\n<p>​Headless Zest</p>\n</li>\n</ul>\n<ul>\n<li>\n<p>​Headless Zesty​</p>\n</li>\n</ul>\n<h2>About Zesty.io</h2>\n<p>Zesty.io was founded in 2010 by Randy Apuzzo and Andy Fleming in the basement of Randy\'s Little Italy loft in San Diego, California. Prior to that, Randy had been building custom websites and software for various businesses since 2004. Randy and Andy leveraged Randy\'s customer base to test and build different aspects of the platform out. In 2011, Andy left his full time job to work with Randy to build out Zesty.io, bootstrapped on the heels of their consulting work.</p>\n<p>Zesty.io\'s unique configuration allowed it to power content on both e-commerce and informational websites. The headless nature of Zesty.io enabled Randy and Andy to quickly transition customers from Wordpress, Joomla, and Magento. To continue bootstrapping development of the software, they partnered with marketing agencies in San Diego, Sacramento, and Las Vegas. Their partners relationships helped fuel development of Zesty.io until 2014, when they raised capital from San Diego based technology angel investors. During the capital raise, Gerry Widmer joined the team and set the platform\'s focus on servicing mid-market and enterprise needs. Zesty.io has doubled in size and usage every year since.</p>\n<p><img title="San Diego At Night" src="https://8xbq19z1.media.zestyio.com/San-Diego-At-Night.png"></p>\n<p></p>\n<p>1709819194221</p>\n<p data-pm-slice="0 0 []">66</p>\n<p>Zesty.io is a <a href="/test">cloud</a> web content management system (WCMS) that is API driven with open-source user interfaces. Our software is built to automate the configuration, optimization, and distribution of digital content so marketing teams and developers can focus on creating excellent digital experiences.</p>\n<h2>What makes Zesty.io different?</h2>\n<p>We architected Zesty.io to meet the needs of any content usage such as a traditional website CMS, a Headless CMS API interface, a modern JamStack implementation, or a combination of solutions. This means Zesty.io can power content beyond websites into new digital mediums like smart devices,</p>',
+    wysiwyg_basic: "<h1>Hello world!</h1>",
     images: "3-7623d24-ghfnj",
     link: "http://www.zesty.pw/1709819194221",
     currency: "10000.00",
@@ -58,6 +58,332 @@ const data = [
     dropdown: "custom_option_two",
     sort: 150,
     uuid: "731a0b2f-e3f9-44bf-b142-59488c0834e9",
+  },
+];
+const dummyFields: Partial<ContentModelField>[] = [
+  {
+    ZUID: "12-6d41d0-n10vtc",
+    contentModelZUID: "6-556370-8sh47g",
+    name: "wysiwyg_basic",
+    label: "WYSIWYG Basic",
+    description: null,
+    datatype: "wysiwyg_basic",
+    sort: 0,
+    required: true,
+    relationship: null,
+    options: null,
+    fieldOptions: null,
+    datatypeOptions: null,
+    settings: {
+      list: true,
+      options: {},
+    },
+    relatedModelZUID: null,
+    relatedFieldZUID: null,
+    createdAt: "2018-09-20T20:46:51Z",
+    updatedAt: "2023-01-03T03:15:29Z",
+  },
+  {
+    ZUID: "12-13d590-9v2nr2",
+    contentModelZUID: "6-556370-8sh47g",
+    name: "text_field",
+    label: "Text",
+    description:
+      "dasdsadsaddasdsadsaddasdsadsaddasdsadsaddasdsadsaddasdsadsaddasdsadsaddasdsadsaddasdsadsaddasdsadsaddasdsadsaddasdsadsaddasdsadsaddasdsadsaddasdsadsaddasdsadsad",
+    datatype: "text",
+    sort: 1,
+    required: true,
+    relationship: null,
+    options: null,
+    fieldOptions: null,
+    datatypeOptions: null,
+    settings: {
+      list: true,
+      tooltip: '<a href="test">test</a>',
+    },
+    relatedModelZUID: null,
+    relatedFieldZUID: null,
+    createdAt: "2018-09-20T20:46:38Z",
+    updatedAt: "2023-12-06T01:30:35Z",
+  },
+  {
+    ZUID: "12-796b3c-8n93rc",
+    contentModelZUID: "6-556370-8sh47g",
+    name: "markdown",
+    label: "Markdown",
+    description: null,
+    datatype: "markdown",
+    sort: 4,
+    required: null,
+    relationship: null,
+    options: null,
+    fieldOptions: null,
+    datatypeOptions: null,
+    settings: {
+      list: false,
+      options: {},
+    },
+    relatedModelZUID: null,
+    relatedFieldZUID: null,
+    createdAt: "2018-09-20T20:58:11Z",
+    updatedAt: "2023-01-03T03:15:29Z",
+  },
+  {
+    ZUID: "12-b5d7b4-n81s15",
+    contentModelZUID: "6-556370-8sh47g",
+    name: "textarea",
+    label: "Textarea",
+    description: "test test",
+    datatype: "textarea",
+    sort: 5,
+    required: null,
+    relationship: null,
+    options: null,
+    fieldOptions: null,
+    datatypeOptions: null,
+    settings: {
+      list: false,
+      options: {},
+      tooltip: "test",
+    },
+    relatedModelZUID: null,
+    relatedFieldZUID: null,
+    createdAt: "2018-09-20T20:47:30Z",
+    updatedAt: "2023-01-03T03:15:29Z",
+  },
+  {
+    ZUID: "12-1c94d4-pg8dvx",
+    contentModelZUID: "6-556370-8sh47g",
+    name: "images",
+    label: "Images",
+    description: null,
+    datatype: "images",
+    sort: 7,
+    required: null,
+    relationship: null,
+    options: null,
+    fieldOptions: null,
+    datatypeOptions: "limit:10;group_id:2-7344879-bqif7;",
+    settings: {
+      group_id: "0",
+      limit: 10,
+      list: false,
+      options: {},
+    },
+    relatedModelZUID: null,
+    relatedFieldZUID: null,
+    createdAt: "2018-09-20T20:47:07Z",
+    updatedAt: "2023-01-03T03:15:29Z",
+  },
+  {
+    ZUID: "12-f3152c-kjz88l",
+    contentModelZUID: "6-556370-8sh47g",
+    name: "dropdown",
+    label: "Dropdown",
+    description: null,
+    datatype: "dropdown",
+    sort: 10,
+    required: null,
+    relationship: null,
+    options:
+      "custom_option_one:Custom Option One;custom_option_two:Custom Option Two",
+    fieldOptions: null,
+    datatypeOptions: null,
+    settings: {
+      list: false,
+      options: {
+        custom_option_one: "Custom Option One",
+        custom_option_two: "Custom Option Two",
+      },
+    },
+    relatedModelZUID: null,
+    relatedFieldZUID: null,
+    createdAt: "2018-09-20T20:50:14Z",
+    updatedAt: "2023-01-03T03:15:29Z",
+  },
+  {
+    ZUID: "12-8ed554-nxmbw8",
+    contentModelZUID: "6-556370-8sh47g",
+    name: "url_link",
+    label: "URL / Link",
+    description: null,
+    datatype: "link",
+    sort: 11,
+    required: null,
+    relationship: null,
+    options: null,
+    fieldOptions: null,
+    datatypeOptions: null,
+    settings: {
+      list: false,
+      options: {},
+    },
+    relatedModelZUID: null,
+    relatedFieldZUID: null,
+    createdAt: "2018-09-20T20:51:04Z",
+    updatedAt: "2023-01-03T03:15:29Z",
+  },
+  {
+    ZUID: "12-575f7c-trw1w3",
+    contentModelZUID: "6-556370-8sh47g",
+    name: "yes_no",
+    label: "YES / NO",
+    description: null,
+    datatype: "yes_no",
+    sort: 13,
+    required: false,
+    relationship: null,
+    options: "1:Yes;0:No",
+    fieldOptions: null,
+    datatypeOptions: null,
+    settings: {
+      list: true,
+      options: {
+        "0": "No",
+        "1": "Yes",
+      },
+    },
+    relatedModelZUID: null,
+    relatedFieldZUID: null,
+    createdAt: "2018-09-20T20:53:12Z",
+    updatedAt: "2023-11-28T20:55:28Z",
+  },
+  {
+    ZUID: "12-8178cc-z37vq1",
+    contentModelZUID: "6-556370-8sh47g",
+    name: "yes_no_with_custom_values",
+    label: "YES / NO with Custom Values",
+    description: null,
+    datatype: "yes_no",
+    sort: 14,
+    required: null,
+    relationship: null,
+    options: "1:Custom One;0:Custom Two",
+    fieldOptions: null,
+    datatypeOptions: null,
+    settings: {
+      list: false,
+      options: {
+        "0": "Custom Two",
+        "1": "Custom One",
+      },
+    },
+    relatedModelZUID: null,
+    relatedFieldZUID: null,
+    createdAt: "2018-09-20T20:54:03Z",
+    updatedAt: "2023-01-03T03:15:29Z",
+  },
+  {
+    ZUID: "12-9b96ec-tll2gn",
+    contentModelZUID: "6-556370-8sh47g",
+    name: "number",
+    label: "Number",
+    description: null,
+    datatype: "number",
+    sort: 16,
+    required: true,
+    relationship: null,
+    options: null,
+    fieldOptions: null,
+    datatypeOptions: null,
+    settings: {
+      defaultValue: 0,
+      list: true,
+      options: {},
+    },
+    relatedModelZUID: null,
+    relatedFieldZUID: null,
+    createdAt: "2018-09-20T20:54:49Z",
+    updatedAt: "2025-04-22T21:58:24Z",
+  },
+  {
+    ZUID: "12-b35c68-jd1s8s",
+    contentModelZUID: "6-556370-8sh47g",
+    name: "currency",
+    label: "Currency",
+    description: null,
+    datatype: "currency",
+    sort: 17,
+    required: null,
+    relationship: null,
+    options: null,
+    fieldOptions: null,
+    datatypeOptions: null,
+    settings: {
+      list: false,
+      options: {},
+    },
+    relatedModelZUID: null,
+    relatedFieldZUID: null,
+    createdAt: "2018-09-20T20:55:10Z",
+    updatedAt: "2023-01-03T03:15:29Z",
+  },
+  {
+    ZUID: "12-eb8684-zwq6hk",
+    contentModelZUID: "6-556370-8sh47g",
+    name: "color",
+    label: "Color",
+    description: null,
+    datatype: "color",
+    sort: 18,
+    required: null,
+    relationship: null,
+    options: null,
+    fieldOptions: null,
+    datatypeOptions: null,
+    settings: {
+      list: false,
+      options: {},
+    },
+    relatedModelZUID: null,
+    relatedFieldZUID: null,
+    createdAt: "2018-09-20T20:56:54Z",
+    updatedAt: "2023-01-03T03:15:29Z",
+  },
+  {
+    ZUID: "12-f72938-8n8vqs",
+    contentModelZUID: "6-556370-8sh47g",
+    name: "uuid",
+    label: "UUID",
+    description: null,
+    datatype: "uuid",
+    sort: 19,
+    required: null,
+    relationship: null,
+    options: null,
+    fieldOptions: null,
+    datatypeOptions: null,
+    settings: {
+      list: false,
+      options: {},
+    },
+    relatedModelZUID: null,
+    relatedFieldZUID: null,
+    createdAt: "2018-09-20T20:57:22Z",
+    updatedAt: "2023-01-03T03:15:29Z",
+  },
+  {
+    ZUID: "12-4e1914-kcqznz",
+    contentModelZUID: "6-556370-8sh47g",
+    name: "sort",
+    label: "Sort",
+    description: null,
+    datatype: "sort",
+    sort: 20,
+    required: null,
+    relationship: null,
+    options: null,
+    fieldOptions: null,
+    datatypeOptions: null,
+    settings: {
+      defaultValue: null,
+      list: true,
+      options: {},
+    },
+    relatedModelZUID: null,
+    relatedFieldZUID: null,
+    createdAt: "2018-09-20T20:57:56Z",
+    updatedAt: "2025-04-22T16:50:36Z",
   },
 ];
 
@@ -172,33 +498,55 @@ const fieldTypeColumnConfigMap: Record<string, Partial<GridColDef>> = {
 
 type FieldTypeRepeaterProps = {
   field: ContentModelField;
+  value: string;
 };
-export const FieldTypeRepeater = ({ field }: FieldTypeRepeaterProps) => {
-  // TODO: For testing only. Dummy data
-  const [dummyRows, setDummyRows] = useState(data);
+export const FieldTypeRepeater = ({ field, value }: FieldTypeRepeaterProps) => {
+  const dispatch = useDispatch();
+  const [rows, setRows] = useState([]);
   const apiRef = useGridApiRef();
   const [rowSelectionModel, setRowSelectionModel] =
     useState<GridRowSelectionModel>([]);
   const [rowDialog, setRowDialog] = useState<"add" | "edit" | null>(null);
 
-  // TODO: Need to copy column config on ItemListTable
+  useEffect(() => {
+    if (!value) return;
+
+    try {
+      const parsedRows = JSON.parse(value);
+
+      if (Array.isArray(parsedRows)) {
+        const processedRows = parsedRows.map((row, index) => ({
+          ...row,
+          id: index,
+        }));
+
+        setRows(processedRows);
+      } else {
+        dispatch(
+          notify({
+            kind: "error",
+            message: `Invalid data format for ${field.label}`,
+          })
+        );
+      }
+    } catch (err) {
+      dispatch(
+        notify({
+          kind: "error",
+          message: `Encountered an error while parsing the ${field.label} data`,
+        })
+      );
+    }
+  }, [value]);
+
   const baseColumns: GridColDef[] = useMemo(() => {
-    // FIXME: Just render text for other components using the stage changes provider
-    return Object.keys(data[0]).map((key) => ({
+    // TODO: Needs to be aligned with the field data once BE is ready
+    return Object.keys(dummyFieldValues[0]).map((key) => ({
       field: key,
       headerName: key,
       ...fieldTypeColumnConfigMap[key],
     }));
-  }, [data]);
-
-  const rows = useMemo(
-    () =>
-      dummyRows.map((item, index) => ({
-        ...item,
-        id: index,
-      })),
-    [dummyRows]
-  );
+  }, [dummyFieldValues]);
 
   const columns: GridColDef[] = useMemo(() => {
     const hasSelectedRows = rowSelectionModel.length > 0;
@@ -244,7 +592,7 @@ export const FieldTypeRepeater = ({ field }: FieldTypeRepeaterProps) => {
           <IconButton
             onClick={() => {
               // Action for deletion can be added here
-              setDummyRows((prev) =>
+              setRows((prev) =>
                 prev.filter((_, index) => !rowSelectionModel.includes(index))
               );
               setRowSelectionModel([]);
@@ -315,7 +663,12 @@ export const FieldTypeRepeater = ({ field }: FieldTypeRepeaterProps) => {
         </AutoSizer>
       </Box>
       {rowDialog && (
-        <RowDialog onClose={() => setRowDialog(null)} name={field.label} />
+        <RowDialog
+          ZUID={field.ZUID}
+          onClose={() => setRowDialog(null)}
+          name={field.label}
+          fields={dummyFields}
+        />
       )}
     </>
   );

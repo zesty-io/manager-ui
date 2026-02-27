@@ -790,7 +790,7 @@ export const Field = memo(
       case "repeater_field":
         return (
           <FieldShell settings={fieldData} errors={errors}>
-            <FieldTypeRepeater field={fieldData} />
+            <FieldTypeRepeater field={fieldData} value={value} />
           </FieldShell>
         );
 
@@ -803,3 +803,5 @@ export const Field = memo(
     }
   }
 );
+
+Field.displayName = "Field";

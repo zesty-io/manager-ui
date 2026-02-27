@@ -10,12 +10,16 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/Add";
+import { ContentModelField } from "shell/services/types";
+import { SubField } from "./SubField";
 
 type RowDialogProps = {
   onClose: () => void;
   name: string;
+  fields: Partial<ContentModelField>[];
+  ZUID: string;
 };
-export const RowDialog = ({ onClose, name }: RowDialogProps) => {
+export const RowDialog = ({ onClose, name, fields }: RowDialogProps) => {
   return (
     <Dialog
       open
@@ -50,7 +54,15 @@ export const RowDialog = ({ onClose, name }: RowDialogProps) => {
           },
         }}
       >
-        Test
+        {fields?.map((field) => (
+          <SubField
+            field={field as ContentModelField}
+            value=""
+            onChange={() => {}}
+            errors={{}}
+            repeaterFieldItemZUID=""
+          />
+        ))}
       </DialogContent>
       <DialogActions
         sx={{

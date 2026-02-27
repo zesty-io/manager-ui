@@ -198,7 +198,7 @@ export interface FieldSettings {
   limit?: number;
   list: boolean;
   tooltip?: string;
-  defaultValue?: string;
+  defaultValue?: string | number;
   minCharLimit?: number;
   maxCharLimit?: number;
   regexMatchPattern?: string;
