@@ -13,6 +13,7 @@ import {
   Paper,
   Skeleton,
   TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import AutoSizer from "react-virtualized-auto-sizer";
@@ -20,7 +21,7 @@ import {
   List,
   CellComponentProps as ListChildComponentProps,
 } from "react-window";
-import { Check, Close, DataObject, Search } from "@mui/icons-material";
+import { Check, Close, DataObject, Search, Refresh } from "@mui/icons-material";
 import {
   IntegrationFieldConfig,
   IntegrationTypes,
@@ -31,7 +32,7 @@ import {
   DISPLAY_OPTIONS_CONFIG,
   LOADING_DATA,
 } from "../configs";
-import { getKeyValue } from "../utils";
+import { findUniqueIdKey, getKeyValue } from "../utils";
 import DisplayCard from "../components/DisplayCard";
 import { NoResults } from "../../../../apps/schema/src/app/components/NoResults";
 import JsonViewer from "../components/JsonViewer";
@@ -46,6 +47,11 @@ interface ItemSelectionDialogProps {
   value: ApiDataWithIdProps[];
   config: IntegrationFieldConfig;
   onSave: (value: ApiDataWithIdProps[]) => void;
+}
+
+interface SyncItem {
+  id: string | number;
+  data: ApiDataWithIdProps;
 }
 
 const getItemRowHeight = (
@@ -67,6 +73,9 @@ type RenderRowDataProps = {
   onSelect: (item: ApiDataProps) => void;
   maxItems?: number;
   onView: (item: ApiDataProps) => void;
+  uniqueIdKey: string | null;
+  onSync: (id: string | number, data: ApiDataProps) => void;
+  forSyncIds: (string | number)[];
 };
 
 type RenderRowProps = Omit<ListChildComponentProps, "data"> & {
@@ -85,11 +94,17 @@ const RenderRow = ({ data, index, style }: RenderRowProps) => {
     onSelect,
     maxItems,
     onView,
+    uniqueIdKey,
+    onSync,
+    forSyncIds,
   } = data;
   const item = items[index];
   const selectedIds = selectedItems.map((item) => item?._itemId);
   const limitReached = selectedIds.length >= maxItems;
   const isSelected = selectedIds.includes(item?._itemId);
+  const selectedUniqueIds = selectedItems.map((item) => item?.[uniqueIdKey]);
+  const itemUniqueId = item?.[uniqueIdKey];
+  const hasUpdates = !isSelected && selectedUniqueIds?.includes(itemUniqueId);
 
   const pathData = {
     heading: getKeyValue(item, keyPaths?.heading),
@@ -132,11 +147,13 @@ const RenderRow = ({ data, index, style }: RenderRowProps) => {
           borderBottom: "1px solid",
           borderColor: "border",
           ...borderRadius,
-          ...(isSelected && {
-            backgroundColor: (theme) => alpha(theme.palette.primary.main, 0.04),
-            boxShadow: (theme) =>
-              `0px -2px 0px 0px ${theme.palette.primary.light} inset`,
-          }),
+          ...(!loading &&
+            (isSelected || hasUpdates) && {
+              backgroundColor: (theme) =>
+                alpha(theme.palette.primary.main, 0.04),
+              boxShadow: (theme) =>
+                `0px -2px 0px 0px ${theme.palette.primary.light} inset`,
+            }),
         }}
       >
         <Box px={1}>
@@ -150,7 +167,7 @@ const RenderRow = ({ data, index, style }: RenderRowProps) => {
           ) : (
             <Checkbox
               disabled={!isSelected && limitReached}
-              checked={isSelected}
+              checked={isSelected || hasUpdates}
               onChange={() => onSelect(item)}
               sx={{ color: "grey.500" }}
             />
@@ -165,7 +182,24 @@ const RenderRow = ({ data, index, style }: RenderRowProps) => {
           {...pathData}
         />
 
-        <Box px={2}>
+        <Box
+          px={2}
+          display="flex"
+          flexDirection="row"
+          justifyContent="space-between"
+          alignItems="center"
+        >
+          {!loading && !forSyncIds?.includes(itemUniqueId) && !!hasUpdates && (
+            <Tooltip title="Resync Values">
+              <IconButton
+                color="primary"
+                size="small"
+                onClick={() => onSync(itemUniqueId, item)}
+              >
+                <Refresh />
+              </IconButton>
+            </Tooltip>
+          )}
           <IconButton
             size="small"
             sx={{ borderRadius: 1, color: "action.active" }}
@@ -205,6 +239,9 @@ const ItemSelectionDialog = ({
 
   const displayConfig = DISPLAY_OPTIONS_CONFIG?.[config?.type] || [];
   const keyPaths = config?.keyPaths;
+  const uniqueIdKey = findUniqueIdKey(items);
+  const [forSync, setForSync] = useState<SyncItem[]>([]);
+  const forSyncIds = forSync?.map((sync) => sync?.id);
 
   const handleSelect = (item: ApiDataWithIdProps) => {
     setSelectedItems((prev) => {
@@ -214,9 +251,33 @@ const ItemSelectionDialog = ({
         : [...prev, item];
     });
   };
+  const handleSync = (id: string | number, data: ApiDataWithIdProps) => {
+    setForSync((prev: SyncItem[]) => {
+      const existingIndex = prev.findIndex((item: SyncItem) => item.id === id);
+
+      if (existingIndex !== -1) {
+        return [
+          ...prev.slice(0, existingIndex),
+          { id, data },
+          ...prev.slice(existingIndex + 1),
+        ];
+      }
+
+      return [...prev, { id, data }];
+    });
+  };
 
   const handleSave = () => {
-    onSave(selectedItems);
+    const updatedItems = !forSync?.length
+      ? selectedItems
+      : selectedItems.map((item) => {
+          const syncItem = forSync.find(
+            (sync) => sync.id === item?.[uniqueIdKey]
+          );
+          return syncItem?.data || item;
+        });
+
+    onSave(updatedItems);
     onClose();
   };
 
@@ -255,6 +316,9 @@ const ItemSelectionDialog = ({
     maxItems,
     onView: handleView,
     loading: loading,
+    uniqueIdKey,
+    onSync: handleSync,
+    forSyncIds,
   };
 
   return (
@@ -331,7 +395,6 @@ const ItemSelectionDialog = ({
           p: 0,
           bgcolor: "grey.50",
           position: "relative",
-          // minHeight: "600px",
         }}
       >
         <Box
