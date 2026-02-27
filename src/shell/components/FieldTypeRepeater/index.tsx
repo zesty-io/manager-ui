@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import {
   DataGridPro,
+  GRID_REORDER_COL_DEF,
   GridColDef,
   GridRenderCellParams,
   GridRowSelectionModel,
@@ -9,6 +10,8 @@ import {
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
+import DragIndicatorRoundedIcon from "@mui/icons-material/DragIndicatorRounded";
+
 import AutoSizer, { Size } from "react-virtualized-auto-sizer";
 import { AddRowFooter } from "./AddRowFooter";
 import {
@@ -518,6 +521,7 @@ export const FieldTypeRepeater = ({ field, value }: FieldTypeRepeaterProps) => {
         const processedRows = parsedRows.map((row, index) => ({
           ...row,
           id: index,
+          __reorder__: Object.values(row)[0],
         }));
 
         setRows(processedRows);
@@ -551,7 +555,7 @@ export const FieldTypeRepeater = ({ field, value }: FieldTypeRepeaterProps) => {
   const columns: GridColDef[] = useMemo(() => {
     const hasSelectedRows = rowSelectionModel.length > 0;
 
-    return baseColumns.map((col) => ({
+    const mappedColumns = baseColumns.map((col) => ({
       ...col,
       headerName: hasSelectedRows ? "" : col.headerName,
       renderHeader: hasSelectedRows
@@ -560,6 +564,15 @@ export const FieldTypeRepeater = ({ field, value }: FieldTypeRepeaterProps) => {
       disableColumnMenu: hasSelectedRows ? true : col.disableColumnMenu,
       sortable: hasSelectedRows ? false : col.sortable,
     }));
+
+    return [
+      {
+        ...GRID_REORDER_COL_DEF,
+        width: 28,
+        minWidth: 28,
+      },
+      ...mappedColumns,
+    ];
   }, [baseColumns, rowSelectionModel]);
 
   const calculatedHeight = useMemo(() => {
@@ -611,6 +624,7 @@ export const FieldTypeRepeater = ({ field, value }: FieldTypeRepeaterProps) => {
         <AutoSizer>
           {({ width, height }: Size) => (
             <DataGridPro
+              rowReordering
               rows={rows}
               apiRef={apiRef}
               columns={columns}
@@ -619,7 +633,7 @@ export const FieldTypeRepeater = ({ field, value }: FieldTypeRepeaterProps) => {
               rowHeight={ROW_HEIGHT}
               columnHeaderHeight={HEADER_HEIGHT}
               pinnedColumns={{
-                left: ["__check__"],
+                left: ["__reorder__", "__check__"],
               }}
               rowSelectionModel={rowSelectionModel}
               onRowSelectionModelChange={(newModel) =>
@@ -635,6 +649,9 @@ export const FieldTypeRepeater = ({ field, value }: FieldTypeRepeaterProps) => {
                     onAddRow={() => setRowDialog("add")}
                   />
                 ),
+                rowReorderIcon: () => (
+                  <DragIndicatorRoundedIcon fontSize="small" color="action" />
+                ),
               }}
               sx={{
                 width,
@@ -642,6 +659,14 @@ export const FieldTypeRepeater = ({ field, value }: FieldTypeRepeaterProps) => {
                 backgroundColor: "common.white",
 
                 "& .MuiDataGrid-columnHeaderCheckbox": {
+                  padding: 0,
+                },
+
+                "& .MuiDataGrid-columnHeaderReorder": {
+                  padding: 0,
+                },
+
+                "& .MuiDataGrid-rowReorderCellContainer": {
                   padding: 0,
                 },
 
