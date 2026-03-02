@@ -502,10 +502,15 @@ const fieldTypeColumnConfigMap: Record<string, Partial<GridColDef>> = {
 type FieldTypeRepeaterProps = {
   field: ContentModelField;
   value: string;
+  onChange: (value: string) => void;
 };
-export const FieldTypeRepeater = ({ field, value }: FieldTypeRepeaterProps) => {
+export const FieldTypeRepeater = ({
+  field,
+  value,
+  onChange,
+}: FieldTypeRepeaterProps) => {
   const dispatch = useDispatch();
-  const [rows, setRows] = useState([]);
+  const [rows, setRows] = useState<Record<string, any>[]>([]);
   const apiRef = useGridApiRef();
   const [rowSelectionModel, setRowSelectionModel] =
     useState<GridRowSelectionModel>([]);
@@ -583,6 +588,33 @@ export const FieldTypeRepeater = ({ field, value }: FieldTypeRepeaterProps) => {
       HEADER_HEIGHT + visibleRows * ROW_HEIGHT + FOOTER_HEIGHT + hScrollBuffer
     );
   }, [rows.length]);
+
+  const handleChange = (row: Record<string, any>) => {
+    console.log("new row data", row);
+    try {
+      const parsedRows = JSON.parse(value);
+
+      if (Array.isArray(parsedRows)) {
+        const updateValue = [...parsedRows, row];
+
+        onChange(JSON.stringify(updateValue));
+      } else {
+        dispatch(
+          notify({
+            kind: "error",
+            message: `Invalid data format for ${field.label}`,
+          })
+        );
+      }
+    } catch (err) {
+      dispatch(
+        notify({
+          kind: "error",
+          message: `Encountered an error while parsing the ${field.label} data`,
+        })
+      );
+    }
+  };
 
   return (
     <>
@@ -693,6 +725,7 @@ export const FieldTypeRepeater = ({ field, value }: FieldTypeRepeaterProps) => {
           onClose={() => setRowDialog(null)}
           name={field.label}
           fields={dummyFields}
+          onSubmit={handleChange}
         />
       )}
     </>

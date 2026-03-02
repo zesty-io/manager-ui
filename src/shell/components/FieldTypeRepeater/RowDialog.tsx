@@ -19,17 +19,24 @@ import { MaxLengths } from "../../../apps/content-editor/src/app/components/Edit
 
 type RowDialogProps = {
   onClose: () => void;
+  onSubmit: (data: Record<string, any>) => void;
   name: string;
   fields: Partial<ContentModelField>[];
   ZUID: string;
 };
-export const RowDialog = ({ onClose, name, fields, ZUID }: RowDialogProps) => {
+export const RowDialog = ({
+  onClose,
+  name,
+  fields,
+  ZUID,
+  onSubmit,
+}: RowDialogProps) => {
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [formErrors, setFormErrors] = useState<Record<string, Error>>({});
+  const [resetKey, setResetKey] = useState(0);
 
-  // Set default values for the fields
-  useEffect(() => {
-    if (!fields || !fields.length) return;
+  const getInitialFormData = useCallback(() => {
+    if (!fields?.length) return {};
 
     const initialData: Record<string, any> = {};
 
@@ -50,8 +57,13 @@ export const RowDialog = ({ onClose, name, fields, ZUID }: RowDialogProps) => {
       initialData[field.name] = null;
     });
 
-    setFormData(initialData);
+    return initialData;
   }, [fields]);
+
+  // Set default values for the fields
+  useEffect(() => {
+    setFormData(getInitialFormData());
+  }, [getInitialFormData]);
 
   const handleChange = useCallback(
     (value, name) => {
@@ -186,6 +198,60 @@ export const RowDialog = ({ onClose, name, fields, ZUID }: RowDialogProps) => {
     [formErrors, fields]
   );
 
+  const validateRequiredFields = (): Record<string, Error> => {
+    const errors = cloneDeep(formErrors);
+
+    fields?.forEach((field) => {
+      if (!field?.required) return;
+
+      const value = formData[field.name];
+
+      let isMissing = false;
+
+      if (field.datatype === "yes_no") {
+        isMissing = value === null;
+      } else if (["number", "sort"].includes(field.datatype)) {
+        isMissing = value === null || value === undefined;
+      } else {
+        isMissing = !value;
+      }
+
+      if (isMissing) {
+        errors[field.name] = {
+          ...(errors[field.name] ?? {}),
+          MISSING_REQUIRED: true,
+        };
+      }
+    });
+
+    return errors;
+  };
+
+  const hasActiveErrors = (errors: Record<string, Error>): boolean => {
+    return Object.values(errors)
+      .flatMap((error) => Object.values(error))
+      .some((error) => !!error);
+  };
+
+  const handleSubmit = (addNew?: boolean) => {
+    const validatedErrors = validateRequiredFields();
+
+    if (hasActiveErrors(validatedErrors)) {
+      setFormErrors(validatedErrors);
+      return;
+    }
+
+    onSubmit(formData);
+
+    if (addNew) {
+      setFormData(getInitialFormData());
+      setFormErrors({});
+      setResetKey((prev) => prev + 1);
+    } else {
+      onClose();
+    }
+  };
+
   return (
     <Dialog
       open
@@ -220,16 +286,22 @@ export const RowDialog = ({ onClose, name, fields, ZUID }: RowDialogProps) => {
           },
         }}
       >
-        {fields?.map((field) => (
-          <SubField
-            key={field.ZUID}
-            field={field as ContentModelField}
-            value={formData[field.name]}
-            onChange={handleChange}
-            errors={formErrors[field.name]}
-            repeaterFieldItemZUID={ZUID}
-          />
-        ))}
+        {fields?.map((field) => {
+          const needsRemount = ["wysiwyg_basic", "uuid"].includes(
+            field.datatype
+          );
+
+          return (
+            <SubField
+              key={needsRemount ? `${field.ZUID}-${resetKey}` : field.ZUID}
+              field={field as ContentModelField}
+              value={formData[field.name]}
+              onChange={handleChange}
+              errors={formErrors[field.name]}
+              repeaterFieldItemZUID={ZUID}
+            />
+          );
+        })}
       </DialogContent>
       <DialogActions
         sx={{
@@ -241,10 +313,14 @@ export const RowDialog = ({ onClose, name, fields, ZUID }: RowDialogProps) => {
           Cancel
         </Button>
         <Stack direction="row" spacing={2}>
-          <Button variant="outlined" onClick={onClose} startIcon={<AddIcon />}>
+          <Button
+            variant="outlined"
+            onClick={() => handleSubmit(true)}
+            startIcon={<AddIcon />}
+          >
             Add another field
           </Button>
-          <Button variant="contained" onClick={onClose}>
+          <Button variant="contained" onClick={() => handleSubmit()}>
             Save
           </Button>
         </Stack>
