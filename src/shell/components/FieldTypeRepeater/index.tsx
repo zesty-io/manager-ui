@@ -30,7 +30,7 @@ const ROW_HEIGHT = 56;
 const FOOTER_HEIGHT = 44;
 const MAX_VISIBLE_ROWS = 10;
 
-const dummyFieldValues = [
+const dummyFieldValues: Record<string, any>[] = [
   {
     text: "1709819194221",
     textarea: "1709819194221",
@@ -41,6 +41,7 @@ const dummyFieldValues = [
     currency: "10000.00",
     number: 3,
     yes_no: 0,
+    yes_no_with_custom_values: null,
     color: "#ffffff",
     dropdown: "custom_option_two",
     sort: 150,
@@ -57,6 +58,7 @@ const dummyFieldValues = [
     currency: "10000.00",
     number: 3,
     yes_no: 0,
+    yes_no_with_custom_values: null,
     color: "#ffffff",
     dropdown: "custom_option_two",
     sort: 150,
@@ -89,7 +91,7 @@ const dummyFields: Partial<ContentModelField>[] = [
   {
     ZUID: "12-13d590-9v2nr2",
     contentModelZUID: "6-556370-8sh47g",
-    name: "text_field",
+    name: "text",
     label: "Text",
     description:
       "dasdsadsaddasdsadsaddasdsadsaddasdsadsaddasdsadsaddasdsadsaddasdsadsaddasdsadsaddasdsadsaddasdsadsaddasdsadsaddasdsadsaddasdsadsaddasdsadsaddasdsadsaddasdsadsad",
@@ -123,7 +125,7 @@ const dummyFields: Partial<ContentModelField>[] = [
     fieldOptions: null,
     datatypeOptions: null,
     settings: {
-      list: false,
+      list: true,
       options: {},
     },
     relatedModelZUID: null,
@@ -145,7 +147,7 @@ const dummyFields: Partial<ContentModelField>[] = [
     fieldOptions: null,
     datatypeOptions: null,
     settings: {
-      list: false,
+      list: true,
       options: {},
       tooltip: "test",
     },
@@ -170,7 +172,7 @@ const dummyFields: Partial<ContentModelField>[] = [
     settings: {
       group_id: "0",
       limit: 10,
-      list: false,
+      list: true,
       options: {},
     },
     relatedModelZUID: null,
@@ -193,7 +195,7 @@ const dummyFields: Partial<ContentModelField>[] = [
     fieldOptions: null,
     datatypeOptions: null,
     settings: {
-      list: false,
+      list: true,
       options: {
         custom_option_one: "Custom Option One",
         custom_option_two: "Custom Option Two",
@@ -207,7 +209,7 @@ const dummyFields: Partial<ContentModelField>[] = [
   {
     ZUID: "12-8ed554-nxmbw8",
     contentModelZUID: "6-556370-8sh47g",
-    name: "url_link",
+    name: "link",
     label: "URL / Link",
     description: null,
     datatype: "link",
@@ -218,7 +220,7 @@ const dummyFields: Partial<ContentModelField>[] = [
     fieldOptions: null,
     datatypeOptions: null,
     settings: {
-      list: false,
+      list: true,
       options: {},
     },
     relatedModelZUID: null,
@@ -265,7 +267,7 @@ const dummyFields: Partial<ContentModelField>[] = [
     fieldOptions: null,
     datatypeOptions: null,
     settings: {
-      list: false,
+      list: true,
       options: {
         "0": "Custom Two",
         "1": "Custom One",
@@ -313,7 +315,7 @@ const dummyFields: Partial<ContentModelField>[] = [
     fieldOptions: null,
     datatypeOptions: null,
     settings: {
-      list: false,
+      list: true,
       options: {},
     },
     relatedModelZUID: null,
@@ -335,7 +337,7 @@ const dummyFields: Partial<ContentModelField>[] = [
     fieldOptions: null,
     datatypeOptions: null,
     settings: {
-      list: false,
+      list: true,
       options: {},
     },
     relatedModelZUID: null,
@@ -357,7 +359,7 @@ const dummyFields: Partial<ContentModelField>[] = [
     fieldOptions: null,
     datatypeOptions: null,
     settings: {
-      list: false,
+      list: true,
       options: {},
     },
     relatedModelZUID: null,
@@ -439,7 +441,7 @@ const fieldTypeColumnConfigMap: Record<string, Partial<GridColDef>> = {
   currency: {
     width: 160,
     valueFormatter: (value: any) => {
-      if (value === undefined || value === null) return "";
+      if (value?.value === undefined || value?.value === null) return "";
 
       return `${
         CURRENCY_OBJECT[value?.currency]?.symbol_native
@@ -549,13 +551,42 @@ export const FieldTypeRepeater = ({
   }, [value]);
 
   const baseColumns: GridColDef[] = useMemo(() => {
-    // TODO: Needs to be aligned with the field data once BE is ready
-    return Object.keys(dummyFieldValues[0]).map((key) => ({
-      field: key,
-      headerName: key,
-      ...fieldTypeColumnConfigMap[key],
-    }));
-  }, [dummyFieldValues]);
+    if (!dummyFields?.length) return [];
+
+    return dummyFields
+      ?.filter((field) => !field.deletedAt && field.settings.list)
+      ?.sort((a, b) => a.sort - b.sort)
+      ?.map((field) => ({
+        field: field.name,
+        headerName: field.label,
+        ...fieldTypeColumnConfigMap[field.datatype],
+        valueGetter: (value, row) => {
+          switch (field.datatype) {
+            case "currency":
+              return {
+                value,
+                currency: field.settings.currency || "USD",
+              };
+
+            case "yes_no": {
+              if (value === null || value === undefined) {
+                return "";
+              }
+
+              // Shows the label of the option if options are defined
+              if (Object.keys(field.settings.options).length) {
+                return field.settings.options[value];
+              }
+
+              return value === 0 ? "No" : "Yes";
+            }
+
+            default:
+              return value;
+          }
+        },
+      }));
+  }, [dummyFields]);
 
   const columns: GridColDef[] = useMemo(() => {
     const hasSelectedRows = rowSelectionModel.length > 0;
@@ -590,7 +621,6 @@ export const FieldTypeRepeater = ({
   }, [rows.length]);
 
   const handleChange = (row: Record<string, any>) => {
-    console.log("new row data", row);
     try {
       const parsedRows = JSON.parse(value);
 
