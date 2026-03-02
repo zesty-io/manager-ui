@@ -517,6 +517,7 @@ export const FieldTypeRepeater = ({
   const [rowSelectionModel, setRowSelectionModel] =
     useState<GridRowSelectionModel>([]);
   const [rowDialog, setRowDialog] = useState<"add" | "edit" | null>(null);
+  const [rowToEdit, setRowToEdit] = useState<Record<string, any> | null>(null);
 
   useEffect(() => {
     if (!value) return;
@@ -625,16 +626,17 @@ export const FieldTypeRepeater = ({
       const parsedRows = JSON.parse(value);
 
       if (Array.isArray(parsedRows)) {
-        const updateValue = [...parsedRows, row];
+        let updateValue = [...parsedRows];
+
+        // If ID is present, this means that we're updating an existing row
+        if (row.id !== undefined && row.id !== null) {
+          const { id, ...rowData } = row;
+          updateValue[id] = rowData;
+        } else {
+          updateValue.push(row);
+        }
 
         onChange(JSON.stringify(updateValue));
-      } else {
-        dispatch(
-          notify({
-            kind: "error",
-            message: `Invalid data format for ${field.label}`,
-          })
-        );
       }
     } catch (err) {
       dispatch(
@@ -644,6 +646,29 @@ export const FieldTypeRepeater = ({
         })
       );
     }
+  };
+
+  const handleRemoveRow = (id: number) => {
+    try {
+      const parsedRows = JSON.parse(value);
+
+      if (Array.isArray(parsedRows)) {
+        const updateValue = [...parsedRows];
+        updateValue.splice(id, 1);
+
+        onChange(JSON.stringify(updateValue));
+      }
+    } catch (err) {
+      dispatch(
+        notify({
+          kind: "error",
+          message: `Encountered an error while parsing the ${field.label} data`,
+        })
+      );
+    }
+
+    setRowDialog(null);
+    setRowToEdit(null);
   };
 
   return (
@@ -702,7 +727,11 @@ export const FieldTypeRepeater = ({
                 setRowSelectionModel(newModel)
               }
               onRowClick={(params) => {
-                console.log(params);
+                setRowToEdit({
+                  id: params.id,
+                  ...params.row,
+                });
+                setRowDialog("edit");
               }}
               slots={{
                 footer: () => (
@@ -752,10 +781,16 @@ export const FieldTypeRepeater = ({
       {rowDialog && (
         <RowDialog
           ZUID={field.ZUID}
-          onClose={() => setRowDialog(null)}
+          onClose={() => {
+            setRowDialog(null);
+            setRowToEdit(null);
+          }}
           name={field.label}
           fields={dummyFields}
           onSubmit={handleChange}
+          onRemoveRow={handleRemoveRow}
+          editRowData={rowToEdit}
+          isUpdate={rowDialog === "edit"}
         />
       )}
     </>

@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/Add";
+import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
 import { ContentModelField } from "shell/services/types";
 import { SubField } from "./SubField";
 import { Error } from "../../../apps/content-editor/src/app/components/Editor/Field/FieldShell";
@@ -19,10 +20,13 @@ import { MaxLengths } from "../../../apps/content-editor/src/app/components/Edit
 
 type RowDialogProps = {
   onClose: () => void;
+  onRemoveRow: (id: number) => void;
   onSubmit: (data: Record<string, any>) => void;
   name: string;
   fields: Partial<ContentModelField>[];
   ZUID: string;
+  editRowData?: Record<string, any>;
+  isUpdate?: boolean;
 };
 export const RowDialog = ({
   onClose,
@@ -30,10 +34,14 @@ export const RowDialog = ({
   fields,
   ZUID,
   onSubmit,
+  onRemoveRow,
+  editRowData,
+  isUpdate,
 }: RowDialogProps) => {
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [formErrors, setFormErrors] = useState<Record<string, Error>>({});
   const [resetKey, setResetKey] = useState(0);
+  const [version, setVersion] = useState(0);
 
   const getInitialFormData = useCallback(() => {
     if (!fields?.length) return {};
@@ -62,8 +70,13 @@ export const RowDialog = ({
 
   // Set default values for the fields
   useEffect(() => {
-    setFormData(getInitialFormData());
-  }, [getInitialFormData]);
+    if (isUpdate) {
+      setFormData(editRowData);
+      setVersion((prev) => prev + 1);
+    } else {
+      setFormData(getInitialFormData());
+    }
+  }, [getInitialFormData, isUpdate, editRowData]);
 
   const handleChange = useCallback(
     (value, name) => {
@@ -299,6 +312,7 @@ export const RowDialog = ({
               onChange={handleChange}
               errors={formErrors[field.name]}
               repeaterFieldItemZUID={ZUID}
+              version={version}
             />
           );
         })}
@@ -309,21 +323,44 @@ export const RowDialog = ({
           pt: 2,
         }}
       >
-        <Button variant="outlined" onClick={onClose} color="inherit">
-          Cancel
-        </Button>
-        <Stack direction="row" spacing={2}>
-          <Button
-            variant="outlined"
-            onClick={() => handleSubmit(true)}
-            startIcon={<AddIcon />}
-          >
-            Add another field
-          </Button>
-          <Button variant="contained" onClick={() => handleSubmit()}>
-            Save
-          </Button>
-        </Stack>
+        {isUpdate ? (
+          <>
+            <Button
+              variant="contained"
+              onClick={() => onRemoveRow(formData.id as number)}
+              color="error"
+              startIcon={<DeleteRoundedIcon />}
+            >
+              Remove Row
+            </Button>
+            <Stack direction="row" spacing={2}>
+              <Button variant="outlined" onClick={onClose} color="inherit">
+                Cancel
+              </Button>
+              <Button variant="contained" onClick={() => handleSubmit()}>
+                Done
+              </Button>
+            </Stack>
+          </>
+        ) : (
+          <>
+            <Button variant="outlined" onClick={onClose} color="inherit">
+              Cancel
+            </Button>
+            <Stack direction="row" spacing={2}>
+              <Button
+                variant="outlined"
+                onClick={() => handleSubmit(true)}
+                startIcon={<AddIcon />}
+              >
+                Add another field
+              </Button>
+              <Button variant="contained" onClick={() => handleSubmit()}>
+                Save
+              </Button>
+            </Stack>
+          </>
+        )}
       </DialogActions>
     </Dialog>
   );

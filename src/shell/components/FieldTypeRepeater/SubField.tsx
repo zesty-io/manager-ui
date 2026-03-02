@@ -44,6 +44,7 @@ type SubFieldProps = {
   field: ContentModelField;
   repeaterFieldItemZUID: string;
   errors: Error;
+  version?: number;
 };
 
 export const SubField = memo(
@@ -53,6 +54,7 @@ export const SubField = memo(
     field,
     repeaterFieldItemZUID,
     errors,
+    version,
   }: SubFieldProps) => {
     const { modelZUID } = useParams<{ modelZUID: string }>();
     const { local, onLocalChange } = useDebouncedInput(value, (v) => {
@@ -242,10 +244,9 @@ export const SubField = memo(
             >
               <FieldTypeTinyMCE
                 name={field?.name}
-                value={local}
-                // version={version}
+                value={value}
+                version={version}
                 onChange={(value) => onLocalChange(value)}
-                // onSave={() => {}}
                 onCharacterCountChange={(charCount: number) =>
                   setCharacterCount(charCount)
                 }
