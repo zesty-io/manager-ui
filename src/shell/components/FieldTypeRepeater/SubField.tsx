@@ -135,6 +135,7 @@ export const SubField = memo(
             errors={errors}
             aiType="text"
             value={local}
+            withComment={false}
           >
             <TextField
               value={local}
@@ -158,6 +159,7 @@ export const SubField = memo(
             errors={errors}
             maxLength={maxLength}
             withLengthCounter
+            withComment={false}
           >
             <TextField
               value={local}
@@ -176,6 +178,7 @@ export const SubField = memo(
             settings={field}
             valueLength={(value as string)?.length ?? 0}
             errors={errors}
+            withComment={false}
           >
             <FieldTypeUUID
               // @ts-ignore component not typed
@@ -204,6 +207,7 @@ export const SubField = memo(
             maxLength={maxLength}
             minLength={minLength}
             value={local}
+            withComment={false}
           >
             <TextField
               value={local}
@@ -234,6 +238,7 @@ export const SubField = memo(
               withLengthCounter
               maxLength={maxLength}
               value={local}
+              withComment={false}
             >
               <FieldTypeTinyMCE
                 name={field?.name}
@@ -275,6 +280,7 @@ export const SubField = memo(
               editorType={editorType}
               onEditorChange={(value: EditorType) => setEditorType(value)}
               value={local}
+              withComment={false}
             >
               <FieldTypeEditor
                 // @ts-ignore component not typed
@@ -305,7 +311,7 @@ export const SubField = memo(
 
         return (
           <>
-            <FieldShell settings={field} errors={errors}>
+            <FieldShell settings={field} errors={errors} withComment={false}>
               <FieldTypeMedia
                 hasError={error}
                 limit={(field?.settings && field?.settings.limit) || 1}
@@ -386,7 +392,7 @@ export const SubField = memo(
           const binaryFieldOpts = Object.values(field?.settings?.options);
 
           return (
-            <FieldShell settings={field} errors={errors}>
+            <FieldShell settings={field} errors={errors} withComment={false}>
               <ToggleButtonGroup
                 color="primary"
                 size="small"
@@ -452,7 +458,7 @@ export const SubField = memo(
         }, [field?.settings?.options]);
 
         return (
-          <FieldShell settings={field} errors={errors}>
+          <FieldShell settings={field} errors={errors} withComment={false}>
             <Autocomplete
               clearOnBlur
               disablePortal
@@ -483,7 +489,7 @@ export const SubField = memo(
       case "color":
         return (
           <Box maxWidth={300}>
-            <FieldShell settings={field} errors={errors}>
+            <FieldShell settings={field} errors={errors} withComment={false}>
               <FieldTypeColor
                 name={field?.name}
                 value={value || "#FFFFFF"}
@@ -496,7 +502,7 @@ export const SubField = memo(
 
       case "number":
         return (
-          <FieldShell settings={field} errors={errors}>
+          <FieldShell settings={field} errors={errors} withComment={false}>
             <FieldTypeNumber
               value={+value || 0}
               name={field?.name}
@@ -513,6 +519,7 @@ export const SubField = memo(
             settings={field}
             customTooltip={`View this value in different currencies based upon your locale "${window.navigator.language}"`}
             errors={errors}
+            withComment={false}
           >
             <FieldTypeCurrency
               name={field?.name}
@@ -526,7 +533,7 @@ export const SubField = memo(
 
       case "sort":
         return (
-          <FieldShell settings={field} errors={errors}>
+          <FieldShell settings={field} errors={errors} withComment={false}>
             <FieldTypeSort
               name={field?.name}
               required={field?.required}
