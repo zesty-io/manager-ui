@@ -283,7 +283,7 @@ export const RowDialog = ({
         }}
       >
         <Typography variant="h5" fontWeight={700}>
-          Add row to {name}
+          {isUpdate ? `Edit ${name}` : `Add row to ${name}`}
         </Typography>
         <IconButton size="small" onClick={onClose}>
           <CloseIcon fontSize="small" />
@@ -294,6 +294,9 @@ export const RowDialog = ({
         sx={{
           pt: 2.5,
           backgroundColor: "grey.50",
+          display: "flex",
+          flexDirection: "column",
+          gap: 2,
           "&.MuiDialogContent-dividers": {
             borderColor: "border",
           },
