@@ -113,8 +113,7 @@ const SubFieldFormContent = ({
     }
 
     // Common field values
-    let body: FieldBody = {
-      contentModelZUID: id,
+    let body: RepeaterSubField = {
       name: formData.name as string,
       label: formData.label as string,
       description: formData.description as string,
@@ -166,11 +165,6 @@ const SubFieldFormContent = ({
       },
       sort: isUpdateField ? fieldData.sort : highestSortValue + 1, // Just use the length since sort starts at 0
     };
-
-    if (type === "one_to_one" || type === "one_to_many") {
-      body.relatedModelZUID = formData.relatedModelZUID || null;
-      body.relatedFieldZUID = formData.relatedFieldZUID || null;
-    }
 
     if (type === "dropdown" || type === "yes_no") {
       const options = formData.options as FieldSettingsOptions[];
