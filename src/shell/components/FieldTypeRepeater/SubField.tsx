@@ -16,7 +16,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 
-import { ContentModelField } from "shell/services/types";
+import { RepeaterSubField } from "shell/services/types";
 import { withAI } from "shell/components/withAi";
 import {
   EditorType,
@@ -41,7 +41,7 @@ const AIFieldShell = withAI(FieldShell);
 type SubFieldProps = {
   value: any;
   onChange: (value: any, name: string) => void;
-  field: ContentModelField;
+  field: RepeaterSubField;
   repeaterFieldItemZUID: string;
   errors: Error;
   version?: number;
@@ -117,7 +117,6 @@ export const SubField = memo(
       case "text":
         return (
           <AIFieldShell
-            ZUID={field?.ZUID}
             name={field?.name}
             label={field?.label}
             valueLength={(local as string)?.length ?? 0}
@@ -195,7 +194,6 @@ export const SubField = memo(
       case "textarea":
         return (
           <AIFieldShell
-            ZUID={field?.ZUID}
             name={field?.name}
             label={field?.label}
             valueLength={(local as string)?.length ?? 0}
@@ -228,7 +226,6 @@ export const SubField = memo(
         return (
           <div className={styles.WYSIWYGFieldType}>
             <AIFieldShell
-              ZUID={field?.ZUID}
               name={field?.name}
               label={field?.label}
               valueLength={characterCount}
@@ -269,7 +266,6 @@ export const SubField = memo(
         return (
           <div className={styles.WYSIWYGFieldType}>
             <AIFieldShell
-              ZUID={field?.ZUID}
               name={field?.name}
               label={field?.label}
               valueLength={(local as string)?.length ?? 0}

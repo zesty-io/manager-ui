@@ -12,7 +12,7 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
-import { ContentModelField } from "shell/services/types";
+import { RepeaterSubField } from "shell/services/types";
 import { SubField } from "./SubField";
 import { Error } from "../../../apps/content-editor/src/app/components/Editor/Field/FieldShell";
 import { cloneDeep, isEqual } from "lodash";
@@ -20,10 +20,10 @@ import { MaxLengths } from "../../../apps/content-editor/src/app/components/Edit
 
 type RowDialogProps = {
   onClose: () => void;
-  onRemoveRow: (id: number) => void;
+  onRemoveRow: (index: number) => void;
   onSubmit: (data: Record<string, any>) => void;
   name: string;
-  fields: Partial<ContentModelField>[];
+  fields: RepeaterSubField[];
   ZUID: string;
   editRowData?: Record<string, any>;
   isUpdate?: boolean;
@@ -306,8 +306,8 @@ export const RowDialog = ({
 
           return (
             <SubField
-              key={needsRemount ? `${field.ZUID}-${resetKey}` : field.ZUID}
-              field={field as ContentModelField}
+              key={needsRemount ? `${field.label}-${resetKey}` : field.label}
+              field={field}
               value={formData[field.name]}
               onChange={handleChange}
               errors={formErrors[field.name]}
@@ -327,7 +327,7 @@ export const RowDialog = ({
           <>
             <Button
               variant="contained"
-              onClick={() => onRemoveRow(formData.id as number)}
+              onClick={() => onRemoveRow(formData.id)}
               color="error"
               startIcon={<DeleteRoundedIcon />}
             >

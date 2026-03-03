@@ -22,8 +22,6 @@ import { ImageCell } from "../../../apps/content-editor/src/app/views/ItemList/T
 import { Link, Typography } from "@mui/material";
 import { ContentModelField } from "shell/services/types";
 import { RowDialog } from "./RowDialog";
-import { useDispatch } from "react-redux";
-import { notify } from "shell/store/notifications";
 
 const HEADER_HEIGHT = 56;
 const ROW_HEIGHT = 56;
@@ -503,15 +501,14 @@ const fieldTypeColumnConfigMap: Record<string, Partial<GridColDef>> = {
 
 type FieldTypeRepeaterProps = {
   field: ContentModelField;
-  value: string;
-  onChange: (value: string) => void;
+  value: Record<string, any>[];
+  onChange: (value: Record<string, any>[]) => void;
 };
 export const FieldTypeRepeater = ({
   field,
   value,
   onChange,
 }: FieldTypeRepeaterProps) => {
-  const dispatch = useDispatch();
   const [rows, setRows] = useState<Record<string, any>[]>([]);
   const apiRef = useGridApiRef();
   const [rowSelectionModel, setRowSelectionModel] =
@@ -520,42 +517,25 @@ export const FieldTypeRepeater = ({
   const [rowToEdit, setRowToEdit] = useState<Record<string, any> | null>(null);
 
   useEffect(() => {
-    if (!value) return;
-
-    try {
-      const parsedRows = JSON.parse(value);
-
-      if (Array.isArray(parsedRows)) {
-        const processedRows = parsedRows.map((row, index) => ({
-          ...row,
-          id: index,
-          __reorder__: Object.values(row)[0],
-        }));
-
-        setRows(processedRows);
-      } else {
-        dispatch(
-          notify({
-            kind: "error",
-            message: `Invalid data format for ${field.label}`,
-          })
-        );
-      }
-    } catch (err) {
-      dispatch(
-        notify({
-          kind: "error",
-          message: `Encountered an error while parsing the ${field.label} data`,
-        })
-      );
+    if (!value?.length) {
+      setRows([]);
+      return;
     }
+
+    const processedRows = value.map((row, index) => ({
+      ...row,
+      id: index,
+      __reorder__: Object.values(row)[0],
+    }));
+
+    setRows(processedRows);
   }, [value]);
 
   const baseColumns: GridColDef[] = useMemo(() => {
-    if (!dummyFields?.length) return [];
+    if (!field?.settings?.subFields?.length) return [];
 
-    return dummyFields
-      ?.filter((field) => !field.deletedAt && field.settings.list)
+    return field.settings.subFields
+      ?.filter((field) => field.settings.list)
       ?.sort((a, b) => a.sort - b.sort)
       ?.map((field) => ({
         field: field.name,
@@ -587,7 +567,7 @@ export const FieldTypeRepeater = ({
           }
         },
       }));
-  }, [dummyFields]);
+  }, [field]);
 
   const columns: GridColDef[] = useMemo(() => {
     const hasSelectedRows = rowSelectionModel.length > 0;
@@ -622,51 +602,37 @@ export const FieldTypeRepeater = ({
   }, [rows.length]);
 
   const handleChange = (row: Record<string, any>) => {
-    try {
-      const parsedRows = JSON.parse(value);
+    const updatedRows = [...rows];
 
-      if (Array.isArray(parsedRows)) {
-        let updateValue = [...parsedRows];
-
-        // If ID is present, this means that we're updating an existing row
-        if (row.id !== undefined && row.id !== null) {
-          const { id, ...rowData } = row;
-          updateValue[id] = rowData;
-        } else {
-          updateValue.push(row);
-        }
-
-        onChange(JSON.stringify(updateValue));
-      }
-    } catch (err) {
-      dispatch(
-        notify({
-          kind: "error",
-          message: `Encountered an error while parsing the ${field.label} data`,
-        })
-      );
+    if (row.id !== undefined) {
+      updatedRows[row.id] = row;
+    } else {
+      updatedRows.push(row);
     }
+
+    const cleanedValue = updatedRows.map((row) => {
+      const { id, __reorder__, ...rowData } = row;
+      return rowData;
+    });
+
+    onChange(cleanedValue);
   };
 
-  const handleRemoveRow = (id: number) => {
-    try {
-      const parsedRows = JSON.parse(value);
+  const handleRemoveRow = (id: number | number[]) => {
+    let updatedRows = [...rows];
 
-      if (Array.isArray(parsedRows)) {
-        const updateValue = [...parsedRows];
-        updateValue.splice(id, 1);
-
-        onChange(JSON.stringify(updateValue));
-      }
-    } catch (err) {
-      dispatch(
-        notify({
-          kind: "error",
-          message: `Encountered an error while parsing the ${field.label} data`,
-        })
-      );
+    if (Array.isArray(id)) {
+      updatedRows = updatedRows.filter((row) => !id.includes(row.id));
+    } else {
+      updatedRows.splice(id, 1);
     }
 
+    const cleanedValue = updatedRows.map((row) => {
+      const { id, __reorder__, ...rowData } = row;
+      return rowData;
+    });
+
+    onChange(cleanedValue);
     setRowDialog(null);
     setRowToEdit(null);
   };
@@ -691,10 +657,7 @@ export const FieldTypeRepeater = ({
         {rowSelectionModel.length > 0 && (
           <IconButton
             onClick={() => {
-              // Action for deletion can be added here
-              setRows((prev) =>
-                prev.filter((_, index) => !rowSelectionModel.includes(index))
-              );
+              handleRemoveRow(rowSelectionModel as number[]);
               setRowSelectionModel([]);
             }}
             size="small"
@@ -786,7 +749,7 @@ export const FieldTypeRepeater = ({
             setRowToEdit(null);
           }}
           name={field.label}
-          fields={dummyFields}
+          fields={field.settings.subFields || []}
           onSubmit={handleChange}
           onRemoveRow={handleRemoveRow}
           editRowData={rowToEdit}
