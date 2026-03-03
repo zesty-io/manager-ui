@@ -30,6 +30,58 @@ import { StudioPreview } from "./components/StudioWrapper/StudioPreview";
 import { StudioSidePanel } from "./components/StudioWrapper/StudioSidePanel";
 
 const drawerWidth = 440;
+const DUMMY_SOURCE_TEMPLATE = `<div data-we-uid="42kasd">{{this.title}}</div>
+<div style="display:flex" data-we-uid="42kas231d">
+    <div data-we-uid="42kfsdkasd">{{this.content}}</div>
+    <div data-we-uid="jkhfsy2">this is static</div>
+</div>
+<div data-we-uid="42lj;asdfkasd">this is also static</div>
+`;
+
+const mapSourceByUidOrder = (source: string, orderedUids: string[]) => {
+  if (!source || !orderedUids?.length) return source;
+
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(
+    `<div id="studio-root">${source}</div>`,
+    "text/html"
+  );
+  const root = doc.getElementById("studio-root");
+  if (!root) return source;
+
+  const rankByUid = new Map<string, number>();
+  orderedUids.forEach((uid, index) => rankByUid.set(uid, index));
+
+  const reorderWithinParent = (parent: Element) => {
+    const allChildren = Array.from(parent.children);
+    const uidChildren = allChildren.filter((child) =>
+      child.hasAttribute("data-we-uid")
+    );
+
+    if (uidChildren.length > 1) {
+      const sortedUidChildren = [...uidChildren].sort((a, b) => {
+        const aUid = a.getAttribute("data-we-uid") || "";
+        const bUid = b.getAttribute("data-we-uid") || "";
+        const aRank = rankByUid.has(aUid)
+          ? (rankByUid.get(aUid) as number)
+          : Number.MAX_SAFE_INTEGER;
+        const bRank = rankByUid.has(bUid)
+          ? (rankByUid.get(bUid) as number)
+          : Number.MAX_SAFE_INTEGER;
+        return aRank - bRank;
+      });
+
+      sortedUidChildren.forEach((child) => {
+        parent.appendChild(child);
+      });
+    }
+
+    Array.from(parent.children).forEach((child) => reorderWithinParent(child));
+  };
+
+  reorderWithinParent(root);
+  return root.innerHTML;
+};
 
 type SelectedElement = {
   fieldZuid: string;
@@ -43,6 +95,7 @@ export const StudioWrapper = () => {
   const dispatch = useDispatch();
 
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
+  const dummySourceRef = useRef<string>(DUMMY_SOURCE_TEMPLATE);
   const [selectedElement, setSelectedElement] =
     useState<SelectedElement | null>(null);
   const [panelMode, setPanelMode] = useState<"info" | "edit">("info");
@@ -405,6 +458,7 @@ export const StudioWrapper = () => {
       value?: string;
       html?: string; // NEW: for wysiwyg_advanced
       itemZuid?: string;
+      selector?: string;
     }) => {
       const iframeWindow = iframeRef.current?.contentWindow;
       if (!iframeWindow) return;
@@ -841,7 +895,17 @@ export const StudioWrapper = () => {
               outline-offset: 2px;
               background-color: rgba(255,152,0,0.06);
             }
+            [data-we-uid][draggable="true"] {
+              cursor: move;
+            }
+            .studio-dragging {
+              opacity: 0.6;
+            }
           `,
+        });
+        postCommandToBridge({
+          action: "enableReorderByUid",
+          selector: "[data-we-uid]",
         });
         return;
       }
@@ -977,6 +1041,28 @@ export const StudioWrapper = () => {
           default:
             break;
         }
+      }
+
+      if (msg.type === "REORDER_OUTPUT") {
+        const orderedUids = Array.isArray(msg.orderedUids)
+          ? msg.orderedUids.filter(
+              (uid: unknown): uid is string => typeof uid === "string"
+            )
+          : [];
+        const mappedSource = mapSourceByUidOrder(
+          dummySourceRef.current,
+          orderedUids
+        );
+        dummySourceRef.current = mappedSource;
+
+        // Temporary visibility while iterating on the drag/reorder behavior
+        // eslint-disable-next-line no-console
+        console.log("[studio] Reordered canvas output", {
+          selector: msg.selector,
+          orderedUids,
+          outputHtml: msg.outputHtml,
+          mappedSource,
+        });
       }
     }
 
