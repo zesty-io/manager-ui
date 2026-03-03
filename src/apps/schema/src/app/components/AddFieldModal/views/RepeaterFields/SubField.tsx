@@ -20,17 +20,17 @@ import { useDrag, useDrop } from "react-dnd";
 
 import { FieldIcon } from "../../../Field/FieldIcon";
 import { TYPE_TEXT, FieldType } from "../../../configs";
-import { FieldBody } from "../FieldForm";
+// import { FieldBody } from "../FieldForm";
 import { useState } from "react";
-import { ContentModelField } from "shell/services/types";
+import { ContentModelField, RepeaterSubField } from "shell/services/types";
 
 type SubFieldProps = {
-  field: FieldBody;
+  field: RepeaterSubField;
   parentName: string;
   onRemoveField: () => void;
-  onMoveField: (draggedField: FieldBody, dropIndex: number) => void;
+  onMoveField: (draggedField: RepeaterSubField, dropIndex: number) => void;
   onDropField: () => void;
-  onEditField: (field: FieldBody) => void;
+  onEditField: (field: RepeaterSubField) => void;
   index: number;
 };
 export const SubField = ({

@@ -47,6 +47,7 @@ import {
   ContentModelField,
   FieldSettingsOptions,
   ContentModelFieldDataType,
+  RepeaterSubField,
 } from "../../../../../../../shell/services/types";
 import { FIELD_COPY_CONFIG, TYPE_TEXT } from "../../configs";
 import { Learn } from "../Learn";
@@ -286,6 +287,9 @@ const FieldFormContent = ({
         ...(formData.fileExtensionsErrorMessage && {
           fileExtensionsErrorMessage:
             formData.fileExtensionsErrorMessage as string,
+        }),
+        ...(formData.subFields && {
+          subFields: formData.subFields as RepeaterSubField[],
         }),
       },
       sort: isUpdateField ? fieldData.sort : sort, // Just use the length since sort starts at 0

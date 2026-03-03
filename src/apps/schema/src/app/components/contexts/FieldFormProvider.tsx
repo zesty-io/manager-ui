@@ -13,6 +13,7 @@ import {
   ContentModelFieldValue,
   FieldSettings,
   FieldSettingsOptions,
+  RepeaterSubField,
 } from "../../../../../../shell/services/types";
 import { FORM_CONFIG } from "../configs";
 import { convertLabelValue, getErrorMessage } from "../../utils";
@@ -26,7 +27,7 @@ export type FieldBody = Omit<
 
 export type FormValue =
   | Exclude<ContentModelFieldValue, FieldSettings>
-  | FieldBody[];
+  | RepeaterSubField[];
 
 export type FormData = {
   [key: string]: FormValue;
@@ -62,7 +63,7 @@ export const FieldFormProvider = ({
 }: {
   children: React.ReactNode;
   type: ContentModelFieldDataType;
-  fields: ContentModelField[] | FieldBody[];
+  fields: ContentModelField[] | RepeaterSubField[];
   fieldData?: ContentModelField;
 }) => {
   const isUpdateField = !isEmpty(fieldData);
@@ -165,7 +166,7 @@ export const FieldFormProvider = ({
     if (type === "repeater_field") {
       formFields = {
         ...formFields,
-        subFields: [],
+        subFields: fieldData?.settings?.subFields || ([] as RepeaterSubField[]),
       };
     }
 

@@ -192,6 +192,17 @@ export interface FieldSettingsOptions {
   [key: string | number]: string;
 }
 
+export type RepeaterSubField = Pick<
+  ContentModelField,
+  | "name"
+  | "label"
+  | "description"
+  | "datatype"
+  | "sort"
+  | "required"
+  | "settings"
+>;
+
 export interface FieldSettings {
   options?: FieldSettingsOptions;
   group_id?: string;
@@ -210,6 +221,7 @@ export interface FieldSettings {
   currency?: string;
   fileExtensions?: string[];
   fileExtensionsErrorMessage?: string;
+  subFields?: RepeaterSubField[];
 }
 
 export type ContentModelFieldValue =

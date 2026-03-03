@@ -8,18 +8,19 @@ import { useParams } from "react-router";
 import {
   ContentModelField,
   ContentModelFieldDataType,
+  RepeaterSubField,
 } from "shell/services/types";
 import { useVisibility } from "../../VisibilityProvider";
 import { SubField } from "./SubField";
 import DndContextProvider from "shell/components/DndContextProvider";
-import { FieldBody } from "../FieldForm";
+// import { FieldBody } from "../FieldForm";
 
 type Params = {
   id: string;
 };
 type RepeaterFieldProps = {
-  fields: FieldBody[];
-  onChange: (fields: FieldBody[]) => void;
+  fields: RepeaterSubField[];
+  onChange: (fields: RepeaterSubField[]) => void;
   name: string;
   label: string;
 };
@@ -35,7 +36,7 @@ export const RepeaterFields = ({
     modelZUID: id,
   });
   const { hide } = useVisibility();
-  const [localFields, setLocalFields] = useState<FieldBody[]>(fields);
+  const [localFields, setLocalFields] = useState<RepeaterSubField[]>(fields);
   const [openedView, setOpenedView] = useState<
     "selection" | "newFieldForm" | "updateFieldForm" | null
   >(null);
@@ -43,7 +44,9 @@ export const RepeaterFields = ({
     fieldType: "",
     fieldName: "",
   });
-  const [fieldToUpdate, setFieldToUpdate] = useState<FieldBody | null>(null);
+  const [fieldToUpdate, setFieldToUpdate] = useState<RepeaterSubField | null>(
+    null
+  );
 
   useEffect(() => {
     hide(openedView !== null);
@@ -54,7 +57,7 @@ export const RepeaterFields = ({
   }, [fields]);
 
   const handleAddField = (
-    newField: FieldBody,
+    newField: RepeaterSubField,
     createAnotherField?: boolean
   ) => {
     const _fields = [...localFields];
@@ -64,7 +67,7 @@ export const RepeaterFields = ({
     setOpenedView(createAnotherField ? "selection" : null);
   };
 
-  const handleRemoveField = (field: FieldBody) => {
+  const handleRemoveField = (field: RepeaterSubField) => {
     const _fields = [...localFields];
 
     _fields.splice(_fields.indexOf(field), 1);
@@ -72,7 +75,7 @@ export const RepeaterFields = ({
   };
 
   const handleMoveField = useCallback(
-    (draggedField: FieldBody, dropIndex: number) => {
+    (draggedField: RepeaterSubField, dropIndex: number) => {
       const _fields = [...localFields];
       const fieldIndex = _fields.indexOf(draggedField);
 
@@ -93,7 +96,7 @@ export const RepeaterFields = ({
     onChange(sortedFields);
   }, [localFields, onChange]);
 
-  const handleUpdateField = (payload: FieldBody) => {
+  const handleUpdateField = (payload: RepeaterSubField) => {
     const _fields = [...localFields];
     const fieldIndex = _fields.indexOf(fieldToUpdate);
 
@@ -194,6 +197,7 @@ export const RepeaterFields = ({
                   ? {
                       ...fieldToUpdate,
                       ZUID: "",
+                      contentModelZUID: "",
                       datatypeOptions: "",
                       createdAt: "",
                       updatedAt: "",

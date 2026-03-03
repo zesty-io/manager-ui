@@ -24,6 +24,7 @@ import {
   ContentModelField,
   ContentModelFieldDataType,
   FieldSettingsOptions,
+  RepeaterSubField,
 } from "shell/services/types";
 import {
   FieldFormProvider,
@@ -45,8 +46,8 @@ type SubFieldFormProps = {
   onBackClick?: () => void;
   fields: ContentModelField[];
   fieldData?: ContentModelField;
-  onSubmit: (payload: FieldBody, createAnotherField?: boolean) => void;
-  subFields: FieldBody[];
+  onSubmit: (payload: RepeaterSubField, createAnotherField?: boolean) => void;
+  subFields: RepeaterSubField[];
 };
 
 type ActiveTab = "details" | "rules" | "learn";
