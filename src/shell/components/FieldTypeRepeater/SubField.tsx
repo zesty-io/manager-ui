@@ -17,7 +17,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 
 import { RepeaterSubField } from "shell/services/types";
-import { withAI } from "shell/components/withAi";
 import {
   EditorType,
   Error,
@@ -35,8 +34,6 @@ import { FieldTypeColor } from "../FieldTypeColor";
 import { FieldTypeNumber } from "../FieldTypeNumber";
 import { FieldTypeCurrency } from "../FieldTypeCurrency";
 import { FieldTypeSort } from "../FieldTypeSort";
-
-const AIFieldShell = withAI(FieldShell);
 
 type SubFieldProps = {
   value: any;
@@ -116,9 +113,7 @@ export const SubField = memo(
     switch (field.datatype) {
       case "text":
         return (
-          <AIFieldShell
-            name={field?.name}
-            label={field?.label}
+          <FieldShell
             valueLength={(local as string)?.length ?? 0}
             settings={
               field || {
@@ -127,15 +122,10 @@ export const SubField = memo(
                 required: field.required,
               }
             }
-            onChange={(evt: ChangeEvent<HTMLInputElement>) =>
-              onChange(evt.target.value, field.name)
-            }
             withLengthCounter
             maxLength={maxLength}
             minLength={minLength}
             errors={errors}
-            aiType="text"
-            value={local}
             withComment={false}
           >
             <TextField
@@ -149,7 +139,7 @@ export const SubField = memo(
               }}
               error={hasError}
             />
-          </AIFieldShell>
+          </FieldShell>
         );
 
       case "link":
@@ -193,20 +183,13 @@ export const SubField = memo(
 
       case "textarea":
         return (
-          <AIFieldShell
-            name={field?.name}
-            label={field?.label}
+          <FieldShell
             valueLength={(local as string)?.length ?? 0}
             settings={field}
-            onChange={(evt: ChangeEvent<HTMLInputElement>) =>
-              onChange(evt.target.value, field.name)
-            }
             withLengthCounter
             errors={errors}
-            aiType="word"
             maxLength={maxLength}
             minLength={minLength}
-            value={local}
             withComment={false}
           >
             <TextField
@@ -217,7 +200,7 @@ export const SubField = memo(
               rows={6}
               error={hasError}
             />
-          </AIFieldShell>
+          </FieldShell>
         );
 
       case "wysiwyg_basic":
@@ -225,18 +208,12 @@ export const SubField = memo(
 
         return (
           <div className={styles.WYSIWYGFieldType}>
-            <AIFieldShell
-              name={field?.name}
-              label={field?.label}
+            <FieldShell
               valueLength={characterCount}
               settings={field}
-              onChange={onChange}
               errors={errors}
-              aiType="word"
-              datatype={field?.datatype}
               withLengthCounter
               maxLength={maxLength}
-              value={local}
               withComment={false}
             >
               <FieldTypeTinyMCE
@@ -255,7 +232,7 @@ export const SubField = memo(
                   errors && Object.values(errors)?.some((error) => !!error)
                 }
               />
-            </AIFieldShell>
+            </FieldShell>
             {imageModal && renderMediaModal()}
           </div>
         );
@@ -265,18 +242,12 @@ export const SubField = memo(
 
         return (
           <div className={styles.WYSIWYGFieldType}>
-            <AIFieldShell
-              name={field?.name}
-              label={field?.label}
+            <FieldShell
               valueLength={(local as string)?.length ?? 0}
               settings={field}
-              onChange={onChange}
               errors={errors}
-              aiType="word"
-              datatype={field?.datatype}
               editorType={editorType}
               onEditorChange={(value: EditorType) => setEditorType(value)}
-              value={local}
               withComment={false}
             >
               <FieldTypeEditor
@@ -294,7 +265,7 @@ export const SubField = memo(
                   errors && Object.values(errors)?.some((error) => !!error)
                 }
               />
-            </AIFieldShell>
+            </FieldShell>
             {imageModal && renderMediaModal()}
           </div>
         );
