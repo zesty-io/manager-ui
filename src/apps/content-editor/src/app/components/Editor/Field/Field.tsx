@@ -788,6 +788,14 @@ export const Field = memo(
         );
 
       case "repeater":
+        const hasBaseColumns = (fieldData?.settings?.subFields || []).filter(
+          (f) => f.settings?.list
+        ).length;
+
+        if (!hasBaseColumns) {
+          return <></>;
+        }
+
         return (
           <FieldShell settings={fieldData} errors={errors}>
             <FieldTypeRepeater
