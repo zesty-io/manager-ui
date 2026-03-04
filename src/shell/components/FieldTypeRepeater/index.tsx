@@ -4,6 +4,7 @@ import {
   GRID_REORDER_COL_DEF,
   GridColDef,
   GridRenderCellParams,
+  GridRowOrderChangeParams,
   GridRowSelectionModel,
   useGridApiRef,
 } from "@mui/x-data-grid-pro";
@@ -601,6 +602,13 @@ export const FieldTypeRepeater = ({
     );
   }, [rows.length]);
 
+  const cleanRows = (rowsToClean: Record<string, any>[]) => {
+    return rowsToClean.map((row: any) => {
+      const { id, __reorder__, ...rowData } = row;
+      return rowData;
+    });
+  };
+
   const handleChange = (row: Record<string, any>) => {
     const updatedRows = [...rows];
 
@@ -610,12 +618,22 @@ export const FieldTypeRepeater = ({
       updatedRows.push(row);
     }
 
-    const cleanedValue = updatedRows.map((row) => {
-      const { id, __reorder__, ...rowData } = row;
-      return rowData;
-    });
+    onChange(cleanRows(updatedRows));
+  };
 
-    onChange(cleanedValue);
+  const handleRowOrderChange = (params: GridRowOrderChangeParams) => {
+    const { oldIndex, targetIndex } = params;
+    const newRows = [...rows];
+    const [removed] = newRows.splice(oldIndex, 1);
+    newRows.splice(targetIndex, 0, removed);
+
+    // Re-index row IDs to maintain order and selection consistency
+    const updatedRows = newRows.map((row, index) => ({
+      ...row,
+      id: index,
+    }));
+
+    onChange(cleanRows(updatedRows));
   };
 
   const handleRemoveRow = (id: number | number[]) => {
@@ -627,12 +645,7 @@ export const FieldTypeRepeater = ({
       updatedRows.splice(id, 1);
     }
 
-    const cleanedValue = updatedRows.map((row) => {
-      const { id, __reorder__, ...rowData } = row;
-      return rowData;
-    });
-
-    onChange(cleanedValue);
+    onChange(cleanRows(updatedRows));
     setRowDialog(null);
     setRowToEdit(null);
   };
@@ -675,6 +688,7 @@ export const FieldTypeRepeater = ({
           {({ width, height }: Size) => (
             <DataGridPro
               rowReordering
+              onRowOrderChange={handleRowOrderChange}
               rows={rows}
               apiRef={apiRef}
               columns={columns}
