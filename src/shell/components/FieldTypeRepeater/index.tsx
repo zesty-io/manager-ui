@@ -728,6 +728,10 @@ export const FieldTypeRepeater = ({
                   backgroundColor: "grey.100",
                 },
 
+                "& .MuiDataGrid-filler": {
+                  backgroundColor: "grey.100",
+                },
+
                 // Hide scrollbar for virtual scroller to avoid double scrollbars when a row is dynamically added
                 "& .MuiDataGrid-virtualScroller": {
                   scrollbarWidth: "none",
