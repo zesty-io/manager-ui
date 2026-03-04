@@ -25,7 +25,6 @@ import {
 import { MaxLengths } from "../../../apps/content-editor/src/app/components/Editor/Editor";
 import { useDebouncedInput } from "shell/hooks/useDebouncedInput";
 import { FieldTypeUUID } from "../FieldTypeUUID";
-import styles from "../../../../src/apps/content-editor/src/app/components/Editor/Field/Field.less";
 import { FieldTypeTinyMCE } from "../FieldTypeTinyMCE";
 import { MediaApp } from "../../../apps/media/src/app";
 import { FieldTypeEditor } from "../FieldTypeEditor";
@@ -207,7 +206,7 @@ export const SubField = memo(
         const [characterCount, setCharacterCount] = useState(0);
 
         return (
-          <div className={styles.WYSIWYGFieldType}>
+          <>
             <FieldShell
               valueLength={characterCount}
               settings={field}
@@ -234,14 +233,14 @@ export const SubField = memo(
               />
             </FieldShell>
             {imageModal && renderMediaModal()}
-          </div>
+          </>
         );
 
       case "markdown":
         const [editorType, setEditorType] = useState<EditorType>();
 
         return (
-          <div className={styles.WYSIWYGFieldType}>
+          <>
             <FieldShell
               valueLength={(local as string)?.length ?? 0}
               settings={field}
@@ -267,7 +266,7 @@ export const SubField = memo(
               />
             </FieldShell>
             {imageModal && renderMediaModal()}
-          </div>
+          </>
         );
 
       case "images":
