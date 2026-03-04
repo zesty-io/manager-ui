@@ -260,7 +260,7 @@ const fieldTypeColumnConfigMap = {
     width: 200,
     filterable: true,
   },
-  repeater_field: {
+  repeater: {
     width: 200,
     filterable: true,
   },

@@ -43,7 +43,7 @@ export const Learn = ({ type }: Props) => {
           ))}
         </Box>
       </Box>
-      {type === "repeater_field" && (
+      {type === "repeater" && (
         <Box>
           <Typography variant="h6" fontWeight={600} mb={0.5}>
             How is the Data Stored?

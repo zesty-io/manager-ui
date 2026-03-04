@@ -25,7 +25,7 @@ export type FieldType =
   | "wysiwyg_advanced"
   | "article_writer"
   | "block_selector"
-  | "repeater_field"; // TODO: Will need to confirm if this type is already supported by the api
+  | "repeater";
 interface FieldListData {
   type: FieldType;
   name: string;
@@ -339,7 +339,7 @@ const FIELD_COPY_CONFIG: { [key: string]: FieldListData[] } = {
       subHeaderText: "Use to set unique ids to each content item",
     },
     {
-      type: "repeater_field",
+      type: "repeater",
       name: "Repeater",
       shortDescription: "A repeating list of grouped fields",
       description:
@@ -376,7 +376,7 @@ const TYPE_TEXT: Record<FieldType, string> = {
   wysiwyg_basic: "WYSIWYG",
   yes_no: "Boolean",
   block_selector: "Block Selector",
-  repeater_field: "Repeater",
+  repeater: "Repeater",
 };
 
 const COMMON_FIELDS: InputField[] = [
@@ -730,7 +730,7 @@ const FORM_CONFIG: Record<FieldType, FormConfig> = {
     details: [...COMMON_FIELDS],
     rules: [],
   },
-  repeater_field: {
+  repeater: {
     details: [...COMMON_FIELDS],
     rules: [],
   },

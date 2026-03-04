@@ -56,7 +56,7 @@ import { Rules } from "./Rules";
 import { RepeaterFields } from "./RepeaterFields";
 import { Details } from "../Details";
 
-type ActiveTab = "details" | "rules" | "learn" | "repeater_fields";
+type ActiveTab = "details" | "rules" | "learn" | "repeater";
 type Params = {
   id: string;
 };
@@ -82,9 +82,9 @@ const FieldFormContent = ({
   onCreateAnotherField,
 }: FieldFormProps) => {
   const isUpdateField = !isEmpty(fieldData);
-  const showRepeaterFieldsTab = type === "repeater_field" && isUpdateField;
+  const showRepeaterFieldsTab = type === "repeater" && isUpdateField;
   const [activeTab, setActiveTab] = useState<ActiveTab>(
-    showRepeaterFieldsTab ? "repeater_fields" : "details"
+    showRepeaterFieldsTab ? "repeater" : "details"
   );
   const [isSubmitClicked, setIsSubmitClicked] = useState(false);
   const [fieldStateOnSaveAction, setFieldStateOnSaveAction] = useState<
@@ -435,7 +435,7 @@ const FieldFormContent = ({
           {showRepeaterFieldsTab && (
             <Tab
               data-cy="RepeaterFieldsTabBtn"
-              value="repeater_fields"
+              value="repeater"
               label="Fields"
               icon={<VerticalSplitRoundedIcon fontSize="small" />}
               iconPosition="start"
@@ -473,7 +473,7 @@ const FieldFormContent = ({
           borderTop: 0,
         }}
       >
-        {activeTab === "repeater_fields" && (
+        {activeTab === "repeater" && (
           <RepeaterFields
             name={fieldData.name}
             label={fieldData.label}

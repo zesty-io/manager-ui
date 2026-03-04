@@ -162,7 +162,7 @@ export const getCategory = (type: string) => {
     case "color":
     case "sort":
     case "uuid":
-    case "repeater_field":
+    case "repeater":
       category = "options";
       break;
 

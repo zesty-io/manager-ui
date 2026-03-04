@@ -255,7 +255,7 @@ export type ContentModelFieldDataType =
   | "color"
   | "sort"
   | "block_selector"
-  | "repeater_field";
+  | "repeater";
 
 export interface ContentModelField {
   ZUID: string;

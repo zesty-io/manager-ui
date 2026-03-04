@@ -21,7 +21,7 @@ const repeaterFields = {
   ),
   numeric: FIELD_COPY_CONFIG.numeric,
   options: FIELD_COPY_CONFIG.options.filter(
-    (field) => field.type !== "repeater_field"
+    (field) => field.type !== "repeater"
   ),
 };
 

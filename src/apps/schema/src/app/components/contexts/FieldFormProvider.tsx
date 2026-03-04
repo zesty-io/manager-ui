@@ -163,7 +163,7 @@ export const FieldFormProvider = ({
       }
     });
 
-    if (type === "repeater_field") {
+    if (type === "repeater") {
       formFields = {
         ...formFields,
         subFields: fieldData?.settings?.subFields || ([] as RepeaterSubField[]),

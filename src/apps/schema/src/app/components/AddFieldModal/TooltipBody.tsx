@@ -98,7 +98,7 @@ export const TooltipBody = ({
             ))}
           </Box>
         </Box>
-        {fieldType === "repeater_field" && (
+        {fieldType === "repeater" && (
           <Box px={2} py={1}>
             <Typography variant="body2" fontWeight="700" pb={0.5}>
               How is the Data Stored?

@@ -42,11 +42,7 @@ export const Rules = ({
     formData?.minCharLimit !== null && formData?.maxCharLimit !== null
   );
 
-  if (
-    type === "uuid" ||
-    type === "block_selector" ||
-    type === "repeater_field"
-  ) {
+  if (type === "uuid" || type === "block_selector" || type === "repeater") {
     return <ComingSoon />;
   }
 

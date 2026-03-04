@@ -787,7 +787,7 @@ export const Field = memo(
           </FieldShell>
         );
 
-      case "repeater_field":
+      case "repeater":
         return (
           <FieldShell settings={fieldData} errors={errors}>
             <FieldTypeRepeater

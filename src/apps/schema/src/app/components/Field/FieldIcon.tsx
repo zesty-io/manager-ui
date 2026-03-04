@@ -91,7 +91,7 @@ const icons: Icons = {
     backgroundColor: "pink.50",
     borderColor: "pink.600",
   },
-  repeater_field: {
+  repeater: {
     icon: Repeater as SvgIconComponent,
     backgroundColor: "purple.50",
     borderColor: "purple.700",
