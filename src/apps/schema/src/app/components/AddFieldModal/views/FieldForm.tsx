@@ -448,13 +448,15 @@ const FieldFormContent = ({
             icon={<InfoRoundedIcon fontSize="small" />}
             iconPosition="start"
           />
-          <Tab
-            data-cy="RulesTabBtn"
-            value="rules"
-            label="Rules"
-            icon={<RuleRoundedIcon fontSize="small" />}
-            iconPosition="start"
-          />
+          {type !== "repeater" && (
+            <Tab
+              data-cy="RulesTabBtn"
+              value="rules"
+              label="Rules"
+              icon={<RuleRoundedIcon fontSize="small" />}
+              iconPosition="start"
+            />
+          )}
           <Tab
             data-cy="LearnTabBtn"
             value="learn"
