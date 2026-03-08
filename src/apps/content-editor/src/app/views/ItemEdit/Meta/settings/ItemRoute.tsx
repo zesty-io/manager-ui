@@ -73,10 +73,15 @@ export const ItemRoute = ({
                      * Exclude currently viewed item zuid, as it's currently saved path would match.
                      * Check if other results have a matching path, if so then it is already taken and
                      * can not be used.
+                     * Check if the matched result is a sibling of the currently viewed item, if so then
+                     * it is fine to have the same path.
                      * Result paths come with leading and trailing slashes
                      */
                     return (
                       _item.meta.ZUID !== item?.meta?.ZUID &&
+                      !Object.values(_item.siblings || {}).includes(
+                        item?.meta?.ZUID
+                      ) &&
                       _item.web.path === fullPath
                     );
                   }
