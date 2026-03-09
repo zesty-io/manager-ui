@@ -201,8 +201,8 @@ describe("Schema: Repeater Field", () => {
   });
 
   it("Adds a boolean sub field", () => {
-    const fieldLabel = `Boolean ${timestamp}`;
-    const fieldName = `boolean_${timestamp}`;
+    const fieldLabel = `Boolean`;
+    const fieldName = `boolean`;
 
     cy.getBySelector("AddRepeaterSubFieldBtn").click();
 
@@ -224,6 +224,33 @@ describe("Schema: Repeater Field", () => {
 
     cy.getBySelector("SubFieldFormAddFieldBtn").click();
     cy.getBySelector(`SubField_${fieldName}`).should("exist");
+  });
+
+  it("Adds a dropdown sub field", () => {
+    const SubFieldLabel = `Dropdown`;
+    const SubFieldName = `dropdown`;
+
+    cy.getBySelector("AddRepeaterSubFieldBtn").click();
+
+    cy.getBySelector("FieldItem_dropdown").click();
+
+    cy.getBySelector("FieldFormInput_label").type(SubFieldLabel);
+    cy.getBySelector("OptionLabel_0").type("Option 1");
+    cy.getBySelector("DropdownAddOption").click();
+    cy.getBySelector("OptionLabel_1").type("Option 2");
+    cy.getBySelector("DeleteOption_1").click();
+
+    cy.getBySelector("RulesTabBtn").click();
+    cy.getBySelector("DefaultValueCheckbox").click();
+    cy.getBySelector("DefaultValueInput").click();
+    cy.get("li[data-value='Option 1']").click();
+    cy.getBySelector("DefaultValueInput")
+      .find("#mui-component-select-defaultValue")
+      .contains("Option 1");
+
+    cy.getBySelector("SubFieldFormAddFieldBtn").click();
+
+    cy.getBySelector(`SubField_${SubFieldName}`).should("exist");
   });
 
   // it.skip("Updates the created repeater field", () => {
