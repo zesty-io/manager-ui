@@ -253,6 +253,54 @@ describe("Schema: Repeater Field", () => {
     cy.getBySelector(`SubField_${SubFieldName}`).should("exist");
   });
 
+  it("Adds a color sub field", () => {
+    const fieldLabel = `Color`;
+    const fieldName = `color`;
+
+    cy.getBySelector("AddRepeaterSubFieldBtn").click();
+    cy.getBySelector("FieldItem_color").click();
+
+    cy.getBySelector("FieldFormInput_label").type(fieldLabel);
+
+    cy.getBySelector("RulesTabBtn").click();
+    cy.getBySelector("DefaultValueCheckbox").click();
+    cy.getBySelector("SubFieldFormAddFieldBtn").click();
+    cy.contains("Required Field. Please enter a value.").should("exist");
+    cy.getBySelector("DefaultValueCheckbox").click();
+    cy.getBySelector("SubFieldFormAddFieldBtn").click();
+
+    cy.getBySelector(`SubField_${fieldName}`).should("exist");
+  });
+
+  it("Adds a sort order sub field", () => {
+    const fieldLabel = `Sort`;
+    const fieldName = `sort`;
+
+    cy.getBySelector("AddRepeaterSubFieldBtn").click();
+    cy.getBySelector("FieldItem_sort").click();
+
+    cy.getBySelector("FieldFormInput_label").type(fieldLabel);
+
+    cy.getBySelector("RulesTabBtn").click();
+    cy.getBySelector("DefaultValueCheckbox").click();
+    cy.getBySelector("DefaultValueInput").type("12");
+    cy.getBySelector("SubFieldFormAddFieldBtn").click();
+
+    cy.getBySelector(`SubField_${fieldName}`).should("exist");
+  });
+
+  it("Adds an uuid sub field", () => {
+    const fieldLabel = `UUID`;
+    const fieldName = `uuid`;
+
+    cy.getBySelector("AddRepeaterSubFieldBtn").click();
+    cy.getBySelector("FieldItem_uuid").click();
+
+    cy.getBySelector("FieldFormInput_label").type(fieldLabel);
+    cy.getBySelector("SubFieldFormAddFieldBtn").click();
+    cy.getBySelector(`SubField_${fieldName}`).should("exist");
+  });
+
   // it.skip("Updates the created repeater field", () => {
   //   cy.intercept("**/fields?showDeleted=true").as("getFields");
   //   cy.intercept("/v1/content/models/**").as("updateField");
