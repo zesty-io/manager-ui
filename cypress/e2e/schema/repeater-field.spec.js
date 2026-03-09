@@ -421,6 +421,22 @@ describe("Schema: Repeater Field", () => {
     cy.getBySelector("SubField_unique_label").should("exist");
   });
 
+  it("Updates a sub field", () => {
+    const newLabel = "Updated SubField Label";
+
+    cy.getBySelector("SubField_unique_label").click();
+    cy.getBySelector("FieldFormInput_label").clear().type(newLabel);
+    cy.getBySelector("SubFieldFormAddFieldBtn").click();
+    cy.contains(newLabel).should("exist");
+  });
+
+  it("Removes a sub field", () => {
+    cy.getBySelector("SubField_unique_label").should("exist");
+    cy.getBySelector("OpenFieldDropdown_unique_label").click();
+    cy.getBySelector("DeactivateReactivateFieldDropdown_unique_label").click();
+    cy.getBySelector("SubField_unique_label").should("not.exist");
+  });
+
   it("sorts subfields with HTML5 drag/drop", () => {
     const dataTransfer = new DataTransfer();
 
