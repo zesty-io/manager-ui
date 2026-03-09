@@ -101,6 +101,87 @@ describe("Schema: Repeater Field", () => {
     cy.getBySelector(`SubField_${SubFieldName}`).should("exist");
   });
 
+  it("Adds a multi line text sub field", () => {
+    const SubFieldLabel = "Multi Line Text";
+    const SubFieldName = "multi_line_text";
+
+    cy.getBySelector("AddRepeaterSubFieldBtn").click();
+    cy.getBySelector("FieldItem_textarea").click();
+
+    // Add field details
+    cy.getBySelector("FieldFormInput_label").type(SubFieldLabel);
+    cy.get("input[name='label']")
+      .should("exist")
+      .should("have.value", SubFieldLabel);
+    cy.get("input[name='name']")
+      .should("exist")
+      .should("have.value", SubFieldName);
+
+    // Add field rules
+    cy.getBySelector("RulesTabBtn").click();
+    cy.getBySelector("DefaultValueCheckbox").click();
+    // enter a default value
+    cy.getBySelector("DefaultValueInput").type("default value");
+    // verify that the default value is set
+    cy.getBySelector("DefaultValueInput")
+      .find("textarea")
+      .should("have.value", "default value");
+
+    // Set min/max character limits
+    cy.getBySelector("CharacterLimitCheckbox").click();
+    cy.getBySelector("MaxCharacterLimitInput").clear().type("{end}17000");
+    cy.getBySelector("MaxCharacterErrorMsg").should("exist");
+    cy.getBySelector("MaxCharacterLimitInput").clear().type("{end}20");
+    cy.getBySelector("MaxCharacterErrorMsg").should("not.exist");
+    cy.getBySelector("MinCharacterLimitInput").clear().type("{end}17000");
+    cy.getBySelector("MinCharacterErrorMsg").should("exist");
+    cy.getBySelector("MinCharacterLimitInput").clear().type("{end}5");
+    cy.getBySelector("MinCharacterErrorMsg").should("not.exist");
+
+    cy.getBySelector("SubFieldFormAddFieldBtn").click();
+    cy.getBySelector(`SubField_${SubFieldName}`).should("exist");
+  });
+
+  it("Adds a wysiwyg sub field", () => {
+    const SubFieldLabel = "WYSIWYG";
+    const SubFieldName = "wysiwyg";
+
+    cy.getBySelector("AddRepeaterSubFieldBtn").click();
+    cy.getBySelector("FieldItem_wysiwyg_basic").click();
+
+    // Add field details
+    cy.getBySelector("FieldFormInput_label").type(SubFieldLabel);
+    cy.get("input[name='label']")
+      .should("exist")
+      .should("have.value", SubFieldLabel);
+    cy.get("input[name='name']")
+      .should("exist")
+      .should("have.value", SubFieldName);
+
+    cy.getBySelector("SubFieldFormAddFieldBtn").click();
+    cy.getBySelector(`SubField_${SubFieldName}`).should("exist");
+  });
+
+  it("Adds a markdown sub field", () => {
+    const SubFieldLabel = "Markdown";
+    const SubFieldName = "markdown";
+
+    cy.getBySelector("AddRepeaterSubFieldBtn").click();
+    cy.getBySelector("FieldItem_markdown").click();
+
+    // Add field details
+    cy.getBySelector("FieldFormInput_label").type(SubFieldLabel);
+    cy.get("input[name='label']")
+      .should("exist")
+      .should("have.value", SubFieldLabel);
+    cy.get("input[name='name']")
+      .should("exist")
+      .should("have.value", SubFieldName);
+
+    cy.getBySelector("SubFieldFormAddFieldBtn").click();
+    cy.getBySelector(`SubField_${SubFieldName}`).should("exist");
+  });
+
   it("Adds a media sub field", () => {
     const SubFieldLabel = `Media`;
     const SubFieldName = `media`;
