@@ -155,6 +155,51 @@ describe("Schema: Repeater Field", () => {
     cy.getBySelector(`SubField_${SubFieldName}`).should("exist");
   });
 
+  it("Creates a currency sub field", () => {
+    const fieldLabel = `Currency`;
+    const fieldName = `currency`;
+
+    cy.getBySelector("AddRepeaterSubFieldBtn").click();
+
+    cy.getBySelector("FieldItem_currency").click();
+
+    cy.getBySelector("Autocomplete_currency").type("phil");
+    cy.get("[role=listbox] [role=option]").first().click();
+
+    cy.getBySelector("FieldFormInput_label").type(fieldLabel);
+
+    cy.getBySelector("RulesTabBtn").click();
+    cy.getBySelector("DefaultValueCheckbox").click();
+    cy.getBySelector("DefaultValueInput").type("1000.50");
+    cy.getBySelector("DefaultValueInput").contains("PHP");
+    cy.getBySelector("InputRangeCheckbox").click();
+    cy.getBySelector("MinValueInput").type("10");
+    cy.getBySelector("MaxValueInput").type("100");
+    cy.getBySelector("SubFieldFormAddFieldBtn").click();
+
+    cy.getBySelector(`SubField_${fieldName}`).should("exist");
+  });
+
+  it("Creates a number sub field", () => {
+    const fieldLabel = `Number`;
+    const fieldName = `number`;
+
+    cy.getBySelector("AddRepeaterSubFieldBtn").click();
+    cy.getBySelector("FieldItem_number").click();
+
+    cy.getBySelector("FieldFormInput_label").type(fieldLabel);
+
+    cy.getBySelector("RulesTabBtn").click();
+    cy.getBySelector("DefaultValueCheckbox").click();
+    cy.getBySelector("DefaultValueInput").type("1000.50");
+    cy.getBySelector("InputRangeCheckbox").click();
+    cy.getBySelector("MinValueInput").type("10");
+    cy.getBySelector("MaxValueInput").type("100");
+    cy.getBySelector("SubFieldFormAddFieldBtn").click();
+
+    cy.getBySelector(`SubField_${fieldName}`).should("exist");
+  });
+
   // it.skip("Updates the created repeater field", () => {
   //   cy.intercept("**/fields?showDeleted=true").as("getFields");
   //   cy.intercept("/v1/content/models/**").as("updateField");
