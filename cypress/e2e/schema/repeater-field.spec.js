@@ -6,6 +6,11 @@ describe("Schema: Repeater Field", () => {
   const fieldLabel = `Repeater Field ${timestamp}`;
   const fieldName = `repeater_field_${timestamp}`;
 
+  const getOrder = () =>
+    cy
+      .get('[data-cy^="SubField_"]')
+      .then(($els) => [...$els].map((el) => el.getAttribute("data-cy")));
+
   before(() => {
     cy.waitOn(
       "/v1/content/models/6-ce80dbfe90-ptjpm6/fields?showDeleted=true",
@@ -414,6 +419,35 @@ describe("Schema: Repeater Field", () => {
     cy.getBySelector("FieldFormInput_label").clear().type("Unique Label");
     cy.getBySelector("SubFieldFormAddFieldBtn").click();
     cy.getBySelector("SubField_unique_label").should("exist");
+  });
+
+  it("sorts subfields with HTML5 drag/drop", () => {
+    const dataTransfer = new DataTransfer();
+
+    getOrder().then((before) => {
+      expect(before.length).to.be.greaterThan(1);
+      const sourceId = before[0];
+      const targetId = before[1];
+
+      cy.getBySelector("SubFieldList")
+        .find('[data-cy^="SubField_"] .drag-handle')
+        .eq(0)
+        .trigger("dragstart", { dataTransfer });
+
+      cy.getBySelector("SubFieldList")
+        .find('[data-cy^="SubField_"] .drag-handle')
+        .eq(1)
+        .trigger("dragover", { dataTransfer })
+        .trigger("drop", { dataTransfer });
+
+      cy.getBySelector("SubFieldList")
+        .find('[data-cy^="SubField_"]')
+        .then(($rows) => [...$rows].map((el) => el.getAttribute("data-cy")))
+        .should((after) => {
+          expect(after[0]).to.eq(targetId);
+          expect(after[1]).to.eq(sourceId);
+        });
+    });
   });
 
   after(() => {
