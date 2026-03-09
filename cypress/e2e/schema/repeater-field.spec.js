@@ -1,5 +1,6 @@
 describe("Schema: Repeater Field", () => {
   const timestamp = Date.now();
+  const modelName = `Cypress Repeater Field Test ${timestamp}`;
   const fieldLabel = `Repeater Field ${timestamp}`;
   const fieldName = `repeater_field_${timestamp}`;
 
@@ -15,9 +16,7 @@ describe("Schema: Repeater Field", () => {
 
             cy.contains("Multi Page Model").click();
             cy.contains("Next").click();
-            cy.contains("Display Name")
-              .next()
-              .type(`Cypress Repeater Field Test ${timestamp}`);
+            cy.contains("Display Name").next().type(modelName);
             cy.get(".MuiDialog-container").within(() => {
               cy.contains("Create Model").click();
             });
@@ -32,7 +31,7 @@ describe("Schema: Repeater Field", () => {
   it("Creates a new repeater field", () => {
     cy.intercept("**/fields?showDeleted=true").as("getFields");
 
-    cy.contains(`Cypress Repeater Field Test ${timestamp}`).should("exist");
+    cy.contains(modelName).should("exist");
 
     // Open the add field modal
     cy.getBySelector("AddFieldBtn").should("exist").click({ force: true });
@@ -120,6 +119,34 @@ describe("Schema: Repeater Field", () => {
     cy.getBySelector("MediaRulesTab").click();
     cy.getBySelector("MediaCheckbox_limit").click();
     cy.getBySelector("MediaCheckbox_group_id").click();
+
+    // Click done
+    cy.getBySelector("SubFieldFormAddFieldBtn").click();
+
+    // Check if field exists
+    cy.getBySelector(`SubField_${SubFieldName}`).should("exist");
+  });
+
+  it("Adds an external url sub field", () => {
+    const SubFieldLabel = `External url`;
+    const SubFieldName = `external_url`;
+    const defaultValue = "https://google.com";
+
+    // Open the add field modal
+    cy.getBySelector("AddRepeaterSubFieldBtn").click();
+
+    // Select Media field
+    cy.getBySelector("FieldItem_link").click();
+
+    // Input field label
+    cy.getBySelector("FieldFormInput_label").type(SubFieldLabel);
+
+    cy.getBySelector("RulesTabBtn").click();
+    cy.getBySelector("DefaultValueCheckbox").click();
+    cy.getBySelector("DefaultValueInput").type(defaultValue);
+    cy.getBySelector("DefaultValueInput")
+      .find("input")
+      .should("have.value", defaultValue);
 
     // Click done
     cy.getBySelector("SubFieldFormAddFieldBtn").click();
