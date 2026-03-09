@@ -98,6 +98,7 @@ export const SubField = ({
 
   return (
     <Stack
+      data-cy={`SubField_${field.name}`}
       ref={(node) => drop(preview(node))}
       draggable
       direction="row"

@@ -129,6 +129,7 @@ export const RepeaterFields = ({
         </DndContextProvider>
 
         <Button
+          data-cy="AddRepeaterSubFieldBtn"
           variant="outlined"
           size="large"
           onClick={() => setOpenedView("selection")}

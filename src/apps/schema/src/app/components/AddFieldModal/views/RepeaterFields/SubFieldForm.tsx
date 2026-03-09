@@ -243,18 +243,21 @@ const SubFieldFormContent = ({
           }}
         >
           <Tab
+            data-cy="DetailsTabBtn"
             value="details"
             label="Details"
             icon={<SettingsRoundedIcon fontSize="small" />}
             iconPosition="start"
           />
           <Tab
+            data-cy="RulesTabBtn"
             value="rules"
             label="Rules"
             icon={<RuleRoundedIcon fontSize="small" />}
             iconPosition="start"
           />
           <Tab
+            data-cy="LearnTabBtn"
             value="learn"
             label="Learn"
             icon={<MenuBookRoundedIcon fontSize="small" />}
@@ -313,7 +316,7 @@ const SubFieldFormContent = ({
             Cancel
           </Button>
           <Button
-            data-cy="FieldFormAddFieldBtn"
+            data-cy="SubFieldFormAddFieldBtn"
             onClick={() => handleSubmit()}
             variant="contained"
             startIcon={<SaveRoundedIcon />}
@@ -335,7 +338,7 @@ const SubFieldFormContent = ({
           </Button>
           <Box>
             <Button
-              data-cy="FieldFormAddAnotherFieldBtn"
+              data-cy="SubFieldFormAddAnotherFieldBtn"
               variant="outlined"
               startIcon={<AddRoundedIcon />}
               sx={{
@@ -346,7 +349,7 @@ const SubFieldFormContent = ({
               Add Another Field
             </Button>
             <Button
-              data-cy="FieldFormAddFieldBtn"
+              data-cy="SubFieldFormAddFieldBtn"
               onClick={() => handleSubmit()}
               variant="contained"
             >
