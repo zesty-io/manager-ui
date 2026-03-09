@@ -109,7 +109,7 @@ export const RepeaterFields = ({
 
   return (
     <>
-      <Stack gap={1}>
+      <Stack data-cy="SubFieldList" gap={1}>
         <DndContextProvider>
           {localFields?.map((field, index) => (
             <SubField

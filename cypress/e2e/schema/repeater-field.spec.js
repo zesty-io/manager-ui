@@ -1,3 +1,5 @@
+import SchemaPage from "./pages/SchemaPage";
+
 describe("Schema: Repeater Field", () => {
   const timestamp = Date.now();
   const modelName = `Cypress Repeater Field Test ${timestamp}`;
@@ -335,13 +337,13 @@ describe("Schema: Repeater Field", () => {
   });
 
   it("Adds a color sub field", () => {
-    const fieldLabel = `Color`;
-    const fieldName = `color`;
+    const SubFieldLabel = `Color`;
+    const SubFieldName = `color`;
 
     cy.getBySelector("AddRepeaterSubFieldBtn").click();
     cy.getBySelector("FieldItem_color").click();
 
-    cy.getBySelector("FieldFormInput_label").type(fieldLabel);
+    cy.getBySelector("FieldFormInput_label").type(SubFieldLabel);
 
     cy.getBySelector("RulesTabBtn").click();
     cy.getBySelector("DefaultValueCheckbox").click();
@@ -350,45 +352,75 @@ describe("Schema: Repeater Field", () => {
     cy.getBySelector("DefaultValueCheckbox").click();
     cy.getBySelector("SubFieldFormAddFieldBtn").click();
 
-    cy.getBySelector(`SubField_${fieldName}`).should("exist");
+    cy.getBySelector(`SubField_${SubFieldName}`).should("exist");
   });
 
   it("Adds a sort order sub field", () => {
-    const fieldLabel = `Sort`;
-    const fieldName = `sort`;
+    const SubFieldLabel = `Sort`;
+    const SubFieldName = `sort`;
 
     cy.getBySelector("AddRepeaterSubFieldBtn").click();
     cy.getBySelector("FieldItem_sort").click();
 
-    cy.getBySelector("FieldFormInput_label").type(fieldLabel);
+    cy.getBySelector("FieldFormInput_label").type(SubFieldLabel);
 
     cy.getBySelector("RulesTabBtn").click();
     cy.getBySelector("DefaultValueCheckbox").click();
     cy.getBySelector("DefaultValueInput").type("12");
     cy.getBySelector("SubFieldFormAddFieldBtn").click();
 
-    cy.getBySelector(`SubField_${fieldName}`).should("exist");
+    cy.getBySelector(`SubField_${SubFieldName}`).should("exist");
   });
 
   it("Adds an uuid sub field", () => {
-    const fieldLabel = `UUID`;
-    const fieldName = `uuid`;
+    const SubFieldLabel = `UUID`;
+    const SubFieldName = `uuid`;
 
     cy.getBySelector("AddRepeaterSubFieldBtn").click();
     cy.getBySelector("FieldItem_uuid").click();
 
-    cy.getBySelector("FieldFormInput_label").type(fieldLabel);
+    cy.getBySelector("FieldFormInput_label").type(SubFieldLabel);
     cy.getBySelector("SubFieldFormAddFieldBtn").click();
-    cy.getBySelector(`SubField_${fieldName}`).should("exist");
+    cy.getBySelector(`SubField_${SubFieldName}`).should("exist");
   });
 
-  // it.skip("Updates the created repeater field", () => {
-  //   cy.intercept("**/fields?showDeleted=true").as("getFields");
-  //   cy.intercept("/v1/content/models/**").as("updateField");
+  it("Should save the added sub fields in the repeater field", () => {
+    cy.getBySelector("FieldFormAddFieldBtn").click();
+    cy.getBySelector(`Field_${fieldName}`).click();
+    cy.getBySelector("SubFieldList")
+      .find('[data-cy^="SubField_"]')
+      .should("have.length", 13);
+  });
 
-  //   // Open the repeater field
-  //   cy.getBySelector(`Field_${fieldName}`).click();
+  it("Should be able to add another field", () => {
+    cy.getBySelector("AddRepeaterSubFieldBtn").click();
+    cy.getBySelector("FieldItem_uuid").click();
 
-  //   //
-  // });
+    cy.getBySelector("FieldFormInput_label").type("UUID 2");
+    cy.getBySelector("SubFieldFormAddAnotherFieldBtn").click();
+    cy.getBySelector("SubFieldSelection").should("exist");
+  });
+
+  it("should not allow duplicate field labels", () => {
+    cy.reload();
+    cy.getBySelector("RepeaterFieldsTabBtn").click();
+    cy.getBySelector("AddRepeaterSubFieldBtn").click();
+    cy.getBySelector("FieldItem_uuid").click();
+    cy.getBySelector("FieldFormInput_label").type("uuid");
+    cy.getBySelector("SubFieldFormAddFieldBtn").click();
+    cy.contains(
+      "A field with this API/Parsley Reference already exists"
+    ).should("exist");
+    cy.getBySelector("FieldFormInput_label").clear().type("Unique Label");
+    cy.getBySelector("SubFieldFormAddFieldBtn").click();
+    cy.getBySelector("SubField_unique_label").should("exist");
+  });
+
+  after(() => {
+    cy.location("pathname").then((pathname) => {
+      const parts = pathname.split("/").filter((x) => x);
+      const modelZUID = parts[1];
+      cy.deleteModel(modelZUID);
+    });
+  });
 });

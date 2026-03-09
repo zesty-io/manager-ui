@@ -72,6 +72,7 @@ export const RepeaterFieldsSelection = ({
         </Stack>
       </DialogTitle>
       <DialogContent
+        data-cy="SubFieldSelection"
         dividers
         sx={{
           pt: 2.5,
