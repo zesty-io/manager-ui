@@ -155,7 +155,7 @@ describe("Schema: Repeater Field", () => {
     cy.getBySelector(`SubField_${SubFieldName}`).should("exist");
   });
 
-  it("Creates a currency sub field", () => {
+  it("Adds a currency sub field", () => {
     const fieldLabel = `Currency`;
     const fieldName = `currency`;
 
@@ -180,7 +180,7 @@ describe("Schema: Repeater Field", () => {
     cy.getBySelector(`SubField_${fieldName}`).should("exist");
   });
 
-  it("Creates a number sub field", () => {
+  it("Adds a number sub field", () => {
     const fieldLabel = `Number`;
     const fieldName = `number`;
 
@@ -197,6 +197,32 @@ describe("Schema: Repeater Field", () => {
     cy.getBySelector("MaxValueInput").type("100");
     cy.getBySelector("SubFieldFormAddFieldBtn").click();
 
+    cy.getBySelector(`SubField_${fieldName}`).should("exist");
+  });
+
+  it("Adds a boolean sub field", () => {
+    const fieldLabel = `Boolean ${timestamp}`;
+    const fieldName = `boolean_${timestamp}`;
+
+    cy.getBySelector("AddRepeaterSubFieldBtn").click();
+
+    cy.getBySelector("FieldItem_yes_no").click();
+
+    cy.getBySelector("FieldFormInput_label").type(fieldLabel);
+    cy.getBySelector("OptionLabel_0").type("Test option 1");
+    cy.getBySelector("OptionLabel_1").type("Test option 2");
+
+    cy.getBySelector("DeleteOption_0").should("not.exist");
+
+    cy.getBySelector("RulesTabBtn").click();
+    cy.getBySelector("DefaultValueCheckbox").click();
+    cy.getBySelector("DefaultValueInput").find("button").first().click();
+    cy.getBySelector("DefaultValueInput")
+      .find("button")
+      .first()
+      .should("have.attr", "aria-pressed", "true");
+
+    cy.getBySelector("SubFieldFormAddFieldBtn").click();
     cy.getBySelector(`SubField_${fieldName}`).should("exist");
   });
 
