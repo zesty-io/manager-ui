@@ -102,13 +102,39 @@ describe("Schema: Repeater Field", () => {
     cy.getBySelector(`SubField_${SubFieldName}`).should("exist");
   });
 
-  it.skip("Updates the created repeater field", () => {
-    cy.intercept("**/fields?showDeleted=true").as("getFields");
-    cy.intercept("/v1/content/models/**").as("updateField");
+  it("Adds a media sub field", () => {
+    const SubFieldLabel = `Media`;
+    const SubFieldName = `media`;
 
-    // Open the repeater field
-    cy.getBySelector(`Field_${fieldName}`).click();
+    // Open the add field modal
+    cy.getBySelector("AddRepeaterSubFieldBtn").click();
 
-    //
+    // Select Media field
+    cy.getBySelector("FieldItem_images").click();
+
+    // Input field label
+    cy.getBySelector("FieldFormInput_label").type(SubFieldLabel);
+
+    // Navigate to rules tab and enable media limit and folder lock
+    cy.getBySelector("RulesTabBtn").click();
+    cy.getBySelector("MediaRulesTab").click();
+    cy.getBySelector("MediaCheckbox_limit").click();
+    cy.getBySelector("MediaCheckbox_group_id").click();
+
+    // Click done
+    cy.getBySelector("SubFieldFormAddFieldBtn").click();
+
+    // Check if field exists
+    cy.getBySelector(`SubField_${SubFieldName}`).should("exist");
   });
+
+  // it.skip("Updates the created repeater field", () => {
+  //   cy.intercept("**/fields?showDeleted=true").as("getFields");
+  //   cy.intercept("/v1/content/models/**").as("updateField");
+
+  //   // Open the repeater field
+  //   cy.getBySelector(`Field_${fieldName}`).click();
+
+  //   //
+  // });
 });
