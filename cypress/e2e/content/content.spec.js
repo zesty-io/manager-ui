@@ -699,5 +699,48 @@ describe("Content Specs", () => {
         .find(".MuiDataGrid-row")
         .should("have.length", 1);
     });
+
+    it("should be able to update a row item", () => {
+      const oldValue = "update my value";
+      const updatedValue = "I am now updated";
+
+      // Add a new row item
+      cy.getBySelector("AddRepeaterRowItemBtn").click();
+      cy.getBySelector("subfield:single_line_text")
+        .find("input")
+        .clear()
+        .type(oldValue);
+      cy.getBySelector("subfield:url")
+        .find("input")
+        .clear()
+        .type("https://zesty.io");
+      cy.getBySelector("SaveRepeaterRowItemBtn").click();
+
+      // Verify old value
+      cy.getBySelector("field:repeater")
+        .find(".MuiDataGrid-row")
+        .eq(1)
+        .find("[data-field='single_line_text']")
+        .should("contain.text", oldValue);
+
+      // Update the value
+      cy.getBySelector("field:repeater")
+        .find(".MuiDataGrid-row")
+        .eq(1)
+        .click({ force: true });
+      cy.getBySelector("subfield:single_line_text")
+        .find("input")
+        .clear()
+        .type(updatedValue);
+      cy.wait(500);
+      cy.getBySelector("SaveRepeaterRowItemBtn").click();
+
+      // Verify updated value
+      cy.getBySelector("field:repeater")
+        .find(".MuiDataGrid-row")
+        .eq(1)
+        .find("[data-field='single_line_text']")
+        .should("contain.text", updatedValue);
+    });
   });
 });
