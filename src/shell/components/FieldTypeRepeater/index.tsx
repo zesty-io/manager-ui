@@ -307,6 +307,7 @@ export const FieldTypeRepeater = ({
       >
         {rowSelectionModel.length > 0 && (
           <IconButton
+            data-cy="BulkRemoveRepeaterFieldRowsBtn"
             onClick={() => {
               handleRemoveRow(rowSelectionModel as number[]);
               setRowSelectionModel([]);
