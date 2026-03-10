@@ -325,6 +325,7 @@ export const FieldTypeRepeater = ({
         <AutoSizer>
           {({ width, height }: Size) => (
             <DataGridPro
+              data-cy="RepeaterFieldGrid"
               rowReordering
               onRowOrderChange={handleRowOrderChange}
               rows={rows}

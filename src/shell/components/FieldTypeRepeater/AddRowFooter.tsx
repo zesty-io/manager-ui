@@ -8,7 +8,12 @@ type AddRowFooterProps = {
 export const AddRowFooter = ({ fieldName, onAddRow }: AddRowFooterProps) => {
   return (
     <Stack py={0.5} alignItems="center">
-      <Button variant="outlined" startIcon={<AddIcon />} onClick={onAddRow}>
+      <Button
+        data-cy="AddRepeaterRowItemBtn"
+        variant="outlined"
+        startIcon={<AddIcon />}
+        onClick={onAddRow}
+      >
         Add row to {fieldName}
       </Button>
     </Stack>

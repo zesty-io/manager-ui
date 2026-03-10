@@ -108,10 +108,11 @@ export const SubField = memo(
       field.settings?.maxCharLimit || MaxLengths[field.datatype];
     const minLength = field.settings?.minCharLimit || 0;
     const hasError = errors && Object.values(errors)?.some((error) => !!error);
+    let content: JSX.Element;
 
     switch (field.datatype) {
       case "text":
-        return (
+        content = (
           <FieldShell
             valueLength={(local as string)?.length ?? 0}
             settings={
@@ -140,9 +141,10 @@ export const SubField = memo(
             />
           </FieldShell>
         );
+        break;
 
       case "link":
-        return (
+        content = (
           <FieldShell
             settings={field}
             valueLength={(local as string)?.length ?? 0}
@@ -160,10 +162,11 @@ export const SubField = memo(
             />
           </FieldShell>
         );
+        break;
 
       case "uuid":
         //Note we should generate the UUID here if one does not exist
-        return (
+        content = (
           <FieldShell
             settings={field}
             valueLength={(value as string)?.length ?? 0}
@@ -179,9 +182,10 @@ export const SubField = memo(
             />
           </FieldShell>
         );
+        break;
 
       case "textarea":
-        return (
+        content = (
           <FieldShell
             valueLength={(local as string)?.length ?? 0}
             settings={field}
@@ -201,11 +205,12 @@ export const SubField = memo(
             />
           </FieldShell>
         );
+        break;
 
       case "wysiwyg_basic":
         const [characterCount, setCharacterCount] = useState(0);
 
-        return (
+        content = (
           <>
             <FieldShell
               valueLength={characterCount}
@@ -235,11 +240,12 @@ export const SubField = memo(
             {imageModal && renderMediaModal()}
           </>
         );
+        break;
 
       case "markdown":
         const [editorType, setEditorType] = useState<EditorType>();
 
-        return (
+        content = (
           <>
             <FieldShell
               valueLength={(local as string)?.length ?? 0}
@@ -268,6 +274,7 @@ export const SubField = memo(
             {imageModal && renderMediaModal()}
           </>
         );
+        break;
 
       case "images":
         const images = useMemo(
@@ -276,7 +283,7 @@ export const SubField = memo(
         );
         const error = errors && Object.values(errors)?.some((error) => !!error);
 
-        return (
+        content = (
           <>
             <FieldShell settings={field} errors={errors} withComment={false}>
               <FieldTypeMedia
@@ -353,12 +360,13 @@ export const SubField = memo(
             )}
           </>
         );
+        break;
 
       case "yes_no":
         if (field?.settings?.options) {
           const binaryFieldOpts = Object.values(field?.settings?.options);
 
-          return (
+          content = (
             <FieldShell settings={field} errors={errors} withComment={false}>
               <ToggleButtonGroup
                 color="primary"
@@ -397,7 +405,7 @@ export const SubField = memo(
             </FieldShell>
           );
         } else {
-          return (
+          content = (
             <h1 style={{ color: "#e53c05" }}>
               <FontAwesomeIcon icon={faExclamationTriangle} />
               &nbsp;
@@ -411,6 +419,7 @@ export const SubField = memo(
             </h1>
           );
         }
+        break;
 
       case "dropdown":
         const dropdownOptions = useMemo(() => {
@@ -424,7 +433,7 @@ export const SubField = memo(
             : [];
         }, [field?.settings?.options]);
 
-        return (
+        content = (
           <FieldShell settings={field} errors={errors} withComment={false}>
             <Autocomplete
               clearOnBlur
@@ -452,9 +461,10 @@ export const SubField = memo(
             />
           </FieldShell>
         );
+        break;
 
       case "color":
-        return (
+        content = (
           <Box maxWidth={300}>
             <FieldShell settings={field} errors={errors} withComment={false}>
               <FieldTypeColor
@@ -466,9 +476,10 @@ export const SubField = memo(
             </FieldShell>
           </Box>
         );
+        break;
 
       case "number":
-        return (
+        content = (
           <FieldShell settings={field} errors={errors} withComment={false}>
             <FieldTypeNumber
               value={+value || 0}
@@ -479,9 +490,10 @@ export const SubField = memo(
             />
           </FieldShell>
         );
+        break;
 
       case "currency":
-        return (
+        content = (
           <FieldShell
             settings={field}
             customTooltip={`View this value in different currencies based upon your locale "${window.navigator.language}"`}
@@ -497,9 +509,10 @@ export const SubField = memo(
             />
           </FieldShell>
         );
+        break;
 
       case "sort":
-        return (
+        content = (
           <FieldShell settings={field} errors={errors} withComment={false}>
             <FieldTypeSort
               name={field?.name}
@@ -512,9 +525,10 @@ export const SubField = memo(
             />
           </FieldShell>
         );
+        break;
 
       default:
-        return (
+        content = (
           <Link
             component={RouterLink}
             to={`/schema/${modelZUID}/field/${repeaterFieldItemZUID}`}
@@ -522,7 +536,10 @@ export const SubField = memo(
             Failed loading {field.label} field. Click here to view field schema.
           </Link>
         );
+        break;
     }
+
+    return <div data-cy={`subfield:${field?.name}`}>{content}</div>;
   }
 );
 

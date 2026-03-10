@@ -329,6 +329,7 @@ export const RowDialog = ({
         {isUpdate ? (
           <>
             <Button
+              data-cy="RemoveRepeaterRowItemBtn"
               variant="contained"
               onClick={() => onRemoveRow(formData.id)}
               color="error"
@@ -337,10 +338,19 @@ export const RowDialog = ({
               Remove Row
             </Button>
             <Stack direction="row" spacing={2}>
-              <Button variant="outlined" onClick={onClose} color="inherit">
+              <Button
+                data-cy="CloseAddRepeaterRowDialogBtn"
+                variant="outlined"
+                onClick={onClose}
+                color="inherit"
+              >
                 Cancel
               </Button>
-              <Button variant="contained" onClick={() => handleSubmit()}>
+              <Button
+                data-cy="SaveRepeaterRowItemBtn"
+                variant="contained"
+                onClick={() => handleSubmit()}
+              >
                 Done
               </Button>
             </Stack>
@@ -352,13 +362,18 @@ export const RowDialog = ({
             </Button>
             <Stack direction="row" spacing={2}>
               <Button
+                data-cy="AddAnotherRepeaterRowItemBtn"
                 variant="outlined"
                 onClick={() => handleSubmit(true)}
                 startIcon={<AddIcon />}
               >
                 Add another field
               </Button>
-              <Button variant="contained" onClick={() => handleSubmit()}>
+              <Button
+                data-cy="SaveRepeaterRowItemBtn"
+                variant="contained"
+                onClick={() => handleSubmit()}
+              >
                 Save
               </Button>
             </Stack>
