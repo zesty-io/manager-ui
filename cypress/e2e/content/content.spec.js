@@ -626,4 +626,78 @@ describe("Content Specs", () => {
       cy.contains("3 selected").should("exist");
     });
   });
+
+  context.only("Repeater Field", () => {
+    before(() => {
+      cy.waitOn("/v1/content/models*", () => {
+        cy.visit(
+          `/content/${Cypress.env("modelZUID")}/${Cypress.env("itemZUID")}`
+        );
+      });
+
+      cy.getBySelector("DuoModeToggle", { timeout: 40000 }).click(forceClick);
+    });
+
+    it("is should not be able to add an item if required fields are missing", () => {
+      cy.getBySelector("AddRepeaterRowItemBtn").click();
+      cy.getBySelector("SaveRepeaterRowItemBtn").click();
+      cy.contains("Required Field. Please enter a value.").should("exist");
+    });
+
+    it("should autofill default values", () => {
+      cy.getBySelector("subfield:multiline_text")
+        .find("textarea")
+        .should("have.value", "default value");
+    });
+
+    it("should be able to add a new row item", () => {
+      cy.getBySelector("subfield:single_line_text")
+        .find("input")
+        .clear()
+        .type("single line text value");
+      cy.iframe("#wysiwyg_ifr").click().type("wysiwyg text value");
+      cy.getBySelector("subfield:markdown")
+        .find("textarea")
+        .clear()
+        .type("markdown value");
+
+      // Add media image from bynder
+      cy.getBySelector("subfield:media")
+        .find('[data-cy="addFromBynderBtn"]')
+        .click();
+      cy.get('[data-test-id="CompactViewContainer"] [data-testid="root"]')
+        .shadow()
+        .as("shadow");
+      cy.get("@shadow")
+        .find('.card-list div [data-testid="asset-card"] button:eq(0)')
+        .click();
+      cy.get("@shadow").find('[data-testid="add-button"]').click();
+
+      cy.getBySelector("subfield:url")
+        .find("input")
+        .clear()
+        .type("https://zesty.io");
+      cy.getBySelector("subfield:number").find("input").clear().type("999");
+      cy.getBySelector("subfield:currency")
+        .find("input")
+        .clear()
+        .type("100.00");
+      cy.getBySelector("subfield:boolean")
+        .contains("Yes")
+        .click({ force: true });
+
+      // Set dropdown value
+      cy.getBySelector("subfield:dropdown")
+        .find(".MuiAutocomplete-root input")
+        .click();
+      cy.get(".MuiAutocomplete-option").first().click();
+
+      cy.getBySelector("subfield:sort").find("input").clear().type("99");
+
+      cy.getBySelector("SaveRepeaterRowItemBtn").click();
+      cy.getBySelector("field:repeater")
+        .find(".MuiDataGrid-row")
+        .should("have.length", 1);
+    });
+  });
 });
