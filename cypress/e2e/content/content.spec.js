@@ -627,7 +627,7 @@ describe("Content Specs", () => {
     });
   });
 
-  context.only("Repeater Field", () => {
+  context("Repeater Field", () => {
     before(() => {
       cy.waitOn("/v1/content/models*", () => {
         cy.visit(
