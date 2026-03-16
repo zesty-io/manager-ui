@@ -32,9 +32,9 @@ import { StudioSidePanel } from "./components/StudioWrapper/StudioSidePanel";
 const drawerWidth = 440;
 
 type SelectedElement = {
+  studioId?: string;
   fieldZuid: string;
-  dataset: Record<string, string>;
-  weType?: string;
+  fieldType?: string;
   itemZuid?: string;
   modelZuid?: string;
 };
@@ -276,12 +276,6 @@ export const StudioWrapper = () => {
     return map;
   }, [activeFields]);
 
-  useEffect(() => {
-    if (!selectedElement?.fieldZuid) return;
-    const nextName = fieldNameByZuid.get(selectedElement.fieldZuid) || null;
-    setFilteredFieldName(nextName);
-  }, [fieldNameByZuid, selectedElement]);
-
   const hasErrors = useMemo(() => {
     const errorList = Object.values(fieldErrors)
       ?.map((error) => {
@@ -398,12 +392,12 @@ export const StudioWrapper = () => {
   const postCommandToBridge = useCallback(
     (cmd: {
       action: string;
+      studioId?: string;
       fieldZuid?: string;
       className?: string;
-      style?: Record<string, string>;
       css?: string;
       value?: string;
-      html?: string; // NEW: for wysiwyg_advanced
+      html?: string;
       itemZuid?: string;
     }) => {
       const iframeWindow = iframeRef.current?.contentWindow;
@@ -417,7 +411,7 @@ export const StudioWrapper = () => {
             payload: cmd,
           },
         },
-        "*" // TODO: restrict to preview origin in prod
+        "*"
       );
     },
     []
@@ -426,14 +420,14 @@ export const StudioWrapper = () => {
   const clearSelection = useCallback(() => {
     if (selectedElement?.fieldZuid) {
       postCommandToBridge({
-        action: "removeClass",
-        fieldZuid: selectedElement.fieldZuid,
-        className: "studio-selected",
+        action: "disableEditing",
+        studioId: selectedElement.studioId,
         itemZuid: selectedElement.itemZuid,
       });
       postCommandToBridge({
-        action: "disableEditing",
-        fieldZuid: selectedElement.fieldZuid,
+        action: "removeClass",
+        studioId: selectedElement.studioId,
+        className: "studio-selected",
         itemZuid: selectedElement.itemZuid,
       });
     }
@@ -525,64 +519,75 @@ export const StudioWrapper = () => {
   }, [clearSelection, selectedItem?.dirty]);
 
   const clearHighlightOnly = useCallback(() => {
-    if (!selectedElement?.fieldZuid) return;
-    postCommandToBridge({
-      action: "removeClass",
-      fieldZuid: selectedElement.fieldZuid,
-      className: "studio-selected",
-      itemZuid: selectedElement.itemZuid,
-    });
+    if (selectedElement?.fieldZuid) {
+      postCommandToBridge({
+        action: "disableEditing",
+        studioId: selectedElement.studioId,
+        itemZuid: selectedElement.itemZuid,
+      });
+      postCommandToBridge({
+        action: "removeClass",
+        studioId: selectedElement.studioId,
+        className: "studio-selected",
+        itemZuid: selectedElement.itemZuid,
+      });
+    }
+    setFilteredFieldName(null);
   }, [postCommandToBridge, selectedElement]);
 
   const applySelection = useCallback(
     (next: {
+      studioId?: string;
       fieldZuid: string;
-      dataset: Record<string, string>;
-      weType?: string;
+      fieldType?: string;
       itemZuid?: string;
       modelZuid?: string;
     }) => {
-      const { fieldZuid, dataset, weType, itemZuid, modelZuid } = next;
+      const { studioId, fieldZuid, fieldType, itemZuid, modelZuid } = next;
 
-      if (
-        selectedElement?.fieldZuid &&
-        selectedElement.fieldZuid !== fieldZuid
-      ) {
+      if (selectedElement?.studioId && selectedElement.studioId !== studioId) {
         postCommandToBridge({
-          action: "removeClass",
-          fieldZuid: selectedElement.fieldZuid,
-          className: "studio-selected",
+          action: "disableEditing",
+          studioId: selectedElement.studioId,
           itemZuid: selectedElement.itemZuid,
         });
         postCommandToBridge({
-          action: "disableEditing",
-          fieldZuid: selectedElement.fieldZuid,
+          action: "removeClass",
+          studioId: selectedElement.studioId,
+          className: "studio-selected",
           itemZuid: selectedElement.itemZuid,
         });
       }
 
       setSelectedElement({
+        studioId,
         fieldZuid,
-        dataset,
-        weType,
+        fieldType,
         itemZuid,
         modelZuid,
       });
-      const fieldName = fieldNameByZuid.get(fieldZuid) || null;
-      setFilteredFieldName(fieldName);
+      setFilteredFieldName(fieldNameByZuid.get(fieldZuid) || null);
       setPanelMode("edit");
       postCommandToBridge({
         action: "addClass",
-        fieldZuid,
+        studioId,
         className: "studio-selected",
         itemZuid,
       });
-
-      // Enable inline editing for text / textarea / wysiwyg_advanced
-      if (["text", "textarea", "wysiwyg_advanced"].includes(weType)) {
+      if (
+        studioId &&
+        fieldType &&
+        [
+          "text",
+          "textarea",
+          "markdown",
+          "wysiwyg_basic",
+          "wysiwyg_advanced",
+        ].includes(fieldType)
+      ) {
         postCommandToBridge({
           action: "enableEditing",
-          fieldZuid,
+          studioId,
           itemZuid,
         });
       }
@@ -590,44 +595,52 @@ export const StudioWrapper = () => {
     [fieldNameByZuid, postCommandToBridge, selectedElement]
   );
 
-  // Sync item field values -> iframe for text / textarea / wysiwyg_advanced
   useEffect(() => {
-    if (!editorItem || !selectedItemZUID || !activeFields?.length) return;
+    if (
+      !selectedElement?.studioId ||
+      !selectedElement.fieldZuid ||
+      !editorItem
+    ) {
+      return;
+    }
 
-    const supportedTypes = new Set(["text", "textarea", "wysiwyg_advanced"]);
+    const selectedFieldName = fieldNameByZuid.get(selectedElement.fieldZuid);
+    if (!selectedFieldName) return;
 
-    activeFields.forEach((field: any) => {
-      if (!supportedTypes.has(field?.datatype)) return;
-      const fieldZuid = field?.ZUID;
-      const fieldName = field?.name;
-      if (!fieldZuid) return;
-      if (!fieldName) return;
+    const rawValue = editorItem?.data?.[selectedFieldName];
+    const nextValue =
+      typeof rawValue === "string"
+        ? rawValue
+        : rawValue == null
+        ? ""
+        : String(rawValue);
 
-      const rawValue = editorItem?.data?.[fieldName];
-      const nextValue =
-        typeof rawValue === "string"
-          ? rawValue
-          : rawValue == null
-          ? ""
-          : String(rawValue);
+    if (
+      ["markdown", "wysiwyg_basic", "wysiwyg_advanced"].includes(
+        selectedElement.fieldType || ""
+      )
+    ) {
+      postCommandToBridge({
+        action: "setHtmlByField",
+        fieldZuid: selectedElement.fieldZuid,
+        itemZuid: selectedElement.itemZuid,
+        html: nextValue,
+      });
+      return;
+    }
 
-      if (field.datatype === "wysiwyg_advanced") {
-        postCommandToBridge({
-          action: "setHtmlByField",
-          itemZuid: selectedItemZUID,
-          fieldZuid,
-          html: nextValue,
-        });
-      } else {
-        postCommandToBridge({
-          action: "setTextByField",
-          itemZuid: selectedItemZUID,
-          fieldZuid,
-          value: nextValue,
-        });
-      }
-    });
-  }, [activeFields, editorItem, postCommandToBridge, selectedItemZUID]);
+    if (
+      selectedElement.fieldType &&
+      ["text", "textarea"].includes(selectedElement.fieldType)
+    ) {
+      postCommandToBridge({
+        action: "setTextByField",
+        fieldZuid: selectedElement.fieldZuid,
+        itemZuid: selectedElement.itemZuid,
+        value: nextValue,
+      });
+    }
+  }, [editorItem, fieldNameByZuid, postCommandToBridge, selectedElement]);
 
   const handleSave = useCallback(async () => {
     if (!selectedItemZUID) return;
@@ -823,14 +836,6 @@ export const StudioWrapper = () => {
         postCommandToBridge({
           action: "injectCss",
           css: `
-            we[data-we-type] {
-              position: relative;
-            }
-
-            /* WYSIWYG regions should behave like block containers */
-            we[data-we-type="wysiwyg_advanced"] {
-              display: block;
-            }
             .studio-hover {
               outline: 1px dashed #00bcd4;
               outline-offset: 2px;
@@ -891,10 +896,11 @@ export const StudioWrapper = () => {
 
         const dataset: Record<string, string> =
           (element.dataset as Record<string, string>) || {};
-        const fieldZuid: string | undefined = dataset.weFieldZuid;
-        const weType = dataset.weType;
-        const itemZuid = dataset.weItemZuid;
-        const modelZuid = dataset.weModelZuid;
+        const studioId = dataset.studioId;
+        const fieldZuid: string | undefined = dataset.fieldZuid;
+        const fieldType = dataset.fieldType;
+        const itemZuid = dataset.itemZuid;
+        const modelZuid = dataset.modelZuid;
 
         switch (eventType) {
           case "click": {
@@ -910,9 +916,9 @@ export const StudioWrapper = () => {
                 openModal((shouldProceed: boolean) => {
                   if (shouldProceed) {
                     applySelection({
+                      studioId,
                       fieldZuid,
-                      dataset,
-                      weType,
+                      fieldType,
                       itemZuid,
                       modelZuid,
                     });
@@ -923,9 +929,9 @@ export const StudioWrapper = () => {
             }
 
             applySelection({
+              studioId,
               fieldZuid,
-              dataset,
-              weType,
+              fieldType,
               itemZuid,
               modelZuid,
             });
@@ -933,11 +939,26 @@ export const StudioWrapper = () => {
             break;
           }
 
+          case "input": {
+            if (!fieldZuid || !itemZuid) return;
+
+            const fieldName = fieldNameByZuid.get(fieldZuid);
+            if (!fieldName) return;
+
+            dispatch({
+              type: "SET_ITEM_DATA",
+              itemZUID: itemZuid,
+              key: fieldName,
+              value: typeof value === "string" ? value : "",
+            });
+            break;
+          }
+
           case "mouseover": {
-            if (!fieldZuid) return;
+            if (!studioId) return;
             postCommandToBridge({
               action: "addClass",
-              fieldZuid,
+              studioId,
               className: "studio-hover",
               itemZuid,
             });
@@ -945,31 +966,12 @@ export const StudioWrapper = () => {
           }
 
           case "mouseout": {
-            if (!fieldZuid) return;
+            if (!studioId) return;
             postCommandToBridge({
               action: "removeClass",
-              fieldZuid,
+              studioId,
               className: "studio-hover",
               itemZuid,
-            });
-            break;
-          }
-
-          case "input": {
-            if (!fieldZuid) return;
-            // value comes from bridge:
-            // - text/textarea: normalized text
-            // - wysiwyg_advanced: innerHTML
-            const nextValue: string = typeof value === "string" ? value : "";
-            const fieldName = fieldNameByZuid.get(fieldZuid);
-            if (!fieldName) return;
-
-            dispatch({
-              type: "SET_ITEM_DATA",
-              itemZUID: dataset.weItemZuid,
-              key: fieldName,
-              // convert empty strings to null if you want later
-              value: nextValue,
             });
             break;
           }
@@ -990,7 +992,6 @@ export const StudioWrapper = () => {
     dispatch,
     fieldNameByZuid,
     postCommandToBridge,
-    selectedElement,
     selectedItem?.dirty,
     selectedItemZUID,
   ]);
@@ -1050,10 +1051,7 @@ export const StudioWrapper = () => {
           variant="outlined"
           size="large"
           fullWidth
-          onClick={() => {
-            clearHighlightOnly();
-            setFilteredFieldName(null);
-          }}
+          onClick={clearHighlightOnly}
         >
           View All Related Fields
         </Button>
