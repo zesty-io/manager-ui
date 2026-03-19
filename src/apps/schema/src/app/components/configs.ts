@@ -731,7 +731,7 @@ const FORM_CONFIG: Record<FieldType, FormConfig> = {
     rules: [],
   },
   repeater: {
-    details: [...COMMON_FIELDS],
+    details: [...COMMON_FIELDS.slice(0, 5)],
     rules: [],
   },
 };

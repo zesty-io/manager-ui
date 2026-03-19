@@ -105,7 +105,9 @@ const METADATA_COLUMNS = [
     valueGetter: (params: any, row: any) => row?.meta?.ZUID,
   },
 ];
-const fieldTypeColumnConfigMap = {
+const fieldTypeColumnConfigMap: Partial<
+  Record<ContentModelField["datatype"], Record<string, unknown>>
+> = {
   text: {
     width: 360,
     filterable: true,
@@ -260,10 +262,6 @@ const fieldTypeColumnConfigMap = {
     width: 200,
     filterable: true,
   },
-  repeater: {
-    width: 200,
-    filterable: true,
-  },
 } as const;
 
 export const ItemListTable = memo(
@@ -341,7 +339,12 @@ export const ItemListTable = memo(
         result = [
           ...result,
           ...fields
-            ?.filter((field) => !field.deletedAt && field?.settings?.list)
+            ?.filter(
+              (field) =>
+                !field.deletedAt &&
+                field?.settings?.list &&
+                field?.datatype !== "repeater"
+            )
             ?.map((field) => ({
               field: field.name,
               headerName: field.label,
@@ -357,7 +360,7 @@ export const ItemListTable = memo(
 
                 return row.data[field.name];
               },
-              ...fieldTypeColumnConfigMap[field.datatype],
+              ...(fieldTypeColumnConfigMap[field.datatype] ?? {}),
               // if field is yes_no but it has custom options increase the width
               ...(field.datatype === "yes_no" &&
                 field?.settings?.options?.[0] !== "No" &&
