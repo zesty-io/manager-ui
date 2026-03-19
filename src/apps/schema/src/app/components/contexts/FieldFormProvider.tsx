@@ -166,6 +166,7 @@ export const FieldFormProvider = ({
     if (type === "repeater") {
       formFields = {
         ...formFields,
+        list: false, // Repeater fields do not need to get rendered on the multipage table
         subFields: fieldData?.settings?.subFields || ([] as RepeaterSubField[]),
       };
     }
