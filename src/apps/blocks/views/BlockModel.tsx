@@ -213,6 +213,7 @@ const BlockVariantCard = ({ item, onClick }: BlockVariantCardProps) => {
   const [noImage, setNoImage] = useState(false);
   return (
     <Box
+      data-cy="block-variant-card"
       key={item.meta.ZUID}
       width={265}
       sx={{
