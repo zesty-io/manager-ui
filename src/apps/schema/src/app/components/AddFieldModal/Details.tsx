@@ -215,7 +215,7 @@ export const Details = ({
         );
       })}
       {canDeactivate && isUpdateField && (
-        <Grid size={12}>
+        <Grid size={12} pl={2.5}>
           <Button
             data-cy="DeactivateReactivateFieldUpdateModal"
             variant="outlined"
