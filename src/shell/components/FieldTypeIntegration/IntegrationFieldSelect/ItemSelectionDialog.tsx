@@ -385,7 +385,7 @@ const ItemSelectionDialog = ({
                 startIcon={<Check />}
                 onClick={handleSave}
               >
-                Done
+                {!value?.length ? "Done" : "Save Changes"}
               </Button>
             </>
           )}
