@@ -321,11 +321,6 @@ const ItemSelectionDialog = ({
     forSyncIds,
   };
 
-  useEffect(() => {
-    const keys = Object.keys(value?.[0] || {});
-    console.debug("value uniqueIdKey keys: ", { value, uniqueIdKey, keys });
-  }, [value, uniqueIdKey]);
-
   return (
     <Dialog
       data-cy="integrationSelectionFormDialog"
