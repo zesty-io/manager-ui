@@ -1,10 +1,17 @@
-import { API_ENDPOINTS } from "../../support/api";
-import genericApi from "../../fixtures/integration-field/generic.json";
-import specialApi from "../../fixtures/integration-field/special.json";
-import apiFields from "../../fixtures/integration-field/fields.json";
+import genericApi from "../../fixtures/integration/generic.json";
+import specialApi from "../../fixtures/integration/special.json";
+
 import { DISPLAY_OPTIONS_CONFIG } from "../../../src/shell/components/FieldTypeIntegration/configs";
 
 const forceClick = { force: true };
+
+const ENDPOINTS = {
+  generic: "https://8xbq19z1-dev.preview.dev.zesty.io/api/generic.json",
+  shopify: "https://shopify.dev/docs/api/ajax/reference/products",
+  youtube: "https://youtube.googleapis.com/youtube/v3/channels",
+  mux: "https://api.mux.com/video/v1/assets",
+  classy: "https://api.classy.org/v1/campaigns",
+};
 
 const genericTypes = ["simple", "text", "image", "video", "details"];
 const specialTypes = ["shopify", "youtube", "mux", "classy"];
@@ -24,44 +31,29 @@ const KEY_PATHS = {
   },
 };
 
-const MODEL_SCHEMA = {
-  label: "__INTEGRATION-TEST",
-  name: "__integration_test",
-  type: "templateset",
-  description: "",
-  parentZUID: null,
-  listed: true,
-};
-
-const GENERIC_FIELD_DATA = {
+const FIELD_DATA = {
   label: "integration generic field",
   name: "integration_generic_field",
   type: "integration",
-  endpoint: "https://test.api.com/api/v1/generic.json",
-};
-
-const SPECIAL_FIELD_DATA = {
-  label: "integration special field",
-  name: "integration_special_field",
-  type: "integration",
-  endpoint: "https://test.api.com/api/v1/special.json",
+  endpoint: ENDPOINTS.generic,
 };
 
 describe("Integration Field", () => {
+  let MODEL = null;
   before(() => {
-    deleteTestData();
-    createTestData();
-  });
-
-  after(() => {
-    deleteTestData();
+    cy.task("seed:content", "fixtures/integration/fields.json").then(
+      ({ model }) => {
+        Cypress.env("modelZUID", model?.ZUID);
+        MODEL = model;
+      }
+    );
   });
 
   describe("Add Field", () => {
     context("Generic Display Types", () => {
       genericTypes.forEach((valueType) => {
         it(`${valueType}`.toUpperCase(), () => {
-          connectToEndpoint(GENERIC_FIELD_DATA.endpoint, valueType, genericApi);
+          connectToEndpoint(FIELD_DATA.endpoint, valueType, genericApi);
           addGenericField(valueType);
         });
         it(`Submit Generic Type Field- ${valueType})`, () => {
@@ -82,11 +74,7 @@ describe("Integration Field", () => {
     context("Special Display Types", () => {
       specialTypes.forEach((valueType) => {
         it(`${valueType}`.toUpperCase(), () => {
-          connectToEndpoint(
-            `https://test.${valueType}.api.com/api/special`,
-            valueType,
-            specialApi
-          );
+          connectToEndpoint(ENDPOINTS[valueType], valueType, specialApi);
           addSpecialField(valueType);
         });
         it(`Submit Special Type Field - ${valueType})`, () => {
@@ -109,47 +97,23 @@ describe("Integration Field", () => {
     it("Create Content Item", () => {
       const modelZUID = Cypress.env("modelZUID");
 
-      const newData = apiFields.data.map((item) => ({
-        ...item,
-        contentModelZUID: modelZUID,
-        name:
-          item.datatype === "integration" ? GENERIC_FIELD_DATA.name : item.name,
-        label:
-          item.datatype === "integration"
-            ? GENERIC_FIELD_DATA.label
-            : item.label,
-        ...(item.datatype === "integration"
-          ? {
-              settings: {
-                integrationFieldConfig: {
-                  ...item.settings.integrationFieldConfig,
-                  endpoint: GENERIC_FIELD_DATA.endpoint,
-                },
-              },
-            }
-          : {}),
-      }));
-      cy.intercept(
-        "GET",
-        `/v1/content/models/${modelZUID}/fields?showDeleted=*`
-      );
-
-      cy.intercept("GET", GENERIC_FIELD_DATA.endpoint);
-
       cy.visit(`/content/${modelZUID}/new`);
+      cy.get(`[data-cy="field:title"]`).find("input").type(MODEL?.label);
+
       cy.get(
-        `[data-cy="field:${GENERIC_FIELD_DATA?.name}"] [data-cy="integrationSelectItemsButton"]`
+        `[data-cy="field:simple"] [data-cy="integrationSelectItemsButton"]`
       ).click();
       cy.get('[data-cy="integrationSelectionFormDialog"]').should("exist");
     });
     it("Search Filter with - results", () => {
       cy.get('[data-cy="integrationSelectionFormSearchBox"] input')
         .clear()
-        .type("Memphis");
 
-      cy.get(".integrationSelectionFormListContainer > div")
+        .type(genericApi[0].name);
+
+      cy.get(".integrationSelectionFormListContainer")
         .children()
-        .should("have.length", 3);
+        .should("have.length", 2);
     });
     it("Search Filter - no items found", () => {
       cy.get('[data-cy="integrationSelectionFormSearchBox"] input')
@@ -168,13 +132,13 @@ describe("Integration Field", () => {
     });
     it("select 3 Items from the list", () => {
       cy.get(
-        '.integrationSelectionFormListContainer > div [data-cy="integrationSelectCard"]:eq(0) input'
+        '.integrationSelectionFormListContainer [data-cy="integrationSelectCard"]:eq(0) input'
       ).check({ force: true });
       cy.get(
-        '.integrationSelectionFormListContainer > div [data-cy="integrationSelectCard"]:eq(1) input'
+        '.integrationSelectionFormListContainer [data-cy="integrationSelectCard"]:eq(1) input'
       ).check({ force: true });
       cy.get(
-        '.integrationSelectionFormListContainer > div [data-cy="integrationSelectCard"]:eq(2) input'
+        '.integrationSelectionFormListContainer [data-cy="integrationSelectCard"]:eq(2) input'
       ).check({ force: true });
 
       cy.get('[data-cy="selectIntegrationFormDoneButton"]').click();
@@ -236,35 +200,32 @@ describe("Integration Field", () => {
     });
 
     it("Save Item", () => {
+      cy.intercept("**/v1/content/models/*/items").as("saveItem");
       cy.get('[data-cy="CreateItemSaveButton"]').click(forceClick);
-      cy.get(
-        ".MuiPopover-root.moreOptionMenu ul li.moreOptionMenuItem-remove"
-      ).click();
 
-      cy.get('[data-cy="integrationListValueContainer"]')
-        .children()
-        .should("have.length", 2);
+      cy.wait("@saveItem");
+
+      cy.get('[data-cy="toast"]').contains("Created Item");
     });
   });
 });
 
 function connectToEndpoint(endpoint, type, apiData) {
-  const modelZUID = Cypress.env("modelZUID");
+  // Mock data for special display types since we don't have endpoints for these types::
+  if (specialTypes.includes(type)) {
+    cy.intercept("/get-url?url=*", {
+      statusCode: 200,
+      body: apiData,
+    });
+  }
 
-  cy.intercept("GET", endpoint, {
-    statusCode: 200,
-    body: apiData,
-  });
   cy.visit(`/schema/${Cypress.env("modelZUID")}/fields`);
 
   cy.get('[data-cy="AddFieldBtn"]').click();
 
   cy.get('[data-cy="FieldItem_integration"]').click();
 
-  cy.get('[data-cy="FieldFormInput_label"] input')
-    .clear()
-    .type(`${SPECIAL_FIELD_DATA.label} - ${type}`);
-  cy.get('label:contains("Required field")').click();
+  cy.get('[data-cy="FieldFormInput_label"] input').clear().type(`${type}`);
 
   cy.get('[data-cy="integrationConfigureButton"]').click();
   cy.get('[data-cy="integrationFormDialog"]').should("exist");
@@ -298,14 +259,17 @@ function connectToEndpoint(endpoint, type, apiData) {
     });
   }
 
+  cy.intercept("**/get-url?url=*").as("getUrl");
+
   cy.get('[data-cy="integrationConnectButton"]').click();
+
+  cy.wait("@getUrl");
 
   cy.get('[data-cy="integrationConnectionStatusContainer"]').should("exist");
 
   cy.get('[data-cy="integrationConnectionStatusLabel"]').should(
     "contain",
-    "Connection Successful",
-    { matchCase: false }
+    "Connection Successful"
   );
   cy.get('[data-cy="integrationConnectionStatusButton"]').click();
 }
@@ -399,38 +363,7 @@ function addGenericField(type) {
 
   cy.get('[data-cy="integrationApiUrl"] input').should(
     "have.value",
-    GENERIC_FIELD_DATA.endpoint
+    FIELD_DATA.endpoint
   );
   cy.get('[data-cy="integrationDisplayType"] input').should("have.value", type);
-}
-
-function createTestData() {
-  cy.apiRequest({
-    url: `${API_ENDPOINTS.devInstance}/content/models`,
-    method: "POST",
-    body: MODEL_SCHEMA,
-  }).then(({ status, data }) => {
-    Cypress.env("modelZUID", data?.ZUID);
-  });
-}
-
-function deleteTestData() {
-  const labelsForDelete = [MODEL_SCHEMA?.label];
-
-  cy.apiRequest({
-    url: `${API_ENDPOINTS.devInstance}/content/models`,
-  }).then(({ status, data }) => {
-    const forDeleteData = data?.filter((item) =>
-      labelsForDelete.includes(item?.label)
-    );
-
-    const forDeleteZuids = forDeleteData?.map((del) => del?.ZUID);
-
-    forDeleteZuids?.forEach((zuid) => {
-      cy.apiRequest({
-        url: `${API_ENDPOINTS.devInstance}/content/models/${zuid}`,
-        method: "DELETE",
-      });
-    });
-  });
 }

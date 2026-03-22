@@ -1,4 +1,4 @@
-import { useRef, useState, ChangeEvent, useMemo } from "react";
+import { useRef, useState, ChangeEvent, useMemo, useEffect } from "react";
 import {
   alpha,
   Box,
@@ -320,6 +320,11 @@ const ItemSelectionDialog = ({
     onSync: handleSync,
     forSyncIds,
   };
+
+  useEffect(() => {
+    const keys = Object.keys(value?.[0] || {});
+    console.debug("value uniqueIdKey keys: ", { value, uniqueIdKey, keys });
+  }, [value, uniqueIdKey]);
 
   return (
     <Dialog

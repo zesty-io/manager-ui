@@ -19,48 +19,35 @@ export function getKeyValue<T, K extends string>(obj: T, path: K): any {
 export function findUniqueIdKey(data: any[]) {
   if (!Array.isArray(data) || data.length === 0) return null;
 
-  const firstItem = data[0];
-  const keys = Object.keys(firstItem);
+  const keys = [...new Set(data.flatMap((item) => Object.keys(item)))];
 
-  for (const key of keys) {
-    const seen = new Set();
-    let isValid = true;
+  const validKeyIds = keys.filter((key) => {
+    const values = [];
 
-    for (let i = 0; i < data.length; i++) {
-      const item = data[i];
-
+    for (const item of data) {
       // Must be own top-level property
       if (!Object.prototype.hasOwnProperty.call(item, key)) {
-        isValid = false;
-        break;
+        return false;
       }
 
       const value = item[key];
 
       // Must be string or number
-      if (
-        (typeof value !== "string" && typeof value !== "number") ||
-        value === "" ||
-        value === null ||
-        value === undefined
-      ) {
-        isValid = false;
-        break;
+      if (typeof value !== "string" && typeof value !== "number") {
+        return false;
       }
 
-      // Must be unique
-      if (seen.has(value)) {
-        isValid = false;
-        break;
+      // Must not be null/undefined/empty string
+      if (value === null || value === undefined || value === "") {
+        return false;
       }
 
-      seen.add(value);
+      values.push(value);
     }
 
-    if (isValid) {
-      return key; // Return immediately once found
-    }
-  }
+    // Must be unique
+    return new Set(values).size === data.length;
+  });
 
-  return null;
+  return validKeyIds.length > 0 ? validKeyIds[0] : null;
 }

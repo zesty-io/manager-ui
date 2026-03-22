@@ -12,6 +12,7 @@ import {
   Divider,
   Paper,
   IconButton,
+  FormHelperTextProps,
 } from "@mui/material";
 import DataObjectRoundedIcon from "@mui/icons-material/DataObjectRounded";
 import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
@@ -216,6 +217,9 @@ const ConnectToApi = ({
                   />
                 ),
               },
+              formHelperText: {
+                "data-cy": "integrationEndpointHelperText",
+              } as FormHelperTextProps,
             }}
             error={!isValidUrl}
             helperText={
@@ -271,7 +275,7 @@ const ConnectToApi = ({
                     />
                   </Grid>
                   <Grid
-                    size={8}
+                    size={i > 0 ? 7 : 8}
                     display="flex"
                     flexDirection="row"
                     justifyContent="space-between"
@@ -293,7 +297,15 @@ const ConnectToApi = ({
                       }}
                       sx={{ flexGrow: 1 }}
                     />
-                    {i > 0 && (
+                  </Grid>
+                  {i > 0 && (
+                    <Grid
+                      size={1}
+                      display="flex"
+                      flexDirection="row"
+                      justifyContent="center"
+                      alignItems="center"
+                    >
                       <IconButton
                         data-cy="removeHeaderButton"
                         sx={{ flexGrow: 0 }}
@@ -308,33 +320,31 @@ const ConnectToApi = ({
                       >
                         <CloseOutlinedIcon />
                       </IconButton>
-                    )}
-                  </Grid>
+                    </Grid>
+                  )}
                 </Grid>
               );
             })}
-            <Grid size={16}>
-              <Button
-                data-cy="addHeaderButton"
-                fullWidth
-                variant="outlined"
-                startIcon={<AddCircleIcon />}
-                onClick={() => {
-                  const keyId: string = Date.now().toString();
-                  focusRef.current = keyId;
-                  setHeadersLocal({
-                    ...headersLocal,
-                    [keyId]: {
-                      key: "",
-                      value: "",
-                    },
-                  });
-                }}
-              >
-                Add HTTP Header
-              </Button>
-            </Grid>
           </Grid>
+          <Button
+            data-cy="addHeaderButton"
+            fullWidth
+            variant="outlined"
+            startIcon={<AddCircleIcon />}
+            onClick={() => {
+              const keyId: string = Date.now().toString();
+              focusRef.current = keyId;
+              setHeadersLocal({
+                ...headersLocal,
+                [keyId]: {
+                  key: "",
+                  value: "",
+                },
+              });
+            }}
+          >
+            Add HTTP Header
+          </Button>
         </FieldWrapper>
       </DialogContent>
       <DialogActions>
