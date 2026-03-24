@@ -36,6 +36,7 @@ import { findUniqueIdKey, getKeyValue } from "../utils";
 import DisplayCard from "../components/DisplayCard";
 import { NoResults } from "../../../../apps/schema/src/app/components/NoResults";
 import JsonViewer from "../components/JsonViewer";
+import { isEqual } from "lodash";
 
 interface ItemSelectionDialogProps {
   title: string;
@@ -236,12 +237,12 @@ const ItemSelectionDialog = ({
   const [jsonViewData, setJsonViewData] = useState<ApiDataWithIdProps>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const itemHeight = getItemRowHeight(config?.type, config?.keyPaths?.details);
-
   const displayConfig = DISPLAY_OPTIONS_CONFIG?.[config?.type] || [];
   const keyPaths = config?.keyPaths;
   const uniqueIdKey = findUniqueIdKey(items);
   const [forSync, setForSync] = useState<SyncItem[]>([]);
   const forSyncIds = forSync?.map((sync) => sync?.id);
+  const hasChanges = !isEqual(value, selectedItems) || !!forSync?.length;
 
   const handleSelect = (item: ApiDataWithIdProps) => {
     setSelectedItems((prev) => {
@@ -379,6 +380,7 @@ const ItemSelectionDialog = ({
                 color="primary"
                 startIcon={<Check />}
                 onClick={handleSave}
+                disabled={!hasChanges}
               >
                 {!value?.length ? "Done" : "Save Changes"}
               </Button>

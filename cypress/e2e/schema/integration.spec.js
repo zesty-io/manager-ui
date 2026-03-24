@@ -57,8 +57,7 @@ describe("Integration Field", () => {
           addGenericField(valueType);
         });
         it(`Submit Generic Type Field- ${valueType})`, () => {
-          const modelZUID = Cypress.env("modelZUID");
-          cy.intercept(`**/v1/content/models/*/fields`).as("getModelFields");
+          cy.intercept(`**/v1/content/models/**`).as("getModelFields");
           cy.get('[data-cy="FieldFormAddFieldBtn"]').click();
 
           cy.wait("@getModelFields").then((interception) => {
@@ -76,9 +75,7 @@ describe("Integration Field", () => {
           addSpecialField(valueType);
         });
         it(`Submit Special Type Field - ${valueType})`, () => {
-          const modelZUID = Cypress.env("modelZUID");
-          // cy.intercept(`/v1/content/models/${modelZUID}/fields`).as(
-          cy.intercept(`**/v1/content/models/*/fields`).as("getModelFields");
+          cy.intercept(`**/v1/content/models/**`).as("getModelFields");
           cy.get('[data-cy="FieldFormAddFieldBtn"]').click();
 
           cy.wait("@getModelFields").then((interception) => {
