@@ -5,7 +5,7 @@
     "team": "Vancouver Vipers",
     "jerseyNo": 23,
     "position": "Shooting Guard",
-    "height": "6'5\"",
+    "height": "196 cm",
     "weight": 205,
     "playerImage": "https://randomuser.me/api/portraits/men/32.jpg"
   },
@@ -15,7 +15,7 @@
     "team": "Toronto Towers",
     "jerseyNo": 11,
     "position": "Point Guard",
-    "height": "6'2\"",
+    "height": "188 cm",
     "weight": 185,
     "playerImage": "https://randomuser.me/api/portraits/men/45.jpg"
   },
@@ -25,7 +25,7 @@
     "team": "Mexico City Aztecs",
     "jerseyNo": 34,
     "position": "Power Forward",
-    "height": "6'9\"",
+    "height": "206 cm",
     "weight": 240,
     "playerImage": "https://randomuser.me/api/portraits/men/22.jpg"
   },
@@ -35,7 +35,7 @@
     "team": "Seattle Storm",
     "jerseyNo": 7,
     "position": "Small Forward",
-    "height": "6'1\"",
+    "height": "185 cm",
     "weight": 175,
     "playerImage": "https://randomuser.me/api/portraits/women/44.jpg"
   },
@@ -45,7 +45,7 @@
     "team": "Dublin Celtic",
     "jerseyNo": 15,
     "position": "Center",
-    "height": "7'0\"",
+    "height": "213 cm",
     "weight": 260,
     "playerImage": "https://randomuser.me/api/portraits/men/51.jpg"
   },
@@ -55,7 +55,7 @@
     "team": "Atlanta Phoenix",
     "jerseyNo": 3,
     "position": "Point Guard",
-    "height": "5'9\"",
+    "height": "175 cm",
     "weight": 150,
     "playerImage": "https://randomuser.me/api/portraits/women/28.jpg"
   },
@@ -65,7 +65,7 @@
     "team": "Tokyo Samurai",
     "jerseyNo": 91,
     "position": "Shooting Guard",
-    "height": "6'4\"",
+    "height": "193 cm",
     "weight": 195,
     "playerImage": "https://randomuser.me/api/portraits/men/67.jpg"
   },
@@ -75,7 +75,7 @@
     "team": "Moscow Spartak",
     "jerseyNo": 8,
     "position": "Small Forward",
-    "height": "6'2\"",
+    "height": "188 cm",
     "weight": 170,
     "playerImage": "https://randomuser.me/api/portraits/women/53.jpg"
   },
@@ -85,7 +85,7 @@
     "team": "New Orleans Crescents",
     "jerseyNo": 0,
     "position": "Power Forward",
-    "height": "6'7\"",
+    "height": "201 cm",
     "weight": 225,
     "playerImage": "https://randomuser.me/api/portraits/men/11.jpg"
   },
@@ -95,7 +95,7 @@
     "team": "Paris Pioneers",
     "jerseyNo": 20,
     "position": "Center",
-    "height": "6'5\"",
+    "height": "196 cm",
     "weight": 200,
     "playerImage": "https://randomuser.me/api/portraits/women/63.jpg"
   }
