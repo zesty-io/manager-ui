@@ -13,7 +13,6 @@ import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
 import DragIndicatorRoundedIcon from "@mui/icons-material/DragIndicatorRounded";
 
-import AutoSizer, { Size } from "react-virtualized-auto-sizer";
 import { AddRowFooter } from "./AddRowFooter";
 import {
   CURRENCY_OBJECT,
@@ -26,8 +25,6 @@ import { RowDialog } from "./RowDialog";
 
 const HEADER_HEIGHT = 56;
 const ROW_HEIGHT = 56;
-const FOOTER_HEIGHT = 44;
-const MAX_VISIBLE_ROWS = 10;
 
 const fieldTypeColumnConfigMap: Record<string, Partial<GridColDef>> = {
   text: {
@@ -170,6 +167,24 @@ export const FieldTypeRepeater = ({
     setRows(processedRows);
   }, [value]);
 
+  useEffect(() => {
+    if (rows.length === 0) {
+      if (rowSelectionModel.length > 0) {
+        setRowSelectionModel([]);
+      }
+      return;
+    }
+
+    const validIds = new Set(rows.map((row) => row.id));
+    const filteredSelection = rowSelectionModel.filter((id) =>
+      validIds.has(id)
+    );
+
+    if (filteredSelection.length !== rowSelectionModel.length) {
+      setRowSelectionModel(filteredSelection);
+    }
+  }, [rows, rowSelectionModel]);
+
   const baseColumns: GridColDef[] = useMemo(() => {
     if (!field?.settings?.subFields?.length) return [];
 
@@ -209,7 +224,7 @@ export const FieldTypeRepeater = ({
   }, [field]);
 
   const columns: GridColDef[] = useMemo(() => {
-    const hasSelectedRows = rowSelectionModel.length > 0;
+    const hasSelectedRows = rowSelectionModel.length > 0 && rows.length > 0;
 
     const mappedColumns = baseColumns.map((col) => ({
       ...col,
@@ -229,16 +244,7 @@ export const FieldTypeRepeater = ({
       },
       ...mappedColumns,
     ];
-  }, [baseColumns, rowSelectionModel]);
-
-  const calculatedHeight = useMemo(() => {
-    const visibleRows = Math.min(rows.length, MAX_VISIBLE_ROWS);
-    // Add 15px for horizontal scrollbar buffer if we have rows
-    const hScrollBuffer = rows.length > 0 ? 15 : 0;
-    return (
-      HEADER_HEIGHT + visibleRows * ROW_HEIGHT + FOOTER_HEIGHT + hScrollBuffer
-    );
-  }, [rows.length]);
+  }, [baseColumns, rowSelectionModel, rows.length]);
 
   const cleanRows = (rowsToClean: Record<string, any>[]) => {
     return rowsToClean.map((row: any) => {
@@ -292,7 +298,11 @@ export const FieldTypeRepeater = ({
     <>
       <Box
         sx={{
-          height: calculatedHeight,
+          // 100px = header (56) + footer (44) so empty state only shows header/footer.
+          minHeight: 100,
+          // 675px = header (56) + 10 rows (560) + footer (44) + scrollbar buffer (15).
+          maxHeight: 675,
+          overflow: "hidden",
           position: "relative",
 
           // An ancestor has removed all scrollbars so we're re-enabling them here
@@ -323,81 +333,84 @@ export const FieldTypeRepeater = ({
             <DeleteIcon />
           </IconButton>
         )}
-        <AutoSizer>
-          {({ width, height }: Size) => (
-            <DataGridPro
-              data-cy="RepeaterFieldGrid"
-              rowReordering
-              onRowOrderChange={handleRowOrderChange}
-              rows={rows}
-              apiRef={apiRef}
-              columns={columns}
-              checkboxSelection
-              disableRowSelectionOnClick
-              rowHeight={ROW_HEIGHT}
-              columnHeaderHeight={HEADER_HEIGHT}
-              pinnedColumns={{
-                left: ["__reorder__", "__check__"],
-              }}
-              rowSelectionModel={rowSelectionModel}
-              onRowSelectionModelChange={(newModel) =>
-                setRowSelectionModel(newModel)
-              }
-              onRowClick={(params) => {
-                setRowToEdit({
-                  id: params.id,
-                  ...params.row,
-                });
-                setRowDialog("edit");
-              }}
-              slots={{
-                footer: () => (
-                  <AddRowFooter
-                    fieldName={field.label}
-                    onAddRow={() => setRowDialog("add")}
-                  />
-                ),
-                rowReorderIcon: () => (
-                  <DragIndicatorRoundedIcon fontSize="small" color="action" />
-                ),
-              }}
-              sx={{
-                width,
-                height,
-                backgroundColor: "common.white",
+        <DataGridPro
+          data-cy="RepeaterFieldGrid"
+          rowReordering
+          onRowOrderChange={handleRowOrderChange}
+          rows={rows}
+          apiRef={apiRef}
+          columns={columns}
+          checkboxSelection
+          disableRowSelectionOnClick
+          rowHeight={ROW_HEIGHT}
+          columnHeaderHeight={HEADER_HEIGHT}
+          pinnedColumns={{
+            left: ["__reorder__", "__check__"],
+          }}
+          rowSelectionModel={rowSelectionModel}
+          onRowSelectionModelChange={(newModel) =>
+            setRowSelectionModel(newModel)
+          }
+          onRowClick={(params) => {
+            setRowToEdit({
+              id: params.id,
+              ...params.row,
+            });
+            setRowDialog("edit");
+          }}
+          slots={{
+            footer: () => (
+              <AddRowFooter
+                fieldName={field.label}
+                onAddRow={() => setRowDialog("add")}
+              />
+            ),
+            noRowsOverlay: () => null,
+            rowReorderIcon: () => (
+              <DragIndicatorRoundedIcon fontSize="small" color="action" />
+            ),
+          }}
+          sx={{
+            width: "100%",
+            height: "fit-content",
+            // 100px = header (56) + footer (44).
+            minHeight: 100,
+            // 675px = header (56) + 10 rows (560) + footer (44) + scrollbar buffer (15).
+            maxHeight: 675,
+            backgroundColor: "common.white",
 
-                "& .MuiDataGrid-columnHeaderCheckbox": {
-                  padding: 0,
-                },
+            "& .MuiDataGrid-columnHeaderCheckbox": {
+              padding: 0,
+            },
 
-                "& .MuiDataGrid-columnHeaderReorder": {
-                  padding: 0,
-                },
+            "& .MuiDataGrid-columnHeaderReorder": {
+              padding: 0,
+            },
 
-                "& .MuiDataGrid-rowReorderCellContainer": {
-                  padding: 0,
-                },
+            "& .MuiDataGrid-rowReorderCellContainer": {
+              padding: 0,
+            },
 
-                "& .MuiDataGrid-scrollbarFiller": {
-                  backgroundColor: "grey.100",
-                },
+            "& .MuiDataGrid-scrollbarFiller": {
+              backgroundColor: "grey.100",
+            },
 
-                "& .MuiDataGrid-filler": {
-                  backgroundColor: "grey.100",
-                },
+            "& .MuiDataGrid-filler": {
+              backgroundColor: "grey.100",
+            },
 
-                // Hide scrollbar for virtual scroller to avoid double scrollbars when a row is dynamically added
-                "& .MuiDataGrid-virtualScroller": {
-                  scrollbarWidth: "none",
-                  msOverflowStyle: "none",
-                  "&::-webkit-scrollbar": {
-                    display: "none",
-                  },
-                },
-              }}
-            />
-          )}
-        </AutoSizer>
+            // Let the grid grow with content, then scroll internally once body hits 10 rows.
+            "& .MuiDataGrid-virtualScroller": {
+              // 575px = 10 rows (560) + scrollbar buffer (15).
+              maxHeight: 575,
+              overflowY: "auto !important",
+            },
+
+            "& .MuiDataGrid-virtualScrollerContent": {
+              display: rows.length === 0 ? "none" : undefined,
+            },
+          }}
+        />
       </Box>
       {rowDialog && (
         <RowDialog
