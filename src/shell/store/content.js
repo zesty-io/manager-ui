@@ -966,6 +966,75 @@ export function unpublish(modelZUID, itemZUID, publishZUID, options = {}) {
   };
 }
 
+export function scheduleUnpublish(
+  modelZUID,
+  itemZUID,
+  data,
+  meta = {},
+  unpublishDateTime
+) {
+  return (dispatch, getState) => {
+    const item = getState().content[itemZUID];
+    let title;
+
+    if (item) {
+      title = `"${item.web.metaTitle || item.web.metaLinkText}" version ${
+        data.version
+      }`;
+    } else {
+      title = `item ${itemZUID} version ${data.version}`;
+    }
+
+    return request(
+      `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items/${itemZUID}/publishings`,
+      {
+        method: "POST",
+        json: true,
+        body: {
+          ...data,
+          unpublishAt: unpublishDateTime,
+        },
+      }
+    )
+      .then((res) => {
+        console.debug("data res: ", { data, res, unpublishDateTime });
+        if (res.status >= 400) {
+          return Promise.reject(new Error(res.error));
+        }
+      })
+      .then(() => {
+        const message = `${title} to unpublish on ${meta.localTime} in the ${meta.localTimezone} timezone`;
+
+        return dispatch(
+          notify({
+            message,
+            kind: "save",
+          })
+        );
+      })
+      .then(() => {
+        dispatch(
+          instanceApi.util.invalidateTags([
+            { type: "ItemPublishing", itemZUID },
+          ])
+        );
+        return dispatch(fetchItemPublishing(modelZUID, itemZUID));
+      })
+      .catch((err) => {
+        const message = data.publishAt
+          ? `Error scheduling ${title}`
+          : `Error publishing ${title}`;
+        dispatch(
+          notify({
+            message,
+            kind: "error",
+          })
+        );
+        throw err;
+      });
+  };
+}
+
 export function fetchItemPublishing(modelZUID, itemZUID) {
   return (dispatch) => {
     return dispatch({
