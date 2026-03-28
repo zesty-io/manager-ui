@@ -30,6 +30,50 @@ import { StudioPreview } from "./components/StudioWrapper/StudioPreview";
 import { StudioSidePanel } from "./components/StudioWrapper/StudioSidePanel";
 
 const drawerWidth = 440;
+const mapSourceByLayoutOrder = (source: string, orderedLayoutIds: string[]) => {
+  if (!source || !orderedLayoutIds?.length) return source;
+
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(
+    `<div id="studio-root">${source}</div>`,
+    "text/html"
+  );
+  const root = doc.getElementById("studio-root");
+  if (!root) return source;
+
+  const rankByUid = new Map<string, number>();
+  orderedLayoutIds.forEach((layoutId, index) => rankByUid.set(layoutId, index));
+
+  const reorderWithinParent = (parent: Element) => {
+    const allChildren = Array.from(parent.children);
+    const uidChildren = allChildren.filter((child) =>
+      child.hasAttribute("data-layout-id")
+    );
+
+    if (uidChildren.length > 1) {
+      const sortedUidChildren = [...uidChildren].sort((a, b) => {
+        const aUid = a.getAttribute("data-layout-id") || "";
+        const bUid = b.getAttribute("data-layout-id") || "";
+        const aRank = rankByUid.has(aUid)
+          ? (rankByUid.get(aUid) as number)
+          : Number.MAX_SAFE_INTEGER;
+        const bRank = rankByUid.has(bUid)
+          ? (rankByUid.get(bUid) as number)
+          : Number.MAX_SAFE_INTEGER;
+        return aRank - bRank;
+      });
+
+      sortedUidChildren.forEach((child) => {
+        parent.appendChild(child);
+      });
+    }
+
+    Array.from(parent.children).forEach((child) => reorderWithinParent(child));
+  };
+
+  reorderWithinParent(root);
+  return root.innerHTML;
+};
 
 type SelectedElement = {
   studioId?: string;
@@ -39,12 +83,26 @@ type SelectedElement = {
   modelZuid?: string;
 };
 
+type InteractionMode = "content" | "layout";
+
 export const StudioWrapper = () => {
   const dispatch = useDispatch();
 
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
+  const templateSourceByCodeIdRef = useRef<Record<string, string>>({});
+  const currentHoverStudioIdRef = useRef<string | null>(null);
+  const currentHoverLayoutIdRef = useRef<string | null>(null);
+  const latestReorderOutputRef = useRef<{
+    codeId: string | null;
+    selector: string;
+    orderedLayoutIds: string[];
+    outputHtml: string;
+    mappedSource: string;
+  } | null>(null);
   const [selectedElement, setSelectedElement] =
     useState<SelectedElement | null>(null);
+  const [interactionMode, setInteractionMode] =
+    useState<InteractionMode>("content");
   const [panelMode, setPanelMode] = useState<"info" | "edit">("info");
   const [filteredFieldName, setFilteredFieldName] = useState<string | null>(
     null
@@ -101,7 +159,7 @@ export const StudioWrapper = () => {
       const baseUrl = `${CONFIG.URL_PREVIEW_PROTOCOL}${instanceHash}${CONFIG.URL_PREVIEW}${normalized}`;
       const queryParams = new URLSearchParams();
 
-      queryParams.set("studio", "on");
+      queryParams.set("studio", "bridge");
 
       if (previewLock) {
         queryParams.set("zpw", previewLock.value);
@@ -393,12 +451,15 @@ export const StudioWrapper = () => {
     (cmd: {
       action: string;
       studioId?: string;
+      mode?: InteractionMode;
       fieldZuid?: string;
       className?: string;
       css?: string;
       value?: string;
       html?: string;
       itemZuid?: string;
+      selector?: string;
+      layoutId?: string;
     }) => {
       const iframeWindow = iframeRef.current?.contentWindow;
       if (!iframeWindow) return;
@@ -435,6 +496,61 @@ export const StudioWrapper = () => {
     setFilteredFieldName(null);
     setPanelMode("info");
   }, [postCommandToBridge, selectedElement]);
+
+  const syncBridgeInteractionMode = useCallback(
+    (nextMode: InteractionMode) => {
+      postCommandToBridge({
+        action: "setInteractionMode",
+        mode: nextMode,
+      });
+
+      if (nextMode === "layout") {
+        postCommandToBridge({
+          action: "enableReorderByUid",
+          selector: "[data-layout-id]",
+        });
+      } else {
+        postCommandToBridge({
+          action: "disableReorderByUid",
+        });
+      }
+    },
+    [postCommandToBridge]
+  );
+
+  const handleInteractionModeChange = useCallback(
+    (nextMode: InteractionMode) => {
+      if (interactionMode === nextMode) return;
+
+      if (currentHoverStudioIdRef.current) {
+        postCommandToBridge({
+          action: "removeClass",
+          studioId: currentHoverStudioIdRef.current,
+          className: "studio-hover",
+        });
+        currentHoverStudioIdRef.current = null;
+      }
+
+      if (currentHoverLayoutIdRef.current) {
+        postCommandToBridge({
+          action: "removeClassByLayoutId",
+          layoutId: currentHoverLayoutIdRef.current,
+          className: "studio-hover",
+        });
+        currentHoverLayoutIdRef.current = null;
+      }
+
+      clearSelection();
+      setInteractionMode(nextMode);
+      syncBridgeInteractionMode(nextMode);
+    },
+    [
+      clearSelection,
+      interactionMode,
+      postCommandToBridge,
+      syncBridgeInteractionMode,
+    ]
+  );
 
   const handleLanguageChange = useCallback(
     (langCode: string) => {
@@ -596,6 +712,7 @@ export const StudioWrapper = () => {
   );
 
   useEffect(() => {
+    if (interactionMode !== "content") return;
     if (
       !selectedElement?.studioId ||
       !selectedElement.fieldZuid ||
@@ -640,7 +757,13 @@ export const StudioWrapper = () => {
         value: nextValue,
       });
     }
-  }, [editorItem, fieldNameByZuid, postCommandToBridge, selectedElement]);
+  }, [
+    editorItem,
+    fieldNameByZuid,
+    interactionMode,
+    postCommandToBridge,
+    selectedElement,
+  ]);
 
   const handleSave = useCallback(async () => {
     if (!selectedItemZUID) return;
@@ -822,6 +945,232 @@ export const StudioWrapper = () => {
     selectedElement,
   ]);
 
+  const handleTemplateSourceMap = useCallback((msg: any) => {
+    templateSourceByCodeIdRef.current =
+      (msg.templateSourceByCodeId as Record<string, string>) || {};
+  }, []);
+
+  const handleBridgeReady = useCallback(() => {
+    postCommandToBridge({
+      action: "injectCss",
+      css: `
+        .studio-hover {
+          outline: 1px dashed #00bcd4;
+          outline-offset: 2px;
+          cursor: pointer;
+        }
+        .studio-selected {
+          outline: 2px solid #ff9800;
+          outline-offset: 2px;
+          background-color: rgba(255,152,0,0.06);
+        }
+        [data-layout-id][draggable="true"] {
+          cursor: move;
+        }
+        .studio-dragging {
+          opacity: 0.6;
+        }
+      `,
+    });
+    syncBridgeInteractionMode(interactionMode);
+  }, [interactionMode, postCommandToBridge, syncBridgeInteractionMode]);
+
+  const handleBridgeError = useCallback(
+    (msg: any) => {
+      const bridgeError = msg.error || {};
+      const error = new Error(bridgeError.message || "Bridge error");
+      if (bridgeError.stack) {
+        (error as any).stack = bridgeError.stack;
+      }
+
+      dispatch(
+        notify({
+          kind: "error",
+          message: `Preview error: ${bridgeError.message || "Bridge error"}`,
+        })
+      );
+
+      Sentry.withScope((scope) => {
+        scope.setLevel("error");
+        scope.setTag("bridge.kind", msg.kind || "error");
+        scope.setContext("bridge.error", {
+          filename: bridgeError.filename || null,
+          lineno: bridgeError.lineno || null,
+          colno: bridgeError.colno || null,
+          stack: bridgeError.stack || null,
+        });
+        scope.setExtra("bridge.message", bridgeError.message || "");
+        Sentry.captureException(error);
+      });
+    },
+    [dispatch]
+  );
+
+  const handleBridgeDomEvent = useCallback(
+    (msg: any) => {
+      const { eventType, element, value } = msg;
+      if (!element) return;
+
+      const dataset: Record<string, string> =
+        (element.dataset as Record<string, string>) || {};
+      const studioId = dataset.studioId;
+      const fieldZuid: string | undefined = dataset.fieldZuid;
+      const fieldType = dataset.fieldType;
+      const itemZuid = dataset.itemZuid;
+      const modelZuid = dataset.modelZuid;
+      const layoutId = dataset.layoutId;
+
+      switch (eventType) {
+        case "click": {
+          if (interactionMode !== "content") return;
+          if (!fieldZuid) return;
+
+          const isChangingItem =
+            Boolean(itemZuid) &&
+            Boolean(selectedItemZUID) &&
+            itemZuid !== selectedItemZUID;
+          if (isChangingItem && selectedItem?.dirty) {
+            const openModal = (window as any).openContentNavigationModal;
+            if (typeof openModal === "function") {
+              openModal((shouldProceed: boolean) => {
+                if (shouldProceed) {
+                  applySelection({
+                    studioId,
+                    fieldZuid,
+                    fieldType,
+                    itemZuid,
+                    modelZuid,
+                  });
+                }
+              });
+              return;
+            }
+          }
+
+          applySelection({
+            studioId,
+            fieldZuid,
+            fieldType,
+            itemZuid,
+            modelZuid,
+          });
+          return;
+        }
+
+        case "input": {
+          if (interactionMode !== "content") return;
+          if (!fieldZuid || !itemZuid) return;
+
+          const fieldName = fieldNameByZuid.get(fieldZuid);
+          if (!fieldName) return;
+
+          dispatch({
+            type: "SET_ITEM_DATA",
+            itemZUID: itemZuid,
+            key: fieldName,
+            value: typeof value === "string" ? value : "",
+          });
+          return;
+        }
+
+        case "mouseover": {
+          if (interactionMode === "layout") {
+            if (!layoutId) return;
+            currentHoverLayoutIdRef.current = layoutId;
+            postCommandToBridge({
+              action: "addClassByLayoutId",
+              layoutId,
+              className: "studio-hover",
+            });
+            return;
+          }
+
+          if (!studioId) return;
+          currentHoverStudioIdRef.current = studioId;
+          postCommandToBridge({
+            action: "addClass",
+            studioId,
+            className: "studio-hover",
+            itemZuid,
+          });
+          return;
+        }
+
+        case "mouseout": {
+          if (interactionMode === "layout") {
+            if (!layoutId) return;
+            if (currentHoverLayoutIdRef.current === layoutId) {
+              currentHoverLayoutIdRef.current = null;
+            }
+            postCommandToBridge({
+              action: "removeClassByLayoutId",
+              layoutId,
+              className: "studio-hover",
+            });
+            return;
+          }
+
+          if (!studioId) return;
+          if (currentHoverStudioIdRef.current === studioId) {
+            currentHoverStudioIdRef.current = null;
+          }
+          postCommandToBridge({
+            action: "removeClass",
+            studioId,
+            className: "studio-hover",
+            itemZuid,
+          });
+        }
+      }
+    },
+    [
+      applySelection,
+      dispatch,
+      fieldNameByZuid,
+      interactionMode,
+      postCommandToBridge,
+      selectedItem?.dirty,
+      selectedItemZUID,
+    ]
+  );
+
+  const handleReorderOutput = useCallback((msg: any) => {
+    const codeId = typeof msg.codeId === "string" ? msg.codeId : null;
+    const orderedLayoutIds = Array.isArray(msg.orderedLayoutIds)
+      ? msg.orderedLayoutIds.filter(
+          (layoutId: unknown): layoutId is string =>
+            typeof layoutId === "string"
+        )
+      : [];
+    const sourceTemplate = codeId
+      ? templateSourceByCodeIdRef.current[codeId] || ""
+      : "";
+    const mappedSource = sourceTemplate
+      ? mapSourceByLayoutOrder(sourceTemplate, orderedLayoutIds)
+      : "";
+
+    latestReorderOutputRef.current = {
+      codeId,
+      selector:
+        typeof msg.selector === "string" ? msg.selector : "[data-layout-id]",
+      orderedLayoutIds,
+      outputHtml: typeof msg.outputHtml === "string" ? msg.outputHtml : "",
+      mappedSource,
+    };
+
+    // Temporary visibility while wiring source remapping from layout drag/drop.
+    // eslint-disable-next-line no-console
+    console.log("[studio] Reordered canvas output", {
+      codeId,
+      selector:
+        typeof msg.selector === "string" ? msg.selector : "[data-layout-id]",
+      orderedLayoutIds,
+      outputHtml: typeof msg.outputHtml === "string" ? msg.outputHtml : "",
+      sourceTemplate,
+      mappedSource,
+    });
+  }, []);
+
   useEffect(() => {
     function handleMessage(evt: MessageEvent<any>) {
       const data = evt.data;
@@ -832,22 +1181,13 @@ export const StudioWrapper = () => {
       const msg = data.message;
       if (!msg) return;
 
+      if (msg.type === "TEMPLATE_SOURCE_MAP") {
+        handleTemplateSourceMap(msg);
+        return;
+      }
+
       if (msg.type === "BRIDGE_READY") {
-        postCommandToBridge({
-          action: "injectCss",
-          css: `
-            .studio-hover {
-              outline: 1px dashed #00bcd4;
-              outline-offset: 2px;
-              cursor: pointer;
-            }
-            .studio-selected {
-              outline: 2px solid #ff9800;
-              outline-offset: 2px;
-              background-color: rgba(255,152,0,0.06);
-            }
-          `,
-        });
+        handleBridgeReady();
         return;
       }
 
@@ -862,123 +1202,17 @@ export const StudioWrapper = () => {
       }
 
       if (msg.type === "BRIDGE_ERROR") {
-        const bridgeError = msg.error || {};
-        const error = new Error(bridgeError.message || "Bridge error");
-        if (bridgeError.stack) {
-          (error as any).stack = bridgeError.stack;
-        }
-
-        dispatch(
-          notify({
-            kind: "error",
-            message: `Preview error: ${bridgeError.message || "Bridge error"}`,
-          })
-        );
-
-        Sentry.withScope((scope) => {
-          scope.setLevel("error");
-          scope.setTag("bridge.kind", msg.kind || "error");
-          scope.setContext("bridge.error", {
-            filename: bridgeError.filename || null,
-            lineno: bridgeError.lineno || null,
-            colno: bridgeError.colno || null,
-            stack: bridgeError.stack || null,
-          });
-          scope.setExtra("bridge.message", bridgeError.message || "");
-          Sentry.captureException(error);
-        });
+        handleBridgeError(msg);
         return;
       }
 
       if (msg.type === "DOM_EVENT") {
-        const { eventType, element, value } = msg;
-        if (!element) return;
+        handleBridgeDomEvent(msg);
+        return;
+      }
 
-        const dataset: Record<string, string> =
-          (element.dataset as Record<string, string>) || {};
-        const studioId = dataset.studioId;
-        const fieldZuid: string | undefined = dataset.fieldZuid;
-        const fieldType = dataset.fieldType;
-        const itemZuid = dataset.itemZuid;
-        const modelZuid = dataset.modelZuid;
-
-        switch (eventType) {
-          case "click": {
-            if (!fieldZuid) return;
-
-            const isChangingItem =
-              Boolean(itemZuid) &&
-              Boolean(selectedItemZUID) &&
-              itemZuid !== selectedItemZUID;
-            if (isChangingItem && selectedItem?.dirty) {
-              const openModal = (window as any).openContentNavigationModal;
-              if (typeof openModal === "function") {
-                openModal((shouldProceed: boolean) => {
-                  if (shouldProceed) {
-                    applySelection({
-                      studioId,
-                      fieldZuid,
-                      fieldType,
-                      itemZuid,
-                      modelZuid,
-                    });
-                  }
-                });
-                return;
-              }
-            }
-
-            applySelection({
-              studioId,
-              fieldZuid,
-              fieldType,
-              itemZuid,
-              modelZuid,
-            });
-
-            break;
-          }
-
-          case "input": {
-            if (!fieldZuid || !itemZuid) return;
-
-            const fieldName = fieldNameByZuid.get(fieldZuid);
-            if (!fieldName) return;
-
-            dispatch({
-              type: "SET_ITEM_DATA",
-              itemZUID: itemZuid,
-              key: fieldName,
-              value: typeof value === "string" ? value : "",
-            });
-            break;
-          }
-
-          case "mouseover": {
-            if (!studioId) return;
-            postCommandToBridge({
-              action: "addClass",
-              studioId,
-              className: "studio-hover",
-              itemZuid,
-            });
-            break;
-          }
-
-          case "mouseout": {
-            if (!studioId) return;
-            postCommandToBridge({
-              action: "removeClass",
-              studioId,
-              className: "studio-hover",
-              itemZuid,
-            });
-            break;
-          }
-
-          default:
-            break;
-        }
+      if (msg.type === "REORDER_OUTPUT") {
+        handleReorderOutput(msg);
       }
     }
 
@@ -987,13 +1221,12 @@ export const StudioWrapper = () => {
       window.removeEventListener("message", handleMessage);
     };
   }, [
-    applySelection,
     clearSelection,
-    dispatch,
-    fieldNameByZuid,
-    postCommandToBridge,
-    selectedItem?.dirty,
-    selectedItemZUID,
+    handleBridgeDomEvent,
+    handleBridgeError,
+    handleBridgeReady,
+    handleReorderOutput,
+    handleTemplateSourceMap,
   ]);
 
   const renderInfoPanel = () => {
@@ -1013,7 +1246,9 @@ export const StudioWrapper = () => {
     return (
       <Box display="flex" flexDirection="column" gap={2}>
         <Alert severity="info" variant="standard">
-          Select items on the canvas to make edits
+          {interactionMode === "layout"
+            ? "Drag blocks on the canvas to reorder the layout"
+            : "Select items on the canvas to make edits"}
         </Alert>
         <ContentInfo
           itemZUID={pageItemZUID}
@@ -1082,6 +1317,8 @@ export const StudioWrapper = () => {
       >
         <StudioHeader
           onLanguageChange={handleLanguageChange}
+          interactionMode={interactionMode}
+          onInteractionModeChange={handleInteractionModeChange}
           pageModelZUID={pageModelZUID}
           pageItemZUID={pageItemZUID}
           unresolvedPath={unresolvedPath}

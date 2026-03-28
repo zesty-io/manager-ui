@@ -4,6 +4,8 @@
   var parentOrigin = "*";
   var markerIdPattern = /data-studio-id\s*=\s*"([^"]+)"/i;
   var markerBoundaryPattern = /data-studio-boundary\s*=\s*"(start|end)"/i;
+  var codeIdPattern = /data-code-id\s*=\s*"([^"]+)"/i;
+  var codeBoundaryPattern = /data-code-boundary\s*=\s*"(start|end)"/i;
   var editableFieldTypes = {
     text: true,
     textarea: true,
@@ -12,13 +14,23 @@
     wysiwyg_advanced: true,
   };
 
+  var interactionMode = "content";
   var currentHoverStudioId = null;
+  var currentHoverLayoutId = null;
+  var reorderState = {
+    enabled: false,
+    selector: "[data-layout-id]",
+    dragEl: null,
+    codeId: null,
+    observer: null,
+  };
 
   var studioContextById = {};
 
   var bridgeScriptUrl =
     (document.currentScript && document.currentScript.src) || null;
 
+  // Bridge -> host messaging
   function post(message) {
     if (!window.parent || window.parent === window) return;
     window.parent.postMessage(
@@ -43,6 +55,7 @@
     } catch (e) {}
   }
 
+  // Runtime data loading
   function loadStudioContextById() {
     var contextScript = document.getElementById("studio-entities");
 
@@ -124,29 +137,49 @@
     true
   );
 
+  // Marker parsing
   function toElement(node) {
     if (!node) return null;
     if (node.nodeType === Node.ELEMENT_NODE) return node;
     return node.parentElement || null;
   }
 
-  function parseMarker(commentNode) {
+  function parseCommentMarker(commentNode, idPattern, boundaryPattern, idKey) {
     if (!commentNode || commentNode.nodeType !== Node.COMMENT_NODE) {
       return null;
     }
 
     var content = commentNode.nodeValue || "";
-    var idMatch = content.match(markerIdPattern);
-    var boundaryMatch = content.match(markerBoundaryPattern);
-    var studioId = idMatch?.[1];
+    var idMatch = content.match(idPattern);
+    var boundaryMatch = content.match(boundaryPattern);
+    var markerId = idMatch?.[1];
     var boundary = boundaryMatch?.[1];
 
-    if (!studioId || !boundary) return null;
+    if (!markerId || !boundary) return null;
 
-    return {
-      studioId: studioId,
+    var marker = {
       boundary: boundary,
     };
+    marker[idKey] = markerId;
+    return marker;
+  }
+
+  function parseMarker(commentNode) {
+    return parseCommentMarker(
+      commentNode,
+      markerIdPattern,
+      markerBoundaryPattern,
+      "studioId"
+    );
+  }
+
+  function parseCodeMarker(commentNode) {
+    return parseCommentMarker(
+      commentNode,
+      codeIdPattern,
+      codeBoundaryPattern,
+      "codeId"
+    );
   }
 
   function buildDataset(studioId) {
@@ -161,6 +194,277 @@
     };
   }
 
+  // Layout template + reorder helpers
+  function getTemplateSourceByCodeId() {
+    var templateSourceByCodeId = {};
+
+    document
+      .querySelectorAll("template[data-code-id]")
+      .forEach(function (node) {
+        var codeId = node.getAttribute("data-code-id");
+        if (!codeId) return;
+        templateSourceByCodeId[codeId] = node.innerHTML || "";
+      });
+
+    return templateSourceByCodeId;
+  }
+
+  function getOrderedBlocks(selector) {
+    return Array.prototype.slice.call(document.querySelectorAll(selector));
+  }
+
+  function getNodesBetween(startNode, endNode) {
+    if (!startNode || !endNode || startNode.parentNode !== endNode.parentNode) {
+      return [];
+    }
+
+    var nodes = [];
+    var current = startNode.nextSibling;
+    while (current && current !== endNode) {
+      nodes.push(current);
+      current = current.nextSibling;
+    }
+
+    return nodes;
+  }
+
+  function getOrderedBlocksWithinNodes(selector, nodes) {
+    var matches = [];
+
+    nodes.forEach(function (node) {
+      if (node.nodeType !== Node.ELEMENT_NODE) return;
+      if (node.matches && node.matches(selector)) {
+        matches.push(node);
+      }
+      matches.push.apply(
+        matches,
+        Array.prototype.slice.call(node.querySelectorAll(selector))
+      );
+    });
+
+    return matches;
+  }
+
+  function resolveCodeRegionForNode(node) {
+    var currentNode = node;
+    var currentParent = currentNode?.parentNode || null;
+
+    while (currentNode && currentParent) {
+      var siblings = Array.prototype.slice.call(currentParent.childNodes);
+      var nodeIndex = siblings.indexOf(currentNode);
+
+      if (nodeIndex !== -1) {
+        var startComment = null;
+        var codeId = null;
+
+        for (var i = nodeIndex - 1; i >= 0; i -= 1) {
+          var startMarker = parseCodeMarker(siblings[i]);
+          if (startMarker?.boundary === "start") {
+            startComment = siblings[i];
+            codeId = startMarker.codeId;
+            break;
+          }
+        }
+
+        if (startComment && codeId) {
+          for (var j = nodeIndex + 1; j < siblings.length; j += 1) {
+            var endMarker = parseCodeMarker(siblings[j]);
+            if (endMarker?.boundary === "end" && endMarker.codeId === codeId) {
+              return {
+                codeId: codeId,
+                startComment: startComment,
+                endComment: siblings[j],
+              };
+            }
+          }
+        }
+      }
+
+      currentNode = currentParent;
+      currentParent = currentParent.parentNode;
+    }
+
+    return null;
+  }
+
+  function elementPayload(el) {
+    if (!el) return null;
+    var ds = {};
+    for (var k in el.dataset) ds[k] = el.dataset[k];
+    return { dataset: ds };
+  }
+
+  function postReorderOutput(selector, anchorNode) {
+    var codeRegion = resolveCodeRegionForNode(
+      anchorNode || reorderState.dragEl
+    );
+    var ordered = codeRegion
+      ? getOrderedBlocksWithinNodes(
+          selector,
+          getNodesBetween(codeRegion.startComment, codeRegion.endComment)
+        )
+      : getOrderedBlocks(selector);
+
+    post({
+      type: "REORDER_OUTPUT",
+      codeId: codeRegion?.codeId || null,
+      selector: selector,
+      orderedLayoutIds: ordered
+        .map(function (el) {
+          return el.getAttribute("data-layout-id");
+        })
+        .filter(Boolean),
+      outputHtml: ordered
+        .map(function (el) {
+          return el.outerHTML;
+        })
+        .join("\n"),
+    });
+  }
+
+  function getReorderTarget(target) {
+    if (!target || !target.closest) return null;
+    var el = target.closest(reorderState.selector);
+    if (!el || el === reorderState.dragEl) return null;
+    if (reorderState.codeId) {
+      var targetCodeRegion = resolveCodeRegionForNode(el);
+      if (
+        !targetCodeRegion ||
+        targetCodeRegion.codeId !== reorderState.codeId
+      ) {
+        return null;
+      }
+    }
+    return el;
+  }
+
+  function emitLayoutDomEvent(eventType, layoutId, evt, element) {
+    post({
+      type: "DOM_EVENT",
+      eventType: eventType,
+      element: element || {
+        dataset: {
+          layoutId: layoutId,
+        },
+      },
+      clientX: evt?.clientX,
+      clientY: evt?.clientY,
+    });
+  }
+
+  function setupReorderListeners() {
+    if (setupReorderListeners.__bound) return;
+    setupReorderListeners.__bound = true;
+
+    document.addEventListener(
+      "dragstart",
+      function (evt) {
+        if (!reorderState.enabled) return;
+        var el =
+          evt.target && evt.target.closest
+            ? evt.target.closest(reorderState.selector)
+            : null;
+        if (!el) return;
+
+        reorderState.dragEl = el;
+        reorderState.codeId = resolveCodeRegionForNode(el)?.codeId || null;
+        el.setAttribute("draggable", "true");
+        el.classList.add("studio-dragging");
+
+        if (evt.dataTransfer) {
+          evt.dataTransfer.effectAllowed = "move";
+          evt.dataTransfer.setData(
+            "text/plain",
+            el.getAttribute("data-layout-id") || ""
+          );
+        }
+      },
+      true
+    );
+
+    document.addEventListener(
+      "pointerdown",
+      function (evt) {
+        if (!reorderState.enabled) return;
+        var el =
+          evt.target && evt.target.closest
+            ? evt.target.closest(reorderState.selector)
+            : null;
+        if (!el) return;
+        el.setAttribute("draggable", "true");
+      },
+      true
+    );
+
+    document.addEventListener(
+      "dragover",
+      function (evt) {
+        if (!reorderState.enabled || !reorderState.dragEl) return;
+        var target = getReorderTarget(evt.target);
+        if (!target || !target.parentNode) return;
+
+        evt.preventDefault();
+
+        var rect = target.getBoundingClientRect();
+        var shouldInsertAfter = evt.clientY > rect.top + rect.height / 2;
+        var parent = target.parentNode;
+
+        if (shouldInsertAfter) {
+          if (target.nextSibling !== reorderState.dragEl) {
+            parent.insertBefore(reorderState.dragEl, target.nextSibling);
+          }
+        } else if (target !== reorderState.dragEl.nextSibling) {
+          parent.insertBefore(reorderState.dragEl, target);
+        }
+      },
+      true
+    );
+
+    document.addEventListener(
+      "drop",
+      function (evt) {
+        if (!reorderState.enabled || !reorderState.dragEl) return;
+        evt.preventDefault();
+        postReorderOutput(reorderState.selector, reorderState.dragEl);
+      },
+      true
+    );
+
+    document.addEventListener(
+      "dragend",
+      function () {
+        if (!reorderState.dragEl) return;
+        postReorderOutput(reorderState.selector, reorderState.dragEl);
+        reorderState.dragEl.classList.remove("studio-dragging");
+        reorderState.dragEl = null;
+        reorderState.codeId = null;
+      },
+      true
+    );
+  }
+
+  function ensureReorderAttributes() {
+    getOrderedBlocks(reorderState.selector).forEach(function (node) {
+      node.setAttribute("draggable", "true");
+    });
+  }
+
+  function setupReorderObserver() {
+    if (reorderState.observer) return;
+    if (typeof MutationObserver !== "function") return;
+
+    reorderState.observer = new MutationObserver(function () {
+      if (!reorderState.enabled) return;
+      ensureReorderAttributes();
+    });
+
+    reorderState.observer.observe(document.documentElement || document.body, {
+      childList: true,
+      subtree: true,
+    });
+  }
+
+  // Studio field range helpers
   function getAllMarkerPairs() {
     var root = document.body || document.documentElement;
     if (!root) return [];
@@ -195,6 +499,14 @@
     }
 
     return pairs;
+  }
+
+  function getPairsWithinNode(node, allPairs) {
+    if (!node) return [];
+    var pairs = allPairs || getAllMarkerPairs();
+    return pairs.filter(function (pair) {
+      return node.contains(pair.startComment);
+    });
   }
 
   function getRangeNodes(pair) {
@@ -324,11 +636,10 @@
   }
 
   function resolveInteraction(target, clientX, clientY) {
+    var allPairs = getAllMarkerPairs();
     var current = target;
     while (current && current !== document.documentElement) {
-      var pairs = getAllMarkerPairs().filter(function (pair) {
-        return current.contains(pair.startComment);
-      });
+      var pairs = getPairsWithinNode(current, allPairs);
 
       if (pairs.length === 1) {
         return pairs[0];
@@ -378,6 +689,7 @@
     );
   }
 
+  // Host event emitters
   function emitDomEvent(eventType, studioId, evt, value) {
     post({
       type: "DOM_EVENT",
@@ -391,6 +703,7 @@
     });
   }
 
+  // Location + link interception
   function notifyPathChange(reason, locationOverride) {
     var loc = locationOverride || {
       path: window.location.pathname,
@@ -496,13 +809,54 @@
     }
   }
 
+  // Interaction handlers
   function handleStudioClick(evt) {
+    if (interactionMode === "layout") {
+      var layoutTarget = toElement(evt.target)?.closest?.(
+        reorderState.selector
+      );
+      var layoutPayload = elementPayload(layoutTarget);
+      if (!layoutPayload) return;
+      emitLayoutDomEvent(
+        "click",
+        layoutTarget.getAttribute("data-layout-id"),
+        evt,
+        layoutPayload
+      );
+      return;
+    }
+
     var pair = resolveInteraction(evt.target, evt.clientX, evt.clientY);
     if (!pair?.studioId) return;
     emitDomEvent("click", pair.studioId, evt);
   }
 
   function handleStudioMouseMove(evt) {
+    if (interactionMode === "layout") {
+      var layoutTarget = toElement(evt.target)?.closest?.(
+        reorderState.selector
+      );
+      var nextLayoutId = layoutTarget?.getAttribute("data-layout-id") || null;
+
+      if (currentHoverLayoutId === nextLayoutId) {
+        return;
+      }
+
+      if (currentHoverLayoutId) {
+        emitLayoutDomEvent("mouseout", currentHoverLayoutId, evt);
+      }
+
+      currentHoverLayoutId = nextLayoutId;
+
+      if (nextLayoutId) {
+        var nextPayload = elementPayload(layoutTarget);
+        if (!nextPayload) return;
+        emitLayoutDomEvent("mouseover", nextLayoutId, evt, nextPayload);
+      }
+
+      return;
+    }
+
     var pair = resolveInteraction(evt.target, evt.clientX, evt.clientY);
     var nextStudioId = pair?.studioId || null;
 
@@ -522,6 +876,13 @@
   }
 
   function handleStudioMouseLeave(evt) {
+    if (interactionMode === "layout") {
+      if (!currentHoverLayoutId) return;
+      emitLayoutDomEvent("mouseout", currentHoverLayoutId, evt);
+      currentHoverLayoutId = null;
+      return;
+    }
+
     if (!currentHoverStudioId) return;
     emitDomEvent("mouseout", currentHoverStudioId, evt);
     currentHoverStudioId = null;
@@ -547,6 +908,7 @@
     );
   }
 
+  // Host -> bridge commands
   function handleIncomingMessage(evt) {
     if (parentOrigin !== "*" && evt.origin !== parentOrigin) return;
     var data = evt.data;
@@ -576,6 +938,50 @@
       ) {
         replacePairContent(pair, "html", payload.html || "");
       });
+      return;
+    }
+
+    if (payload.action === "enableReorderByUid") {
+      reorderState.enabled = true;
+      reorderState.selector = payload.selector || "[data-layout-id]";
+      ensureReorderAttributes();
+      setupReorderListeners();
+      setupReorderObserver();
+      postReorderOutput(reorderState.selector, null);
+      return;
+    }
+
+    if (payload.action === "disableReorderByUid") {
+      reorderState.enabled = false;
+      reorderState.dragEl = null;
+      reorderState.codeId = null;
+      return;
+    }
+
+    if (payload.action === "setInteractionMode") {
+      interactionMode = payload.mode === "layout" ? "layout" : "content";
+      currentHoverStudioId = null;
+      currentHoverLayoutId = null;
+      return;
+    }
+
+    if (payload.action === "addClassByLayoutId") {
+      if (!payload.layoutId || !payload.className) return;
+      document
+        .querySelectorAll('[data-layout-id="' + payload.layoutId + '"]')
+        .forEach(function (node) {
+          node.classList.add(payload.className);
+        });
+      return;
+    }
+
+    if (payload.action === "removeClassByLayoutId") {
+      if (!payload.layoutId || !payload.className) return;
+      document
+        .querySelectorAll('[data-layout-id="' + payload.layoutId + '"]')
+        .forEach(function (node) {
+          node.classList.remove(payload.className);
+        });
       return;
     }
 
@@ -625,6 +1031,13 @@
     }
   }
 
+  function postTemplateSourceMap() {
+    post({
+      type: "TEMPLATE_SOURCE_MAP",
+      templateSourceByCodeId: getTemplateSourceByCodeId(),
+    });
+  }
+
   document.addEventListener("click", handleLinkClick, true);
   document.addEventListener("click", handleStudioClick, true);
   document.addEventListener("mousemove", handleStudioMouseMove, true);
@@ -635,5 +1048,14 @@
   window.addEventListener("message", handleIncomingMessage);
 
   window.ZestyStudioBridge = { __initialized: true };
+  // Template source lives in <body>, while the bridge script will execute from <head>.
+  // Wait until the DOM is ready so template[data-code-id] nodes are present before reading them.
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", postTemplateSourceMap, {
+      once: true,
+    });
+  } else {
+    postTemplateSourceMap();
+  }
   post({ type: "BRIDGE_READY" });
 })();
