@@ -189,6 +189,14 @@ export const SPECIAL_DISPLAY_TYPES: DisplayOptionCardProps[] = [
   },
 ];
 
+const ITEM_ID: ConfigProps = {
+  name: "itemId",
+  label: "Item ID",
+  type: "text",
+  isRequired: true,
+  placeholder: "Select",
+};
+
 const HEADING: ConfigProps = {
   name: "heading",
   label: "Heading",
@@ -215,9 +223,10 @@ const IMAGE: ConfigProps = {
 };
 
 export const DISPLAY_OPTIONS_CONFIG: Record<string, ConfigProps[]> = {
-  simple: [HEADING],
-  text: [HEADING, SUB_HEADING],
+  simple: [ITEM_ID, HEADING],
+  text: [ITEM_ID, HEADING, SUB_HEADING],
   details: [
+    ITEM_ID,
     HEADING,
     {
       name: "details",
@@ -227,9 +236,10 @@ export const DISPLAY_OPTIONS_CONFIG: Record<string, ConfigProps[]> = {
       placeholder: "Select",
     },
   ],
-  image: [HEADING, SUB_HEADING, IMAGE],
-  video: [HEADING, SUB_HEADING, IMAGE],
+  image: [ITEM_ID, HEADING, SUB_HEADING, IMAGE],
+  video: [ITEM_ID, HEADING, SUB_HEADING, IMAGE],
   shopify: [
+    ITEM_ID,
     HEADING,
     SUB_HEADING,
     IMAGE,
@@ -241,9 +251,9 @@ export const DISPLAY_OPTIONS_CONFIG: Record<string, ConfigProps[]> = {
       placeholder: "Select",
     },
   ],
-  youtube: [HEADING, SUB_HEADING, IMAGE],
-  mux: [HEADING, SUB_HEADING, IMAGE],
-  classy: [HEADING, SUB_HEADING],
+  youtube: [ITEM_ID, HEADING, SUB_HEADING, IMAGE],
+  mux: [ITEM_ID, HEADING, SUB_HEADING, IMAGE],
+  classy: [ITEM_ID, HEADING, SUB_HEADING],
 };
 
 export const LOADING_DATA = [...Array(10)].map((_, number) => ({

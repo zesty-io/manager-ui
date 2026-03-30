@@ -84,6 +84,7 @@ export type IntegrationRequestHeaders<T extends string = string> = {
 
 export type IntegrationKeyPaths = {
   rootPath?: string | null;
+  itemId?: string | null;
   heading?: string | null;
   subHeading?: string | null;
   thumbnail?: string | null;

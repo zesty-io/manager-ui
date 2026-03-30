@@ -3,6 +3,22 @@ import { Box, Paper, Tooltip, Typography } from "@mui/material";
 import InfoIcon from "@mui/icons-material/Info";
 import { ReactNode } from "react";
 
+export type FieldWrapperProps = {
+  name?: string;
+  label?: string;
+  description?: string;
+  toolTip?: string;
+  isRequired?: boolean;
+  error?: string;
+  children: React.ReactNode;
+};
+
+export type FormWrapperProps = {
+  width: string | number;
+  height: string | number;
+  children: ReactNode;
+};
+
 export const FieldWrapper = ({
   name,
   label,
@@ -11,15 +27,7 @@ export const FieldWrapper = ({
   isRequired,
   error,
   children,
-}: {
-  name?: string;
-  label?: string;
-  description?: string;
-  toolTip?: string;
-  isRequired?: boolean;
-  error?: string;
-  children: React.ReactNode;
-}) => {
+}: FieldWrapperProps) => {
   return (
     <Box
       className="fieldWrapper"
@@ -82,15 +90,7 @@ export const FieldWrapper = ({
   );
 };
 
-export const FormWrapper = ({
-  width,
-  height,
-  children,
-}: {
-  width: string | number;
-  height: string | number;
-  children: ReactNode;
-}) => {
+export const FormWrapper = ({ width, height, children }: FormWrapperProps) => {
   return (
     <Paper
       sx={{

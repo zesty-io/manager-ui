@@ -12,21 +12,6 @@ import { getKeyValue } from "../utils";
 import useIntegrationField from "../useIntegrationField";
 import DndContextProvider from "shell/components/DndContextProvider";
 
-const getItemId = (item: ApiDataProps, keyPaths: IntegrationKeyPaths) => {
-  const validValues = Object.values(keyPaths)
-    ?.filter((value) => {
-      if (Array.isArray(value)) return value?.length > 0;
-      return value !== "";
-    })
-    ?.flat();
-  const idParts = validValues?.map((key) => {
-    const value = item?.[key] || "";
-    return typeof value === "string" ? value?.replace(/\s+/g, "") : value;
-  });
-
-  return idParts?.join("_");
-};
-
 type IntegrationFieldSelectProps = {
   name: string;
   label: string;
@@ -50,7 +35,7 @@ const IntegrationFieldSelect = ({
   const [selectedItems, setSelectedItems] = useState<ApiDataWithIdProps[]>(
     value?.map((item) => ({
       ...item,
-      _itemId: getItemId(item, config?.keyPaths),
+      _itemId: item?.[config?.keyPaths?.itemId],
     })) || []
   );
 
@@ -68,7 +53,6 @@ const IntegrationFieldSelect = ({
   };
 
   const handleSave = (items: ApiDataWithIdProps[]) => {
-    // setSelectedItems(items);
     onChange(
       items?.map((item) => {
         const { _itemId, ...restItems } = item;
@@ -88,7 +72,7 @@ const IntegrationFieldSelect = ({
       ? []
       : data?.map((item: ApiDataProps) => ({
           ...item,
-          _itemId: getItemId(item, config?.keyPaths),
+          _itemId: item?.[config?.keyPaths?.itemId],
         }));
 
     return itemWithId;
@@ -98,7 +82,7 @@ const IntegrationFieldSelect = ({
     const newValue =
       value?.map((item) => ({
         ...item,
-        _itemId: getItemId(item, config?.keyPaths),
+        _itemId: item?.[config?.keyPaths?.itemId],
       })) || [];
     setSelectedItems(newValue);
   }, [value, setSelectedItems]);

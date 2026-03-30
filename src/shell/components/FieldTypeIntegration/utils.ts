@@ -1,3 +1,6 @@
+import { IntegrationKeyPaths } from "shell/services/types";
+import { ApiDataProps } from "./configs";
+
 export function getKeyValue<T, K extends string>(obj: T, path: K): any {
   if (!obj || !path) return undefined;
 
@@ -16,38 +19,20 @@ export function getKeyValue<T, K extends string>(obj: T, path: K): any {
   }, obj);
 }
 
-export function findUniqueIdKey(data: any[]) {
-  if (!Array.isArray(data) || data.length === 0) return null;
-
-  const keys = [...new Set(data.flatMap((item) => Object.keys(item)))];
-
-  const validKeyIds = keys.filter((key) => {
-    const values = [];
-
-    for (const item of data) {
-      // Must be own top-level property
-      if (!Object.prototype.hasOwnProperty.call(item, key)) {
-        return false;
-      }
-
-      const value = item[key];
-
-      // Must be string or number
-      if (typeof value !== "string" && typeof value !== "number") {
-        return false;
-      }
-
-      // Must not be null/undefined/empty string
-      if (value === null || value === undefined || value === "") {
-        return false;
-      }
-
-      values.push(value);
-    }
-
-    // Must be unique
-    return new Set(values).size === data.length;
+export const keyPathValuesToString = (
+  item: ApiDataProps,
+  keyPaths: IntegrationKeyPaths
+) => {
+  const validValues = Object.values(keyPaths)
+    ?.filter((value) => {
+      if (Array.isArray(value)) return value?.length > 0;
+      return value !== "";
+    })
+    ?.flat();
+  const idParts = validValues?.map((key) => {
+    const value = item?.[key] || "";
+    return typeof value === "string" ? value?.replace(/\s+/g, "") : value;
   });
 
-  return validKeyIds.length > 0 ? validKeyIds[0] : null;
-}
+  return idParts?.join(";");
+};

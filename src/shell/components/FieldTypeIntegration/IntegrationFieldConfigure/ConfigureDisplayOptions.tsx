@@ -115,6 +115,7 @@ const ConfigureDisplayOptions = ({
   const [rootData, setRootData] = useState(null);
 
   const [rootPathData, setRootPathData] = useState({
+    itemId: keyPaths?.itemId || null,
     heading: keyPaths?.heading || null,
     subHeading: keyPaths?.subHeading || null,
     thumbnail: keyPaths?.thumbnail || null,

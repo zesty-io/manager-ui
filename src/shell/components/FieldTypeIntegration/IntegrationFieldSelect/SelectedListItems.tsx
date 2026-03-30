@@ -52,7 +52,6 @@ const SelectedListItems = ({
         {items?.map((item, index) => {
           return (
             <Draggable
-              // loading={false}
               key={item?._itemId}
               id={item?._itemId}
               index={index}
@@ -61,7 +60,6 @@ const SelectedListItems = ({
               onView={() => viewJson(item)}
             >
               <DisplayCard
-                // loading={true}
                 type={config?.type}
                 heading={getKeyValue(item, config?.keyPaths?.heading || null)}
                 subHeading={getKeyValue(

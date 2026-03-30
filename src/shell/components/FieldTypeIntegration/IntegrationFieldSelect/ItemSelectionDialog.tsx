@@ -32,7 +32,7 @@ import {
   DISPLAY_OPTIONS_CONFIG,
   LOADING_DATA,
 } from "../configs";
-import { findUniqueIdKey, getKeyValue } from "../utils";
+import { getKeyValue, keyPathValuesToString } from "../utils";
 import DisplayCard from "../components/DisplayCard";
 import { NoResults } from "../../../../apps/schema/src/app/components/NoResults";
 import JsonViewer from "../components/JsonViewer";
@@ -68,13 +68,13 @@ const getItemRowHeight = (
 type RenderRowDataProps = {
   loading?: boolean;
   type: IntegrationTypes;
+  value: ApiDataProps[];
   items: ApiDataProps[];
   selectedItems: ApiDataProps[];
   keyPaths: any;
   onSelect: (item: ApiDataProps) => void;
   maxItems?: number;
   onView: (item: ApiDataProps) => void;
-  uniqueIdKey: string | null;
   onSync: (id: string | number, data: ApiDataProps) => void;
   forSyncIds: (string | number)[];
 };
@@ -89,13 +89,14 @@ const RenderRow = ({ data, index, style }: RenderRowProps) => {
   const {
     loading = false,
     type,
+    value,
     items,
     selectedItems,
     keyPaths,
     onSelect,
     maxItems,
     onView,
-    uniqueIdKey,
+
     onSync,
     forSyncIds,
   } = data;
@@ -103,10 +104,12 @@ const RenderRow = ({ data, index, style }: RenderRowProps) => {
   const selectedIds = selectedItems.map((item) => item?._itemId);
   const limitReached = selectedIds.length >= maxItems;
   const isSelected = selectedIds.includes(item?._itemId);
-  const selectedUniqueIds = selectedItems.map((item) => item?.[uniqueIdKey]);
-  const itemUniqueId = item?.[uniqueIdKey];
-  const hasUpdates = !isSelected && selectedUniqueIds?.includes(itemUniqueId);
 
+  const localItem =
+    value?.find((val) => val?.[keyPaths?.itemId] === item?._itemId) || null;
+  const remoteItemData = keyPathValuesToString(item, keyPaths);
+  const localItemData = keyPathValuesToString(localItem, keyPaths);
+  const hasUpdates = !!localItem && remoteItemData !== localItemData;
   const pathData = {
     heading: getKeyValue(item, keyPaths?.heading),
     subHeading: getKeyValue(item, keyPaths?.subHeading),
@@ -149,7 +152,7 @@ const RenderRow = ({ data, index, style }: RenderRowProps) => {
           borderColor: "border",
           ...borderRadius,
           ...(!loading &&
-            (isSelected || hasUpdates) && {
+            isSelected && {
               backgroundColor: (theme) =>
                 alpha(theme.palette.primary.main, 0.04),
               boxShadow: (theme) =>
@@ -168,7 +171,7 @@ const RenderRow = ({ data, index, style }: RenderRowProps) => {
           ) : (
             <Checkbox
               disabled={!isSelected && limitReached}
-              checked={isSelected || hasUpdates}
+              checked={isSelected}
               onChange={() => onSelect(item)}
               sx={{ color: "grey.500" }}
             />
@@ -190,17 +193,20 @@ const RenderRow = ({ data, index, style }: RenderRowProps) => {
           justifyContent="space-between"
           alignItems="center"
         >
-          {!loading && !forSyncIds?.includes(itemUniqueId) && !!hasUpdates && (
-            <Tooltip title="Resync Values">
-              <IconButton
-                color="primary"
-                size="small"
-                onClick={() => onSync(itemUniqueId, item)}
-              >
-                <Refresh />
-              </IconButton>
-            </Tooltip>
-          )}
+          {!loading &&
+            !forSyncIds?.includes(item?._itemId) &&
+            isSelected &&
+            !!hasUpdates && (
+              <Tooltip title="Resync Values">
+                <IconButton
+                  color="primary"
+                  size="small"
+                  onClick={() => onSync(item?._itemId, item)}
+                >
+                  <Refresh />
+                </IconButton>
+              </Tooltip>
+            )}
           <IconButton
             size="small"
             sx={{ borderRadius: 1, color: "action.active" }}
@@ -239,10 +245,9 @@ const ItemSelectionDialog = ({
   const itemHeight = getItemRowHeight(config?.type, config?.keyPaths?.details);
   const displayConfig = DISPLAY_OPTIONS_CONFIG?.[config?.type] || [];
   const keyPaths = config?.keyPaths;
-  const uniqueIdKey = findUniqueIdKey(items);
   const [forSync, setForSync] = useState<SyncItem[]>([]);
   const forSyncIds = forSync?.map((sync) => sync?.id);
-  const hasChanges = !isEqual(value, selectedItems) || !!forSync?.length;
+  const hasChanges = !isEqual(value, selectedItems) || forSyncIds?.length > 0;
 
   const handleSelect = (item: ApiDataWithIdProps) => {
     setSelectedItems((prev) => {
@@ -255,7 +260,6 @@ const ItemSelectionDialog = ({
   const handleSync = (id: string | number, data: ApiDataWithIdProps) => {
     setForSync((prev: SyncItem[]) => {
       const existingIndex = prev.findIndex((item: SyncItem) => item.id === id);
-
       if (existingIndex !== -1) {
         return [
           ...prev.slice(0, existingIndex),
@@ -263,7 +267,6 @@ const ItemSelectionDialog = ({
           ...prev.slice(existingIndex + 1),
         ];
       }
-
       return [...prev, { id, data }];
     });
   };
@@ -273,7 +276,7 @@ const ItemSelectionDialog = ({
       ? selectedItems
       : selectedItems.map((item) => {
           const syncItem = forSync.find(
-            (sync) => sync.id === item?.[uniqueIdKey]
+            (sync) => sync.id === item?.[config?.keyPaths?.itemId]
           );
           return syncItem?.data || item;
         });
@@ -310,6 +313,7 @@ const ItemSelectionDialog = ({
 
   const listData: RenderRowDataProps = {
     type: config?.type,
+    value,
     items: filteredItems,
     selectedItems,
     keyPaths: config?.keyPaths,
@@ -317,7 +321,6 @@ const ItemSelectionDialog = ({
     maxItems,
     onView: handleView,
     loading: loading,
-    uniqueIdKey,
     onSync: handleSync,
     forSyncIds,
   };
