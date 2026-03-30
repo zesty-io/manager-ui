@@ -18,12 +18,14 @@ const specialTypes = ["shopify", "youtube", "mux", "classy"];
 
 const KEY_PATHS = {
   generic: {
+    itemId: "playerId",
     heading: "name",
     subHeading: "team",
     thumbnail: "playerImage",
   },
   special: {
     rootPath: "results",
+    itemId: "id",
     heading: "title",
     subHeading: "color",
     thumbnail: "featuredMedia",
