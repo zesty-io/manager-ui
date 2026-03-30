@@ -18,8 +18,12 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
+import { useSelector } from "react-redux";
 import { useEffect, useRef, useState } from "react";
-import { useGeminiGenerationMutation } from "../../services/mcp";
+import {
+  useGeminiGenerationMutation,
+  useGetAllChatSessionsQuery,
+} from "../../services/mcp";
 import { enqueueAction } from "../../../engine/queue";
 import {
   ArrowForward,
@@ -44,6 +48,7 @@ import { getRefRegistry } from "../../../engine/refRegistry";
 import { Brain } from "@zesty-io/material";
 import { keyframes } from "@emotion/react";
 import geminiLogo from "../../../../public/images/geminiLogo.svg";
+import { AppState } from "shell/store/types";
 
 const borderMove = keyframes`
   0% { background-position: 0 0; }
@@ -73,6 +78,7 @@ export const AIDrawer = () => {
   const isInContentMeta = /^\/content\/[^/]+\/[^/]+\/meta$/.test(pathname);
   const isInBlocks = /^\/blocks\/[^/]+\/[^/]+\/?$/.test(pathname);
   const isInCodeApp = /^\/code\/file\/.+/.test(pathname);
+  const user = useSelector((state: AppState) => state.user);
   const { data: langMappings } = useGetLangsMappingQuery();
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const [isInitialMount, setIsInitialMount] = useState(true);
@@ -111,6 +117,13 @@ export const AIDrawer = () => {
 
   const [geminiGenerate, { isLoading, isError, data: aiResponse }] =
     useGeminiGenerationMutation();
+  const { data: chatHistory, isLoading: isLoadingChatHistory } =
+    useGetAllChatSessionsQuery(
+      { userZUID: user.ZUID },
+      { skip: !user || !user.ZUID }
+    );
+
+  console.log("chatHistory", chatHistory);
 
   const responsesEndRef = useRef(null);
 
