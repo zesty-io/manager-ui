@@ -702,7 +702,7 @@ export type WebFont = {
 };
 
 export type GeminiResponse = {
-  data: string;
+  data: string | { data: any };
   message: string;
   tools: any[];
 };

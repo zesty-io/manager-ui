@@ -2,6 +2,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { getResponseData, prepareHeaders as prepareAuthHeaders } from "./util";
 import instanceZUID from "../../utility/instanceZUID";
 import { ChatSession, GeminiResponse } from "./types";
+import { PromptMetadata } from "shell/views/Shell/AIDrawer";
 
 export const mcpApi = createApi({
   reducerPath: "mcpApi",
@@ -78,15 +79,7 @@ export const mcpApi = createApi({
             data: any;
             message: string;
           };
-          metadata: {
-            tone: string;
-            language: string;
-            modelZuid: string;
-            itemZuid: string;
-            registryKeys: string[];
-            refRegistry: string[];
-            temperature: number;
-          };
+          metadata: PromptMetadata;
           url: string;
           approval: "0";
         };
