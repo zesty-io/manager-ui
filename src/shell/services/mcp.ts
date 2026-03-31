@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { prepareHeaders as prepareAuthHeaders } from "./util";
+import { getResponseData, prepareHeaders as prepareAuthHeaders } from "./util";
 import instanceZUID from "../../utility/instanceZUID";
+import { ChatSession, GeminiResponse } from "./types";
 
 export const mcpApi = createApi({
   reducerPath: "mcpApi",
@@ -16,7 +17,7 @@ export const mcpApi = createApi({
   }),
   tagTypes: ["ChatSessions", "ChatSessionLog"],
   endpoints: (builder) => ({
-    geminiGeneration: builder.mutation<any, any>({
+    geminiGeneration: builder.mutation<GeminiResponse, any>({
       query: (body) => {
         return {
           url: `client`,
@@ -26,7 +27,7 @@ export const mcpApi = createApi({
       },
     }),
     //TODO: Add return types
-    getAllChatSessions: builder.query<any, { userZUID: string }>({
+    getAllChatSessions: builder.query<ChatSession[], { userZUID: string }>({
       query: ({ userZUID }) => {
         return {
           url: `chats?instanceZuid=${instanceZUID}&userZuid=${userZUID}`,
@@ -34,6 +35,7 @@ export const mcpApi = createApi({
         };
       },
       providesTags: ["ChatSessions"],
+      transformResponse: getResponseData,
     }),
     createNewChatSession: builder.mutation<
       any,
@@ -44,18 +46,21 @@ export const mcpApi = createApi({
           url: `chats`,
           method: "POST",
           body: {
-            userZUID,
-            roleZUID,
-            instanceZUID,
+            userZuid: userZUID,
+            roleZuid: roleZUID,
+            instanceZuid: instanceZUID,
           },
         };
       },
       invalidatesTags: ["ChatSessions"],
     }),
-    getChatSessionLog: builder.query<any, { chatZUID: string }>({
-      query: ({ chatZUID }) => {
+    getChatSessionLog: builder.query<
+      any,
+      { chatZUID: string; userZUID: string }
+    >({
+      query: ({ chatZUID, userZUID }) => {
         return {
-          url: `chats/${chatZUID}`,
+          url: `chats/${chatZUID}?userZuid=${userZUID}&instanceZuid=${instanceZUID}`,
           method: "GET",
         };
       },
@@ -63,12 +68,38 @@ export const mcpApi = createApi({
         { type: "ChatSessionLog", id: chatZUID },
       ],
     }),
-    addNewChatLogItem: builder.mutation<any, { chatZUID: string; body: any }>({
+    addNewChatLogItem: builder.mutation<
+      any,
+      {
+        chatZUID: string;
+        body: {
+          prompt: string;
+          response: {
+            data: any;
+            message: string;
+          };
+          metadata: {
+            tone: string;
+            language: string;
+            modelZuid: string;
+            itemZuid: string;
+            registryKeys: string[];
+            refRegistry: string[];
+            temperature: number;
+          };
+          url: string;
+          approval: "0";
+        };
+      }
+    >({
       query: ({ chatZUID, body }) => {
         return {
           url: `chats/${chatZUID}/prompt`,
           method: "POST",
-          body,
+          body: {
+            ...body,
+            instanceZuid: instanceZUID,
+          },
         };
       },
       invalidatesTags: (result, error, { chatZUID }) => [
@@ -77,7 +108,7 @@ export const mcpApi = createApi({
     }),
     updatePromptApprovalStatus: builder.mutation<
       void,
-      { chatZUID: string; promptZUID: string; approval: 0 | 1 }
+      { chatZUID: string; promptZUID: string; approval: "0" | "1" }
     >({
       query: ({ chatZUID, promptZUID, approval }) => {
         return {

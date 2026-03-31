@@ -18,11 +18,15 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useRef, useState } from "react";
 import {
   useGeminiGenerationMutation,
   useGetAllChatSessionsQuery,
+  useGetChatSessionLogQuery,
+  useCreateNewChatSessionMutation,
+  useAddNewChatLogItemMutation,
+  useUpdatePromptApprovalStatusMutation,
 } from "../../services/mcp";
 import { enqueueAction } from "../../../engine/queue";
 import {
@@ -49,6 +53,24 @@ import { Brain } from "@zesty-io/material";
 import { keyframes } from "@emotion/react";
 import geminiLogo from "../../../../public/images/geminiLogo.svg";
 import { AppState } from "shell/store/types";
+import { useGetUsersRolesQuery } from "shell/services/accounts";
+import { GeminiResponse, ChatSession } from "shell/services/types";
+import { notify } from "shell/store/notifications";
+
+const parseResponse = (rawResponse: GeminiResponse) => {
+  if (!rawResponse) return;
+
+  try {
+    const cleaned =
+      typeof rawResponse.data === "string"
+        ? rawResponse.data.replace(/```json|```/g, "").trim()
+        : null;
+
+    return cleaned ? JSON.parse(cleaned) : rawResponse.data;
+  } catch (error) {
+    throw error;
+  }
+};
 
 const borderMove = keyframes`
   0% { background-position: 0 0; }
@@ -72,13 +94,18 @@ const TONE_OPTIONS = [
   { label: "Succinct", value: "Succinct - Clear, factual, with no hyperbole" },
 ] as const;
 
-export const AIDrawer = () => {
+type AIDrawerProps = {
+  open: boolean;
+};
+export const AIDrawer = ({ open }: AIDrawerProps) => {
   const { pathname } = useLocation();
+  const dispatch = useDispatch();
   const isInContentApp = /^\/content\/[^/]+\/[^/]+$/.test(pathname);
   const isInContentMeta = /^\/content\/[^/]+\/[^/]+\/meta$/.test(pathname);
   const isInBlocks = /^\/blocks\/[^/]+\/[^/]+\/?$/.test(pathname);
   const isInCodeApp = /^\/code\/file\/.+/.test(pathname);
   const user = useSelector((state: AppState) => state.user);
+  const { data: roles } = useGetUsersRolesQuery();
   const { data: langMappings } = useGetLangsMappingQuery();
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const [isInitialMount, setIsInitialMount] = useState(true);
@@ -91,11 +118,11 @@ export const AIDrawer = () => {
     ? { modelZUID: zuidMatch[1], itemZUID: zuidMatch[2] }
     : { modelZUID: undefined, itemZUID: undefined };
 
-  const [responsesLS, setResponsesLS] = useLocalStorage<any[]>(
-    `ai-drawer-responses-${pathname}`,
-    []
-  );
-  const [responses, setResponses] = useState(responsesLS || []);
+  // const [responsesLS, setResponsesLS] = useLocalStorage<any[]>(
+  //   `ai-drawer-responses-${pathname}`,
+  //   []
+  // );
+  const [responses, setResponses] = useState([]);
   const [prompt, setPrompt] = useState("");
   const [autoApply, setAutoApply] = useState(false);
 
@@ -120,10 +147,28 @@ export const AIDrawer = () => {
   const { data: chatHistory, isLoading: isLoadingChatHistory } =
     useGetAllChatSessionsQuery(
       { userZUID: user.ZUID },
-      { skip: !user || !user.ZUID }
+      { skip: !user || !user.ZUID || !open }
     );
+  const latestChatSessionZUID = chatHistory?.[0]?.chatZuid;
+  const { data: chatSessionLog, isLoading: isLoadingChatSessionLog } =
+    useGetChatSessionLogQuery(
+      { chatZUID: latestChatSessionZUID, userZUID: user.ZUID },
+      {
+        skip:
+          !chatHistory?.length || !latestChatSessionZUID || !user.ZUID || !open,
+      }
+    );
+  const [createNewChatSession, { isLoading: isCreatingNewChatSession }] =
+    useCreateNewChatSessionMutation();
+  const [addNewChatLogItem, { isLoading: isAddingNewChatLogItem }] =
+    useAddNewChatLogItemMutation();
+  const [
+    updatePromptApprovalStatus,
+    { isLoading: isUpdatingPromptApprovalStatus },
+  ] = useUpdatePromptApprovalStatusMutation();
 
   console.log("chatHistory", chatHistory);
+  console.log("chatsessionlog", chatSessionLog);
 
   const responsesEndRef = useRef(null);
 
@@ -137,18 +182,15 @@ export const AIDrawer = () => {
     if (responsesEndRef.current) {
       responsesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
-    setResponsesLS(responses);
+    // setResponsesLS(responses);
+    // console.log(responses);
   }, [responses]);
 
   useEffect(() => {
     if (!aiResponse) return;
 
     try {
-      const cleaned =
-        typeof aiResponse.data === "string"
-          ? aiResponse.data.replace(/```json|```/g, "").trim()
-          : null;
-      const parsed = cleaned ? JSON.parse(cleaned) : aiResponse.data;
+      const parsed = parseResponse(aiResponse);
       const responsesArray = Array.isArray(parsed) ? parsed : [parsed];
 
       setResponses((prev) => [...prev, ...responsesArray]);
@@ -178,26 +220,14 @@ export const AIDrawer = () => {
     }
   }, [aiResponse]);
 
-  const handlePrompt = (newPrompt: string) => {
+  const handlePrompt = async (newPrompt: string) => {
     const registryKeys = Object.keys(getRefRegistry() || {});
     const refRegistry = getRefRegistry();
+    const mappedRefRegistry = registryKeys.map(
+      (x) => `"${x}": "${JSON.stringify(refRegistry[x].context())}"`
+    );
+    const temperature = 0.5;
 
-    geminiGenerate({
-      prompt: newPrompt,
-      tone: selectedTone.value,
-      language: selectedLanguage.value,
-      modelZuid: modelZUID,
-      itemZuid: itemZUID,
-      registryKeys: Object.keys(getRefRegistry() || {}),
-      refRegistry: registryKeys.map(
-        (x) => `"${x}": "${JSON.stringify(refRegistry[x].context())}"`
-      ),
-      filename:
-        getRefRegistry()?.["code-editor"]?.context()?.fileName || undefined,
-      code: getRefRegistry()?.["code-editor"]?.context()?.code || undefined,
-      fields: getRefRegistry()?.["code-editor"]?.context()?.fields || undefined,
-      temperature: 0.5,
-    });
     setResponses((prev) => [
       ...prev,
       {
@@ -208,6 +238,106 @@ export const AIDrawer = () => {
       },
     ]);
     setPrompt("");
+
+    const response = await geminiGenerate({
+      prompt: newPrompt,
+      tone: selectedTone.value,
+      language: selectedLanguage.value,
+      modelZuid: modelZUID,
+      itemZuid: itemZUID,
+      registryKeys,
+      refRegistry: mappedRefRegistry,
+      filename:
+        getRefRegistry()?.["code-editor"]?.context()?.fileName || undefined,
+      code: getRefRegistry()?.["code-editor"]?.context()?.code || undefined,
+      fields: getRefRegistry()?.["code-editor"]?.context()?.fields || undefined,
+      temperature,
+    }).unwrap();
+
+    handleAddChatLog(newPrompt, response, {
+      tone: selectedTone.value,
+      language: selectedLanguage.value,
+      modelZuid: modelZUID,
+      itemZuid: itemZUID,
+      registryKeys,
+      refRegistry: mappedRefRegistry,
+      temperature,
+    });
+  };
+
+  const handleAddChatLog = async (
+    prompt: string,
+    response: any,
+    metadata: {
+      tone: string;
+      language: string;
+      modelZuid: string;
+      itemZuid: string;
+      registryKeys: string[];
+      refRegistry: string[];
+      temperature: number;
+    }
+  ) => {
+    let parsedData;
+
+    try {
+      parsedData = parseResponse(response);
+    } catch (error) {
+      parsedData = [
+        {
+          type: "ERROR",
+          payload: {
+            value: "Error parsing AI response. Please try again.",
+          },
+        },
+      ];
+    }
+
+    const body = {
+      prompt,
+      response: {
+        data: parsedData,
+        message: response.message,
+      },
+      metadata,
+      url: location.href,
+      approval: "0" as const,
+    };
+
+    if (!chatHistory?.length) {
+      // This is only supposed to run once, when the user first interacts with
+      // the AI drawer and they have no chat session yet
+      const userRole = roles?.find((role) => role.ZUID === user.ZUID);
+
+      if (user?.ZUID && userRole?.role?.ZUID) {
+        const newChatSessionRes = await createNewChatSession({
+          userZUID: user.ZUID,
+          roleZUID: userRole?.role?.ZUID,
+        }).unwrap();
+
+        if (newChatSessionRes.data) {
+          // Create the new log after the chat session is created
+          addNewChatLogItem({
+            chatZUID: (newChatSessionRes.data as ChatSession).chatZuid,
+            body,
+          });
+        } else {
+          dispatch(
+            notify({ message: "Failed to create chat session", kind: "error" })
+          );
+        }
+      } else {
+        throw new Error(
+          "User data not found. Unable to create a new chat session."
+        );
+      }
+    } else {
+      // Add the new log item to the existing chat session
+      addNewChatLogItem({
+        chatZUID: latestChatSessionZUID,
+        body,
+      });
+    }
   };
 
   return (
@@ -314,7 +444,7 @@ export const AIDrawer = () => {
                   color="error"
                   onClick={() => {
                     setResponses([]);
-                    setResponsesLS([]);
+                    // setResponsesLS([]);
                   }}
                 >
                   <NotInterestedRounded sx={{ fontSize: 16 }} />
