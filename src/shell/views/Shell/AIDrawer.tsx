@@ -94,6 +94,21 @@ const TONE_OPTIONS = [
   { label: "Succinct", value: "Succinct - Clear, factual, with no hyperbole" },
 ] as const;
 
+export type PromptMetadata =
+  | {
+      tone: string;
+      language: string;
+      modelZuid: string;
+      itemZuid: string;
+      registryKeys: string[];
+      refRegistry: string[];
+      temperature: number;
+    }
+  | {
+      temperature: number;
+      // systemInstruction: string;
+    };
+
 type AIDrawerProps = {
   open: boolean;
 };
@@ -239,7 +254,7 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
     ]);
     setPrompt("");
 
-    const response = await geminiGenerate({
+    const geminiResponse = await geminiGenerate({
       prompt: newPrompt,
       tone: selectedTone.value,
       language: selectedLanguage.value,
@@ -254,7 +269,7 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
       temperature,
     }).unwrap();
 
-    handleAddChatLog(newPrompt, response, {
+    handleAddChatLog(newPrompt, geminiResponse, {
       tone: selectedTone.value,
       language: selectedLanguage.value,
       modelZuid: modelZUID,
@@ -265,18 +280,45 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
     });
   };
 
+  const handleGenerateSuggestions = async () => {
+    setResponses((prev) => [
+      ...prev,
+      {
+        type: "USER_INPUT",
+        payload: {
+          value: prompt
+            ? `Generate suggestions: ${prompt}`
+            : "Generate suggestions",
+        },
+      },
+    ]);
+    setPrompt("");
+
+    const systemInstruction = suggestionSystemInstruction(
+      Object.keys(getRefRegistry() || {}),
+      getRefRegistry()
+    );
+    const temperature = 0.5;
+    const geminiResponse = await geminiGenerate({
+      prompt: prompt || "Generate suggestions for my content fields",
+      systemInstruction,
+      temperature,
+    }).unwrap();
+
+    handleAddChatLog(
+      prompt ? `Generate suggestions: ${prompt}` : "Generate suggestions",
+      geminiResponse,
+      {
+        temperature,
+        // systemInstruction,
+      }
+    );
+  };
+
   const handleAddChatLog = async (
     prompt: string,
     response: any,
-    metadata: {
-      tone: string;
-      language: string;
-      modelZuid: string;
-      itemZuid: string;
-      registryKeys: string[];
-      refRegistry: string[];
-      temperature: number;
-    }
+    metadata: PromptMetadata
   ) => {
     let parsedData;
 
@@ -633,29 +675,7 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
             <Button
               size="small"
               variant="contained"
-              onClick={() => {
-                geminiGenerate({
-                  prompt:
-                    prompt || "Generate suggestions for my content fields",
-                  systemInstruction: suggestionSystemInstruction(
-                    Object.keys(getRefRegistry() || {}),
-                    getRefRegistry()
-                  ),
-                  temperature: 0.5,
-                });
-                setResponses((prev) => [
-                  ...prev,
-                  {
-                    type: "USER_INPUT",
-                    payload: {
-                      value: prompt
-                        ? `Generate suggestions: ${prompt}`
-                        : "Generate suggestions",
-                    },
-                  },
-                ]);
-                setPrompt("");
-              }}
+              onClick={handleGenerateSuggestions}
               endIcon={<AutoFixHighRounded />}
             >
               Generate Suggestions
