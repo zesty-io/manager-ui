@@ -700,3 +700,19 @@ export type WebFont = {
   kind?: string;
   menu?: string;
 };
+
+export type GeminiResponse = {
+  data: string;
+  message: string;
+  tools: any[];
+};
+
+export type ChatSession = {
+  userZuid: string;
+  instanceZuid: string;
+  roleZuid: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  chatZuid: string;
+};
