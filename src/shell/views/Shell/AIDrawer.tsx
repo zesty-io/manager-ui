@@ -106,7 +106,7 @@ export type PromptMetadata =
     }
   | {
       temperature: number;
-      // systemInstruction: string;
+      systemInstruction: string;
     };
 
 type AIDrawerProps = {
@@ -310,7 +310,7 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
       geminiResponse,
       {
         temperature,
-        // systemInstruction,
+        systemInstruction,
       }
     );
   };
@@ -379,6 +379,37 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
         chatZUID: latestChatSessionZUID,
         body,
       });
+    }
+  };
+
+  const handleClearChat = () => {
+    const userRole = roles?.find((role) => role.ZUID === user.ZUID);
+
+    if (user?.ZUID && userRole?.role?.ZUID) {
+      createNewChatSession({
+        userZUID: user.ZUID,
+        roleZUID: userRole?.role?.ZUID,
+      })
+        .unwrap()
+        .then(() => {
+          setResponses([]);
+          // setResponsesLS([]);
+        })
+        .catch(() => {
+          dispatch(
+            notify({
+              message: "Failed to create a new chat session",
+              kind: "error",
+            })
+          );
+        });
+    } else {
+      dispatch(
+        notify({
+          message: "Failed to create a new chat session",
+          kind: "error",
+        })
+      );
     }
   };
 
@@ -484,10 +515,7 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
                 <IconButton
                   size="small"
                   color="error"
-                  onClick={() => {
-                    setResponses([]);
-                    // setResponsesLS([]);
-                  }}
+                  onClick={handleClearChat}
                 >
                   <NotInterestedRounded sx={{ fontSize: 16 }} />
                 </IconButton>
