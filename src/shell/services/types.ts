@@ -716,3 +716,42 @@ export type ChatSession = {
   deletedAt: string | null;
   chatZuid: string;
 };
+export type ChatPromptMetadata =
+  | {
+      tone: string;
+      language: string;
+      modelZuid: string;
+      itemZuid: string;
+      registryKeys: string[];
+      refRegistry: string[];
+      temperature: number;
+    }
+  | {
+      temperature: number;
+      systemInstruction: string;
+    };
+
+export type ChatPrompt = {
+  prompt: string;
+  response: GeminiResponse;
+  metadata: ChatPromptMetadata;
+  url: string;
+  approval: "0" | "1";
+  instanceZuid: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  promptZuid: string;
+  chatZuid: string;
+};
+
+export type ChatSessionLog = {
+  userZuid: string;
+  roleZuid: string;
+  instanceZuid: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  chatZuid: string;
+  prompts: ChatPrompt[];
+};

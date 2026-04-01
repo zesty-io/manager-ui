@@ -54,7 +54,12 @@ import { keyframes } from "@emotion/react";
 import geminiLogo from "../../../../public/images/geminiLogo.svg";
 import { AppState } from "shell/store/types";
 import { useGetUsersRolesQuery } from "shell/services/accounts";
-import { GeminiResponse, ChatSession } from "shell/services/types";
+import {
+  GeminiResponse,
+  ChatSession,
+  ChatPrompt,
+  ChatPromptMetadata,
+} from "shell/services/types";
 import { notify } from "shell/store/notifications";
 
 const parseResponse = (rawResponse: GeminiResponse) => {
@@ -70,6 +75,40 @@ const parseResponse = (rawResponse: GeminiResponse) => {
   } catch (error) {
     throw error;
   }
+};
+
+const normalizeChatSessionLog = (prompts: ChatPrompt[] = []) => {
+  return prompts.flatMap((promptLog) => {
+    let parsedResponses = [];
+
+    try {
+      const parsed = parseResponse(promptLog.response);
+      parsedResponses = parsed
+        ? Array.isArray(parsed)
+          ? parsed
+          : [parsed]
+        : [];
+    } catch (error) {
+      parsedResponses = [
+        {
+          type: "ERROR",
+          payload: {
+            value: "Error parsing saved AI response. Please try again.",
+          },
+        },
+      ];
+    }
+
+    return [
+      {
+        type: "USER_INPUT",
+        payload: {
+          value: promptLog.prompt,
+        },
+      },
+      ...parsedResponses,
+    ];
+  });
 };
 
 const borderMove = keyframes`
@@ -94,21 +133,6 @@ const TONE_OPTIONS = [
   { label: "Succinct", value: "Succinct - Clear, factual, with no hyperbole" },
 ] as const;
 
-export type PromptMetadata =
-  | {
-      tone: string;
-      language: string;
-      modelZuid: string;
-      itemZuid: string;
-      registryKeys: string[];
-      refRegistry: string[];
-      temperature: number;
-    }
-  | {
-      temperature: number;
-      systemInstruction: string;
-    };
-
 type AIDrawerProps = {
   open: boolean;
 };
@@ -123,7 +147,9 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
   const { data: roles } = useGetUsersRolesQuery();
   const { data: langMappings } = useGetLangsMappingQuery();
   const chatContainerRef = useRef<HTMLDivElement>(null);
-  const [isInitialMount, setIsInitialMount] = useState(true);
+  const [hasHydratedInitialResponses, setHasHydratedInitialResponses] =
+    useState(false);
+  const [hydratedResponsesCount, setHydratedResponsesCount] = useState(0);
   const promptInputRef = useRef<HTMLInputElement>(null);
 
   const zuidMatch = pathname.match(
@@ -159,18 +185,21 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
 
   const [geminiGenerate, { isLoading, isError, data: aiResponse }] =
     useGeminiGenerationMutation();
-  const { data: chatHistory, isLoading: isLoadingChatHistory } =
+  const { data: chatSessions, isLoading: isLoadingChatSessions } =
     useGetAllChatSessionsQuery(
       { userZUID: user.ZUID },
       { skip: !user || !user.ZUID || !open }
     );
-  const latestChatSessionZUID = chatHistory?.[0]?.chatZuid;
+  const latestChatSessionZUID = chatSessions?.[0]?.chatZuid;
   const { data: chatSessionLog, isLoading: isLoadingChatSessionLog } =
     useGetChatSessionLogQuery(
       { chatZUID: latestChatSessionZUID, userZUID: user.ZUID },
       {
         skip:
-          !chatHistory?.length || !latestChatSessionZUID || !user.ZUID || !open,
+          !chatSessions?.length ||
+          !latestChatSessionZUID ||
+          !user.ZUID ||
+          !open,
       }
     );
   const [createNewChatSession, { isLoading: isCreatingNewChatSession }] =
@@ -182,16 +211,7 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
     { isLoading: isUpdatingPromptApprovalStatus },
   ] = useUpdatePromptApprovalStatusMutation();
 
-  console.log("chatHistory", chatHistory);
-  console.log("chatsessionlog", chatSessionLog);
-
   const responsesEndRef = useRef(null);
-
-  useEffect(() => {
-    if (isInitialMount) {
-      setIsInitialMount(false);
-    }
-  }, [isInitialMount]);
 
   useEffect(() => {
     if (responsesEndRef.current) {
@@ -200,6 +220,39 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
     // setResponsesLS(responses);
     // console.log(responses);
   }, [responses]);
+
+  useEffect(() => {
+    if (
+      !open ||
+      hasHydratedInitialResponses ||
+      isLoadingChatSessions ||
+      isLoadingChatSessionLog
+    ) {
+      return;
+    }
+
+    if (chatSessions?.length && !chatSessionLog) {
+      return;
+    }
+
+    const restoredResponses = chatSessionLog?.prompts?.length
+      ? normalizeChatSessionLog(chatSessionLog?.prompts)
+      : [];
+    if (restoredResponses.length) {
+      setHydratedResponsesCount(restoredResponses.length);
+      // Responses need to be reversed
+      setResponses(restoredResponses.reverse());
+    }
+
+    setHasHydratedInitialResponses(true);
+  }, [
+    open,
+    hasHydratedInitialResponses,
+    isLoadingChatSessions,
+    isLoadingChatSessionLog,
+    chatSessions,
+    chatSessionLog,
+  ]);
 
   useEffect(() => {
     if (!aiResponse) return;
@@ -318,7 +371,7 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
   const handleAddChatLog = async (
     prompt: string,
     response: any,
-    metadata: PromptMetadata
+    metadata: ChatPromptMetadata
   ) => {
     let parsedData;
 
@@ -346,7 +399,7 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
       approval: "0" as const,
     };
 
-    if (!chatHistory?.length) {
+    if (!chatSessions?.length) {
       // This is only supposed to run once, when the user first interacts with
       // the AI drawer and they have no chat session yet
       const userRole = roles?.find((role) => role.ZUID === user.ZUID);
@@ -392,6 +445,7 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
       })
         .unwrap()
         .then(() => {
+          setHydratedResponsesCount(0);
           setResponses([]);
           // setResponsesLS([]);
         })
@@ -579,7 +633,7 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
                   >
                     <AnimatedText
                       text={response.payload.value}
-                      animate={!isInitialMount}
+                      animate={index >= hydratedResponsesCount}
                       onGrow={() => {
                         if (responsesEndRef.current) {
                           responsesEndRef.current.scrollIntoView({
@@ -629,7 +683,7 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
                     <AnimatedText
                       key={index}
                       text={response.payload.value}
-                      animate={!isInitialMount && !isInCodeApp}
+                      animate={index >= hydratedResponsesCount && !isInCodeApp}
                       onGrow={() => {
                         if (responsesEndRef.current) {
                           responsesEndRef.current.scrollIntoView({
@@ -684,7 +738,9 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
           </Box>
           <TextField
             inputRef={promptInputRef}
-            disabled={isLoading}
+            disabled={
+              isLoading || isLoadingChatSessionLog || isCreatingNewChatSession
+            }
             placeholder="Ask AI to make edits to your content..."
             variant="outlined"
             fullWidth

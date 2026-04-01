@@ -1,8 +1,12 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { getResponseData, prepareHeaders as prepareAuthHeaders } from "./util";
 import instanceZUID from "../../utility/instanceZUID";
-import { ChatSession, GeminiResponse } from "./types";
-import { PromptMetadata } from "shell/views/Shell/AIDrawer";
+import {
+  ChatSession,
+  GeminiResponse,
+  ChatPromptMetadata,
+  ChatSessionLog,
+} from "./types";
 
 export const mcpApi = createApi({
   reducerPath: "mcpApi",
@@ -35,8 +39,8 @@ export const mcpApi = createApi({
           method: "GET",
         };
       },
-      providesTags: ["ChatSessions"],
       transformResponse: getResponseData,
+      providesTags: ["ChatSessions"],
     }),
     createNewChatSession: builder.mutation<
       any,
@@ -56,7 +60,7 @@ export const mcpApi = createApi({
       invalidatesTags: ["ChatSessions"],
     }),
     getChatSessionLog: builder.query<
-      any,
+      ChatSessionLog,
       { chatZUID: string; userZUID: string }
     >({
       query: ({ chatZUID, userZUID }) => {
@@ -65,6 +69,7 @@ export const mcpApi = createApi({
           method: "GET",
         };
       },
+      transformResponse: getResponseData,
       providesTags: (results, error, { chatZUID }) => [
         { type: "ChatSessionLog", id: chatZUID },
       ],
@@ -79,7 +84,7 @@ export const mcpApi = createApi({
             data: any;
             message: string;
           };
-          metadata: PromptMetadata;
+          metadata: ChatPromptMetadata;
           url: string;
           approval: "0";
         };
