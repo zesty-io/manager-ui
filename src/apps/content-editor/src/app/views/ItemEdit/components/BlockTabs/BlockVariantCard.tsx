@@ -99,9 +99,9 @@ export const BlockVariantCard = ({ block }: { block: ContentItem }) => {
           <Typography
             variant="body1"
             fontWeight={700}
-            sx={{ wordBreak: "break-word" }}
+            sx={{ wordBreak: "break-word", minHeight: "24px" }}
           >
-            {block?.web?.metaTitle}
+            {block?.web?.metaTitle ?? ""}
           </Typography>
           <Typography
             variant="body3"
