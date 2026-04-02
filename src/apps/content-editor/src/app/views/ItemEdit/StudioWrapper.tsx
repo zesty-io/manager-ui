@@ -1,3 +1,5 @@
+import CloudUploadRoundedIcon from "@mui/icons-material/CloudUploadRounded";
+import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
 import { Alert, Box, Button, CircularProgress, Dialog } from "@mui/material";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -17,6 +19,7 @@ import { ContentInfo } from "./Content/Actions/Widgets/ContentInfo";
 import Editor from "../../components/Editor/Editor";
 import { FieldError } from "../../components/Editor/FieldError";
 import { PendingEditsModal } from "../../components/PendingEditsModal";
+import { DirtyCodeModal } from "../../../../../../shell/components/DirtyCodeModal";
 import contentOneLogoOnly from "../../../../../../../public/images/contentOneLogoOnly.webp";
 import contentOneLogo from "../../../../../../../public/images/contentOneLogo.webp";
 import {
@@ -24,93 +27,49 @@ import {
   normalizePath,
   resolveItemByPath,
 } from "../../../../../studio/utils/pathResolver";
-import { Sentry } from "../../../../../../utility/sentry";
+import {
+  useGetWebViewsQuery,
+  usePublishWebViewMutation,
+  useUpdateWebViewMutation,
+} from "../../../../../../shell/services/instance";
 import { StudioHeader } from "./components/StudioWrapper/StudioHeader";
 import { StudioPreview } from "./components/StudioWrapper/StudioPreview";
 import { StudioSidePanel } from "./components/StudioWrapper/StudioSidePanel";
+import { useLayoutReorderState } from "./hooks/useLayoutReorderState";
+import { useStudioBridge } from "./hooks/useStudioBridge";
+import { InteractionMode, LayoutBreadcrumbItem } from "./hooks/studioTypes";
+import { useStudioSelection } from "./hooks/useStudioSelection";
 
 const drawerWidth = 440;
-const mapSourceByLayoutOrder = (source: string, orderedLayoutIds: string[]) => {
-  if (!source || !orderedLayoutIds?.length) return source;
 
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(
-    `<div id="studio-root">${source}</div>`,
-    "text/html"
-  );
-  const root = doc.getElementById("studio-root");
-  if (!root) return source;
-
-  const rankByUid = new Map<string, number>();
-  orderedLayoutIds.forEach((layoutId, index) => rankByUid.set(layoutId, index));
-
-  const reorderWithinParent = (parent: Element) => {
-    const allChildren = Array.from(parent.children);
-    const uidChildren = allChildren.filter((child) =>
-      child.hasAttribute("data-layout-id")
-    );
-
-    if (uidChildren.length > 1) {
-      const sortedUidChildren = [...uidChildren].sort((a, b) => {
-        const aUid = a.getAttribute("data-layout-id") || "";
-        const bUid = b.getAttribute("data-layout-id") || "";
-        const aRank = rankByUid.has(aUid)
-          ? (rankByUid.get(aUid) as number)
-          : Number.MAX_SAFE_INTEGER;
-        const bRank = rankByUid.has(bUid)
-          ? (rankByUid.get(bUid) as number)
-          : Number.MAX_SAFE_INTEGER;
-        return aRank - bRank;
-      });
-
-      sortedUidChildren.forEach((child) => {
-        parent.appendChild(child);
-      });
-    }
-
-    Array.from(parent.children).forEach((child) => reorderWithinParent(child));
-  };
-
-  reorderWithinParent(root);
-  return root.innerHTML;
+const withCodeIdBreadcrumbRoot = (
+  codeId: string,
+  breadcrumb: LayoutBreadcrumbItem[],
+  codeLabel?: string
+): LayoutBreadcrumbItem[] => {
+  const segments = Array.isArray(breadcrumb)
+    ? breadcrumb.filter((segment) => Boolean(segment?.label))
+    : [];
+  if (!codeId) return segments;
+  const resolvedLabel = codeLabel || codeId;
+  if (segments[0]?.label === resolvedLabel) return segments;
+  return [{ label: resolvedLabel }, ...segments];
 };
-
-type SelectedElement = {
-  studioId?: string;
-  fieldZuid: string;
-  fieldType?: string;
-  itemZuid?: string;
-  modelZuid?: string;
-};
-
-type InteractionMode = "content" | "layout";
 
 export const StudioWrapper = () => {
   const dispatch = useDispatch();
 
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
-  const templateSourceByCodeIdRef = useRef<Record<string, string>>({});
   const currentHoverStudioIdRef = useRef<string | null>(null);
-  const currentHoverLayoutIdRef = useRef<string | null>(null);
-  const latestReorderOutputRef = useRef<{
-    codeId: string | null;
-    selector: string;
-    orderedLayoutIds: string[];
-    outputHtml: string;
-    mappedSource: string;
-  } | null>(null);
-  const [selectedElement, setSelectedElement] =
-    useState<SelectedElement | null>(null);
+  const [showPendingLayoutModal, setShowPendingLayoutModal] = useState(false);
   const [interactionMode, setInteractionMode] =
     useState<InteractionMode>("content");
-  const [panelMode, setPanelMode] = useState<"info" | "edit">("info");
-  const [filteredFieldName, setFilteredFieldName] = useState<string | null>(
-    null
-  );
   const [studioSaving, setStudioSaving] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, any>>({});
   const [saveClicked, setSaveClicked] = useState(false);
   const fieldErrorRef = useRef<any>(null);
+  const pendingLayoutContinuationRef = useRef<null | (() => void)>(null);
+  const previewReloadContinuationRef = useRef<null | (() => void)>(null);
   const [isFetchingItem, setIsFetchingItem] = useState(false);
   const [isFetchingModel, setIsFetchingModel] = useState(false);
   const [isFetchingFields, setIsFetchingFields] = useState(false);
@@ -136,6 +95,70 @@ export const StudioWrapper = () => {
   const contentItems = useSelector((state: AppState) => state.content);
   const modelsState = useSelector((state: AppState) => state.models);
   const fieldsState = useSelector((state: AppState) => state.fields);
+  const { data: webViews = [] } = useGetWebViewsQuery({ status: "dev" });
+  const [updateWebView] = useUpdateWebViewMutation();
+  const [publishWebView] = usePublishWebViewMutation();
+
+  const codeFileNameById = useMemo(() => {
+    return webViews.reduce<Record<string, string>>((acc, view) => {
+      if (view?.ZUID && view?.fileName) {
+        acc[view.ZUID] = view.fileName.endsWith(".html")
+          ? view.fileName
+          : `${view.fileName}.html`;
+      }
+      return acc;
+    }, {});
+  }, [webViews]);
+
+  const postCommandToBridge = useCallback(
+    (cmd: {
+      action: string;
+      studioId?: string;
+      mode?: InteractionMode;
+      fieldZuid?: string;
+      className?: string;
+      css?: string;
+      value?: string;
+      html?: string;
+      itemZuid?: string;
+      selector?: string;
+      layoutId?: string;
+      codeId?: string;
+    }) => {
+      const iframeWindow = iframeRef.current?.contentWindow;
+      if (!iframeWindow) return;
+
+      iframeWindow.postMessage(
+        {
+          source: "zesty-studio-host",
+          message: {
+            type: "COMMAND",
+            payload: cmd,
+          },
+        },
+        "*"
+      );
+    },
+    []
+  );
+
+  const {
+    selectedElement,
+    selectedLayout,
+    panelMode,
+    filteredFieldName,
+    setSelectedLayout,
+    clearSelection,
+    clearLayoutSelection,
+    applyLayoutSelection,
+    handleLayoutBreadcrumbSelect,
+    clearHighlightOnly,
+    applySelection,
+  } = useStudioSelection({
+    postCommandToBridge,
+    codeFileNameById,
+    withCodeIdBreadcrumbRoot,
+  });
 
   const resolvedFromCache = useMemo(
     () => findItemByPath(normalizedPathParam, contentItems),
@@ -257,11 +280,17 @@ export const StudioWrapper = () => {
     }
     setPageItemZUID(resolvedFromCache.meta.ZUID);
     setPageModelZUID(resolvedFromCache.meta.contentModelZUID);
-    setSelectedElement(null);
-    setFilteredFieldName(null);
+    clearLayoutSelection();
+    clearSelection();
     setUnresolvedPath(false);
-    setPanelMode("info");
-  }, [pageItemZUID, pageModelZUID, resolvedFromCache, unresolvedPath]);
+  }, [
+    clearLayoutSelection,
+    clearSelection,
+    pageItemZUID,
+    pageModelZUID,
+    resolvedFromCache,
+    unresolvedPath,
+  ]);
 
   const updateStudioUrl = useCallback(
     (path: string) => {
@@ -270,6 +299,8 @@ export const StudioWrapper = () => {
       history.replace(`/studio?path=${normalized}`);
 
       if (window.parent && window.parent !== window) {
+        // When Studio itself is embedded, notify the outer parent window so it
+        // can stay in sync with the active preview path.
         window.parent.postMessage(
           {
             source: "zesty-studio-host",
@@ -447,55 +478,50 @@ export const StudioWrapper = () => {
     return () => iframeEl.removeEventListener("load", handleLoad);
   }, []);
 
-  const postCommandToBridge = useCallback(
-    (cmd: {
-      action: string;
-      studioId?: string;
-      mode?: InteractionMode;
-      fieldZuid?: string;
-      className?: string;
-      css?: string;
-      value?: string;
-      html?: string;
-      itemZuid?: string;
-      selector?: string;
-      layoutId?: string;
-    }) => {
-      const iframeWindow = iframeRef.current?.contentWindow;
-      if (!iframeWindow) return;
-
-      iframeWindow.postMessage(
-        {
-          source: "zesty-studio-host",
-          message: {
-            type: "COMMAND",
-            payload: cmd,
-          },
-        },
-        "*"
-      );
+  const refreshPreviewFrame = useCallback(
+    (onReloadComplete?: () => void) => {
+      previewReloadContinuationRef.current = onReloadComplete || null;
+      setIsNavigating(true);
+      if (iframeRef.current) {
+        iframeRef.current.src = iframeSrc;
+      }
     },
-    []
+    [iframeSrc]
   );
 
-  const clearSelection = useCallback(() => {
-    if (selectedElement?.fieldZuid) {
-      postCommandToBridge({
-        action: "disableEditing",
-        studioId: selectedElement.studioId,
-        itemZuid: selectedElement.itemZuid,
-      });
-      postCommandToBridge({
-        action: "removeClass",
-        studioId: selectedElement.studioId,
-        className: "studio-selected",
-        itemZuid: selectedElement.itemZuid,
-      });
-    }
-    setSelectedElement(null);
-    setFilteredFieldName(null);
-    setPanelMode("info");
-  }, [postCommandToBridge, selectedElement]);
+  const {
+    pendingLayoutSave,
+    isSavingLayout,
+    handleDiscardPendingLayoutSave,
+    handleSavePendingLayout,
+    handleSaveAndPublishPendingLayout,
+    handleTemplateSourceMap,
+    handleReorderOutput,
+  } = useLayoutReorderState({
+    webViews,
+    codeFileNameById,
+    updateWebView,
+    publishWebView,
+    dispatch,
+    selectedLayoutCodeId: selectedLayout?.codeId,
+    clearLayoutSelection,
+    refreshPreviewFrame,
+    withCodeIdBreadcrumbRoot,
+    onSelectedLayoutBreadcrumbChange: setSelectedLayout,
+  });
+
+  const requestProceedWithPendingLayoutSave = useCallback(
+    (onProceed: () => void) => {
+      if (!pendingLayoutSave?.mappedSource) {
+        onProceed();
+        return;
+      }
+
+      pendingLayoutContinuationRef.current = onProceed;
+      setShowPendingLayoutModal(true);
+    },
+    [pendingLayoutSave?.mappedSource]
+  );
 
   const syncBridgeInteractionMode = useCallback(
     (nextMode: InteractionMode) => {
@@ -522,32 +548,49 @@ export const StudioWrapper = () => {
     (nextMode: InteractionMode) => {
       if (interactionMode === nextMode) return;
 
-      if (currentHoverStudioIdRef.current) {
-        postCommandToBridge({
-          action: "removeClass",
-          studioId: currentHoverStudioIdRef.current,
-          className: "studio-hover",
-        });
-        currentHoverStudioIdRef.current = null;
+      const applyInteractionModeChange = () => {
+        if (currentHoverStudioIdRef.current) {
+          postCommandToBridge({
+            action: "removeClass",
+            studioId: currentHoverStudioIdRef.current,
+            className: "studio-hover",
+          });
+          currentHoverStudioIdRef.current = null;
+        }
+
+        clearLayoutSelection();
+        clearSelection();
+        setInteractionMode(nextMode);
+        syncBridgeInteractionMode(nextMode);
+      };
+
+      if (nextMode === "layout" && selectedItem?.dirty) {
+        const openModal = (window as any).openContentNavigationModal;
+        if (typeof openModal === "function") {
+          openModal((shouldProceed: boolean) => {
+            if (shouldProceed) {
+              applyInteractionModeChange();
+            }
+          });
+          return;
+        }
       }
 
-      if (currentHoverLayoutIdRef.current) {
-        postCommandToBridge({
-          action: "removeClassByLayoutId",
-          layoutId: currentHoverLayoutIdRef.current,
-          className: "studio-hover",
-        });
-        currentHoverLayoutIdRef.current = null;
+      if (nextMode === "content" && pendingLayoutSave?.mappedSource) {
+        requestProceedWithPendingLayoutSave(applyInteractionModeChange);
+        return;
       }
 
-      clearSelection();
-      setInteractionMode(nextMode);
-      syncBridgeInteractionMode(nextMode);
+      applyInteractionModeChange();
     },
     [
+      clearLayoutSelection,
       clearSelection,
       interactionMode,
+      pendingLayoutSave?.mappedSource,
       postCommandToBridge,
+      requestProceedWithPendingLayoutSave,
+      selectedItem?.dirty,
       syncBridgeInteractionMode,
     ]
   );
@@ -633,83 +676,6 @@ export const StudioWrapper = () => {
 
     clearSelection();
   }, [clearSelection, selectedItem?.dirty]);
-
-  const clearHighlightOnly = useCallback(() => {
-    if (selectedElement?.fieldZuid) {
-      postCommandToBridge({
-        action: "disableEditing",
-        studioId: selectedElement.studioId,
-        itemZuid: selectedElement.itemZuid,
-      });
-      postCommandToBridge({
-        action: "removeClass",
-        studioId: selectedElement.studioId,
-        className: "studio-selected",
-        itemZuid: selectedElement.itemZuid,
-      });
-    }
-    setFilteredFieldName(null);
-  }, [postCommandToBridge, selectedElement]);
-
-  const applySelection = useCallback(
-    (next: {
-      studioId?: string;
-      fieldZuid: string;
-      fieldType?: string;
-      itemZuid?: string;
-      modelZuid?: string;
-    }) => {
-      const { studioId, fieldZuid, fieldType, itemZuid, modelZuid } = next;
-
-      if (selectedElement?.studioId && selectedElement.studioId !== studioId) {
-        postCommandToBridge({
-          action: "disableEditing",
-          studioId: selectedElement.studioId,
-          itemZuid: selectedElement.itemZuid,
-        });
-        postCommandToBridge({
-          action: "removeClass",
-          studioId: selectedElement.studioId,
-          className: "studio-selected",
-          itemZuid: selectedElement.itemZuid,
-        });
-      }
-
-      setSelectedElement({
-        studioId,
-        fieldZuid,
-        fieldType,
-        itemZuid,
-        modelZuid,
-      });
-      setFilteredFieldName(fieldNameByZuid.get(fieldZuid) || null);
-      setPanelMode("edit");
-      postCommandToBridge({
-        action: "addClass",
-        studioId,
-        className: "studio-selected",
-        itemZuid,
-      });
-      if (
-        studioId &&
-        fieldType &&
-        [
-          "text",
-          "textarea",
-          "markdown",
-          "wysiwyg_basic",
-          "wysiwyg_advanced",
-        ].includes(fieldType)
-      ) {
-        postCommandToBridge({
-          action: "enableEditing",
-          studioId,
-          itemZuid,
-        });
-      }
-    },
-    [fieldNameByZuid, postCommandToBridge, selectedElement]
-  );
 
   useEffect(() => {
     if (interactionMode !== "content") return;
@@ -888,6 +854,7 @@ export const StudioWrapper = () => {
           dispatch(fetchAuditTrailDrafting(selectedItemZUID)),
           dispatch(fetchAllModelPublishings({ modelZUID: selectedModelZUID })),
         ]);
+        refreshPreviewFrame();
       }
 
       return res;
@@ -909,6 +876,7 @@ export const StudioWrapper = () => {
     selectedItemLabel,
     selectedItemZUID,
     selectedModelZUID,
+    refreshPreviewFrame,
   ]);
 
   useEffect(() => {
@@ -945,289 +913,42 @@ export const StudioWrapper = () => {
     selectedElement,
   ]);
 
-  const handleTemplateSourceMap = useCallback((msg: any) => {
-    templateSourceByCodeIdRef.current =
-      (msg.templateSourceByCodeId as Record<string, string>) || {};
-  }, []);
-
-  const handleBridgeReady = useCallback(() => {
-    postCommandToBridge({
-      action: "injectCss",
-      css: `
-        .studio-hover {
-          outline: 1px dashed #00bcd4;
-          outline-offset: 2px;
-          cursor: pointer;
-        }
-        .studio-selected {
-          outline: 2px solid #ff9800;
-          outline-offset: 2px;
-          background-color: rgba(255,152,0,0.06);
-        }
-        [data-layout-id][draggable="true"] {
-          cursor: move;
-        }
-        .studio-dragging {
-          opacity: 0.6;
-        }
-      `,
-    });
-    syncBridgeInteractionMode(interactionMode);
-  }, [interactionMode, postCommandToBridge, syncBridgeInteractionMode]);
-
-  const handleBridgeError = useCallback(
-    (msg: any) => {
-      const bridgeError = msg.error || {};
-      const error = new Error(bridgeError.message || "Bridge error");
-      if (bridgeError.stack) {
-        (error as any).stack = bridgeError.stack;
-      }
-
-      dispatch(
-        notify({
-          kind: "error",
-          message: `Preview error: ${bridgeError.message || "Bridge error"}`,
-        })
-      );
-
-      Sentry.withScope((scope) => {
-        scope.setLevel("error");
-        scope.setTag("bridge.kind", msg.kind || "error");
-        scope.setContext("bridge.error", {
-          filename: bridgeError.filename || null,
-          lineno: bridgeError.lineno || null,
-          colno: bridgeError.colno || null,
-          stack: bridgeError.stack || null,
-        });
-        scope.setExtra("bridge.message", bridgeError.message || "");
-        Sentry.captureException(error);
-      });
+  const applyBridgeSelection = useCallback(
+    (next: {
+      studioId?: string;
+      fieldZuid: string;
+      fieldType?: string;
+      itemZuid?: string;
+      modelZuid?: string;
+    }) => {
+      applySelection(next, fieldNameByZuid);
     },
-    [dispatch]
+    [applySelection, fieldNameByZuid]
   );
 
-  const handleBridgeDomEvent = useCallback(
-    (msg: any) => {
-      const { eventType, element, value } = msg;
-      if (!element) return;
-
-      const dataset: Record<string, string> =
-        (element.dataset as Record<string, string>) || {};
-      const studioId = dataset.studioId;
-      const fieldZuid: string | undefined = dataset.fieldZuid;
-      const fieldType = dataset.fieldType;
-      const itemZuid = dataset.itemZuid;
-      const modelZuid = dataset.modelZuid;
-      const layoutId = dataset.layoutId;
-
-      switch (eventType) {
-        case "click": {
-          if (interactionMode !== "content") return;
-          if (!fieldZuid) return;
-
-          const isChangingItem =
-            Boolean(itemZuid) &&
-            Boolean(selectedItemZUID) &&
-            itemZuid !== selectedItemZUID;
-          if (isChangingItem && selectedItem?.dirty) {
-            const openModal = (window as any).openContentNavigationModal;
-            if (typeof openModal === "function") {
-              openModal((shouldProceed: boolean) => {
-                if (shouldProceed) {
-                  applySelection({
-                    studioId,
-                    fieldZuid,
-                    fieldType,
-                    itemZuid,
-                    modelZuid,
-                  });
-                }
-              });
-              return;
-            }
-          }
-
-          applySelection({
-            studioId,
-            fieldZuid,
-            fieldType,
-            itemZuid,
-            modelZuid,
-          });
-          return;
-        }
-
-        case "input": {
-          if (interactionMode !== "content") return;
-          if (!fieldZuid || !itemZuid) return;
-
-          const fieldName = fieldNameByZuid.get(fieldZuid);
-          if (!fieldName) return;
-
-          dispatch({
-            type: "SET_ITEM_DATA",
-            itemZUID: itemZuid,
-            key: fieldName,
-            value: typeof value === "string" ? value : "",
-          });
-          return;
-        }
-
-        case "mouseover": {
-          if (interactionMode === "layout") {
-            if (!layoutId) return;
-            currentHoverLayoutIdRef.current = layoutId;
-            postCommandToBridge({
-              action: "addClassByLayoutId",
-              layoutId,
-              className: "studio-hover",
-            });
-            return;
-          }
-
-          if (!studioId) return;
-          currentHoverStudioIdRef.current = studioId;
-          postCommandToBridge({
-            action: "addClass",
-            studioId,
-            className: "studio-hover",
-            itemZuid,
-          });
-          return;
-        }
-
-        case "mouseout": {
-          if (interactionMode === "layout") {
-            if (!layoutId) return;
-            if (currentHoverLayoutIdRef.current === layoutId) {
-              currentHoverLayoutIdRef.current = null;
-            }
-            postCommandToBridge({
-              action: "removeClassByLayoutId",
-              layoutId,
-              className: "studio-hover",
-            });
-            return;
-          }
-
-          if (!studioId) return;
-          if (currentHoverStudioIdRef.current === studioId) {
-            currentHoverStudioIdRef.current = null;
-          }
-          postCommandToBridge({
-            action: "removeClass",
-            studioId,
-            className: "studio-hover",
-            itemZuid,
-          });
-        }
-      }
-    },
-    [
-      applySelection,
-      dispatch,
-      fieldNameByZuid,
-      interactionMode,
-      postCommandToBridge,
-      selectedItem?.dirty,
-      selectedItemZUID,
-    ]
-  );
-
-  const handleReorderOutput = useCallback((msg: any) => {
-    const codeId = typeof msg.codeId === "string" ? msg.codeId : null;
-    const orderedLayoutIds = Array.isArray(msg.orderedLayoutIds)
-      ? msg.orderedLayoutIds.filter(
-          (layoutId: unknown): layoutId is string =>
-            typeof layoutId === "string"
-        )
-      : [];
-    const sourceTemplate = codeId
-      ? templateSourceByCodeIdRef.current[codeId] || ""
-      : "";
-    const mappedSource = sourceTemplate
-      ? mapSourceByLayoutOrder(sourceTemplate, orderedLayoutIds)
-      : "";
-
-    latestReorderOutputRef.current = {
-      codeId,
-      selector:
-        typeof msg.selector === "string" ? msg.selector : "[data-layout-id]",
-      orderedLayoutIds,
-      outputHtml: typeof msg.outputHtml === "string" ? msg.outputHtml : "",
-      mappedSource,
-    };
-
-    // Temporary visibility while wiring source remapping from layout drag/drop.
-    // eslint-disable-next-line no-console
-    console.log("[studio] Reordered canvas output", {
-      codeId,
-      selector:
-        typeof msg.selector === "string" ? msg.selector : "[data-layout-id]",
-      orderedLayoutIds,
-      outputHtml: typeof msg.outputHtml === "string" ? msg.outputHtml : "",
-      sourceTemplate,
-      mappedSource,
-    });
-  }, []);
-
-  useEffect(() => {
-    function handleMessage(evt: MessageEvent<any>) {
-      const data = evt.data;
-      if (!data || data.source !== "studio-bridge") {
-        return;
-      }
-
-      const msg = data.message;
-      if (!msg) return;
-
-      if (msg.type === "TEMPLATE_SOURCE_MAP") {
-        handleTemplateSourceMap(msg);
-        return;
-      }
-
-      if (msg.type === "BRIDGE_READY") {
-        handleBridgeReady();
-        return;
-      }
-
-      if (msg.type === "PATH_CHANGE") {
-        const loc = msg.location || {};
-        const path = (loc.path as string) || "/";
-
-        const normalizedPath = normalizePath(path || "/");
-        updateStudioUrl(normalizedPath);
-        updateItemByPath(normalizedPath, { onApplied: clearSelection });
-        return;
-      }
-
-      if (msg.type === "BRIDGE_ERROR") {
-        handleBridgeError(msg);
-        return;
-      }
-
-      if (msg.type === "DOM_EVENT") {
-        handleBridgeDomEvent(msg);
-        return;
-      }
-
-      if (msg.type === "REORDER_OUTPUT") {
-        handleReorderOutput(msg);
-      }
-    }
-
-    window.addEventListener("message", handleMessage);
-    return () => {
-      window.removeEventListener("message", handleMessage);
-    };
-  }, [
-    clearSelection,
-    handleBridgeDomEvent,
-    handleBridgeError,
-    handleBridgeReady,
-    handleReorderOutput,
+  const { handlePreviewLoad } = useStudioBridge({
+    dispatch,
+    interactionMode,
+    syncBridgeInteractionMode,
+    postCommandToBridge,
     handleTemplateSourceMap,
-  ]);
+    handleReorderOutput,
+    applyLayoutSelection,
+    requestProceedWithPendingLayoutSave,
+    clearLayoutSelection,
+    applySelection: applyBridgeSelection,
+    fieldNameByZuid,
+    currentHoverStudioIdRef,
+    pendingLayoutHasMappedSource: Boolean(pendingLayoutSave?.mappedSource),
+    selectedLayoutCodeId: selectedLayout?.codeId,
+    selectedItemDirty: selectedItem?.dirty,
+    selectedItemZUID,
+    clearSelection,
+    updateStudioUrl,
+    updateItemByPath,
+    previewReloadContinuationRef,
+    setIsNavigating,
+  });
 
   const renderInfoPanel = () => {
     if (!isResolved) {
@@ -1319,6 +1040,8 @@ export const StudioWrapper = () => {
           onLanguageChange={handleLanguageChange}
           interactionMode={interactionMode}
           onInteractionModeChange={handleInteractionModeChange}
+          selectedLayoutBreadcrumb={selectedLayout?.breadcrumb || []}
+          onLayoutBreadcrumbClick={handleLayoutBreadcrumbSelect}
           pageModelZUID={pageModelZUID}
           pageItemZUID={pageItemZUID}
           unresolvedPath={unresolvedPath}
@@ -1329,34 +1052,125 @@ export const StudioWrapper = () => {
             iframeRef={iframeRef}
             iframeSrc={iframeSrc}
             isNavigating={isNavigating}
-            onLoad={() => setIsNavigating(false)}
+            onLoad={handlePreviewLoad}
           />
-          <StudioSidePanel
-            headerTitle={headerTitle}
-            pageItemVersion={pageItemVersion}
-            unresolvedPath={unresolvedPath}
-            panelMode={panelMode}
-            clearSelection={requestClearSelection}
-            activeVersion={activeVersion}
-            selectedModelZUID={selectedModelZUID}
-            selectedItemZUID={selectedItemZUID}
-            isSaving={isSaving}
-            hasErrors={hasErrors}
-            isSelectedItemLoading={isSelectedItemLoading}
-            onEditInManager={handleEditInManager}
-            onSave={handleSave}
-            editorPanel={renderEditorPanel()}
-            infoPanel={renderInfoPanel()}
-            drawerWidth={drawerWidth}
-            logoSrc={contentOneLogo}
-          />
+          {interactionMode === "content" ? (
+            <StudioSidePanel
+              headerTitle={headerTitle}
+              pageItemVersion={pageItemVersion}
+              unresolvedPath={unresolvedPath}
+              panelMode={panelMode}
+              clearSelection={requestClearSelection}
+              activeVersion={activeVersion}
+              selectedModelZUID={selectedModelZUID}
+              selectedItemZUID={selectedItemZUID}
+              isSaving={isSaving}
+              hasErrors={hasErrors}
+              isSelectedItemLoading={isSelectedItemLoading}
+              onEditInManager={handleEditInManager}
+              onSave={handleSave}
+              editorPanel={renderEditorPanel()}
+              infoPanel={renderInfoPanel()}
+              drawerWidth={drawerWidth}
+              logoSrc={contentOneLogo}
+            />
+          ) : null}
         </Box>
+        {pendingLayoutSave?.mappedSource ? (
+          <Box
+            position="absolute"
+            left="50%"
+            bottom={24}
+            sx={{ transform: "translateX(-50%)", zIndex: 1301 }}
+          >
+            <Box
+              display="flex"
+              alignItems="center"
+              gap={1}
+              p={2}
+              borderRadius="12px"
+              bgcolor="background.paper"
+              boxShadow={6}
+            >
+              <Button
+                color="inherit"
+                onClick={() => {
+                  handleDiscardPendingLayoutSave();
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={
+                  isSavingLayout ? undefined : (
+                    <SaveRoundedIcon fontSize="small" />
+                  )
+                }
+                sx={{ whiteSpace: "nowrap" }}
+                onClick={() => {
+                  void handleSavePendingLayout();
+                }}
+                disabled={isSavingLayout}
+              >
+                {isSavingLayout ? (
+                  <CircularProgress size={16} color="inherit" />
+                ) : (
+                  "Save"
+                )}
+              </Button>
+              <Button
+                variant="contained"
+                color="success"
+                startIcon={
+                  isSavingLayout ? undefined : (
+                    <CloudUploadRoundedIcon fontSize="small" />
+                  )
+                }
+                sx={{ whiteSpace: "nowrap" }}
+                onClick={() => {
+                  void handleSaveAndPublishPendingLayout();
+                }}
+                disabled={isSavingLayout}
+              >
+                {isSavingLayout ? (
+                  <CircularProgress size={16} color="inherit" />
+                ) : (
+                  "Save and Publish"
+                )}
+              </Button>
+            </Box>
+          </Box>
+        ) : null}
         <PendingEditsModal
           show={Boolean(selectedItem?.dirty)}
           loading={isSaving}
           onSave={handleSave}
           // @ts-ignore
           onDiscard={discardPendingEdits}
+        />
+        <DirtyCodeModal
+          title="Unsaved layout changes"
+          content="You have unsaved layout changes. Save them before continuing?"
+          open={showPendingLayoutModal}
+          loading={isSavingLayout}
+          onCancel={() => {
+            setShowPendingLayoutModal(false);
+            pendingLayoutContinuationRef.current = null;
+          }}
+          onSave={async () => {
+            const onProceed = pendingLayoutContinuationRef.current;
+            setShowPendingLayoutModal(false);
+            pendingLayoutContinuationRef.current = null;
+            await handleSavePendingLayout(onProceed);
+          }}
+          onDiscard={async () => {
+            const onProceed = pendingLayoutContinuationRef.current;
+            setShowPendingLayoutModal(false);
+            pendingLayoutContinuationRef.current = null;
+            handleDiscardPendingLayoutSave(onProceed);
+          }}
         />
       </Box>
     </Dialog>

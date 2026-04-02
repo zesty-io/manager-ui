@@ -17,10 +17,18 @@
   var interactionMode = "content";
   var currentHoverStudioId = null;
   var currentHoverLayoutId = null;
+  var lastLayoutSelectionPath = null;
+  var lastLayoutSelectionDepth = -1;
   var reorderState = {
     enabled: false,
     selector: "[data-layout-id]",
     dragEl: null,
+    dragPath: null,
+    dragPreviewEl: null,
+    dropTargetEl: null,
+    dropPosition: null,
+    dropAxis: null,
+    didDrop: false,
     codeId: null,
     observer: null,
   };
@@ -30,7 +38,14 @@
   var bridgeScriptUrl =
     (document.currentScript && document.currentScript.src) || null;
 
-  // Bridge -> host messaging
+  // Interaction mode state
+  function syncInteractionModeClass() {
+    var root = document.documentElement || document.body;
+    if (!root) return;
+    root.classList.toggle("studio-layout-mode", interactionMode === "layout");
+  }
+
+  // Messaging + error reporting
   function post(message) {
     if (!window.parent || window.parent === window) return;
     window.parent.postMessage(
@@ -137,7 +152,7 @@
     true
   );
 
-  // Marker parsing
+  // Marker parsing + dataset helpers
   function toElement(node) {
     if (!node) return null;
     if (node.nodeType === Node.ELEMENT_NODE) return node;
@@ -194,7 +209,31 @@
     };
   }
 
-  // Layout template + reorder helpers
+  function buildLayoutDataset(layoutTarget) {
+    if (!layoutTarget) return null;
+
+    var codeRegion = resolveCodeRegionForNode(layoutTarget);
+
+    return {
+      layoutId: layoutTarget.getAttribute("data-layout-id") || "",
+      codeId: codeRegion?.codeId || "",
+    };
+  }
+
+  function getLayoutBreadcrumb(layoutTarget) {
+    if (!layoutTarget) return [];
+
+    var path = getLayoutSelectionPath(layoutTarget);
+
+    return path.map(function (node) {
+      return {
+        layoutId: node.getAttribute("data-layout-id") || "",
+        label: node.tagName.toLowerCase(),
+      };
+    });
+  }
+
+  // Code region + template helpers
   function getTemplateSourceByCodeId() {
     var templateSourceByCodeId = {};
 
@@ -245,6 +284,37 @@
     return matches;
   }
 
+  function getParentLayoutId(node, selector, codeId) {
+    var current = node?.parentElement || null;
+
+    while (current) {
+      if (current.matches && current.matches(selector)) {
+        var currentCodeId = resolveCodeRegionForNode(current)?.codeId || "";
+        if (!codeId || currentCodeId === codeId) {
+          return current.getAttribute("data-layout-id") || null;
+        }
+      }
+
+      current = current.parentElement;
+    }
+
+    return null;
+  }
+
+  function getLayoutStructure(selector, nodes, codeId) {
+    return getOrderedBlocksWithinNodes(selector, nodes)
+      .map(function (el) {
+        var layoutId = el.getAttribute("data-layout-id");
+        if (!layoutId) return null;
+
+        return {
+          layoutId: layoutId,
+          parentLayoutId: getParentLayoutId(el, selector, codeId),
+        };
+      })
+      .filter(Boolean);
+  }
+
   function resolveCodeRegionForNode(node) {
     var currentNode = node;
     var currentParent = currentNode?.parentNode || null;
@@ -287,33 +357,41 @@
     return null;
   }
 
-  function elementPayload(el) {
-    if (!el) return null;
-    var ds = {};
-    for (var k in el.dataset) ds[k] = el.dataset[k];
-    return { dataset: ds };
-  }
-
+  // Layout reorder state + targeting
   function postReorderOutput(selector, anchorNode) {
-    var codeRegion = resolveCodeRegionForNode(
-      anchorNode || reorderState.dragEl
-    );
+    var activeNode = anchorNode || reorderState.dragEl;
+    var codeRegion = resolveCodeRegionForNode(activeNode);
+    var regionNodes = codeRegion
+      ? getNodesBetween(codeRegion.startComment, codeRegion.endComment)
+      : null;
     var ordered = codeRegion
-      ? getOrderedBlocksWithinNodes(
-          selector,
-          getNodesBetween(codeRegion.startComment, codeRegion.endComment)
-        )
+      ? getOrderedBlocksWithinNodes(selector, regionNodes)
       : getOrderedBlocks(selector);
+    var layoutStructure = codeRegion
+      ? getLayoutStructure(selector, regionNodes, codeRegion.codeId)
+      : getOrderedBlocks(selector)
+          .map(function (el) {
+            var layoutId = el.getAttribute("data-layout-id");
+            if (!layoutId) return null;
+            return {
+              layoutId: layoutId,
+              parentLayoutId: getParentLayoutId(el, selector, null),
+            };
+          })
+          .filter(Boolean);
 
     post({
       type: "REORDER_OUTPUT",
       codeId: codeRegion?.codeId || null,
+      selectedLayoutId: activeNode?.getAttribute("data-layout-id") || null,
+      selectedLayoutBreadcrumb: getLayoutBreadcrumb(activeNode),
       selector: selector,
       orderedLayoutIds: ordered
         .map(function (el) {
           return el.getAttribute("data-layout-id");
         })
         .filter(Boolean),
+      layoutStructure: layoutStructure,
       outputHtml: ordered
         .map(function (el) {
           return el.outerHTML;
@@ -323,35 +401,342 @@
   }
 
   function getReorderTarget(target) {
-    if (!target || !target.closest) return null;
-    var el = target.closest(reorderState.selector);
-    if (!el || el === reorderState.dragEl) return null;
-    if (reorderState.codeId) {
-      var targetCodeRegion = resolveCodeRegionForNode(el);
+    if (!target) return null;
+
+    var current =
+      target.nodeType === Node.ELEMENT_NODE ? target : target.parentElement;
+
+    while (current && current !== document.documentElement) {
       if (
-        !targetCodeRegion ||
-        targetCodeRegion.codeId !== reorderState.codeId
+        current.matches &&
+        current.matches(reorderState.selector) &&
+        current !== reorderState.dragEl
       ) {
-        return null;
+        var el = current;
+        if (reorderState.codeId) {
+          var targetCodeRegion = resolveCodeRegionForNode(el);
+          if (
+            !targetCodeRegion ||
+            targetCodeRegion.codeId !== reorderState.codeId
+          ) {
+            return null;
+          }
+        }
+        return el;
       }
+
+      current = current.parentElement;
     }
-    return el;
+
+    return null;
   }
 
-  function emitLayoutDomEvent(eventType, layoutId, evt, element) {
+  function cleanupDragPreview() {
+    if (!reorderState.dragPreviewEl) return;
+    reorderState.dragPreviewEl.remove();
+    reorderState.dragPreviewEl = null;
+  }
+
+  function clearDragIntent() {
+    if (reorderState.dropTargetEl && reorderState.dropPosition) {
+      reorderState.dropTargetEl.classList.remove(
+        "studio-drop-" + reorderState.dropPosition
+      );
+      if (reorderState.dropAxis) {
+        reorderState.dropTargetEl.classList.remove(
+          "studio-drop-" +
+            reorderState.dropPosition +
+            "-" +
+            reorderState.dropAxis
+        );
+      }
+    }
+    reorderState.dropTargetEl = null;
+    reorderState.dropPosition = null;
+    reorderState.dropAxis = null;
+  }
+
+  function createDragPreview(el) {
+    if (!el) return null;
+
+    cleanupDragPreview();
+
+    var preview = el.cloneNode(true);
+    preview.removeAttribute("draggable");
+    preview.classList.remove("studio-dragging");
+    preview.style.position = "fixed";
+    preview.style.top = "-9999px";
+    preview.style.left = "-9999px";
+    preview.style.pointerEvents = "none";
+    preview.style.margin = "0";
+    preview.style.boxSizing = "border-box";
+    preview.style.width = el.getBoundingClientRect().width + "px";
+    preview.style.maxWidth = "none";
+    preview.style.zIndex = "2147483647";
+    document.body.appendChild(preview);
+
+    reorderState.dragPreviewEl = preview;
+    return preview;
+  }
+
+  function setDragIntent(target, position, axis) {
+    if (
+      reorderState.dropTargetEl === target &&
+      reorderState.dropPosition === position &&
+      reorderState.dropAxis === axis
+    ) {
+      return;
+    }
+
+    clearDragIntent();
+
+    if (!target || !position) return;
+
+    target.classList.add("studio-drop-" + position);
+    if (axis) {
+      target.classList.add("studio-drop-" + position + "-" + axis);
+    }
+    reorderState.dropTargetEl = target;
+    reorderState.dropPosition = position;
+    reorderState.dropAxis = axis || null;
+  }
+
+  function finalizeDraggedLayoutPlacement(shouldPostOutput) {
+    if (!reorderState.dragEl) return;
+
+    var dragEl = reorderState.dragEl;
+    var target = reorderState.dropTargetEl;
+    var position = reorderState.dropPosition;
+
+    if (target && position) {
+      if (position === "before" && target.parentNode) {
+        target.parentNode.insertBefore(dragEl, target);
+      } else if (position === "after" && target.parentNode) {
+        target.parentNode.insertBefore(dragEl, target.nextSibling);
+      } else if (
+        position === "inside" &&
+        target !== dragEl &&
+        !dragEl.contains(target)
+      ) {
+        target.appendChild(dragEl);
+      }
+    }
+
+    clearDragIntent();
+
+    if (shouldPostOutput) {
+      postReorderOutput(reorderState.selector, dragEl);
+    }
+
+    dragEl.classList.remove("studio-dragging");
+    var selectionData = getLayoutSelectionData(dragEl);
+    if (selectionData?.path?.length) {
+      lastLayoutSelectionPath = selectionData.pathKey;
+      lastLayoutSelectionDepth = selectionData.path.length - 1;
+    }
+    reorderState.dragEl = null;
+    reorderState.dragPath = null;
+    cleanupDragPreview();
+    reorderState.codeId = null;
+    reorderState.didDrop = false;
+    syncDraggableLayoutElements(dragEl);
+  }
+
+  function getLayoutElements(layoutId, codeId) {
+    if (!layoutId) return [];
+
+    var elements = Array.prototype.slice.call(
+      document.querySelectorAll('[data-layout-id="' + layoutId + '"]')
+    );
+
+    if (!codeId) {
+      return elements;
+    }
+
+    return elements.filter(function (node) {
+      return resolveCodeRegionForNode(node)?.codeId === codeId;
+    });
+  }
+
+  function getLayoutElement(layoutId, codeId) {
+    return getLayoutElements(layoutId, codeId)[0] || null;
+  }
+
+  function getSelectedLayoutElement() {
+    return document.querySelector(reorderState.selector + ".studio-selected");
+  }
+
+  function syncDraggableLayoutElements(activeLayoutElement) {
+    getOrderedBlocks(reorderState.selector).forEach(function (node) {
+      if (activeLayoutElement && node === activeLayoutElement) {
+        node.setAttribute("draggable", "true");
+        return;
+      }
+
+      node.removeAttribute("draggable");
+    });
+  }
+
+  function getDraggableLayoutTarget(target) {
+    if (!target) return null;
+
+    var selectedLayoutElement = getSelectedLayoutElement();
+    if (selectedLayoutElement && selectedLayoutElement.contains(target)) {
+      return selectedLayoutElement;
+    }
+
+    if (target.closest) {
+      return target.closest(reorderState.selector);
+    }
+
+    return null;
+  }
+
+  function getBranchPlacementTarget(target) {
+    var deepestTarget = toElement(target)?.closest?.(reorderState.selector);
+    var selectionData = getLayoutSelectionData(deepestTarget);
+    var path = selectionData?.path || [];
+
+    if (!path.length) {
+      return deepestTarget || null;
+    }
+
+    if (!reorderState.dragPath?.length) {
+      return path[0] || deepestTarget || null;
+    }
+
+    var commonPrefixLength = 0;
+    while (
+      commonPrefixLength < reorderState.dragPath.length &&
+      commonPrefixLength < path.length &&
+      reorderState.dragPath[commonPrefixLength] ===
+        (path[commonPrefixLength]?.getAttribute("data-layout-id") || "")
+    ) {
+      commonPrefixLength += 1;
+    }
+
+    return (
+      path[commonPrefixLength] || path[path.length - 1] || deepestTarget || null
+    );
+  }
+
+  function getDragAxis(target) {
+    var parent = target?.parentElement;
+    if (!parent) return "vertical";
+
+    var computed = window.getComputedStyle(parent);
+    if (computed.display !== "flex") return "vertical";
+
+    var direction = computed.flexDirection || "row";
+    return direction.indexOf("row") === 0 ? "horizontal" : "vertical";
+  }
+
+  // Layout selection helpers
+  function getLayoutSelectionPath(layoutTarget, codeId) {
+    if (!layoutTarget) return [];
+
+    var path = [];
+    var current = layoutTarget;
+
+    while (current && current !== document.documentElement) {
+      if (current.matches && current.matches(reorderState.selector)) {
+        var currentCodeId = resolveCodeRegionForNode(current)?.codeId || "";
+        if (!codeId || currentCodeId === codeId) {
+          path.unshift(current);
+        }
+      }
+      if (codeId) {
+        var parentCodeId =
+          resolveCodeRegionForNode(current.parentElement)?.codeId || "";
+        if (current.parentElement && parentCodeId && parentCodeId !== codeId) {
+          break;
+        }
+      }
+      current = current.parentElement;
+    }
+
+    return path;
+  }
+
+  function getInnermostLayoutCodeId(layoutTarget) {
+    return resolveCodeRegionForNode(layoutTarget)?.codeId || "";
+  }
+
+  function getLayoutSelectionData(layoutTarget) {
+    var codeId = getInnermostLayoutCodeId(layoutTarget);
+    var path = getLayoutSelectionPath(layoutTarget, codeId);
+    if (!path.length) return null;
+
+    return {
+      codeId: codeId,
+      path: path,
+      pathKey: getLayoutSelectionPathKey(path),
+    };
+  }
+
+  function getLayoutSelectionPathKey(path) {
+    return path
+      .map(function (node) {
+        return node.getAttribute("data-layout-id") || "";
+      })
+      .join(">");
+  }
+
+  function selectTopLayoutTarget(layoutTarget) {
+    var selectionData = getLayoutSelectionData(layoutTarget);
+    if (!selectionData) return null;
+
+    lastLayoutSelectionPath = selectionData.pathKey;
+    lastLayoutSelectionDepth = 0;
+
+    return selectionData.path[0] || null;
+  }
+
+  function selectNextLayoutTarget(layoutTarget) {
+    var selectionData = getLayoutSelectionData(layoutTarget);
+    if (!selectionData) return null;
+    var path = selectionData.path;
+    var pathKey = selectionData.pathKey;
+
+    if (pathKey !== lastLayoutSelectionPath) {
+      lastLayoutSelectionPath = pathKey;
+      lastLayoutSelectionDepth = 0;
+      return path[0] || null;
+    }
+
+    lastLayoutSelectionDepth = Math.min(
+      Math.max(lastLayoutSelectionDepth, 0) + 1,
+      path.length - 1
+    );
+
+    return path[lastLayoutSelectionDepth] || null;
+  }
+
+  // Bridge -> host DOM events
+  function emitLayoutDomEvent(
+    eventType,
+    layoutId,
+    evt,
+    element,
+    codeId,
+    breadcrumb
+  ) {
     post({
       type: "DOM_EVENT",
       eventType: eventType,
       element: element || {
         dataset: {
           layoutId: layoutId,
+          codeId: codeId || "",
         },
       },
+      breadcrumb: breadcrumb || [],
       clientX: evt?.clientX,
       clientY: evt?.clientY,
     });
   }
 
+  // Layout drag + reorder listeners
   function setupReorderListeners() {
     if (setupReorderListeners.__bound) return;
     setupReorderListeners.__bound = true;
@@ -360,23 +745,34 @@
       "dragstart",
       function (evt) {
         if (!reorderState.enabled) return;
-        var el =
-          evt.target && evt.target.closest
-            ? evt.target.closest(reorderState.selector)
-            : null;
+        var el = getDraggableLayoutTarget(evt.target);
         if (!el) return;
+        if (!el.classList.contains("studio-selected")) {
+          evt.preventDefault();
+          return;
+        }
 
         reorderState.dragEl = el;
         reorderState.codeId = resolveCodeRegionForNode(el)?.codeId || null;
-        el.setAttribute("draggable", "true");
+        reorderState.dragPath =
+          getLayoutSelectionData(el)?.path.map(function (node) {
+            return node.getAttribute("data-layout-id") || "";
+          }) || null;
+        reorderState.didDrop = false;
+        syncDraggableLayoutElements(el);
+        clearDragIntent();
         el.classList.add("studio-dragging");
 
         if (evt.dataTransfer) {
+          var preview = createDragPreview(el);
           evt.dataTransfer.effectAllowed = "move";
           evt.dataTransfer.setData(
             "text/plain",
             el.getAttribute("data-layout-id") || ""
           );
+          if (preview) {
+            evt.dataTransfer.setDragImage(preview, 0, 0);
+          }
         }
       },
       true
@@ -386,12 +782,10 @@
       "pointerdown",
       function (evt) {
         if (!reorderState.enabled) return;
-        var el =
-          evt.target && evt.target.closest
-            ? evt.target.closest(reorderState.selector)
-            : null;
+        var el = getDraggableLayoutTarget(evt.target);
         if (!el) return;
-        el.setAttribute("draggable", "true");
+        if (!el.classList.contains("studio-selected")) return;
+        syncDraggableLayoutElements(el);
       },
       true
     );
@@ -400,21 +794,61 @@
       "dragover",
       function (evt) {
         if (!reorderState.enabled || !reorderState.dragEl) return;
-        var target = getReorderTarget(evt.target);
-        if (!target || !target.parentNode) return;
+        var deepestTarget = toElement(evt.target)?.closest?.(
+          reorderState.selector
+        );
+        var branchTarget = getBranchPlacementTarget(evt.target);
+        var branchReorderTarget = getReorderTarget(branchTarget);
+        var nestedReorderTarget = getReorderTarget(deepestTarget);
+        var target = branchReorderTarget || nestedReorderTarget;
+        if (!target) return;
 
         evt.preventDefault();
 
         var rect = target.getBoundingClientRect();
-        var shouldInsertAfter = evt.clientY > rect.top + rect.height / 2;
-        var parent = target.parentNode;
+        var axis = getDragAxis(target);
+        var edgeRatio = 0.35;
+        if (!target.parentNode) return;
 
-        if (shouldInsertAfter) {
-          if (target.nextSibling !== reorderState.dragEl) {
-            parent.insertBefore(reorderState.dragEl, target.nextSibling);
+        if (axis === "horizontal") {
+          var leftBand = rect.left + rect.width * edgeRatio;
+          var rightBand = rect.right - rect.width * edgeRatio;
+
+          if (evt.clientX < leftBand) {
+            setDragIntent(
+              branchReorderTarget || target,
+              "before",
+              "horizontal"
+            );
+          } else if (evt.clientX > rightBand) {
+            setDragIntent(branchReorderTarget || target, "after", "horizontal");
+          } else if (
+            nestedReorderTarget &&
+            nestedReorderTarget !== reorderState.dragEl &&
+            !reorderState.dragEl.contains(nestedReorderTarget)
+          ) {
+            setDragIntent(nestedReorderTarget, "inside", "horizontal");
+          } else {
+            clearDragIntent();
           }
-        } else if (target !== reorderState.dragEl.nextSibling) {
-          parent.insertBefore(reorderState.dragEl, target);
+          return;
+        }
+
+        var topBand = rect.top + rect.height * edgeRatio;
+        var bottomBand = rect.bottom - rect.height * edgeRatio;
+
+        if (evt.clientY < topBand) {
+          setDragIntent(branchReorderTarget || target, "before", "vertical");
+        } else if (evt.clientY > bottomBand) {
+          setDragIntent(branchReorderTarget || target, "after", "vertical");
+        } else if (
+          nestedReorderTarget &&
+          nestedReorderTarget !== reorderState.dragEl &&
+          !reorderState.dragEl.contains(nestedReorderTarget)
+        ) {
+          setDragIntent(nestedReorderTarget, "inside", "vertical");
+        } else {
+          clearDragIntent();
         }
       },
       true
@@ -425,7 +859,8 @@
       function (evt) {
         if (!reorderState.enabled || !reorderState.dragEl) return;
         evt.preventDefault();
-        postReorderOutput(reorderState.selector, reorderState.dragEl);
+        reorderState.didDrop = true;
+        finalizeDraggedLayoutPlacement(true);
       },
       true
     );
@@ -434,19 +869,31 @@
       "dragend",
       function () {
         if (!reorderState.dragEl) return;
-        postReorderOutput(reorderState.selector, reorderState.dragEl);
-        reorderState.dragEl.classList.remove("studio-dragging");
-        reorderState.dragEl = null;
-        reorderState.codeId = null;
+        finalizeDraggedLayoutPlacement(!reorderState.didDrop);
+      },
+      true
+    );
+
+    document.addEventListener(
+      "keydown",
+      function (evt) {
+        if (interactionMode !== "layout") return;
+        if (evt.key !== "Escape") return;
+
+        clearDragIntent();
+
+        if (!getSelectedLayoutElement()) return;
+
+        emitLayoutDomEvent("escape", "", evt, {
+          dataset: {},
+        });
       },
       true
     );
   }
 
   function ensureReorderAttributes() {
-    getOrderedBlocks(reorderState.selector).forEach(function (node) {
-      node.setAttribute("draggable", "true");
-    });
+    syncDraggableLayoutElements(getSelectedLayoutElement());
   }
 
   function setupReorderObserver() {
@@ -689,7 +1136,7 @@
     );
   }
 
-  // Host event emitters
+  // Bridge -> host field events
   function emitDomEvent(eventType, studioId, evt, value) {
     post({
       type: "DOM_EVENT",
@@ -809,20 +1256,9 @@
     }
   }
 
-  // Interaction handlers
+  // DOM interaction handlers
   function handleStudioClick(evt) {
     if (interactionMode === "layout") {
-      var layoutTarget = toElement(evt.target)?.closest?.(
-        reorderState.selector
-      );
-      var layoutPayload = elementPayload(layoutTarget);
-      if (!layoutPayload) return;
-      emitLayoutDomEvent(
-        "click",
-        layoutTarget.getAttribute("data-layout-id"),
-        evt,
-        layoutPayload
-      );
       return;
     }
 
@@ -849,9 +1285,20 @@
       currentHoverLayoutId = nextLayoutId;
 
       if (nextLayoutId) {
-        var nextPayload = elementPayload(layoutTarget);
+        var nextLayoutDataset = buildLayoutDataset(layoutTarget);
+        var nextPayload = nextLayoutDataset
+          ? {
+              dataset: nextLayoutDataset,
+            }
+          : null;
         if (!nextPayload) return;
-        emitLayoutDomEvent("mouseover", nextLayoutId, evt, nextPayload);
+        emitLayoutDomEvent(
+          "mouseover",
+          nextLayoutId,
+          evt,
+          nextPayload,
+          nextLayoutDataset.codeId
+        );
       }
 
       return;
@@ -886,6 +1333,60 @@
     if (!currentHoverStudioId) return;
     emitDomEvent("mouseout", currentHoverStudioId, evt);
     currentHoverStudioId = null;
+  }
+
+  function handleStudioMouseDown(evt) {
+    if (interactionMode !== "layout") return;
+
+    var deepestLayoutTarget = toElement(evt.target)?.closest?.(
+      reorderState.selector
+    );
+    var selectionData = getLayoutSelectionData(deepestLayoutTarget);
+    if (!selectionData) return;
+
+    var shouldResetSelection =
+      selectionData.pathKey !== lastLayoutSelectionPath ||
+      lastLayoutSelectionDepth < 0;
+    if (!shouldResetSelection) {
+      return;
+    }
+
+    var layoutTarget = selectTopLayoutTarget(deepestLayoutTarget);
+    var layoutDataset = buildLayoutDataset(layoutTarget);
+    if (!layoutDataset) return;
+
+    emitLayoutDomEvent(
+      "mousedown",
+      layoutDataset.layoutId,
+      evt,
+      {
+        dataset: layoutDataset,
+      },
+      layoutDataset.codeId,
+      getLayoutBreadcrumb(layoutTarget)
+    );
+  }
+
+  function handleStudioDoubleClick(evt) {
+    if (interactionMode !== "layout") return;
+
+    var deepestLayoutTarget = toElement(evt.target)?.closest?.(
+      reorderState.selector
+    );
+    var layoutTarget = selectNextLayoutTarget(deepestLayoutTarget);
+    var layoutDataset = buildLayoutDataset(layoutTarget);
+    if (!layoutDataset) return;
+
+    emitLayoutDomEvent(
+      "dblclick",
+      layoutDataset.layoutId,
+      evt,
+      {
+        dataset: layoutDataset,
+      },
+      layoutDataset.codeId,
+      getLayoutBreadcrumb(layoutTarget)
+    );
   }
 
   function handleEditableInput(evt) {
@@ -953,35 +1454,82 @@
 
     if (payload.action === "disableReorderByUid") {
       reorderState.enabled = false;
+      if (reorderState.dragEl) {
+        finalizeDraggedLayoutPlacement(false);
+      }
       reorderState.dragEl = null;
+      reorderState.dragPath = null;
+      cleanupDragPreview();
+      clearDragIntent();
       reorderState.codeId = null;
+      reorderState.didDrop = false;
+      syncDraggableLayoutElements(null);
       return;
     }
 
     if (payload.action === "setInteractionMode") {
       interactionMode = payload.mode === "layout" ? "layout" : "content";
+      syncInteractionModeClass();
       currentHoverStudioId = null;
       currentHoverLayoutId = null;
+      lastLayoutSelectionPath = null;
+      lastLayoutSelectionDepth = -1;
       return;
     }
 
     if (payload.action === "addClassByLayoutId") {
       if (!payload.layoutId || !payload.className) return;
-      document
-        .querySelectorAll('[data-layout-id="' + payload.layoutId + '"]')
-        .forEach(function (node) {
-          node.classList.add(payload.className);
-        });
+      getLayoutElements(payload.layoutId, payload.codeId).forEach(function (
+        node
+      ) {
+        node.classList.add(payload.className);
+      });
+      if (payload.className === "studio-selected") {
+        syncDraggableLayoutElements(
+          getLayoutElement(payload.layoutId, payload.codeId)
+        );
+      }
       return;
     }
 
     if (payload.action === "removeClassByLayoutId") {
       if (!payload.layoutId || !payload.className) return;
-      document
-        .querySelectorAll('[data-layout-id="' + payload.layoutId + '"]')
-        .forEach(function (node) {
-          node.classList.remove(payload.className);
-        });
+      getLayoutElements(payload.layoutId, payload.codeId).forEach(function (
+        node
+      ) {
+        node.classList.remove(payload.className);
+      });
+      if (payload.className === "studio-selected") {
+        syncDraggableLayoutElements(getSelectedLayoutElement());
+      }
+      return;
+    }
+
+    if (payload.action === "setSelectedLayoutId") {
+      var selectedLayoutTarget = getLayoutElement(
+        payload.layoutId,
+        payload.codeId
+      );
+      var selectionData = getLayoutSelectionData(selectedLayoutTarget);
+      if (!selectionData) return;
+      lastLayoutSelectionPath = selectionData.pathKey;
+      lastLayoutSelectionDepth = Math.max(
+        0,
+        selectionData.path.findIndex(function (node) {
+          return (
+            (node.getAttribute && node.getAttribute("data-layout-id")) ===
+            payload.layoutId
+          );
+        })
+      );
+      return;
+    }
+
+    if (payload.action === "clearSelectedLayout") {
+      lastLayoutSelectionPath = null;
+      lastLayoutSelectionDepth = -1;
+      clearDragIntent();
+      syncDraggableLayoutElements(null);
       return;
     }
 
@@ -1039,7 +1587,9 @@
   }
 
   document.addEventListener("click", handleLinkClick, true);
+  document.addEventListener("mousedown", handleStudioMouseDown, true);
   document.addEventListener("click", handleStudioClick, true);
+  document.addEventListener("dblclick", handleStudioDoubleClick, true);
   document.addEventListener("mousemove", handleStudioMouseMove, true);
   document.addEventListener("mouseleave", handleStudioMouseLeave, true);
   document.addEventListener("input", handleEditableInput, true);
@@ -1048,6 +1598,7 @@
   window.addEventListener("message", handleIncomingMessage);
 
   window.ZestyStudioBridge = { __initialized: true };
+  syncInteractionModeClass();
   // Template source lives in <body>, while the bridge script will execute from <head>.
   // Wait until the DOM is ready so template[data-code-id] nodes are present before reading them.
   if (document.readyState === "loading") {

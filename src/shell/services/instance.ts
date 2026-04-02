@@ -505,6 +505,22 @@ export const instanceApi = createApi({
       transformResponse: getResponseData,
       providesTags: ["WebViews"],
     }),
+    updateWebView: builder.mutation<WebView, { ZUID: string; body: WebView }>({
+      query: ({ ZUID, body }) => ({
+        url: `web/views/${ZUID}`,
+        method: "PUT",
+        body,
+      }),
+      transformResponse: getResponseData,
+      invalidatesTags: ["WebViews"],
+    }),
+    publishWebView: builder.mutation<any, { ZUID: string; version: number }>({
+      query: ({ ZUID, version }) => ({
+        url: `web/views/${ZUID}/versions/${version}?purge_cache=true`,
+        method: "POST",
+      }),
+      invalidatesTags: ["WebViews"],
+    }),
     undeleteContentModelField: builder.mutation<
       any,
       { modelZUID: string; fieldZUID: string }
@@ -939,6 +955,8 @@ export const {
   useUpdateContentModelFieldMutation,
   useCreateContentModelMutation,
   useGetWebViewsQuery,
+  useUpdateWebViewMutation,
+  usePublishWebViewMutation,
   useBulkCreateContentModelFieldMutation,
   useDeleteContentModelFieldMutation,
   useUndeleteContentModelFieldMutation,
