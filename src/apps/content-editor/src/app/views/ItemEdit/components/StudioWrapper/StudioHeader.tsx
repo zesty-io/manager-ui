@@ -96,6 +96,7 @@ export const StudioHeader = ({
 
   return (
     <Box
+      data-cy="StudioHeader"
       sx={{
         py: 1,
         px: 3,
@@ -110,11 +111,13 @@ export const StudioHeader = ({
         component="img"
         src={logoSrc}
         alt="Content One"
+        data-cy="StudioLogo"
         sx={{ height: 32 }}
       />
       <Box flex="1" display="flex" justifyContent="center" minWidth={0} px={2}>
         {interactionMode === "layout" && selectedLayoutBreadcrumb.length ? (
           <Box
+            data-cy="StudioBreadcrumbs"
             display="flex"
             alignItems="center"
             gap={0.5}
@@ -123,6 +126,7 @@ export const StudioHeader = ({
           >
             {codeIdSegment ? (
               <Chip
+                data-cy="StudioBreadcrumbRoot"
                 label={codeIdSegment.label}
                 size="small"
                 variant="filled"
@@ -135,6 +139,7 @@ export const StudioHeader = ({
             ) : null}
             {pathSegments.length ? (
               <Box
+                data-cy="StudioBreadcrumbRail"
                 minWidth={0}
                 sx={{
                   maxWidth: 252,
@@ -161,6 +166,7 @@ export const StudioHeader = ({
                     const isCurrent = index === pathSegments.length - 1;
                     return (
                       <Chip
+                        data-cy="StudioBreadcrumbChip"
                         key={segment.layoutId || segment.label}
                         label={segment.label}
                         size="small"
@@ -200,6 +206,7 @@ export const StudioHeader = ({
           />
         </Box>
         <StudioModeSwitch
+          data-cy="StudioModeToggle"
           checked={interactionMode === "layout"}
           onChange={(evt) =>
             onInteractionModeChange(evt.target.checked ? "layout" : "content")

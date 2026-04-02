@@ -284,6 +284,7 @@ export const Field = memo(
               fullWidth
               inputProps={{
                 name: fieldData?.name || name,
+                "data-cy": `EditorField-${fieldData?.name || name}`,
               }}
               error={errors && Object.values(errors)?.some((error) => !!error)}
             />
@@ -367,6 +368,9 @@ export const Field = memo(
               fullWidth
               multiline
               rows={6}
+              inputProps={{
+                "data-cy": `EditorField-${fieldData?.name || name}`,
+              }}
               error={errors && Object.values(errors)?.some((error) => !!error)}
             />
           </AIFieldShell>

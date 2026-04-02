@@ -16,6 +16,7 @@ export const StudioPreview = ({
 }: StudioPreviewProps) => (
   <Box position="relative" flex="1" minWidth={0}>
     <Box
+      data-cy="StudioPreviewFrame"
       flex="1"
       minWidth={0}
       ref={iframeRef}

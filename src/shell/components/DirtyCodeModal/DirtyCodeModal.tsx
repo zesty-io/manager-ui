@@ -32,6 +32,7 @@ export const DirtyCodeModal: FC<DirtyCodeModal> = ({
       fullWidth
     >
       <Stack
+        data-cy="DirtyCodeModal"
         direction="row"
         sx={{
           alignItems: "flex-start",
@@ -43,6 +44,7 @@ export const DirtyCodeModal: FC<DirtyCodeModal> = ({
         }}
       >
         <Button
+          data-cy="DirtyCodeModalCancel"
           variant="text"
           onClick={onCancel}
           color="inherit"
@@ -56,6 +58,7 @@ export const DirtyCodeModal: FC<DirtyCodeModal> = ({
         </Button>
         <Stack direction="row" sx={{ gap: "8px" }}>
           <Button
+            data-cy="DirtyCodeModalDiscard"
             variant="text"
             color="primary"
             disabled={loading}
@@ -64,6 +67,7 @@ export const DirtyCodeModal: FC<DirtyCodeModal> = ({
             Discard
           </Button>
           <Button
+            data-cy="DirtyCodeModalSave"
             variant="contained"
             color="primary"
             disabled={loading}

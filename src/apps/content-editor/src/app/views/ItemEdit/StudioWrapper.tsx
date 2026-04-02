@@ -1078,6 +1078,7 @@ export const StudioWrapper = () => {
         </Box>
         {pendingLayoutSave?.mappedSource ? (
           <Box
+            data-cy="StudioLayoutSaveBar"
             position="absolute"
             left="50%"
             bottom={24}
@@ -1093,6 +1094,7 @@ export const StudioWrapper = () => {
               boxShadow={6}
             >
               <Button
+                data-cy="StudioLayoutCancelButton"
                 color="inherit"
                 onClick={() => {
                   handleDiscardPendingLayoutSave();
@@ -1101,6 +1103,7 @@ export const StudioWrapper = () => {
                 Cancel
               </Button>
               <Button
+                data-cy="StudioLayoutSaveButton"
                 variant="contained"
                 color="primary"
                 startIcon={
@@ -1121,6 +1124,7 @@ export const StudioWrapper = () => {
                 )}
               </Button>
               <Button
+                data-cy="StudioLayoutSavePublishButton"
                 variant="contained"
                 color="success"
                 startIcon={

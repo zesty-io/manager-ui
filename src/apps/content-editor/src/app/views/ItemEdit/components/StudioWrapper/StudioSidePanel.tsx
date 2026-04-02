@@ -52,6 +52,7 @@ export const StudioSidePanel = ({
   logoSrc,
 }: StudioSidePanelProps) => (
   <Drawer
+    data-cy="StudioSidePanel"
     variant="permanent"
     anchor="right"
     PaperProps={{
