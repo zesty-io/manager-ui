@@ -191,8 +191,11 @@ export const useStudioBridge = ({
         }
 
         case "escape": {
-          if (interactionMode !== "layout") return;
-          clearLayoutSelection();
+          if (interactionMode === "layout") {
+            clearLayoutSelection();
+            return;
+          }
+          clearSelection();
           return;
         }
 
