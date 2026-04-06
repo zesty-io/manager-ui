@@ -10,7 +10,6 @@ import {
   ContentModelFieldDataType,
   RepeaterSubField,
 } from "shell/services/types";
-import { useVisibility } from "../../VisibilityProvider";
 import { SubField } from "./SubField";
 import DndContextProvider from "shell/components/DndContextProvider";
 // import { FieldBody } from "../FieldForm";
@@ -35,7 +34,6 @@ export const RepeaterFields = ({
   const { data: contentModelFields } = useGetContentModelFieldsQuery({
     modelZUID: id,
   });
-  const { hide } = useVisibility();
   const [localFields, setLocalFields] = useState<RepeaterSubField[]>(fields);
   const [openedView, setOpenedView] = useState<
     "selection" | "newFieldForm" | "updateFieldForm" | null
@@ -47,10 +45,6 @@ export const RepeaterFields = ({
   const [fieldToUpdate, setFieldToUpdate] = useState<RepeaterSubField | null>(
     null
   );
-
-  useEffect(() => {
-    hide(openedView !== null);
-  }, [openedView]);
 
   useEffect(() => {
     setLocalFields(fields);

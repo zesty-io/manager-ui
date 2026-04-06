@@ -8,7 +8,6 @@ import { FieldForm } from "./views/FieldForm";
 import { useGetContentModelFieldsQuery } from "../../../../../../shell/services/instance";
 import { FieldType } from "../configs";
 import { ContentModelFieldDataType } from "../../../../../../shell/services/types";
-import { useVisibility } from "./VisibilityProvider";
 
 type Params = {
   id: string;
@@ -21,7 +20,6 @@ interface Props {
   sortIndex?: number | null;
 }
 export const AddFieldModal = ({ onModalClose, mode, sortIndex }: Props) => {
-  const { isHidden } = useVisibility();
   const [viewMode, setViewMode] = useState<ViewMode>(mode);
   const [selectedField, setSelectedField] = useState({
     fieldType: "",
@@ -61,11 +59,6 @@ export const AddFieldModal = ({ onModalClose, mode, sortIndex }: Props) => {
       fullScreen={viewMode === "fields_list"}
       sx={{
         my: "20px",
-        // This is used when adding a sub-field in a repeater field,
-        // that flow opens a new modal and we want this modal to still remain open
-        // so context is not lost while being hidden so it doesn't interfere
-        // with the other modal
-        display: isHidden ? "none" : "block",
       }}
       PaperProps={{
         sx: {

@@ -10,7 +10,6 @@ import { NotFound } from "../../../../../shell/components/NotFound";
 import SchemaRoundedIcon from "@mui/icons-material/SchemaRounded";
 import { ModelActivityLog } from "../components/ModelActivityLog";
 import { ModelApi } from "../components/ModelApi";
-import { VisibilityProvider } from "../components/AddFieldModal/VisibilityProvider";
 
 type Params = {
   id: string;
@@ -64,12 +63,10 @@ export const Model = () => {
         path="/schema/:id/fields/:fieldId"
         render={() => {
           return (
-            <VisibilityProvider>
-              <AddFieldModal
-                mode="update_field"
-                onModalClose={() => history.push(`/schema/${id}/fields`)}
-              />
-            </VisibilityProvider>
+            <AddFieldModal
+              mode="update_field"
+              onModalClose={() => history.push(`/schema/${id}/fields`)}
+            />
           );
         }}
       />
@@ -90,13 +87,11 @@ export const Model = () => {
         <Redirect to="/schema/:id/fields" />
       </Switch>
       {isAddFieldModalOpen && (
-        <VisibilityProvider>
-          <AddFieldModal
-            mode="fields_list"
-            onModalClose={handleModalClosed}
-            sortIndex={sortIndex}
-          />
-        </VisibilityProvider>
+        <AddFieldModal
+          mode="fields_list"
+          onModalClose={handleModalClosed}
+          sortIndex={sortIndex}
+        />
       )}
     </Box>
   );
