@@ -90,6 +90,7 @@ type Args = {
   ) => void;
   previewReloadContinuationRef: MutableRefObject<null | (() => void)>;
   setIsNavigating: (value: boolean) => void;
+  onBridgeFieldInput?: (fieldZuid: string) => void;
 };
 
 export const useStudioBridge = ({
@@ -114,6 +115,7 @@ export const useStudioBridge = ({
   updateItemByPath,
   previewReloadContinuationRef,
   setIsNavigating,
+  onBridgeFieldInput,
 }: Args) => {
   const handleBridgeReady = useCallback(() => {
     postCommandToBridge({
@@ -242,6 +244,7 @@ export const useStudioBridge = ({
             key: fieldName,
             value: typeof value === "string" ? value : "",
           });
+          onBridgeFieldInput?.(fieldZuid);
           return;
         }
 
@@ -287,6 +290,7 @@ export const useStudioBridge = ({
       selectedItemDirty,
       selectedItemZUID,
       selectedLayoutCodeId,
+      onBridgeFieldInput,
     ]
   );
 

@@ -39,6 +39,7 @@ import { useLayoutReorderState } from "./hooks/useLayoutReorderState";
 import { useStudioBridge } from "./hooks/useStudioBridge";
 import { InteractionMode, LayoutBreadcrumbItem } from "./hooks/studioTypes";
 import { useStudioSelection } from "./hooks/useStudioSelection";
+import { getRefRegistry } from "../../../../../../engine/refRegistry";
 
 const drawerWidth = 440;
 
@@ -70,6 +71,7 @@ export const StudioWrapper = () => {
   const fieldErrorRef = useRef<any>(null);
   const pendingLayoutContinuationRef = useRef<null | (() => void)>(null);
   const previewReloadContinuationRef = useRef<null | (() => void)>(null);
+  const bridgeUpdatedFieldZuidRef = useRef<string | null>(null);
   const [isFetchingItem, setIsFetchingItem] = useState(false);
   const [isFetchingModel, setIsFetchingModel] = useState(false);
   const [isFetchingFields, setIsFetchingFields] = useState(false);
@@ -703,6 +705,12 @@ export const StudioWrapper = () => {
         selectedElement.fieldType || ""
       )
     ) {
+      // Use ref registry to update tinyMCE field
+      if (bridgeUpdatedFieldZuidRef.current === selectedElement.fieldZuid) {
+        getRefRegistry()?.[selectedFieldName]?.handle?.setValue?.(nextValue);
+        bridgeUpdatedFieldZuidRef.current = null;
+      }
+
       postCommandToBridge({
         action: "setHtmlByField",
         fieldZuid: selectedElement.fieldZuid,
@@ -926,6 +934,10 @@ export const StudioWrapper = () => {
     [applySelection, fieldNameByZuid]
   );
 
+  const handleBridgeFieldInput = useCallback((fieldZuid: string) => {
+    bridgeUpdatedFieldZuidRef.current = fieldZuid;
+  }, []);
+
   const { handlePreviewLoad } = useStudioBridge({
     dispatch,
     interactionMode,
@@ -948,6 +960,7 @@ export const StudioWrapper = () => {
     updateItemByPath,
     previewReloadContinuationRef,
     setIsNavigating,
+    onBridgeFieldInput: handleBridgeFieldInput,
   });
 
   const renderInfoPanel = () => {
