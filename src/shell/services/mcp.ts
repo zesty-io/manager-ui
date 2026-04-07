@@ -85,7 +85,7 @@ export const mcpApi = createApi({
         return {
           url: `chats/${chatZUID}/prompts/${promptZUID}`,
           method: "PATCH",
-          body: { approval },
+          body: { approval, instanceZuid: instanceZUID },
         };
       },
     }),
