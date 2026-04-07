@@ -19,7 +19,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   useGeminiGenerationMutation,
   useGetAllChatSessionsQuery,
@@ -61,16 +61,21 @@ import {
 } from "shell/services/types";
 import { notify } from "shell/store/notifications";
 
-const parseResponse = (rawResponse: GeminiResponse) => {
+const parseResponse = (rawResponse: string) => {
   if (!rawResponse) return;
 
   try {
-    const cleaned =
-      typeof rawResponse.data === "string"
-        ? rawResponse.data.replace(/```json|```/g, "").trim()
-        : null;
+    let parsed: any = rawResponse;
 
-    return cleaned ? JSON.parse(cleaned) : rawResponse.data;
+    // Some persisted responses are double-encoded JSON strings.
+    // Cap parsing at 3 passes: enough for normal, fenced, and double-encoded payloads
+    // while avoiding endless retries on malformed values.
+    for (let i = 0; i < 3 && typeof parsed === "string"; i++) {
+      const cleaned = parsed.replace(/```json|```/g, "").trim();
+      parsed = JSON.parse(cleaned);
+    }
+
+    return parsed;
   } catch (error) {
     throw error;
   }
@@ -233,12 +238,13 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
     }
 
     const restoredResponses = chatSessionLog?.prompts?.length
-      ? normalizeChatSessionLog(chatSessionLog?.prompts)
+      ? // Reversing the prompts array before normalizing since the UI needs to render this in
+        // ascending order but the data is stored in descending order
+        normalizeChatSessionLog([...chatSessionLog?.prompts].reverse())
       : [];
     if (restoredResponses.length) {
       setHydratedResponsesCount(restoredResponses.length);
-      // Responses need to be reversed
-      setResponses(restoredResponses.reverse());
+      setResponses(restoredResponses);
     }
 
     setHasHydratedInitialResponses(true);
@@ -255,7 +261,10 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
     if (!aiResponse) return;
 
     try {
-      const parsed = parseResponse(aiResponse);
+      const parsed =
+        typeof aiResponse.data === "string"
+          ? parseResponse(aiResponse.data)
+          : aiResponse.data;
       const responsesArray = Array.isArray(parsed) ? parsed : [parsed];
 
       setResponses((prev) => [...prev, ...responsesArray]);
