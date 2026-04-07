@@ -25,7 +25,6 @@ import {
   useGetAllChatSessionsQuery,
   useGetChatSessionLogQuery,
   useCreateNewChatSessionMutation,
-  useAddNewChatLogItemMutation,
   useUpdatePromptApprovalStatusMutation,
 } from "../../services/mcp";
 import { enqueueAction } from "../../../engine/queue";
@@ -204,8 +203,6 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
     );
   const [createNewChatSession, { isLoading: isCreatingNewChatSession }] =
     useCreateNewChatSessionMutation();
-  const [addNewChatLogItem, { isLoading: isAddingNewChatLogItem }] =
-    useAddNewChatLogItemMutation();
   const [
     updatePromptApprovalStatus,
     { isLoading: isUpdatingPromptApprovalStatus },
@@ -288,7 +285,7 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
     }
   }, [aiResponse]);
 
-  const handlePrompt = async (newPrompt: string) => {
+  const handlePrompt = (newPrompt: string) => {
     const registryKeys = Object.keys(getRefRegistry() || {});
     const refRegistry = getRefRegistry();
     const mappedRefRegistry = registryKeys.map(
@@ -296,18 +293,7 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
     );
     const temperature = 0.5;
 
-    setResponses((prev) => [
-      ...prev,
-      {
-        type: "USER_INPUT",
-        payload: {
-          value: newPrompt,
-        },
-      },
-    ]);
-    setPrompt("");
-
-    const geminiResponse = await geminiGenerate({
+    geminiGenerate({
       prompt: newPrompt,
       tone: selectedTone.value,
       language: selectedLanguage.value,
@@ -320,119 +306,49 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
       code: getRefRegistry()?.["code-editor"]?.context()?.code || undefined,
       fields: getRefRegistry()?.["code-editor"]?.context()?.fields || undefined,
       temperature,
-    }).unwrap();
-
-    handleAddChatLog(newPrompt, geminiResponse, {
-      tone: selectedTone.value,
-      language: selectedLanguage.value,
-      modelZuid: modelZUID,
-      itemZuid: itemZUID,
-      registryKeys,
-      refRegistry: mappedRefRegistry,
-      temperature,
+      chatZuid: latestChatSessionZUID,
+      url: window.location.href,
     });
-  };
-
-  const handleGenerateSuggestions = async () => {
     setResponses((prev) => [
       ...prev,
       {
         type: "USER_INPUT",
         payload: {
-          value: prompt
-            ? `Generate suggestions: ${prompt}`
-            : "Generate suggestions",
+          value: newPrompt,
         },
       },
     ]);
     setPrompt("");
+  };
 
+  const handleGenerateSuggestions = () => {
     const systemInstruction = suggestionSystemInstruction(
       Object.keys(getRefRegistry() || {}),
       getRefRegistry()
     );
     const temperature = 0.5;
-    const geminiResponse = await geminiGenerate({
-      prompt: prompt || "Generate suggestions for my content fields",
+    const normalizedPrompt = prompt ? prompt.trim() : "";
+    const promptValue = normalizedPrompt
+      ? `Generate suggestions: ${normalizedPrompt}`
+      : "Generate suggestions for my content fields";
+
+    geminiGenerate({
+      prompt: promptValue,
       systemInstruction,
       temperature,
-    }).unwrap();
-
-    handleAddChatLog(
-      prompt ? `Generate suggestions: ${prompt}` : "Generate suggestions",
-      geminiResponse,
+      chatZuid: latestChatSessionZUID,
+      url: window.location.href,
+    });
+    setResponses((prev) => [
+      ...prev,
       {
-        temperature,
-        systemInstruction,
-      }
-    );
-  };
-
-  const handleAddChatLog = async (
-    prompt: string,
-    response: any,
-    metadata: ChatPromptMetadata
-  ) => {
-    let parsedData;
-
-    try {
-      parsedData = parseResponse(response);
-    } catch (error) {
-      parsedData = [
-        {
-          type: "ERROR",
-          payload: {
-            value: "Error parsing AI response. Please try again.",
-          },
+        type: "USER_INPUT",
+        payload: {
+          value: promptValue,
         },
-      ];
-    }
-
-    const body = {
-      prompt,
-      response: {
-        data: parsedData,
-        message: response.message,
       },
-      metadata,
-      url: location.href,
-      approval: "0" as const,
-    };
-
-    if (!chatSessions?.length) {
-      // This is only supposed to run once, when the user first interacts with
-      // the AI drawer and they have no chat session yet
-      const userRole = roles?.find((role) => role.ZUID === user.ZUID);
-
-      if (user?.ZUID && userRole?.role?.ZUID) {
-        const newChatSessionRes = await createNewChatSession({
-          userZUID: user.ZUID,
-          roleZUID: userRole?.role?.ZUID,
-        }).unwrap();
-
-        if (newChatSessionRes.data) {
-          // Create the new log after the chat session is created
-          addNewChatLogItem({
-            chatZUID: (newChatSessionRes.data as ChatSession).chatZuid,
-            body,
-          });
-        } else {
-          dispatch(
-            notify({ message: "Failed to create chat session", kind: "error" })
-          );
-        }
-      } else {
-        throw new Error(
-          "User data not found. Unable to create a new chat session."
-        );
-      }
-    } else {
-      // Add the new log item to the existing chat session
-      addNewChatLogItem({
-        chatZUID: latestChatSessionZUID,
-        body,
-      });
-    }
+    ]);
+    setPrompt("");
   };
 
   const handleClearChat = () => {

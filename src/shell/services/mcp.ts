@@ -30,6 +30,9 @@ export const mcpApi = createApi({
           body,
         };
       },
+      invalidatesTags: (result, error, { chatZUID }) => [
+        { type: "ChatSessionLog", id: chatZUID },
+      ],
     }),
     //TODO: Add return types
     getAllChatSessions: builder.query<ChatSession[], { userZUID: string }>({
@@ -74,36 +77,6 @@ export const mcpApi = createApi({
         { type: "ChatSessionLog", id: chatZUID },
       ],
     }),
-    addNewChatLogItem: builder.mutation<
-      any,
-      {
-        chatZUID: string;
-        body: {
-          prompt: string;
-          response: {
-            data: any;
-            message: string;
-          };
-          metadata: ChatPromptMetadata;
-          url: string;
-          approval: "0";
-        };
-      }
-    >({
-      query: ({ chatZUID, body }) => {
-        return {
-          url: `chats/${chatZUID}/prompt`,
-          method: "POST",
-          body: {
-            ...body,
-            instanceZuid: instanceZUID,
-          },
-        };
-      },
-      invalidatesTags: (result, error, { chatZUID }) => [
-        { type: "ChatSessionLog", id: chatZUID },
-      ],
-    }),
     updatePromptApprovalStatus: builder.mutation<
       void,
       { chatZUID: string; promptZUID: string; approval: "0" | "1" }
@@ -124,6 +97,5 @@ export const {
   useGetAllChatSessionsQuery,
   useGetChatSessionLogQuery,
   useCreateNewChatSessionMutation,
-  useAddNewChatLogItemMutation,
   useUpdatePromptApprovalStatusMutation,
 } = mcpApi;
