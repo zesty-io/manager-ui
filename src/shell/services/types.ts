@@ -733,7 +733,7 @@ export type ChatPromptMetadata =
 
 export type ChatPrompt = {
   prompt: string;
-  response: GeminiResponse;
+  response: string;
   metadata: ChatPromptMetadata;
   url: string;
   approval: "0" | "1";
