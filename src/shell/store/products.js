@@ -97,10 +97,7 @@ export function fetchProducts() {
         data = [];
     }
 
-    if (
-      getState().user.staff ||
-      getState().user.email === "developers+test+manager-ui@zesty.io"
-    ) {
+    if (getState().user.staff) {
       data = [
         "launchpad",
         "content",

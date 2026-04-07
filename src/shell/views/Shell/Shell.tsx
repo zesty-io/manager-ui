@@ -146,6 +146,7 @@ export default memo(function Shell() {
                 <Box flex={1}>
                   <Switch>
                     <Route path="/release" component={ReleaseApp} />
+                    <Route path="/studio" component={StudioApp} />
 
                     <Route
                       path="/media/:groupID/file/:fileID"
@@ -170,14 +171,6 @@ export default memo(function Shell() {
                               key={product}
                               path="/content"
                               component={ContentApp}
-                            />
-                          );
-                        case "studio":
-                          return (
-                            <Route
-                              key={product}
-                              path="/studio"
-                              component={StudioApp}
                             />
                           );
                         case "blocks":
