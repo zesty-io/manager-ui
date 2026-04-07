@@ -83,7 +83,7 @@ export const mcpApi = createApi({
     >({
       query: ({ chatZUID, promptZUID, approval }) => {
         return {
-          url: `chats/${chatZUID}/prompts/${promptZUID}`,
+          url: `chats/${chatZUID}/prompt/${promptZUID}`,
           method: "PATCH",
           body: { approval, instanceZuid: instanceZUID },
         };
