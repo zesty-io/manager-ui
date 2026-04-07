@@ -34,7 +34,6 @@ export const mcpApi = createApi({
         { type: "ChatSessionLog", id: chatZUID },
       ],
     }),
-    //TODO: Add return types
     getAllChatSessions: builder.query<ChatSession[], { userZUID: string }>({
       query: ({ userZUID }) => {
         return {
@@ -60,6 +59,7 @@ export const mcpApi = createApi({
           },
         };
       },
+      transformErrorResponse: getResponseData,
       invalidatesTags: ["ChatSessions"],
     }),
     getChatSessionLog: builder.query<
