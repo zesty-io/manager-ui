@@ -19,7 +19,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
-import { useEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 import {
   useGeminiGenerationMutation,
   useGetChatSessionLogQuery,
@@ -145,10 +145,9 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
   const { data: roles } = useGetUsersRolesQuery();
   const { data: langMappings } = useGetLangsMappingQuery();
   const chatContainerRef = useRef<HTMLDivElement>(null);
-  const [hasHydratedInitialResponses, setHasHydratedInitialResponses] =
-    useState(false);
+  // const [hasHydratedInitialResponses, setHasHydratedInitialResponses] =
+  //   useState(false);
   const [hydratedResponsesCount, setHydratedResponsesCount] = useState(0);
-  const promptInputRef = useRef<HTMLInputElement>(null);
 
   const zuidMatch = pathname.match(
     /^\/content\/([^/]+)\/([^/]+)(?:\/(meta|seo))?$/
@@ -162,7 +161,7 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
     null
   );
   const [responses, setResponses] = useState<Record<string, any[]>>({});
-  const [prompt, setPrompt] = useState("");
+  const [composerSeed, setComposerSeed] = useState("");
   const [autoApply, setAutoApply] = useState(false);
 
   const [selectedLanguage, setSelectedLanguage] = useState({
@@ -181,8 +180,7 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
     })
   );
 
-  const [geminiGenerate, { isLoading, isError, data: aiResponse }] =
-    useGeminiGenerationMutation();
+  const [geminiGenerate, { isLoading }] = useGeminiGenerationMutation();
   const {
     data: chatSessionLog,
     isLoading: isLoadingChatSessionLog,
@@ -251,7 +249,7 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
   ]);
 
   useEffect(() => {
-    if (!open || hasHydratedInitialResponses || isLoadingChatSessionLog) {
+    if (!open || isLoadingChatSessionLog) {
       return;
     }
 
@@ -268,14 +266,7 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
       setHydratedResponsesCount(Object.keys(restoredResponses).length);
       setResponses(restoredResponses);
     }
-
-    setHasHydratedInitialResponses(true);
-  }, [
-    open,
-    hasHydratedInitialResponses,
-    isLoadingChatSessionLog,
-    chatSessionLog,
-  ]);
+  }, [open, isLoadingChatSessionLog, chatSessionLog]);
 
   // useEffect(() => {
   //   if (!aiResponse) return;
@@ -314,73 +305,96 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
   //   }
   // }, [aiResponse]);
 
-  const handlePrompt = (newPrompt: string) => {
-    const registryKeys = Object.keys(getRefRegistry() || {});
-    const refRegistry = getRefRegistry();
-    const mappedRefRegistry = registryKeys.map(
-      (x) => `"${x}": "${JSON.stringify(refRegistry[x].context())}"`
-    );
-    const temperature = 0.5;
+  const handlePrompt = useCallback(
+    (newPrompt: string) => {
+      if (!newPrompt?.trim()) {
+        return;
+      }
 
-    geminiGenerate({
-      prompt: newPrompt,
-      tone: selectedTone.value,
-      language: selectedLanguage.value,
-      modelZuid: modelZUID,
-      itemZuid: itemZUID,
-      registryKeys,
-      refRegistry: mappedRefRegistry,
-      filename:
-        getRefRegistry()?.["code-editor"]?.context()?.fileName || undefined,
-      code: getRefRegistry()?.["code-editor"]?.context()?.code || undefined,
-      fields: getRefRegistry()?.["code-editor"]?.context()?.fields || undefined,
-      temperature,
-      chatZuid: urlChatZUID,
-      url: window.location.href,
-    });
-    // setResponses((prev) => [
-    //   ...prev,
-    //   {
-    //     type: "USER_INPUT",
-    //     payload: {
-    //       value: newPrompt,
-    //     },
-    //   },
-    // ]);
-    setPrompt("");
-  };
+      const registryKeys = Object.keys(getRefRegistry() || {});
+      const refRegistry = getRefRegistry();
+      const mappedRefRegistry = registryKeys.map(
+        (x) => `"${x}": "${JSON.stringify(refRegistry[x].context())}"`
+      );
+      const temperature = 0.5;
+      const trimmedPrompt = newPrompt.trim();
 
-  const handleGenerateSuggestions = () => {
-    const systemInstruction = suggestionSystemInstruction(
-      Object.keys(getRefRegistry() || {}),
-      getRefRegistry()
-    );
-    const temperature = 0.5;
-    const normalizedPrompt = prompt ? prompt.trim() : "";
-    const promptValue = normalizedPrompt
-      ? `Generate suggestions: ${normalizedPrompt}`
-      : "Generate suggestions for my content fields";
+      geminiGenerate({
+        prompt: trimmedPrompt,
+        tone: selectedTone.value,
+        language: selectedLanguage.value,
+        modelZuid: modelZUID,
+        itemZuid: itemZUID,
+        registryKeys,
+        refRegistry: mappedRefRegistry,
+        filename:
+          getRefRegistry()?.["code-editor"]?.context()?.fileName || undefined,
+        code: getRefRegistry()?.["code-editor"]?.context()?.code || undefined,
+        fields:
+          getRefRegistry()?.["code-editor"]?.context()?.fields || undefined,
+        temperature,
+        chatZuid: urlChatZUID,
+        url: window.location.href,
+      });
+      setResponses((prev) => ({
+        ...prev,
+        pendingPrompt: [
+          {
+            type: "USER_INPUT",
+            payload: {
+              value: trimmedPrompt,
+            },
+          },
+        ],
+      }));
+      setComposerSeed("");
+    },
+    [
+      geminiGenerate,
+      itemZUID,
+      modelZUID,
+      selectedLanguage.value,
+      selectedTone.value,
+      urlChatZUID,
+    ]
+  );
 
-    geminiGenerate({
-      prompt: promptValue,
-      systemInstruction,
-      temperature,
-      chatZuid: urlChatZUID,
-      url: window.location.href,
-    });
-    // setResponses((prev) => [
-    //   ...prev,
-    //   {
-    //     type: "USER_INPUT",
-    //     payload: {
-    //       value: promptValue,
-    //     },
-    //   },
-    // ]);
-    setPrompt("");
-  };
+  const handleGenerateSuggestions = useCallback(
+    (sourcePrompt: string) => {
+      const systemInstruction = suggestionSystemInstruction(
+        Object.keys(getRefRegistry() || {}),
+        getRefRegistry()
+      );
+      const temperature = 0.5;
+      const normalizedPrompt = sourcePrompt ? sourcePrompt.trim() : "";
+      const promptValue = normalizedPrompt
+        ? `Generate suggestions: ${normalizedPrompt}`
+        : "Generate suggestions for my content fields";
 
-  const handleStartNewChatSession = () => {
+      geminiGenerate({
+        prompt: promptValue,
+        systemInstruction,
+        temperature,
+        chatZuid: urlChatZUID,
+        url: window.location.href,
+      });
+      setResponses((prev) => ({
+        ...prev,
+        pendingPrompt: [
+          {
+            type: "USER_INPUT",
+            payload: {
+              value: promptValue,
+            },
+          },
+        ],
+      }));
+      setComposerSeed("");
+    },
+    [geminiGenerate, urlChatZUID]
+  );
+
+  const handleStartNewChatSession = useCallback(() => {
     const userRole = roles?.find((role) => role.ZUID === user.ZUID);
 
     if (user?.ZUID && userRole?.role?.ZUID) {
@@ -394,6 +408,7 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
             setUrlChatZUID(response?.data?.chatZuid);
           }
           setHydratedResponsesCount(0);
+          setComposerSeed("");
           setResponses({});
         })
         .catch(() => {
@@ -412,7 +427,7 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
         })
       );
     }
-  };
+  }, [createNewChatSession, dispatch, roles, setUrlChatZUID, user?.ZUID]);
 
   return (
     <Box
@@ -568,8 +583,7 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
                       <Button
                         key={`${promptZUID}-${index}`}
                         onClick={() => {
-                          setPrompt(response.payload.value);
-                          promptInputRef.current?.focus();
+                          setComposerSeed(response.payload.value);
                         }}
                         sx={{
                           textAlign: "left",
@@ -699,46 +713,14 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
               </Box>
             )}
           </Box>
-          <TextField
-            inputRef={promptInputRef}
+          <PromptComposer
+            seed={composerSeed}
             disabled={
               isLoading || isLoadingChatSessionLog || isCreatingNewChatSession
             }
-            placeholder="Ask AI to make edits to your content..."
-            variant="outlined"
-            fullWidth
-            multiline
-            rows={4}
-            onChange={(e) => setPrompt(e.target.value)}
-            value={prompt}
-            onKeyPress={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                handlePrompt(prompt);
-              }
-            }}
+            onSubmit={handlePrompt}
+            onGenerateSuggestions={handleGenerateSuggestions}
           />
-          <Box display="flex" justifyContent="space-between" my={0.5}>
-            <Button
-              size="small"
-              variant="contained"
-              onClick={handleGenerateSuggestions}
-              endIcon={<AutoFixHighRounded />}
-            >
-              Generate Suggestions
-            </Button>
-            <Button
-              variant="contained"
-              onClick={() => handlePrompt(prompt)}
-              sx={{
-                borderRadius: "24px",
-                padding: 0.5,
-                minWidth: 0,
-              }}
-            >
-              <ArrowUpwardRounded />
-            </Button>
-          </Box>
           <Accordion elevation={0} disableGutters>
             <AccordionSummary
               sx={{
@@ -845,6 +827,86 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
     </Box>
   );
 };
+
+type PromptComposerProps = {
+  seed: string;
+  disabled: boolean;
+  onSubmit: (value: string) => void;
+  onGenerateSuggestions: (value: string) => void;
+};
+
+const PromptComposer = memo(
+  ({
+    seed,
+    disabled,
+    onSubmit,
+    onGenerateSuggestions,
+  }: PromptComposerProps) => {
+    const [draft, setDraft] = useState(seed);
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+      setDraft(seed);
+      if (seed) {
+        inputRef.current?.focus();
+      }
+    }, [seed]);
+
+    const submitDraft = () => {
+      if (!draft.trim()) {
+        return;
+      }
+      onSubmit(draft);
+      setDraft("");
+    };
+
+    return (
+      <>
+        <TextField
+          inputRef={inputRef}
+          disabled={disabled}
+          placeholder="Ask AI to make edits to your content..."
+          variant="outlined"
+          fullWidth
+          multiline
+          rows={4}
+          onChange={(e) => setDraft(e.target.value)}
+          value={draft}
+          onKeyPress={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              submitDraft();
+            }
+          }}
+        />
+        <Box display="flex" justifyContent="space-between" my={0.5}>
+          <Button
+            size="small"
+            variant="contained"
+            onClick={() => {
+              onGenerateSuggestions(draft);
+              setDraft("");
+            }}
+            endIcon={<AutoFixHighRounded />}
+          >
+            Generate Suggestions
+          </Button>
+          <Button
+            variant="contained"
+            onClick={submitDraft}
+            sx={{
+              borderRadius: "24px",
+              padding: 0.5,
+              minWidth: 0,
+            }}
+          >
+            <ArrowUpwardRounded />
+          </Button>
+        </Box>
+      </>
+    );
+  }
+);
 
 type AnimatedTextProps = {
   text: string;
