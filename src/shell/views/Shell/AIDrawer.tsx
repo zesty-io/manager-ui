@@ -19,10 +19,9 @@ import {
   Typography,
 } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   useGeminiGenerationMutation,
-  useGetAllChatSessionsQuery,
   useGetChatSessionLogQuery,
   useCreateNewChatSessionMutation,
   useUpdatePromptApprovalStatusMutation,
@@ -41,11 +40,7 @@ import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import LanguageRoundedIcon from "@mui/icons-material/LanguageRounded";
 import { useGetLangsMappingQuery } from "../../services/instance";
-import {
-  codeSystemInstruction,
-  contentSystemInstruction,
-  suggestionSystemInstruction,
-} from "./systemInstructions";
+import { suggestionSystemInstruction } from "./systemInstructions";
 import { useLocalStorage } from "react-use";
 import { getRefRegistry } from "../../../engine/refRegistry";
 import { Brain } from "@zesty-io/material";
@@ -53,12 +48,7 @@ import { keyframes } from "@emotion/react";
 import geminiLogo from "../../../../public/images/geminiLogo.svg";
 import { AppState } from "shell/store/types";
 import { useGetUsersRolesQuery } from "shell/services/accounts";
-import {
-  GeminiResponse,
-  ChatSession,
-  ChatPrompt,
-  ChatPromptMetadata,
-} from "shell/services/types";
+import { ChatPrompt } from "shell/services/types";
 import { notify } from "shell/store/notifications";
 
 const parseResponse = (rawResponse: string) => {
@@ -163,10 +153,10 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
     ? { modelZUID: zuidMatch[1], itemZUID: zuidMatch[2] }
     : { modelZUID: undefined, itemZUID: undefined };
 
-  // const [responsesLS, setResponsesLS] = useLocalStorage<any[]>(
-  //   `ai-drawer-responses-${pathname}`,
-  //   []
-  // );
+  const [urlChatZUID, setUrlChatZUID] = useLocalStorage<string | null>(
+    `ai-drawer-${pathname}-chatZUID`,
+    null
+  );
   const [responses, setResponses] = useState([]);
   const [prompt, setPrompt] = useState("");
   const [autoApply, setAutoApply] = useState(false);
@@ -189,23 +179,16 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
 
   const [geminiGenerate, { isLoading, isError, data: aiResponse }] =
     useGeminiGenerationMutation();
-  const { data: chatSessions, isLoading: isLoadingChatSessions } =
-    useGetAllChatSessionsQuery(
-      { userZUID: user.ZUID },
-      { skip: !user || !user.ZUID || !open }
-    );
-  const latestChatSessionZUID = chatSessions?.[0]?.chatZuid;
-  const { data: chatSessionLog, isLoading: isLoadingChatSessionLog } =
-    useGetChatSessionLogQuery(
-      { chatZUID: latestChatSessionZUID, userZUID: user.ZUID },
-      {
-        skip:
-          !chatSessions?.length ||
-          !latestChatSessionZUID ||
-          !user.ZUID ||
-          !open,
-      }
-    );
+  const {
+    data: chatSessionLog,
+    isLoading: isLoadingChatSessionLog,
+    isError: isChatSessionLogError,
+  } = useGetChatSessionLogQuery(
+    { chatZUID: urlChatZUID, userZUID: user.ZUID },
+    {
+      skip: !urlChatZUID || !user.ZUID || !open,
+    }
+  );
   const [createNewChatSession, { isLoading: isCreatingNewChatSession }] =
     useCreateNewChatSessionMutation();
   const [
@@ -214,26 +197,61 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
   ] = useUpdatePromptApprovalStatusMutation();
 
   const responsesEndRef = useRef(null);
+  const hasAttemptedInitialSessionRef = useRef(false);
+  const lastFailedChatSessionZUIDRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (responsesEndRef.current) {
       responsesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
-    // setResponsesLS(responses);
-    // console.log(responses);
   }, [responses]);
 
+  // Starts a new chat session if the current url doesn't have
+  // a chatZUID associated with it yet
+  useEffect(() => {
+    if (!open || urlChatZUID || hasAttemptedInitialSessionRef.current) {
+      return;
+    }
+
+    hasAttemptedInitialSessionRef.current = true;
+    if (!urlChatZUID) {
+      handleStartNewChatSession();
+    }
+  }, [open, urlChatZUID]);
+
+  // Attempts to start a new chat session when the api call fails
+  // due to an invalid chatZUID
   useEffect(() => {
     if (
       !open ||
-      hasHydratedInitialResponses ||
-      isLoadingChatSessions ||
-      isLoadingChatSessionLog
+      !urlChatZUID ||
+      !isChatSessionLogError ||
+      isCreatingNewChatSession
     ) {
       return;
     }
 
-    if (chatSessions?.length && !chatSessionLog) {
+    if (lastFailedChatSessionZUIDRef.current === urlChatZUID) {
+      return;
+    }
+
+    lastFailedChatSessionZUIDRef.current = urlChatZUID;
+    handleStartNewChatSession();
+  }, [
+    open,
+    urlChatZUID,
+    isChatSessionLogError,
+    isCreatingNewChatSession,
+    roles,
+    user?.ZUID,
+  ]);
+
+  useEffect(() => {
+    if (!open || hasHydratedInitialResponses || isLoadingChatSessionLog) {
+      return;
+    }
+
+    if (!chatSessionLog) {
       return;
     }
 
@@ -251,9 +269,7 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
   }, [
     open,
     hasHydratedInitialResponses,
-    isLoadingChatSessions,
     isLoadingChatSessionLog,
-    chatSessions,
     chatSessionLog,
   ]);
 
@@ -315,7 +331,7 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
       code: getRefRegistry()?.["code-editor"]?.context()?.code || undefined,
       fields: getRefRegistry()?.["code-editor"]?.context()?.fields || undefined,
       temperature,
-      chatZuid: latestChatSessionZUID,
+      chatZuid: urlChatZUID,
       url: window.location.href,
     });
     setResponses((prev) => [
@@ -345,7 +361,7 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
       prompt: promptValue,
       systemInstruction,
       temperature,
-      chatZuid: latestChatSessionZUID,
+      chatZuid: urlChatZUID,
       url: window.location.href,
     });
     setResponses((prev) => [
@@ -360,7 +376,7 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
     setPrompt("");
   };
 
-  const handleClearChat = () => {
+  const handleStartNewChatSession = () => {
     const userRole = roles?.find((role) => role.ZUID === user.ZUID);
 
     if (user?.ZUID && userRole?.role?.ZUID) {
@@ -369,7 +385,10 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
         roleZUID: userRole?.role?.ZUID,
       })
         .unwrap()
-        .then(() => {
+        .then((response: any) => {
+          if (response?.data?.chatZuid) {
+            setUrlChatZUID(response?.data?.chatZuid);
+          }
           setHydratedResponsesCount(0);
           setResponses([]);
           // setResponsesLS([]);
@@ -494,7 +513,7 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
                 <IconButton
                   size="small"
                   color="error"
-                  onClick={handleClearChat}
+                  onClick={handleStartNewChatSession}
                 >
                   <NotInterestedRounded sx={{ fontSize: 16 }} />
                 </IconButton>
