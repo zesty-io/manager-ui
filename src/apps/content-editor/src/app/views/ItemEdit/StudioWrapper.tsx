@@ -40,6 +40,7 @@ import { useStudioBridge } from "./hooks/useStudioBridge";
 import { InteractionMode, LayoutBreadcrumbItem } from "./hooks/studioTypes";
 import { useStudioSelection } from "./hooks/useStudioSelection";
 import { getRefRegistry } from "../../../../../../engine/refRegistry";
+import { usePermission } from "../../../../../../shell/hooks/use-permissions";
 
 const drawerWidth = 440;
 
@@ -511,6 +512,15 @@ export const StudioWrapper = () => {
     withCodeIdBreadcrumbRoot,
     onSelectedLayoutBreadcrumbChange: setSelectedLayout,
   });
+  const pendingLayoutCodeId = pendingLayoutSave?.codeId || null;
+  const canUpdatePendingLayout = usePermission(
+    "UPDATE",
+    pendingLayoutCodeId || undefined
+  );
+  const canPublishPendingLayout = usePermission(
+    "PUBLISH",
+    pendingLayoutCodeId || undefined
+  );
 
   const requestProceedWithPendingLayoutSave = useCallback(
     (onProceed: () => void) => {
@@ -1126,9 +1136,10 @@ export const StudioWrapper = () => {
                 }
                 sx={{ whiteSpace: "nowrap" }}
                 onClick={() => {
+                  if (!canUpdatePendingLayout) return;
                   void handleSavePendingLayout();
                 }}
-                disabled={isSavingLayout}
+                disabled={isSavingLayout || !canUpdatePendingLayout}
               >
                 {isSavingLayout ? (
                   <CircularProgress size={16} color="inherit" />
@@ -1147,9 +1158,10 @@ export const StudioWrapper = () => {
                 }
                 sx={{ whiteSpace: "nowrap" }}
                 onClick={() => {
+                  if (!canPublishPendingLayout) return;
                   void handleSaveAndPublishPendingLayout();
                 }}
-                disabled={isSavingLayout}
+                disabled={isSavingLayout || !canPublishPendingLayout}
               >
                 {isSavingLayout ? (
                   <CircularProgress size={16} color="inherit" />
@@ -1172,11 +1184,13 @@ export const StudioWrapper = () => {
           content="You have unsaved layout changes. Save them before continuing?"
           open={showPendingLayoutModal}
           loading={isSavingLayout}
+          saveDisabled={!canUpdatePendingLayout}
           onCancel={() => {
             setShowPendingLayoutModal(false);
             pendingLayoutContinuationRef.current = null;
           }}
           onSave={async () => {
+            if (!canUpdatePendingLayout) return;
             const onProceed = pendingLayoutContinuationRef.current;
             setShowPendingLayoutModal(false);
             pendingLayoutContinuationRef.current = null;

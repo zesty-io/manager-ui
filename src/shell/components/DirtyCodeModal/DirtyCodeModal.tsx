@@ -9,6 +9,7 @@ export type DirtyCodeModal = {
   content: string;
   open: boolean;
   loading: boolean;
+  saveDisabled?: boolean;
   onCancel: () => void;
   onSave: () => void;
   onDiscard: () => void;
@@ -18,6 +19,7 @@ export const DirtyCodeModal: FC<DirtyCodeModal> = ({
   content,
   open,
   loading,
+  saveDisabled = false,
   onCancel,
   onSave,
   onDiscard,
@@ -70,7 +72,7 @@ export const DirtyCodeModal: FC<DirtyCodeModal> = ({
             data-cy="DirtyCodeModalSave"
             variant="contained"
             color="primary"
-            disabled={loading}
+            disabled={loading || saveDisabled}
             onClick={onSave}
           >
             Save
