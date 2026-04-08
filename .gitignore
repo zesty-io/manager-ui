@@ -16,3 +16,5 @@ coverage/
 .vscode
 .DS_Store
 .idea
+.agents
+skills-lock.json
