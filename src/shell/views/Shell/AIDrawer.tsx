@@ -180,7 +180,8 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
     })
   );
 
-  const [geminiGenerate, { isLoading }] = useGeminiGenerationMutation();
+  const [geminiGenerate, { isLoading, data: aiResponse }] =
+    useGeminiGenerationMutation();
   const {
     data: chatSessionLog,
     isLoading: isLoadingChatSessionLog,
@@ -205,6 +206,40 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
   const prevPromptZUIDsRef = useRef<Set<string>>(new Set());
   const isEnabled =
     isInContentApp || isInContentMeta || isInBlocks || isInCodeApp;
+
+  // Auto-applies AI responses to the editor when available
+  useEffect(() => {
+    if (!aiResponse || !autoApply) return;
+
+    try {
+      const parsedResponse =
+        typeof aiResponse.data === "string"
+          ? parseResponse(aiResponse.data)
+          : aiResponse.data;
+      const responseArray = parsedResponse
+        ? Array.isArray(parsedResponse)
+          ? parsedResponse
+          : [parsedResponse]
+        : [];
+
+      responseArray.forEach((response) => {
+        if (response.type === "SET_VALUE") {
+          enqueueAction({
+            type: response.type,
+            payload: {
+              refKey: response.payload.refKey,
+              value: response.payload.value,
+            },
+          });
+        }
+      });
+    } catch (error) {
+      console.error(
+        "Failed to auto-apply response due to an error while parsing AI response",
+        error
+      );
+    }
+  }, [autoApply, aiResponse]);
 
   useEffect(() => {
     if (responsesEndRef.current) {
