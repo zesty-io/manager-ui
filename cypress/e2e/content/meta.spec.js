@@ -111,7 +111,7 @@ describe("Content Meta", () => {
       });
     });
 
-    cy.getBySelector(`"field:text"`).find("input").type(today);
+    cy.getBySelector("field:text").find("input").type(today);
     cy.wait(500); // wait for debounced input to settle
     cy.getBySelector("CreateItemSaveButton").click();
     cy.getBySelector("toast").contains("Created Item");
@@ -129,7 +129,7 @@ describe("Content Meta", () => {
     cy.iframe("#wysiwyg_basic_ifr")
       .click()
       .type(`{selectall}{backspace}meta description`);
-    cy.getBySelector(`"field:text"`)
+    cy.getBySelector("field:text")
       .find("input")
       .clear()
       .type(`{selectall}{backspace} meta title ${today}`);
