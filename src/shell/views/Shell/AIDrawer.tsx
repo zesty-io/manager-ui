@@ -470,7 +470,7 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
               </Typography>
             </Box>
           </Box>
-          <Typography variant="body1">
+          <Typography variant="body1" data-cy="AIDrawerDisabled">
             Only available in content app.
           </Typography>
         </>
@@ -478,6 +478,7 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
       {isEnabled && (
         <>
           <Box
+            data-cy="AIDrawerEnabled"
             display="flex"
             alignItems={"center"}
             justifyContent={"space-between"}
@@ -710,6 +711,7 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
           />
           <Accordion elevation={0} disableGutters>
             <AccordionSummary
+              data-cy="AIDrawerSettings"
               sx={{
                 p: 0,
               }}
@@ -736,6 +738,7 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
                   }}
                   control={
                     <Switch
+                      data-cy="AIDrawerAutoApplyToggle"
                       size="small"
                       checked={autoApply}
                       onChange={(e) => setAutoApply(e.target.checked)}
