@@ -18,3 +18,4 @@ coverage/
 .idea
 .agents
 skills-lock.json
+.nyc_output
