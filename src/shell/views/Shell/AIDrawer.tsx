@@ -548,6 +548,7 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
             <Box display="flex" alignItems={"center"} gap={0.5}>
               <Tooltip title="Clear chat" placement="top">
                 <IconButton
+                  data-cy="AIDrawerClearChat"
                   size="small"
                   color="error"
                   onClick={handleStartNewChatSession}
