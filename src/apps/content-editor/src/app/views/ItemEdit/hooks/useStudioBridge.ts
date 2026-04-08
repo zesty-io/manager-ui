@@ -1,7 +1,6 @@
 import { MutableRefObject, useCallback, useEffect } from "react";
 import { notify } from "../../../../../../../shell/store/notifications";
 import { Sentry } from "../../../../../../../utility/sentry";
-import { normalizePath } from "../../../../../../studio/utils/pathResolver";
 import { InteractionMode } from "./studioTypes";
 
 const bridgeInjectedCss = `
@@ -83,11 +82,6 @@ type Args = {
   selectedItemDirty?: boolean;
   selectedItemZUID?: string;
   clearSelection: () => void;
-  updateStudioUrl: (path: string) => void;
-  updateItemByPath: (
-    path: string,
-    options?: { onApplied?: () => void }
-  ) => void;
   previewReloadContinuationRef: MutableRefObject<null | (() => void)>;
   setIsNavigating: (value: boolean) => void;
   onBridgeFieldInput?: (fieldZuid: string) => void;
@@ -111,8 +105,6 @@ export const useStudioBridge = ({
   selectedItemDirty,
   selectedItemZUID,
   clearSelection,
-  updateStudioUrl,
-  updateItemByPath,
   previewReloadContinuationRef,
   setIsNavigating,
   onBridgeFieldInput,
@@ -236,8 +228,7 @@ export const useStudioBridge = ({
         }
 
         case "input": {
-          if (interactionMode !== "content") return;
-          if (!fieldZuid || !itemZuid) return;
+          if (interactionMode !== "content" || !fieldZuid || !itemZuid) return;
           const fieldName = fieldNameByZuid.get(fieldZuid);
           if (!fieldName) return;
 
@@ -324,15 +315,6 @@ export const useStudioBridge = ({
         return;
       }
 
-      if (msg.type === "PATH_CHANGE") {
-        const loc = msg.location || {};
-        const path = (loc.path as string) || "/";
-        const normalizedPath = normalizePath(path || "/");
-        updateStudioUrl(normalizedPath);
-        updateItemByPath(normalizedPath, { onApplied: clearSelection });
-        return;
-      }
-
       if (msg.type === "BRIDGE_ERROR") {
         handleBridgeError(msg);
         return;
@@ -359,8 +341,6 @@ export const useStudioBridge = ({
     handleBridgeReady,
     handleReorderOutput,
     handleTemplateSourceMap,
-    updateItemByPath,
-    updateStudioUrl,
   ]);
 
   return {

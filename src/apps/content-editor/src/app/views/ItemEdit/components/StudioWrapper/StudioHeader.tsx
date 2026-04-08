@@ -189,9 +189,7 @@ export const StudioHeader = ({
               </Box>
             ) : null}
           </Box>
-        ) : (
-          <Box />
-        )}
+        ) : null}
       </Box>
       <Box display="flex" alignItems="center" gap={1.5}>
         <Box minWidth={96}>

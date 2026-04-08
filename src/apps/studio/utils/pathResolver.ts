@@ -4,8 +4,7 @@ import { searchItems } from "../../../shell/store/content";
 export const normalizePath = (path?: string) => {
   if (!path) return "/";
   const decoded = decodeURIComponent(path.trim());
-  if (!decoded) return "/";
-  if (decoded === "/") return "/";
+  if (!decoded || decoded === "/") return "/";
   const withLeading = decoded.startsWith("/") ? decoded : `/${decoded}`;
   const trimmedTrailing = withLeading.replace(/\/+$/, "");
   if (!trimmedTrailing) return "/";

@@ -611,6 +611,7 @@ export const StudioWrapper = () => {
     (langCode: string) => {
       const normalizedPath = normalizePath(previewPath);
       const pathSegments = normalizedPath.split("/").filter(Boolean);
+      // Match a leading locale segment like `en` or `en-us`.
       const isLangSegment =
         pathSegments.length > 0 &&
         /^[a-z]{2}(?:-[a-z]{2})?$/i.test(pathSegments[0]);
@@ -712,7 +713,7 @@ export const StudioWrapper = () => {
 
     if (
       ["markdown", "wysiwyg_basic", "wysiwyg_advanced"].includes(
-        selectedElement.fieldType || ""
+        selectedElement.fieldType
       )
     ) {
       // Use ref registry to update tinyMCE field
@@ -966,8 +967,6 @@ export const StudioWrapper = () => {
     selectedItemDirty: selectedItem?.dirty,
     selectedItemZUID,
     clearSelection,
-    updateStudioUrl,
-    updateItemByPath,
     previewReloadContinuationRef,
     setIsNavigating,
     onBridgeFieldInput: handleBridgeFieldInput,
@@ -1105,14 +1104,17 @@ export const StudioWrapper = () => {
             position="absolute"
             left="50%"
             bottom={24}
-            sx={{ transform: "translateX(-50%)", zIndex: 1301 }}
+            sx={{
+              transform: "translateX(-50%)",
+              zIndex: (theme) => theme.zIndex.modal + 1,
+            }}
           >
             <Box
               display="flex"
               alignItems="center"
               gap={1}
               p={2}
-              borderRadius="12px"
+              borderRadius={1.5}
               bgcolor="background.paper"
               boxShadow={6}
             >

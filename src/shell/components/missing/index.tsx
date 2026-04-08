@@ -24,7 +24,6 @@ const MANAGER_APPS = [
 const Missing = () => {
   const products = useSelector((state: AppState) => state.products.products);
   const appRoute = location.pathname.split("/")[1] as Products;
-  // @ts-ignore
   const isValidAppRoute: boolean = MANAGER_APPS?.includes(appRoute);
   const noAccess: boolean = !products?.includes(appRoute);
   return isValidAppRoute && noAccess ? <AccessDenied /> : <InvalidUrl />;
