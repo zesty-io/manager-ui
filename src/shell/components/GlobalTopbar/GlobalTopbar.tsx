@@ -47,6 +47,7 @@ export const GlobalTopbar = memo(({ onShowAiDrawerToggle }: Props) => {
       </Box>
       <Stack direction="row" flexBasis={72} alignItems="baseline" gap={1}>
         <IconButton
+          data-cy="AIDrawerToggle"
           onClick={() => {
             onShowAiDrawerToggle();
           }}

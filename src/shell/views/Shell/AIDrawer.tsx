@@ -203,6 +203,8 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
   const lastFailedChatSessionZUIDRef = useRef<string | null>(null);
   const hasInitializedResponseSyncRef = useRef(false);
   const prevPromptZUIDsRef = useRef<Set<string>>(new Set());
+  const isEnabled =
+    isInContentApp || isInContentMeta || isInBlocks || isInCodeApp;
 
   useEffect(() => {
     if (responsesEndRef.current) {
@@ -213,7 +215,12 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
   // Starts a new chat session if the current url doesn't have
   // a chatZUID associated with it yet
   useEffect(() => {
-    if (!open || urlChatZUID || hasAttemptedInitialSessionRef.current) {
+    if (
+      !isEnabled ||
+      !open ||
+      urlChatZUID ||
+      hasAttemptedInitialSessionRef.current
+    ) {
       return;
     }
 
@@ -221,12 +228,13 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
     if (!urlChatZUID) {
       handleStartNewChatSession();
     }
-  }, [open, urlChatZUID]);
+  }, [open, urlChatZUID, isEnabled]);
 
   // Attempts to start a new chat session when the api call fails
   // due to an invalid chatZUID
   useEffect(() => {
     if (
+      !isEnabled ||
       !open ||
       !urlChatZUID ||
       !isChatSessionLogError ||
@@ -248,6 +256,7 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
     isCreatingNewChatSession,
     roles,
     user?.ZUID,
+    isEnabled,
   ]);
 
   useEffect(() => {
@@ -432,7 +441,7 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
         bgcolor: "background.paper", // optional: give a bg to cover avatar overflow
       }}
     >
-      {!isInContentApp && !isInContentMeta && !isInBlocks && !isInCodeApp && (
+      {!isEnabled && (
         <>
           <Box display="flex" alignItems={"center"} gap={1}>
             <Stack
@@ -466,7 +475,7 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
           </Typography>
         </>
       )}
-      {(isInContentApp || isInContentMeta || isInBlocks || isInCodeApp) && (
+      {isEnabled && (
         <>
           <Box
             display="flex"
@@ -530,6 +539,7 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
                 if (response.type === "USER_INPUT") {
                   return (
                     <Box
+                      data-cy="AIDrawerUserInput"
                       key={`${promptZUID}-${responseIndex}`}
                       sx={{
                         padding: 1,
@@ -558,6 +568,7 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
                 } else if (response.type === "SYSTEM_SUGGESTION") {
                   return (
                     <Button
+                      data-cy="AIDrawerSystemSuggestion"
                       key={`${promptZUID}-${responseIndex}`}
                       onClick={() => {
                         setComposerSeed(response.payload.value);
@@ -593,6 +604,7 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
                       key={`${promptZUID}-${responseIndex}`}
                     >
                       <Button
+                        data-cy="AIDrawerNavigate"
                         size="xsmall"
                         variant="contained"
                         sx={{ ml: "auto", mt: 0.5 }}
@@ -641,6 +653,7 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
                     {response.type === "SET_VALUE" && (
                       <Box display="flex" justifyContent="flex-end">
                         <Button
+                          data-cy="AIDrawerSetValue"
                           size="xsmall"
                           variant="contained"
                           sx={{ ml: "auto", mt: 0.5 }}
@@ -837,6 +850,7 @@ const PromptComposer = memo(
     return (
       <>
         <TextField
+          data-cy="AIDrawerComposer"
           inputRef={inputRef}
           disabled={disabled}
           placeholder="Ask AI to make edits to your content..."
@@ -855,6 +869,7 @@ const PromptComposer = memo(
         />
         <Box display="flex" justifyContent="space-between" my={0.5}>
           <Button
+            data-cy="AIDrawerGenerateSuggestions"
             size="small"
             variant="contained"
             onClick={() => {
@@ -866,6 +881,7 @@ const PromptComposer = memo(
             Generate Suggestions
           </Button>
           <Button
+            data-cy="AIDrawerSubmitPrompt"
             variant="contained"
             onClick={submitDraft}
             sx={{
@@ -915,7 +931,11 @@ export const AnimatedText = ({ text, animate, onGrow }: AnimatedTextProps) => {
     return () => clearInterval(intervalRef.current);
   }, []);
 
-  return <Typography variant="body2">{displayedText}</Typography>;
+  return (
+    <Typography data-cy="AIDrawerSystemOutput" variant="body2">
+      {displayedText}
+    </Typography>
+  );
 };
 
 const GeneratedImage = ({ src }: { src: string }) => {
@@ -934,6 +954,7 @@ const GeneratedImage = ({ src }: { src: string }) => {
         </Box>
       )}
       <Box
+        data-cy="AIDrawerGeneratedImage"
         component="img"
         display="block"
         width="100%"
