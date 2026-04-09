@@ -8,7 +8,7 @@ import {
   TextField,
   InputAdornment,
 } from "@mui/material";
-import { useRef, useState } from "react";
+import { useRef, useState, useMemo } from "react";
 
 import {
   VerticalSplitRounded,
@@ -34,6 +34,26 @@ export const BlockTabs = (props: any) => {
   const searchRef = useRef(null);
   const [search, setSearch] = useState("");
   const [createVariantDialogOpen, setCreateVariantDialogOpen] = useState(false);
+
+  const sortedBlocks = useMemo(() => {
+    if (!data) return [];
+
+    return data.slice().sort((a, b) => {
+      return (a.web.metaTitle ?? "")?.localeCompare(b.web.metaTitle ?? "");
+    });
+  }, [data]);
+
+  const filteredBlocks = useMemo(() => {
+    if (!sortedBlocks) return [];
+
+    const normalizedSearch = search.toLowerCase().trim();
+
+    if (!normalizedSearch) return sortedBlocks;
+
+    return sortedBlocks?.filter?.((item) =>
+      item.web.metaTitle?.toLowerCase().includes(normalizedSearch)
+    );
+  }, [sortedBlocks, search]);
 
   return (
     <>
@@ -115,9 +135,7 @@ export const BlockTabs = (props: any) => {
               ),
             }}
           />
-          {!!data?.filter((block) =>
-            block.web?.metaTitle.toLowerCase().includes(search.toLowerCase())
-          )?.length && (
+          {!!filteredBlocks.length && (
             <List
               disablePadding
               sx={{
@@ -130,64 +148,51 @@ export const BlockTabs = (props: any) => {
                 overflowY: "auto",
               }}
             >
-              {data
-                ?.filter((block) =>
-                  block.web?.metaTitle
-                    .toLowerCase()
-                    .includes(search.toLowerCase())
-                )
-                ?.slice()
-                ?.sort((a, b) => {
-                  return a.web?.metaTitle.localeCompare(b.web?.metaTitle);
-                })
-                ?.map((block) => (
-                  <BlockVariantCard key={block.meta.ZUID} block={block} />
-                ))}
+              {filteredBlocks.map((block) => (
+                <BlockVariantCard key={block.meta.ZUID} block={block} />
+              ))}
             </List>
           )}
-          {search &&
-            !data?.filter((block) =>
-              block.web?.metaTitle.toLowerCase().includes(search.toLowerCase())
-            )?.length && (
-              <Box display="flex" gap={2}>
-                <Box
-                  component="img"
-                  src={noSearchResults}
-                  width={120}
-                  height={110}
-                ></Box>
-                <Box>
-                  <Typography variant="h4" maxWidth={458}>
-                    Your search{" "}
-                    <strong
-                      style={{
-                        wordBreak: "break-all",
-                      }}
-                    >
-                      "{search}"
-                    </strong>{" "}
-                    could not find any results
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    mt={1}
-                    mb={3}
-                    maxWidth={458}
+          {search && !filteredBlocks.length && (
+            <Box display="flex" gap={2}>
+              <Box
+                component="img"
+                src={noSearchResults}
+                width={120}
+                height={110}
+              ></Box>
+              <Box>
+                <Typography variant="h4" maxWidth={458}>
+                  Your search{" "}
+                  <strong
+                    style={{
+                      wordBreak: "break-all",
+                    }}
                   >
-                    Try adjusting your search. We suggest check all words are
-                    spelled correctly or try using different keywords.
-                  </Typography>
-                  <Button
-                    variant="contained"
-                    startIcon={<SearchRounded />}
-                    onClick={() => searchRef?.current?.focus()}
-                  >
-                    Search Again
-                  </Button>
-                </Box>
+                    "{search}"
+                  </strong>{" "}
+                  could not find any results
+                </Typography>
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  mt={1}
+                  mb={3}
+                  maxWidth={458}
+                >
+                  Try adjusting your search. We suggest check all words are
+                  spelled correctly or try using different keywords.
+                </Typography>
+                <Button
+                  variant="contained"
+                  startIcon={<SearchRounded />}
+                  onClick={() => searchRef?.current?.focus()}
+                >
+                  Search Again
+                </Button>
               </Box>
-            )}
+            </Box>
+          )}
         </>
       )}
       {value === 1 && (
