@@ -122,7 +122,8 @@ export const ItemEditHeaderActions = ({
       state.content[resolvedItemZUID] as ContentItemWithDirtyAndPublishing
   );
   const hasScheduledUnpublish =
-    !!item?.publishing?.publishAt && !!item?.scheduling?.unpublishAt;
+    !!item?.publishing?.publishAt && !!item?.publishing?.unpublishAt;
+
   const items = useSelector((state: AppState) => state.content);
   const model = useSelector(
     (state: AppState) => state.models[resolvedModelZUID]
@@ -677,12 +678,16 @@ export const ItemEditHeaderActions = ({
               title={
                 <div>
                   v{activePublishing?.version} scheduled to unpublish on{" "}
-                  {formatDate(activePublishing?.publishAt).includes("Today") ||
-                  formatDate(activePublishing?.publishAt).includes("Yesterday")
+                  {formatDate(activePublishing?.unpublishAt).includes(
+                    "Today"
+                  ) ||
+                  formatDate(activePublishing?.unpublishAt).includes(
+                    "Yesterday"
+                  )
                     ? ""
                     : "on"}
                   <br />
-                  {formatDate(activePublishing?.publishAt)} <br />
+                  {formatDate(activePublishing?.unpublishAt)} <br />
                   by{" "}
                   {
                     users?.find(
@@ -891,11 +896,6 @@ export const ItemEditHeaderActions = ({
           onUnpublishNow={() => {
             handleUnpublish();
             setScheduledUnpublishDialogOpen(false);
-          }}
-          onUnscheduleSuccess={() => {
-            if (publishAfterUnschedule) {
-              setIsConfirmPublishModalOpen(true);
-            }
           }}
         />
       )}

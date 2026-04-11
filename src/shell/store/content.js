@@ -966,13 +966,7 @@ export function unpublish(modelZUID, itemZUID, publishZUID, options = {}) {
   };
 }
 
-export function scheduleUnpublish(
-  modelZUID,
-  itemZUID,
-  data,
-  meta = {},
-  unpublishDateTime
-) {
+export function scheduleUnpublish(modelZUID, itemZUID, data, meta = {}) {
   return (dispatch, getState) => {
     const item = getState().content[itemZUID];
     let title;
@@ -992,25 +986,25 @@ export function scheduleUnpublish(
         json: true,
         body: {
           ...data,
-          unpublishAt: unpublishDateTime,
         },
       }
     )
       .then((res) => {
-        console.debug("data res: ", { data, res, unpublishDateTime });
         if (res.status >= 400) {
           return Promise.reject(new Error(res.error));
         }
       })
       .then(() => {
-        const message = `${title} to unpublish on ${meta.localTime} in the ${meta.localTimezone} timezone`;
+        if (!!data.unpublishAt && data.unpublishAt !== "never") {
+          const message = `${title} to unpublish on ${meta.localTime} in the ${meta.localTimezone} timezone`;
 
-        return dispatch(
-          notify({
-            message,
-            kind: "save",
-          })
-        );
+          return dispatch(
+            notify({
+              message,
+              kind: "save",
+            })
+          );
+        }
       })
       .then(() => {
         dispatch(

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogActions,
@@ -29,16 +29,12 @@ type ScheduleUnpublishProps = {
   item: ContentItemWithDirtyAndPublishing;
   onClose: () => void;
   onUnpublishNow: () => void;
-  onScheduleSuccess?: () => void;
-  onUnscheduleSuccess?: () => void;
 };
 
 export const ScheduleUnpublish = ({
   onClose,
   item,
   onUnpublishNow,
-  onScheduleSuccess,
-  onUnscheduleSuccess,
 }: ScheduleUnpublishProps) => {
   const dispatch = useDispatch();
   const { data: users } = useGetUsersQuery();
@@ -71,7 +67,7 @@ export const ScheduleUnpublish = ({
     ? isBefore(selectedUtc, new Date())
     : false;
 
-  const handleScheduleUnpublish = () => {
+  const handleSubmit = (autoUnpublish: boolean = false) => {
     setIsLoading(true);
 
     // API value must be UTC "YYYY-MM-DD HH:mm:ss"
@@ -93,45 +89,19 @@ export const ScheduleUnpublish = ({
         item?.meta?.contentModelZUID,
         item?.meta?.ZUID,
         {
-          publishAt: unpublishAtUtcStr,
+          publishAt: "now",
           version: item?.meta?.version,
+          unpublishAt: autoUnpublish ? unpublishAtUtcStr : "never",
         },
         {
           localTime: localPretty,
           localTimezone: unpublishTimezone,
-        },
-        unpublishDateTime
-      )
-      // @ts-expect-error untyped action
-    ).finally(() => {
-      onScheduleSuccess?.();
-      setIsLoading(false);
-      onClose();
-    });
-  };
-
-  const handleCancelScheduleUnpublish = () => {
-    setIsLoading(true);
-
-    dispatch(
-      // scheduleUnpublish(
-      //   item?.meta?.contentModelZUID,
-      //   item?.meta?.ZUID,
-      //   item?.scheduling?.ZUID,
-      //   item?.scheduling?.version,
-      //   "never"
-      // )
-      unpublish(
-        item?.meta?.contentModelZUID,
-        item?.meta?.ZUID,
-        item?.scheduling?.ZUID,
-        { version: item?.scheduling?.version }
+        }
       )
       // @ts-expect-error untyped action
     ).finally(() => {
       setIsLoading(false);
       onClose();
-      onUnscheduleSuccess?.();
     });
   };
 
@@ -167,7 +137,7 @@ export const ScheduleUnpublish = ({
               alignItems: "center",
             }}
           >
-            {item?.scheduling?.isScheduled ? (
+            {item?.publishing?.unpublishAt ? (
               <CalendarTodayRoundedIcon color="warning" />
             ) : (
               <ScheduleRoundedIcon color="warning" />
@@ -176,7 +146,7 @@ export const ScheduleUnpublish = ({
           <Box>
             <Box mb={1}>
               <Typography variant="h5" display="inline" fontWeight={700}>
-                {item?.scheduling?.isScheduled
+                {item?.publishing?.unpublishAt
                   ? "Unschedule Unpublish:"
                   : "Schedule Unpublish:"}
                 &nbsp;
@@ -187,7 +157,7 @@ export const ScheduleUnpublish = ({
             </Box>
 
             <Typography variant="body2" color="text.secondary">
-              {item?.scheduling?.isScheduled
+              {item?.publishing?.unpublishAt
                 ? `v${item?.web?.version} is scheduled to publish on ${scheduledLocalText} in ${tzLabel}.`
                 : `v${item?.web?.version} saved ${
                     item?.web?.createdAt
@@ -204,7 +174,7 @@ export const ScheduleUnpublish = ({
       </DialogTitle>
 
       <DialogContent data-cy="unpublishScheduleModal">
-        {item?.scheduling?.isScheduled ? (
+        {item?.publishing?.unpublishAt ? (
           <Alert severity="info" icon={<InfoRoundedIcon />}>
             This will enable the ability to schedule or publish other versions
             of this content item
@@ -254,13 +224,13 @@ export const ScheduleUnpublish = ({
           Cancel
         </Button>
 
-        {item?.scheduling?.isScheduled ? (
+        {item?.publishing?.unpublishAt ? (
           <Button
             data-cy="UnschedulePublishButton"
             variant="contained"
             color="warning"
             startIcon={<CalendarTodayRoundedIcon />}
-            onClick={handleCancelScheduleUnpublish}
+            onClick={() => handleSubmit()}
             loading={isLoading}
           >
             Cancel Scheduled Unpublish
@@ -274,7 +244,7 @@ export const ScheduleUnpublish = ({
               if (isSelectedDatetimePast) {
                 onUnpublishNow();
               } else {
-                handleScheduleUnpublish();
+                handleSubmit(true);
               }
             }}
             loading={isLoading}
