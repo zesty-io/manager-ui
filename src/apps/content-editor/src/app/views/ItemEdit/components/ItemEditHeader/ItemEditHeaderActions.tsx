@@ -713,6 +713,7 @@ export const ItemEditHeaderActions = ({
                 justifyContent="flex-start"
                 alignItems="center"
                 columnGap={1}
+                data-cy="ScheduledUnpublishIndicator"
                 sx={{
                   whiteSpace: "nowrap",
                   position: "absolute",

@@ -245,6 +245,56 @@ describe("Actions in content editor", () => {
     cy.getBySelector("ContentPublishedIndicator").should("exist");
   });
 
+  it("Schedules an item for unpublishing", () => {
+    const { items, publishItem, publishings } = awaitRequests();
+    cy.getBySelector("PublishMenuButton").should("exist").should("be.enabled");
+    cy.getBySelector("PublishMenuButton").trigger("click");
+
+    cy.getBySelector("publishingMenu")
+      .should("exist")
+      .within(() => {
+        cy.getBySelector("UnpublishScheduleButton").should("exist");
+        cy.getBySelector("UnpublishScheduleButton").trigger("click");
+      });
+
+    cy.getBySelector("ScheduleUnpublishModal")
+      .should("exist")
+      .within(() => {
+        cy.getBySelector("ScheduleUnpublishButton").should("exist");
+        cy.getBySelector("ScheduleUnpublishButton").trigger("click");
+      });
+
+    cy.wait(publishItem);
+    cy.wait(publishings);
+
+    cy.getBySelector("ScheduledUnpublishIndicator").should("exist");
+  });
+
+  it("Cancels a scheduled unpublish", () => {
+    const { items, publishItem, publishings } = awaitRequests();
+    cy.getBySelector("PublishMenuButton").should("exist").should("be.enabled");
+    cy.getBySelector("PublishMenuButton").trigger("click");
+
+    cy.getBySelector("publishingMenu")
+      .should("exist")
+      .within(() => {
+        cy.getBySelector("UnpublishScheduleButton").should("exist");
+        cy.getBySelector("UnpublishScheduleButton").trigger("click");
+      });
+
+    cy.getBySelector("ScheduleUnpublishModal")
+      .should("exist")
+      .within(() => {
+        cy.getBySelector("UnschedulePublishButton").should("exist");
+        cy.getBySelector("UnschedulePublishButton").trigger("click");
+      });
+
+    cy.wait(publishItem);
+    cy.wait(publishings);
+
+    cy.getBySelector("ScheduledUnpublishIndicator").should("not.exist");
+  });
+
   it("Unpublishes an item", () => {
     const { items, deletePublishedItem, publishings } = awaitRequests();
     cy.visit(
