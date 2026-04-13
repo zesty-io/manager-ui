@@ -145,10 +145,10 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
   const { data: roles } = useGetUsersRolesQuery();
   const { data: langMappings } = useGetLangsMappingQuery();
   const chatContainerRef = useRef<HTMLDivElement>(null);
-  const [animatedPromptZUIDs, setAnimatedPromptZUIDs] = useState<Set<string>>(
+  const [latestPromptZUIDs, setLatestPromptZUIDs] = useState<Set<string>>(
     new Set()
   );
-
+  const prevPromptZUIDsRef = useRef<Set<string>>(new Set());
   const zuidMatch = pathname.match(
     /^\/content\/([^/]+)\/([^/]+)(?:\/(meta|seo))?$/
   );
@@ -198,7 +198,6 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
 
   const responsesEndRef = useRef(null);
   const hasInitializedResponseSyncRef = useRef(false);
-  const prevPromptZUIDsRef = useRef<Set<string>>(new Set());
   const isEnabled =
     isInContentApp || isInContentMeta || isInBlocks || isInCodeApp;
 
@@ -218,37 +217,31 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
 
   // Auto-applies AI responses to the editor when available
   useEffect(() => {
-    if (!aiResponse || !autoApply) return;
+    if (!autoApply) return;
 
-    try {
-      const parsedResponse =
-        typeof aiResponse.data === "string"
-          ? parseResponse(aiResponse.data)
-          : aiResponse.data;
-      const responseArray = parsedResponse
-        ? Array.isArray(parsedResponse)
-          ? parsedResponse
-          : [parsedResponse]
-        : [];
+    const latestPromptZUID = latestPromptZUIDs.values().next().value;
 
-      responseArray.forEach((response) => {
-        if (response.type === "SET_VALUE") {
+    if (latestPromptZUID) {
+      const promptsArray = responses[latestPromptZUID];
+
+      promptsArray?.forEach((prompt) => {
+        if (prompt.type === "SET_VALUE") {
           enqueueAction({
-            type: response.type,
+            type: prompt.type,
             payload: {
-              refKey: response.payload.refKey,
-              value: response.payload.value,
+              refKey: prompt.payload.refKey,
+              value: prompt.payload.value,
             },
+          });
+          updatePromptApprovalStatus({
+            chatZUID: urlChatZUID,
+            promptZUID: latestPromptZUID,
+            approval: "1",
           });
         }
       });
-    } catch (error) {
-      console.error(
-        "Failed to auto-apply response due to an error while parsing AI response",
-        error
-      );
     }
-  }, [autoApply, aiResponse]);
+  }, [autoApply, latestPromptZUIDs, responses, urlChatZUID]);
 
   useEffect(() => {
     if (responsesEndRef.current) {
@@ -272,12 +265,12 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
     if (!hasInitializedResponseSyncRef.current) {
       hasInitializedResponseSyncRef.current = true;
       prevPromptZUIDsRef.current = new Set(currentPromptZUIDs);
-      setAnimatedPromptZUIDs(new Set());
+      setLatestPromptZUIDs(new Set());
     } else {
       const newPromptZUIDs = currentPromptZUIDs.filter(
         (promptZUID) => !prevPromptZUIDsRef.current.has(promptZUID)
       );
-      setAnimatedPromptZUIDs(new Set(newPromptZUIDs));
+      setLatestPromptZUIDs(new Set(newPromptZUIDs));
       prevPromptZUIDsRef.current = new Set(currentPromptZUIDs);
     }
 
@@ -375,43 +368,6 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
     },
     [geminiGenerate, urlChatZUID]
   );
-
-  const handleStartNewChatSession = useCallback(() => {
-    const userRole = roles?.find((role) => role.ZUID === user.ZUID);
-
-    if (user?.ZUID && userRole?.role?.ZUID) {
-      createNewChatSession({
-        userZUID: user.ZUID,
-        roleZUID: userRole?.role?.ZUID,
-      })
-        .unwrap()
-        .then((response: any) => {
-          if (response?.data?.chatZuid) {
-            setUrlChatZUID(response?.data?.chatZuid);
-          }
-          hasInitializedResponseSyncRef.current = false;
-          prevPromptZUIDsRef.current = new Set();
-          setAnimatedPromptZUIDs(new Set());
-          setComposerSeed("");
-          setResponses({});
-        })
-        .catch(() => {
-          dispatch(
-            notify({
-              message: "Failed to create a new chat session",
-              kind: "error",
-            })
-          );
-        });
-    } else {
-      dispatch(
-        notify({
-          message: "Failed to create a new chat session",
-          kind: "error",
-        })
-      );
-    }
-  }, [createNewChatSession, dispatch, roles, setUrlChatZUID, user?.ZUID]);
 
   return (
     <Box
@@ -539,7 +495,7 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
             {Object.entries(responses).map(([promptZUID, promptResponses]) => {
               return promptResponses.map((response, responseIndex) => {
                 const shouldAnimate =
-                  animatedPromptZUIDs.has(promptZUID) &&
+                  latestPromptZUIDs.has(promptZUID) &&
                   response.type !== "USER_INPUT";
 
                 if (response.type === "USER_INPUT") {
