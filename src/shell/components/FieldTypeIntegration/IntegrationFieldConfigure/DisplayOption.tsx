@@ -65,7 +65,7 @@ const DisplayOption = ({
                   alignItems: "flex-start",
                 }}
               >
-                {["shopify", "youtube", "mux", "classy"]?.includes(type) && (
+                {["shopify", "youtube", "mux", "classy"].includes(type) && (
                   <Avatar
                     src={`/images/${type}Icon.svg`}
                     variant="square"

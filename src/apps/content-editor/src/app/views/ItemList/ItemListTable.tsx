@@ -270,7 +270,7 @@ const fieldTypeColumnConfigMap = {
           alignItems="center"
         >
           <Typography variant="body2" noWrap>
-            {params.value?.toUpperCase()}
+            {params.value}
           </Typography>
         </Box>
       ),

@@ -196,7 +196,7 @@ const ConfigureDisplayOptions = ({
           color="primary"
           sx={{
             p: 1,
-            borderRadius: "20px",
+            borderRadius: 5,
             bgcolor: "deepOrange.50",
             width: 40,
             height: 40,

@@ -105,12 +105,12 @@ const KeyPathSelector = ({
                 </Typography>
               </Typography>
 
-              <Box
+              <Typography
                 component="span"
+                variant="caption"
                 sx={{
                   flexShrink: 0,
                   borderRadius: 1,
-                  fontSize: "12px",
                   bgcolor: `${typeColor}.50`,
                   color: `${typeColor}.600`,
                   py: 0,
@@ -118,7 +118,7 @@ const KeyPathSelector = ({
                 }}
               >
                 {valueType}
-              </Box>
+              </Typography>
             </Box>
           </li>
         );

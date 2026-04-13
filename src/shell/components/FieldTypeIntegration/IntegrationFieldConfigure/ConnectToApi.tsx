@@ -29,6 +29,7 @@ import { FormWrapper, FieldWrapper } from "../components/Wrappers";
 import { IntegrationRequestHeaders } from "../../../services/types";
 import { validateUrl } from "../../../../utility/validateUrl";
 import useIntegrationField from "../useIntegrationField";
+import { v4 as uuidv4 } from "uuid";
 
 const CONNECTION_STATUSES: {
   [key: string]: {
@@ -104,12 +105,12 @@ const ConnectToApi = ({
     Record<string, { key: string; value: string }>
   >(() => {
     if (!headers || Object.keys(headers).length === 0) {
-      const id = Date.now().toString();
+      const id = uuidv4();
       return { [id]: { key: "", value: "" } };
     }
 
     return Object.entries(headers).reduce((acc, [key, value]) => {
-      const id = Date.now() + Math.random().toString(36).substr(2, 9);
+      const id = uuidv4();
       acc[id] = { key, value: String(value) };
       return acc;
     }, {} as Record<string, { key: string; value: string }>);

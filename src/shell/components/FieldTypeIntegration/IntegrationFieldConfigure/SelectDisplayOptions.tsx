@@ -277,11 +277,7 @@ const SelectDisplayOptions = ({
       </DialogContent>
       <DialogActions
         sx={{
-          p: "20px",
           flexGrow: 0,
-          height: "76px",
-          minHeight: "76px",
-          maxHeight: "76px",
           borderTop: "1px solid",
           borderColor: "border",
         }}
