@@ -702,6 +702,7 @@ export type WebFont = {
 };
 
 export type GeminiResponse = {
+  chatZuid?: string;
   data: string | { data: any };
   message: string;
   tools: any[];

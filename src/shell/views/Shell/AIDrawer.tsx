@@ -19,7 +19,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
-import { memo, useCallback, useEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   useGeminiGenerationMutation,
   useGetChatSessionLogQuery,
@@ -194,18 +194,27 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
   );
   const [createNewChatSession, { isLoading: isCreatingNewChatSession }] =
     useCreateNewChatSessionMutation();
-  const [
-    updatePromptApprovalStatus,
-    { isLoading: isUpdatingPromptApprovalStatus },
-  ] = useUpdatePromptApprovalStatusMutation();
+  const [updatePromptApprovalStatus] = useUpdatePromptApprovalStatusMutation();
 
   const responsesEndRef = useRef(null);
-  const hasAttemptedInitialSessionRef = useRef(false);
-  const lastFailedChatSessionZUIDRef = useRef<string | null>(null);
   const hasInitializedResponseSyncRef = useRef(false);
   const prevPromptZUIDsRef = useRef<Set<string>>(new Set());
   const isEnabled =
     isInContentApp || isInContentMeta || isInBlocks || isInCodeApp;
+
+  const userRole = useMemo(
+    () => roles?.find((role) => role.ZUID === user.ZUID),
+    [roles, user.ZUID]
+  );
+
+  // Sets the chatZUID if there already isn't one or it doesn't match the response's chatZUID
+  useEffect(() => {
+    if (!aiResponse) return;
+
+    if (aiResponse.chatZuid && aiResponse.chatZuid !== urlChatZUID) {
+      setUrlChatZUID(aiResponse.chatZuid);
+    }
+  }, [urlChatZUID, aiResponse]);
 
   // Auto-applies AI responses to the editor when available
   useEffect(() => {
@@ -247,53 +256,7 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
     }
   }, [responses]);
 
-  // Starts a new chat session if the current url doesn't have
-  // a chatZUID associated with it yet
-  useEffect(() => {
-    if (
-      !isEnabled ||
-      !open ||
-      urlChatZUID ||
-      hasAttemptedInitialSessionRef.current
-    ) {
-      return;
-    }
-
-    hasAttemptedInitialSessionRef.current = true;
-    if (!urlChatZUID) {
-      handleStartNewChatSession();
-    }
-  }, [open, urlChatZUID, isEnabled]);
-
-  // Attempts to start a new chat session when the api call fails
-  // due to an invalid chatZUID
-  useEffect(() => {
-    if (
-      !isEnabled ||
-      !open ||
-      !urlChatZUID ||
-      !isChatSessionLogError ||
-      isCreatingNewChatSession
-    ) {
-      return;
-    }
-
-    if (lastFailedChatSessionZUIDRef.current === urlChatZUID) {
-      return;
-    }
-
-    lastFailedChatSessionZUIDRef.current = urlChatZUID;
-    handleStartNewChatSession();
-  }, [
-    open,
-    urlChatZUID,
-    isChatSessionLogError,
-    isCreatingNewChatSession,
-    roles,
-    user?.ZUID,
-    isEnabled,
-  ]);
-
+  // Maps the chat session log to a normalized format for rendering
   useEffect(() => {
     if (!open || isLoadingChatSessionLog) {
       return;
@@ -323,7 +286,7 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
 
   const handlePrompt = useCallback(
     (newPrompt: string) => {
-      if (!newPrompt?.trim()) {
+      if (!newPrompt?.trim() || !userRole?.ZUID) {
         return;
       }
 
@@ -349,8 +312,10 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
         fields:
           getRefRegistry()?.["code-editor"]?.context()?.fields || undefined,
         temperature,
-        chatZuid: urlChatZUID,
         url: window.location.href,
+        roleZuid: userRole.ZUID,
+        // This tells the /client endpoint whether to generate a new chat session or use an existing one
+        ...(urlChatZUID && { chatZuid: urlChatZUID }),
       });
       setResponses((prev) => ({
         ...prev,
@@ -372,6 +337,7 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
       selectedLanguage.value,
       selectedTone.value,
       urlChatZUID,
+      userRole,
     ]
   );
 
@@ -551,7 +517,10 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
                   data-cy="AIDrawerClearChat"
                   size="small"
                   color="error"
-                  onClick={handleStartNewChatSession}
+                  onClick={() => {
+                    setUrlChatZUID(null);
+                    setResponses({});
+                  }}
                 >
                   <NotInterestedRounded sx={{ fontSize: 16 }} />
                 </IconButton>
