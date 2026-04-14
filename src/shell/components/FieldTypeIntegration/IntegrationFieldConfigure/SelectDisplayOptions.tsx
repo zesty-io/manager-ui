@@ -277,9 +277,7 @@ const SelectDisplayOptions = ({
       </DialogContent>
       <DialogActions
         sx={{
-          flexGrow: 0,
-          borderTop: "1px solid",
-          borderColor: "border",
+          p: 2,
         }}
       >
         <Button variant="outlined" color="inherit" onClick={closeForm}>

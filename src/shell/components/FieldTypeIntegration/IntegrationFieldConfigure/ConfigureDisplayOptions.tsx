@@ -425,7 +425,11 @@ const ConfigureDisplayOptions = ({
         </Box>
       </DialogContent>
 
-      <DialogActions sx={{ p: 2, height: 76, minHeight: 76 }}>
+      <DialogActions
+        sx={{
+          p: 2,
+        }}
+      >
         <Button
           variant="outlined"
           color="inherit"

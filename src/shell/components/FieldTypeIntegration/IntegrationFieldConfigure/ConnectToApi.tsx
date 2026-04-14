@@ -160,7 +160,7 @@ const ConnectToApi = ({
           color="primary"
           sx={{
             padding: 1,
-            borderRadius: "20px",
+            borderRadius: 5,
             backgroundColor: "deepOrange.50",
             display: "block",
             width: "40px",
