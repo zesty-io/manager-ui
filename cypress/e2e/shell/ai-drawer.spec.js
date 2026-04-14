@@ -12,7 +12,7 @@ describe("AI drawer", () => {
     cy.deleteModel(Cypress.env("modelZUID"));
   });
 
-  it.skip("should only be available to the content, code and blocks app", () => {
+  it("should only be available to the content, code and blocks app", () => {
     cy.visit("/launchpad");
     cy.getBySelector("AIDrawerToggle").click();
     cy.getBySelector("AIDrawerDisabled").should("not.exist");
@@ -52,14 +52,11 @@ describe("AI drawer", () => {
 
     const prompt = "Hello world";
 
-    cy.intercept("POST", "**/chats*").as("createChat");
     cy.intercept("GET", "**/chats/*?*").as("getChat");
     cy.intercept("POST", "**/client").as("postClient");
 
     cy.getBySelector("AIDrawerToggle").click();
     cy.getBySelector("AIDrawerEnabled").should("exist");
-    cy.wait("@createChat");
-    cy.wait("@getChat");
     cy.wait(500);
     cy.getBySelector("AIDrawerComposer").type(prompt);
     cy.getBySelector("AIDrawerSubmitPrompt").click();
@@ -158,33 +155,19 @@ describe("AI drawer", () => {
   });
 
   it("should be able to create a new chat session", () => {
-    cy.intercept("POST", "**/chats*").as("createChat");
-    cy.intercept("GET", "**/chats/*?*").as("getChat");
-
     cy.getBySelector("AIDrawerClearChat").click();
-    cy.wait("@createChat");
-    cy.wait("@getChat");
     cy.getBySelector("AIDrawerUserInput").should("not.exist");
   });
 
   it("should be able to edit code", () => {
-    cy.intercept("POST", "**/chats*").as("createChat");
     cy.intercept("GET", "**/chats/*?*").as("getChat");
     cy.intercept("POST", "**/client").as("postClient");
     cy.intercept("GET", "**/v1/web/views/*").as("getView");
 
     cy.getBySelector("ContentItemMoreButton").click();
     cy.getBySelector("EditTemplate").click();
-    cy.get("body").then((body) => {
-      const dontSaveBtn = body.find("button").contains("Don't Save");
-
-      if (dontSaveBtn.length) {
-        cy.wrap(dontSaveBtn).click();
-      }
-    });
+    cy.contains("Don't Save").click();
     cy.wait("@getView");
-    cy.wait("@createChat");
-    cy.wait("@getChat");
     cy.getBySelector("AIDrawerEnabled").should("exist");
     cy.getBySelector("AIDrawerComposer").type(
       "Generate a code with an H1 wrapping the page_title field"
