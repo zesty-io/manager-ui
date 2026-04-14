@@ -18,12 +18,11 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   useGeminiGenerationMutation,
   useGetChatSessionLogQuery,
-  useCreateNewChatSessionMutation,
   useUpdatePromptApprovalStatusMutation,
 } from "../../services/mcp";
 import { enqueueAction } from "../../../engine/queue";
@@ -49,7 +48,6 @@ import geminiLogo from "../../../../public/images/geminiLogo.svg";
 import { AppState } from "shell/store/types";
 import { useGetUsersRolesQuery } from "shell/services/accounts";
 import { ChatPrompt } from "shell/services/types";
-import { notify } from "shell/store/notifications";
 
 const parseResponse = (rawResponse: string) => {
   if (!rawResponse) return;
@@ -136,7 +134,6 @@ type AIDrawerProps = {
 };
 export const AIDrawer = ({ open }: AIDrawerProps) => {
   const { pathname } = useLocation();
-  const dispatch = useDispatch();
   const isInContentApp = /^\/content\/[^/]+\/[^/]+$/.test(pathname);
   const isInContentMeta = /^\/content\/[^/]+\/[^/]+\/meta$/.test(pathname);
   const isInBlocks = /^\/blocks\/[^/]+\/[^/]+\/?$/.test(pathname);
@@ -156,10 +153,10 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
     ? { modelZUID: zuidMatch[1], itemZUID: zuidMatch[2] }
     : { modelZUID: undefined, itemZUID: undefined };
 
-  const [urlChatZUID, setUrlChatZUID] = useLocalStorage<string | null>(
-    `ai-drawer-${pathname}-chatZUID`,
-    null
-  );
+  const chatStorageKey = `ai-drawer-${pathname}-chatZUID`;
+  const [urlChatZUID, setUrlChatZUID, removeUrlChatZUID] = useLocalStorage<
+    string | undefined
+  >(chatStorageKey, undefined);
   const [responses, setResponses] = useState<Record<string, any[]>>({});
   const [composerSeed, setComposerSeed] = useState("");
   const [autoApply, setAutoApply] = useState(false);
@@ -192,8 +189,6 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
       skip: !urlChatZUID || !user.ZUID || !open,
     }
   );
-  const [createNewChatSession, { isLoading: isCreatingNewChatSession }] =
-    useCreateNewChatSessionMutation();
   const [updatePromptApprovalStatus] = useUpdatePromptApprovalStatusMutation();
 
   const responsesEndRef = useRef(null);
@@ -206,14 +201,15 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
     [roles, user.ZUID]
   );
 
-  // Sets the chatZUID if there already isn't one or it doesn't match the response's chatZUID
+  // Sync the active chat ZUID from the latest generation response only when that
+  // response changes. This prevents restoring a cleared chat from stale mutation data.
   useEffect(() => {
-    if (!aiResponse) return;
+    if (!aiResponse?.chatZuid) return;
 
-    if (aiResponse.chatZuid && aiResponse.chatZuid !== urlChatZUID) {
-      setUrlChatZUID(aiResponse.chatZuid);
-    }
-  }, [urlChatZUID, aiResponse]);
+    setUrlChatZUID((prev) =>
+      prev === aiResponse.chatZuid ? prev : aiResponse.chatZuid
+    );
+  }, [aiResponse, setUrlChatZUID]);
 
   // Auto-applies AI responses to the editor when available
   useEffect(() => {
@@ -474,7 +470,7 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
                   size="small"
                   color="error"
                   onClick={() => {
-                    setUrlChatZUID(null);
+                    removeUrlChatZUID();
                     setResponses({});
                   }}
                 >
@@ -664,9 +660,7 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
           </Box>
           <PromptComposer
             seed={composerSeed}
-            disabled={
-              isLoading || isLoadingChatSessionLog || isCreatingNewChatSession
-            }
+            disabled={isLoading || isLoadingChatSessionLog}
             onSubmit={handlePrompt}
             onGenerateSuggestions={handleGenerateSuggestions}
           />
@@ -861,6 +855,7 @@ const PromptComposer = memo(
     );
   }
 );
+PromptComposer.displayName = "PromptComposer";
 
 type AnimatedTextProps = {
   text: string;
