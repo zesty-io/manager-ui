@@ -843,7 +843,7 @@ const PromptComposer = memo(
             variant="contained"
             onClick={submitDraft}
             sx={{
-              borderRadius: "24px",
+              borderRadius: "50%",
               padding: 0.5,
               minWidth: 0,
             }}
