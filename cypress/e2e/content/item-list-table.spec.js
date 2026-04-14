@@ -20,7 +20,7 @@ describe("Content item list table", () => {
     });
 
     cy.getBySelector("sortByFilter_default").click();
-    cy.getBySelector(`"sort:text"`).click();
+    cy.getBySelector("sort:text").click();
     cy.getBySelector("listItemTable")
       .find('[data-cy="itemListRow"]')
       .first()
