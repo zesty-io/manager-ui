@@ -1,3 +1,5 @@
+const AI_CLIENT_TIMEOUT = { timeout: 30000 };
+
 describe("AI drawer", () => {
   before(() => {
     cy.task("seed:content", "fixtures/ai-drawer.json").then(
@@ -60,7 +62,7 @@ describe("AI drawer", () => {
     cy.wait(500);
     cy.getBySelector("AIDrawerComposer").type(prompt);
     cy.getBySelector("AIDrawerSubmitPrompt").click();
-    cy.wait("@postClient");
+    cy.wait("@postClient", AI_CLIENT_TIMEOUT);
     cy.wait("@getChat");
     cy.getBySelector("AIDrawerUserInput").should("contain", prompt);
     cy.getBySelector("AIDrawerSystemOutput").should("have.length", 1);
@@ -78,7 +80,7 @@ describe("AI drawer", () => {
       "Generate a sensational title for the page_title field"
     );
     cy.getBySelector("AIDrawerSubmitPrompt").click();
-    cy.wait("@postClient");
+    cy.wait("@postClient", AI_CLIENT_TIMEOUT);
     cy.wait("@getChat");
     cy.getBySelector("AIDrawerSetValue").first().should("exist").click();
     cy.getBySelector("field:page_title")
@@ -95,7 +97,7 @@ describe("AI drawer", () => {
       "Generate an image of the alps for the page_image field"
     );
     cy.getBySelector("AIDrawerSubmitPrompt").click();
-    cy.wait("@postClient");
+    cy.wait("@postClient", AI_CLIENT_TIMEOUT);
     cy.wait("@getChat");
     cy.getBySelector("AIDrawerSetValue").eq(1).should("exist").click();
     cy.getBySelector("field:page_image")
@@ -108,7 +110,7 @@ describe("AI drawer", () => {
     cy.intercept("POST", "**/client").as("postClient");
 
     cy.getBySelector("AIDrawerGenerateSuggestions").click();
-    cy.wait("@postClient");
+    cy.wait("@postClient", AI_CLIENT_TIMEOUT);
     cy.wait("@getChat");
     cy.getBySelector("AIDrawerSystemSuggestion").should("have.length", 3);
     cy.getBySelector("AIDrawerSystemSuggestion").first().click();
@@ -127,7 +129,7 @@ describe("AI drawer", () => {
       "{selectall}{del}Generate a block for a dog profile"
     );
     cy.getBySelector("AIDrawerSubmitPrompt").click();
-    cy.wait("@postClient");
+    cy.wait("@postClient", AI_CLIENT_TIMEOUT);
     cy.wait("@getChat");
     cy.getBySelector("AIDrawerNavigate").should("exist");
   });
@@ -146,7 +148,7 @@ describe("AI drawer", () => {
       "Generate a title for people who love to fish for the page_title field"
     );
     cy.getBySelector("AIDrawerSubmitPrompt").click();
-    cy.wait("@postClient");
+    cy.wait("@postClient", AI_CLIENT_TIMEOUT);
     cy.wait("@getChat");
     cy.getBySelector("field:page_title")
       .find("input")
@@ -173,7 +175,7 @@ describe("AI drawer", () => {
       "Generate a code with an H1 wrapping the page_title field"
     );
     cy.getBySelector("AIDrawerSubmitPrompt").click();
-    cy.wait("@postClient");
+    cy.wait("@postClient", AI_CLIENT_TIMEOUT);
     cy.wait("@getChat");
     cy.getBySelector("AIDrawerSetValue").should("exist");
   });
