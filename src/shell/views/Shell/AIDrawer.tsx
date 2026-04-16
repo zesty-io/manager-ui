@@ -156,7 +156,7 @@ export const AIDrawer: FC<AIDrawerProps> = ({ onClose }) => {
           });
 
           setAppliedResponsesLS([
-            ...appliedResponsesLS,
+            ...(appliedResponsesLS || []),
             `${response?.type}-${response?.payload?.refKey}-${response?.payload?.value}`,
           ]);
         }
@@ -221,7 +221,7 @@ export const AIDrawer: FC<AIDrawerProps> = ({ onClose }) => {
         position: "relative",
         overflow: "hidden",
         zIndex: 1,
-        marginTop: "-40px",
+        marginTop: -5,
         bgcolor: "background.paper",
       }}
     >
@@ -471,7 +471,7 @@ export const AIDrawer: FC<AIDrawerProps> = ({ onClose }) => {
                                 },
                               });
                               setAppliedResponsesLS([
-                                ...appliedResponsesLS,
+                                ...(appliedResponsesLS || []),
                                 responseId,
                               ]);
                             }}
@@ -512,38 +512,36 @@ export const AIDrawer: FC<AIDrawerProps> = ({ onClose }) => {
               justifyContent="space-between"
               rowGap={1}
             >
-              {!responses?.length && !responsesLS?.length && (
-                <Button
-                  size="small"
-                  variant="outlined"
-                  fullWidth
-                  onClick={() => {
-                    geminiGenerate({
-                      prompt:
-                        prompt || "Generate suggestions for my content fields",
-                      systemInstruction: suggestionSystemInstruction(
-                        Object.keys(getRefRegistry() || {}),
-                        getRefRegistry()
-                      ),
-                      temperature: 0.5,
-                    });
-                    setResponses((prev) => [
-                      ...prev,
-                      {
-                        type: "USER_INPUT",
-                        payload: {
-                          value: prompt
-                            ? `Generate suggestions: ${prompt}`
-                            : "Generate suggestions",
-                        },
+              <Button
+                size="small"
+                variant="outlined"
+                fullWidth
+                onClick={() => {
+                  geminiGenerate({
+                    prompt:
+                      prompt || "Generate suggestions for my content fields",
+                    systemInstruction: suggestionSystemInstruction(
+                      Object.keys(getRefRegistry() || {}),
+                      getRefRegistry()
+                    ),
+                    temperature: 0.5,
+                  });
+                  setResponses((prev) => [
+                    ...prev,
+                    {
+                      type: "USER_INPUT",
+                      payload: {
+                        value: prompt
+                          ? `Generate suggestions: ${prompt}`
+                          : "Generate suggestions",
                       },
-                    ]);
-                    setPrompt("");
-                  }}
-                >
-                  Generate Suggestions
-                </Button>
-              )}
+                    },
+                  ]);
+                  setPrompt("");
+                }}
+              >
+                Generate Suggestions
+              </Button>
 
               <TextField
                 inputRef={promptInputRef}
@@ -594,7 +592,7 @@ export const AIDrawer: FC<AIDrawerProps> = ({ onClose }) => {
                 onClick={() => handlePrompt(prompt)}
                 disabled={promptIsEmpty}
                 sx={{
-                  borderRadius: "24px",
+                  borderRadius: 6,
                   padding: 0.5,
                   minWidth: 0,
                   backgroundColor: promptIsEmpty
