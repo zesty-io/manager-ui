@@ -304,6 +304,10 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
 
   const usedColors = labels.map((label) => label.color);
 
+  const ownerRoleZUID = rolesMenuItems?.find(
+    (role) => role?.label?.toLocaleLowerCase() === "owner"
+  )?.value;
+
   const transformRoleValues = (value: string): string[] =>
     value ? value.split(",") : [];
 
@@ -458,7 +462,11 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
               id="workflows-create-status-label-addPermissionRoles-select"
               name="addPermissionRoles"
               listData={rolesMenuItems}
-              defaultValue={values?.addPermissionRoles?.join(",")}
+              defaultValue={
+                !values?.name
+                  ? ownerRoleZUID
+                  : values?.addPermissionRoles?.join(",")
+              }
             />
           </FormInputFieldWrapper>
           <FormInputFieldWrapper
@@ -469,7 +477,11 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
               id="workflows-create-status-label-removePermissionRoles-select"
               name="removePermissionRoles"
               listData={rolesMenuItems}
-              defaultValue={values?.removePermissionRoles?.join(",")}
+              defaultValue={
+                !values?.name
+                  ? ownerRoleZUID
+                  : values?.removePermissionRoles?.join(",")
+              }
             />
           </FormInputFieldWrapper>
           <FormControlLabel
