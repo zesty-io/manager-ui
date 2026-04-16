@@ -257,11 +257,11 @@ describe("Actions in content editor", () => {
         cy.getBySelector("UnpublishScheduleButton").trigger("click");
       });
 
-    cy.getBySelector("ScheduleUnpublishModal")
+    cy.getBySelector("SchedulePublishModal")
       .should("exist")
       .within(() => {
-        cy.getBySelector("ScheduleUnpublishButton").should("exist");
-        cy.getBySelector("ScheduleUnpublishButton").trigger("click");
+        cy.getBySelector("SchedulePublishButton").should("exist");
+        cy.getBySelector("SchedulePublishButton").trigger("click");
       });
 
     cy.wait(publishItem);
@@ -282,7 +282,7 @@ describe("Actions in content editor", () => {
         cy.getBySelector("UnpublishScheduleButton").trigger("click");
       });
 
-    cy.getBySelector("ScheduleUnpublishModal")
+    cy.getBySelector("SchedulePublishModal")
       .should("exist")
       .within(() => {
         cy.getBySelector("UnschedulePublishButton").should("exist");

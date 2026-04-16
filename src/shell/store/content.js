@@ -876,9 +876,17 @@ export function publish(modelZUID, itemZUID, data, meta = {}) {
         }
       })
       .then(() => {
-        const message = data.publishAt
-          ? `Scheduled ${title} to publish on ${meta.localTime} in the ${meta.localTimezone} timezone`
-          : `Published ${title} now`;
+        const message =
+          (!!data.publishAt && data.publishAt !== "now") ||
+          (data.publishAt === "now" &&
+            !!data?.unpublishAt &&
+            data?.unpublishAt !== "never")
+            ? `Scheduled ${title} to ${
+                data.publishAt === "now" && data?.unpublishAt !== "never"
+                  ? "unpublish"
+                  : "publish"
+              } on ${meta.localTime} in the ${meta.localTimezone} timezone`
+            : `Published ${title} now`;
 
         return dispatch(
           notify({
@@ -962,69 +970,6 @@ export function unpublish(modelZUID, itemZUID, publishZUID, options = {}) {
             kind: "error",
           })
         );
-      });
-  };
-}
-
-export function scheduleUnpublish(modelZUID, itemZUID, data, meta = {}) {
-  return (dispatch, getState) => {
-    const item = getState().content[itemZUID];
-    let title;
-
-    if (item) {
-      title = `"${item.web.metaTitle || item.web.metaLinkText}" version ${
-        data.version
-      }`;
-    } else {
-      title = `item ${itemZUID} version ${data.version}`;
-    }
-
-    return request(
-      `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items/${itemZUID}/publishings`,
-      {
-        method: "POST",
-        json: true,
-        body: {
-          ...data,
-        },
-      }
-    )
-      .then((res) => {
-        if (res.status >= 400) {
-          return Promise.reject(new Error(res.error));
-        }
-      })
-      .then(() => {
-        if (!!data.unpublishAt && data.unpublishAt !== "never") {
-          const message = `${title} to unpublish on ${meta.localTime} in the ${meta.localTimezone} timezone`;
-
-          return dispatch(
-            notify({
-              message,
-              kind: "save",
-            })
-          );
-        }
-      })
-      .then(() => {
-        dispatch(
-          instanceApi.util.invalidateTags([
-            { type: "ItemPublishing", itemZUID },
-          ])
-        );
-        return dispatch(fetchItemPublishing(modelZUID, itemZUID));
-      })
-      .catch((err) => {
-        const message = data.publishAt
-          ? `Error scheduling ${title}`
-          : `Error publishing ${title}`;
-        dispatch(
-          notify({
-            message,
-            kind: "error",
-          })
-        );
-        throw err;
       });
   };
 }

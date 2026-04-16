@@ -64,7 +64,6 @@ import {
   PUBLISH_ATTEMPT_WITHOUT_ALLOW_PUBLISH_STATUS,
   SCHEDULE_PUBLISH_ATTEMPT_WITHOUT_ALLOW_PUBLISH_STATUS,
 } from "../../../../../../../../amplitude-events";
-import { ScheduleUnpublish } from "shell/components/ScheduleUnpublish";
 import ScheduleRoundedIcon from "@mui/icons-material/ScheduleRounded";
 
 const ITEM_STATES = {
@@ -106,8 +105,6 @@ export const ItemEditHeaderActions = ({
   const [unpublishDialogOpen, setUnpublishDialogOpen] = useState(false);
   const [scheduledPublishDialogOpen, setScheduledPublishDialogOpen] =
     useState(false);
-  const [scheduledUnpublishDialogOpen, setScheduledUnpublishDialogOpen] =
-    useState(false);
   const [scheduleAfterSave, setScheduleAfterSave] = useState(false);
   const [publishAfterUnschedule, setPublishAfterUnschedule] = useState(false);
   const [isConfirmPublishModalOpen, setIsConfirmPublishModalOpen] =
@@ -123,6 +120,10 @@ export const ItemEditHeaderActions = ({
   );
   const hasScheduledUnpublish =
     !!item?.publishing?.publishAt && !!item?.publishing?.unpublishAt;
+
+  const [scheduledAction, setScheduledAction] = useState<
+    "publish" | "unpublish" | null
+  >(null);
 
   const items = useSelector((state: AppState) => state.content);
   const model = useSelector(
@@ -838,9 +839,8 @@ export const ItemEditHeaderActions = ({
         setPublishAfterSave={setPublishAfterSave}
         setScheduleAfterSave={setScheduleAfterSave}
         setUnpublishDialogOpen={setUnpublishDialogOpen}
-        setScheduleUnpublishDialogOpen={setScheduledUnpublishDialogOpen}
         hasScheduledUnpublish={hasScheduledUnpublish}
-        setScheduledPublishDialogOpen={(open) => {
+        setScheduledPublishDialogOpen={(open, action = "publish") => {
           if (!allowPublish) {
             dispatch(
               notify({
@@ -853,6 +853,7 @@ export const ItemEditHeaderActions = ({
             );
           } else {
             setScheduledPublishDialogOpen(open);
+            setScheduledAction(action);
           }
         }}
         setPublishAfterUnschedule={() => {
@@ -886,18 +887,7 @@ export const ItemEditHeaderActions = ({
               setIsConfirmPublishModalOpen(true);
             }
           }}
-        />
-      )}
-      {scheduledUnpublishDialogOpen && (
-        <ScheduleUnpublish
-          item={item}
-          onClose={() => {
-            setScheduledUnpublishDialogOpen(false);
-          }}
-          onUnpublishNow={() => {
-            handleUnpublish();
-            setScheduledUnpublishDialogOpen(false);
-          }}
+          scheduledAction={scheduledAction}
         />
       )}
       {isConfirmPublishModalOpen && (
@@ -967,8 +957,10 @@ type PublishingMenuProps = {
   setPublishAfterSave: (value: boolean) => void;
   setScheduleAfterSave: (value: boolean) => void;
   setUnpublishDialogOpen: (value: boolean) => void;
-  setScheduledPublishDialogOpen: (value: boolean) => void;
-  setScheduleUnpublishDialogOpen: (value: boolean) => void;
+  setScheduledPublishDialogOpen: (
+    value: boolean,
+    action?: "publish" | "unpublish" | null
+  ) => void;
   setPublishAfterUnschedule: () => void;
   handlePublish: () => void;
   hasScheduledUnpublish?: boolean;
@@ -985,7 +977,6 @@ const PublishingMenu = ({
   setScheduleAfterSave,
   setUnpublishDialogOpen,
   setScheduledPublishDialogOpen,
-  setScheduleUnpublishDialogOpen,
   setPublishAfterUnschedule,
   handlePublish,
 }: PublishingMenuProps) => {
@@ -1057,13 +1048,13 @@ const PublishingMenu = ({
                 onSave();
                 break;
               case ITEM_STATES.scheduled:
-                setScheduledPublishDialogOpen(true);
+                setScheduledPublishDialogOpen(true, "publish");
                 break;
               case ITEM_STATES.published:
-                console.log("schedule unpublish");
+                setScheduledPublishDialogOpen(true, "unpublish");
                 break;
               case ITEM_STATES.draft:
-                setScheduledPublishDialogOpen(true);
+                setScheduledPublishDialogOpen(true, "publish");
                 break;
             }
             onClose();
@@ -1085,7 +1076,7 @@ const PublishingMenu = ({
       {itemState === ITEM_STATES.published && (
         <MenuItem
           onClick={() => {
-            setScheduleUnpublishDialogOpen(true);
+            setScheduledPublishDialogOpen(true, "unpublish");
             onClose();
           }}
           data-cy="UnpublishScheduleButton"

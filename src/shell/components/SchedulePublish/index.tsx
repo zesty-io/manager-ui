@@ -31,6 +31,7 @@ type SchedulePublishProps = {
   onPublishNow: () => void;
   onScheduleSuccess?: () => void;
   onUnscheduleSuccess?: () => void;
+  scheduledAction?: "publish" | "unpublish" | null;
 };
 
 export const SchedulePublish = ({
@@ -39,6 +40,7 @@ export const SchedulePublish = ({
   onPublishNow,
   onScheduleSuccess,
   onUnscheduleSuccess,
+  scheduledAction,
 }: SchedulePublishProps) => {
   const dispatch = useDispatch();
   const { data: users } = useGetUsersQuery();
@@ -71,29 +73,32 @@ export const SchedulePublish = ({
     ? isBefore(selectedUtc, new Date())
     : false;
 
+  const isForUnpublish = scheduledAction === "unpublish";
+
+  // API value must be UTC "YYYY-MM-DD HH:mm:ss"
+  const publishAtUtcStr = formatInTimeZone(
+    selectedUtc,
+    "UTC",
+    "yyyy-MM-dd HH:mm:ss"
+  );
+
+  // Pretty local confirmation text in the chosen timezone
+  const localPretty = formatInTimeZone(
+    selectedUtc,
+    publishTimezone,
+    "MMMM do yyyy, 'at' h:mm a"
+  );
+
   const handleSchedulePublish = () => {
     setIsLoading(true);
-
-    // API value must be UTC "YYYY-MM-DD HH:mm:ss"
-    const publishAtUtcStr = formatInTimeZone(
-      selectedUtc,
-      "UTC",
-      "yyyy-MM-dd HH:mm:ss"
-    );
-
-    // Pretty local confirmation text in the chosen timezone
-    const localPretty = formatInTimeZone(
-      selectedUtc,
-      publishTimezone,
-      "MMMM do yyyy, 'at' h:mm a"
-    );
 
     dispatch(
       publish(
         item?.meta?.contentModelZUID,
         item?.meta?.ZUID,
         {
-          publishAt: publishAtUtcStr,
+          publishAt: isForUnpublish ? "now" : publishAtUtcStr,
+          unpublishAt: isForUnpublish ? publishAtUtcStr : "never",
           version: item?.meta?.version,
         },
         {
@@ -112,13 +117,32 @@ export const SchedulePublish = ({
   const handleUnschedulePublish = () => {
     setIsLoading(true);
 
-    dispatch(
-      unpublish(
+    let actionDispatch = null;
+
+    if (isForUnpublish) {
+      actionDispatch = publish(
+        item?.meta?.contentModelZUID,
+        item?.meta?.ZUID,
+        {
+          publishAt: "now",
+          unpublishAt: "never",
+          version: item?.meta?.version,
+        },
+        {
+          localTime: localPretty,
+          localTimezone: publishTimezone,
+        }
+      );
+    } else {
+      actionDispatch = unpublish(
         item?.meta?.contentModelZUID,
         item?.meta?.ZUID,
         item?.scheduling?.ZUID,
         { version: item?.scheduling?.version }
-      )
+      );
+    }
+    dispatch(
+      actionDispatch
       // @ts-expect-error untyped action
     ).finally(() => {
       setIsLoading(false);
@@ -138,6 +162,14 @@ export const SchedulePublish = ({
 
   const tzLabel =
     TIMEZONES.find((tz) => tz.id === guessedTz)?.label || guessedTz;
+
+  const publishHeader = item?.scheduling?.isScheduled
+    ? "Unschedule Publish:"
+    : "Schedule Publish:";
+
+  const unpublishHeader = item?.publishing?.unpublishAt
+    ? "Unschedule Unpublish:"
+    : "Schedule Unpublish:";
 
   return (
     <Dialog
@@ -159,7 +191,7 @@ export const SchedulePublish = ({
               alignItems: "center",
             }}
           >
-            {item?.scheduling?.isScheduled ? (
+            {item?.scheduling?.isScheduled || item?.publishing?.unpublishAt ? (
               <CalendarTodayRoundedIcon color="warning" />
             ) : (
               <ScheduleRoundedIcon color="warning" />
@@ -168,9 +200,7 @@ export const SchedulePublish = ({
           <Box>
             <Box mb={1}>
               <Typography variant="h5" display="inline" fontWeight={700}>
-                {item?.scheduling?.isScheduled
-                  ? "Unschedule Publish:"
-                  : "Schedule Publish:"}
+                {isForUnpublish ? unpublishHeader : publishHeader}
                 &nbsp;
               </Typography>
               <Typography variant="h5" display="inline">
@@ -179,8 +209,10 @@ export const SchedulePublish = ({
             </Box>
 
             <Typography variant="body2" color="text.secondary">
-              {item?.scheduling?.isScheduled
-                ? `v${item?.web?.version} is scheduled to publish on ${scheduledLocalText} in ${tzLabel}.`
+              {item?.scheduling?.isScheduled || item?.publishing?.unpublishAt
+                ? `v${item?.web?.version} is scheduled to ${
+                    isForUnpublish ? "unpublish" : "publish"
+                  } on ${scheduledLocalText} in ${tzLabel}.`
                 : `v${item?.web?.version} saved ${
                     item?.web?.createdAt
                       ? formatDistanceToNow(new Date(item.web.createdAt), {
@@ -196,7 +228,7 @@ export const SchedulePublish = ({
       </DialogTitle>
 
       <DialogContent data-cy="PublishScheduleModal">
-        {item?.scheduling?.isScheduled ? (
+        {item?.scheduling?.isScheduled || item?.publishing?.unpublishAt ? (
           <Alert severity="info" icon={<InfoRoundedIcon />}>
             This will enable the ability to schedule or publish other versions
             of this content item
@@ -204,7 +236,7 @@ export const SchedulePublish = ({
         ) : (
           <>
             <Typography variant="subtitle2" fontWeight={600} mb={0.5}>
-              Publish on
+              {`${isForUnpublish ? "Unpublish" : "Publish"} on`}
             </Typography>
             <FieldTypeDateTime
               disablePast
@@ -244,7 +276,7 @@ export const SchedulePublish = ({
           Cancel
         </Button>
 
-        {item?.scheduling?.isScheduled ? (
+        {item?.scheduling?.isScheduled || item?.publishing?.unpublishAt ? (
           <Button
             data-cy="UnschedulePublishButton"
             variant="contained"
@@ -253,7 +285,9 @@ export const SchedulePublish = ({
             onClick={handleUnschedulePublish}
             loading={isLoading}
           >
-            Unschedule Publish
+            {isForUnpublish
+              ? "Cancel Scheduled Unpublish"
+              : "Unschedule Publish"}
           </Button>
         ) : (
           <Button
@@ -269,7 +303,7 @@ export const SchedulePublish = ({
             }}
             loading={isLoading}
           >
-            Schedule Publish
+            {`Schedule ${isForUnpublish ? "Unpublish" : "Publish"}`}
           </Button>
         )}
       </DialogActions>
