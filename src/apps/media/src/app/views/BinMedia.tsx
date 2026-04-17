@@ -211,7 +211,7 @@ export const BinMedia = ({
                 currentBinId={id}
                 currentGroupId=""
                 sx={{
-                  overflowY: "scroll",
+                  overflowY: "auto",
                 }}
               >
                 {!isFilesFetching && !binFiles?.length && !binGroups?.length ? (
