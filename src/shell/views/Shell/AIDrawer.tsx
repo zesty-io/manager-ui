@@ -90,10 +90,9 @@ export const AIDrawer: FC<AIDrawerProps> = ({ onClose }) => {
   );
   const [responses, setResponses] = useState(responsesLS || []);
   const [prompt, setPrompt] = useState("");
-  const [appliedResponsesLS, setAppliedResponsesLS] = useLocalStorage<string[]>(
-    `ai-drawer-applied-responses-${pathname}`,
-    []
-  );
+  const [appliedResponsesLS, setAppliedResponsesLS] = useLocalStorage<
+    Record<string, number[]>
+  >(`ai-drawer-applied-responses`, { [pathname]: [] });
   const promptIsEmpty = isEmpty(prompt.trim());
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [autoApply, setAutoApply] = useState(false);
@@ -145,7 +144,7 @@ export const AIDrawer: FC<AIDrawerProps> = ({ onClose }) => {
 
       setResponses((prev) => [...prev, ...responsesArray]);
 
-      responsesArray.forEach((response) => {
+      responsesArray.forEach((response, index) => {
         if (autoApply && response.type === "SET_VALUE") {
           enqueueAction({
             type: response.type,
@@ -155,10 +154,13 @@ export const AIDrawer: FC<AIDrawerProps> = ({ onClose }) => {
             },
           });
 
-          setAppliedResponsesLS([
-            ...(appliedResponsesLS || []),
-            `${response?.type}-${response?.payload?.refKey}-${response?.payload?.value}`,
-          ]);
+          setAppliedResponsesLS({
+            ...appliedResponsesLS,
+            [pathname]: [
+              ...(appliedResponsesLS?.[pathname] || []),
+              responses?.length + index,
+            ],
+          });
         }
       });
     } catch (error) {
@@ -220,9 +222,9 @@ export const AIDrawer: FC<AIDrawerProps> = ({ onClose }) => {
         boxSizing: "border-box",
         position: "relative",
         overflow: "hidden",
-        zIndex: 1,
         marginTop: -5,
         bgcolor: "background.paper",
+        zIndex: (theme) => theme.zIndex.speedDial + 1,
       }}
     >
       {!isInContentApp && !isInContentMeta && !isInBlocks && !isInCodeApp && (
@@ -343,7 +345,6 @@ export const AIDrawer: FC<AIDrawerProps> = ({ onClose }) => {
                 }}
               >
                 {responses.map((response, index) => {
-                  const responseId: string = `${response?.type}-${response?.payload?.refKey}-${response?.payload?.value}`;
                   if (response.type === "USER_INPUT") {
                     return (
                       <Box
@@ -461,7 +462,9 @@ export const AIDrawer: FC<AIDrawerProps> = ({ onClose }) => {
                             size="xsmall"
                             variant="contained"
                             sx={{ ml: "auto", mt: 0.5 }}
-                            disabled={appliedResponsesLS?.includes(responseId)}
+                            disabled={appliedResponsesLS?.[pathname]?.includes(
+                              index
+                            )}
                             onClick={() => {
                               enqueueAction({
                                 type: response.type,
@@ -470,10 +473,13 @@ export const AIDrawer: FC<AIDrawerProps> = ({ onClose }) => {
                                   value: response.payload.value,
                                 },
                               });
-                              setAppliedResponsesLS([
-                                ...(appliedResponsesLS || []),
-                                responseId,
-                              ]);
+                              setAppliedResponsesLS({
+                                ...appliedResponsesLS,
+                                [pathname]: [
+                                  ...(appliedResponsesLS?.[pathname] || []),
+                                  index,
+                                ],
+                              });
                             }}
                             startIcon={<AutoFixHighRounded fontSize="small" />}
                           >
@@ -574,7 +580,10 @@ export const AIDrawer: FC<AIDrawerProps> = ({ onClose }) => {
                   onClick={() => {
                     setResponses([]);
                     setResponsesLS([]);
-                    setAppliedResponsesLS([]);
+                    setAppliedResponsesLS({
+                      ...appliedResponsesLS,
+                      [pathname]: [],
+                    });
                   }}
                 >
                   Clear Chat
