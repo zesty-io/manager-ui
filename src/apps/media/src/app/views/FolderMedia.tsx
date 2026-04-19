@@ -207,7 +207,7 @@ export const FolderMedia = ({
                 currentBinId={groupData?.bin_id}
                 currentGroupId={groupData?.id}
                 sx={{
-                  overflowY: "scroll",
+                  overflowY: "auto",
                 }}
               >
                 {!isFetching && !groupFiles?.length && !subgroups?.length ? (
