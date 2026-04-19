@@ -1,4 +1,6 @@
-const AI_CLIENT_TIMEOUT = { timeout: 30000 };
+// Purposedly setting this to 1 minute as the client call sometimes takes a while to respond
+// causing some tests to fail intermittently
+const AI_CLIENT_TIMEOUT = { timeout: 60000 };
 
 describe("AI drawer", () => {
   before(() => {
