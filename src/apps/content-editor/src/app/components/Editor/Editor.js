@@ -9,6 +9,7 @@ import { cloneDeep, isEqual } from "lodash";
 import { useGetContentModelFieldsQuery } from "../../../../../../shell/services/instance";
 import { DYNAMIC_META_FIELD_NAMES } from "../../views/ItemEdit/Meta";
 import { FieldsLoader } from "./FieldsLoader";
+import { UsedBlocks } from "../UsedBlocks";
 
 export const MaxLengths = {
   text: 150,
@@ -427,6 +428,7 @@ export default memo(function Editor({
           </div>
         );
       })}
+      <UsedBlocks />
     </div>
   );
 });
