@@ -914,6 +914,7 @@ export const {
   useCreateItemPublishingMutation,
   useDeleteItemPublishingMutation,
   useGetContentItemQuery,
+  useLazyGetContentItemQuery,
   useGetContentItemsQuery,
   useGetContentModelQuery,
   useGetContentModelsQuery,
