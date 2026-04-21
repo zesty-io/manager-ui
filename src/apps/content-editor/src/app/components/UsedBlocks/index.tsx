@@ -115,15 +115,24 @@ export const UsedBlocks = () => {
 
       // Fetch all items for each block model in parallel. Each block model's items
       // represent the available variants — we need them to find the base (earliest) variant.
-      const allVariantData: ContentItem[][] = await Promise.all(
-        Array.from(blockZUIDs).map((blockId) =>
-          dispatch(
-            instanceApi.endpoints.getContentModelItems.initiate({
-              modelZUID: blockId,
-            })
-          ).unwrap()
+      // allSettled is used so a single failed fetch doesn't abort the rest — failed/empty
+      // results are filtered out and omitted from the final list.
+      const allVariantData: ContentItem[][] = (
+        await Promise.allSettled(
+          Array.from(blockZUIDs).map((blockId) =>
+            dispatch(
+              instanceApi.endpoints.getContentModelItems.initiate({
+                modelZUID: blockId,
+              })
+            ).unwrap()
+          )
         )
-      );
+      )
+        .filter(
+          (result): result is PromiseFulfilledResult<ContentItem[]> =>
+            result.status === "fulfilled" && !!result.value?.length
+        )
+        .map((result) => result.value);
 
       // For each block model's items, find the earliest-created item — that's the base
       // variant. If it's already in variantZUIDs (referenced directly), remove it to
@@ -143,13 +152,21 @@ export const UsedBlocks = () => {
 
       // Fetch any remaining directly-referenced variants in parallel (these are variant
       // ZUIDs from block() calls that weren't already resolved via a block model lookup).
-      const directVariants: ContentItem[] = await Promise.all(
-        Array.from(variantZUIDs).map((variantZUID) =>
-          dispatch(
-            instanceApi.endpoints.getContentItem.initiate(variantZUID)
-          ).unwrap()
+      // Same allSettled pattern — failed/empty fetches are omitted.
+      const directVariants: ContentItem[] = (
+        await Promise.allSettled(
+          Array.from(variantZUIDs).map((variantZUID) =>
+            dispatch(
+              instanceApi.endpoints.getContentItem.initiate(variantZUID)
+            ).unwrap()
+          )
         )
-      );
+      )
+        .filter(
+          (result): result is PromiseFulfilledResult<ContentItem> =>
+            result.status === "fulfilled" && !!result.value
+        )
+        .map((result) => result.value);
       variants.push(...directVariants);
 
       setBlockReferences(variants);
