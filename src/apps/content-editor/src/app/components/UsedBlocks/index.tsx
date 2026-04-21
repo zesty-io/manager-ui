@@ -1,12 +1,12 @@
 import { Typography } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
+import { useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
 import {
+  instanceApi,
   useGetContentItemQuery,
   useGetContentModelsQuery,
   useGetWebViewsQuery,
-  useLazyGetContentModelItemsQuery,
-  useLazyGetContentItemQuery,
 } from "shell/services/instance";
 import { ContentItem, Data } from "shell/services/types";
 import { extractBlockReferences } from "./extractBlockReferences";
@@ -21,8 +21,10 @@ export const UsedBlocks = () => {
   const { data: models, isLoading: isLoadingModels } =
     useGetContentModelsQuery();
   const { data: contentItemData } = useGetContentItemQuery(itemZUID);
-  const [getContentModelItems] = useLazyGetContentModelItemsQuery();
-  const [getContentItem] = useLazyGetContentItemQuery();
+  // Using dispatch + initiate instead of lazy query hooks to support parallel fetching.
+  // Lazy query hooks only track the last dispatched query, so calling them in a loop
+  // causes earlier results to be overwritten.
+  const dispatch = useDispatch<any>();
 
   const blockModels = useMemo(() => {
     if (!models) return [];
@@ -111,14 +113,21 @@ export const UsedBlocks = () => {
         }
       });
 
-      const allVariantData: ContentItem[][] = [];
-      for (const blockId of blockZUIDs) {
-        const data: ContentItem[] = await getContentModelItems({
-          modelZUID: blockId,
-        }).unwrap();
-        allVariantData.push(data);
-      }
+      // Fetch all items for each block model in parallel. Each block model's items
+      // represent the available variants — we need them to find the base (earliest) variant.
+      const allVariantData: ContentItem[][] = await Promise.all(
+        Array.from(blockZUIDs).map((blockId) =>
+          dispatch(
+            instanceApi.endpoints.getContentModelItems.initiate({
+              modelZUID: blockId,
+            })
+          ).unwrap()
+        )
+      );
 
+      // For each block model's items, find the earliest-created item — that's the base
+      // variant. If it's already in variantZUIDs (referenced directly), remove it to
+      // avoid fetching it again below.
       allVariantData.forEach((items) => {
         if (!items?.length) return;
         const earliest = items.reduce((a, b) =>
@@ -132,10 +141,16 @@ export const UsedBlocks = () => {
         variants.push(earliest);
       });
 
-      for (const variantZUID of variantZUIDs) {
-        const data: ContentItem = await getContentItem(variantZUID).unwrap();
-        variants.push(data);
-      }
+      // Fetch any remaining directly-referenced variants in parallel (these are variant
+      // ZUIDs from block() calls that weren't already resolved via a block model lookup).
+      const directVariants: ContentItem[] = await Promise.all(
+        Array.from(variantZUIDs).map((variantZUID) =>
+          dispatch(
+            instanceApi.endpoints.getContentItem.initiate(variantZUID)
+          ).unwrap()
+        )
+      );
+      variants.push(...directVariants);
 
       setBlockReferences(variants);
     };
