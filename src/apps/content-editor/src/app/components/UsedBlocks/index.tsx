@@ -4,11 +4,10 @@ import { useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
 import {
   instanceApi,
-  useGetContentItemQuery,
   useGetContentModelsQuery,
   useGetWebViewsQuery,
 } from "shell/services/instance";
-import { ContentItem, Data } from "shell/services/types";
+import { ContentItem } from "shell/services/types";
 import { extractBlockReferences } from "./extractBlockReferences";
 
 export const UsedBlocks = () => {
@@ -20,7 +19,6 @@ export const UsedBlocks = () => {
   const { data: views } = useGetWebViewsQuery({ status: "dev" });
   const { data: models, isLoading: isLoadingModels } =
     useGetContentModelsQuery();
-  const { data: contentItemData } = useGetContentItemQuery(itemZUID);
   // Using dispatch + initiate instead of lazy query hooks to support parallel fetching.
   // Lazy query hooks only track the last dispatched query, so calling them in a loop
   // causes earlier results to be overwritten.
@@ -68,11 +66,13 @@ export const UsedBlocks = () => {
           : []),
       ];
 
+      console.log(allBlockReferences);
+
       // Deduplicate block references so if a block is referenced multiple times it only appears
       // once, unless there's a different variant and/or version specified
       const seen = new Set<string>();
       const uniqueBlockReferences = allBlockReferences.filter((ref) => {
-        const key = `${ref.blockName}|${ref.field}|${ref.variant}|${ref.version}`;
+        const key = `${ref.blockName}|${ref.variant}|${ref.version}`;
         if (seen.has(key)) return false;
 
         seen.add(key);
@@ -87,19 +87,7 @@ export const UsedBlocks = () => {
       const variants: ContentItem[] = [];
 
       uniqueBlockReferences.forEach((ref) => {
-        // Block selector block(this.blockselector)
-        if (ref.field) {
-          const fieldValue =
-            contentItemData?.data?.[ref.field.replace("this.", "")];
-
-          const extractedBlockRef = extractBlockReferences(
-            `{{ block(${fieldValue}) }}`
-          );
-
-          if (extractedBlockRef.length > 0 && extractedBlockRef[0].variant) {
-            variantZUIDs.add(extractedBlockRef[0].variant);
-          }
-        } else if (ref.variant) {
+        if (ref.variant) {
           variantZUIDs.add(ref.variant);
         } else if (ref.blockName) {
           // Non block selector: block('/-/block/name.html') or block(https://instance.preview.zesty.io/-/block/name.html)
@@ -173,7 +161,7 @@ export const UsedBlocks = () => {
     };
 
     run();
-  }, [templateFiles, blockModels, contentItemData]);
+  }, [templateFiles, blockModels]);
 
   // Get block references from both files
   // Display the block references

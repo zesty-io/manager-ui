@@ -5,19 +5,17 @@
  * references found in it, covering every known syntax pattern.
  *
  * Supported patterns:
- *  1. Block selector field:       {{block({this.field_name})}}
- *  2. Basic path:                 {{block('/-/block/name.html')}}
- *  3. Path with version:          {{block('/-/block/name.html?version=5')}}
- *  4. Path with variant:          {{block('/-/block/name.html?variant=7-xxx')}}
- *  5. Positional params:          {{block('/-/block/name.html', 'variantZUID')}}
+ *  1. Basic path:                 {{block('/-/block/name.html')}}
+ *  2. Path with version:          {{block('/-/block/name.html?version=5')}}
+ *  3. Path with variant:          {{block('/-/block/name.html?variant=7-xxx')}}
+ *  4. Positional params:          {{block('/-/block/name.html', 'variantZUID')}}
  *                                 {{block('/-/block/name.html', 'variantZUID', '4')}}
- *  6. Full preview URL:           https://instance.preview.zesty.io/-/block/name.html
+ *  5. Full preview URL:           https://instance.preview.zesty.io/-/block/name.html
  *                                 https://instance.preview.zesty.io/-/block/name.html?variant=7-xxx
  */
 
 export interface BlockReference {
   raw: string;
-  field: string | null;
   blockName: string | null;
   variant: string | null;
   version: string | null;
@@ -65,7 +63,7 @@ function parseArgs(str: string): string[] {
 export function extractBlockReferences(code: string): BlockReference[] {
   const references: BlockReference[] = [];
 
-  // ─── Pattern 1–5: Parsley {{block(...)}} calls ───────────────────────────
+  // ─── Patterns 1–4: Parsley {{block(...)}} calls ──────────────────────────
   const parsleyRegex = /\{\{\s*block\s*\(([^)]+)\)\s*\}\}/g;
   let match: RegExpExecArray | null;
 
@@ -74,46 +72,44 @@ export function extractBlockReferences(code: string): BlockReference[] {
     const argsStr = match[1].trim();
     const ref: BlockReference = {
       raw,
-      field: null,
       blockName: null,
       variant: null,
       version: null,
     };
 
-    // Pattern 1: Block selector field — {{block({this.some_field})}}
-    if (argsStr.startsWith("{")) {
-      ref.field = argsStr.replace(/^\{|\}$/g, "").trim();
+    // Skip block selector field patterns:
+    // {{block(this.selector)}} and {{block({this.some_field})}}
+    if (argsStr.startsWith("this.") || argsStr.startsWith("{this.")) continue;
+
+    const args = parseArgs(argsStr);
+    const fullPath = args[0] ?? "";
+
+    // Full URL passed as argument —
+    // {{block('https://instance/-/block/name.html')}} or {{block(https://...)}}
+    if (fullPath.startsWith("http://") || fullPath.startsWith("https://")) {
+      const url = new URL(fullPath);
+      ref.blockName = url.pathname.split("/").pop() ?? null;
+      ref.variant = url.searchParams.get("variant");
+      ref.version = url.searchParams.get("version");
     } else {
-      const args = parseArgs(argsStr);
-      const fullPath = args[0] ?? "";
+      const [filePath, queryString] = fullPath.split("?");
+      ref.blockName = filePath.split("/").pop() ?? null;
 
-      // Pattern 6 (inline): Full URL passed as argument —
-      // {{block('https://instance/-/block/name.html')}} or {{block(https://...)}}
-      if (fullPath.startsWith("http://") || fullPath.startsWith("https://")) {
-        const url = new URL(fullPath);
-        ref.blockName = url.pathname.split("/").pop() ?? null;
-        ref.variant = url.searchParams.get("variant");
-        ref.version = url.searchParams.get("version");
-      } else {
-        const [filePath, queryString] = fullPath.split("?");
-        ref.blockName = filePath.split("/").pop() ?? null;
-
-        if (args.length >= 2) {
-          // Pattern 5: Positional params — variant is 2nd argument, version is 3rd
-          ref.variant = args[1];
-          if (args.length >= 3) ref.version = args[2];
-        } else if (queryString) {
-          const params = new URLSearchParams(queryString);
-          ref.variant = params.get("variant");
-          ref.version = params.get("version");
-        }
+      if (args.length >= 2) {
+        // Positional params — variant is 2nd argument, version is 3rd
+        ref.variant = args[1];
+        if (args.length >= 3) ref.version = args[2];
+      } else if (queryString) {
+        const params = new URLSearchParams(queryString);
+        ref.variant = params.get("variant");
+        ref.version = params.get("version");
       }
     }
 
     references.push(ref);
   }
 
-  // ─── Pattern 6: Standalone full preview URLs (not already inside a block() call) ───
+  // ─── Pattern 5: Standalone full preview URLs (not already inside a block() call) ───
   // Strip all {{block(...)}} calls first to avoid double-matching URLs inside them
   const codeWithoutBlockCalls = code.replace(
     /\{\{\s*block\s*\([^)]+\)\s*\}\}/g,
@@ -128,7 +124,6 @@ export function extractBlockReferences(code: string): BlockReference[] {
     const queryString = match[2] ?? "";
     const ref: BlockReference = {
       raw,
-      field: null,
       blockName: blockFile,
       variant: null,
       version: null,
