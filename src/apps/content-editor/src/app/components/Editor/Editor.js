@@ -428,7 +428,7 @@ export default memo(function Editor({
           </div>
         );
       })}
-      <UsedBlocks />
+      {model.type !== "block" && <UsedBlocks />}
     </div>
   );
 });
