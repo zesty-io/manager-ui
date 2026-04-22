@@ -1,4 +1,4 @@
-import { Typography } from "@mui/material";
+import { Typography, Stack, Skeleton } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -8,6 +8,7 @@ import {
   useGetWebViewsQuery,
 } from "shell/services/instance";
 import { ContentItem } from "shell/services/types";
+import { BlockPreview } from "./BlockPreview";
 import {
   BlockReference,
   extractBlockReferences,
@@ -23,6 +24,7 @@ export const UsedBlocks = () => {
   const { data: models, isLoading: isLoadingModels } =
     useGetContentModelsQuery();
   const [blockReferences, setBlockReferences] = useState<ContentItem[]>([]);
+  const [isBuildingReferences, setIsBuildingReferences] = useState(false);
 
   const blockModels = useMemo(() => {
     if (!models) return [];
@@ -54,6 +56,8 @@ export const UsedBlocks = () => {
   useEffect(() => {
     const run = async () => {
       if (!templateFiles) return;
+
+      setIsBuildingReferences(true);
 
       const allBlockReferences = [
         ...(templateFiles.code?.code
@@ -233,18 +237,35 @@ export const UsedBlocks = () => {
       variants.push(...directVariants);
 
       setBlockReferences(variants);
+      setIsBuildingReferences(false);
     };
 
     run();
   }, [templateFiles, blockModels]);
+
+  if (isBuildingReferences) {
+    return (
+      <Stack py={1.5} gap={1}>
+        <Typography variant="body2" fontWeight={600} color="text.primary">
+          Blocks Referenced in Code or Freestyle
+        </Typography>
+        <Skeleton variant="rounded" height={392} width="100%" />
+      </Stack>
+    );
+  }
 
   if (!blockReferences.length) {
     return <></>;
   }
 
   return (
-    <Typography variant="body2" fontWeight={600} color="text.primary">
-      Blocks Referenced in Code or Freestyle
-    </Typography>
+    <Stack py={1.5} gap={1}>
+      <Typography variant="body2" fontWeight={600} color="text.primary">
+        Blocks Referenced in Code or Freestyle
+      </Typography>
+      {blockReferences.map((ref) => (
+        <BlockPreview key={ref.meta.ZUID} variantData={ref} />
+      ))}
+    </Stack>
   );
 };
