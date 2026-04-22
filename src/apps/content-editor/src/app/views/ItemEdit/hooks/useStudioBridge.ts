@@ -358,7 +358,7 @@ export const useStudioBridge = ({
           notify({
             kind: "warn",
             message:
-              "This block contains dynamic content and cannot be edited inline.",
+              "This block contains dynamic content and cannot be edited inline. Switch to Content mode to make edits.",
           })
         );
         return;
