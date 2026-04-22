@@ -24,7 +24,19 @@ import {
   getCountryCode,
 } from "../../../../../../../../shell/components/Flag";
 
-export const LanguageSelector = () => {
+type LanguageSelectorProps = {
+  modelZUIDOverride?: string;
+  itemZUIDOverride?: string;
+  onChange?: (payload: { langCode: string; siblingZUID?: string }) => void;
+  disabled?: boolean;
+};
+
+export const LanguageSelector = ({
+  modelZUIDOverride,
+  itemZUIDOverride,
+  onChange,
+  disabled = false,
+}: LanguageSelectorProps) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const location = useLocation();
@@ -32,34 +44,46 @@ export const LanguageSelector = () => {
     modelZUID: string;
     itemZUID: string;
   }>();
+  const resolvedModelZUID = modelZUIDOverride || modelZUID;
+  const resolvedItemZUID = itemZUIDOverride || itemZUID;
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const { data: versions } = useGetContentItemVersionsQuery({
-    modelZUID,
-    itemZUID,
+  const { data: _versions } = useGetContentItemVersionsQuery({
+    modelZUID: resolvedModelZUID,
+    itemZUID: resolvedItemZUID,
   });
-  const { data: itemPublishings } = useGetItemPublishingsQuery({
-    modelZUID,
-    itemZUID,
+  const { data: _itemPublishings } = useGetItemPublishingsQuery({
+    modelZUID: resolvedModelZUID,
+    itemZUID: resolvedItemZUID,
   });
   const { data: languages, isLoading: isLoadingLanguages } = useGetLangsQuery(
     {}
   );
 
   const item = useSelector(
-    (state: AppState) => state.content[itemZUID] as ContentItem
+    (state: AppState) => state.content[resolvedItemZUID] as ContentItem
   );
 
-  const onSelect = (langId: string) => {
-    dispatch(selectLang(langId));
+  const onSelect = (langCode: string) => {
+    if (onChange) {
+      // @ts-ignore
+      const siblingZUID = item?.siblings?.[langCode];
+      onChange({ langCode, siblingZUID });
+      setAnchorEl(null);
+      return;
+    }
+
+    dispatch(selectLang(langCode));
 
     // If we are at a content item level then reload newly selected language item
     const parts = location.pathname.split("/");
     // @ts-ignore
-    const siblingZUID = item.siblings[langId];
+    const siblingZUID = item.siblings[langCode];
 
     if (parts[3] && siblingZUID) {
-      const subpath = parts.slice(0, 3);
-      subpath.push(siblingZUID);
+      const subpath = [...parts];
+      // route shape: /content/:model/:item/...
+      subpath[2] = resolvedModelZUID;
+      subpath[3] = siblingZUID;
       history.push(`${subpath.join("/")}`);
     }
   };
@@ -101,6 +125,7 @@ export const LanguageSelector = () => {
           endIcon={<KeyboardArrowDownRounded color="action" />}
           onClick={(e) => setAnchorEl(e.currentTarget)}
           data-cy="language-selector"
+          disabled={disabled}
         >
           <Box component="span" color="text.primary">
             <Flag countryCode={getCountryCode(activeLanguage?.code)} />
@@ -135,6 +160,7 @@ export const LanguageSelector = () => {
               setAnchorEl(null);
               onSelect(language.code);
             }}
+            disabled={disabled}
           >
             <Flag countryCode={getCountryCode(language.code)} />{" "}
             {language.code.split("-")[0]?.toUpperCase()} (
