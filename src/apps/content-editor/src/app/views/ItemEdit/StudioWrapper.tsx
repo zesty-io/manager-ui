@@ -193,9 +193,7 @@ export const StudioWrapper = () => {
       const normalized = normalizePath(path || "/");
       const instanceHash = instance?.randomHashID ?? "";
       // @ts-expect-error Config is provided globally at runtime
-      const baseUrl = `${"https://"}${instanceHash}${
-        CONFIG.URL_PREVIEW
-      }${normalized}`;
+      const baseUrl = `${CONFIG.URL_PREVIEW_PROTOCOL}${instanceHash}${CONFIG.URL_PREVIEW}${normalized}`;
       const queryParams = new URLSearchParams();
 
       queryParams.set("studio", "bridge");
