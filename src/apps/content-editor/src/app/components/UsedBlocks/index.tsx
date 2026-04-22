@@ -14,7 +14,7 @@ import {
 } from "./extractBlockReferences";
 
 export const UsedBlocks = () => {
-  // Get code file and pvl file
+  const dispatch = useDispatch<any>();
   const { modelZUID, itemZUID } = useParams<{
     modelZUID: string;
     itemZUID: string;
@@ -22,10 +22,7 @@ export const UsedBlocks = () => {
   const { data: views } = useGetWebViewsQuery({ status: "dev" });
   const { data: models, isLoading: isLoadingModels } =
     useGetContentModelsQuery();
-  // Using dispatch + initiate instead of lazy query hooks to support parallel fetching.
-  // Lazy query hooks only track the last dispatched query, so calling them in a loop
-  // causes earlier results to be overwritten.
-  const dispatch = useDispatch<any>();
+  const [blockReferences, setBlockReferences] = useState<ContentItem[]>([]);
 
   const blockModels = useMemo(() => {
     if (!models) return [];
@@ -54,8 +51,6 @@ export const UsedBlocks = () => {
     );
   }, [views, modelZUID, itemZUID]);
 
-  const [blockReferences, setBlockReferences] = useState<ContentItem[]>([]);
-
   useEffect(() => {
     const run = async () => {
       if (!templateFiles) return;
@@ -68,8 +63,6 @@ export const UsedBlocks = () => {
           ? extractBlockReferences(templateFiles.freestyle.code)
           : []),
       ];
-
-      console.log(allBlockReferences);
 
       // Deduplicate block references so if a block is referenced multiple times it only appears
       // once, unless there's a different variant and/or version specified
@@ -103,6 +96,7 @@ export const UsedBlocks = () => {
             const blockModel = blockModels?.find(
               (block) => block.name === ref.blockName?.replace(".html", "")
             );
+
             if (blockModel) {
               versionedRefs.push({
                 ref,
@@ -117,6 +111,7 @@ export const UsedBlocks = () => {
           const blockModel = blockModels?.find(
             (block) => block.name === ref.blockName.replace(".html", "")
           );
+
           if (blockModel) {
             blockZUIDs.add(blockModel.ZUID);
           }
@@ -129,24 +124,32 @@ export const UsedBlocks = () => {
       const blockZUIDToBaseItem = new Map<string, ContentItem>();
       (
         await Promise.allSettled(
+          // Using dispatch + initiate instead of lazy query hooks to support parallel fetching.
+          // Lazy query hooks only track the last dispatched query, so calling them in a loop
+          // causes earlier results to be overwritten.
           Array.from(blockZUIDs).map(async (blockId) => {
             const items = await dispatch(
               instanceApi.endpoints.getContentModelItems.initiate({
                 modelZUID: blockId,
               })
             ).unwrap();
+
             return [blockId, items] as [string, ContentItem[]];
           })
         )
       )
         .filter(
-          (result): result is PromiseFulfilledResult<[string, ContentItem[]]> =>
-            result.status === "fulfilled" && !!result.value?.[1]?.length
+          (
+            result
+          ): result is PromiseFulfilledResult<[string, ContentItem[]]> => {
+            return result.status === "fulfilled" && !!result.value?.[1]?.length;
+          }
         )
         .forEach(({ value: [blockId, items] }) => {
           const earliest = items.reduce((a, b) =>
             a.meta.createdAt < b.meta.createdAt ? a : b
           );
+
           blockZUIDToBaseItem.set(blockId, earliest);
         });
 
@@ -157,8 +160,10 @@ export const UsedBlocks = () => {
       >();
       blockModels?.forEach((model) => {
         const baseItem = blockZUIDToBaseItem.get(model.ZUID);
-        if (baseItem)
+
+        if (baseItem) {
           blockNameToInfo.set(model.name, { modelZUID: model.ZUID, baseItem });
+        }
       });
 
       // Resolve each blockName ref (no variant). Iterating uniqueBlockReferences rather
@@ -169,6 +174,7 @@ export const UsedBlocks = () => {
         if (ref.variant || !ref.blockName) return;
 
         const info = blockNameToInfo.get(ref.blockName.replace(".html", ""));
+
         if (!info) return;
 
         if (ref.version) {
@@ -196,7 +202,8 @@ export const UsedBlocks = () => {
               ).unwrap();
               return (
                 versions?.find(
-                  (v: ContentItem) => v.meta.version === Number(ref.version)
+                  (version: ContentItem) =>
+                    version.meta.version === Number(ref.version)
                 ) ?? null
               );
             })
@@ -219,10 +226,9 @@ export const UsedBlocks = () => {
           )
         )
       )
-        .filter(
-          (result): result is PromiseFulfilledResult<ContentItem> =>
-            result.status === "fulfilled" && !!result.value
-        )
+        .filter((result): result is PromiseFulfilledResult<ContentItem> => {
+          return result.status === "fulfilled" && !!result.value;
+        })
         .map((result) => result.value);
       variants.push(...directVariants);
 
@@ -232,8 +238,9 @@ export const UsedBlocks = () => {
     run();
   }, [templateFiles, blockModels]);
 
-  // Get block references from both files
-  // Display the block references
+  if (!blockReferences.length) {
+    return <></>;
+  }
 
   return (
     <Typography variant="body2" fontWeight={600} color="text.primary">
