@@ -188,6 +188,11 @@ export const Field = memo(
       }
     );
 
+    const closeImageModal = () => {
+      imageModal?.onClose?.();
+      setImageModal(null);
+    };
+
     const renderMediaModal = () => {
       return ReactDOM.createPortal(
         <MemoryRouter
@@ -207,7 +212,7 @@ export const Field = memo(
                 overflow: "hidden",
               },
             }}
-            onClose={() => setImageModal(null)}
+            onClose={closeImageModal}
           >
             <IconButton
               sx={{
@@ -215,7 +220,7 @@ export const Field = memo(
                 right: 15,
                 top: 10,
               }}
-              onClick={() => setImageModal(null)}
+              onClick={closeImageModal}
             >
               <CloseIcon sx={{ color: "common.white" }} />
             </IconButton>
@@ -224,7 +229,7 @@ export const Field = memo(
               isSelectDialog={true}
               addImagesCallback={(images) => {
                 imageModal.callback(images);
-                setImageModal(null);
+                closeImageModal();
               }}
             />
           </Dialog>
@@ -503,7 +508,7 @@ export const Field = memo(
                       overflow: "hidden",
                     },
                   }}
-                  onClose={() => setImageModal(null)}
+                  onClose={closeImageModal}
                 >
                   <IconButton
                     data-cy="closeMediaDialogBtn"
@@ -512,7 +517,7 @@ export const Field = memo(
                       right: 5,
                       top: 0,
                     }}
-                    onClick={() => setImageModal(null)}
+                    onClick={closeImageModal}
                   >
                     <CloseIcon sx={{ color: "common.white" }} />
                   </IconButton>
@@ -531,7 +536,7 @@ export const Field = memo(
                     }
                     addImagesCallback={(images) => {
                       imageModal.callback(images);
-                      setImageModal(null);
+                      closeImageModal();
                     }}
                     isReplace={imageModal.isReplace}
                   />
