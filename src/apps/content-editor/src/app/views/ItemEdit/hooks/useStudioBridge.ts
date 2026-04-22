@@ -52,6 +52,14 @@ const bridgeInjectedCss = `
     outline: 2px dashed #ff9800;
     outline-offset: 2px;
   }
+  .studio-static-editing {
+    outline: 2px solid #ff9800 !important;
+    outline-offset: 2px;
+    cursor: text !important;
+  }
+  .studio-static-editing * {
+    cursor: text !important;
+  }
 `;
 
 type Args = {
@@ -61,6 +69,7 @@ type Args = {
   postCommandToBridge: (cmd: any) => void;
   handleTemplateSourceMap: (msg: any) => void;
   handleReorderOutput: (msg: any) => void;
+  handleLayoutContentUpdate: (msg: any) => void;
   applyLayoutSelection: (next: {
     codeId?: string;
     layoutId?: string;
@@ -85,6 +94,13 @@ type Args = {
   previewReloadContinuationRef: MutableRefObject<null | (() => void)>;
   setIsNavigating: (value: boolean) => void;
   onBridgeFieldInput?: (fieldZuid: string) => void;
+  onStaticEditImage?: (msg: {
+    codeId: string;
+    layoutId: string;
+    isLeafImg: boolean;
+    imgIndex: number;
+    currentSrc: string;
+  }) => void;
 };
 
 export const useStudioBridge = ({
@@ -94,6 +110,7 @@ export const useStudioBridge = ({
   postCommandToBridge,
   handleTemplateSourceMap,
   handleReorderOutput,
+  handleLayoutContentUpdate,
   applyLayoutSelection,
   requestProceedWithPendingLayoutSave,
   clearLayoutSelection,
@@ -108,6 +125,7 @@ export const useStudioBridge = ({
   previewReloadContinuationRef,
   setIsNavigating,
   onBridgeFieldInput,
+  onStaticEditImage,
 }: Args) => {
   const handleBridgeReady = useCallback(() => {
     postCommandToBridge({
@@ -327,6 +345,28 @@ export const useStudioBridge = ({
 
       if (msg.type === "REORDER_OUTPUT") {
         handleReorderOutput(msg);
+        return;
+      }
+
+      if (msg.type === "LAYOUT_CONTENT_UPDATE") {
+        handleLayoutContentUpdate(msg);
+        return;
+      }
+
+      if (msg.type === "STATIC_EDIT_REJECTED") {
+        dispatch(
+          notify({
+            kind: "warn",
+            message:
+              "This block contains dynamic content and cannot be edited inline.",
+          })
+        );
+        return;
+      }
+
+      if (msg.type === "STATIC_EDIT_IMAGE") {
+        onStaticEditImage?.(msg);
+        return;
       }
     }
 
@@ -339,8 +379,10 @@ export const useStudioBridge = ({
     handleBridgeDomEvent,
     handleBridgeError,
     handleBridgeReady,
+    handleLayoutContentUpdate,
     handleReorderOutput,
     handleTemplateSourceMap,
+    onStaticEditImage,
   ]);
 
   return {

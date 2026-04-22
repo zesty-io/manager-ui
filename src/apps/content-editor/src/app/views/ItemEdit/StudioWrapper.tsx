@@ -3,7 +3,7 @@ import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
 import { Alert, Box, Button, CircularProgress, Dialog } from "@mui/material";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useHistory, useLocation } from "react-router";
+import { MemoryRouter, useHistory, useLocation } from "react-router";
 import { cloneDeep } from "lodash";
 import { AppState } from "../../../../../../shell/store/types";
 import {
@@ -41,6 +41,7 @@ import { InteractionMode, LayoutBreadcrumbItem } from "./hooks/studioTypes";
 import { useStudioSelection } from "./hooks/useStudioSelection";
 import { getRefRegistry } from "../../../../../../engine/refRegistry";
 import { usePermission } from "../../../../../../shell/hooks/use-permissions";
+import { MediaApp } from "../../../../../media/src/app";
 
 const drawerWidth = 440;
 
@@ -76,6 +77,13 @@ export const StudioWrapper = () => {
   const [isFetchingItem, setIsFetchingItem] = useState(false);
   const [isFetchingModel, setIsFetchingModel] = useState(false);
   const [isFetchingFields, setIsFetchingFields] = useState(false);
+  const [imageEditState, setImageEditState] = useState<{
+    codeId: string;
+    layoutId: string;
+    isLeafImg: boolean;
+    imgIndex: number;
+    currentSrc: string;
+  } | null>(null);
   const history = useHistory();
   const location = useLocation();
 
@@ -127,6 +135,9 @@ export const StudioWrapper = () => {
       selector?: string;
       layoutId?: string;
       codeId?: string;
+      isLeafImg?: boolean;
+      imgIndex?: number;
+      newSrc?: string;
     }) => {
       const iframeWindow = iframeRef.current?.contentWindow;
       if (!iframeWindow) return;
@@ -182,7 +193,9 @@ export const StudioWrapper = () => {
       const normalized = normalizePath(path || "/");
       const instanceHash = instance?.randomHashID ?? "";
       // @ts-expect-error Config is provided globally at runtime
-      const baseUrl = `${CONFIG.URL_PREVIEW_PROTOCOL}${instanceHash}${CONFIG.URL_PREVIEW}${normalized}`;
+      const baseUrl = `${"https://"}${instanceHash}${
+        CONFIG.URL_PREVIEW
+      }${normalized}`;
       const queryParams = new URLSearchParams();
 
       queryParams.set("studio", "bridge");
@@ -500,6 +513,8 @@ export const StudioWrapper = () => {
     handleSaveAndPublishPendingLayout,
     handleTemplateSourceMap,
     handleReorderOutput,
+    handleLayoutContentUpdate,
+    handleLayoutImageSrcUpdate,
   } = useLayoutReorderState({
     webViews,
     codeFileNameById,
@@ -956,6 +971,7 @@ export const StudioWrapper = () => {
     postCommandToBridge,
     handleTemplateSourceMap,
     handleReorderOutput,
+    handleLayoutContentUpdate,
     applyLayoutSelection,
     requestProceedWithPendingLayoutSave,
     clearLayoutSelection,
@@ -970,6 +986,7 @@ export const StudioWrapper = () => {
     previewReloadContinuationRef,
     setIsNavigating,
     onBridgeFieldInput: handleBridgeFieldInput,
+    onStaticEditImage: setImageEditState,
   });
 
   const renderInfoPanel = () => {
@@ -1040,172 +1057,210 @@ export const StudioWrapper = () => {
   const isResolved = !!pageItemZUID && !!pageModelZUID;
 
   return (
-    <Dialog
-      open
-      fullScreen
-      PaperProps={{
-        sx: {
-          overflow: "hidden",
-          bgcolor: "grey.900",
-          borderRadius: 0,
-        },
-      }}
-    >
-      <Box
-        display="flex"
-        flexDirection="column"
-        height="100%"
-        width="100%"
-        position="relative"
+    <>
+      <Dialog
+        open
+        fullScreen
+        PaperProps={{
+          sx: {
+            overflow: "hidden",
+            bgcolor: "grey.900",
+            borderRadius: 0,
+          },
+        }}
       >
-        <StudioHeader
-          onLanguageChange={handleLanguageChange}
-          interactionMode={interactionMode}
-          onInteractionModeChange={handleInteractionModeChange}
-          selectedLayoutBreadcrumb={selectedLayout?.breadcrumb || []}
-          onLayoutBreadcrumbClick={handleLayoutBreadcrumbSelect}
-          pageModelZUID={pageModelZUID}
-          pageItemZUID={pageItemZUID}
-          unresolvedPath={unresolvedPath}
-          logoSrc={contentOneLogoOnly}
-        />
-        <Box display="flex" flex="1" minHeight={0} width="100%">
-          <StudioPreview
-            iframeRef={iframeRef}
-            iframeSrc={iframeSrc}
-            isNavigating={isNavigating}
-            onLoad={handlePreviewLoad}
+        <Box
+          display="flex"
+          flexDirection="column"
+          height="100%"
+          width="100%"
+          position="relative"
+        >
+          <StudioHeader
+            onLanguageChange={handleLanguageChange}
+            interactionMode={interactionMode}
+            onInteractionModeChange={handleInteractionModeChange}
+            selectedLayoutBreadcrumb={selectedLayout?.breadcrumb || []}
+            onLayoutBreadcrumbClick={handleLayoutBreadcrumbSelect}
+            pageModelZUID={pageModelZUID}
+            pageItemZUID={pageItemZUID}
+            unresolvedPath={unresolvedPath}
+            logoSrc={contentOneLogoOnly}
           />
-          {interactionMode === "content" ? (
-            <StudioSidePanel
-              headerTitle={headerTitle}
-              pageItemVersion={pageItemVersion}
-              unresolvedPath={unresolvedPath}
-              panelMode={panelMode}
-              clearSelection={requestClearSelection}
-              activeVersion={activeVersion}
-              selectedModelZUID={selectedModelZUID}
-              selectedItemZUID={selectedItemZUID}
-              isSaving={isSaving}
-              hasErrors={hasErrors}
-              isSelectedItemLoading={isSelectedItemLoading}
-              onEditInManager={handleEditInManager}
-              onSave={handleSave}
-              editorPanel={renderEditorPanel()}
-              infoPanel={renderInfoPanel()}
-              drawerWidth={drawerWidth}
-              logoSrc={contentOneLogo}
+          <Box display="flex" flex="1" minHeight={0} width="100%">
+            <StudioPreview
+              iframeRef={iframeRef}
+              iframeSrc={iframeSrc}
+              isNavigating={isNavigating}
+              onLoad={handlePreviewLoad}
             />
-          ) : null}
-        </Box>
-        {pendingLayoutSave?.mappedSource ? (
-          <Box
-            data-cy="StudioLayoutSaveBar"
-            position="absolute"
-            left="50%"
-            bottom={24}
-            sx={{
-              transform: "translateX(-50%)",
-              zIndex: (theme) => theme.zIndex.modal + 1,
-            }}
-          >
-            <Box
-              display="flex"
-              alignItems="center"
-              gap={1}
-              p={2}
-              borderRadius={1.5}
-              bgcolor="background.paper"
-              boxShadow={6}
-            >
-              <Button
-                data-cy="StudioLayoutCancelButton"
-                color="inherit"
-                onClick={() => {
-                  handleDiscardPendingLayoutSave();
-                }}
-              >
-                Cancel
-              </Button>
-              <Button
-                data-cy="StudioLayoutSaveButton"
-                variant="contained"
-                color="primary"
-                startIcon={
-                  isSavingLayout ? undefined : (
-                    <SaveRoundedIcon fontSize="small" />
-                  )
-                }
-                sx={{ whiteSpace: "nowrap" }}
-                onClick={() => {
-                  if (!canUpdatePendingLayout) return;
-                  void handleSavePendingLayout();
-                }}
-                disabled={isSavingLayout || !canUpdatePendingLayout}
-              >
-                {isSavingLayout ? (
-                  <CircularProgress size={16} color="inherit" />
-                ) : (
-                  "Save"
-                )}
-              </Button>
-              <Button
-                data-cy="StudioLayoutSavePublishButton"
-                variant="contained"
-                color="success"
-                startIcon={
-                  isSavingLayout ? undefined : (
-                    <CloudUploadRoundedIcon fontSize="small" />
-                  )
-                }
-                sx={{ whiteSpace: "nowrap" }}
-                onClick={() => {
-                  if (!canPublishPendingLayout) return;
-                  void handleSaveAndPublishPendingLayout();
-                }}
-                disabled={isSavingLayout || !canPublishPendingLayout}
-              >
-                {isSavingLayout ? (
-                  <CircularProgress size={16} color="inherit" />
-                ) : (
-                  "Save and Publish"
-                )}
-              </Button>
-            </Box>
+            {interactionMode === "content" ? (
+              <StudioSidePanel
+                headerTitle={headerTitle}
+                pageItemVersion={pageItemVersion}
+                unresolvedPath={unresolvedPath}
+                panelMode={panelMode}
+                clearSelection={requestClearSelection}
+                activeVersion={activeVersion}
+                selectedModelZUID={selectedModelZUID}
+                selectedItemZUID={selectedItemZUID}
+                isSaving={isSaving}
+                hasErrors={hasErrors}
+                isSelectedItemLoading={isSelectedItemLoading}
+                onEditInManager={handleEditInManager}
+                onSave={handleSave}
+                editorPanel={renderEditorPanel()}
+                infoPanel={renderInfoPanel()}
+                drawerWidth={drawerWidth}
+                logoSrc={contentOneLogo}
+              />
+            ) : null}
           </Box>
-        ) : null}
-        <PendingEditsModal
-          show={Boolean(selectedItem?.dirty)}
-          loading={isSaving}
-          onSave={handleSave}
-          // @ts-ignore
-          onDiscard={discardPendingEdits}
-        />
-        <DirtyCodeModal
-          title="Unsaved layout changes"
-          content="You have unsaved layout changes. Save them before continuing?"
-          open={showPendingLayoutModal}
-          loading={isSavingLayout}
-          saveDisabled={!canUpdatePendingLayout}
-          onCancel={() => {
-            setShowPendingLayoutModal(false);
-            pendingLayoutContinuationRef.current = null;
-          }}
-          onSave={async () => {
-            if (!canUpdatePendingLayout) return;
-            const onProceed = pendingLayoutContinuationRef.current;
-            setShowPendingLayoutModal(false);
-            pendingLayoutContinuationRef.current = null;
-            await handleSavePendingLayout(onProceed);
-          }}
-          onDiscard={async () => {
-            const onProceed = pendingLayoutContinuationRef.current;
-            setShowPendingLayoutModal(false);
-            pendingLayoutContinuationRef.current = null;
-            handleDiscardPendingLayoutSave(onProceed);
-          }}
-        />
-      </Box>
-    </Dialog>
+          {pendingLayoutSave?.mappedSource ? (
+            <Box
+              data-cy="StudioLayoutSaveBar"
+              position="absolute"
+              left="50%"
+              bottom={24}
+              sx={{
+                transform: "translateX(-50%)",
+                zIndex: (theme) => theme.zIndex.modal + 1,
+              }}
+            >
+              <Box
+                display="flex"
+                alignItems="center"
+                gap={1}
+                p={2}
+                borderRadius={1.5}
+                bgcolor="background.paper"
+                boxShadow={6}
+              >
+                <Button
+                  data-cy="StudioLayoutCancelButton"
+                  color="inherit"
+                  onClick={() => {
+                    handleDiscardPendingLayoutSave();
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  data-cy="StudioLayoutSaveButton"
+                  variant="contained"
+                  color="primary"
+                  startIcon={
+                    isSavingLayout ? undefined : (
+                      <SaveRoundedIcon fontSize="small" />
+                    )
+                  }
+                  sx={{ whiteSpace: "nowrap" }}
+                  onClick={() => {
+                    if (!canUpdatePendingLayout) return;
+                    void handleSavePendingLayout();
+                  }}
+                  disabled={isSavingLayout || !canUpdatePendingLayout}
+                >
+                  {isSavingLayout ? (
+                    <CircularProgress size={16} color="inherit" />
+                  ) : (
+                    "Save"
+                  )}
+                </Button>
+                <Button
+                  data-cy="StudioLayoutSavePublishButton"
+                  variant="contained"
+                  color="success"
+                  startIcon={
+                    isSavingLayout ? undefined : (
+                      <CloudUploadRoundedIcon fontSize="small" />
+                    )
+                  }
+                  sx={{ whiteSpace: "nowrap" }}
+                  onClick={() => {
+                    if (!canPublishPendingLayout) return;
+                    void handleSaveAndPublishPendingLayout();
+                  }}
+                  disabled={isSavingLayout || !canPublishPendingLayout}
+                >
+                  {isSavingLayout ? (
+                    <CircularProgress size={16} color="inherit" />
+                  ) : (
+                    "Save and Publish"
+                  )}
+                </Button>
+              </Box>
+            </Box>
+          ) : null}
+          <PendingEditsModal
+            show={Boolean(selectedItem?.dirty)}
+            loading={isSaving}
+            onSave={handleSave}
+            // @ts-ignore
+            onDiscard={discardPendingEdits}
+          />
+          <DirtyCodeModal
+            title="Unsaved layout changes"
+            content="You have unsaved layout changes. Save them before continuing?"
+            open={showPendingLayoutModal}
+            loading={isSavingLayout}
+            saveDisabled={!canUpdatePendingLayout}
+            onCancel={() => {
+              setShowPendingLayoutModal(false);
+              pendingLayoutContinuationRef.current = null;
+            }}
+            onSave={async () => {
+              if (!canUpdatePendingLayout) return;
+              const onProceed = pendingLayoutContinuationRef.current;
+              setShowPendingLayoutModal(false);
+              pendingLayoutContinuationRef.current = null;
+              await handleSavePendingLayout(onProceed);
+            }}
+            onDiscard={async () => {
+              const onProceed = pendingLayoutContinuationRef.current;
+              setShowPendingLayoutModal(false);
+              pendingLayoutContinuationRef.current = null;
+              handleDiscardPendingLayoutSave(onProceed);
+            }}
+          />
+        </Box>
+      </Dialog>
+      {imageEditState && (
+        <MemoryRouter>
+          <Dialog
+            open
+            fullScreen
+            sx={{ my: 2.5, mx: 10 }}
+            PaperProps={{ style: { borderRadius: "4px", overflow: "hidden" } }}
+            onClose={() => setImageEditState(null)}
+          >
+            <MediaApp
+              limitSelected={1}
+              isSelectDialog
+              showHeaderActions={false}
+              addImagesCallback={(images: any[]) => {
+                if (!images.length) return;
+                const newSrc = images[0].url;
+                handleLayoutImageSrcUpdate(
+                  imageEditState.codeId,
+                  imageEditState.layoutId,
+                  imageEditState.isLeafImg,
+                  imageEditState.imgIndex,
+                  newSrc
+                );
+                postCommandToBridge({
+                  action: "updateImageSrc",
+                  layoutId: imageEditState.layoutId,
+                  isLeafImg: imageEditState.isLeafImg,
+                  imgIndex: imageEditState.imgIndex,
+                  newSrc,
+                });
+                setImageEditState(null);
+              }}
+            />
+          </Dialog>
+        </MemoryRouter>
+      )}
+    </>
   );
 };
