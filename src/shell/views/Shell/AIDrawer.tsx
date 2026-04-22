@@ -254,7 +254,7 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
     const restoredResponses = chatSessionLog?.prompts?.length
       ? // Reversing the prompts array before normalizing since the UI needs to render this in
         // ascending order but the data is stored in descending order
-        normalizeChatSessionLog([...chatSessionLog?.prompts].reverse())
+        normalizeChatSessionLog([...chatSessionLog?.prompts])
       : {};
     const currentPromptZUIDs = Object.keys(restoredResponses);
 
