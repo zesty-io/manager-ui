@@ -233,20 +233,20 @@ export const useLayoutReorderState = ({
   );
 
   const savePendingLayoutSource = useCallback(async () => {
-    if (!pendingLayoutSave?.codeId || !pendingLayoutSave.mappedSource) return;
+    if (!pendingLayoutSave?.codeId) return;
 
-    const webView = webViews.find(
-      (view) => view.ZUID === pendingLayoutSave.codeId
-    );
+    const codeId = pendingLayoutSave.codeId;
+    const latestSource = templateSourceByCodeIdRef.current[codeId];
+    if (!latestSource) return;
+
+    const webView = webViews.find((view) => view.ZUID === codeId);
     if (!webView) {
       throw new Error("Unable to resolve code file for layout save.");
     }
 
-    const sanitizedSource = stripLayoutIdsFromSource(
-      pendingLayoutSave.mappedSource
-    );
+    const sanitizedSource = stripLayoutIdsFromSource(latestSource);
     const updatedWebView = await updateWebView({
-      ZUID: pendingLayoutSave.codeId,
+      ZUID: codeId,
       body: {
         ...webView,
         code: sanitizedSource,
@@ -254,11 +254,11 @@ export const useLayoutReorderState = ({
     }).unwrap();
 
     return {
-      codeId: pendingLayoutSave.codeId,
+      codeId,
       webView,
       updatedWebView,
     };
-  }, [pendingLayoutSave, updateWebView, webViews]);
+  }, [pendingLayoutSave?.codeId, updateWebView, webViews]);
 
   const handleSavePendingLayout = useCallback(
     async (onComplete?: () => void) => {
