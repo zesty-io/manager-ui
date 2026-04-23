@@ -94,6 +94,67 @@ const mapSourceByLayoutStructure = (
   return root.innerHTML;
 };
 
+// Apply the bridge's edited innerHTML to the cached template source while
+// preserving every nested [data-layout-id] subtree from the template. The
+// bridge locks nested layouts read-only during editing, so the incoming
+// `innerHtml` has the same set of descendant layouts, but their contents are
+// the live/resolved HTML — we swap each one back to the template snapshot so
+// Parsley expressions and studio-field markers are never baked in.
+const patchLeafInnerHtml = (
+  source: string,
+  layoutId: string,
+  innerHtml: string
+): string | null => {
+  if (!source || !layoutId) return null;
+
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(
+    `<div id="studio-patch-root">${source}</div>`,
+    "text/html"
+  );
+  const root = doc.getElementById("studio-patch-root");
+  if (!root) return null;
+
+  const leaf = root.querySelector(`[data-layout-id="${layoutId}"]`);
+  if (!leaf) return null;
+
+  const descendantSnapshots = new Map<string, string>();
+  leaf.querySelectorAll("[data-layout-id]").forEach((node) => {
+    const id = node.getAttribute("data-layout-id") || "";
+    if (id && !descendantSnapshots.has(id)) {
+      descendantSnapshots.set(id, node.outerHTML);
+    }
+  });
+
+  leaf.innerHTML = innerHtml;
+
+  leaf.querySelectorAll("[data-layout-id]").forEach((node) => {
+    const id = node.getAttribute("data-layout-id") || "";
+    const snapshot = id ? descendantSnapshots.get(id) : null;
+    if (!snapshot || !node.parentNode) return;
+
+    const holder = doc.createElement("div");
+    holder.innerHTML = snapshot;
+    const replacement = holder.firstElementChild;
+    if (replacement) {
+      node.parentNode.replaceChild(replacement, node);
+    }
+  });
+
+  // Belt-and-braces: strip any contenteditable/frozen attrs the bridge may
+  // have left on nested layouts (the snapshot swap above should already cover
+  // this, but if a descendant appears in `innerHtml` without a template match
+  // we don't want runtime attributes bleeding into the saved source).
+  leaf
+    .querySelectorAll("[contenteditable],[data-studio-static-frozen]")
+    .forEach((node) => {
+      node.removeAttribute("contenteditable");
+      node.removeAttribute("data-studio-static-frozen");
+    });
+
+  return root.innerHTML;
+};
+
 const stripLayoutIdsFromSource = (source: string): string => {
   if (!source) return "";
 
@@ -172,20 +233,20 @@ export const useLayoutReorderState = ({
   );
 
   const savePendingLayoutSource = useCallback(async () => {
-    if (!pendingLayoutSave?.codeId || !pendingLayoutSave.mappedSource) return;
+    if (!pendingLayoutSave?.codeId) return;
 
-    const webView = webViews.find(
-      (view) => view.ZUID === pendingLayoutSave.codeId
-    );
+    const codeId = pendingLayoutSave.codeId;
+    const latestSource = templateSourceByCodeIdRef.current[codeId];
+    if (!latestSource) return;
+
+    const webView = webViews.find((view) => view.ZUID === codeId);
     if (!webView) {
       throw new Error("Unable to resolve code file for layout save.");
     }
 
-    const sanitizedSource = stripLayoutIdsFromSource(
-      pendingLayoutSave.mappedSource
-    );
+    const sanitizedSource = stripLayoutIdsFromSource(latestSource);
     const updatedWebView = await updateWebView({
-      ZUID: pendingLayoutSave.codeId,
+      ZUID: codeId,
       body: {
         ...webView,
         code: sanitizedSource,
@@ -193,11 +254,11 @@ export const useLayoutReorderState = ({
     }).unwrap();
 
     return {
-      codeId: pendingLayoutSave.codeId,
+      codeId,
       webView,
       updatedWebView,
     };
-  }, [pendingLayoutSave, updateWebView, webViews]);
+  }, [pendingLayoutSave?.codeId, updateWebView, webViews]);
 
   const handleSavePendingLayout = useCallback(
     async (onComplete?: () => void) => {
@@ -293,9 +354,73 @@ export const useLayoutReorderState = ({
   ]);
 
   const handleTemplateSourceMap = useCallback((msg: any) => {
-    templateSourceByCodeIdRef.current =
+    const incoming =
       (msg.templateSourceByCodeId as Record<string, string>) || {};
+    templateSourceByCodeIdRef.current = {
+      ...templateSourceByCodeIdRef.current,
+      ...incoming,
+    };
   }, []);
+
+  const handleLayoutContentUpdate = useCallback(
+    (msg: any) => {
+      const codeId = typeof msg?.codeId === "string" ? msg.codeId : "";
+      const layoutId = typeof msg?.layoutId === "string" ? msg.layoutId : "";
+      const innerHtml = typeof msg?.innerHtml === "string" ? msg.innerHtml : "";
+
+      if (!codeId || !layoutId) return;
+
+      const cached = templateSourceByCodeIdRef.current[codeId];
+      if (!cached) return;
+
+      const next = patchLeafInnerHtml(cached, layoutId, innerHtml);
+      if (!next) {
+        dispatch(
+          notify({
+            kind: "warn",
+            message: "Could not apply inline edit for this block.",
+          })
+        );
+        return;
+      }
+
+      templateSourceByCodeIdRef.current = {
+        ...templateSourceByCodeIdRef.current,
+        [codeId]: next,
+      };
+
+      setPendingLayoutSave((prev) => {
+        const hasPendingReorder = Boolean(
+          prev?.layoutStructure && prev.layoutStructure.length
+        );
+        const layoutStructure: LayoutStructureItem[] = hasPendingReorder
+          ? prev!.layoutStructure
+          : [];
+        const orderedLayoutIds = hasPendingReorder
+          ? prev!.orderedLayoutIds
+          : [];
+        const selector = prev?.selector || "[data-layout-id]";
+        // Only re-run the reorder mapping when there is a pending reorder to
+        // apply on top of the edit. A pure static edit leaves the structure
+        // untouched, so the patched source IS the mapped source — running
+        // mapSourceByLayoutStructure with a bogus single-entry structure would
+        // move the edited block to the root of the template.
+        const mappedSource = hasPendingReorder
+          ? mapSourceByLayoutStructure(next, layoutStructure)
+          : next;
+
+        return {
+          codeId,
+          selector,
+          orderedLayoutIds,
+          layoutStructure,
+          outputHtml: prev?.outputHtml || "",
+          mappedSource,
+        };
+      });
+    },
+    [dispatch]
+  );
 
   const handleReorderOutput = useCallback(
     (msg: any) => {
@@ -378,6 +503,70 @@ export const useLayoutReorderState = ({
     ]
   );
 
+  const handleLayoutImageSrcUpdate = useCallback(
+    (
+      codeId: string,
+      layoutId: string,
+      isLeafImg: boolean,
+      imgIndex: number,
+      newSrc: string
+    ) => {
+      if (!codeId || !layoutId || !newSrc) return;
+
+      const cached = templateSourceByCodeIdRef.current[codeId];
+      if (!cached) return;
+
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(
+        `<div id="studio-img-root">${cached}</div>`,
+        "text/html"
+      );
+      const root = doc.getElementById("studio-img-root");
+      if (!root) return;
+
+      const leaf = root.querySelector(`[data-layout-id="${layoutId}"]`);
+      if (!leaf) return;
+
+      const imgTarget = isLeafImg
+        ? (leaf as HTMLElement)
+        : (Array.from(leaf.querySelectorAll("img"))[imgIndex] as HTMLElement);
+      if (!imgTarget) return;
+
+      imgTarget.setAttribute("src", newSrc);
+
+      const next = root.innerHTML;
+
+      templateSourceByCodeIdRef.current = {
+        ...templateSourceByCodeIdRef.current,
+        [codeId]: next,
+      };
+
+      setPendingLayoutSave((prev) => {
+        const hasPendingReorder = Boolean(
+          prev?.layoutStructure && prev.layoutStructure.length
+        );
+        const layoutStructure = hasPendingReorder ? prev!.layoutStructure : [];
+        const orderedLayoutIds = hasPendingReorder
+          ? prev!.orderedLayoutIds
+          : [];
+        const selector = prev?.selector || "[data-layout-id]";
+        const mappedSource = hasPendingReorder
+          ? mapSourceByLayoutStructure(next, layoutStructure)
+          : next;
+
+        return {
+          codeId,
+          selector,
+          orderedLayoutIds,
+          layoutStructure,
+          outputHtml: prev?.outputHtml || "",
+          mappedSource,
+        };
+      });
+    },
+    []
+  );
+
   return {
     pendingLayoutSave,
     isSavingLayout,
@@ -386,5 +575,7 @@ export const useLayoutReorderState = ({
     handleSaveAndPublishPendingLayout,
     handleTemplateSourceMap,
     handleReorderOutput,
+    handleLayoutContentUpdate,
+    handleLayoutImageSrcUpdate,
   };
 };
