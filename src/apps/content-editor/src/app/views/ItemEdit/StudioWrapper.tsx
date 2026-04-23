@@ -733,6 +733,7 @@ export const StudioWrapper = () => {
       if (bridgeUpdatedFieldZuidRef.current === selectedElement.fieldZuid) {
         getRefRegistry()?.[selectedFieldName]?.handle?.setValue?.(nextValue);
         bridgeUpdatedFieldZuidRef.current = null;
+        return;
       }
 
       postCommandToBridge({

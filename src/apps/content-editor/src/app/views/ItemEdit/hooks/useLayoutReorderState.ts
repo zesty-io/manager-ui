@@ -354,8 +354,12 @@ export const useLayoutReorderState = ({
   ]);
 
   const handleTemplateSourceMap = useCallback((msg: any) => {
-    templateSourceByCodeIdRef.current =
+    const incoming =
       (msg.templateSourceByCodeId as Record<string, string>) || {};
+    templateSourceByCodeIdRef.current = {
+      ...templateSourceByCodeIdRef.current,
+      ...incoming,
+    };
   }, []);
 
   const handleLayoutContentUpdate = useCallback(
