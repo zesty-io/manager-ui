@@ -314,6 +314,289 @@ describe("Studio Wrapper", () => {
       });
   });
 
+  // ── Static inline text editing ─────────────────────────────────────────────
+
+  it("shows save bar after a LAYOUT_CONTENT_UPDATE static edit", () => {
+    postBridgeMessage({
+      type: "TEMPLATE_SOURCE_MAP",
+      templateSourceByCodeId: {
+        [codeId]: `<div data-layout-id="leaf-1">Original text</div>`,
+      },
+    });
+
+    postBridgeMessage({
+      type: "LAYOUT_CONTENT_UPDATE",
+      codeId,
+      layoutId: "leaf-1",
+      innerHtml: "Updated text",
+    });
+
+    cy.getBySelector("StudioLayoutSaveBar").should("exist");
+    cy.getBySelector("StudioLayoutSaveButton").should("exist");
+    cy.getBySelector("StudioLayoutSavePublishButton").should("exist");
+  });
+
+  it("saves static content edit with updated text and no layout-id attributes", () => {
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+
+      cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as("updateWebView");
+
+      postBridgeMessage({
+        type: "TEMPLATE_SOURCE_MAP",
+        templateSourceByCodeId: {
+          [webView.ZUID]: `<div data-layout-id="leaf-1">Original text</div>`,
+        },
+      });
+
+      postBridgeMessage({
+        type: "LAYOUT_CONTENT_UPDATE",
+        codeId: webView.ZUID,
+        layoutId: "leaf-1",
+        innerHtml: "Updated text",
+      });
+
+      cy.getBySelector("StudioLayoutSaveButton").click();
+
+      cy.wait("@updateWebView").then(({ request }) => {
+        expect(request.body.code).to.contain("Updated text");
+        expect(request.body.code).not.to.contain("Original text");
+        expect(request.body.code).not.to.contain("data-layout-id");
+      });
+    });
+  });
+
+  it("accumulates multiple static edits and saves the latest", () => {
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+
+      cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as("updateWebView");
+
+      postBridgeMessage({
+        type: "TEMPLATE_SOURCE_MAP",
+        templateSourceByCodeId: {
+          [webView.ZUID]: `<div data-layout-id="leaf-1">Original text</div>`,
+        },
+      });
+
+      postBridgeMessage({
+        type: "LAYOUT_CONTENT_UPDATE",
+        codeId: webView.ZUID,
+        layoutId: "leaf-1",
+        innerHtml: "First edit",
+      });
+
+      postBridgeMessage({
+        type: "LAYOUT_CONTENT_UPDATE",
+        codeId: webView.ZUID,
+        layoutId: "leaf-1",
+        innerHtml: "Second edit",
+      });
+
+      cy.getBySelector("StudioLayoutSaveButton").click();
+
+      cy.wait("@updateWebView").then(({ request }) => {
+        expect(request.body.code).to.contain("Second edit");
+        expect(request.body.code).not.to.contain("First edit");
+      });
+    });
+  });
+
+  it("applies static edit on top of a pending reorder without repositioning the block", () => {
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+
+      cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as("updateWebView");
+
+      // Establish template with two blocks
+      postBridgeMessage({
+        type: "TEMPLATE_SOURCE_MAP",
+        templateSourceByCodeId: {
+          [webView.ZUID]: `<div data-layout-id="1">One</div><div data-layout-id="2">Two</div>`,
+        },
+      });
+
+      // Reorder: swap block 2 before block 1
+      postBridgeMessage({
+        type: "REORDER_OUTPUT",
+        codeId: webView.ZUID,
+        selector: "[data-layout-id]",
+        orderedLayoutIds: ["2", "1"],
+        layoutStructure: [
+          { layoutId: "2", parentLayoutId: null },
+          { layoutId: "1", parentLayoutId: null },
+        ],
+        outputHtml:
+          '<div data-layout-id="2">Two</div><div data-layout-id="1">One</div>',
+        selectedLayoutBreadcrumb: [],
+      });
+
+      // Static edit on block 2 after reorder
+      postBridgeMessage({
+        type: "LAYOUT_CONTENT_UPDATE",
+        codeId: webView.ZUID,
+        layoutId: "2",
+        innerHtml: "Two (edited)",
+      });
+
+      cy.getBySelector("StudioLayoutSaveButton").click();
+
+      cy.wait("@updateWebView").then(({ request }) => {
+        // Reorder order preserved: block 2 still before block 1
+        const code = request.body.code;
+        expect(code.indexOf("Two (edited)")).to.be.lessThan(
+          code.indexOf("One")
+        );
+        expect(code).not.to.contain("data-layout-id");
+      });
+    });
+  });
+
+  // ── Image src replacement via MediaDam ──────────────────────────────────────
+
+  it("opens MediaDam dialog when STATIC_EDIT_IMAGE bridge message is received", () => {
+    postBridgeMessage({
+      type: "STATIC_EDIT_IMAGE",
+      codeId,
+      layoutId: "img-1",
+      isLeafImg: true,
+      imgIndex: 0,
+      currentSrc: "https://example.com/old.jpg",
+    });
+
+    cy.getBySelector("appSidebarHeaderTitle").should(
+      "contain.text",
+      "Insert from Media"
+    );
+  });
+
+  it("closes MediaDam dialog without creating a pending save when dismissed", () => {
+    postBridgeMessage({
+      type: "STATIC_EDIT_IMAGE",
+      codeId,
+      layoutId: "img-1",
+      isLeafImg: true,
+      imgIndex: 0,
+      currentSrc: "https://example.com/old.jpg",
+    });
+
+    cy.getBySelector("appSidebarHeaderTitle").should("exist");
+
+    cy.get("body").type("{esc}");
+
+    cy.getBySelector("appSidebarHeaderTitle").should("not.exist");
+    cy.getBySelector("StudioLayoutSaveBar").should("not.exist");
+  });
+
+  it("saves updated image src after selecting from MediaDam", () => {
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+
+      cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as("updateWebView");
+
+      postBridgeMessage({
+        type: "TEMPLATE_SOURCE_MAP",
+        templateSourceByCodeId: {
+          [webView.ZUID]: `<img data-layout-id="img-1" src="https://example.com/old.jpg" />`,
+        },
+      });
+
+      postBridgeMessage({
+        type: "STATIC_EDIT_IMAGE",
+        codeId: webView.ZUID,
+        layoutId: "img-1",
+        isLeafImg: true,
+        imgIndex: 0,
+        currentSrc: "https://example.com/old.jpg",
+      });
+
+      cy.getBySelector("appSidebarHeaderTitle").should("exist");
+
+      // Select the first available media thumbnail
+      cy.waitOn(`**/bin/**`, () => {
+        cy.get("[data-testid='media-thumbnail-content']")
+          .first()
+          .parent()
+          .find("input[type=checkbox]")
+          .first()
+          .click({ force: true });
+      });
+
+      cy.contains("Done").click();
+
+      cy.getBySelector("StudioLayoutSaveBar").should("exist");
+
+      cy.getBySelector("StudioLayoutSaveButton").click();
+
+      cy.wait("@updateWebView").then(({ request }) => {
+        expect(request.body.code).not.to.contain("old.jpg");
+        expect(request.body.code).not.to.contain("data-layout-id");
+        // The src attribute should be a valid URL
+        expect(request.body.code).to.match(/<img src="https?:\/\/.+"/);
+      });
+    });
+  });
+
+  it("saves updated src for an img nested inside a layout leaf", () => {
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+
+      cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as("updateWebView");
+
+      postBridgeMessage({
+        type: "TEMPLATE_SOURCE_MAP",
+        templateSourceByCodeId: {
+          [webView.ZUID]: `<div data-layout-id="wrap-1"><img src="https://example.com/old.jpg" /><p>Caption</p></div>`,
+        },
+      });
+
+      postBridgeMessage({
+        type: "STATIC_EDIT_IMAGE",
+        codeId: webView.ZUID,
+        layoutId: "wrap-1",
+        isLeafImg: false,
+        imgIndex: 0,
+        currentSrc: "https://example.com/old.jpg",
+      });
+
+      cy.getBySelector("appSidebarHeaderTitle").should("exist");
+
+      cy.waitOn(`**/bin/**`, () => {
+        cy.get("[data-testid='media-thumbnail-content']")
+          .first()
+          .parent()
+          .find("input[type=checkbox]")
+          .first()
+          .click({ force: true });
+      });
+
+      cy.contains("Done").click();
+
+      cy.getBySelector("StudioLayoutSaveButton").click();
+
+      cy.wait("@updateWebView").then(({ request }) => {
+        expect(request.body.code).not.to.contain("old.jpg");
+        expect(request.body.code).to.contain("<p>Caption</p>");
+        expect(request.body.code).not.to.contain("data-layout-id");
+      });
+    });
+  });
+
   it("saves and publishes a pending layout draft", () => {
     cy.apiRequest({
       url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
