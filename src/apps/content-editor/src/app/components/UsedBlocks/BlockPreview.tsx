@@ -62,7 +62,7 @@ export const BlockPreview = ({
   };
 
   return (
-    <Box data-cy="BlockPreview">
+    <Box data-cy="UsedBlockPreview">
       <Stack
         direction="row"
         justifyContent="space-between"
@@ -102,6 +102,7 @@ export const BlockPreview = ({
         </Stack>
         <Stack direction="row" gap={0.5}>
           <IconButton
+            data-cy="EditBlock"
             size="small"
             onClick={() =>
               history.push(

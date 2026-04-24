@@ -21,8 +21,7 @@ export const UsedBlocks = () => {
     itemZUID: string;
   }>();
   const { data: views } = useGetWebViewsQuery({ status: "dev" });
-  const { data: models, isLoading: isLoadingModels } =
-    useGetContentModelsQuery();
+  const { data: models } = useGetContentModelsQuery();
   const [blockReferences, setBlockReferences] = useState<ContentItem[]>([]);
   const [isBuildingReferences, setIsBuildingReferences] = useState(false);
 
@@ -259,7 +258,7 @@ export const UsedBlocks = () => {
   }
 
   return (
-    <Stack py={1.5} gap={1}>
+    <Stack py={1.5} gap={1} data-cy="UsedBlocks">
       <Typography variant="body2" fontWeight={600} color="text.primary">
         Blocks Referenced in Code or Freestyle
       </Typography>
