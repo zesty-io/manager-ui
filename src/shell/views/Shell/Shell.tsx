@@ -29,6 +29,7 @@ import SchemaApp from "../../../apps/schema/src";
 import SeoApp from "../../../apps/seo/src";
 import SettingsApp from "../../../apps/settings/src";
 import HomeApp from "../../../apps/home";
+import StudioApp from "../../../apps/studio";
 import MarketplaceApp from "../../../apps/marketplace/src";
 import { BlocksApp } from "../../../apps/blocks";
 import { AppState } from "../../store/types";
@@ -145,6 +146,7 @@ export default memo(function Shell() {
                 <Box flex={1}>
                   <Switch>
                     <Route path="/release" component={ReleaseApp} />
+                    <Route path="/studio" component={StudioApp} />
 
                     <Route
                       path="/media/:groupID/file/:fileID"
