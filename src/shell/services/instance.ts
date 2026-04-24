@@ -178,6 +178,17 @@ export const instanceApi = createApi({
       query: (ZUID) => `search/items?q=${ZUID}&order=created&dir=DESC&limit=1`,
       transformResponse: (response: { data: any[] }) => response?.data?.[0],
     }),
+    getContentItemByPath: builder.query<ContentItem, string>({
+      query: (path) => ({
+        url: `search/items`,
+        params: {
+          q: "/page/",
+          limit: 1,
+        },
+      }),
+      transformResponse: (response: { data: any[] }) => response?.data?.[0],
+      keepUnusedDataFor: 0,
+    }),
     getContentItems: builder.query<any, any[]>({
       async queryFn(args, _queryApi, _extraOptions, fetchWithBQ) {
         try {
@@ -493,6 +504,22 @@ export const instanceApi = createApi({
       },
       transformResponse: getResponseData,
       providesTags: ["WebViews"],
+    }),
+    updateWebView: builder.mutation<WebView, { ZUID: string; body: WebView }>({
+      query: ({ ZUID, body }) => ({
+        url: `web/views/${ZUID}`,
+        method: "PUT",
+        body,
+      }),
+      transformResponse: getResponseData,
+      invalidatesTags: ["WebViews"],
+    }),
+    publishWebView: builder.mutation<any, { ZUID: string; version: number }>({
+      query: ({ ZUID, version }) => ({
+        url: `web/views/${ZUID}/versions/${version}?purge_cache=true`,
+        method: "POST",
+      }),
+      invalidatesTags: ["WebViews"],
     }),
     undeleteContentModelField: builder.mutation<
       any,
@@ -915,6 +942,7 @@ export const {
   useDeleteItemPublishingMutation,
   useGetContentItemQuery,
   useLazyGetContentItemQuery,
+  useGetContentItemByPathQuery,
   useGetContentItemsQuery,
   useGetContentModelQuery,
   useGetContentModelsQuery,
@@ -928,6 +956,8 @@ export const {
   useUpdateContentModelFieldMutation,
   useCreateContentModelMutation,
   useGetWebViewsQuery,
+  useUpdateWebViewMutation,
+  usePublishWebViewMutation,
   useBulkCreateContentModelFieldMutation,
   useDeleteContentModelFieldMutation,
   useUndeleteContentModelFieldMutation,
