@@ -34,41 +34,10 @@ export const mcpApi = createApi({
         { type: "ChatSessionLog", id: chatZUID },
       ],
     }),
-    getAllChatSessions: builder.query<ChatSession[], { userZUID: string }>({
-      query: ({ userZUID }) => {
+    getChatSessionLog: builder.query<ChatSessionLog, { chatZUID: string }>({
+      query: ({ chatZUID }) => {
         return {
-          url: `chats?instanceZuid=${instanceZUID}&userZuid=${userZUID}`,
-          method: "GET",
-        };
-      },
-      transformResponse: getResponseData,
-      providesTags: ["ChatSessions"],
-    }),
-    createNewChatSession: builder.mutation<
-      any,
-      { userZUID: string; roleZUID: string }
-    >({
-      query: ({ userZUID, roleZUID }) => {
-        return {
-          url: `chats`,
-          method: "POST",
-          body: {
-            userZuid: userZUID,
-            roleZuid: roleZUID,
-            instanceZuid: instanceZUID,
-          },
-        };
-      },
-      transformErrorResponse: getResponseData,
-      invalidatesTags: ["ChatSessions"],
-    }),
-    getChatSessionLog: builder.query<
-      ChatSessionLog,
-      { chatZUID: string; userZUID: string }
-    >({
-      query: ({ chatZUID, userZUID }) => {
-        return {
-          url: `chats/${chatZUID}?userZuid=${userZUID}&instanceZuid=${instanceZUID}`,
+          url: `chats/${chatZUID}?instanceZuid=${instanceZUID}`,
           method: "GET",
         };
       },
@@ -94,8 +63,6 @@ export const mcpApi = createApi({
 
 export const {
   useGeminiGenerationMutation,
-  useGetAllChatSessionsQuery,
   useGetChatSessionLogQuery,
-  useCreateNewChatSessionMutation,
   useUpdatePromptApprovalStatusMutation,
 } = mcpApi;
