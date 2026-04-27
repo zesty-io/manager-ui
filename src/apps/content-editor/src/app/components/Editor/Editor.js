@@ -32,6 +32,7 @@ export default memo(function Editor({
   onUpdateFieldErrors,
   fieldErrors,
   isLoadingItem,
+  visibleFieldName,
 }) {
   const dispatch = useDispatch();
   const isNewItem = itemZUID.slice(0, 3) === "new";
@@ -94,6 +95,18 @@ export default memo(function Editor({
       );
     }
   });
+
+  const renderedFields = useMemo(() => {
+    if (!visibleFieldName) {
+      return activeFields;
+    }
+
+    const filtered = activeFields.filter(
+      (field) => field.name === visibleFieldName
+    );
+
+    return filtered.length ? filtered : activeFields;
+  }, [activeFields, visibleFieldName]);
 
   const onChange = useCallback(
     (value, name) => {
@@ -392,7 +405,7 @@ export default memo(function Editor({
 
   return (
     <div className={styles.Fields}>
-      {activeFields?.map((field) => {
+      {renderedFields?.map((field) => {
         return (
           <div
             key={`${field.ZUID}`}
