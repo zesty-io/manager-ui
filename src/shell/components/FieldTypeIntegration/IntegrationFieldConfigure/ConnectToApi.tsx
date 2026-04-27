@@ -181,7 +181,8 @@ const ConnectToApi = ({
           justifyContent="flex-start"
           alignItems="center"
           component={Link}
-          href="#"
+          href="https://docs.zesty.io/docs/how-to-use-the-integration-field"
+          target="_blank"
         >
           <MenuBookRoundedIcon color="info" />
           <Typography variant="body2" color="info.dark">
