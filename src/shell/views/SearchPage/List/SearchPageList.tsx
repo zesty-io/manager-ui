@@ -110,7 +110,7 @@ export const SearchPageList: FC<SearchPageList> = ({
 
   return (
     <List
-      rowHeight={72}
+      rowHeight={92}
       rowCount={results.length}
       style={{ borderRadius: "8px" }}
       rowComponent={Row}
