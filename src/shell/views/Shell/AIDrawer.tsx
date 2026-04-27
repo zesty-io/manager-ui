@@ -179,16 +179,13 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
 
   const [geminiGenerate, { isLoading, data: aiResponse }] =
     useGeminiGenerationMutation();
-  const {
-    data: chatSessionLog,
-    isLoading: isLoadingChatSessionLog,
-    isError: isChatSessionLogError,
-  } = useGetChatSessionLogQuery(
-    { chatZUID: urlChatZUID, userZUID: user.ZUID },
-    {
-      skip: !urlChatZUID || !user.ZUID || !open,
-    }
-  );
+  const { data: chatSessionLog, isLoading: isLoadingChatSessionLog } =
+    useGetChatSessionLogQuery(
+      { chatZUID: urlChatZUID },
+      {
+        skip: !urlChatZUID || !open,
+      }
+    );
   const [updatePromptApprovalStatus] = useUpdatePromptApprovalStatusMutation();
 
   const responsesEndRef = useRef(null);
