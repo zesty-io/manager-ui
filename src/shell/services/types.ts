@@ -429,6 +429,7 @@ export interface InstanceSetting {
 export type Products =
   | "launchpad"
   | "content"
+  | "studio"
   | "media"
   | "schema"
   | "code"
