@@ -101,6 +101,7 @@ export function fetchProducts() {
       data = [
         "launchpad",
         "content",
+        "studio",
         "blocks",
         "schema",
         "media",

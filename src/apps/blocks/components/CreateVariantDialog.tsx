@@ -104,7 +104,7 @@ export const CreateVariantDialog = ({
           Cancel
         </Button>
         <Button
-          disabled={!variantName || isFieldsLoading}
+          disabled={isFieldsLoading}
           onClick={handleVariantCreate}
           loading={isLoading}
           variant="contained"
