@@ -41,6 +41,7 @@ window.CONFIG = {
 };
 
 import * as amplitude from "@amplitude/analytics-browser";
+import { sessionReplayPlugin } from "@amplitude/plugin-session-replay-browser";
 import { isContentOne } from "../utility/isContentOne";
 
 // needed for Breadcrumbs in Shell
@@ -121,6 +122,7 @@ const appTheme = createTheme(theme, {
 
 MonacoSetup(store);
 
+amplitude.add(sessionReplayPlugin());
 amplitude.init(window.CONFIG.AMPLITUDE_API_KEY, { autocapture: true });
 
 const preLoginIdentify = new amplitude.Identify();
