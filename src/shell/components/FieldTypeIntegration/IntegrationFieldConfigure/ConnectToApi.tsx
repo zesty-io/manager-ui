@@ -27,7 +27,7 @@ import AddCircleIcon from "@mui/icons-material/AddCircle";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import { FormWrapper, FieldWrapper } from "../components/Wrappers";
 import { IntegrationRequestHeaders } from "../../../services/types";
-import { validateUrl } from "../../../../utility/validateUrl";
+import { validateUrl } from "../utils";
 import useIntegrationField from "../useIntegrationField";
 import { v4 as uuidv4 } from "uuid";
 
