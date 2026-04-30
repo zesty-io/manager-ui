@@ -171,6 +171,13 @@ export const ItemEditHeaderActions = ({
       { skip: !resolvedItemZUID || !resolvedModelZUID }
     );
 
+  const publishedByUser = users?.find(
+    (user: any) => user.ZUID === activePublishing?.publishedByUserZUID
+  );
+  const publisherFullName = `${publishedByUser?.firstName || ""} ${
+    publishedByUser?.lastName || ""
+  }`.trim();
+
   useEffect(() => {
     // Automatically opens the create redirect modal
     // when there are changes to the url path part
@@ -327,6 +334,17 @@ export const ItemEditHeaderActions = ({
       return ITEM_STATES.draft;
     }
   })();
+
+  const publishButtonTooltipLabel =
+    itemState === ITEM_STATES.dirty ? "Save & Publish Item" : "Publish Item";
+
+  const datePreposition = (date?: string) => {
+    if (!date) return "on";
+    const formatted = formatDate(date);
+    return formatted.includes("Today") || formatted.includes("Yesterday")
+      ? ""
+      : "on";
+  };
 
   const allowPublish = useMemo(() => {
     const allowPublishLabelZUIDs = statusLabels?.reduce((acc, next) => {
@@ -555,34 +573,16 @@ export const ItemEditHeaderActions = ({
               itemState === ITEM_STATES.draft ||
               itemState === ITEM_STATES.dirty ? (
                 <div>
-                  {itemState === ITEM_STATES.dirty
-                    ? "Save & Publish Item"
-                    : "Publish Item"}{" "}
-                  <br />
+                  {publishButtonTooltipLabel} <br />
                   {publishShortcut}
                 </div>
               ) : (
                 <div>
                   v{activePublishing?.version} published{" "}
-                  {formatDate(activePublishing?.publishAt).includes("Today") ||
-                  formatDate(activePublishing?.publishAt).includes("Yesterday")
-                    ? ""
-                    : "on"}
+                  {datePreposition(activePublishing?.publishAt)}
                   <br />
                   {formatDate(activePublishing?.publishAt)} <br />
-                  by{" "}
-                  {
-                    users?.find(
-                      (user: any) =>
-                        user.ZUID === activePublishing?.publishedByUserZUID
-                    )?.firstName
-                  }{" "}
-                  {
-                    users?.find(
-                      (user: any) =>
-                        user.ZUID === activePublishing?.publishedByUserZUID
-                    )?.lastName
-                  }
+                  by {publisherFullName}
                 </div>
               )
             }
@@ -678,30 +678,11 @@ export const ItemEditHeaderActions = ({
             <Tooltip
               title={
                 <div>
-                  v{activePublishing?.version} scheduled to unpublish on{" "}
-                  {formatDate(activePublishing?.unpublishAt).includes(
-                    "Today"
-                  ) ||
-                  formatDate(activePublishing?.unpublishAt).includes(
-                    "Yesterday"
-                  )
-                    ? ""
-                    : "on"}
+                  v{activePublishing?.version} scheduled to unpublish{" "}
+                  {datePreposition(activePublishing?.unpublishAt)}
                   <br />
                   {formatDate(activePublishing?.unpublishAt)} <br />
-                  by{" "}
-                  {
-                    users?.find(
-                      (user: any) =>
-                        user.ZUID === activePublishing?.publishedByUserZUID
-                    )?.firstName
-                  }{" "}
-                  {
-                    users?.find(
-                      (user: any) =>
-                        user.ZUID === activePublishing?.publishedByUserZUID
-                    )?.lastName
-                  }
+                  by {publisherFullName}
                 </div>
               }
               enterDelay={1000}
@@ -739,19 +720,7 @@ export const ItemEditHeaderActions = ({
             <div>
               v{item?.scheduling?.version} published on <br />
               {formatDate(item?.scheduling?.publishAt)} <br />
-              by{" "}
-              {
-                users?.find(
-                  (user: any) =>
-                    user.ZUID === item?.scheduling?.publishedByUserZUID
-                )?.firstName
-              }{" "}
-              {
-                users?.find(
-                  (user: any) =>
-                    user.ZUID === item?.scheduling?.publishedByUserZUID
-                )?.lastName
-              }
+              by {publisherFullName}
             </div>
           }
           placement="bottom-start"
@@ -968,6 +937,20 @@ type PublishingMenuProps = {
   itemZUID: string;
 };
 
+const MENU_ACTION_LABELS: Record<string, string> = {
+  [ITEM_STATES.dirty]: "Save & Publish",
+  [ITEM_STATES.scheduled]: "Publish Now",
+  [ITEM_STATES.published]: "Unpublish Now",
+  [ITEM_STATES.draft]: "Publish Now",
+};
+
+const SCHEDULE_ACTION_LABELS: Record<string, string> = {
+  [ITEM_STATES.dirty]: "Save & Schedule Publish",
+  [ITEM_STATES.scheduled]: "Unschedule Publish",
+  [ITEM_STATES.published]: "Schedule Unpublish",
+  [ITEM_STATES.draft]: "Schedule Publish",
+};
+
 const PublishingMenu = ({
   itemState,
   onSave,
@@ -981,6 +964,12 @@ const PublishingMenu = ({
   handlePublish,
 }: PublishingMenuProps) => {
   const history = useHistory();
+  const menuActionIcon =
+    itemState === ITEM_STATES.published ? (
+      <UnpublishedRounded fontSize="small" />
+    ) : (
+      <CloudUploadRounded fontSize="small" />
+    );
   return (
     <Menu
       data-cy="publishingMenu"
@@ -1020,24 +1009,8 @@ const PublishingMenu = ({
           itemState === ITEM_STATES.published ? "UnpublishContentButton" : ""
         }
       >
-        <ListItemIcon>
-          {itemState === ITEM_STATES.dirty ? (
-            <CloudUploadRounded fontSize="small" />
-          ) : itemState === ITEM_STATES.scheduled ? (
-            <CloudUploadRounded fontSize="small" />
-          ) : itemState === ITEM_STATES.published ? (
-            <UnpublishedRounded fontSize="small" />
-          ) : (
-            <CloudUploadRounded fontSize="small" />
-          )}
-        </ListItemIcon>
-        {itemState === ITEM_STATES.dirty
-          ? "Save & Publish"
-          : itemState === ITEM_STATES.scheduled
-          ? "Publish Now"
-          : itemState === ITEM_STATES.published
-          ? "Unpublish Now"
-          : "Publish Now"}
+        <ListItemIcon>{menuActionIcon}</ListItemIcon>
+        {MENU_ACTION_LABELS[itemState]}
       </MenuItem>
       {itemState !== ITEM_STATES.published && (
         <MenuItem
@@ -1064,13 +1037,7 @@ const PublishingMenu = ({
           <ListItemIcon>
             <CalendarTodayRounded fontSize="small" />
           </ListItemIcon>
-          {itemState === ITEM_STATES.dirty
-            ? "Save & Schedule Publish"
-            : itemState === ITEM_STATES.scheduled
-            ? "Unschedule Publish"
-            : itemState === ITEM_STATES.published
-            ? "Schedule Unpublish"
-            : "Schedule Publish"}
+          {SCHEDULE_ACTION_LABELS[itemState]}
         </MenuItem>
       )}
       {itemState === ITEM_STATES.published && (

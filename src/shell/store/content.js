@@ -876,24 +876,19 @@ export function publish(modelZUID, itemZUID, data, meta = {}) {
         }
       })
       .then(() => {
-        const message =
-          (!!data.publishAt && data.publishAt !== "now") ||
-          (data.publishAt === "now" &&
-            !!data?.unpublishAt &&
-            data?.unpublishAt !== "never")
-            ? `Scheduled ${title} to ${
-                data.publishAt === "now" && data?.unpublishAt !== "never"
-                  ? "unpublish"
-                  : "publish"
-              } on ${meta.localTime} in the ${meta.localTimezone} timezone`
-            : `Published ${title} now`;
+        let message = `Published ${title} now`;
 
-        return dispatch(
-          notify({
-            message,
-            kind: "save",
-          })
-        );
+        if (data.publishAt !== "now" && !!data.publishAt) {
+          message = `Scheduled ${title} to publish on ${meta.localTime} in the ${meta.localTimezone} timezone`;
+        } else if (
+          data.publishAt === "now" &&
+          !!data?.unpublishAt &&
+          data?.unpublishAt !== "never"
+        ) {
+          message = `Scheduled ${title} to unpublish on ${meta.localTime} in the ${meta.localTimezone} timezone`;
+        }
+
+        return dispatch(notify({ message, kind: "save" }));
       })
       .then(() => {
         dispatch(
