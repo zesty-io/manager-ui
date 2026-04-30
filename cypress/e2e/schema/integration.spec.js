@@ -6,7 +6,7 @@ import { DISPLAY_OPTIONS_CONFIG } from "../../../src/shell/components/FieldTypeI
 const forceClick = { force: true };
 
 const ENDPOINTS = {
-  generic: "https://8xbq19z1-dev.preview.dev.zesty.io/api/generic.json",
+  generic: "https://8xbq19z1-dev.preview.stage.zesty.io/api/generic.json",
   shopify: "https://shopify.dev/docs/api/ajax/reference/products",
   youtube: "https://youtube.googleapis.com/youtube/v3/channels",
   mux: "https://api.mux.com/video/v1/assets",
@@ -60,6 +60,11 @@ describe("Integration Field", () => {
         });
         it(`Submit Generic Type Field- ${valueType})`, () => {
           cy.intercept(`**/v1/content/models/**`).as("getModelFields");
+
+          cy.get('[data-cy="FieldFormInput_label"] input')
+            .focus()
+            .type("{selectAll}{del}");
+          cy.get('[data-cy="FieldFormInput_label"] input').type(`${valueType}`);
           cy.get('[data-cy="FieldFormAddFieldBtn"]').click();
 
           cy.wait("@getModelFields").then((interception) => {
@@ -78,6 +83,12 @@ describe("Integration Field", () => {
         });
         it(`Submit Special Type Field - ${valueType})`, () => {
           cy.intercept(`**/v1/content/models/**`).as("getModelFields");
+
+          cy.get('[data-cy="FieldFormInput_label"] input')
+            .focus()
+            .type("{selectAll}{del}");
+          cy.get('[data-cy="FieldFormInput_label"] input').type(`${valueType}`);
+
           cy.get('[data-cy="FieldFormAddFieldBtn"]').click();
 
           cy.wait("@getModelFields").then((interception) => {
@@ -220,8 +231,6 @@ function connectToEndpoint(endpoint, type, apiData) {
   cy.get('[data-cy="AddFieldBtn"]').click();
 
   cy.get('[data-cy="FieldItem_integration"]').click();
-
-  cy.get('[data-cy="FieldFormInput_label"] input').clear().type(`${type}`);
 
   cy.get('[data-cy="integrationConfigureButton"]').click();
   cy.get('[data-cy="integrationFormDialog"]').should("exist");
