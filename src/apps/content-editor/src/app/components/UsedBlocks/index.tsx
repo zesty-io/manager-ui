@@ -79,7 +79,11 @@ export const UsedBlocks = () => {
         return true;
       });
 
-      if (!uniqueBlockReferences.length) return;
+      if (!uniqueBlockReferences.length) {
+        setIsBuildingReferences(false);
+        setBlockReferences([]);
+        return;
+      }
 
       // blockZUIDs: models we need to fetch items for (to find the base/earliest variant)
       // directVariantZUIDs: variant ZUIDs to fetch directly (variant, no version)

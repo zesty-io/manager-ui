@@ -87,13 +87,21 @@ export function extractBlockReferences(code: string): BlockReference[] {
     // Full URL passed as argument —
     // {{block('https://instance/-/block/name.html')}} or {{block(https://...)}}
     if (fullPath.startsWith("http://") || fullPath.startsWith("https://")) {
-      const url = new URL(fullPath);
-      ref.blockName = url.pathname.split("/").pop() ?? null;
+      let url: URL;
+      try {
+        url = new URL(fullPath);
+      } catch {
+        continue;
+      }
+
+      ref.blockName = url.pathname.split("/").pop() || null;
       ref.variant = url.searchParams.get("variant");
       ref.version = url.searchParams.get("version");
     } else {
+      if (!fullPath) continue;
+
       const [filePath, queryString] = fullPath.split("?");
-      ref.blockName = filePath.split("/").pop() ?? null;
+      ref.blockName = filePath.split("/").pop() || null;
 
       if (args.length >= 2) {
         // Positional params — variant is 2nd argument, version is 3rd
