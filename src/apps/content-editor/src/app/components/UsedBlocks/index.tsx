@@ -1,13 +1,15 @@
 import { Typography, Stack, Skeleton } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector, useStore } from "react-redux";
 import { useParams } from "react-router-dom";
 import {
-  instanceApi,
   useGetContentModelsQuery,
   useGetWebViewsQuery,
 } from "shell/services/instance";
 import { ContentItem } from "shell/services/types";
+import { fetchItems, searchItems } from "shell/store/content";
+import { fetchVersions } from "shell/store/contentVersions";
+import { AppState } from "shell/store/types";
 import { BlockPreview } from "./BlockPreview";
 import {
   BlockReference,
@@ -16,6 +18,7 @@ import {
 
 export const UsedBlocks = () => {
   const dispatch = useDispatch<any>();
+  const store = useStore<AppState>();
   const { modelZUID, itemZUID } = useParams<{
     modelZUID: string;
     itemZUID: string;
@@ -24,6 +27,11 @@ export const UsedBlocks = () => {
   const { data: models } = useGetContentModelsQuery();
   const [blockReferences, setBlockReferences] = useState<ContentItem[]>([]);
   const [isBuildingReferences, setIsBuildingReferences] = useState(false);
+
+  const contentItems = useSelector((state: AppState) => state.content);
+  const contentVersions = useSelector(
+    (state: AppState) => state.contentVersions
+  );
 
   const blockModels = useMemo(() => {
     if (!models) return [];
@@ -131,15 +139,17 @@ export const UsedBlocks = () => {
       const blockZUIDToBaseItem = new Map<string, ContentItem>();
       (
         await Promise.allSettled(
-          // Using dispatch + initiate instead of lazy query hooks to support parallel fetching.
-          // Lazy query hooks only track the last dispatched query, so calling them in a loop
-          // causes earlier results to be overwritten.
           Array.from(blockZUIDs).map(async (blockId) => {
-            const items = await dispatch(
-              instanceApi.endpoints.getContentModelItems.initiate({
-                modelZUID: blockId,
-              })
-            ).unwrap();
+            // Use items already in the store if available, otherwise fetch.
+            const storeItems = Object.values(contentItems).filter(
+              (item) => item?.meta?.contentModelZUID === blockId
+            ) as ContentItem[];
+
+            const items =
+              storeItems.length > 0
+                ? storeItems
+                : (((await dispatch(fetchItems(blockId, { limit: 100 })))
+                    ?.data ?? []) as ContentItem[]);
 
             return [blockId, items] as [string, ContentItem[]];
           })
@@ -201,16 +211,25 @@ export const UsedBlocks = () => {
         (
           await Promise.allSettled(
             versionedRefs.map(async ({ ref, modelZUID, itemZUID }) => {
-              const versions = await dispatch(
-                instanceApi.endpoints.getContentItemVersions.initiate({
-                  modelZUID,
-                  itemZUID,
-                })
-              ).unwrap();
+              const storeVersions = contentVersions?.[itemZUID] as
+                | ContentItem[]
+                | undefined;
+              const storeVersion = Array.isArray(storeVersions)
+                ? storeVersions.find(
+                    (v) => v.meta.version === Number(ref.version)
+                  )
+                : null;
+
+              if (storeVersion) return storeVersion;
+
+              await dispatch(fetchVersions(modelZUID, itemZUID));
+
+              const freshVersions = store.getState().contentVersions?.[
+                itemZUID
+              ] as ContentItem[] | undefined;
               return (
-                versions?.find(
-                  (version: ContentItem) =>
-                    version.meta.version === Number(ref.version)
+                freshVersions?.find(
+                  (v) => v.meta.version === Number(ref.version)
                 ) ?? null
               );
             })
@@ -223,14 +242,18 @@ export const UsedBlocks = () => {
           .forEach(({ value }) => variants.push(value));
       }
 
-      // Fetch direct variant refs (variant with no version) in parallel.
+      // Resolve direct variant refs — use store item if already loaded, otherwise fetch.
       const directVariants: ContentItem[] = (
         await Promise.allSettled(
-          Array.from(directVariantZUIDs).map((variantZUID) =>
-            dispatch(
-              instanceApi.endpoints.getContentItem.initiate(variantZUID)
-            ).unwrap()
-          )
+          Array.from(directVariantZUIDs).map(async (variantZUID) => {
+            if (!contentItems[variantZUID]) {
+              await dispatch(searchItems(variantZUID));
+            }
+
+            return (
+              (store.getState().content[variantZUID] as ContentItem) ?? null
+            );
+          })
         )
       )
         .filter((result): result is PromiseFulfilledResult<ContentItem> => {
