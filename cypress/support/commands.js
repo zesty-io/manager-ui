@@ -45,7 +45,7 @@ Cypress.Commands.add("assertClipboardValue", (value) => {
 });
 
 Cypress.Commands.add("getBySelector", (selector, ...args) => {
-  return cy.get(`[data-cy=${selector}]`, ...args);
+  return cy.get(`[data-cy="${selector}"]`, ...args);
 });
 
 Cypress.Commands.add("blockAnnouncements", () => {
