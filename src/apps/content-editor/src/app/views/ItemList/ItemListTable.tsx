@@ -276,6 +276,7 @@ const fieldTypeColumnConfigMap: Partial<
           </Typography>
         </Box>
       ),
+  },
   block_selector: {
     width: 200,
     filterable: true,
