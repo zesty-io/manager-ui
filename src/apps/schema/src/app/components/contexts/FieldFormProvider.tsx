@@ -13,6 +13,7 @@ import {
   ContentModelFieldValue,
   FieldSettings,
   FieldSettingsOptions,
+  IntegrationFieldConfig,
   RepeaterSubField,
 } from "../../../../../../shell/services/types";
 import { FORM_CONFIG } from "../configs";
@@ -137,6 +138,16 @@ export const FieldFormProvider = ({
           formFields[field.name] = [{ 0: "No" }, { 1: "Yes" }];
         } else if (field.name === "defaultValue" && type === "number") {
           formFields[field.name] = 0;
+        } else if (
+          field.type === "config" &&
+          field.name === "integrationFieldConfig"
+        ) {
+          formFields["integrationFieldConfig"] = {
+            endpoint: "",
+            headers: null,
+            type: null,
+            keyPaths: null,
+          };
         } else if (
           [
             "defaultValue",
@@ -286,6 +297,18 @@ export const FieldFormProvider = ({
         newErrorsObj[inputName] = "This field is required";
       }
 
+      if (inputName === "integrationFieldConfig") {
+        const intField = (
+          isUpdateField
+            ? fieldData?.settings?.integrationFieldConfig
+            : formData?.integrationFieldConfig
+        ) as IntegrationFieldConfig;
+
+        if (!intField?.endpoint || !intField?.type || !intField?.keyPaths) {
+          newErrorsObj[inputName] = "Incomplete API Configuration";
+        }
+      }
+
       if (
         inputName in errors &&
         ![
@@ -301,6 +324,7 @@ export const FieldFormProvider = ({
           "currency",
           "fileExtensions",
           "fileExtensionsErrorMessage",
+          "integrationFieldConfig",
         ].includes(inputName)
       ) {
         const { maxLength, label, validate } = FORM_CONFIG[type].details.find(

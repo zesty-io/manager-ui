@@ -1,0 +1,298 @@
+{
+  "results": [
+    {
+      "id": 6804843135178,
+      "sku": "A2A4G",
+      "title": "Crest Hoodie",
+      "type": "Mens Hoodie",
+      "color": "Black",
+      "inStock": true,
+      "price": "$40",
+      "featuredMedia": "https://cdn.shopify.com/s/files/1/0156/6146/files/CrestHoodieBlackA2A4G-BBBB-1827_A-Edit.jpg?v=1743417063",
+      "rating": {
+        "average": 4.5659,
+        "range": 5,
+        "count": 668
+      }
+    },
+    {
+      "id": 6805972385994,
+      "sku": "A5A9T",
+      "title": "Crest Oversized Zip Up Hoodie",
+      "type": "Mens Pullovers",
+      "color": "Lifestyle Brown",
+      "inStock": true,
+      "price": "$48",
+      "featuredMedia": "https://cdn.shopify.com/s/files/1/0156/6146/files/images-CrestOversizedZipUpHoodieGSLifestyleBrownA5A9T_NC0S_2349_0292.jpg?v=1746438153",
+      "rating": {
+        "average": 4.5088,
+        "range": 5,
+        "count": 57
+      }
+    },
+    {
+      "id": 6806002139338,
+      "sku": "A2C1B",
+      "title": "Arrival Track Jacket",
+      "type": "Mens Jackets / Outerwear",
+      "color": "Black",
+      "inStock": true,
+      "price": "$56",
+      "featuredMedia": "https://cdn.shopify.com/s/files/1/0156/6146/files/images-ArrivalWovenTrackJacketGSBlackA2C1B_BB2J_1125_A_A_0207.jpg?v=1746708605",
+      "rating": {
+        "range": 5
+      }
+    },
+    {
+      "id": 6805235728586,
+      "sku": "A4A7J",
+      "title": "Heritage Washed Hoodie",
+      "type": "Mens Hoodie",
+      "color": "Onyx Grey",
+      "inStock": true,
+      "price": "$44.8",
+      "featuredMedia": "https://cdn.shopify.com/s/files/1/0156/6146/files/HeritageWashedHoodieGSOnyxGrey-ACIDWASHSMALLBALLA4A7J-GB8N-1430.jpg?v=1695912174",
+      "rating": {
+        "average": 4.4779,
+        "range": 5,
+        "count": 272
+      }
+    },
+    {
+      "id": 6805481488586,
+      "sku": "A5A8O",
+      "title": "Crest Oversized Hoodie",
+      "type": "Mens Pullovers",
+      "color": "Black",
+      "inStock": true,
+      "price": "$46",
+      "featuredMedia": "https://cdn.shopify.com/s/files/1/0156/6146/files/CrestOversizedHoodieGSBlackA5A8O-BB2J-1282.jpg?v=1713881508",
+      "rating": {
+        "average": 4.4157,
+        "range": 5,
+        "count": 89
+      }
+    },
+    {
+      "id": 6806110044362,
+      "sku": "A2B3L",
+      "title": "Rest Day Essentials Hoodie",
+      "type": "Mens Pullovers",
+      "color": "Light Grey Core Marl",
+      "inStock": true,
+      "price": "$58",
+      "featuredMedia": "https://cdn.shopify.com/s/files/1/0156/6146/files/images-RestDayEssentialsBoxyOversizedHoodieLightGreyCoreMarlA2B3L_GBCN_2156_0263.jpg?v=1746437914",
+      "rating": {
+        "average": 4.75,
+        "range": 5,
+        "count": 4
+      }
+    },
+    {
+      "id": 6806126264522,
+      "sku": "A2C9H",
+      "title": "Power Hoodie",
+      "type": "Mens Hoodie",
+      "color": "Charcoal Core Marl",
+      "inStock": true,
+      "price": "$37.2",
+      "featuredMedia": "https://cdn.shopify.com/s/files/1/0156/6146/files/A_PowerOriginalsHoodieCharcoalCoreMarlA2C9H-GBBB-1262_391700d8-8ec4-4ddb-9d76-a3ce4d42eb27.jpg?v=1743417072",
+      "rating": {
+        "average": 4.6389,
+        "range": 5,
+        "count": 36
+      }
+    },
+    {
+      "id": 6805481717962,
+      "sku": "A5A8O",
+      "title": "Crest Oversized Hoodie",
+      "type": "Mens Pullovers",
+      "color": "Light Grey Marl",
+      "inStock": true,
+      "price": "$46",
+      "featuredMedia": "https://cdn.shopify.com/s/files/1/0156/6146/files/CrestOversizedHoodieGSLightGreyMarlA5A8O-GCHR-1625.jpg?v=1709107946",
+      "rating": {
+        "average": 4.4157,
+        "range": 5,
+        "count": 89
+      }
+    },
+    {
+      "id": 6805971828938,
+      "sku": "A5A8O",
+      "title": "Crest Oversized Hoodie",
+      "type": "Mens Pullovers",
+      "color": "Lifestyle Brown",
+      "inStock": true,
+      "price": "$46",
+      "featuredMedia": "https://cdn.shopify.com/s/files/1/0156/6146/files/CrestOversizedHoodieGSLifestyleBrownA5A8O-NC0S-1834_A-Edit-2_5ae29354-fab0-4b7e-a21d-b35571e04ba1.jpg?v=1744898780",
+      "rating": {
+        "average": 4.4111,
+        "range": 5,
+        "count": 90
+      }
+    },
+    {
+      "id": 6805972287690,
+      "sku": "A5A8O",
+      "title": "Crest Oversized Hoodie",
+      "type": "Mens Pullovers",
+      "color": "Rest Blue",
+      "inStock": true,
+      "price": "$46",
+      "featuredMedia": "https://cdn.shopify.com/s/files/1/0156/6146/files/CrestOversizedHoodieGSRestBlueA5A8O-UDBB0017_c4235ceb-0f70-406d-a422-83e69aaee0cd.jpg?v=1738170561",
+      "rating": {
+        "average": 4.4157,
+        "range": 5,
+        "count": 89
+      }
+    },
+    {
+      "id": 6805217181898,
+      "sku": "A5A9T",
+      "title": "Crest Oversized Zip Up Hoodie",
+      "type": "Mens Hoodie",
+      "color": "Black",
+      "inStock": true,
+      "price": "$48",
+      "featuredMedia": "https://cdn.shopify.com/s/files/1/0156/6146/files/EssentialOversizedZipUpHoodieGSBlackA5A9T-BB2J-1354.jpg?v=1696606434",
+      "rating": {
+        "average": 4.5088,
+        "range": 5,
+        "count": 57
+      }
+    },
+    {
+      "id": 6805967929546,
+      "sku": "A5A9T",
+      "title": "Crest Oversized Zip Up Hoodie",
+      "type": "Mens Pullovers",
+      "color": "Light Grey Core Marl",
+      "inStock": true,
+      "price": "$48",
+      "featuredMedia": "https://cdn.shopify.com/s/files/1/0156/6146/files/CrestOversizedZipUpHoodieLightGreyCoreMarlA5A9T-GBCN0023_68aeef6b-fbfe-4206-8600-03abf5037ea6.jpg?v=1738170562",
+      "rating": {
+        "average": 4.5088,
+        "range": 5,
+        "count": 57
+      }
+    },
+    {
+      "id": 6806073966794,
+      "sku": "A2B2U",
+      "title": "Lightweight Slub Textured Hoodie",
+      "type": "Mens Pullovers",
+      "color": "Black",
+      "inStock": true,
+      "price": "$70",
+      "featuredMedia": "https://cdn.shopify.com/s/files/1/0156/6146/files/images-LightweightSlubTexturedLiftingHoodieGSBlackA2B2U_BB2J_1305_0084.jpg?v=1747673262",
+      "rating": {
+        "range": 5
+      }
+    },
+    {
+      "id": 6806109683914,
+      "sku": "A2B3M",
+      "title": "Rest Day Essentials Zip Hoodie",
+      "type": "Mens Pullovers",
+      "color": "Light Grey Core Marl",
+      "inStock": true,
+      "price": "$60",
+      "featuredMedia": "https://cdn.shopify.com/s/files/1/0156/6146/files/images-RestDayEssentialsBoxyOversizedZipHoodieLightGreyCoreMarlA2B3M_GBCN_2266_0278.jpg?v=1746437914",
+      "rating": {
+        "average": 5,
+        "range": 5,
+        "count": 2
+      }
+    },
+    {
+      "id": 6806075637962,
+      "sku": "A2B2U",
+      "title": "Lightweight Slub Textured Hoodie",
+      "type": "Mens Pullovers",
+      "color": "Utility Green",
+      "inStock": true,
+      "price": "$70",
+      "featuredMedia": "https://cdn.shopify.com/s/files/1/0156/6146/files/images-LightweightSlubTexturedLiftingHoodieGSUtilityGreenA2B2U_ECJP_1310_0089.jpg?v=1747681706",
+      "rating": {
+        "range": 5
+      }
+    },
+    {
+      "id": 6806088450250,
+      "sku": "A2B3O",
+      "title": "Prime Hoodie",
+      "type": "Mens Hoodie",
+      "color": "Black/Vivid Red",
+      "inStock": true,
+      "price": "$48",
+      "featuredMedia": "https://cdn.shopify.com/s/files/1/0156/6146/files/PrimeHoodieGSBlack-GSVividRedA2B3O-RBWN-1363-0190_e00f20c9-bd19-4027-897b-602f6dddb2fe.jpg?v=1740429537",
+      "rating": {
+        "average": 4,
+        "range": 5,
+        "count": 1
+      }
+    },
+    {
+      "id": 6805953839306,
+      "sku": "A2B3B",
+      "title": "GSLC Hoodie",
+      "type": "Mens Pullovers",
+      "color": "Black",
+      "inStock": true,
+      "price": "$58",
+      "featuredMedia": "https://cdn.shopify.com/s/files/1/0156/6146/files/images-GSLCHoodieGSBlackA2B3B_BB2J_2693.jpg?v=1748014515",
+      "rating": {
+        "average": 5,
+        "range": 5,
+        "count": 3
+      }
+    },
+    {
+      "id": 6805954068682,
+      "sku": "A2B3B",
+      "title": "GSLC Hoodie",
+      "type": "Mens Pullovers",
+      "color": "Soft White",
+      "inStock": true,
+      "price": "$58",
+      "featuredMedia": "https://cdn.shopify.com/s/files/1/0156/6146/files/images-GSLCHoodieGSSoftWhiteA2B3B_WCMY_2627.jpg?v=1747678021",
+      "rating": {
+        "average": 5,
+        "range": 5,
+        "count": 3
+      }
+    },
+    {
+      "id": 6806101295306,
+      "sku": "A6A7F",
+      "title": "Interlock Tech Zip Up Hoodie",
+      "type": "Mens Pullovers",
+      "color": "Light Grey Core Marl",
+      "inStock": true,
+      "price": "$70",
+      "featuredMedia": "https://cdn.shopify.com/s/files/1/0156/6146/files/images-TechKnitZipUpHoodieLightGreyCoreMarlA6A7F_GBCN_0711.jpg?v=1746693707",
+      "rating": {
+        "average": 4.6957,
+        "range": 5,
+        "count": 23
+      }
+    },
+    {
+      "id": 6805953904842,
+      "sku": "A2B3B",
+      "title": "GSLC Hoodie",
+      "type": "Mens Pullovers",
+      "color": "Heavy Blue",
+      "inStock": true,
+      "price": "$58",
+      "featuredMedia": "https://cdn.shopify.com/s/files/1/0156/6146/files/images-GSLCHoodieGSHeavyBlueA2B3B_UCTN_1679.jpg?v=1748014575",
+      "rating": {
+        "average": 5,
+        "range": 5,
+        "count": 3
+      }
+    }
+  ]
+}

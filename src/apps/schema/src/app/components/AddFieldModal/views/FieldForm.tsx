@@ -11,6 +11,10 @@ import {
   Tabs,
   Tab,
   Button,
+  Grid,
+  ListItem,
+  InputAdornment,
+  Fade,
 } from "@mui/material";
 import { isEmpty } from "lodash";
 import CloseIcon from "@mui/icons-material/Close";
@@ -47,6 +51,7 @@ import {
   ContentModelField,
   FieldSettingsOptions,
   ContentModelFieldDataType,
+  IntegrationFieldConfig,
   RepeaterSubField,
 } from "../../../../../../../shell/services/types";
 import { FIELD_COPY_CONFIG, TYPE_TEXT } from "../../configs";
@@ -203,6 +208,7 @@ const FieldFormContent = ({
 
   const handleSubmitForm = () => {
     setIsSubmitClicked(true);
+
     const hasErrors = Object.values(errors)
       .flat(2)
       .some((error) => error.length);
@@ -310,6 +316,14 @@ const FieldFormContent = ({
       );
 
       body.settings.options = optionsObject;
+    }
+
+    if (type === "integration") {
+      body.settings.integrationFieldConfig = (
+        isUpdateField
+          ? fieldData?.settings?.integrationFieldConfig
+          : formData?.integrationFieldConfig
+      ) as IntegrationFieldConfig;
     }
 
     if (isUpdateField) {
