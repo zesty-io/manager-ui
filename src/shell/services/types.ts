@@ -67,6 +67,38 @@ export interface File {
 
 export type ModelType = "pageset" | "templateset" | "dataset" | "block";
 
+export type IntegrationTypes =
+  | "simple"
+  | "text"
+  | "details"
+  | "image"
+  | "video"
+  | "shopify"
+  | "youtube"
+  | "mux"
+  | "classy";
+
+export type IntegrationRequestHeaders<T extends string = string> = {
+  [key: string]: T;
+};
+
+export type IntegrationKeyPaths = {
+  rootPath?: string | null;
+  itemId?: string | null;
+  heading?: string | null;
+  subHeading?: string | null;
+  thumbnail?: string | null;
+  detail?: string | null;
+  details?: string[] | null;
+};
+
+export type IntegrationFieldConfig = {
+  endpoint: string;
+  headers: IntegrationRequestHeaders | null;
+  type: IntegrationTypes | null;
+  keyPaths: IntegrationKeyPaths | null;
+};
+
 export interface ContentModel {
   ZUID: string;
   masterZUID: string;
@@ -120,7 +152,7 @@ export interface Meta {
   createdByUserZUID: string;
 }
 export interface Data {
-  [key: string]: number | string | null | undefined;
+  [key: string]: number | string | null | undefined | unknown;
 }
 
 type UnorderedQuery = {
@@ -221,6 +253,7 @@ export interface FieldSettings {
   currency?: string;
   fileExtensions?: string[];
   fileExtensionsErrorMessage?: string;
+  integrationFieldConfig?: IntegrationFieldConfig;
   subFields?: RepeaterSubField[];
 }
 
@@ -230,7 +263,8 @@ export type ContentModelFieldValue =
   | boolean
   | string[]
   | FieldSettings
-  | FieldSettingsOptions[];
+  | FieldSettingsOptions[]
+  | IntegrationFieldConfig;
 
 export type ContentModelFieldDataType =
   | "text"
@@ -254,6 +288,7 @@ export type ContentModelFieldDataType =
   | "yes_no"
   | "color"
   | "sort"
+  | "integration"
   | "block_selector"
   | "repeater";
 

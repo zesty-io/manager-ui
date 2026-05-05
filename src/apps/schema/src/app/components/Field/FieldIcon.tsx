@@ -17,7 +17,7 @@ import ColorLensRounded from "@mui/icons-material/ColorLensRounded";
 import FormatListNumberedRounded from "@mui/icons-material/FormatListNumberedRounded";
 import { Markdown, OneToOne, Block, Repeater } from "@zesty-io/material";
 import { Box, SvgIcon } from "@mui/material";
-
+import DataObjectIcon from "@mui/icons-material/DataObject";
 type Icons = {
   [key: string]: {
     icon: SvgIconComponent;
@@ -130,6 +130,11 @@ const icons: Icons = {
     icon: AttachmentRounded,
     backgroundColor: "grey.100",
     borderColor: "grey.700",
+  },
+  integration: {
+    icon: DataObjectIcon,
+    backgroundColor: "purple.50",
+    borderColor: "purple.700",
   },
 };
 

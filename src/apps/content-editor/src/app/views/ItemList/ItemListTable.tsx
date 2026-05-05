@@ -258,6 +258,25 @@ const fieldTypeColumnConfigMap: Partial<
     filterable: true,
     renderCell: (params: GridRenderCellParams) => <SortCell params={params} />,
   },
+  integration: {
+    width: 240,
+    filterable: true,
+    renderCell: (params: any) =>
+      params.value && (
+        <Box
+          height="100%"
+          width="100%"
+          display="flex"
+          flexDirection="row"
+          justifyContent="flex-start"
+          alignItems="center"
+        >
+          <Typography variant="body2" noWrap>
+            {params.value}
+          </Typography>
+        </Box>
+      ),
+  },
   block_selector: {
     width: 200,
     filterable: true,

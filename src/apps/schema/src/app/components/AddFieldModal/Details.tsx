@@ -13,6 +13,7 @@ import PlayCircleFilledRoundedIcon from "@mui/icons-material/PlayCircleFilledRou
 import {
   ContentModelField,
   ContentModelFieldDataType,
+  IntegrationFieldConfig,
 } from "../../../../../../shell/services/types";
 import { Errors, FormData } from "./views/FieldForm";
 import { FORM_CONFIG } from "../configs";
@@ -121,6 +122,8 @@ export const Details = ({
         let renderOption: any;
         let filterOptions: any;
         let autocompleteConfig: AutocompleteConfig = {};
+        let integrationFieldConfig: IntegrationFieldConfig | undefined =
+          undefined;
 
         if (fieldConfig.name === "relatedModelZUID") {
           dropdownOptions = modelsOptions;
@@ -130,6 +133,12 @@ export const Details = ({
         if (fieldConfig.name === "relatedFieldZUID") {
           dropdownOptions = fieldsOptions;
           disabled = isFetchingSelectedModelFields;
+        }
+
+        if (fieldConfig.name === "integrationFieldConfig") {
+          integrationFieldConfig = isUpdateField
+            ? fieldData?.settings?.integrationFieldConfig
+            : (formData["integrationFieldConfig"] as IntegrationFieldConfig);
         }
 
         if (fieldConfig.name === "currency") {
@@ -211,6 +220,8 @@ export const Details = ({
             renderOption={renderOption}
             filterOptions={filterOptions}
             autocompleteConfig={autocompleteConfig}
+            integrationFieldConfig={integrationFieldConfig}
+            isUpdateField={isUpdateField}
           />
         );
       })}
