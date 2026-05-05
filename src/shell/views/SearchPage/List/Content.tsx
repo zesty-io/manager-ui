@@ -104,6 +104,7 @@ export const Content: FC<Content> = ({
       icon={Create}
       style={style}
       loading={loading}
+      path={contentData?.web?.path}
     />
   );
 };
