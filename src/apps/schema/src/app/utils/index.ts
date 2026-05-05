@@ -163,6 +163,7 @@ export const getCategory = (type: string) => {
     case "sort":
     case "uuid":
     case "integration":
+    case "repeater":
       category = "options";
       break;
 

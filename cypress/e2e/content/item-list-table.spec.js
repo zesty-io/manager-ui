@@ -20,7 +20,7 @@ describe("Content item list table", () => {
     });
 
     cy.getBySelector("sortByFilter_default").click();
-    cy.getBySelector(`"sort:text"`).click();
+    cy.getBySelector("sort:text").click();
     cy.getBySelector("listItemTable")
       .find('[data-cy="itemListRow"]')
       .first()
@@ -37,7 +37,7 @@ describe("Content item list table", () => {
 
     cy.intercept("/search/items*").as("searchItems");
     cy.intercept("/v1/content/models*").as("contentModels");
-    cy.getBySelector(`"field:text"`)
+    cy.getBySelector("field:text")
       .find("input")
       .clear()
       .type(`Delete me ${NOW}`);

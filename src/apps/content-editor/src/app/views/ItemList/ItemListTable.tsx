@@ -44,7 +44,7 @@ type ItemListTableProps = {
   noRowsOverlay: () => JSX.Element;
 };
 
-const CURRENCY_OBJECT: Record<string, Currency> = currencies.reduce(
+export const CURRENCY_OBJECT: Record<string, Currency> = currencies.reduce(
   (acc, curr) => {
     return {
       ...acc,
@@ -56,7 +56,7 @@ const CURRENCY_OBJECT: Record<string, Currency> = currencies.reduce(
   {}
 );
 
-const getHtmlText = (html: string) => {
+export const getHtmlText = (html: string) => {
   if (!html) return "";
 
   const rawData = html;
@@ -105,7 +105,9 @@ const METADATA_COLUMNS = [
     valueGetter: (params: any, row: any) => row?.meta?.ZUID,
   },
 ];
-const fieldTypeColumnConfigMap = {
+const fieldTypeColumnConfigMap: Partial<
+  Record<ContentModelField["datatype"], Record<string, unknown>>
+> = {
   text: {
     width: 360,
     filterable: true,
@@ -274,6 +276,9 @@ const fieldTypeColumnConfigMap = {
           </Typography>
         </Box>
       ),
+  block_selector: {
+    width: 200,
+    filterable: true,
   },
 } as const;
 
@@ -352,7 +357,12 @@ export const ItemListTable = memo(
         result = [
           ...result,
           ...fields
-            ?.filter((field) => !field.deletedAt && field?.settings?.list)
+            ?.filter(
+              (field) =>
+                !field.deletedAt &&
+                field?.settings?.list &&
+                field?.datatype !== "repeater"
+            )
             ?.map((field) => ({
               field: field.name,
               headerName: field.label,
@@ -368,7 +378,7 @@ export const ItemListTable = memo(
 
                 return row.data[field.name];
               },
-              ...fieldTypeColumnConfigMap[field.datatype],
+              ...(fieldTypeColumnConfigMap[field.datatype] ?? {}),
               // if field is yes_no but it has custom options increase the width
               ...(field.datatype === "yes_no" &&
                 field?.settings?.options?.[0] !== "No" &&
@@ -565,3 +575,5 @@ export const ItemListTable = memo(
     );
   }
 );
+
+ItemListTable.displayName = "ItemListTable";

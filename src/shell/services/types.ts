@@ -224,13 +224,24 @@ export interface FieldSettingsOptions {
   [key: string | number]: string;
 }
 
+export type RepeaterSubField = Pick<
+  ContentModelField,
+  | "name"
+  | "label"
+  | "description"
+  | "datatype"
+  | "sort"
+  | "required"
+  | "settings"
+>;
+
 export interface FieldSettings {
   options?: FieldSettingsOptions;
   group_id?: string;
   limit?: number;
   list: boolean;
   tooltip?: string;
-  defaultValue?: string;
+  defaultValue?: string | number;
   minCharLimit?: number;
   maxCharLimit?: number;
   regexMatchPattern?: string;
@@ -243,6 +254,7 @@ export interface FieldSettings {
   fileExtensions?: string[];
   fileExtensionsErrorMessage?: string;
   integrationFieldConfig?: IntegrationFieldConfig;
+  subFields?: RepeaterSubField[];
 }
 
 export type ContentModelFieldValue =
@@ -276,7 +288,9 @@ export type ContentModelFieldDataType =
   | "yes_no"
   | "color"
   | "sort"
-  | "integration";
+  | "integration"
+  | "block_selector"
+  | "repeater";
 
 export interface ContentModelField {
   ZUID: string;

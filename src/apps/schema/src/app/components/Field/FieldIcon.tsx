@@ -15,7 +15,7 @@ import ToggleOnRounded from "@mui/icons-material/ToggleOnRounded";
 import KeyboardArrowDownRounded from "@mui/icons-material/KeyboardArrowDownRounded";
 import ColorLensRounded from "@mui/icons-material/ColorLensRounded";
 import FormatListNumberedRounded from "@mui/icons-material/FormatListNumberedRounded";
-import { Markdown, OneToOne, Block } from "@zesty-io/material";
+import { Markdown, OneToOne, Block, Repeater } from "@zesty-io/material";
 import { Box, SvgIcon } from "@mui/material";
 import DataObjectIcon from "@mui/icons-material/DataObject";
 type Icons = {
@@ -90,6 +90,11 @@ const icons: Icons = {
     icon: OneToOne as SvgIconComponent,
     backgroundColor: "pink.50",
     borderColor: "pink.600",
+  },
+  repeater: {
+    icon: Repeater as SvgIconComponent,
+    backgroundColor: "purple.50",
+    borderColor: "purple.700",
   },
   sort: {
     icon: FormatListNumberedRounded,
