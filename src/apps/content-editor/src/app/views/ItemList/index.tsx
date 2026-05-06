@@ -284,6 +284,9 @@ export const ItemList = () => {
             // @ts-ignore
             clonedItem.fieldData[key] = fieldData;
             break;
+          case "integration":
+            clonedItem.data[key] = !value ? "" : JSON.stringify(value);
+            break;
           default:
             break;
         }
@@ -574,8 +577,23 @@ export const ItemList = () => {
     return clonedItems;
   }, [processedItems, search, sortModel, statusFilter, dateFilter, userFilter]);
 
-  if (modelError && "status" in modelError && modelError.status === 404) {
-    return <NotFound message={`Model "${modelZUID}" not found`} />;
+  if (modelError && "status" in modelError) {
+    let message = "";
+
+    switch (modelError.status) {
+      case 404:
+        message = `Model "${modelZUID}" not found`;
+        break;
+
+      case 400:
+        message = `Invalid model "${modelZUID}"`;
+        break;
+
+      default:
+        break;
+    }
+
+    return <NotFound message={message} />;
   }
 
   return (

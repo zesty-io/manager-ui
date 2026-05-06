@@ -9,8 +9,10 @@ import {
 } from "@mui/material";
 import { Errors } from "./views/FieldForm";
 import { FieldTypeNumber } from "../../../../../../shell/components/FieldTypeNumber";
+import { FieldType } from "../configs";
 
 type InputRangeProps = {
+  type?: "number" | "currency" | "integration";
   onChange: ({
     inputName,
     value,
@@ -21,13 +23,18 @@ type InputRangeProps = {
   minValue: number | null;
   maxValue: number | null;
   errors: Errors;
+  primaryText?: string | null;
+  secondaryText?: string | null;
 };
 
 export const InputRange = ({
+  type = "number",
   onChange,
   minValue,
   maxValue,
   errors,
+  primaryText = null,
+  secondaryText = null,
 }: InputRangeProps) => {
   return (
     <Box>
@@ -54,7 +61,7 @@ export const InputRange = ({
         label={
           <Box>
             <Typography variant="body2" fontWeight="600">
-              Limit Input Range
+              {primaryText || "Limit Input Range"}
             </Typography>
             <Typography
               variant="body3"
@@ -62,7 +69,7 @@ export const InputRange = ({
               fontWeight="600"
               display="block"
             >
-              Set a minimum and/or maximum allowed value
+              {secondaryText || "Set a minimum and/or maximum allowed value"}
             </Typography>
           </Box>
         }

@@ -221,7 +221,9 @@ export const ContentInsights = ({}) => {
         if (!!value) {
           value = cleanContent(String(value));
 
-          words = [...words, ...value.split(" ")];
+          if (typeof value === "string") {
+            words = [...words, ...value.split(" ")];
+          }
         }
       });
 
