@@ -80,6 +80,7 @@ export default memo(function PendingEditsModal(props: PendingEditsModalProps) {
       <Prompt when={Boolean(props.show)} message={"content_confirm"} />
 
       <Dialog
+        data-cy="PendingEditsModal"
         open={open}
         fullWidth
         maxWidth={"xs"}
@@ -110,11 +111,16 @@ export default memo(function PendingEditsModal(props: PendingEditsModalProps) {
             justifyContent: "space-between",
           }}
         >
-          <Button color="inherit" onClick={() => handler("cancel")}>
+          <Button
+            data-cy="PendingEditsModalCancel"
+            color="inherit"
+            onClick={() => handler("cancel")}
+          >
             Continue Editing
           </Button>
           <Box display="flex" gap={1}>
             <Button
+              data-cy="PendingEditsModalDiscard"
               color="primary"
               loading={loading}
               onClick={() => handler("delete")}
@@ -122,6 +128,7 @@ export default memo(function PendingEditsModal(props: PendingEditsModalProps) {
               Don't Save
             </Button>
             <Button
+              data-cy="PendingEditsModalSave"
               variant="contained"
               color="primary"
               loading={loading}

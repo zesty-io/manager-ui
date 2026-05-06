@@ -1,6 +1,7 @@
 import idb from "utility/idb";
 import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
+import { instanceApi } from "shell/services/instance";
 
 export function files(state = [], action) {
   let files;
@@ -481,6 +482,8 @@ export function saveFile(ZUID, status, code = null) {
             payload: { file, instanceZUID: getState().instance.ZUID },
           });
 
+          dispatch(instanceApi.util.invalidateTags(["WebViews"]));
+
           // re-render ActivePreview on code file save
           zesty.trigger("PREVIEW_REFRESH");
 
@@ -554,6 +557,8 @@ export function publishFile(fileZUID, fileStatus) {
               fileZUID,
             },
           });
+
+          dispatch(instanceApi.util.invalidateTags(["WebViews"]));
         } else {
           dispatch(
             notify({
