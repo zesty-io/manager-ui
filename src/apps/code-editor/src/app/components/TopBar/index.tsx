@@ -119,6 +119,7 @@ const TopBar = memo(function TopBar(props: TopBarProps) {
             )}
           </Box>
           <Typography
+            data-cy="code-editor-file-name"
             variant="h6"
             color="grey.300"
             overflow="hidden"
@@ -129,6 +130,7 @@ const TopBar = memo(function TopBar(props: TopBarProps) {
             {`/${props.fileName?.trim()?.replace(/^\/+/, "")}`}
           </Typography>
           <Typography
+            data-cy="code-editor-file-version"
             variant="h6"
             color="grey.400"
             fontWeight={600}

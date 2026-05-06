@@ -47,6 +47,7 @@ export const ActionButton: FC<ActionButtonProps> = ({
         <span>
           <Button
             {...props}
+            data-cy={`code-app-${label?.toLowerCase()}-button`}
             onClick={onClick}
             loading={isLoading}
             sx={{ whiteSpace: "nowrap" }}
@@ -55,7 +56,13 @@ export const ActionButton: FC<ActionButtonProps> = ({
           </Button>
         </span>
       ) : (
-        <Box display="flex" alignItems="center" columnGap={1} px={1}>
+        <Box
+          display="flex"
+          alignItems="center"
+          columnGap={1}
+          px={1}
+          data-cy={`code-app-${label?.toLowerCase()}-indicator`}
+        >
           <CheckCircleRounded fontSize="small" sx={{ color: inActiveColor }} />
           <Typography
             variant="body2"
