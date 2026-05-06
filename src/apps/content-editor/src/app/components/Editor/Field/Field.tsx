@@ -41,7 +41,6 @@ import { FieldTypeSort } from "../../../../../../../shell/components/FieldTypeSo
 import { FieldTypeNumber } from "../../../../../../../shell/components/FieldTypeNumber";
 import { FieldTypeBlockSelector } from "../../../../../../../shell/components/FieldTypeBlockSelector";
 import { InternalLink } from "./InternalLink";
-
 import styles from "./Field.less";
 import { MemoryRouter } from "react-router";
 import { withAI } from "../../../../../../../shell/components/withAi";
@@ -53,8 +52,10 @@ import {
 import { FieldTypeMedia } from "../../FieldTypeMedia";
 import { debounce, parseInt } from "lodash";
 import { useRegisterRef } from "../../../../../../../engine/useRegisterRef";
+import IntegrationFieldSelect from "../../../../../../../shell/components/FieldTypeIntegration/IntegrationFieldSelect";
 import { useDebouncedInput } from "../../../../../../../shell/hooks/useDebouncedInput";
 import { format as fmt } from "date-fns";
+import { FieldTypeRepeater } from "shell/components/FieldTypeRepeater";
 
 const AIFieldShell = withAI(FieldShell);
 
@@ -184,9 +185,15 @@ export const Field = memo(
           "dropdown",
           "date",
           "datetime",
+          "integration",
         ].includes(datatype),
       }
     );
+
+    const closeImageModal = () => {
+      imageModal?.onClose?.();
+      setImageModal(null);
+    };
 
     const renderMediaModal = () => {
       return ReactDOM.createPortal(
@@ -207,7 +214,7 @@ export const Field = memo(
                 overflow: "hidden",
               },
             }}
-            onClose={() => setImageModal(null)}
+            onClose={closeImageModal}
           >
             <IconButton
               sx={{
@@ -215,7 +222,7 @@ export const Field = memo(
                 right: 15,
                 top: 10,
               }}
-              onClick={() => setImageModal(null)}
+              onClick={closeImageModal}
             >
               <CloseIcon sx={{ color: "common.white" }} />
             </IconButton>
@@ -224,7 +231,7 @@ export const Field = memo(
               isSelectDialog={true}
               addImagesCallback={(images) => {
                 imageModal.callback(images);
-                setImageModal(null);
+                closeImageModal();
               }}
             />
           </Dialog>
@@ -284,6 +291,7 @@ export const Field = memo(
               fullWidth
               inputProps={{
                 name: fieldData?.name || name,
+                "data-cy": `EditorField-${fieldData?.name || name}`,
               }}
               error={errors && Object.values(errors)?.some((error) => !!error)}
             />
@@ -367,6 +375,9 @@ export const Field = memo(
               fullWidth
               multiline
               rows={6}
+              inputProps={{
+                "data-cy": `EditorField-${fieldData?.name || name}`,
+              }}
               error={errors && Object.values(errors)?.some((error) => !!error)}
             />
           </AIFieldShell>
@@ -499,7 +510,7 @@ export const Field = memo(
                       overflow: "hidden",
                     },
                   }}
-                  onClose={() => setImageModal(null)}
+                  onClose={closeImageModal}
                 >
                   <IconButton
                     data-cy="closeMediaDialogBtn"
@@ -508,7 +519,7 @@ export const Field = memo(
                       right: 5,
                       top: 0,
                     }}
-                    onClick={() => setImageModal(null)}
+                    onClick={closeImageModal}
                   >
                     <CloseIcon sx={{ color: "common.white" }} />
                   </IconButton>
@@ -527,7 +538,7 @@ export const Field = memo(
                     }
                     addImagesCallback={(images) => {
                       imageModal.callback(images);
-                      setImageModal(null);
+                      closeImageModal();
                     }}
                     isReplace={imageModal.isReplace}
                   />
@@ -785,6 +796,38 @@ export const Field = memo(
             />
           </FieldShell>
         );
+      case "integration":
+        return (
+          <FieldShell settings={fieldData} errors={errors}>
+            <IntegrationFieldSelect
+              name={name}
+              label={label}
+              maxItems={settings?.maxValue}
+              config={settings?.integrationFieldConfig}
+              value={value ? (value as Record<string, any>[]) : null}
+              onChange={(value) => onChange(value, name)}
+            />
+          </FieldShell>
+        );
+
+      case "repeater":
+        const hasBaseColumns = (fieldData?.settings?.subFields || []).filter(
+          (f) => f.settings?.list
+        ).length;
+
+        if (!hasBaseColumns) {
+          return <></>;
+        }
+
+        return (
+          <FieldShell settings={fieldData} errors={errors}>
+            <FieldTypeRepeater
+              field={fieldData}
+              value={value}
+              onChange={(value) => onChange(value, name, datatype)}
+            />
+          </FieldShell>
+        );
 
       default:
         return (
@@ -795,3 +838,5 @@ export const Field = memo(
     }
   }
 );
+
+Field.displayName = "Field";

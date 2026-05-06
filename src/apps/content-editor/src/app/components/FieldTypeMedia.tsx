@@ -353,6 +353,7 @@ export const FieldTypeMedia = forwardRef(
           openMediaBrowser({
             callback: replaceImage,
             isReplace: true,
+            onClose: () => setImageToReplace(""),
           });
         }
       }

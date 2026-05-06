@@ -92,6 +92,10 @@ export const FieldSelectorDialog = ({
   replace = null,
 }: FieldSelectorDialogProps) => {
   const dispatch = useDispatch();
+  const { data: langs } = useGetLangsQuery({});
+  const userSelectedLangCode = useSelector(
+    (state: AppState) => state?.user?.selected_lang
+  );
   const searchField = useRef(null);
   const [filterKeyword, setFilterKeyword] = useState<string>(null);
   const [filters, updateFilters] = useReducer(
@@ -118,7 +122,6 @@ export const FieldSelectorDialog = ({
   );
   const [isFetchingContentItems, setIsFetchingContentItems] = useState(false);
 
-  const { data: langs } = useGetLangsQuery({});
   const langCode = langs?.find((lang) => lang.ID === filters.lang)?.code;
   const contentItems = useSelector((state: AppState) =>
     selectFilteredItems(state, modelZUID, filters.lang, isFetchingContentItems)
@@ -133,10 +136,12 @@ export const FieldSelectorDialog = ({
   const { data: users, isLoading: isLoadingUsers } = useGetUsersQuery();
 
   useEffect(() => {
-    if (!!langs?.length) {
-      updateFilters({ lang: langs.find((lang) => lang.default)?.ID });
+    if (!!langs?.length && userSelectedLangCode) {
+      updateFilters({
+        lang: langs.find((lang) => lang.code === userSelectedLangCode)?.ID,
+      });
     }
-  }, [langs]);
+  }, [langs, userSelectedLangCode]);
 
   useEffect(() => {
     if (!!modelZUID) {
@@ -646,7 +651,12 @@ export const FieldSelectorDialog = ({
                               from: null,
                               to: null,
                             },
-                            lang: langs.find((lang) => lang.default)?.ID,
+                            lang: userSelectedLangCode
+                              ? langs?.find(
+                                  (lang) => lang.code === userSelectedLangCode
+                                )?.ID
+                              : null,
+
                             status: null,
                           });
                         }}
