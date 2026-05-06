@@ -350,6 +350,185 @@
         "list": true,
         "options": {}
       }
+    },
+    {
+      "contentModelZUID": "",
+      "name": "repeater",
+      "label": "repeater",
+      "datatype": "repeater",
+      "sort": 25,
+      "required": false,
+      "settings": {
+        "list": true,
+        "subFields": [
+          {
+            "datatype": "text",
+            "description": "",
+            "label": "single line text",
+            "name": "single_line_text",
+            "required": true,
+            "settings": {
+              "defaultValue": null,
+              "list": true
+            },
+            "sort": 1
+          },
+          {
+            "datatype": "textarea",
+            "description": "",
+            "label": "multiline text",
+            "name": "multiline_text",
+            "required": false,
+            "settings": {
+              "defaultValue": "default value",
+              "list": true
+            },
+            "sort": 2
+          },
+          {
+            "datatype": "wysiwyg_basic",
+            "description": "",
+            "label": "wysiwyg",
+            "name": "wysiwyg",
+            "required": false,
+            "settings": {
+              "defaultValue": null,
+              "list": true
+            },
+            "sort": 3
+          },
+          {
+            "datatype": "markdown",
+            "description": "",
+            "label": "markdown",
+            "name": "markdown",
+            "required": false,
+            "settings": {
+              "defaultValue": null,
+              "list": true
+            },
+            "sort": 4
+          },
+          {
+            "datatype": "images",
+            "description": "",
+            "label": "media",
+            "name": "media",
+            "required": false,
+            "settings": {
+              "defaultValue": null,
+              "group_id": "",
+              "limit": "",
+              "list": true
+            },
+            "sort": 5
+          },
+          {
+            "datatype": "link",
+            "description": "",
+            "label": "url",
+            "name": "url",
+            "required": false,
+            "settings": {
+              "defaultValue": null,
+              "list": true
+            },
+            "sort": 6
+          },
+          {
+            "datatype": "number",
+            "description": "",
+            "label": "number",
+            "name": "number",
+            "required": false,
+            "settings": {
+              "defaultValue": 0,
+              "list": true
+            },
+            "sort": 7
+          },
+          {
+            "datatype": "currency",
+            "description": "",
+            "label": "currency",
+            "name": "currency",
+            "required": false,
+            "settings": {
+              "currency": "PHP",
+              "defaultValue": null,
+              "list": true
+            },
+            "sort": 8
+          },
+          {
+            "datatype": "yes_no",
+            "description": "",
+            "label": "boolean",
+            "name": "boolean",
+            "required": false,
+            "settings": {
+              "defaultValue": null,
+              "list": true,
+              "options": {
+                "0": "No",
+                "1": "Yes"
+              }
+            },
+            "sort": 9
+          },
+          {
+            "datatype": "dropdown",
+            "description": "",
+            "label": "dropdown",
+            "name": "dropdown",
+            "required": false,
+            "settings": {
+              "defaultValue": null,
+              "list": true,
+              "options": {
+                "option 1": "option 1",
+                "option 2": "option 2"
+              }
+            },
+            "sort": 10
+          },
+          {
+            "datatype": "color",
+            "description": "",
+            "label": "color",
+            "name": "color",
+            "required": false,
+            "settings": {
+              "defaultValue": null,
+              "list": true
+            },
+            "sort": 11
+          },
+          {
+            "datatype": "sort",
+            "description": "",
+            "label": "sort",
+            "name": "sort",
+            "required": false,
+            "settings": {
+              "defaultValue": null,
+              "list": true
+            },
+            "sort": 12
+          },
+          {
+            "datatype": "uuid",
+            "description": "",
+            "label": "uuid",
+            "name": "uuid",
+            "required": false,
+            "settings": {
+              "list": true
+            },
+            "sort": 13
+          }
+        ]
+      }
     }
   ],
   "items": [
@@ -367,7 +546,8 @@
         "wysiwyg_basic": "wysiwyg_basic",
         "yes_no": 0,
         "link": "https://www.zesty.io/",
-        "images": "3-6e3cefc-neo39,3-7d9231d-i4iv9,3-b138798-i992x,3-6d7e8b3-4dv81"
+        "images": "3-6e3cefc-neo39,3-7d9231d-i4iv9,3-b138798-i992x,3-6d7e8b3-4dv81",
+        "repeater": null
       }
     }
   ]

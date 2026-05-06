@@ -1,0 +1,19 @@
+{
+  "model": {
+    "label": "Schema - Integration",
+    "type": "pageset",
+    "listed": true
+  },
+  "fields": [
+    {
+      "label": "Title",
+      "name": "title",
+      "datatype": "text",
+      "sort": 0,
+      "settings": {
+        "list": true
+      }
+    }
+  ],
+  "items": []
+}

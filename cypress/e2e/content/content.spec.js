@@ -626,4 +626,223 @@ describe("Content Specs", () => {
       cy.contains("3 selected").should("exist");
     });
   });
+
+  context("Repeater Field", () => {
+    before(() => {
+      cy.waitOn("/v1/content/models*", () => {
+        cy.visit(
+          `/content/${Cypress.env("modelZUID")}/${Cypress.env("itemZUID")}`
+        );
+      });
+
+      cy.getBySelector("DuoModeToggle", { timeout: 40000 }).click(forceClick);
+    });
+
+    it("is should not be able to add an item if required fields are missing", () => {
+      cy.getBySelector("AddRepeaterRowItemBtn").click();
+      cy.getBySelector("SaveRepeaterRowItemBtn").click();
+      cy.contains("Required Field. Please enter a value.").should("exist");
+    });
+
+    it("should autofill default values", () => {
+      cy.getBySelector("subfield:multiline_text")
+        .find("textarea")
+        .should("have.value", "default value");
+    });
+
+    it("should be able to add a new row item", () => {
+      cy.getBySelector("subfield:single_line_text")
+        .find("input")
+        .clear()
+        .type("single line text value");
+      cy.iframe("#wysiwyg_ifr").click().type("wysiwyg text value");
+      cy.getBySelector("subfield:markdown")
+        .find("textarea")
+        .clear()
+        .type("markdown value");
+
+      // Add media image from bynder
+      cy.getBySelector("subfield:media")
+        .find('[data-cy="addFromBynderBtn"]')
+        .click();
+      cy.get('[data-test-id="CompactViewContainer"] [data-testid="root"]')
+        .shadow()
+        .as("shadow");
+      cy.get("@shadow")
+        .find('.card-list div [data-testid="asset-card"] button:eq(0)')
+        .click();
+      cy.get("@shadow").find('[data-testid="add-button"]').click();
+
+      cy.getBySelector("subfield:url")
+        .find("input")
+        .clear()
+        .type("https://zesty.io");
+      cy.getBySelector("subfield:number").find("input").clear().type("999");
+      cy.getBySelector("subfield:currency")
+        .find("input")
+        .clear()
+        .type("100.00");
+      cy.getBySelector("subfield:boolean")
+        .contains("Yes")
+        .click({ force: true });
+
+      // Set dropdown value
+      cy.getBySelector("subfield:dropdown")
+        .find(".MuiAutocomplete-root input")
+        .click();
+      cy.get(".MuiAutocomplete-option").first().click();
+
+      cy.getBySelector("subfield:sort").find("input").clear().type("99");
+
+      cy.getBySelector("SaveRepeaterRowItemBtn").click();
+      cy.getBySelector("field:repeater")
+        .find(".MuiDataGrid-row")
+        .should("have.length", 1);
+    });
+
+    it("should be able to update a row item", () => {
+      const oldValue = "update my value";
+      const updatedValue = "I am now updated";
+
+      // Add a new row item
+      cy.getBySelector("AddRepeaterRowItemBtn").click();
+      cy.getBySelector("subfield:single_line_text")
+        .find("input")
+        .clear()
+        .type(oldValue);
+      cy.getBySelector("subfield:url")
+        .find("input")
+        .clear()
+        .type("https://zesty.io");
+      cy.getBySelector("SaveRepeaterRowItemBtn").click();
+
+      // Verify old value
+      cy.getBySelector("field:repeater")
+        .find(".MuiDataGrid-row")
+        .eq(1)
+        .find("[data-field='single_line_text']")
+        .should("contain.text", oldValue);
+
+      // Update the value
+      cy.getBySelector("field:repeater")
+        .find(".MuiDataGrid-row")
+        .eq(1)
+        .click({ force: true });
+      cy.getBySelector("subfield:single_line_text")
+        .find("input")
+        .clear()
+        .type(updatedValue);
+      cy.wait(500);
+      cy.getBySelector("SaveRepeaterRowItemBtn").click();
+
+      // Verify updated value
+      cy.getBySelector("field:repeater")
+        .find(".MuiDataGrid-row")
+        .eq(1)
+        .find("[data-field='single_line_text']")
+        .should("contain.text", updatedValue);
+    });
+
+    it("should persist repeater rows after saving and reload", () => {
+      cy.get("#SaveItemButton").click();
+      cy.get("[data-cy=toast]").contains("Item Saved").should("exist");
+
+      cy.reload();
+      cy.getBySelector("DuoModeToggle", { timeout: 40000 }).click(forceClick);
+
+      cy.getBySelector("field:repeater")
+        .find(".MuiDataGrid-row")
+        .should("have.length", 2);
+
+      cy.getBySelector("field:repeater")
+        .find(".MuiDataGrid-row")
+        .eq(0)
+        .find("[data-field='single_line_text']")
+        .should("contain.text", "single line text value");
+
+      cy.getBySelector("field:repeater")
+        .find(".MuiDataGrid-row")
+        .eq(1)
+        .find("[data-field='single_line_text']")
+        .should("contain.text", "I am now updated");
+    });
+
+    it("should be able to delete the last row", () => {
+      cy.getBySelector("field:repeater")
+        .find(".MuiDataGrid-row")
+        .should("have.length", 2);
+
+      cy.getBySelector("field:repeater")
+        .find(".MuiDataGrid-row")
+        .eq(1)
+        .find("[data-field='single_line_text']")
+        .should("contain.text", "I am now updated");
+
+      cy.getBySelector("field:repeater")
+        .find(".MuiDataGrid-row")
+        .eq(1)
+        .click({ force: true });
+
+      cy.getBySelector("RemoveRepeaterRowItemBtn").click();
+
+      cy.getBySelector("field:repeater")
+        .find(".MuiDataGrid-row")
+        .should("have.length", 1);
+
+      cy.getBySelector("field:repeater")
+        .find(".MuiDataGrid-row")
+        .eq(0)
+        .find("[data-field='single_line_text']")
+        .should("contain.text", "single line text value");
+
+      cy.getBySelector("field:repeater")
+        .find("[data-field='single_line_text']")
+        .should("not.contain.text", "I am now updated");
+    });
+
+    it("should bulk remove checked rows", () => {
+      cy.getBySelector("AddRepeaterRowItemBtn").click();
+      cy.getBySelector("subfield:single_line_text")
+        .find("input")
+        .clear()
+        .type("bulk remove row");
+      cy.getBySelector("subfield:url")
+        .find("input")
+        .clear()
+        .type("https://zesty.io");
+      cy.getBySelector("SaveRepeaterRowItemBtn").click();
+
+      cy.getBySelector("field:repeater")
+        .find(".MuiDataGrid-row")
+        .should("have.length", 2);
+
+      cy.getBySelector("field:repeater")
+        .find(".MuiDataGrid-row")
+        .eq(1)
+        .find("[data-field='single_line_text']")
+        .should("contain.text", "bulk remove row");
+
+      cy.getBySelector("field:repeater")
+        .find(".MuiDataGrid-row")
+        .eq(1)
+        .find('input[type="checkbox"]')
+        .check({ force: true });
+
+      cy.getBySelector("BulkRemoveRepeaterFieldRowsBtn").click({ force: true });
+
+      cy.getBySelector("field:repeater")
+        .find(".MuiDataGrid-row")
+        .should("have.length", 1);
+
+      cy.getBySelector("field:repeater")
+        .find(".MuiDataGrid-row")
+        .eq(0)
+        .find("[data-field='single_line_text']")
+        .should("contain.text", "single line text value");
+
+      cy.getBySelector("field:repeater")
+        .find("[data-field='single_line_text']")
+        .should("not.contain.text", "bulk remove row");
+    });
+  });
 });

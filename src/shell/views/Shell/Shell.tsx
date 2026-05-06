@@ -247,7 +247,11 @@ export default memo(function Shell() {
                   </Switch>
                 </Box>
                 {showAiDrawer && (
-                  <AIDrawer key={pathname} open={showAiDrawer} />
+                  <AIDrawer
+                    open={showAiDrawer}
+                    onClose={() => setShowAiDrawer(false)}
+                    key={pathname}
+                  />
                 )}
               </Box>
             ) : (

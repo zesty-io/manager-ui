@@ -225,22 +225,6 @@ export const SinglePageAnalytics = ({ item, loading }: Props) => {
   return (
     <>
       <Box height="100%">
-        <Box
-          display="flex"
-          px={2}
-          py={1}
-          gap={1.5}
-          borderRadius="8px"
-          bgcolor="grey.100"
-          mb={1.25}
-          alignItems="center"
-        >
-          <WarningRoundedIcon color="action" />
-          <Typography variant="body2" color="grey.700">
-            Early preview to premium GA4 analytics integration. Inquire to your
-            account manager for more details.
-          </Typography>
-        </Box>
         <Box display="flex" justifyContent="space-between" gap={2}>
           <Box display="flex" gap={1.5}>
             <AnalyticsDateFilter />

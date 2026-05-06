@@ -1,7 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
-import { useParams, useLocation } from "react-router";
+import { useParams } from "react-router";
 import { Dialog } from "@mui/material";
-import { theme } from "@zesty-io/material";
 
 import { FieldSelection } from "./views/FieldSelection";
 import { FieldForm } from "./views/FieldForm";
@@ -60,13 +59,18 @@ export const AddFieldModal = ({ onModalClose, mode, sortIndex }: Props) => {
       sx={{
         my: "20px",
       }}
-      PaperProps={{
-        sx: {
-          width: viewMode === "fields_list" ? "900px" : "640px",
-          maxWidth: "100%",
-          maxHeight: "min(100%, 1000px)",
-          minHeight: "680px",
-          m: 0,
+      slotProps={{
+        paper: {
+          sx: {
+            width: viewMode === "fields_list" ? "900px" : "640px",
+            maxWidth: "100%",
+            maxHeight: "min(100%, 1000px)",
+            minHeight: "680px",
+            m: 0,
+            "&:has(.IntegrationConfigForm)": {
+              visibility: "hidden",
+            },
+          },
         },
       }}
     >

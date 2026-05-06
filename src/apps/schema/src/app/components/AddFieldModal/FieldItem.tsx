@@ -31,7 +31,7 @@ export const FieldItem = ({
   return (
     <Box
       data-cy={`FieldItem_${fieldType}`}
-      height="62px"
+      height={54}
       border="1px solid"
       borderColor="border"
       borderRadius={1}
@@ -67,7 +67,7 @@ export const FieldItem = ({
           sx={{
             py: 1,
             px: 2,
-            height: "62px",
+            height: 54,
           }}
         >
           <ListItemIcon sx={{ minWidth: "36px" }}>
@@ -76,13 +76,19 @@ export const FieldItem = ({
           <ListItemText
             primary={fieldName}
             secondary={shortDescription}
-            primaryTypographyProps={{
-              fontSize: 14,
-              fontWeight: 700,
-              color: "text.primary",
+            slotProps={{
+              primary: {
+                fontWeight: 700,
+                variant: "body2",
+                color: "text.primary",
+              },
+              secondary: {
+                variant: "body3",
+              },
             }}
-            secondaryTypographyProps={{
-              variant: "body3",
+            sx={{
+              display: "flex",
+              flexDirection: "column",
             }}
           />
         </ListItem>

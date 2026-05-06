@@ -26,10 +26,14 @@ import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
 import { cloneDeep } from "lodash";
 
 import { FormValue } from "./views/FieldForm";
-import { FieldSettingsOptions } from "../../../../../../shell/services/types";
+import {
+  FieldSettingsOptions,
+  IntegrationFieldConfig,
+} from "../../../../../../shell/services/types";
 import { convertDropdownValue } from "../../utils";
 import { withCursorPosition } from "../../../../../../shell/components/withCursorPosition";
 import { Currency } from "../../../../../../shell/components/FieldTypeCurrency/currencies";
+import IntegrationFieldConfigure from "../../../../../../shell/components/FieldTypeIntegration/IntegrationFieldConfigure";
 
 const TextFieldWithCursorPosition = withCursorPosition(TextField);
 
@@ -57,14 +61,18 @@ export type FieldNames =
   | "maxValue"
   | "currency"
   | "fileExtensions"
-  | "fileExtensionsErrorMessage";
+  | "fileExtensionsErrorMessage"
+  | "integrationFieldConfig";
+
 type FieldType =
   | "input"
   | "checkbox"
   | "dropdown"
   | "autocomplete"
   | "options"
-  | "toggle_options";
+  | "toggle_options"
+  | "config";
+
 type InputType = "text" | "number";
 export interface InputField {
   name: FieldNames;
@@ -107,6 +115,8 @@ type FieldFormInputProps = {
   dropdownOptions?: DropdownOptions[] | Currency[];
   disabled?: boolean;
   autocompleteConfig?: AutocompleteConfig;
+  integrationFieldConfig?: IntegrationFieldConfig;
+  isUpdateField?: boolean;
 } & Pick<
   AutocompleteProps<DropdownOptions | Currency, false, false, false, "div">,
   "renderOption" | "filterOptions"
@@ -121,6 +131,8 @@ export const FieldFormInput = ({
   renderOption,
   filterOptions,
   autocompleteConfig,
+  integrationFieldConfig,
+  isUpdateField,
 }: FieldFormInputProps) => {
   const options =
     fieldConfig.type === "options" ||
@@ -431,6 +443,16 @@ export const FieldFormInput = ({
           )}
         </>
       )}
+      {fieldConfig.type === "config" && (
+        <IntegrationFieldConfigure
+          integrationFieldConfig={integrationFieldConfig}
+          onChange={(value) =>
+            onDataChange({ inputName: fieldConfig.name, value })
+          }
+          isUpdate={isUpdateField}
+          error={errorMsg}
+        />
+      )}
     </Grid>
   );
 };
@@ -486,7 +508,7 @@ const KeyValueInput = ({
           required
           fullWidth
           placeholder="Enter Label"
-          value={optionValue}
+          value={optionValue || ""}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
             handleDataChanged("value", e.target?.value);
           }}
@@ -504,7 +526,7 @@ const KeyValueInput = ({
           required
           fullWidth
           placeholder="Enter Value"
-          value={optionKey}
+          value={optionKey || ""}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
             handleDataChanged("key", e.target?.value);
           }}

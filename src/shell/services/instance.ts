@@ -941,6 +941,7 @@ export const {
   useCreateItemPublishingMutation,
   useDeleteItemPublishingMutation,
   useGetContentItemQuery,
+  useLazyGetContentItemQuery,
   useGetContentItemByPathQuery,
   useGetContentItemsQuery,
   useGetContentModelQuery,
