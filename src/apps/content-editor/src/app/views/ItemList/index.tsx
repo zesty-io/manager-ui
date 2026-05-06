@@ -284,6 +284,9 @@ export const ItemList = () => {
             // @ts-ignore
             clonedItem.fieldData[key] = fieldData;
             break;
+          case "integration":
+            clonedItem.data[key] = !value ? "" : JSON.stringify(value);
+            break;
           default:
             break;
         }

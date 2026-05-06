@@ -1,16 +1,15 @@
 import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
   Autocomplete,
   Box,
   Button,
   CircularProgress,
+  Collapse,
   FormControlLabel,
   FormGroup,
   IconButton,
   InputAdornment,
   InputLabel,
+  Paper,
   Skeleton,
   Stack,
   Switch,
@@ -19,22 +18,29 @@ import {
   Typography,
 } from "@mui/material";
 import { useSelector } from "react-redux";
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  memo,
+  useCallback,
+  FC,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   useGeminiGenerationMutation,
   useGetChatSessionLogQuery,
   useUpdatePromptApprovalStatusMutation,
 } from "../../services/mcp";
+import CloseIcon from "@mui/icons-material/Close";
 import { enqueueAction } from "../../../engine/queue";
 import {
   ArrowForward,
   ArrowUpwardRounded,
   AutoFixHighRounded,
   ChevronRightRounded,
-  NotInterestedRounded,
 } from "@mui/icons-material";
 import { useLocation } from "react-router";
-import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import LanguageRoundedIcon from "@mui/icons-material/LanguageRounded";
@@ -42,12 +48,13 @@ import { useGetLangsMappingQuery } from "../../services/instance";
 import { suggestionSystemInstruction } from "./systemInstructions";
 import { useLocalStorage } from "react-use";
 import { getRefRegistry } from "../../../engine/refRegistry";
-import { Brain } from "@zesty-io/material";
 import { keyframes } from "@emotion/react";
 import geminiLogo from "../../../../public/images/geminiLogo.svg";
 import { AppState } from "shell/store/types";
 import { useGetUsersRolesQuery } from "shell/services/accounts";
 import { ChatPrompt } from "shell/services/types";
+import geminiIcon from "../../../../public/images/geminiIcon.svg";
+import { isEmpty } from "lodash";
 
 const parseResponse = (rawResponse: string) => {
   if (!rawResponse) return;
@@ -129,10 +136,11 @@ const TONE_OPTIONS = [
   { label: "Succinct", value: "Succinct - Clear, factual, with no hyperbole" },
 ] as const;
 
-type AIDrawerProps = {
+export type AIDrawerProps = {
+  onClose: () => void;
   open: boolean;
 };
-export const AIDrawer = ({ open }: AIDrawerProps) => {
+export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
   const { pathname } = useLocation();
   const isInContentApp = /^\/content\/[^/]+\/[^/]+$/.test(pathname);
   const isInContentMeta = /^\/content\/[^/]+\/[^/]+\/meta$/.test(pathname);
@@ -159,6 +167,12 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
   >(chatStorageKey, undefined);
   const [responses, setResponses] = useState<Record<string, any[]>>({});
   const [composerSeed, setComposerSeed] = useState("");
+
+  const [appliedResponsesLS, setAppliedResponsesLS] = useLocalStorage<
+    Record<string, number[]>
+  >(`ai-drawer-applied-responses`, { [pathname]: [] });
+  const promptIsEmpty = isEmpty(composerSeed.trim());
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [autoApply, setAutoApply] = useState(false);
 
   const [selectedLanguage, setSelectedLanguage] = useState({
@@ -363,10 +377,11 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
   );
 
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
+    <Paper
+      elevation={16}
       sx={{
+        display: "flex",
+        flexDirection: "column",
         minWidth: 300,
         maxWidth: 300,
         px: 2,
@@ -374,38 +389,28 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
         boxSizing: "border-box",
         position: "relative",
         overflow: "hidden",
-        "&::before": {
-          content: '""',
-          position: "absolute",
-          left: 0,
-          top: 0,
-          bottom: 0,
-          width: "2px",
-          zIndex: 2,
-          background:
-            "linear-gradient(180deg, #0ba5ec 0%, #ee46bc 50%, #6938ef 100%)",
-          backgroundSize: "100% 200%",
-          animation: `${borderMove} 4s linear infinite`,
-          pointerEvents: "none",
-        },
-        bgcolor: "background.paper", // optional: give a bg to cover avatar overflow
+        marginTop: -5,
+        bgcolor: "background.paper",
+        zIndex: (theme) => theme.zIndex.speedDial + 1,
       }}
     >
       {!isEnabled && (
         <>
-          <Box display="flex" alignItems={"center"} gap={1}>
+          <Box position="relative" display="flex" alignItems={"center"} gap={1}>
             <Stack
               width={40}
               height={40}
               borderRadius="50%"
               justifyContent="center"
               alignItems="center"
-              sx={{
-                background:
-                  "linear-gradient(90deg, rgba(11,165,236,1) 0%, rgba(238,70,188,1) 50%, rgba(105,56,239,1) 100%)",
-              }}
             >
-              <Brain sx={{ color: "common.white" }} />
+              <Box
+                component="img"
+                src={geminiIcon}
+                alt="Gemini Icon"
+                width="32px"
+                display="block"
+              />
             </Stack>
             <Box>
               <Box
@@ -419,12 +424,26 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
                 AI Assistant Beta
               </Typography>
             </Box>
+            <IconButton
+              size="small"
+              onClick={() => {
+                onClose();
+              }}
+              sx={{
+                position: "absolute",
+                right: 0,
+                top: 0,
+              }}
+            >
+              <CloseIcon fontSize="medium" />
+            </IconButton>
           </Box>
           <Typography variant="body1" data-cy="AIDrawerDisabled">
             Only available in content app.
           </Typography>
         </>
       )}
+
       {isEnabled && (
         <>
           <Box
@@ -432,6 +451,8 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
             display="flex"
             alignItems={"center"}
             justifyContent={"space-between"}
+            position="relative"
+            gap={1}
           >
             <Box display="flex" alignItems={"center"} gap={1}>
               <Stack
@@ -440,12 +461,14 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
                 borderRadius="50%"
                 justifyContent="center"
                 alignItems="center"
-                sx={{
-                  background:
-                    "linear-gradient(90deg, rgba(11,165,236,1) 0%, rgba(238,70,188,1) 50%, rgba(105,56,239,1) 100%)",
-                }}
               >
-                <Brain sx={{ color: "common.white" }} />
+                <Box
+                  component="img"
+                  src={geminiIcon}
+                  alt="Gemini Icon"
+                  width="32px"
+                  display="block"
+                />
               </Stack>
               <Box>
                 <Box
@@ -459,314 +482,387 @@ export const AIDrawer = ({ open }: AIDrawerProps) => {
                   AI Assistant Beta
                 </Typography>
               </Box>
+              <IconButton
+                size="small"
+                onClick={() => {
+                  onClose();
+                }}
+                sx={{
+                  position: "absolute",
+                  right: 0,
+                  top: 0,
+                }}
+              >
+                <CloseIcon fontSize="medium" />
+              </IconButton>
             </Box>
-            <Box display="flex" alignItems={"center"} gap={0.5}>
-              <Tooltip title="Clear chat" placement="top">
-                <IconButton
+          </Box>
+          <Box display="flex" flexGrow={1} overflow="auto">
+            <Box display="block" overflow="auto" my={1} width="100%">
+              <Box
+                flex="1"
+                display="flex"
+                flexDirection="column"
+                gap={2}
+                ref={chatContainerRef}
+                justifyContent="flex-end"
+                sx={{
+                  position: "relative",
+                  boxSizing: "border-box",
+                  minHeight: "100%",
+                  width: "100%",
+                }}
+              >
+                {Object.entries(responses).map(
+                  ([promptZUID, promptResponses]) => {
+                    return promptResponses.map((response, responseIndex) => {
+                      const shouldAnimate =
+                        latestPromptZUIDs.has(promptZUID) &&
+                        response.type !== "USER_INPUT";
+
+                      if (response.type === "USER_INPUT") {
+                        return (
+                          <Box
+                            data-cy="AIDrawerUserInput"
+                            key={`${promptZUID}-${responseIndex}`}
+                            px={1.5}
+                            py={1}
+                            sx={{
+                              borderRadius: 2,
+                              maxWidth: "168px",
+                              width: "fit-content",
+                              color: "white",
+                              ml: "auto",
+                              backgroundColor: "grey.500",
+                            }}
+                          >
+                            <Typography
+                              variant="body2"
+                              sx={{
+                                borderRadius: 1,
+                                wordBreak: "break-word",
+                                fontStyle:
+                                  response.payload.value.startsWith(
+                                    "Generate suggestions"
+                                  ) && "italic",
+                              }}
+                            >
+                              {response.payload.value}
+                            </Typography>
+                          </Box>
+                        );
+                      } else if (response.type === "SYSTEM_SUGGESTION") {
+                        return (
+                          <Button
+                            data-cy="AIDrawerSystemSuggestion"
+                            key={`${promptZUID}-${responseIndex}`}
+                            onClick={() => {
+                              setComposerSeed(response.payload.value);
+                            }}
+                            sx={{
+                              textAlign: "left",
+                              justifyContent: "flex-start",
+                              width: "fit-content",
+                              px: 1.5,
+                              py: 1,
+                              borderRadius: 2,
+                            }}
+                            variant="contained"
+                            color="inherit"
+                            endIcon={<ChevronRightRounded />}
+                          >
+                            <AnimatedText
+                              text={response.payload.value}
+                              animate={shouldAnimate}
+                              onGrow={() => {
+                                if (responsesEndRef.current) {
+                                  responsesEndRef.current.scrollIntoView({
+                                    behavior: "smooth",
+                                  });
+                                }
+                              }}
+                            />
+                          </Button>
+                        );
+                      } else if (response.type === "NAVIGATE") {
+                        return (
+                          <Box display="flex" justifyContent="flex-end">
+                            <Button
+                              key={`${promptZUID}-${responseIndex}`}
+                              size="xsmall"
+                              variant="contained"
+                              sx={{ ml: "auto", mt: 0.5 }}
+                              onClick={() => {
+                                enqueueAction({
+                                  type: response.type,
+                                  payload: {
+                                    path: response.payload.path,
+                                  },
+                                });
+                              }}
+                              endIcon={<ArrowForward fontSize="small" />}
+                            >
+                              Navigate
+                            </Button>
+                          </Box>
+                        );
+                      }
+
+                      return (
+                        <Box key={`${promptZUID}-${responseIndex}`}>
+                          <Typography
+                            variant="body3"
+                            sx={{
+                              mb: 0.5,
+                            }}
+                          >
+                            {response.payload.refKey}
+                          </Typography>
+                          {response.payload?.value?.startsWith("3-") ? (
+                            <GeneratedImage src={response.payload.value} />
+                          ) : (
+                            <AnimatedText
+                              key={`${promptZUID}-${responseIndex}`}
+                              text={response.payload.value}
+                              animate={shouldAnimate && !isInCodeApp}
+                              onGrow={() => {
+                                if (responsesEndRef.current) {
+                                  responsesEndRef.current.scrollIntoView({
+                                    behavior: "smooth",
+                                  });
+                                }
+                              }}
+                            />
+                          )}
+                          {!autoApply && response.type === "SET_VALUE" && (
+                            <Box display="flex" justifyContent="flex-end">
+                              <Button
+                                data-cy="AIDrawerSetValue"
+                                size="xsmall"
+                                variant="contained"
+                                sx={{ ml: "auto", mt: 0.5 }}
+                                // disabled={appliedResponsesLS?.[pathname]?.includes(
+                                //   index
+                                // )}
+                                onClick={() => {
+                                  enqueueAction({
+                                    type: response.type,
+                                    payload: {
+                                      refKey: response.payload.refKey,
+                                      value: response.payload.value,
+                                    },
+                                  });
+                                  updatePromptApprovalStatus({
+                                    chatZUID: urlChatZUID,
+                                    promptZUID,
+                                    approval: "1",
+                                  });
+                                  // setAppliedResponsesLS({
+                                  //   ...appliedResponsesLS,
+                                  //   [pathname]: [
+                                  //     ...(appliedResponsesLS?.[pathname] || []),
+                                  //     index,
+                                  //   ],
+                                  // });
+                                }}
+                                startIcon={
+                                  <AutoFixHighRounded fontSize="small" />
+                                }
+                              >
+                                Apply
+                              </Button>
+                            </Box>
+                          )}
+                        </Box>
+                      );
+                    });
+                  }
+                )}
+                <div ref={responsesEndRef} />
+                {isLoading && (
+                  <Box
+                    display="flex"
+                    alignItems="center"
+                    gap={0.5}
+                    p={1}
+                    borderRadius={2}
+                    border="1px solid"
+                    borderColor="border"
+                    width="fit-content"
+                    mb={1}
+                  >
+                    <Skeleton variant="rounded" width={8} height={8} />
+                    <Skeleton variant="rounded" width={8} height={8} />
+                    <Skeleton variant="rounded" width={8} height={8} />
+                  </Box>
+                )}
+              </Box>
+            </Box>
+          </Box>
+          <Box>
+            <Box
+              display="flex"
+              flexDirection="column"
+              justifyContent="space-between"
+              rowGap={1}
+            >
+              <Button
+                data-cy="AIDrawerGenerateSuggestions"
+                size="small"
+                variant="outlined"
+                fullWidth
+                onClick={() => handleGenerateSuggestions(composerSeed)}
+              >
+                Generate Suggestions
+              </Button>
+              <PromptComposer
+                seed={composerSeed}
+                disabled={isLoading || isLoadingChatSessionLog}
+                onSubmit={handlePrompt}
+              />
+            </Box>
+            <Box
+              display="flex"
+              alignItems="center"
+              justifyContent="space-between"
+              my={0.5}
+            >
+              <Box display="flex" alignItems="flex-start" flexGrow={1}>
+                <Button
                   data-cy="AIDrawerClearChat"
-                  size="small"
-                  color="error"
+                  variant="text"
+                  color="inherit"
                   onClick={() => {
                     removeUrlChatZUID();
                     setResponses({});
+                    setAppliedResponsesLS({
+                      ...appliedResponsesLS,
+                      [pathname]: [],
+                    });
                   }}
                 >
-                  <NotInterestedRounded sx={{ fontSize: 16 }} />
-                </IconButton>
-              </Tooltip>
-            </Box>
-          </Box>
-          <Box
-            flex="1"
-            overflow="auto"
-            my={1}
-            display="flex"
-            flexDirection="column"
-            gap={1}
-            ref={chatContainerRef}
-          >
-            {Object.entries(responses).map(([promptZUID, promptResponses]) => {
-              return promptResponses.map((response, responseIndex) => {
-                const shouldAnimate =
-                  latestPromptZUIDs.has(promptZUID) &&
-                  response.type !== "USER_INPUT";
-
-                if (response.type === "USER_INPUT") {
-                  return (
-                    <Box
-                      data-cy="AIDrawerUserInput"
-                      key={`${promptZUID}-${responseIndex}`}
-                      sx={{
-                        padding: 1,
-                        borderRadius: 1,
-                        maxWidth: "168px",
-                        width: "fit-content",
-                        color: "white",
-                        ml: "auto",
-                        backgroundColor: "grey.500",
-                      }}
-                    >
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          wordBreak: "break-word",
-                          fontStyle:
-                            response.payload.value.startsWith(
-                              "Generate suggestions"
-                            ) && "italic",
-                        }}
-                      >
-                        {response.payload.value}
-                      </Typography>
-                    </Box>
-                  );
-                } else if (response.type === "SYSTEM_SUGGESTION") {
-                  return (
-                    <Button
-                      data-cy="AIDrawerSystemSuggestion"
-                      key={`${promptZUID}-${responseIndex}`}
-                      onClick={() => {
-                        setComposerSeed(response.payload.value);
-                      }}
-                      sx={{
-                        textAlign: "left",
-                        justifyContent: "flex-start",
-                        width: "fit-content",
-                        padding: 1,
-                      }}
-                      variant="contained"
-                      color="inherit"
-                      endIcon={<ChevronRightRounded />}
-                    >
-                      <AnimatedText
-                        text={response.payload.value}
-                        animate={shouldAnimate}
-                        onGrow={() => {
-                          if (responsesEndRef.current) {
-                            responsesEndRef.current.scrollIntoView({
-                              behavior: "smooth",
-                            });
-                          }
-                        }}
-                      />
-                    </Button>
-                  );
-                } else if (response.type === "NAVIGATE") {
-                  return (
-                    <Box
-                      display="flex"
-                      justifyContent="flex-end"
-                      key={`${promptZUID}-${responseIndex}`}
-                    >
-                      <Button
-                        data-cy="AIDrawerNavigate"
-                        size="xsmall"
-                        variant="contained"
-                        sx={{ ml: "auto", mt: 0.5 }}
-                        onClick={() => {
-                          enqueueAction({
-                            type: response.type,
-                            payload: {
-                              path: response.payload.path,
-                            },
-                          });
-                        }}
-                        endIcon={<ArrowForward fontSize="small" />}
-                      >
-                        Navigate
-                      </Button>
-                    </Box>
-                  );
-                }
-
-                return (
-                  <Box key={`${promptZUID}-${responseIndex}`}>
-                    <Typography
-                      variant="body3"
-                      sx={{
-                        mb: 0.5,
-                      }}
-                    >
-                      {response.payload.refKey}
-                    </Typography>
-                    {response.payload?.value?.startsWith("3-") ? (
-                      <GeneratedImage src={response.payload.value} />
-                    ) : (
-                      <AnimatedText
-                        key={`${promptZUID}-${responseIndex}`}
-                        text={response.payload.value}
-                        animate={shouldAnimate && !isInCodeApp}
-                        onGrow={() => {
-                          if (responsesEndRef.current) {
-                            responsesEndRef.current.scrollIntoView({
-                              behavior: "smooth",
-                            });
-                          }
-                        }}
-                      />
-                    )}
-                    {response.type === "SET_VALUE" && (
-                      <Box display="flex" justifyContent="flex-end">
-                        <Button
-                          data-cy="AIDrawerSetValue"
-                          size="xsmall"
-                          variant="contained"
-                          sx={{ ml: "auto", mt: 0.5 }}
-                          onClick={() => {
-                            enqueueAction({
-                              type: response.type,
-                              payload: {
-                                refKey: response.payload.refKey,
-                                value: response.payload.value,
-                              },
-                            });
-                            updatePromptApprovalStatus({
-                              chatZUID: urlChatZUID,
-                              promptZUID,
-                              approval: "1",
-                            });
-                          }}
-                          endIcon={<AutoFixHighRounded fontSize="small" />}
-                        >
-                          Apply
-                        </Button>
-                      </Box>
-                    )}
-                  </Box>
-                );
-              });
-            })}
-            <div ref={responsesEndRef} />
-            {isLoading && (
-              <Box
-                display="flex"
-                alignItems="center"
-                gap={0.5}
-                p={1}
-                borderRadius={2}
-                border="1px solid"
-                borderColor="border"
-                width="fit-content"
-                mb={1}
+                  Clear Chat
+                </Button>
+              </Box>
+              <IconButton
+                data-cy="AIDrawerSettings"
+                onClick={() => setSettingsOpen(!settingsOpen)}
+                size="small"
               >
-                <Skeleton variant="rounded" width={8} height={8} />
-                <Skeleton variant="rounded" width={8} height={8} />
-                <Skeleton variant="rounded" width={8} height={8} />
-              </Box>
-            )}
-          </Box>
-          <PromptComposer
-            seed={composerSeed}
-            disabled={isLoading || isLoadingChatSessionLog}
-            onSubmit={handlePrompt}
-            onGenerateSuggestions={handleGenerateSuggestions}
-          />
-          <Accordion elevation={0} disableGutters>
-            <AccordionSummary
-              data-cy="AIDrawerSettings"
-              sx={{
-                p: 0,
-              }}
-              expandIcon={
-                <ArrowDropDownRoundedIcon sx={{ fontSize: "20px" }} />
-              }
-            >
-              <Box display="flex" gap={0.5} alignContent={"center"}>
                 <SettingsRoundedIcon color="action" fontSize="small" />
-                <Typography variant="body2" color="text.secondary">
-                  Settings
-                </Typography>
-              </Box>
-            </AccordionSummary>
-            <AccordionDetails
-              sx={{
-                px: 0,
-              }}
+              </IconButton>
+
+              <Button
+                variant="contained"
+                onClick={() => handlePrompt(composerSeed)}
+                disabled={promptIsEmpty}
+                sx={{
+                  borderRadius: 6,
+                  padding: 0.5,
+                  minWidth: 0,
+                  backgroundColor: promptIsEmpty
+                    ? "transparent!important"
+                    : "primary.main",
+                  color: promptIsEmpty
+                    ? "action.active"
+                    : "primary.contrastText",
+                }}
+              >
+                <ArrowUpwardRounded fontSize="small" />
+              </Button>
+            </Box>
+            <Collapse
+              orientation="vertical"
+              collapsedSize={0}
+              sx={{ position: "relative" }}
+              in={settingsOpen}
             >
-              <FormGroup>
-                <FormControlLabel
-                  sx={{
-                    mx: 0,
-                  }}
-                  control={
-                    <Switch
-                      data-cy="AIDrawerAutoApplyToggle"
-                      size="small"
-                      checked={autoApply}
-                      onChange={(e) => setAutoApply(e.target.checked)}
-                    />
-                  }
-                  label={
-                    <Typography variant="subtitle2" color="text.secondary">
-                      Auto apply
-                    </Typography>
-                  }
-                />
-              </FormGroup>
-              <Box>
-                <Stack direction="row" gap={1} alignItems="center" mt={1}>
-                  <InputLabel sx={{ mb: 0 }}>Language</InputLabel>
-                  <Tooltip
-                    title="Set the language in which you'd like the text to be generated."
-                    placement="top"
-                  >
-                    <InfoRoundedIcon color="action" sx={{ fontSize: 12 }} />
-                  </Tooltip>
-                </Stack>
-                <Autocomplete
-                  autoHighlight
-                  disableClearable
-                  isOptionEqualToValue={(option: any, value: any) =>
-                    option.value === value.value
-                  }
-                  onChange={(event, value) => setSelectedLanguage(value)}
-                  value={selectedLanguage}
-                  options={languageOptions}
-                  renderInput={(params: any) => (
-                    <TextField
-                      {...params}
-                      fullWidth
-                      InputProps={{
-                        ...params.InputProps,
-                        startAdornment: (
-                          <InputAdornment position="start" sx={{ width: 24 }}>
-                            <LanguageRoundedIcon fontSize="small" />
-                          </InputAdornment>
-                        ),
-                      }}
-                    />
-                  )}
-                />
+              <Box py={2}>
+                <FormGroup>
+                  <FormControlLabel
+                    sx={{
+                      mx: 0,
+                    }}
+                    control={
+                      <Switch
+                        data-cy="AIDrawerAutoApplyToggle"
+                        size="small"
+                        checked={autoApply}
+                        onChange={(e) => setAutoApply(e.target.checked)}
+                      />
+                    }
+                    label={
+                      <Typography variant="subtitle2" color="text.secondary">
+                        Auto apply
+                      </Typography>
+                    }
+                  />
+                </FormGroup>
+                <Box>
+                  <Stack direction="row" gap={1} alignItems="center" mt={1}>
+                    <InputLabel sx={{ mb: 0 }}>Language</InputLabel>
+                    <Tooltip
+                      title="Set the language in which you'd like the text to be generated."
+                      placement="top"
+                    >
+                      <InfoRoundedIcon color="action" sx={{ fontSize: 12 }} />
+                    </Tooltip>
+                  </Stack>
+                  <Autocomplete
+                    autoHighlight
+                    disableClearable
+                    isOptionEqualToValue={(option: any, value: any) =>
+                      option.value === value.value
+                    }
+                    onChange={(event, value) => setSelectedLanguage(value)}
+                    value={selectedLanguage}
+                    options={languageOptions}
+                    renderInput={(params: any) => (
+                      <TextField
+                        {...params}
+                        fullWidth
+                        InputProps={{
+                          ...params.InputProps,
+                          startAdornment: (
+                            <InputAdornment position="start" sx={{ width: 24 }}>
+                              <LanguageRoundedIcon fontSize="small" />
+                            </InputAdornment>
+                          ),
+                        }}
+                      />
+                    )}
+                  />
+                </Box>
+                <Box>
+                  <Stack direction="row" gap={1} alignItems="center" mt={1}>
+                    <InputLabel sx={{ mb: 0 }}>Tone</InputLabel>
+                    <Tooltip
+                      title="Set the desired style and mood of the generated text"
+                      placement="top"
+                    >
+                      <InfoRoundedIcon color="action" sx={{ fontSize: 12 }} />
+                    </Tooltip>
+                  </Stack>
+                  <Autocomplete
+                    autoHighlight
+                    disableClearable
+                    isOptionEqualToValue={(option: any, value: any) =>
+                      option.value === value.value
+                    }
+                    onChange={(_, value) => setSelectedTone(value)}
+                    value={selectedTone}
+                    options={TONE_OPTIONS}
+                    renderInput={(params: any) => (
+                      <TextField {...params} fullWidth />
+                    )}
+                  />
+                </Box>
               </Box>
-              <Box>
-                <Stack direction="row" gap={1} alignItems="center" mt={1}>
-                  <InputLabel sx={{ mb: 0 }}>Tone</InputLabel>
-                  <Tooltip
-                    title="Set the desired style and mood of the generated text"
-                    placement="top"
-                  >
-                    <InfoRoundedIcon color="action" sx={{ fontSize: 12 }} />
-                  </Tooltip>
-                </Stack>
-                <Autocomplete
-                  autoHighlight
-                  disableClearable
-                  isOptionEqualToValue={(option: any, value: any) =>
-                    option.value === value.value
-                  }
-                  onChange={(_, value) => setSelectedTone(value)}
-                  value={selectedTone}
-                  options={TONE_OPTIONS}
-                  renderInput={(params: any) => (
-                    <TextField {...params} fullWidth />
-                  )}
-                />
-              </Box>
-            </AccordionDetails>
-          </Accordion>
+            </Collapse>
+          </Box>
         </>
       )}
-    </Box>
+    </Paper>
   );
 };
 
@@ -774,16 +870,10 @@ type PromptComposerProps = {
   seed: string;
   disabled: boolean;
   onSubmit: (value: string) => void;
-  onGenerateSuggestions: (value: string) => void;
 };
 
 const PromptComposer = memo(
-  ({
-    seed,
-    disabled,
-    onSubmit,
-    onGenerateSuggestions,
-  }: PromptComposerProps) => {
+  ({ seed, disabled, onSubmit }: PromptComposerProps) => {
     const [draft, setDraft] = useState(seed);
     const inputRef = useRef<HTMLInputElement>(null);
 
@@ -803,52 +893,24 @@ const PromptComposer = memo(
     };
 
     return (
-      <>
-        <TextField
-          data-cy="AIDrawerComposer"
-          inputRef={inputRef}
-          disabled={disabled}
-          placeholder="Ask AI to make edits to your content..."
-          variant="outlined"
-          fullWidth
-          multiline
-          rows={4}
-          onChange={(e) => setDraft(e.target.value)}
-          value={draft}
-          onKeyPress={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              submitDraft();
-            }
-          }}
-        />
-        <Box display="flex" justifyContent="space-between" my={0.5}>
-          <Button
-            data-cy="AIDrawerGenerateSuggestions"
-            size="small"
-            variant="contained"
-            onClick={() => {
-              onGenerateSuggestions(draft);
-              setDraft("");
-            }}
-            endIcon={<AutoFixHighRounded />}
-          >
-            Generate Suggestions
-          </Button>
-          <Button
-            data-cy="AIDrawerSubmitPrompt"
-            variant="contained"
-            onClick={submitDraft}
-            sx={{
-              borderRadius: "50%",
-              padding: 0.5,
-              minWidth: 0,
-            }}
-          >
-            <ArrowUpwardRounded />
-          </Button>
-        </Box>
-      </>
+      <TextField
+        data-cy="AIDrawerComposer"
+        inputRef={inputRef}
+        disabled={disabled}
+        placeholder={`Ask for anything, for example "Cater my content to a specific audience"`}
+        variant="outlined"
+        fullWidth
+        multiline
+        rows={4}
+        onChange={(e) => setDraft(e.target.value)}
+        value={draft}
+        onKeyPress={(e) => {
+          if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            submitDraft();
+          }
+        }}
+      />
     );
   }
 );
