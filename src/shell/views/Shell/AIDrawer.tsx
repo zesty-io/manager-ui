@@ -18,15 +18,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useSelector } from "react-redux";
-import {
-  memo,
-  useCallback,
-  FC,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   useGeminiGenerationMutation,
   useGetChatSessionLogQuery,
@@ -48,7 +40,6 @@ import { useGetLangsMappingQuery } from "../../services/instance";
 import { suggestionSystemInstruction } from "./systemInstructions";
 import { useLocalStorage } from "react-use";
 import { getRefRegistry } from "../../../engine/refRegistry";
-import { keyframes } from "@emotion/react";
 import geminiLogo from "../../../../public/images/geminiLogo.svg";
 import { AppState } from "shell/store/types";
 import { useGetUsersRolesQuery } from "shell/services/accounts";
@@ -100,6 +91,8 @@ const normalizeChatSessionLog = (prompts: ChatPrompt[] = []) => {
       ];
     }
 
+    console.log("promptLog:", promptLog);
+
     promptMap[promptLog.promptZuid] = [
       {
         type: "USER_INPUT",
@@ -113,11 +106,6 @@ const normalizeChatSessionLog = (prompts: ChatPrompt[] = []) => {
 
   return promptMap;
 };
-
-const borderMove = keyframes`
-  0% { background-position: 0 0; }
-  100% { background-position: 0 200%; }
-`;
 
 const TONE_OPTIONS = [
   {
@@ -641,6 +629,7 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
                                 size="xsmall"
                                 variant="contained"
                                 sx={{ ml: "auto", mt: 0.5 }}
+                                // FIXME: Determine if we should use the backend approval value
                                 // disabled={appliedResponsesLS?.[pathname]?.includes(
                                 //   index
                                 // )}
