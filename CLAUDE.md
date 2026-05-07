@@ -42,6 +42,25 @@ Layout:
 - `src/engine/` — a ref-registry + action-handler layer (`refRegistry`, `handlers.ts`, `navigator.ts`) that lets external code (notably the AI drawer in `views/Shell/AIDrawer.tsx`) drive UI by `refKey` rather than DOM queries. When adding components that should be controllable this way, register them via `useRegisterRef`.
 - `src/utility/` — framework-agnostic helpers (`request.js`, `idb.ts`, `history.ts`, `sentry.js`, `instanceZUID.js`).
 
+### Sub-apps inventory
+
+Each `src/apps/<name>/src/index.js` exports the app's root component and (optionally) calls `injectReducer`. Mapping directory → `Shell.tsx` import:
+
+- `content-editor` → `ContentApp` — content item editor (the primary editing surface).
+- `schema` → `SchemaApp` — content model and field editor.
+- `media` → `DamApp` — digital asset manager / file uploads.
+- `release` → `ReleaseApp` — versioned release management.
+- `reports` → `ReportingApp` — analytics and audit reports.
+- `code-editor` → `CodeApp` — instance code (templates, scripts, stylesheets).
+- `seo` → `SeoApp` — SEO settings.
+- `settings` → `SettingsApp` — instance settings.
+- `home` → `HomeApp` — dashboard / landing.
+- `leads` → `LeadsApp` — lead capture.
+- `studio` → `StudioApp` — visual builder.
+- `marketplace` → `MarketplaceApp` — app/integration directory.
+- `blocks` → `BlocksApp` — reusable content blocks.
+- `active-preview` — **not** routed via `Shell.tsx`; it's the separate webpack entry that renders the preview iframe.
+
 ### State management
 
 - **Redux** (classic `createStore` + thunk + custom middleware) is the source of truth. Reducers are wired in `src/shell/store/index.js`.
@@ -53,6 +72,27 @@ Layout:
   - `nav.js` — content nav tree updates.
 - Sub-apps add reducers asynchronously via `injectReducer(store, name, reducer)` (`src/shell/store/index.js`). This is how content-editor adds `modal` and `listFilters`, and how the shell itself adds `navContent`.
 - Some legacy code reads from a global `window.zesty` (a `@riotjs/observable`) and `window.zestyStore` — both are set up in `src/shell/index.js`. Don't add new dependencies on these.
+
+### Auth & session
+
+Auth lives in the legacy thunk-based reducer `src/shell/store/auth.js` (not RTK Query — leave as-is). Bootstrap order:
+
+1. On boot, `verify()` GETs `${CONFIG.SERVICE_AUTH}/verify`. Success dispatches `VERIFY_SUCCESS` and writes the returned `meta.token` to a cookie named `CONFIG.COOKIE_NAME` on `CONFIG.COOKIE_DOMAIN`. Failure renders `<Login>`.
+2. `login(email, password)` POSTs `${CONFIG.SERVICE_AUTH}/login`; `verifyTwoFactor` and `pollTwoFactor` handle the 2FA flow.
+3. RTK Query services pick up the cookie automatically via `prepareHeaders` in `src/shell/services/util.js` — don't read the cookie or set the bearer manually.
+4. On 401 from any RTK Query call, `endSession()` dispatches `SESSION_ENDING`, shows a notification, and after 5s flips `SESSION_INVALID` to redirect to login.
+
+Auth state shape: `{ checking, valid, sessionEnding, token }`. Treat `state.auth.valid === true` as "logged in"; `checking` is the boot-time race.
+
+### Permissions: `usePermission`
+
+Use `usePermission(action, zuid?)` from `src/shell/hooks/use-permissions.js` to gate UI on the current user's role. Actions are `"CREATE" | "READ" | "UPDATE" | "DELETE" | "PUBLISH" | "CODE"`. `zuid` defaults to `instanceZUID`; pass a resource ZUID to check granular roles for that resource (falls back to the instance-level granular role, then to the system role).
+
+Quirks:
+
+- `user.staff === true` (Zesty staff) and `userRole.systemRole.super === true` short-circuit to `true` for every action.
+- `"CODE"` is a _role-name_ check, not a CRUD bit — only `Owner`, `Admin`, `Developer` pass. New product gates that look like `CODE` belong here too rather than as new CRUD actions.
+- For "user can't do X" UI, render `<NoPermission>` from `src/shell/components/NoPermission.tsx` instead of hiding the control silently.
 
 ### Config injection
 
@@ -74,6 +114,39 @@ Uses `@zesty-io/material` (a wrapper around MUI v5 + MUI X with a paid license k
 
 - Sentry is initialized in `src/utility/sentry.js` and wraps the root component (`Sentry.withProfiler`, `Sentry.ErrorBoundary`). A redux-sentry-middleware allowlists which slices are sent.
 - Amplitude (`@amplitude/analytics-browser`) is initialized in `index.js` and identified per-user in `Shell.tsx`. Event names live in `src/amplitude-events.ts`.
+
+### Engine and the AI drawer
+
+`src/engine/` is the bridge between the AI drawer (`src/shell/views/Shell/AIDrawer.tsx`, backed by `useGeminiGenerationMutation` from `src/shell/services/mcp.ts`) and the app's UI. The drawer dispatches actions by `refKey` rather than querying the DOM, so any control the AI should be able to drive must be registered:
+
+```ts
+useRegisterRef(key, handle, context?, options?)
+```
+
+- `key` — stable string id (must match what the action handlers expect).
+- `handle` — a `RefHandle` exposing the imperative API the action will call (e.g. `{ open: () => void, save: () => void }`). The component owns it and unregisters automatically on unmount.
+- `context` — optional snapshot (object or thunk) describing current state for the AI; the thunk form is re-evaluated on each action.
+
+Action types and routing live in `src/engine/{actionTypes.ts, handlers.ts, navigator.ts, queue.ts}`. Add new actions there rather than special-casing inside `AIDrawer.tsx`.
+
+## Testing with Cypress
+
+Specs live in `cypress/e2e/<area>/<file>.spec.js`. Required setup: a `cypress.env.json` at the repo root with `{ "email", "password" }` plus the env vars consumed by the custom commands (`API_AUTH`, `COOKIE_NAME`, etc. — see `cypress.config.js`).
+
+Custom commands (`cypress/support/commands.js`) — use these instead of hand-rolling:
+
+- `cy.login()` — POSTs `${API_AUTH}/login` and writes the `COOKIE_NAME` cookie. Call in `beforeEach`.
+- `cy.apiRequest({ method, url, body })` — wraps `cy.request` and auto-injects the bearer from the cookie. Use for setup/teardown HTTP, not raw `cy.request`.
+- `cy.getBySelector("foo")` — selects `[data-cy="foo"]`. New components should expose `data-cy` attributes for anything tests will target; don't lean on class names or text.
+- `cy.blockLock()` — stubs `/door/knock*` to defeat the "instance is locked" modal. Call before any edit-page test.
+- `cy.blockAnnouncements()` — stubs the announcements feed. Use when announcements would otherwise interrupt the flow.
+- `cy.waitOn(path, cb)` — runs `cb` after intercepting `path` and waits up to 30s for the request.
+
+Fixtures (`cypress/fixtures/`) seed instance/content/model JSON. Don't hand-roll fixtures inline in specs.
+
+**Tests hit a real dev instance, not mocks.** `cypress/support/api.js` exposes seeding helpers — `cy.createModel`, `cy.deleteModel(s)`, `cy.createField`, `cy.createStatusLabel`, `cy.deleteStatusLabels` — that POST/DELETE against the dev API (`API_ENDPOINTS.devInstance`). Use them in `before` / `after` hooks and clean up everything you create; leaked records pollute later runs. Hardcoded ZUIDs in specs (e.g. `/content/6-0c960c-d1n0kx`) reference seed data on the configured instance — don't repoint specs at a different instance without re-seeding.
+
+**`data-cy` is the only selector strategy.** Tests use `cy.getBySelector("Foo")` exclusively; class-based selectors, MUI class hooks, and text-matching for clicks are flake risks. New interactive controls (buttons, inputs, menu items, table rows) MUST expose a stable `data-cy="…"` attribute or they're effectively untestable.
 
 ## Code conventions
 
