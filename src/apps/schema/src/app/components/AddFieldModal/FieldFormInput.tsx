@@ -13,6 +13,7 @@ import {
   Tooltip,
   Button,
   IconButton,
+  InputAdornment,
   Stack,
   AutocompleteProps,
   InputProps,
@@ -117,6 +118,7 @@ type FieldFormInputProps = {
   autocompleteConfig?: AutocompleteConfig;
   integrationFieldConfig?: IntegrationFieldConfig;
   isUpdateField?: boolean;
+  startAdornment?: React.ReactNode;
 } & Pick<
   AutocompleteProps<DropdownOptions | Currency, false, false, false, "div">,
   "renderOption" | "filterOptions"
@@ -133,6 +135,7 @@ export const FieldFormInput = ({
   autocompleteConfig,
   integrationFieldConfig,
   isUpdateField,
+  startAdornment,
 }: FieldFormInputProps) => {
   const options =
     fieldConfig.type === "options" ||
@@ -394,6 +397,20 @@ export const FieldFormInput = ({
             inputProps={{
               min: 1,
             }}
+            InputProps={
+              startAdornment
+                ? {
+                    startAdornment: (
+                      <InputAdornment
+                        position="start"
+                        sx={{ "&.MuiInputAdornment-positionStart": { mr: 0 } }}
+                      >
+                        {startAdornment}
+                      </InputAdornment>
+                    ),
+                  }
+                : undefined
+            }
           />
         </>
       )}
