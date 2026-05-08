@@ -466,6 +466,7 @@ export function saveItem({
       (field) =>
         field.required &&
         field?.name !== "og_image" &&
+        field?.datatype !== "repeater" &&
         (item.data[field.name] === "" || item.data[field.name] === null)
     );
 
@@ -677,7 +678,8 @@ export function createItem({ modelZUID, itemZUID, skipPathPartValidation }) {
                 "tc_title",
                 "tc_description",
               ].includes(field.name) &&
-              field.required
+              field.required &&
+              field.datatype !== "repeater"
             ) {
               if (!item.data[field.name] && item.data[field.name] != 0) {
                 return true;
