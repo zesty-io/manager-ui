@@ -91,8 +91,6 @@ const normalizeChatSessionLog = (prompts: ChatPrompt[] = []) => {
       ];
     }
 
-    console.log("promptLog:", promptLog);
-
     promptMap[promptLog.promptZuid] = [
       {
         type: "USER_INPUT",
@@ -100,7 +98,10 @@ const normalizeChatSessionLog = (prompts: ChatPrompt[] = []) => {
           value: promptLog.prompt,
         },
       },
-      ...parsedResponses,
+      ...parsedResponses.map((parsedResponse: any) => ({
+        ...parsedResponse,
+        approval: promptLog.approval,
+      })),
     ];
   });
 
@@ -156,9 +157,6 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
   const [responses, setResponses] = useState<Record<string, any[]>>({});
   const [composerSeed, setComposerSeed] = useState("");
 
-  const [appliedResponsesLS, setAppliedResponsesLS] = useLocalStorage<
-    Record<string, number[]>
-  >(`ai-drawer-applied-responses`, { [pathname]: [] });
   const promptIsEmpty = isEmpty(composerSeed.trim());
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [autoApply, setAutoApply] = useState(false);
@@ -218,6 +216,7 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
 
     if (latestPromptZUID) {
       const promptsArray = responses[latestPromptZUID];
+      const hasSetValue = promptsArray?.some((p) => p.type === "SET_VALUE");
 
       promptsArray?.forEach((prompt) => {
         if (prompt.type === "SET_VALUE") {
@@ -235,6 +234,19 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
           });
         }
       });
+
+      if (hasSetValue) {
+        // Optimistically mark as approved so the button disables immediately
+        // without waiting for a re-fetch (mirrors the manual Apply button behavior)
+        setResponses((prev) => ({
+          ...prev,
+          [latestPromptZUID]: prev[latestPromptZUID].map((response) =>
+            response.type === "SET_VALUE"
+              ? { ...response, approval: "1" }
+              : response
+          ),
+        }));
+      }
     }
   }, [autoApply, latestPromptZUIDs, responses, urlChatZUID]);
 
@@ -629,10 +641,7 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
                                 size="xsmall"
                                 variant="contained"
                                 sx={{ ml: "auto", mt: 0.5 }}
-                                // FIXME: Determine if we should use the backend approval value
-                                // disabled={appliedResponsesLS?.[pathname]?.includes(
-                                //   index
-                                // )}
+                                disabled={response.approval === "1"}
                                 onClick={() => {
                                   enqueueAction({
                                     type: response.type,
@@ -646,13 +655,17 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
                                     promptZUID,
                                     approval: "1",
                                   });
-                                  // setAppliedResponsesLS({
-                                  //   ...appliedResponsesLS,
-                                  //   [pathname]: [
-                                  //     ...(appliedResponsesLS?.[pathname] || []),
-                                  //     index,
-                                  //   ],
-                                  // });
+                                  // Optimistically mark as approved so the button
+                                  // disables immediately without waiting for a re-fetch
+                                  setResponses((prev) => ({
+                                    ...prev,
+                                    [promptZUID]: prev[promptZUID].map(
+                                      (response) =>
+                                        response.type === "SET_VALUE"
+                                          ? { ...response, approval: "1" }
+                                          : response
+                                    ),
+                                  }));
                                 }}
                                 startIcon={
                                   <AutoFixHighRounded fontSize="small" />
@@ -724,10 +737,6 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
                   onClick={() => {
                     removeUrlChatZUID();
                     setResponses({});
-                    setAppliedResponsesLS({
-                      ...appliedResponsesLS,
-                      [pathname]: [],
-                    });
                   }}
                 >
                   Clear Chat
