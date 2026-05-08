@@ -13,15 +13,37 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { FIELD_COPY_CONFIG, FieldListData, FieldType } from "../../../configs";
 import { FieldItem } from "../../FieldItem";
 
+const ALLOWED_REPEATER_FIELD_TYPES = new Set<FieldType>([
+  "text",
+  "textarea",
+  "wysiwyg_basic",
+  "markdown",
+  "images",
+  "link",
+  "number",
+  "currency",
+  "yes_no",
+  "dropdown",
+  "color",
+  "sort",
+  "uuid",
+]);
+
 const repeaterFields = {
-  text: FIELD_COPY_CONFIG.text,
-  media: FIELD_COPY_CONFIG.media,
-  relationship: FIELD_COPY_CONFIG.relationship.filter(
-    (field) => field.type === "link"
+  text: FIELD_COPY_CONFIG.text.filter((field) =>
+    ALLOWED_REPEATER_FIELD_TYPES.has(field.type)
   ),
-  numeric: FIELD_COPY_CONFIG.numeric,
-  options: FIELD_COPY_CONFIG.options.filter(
-    (field) => field.type !== "repeater"
+  media: FIELD_COPY_CONFIG.media.filter((field) =>
+    ALLOWED_REPEATER_FIELD_TYPES.has(field.type)
+  ),
+  relationship: FIELD_COPY_CONFIG.relationship.filter((field) =>
+    ALLOWED_REPEATER_FIELD_TYPES.has(field.type)
+  ),
+  numeric: FIELD_COPY_CONFIG.numeric.filter((field) =>
+    ALLOWED_REPEATER_FIELD_TYPES.has(field.type)
+  ),
+  options: FIELD_COPY_CONFIG.options.filter((field) =>
+    ALLOWED_REPEATER_FIELD_TYPES.has(field.type)
   ),
 };
 

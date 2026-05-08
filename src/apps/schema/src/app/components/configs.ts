@@ -767,7 +767,7 @@ const FORM_CONFIG: Record<FieldType, FormConfig> = {
     rules: [...INPUT_RANGE_RULES],
   },
   repeater: {
-    details: [...COMMON_FIELDS.slice(0, 5)],
+    details: [...COMMON_FIELDS.slice(0, 4)],
     rules: [],
   },
 };
