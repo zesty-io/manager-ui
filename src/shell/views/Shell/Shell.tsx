@@ -246,7 +246,12 @@ export default memo(function Shell() {
                     <Route path="*" component={Missing} />
                   </Switch>
                 </Box>
-                {showAiDrawer && <AIDrawer key={pathname} />}
+                {showAiDrawer && (
+                  <AIDrawer
+                    onClose={() => setShowAiDrawer(false)}
+                    key={pathname}
+                  />
+                )}
               </Box>
             ) : (
               <LoadingShell />

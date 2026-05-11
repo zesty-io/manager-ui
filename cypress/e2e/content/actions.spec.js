@@ -38,7 +38,7 @@ describe("Actions in content editor", () => {
       );
     });
 
-    cy.getBySelector(`"field:markdown"`)
+    cy.getBySelector("field:markdown")
       .find("textarea")
       .click()
       .clear()
@@ -53,7 +53,7 @@ describe("Actions in content editor", () => {
     cy.getBySelector("toast").contains("Missing Data in Required Fields", {
       matchCase: false,
     });
-    cy.getBySelector(`"field:markdown"`)
+    cy.getBySelector("field:markdown")
       .find("textarea")
       .click()
       .clear()
@@ -61,7 +61,7 @@ describe("Actions in content editor", () => {
   });
 
   it("Must not save when exceeding or lacking characters", () => {
-    cy.getBySelector(`"field:text"`)
+    cy.getBySelector("field:text")
       .find("input")
       .click()
       .clear()
@@ -77,7 +77,7 @@ describe("Actions in content editor", () => {
       .find("li")
       .first()
       .contains("Requires 8 more characters.");
-    cy.getBySelector(`"field:text"`)
+    cy.getBySelector("field:text")
       .find("input")
       .click()
       .clear()
@@ -93,7 +93,7 @@ describe("Actions in content editor", () => {
       .find("li")
       .first()
       .contains("Exceeding by 5 characters.");
-    cy.getBySelector(`"field:text"`)
+    cy.getBySelector("field:text")
       .find("input")
       .click()
       .clear()
@@ -109,7 +109,7 @@ describe("Actions in content editor", () => {
         matchCase: false,
       }
     );
-    cy.getBySelector(`"field:text"`)
+    cy.getBySelector("field:text")
       .find("input")
       .click()
       .clear()
@@ -117,7 +117,7 @@ describe("Actions in content editor", () => {
   });
 
   it("Must not save when regex is not matched", () => {
-    cy.getBySelector(`"field:textarea"`)
+    cy.getBySelector("field:textarea")
       .find("textarea")
       .first()
       .click()
@@ -133,7 +133,7 @@ describe("Actions in content editor", () => {
       .find("li")
       .first()
       .contains("Must be an email (e.g. hello@zesty.io)");
-    cy.getBySelector(`"field:textarea"`)
+    cy.getBySelector("field:textarea")
       .find("textarea")
       .first()
       .click()
@@ -150,7 +150,7 @@ describe("Actions in content editor", () => {
         matchCase: false,
       }
     );
-    cy.getBySelector(`"field:textarea"`)
+    cy.getBySelector("field:textarea")
       .find("textarea")
       .first()
       .click()
@@ -166,7 +166,7 @@ describe("Actions in content editor", () => {
     cy.get(`[data-cy="field:fontawesome"] input`).should("not.exist");
 
     // Make an edit to enable save button
-    cy.getBySelector(`"field:text"`)
+    cy.getBySelector("field:text")
       .find("input")
       .click()
       .clear()
@@ -361,20 +361,20 @@ describe("Actions in content editor", () => {
       cy.visit(`/content/${Cypress.env("modelZUID")}/new`);
     });
 
-    cy.getBySelector(`"field:text"`)
+    cy.getBySelector("field:text")
       .find("input")
       .should(
         "have.value",
         FIELDS.find((field) => field.name === "text").settings.defaultValue
       );
-    cy.getBySelector(`"field:textarea"`)
+    cy.getBySelector("field:textarea")
       .find("textarea")
       .first()
       .should(
         "have.value",
         FIELDS.find((field) => field.name === "textarea").settings.defaultValue
       );
-    cy.getBySelector(`"field:markdown"`)
+    cy.getBySelector("field:markdown")
       .find("textarea")
       .should(
         "have.value",
@@ -387,7 +387,7 @@ describe("Actions in content editor", () => {
       cy.visit(`/content/${Cypress.env("modelZUID")}/new`);
     });
 
-    cy.getBySelector(`"field:text"`)
+    cy.getBySelector("field:text")
       .find("input")
       .click()
       .clear()
@@ -464,14 +464,14 @@ describe("Actions in content editor", () => {
     // Increase timeout to account for longer AI generation times.
     const aiDataGenerationTimeout = { timeout: 60_000 };
 
-    cy.getBySelector(`"field:text"`)
+    cy.getBySelector("field:text")
       .find("input")
       .click()
       .clear()
       .type(TEST_DATA?.ai);
 
     // Generate AI content for markdown
-    cy.getBySelector(`"field:markdown"`).find("[data-cy='AIOpen']").click();
+    cy.getBySelector("field:markdown").find("[data-cy='AIOpen']").click();
     cy.getBySelector("AITopicField").type("biking");
     cy.getBySelector("AIAudienceField").type("young adults");
     cy.getBySelector("AIGenerate").click();
@@ -479,9 +479,7 @@ describe("Actions in content editor", () => {
     cy.get("[data-cy='AIApprove']", aiDataGenerationTimeout).click();
 
     // Generate AI content for wysiwyg_basic
-    cy.getBySelector(`"field:wysiwyg_basic"`)
-      .find("[data-cy='AIOpen']")
-      .click();
+    cy.getBySelector("field:wysiwyg_basic").find("[data-cy='AIOpen']").click();
     cy.getBySelector("AITopicField").type("biking");
     cy.getBySelector("AIAudienceField").type("young adults");
     cy.getBySelector("AIGenerate").click();
