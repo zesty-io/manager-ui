@@ -145,6 +145,11 @@ export const Meta = forwardRef(
         data: {} as Data,
         web: {} as Web,
       };
+    const homepageItem = useSelector((state: AppState) =>
+      Object.values(state.content).find(
+        (item) => item.web?.pathPart === "zesty_home"
+      )
+    );
     const [flowType, setFlowType] =
       useState<(typeof FlowType)[keyof typeof FlowType]>(null);
     const metaDescriptionButtonRef = useRef(null);
@@ -184,6 +189,13 @@ export const Meta = forwardRef(
 
       return fields;
     }, [model]);
+
+    const isHomepage = useMemo(() => {
+      if (!homepageItem) return false;
+
+      const homepageZUIDs = Object.values(homepageItem.siblings ?? []);
+      return homepageZUIDs.includes(itemZUID);
+    }, [homepageItem, itemZUID]);
 
     const handleOnChange = useCallback(
       (value, name) => {
@@ -295,11 +307,11 @@ export const Meta = forwardRef(
               CUSTOM_ERROR: !!metaDescriptionError ? metaDescriptionError : "",
             };
 
-            // No need to validate pathPart for datasets
+            // No need to validate pathPart for datasets, blocks and homepage
             if (
               model?.type === "dataset" ||
               model?.type === "block" ||
-              web?.pathPart === "zesty_home"
+              isHomepage
             ) {
               delete currentErrors.pathPart;
               delete currentErrors.parentZUID;
@@ -326,7 +338,7 @@ export const Meta = forwardRef(
           },
         };
       },
-      [errors, web, model, metaFields, data]
+      [errors, web, model, metaFields, data, isHomepage]
     );
 
     useEffect(() => {
@@ -638,7 +650,7 @@ export const Meta = forwardRef(
               />
             )}
           </Stack>
-          {model?.type !== "dataset" && web?.pathPart !== "zesty_home" && (
+          {model?.type !== "dataset" && !isHomepage && (
             <Stack gap={3}>
               <Box>
                 <Typography variant="h5" fontWeight={700} mb={0.5}>
@@ -737,3 +749,5 @@ export const Meta = forwardRef(
     );
   }
 );
+
+Meta.displayName = "Meta";
