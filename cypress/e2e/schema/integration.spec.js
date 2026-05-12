@@ -215,6 +215,33 @@ describe("Integration Field", () => {
       cy.get('[data-cy="toast"]').contains("Created Item");
     });
   });
+
+  // Regression for MANAGER-UI-2JX: the "details" field is configured with
+  // `jerseyNo` (a number) as one of its details keyPaths. Before the fix,
+  // typing in the search box called `.trim()` on that number and crashed the
+  // dialog via the React error boundary.
+  describe("Search Filter with Non-string KeyPath", () => {
+    it("Does not crash when a configured keyPath resolves to a number", () => {
+      const modelZUID = Cypress.env("modelZUID");
+
+      cy.visit(`/content/${modelZUID}/new`);
+      cy.get('[data-cy="field:title"]').find("input").type(MODEL?.label);
+
+      cy.get(
+        `[data-cy="field:details"] [data-cy="integrationSelectItemsButton"]`
+      ).click();
+      cy.get('[data-cy="integrationSelectionFormDialog"]').should("exist");
+
+      cy.get('[data-cy="integrationSelectionFormSearchBox"] input')
+        .clear()
+        .type(genericApi[0].name);
+
+      cy.get('[data-cy="integrationSelectionFormDialog"]').should("exist");
+      cy.get(".integrationSelectionFormListContainer")
+        .children()
+        .should("have.length.at.least", 1);
+    });
+  });
 });
 
 function connectToEndpoint(endpoint, type, apiData) {
