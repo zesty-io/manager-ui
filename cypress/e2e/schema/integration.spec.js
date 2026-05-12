@@ -216,10 +216,6 @@ describe("Integration Field", () => {
     });
   });
 
-  // Regression for MANAGER-UI-2JX: the "details" field is configured with
-  // `jerseyNo` (a number) as one of its details keyPaths. Before the fix,
-  // typing in the search box called `.trim()` on that number and crashed the
-  // dialog via the React error boundary.
   describe("Search Filter with Non-string KeyPath", () => {
     it("Does not crash when a configured keyPath resolves to a number", () => {
       const modelZUID = Cypress.env("modelZUID");
