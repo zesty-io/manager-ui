@@ -1,5 +1,5 @@
 import * as Sentry from "@sentry/react";
-import { spanToJSON } from "@sentry/react";
+import { spanToJSON } from "@sentry/core";
 import history from "utility/history";
 
 // Endpoints confirmed as non-issues — required for UI rendering
