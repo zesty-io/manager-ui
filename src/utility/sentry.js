@@ -1,5 +1,13 @@
 import * as Sentry from "@sentry/react";
+import { spanToJSON } from "@sentry/react";
 import history from "utility/history";
+
+// Endpoints confirmed as non-issues — required for UI rendering
+const N1_IGNORED_ENDPOINTS = [
+  /\/v1\/search\/items/,
+  /accounts\.api\.zesty\.io\/v1\/instances\/[^/]+\/comments/,
+  /\/v1\/content\/models\/[^/]+\/items/,
+];
 
 // window.CONFIG not available so we use the webpack injected variable
 if (["stage", "production"].includes(__CONFIG__?.ENV)) {
@@ -58,6 +66,21 @@ if (["stage", "production"].includes(__CONFIG__?.ENV)) {
 
       // Return default breadcrumb data if the event is not a click or input event
       return breadcrumb;
+    },
+    beforeSendTransaction(event) {
+      const isIgnoredN1 = event.spans?.some((span) => {
+        const { op, description } = spanToJSON(span);
+        return (
+          op === "http.client" &&
+          N1_IGNORED_ENDPOINTS.some((pattern) =>
+            pattern.test(description ?? "")
+          )
+        );
+      });
+
+      if (isIgnoredN1) return null;
+
+      return event;
     },
   });
 }
