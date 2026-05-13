@@ -67,6 +67,7 @@ jobs:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SPLIT: 4
           SPLIT_INDEX: ${{ matrix.split_index }}
+          SPLIT_FILE: timings.json
       # Rename so artifacts from each runner have unique filenames and don't overwrite each other.
       - name: Rename Coverage Output
         if: ${{ success() }}
@@ -80,9 +81,53 @@ jobs:
         with:
           name: coverage-${{ matrix.split_index }}
           path: .nyc_output/out-${{ matrix.split_index }}.json
+      # Upload partial timings so merge_timings can combine them into a single file.
+      # if-no-files-found: ignore handles the case where no timings were recorded (e.g. all specs failed).
+      - name: Upload Timings
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: timings-partial-${{ matrix.split_index }}
+          path: timings.json
+          if-no-files-found: ignore
       - name: Upload Screenshots
         if: ${{ failure() }}
         run: ./ci/scripts/upload_debug_screenshots_to_gcp.sh
+
+  # Merges partial timings.json from each runner into a single file and uploads it as an artifact.
+  # Download the artifact after CI runs and commit timings.json to the repo to enable
+  # runtime-based spec distribution on subsequent runs.
+  merge_timings:
+    needs: run_tests
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4.1.0
+        with:
+          node-version: "22.19.0"
+          cache: "npm"
+          cache-dependency-path: package-lock.json
+      - name: Install Dependencies
+        run: npm install --legacy-peer-deps
+      # Each artifact is downloaded into its own subdirectory: partials/timings-partial-N/timings.json
+      # cypress-split-merge looks for timings.json in each subdirectory of --parent-folder.
+      - name: Download Timings Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: timings-partial-*
+          path: partials
+      - name: Merge Timings
+        run: npx cypress-split-merge --parent-folder partials --split-file timings.json --output timings.json
+      - name: Upload Merged Timings
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-split-timings
+          path: timings.json
+          if-no-files-found: ignore
 
   # Merges coverage output from all 4 runners and posts a single comment on the PR.
   # nyc report reads all out-N.json files in .nyc_output/ and merges them automatically.
