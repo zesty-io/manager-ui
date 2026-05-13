@@ -8,6 +8,9 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     steps:
+      # This Clean step simply checks if there's already a workflow running from the last
+      # commit and cancels it if there is. This helps us save on cloud cost in the long run.
+      # See https://github.com/rokroskar/workflow-run-cleanup-action for more information.
       - name: Clean
         uses: rokroskar/workflow-run-cleanup-action@v0.2.2
         env:
