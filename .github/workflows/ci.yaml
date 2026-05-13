@@ -125,7 +125,7 @@ jobs:
       - name: Upload Merged Timings
         uses: actions/upload-artifact@v4
         with:
-          name: cypress-split-timings
+          name: merged-timings
           path: timings.json
           if-no-files-found: ignore
 
