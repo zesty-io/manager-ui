@@ -27,11 +27,15 @@ jobs:
       - name: Delete Old Screenshots
         run: gsutil rm gs://cypress_screenshots/* || true
 
+  # Runs 4 parallel jobs, each handling X number of specs. cypress-split distributes specs automatically
+  # based on SPLIT (total runners) and SPLIT_INDEX (current runner). To scale up, increase both
+  # the matrix array and SPLIT to match.
+  # Repo: https://github.com/bahmutov/cypress-split
   run_tests:
     needs: setup
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false
+      fail-fast: false # Don't cancel other runners if one fails
       matrix:
         split_index: [0, 1, 2, 3]
 
@@ -63,6 +67,7 @@ jobs:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SPLIT: 4
           SPLIT_INDEX: ${{ matrix.split_index }}
+      # Rename so artifacts from each runner have unique filenames and don't overwrite each other.
       - name: Rename Coverage Output
         if: ${{ success() }}
         run: |
@@ -79,6 +84,8 @@ jobs:
         if: ${{ failure() }}
         run: ./ci/scripts/upload_debug_screenshots_to_gcp.sh
 
+  # Merges coverage output from all 4 runners and posts a single comment on the PR.
+  # nyc report reads all out-N.json files in .nyc_output/ and merges them automatically.
   coverage:
     needs: run_tests
     runs-on: ubuntu-latest
