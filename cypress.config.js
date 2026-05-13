@@ -20,6 +20,8 @@ module.exports = defineConfig({
     // We've imported your old cypress plugins here.
     // You may want to clean this up later by importing these.
     setupNodeEvents(on, config) {
+      require("cypress-split")(on, config);
+
       on("before:browser:launch", (browser, launchOptions) => {
         if (browser.name === "chrome" && browser.isHeadless) {
           launchOptions.args.push("--headless=old");
