@@ -238,6 +238,45 @@ describe("Integration Field", () => {
         .should("have.length.at.least", 1);
     });
   });
+
+  describe("Reconfigure Display Options", () => {
+    it("Persists keyPath changes when updating an integration field", () => {
+      cy.intercept("**/get-url?url=*", {
+        statusCode: 200,
+        body: genericApi,
+      }).as("reconfigureGetUrl");
+
+      cy.visit(`/schema/${Cypress.env("modelZUID")}/fields`);
+
+      cy.get('[data-cy="Field_text"]').click();
+
+      cy.wait("@reconfigureGetUrl");
+
+      cy.intercept("PUT", "**/content/models/*/fields/*").as("updateField");
+
+      cy.get('[data-cy="integrationConfigureButton"]').click();
+      cy.get('[data-cy="integrationFormDialog"]').should("exist");
+
+      cy.get('[data-cy="integrationConfigureOptionNextButton"]').click();
+
+      cy.get('[data-cy="integrationKeyPathSelector-subHeading"]').click();
+      cy.get(`.MuiAutocomplete-listbox li:contains("position")`).click(
+        forceClick
+      );
+
+      cy.get(
+        '[data-cy="integrationConfigureDisplayOptionsDoneButton"]'
+      ).click();
+
+      cy.get('[data-cy="FieldFormAddFieldBtn"]').click();
+
+      cy.wait("@updateField").then(({ request }) => {
+        expect(
+          request.body.settings.integrationFieldConfig.keyPaths.subHeading
+        ).to.equal("position");
+      });
+    });
+  });
 });
 
 function connectToEndpoint(endpoint, type, apiData) {
