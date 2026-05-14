@@ -34,7 +34,7 @@ import {
 import { convertDropdownValue } from "../../utils";
 import { withCursorPosition } from "../../../../../../shell/components/withCursorPosition";
 import { Currency } from "../../../../../../shell/components/FieldTypeCurrency/currencies";
-import IntegrationFieldConfigure from "../../../../../../shell/components/FieldTypeIntegration/IntegrationFieldConfigure";
+import { IntegrationFieldConfigure } from "shell/components/FieldTypeIntegration";
 
 const TextFieldWithCursorPosition = withCursorPosition(TextField);
 
