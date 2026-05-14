@@ -335,15 +335,12 @@ const ConnectToApi = ({
             variant="outlined"
             startIcon={<AddCircleIcon />}
             onClick={() => {
-              const keyId: string = Date.now().toString();
+              const keyId: string = uuidv4();
               focusRef.current = keyId;
-              setHeadersLocal({
-                ...headersLocal,
-                [keyId]: {
-                  key: "",
-                  value: "",
-                },
-              });
+              setHeadersLocal((prev) => ({
+                ...prev,
+                [keyId]: { key: "", value: "" },
+              }));
             }}
           >
             Add HTTP Header
