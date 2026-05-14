@@ -118,6 +118,7 @@ describe("Content List Actions", () => {
 
   it("Saves bulk edits", () => {
     cy.intercept("PUT", "/v1/content/models/*/items/batch").as("batchSave");
+    cy.intercept("GET", "/v1/content/models/*/items/*").as("itemRefetch");
 
     cy.getBySelector("listItemTable")
       .find('[data-cy="itemListRow"]')
@@ -135,6 +136,11 @@ describe("Content List Actions", () => {
     cy.getBySelector("MultiPageTableSaveChanges").click();
 
     cy.wait("@batchSave").its("response.statusCode").should("equal", 200);
+    // Wait for the post-save item refetches to complete before the next test
+    // starts interacting with the table. handleSave fires fetchItem for each
+    // saved item but doesn't await them (Promise.allSettled bug), so they can
+    // still be in-flight when the next test clicks and wipe its staged changes.
+    cy.wait(["@itemRefetch", "@itemRefetch"]);
   });
   it("Saves and publishes bulk edits", () => {
     cy.intercept("PUT", "/v1/content/models/*/items/batch").as("batchSave");
