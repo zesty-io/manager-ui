@@ -14,12 +14,12 @@ import { IntegrationTypes } from "../../../services/types";
 
 export type DisplayCardProps = {
   type: IntegrationTypes;
-  heading: string;
-  subHeading?: string;
+  heading: string | number | boolean | null;
+  subHeading?: string | number | boolean | null;
   thumbnail?: string;
   rootPath?: string | null;
-  detail?: string;
-  details?: Record<string, string | number>[];
+  detail?: string | number | boolean | null;
+  details?: Record<string, string | number | boolean | null>[];
   mediaVariant?: "rounded" | "square";
   showPlayIcon?: boolean;
   loading?: boolean;
@@ -36,6 +36,12 @@ const DisplayCard = ({
   showPlayIcon,
   loading,
 }: DisplayCardProps) => {
+  const renderValue = (value: unknown, placeholder: string) => {
+    if (value === null || value === undefined || value === "")
+      return placeholder;
+    return String(value);
+  };
+
   const [noImage, setNoImage] = useState(false);
   const isVideoType = ["video", "youtube", "mux"].includes(type);
   const isSpecialType = ["shopify", "youtube", "mux", "classy"].includes(type);
@@ -61,25 +67,19 @@ const DisplayCard = ({
 
   const headingValue = loading ? (
     <Skeleton width={type === "simple" ? "90%" : "55%"} height="26px" />
-  ) : typeof heading === "boolean" ? (
-    String(heading)
   ) : (
-    heading || "Add Heading"
+    renderValue(heading, "Add Heading")
   );
   const subHeadingValue = loading ? (
     <Skeleton width="90%" />
-  ) : typeof subHeading === "boolean" ? (
-    String(subHeading)
   ) : (
-    subHeading || "Add Subheading"
+    renderValue(subHeading, "Add Subheading")
   );
   const thumbnailValue = thumbnail || null;
   const detailValue = loading ? (
     <Skeleton width="70px" />
-  ) : typeof detail === "boolean" ? (
-    String(detail)
   ) : (
-    detail || "Add Detail"
+    renderValue(detail, "Add Detail")
   );
 
   const renderCard = () => {
@@ -138,47 +138,50 @@ const DisplayCard = ({
             alignItems="flex-start"
             sx={{ width: "100%" }}
           >
-            {details?.map((item: Record<string, string>, index: number) => (
-              <Box
-                width="100%"
-                display="flex"
-                flexDirection="row"
-                justifyContent="space-between"
-                alignItems="center"
-                key={`${item?.key}-${index}`}
-              >
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  fontWeight={400}
-                  flexGrow={1}
+            {details?.map(
+              (
+                item: Record<string, string | number | boolean | null>,
+                index: number
+              ) => (
+                <Box
+                  width="100%"
+                  display="flex"
+                  flexDirection="row"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  key={`${item?.key}-${index}`}
                 >
-                  {loading ? (
-                    <Skeleton sx={{ width: "95%" }} />
-                  ) : (
-                    item?.key || "+ Add Detail"
-                  )}
-                </Typography>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  fontWeight={400}
-                >
-                  {loading ? (
-                    <Skeleton
-                      sx={{
-                        width: "100px",
-                        height: "16px",
-                      }}
-                    />
-                  ) : typeof item?.value === "boolean" ? (
-                    String(item?.value)
-                  ) : (
-                    item?.value || ""
-                  )}
-                </Typography>
-              </Box>
-            ))}
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    fontWeight={400}
+                    flexGrow={1}
+                  >
+                    {loading ? (
+                      <Skeleton sx={{ width: "95%" }} />
+                    ) : (
+                      renderValue(item?.key, "+ Add Detail")
+                    )}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    fontWeight={400}
+                  >
+                    {loading ? (
+                      <Skeleton
+                        sx={{
+                          width: "100px",
+                          height: "16px",
+                        }}
+                      />
+                    ) : (
+                      renderValue(item?.value, "")
+                    )}
+                  </Typography>
+                </Box>
+              )
+            )}
           </Box>
         </Box>
       );
