@@ -26,12 +26,14 @@ export const keyPathValuesToString = (
   const validValues = Object.values(keyPaths)
     ?.filter((value) => {
       if (Array.isArray(value)) return value?.length > 0;
-      return value !== "";
+      return value !== "" && value !== null;
     })
     ?.flat();
   const idParts = validValues?.map((key) => {
-    const value = item?.[key] || "";
-    return typeof value === "string" ? value?.replace(/\s+/g, "") : value;
+    const value = item?.[key];
+    if (value === null || value === undefined) return "<null>";
+    if (typeof value === "string") return value.replace(/\s+/g, "");
+    return JSON.stringify(value);
   });
 
   return idParts?.join(";");
