@@ -40,15 +40,11 @@ describe("Global Search: Advanced Search", () => {
       .find("input")
       .should("exist")
       .should("have.value", "cypress");
+    cy.get("body").type("{esc}");
   });
 
   it("Is able to clear all user input when clicking the clear all button", () => {
-    cy.waitOn(
-      "https://8-f48cf3a682-7fthvk.api.dev.zesty.io/v1/search/items*",
-      () => {
-        cy.visit("/search?q=somerandomstringthatdoesnotexist");
-      }
-    );
+    // modal closed via esc in previous test; still at /search?q=somerandomstringthatdoesnotexist
 
     // Type in keyword
     cy.getBySelector("GlobalSearchFilterButton").should("exist").click();
