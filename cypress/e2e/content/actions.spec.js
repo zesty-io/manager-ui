@@ -42,7 +42,6 @@ describe("Actions in content editor", () => {
       .find("textarea")
       .click()
       .clear()
-      .wait(500)
       .should("have.value", "");
 
     cy.getBySelector("SaveItemButton")
@@ -61,12 +60,7 @@ describe("Actions in content editor", () => {
   });
 
   it("Must not save when exceeding or lacking characters", () => {
-    cy.getBySelector("field:text")
-      .find("input")
-      .click()
-      .clear()
-      .type("aa")
-      .wait(500);
+    cy.getBySelector("field:text").find("input").click().clear().type("aa");
     cy.getBySelector("SaveItemButton")
       .should("exist")
       .should("be.enabled")
@@ -81,8 +75,7 @@ describe("Actions in content editor", () => {
       .find("input")
       .click()
       .clear()
-      .type("Lorem ipsum dolor sit amet, consect")
-      .wait(500);
+      .type("Lorem ipsum dolor sit amet, consect");
     cy.getBySelector("SaveItemButton")
       .should("exist")
       .should("be.enabled")
@@ -97,8 +90,7 @@ describe("Actions in content editor", () => {
       .find("input")
       .click()
       .clear()
-      .type("Lorem ipsum")
-      .wait(500);
+      .type("Lorem ipsum");
     cy.getBySelector("SaveItemButton")
       .should("exist")
       .should("be.enabled")
@@ -138,8 +130,7 @@ describe("Actions in content editor", () => {
       .first()
       .click()
       .clear()
-      .type("hello@zesty.io")
-      .wait(500);
+      .type("hello@zesty.io");
     cy.getBySelector("SaveItemButton")
       .should("exist")
       .should("be.enabled")
