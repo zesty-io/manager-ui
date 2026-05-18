@@ -112,7 +112,8 @@ describe("Content Meta", () => {
     });
 
     cy.getBySelector("field:text").find("input").type(today);
-    cy.getBySelector("CreateItemSaveButton").should("not.be.disabled").click();
+    cy.wait(500); // wait for debounced input to settle
+    cy.getBySelector("CreateItemSaveButton").click();
     cy.getBySelector("toast").contains("Created Item");
   });
 
