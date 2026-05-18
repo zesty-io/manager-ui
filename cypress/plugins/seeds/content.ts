@@ -1,5 +1,6 @@
 import { readFileSync } from "fs";
 import { join } from "path";
+import { v4 as uuidv4 } from "uuid";
 
 import {
   ContentItem,
@@ -23,7 +24,7 @@ module.exports = function content(config) {
     const json = JSON.parse(jsonString);
 
     const sdk = await getSDK(config);
-    const timeStamp = Date.now();
+    const timeStamp = uuidv4();
 
     // 1) Create Schema
     // Append commit id for spec tracking

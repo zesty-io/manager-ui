@@ -4,49 +4,71 @@ describe("Reports > Activity Log > Home", () => {
   describe("Tabs", () => {
     it("Highlights tabs depending on URL", () => {
       cy.visit("/reports/activity-log/resources");
-      cy.get(".MuiTabs-root")
-        .contains("Resources")
-        .should("have.attr", "aria-selected", "true");
+      cy.getBySelector("activityLogTabResources").should(
+        "have.attr",
+        "aria-selected",
+        "true"
+      );
 
       cy.visit("/reports/activity-log/users");
-      cy.get(".MuiTabs-root")
-        .contains("Users")
-        .should("have.attr", "aria-selected", "true");
+      cy.getBySelector("activityLogTabUsers").should(
+        "have.attr",
+        "aria-selected",
+        "true"
+      );
 
       cy.visit("/reports/activity-log/timeline");
-      cy.get(".MuiTabs-root")
-        .contains("Timeline")
-        .should("have.attr", "aria-selected", "true");
+      cy.getBySelector("activityLogTabTimeline").should(
+        "have.attr",
+        "aria-selected",
+        "true"
+      );
 
       cy.visit("/reports/activity-log/insights");
-      cy.get(".MuiTabs-root")
-        .contains("Insights")
-        .should("have.attr", "aria-selected", "true");
+      cy.getBySelector("activityLogTabInsights").should(
+        "have.attr",
+        "aria-selected",
+        "true"
+      );
     });
 
     it("Navigates on tab click", () => {
-      cy.visit("/reports/activity-log/resources");
+      // page is still at /insights from the previous test — navigate via click
+      cy.getBySelector("activityLogTabResources").click();
+      cy.location("pathname").should("eq", "/reports/activity-log/resources");
 
-      cy.get(".MuiTabs-root").contains("Users").click();
+      // resources → users
+      cy.getBySelector("activityLogTabUsers").click();
       cy.location("pathname").should("eq", "/reports/activity-log/users");
 
-      cy.visit("/reports/activity-log/timeline");
-      cy.get(".MuiTabs-root").contains("Timeline").click();
+      // users → timeline
+      cy.getBySelector("activityLogTabTimeline").click();
       cy.location("pathname").should("eq", "/reports/activity-log/timeline");
 
-      cy.visit("/reports/activity-log/insights");
-      cy.get(".MuiTabs-root").contains("Insights").click();
+      // clicking active tab stays put
+      cy.getBySelector("activityLogTabTimeline").click();
+      cy.location("pathname").should("eq", "/reports/activity-log/timeline");
+
+      // timeline → insights
+      cy.getBySelector("activityLogTabInsights").click();
       cy.location("pathname").should("eq", "/reports/activity-log/insights");
 
-      cy.visit("/reports/activity-log/resources");
-      cy.get(".MuiTabs-root").contains("Resources").click();
+      // clicking active tab stays put
+      cy.getBySelector("activityLogTabInsights").click();
+      cy.location("pathname").should("eq", "/reports/activity-log/insights");
+
+      // insights → resources
+      cy.getBySelector("activityLogTabResources").click();
+      cy.location("pathname").should("eq", "/reports/activity-log/resources");
+
+      // clicking active tab stays put
+      cy.getBySelector("activityLogTabResources").click();
       cy.location("pathname").should("eq", "/reports/activity-log/resources");
     });
   });
 
   describe("Filters", () => {
     it("Sets default date url parameters if none are set", () => {
-      cy.visit("/reports/activity-log/resources");
       const today = new Date();
       const threeMonthsAgo = addMonths(today, -3);
       cy.location("search").should(
@@ -58,17 +80,11 @@ describe("Reports > Activity Log > Home", () => {
       );
     });
 
-    it("Does not set default date url parameters if they are set", () => {
-      cy.visit("/reports/activity-log/resources?from=2020-07-14&to=2020-07-16");
-      const today = new Date();
-      const threeMonthsAgo = addMonths(today, -3);
-      cy.location("search").should(
-        "not.eq",
-        `?from=${format(threeMonthsAgo, "yyyy-MM-dd")}&to=${format(
-          today,
-          "yyyy-MM-dd"
-        )}`
-      );
+    it("Filters block items", () => {
+      // already at /resources with default date range and data loaded from previous test
+      cy.getBySelector("resourceType_default").should("exist").click();
+      cy.getBySelector("filter_value_block").should("exist").click();
+      cy.getBySelector("resource_list_item").should("exist");
     });
 
     it("Displays all url parameters on filters", () => {
@@ -132,26 +148,21 @@ describe("Reports > Activity Log > Home", () => {
       );
     });
 
-    it("Filters block items", () => {
-      cy.waitOn("/v1/env/audits*", () => {
-        cy.visit("/reports/activity-log/resources");
-      });
-
-      cy.getBySelector("resourceType_default").should("exist").click();
-      cy.getBySelector("filter_value_block").should("exist").click();
-      cy.getBySelector("resource_list_item").should("exist");
+    it("Does not set default date url parameters if they are set", () => {
+      // already at a non-default URL from the previous test — no visit needed
+      const today = new Date();
+      const threeMonthsAgo = addMonths(today, -3);
+      cy.location("search").should(
+        "not.eq",
+        `?from=${format(threeMonthsAgo, "yyyy-MM-dd")}&to=${format(
+          today,
+          "yyyy-MM-dd"
+        )}`
+      );
     });
   });
 
   describe("Resources View", () => {
-    before(() => {
-      cy.waitOn("/v1/env/audits*", () => {
-        cy.visit(
-          "/reports/activity-log/resources?from=2022-07-14&to=2022-07-16"
-        );
-      });
-    });
-
     it("Navigates to Resource Detail on Resource Item click", () => {
       cy.getBySelector("resource_list_item")
         .should("have.attr", "data-is-loading", "false")
@@ -180,12 +191,7 @@ describe("Reports > Activity Log > Home", () => {
     });
 
     it("Displays partial Skeletons when changing dates and refetching API", () => {
-      cy.waitOn("/v1/env/audits*", () => {
-        cy.visit(
-          "/reports/activity-log/resources?from=2022-07-14&to=2022-07-16"
-        );
-      });
-
+      // already at the same URL with data loaded from the previous test
       cy.get(".MuiSkeleton-root").should("have.length", 0);
 
       cy.intercept("/v1/env/audits*", (req) => {
@@ -219,10 +225,6 @@ describe("Reports > Activity Log > Home", () => {
   });
 
   describe("Empty State", () => {
-    it("Displays Resources Tab empty state", () => {
-      cy.visit("/reports/activity-log/resources?from=2099-01-01&to=2099-01-02");
-      cy.contains("No Resources Found");
-    });
     it("Displays Users Tab empty state", () => {
       cy.visit("/reports/activity-log/users?from=2099-01-01&to=2099-01-02");
       cy.contains("No Users Found");
@@ -235,9 +237,12 @@ describe("Reports > Activity Log > Home", () => {
       cy.visit("/reports/activity-log/insights?from=2099-01-01&to=2099-01-02");
       cy.contains("No Insights Found");
     });
+    it("Displays Resources Tab empty state", () => {
+      cy.visit("/reports/activity-log/resources?from=2099-01-01&to=2099-01-02");
+      cy.contains("No Resources Found");
+    });
 
     it("Resets filters", () => {
-      cy.visit("/reports/activity-log/resources?from=2099-01-01&to=2099-01-02");
       cy.contains("RESET FILTERS").click();
 
       const today = new Date();
@@ -257,7 +262,7 @@ describe("Reports > Activity Log > Home", () => {
       cy.intercept("GET", "/v1/env/audits*", {
         statusCode: 500,
       }).as("request");
-      cy.visit("/reports/activity-log/resources?from=2099-01-01&to=2099-01-02");
+      cy.reload();
 
       cy.wait("@request");
       cy.contains("Whoops!");
@@ -266,20 +271,19 @@ describe("Reports > Activity Log > Home", () => {
       cy.intercept("GET", "/v1/env/audits*", {
         statusCode: 500,
       }).as("request");
-      cy.visit("/reports/activity-log/resources?from=2099-01-01&to=2099-01-02");
-
-      cy.wait("@request");
       cy.contains("RETRY").click();
       cy.wait("@request");
     });
   });
 
-  it("Fetches initial data from Audit API with url parameters", () => {
-    cy.intercept("GET", "/v1/env/audits*").as("request");
-    cy.visit("/reports/activity-log/resources?from=2020-01-01&to=2020-01-02");
-    cy.wait("@request")
-      .its("request.url")
-      .should("include", "start_date")
-      .and("include", "end_date");
+  describe("API Parameters", () => {
+    it("Fetches initial data from Audit API with url parameters", () => {
+      cy.intercept("GET", "/v1/env/audits*").as("request");
+      cy.visit("/reports/activity-log/resources?from=2020-01-01&to=2020-01-02");
+      cy.wait("@request")
+        .its("request.url")
+        .should("include", "start_date")
+        .and("include", "end_date");
+    });
   });
 });
