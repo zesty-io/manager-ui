@@ -216,6 +216,29 @@ describe("Integration Field", () => {
     });
   });
 
+  describe("Search Filter with Non-string KeyPath", () => {
+    it("Does not crash when a configured keyPath resolves to a number", () => {
+      const modelZUID = Cypress.env("modelZUID");
+
+      cy.visit(`/content/${modelZUID}/new`);
+      cy.get('[data-cy="field:title"]').find("input").type(MODEL?.label);
+
+      cy.get(
+        `[data-cy="field:details"] [data-cy="integrationSelectItemsButton"]`
+      ).click();
+      cy.get('[data-cy="integrationSelectionFormDialog"]').should("exist");
+
+      cy.get('[data-cy="integrationSelectionFormSearchBox"] input')
+        .clear()
+        .type(genericApi[0].name);
+
+      cy.get('[data-cy="integrationSelectionFormDialog"]').should("exist");
+      cy.get(".integrationSelectionFormListContainer")
+        .children()
+        .should("have.length.at.least", 1);
+    });
+  });
+
   describe("Reconfigure Display Options", () => {
     it("Persists keyPath changes when updating an integration field", () => {
       cy.intercept("**/get-url?url=*", {
