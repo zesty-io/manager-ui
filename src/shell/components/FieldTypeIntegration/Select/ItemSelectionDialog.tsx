@@ -339,7 +339,6 @@ const ItemSelectionDialog = ({
             maxHeight: "1080px",
             my: 2.5,
             position: "relative",
-            border: "2px solid green",
           },
         },
       }}
