@@ -7,7 +7,8 @@
     "position": "Shooting Guard",
     "height": "196 cm",
     "weight": 205,
-    "playerImage": "https://randomuser.me/api/portraits/men/32.jpg"
+    "playerImage": "https://randomuser.me/api/portraits/men/32.jpg",
+    "test": null
   },
   {
     "playerId": "P1002",

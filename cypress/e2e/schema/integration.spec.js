@@ -1,7 +1,7 @@
 import genericApi from "../../fixtures/integration/generic.json";
 import specialApi from "../../fixtures/integration/special.json";
 
-import { DISPLAY_OPTIONS_CONFIG } from "../../../src/shell/components/FieldTypeIntegration/configs";
+import { DISPLAY_OPTIONS_CONFIG } from "../../../src/shell/components/FieldTypeIntegration/constants";
 
 const forceClick = { force: true };
 
