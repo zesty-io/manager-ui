@@ -1,11 +1,11 @@
 import { useCallback, useState } from "react";
 import { Box } from "@mui/material";
-import { ApiDataWithIdProps } from "../configs";
+import { ApiDataWithIdProps } from "../types";
 import { IntegrationFieldConfig } from "../../../services/types";
 import Draggable from "./Draggable";
 import { getKeyValue } from "../utils";
-import DisplayCard from "../components/DisplayCard";
-import JsonViewer from "../components/JsonViewer";
+import DisplayCard from "../Shared/DisplayCard";
+import JsonViewer from "../Shared/JsonViewer";
 
 const SelectedListItems = ({
   items,
