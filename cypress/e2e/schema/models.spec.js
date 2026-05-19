@@ -70,6 +70,9 @@ describe("Schema: Models", () => {
   });
 
   it("Renames model", () => {
+    cy.intercept("PUT", "**/v1/content/models/**").as("renameModel");
+    cy.intercept("GET", "**/v1/content/models").as("getModels");
+
     cy.getBySelector(`model-header-menu`, options).click(forceClick);
     cy.contains("Rename Model", options).click(forceClick);
 
@@ -78,8 +81,7 @@ describe("Schema: Models", () => {
       cy.get("label", options).contains("Reference ID").next().type("_updated");
       cy.contains("Save").click();
     });
-    cy.intercept("PUT", "/models");
-    cy.intercept("GET", "/models");
+    cy.wait(["@renameModel", "@getModels"]);
     cy.contains("Cypress Test Model Updated", options).should("exist");
   });
   it("Deletes model", () => {

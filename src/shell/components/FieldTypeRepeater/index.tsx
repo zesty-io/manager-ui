@@ -160,8 +160,8 @@ export const FieldTypeRepeater = ({
 
     const processedRows = value.map((row, index) => ({
       ...row,
-      id: index,
-      __reorder__: Object.values(row)[0],
+      __rowId__: index,
+      __rowReorder__: Object.values(row)[0],
     }));
 
     setRows(processedRows);
@@ -175,7 +175,7 @@ export const FieldTypeRepeater = ({
       return;
     }
 
-    const validIds = new Set(rows.map((row) => row.id));
+    const validIds = new Set(rows.map((row) => row.__rowId__));
     const filteredSelection = rowSelectionModel.filter((id) =>
       validIds.has(id)
     );
@@ -248,7 +248,7 @@ export const FieldTypeRepeater = ({
 
   const cleanRows = (rowsToClean: Record<string, any>[]) => {
     return rowsToClean.map((row: any) => {
-      const { id, __reorder__, ...rowData } = row;
+      const { __rowId__, __rowReorder__, ...rowData } = row;
       return rowData;
     });
   };
@@ -256,8 +256,8 @@ export const FieldTypeRepeater = ({
   const handleChange = (row: Record<string, any>) => {
     const updatedRows = [...rows];
 
-    if (row.id !== undefined) {
-      updatedRows[row.id] = row;
+    if (row.__rowId__ !== undefined) {
+      updatedRows[row.__rowId__] = row;
     } else {
       updatedRows.push(row);
     }
@@ -274,7 +274,7 @@ export const FieldTypeRepeater = ({
     // Re-index row IDs to maintain order and selection consistency
     const updatedRows = newRows.map((row, index) => ({
       ...row,
-      id: index,
+      __rowId__: index,
     }));
 
     onChange(cleanRows(updatedRows));
@@ -284,7 +284,7 @@ export const FieldTypeRepeater = ({
     let updatedRows = [...rows];
 
     if (Array.isArray(id)) {
-      updatedRows = updatedRows.filter((row) => !id.includes(row.id));
+      updatedRows = updatedRows.filter((row) => !id.includes(row.__rowId__));
     } else {
       updatedRows.splice(id, 1);
     }
@@ -342,6 +342,7 @@ export const FieldTypeRepeater = ({
           rowReordering
           onRowOrderChange={handleRowOrderChange}
           rows={rows}
+          getRowId={(row) => row.__rowId__}
           apiRef={apiRef}
           columns={columns}
           checkboxSelection
@@ -356,10 +357,7 @@ export const FieldTypeRepeater = ({
             setRowSelectionModel(newModel)
           }
           onRowClick={(params) => {
-            setRowToEdit({
-              id: params.id,
-              ...params.row,
-            });
+            setRowToEdit(params.row);
             setRowDialog("edit");
           }}
           slots={{

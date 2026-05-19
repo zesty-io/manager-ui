@@ -41,7 +41,7 @@ describe("Schema: Repeater Field", () => {
     cy.contains(modelName).should("exist");
 
     // Open the add field modal
-    cy.getBySelector("AddFieldBtn").should("exist").click({ force: true });
+    cy.getBySelector("AddFieldBtn").should("not.be.disabled").click();
     cy.getBySelector("AddFieldModal").should("exist");
 
     // Select repeater field
