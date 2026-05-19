@@ -304,13 +304,17 @@ export const FieldTypeRepeater = ({
           maxHeight: 675,
           overflow: "hidden",
           position: "relative",
+          // Prevents the DataGrid's column width from inflating this box's width.
+          // Without this, percentage-based widths on the DataGrid resolve circularly
+          // against the already-expanded parent, making horizontal scroll impossible.
+          contain: "inline-size",
 
           // An ancestor has removed all scrollbars so we're re-enabling them here
           "*": {
             scrollbarWidth: "auto",
             msOverflowStyle: "auto",
             "&::-webkit-scrollbar": {
-              display: "auto",
+              display: "block",
             },
           },
         }}
@@ -404,6 +408,7 @@ export const FieldTypeRepeater = ({
               // 575px = 10 rows (560) + scrollbar buffer (15).
               maxHeight: 575,
               overflowY: "auto !important",
+              overflowX: "auto !important",
             },
 
             "& .MuiDataGrid-virtualScrollerContent": {
