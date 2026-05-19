@@ -186,6 +186,7 @@ Things the codebase actively avoids — flag if you see them in a PR:
 
 - PRs target **`dev`**. After merge, automation cascades changes through `dev → stage → beta → stable` via auto-generated PRs (`.github/workflows/cd-*.yaml`). Each promotion still requires a human merge.
 - **CI runs Cypress only.** `.github/workflows/ci.yaml` runs `npm run ci`, which is `start-server-and-test start … test` — there is **no lint step, no typecheck step, no build gate**. If you've touched TypeScript, run `npx tsc --noEmit` locally before opening a PR; the pipeline will not catch type errors for you.
+- **CI is parallelized across 4 runners** using `cypress-split`. Specs are distributed automatically — no manual grouping needed. To scale, update both the matrix array and `SPLIT` in `ci.yaml`. A `timings.json` at the repo root enables runtime-based distribution; if absent, cypress-split falls back to spec count. Refresh `timings.json` by downloading the `merged-timings` artifact after a CI run and committing it. Update it every 1–2 months or when runners become noticeably unbalanced.
 - Coverage from Cypress is posted as a PR comment by `ci.yaml`. Treat dropping coverage on changed files as a review signal, not a hard gate.
 - Pre-commit (`.husky/pre-commit`) runs `pretty-quick --staged` only. There is no pre-push hook.
 - Commit/PR titles follow `[Area] - Description` (e.g. `Content - Prevent app from crashing…`); the PR number is appended on merge by GitHub. No conventional-commits prefixes.
