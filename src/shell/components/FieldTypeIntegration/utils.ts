@@ -31,6 +31,7 @@ export const keyPathValuesToString = (
     ?.flat();
   const idParts = validValues?.map((key) => {
     const value = item?.[key];
+    // Sentinel keeps null fields positionally distinct in the composite key so drift detection doesn't conflate records with different field shapes
     if (value === null || value === undefined) return "<null>";
     if (typeof value === "string") return value.replace(/\s+/g, "");
     return JSON.stringify(value);
