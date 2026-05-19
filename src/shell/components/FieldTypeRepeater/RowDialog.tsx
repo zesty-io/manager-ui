@@ -331,7 +331,7 @@ export const RowDialog = ({
             <Button
               data-cy="RemoveRepeaterRowItemBtn"
               variant="contained"
-              onClick={() => onRemoveRow(formData.id)}
+              onClick={() => onRemoveRow(formData.__rowId__)}
               color="error"
               startIcon={<DeleteRoundedIcon />}
             >
