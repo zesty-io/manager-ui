@@ -26,7 +26,7 @@ export const keyPathValuesToString = (
   const validValues = Object.values(keyPaths)
     ?.filter((value) => {
       if (Array.isArray(value)) return value?.length > 0;
-      return value !== "" && value !== null;
+      return value !== "" && value !== null && value !== undefined;
     })
     ?.flat();
   const idParts = validValues?.map((key) => {
