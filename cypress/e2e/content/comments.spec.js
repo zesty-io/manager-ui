@@ -24,6 +24,7 @@ describe("Content Item: Comments", () => {
 
   beforeEach(() => {
     // Workaround for Cypress issue with IntersectionObserver
+    // Cypress issue: https://github.com/cypress-io/cypress/issues/3848
     cy.viewport(1440, 900);
   });
 

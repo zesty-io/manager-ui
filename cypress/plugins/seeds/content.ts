@@ -5,6 +5,8 @@ import {
   ContentItem,
   ContentModel,
   ContentModelField,
+  CreateStatusLabel,
+  WorkflowStatusLabel,
 } from "../../../src/shell/services/types";
 
 export type SeedContentTask = {
@@ -92,8 +94,39 @@ module.exports = function content(config) {
     };
   }
 
+  async function deleteAllLabels(): Promise<string[]> {
+    const sdk = await getSDK(config);
+    const allLabels = await sdk.instance.fetchLabels();
+    if (!allLabels?.data?.length) {
+      return [];
+    }
+
+    const deletePromises = allLabels?.data
+      .filter(
+        (label) => !["Needs Review", "Draft", "Approved"]?.includes(label?.name)
+      )
+      .map((label) => {
+        sdk.instance.deleteLabel(label?.ZUID).then((res) => {
+          return res.data;
+        });
+      });
+
+    return await Promise.all(deletePromises);
+  }
+
+  async function createLabel(
+    data: CreateStatusLabel
+  ): Promise<WorkflowStatusLabel> {
+    const sdk = await getSDK(config);
+    return await sdk.instance.createLabel(data).then((res) => {
+      return res.data;
+    });
+  }
+
   // CONTENT TASK MAPPING
   return {
     "seed:content": (path: string) => seedContent(path),
+    "api:createLabel": (data: CreateStatusLabel) => createLabel(data),
+    "cleanup:labels": () => deleteAllLabels(),
   };
 };

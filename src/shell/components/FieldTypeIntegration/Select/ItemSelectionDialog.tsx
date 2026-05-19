@@ -26,16 +26,12 @@ import {
   IntegrationFieldConfig,
   IntegrationTypes,
 } from "../../../services/types";
-import {
-  ApiDataProps,
-  ApiDataWithIdProps,
-  DISPLAY_OPTIONS_CONFIG,
-  LOADING_DATA,
-} from "../configs";
+import { ApiDataProps, ApiDataWithIdProps } from "../types";
+import { DISPLAY_OPTIONS_CONFIG, LOADING_DATA } from "../constants";
 import { getKeyValue, keyPathValuesToString } from "../utils";
-import DisplayCard from "../components/DisplayCard";
+import DisplayCard from "../Shared/DisplayCard";
 import { NoResults } from "../../../../apps/schema/src/app/components/NoResults";
-import JsonViewer from "../components/JsonViewer";
+import JsonViewer from "../Shared/JsonViewer";
 import { isEqual } from "lodash";
 
 interface ItemSelectionDialogProps {
