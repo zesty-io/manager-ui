@@ -54,6 +54,7 @@ type FieldShellProps = {
   children: JSX.Element;
   errors: Error;
   withInteractiveTooltip?: boolean;
+  withComment?: boolean;
 };
 export const FieldShell = ({
   settings,
@@ -68,6 +69,7 @@ export const FieldShell = ({
   children,
   errors,
   withInteractiveTooltip = true,
+  withComment = true,
 }: FieldShellProps) => {
   const location = useLocation();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null);
@@ -201,7 +203,9 @@ export const FieldShell = ({
             </>
           )}
           {endLabel}
-          {!isCreateNewItemPage && <Comment resourceZUID={settings.ZUID} />}
+          {!isCreateNewItemPage && withComment && (
+            <Comment resourceZUID={settings.ZUID} />
+          )}
         </Stack>
       </Stack>
       {settings?.description && (

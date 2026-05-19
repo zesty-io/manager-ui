@@ -48,11 +48,15 @@ import { isZestyEmail } from "../../../utility/isZestyEmail";
 
 let sessionReplayAdded = false;
 function maybeEnableSessionReplay(email?: string) {
-  if (sessionReplayAdded) return;
-  if (window.CONFIG?.ENV !== "production") return;
-  if (!email || isZestyEmail(email)) return;
-  amplitude.add(sessionReplayPlugin({ sampleRate: 1 }));
-  sessionReplayAdded = true;
+  if (
+    !sessionReplayAdded &&
+    window.CONFIG?.ENV === "production" &&
+    !!email &&
+    !isZestyEmail(email)
+  ) {
+    amplitude.add(sessionReplayPlugin({ sampleRate: 1 }));
+    sessionReplayAdded = true;
+  }
 }
 
 export default memo(function Shell() {
@@ -258,7 +262,12 @@ export default memo(function Shell() {
                     <Route path="*" component={Missing} />
                   </Switch>
                 </Box>
-                {showAiDrawer && <AIDrawer key={pathname} />}
+                {showAiDrawer && (
+                  <AIDrawer
+                    onClose={() => setShowAiDrawer(false)}
+                    key={pathname}
+                  />
+                )}
               </Box>
             ) : (
               <LoadingShell />

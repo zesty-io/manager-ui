@@ -41,7 +41,6 @@ import { FieldTypeSort } from "../../../../../../../shell/components/FieldTypeSo
 import { FieldTypeNumber } from "../../../../../../../shell/components/FieldTypeNumber";
 import { FieldTypeBlockSelector } from "../../../../../../../shell/components/FieldTypeBlockSelector";
 import { InternalLink } from "./InternalLink";
-
 import styles from "./Field.less";
 import { MemoryRouter } from "react-router";
 import { withAI } from "../../../../../../../shell/components/withAi";
@@ -53,8 +52,10 @@ import {
 import { FieldTypeMedia } from "../../FieldTypeMedia";
 import { debounce, parseInt } from "lodash";
 import { useRegisterRef } from "../../../../../../../engine/useRegisterRef";
+import { IntegrationFieldSelect } from "shell/components/FieldTypeIntegration";
 import { useDebouncedInput } from "../../../../../../../shell/hooks/useDebouncedInput";
 import { format as fmt } from "date-fns";
+import { FieldTypeRepeater } from "shell/components/FieldTypeRepeater";
 
 const AIFieldShell = withAI(FieldShell);
 
@@ -184,6 +185,7 @@ export const Field = memo(
           "dropdown",
           "date",
           "datetime",
+          "integration",
         ].includes(datatype),
       }
     );
@@ -794,6 +796,38 @@ export const Field = memo(
             />
           </FieldShell>
         );
+      case "integration":
+        return (
+          <FieldShell settings={fieldData} errors={errors}>
+            <IntegrationFieldSelect
+              name={name}
+              label={label}
+              maxItems={settings?.maxValue}
+              config={settings?.integrationFieldConfig}
+              value={value ? (value as Record<string, any>[]) : null}
+              onChange={(value) => onChange(value, name)}
+            />
+          </FieldShell>
+        );
+
+      case "repeater":
+        const hasBaseColumns = (fieldData?.settings?.subFields || []).filter(
+          (f) => f.settings?.list
+        ).length;
+
+        if (!hasBaseColumns) {
+          return <></>;
+        }
+
+        return (
+          <FieldShell settings={fieldData} errors={errors}>
+            <FieldTypeRepeater
+              field={fieldData}
+              value={value}
+              onChange={(value) => onChange(value, name, datatype)}
+            />
+          </FieldShell>
+        );
 
       default:
         return (
@@ -804,3 +838,5 @@ export const Field = memo(
     }
   }
 );
+
+Field.displayName = "Field";

@@ -138,7 +138,10 @@ describe("Schema: Fields", () => {
       .should("have.value", "default value");
 
     // Set min/max character limits
-    cy.getBySelector(SELECTORS.CHARACTER_LIMIT_CHECKBOX).click();
+    cy.getBySelector(SELECTORS.CHARACTER_LIMIT_CHECKBOX)
+      .find("input")
+      .check({ force: true });
+    cy.wait(200);
     cy.getBySelector(SELECTORS.MAX_CHARACTER_LIMIT_INPUT)
       .clear()
       .type("{end}10000");

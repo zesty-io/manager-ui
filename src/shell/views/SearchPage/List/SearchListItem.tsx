@@ -3,6 +3,7 @@ import { LinksContainer } from "../LinksContainer";
 import { Box, Skeleton, Stack, Typography, SvgIcon } from "@mui/material";
 import { Link } from "react-router-dom";
 import { SvgIconComponent } from "@mui/icons-material";
+import { ResourceType } from "shell/services/types";
 
 interface SearchListItem {
   title: string | ReactNode;
@@ -11,6 +12,7 @@ interface SearchListItem {
   icon: SvgIconComponent;
   style: any;
   loading?: boolean;
+  path?: string;
 }
 export const SearchListItem: FC<SearchListItem> = ({
   title,
@@ -19,6 +21,7 @@ export const SearchListItem: FC<SearchListItem> = ({
   icon,
   style,
   loading = false,
+  path,
 }) => {
   return (
     <Box
@@ -27,7 +30,7 @@ export const SearchListItem: FC<SearchListItem> = ({
       style={style}
       sx={{
         boxSizing: "border-box",
-        alignItems: "flex-start",
+        alignItems: "center",
         display: "flex",
         flex: 1,
         padding: 2,
@@ -94,6 +97,20 @@ export const SearchListItem: FC<SearchListItem> = ({
               <>{title}</>
             )}
           </Typography>
+          {!!path && (
+            <Typography variant="body3" color="info.main">
+              {loading ? (
+                <Skeleton
+                  variant="rectangular"
+                  height={14}
+                  width={425}
+                  sx={{ mb: 1 }}
+                />
+              ) : (
+                <>{path}</>
+              )}
+            </Typography>
+          )}
           <Typography variant="body3" color="text.secondary">
             {loading ? (
               <Skeleton

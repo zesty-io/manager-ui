@@ -1,16 +1,15 @@
 import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
   Autocomplete,
   Box,
   Button,
   CircularProgress,
+  Collapse,
   FormControlLabel,
   FormGroup,
   IconButton,
   InputAdornment,
   InputLabel,
+  Paper,
   Skeleton,
   Stack,
   Switch,
@@ -18,7 +17,8 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import { useEffect, useRef, useState } from "react";
+import CloseIcon from "@mui/icons-material/Close";
+import { FC, useEffect, useRef, useState } from "react";
 import { useGeminiGenerationMutation } from "../../services/mcp";
 import { enqueueAction } from "../../../engine/queue";
 import {
@@ -26,24 +26,19 @@ import {
   ArrowUpwardRounded,
   AutoFixHighRounded,
   ChevronRightRounded,
-  NotInterestedRounded,
 } from "@mui/icons-material";
 import { useLocation } from "react-router";
-import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import LanguageRoundedIcon from "@mui/icons-material/LanguageRounded";
 import { useGetLangsMappingQuery } from "../../services/instance";
-import {
-  codeSystemInstruction,
-  contentSystemInstruction,
-  suggestionSystemInstruction,
-} from "./systemInstructions";
+import { suggestionSystemInstruction } from "./systemInstructions";
 import { useLocalStorage } from "react-use";
 import { getRefRegistry } from "../../../engine/refRegistry";
-import { Brain } from "@zesty-io/material";
 import { keyframes } from "@emotion/react";
 import geminiLogo from "../../../../public/images/geminiLogo.svg";
+import geminiIcon from "../../../../public/images/geminiIcon.svg";
+import { isEmpty } from "lodash";
 
 const borderMove = keyframes`
   0% { background-position: 0 0; }
@@ -67,7 +62,11 @@ const TONE_OPTIONS = [
   { label: "Succinct", value: "Succinct - Clear, factual, with no hyperbole" },
 ] as const;
 
-export const AIDrawer = () => {
+export type AIDrawerProps = {
+  onClose: () => void;
+};
+
+export const AIDrawer: FC<AIDrawerProps> = ({ onClose }) => {
   const { pathname } = useLocation();
   const isInContentApp = /^\/content\/[^/]+\/[^/]+$/.test(pathname);
   const isInContentMeta = /^\/content\/[^/]+\/[^/]+\/meta$/.test(pathname);
@@ -91,6 +90,11 @@ export const AIDrawer = () => {
   );
   const [responses, setResponses] = useState(responsesLS || []);
   const [prompt, setPrompt] = useState("");
+  const [appliedResponsesLS, setAppliedResponsesLS] = useLocalStorage<
+    Record<string, number[]>
+  >(`ai-drawer-applied-responses`, { [pathname]: [] });
+  const promptIsEmpty = isEmpty(prompt.trim());
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [autoApply, setAutoApply] = useState(false);
 
   const [selectedLanguage, setSelectedLanguage] = useState({
@@ -140,7 +144,7 @@ export const AIDrawer = () => {
 
       setResponses((prev) => [...prev, ...responsesArray]);
 
-      responsesArray.forEach((response) => {
+      responsesArray.forEach((response, index) => {
         if (autoApply && response.type === "SET_VALUE") {
           enqueueAction({
             type: response.type,
@@ -148,6 +152,14 @@ export const AIDrawer = () => {
               refKey: response.payload.refKey,
               value: response.payload.value,
             },
+          });
+
+          setAppliedResponsesLS({
+            ...appliedResponsesLS,
+            [pathname]: [
+              ...(appliedResponsesLS?.[pathname] || []),
+              responses?.length + index,
+            ],
           });
         }
       });
@@ -198,10 +210,11 @@ export const AIDrawer = () => {
   };
 
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
+    <Paper
+      elevation={16}
       sx={{
+        display: "flex",
+        flexDirection: "column",
         minWidth: 300,
         maxWidth: 300,
         px: 2,
@@ -209,38 +222,28 @@ export const AIDrawer = () => {
         boxSizing: "border-box",
         position: "relative",
         overflow: "hidden",
-        "&::before": {
-          content: '""',
-          position: "absolute",
-          left: 0,
-          top: 0,
-          bottom: 0,
-          width: "2px",
-          zIndex: 2,
-          background:
-            "linear-gradient(180deg, #0ba5ec 0%, #ee46bc 50%, #6938ef 100%)",
-          backgroundSize: "100% 200%",
-          animation: `${borderMove} 4s linear infinite`,
-          pointerEvents: "none",
-        },
-        bgcolor: "background.paper", // optional: give a bg to cover avatar overflow
+        marginTop: -5,
+        bgcolor: "background.paper",
+        zIndex: (theme) => theme.zIndex.speedDial + 1,
       }}
     >
       {!isInContentApp && !isInContentMeta && !isInBlocks && !isInCodeApp && (
         <>
-          <Box display="flex" alignItems={"center"} gap={1}>
+          <Box position="relative" display="flex" alignItems={"center"} gap={1}>
             <Stack
               width={40}
               height={40}
               borderRadius="50%"
               justifyContent="center"
               alignItems="center"
-              sx={{
-                background:
-                  "linear-gradient(90deg, rgba(11,165,236,1) 0%, rgba(238,70,188,1) 50%, rgba(105,56,239,1) 100%)",
-              }}
             >
-              <Brain sx={{ color: "common.white" }} />
+              <Box
+                component="img"
+                src={geminiIcon}
+                alt="Gemini Icon"
+                width="32px"
+                display="block"
+              />
             </Stack>
             <Box>
               <Box
@@ -254,6 +257,19 @@ export const AIDrawer = () => {
                 AI Assistant Beta
               </Typography>
             </Box>
+            <IconButton
+              size="small"
+              onClick={() => {
+                onClose();
+              }}
+              sx={{
+                position: "absolute",
+                right: 0,
+                top: 0,
+              }}
+            >
+              <CloseIcon fontSize="medium" />
+            </IconButton>
           </Box>
           <Typography variant="body1">
             Only available in content app.
@@ -266,6 +282,8 @@ export const AIDrawer = () => {
             display="flex"
             alignItems={"center"}
             justifyContent={"space-between"}
+            position="relative"
+            gap={1}
           >
             <Box display="flex" alignItems={"center"} gap={1}>
               <Stack
@@ -274,12 +292,14 @@ export const AIDrawer = () => {
                 borderRadius="50%"
                 justifyContent="center"
                 alignItems="center"
-                sx={{
-                  background:
-                    "linear-gradient(90deg, rgba(11,165,236,1) 0%, rgba(238,70,188,1) 50%, rgba(105,56,239,1) 100%)",
-                }}
               >
-                <Brain sx={{ color: "common.white" }} />
+                <Box
+                  component="img"
+                  src={geminiIcon}
+                  alt="Gemini Icon"
+                  width="32px"
+                  display="block"
+                />
               </Stack>
               <Box>
                 <Box
@@ -293,346 +313,399 @@ export const AIDrawer = () => {
                   AI Assistant Beta
                 </Typography>
               </Box>
+              <IconButton
+                size="small"
+                onClick={() => {
+                  onClose();
+                }}
+                sx={{
+                  position: "absolute",
+                  right: 0,
+                  top: 0,
+                }}
+              >
+                <CloseIcon fontSize="medium" />
+              </IconButton>
             </Box>
-            <Box display="flex" alignItems={"center"} gap={0.5}>
-              <Tooltip title="Clear chat" placement="top">
-                <IconButton
-                  size="small"
-                  color="error"
+          </Box>
+          <Box display="flex" flexGrow={1} overflow="auto">
+            <Box display="block" overflow="auto" my={1} width="100%">
+              <Box
+                flex="1"
+                display="flex"
+                flexDirection="column"
+                gap={2}
+                ref={chatContainerRef}
+                justifyContent="flex-end"
+                sx={{
+                  position: "relative",
+                  boxSizing: "border-box",
+                  minHeight: "100%",
+                  width: "100%",
+                }}
+              >
+                {responses.map((response, index) => {
+                  if (response.type === "USER_INPUT") {
+                    return (
+                      <Box
+                        key={index}
+                        px={1.5}
+                        py={1}
+                        sx={{
+                          borderRadius: 2,
+                          maxWidth: "168px",
+                          width: "fit-content",
+                          color: "white",
+                          ml: "auto",
+                          backgroundColor: "grey.500",
+                        }}
+                      >
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            borderRadius: 1,
+                            wordBreak: "break-word",
+                            fontStyle:
+                              response.payload.value.startsWith(
+                                "Generate suggestions"
+                              ) && "italic",
+                          }}
+                        >
+                          {response.payload.value}
+                        </Typography>
+                      </Box>
+                    );
+                  } else if (response.type === "SYSTEM_SUGGESTION") {
+                    return (
+                      <Button
+                        onClick={() => {
+                          setPrompt(response.payload.value);
+                          promptInputRef.current?.focus();
+                        }}
+                        sx={{
+                          textAlign: "left",
+                          justifyContent: "flex-start",
+                          width: "fit-content",
+                          px: 1.5,
+                          py: 1,
+                          borderRadius: 2,
+                        }}
+                        variant="contained"
+                        color="inherit"
+                        endIcon={<ChevronRightRounded />}
+                      >
+                        <AnimatedText
+                          text={response.payload.value}
+                          animate={!isInitialMount}
+                          onGrow={() => {
+                            if (responsesEndRef.current) {
+                              responsesEndRef.current.scrollIntoView({
+                                behavior: "smooth",
+                              });
+                            }
+                          }}
+                        />
+                      </Button>
+                    );
+                  } else if (response.type === "NAVIGATE") {
+                    return (
+                      <Box display="flex" justifyContent="flex-end">
+                        <Button
+                          size="xsmall"
+                          variant="contained"
+                          sx={{ ml: "auto", mt: 0.5 }}
+                          onClick={() => {
+                            enqueueAction({
+                              type: response.type,
+                              payload: {
+                                path: response.payload.path,
+                              },
+                            });
+                          }}
+                          endIcon={<ArrowForward fontSize="small" />}
+                        >
+                          Navigate
+                        </Button>
+                      </Box>
+                    );
+                  }
+
+                  return (
+                    <Box key={index}>
+                      <Typography
+                        variant="body3"
+                        sx={{
+                          mb: 0.5,
+                        }}
+                      >
+                        {response.payload.refKey}
+                      </Typography>
+                      {response.payload?.value?.startsWith("3-") ? (
+                        <GeneratedImage src={response.payload.value} />
+                      ) : (
+                        <AnimatedText
+                          key={index}
+                          text={response.payload.value}
+                          animate={!isInitialMount && !isInCodeApp}
+                          onGrow={() => {
+                            if (responsesEndRef.current) {
+                              responsesEndRef.current.scrollIntoView({
+                                behavior: "smooth",
+                              });
+                            }
+                          }}
+                        />
+                      )}
+                      {!autoApply && response.type === "SET_VALUE" && (
+                        <Box display="flex" justifyContent="flex-end">
+                          <Button
+                            size="xsmall"
+                            variant="contained"
+                            sx={{ ml: "auto", mt: 0.5 }}
+                            disabled={appliedResponsesLS?.[pathname]?.includes(
+                              index
+                            )}
+                            onClick={() => {
+                              enqueueAction({
+                                type: response.type,
+                                payload: {
+                                  refKey: response.payload.refKey,
+                                  value: response.payload.value,
+                                },
+                              });
+                              setAppliedResponsesLS({
+                                ...appliedResponsesLS,
+                                [pathname]: [
+                                  ...(appliedResponsesLS?.[pathname] || []),
+                                  index,
+                                ],
+                              });
+                            }}
+                            startIcon={<AutoFixHighRounded fontSize="small" />}
+                          >
+                            Apply
+                          </Button>
+                        </Box>
+                      )}
+                    </Box>
+                  );
+                })}
+                <div ref={responsesEndRef} />
+                {isLoading && (
+                  <Box
+                    display="flex"
+                    alignItems="center"
+                    gap={0.5}
+                    p={1}
+                    borderRadius={2}
+                    border="1px solid"
+                    borderColor="border"
+                    width="fit-content"
+                    mb={1}
+                  >
+                    <Skeleton variant="rounded" width={8} height={8} />
+                    <Skeleton variant="rounded" width={8} height={8} />
+                    <Skeleton variant="rounded" width={8} height={8} />
+                  </Box>
+                )}
+              </Box>
+            </Box>
+          </Box>
+          <Box>
+            <Box
+              display="flex"
+              flexDirection="column"
+              justifyContent="space-between"
+              rowGap={1}
+            >
+              <Button
+                size="small"
+                variant="outlined"
+                fullWidth
+                onClick={() => {
+                  geminiGenerate({
+                    prompt:
+                      prompt || "Generate suggestions for my content fields",
+                    systemInstruction: suggestionSystemInstruction(
+                      Object.keys(getRefRegistry() || {}),
+                      getRefRegistry()
+                    ),
+                    temperature: 0.5,
+                  });
+                  setResponses((prev) => [
+                    ...prev,
+                    {
+                      type: "USER_INPUT",
+                      payload: {
+                        value: prompt
+                          ? `Generate suggestions: ${prompt}`
+                          : "Generate suggestions",
+                      },
+                    },
+                  ]);
+                  setPrompt("");
+                }}
+              >
+                Generate Suggestions
+              </Button>
+
+              <TextField
+                inputRef={promptInputRef}
+                disabled={isLoading}
+                placeholder={`Ask for anything, for example "Cater my content to a specific audience"`}
+                variant="outlined"
+                fullWidth
+                multiline
+                rows={4}
+                onChange={(e) => setPrompt(e.target.value)}
+                value={prompt}
+                onKeyPress={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    handlePrompt(prompt);
+                  }
+                }}
+              />
+            </Box>
+            <Box
+              display="flex"
+              alignItems="center"
+              justifyContent="space-between"
+              my={0.5}
+            >
+              <Box display="flex" alignItems="flex-start" flexGrow={1}>
+                <Button
+                  variant="text"
+                  color="inherit"
                   onClick={() => {
                     setResponses([]);
                     setResponsesLS([]);
+                    setAppliedResponsesLS({
+                      ...appliedResponsesLS,
+                      [pathname]: [],
+                    });
                   }}
                 >
-                  <NotInterestedRounded sx={{ fontSize: 16 }} />
-                </IconButton>
-              </Tooltip>
-            </Box>
-          </Box>
-          <Box
-            flex="1"
-            overflow="auto"
-            my={1}
-            display="flex"
-            flexDirection="column"
-            gap={1}
-            ref={chatContainerRef}
-          >
-            {responses.map((response, index) => {
-              if (response.type === "USER_INPUT") {
-                return (
-                  <Box
-                    key={index}
-                    sx={{
-                      padding: 1,
-                      borderRadius: 1,
-                      maxWidth: "168px",
-                      width: "fit-content",
-                      color: "white",
-                      ml: "auto",
-                      backgroundColor: "grey.500",
-                    }}
-                  >
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        wordBreak: "break-word",
-                        fontStyle:
-                          response.payload.value.startsWith(
-                            "Generate suggestions"
-                          ) && "italic",
-                      }}
-                    >
-                      {response.payload.value}
-                    </Typography>
-                  </Box>
-                );
-              } else if (response.type === "SYSTEM_SUGGESTION") {
-                return (
-                  <Button
-                    onClick={() => {
-                      setPrompt(response.payload.value);
-                      promptInputRef.current?.focus();
-                    }}
-                    sx={{
-                      textAlign: "left",
-                      justifyContent: "flex-start",
-                      width: "fit-content",
-                      padding: 1,
-                    }}
-                    variant="contained"
-                    color="inherit"
-                    endIcon={<ChevronRightRounded />}
-                  >
-                    <AnimatedText
-                      text={response.payload.value}
-                      animate={!isInitialMount}
-                      onGrow={() => {
-                        if (responsesEndRef.current) {
-                          responsesEndRef.current.scrollIntoView({
-                            behavior: "smooth",
-                          });
-                        }
-                      }}
-                    />
-                  </Button>
-                );
-              } else if (response.type === "NAVIGATE") {
-                return (
-                  <Box display="flex" justifyContent="flex-end">
-                    <Button
-                      size="xsmall"
-                      variant="contained"
-                      sx={{ ml: "auto", mt: 0.5 }}
-                      onClick={() => {
-                        enqueueAction({
-                          type: response.type,
-                          payload: {
-                            path: response.payload.path,
-                          },
-                        });
-                      }}
-                      endIcon={<ArrowForward fontSize="small" />}
-                    >
-                      Navigate
-                    </Button>
-                  </Box>
-                );
-              }
-
-              return (
-                <Box key={index}>
-                  <Typography
-                    variant="body3"
-                    sx={{
-                      mb: 0.5,
-                    }}
-                  >
-                    {response.payload.refKey}
-                  </Typography>
-                  {response.payload?.value?.startsWith("3-") ? (
-                    <GeneratedImage src={response.payload.value} />
-                  ) : (
-                    <AnimatedText
-                      key={index}
-                      text={response.payload.value}
-                      animate={!isInitialMount && !isInCodeApp}
-                      onGrow={() => {
-                        if (responsesEndRef.current) {
-                          responsesEndRef.current.scrollIntoView({
-                            behavior: "smooth",
-                          });
-                        }
-                      }}
-                    />
-                  )}
-                  {response.type === "SET_VALUE" && (
-                    <Box display="flex" justifyContent="flex-end">
-                      <Button
-                        size="xsmall"
-                        variant="contained"
-                        sx={{ ml: "auto", mt: 0.5 }}
-                        onClick={() => {
-                          enqueueAction({
-                            type: response.type,
-                            payload: {
-                              refKey: response.payload.refKey,
-                              value: response.payload.value,
-                            },
-                          });
-                        }}
-                        endIcon={<AutoFixHighRounded fontSize="small" />}
-                      >
-                        Apply
-                      </Button>
-                    </Box>
-                  )}
-                </Box>
-              );
-            })}
-            <div ref={responsesEndRef} />
-            {isLoading && (
-              <Box
-                display="flex"
-                alignItems="center"
-                gap={0.5}
-                p={1}
-                borderRadius={2}
-                border="1px solid"
-                borderColor="border"
-                width="fit-content"
-                mb={1}
+                  Clear Chat
+                </Button>
+              </Box>
+              <IconButton
+                onClick={() => setSettingsOpen(!settingsOpen)}
+                size="small"
               >
-                <Skeleton variant="rounded" width={8} height={8} />
-                <Skeleton variant="rounded" width={8} height={8} />
-                <Skeleton variant="rounded" width={8} height={8} />
-              </Box>
-            )}
-          </Box>
-          <TextField
-            inputRef={promptInputRef}
-            disabled={isLoading}
-            placeholder="Ask AI to make edits to your content..."
-            variant="outlined"
-            fullWidth
-            multiline
-            rows={4}
-            onChange={(e) => setPrompt(e.target.value)}
-            value={prompt}
-            onKeyPress={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                handlePrompt(prompt);
-              }
-            }}
-          />
-          <Box display="flex" justifyContent="space-between" my={0.5}>
-            <Button
-              size="small"
-              variant="contained"
-              onClick={() => {
-                geminiGenerate({
-                  prompt:
-                    prompt || "Generate suggestions for my content fields",
-                  systemInstruction: suggestionSystemInstruction(
-                    Object.keys(getRefRegistry() || {}),
-                    getRefRegistry()
-                  ),
-                  temperature: 0.5,
-                });
-                setResponses((prev) => [
-                  ...prev,
-                  {
-                    type: "USER_INPUT",
-                    payload: {
-                      value: prompt
-                        ? `Generate suggestions: ${prompt}`
-                        : "Generate suggestions",
-                    },
-                  },
-                ]);
-                setPrompt("");
-              }}
-              endIcon={<AutoFixHighRounded />}
-            >
-              Generate Suggestions
-            </Button>
-            <Button
-              variant="contained"
-              onClick={() => handlePrompt(prompt)}
-              sx={{
-                borderRadius: "24px",
-                padding: 0.5,
-                minWidth: 0,
-              }}
-            >
-              <ArrowUpwardRounded />
-            </Button>
-          </Box>
-          <Accordion elevation={0} disableGutters>
-            <AccordionSummary
-              sx={{
-                p: 0,
-              }}
-              expandIcon={
-                <ArrowDropDownRoundedIcon sx={{ fontSize: "20px" }} />
-              }
-            >
-              <Box display="flex" gap={0.5} alignContent={"center"}>
                 <SettingsRoundedIcon color="action" fontSize="small" />
-                <Typography variant="body2" color="text.secondary">
-                  Settings
-                </Typography>
-              </Box>
-            </AccordionSummary>
-            <AccordionDetails
-              sx={{
-                px: 0,
-              }}
+              </IconButton>
+
+              <Button
+                variant="contained"
+                onClick={() => handlePrompt(prompt)}
+                disabled={promptIsEmpty}
+                sx={{
+                  borderRadius: 6,
+                  padding: 0.5,
+                  minWidth: 0,
+                  backgroundColor: promptIsEmpty
+                    ? "transparent!important"
+                    : "primary.main",
+                  color: promptIsEmpty
+                    ? "action.active"
+                    : "primary.contrastText",
+                }}
+              >
+                <ArrowUpwardRounded fontSize="small" />
+              </Button>
+            </Box>
+            <Collapse
+              orientation="vertical"
+              collapsedSize={0}
+              sx={{ position: "relative" }}
+              in={settingsOpen}
             >
-              <FormGroup>
-                <FormControlLabel
-                  sx={{
-                    mx: 0,
-                  }}
-                  control={
-                    <Switch
-                      size="small"
-                      checked={autoApply}
-                      onChange={(e) => setAutoApply(e.target.checked)}
-                    />
-                  }
-                  label={
-                    <Typography variant="subtitle2" color="text.secondary">
-                      Auto apply
-                    </Typography>
-                  }
-                />
-              </FormGroup>
-              <Box>
-                <Stack direction="row" gap={1} alignItems="center" mt={1}>
-                  <InputLabel sx={{ mb: 0 }}>Language</InputLabel>
-                  <Tooltip
-                    title="Set the language in which you'd like the text to be generated."
-                    placement="top"
-                  >
-                    <InfoRoundedIcon color="action" sx={{ fontSize: 12 }} />
-                  </Tooltip>
-                </Stack>
-                <Autocomplete
-                  autoHighlight
-                  disableClearable
-                  isOptionEqualToValue={(option: any, value: any) =>
-                    option.value === value.value
-                  }
-                  onChange={(event, value) => setSelectedLanguage(value)}
-                  value={selectedLanguage}
-                  options={languageOptions}
-                  renderInput={(params: any) => (
-                    <TextField
-                      {...params}
-                      fullWidth
-                      InputProps={{
-                        ...params.InputProps,
-                        startAdornment: (
-                          <InputAdornment position="start" sx={{ width: 24 }}>
-                            <LanguageRoundedIcon fontSize="small" />
-                          </InputAdornment>
-                        ),
-                      }}
-                    />
-                  )}
-                />
+              <Box py={2}>
+                <FormGroup>
+                  <FormControlLabel
+                    sx={{
+                      mx: 0,
+                    }}
+                    control={
+                      <Switch
+                        size="small"
+                        checked={autoApply}
+                        onChange={(e) => setAutoApply(e.target.checked)}
+                      />
+                    }
+                    label={
+                      <Typography variant="subtitle2" color="text.secondary">
+                        Auto apply
+                      </Typography>
+                    }
+                  />
+                </FormGroup>
+                <Box>
+                  <Stack direction="row" gap={1} alignItems="center" mt={1}>
+                    <InputLabel sx={{ mb: 0 }}>Language</InputLabel>
+                    <Tooltip
+                      title="Set the language in which you'd like the text to be generated."
+                      placement="top"
+                    >
+                      <InfoRoundedIcon color="action" sx={{ fontSize: 12 }} />
+                    </Tooltip>
+                  </Stack>
+                  <Autocomplete
+                    autoHighlight
+                    disableClearable
+                    isOptionEqualToValue={(option: any, value: any) =>
+                      option.value === value.value
+                    }
+                    onChange={(event, value) => setSelectedLanguage(value)}
+                    value={selectedLanguage}
+                    options={languageOptions}
+                    renderInput={(params: any) => (
+                      <TextField
+                        {...params}
+                        fullWidth
+                        InputProps={{
+                          ...params.InputProps,
+                          startAdornment: (
+                            <InputAdornment position="start" sx={{ width: 24 }}>
+                              <LanguageRoundedIcon fontSize="small" />
+                            </InputAdornment>
+                          ),
+                        }}
+                      />
+                    )}
+                  />
+                </Box>
+                <Box>
+                  <Stack direction="row" gap={1} alignItems="center" mt={1}>
+                    <InputLabel sx={{ mb: 0 }}>Tone</InputLabel>
+                    <Tooltip
+                      title="Set the desired style and mood of the generated text"
+                      placement="top"
+                    >
+                      <InfoRoundedIcon color="action" sx={{ fontSize: 12 }} />
+                    </Tooltip>
+                  </Stack>
+                  <Autocomplete
+                    autoHighlight
+                    disableClearable
+                    isOptionEqualToValue={(option: any, value: any) =>
+                      option.value === value.value
+                    }
+                    onChange={(_, value) => setSelectedTone(value)}
+                    value={selectedTone}
+                    options={TONE_OPTIONS}
+                    renderInput={(params: any) => (
+                      <TextField {...params} fullWidth />
+                    )}
+                  />
+                </Box>
               </Box>
-              <Box>
-                <Stack direction="row" gap={1} alignItems="center" mt={1}>
-                  <InputLabel sx={{ mb: 0 }}>Tone</InputLabel>
-                  <Tooltip
-                    title="Set the desired style and mood of the generated text"
-                    placement="top"
-                  >
-                    <InfoRoundedIcon color="action" sx={{ fontSize: 12 }} />
-                  </Tooltip>
-                </Stack>
-                <Autocomplete
-                  autoHighlight
-                  disableClearable
-                  isOptionEqualToValue={(option: any, value: any) =>
-                    option.value === value.value
-                  }
-                  onChange={(_, value) => setSelectedTone(value)}
-                  value={selectedTone}
-                  options={TONE_OPTIONS}
-                  renderInput={(params: any) => (
-                    <TextField {...params} fullWidth />
-                  )}
-                />
-              </Box>
-            </AccordionDetails>
-          </Accordion>
+            </Collapse>
+          </Box>
         </>
       )}
-    </Box>
+    </Paper>
   );
 };
 
