@@ -118,6 +118,9 @@ describe("Content List Actions", () => {
 
   it("Saves bulk edits", () => {
     cy.intercept("PUT", "/v1/content/models/*/items/batch").as("batchSave");
+    // Set up item refetch intercept just before save so it only captures the
+    // post-save fetchItem calls, not earlier background requests.
+    cy.intercept("GET", "/v1/content/models/*/items/*").as("itemRefetch");
 
     cy.getBySelector("listItemTable")
       .find('[data-cy="itemListRow"]')
@@ -135,24 +138,31 @@ describe("Content List Actions", () => {
     cy.getBySelector("MultiPageTableSaveChanges").click();
 
     cy.wait("@batchSave").its("response.statusCode").should("equal", 200);
+    // Wait for the two post-save item refetches so Redux is settled at yes_no=1
+    // before the next test starts. Without this, in-flight GETs can arrive
+    // mid-next-test and cause its eq(0) clicks to be no-ops.
+    cy.wait(["@itemRefetch", "@itemRefetch"]);
   });
   it("Saves and publishes bulk edits", () => {
     cy.intercept("PUT", "/v1/content/models/*/items/batch").as("batchSave");
     cy.intercept("POST", "/v1/content/models/*/items/publishings/batch").as(
       "batchPublish"
     );
+    // "Saves bulk edits" left yes_no=1 for these rows. Click eq(0) to toggle
+    // back to 0 so the ToggleButtonGroup registers a real change (clicking the
+    // already-selected value returns null and is a no-op).
     cy.getBySelector("listItemTable")
       .find('[data-cy="itemListRow"]')
       .eq(0)
       .find('[data-field="yes_no"] button')
-      .eq(1)
+      .eq(0)
       .click();
 
     cy.getBySelector("listItemTable")
       .find('[data-cy="itemListRow"]')
       .eq(1)
       .find('[data-field="yes_no"] button')
-      .eq(1)
+      .eq(0)
       .click();
     cy.getBySelector("MultiPageTablePublish").click();
     cy.getBySelector("ConfirmPublishButton").click();
