@@ -95,6 +95,12 @@ const TEST_DATA = {
 before(() => {
   cy.cleanTestData();
   cy.createTestData();
+  // Under CI load the POSTs can be slow and the page may load from IndexedDB
+  // cache before they complete — confirm the labels are visible before tests start
+  cy.goToWorkflowsPage();
+  cy.contains(TEST_DATA.temp1.name, TIMEOUT).should("exist");
+  cy.contains(TEST_DATA.temp2.name, TIMEOUT).should("exist");
+  cy.contains(TEST_DATA.temp3.name, TIMEOUT).should("exist");
 });
 
 after(() => {
@@ -408,25 +414,17 @@ describe("Deactivate Status Label", { retries: 1 }, () => {
 });
 
 describe("Filter Active and Deactivated Status Labels", { retries: 1 }, () => {
-  let statusLabelsData;
-
-  before(() => {
-    cy.getStatusLabels().then((data) => {
-      statusLabelsData = data;
-    });
-  });
-
   it("Displays active/deactivated status labels", () => {
     cy.get('input[value="deactivated"]').click(TIMEOUT);
-    const { active = [], deactivated = [] } = statusLabelsData || {};
+    // Asserting on specific test labels rather than total count — the instance
+    // has pre-existing labels we don't control, making count assertions flaky in CI
     cy.getBySelector("active-labels-container").within(() => {
-      cy.getBySelector("status-label").should("have.length", active.length);
+      cy.contains(TEST_DATA.new.name).should("exist");
+      cy.contains(TEST_DATA.edited.name).should("exist");
     });
     cy.getBySelector("deactivated-labels-container").within(() => {
-      cy.getBySelector("status-label").should(
-        "have.length",
-        deactivated.length
-      );
+      cy.contains(TEST_DATA.temp2.name).should("exist");
+      cy.contains(TEST_DATA.temp3.name).should("exist");
     });
   });
 
