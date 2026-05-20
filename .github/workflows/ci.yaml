@@ -60,14 +60,28 @@ jobs:
           project_id: zesty-dev
       - name: Setup Testing Environment
         run: npm run ci:test:setup
+      # Runner 0 runs all publish-related specs together so that workflows.spec.js
+      # (which creates a publish-blocking workflow label) and the publish action specs
+      # run sequentially on the same runner, avoiding cross-runner interference.
       - name: Run Tests
+        if: matrix.split_index == 0
         run: npm run ci
         env:
           CYPRESS_COVERAGE: "true"
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          SPLIT: 4
-          SPLIT_INDEX: ${{ matrix.split_index }}
+          SPLIT: 1
+          SPLIT_INDEX: 0
+          SPEC: "cypress/e2e/content/redirects.spec.js,cypress/e2e/settings/workflows.spec.js,cypress/e2e/content/actions.spec.js,cypress/e2e/content/list.spec.js"
+      - name: Run Tests
+        if: matrix.split_index != 0
+        run: npm run ci
+        env:
+          CYPRESS_COVERAGE: "true"
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SPLIT: 3
+          SPLIT_INDEX: ${{ matrix.split_index - 1 }}
           SPLIT_FILE: timings.json
+          SKIP_SPEC: "cypress/e2e/content/redirects.spec.js,cypress/e2e/settings/workflows.spec.js,cypress/e2e/content/actions.spec.js,cypress/e2e/content/list.spec.js"
       # Rename so artifacts from each runner have unique filenames and don't overwrite each other.
       - name: Rename Coverage Output
         if: ${{ success() }}
