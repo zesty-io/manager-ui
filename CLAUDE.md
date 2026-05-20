@@ -146,7 +146,7 @@ Fixtures (`cypress/fixtures/`) seed instance/content/model JSON. Don't hand-roll
 
 **Tests hit a real dev instance, not mocks.** `cypress/support/api.js` exposes seeding helpers — `cy.createModel`, `cy.deleteModel(s)`, `cy.createField`, `cy.createStatusLabel`, `cy.deleteStatusLabels` — that POST/DELETE against the dev API (`API_ENDPOINTS.devInstance`). Use them in `before` / `after` hooks and clean up everything you create; leaked records pollute later runs. Hardcoded ZUIDs in specs (e.g. `/content/6-0c960c-d1n0kx`) reference seed data on the configured instance — don't repoint specs at a different instance without re-seeding.
 
-**`data-cy` is the only selector strategy.** Tests use `cy.getBySelector("Foo")` exclusively; class-based selectors, MUI class hooks, and text-matching for clicks are flake risks. New interactive controls (buttons, inputs, menu items, table rows) MUST expose a stable `data-cy="…"` attribute or they're effectively untestable.
+**`data-cy` is the only selector strategy.** Tests use `cy.getBySelector("Foo")` exclusively; class-based selectors, MUI class hooks, and text-matching for clicks are flake risks. When writing or modifying a component, add a `data-cy="…"` attribute to every interactive element (button, input, menu item, table row) that a test may need to target — never rely on class names or MUI internals. New interactive controls without a `data-cy` are effectively untestable.
 
 **No hard waits.** Do not use `cy.wait(ms)` with a fixed number. Use `cy.waitOn(path, cb)` to wait for a network request, or Cypress's built-in retry-ability (`.should(…)`, `.contains(…)` with a `timeout` option). Hard waits make tests slow and mask real timing issues.
 
