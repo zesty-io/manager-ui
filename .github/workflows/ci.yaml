@@ -27,9 +27,9 @@ jobs:
       - name: Delete Old Screenshots
         run: gsutil rm gs://cypress_screenshots/* || true
 
-  # Runs 4 parallel jobs, each handling X number of specs. cypress-split distributes specs automatically
-  # based on SPLIT (total runners) and SPLIT_INDEX (current runner). To scale up, increase both
-  # the matrix array and SPLIT to match.
+  # Runs 5 parallel jobs. Runners 0-3 split the non-publish specs evenly (SPLIT=4).
+  # Runner 4 is dedicated to publish-related specs to avoid cross-runner interference.
+  # cypress-split distributes specs based on SPLIT and SPLIT_INDEX.
   # Repo: https://github.com/bahmutov/cypress-split
   run_tests:
     needs: setup
@@ -37,7 +37,7 @@ jobs:
     strategy:
       fail-fast: false # Don't cancel other runners if one fails
       matrix:
-        split_index: [0, 1, 2, 3]
+        split_index: [0, 1, 2, 3, 4]
 
     steps:
       - name: Checkout Repo
@@ -60,11 +60,21 @@ jobs:
           project_id: zesty-dev
       - name: Setup Testing Environment
         run: npm run ci:test:setup
-      # Runner 0 runs all publish-related specs together so that workflows.spec.js
+      - name: Run Tests
+        if: matrix.split_index != 4
+        run: npm run ci
+        env:
+          CYPRESS_COVERAGE: "true"
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SPLIT: 4
+          SPLIT_INDEX: ${{ matrix.split_index }}
+          SPLIT_FILE: timings.json
+          SKIP_SPEC: "cypress/e2e/content/redirects.spec.js,cypress/e2e/settings/workflows.spec.js,cypress/e2e/content/actions.spec.js,cypress/e2e/content/list.spec.js"
+      # Runner 4 runs all publish-related specs together so that workflows.spec.js
       # (which creates a publish-blocking workflow label) and the publish action specs
       # run sequentially on the same runner, avoiding cross-runner interference.
       - name: Run Tests
-        if: matrix.split_index == 0
+        if: matrix.split_index == 4
         run: npm run ci
         env:
           CYPRESS_COVERAGE: "true"
@@ -72,16 +82,6 @@ jobs:
           SPLIT: 1
           SPLIT_INDEX: 0
           SPEC: "cypress/e2e/content/redirects.spec.js,cypress/e2e/settings/workflows.spec.js,cypress/e2e/content/actions.spec.js,cypress/e2e/content/list.spec.js"
-      - name: Run Tests
-        if: matrix.split_index != 0
-        run: npm run ci
-        env:
-          CYPRESS_COVERAGE: "true"
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          SPLIT: 3
-          SPLIT_INDEX: ${{ matrix.split_index - 1 }}
-          SPLIT_FILE: timings.json
-          SKIP_SPEC: "cypress/e2e/content/redirects.spec.js,cypress/e2e/settings/workflows.spec.js,cypress/e2e/content/actions.spec.js,cypress/e2e/content/list.spec.js"
       # Rename so artifacts from each runner have unique filenames and don't overwrite each other.
       - name: Rename Coverage Output
         if: ${{ success() }}
