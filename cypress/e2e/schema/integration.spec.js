@@ -98,6 +98,57 @@ describe("Integration Field", () => {
         });
       });
     });
+
+    context("HTTP Headers", () => {
+      beforeEach(() => {
+        cy.visit(`/schema/${Cypress.env("modelZUID")}/fields`);
+        cy.get('[data-cy="AddFieldBtn"]').click();
+        cy.get('[data-cy="FieldItem_integration"]').click();
+        cy.get('[data-cy="integrationConfigureButton"]').click();
+        cy.get('[data-cy="integrationFormDialog"]').should("exist");
+        cy.get('[data-cy="integrationEndpointInput"] input')
+          .clear()
+          .type(ENDPOINTS.generic);
+      });
+
+      it("Add HTTP Headers", () => {
+        cy.get('[data-cy="addHeaderButton"]').click();
+        cy.get('[data-cy="addHeaderButton"]').click();
+        cy.get('[data-cy="addHeaderButton"]').click();
+
+        cy.get('[data-cy="integrationHeadersContainer"]')
+          .children()
+          .should("have.length", 4);
+      });
+
+      it("Remove HTTP Headers", () => {
+        cy.get('[data-cy="addHeaderButton"]').click();
+        cy.get('[data-cy="addHeaderButton"]').click();
+        cy.get('[data-cy="addHeaderButton"]').click();
+
+        cy.get(
+          '[data-cy="integrationHeadersContainerRow-3"] [data-cy="removeHeaderButton"]'
+        ).click();
+        cy.get(
+          '[data-cy="integrationHeadersContainerRow-2"] [data-cy="removeHeaderButton"]'
+        ).click();
+        cy.get(
+          '[data-cy="integrationHeadersContainerRow-1"] [data-cy="removeHeaderButton"]'
+        ).click();
+
+        cy.get('[data-cy="integrationHeadersContainer"]')
+          .children()
+          .should("have.length", 1);
+      });
+
+      it("Double-click does not add duplicate header rows", () => {
+        cy.get('[data-cy="addHeaderButton"]').dblclick();
+
+        cy.get('[data-cy="integrationHeadersContainer"]')
+          .children()
+          .should("have.length", 2);
+      });
+    });
   });
 
   describe("Item Selection", () => {
@@ -214,6 +265,14 @@ describe("Integration Field", () => {
 
       cy.get('[data-cy="toast"]').contains("Created Item");
     });
+
+    it("Reload preserves saved selections", () => {
+      cy.reload();
+
+      cy.get('[data-cy="integrationListValueContainer"]')
+        .children()
+        .should("have.length", 2);
+    });
   });
 
   describe("Search Filter with Non-string KeyPath", () => {
@@ -239,6 +298,47 @@ describe("Integration Field", () => {
     });
   });
 
+  describe("maxValue Lockout", () => {
+    let MAXVALUE_MODEL = null;
+
+    before(() => {
+      cy.task("seed:content", "fixtures/integration/maxvalue.json").then(
+        ({ model }) => {
+          MAXVALUE_MODEL = model;
+        }
+      );
+    });
+
+    it("Disables unselected checkboxes once the maxValue limit is reached", () => {
+      cy.intercept("**/get-url?url=*", {
+        statusCode: 200,
+        body: genericApi,
+      }).as("maxValueGetUrl");
+
+      cy.visit(`/content/${MAXVALUE_MODEL?.ZUID}/new`);
+      cy.get('[data-cy="field:title"]')
+        .find("input")
+        .type(MAXVALUE_MODEL?.label);
+
+      cy.get(
+        `[data-cy="field:players"] [data-cy="integrationSelectItemsButton"]`
+      ).click();
+      cy.wait("@maxValueGetUrl");
+      cy.get('[data-cy="integrationSelectionFormDialog"]').should("exist");
+
+      cy.get(
+        '.integrationSelectionFormListContainer [data-cy="integrationSelectCard"]:eq(0) input'
+      ).check({ force: true });
+      cy.get(
+        '.integrationSelectionFormListContainer [data-cy="integrationSelectCard"]:eq(1) input'
+      ).check({ force: true });
+
+      cy.get(
+        '.integrationSelectionFormListContainer [data-cy="integrationSelectCard"]:eq(2) input'
+      ).should("be.disabled");
+    });
+  });
+
   describe("Reconfigure Display Options", () => {
     it("Persists keyPath changes when updating an integration field", () => {
       cy.intercept("**/get-url?url=*", {
@@ -258,6 +358,15 @@ describe("Integration Field", () => {
       cy.get('[data-cy="integrationFormDialog"]').should("exist");
 
       cy.get('[data-cy="integrationConfigureOptionNextButton"]').click();
+
+      cy.get('[data-cy="integrationKeyPathSelector-itemId"] input').should(
+        "have.value",
+        KEY_PATHS.generic.itemId
+      );
+      cy.get('[data-cy="integrationKeyPathSelector-heading"] input').should(
+        "have.value",
+        KEY_PATHS.generic.heading
+      );
 
       cy.get('[data-cy="integrationKeyPathSelector-subHeading"]').click();
       cy.get(`.MuiAutocomplete-listbox li:contains("position")`).click(
@@ -297,34 +406,6 @@ function connectToEndpoint(endpoint, type, apiData) {
   cy.get('[data-cy="integrationConfigureButton"]').click();
   cy.get('[data-cy="integrationFormDialog"]').should("exist");
   cy.get('[data-cy="integrationEndpointInput"] input').clear().type(endpoint);
-
-  if (type === "simple") {
-    it("Add HTTP Headers", () => {
-      cy.get('[data-cy="addHeaderButton"]').click();
-      cy.get('[data-cy="addHeaderButton"]').click();
-      cy.get('[data-cy="addHeaderButton"]').click();
-
-      cy.get('[data-cy="integrationHeadersContainer"]')
-        .children()
-        .should("have.length", 5);
-    });
-
-    it("Remove HTTP Headers", () => {
-      cy.get(
-        '[data-cy="integrationHeadersContainerRow-3"] [data-cy="removeHeaderButton"]'
-      ).click();
-      cy.get(
-        '[data-cy="integrationHeadersContainerRow-2"] [data-cy="removeHeaderButton"]'
-      ).click();
-      cy.get(
-        '[data-cy="integrationHeadersContainerRow-1"] [data-cy="removeHeaderButton"]'
-      ).click();
-
-      cy.get('[data-cy="integrationHeadersContainer"]')
-        .children()
-        .should("have.length", 1);
-    });
-  }
 
   cy.intercept("**/get-url?url=*").as("getUrl");
 
