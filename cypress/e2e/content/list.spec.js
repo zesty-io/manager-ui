@@ -9,9 +9,9 @@ describe("Content List Filters", () => {
       }
     );
 
-    cy.waitOn("/v1/content/models*", () => {
-      cy.visit(`/content/${Cypress.env("modelZUID")}`);
-    });
+    cy.visit(`/content/${Cypress.env("modelZUID")}`);
+    // Content may load from IndexedDB cache — wait for UI instead of network
+    cy.getBySelector("listItemTable").should("exist");
   });
 
   it("Filters list items based on search term", () => {
@@ -70,11 +70,9 @@ describe("Content List Filters", () => {
 
 describe("Content List Navigation", () => {
   before(() => {
-    cy.waitOn("/v1/content/models*", () => {
-      cy.waitOn("/bin/*", () => {
-        cy.visit(`/content/${Cypress.env("modelZUID")}`);
-      });
-    });
+    cy.visit(`/content/${Cypress.env("modelZUID")}`);
+    // Content may load from IndexedDB cache — wait for UI instead of network
+    cy.getBySelector("listItemTable").should("exist");
   });
 
   it("Opens the content item on click", () => {
@@ -97,11 +95,8 @@ describe("Content List Navigation", () => {
   });
 
   it("Navigates to edit the template page", () => {
-    cy.waitOn("/v1/content/models*", () => {
-      cy.waitOn("/bin/*", () => {
-        cy.visit(`/content/${Cypress.env("modelZUID")}`);
-      });
-    });
+    cy.visit(`/content/${Cypress.env("modelZUID")}`);
+    cy.getBySelector("listItemTable").should("exist");
 
     cy.getBySelector("MultiPageTableMoreMenu").click();
     cy.getBySelector("EditTemplateNavButton").click();
@@ -111,9 +106,9 @@ describe("Content List Navigation", () => {
 
 describe("Content List Actions", () => {
   before(() => {
-    cy.waitOn("/v1/content/models*", () => {
-      cy.visit(`/content/${Cypress.env("modelZUID")}`);
-    });
+    cy.visit(`/content/${Cypress.env("modelZUID")}`);
+    // Content may load from IndexedDB cache — wait for UI instead of network
+    cy.getBySelector("listItemTable").should("exist");
   });
 
   it("Saves bulk edits", () => {
