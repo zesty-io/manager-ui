@@ -24,15 +24,33 @@ import {
 import { Check, Close, DataObject, Search, Refresh } from "@mui/icons-material";
 import {
   IntegrationFieldConfig,
+  IntegrationKeyPaths,
   IntegrationTypes,
 } from "../../../services/types";
 import { ApiDataProps, ApiDataWithIdProps } from "../types";
 import { DISPLAY_OPTIONS_CONFIG, LOADING_DATA } from "../constants";
-import { getKeyValue, keyPathValuesToString } from "../utils";
 import DisplayCard from "../Shared/DisplayCard";
 import { NoResults } from "../../../../apps/schema/src/app/components/NoResults";
 import JsonViewer from "../Shared/JsonViewer";
-import { isEqual } from "lodash";
+import { isEqual, get } from "lodash";
+
+const keyPathValuesToString = (
+  item: ApiDataProps,
+  keyPaths: IntegrationKeyPaths
+) => {
+  const validValues = Object.values(keyPaths)
+    ?.filter((value) => {
+      if (Array.isArray(value)) return value?.length > 0;
+      return value !== "";
+    })
+    ?.flat();
+  const idParts = validValues?.map((key) => {
+    const value = item?.[key] || "";
+    return typeof value === "string" ? value?.replace(/\s+/g, "") : value;
+  });
+
+  return idParts?.join(";");
+};
 
 interface ItemSelectionDialogProps {
   title: string;
@@ -107,16 +125,16 @@ const RenderRow = ({ data, index, style }: RenderRowProps) => {
   const localItemData = keyPathValuesToString(localItem, keyPaths);
   const hasUpdates = !!localItem && remoteItemData !== localItemData;
   const pathData = {
-    heading: getKeyValue(item, keyPaths?.heading),
-    subHeading: getKeyValue(item, keyPaths?.subHeading),
-    thumbnail: getKeyValue(item, keyPaths?.thumbnail),
-    detail: getKeyValue(item, keyPaths?.detail),
+    heading: get(item, keyPaths?.heading),
+    subHeading: get(item, keyPaths?.subHeading),
+    thumbnail: get(item, keyPaths?.thumbnail),
+    detail: get(item, keyPaths?.detail),
     details:
       type !== "details"
         ? null
         : keyPaths?.details?.map((detailKey: string) => ({
             key: detailKey,
-            value: getKeyValue(item, detailKey),
+            value: get(item, detailKey),
           })),
   };
 
@@ -298,7 +316,7 @@ const ItemSelectionDialog = ({
     const filtered = items.filter((item) => {
       const searchString = validKeys
         ?.map((itemKey) => {
-          const value = getKeyValue(item, itemKey);
+          const value = get(item, itemKey);
           return typeof value === "string" ? value.trim() : "";
         })
         .join("\n")

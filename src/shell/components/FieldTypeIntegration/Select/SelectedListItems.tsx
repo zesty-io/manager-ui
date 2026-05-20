@@ -3,7 +3,7 @@ import { Box } from "@mui/material";
 import { ApiDataWithIdProps } from "../types";
 import { IntegrationFieldConfig } from "../../../services/types";
 import Draggable from "./Draggable";
-import { getKeyValue } from "../utils";
+import { get } from "lodash";
 import DisplayCard from "../Shared/DisplayCard";
 import JsonViewer from "../Shared/JsonViewer";
 
@@ -61,22 +61,16 @@ const SelectedListItems = ({
             >
               <DisplayCard
                 type={config?.type}
-                heading={getKeyValue(item, config?.keyPaths?.heading || null)}
-                subHeading={getKeyValue(
-                  item,
-                  config?.keyPaths?.subHeading || null
-                )}
-                thumbnail={getKeyValue(
-                  item,
-                  config?.keyPaths?.thumbnail || null
-                )}
-                detail={getKeyValue(item, config?.keyPaths?.detail || null)}
+                heading={get(item, config?.keyPaths?.heading || null)}
+                subHeading={get(item, config?.keyPaths?.subHeading || null)}
+                thumbnail={get(item, config?.keyPaths?.thumbnail || null)}
+                detail={get(item, config?.keyPaths?.detail || null)}
                 details={
                   config?.type !== "details"
                     ? null
                     : config?.keyPaths?.details.map((detailKey: string) => ({
                         key: detailKey,
-                        value: getKeyValue(item, detailKey),
+                        value: get(item, detailKey),
                       }))
                 }
               />

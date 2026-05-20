@@ -26,7 +26,7 @@ import { FormWrapper } from "../Shared/FormWrapper";
 import { FieldWrapper } from "../Shared/FieldWrapper";
 import { DISPLAY_OPTIONS_CONFIG } from "../constants";
 import { ConfigProps } from "../types";
-import { getKeyValue } from "../utils";
+import { get } from "lodash";
 import { IntegrationKeyPaths, IntegrationTypes } from "../../../services/types";
 import KeyPathSelector from "./KeyPathSelector";
 import DisplayCard from "../Shared/DisplayCard";
@@ -146,7 +146,7 @@ const ConfigureDisplayOptions = ({
     if (!apiData || rootData) return;
 
     if (rootPath) {
-      const dataRoot = getKeyValue(apiData, rootPath)[0];
+      const dataRoot = get(apiData, rootPath)[0];
       const optionsRaw = getObjectKeyPaths(dataRoot);
       setRootData(dataRoot);
       setRootPathOptions(optionsRaw);
@@ -261,7 +261,7 @@ const ConfigureDisplayOptions = ({
                     options={apiPathOptions}
                     placeholder="Select Data Path"
                     onChange={(value) => {
-                      const rootDataRaw = getKeyValue(apiData, value)[0];
+                      const rootDataRaw = get(apiData, value)[0];
                       const rootPathOptionsRaw = getObjectKeyPaths(rootDataRaw);
                       setRootData(rootDataRaw);
                       setRootPathOptions(rootPathOptionsRaw);
@@ -411,13 +411,13 @@ const ConfigureDisplayOptions = ({
               />
               <DisplayCard
                 type={type}
-                heading={getKeyValue(rootData, rootPathData.heading)}
-                subHeading={getKeyValue(rootData, rootPathData.subHeading)}
-                thumbnail={getKeyValue(rootData, rootPathData.thumbnail)}
-                detail={getKeyValue(rootData, rootPathData.detail)}
+                heading={get(rootData, rootPathData.heading)}
+                subHeading={get(rootData, rootPathData.subHeading)}
+                thumbnail={get(rootData, rootPathData.thumbnail)}
+                detail={get(rootData, rootPathData.detail)}
                 details={detailsPathData?.map((keyPath) => ({
                   key: keyPath || "",
-                  value: !keyPath ? "" : getKeyValue(rootData, keyPath),
+                  value: !keyPath ? "" : get(rootData, keyPath),
                 }))}
                 showPlayIcon={false}
               />

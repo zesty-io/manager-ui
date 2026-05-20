@@ -8,7 +8,7 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import ItemSelectionDialog from "./ItemSelectionDialog";
 import SelectedListItems from "./SelectedListItems";
-import { getKeyValue } from "../utils";
+import { get } from "lodash";
 import useIntegrationField from "../useIntegrationField";
 import DndContextProvider from "shell/components/DndContextProvider";
 
@@ -66,7 +66,7 @@ const IntegrationFieldSelect = ({
     const data =
       (!config?.keyPaths?.rootPath
         ? apiData
-        : getKeyValue(apiData, config?.keyPaths?.rootPath)) || [];
+        : get(apiData, config?.keyPaths?.rootPath)) || [];
 
     const itemWithId = !data?.length
       ? []
