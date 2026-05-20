@@ -28,12 +28,13 @@ Cypress.Commands.add("blockLock", () => {
 });
 
 Cypress.Commands.add("waitOn", (path, cb) => {
-  cy.intercept(path).as("waitingOn");
+  // Use a unique alias per call so nested cy.waitOn() calls don't overwrite
+  // each other's @waitingOn alias and wait on the wrong intercept
+  const alias = `waitingOn_${Cypress._.uniqueId()}`;
+  cy.intercept(path).as(alias);
   cy.blockAnnouncements();
   cb();
-  cy.wait("@waitingOn", {
-    timeout: 30000,
-  });
+  cy.wait(`@${alias}`, { timeout: 30000 });
 });
 
 Cypress.Commands.add("assertClipboardValue", (value) => {

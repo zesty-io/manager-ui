@@ -144,7 +144,9 @@ Custom commands (`cypress/support/commands.js`) — use these instead of hand-ro
 
 Fixtures (`cypress/fixtures/`) seed instance/content/model JSON. Don't hand-roll fixtures inline in specs.
 
-**Tests hit a real dev instance, not mocks.** `cypress/support/api.js` exposes seeding helpers — `cy.createModel`, `cy.deleteModel(s)`, `cy.createField`, `cy.createStatusLabel`, `cy.deleteStatusLabels` — that POST/DELETE against the dev API (`API_ENDPOINTS.devInstance`). Use them in `before` / `after` hooks and clean up everything you create; leaked records pollute later runs. Hardcoded ZUIDs in specs (e.g. `/content/6-0c960c-d1n0kx`) reference seed data on the configured instance — don't repoint specs at a different instance without re-seeding.
+**Tests hit a real dev instance, not mocks.** `cypress/support/api.js` exposes seeding helpers — `cy.createModel`, `cy.deleteModel(s)`, `cy.createField`, `cy.createStatusLabel`, `cy.deleteStatusLabels` — that POST/DELETE against the dev API (`API_ENDPOINTS.devInstance`). Use them in `before` / `after` hooks and clean up everything you create; leaked records pollute later runs within the same day. Hardcoded ZUIDs in specs (e.g. `/content/6-0c960c-d1n0kx`) reference seed data on the configured instance — don't repoint specs at a different instance without re-seeding.
+
+**The dev instance is synced nightly from prod.** Test data created during a run is wiped on the next nightly sync, so specs must not rely on data from a previous day's run still being present — always seed what you need in `before` hooks. Instance-level configuration (integrations, fonts, analytics connections) reflects prod state after each sync.
 
 **`data-cy` is the only selector strategy.** Tests use `cy.getBySelector("Foo")` exclusively; class-based selectors, MUI class hooks, and text-matching for clicks are flake risks. When writing or modifying a component, add a `data-cy="…"` attribute to every interactive element (button, input, menu item, table row) that a test may need to target — never rely on class names or MUI internals. New interactive controls without a `data-cy` are effectively untestable.
 
