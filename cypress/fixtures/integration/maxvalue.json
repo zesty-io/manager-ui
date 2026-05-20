@@ -26,10 +26,16 @@
           "headers": null,
           "type": "simple",
           "keyPaths": {
+            "detail": null,
+            "details": null,
+            "heading": "name",
             "itemId": "playerId",
-            "heading": "name"
+            "rootPath": "",
+            "subHeading": null,
+            "thumbnail": null
           }
-        }
+        },
+        "list": true
       }
     }
   ],
