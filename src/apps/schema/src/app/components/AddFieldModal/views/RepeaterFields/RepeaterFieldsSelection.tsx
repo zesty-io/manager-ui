@@ -27,6 +27,8 @@ const ALLOWED_REPEATER_FIELD_TYPES = new Set<FieldType>([
   "color",
   "sort",
   "uuid",
+  "date",
+  "datetime",
 ]);
 
 const repeaterFields = {
@@ -40,6 +42,9 @@ const repeaterFields = {
     ALLOWED_REPEATER_FIELD_TYPES.has(field.type)
   ),
   numeric: FIELD_COPY_CONFIG.numeric.filter((field) =>
+    ALLOWED_REPEATER_FIELD_TYPES.has(field.type)
+  ),
+  dateandtime: FIELD_COPY_CONFIG.dateandtime.filter((field) =>
     ALLOWED_REPEATER_FIELD_TYPES.has(field.type)
   ),
   options: FIELD_COPY_CONFIG.options.filter((field) =>
@@ -116,7 +121,11 @@ export const RepeaterFieldsSelection = ({
                 mb={1.5}
                 color="text.secondary"
               >
-                {fieldKey === "options" ? "Advanced" : fieldKey}
+                {fieldKey === "options"
+                  ? "Advanced"
+                  : fieldKey === "dateandtime"
+                  ? "Date & Time"
+                  : fieldKey}
               </Typography>
               <Box
                 display="grid"
