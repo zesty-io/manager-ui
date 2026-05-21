@@ -36,7 +36,7 @@ describe("All Files Page", () => {
   });
 
   it("Create New File", () => {
-    cy.getBySelector("CreateFileCancelButton").click();
+    cy.visit("/code");
     cy.getBySelector("AllFilesCreateButton").click();
     cy.getBySelector("CodeAppCreateFileDialog").should("exist");
     cy.getBySelector("CreateFileFileNameInput")
@@ -63,14 +63,14 @@ describe("All Files Page", () => {
   });
 
   it("Newly created file is listed on top in recent files", () => {
-    cy.getBySelector("codeNavAllFiles").click();
+    cy.visit("/code");
     cy.getBySelector("AllFilesTable")
       .find('[data-cy="AllFilesRow"]:eq(0)')
       .should("contain.text", TEST_DATA[0].filename, matchcase);
   });
 
   it("Open newly created file from recent files", () => {
-    cy.getBySelector("codeNavAllFiles").click();
+    cy.visit("/code");
     cy.getBySelector("AllFilesTable")
       .find(`[data-cy="AllFilesRow"]:contains(${TEST_DATA[0].filename})`)
       .click();
@@ -79,7 +79,7 @@ describe("All Files Page", () => {
 
   describe("Search Files", () => {
     it("Accurate Search results", () => {
-      cy.getBySelector("codeNavAllFiles").click();
+      cy.visit("/code");
       cy.getBySelector("AllFilesSearchInput")
         .find("input")
         .clear()
@@ -91,6 +91,7 @@ describe("All Files Page", () => {
     });
 
     it("No results found", () => {
+      cy.visit("/code");
       cy.getBySelector("AllFilesSearchInput")
         .find("input")
         .clear()

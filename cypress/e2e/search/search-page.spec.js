@@ -73,7 +73,15 @@ describe("Global Search: Search Page", () => {
   });
 
   it("Shows the no results matching the filters applied screen", () => {
-    // already at the filtered URL from the previous test
+    cy.waitOn(
+      "https://8-f48cf3a682-7fthvk.api.dev.zesty.io/v1/search/items*",
+      () => {
+        cy.visit(
+          "/search?q=somerandomstringthatdoesnotexist&sort=created&user=5-84d1e6d4ae-s3m974&datePreset=today"
+        );
+      }
+    );
+
     cy.getBySelector("NoSearchResults").should("exist");
   });
 });

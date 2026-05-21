@@ -52,6 +52,10 @@ describe("Tabs actions", () => {
   });
 
   it("Stays pinned while navigating to different pages", () => {
+    // Navigate to first page
+    cy.waitOn("/v1/web/views/11-e55790-f19nwx", () => {
+      cy.visit("/code/file/views/11-e55790-f19nwx");
+    });
     // Pin the tab
     cy.get('[data-testid="PushPinOutlinedIcon"]').parent().click();
     // Ensure that it is pinned
@@ -62,7 +66,7 @@ describe("Tabs actions", () => {
       .find('[data-testid="PushPinOutlinedIcon"]')
       .should("not.exist");
     // Navigate to second page
-    cy.getBySelector("ContentApp").click();
+    cy.visit("/content");
     // Ensure active tab is unpinnned
     cy.getBySelector("UnpinnedTab")
       .find('[data-testid="PushPinIcon"]')
@@ -80,7 +84,10 @@ describe("Tabs actions", () => {
       Should create dropdown after 5 tabs
     */
 
-    // Tab #1 (code view) is already pinned from the previous test
+    // Pin tab #1 and ensure it is pinned
+    cy.waitOn("/v1/web/views/11-e55790-f19nwx", () => {
+      cy.visit("/code/file/views/11-e55790-f19nwx");
+    });
     cy.getBySelector("PinnedTab-0")
       .find('[data-testid="PushPinIcon"]')
       .should("exist");
@@ -89,7 +96,9 @@ describe("Tabs actions", () => {
       .should("not.exist");
 
     // Pin tab #2 and ensure it is pinned
-    cy.getBySelector("LaunchpadApp").click();
+    cy.waitOn("/launchpad", () => {
+      cy.visit("/launchpad");
+    });
     cy.getBySelector("UnpinnedTab").should("exist");
     // Verify that the 1st pinned tab still exists
     cy.getBySelector("PinnedTab-0").should("exist");
@@ -105,7 +114,9 @@ describe("Tabs actions", () => {
     cy.wait(100); // Makes sure that the pinned tabs have been properly saved to indexdb before navigating to a new url
 
     // Pin tab #3 and ensure it is pinned
-    cy.getBySelector("RedirectsApp").click();
+    cy.waitOn("/redirects", () => {
+      cy.visit("/redirects");
+    });
     cy.getBySelector("UnpinnedTab").should("exist");
     // Verify that the other tabs still exist
     cy.getBySelector("PinnedTab-0").should("exist");
@@ -122,7 +133,9 @@ describe("Tabs actions", () => {
     cy.wait(100); // Makes sure that the pinned tabs have been properly saved to indexdb before navigating to a new url
 
     // Pin tab #4 and ensure it is pinned
-    cy.getBySelector("LeadsApp").click();
+    cy.waitOn("/leads", () => {
+      cy.visit("/leads");
+    });
     cy.getBySelector("UnpinnedTab").should("exist");
     // Verify that the other tabs still exist
     cy.getBySelector("PinnedTab-0").should("exist");
@@ -139,7 +152,9 @@ describe("Tabs actions", () => {
     cy.wait(100); // Makes sure that the pinned tabs have been properly saved to indexdb before navigating to a new url
 
     // Pin tab #5 and ensure it is pinned
-    cy.getBySelector("MediaApp").click();
+    cy.waitOn("/media", () => {
+      cy.visit("/media");
+    });
     cy.getBySelector("UnpinnedTab").should("exist");
     // Verify that the other tabs still exist, we only have 4 pinned tabs at this point since the other 1 will go to the dropdown menu
     cy.getBySelector("PinnedTab-0").should("exist");
@@ -205,7 +220,9 @@ describe("Tabs actions", () => {
     cy.getBySelector("PinnedTab-2").should("exist");
     cy.getBySelector("PinnedTab-3").should("exist");
 
-    cy.getBySelector("LaunchpadApp").click();
+    cy.waitOn("/launchpad", () => {
+      cy.visit("/launchpad");
+    });
 
     // Verify that the current active tab is the visited url
     cy.get("[data-active=true]").should("exist");
