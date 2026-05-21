@@ -1,8 +1,6 @@
 import {
-  Dialog,
   DialogContent,
   DialogTitle,
-  Button,
   Typography,
   IconButton,
   Stack,
@@ -50,6 +48,11 @@ const repeaterFields = {
   options: FIELD_COPY_CONFIG.options.filter((field) =>
     ALLOWED_REPEATER_FIELD_TYPES.has(field.type)
   ),
+};
+
+const GROUP_LABELS: Partial<Record<keyof typeof repeaterFields, string>> = {
+  options: "Advanced",
+  dateandtime: "Date & Time",
 };
 
 type RepeaterFieldsSelectionProps = {
@@ -112,8 +115,8 @@ export const RepeaterFieldsSelection = ({
           },
         }}
       >
-        {Object.keys(repeaterFields).map(
-          (fieldKey: keyof typeof repeaterFields) => (
+        {(Object.keys(repeaterFields) as (keyof typeof repeaterFields)[]).map(
+          (fieldKey) => (
             <Box className="field-type-group" key={fieldKey}>
               <Typography
                 component="p"
@@ -121,11 +124,7 @@ export const RepeaterFieldsSelection = ({
                 mb={1.5}
                 color="text.secondary"
               >
-                {fieldKey === "options"
-                  ? "Advanced"
-                  : fieldKey === "dateandtime"
-                  ? "Date & Time"
-                  : fieldKey}
+                {GROUP_LABELS[fieldKey] ?? fieldKey}
               </Typography>
               <Box
                 display="grid"
