@@ -33,6 +33,9 @@ import { FieldTypeColor } from "../FieldTypeColor";
 import { FieldTypeNumber } from "../FieldTypeNumber";
 import { FieldTypeCurrency } from "../FieldTypeCurrency";
 import { FieldTypeSort } from "../FieldTypeSort";
+import { FieldTypeDate } from "../FieldTypeDate";
+import { FieldTypeDateTime } from "../FieldTypeDateTime";
+import { format } from "date-fns";
 
 type SubFieldProps = {
   value: any;
@@ -520,6 +523,38 @@ export const SubField = memo(
               value={value?.toString() || "0"}
               onChange={(evt) => {
                 onChange(parseInt(evt.target.value) || 0, field?.name);
+              }}
+              error={hasError}
+            />
+          </FieldShell>
+        );
+        break;
+
+      case "date":
+        content = (
+          <FieldShell settings={field} errors={errors} withComment={false}>
+            <FieldTypeDate
+              name={field.name}
+              required={field.required}
+              value={value ? new Date((value as string) + "T00:00:00") : null}
+              onChange={(date) => {
+                onChange(date ? format(date, "yyyy-MM-dd") : null, field.name);
+              }}
+              error={hasError}
+            />
+          </FieldShell>
+        );
+        break;
+
+      case "datetime":
+        content = (
+          <FieldShell settings={field} errors={errors} withComment={false}>
+            <FieldTypeDateTime
+              name={field.name}
+              required={field.required}
+              value={(value as string) ?? null}
+              onChange={(datetime) => {
+                onChange(datetime, field.name);
               }}
               error={hasError}
             />
