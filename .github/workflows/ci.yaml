@@ -108,6 +108,21 @@ jobs:
         if: ${{ failure() }}
         run: ./ci/scripts/upload_debug_screenshots_to_gcp.sh
 
+  # Aggregates all matrix runner results into a single status check.
+  # Branch protection should require this job, not run_tests, because matrix jobs
+  # produce individual checks (run_tests (0), run_tests (1), …) — never a single run_tests check.
+  all_tests_passed:
+    needs: run_tests
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Check matrix results
+        run: |
+          if [ "${{ needs.run_tests.result }}" != "success" ]; then
+            echo "One or more test runners failed or were cancelled"
+            exit 1
+          fi
+
   # Merges partial timings.json from each runner into a single file and uploads it as an artifact.
   # Download the artifact after CI runs and commit timings.json to the repo to enable
   # runtime-based spec distribution on subsequent runs.
