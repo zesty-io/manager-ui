@@ -514,6 +514,41 @@ describe("Schema: Fields", () => {
     cy.getBySelector(SELECTORS.ADD_FIELD_MODAL_CLOSE).should("exist").click();
   });
 
+  it("Blocks field creation when description exceeds 500 characters", () => {
+    const longDescription = "a".repeat(501);
+
+    // Open the add field modal
+    cy.getBySelector(SELECTORS.ADD_FIELD_BTN)
+      .should("exist")
+      .click({ force: true });
+    cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("exist");
+
+    // Select Repeater field
+    cy.getBySelector("FieldItem_repeater").should("exist").click();
+
+    // Fill in a valid label
+    cy.getBySelector(SELECTORS.INPUT_LABEL).should("exist").type("Test Field");
+
+    // Type a description that exceeds the 500 character limit
+    cy.get("textarea[name='description']").type(longDescription);
+
+    // Attempt to submit
+    cy.getBySelector(SELECTORS.SAVE_FIELD_BUTTON).should("exist").click();
+
+    // Inline error should appear and modal should remain open
+    cy.getBySelector("ErrorMsg_description")
+      .should("exist")
+      .and("contain", "Shorten to less than 500 characters");
+    cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("exist");
+
+    // Fix the description — error should clear and submission should succeed
+    cy.get("textarea[name='description']").clear().type("A valid description.");
+    cy.getBySelector("ErrorMsg_description").should("not.exist");
+
+    cy.getBySelector(SELECTORS.SAVE_FIELD_BUTTON).click();
+    cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("not.exist");
+  });
+
   it("Opens Add Field Modal via end of list button", () => {
     // Click end of list button
     cy.getBySelector(SELECTORS.ADD_FIELD_BTN_END_OF_LIST)
