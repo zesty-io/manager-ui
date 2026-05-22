@@ -524,6 +524,7 @@ const CreateForm: FC<CreateFormProps> = ({
         }}
       >
         <Button
+          data-cy="RedirectsFormCancelButton"
           size="medium"
           variant="outlined"
           color="inherit"
