@@ -90,6 +90,7 @@ type FieldProps = {
   errors: Error;
   maxLength: number;
   minLength: number;
+  compact?: boolean;
 };
 
 export const Field = memo(
@@ -111,6 +112,7 @@ export const Field = memo(
     maxLength,
     minLength,
     version,
+    compact = false,
   }: FieldProps) => {
     const dispatch = useDispatch();
     const { data: fields } = useGetContentModelFieldsQuery({
@@ -374,7 +376,7 @@ export const Field = memo(
               onChange={(e) => onLocalChange(e.target.value)}
               fullWidth
               multiline
-              rows={6}
+              rows={compact ? 4 : 6}
               inputProps={{
                 "data-cy": `EditorField-${fieldData?.name || name}`,
               }}
@@ -420,6 +422,7 @@ export const Field = memo(
                 error={
                   errors && Object.values(errors)?.some((error) => !!error)
                 }
+                compact={compact}
               />
             </AIFieldShell>
             {imageModal && renderMediaModal()}
