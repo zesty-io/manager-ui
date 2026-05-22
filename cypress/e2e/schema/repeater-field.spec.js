@@ -12,27 +12,16 @@ describe("Schema: Repeater Field", () => {
       .then(($els) => [...$els].map((el) => el.getAttribute("data-cy")));
 
   before(() => {
-    cy.waitOn(
-      "/v1/content/models/6-ce80dbfe90-ptjpm6/fields?showDeleted=true",
-      () => {
-        cy.waitOn("/bin/1-6c9618c-r26pt/groups", () => {
-          cy.waitOn("/v1/content/models", () => {
-            cy.visit("/schema/6-ce80dbfe90-ptjpm6/fields");
+    cy.visit("/schema/6-ce80dbfe90-ptjpm6/fields");
+    // Page may load from IndexedDB cache — wait for UI instead of network
+    cy.getBySelector("create_new_content_item").should("exist").click();
 
-            cy.getBySelector("create_new_content_item").click();
-
-            cy.contains("Multi Page Model").click();
-            cy.contains("Next").click();
-            cy.contains("Display Name").next().type(modelName);
-            cy.get(".MuiDialog-container").within(() => {
-              cy.contains("Create Model").click();
-            });
-            cy.intercept("POST", "/models");
-            cy.intercept("GET", "/models");
-          });
-        });
-      }
-    );
+    cy.contains("Multi Page Model").click();
+    cy.contains("Next").click();
+    cy.contains("Display Name").next().type(modelName);
+    cy.get(".MuiDialog-container").within(() => {
+      cy.contains("Create Model").click();
+    });
   });
 
   it("Creates a new repeater field", () => {

@@ -92,7 +92,7 @@ Pull Cypress Screenshots
 
 ### CI Parallelization
 
-CI runs 4 parallel jobs using [cypress-split](https://github.com/bahmutov/cypress-split). Specs are distributed automatically across runners — no manual assignment needed. To scale up or down, update both the matrix array and `SPLIT` value in `.github/workflows/ci.yaml`.
+CI runs 5 parallel jobs using [cypress-split](https://github.com/bahmutov/cypress-split). Runners 0–3 split the general spec pool automatically using `SPLIT=4`. Runner 4 is dedicated to publish-related specs to prevent cross-runner interference — see `.github/workflows/ci.yaml` for details. To add more general runners, increment the matrix array and `SPLIT` together.
 
 #### Spec timing distribution
 
