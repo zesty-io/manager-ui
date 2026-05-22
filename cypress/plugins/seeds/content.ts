@@ -1,5 +1,6 @@
 import { readFileSync } from "fs";
 import { join } from "path";
+import { v4 as uuidv4 } from "uuid";
 
 import {
   ContentItem,
@@ -25,7 +26,7 @@ module.exports = function content(config) {
     const json = JSON.parse(jsonString);
 
     const sdk = await getSDK(config);
-    const timeStamp = Date.now();
+    const timeStamp = uuidv4();
 
     // 1) Create Schema
     // Append commit id for spec tracking
@@ -37,8 +38,20 @@ module.exports = function content(config) {
       metaTitle: modelLabel,
       name: formatName(modelLabel),
     };
-    const modelResponse = await sdk.instance.createModel(modelPayload);
-    const model = modelResponse?.data;
+    // Retry up to 3 times — createModel can return null data under API load
+    let model = null;
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      const modelResponse = await sdk.instance.createModel(modelPayload);
+      model = modelResponse?.data;
+      if (model?.ZUID) break;
+      // API can be slow under parallel runner load — wait longer each attempt
+      if (attempt < 3) await new Promise((r) => setTimeout(r, 2000 * attempt));
+    }
+    if (!model?.ZUID) {
+      throw new Error(
+        `seed:content failed to create model after 3 attempts: "${modelPayload.label}"`
+      );
+    }
 
     // 2) Create Fields
     const fields = await Promise.all(

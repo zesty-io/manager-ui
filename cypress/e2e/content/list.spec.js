@@ -6,12 +6,14 @@ describe("Content List Filters", () => {
         Cypress.env("modelZUID", model?.ZUID);
         Cypress.env("itemZUID", items[0]?.meta?.ZUID);
         contentItems = items;
+        // Visit inside .then() so model ZUID is available before the URL is built
+        cy.visit(`/content/${model?.ZUID}`);
       }
     );
-
-    cy.waitOn("/v1/content/models*", () => {
-      cy.visit(`/content/${Cypress.env("modelZUID")}`);
-    });
+    // Content may load from IndexedDB cache — wait for rows to be interactive
+    cy.getBySelector("listItemTable")
+      .find('[data-cy="itemListRow"]')
+      .should("have.length.greaterThan", 0);
   });
 
   it("Filters list items based on search term", () => {
@@ -70,11 +72,11 @@ describe("Content List Filters", () => {
 
 describe("Content List Navigation", () => {
   before(() => {
-    cy.waitOn("/v1/content/models*", () => {
-      cy.waitOn("/bin/*", () => {
-        cy.visit(`/content/${Cypress.env("modelZUID")}`);
-      });
-    });
+    cy.visit(`/content/${Cypress.env("modelZUID")}`);
+    // Content may load from IndexedDB cache — wait for UI instead of network
+    cy.getBySelector("listItemTable")
+      .find('[data-cy="itemListRow"]')
+      .should("have.length.greaterThan", 0);
   });
 
   it("Opens the content item on click", () => {
@@ -97,11 +99,10 @@ describe("Content List Navigation", () => {
   });
 
   it("Navigates to edit the template page", () => {
-    cy.waitOn("/v1/content/models*", () => {
-      cy.waitOn("/bin/*", () => {
-        cy.visit(`/content/${Cypress.env("modelZUID")}`);
-      });
-    });
+    cy.visit(`/content/${Cypress.env("modelZUID")}`);
+    cy.getBySelector("listItemTable")
+      .find('[data-cy="itemListRow"]')
+      .should("have.length.greaterThan", 0);
 
     cy.getBySelector("MultiPageTableMoreMenu").click();
     cy.getBySelector("EditTemplateNavButton").click();
@@ -111,9 +112,11 @@ describe("Content List Navigation", () => {
 
 describe("Content List Actions", () => {
   before(() => {
-    cy.waitOn("/v1/content/models*", () => {
-      cy.visit(`/content/${Cypress.env("modelZUID")}`);
-    });
+    cy.visit(`/content/${Cypress.env("modelZUID")}`);
+    // Content may load from IndexedDB cache — wait for UI instead of network
+    cy.getBySelector("listItemTable")
+      .find('[data-cy="itemListRow"]')
+      .should("have.length.greaterThan", 0);
   });
 
   it("Saves bulk edits", () => {
