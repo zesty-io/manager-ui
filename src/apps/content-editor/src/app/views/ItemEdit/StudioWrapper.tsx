@@ -1068,6 +1068,7 @@ export const StudioWrapper = () => {
         fieldErrors={fieldErrors}
         isLoadingItem={isSelectedItemLoading}
         visibleFieldName={filteredFieldName || undefined}
+        compact={true}
       />
       {filteredFieldName ? (
         <Button

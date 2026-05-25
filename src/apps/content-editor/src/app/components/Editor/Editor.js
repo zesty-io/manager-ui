@@ -3,14 +3,12 @@ import { useDispatch } from "react-redux";
 import { AppLink } from "shell/components/AppLink";
 import { unescape } from "lodash";
 import { Field } from "./Field";
-import { useTheme } from "@mui/material";
 import styles from "./Editor.less";
 import { cloneDeep, isEqual } from "lodash";
 import { useGetContentModelFieldsQuery } from "../../../../../../shell/services/instance";
 import { DYNAMIC_META_FIELD_NAMES } from "../../views/ItemEdit/Meta";
 import { FieldsLoader } from "./FieldsLoader";
 import { UsedBlocks } from "../UsedBlocks";
-import { useContainerQuery } from "shell/hooks/useContainerQuery";
 
 export const MaxLengths = {
   text: 150,
@@ -35,11 +33,8 @@ export default memo(function Editor({
   fieldErrors,
   isLoadingItem,
   visibleFieldName,
+  compact = false,
 }) {
-  const theme = useTheme();
-  const { ref: containerRef, matches: isSmall } = useContainerQuery(
-    theme.breakpoints.down("sm")
-  );
   const dispatch = useDispatch();
   const isNewItem = itemZUID.slice(0, 3) === "new";
   const { data: fields, isFetching: isFetchingFields } =
@@ -410,7 +405,7 @@ export default memo(function Editor({
   if (!isLoaded) return null;
 
   return (
-    <div ref={containerRef} className={styles.Fields}>
+    <div className={styles.Fields}>
       {renderedFields?.map((field) => {
         return (
           <div
@@ -442,7 +437,7 @@ export default memo(function Editor({
                 field.settings?.maxCharLimit ?? MaxLengths[field.datatype]
               }
               minLength={field.settings?.minCharLimit ?? 0}
-              compact={isSmall}
+              compact={compact}
             />
           </div>
         );

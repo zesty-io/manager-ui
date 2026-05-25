@@ -902,6 +902,7 @@ export const MediaItem = ({
                     enterDelay={800}
                   >
                     <IconButton
+                      data-cy="mediaItemMenuButton"
                       size="small"
                       onClick={(event: any) => {
                         event.stopPropagation();

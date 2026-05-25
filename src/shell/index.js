@@ -113,6 +113,10 @@ const appTheme = createTheme(theme, {
             backgroundColor: theme.palette.grey[300],
             borderRadius: "4px",
           },
+          // Ensure TinyMCE popups appear above the fullscreen editor
+          "&.tox-fullscreen .tox.tox-tinymce-aux": {
+            zIndex: theme.zIndex.modal + 1,
+          },
         },
       }),
     },
