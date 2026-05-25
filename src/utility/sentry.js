@@ -85,6 +85,7 @@ if (["stage", "production"].includes(__CONFIG__?.ENV)) {
         if (!isIgnoredEndpoint) {
           return true;
         }
+
         if (seenEndpoints.has(description)) {
           return false;
         }
