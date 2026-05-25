@@ -26,6 +26,7 @@ import {
   MoreHorizRounded,
   UploadRounded,
   AddRounded,
+  AddCircleRounded,
   DriveFileRenameOutlineRounded,
   WidgetsRounded,
   CheckRounded,
@@ -412,7 +413,7 @@ export const FieldTypeMedia = forwardRef(
                   <Stack direction="row" gap={1}>
                     <Button
                       size="small"
-                      variant="outlined"
+                      variant="text"
                       onClick={open}
                       startIcon={<UploadRounded />}
                     >
@@ -421,14 +422,14 @@ export const FieldTypeMedia = forwardRef(
                     <Button
                       data-cy="selectFromMediaButton"
                       size="small"
-                      variant="outlined"
+                      variant="text"
                       onClick={() => {
                         openMediaBrowser({
                           limit,
                           callback: addZestyImage,
                         });
                       }}
-                      startIcon={<AddRounded />}
+                      startIcon={<AddCircleRounded />}
                     >
                       Add from Media
                     </Button>
