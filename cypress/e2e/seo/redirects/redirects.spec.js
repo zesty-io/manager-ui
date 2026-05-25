@@ -129,7 +129,6 @@ describe("Redirects", () => {
       );
     });
     it("External", () => {
-      cy.visit("/redirects");
       cy.getElement('[data-cy="RedirectActionCreateButton"]').click();
 
       cy.getElement('[data-cy="RedirectsFieldPath"]:eq(0) input').type(
@@ -159,7 +158,6 @@ describe("Redirects", () => {
     });
 
     it("Wildcard", () => {
-      cy.visit("/redirects");
       cy.getElement('[data-cy="RedirectActionCreateButton"]').click();
 
       cy.getElement('[data-cy="RedirectsFieldPath"]:eq(0) input').type(
@@ -194,7 +192,6 @@ describe("Redirects", () => {
 
   describe("Create another Redirects Clicked", () => {
     it("Success", () => {
-      cy.visit("/redirects");
       cy.getElement('[data-cy="RedirectActionCreateButton"]').click();
 
       cy.getElement('[data-cy="RedirectsFieldPath"]:eq(0) input').type(
@@ -227,12 +224,13 @@ describe("Redirects", () => {
       cy.getElement('[data-cy="RedirectsSearchFieldInput"] input').should(
         "be.empty"
       );
+
+      cy.getBySelector("RedirectsFormCancelButton").click();
     });
   });
 
   describe("Create Redirect Errors", () => {
     it("Error Dialog", () => {
-      cy.visit("/redirects");
       cy.getElement('[data-cy="RedirectActionCreateButton"]').click();
       cy.getElement('[data-cy="RedirectsFormDialogAddPathButton"]').click();
       cy.getElement('[data-cy="RedirectsFormDialogAddPathButton"]').click();
@@ -290,7 +288,6 @@ describe("Redirects", () => {
     });
 
     it("Invalid URL", () => {
-      cy.visit("/redirects");
       cy.getElement('[data-cy="RedirectActionCreateButton"]').click();
       cy.getElement('[data-cy="RedirectsTypeSelector"]').click();
       cy.contains(REDIRECT_TYPE_LABELS.external, {
@@ -304,13 +301,13 @@ describe("Redirects", () => {
         TARGET_PATH_ERRORS.invalidUrl,
         { matchCase: false }
       );
+
+      cy.getBySelector("RedirectsFormCancelButton").click();
     });
   });
 
   describe("Update Redirect", () => {
     it("Success", () => {
-      cy.visit("/redirects");
-
       cy.getElement(".MuiDataGrid-cell")
         .contains(`/${TEST_REDIRECTS_DATA[0]?.path}`, { matchCase: false })
         .parents(".MuiDataGrid-row")
@@ -383,8 +380,8 @@ describe("Redirects", () => {
       );
     });
     it("Single Selection", () => {
-      cy.visit("/redirects");
-      cy.wait(5000); // Need to add an arbitrary wait for the grid api ref to be set
+      // grid is already loaded and refreshed from the previous test
+      cy.getElement(".MuiDataGrid-row").should("have.length.greaterThan", 0);
       cy.getElement(".MuiDataGrid-cell")
         .contains(`/${TEST_DELETE_DATA[1]?.path}`, { matchCase: false })
         .parents(".MuiDataGrid-row")
@@ -398,7 +395,7 @@ describe("Redirects", () => {
         { matchCase: false }
       );
 
-      cy.intercept("/v1/web/redirects/*", "DELETE").as("deleteRedirect");
+      cy.intercept("DELETE", "/v1/web/redirects/*").as("deleteRedirect");
       cy.intercept("/v1/web/redirects").as("getRedirects");
       cy.getElement('[data-cy="DeleteContentItemConfirmButton"]').click();
       cy.wait(["@deleteRedirect", "@getRedirects"]);
@@ -408,11 +405,13 @@ describe("Redirects", () => {
         "1 Redirect Deleted",
         { matchCase: false }
       );
+      cy.getElement(".MuiDataGrid-cell")
+        .contains(`/${TEST_DELETE_DATA[1]?.path}`, { matchCase: false })
+        .should("not.exist");
     });
 
     it("Multiple", () => {
-      cy.visit("/redirects");
-      cy.wait(5000); // Need to add an arbitrary wait for the grid api ref to be set
+      cy.getElement(".MuiDataGrid-row").should("have.length.greaterThan", 0);
       cy.getElement(".MuiDataGrid-cell")
         .contains(`/${TEST_DELETE_DATA[2]?.path}`, { matchCase: false })
         .parents(".MuiDataGrid-row")
@@ -439,7 +438,7 @@ describe("Redirects", () => {
         { matchCase: false }
       );
 
-      cy.intercept("/v1/web/redirects/*", "DELETE").as("deleteRedirect");
+      cy.intercept("DELETE", "/v1/web/redirects/*").as("deleteRedirect");
       cy.intercept("/v1/web/redirects").as("getRedirects");
       cy.getElement('[data-cy="DeleteContentItemConfirmButton"]').click();
       cy.wait(["@deleteRedirect", "@getRedirects"]);

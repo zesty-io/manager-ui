@@ -22,12 +22,14 @@ import {
   AddRounded,
 } from "@mui/icons-material";
 
-import { FormWrapper, FieldWrapper } from "../components/Wrappers";
-import { DISPLAY_OPTIONS_CONFIG, ConfigProps } from "../configs";
+import { FormWrapper } from "../Shared/FormWrapper";
+import { FieldWrapper } from "../Shared/FieldWrapper";
+import { DISPLAY_OPTIONS_CONFIG } from "../constants";
+import { ConfigProps } from "../types";
 import { getKeyValue } from "../utils";
 import { IntegrationKeyPaths, IntegrationTypes } from "../../../services/types";
 import KeyPathSelector from "./KeyPathSelector";
-import DisplayCard from "../components/DisplayCard";
+import DisplayCard from "../Shared/DisplayCard";
 
 const getObjectKeyPaths = <T extends object>(obj: T, prefix = ""): string[] => {
   const result: string[] = [];

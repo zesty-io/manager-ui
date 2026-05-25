@@ -48,7 +48,6 @@ describe("Single Page Analytics", () => {
       .find("span")
       .invoke("text")
       .should("be.oneOf", ["Andres Galindo", "Lunar Jay  Cuenca"]);
-    cy.wait(1000);
     cy.get("body").type("{esc}");
   });
   it("Applies selected date filter to url params", () => {

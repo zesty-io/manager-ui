@@ -103,6 +103,9 @@ export const FieldFormProvider = ({
           formFields.options = options as any;
         } else if (field.name === "tooltip") {
           formFields["tooltip"] = fieldData.settings?.tooltip || "";
+        } else if (field.name === "integrationFieldConfig") {
+          formFields["integrationFieldConfig"] =
+            fieldData.settings?.integrationFieldConfig;
         } else if (field.name === "defaultValue") {
           formFields["defaultValue"] =
             type === "number"

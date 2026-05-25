@@ -8,8 +8,8 @@ import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import IconButton from "@mui/material/IconButton";
 
 import { IntegrationTypes } from "../../../services/types";
-import { GENERIC_DISPLAY_TYPES, SPECIAL_DISPLAY_TYPES } from "../configs";
-import { FormWrapper } from "../components/Wrappers";
+import { GENERIC_DISPLAY_TYPES, SPECIAL_DISPLAY_TYPES } from "../constants";
+import { FormWrapper } from "../Shared/FormWrapper";
 import DisplayOption from "./DisplayOption";
 
 type SelectDisplayOptionsProps = {

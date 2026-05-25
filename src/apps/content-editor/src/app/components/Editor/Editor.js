@@ -441,7 +441,6 @@ export default memo(function Editor({
           </div>
         );
       })}
-      {model.type !== "block" && <UsedBlocks />}
     </div>
   );
 });

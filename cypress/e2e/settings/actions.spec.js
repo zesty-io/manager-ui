@@ -2,9 +2,9 @@ describe("Settings Actions", () => {
   const SAVED_MESSAGE = "Settings Saved";
 
   before(() => {
-    cy.waitOn("**/settings", () => {
-      cy.visit("/settings");
-    });
+    cy.visit("/settings");
+    // Settings may load from IndexedDB cache — wait for UI instead of network
+    cy.getBySelector("SettingsNav").should("exist");
   });
 
   it("Body Colors & Spacing", () => {

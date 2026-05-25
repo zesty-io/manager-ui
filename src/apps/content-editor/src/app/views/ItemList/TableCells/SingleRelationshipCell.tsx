@@ -11,9 +11,10 @@ export const SingleRelationshipCell = ({
   params: GridRenderCellParams;
 }) => {
   const dispatch = useDispatch();
+
   useEffect(() => {
     // If value starts with '7-', that means it was unable to find the item in the store so we need to fetch it
-    if (params.value?.startsWith("7-")) {
+    if (typeof params.value === "string" && params.value?.startsWith("7-")) {
       dispatch(searchItems(params.value));
     }
   }, [params.value, dispatch]);

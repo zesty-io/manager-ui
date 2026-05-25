@@ -6,18 +6,10 @@ describe("Schema: Activity Log Tab", () => {
   it("Sets default date url params", () => {
     cy.visit("/schema/6-ce80dbfe90-ptjpm6/activity-log");
 
-    cy.wait(3000);
-
     cy.location("search").should("equal", `?from=2023-02-15&to=${now}`);
   });
 
   it("Displays filters as url params", () => {
-    cy.waitOn("/v1/env/audits*", () => {
-      cy.visit(
-        `/schema/6-ce80dbfe90-ptjpm6/activity-log?from=2023-02-15&to=${now}`
-      );
-    });
-
     // Set action type filter
     cy.getBySelector("action_default").should("exist").click();
     cy.getBySelector("filter_value_1").should("exist").click();

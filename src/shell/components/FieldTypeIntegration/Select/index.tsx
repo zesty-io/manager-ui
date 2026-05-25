@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Box, Button } from "@mui/material";
-import { ApiDataProps, ApiDataWithIdProps } from "../configs";
+import { ApiDataProps, ApiDataWithIdProps } from "../types";
 import {
   IntegrationFieldConfig,
   IntegrationKeyPaths,

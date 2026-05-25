@@ -34,8 +34,6 @@ describe("Media Folders", () => {
 
     cy.contains("Hide", options).should("be.visible").click(forceClick);
 
-    cy.wait(500);
-
     // Non hidden tree
     cy.get(".MuiTreeItem-root", options)
       .first()
@@ -49,8 +47,6 @@ describe("Media Folders", () => {
     cy.get("[aria-label='Open folder menu']").click();
 
     cy.contains("Show", options).click();
-
-    cy.wait(500);
 
     // Non hidden tree
     cy.get(".MuiTreeItem-root", options)
@@ -79,7 +75,6 @@ describe("Media Folders", () => {
       cy.contains("New Folder Name", options)
         .next()
         .clear()
-        .wait(500)
         .type("CYPRESS TEST NEW FOLDER EDITED");
       cy.contains("Update").click();
     });

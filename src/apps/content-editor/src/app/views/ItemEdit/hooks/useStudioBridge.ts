@@ -27,27 +27,27 @@ const bridgeInjectedCss = `
   .studio-dragging * {
     visibility: hidden !important;
   }
-  .studio-drop-before {
+  [data-layout-id].studio-drop-before {
     box-shadow:
       inset 0 4px 0 #ff9800,
       0 0 0 1px rgba(255, 152, 0, 0.35);
   }
-  .studio-drop-before-horizontal {
+  [data-layout-id].studio-drop-before-horizontal {
     box-shadow:
       inset 4px 0 0 #ff9800,
       0 0 0 1px rgba(255, 152, 0, 0.35);
   }
-  .studio-drop-after {
+  [data-layout-id].studio-drop-after {
     box-shadow:
       inset 0 -4px 0 #ff9800,
       0 0 0 1px rgba(255, 152, 0, 0.35);
   }
-  .studio-drop-after-horizontal {
+  [data-layout-id].studio-drop-after-horizontal {
     box-shadow:
       inset -4px 0 0 #ff9800,
       0 0 0 1px rgba(255, 152, 0, 0.35);
   }
-  .studio-drop-inside {
+  [data-layout-id].studio-drop-inside {
     background-color: rgba(255, 152, 0, 0.18);
     outline: 2px dashed #ff9800;
     outline-offset: 2px;

@@ -1,6 +1,8 @@
 describe("Code Editor Sidebar", () => {
   before(() => {
-    cy.visit("/code");
+    cy.waitOn("/v1/web/views*", () => {
+      cy.visit("/code");
+    });
   });
 
   it("can navigate code files in the sidebar", () => {

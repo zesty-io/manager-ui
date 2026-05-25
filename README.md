@@ -90,6 +90,24 @@ Open a second terminal `npm run start:test`
 Pull Cypress Screenshots
 `npm run ci:pull:screenshots`
 
+### CI Parallelization
+
+CI runs 5 parallel jobs using [cypress-split](https://github.com/bahmutov/cypress-split). Runners 0–3 split the general spec pool automatically using `SPLIT=4`. Runner 4 is dedicated to publish-related specs to prevent cross-runner interference — see `.github/workflows/ci.yaml` for details. To add more general runners, increment the matrix array and `SPLIT` together.
+
+#### Spec timing distribution
+
+A `timings.json` file at the repo root enables runtime-based spec distribution so runners finish at roughly the same time. It is generated automatically during CI runs and needs to be committed manually.
+
+To regenerate it:
+
+1. Open a PR and let CI run
+2. Download the `merged-timings` artifact from the Actions tab
+3. Extract and commit `timings.json` to the repo root
+
+If `timings.json` does not exist, cypress-split falls back to distributing by spec count with no errors.
+
+**When to update `timings.json`:** Refresh it whenever you notice runners finishing at significantly different times — typically after adding several new specs or after a large refactor of existing ones. A periodic refresh every 1–2 months is a reasonable cadence to keep distribution accurate.
+
 ---
 
 ## Connect Manager-ui to Material Design System

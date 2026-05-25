@@ -1,5 +1,5 @@
 import { IntegrationKeyPaths } from "shell/services/types";
-import { ApiDataProps } from "./configs";
+import { ApiDataProps } from "./types";
 
 export function getKeyValue<T, K extends string>(obj: T, path: K): any {
   if (!obj || !path) return undefined;

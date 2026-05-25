@@ -41,6 +41,7 @@ const SUB_MENUS: SubMenu[] = [
     name: "All Files",
     icon: FileCopyIcon,
     path: "/code",
+    dataCy: "codeNavAllFiles",
   },
 ];
 

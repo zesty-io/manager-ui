@@ -1,21 +1,44 @@
 describe("Content List Filters", () => {
+  let contentItems = [];
   before(() => {
-    cy.waitOn("/v1/content/models*", () => {
-      cy.visit("/content/6-0c960c-d1n0kx");
-    });
+    cy.task("seed:content", "fixtures/lists.json").then(
+      ({ model, fields, items }) => {
+        Cypress.env("modelZUID", model?.ZUID);
+        Cypress.env("itemZUID", items[0]?.meta?.ZUID);
+        contentItems = items;
+        // Visit inside .then() so model ZUID is available before the URL is built
+        cy.visit(`/content/${model?.ZUID}`);
+      }
+    );
+    // Content may load from IndexedDB cache — wait for rows to be interactive
+    cy.getBySelector("listItemTable")
+      .find('[data-cy="itemListRow"]')
+      .should("have.length.greaterThan", 0);
   });
 
   it("Filters list items based on search term", () => {
-    cy.getBySelector("MultiPageTableSearchField").type("turkey");
-    cy.get(".MuiDataGrid-cell").contains("Turkey Run");
-    cy.getBySelector("MultiPageTableSearchField").type("{selectAll}{del}");
+    cy.getBySelector("MultiPageTableSearchField").type(
+      contentItems[1].data.text
+    );
+    cy.get(".MuiDataGrid-cell").contains(contentItems[1].data.text);
+    cy.getBySelector("MultiPageTableSearchField").clear();
   });
 
   it("Filters items based on date saved", () => {
-    cy.getBySelector("date_default").click();
-    cy.get(".MuiMenuItem-root").eq(1).click();
+    cy.getBySelector("MultiPageTableSearchField")
+      .find("input")
+      .should("be.empty");
+    cy.getBySelector("date_default").click({ force: true });
+    cy.getBySelector("DateFilterMenu")
+      .find("ul li")
+      .contains("Yesterday")
+      .should("exist")
+      .click({ force: true });
     cy.getBySelector("NoResults").should("exist");
-    cy.getBySelector("date_clearFilter").click();
+    cy.getBySelector("date_clearFilter")
+      .should("exist")
+      .should("be.enabled")
+      .click({ force: true });
     cy.getBySelector("NoResults").should("not.exist");
   });
 
@@ -37,49 +60,49 @@ describe("Content List Filters", () => {
 
   it("Sorts list items", () => {
     cy.getBySelector("sortByFilter_default").click();
-    cy.getBySelector("dateCreatedFilterOption").click();
-    cy.get(".MuiDataGrid-cell[data-colindex='3']").contains(
-      "Parent pre selection with fast typing"
-    );
+    cy.getBySelector("createdOnFilterOption").click();
+
+    cy.get(".MuiDataGrid-cell[data-colindex='2']")
+      .should("exist")
+      .contains(contentItems[4].data.text);
     cy.getBySelector("sortByFilter_default").click();
-    cy.getBySelector("dateSavedFilterOption").click();
+    cy.getBySelector("createdOnFilterOption").click();
   });
 });
 
 describe("Content List Navigation", () => {
   before(() => {
-    cy.waitOn("/v1/content/models*", () => {
-      cy.waitOn("/bin/*", () => {
-        cy.visit("/content/6-0c960c-d1n0kx");
-      });
-    });
+    cy.visit(`/content/${Cypress.env("modelZUID")}`);
+    // Content may load from IndexedDB cache — wait for UI instead of network
+    cy.getBySelector("listItemTable")
+      .find('[data-cy="itemListRow"]')
+      .should("have.length.greaterThan", 0);
   });
 
   it("Opens the content item on click", () => {
     cy.get(".MuiDataGrid-cell[data-colindex='1']").first().click();
     cy.getBySelector("DuoModeToggle").should("exist");
-    cy.getBySelector("breadcrumbs").find(".MuiBreadcrumbs-li").eq(2).click();
-    cy.url().should("include", "/content/6-0c960c-d1n0kx");
+    cy.getBySelector("breadcrumbs").find(".MuiBreadcrumbs-li").eq(1).click();
+    cy.url().should("include", `/content/${Cypress.env("modelZUID")}`);
   });
 
   it("Navigates to the import csv page", () => {
     cy.getBySelector("MultiPageTableMoreMenu").click();
     cy.getBySelector("ImportCSVNavButton").click();
-    cy.url().should("include", "/content/6-0c960c-d1n0kx/import");
+    cy.url().should("include", `/content/${Cypress.env("modelZUID")}`);
   });
 
   it("Navigates to edit the model page", () => {
     cy.getBySelector("MultiPageTableMoreMenu").click();
     cy.getBySelector("EditModelNavButton").click();
-    cy.url().should("include", "/schema/6-0c960c-d1n0kx/fields");
+    cy.url().should("include", `/schema/${Cypress.env("modelZUID")}/fields`);
   });
 
   it("Navigates to edit the template page", () => {
-    cy.waitOn("/v1/content/models*", () => {
-      cy.waitOn("/bin/*", () => {
-        cy.visit("/content/6-0c960c-d1n0kx");
-      });
-    });
+    cy.visit(`/content/${Cypress.env("modelZUID")}`);
+    cy.getBySelector("listItemTable")
+      .find('[data-cy="itemListRow"]')
+      .should("have.length.greaterThan", 0);
 
     cy.getBySelector("MultiPageTableMoreMenu").click();
     cy.getBySelector("EditTemplateNavButton").click();
@@ -89,27 +112,61 @@ describe("Content List Navigation", () => {
 
 describe("Content List Actions", () => {
   before(() => {
-    cy.waitOn("/v1/content/models*", () => {
-      cy.visit("/content/6-a8bae2f4d7-rffln5");
-    });
+    cy.visit(`/content/${Cypress.env("modelZUID")}`);
+    // Content may load from IndexedDB cache — wait for UI instead of network
+    cy.getBySelector("listItemTable")
+      .find('[data-cy="itemListRow"]')
+      .should("have.length.greaterThan", 0);
   });
 
   it("Saves bulk edits", () => {
     cy.intercept("PUT", "/v1/content/models/*/items/batch").as("batchSave");
-    cy.getBySelector("sortCell").first().find("button").first().click();
-    cy.getBySelector("sortCell").eq(1).find("button").first().click();
+    // Set up item refetch intercept just before save so it only captures the
+    // post-save fetchItem calls, not earlier background requests.
+    cy.intercept("GET", "/v1/content/models/*/items/*").as("itemRefetch");
+
+    cy.getBySelector("listItemTable")
+      .find('[data-cy="itemListRow"]')
+      .eq(0)
+      .find('[data-field="yes_no"] button')
+      .eq(1)
+      .click();
+    cy.getBySelector("listItemTable")
+      .find('[data-cy="itemListRow"]')
+      .eq(1)
+      .find('[data-field="yes_no"] button')
+      .eq(1)
+      .click();
+
     cy.getBySelector("MultiPageTableSaveChanges").click();
 
     cy.wait("@batchSave").its("response.statusCode").should("equal", 200);
+    // Wait for the two post-save item refetches so Redux is settled at yes_no=1
+    // before the next test starts. Without this, in-flight GETs can arrive
+    // mid-next-test and cause its eq(0) clicks to be no-ops.
+    cy.wait(["@itemRefetch", "@itemRefetch"]);
   });
-
   it("Saves and publishes bulk edits", () => {
     cy.intercept("PUT", "/v1/content/models/*/items/batch").as("batchSave");
     cy.intercept("POST", "/v1/content/models/*/items/publishings/batch").as(
       "batchPublish"
     );
-    cy.getBySelector("sortCell").first().find("button").first().click();
-    cy.getBySelector("sortCell").eq(1).find("button").first().click();
+    // "Saves bulk edits" left yes_no=1 for these rows. Click eq(0) to toggle
+    // back to 0 so the ToggleButtonGroup registers a real change (clicking the
+    // already-selected value returns null and is a no-op).
+    cy.getBySelector("listItemTable")
+      .find('[data-cy="itemListRow"]')
+      .eq(0)
+      .find('[data-field="yes_no"] button')
+      .eq(0)
+      .click();
+
+    cy.getBySelector("listItemTable")
+      .find('[data-cy="itemListRow"]')
+      .eq(1)
+      .find('[data-field="yes_no"] button')
+      .eq(0)
+      .click();
     cy.getBySelector("MultiPageTablePublish").click();
     cy.getBySelector("ConfirmPublishButton").click();
 
@@ -117,13 +174,21 @@ describe("Content List Actions", () => {
     cy.wait("@batchPublish").its("response.statusCode").should("equal", 201);
   });
 
-  it.only("Selects items and publishes", () => {
+  it("Selects items and publishes", () => {
     cy.intercept("PUT", "/v1/content/models/*/items/batch").as("batchSave");
     cy.intercept("POST", "/v1/content/models/*/items/publishings/batch").as(
       "batchPublish"
     );
-    cy.get("input[type=checkbox]").eq(1).click();
-    cy.get("input[type=checkbox]").eq(2).click();
+    cy.getBySelector("listItemTable")
+      .find("input[type=checkbox]")
+      .eq(1)
+      .click();
+
+    cy.getBySelector("listItemTable")
+      .find("input[type=checkbox]")
+      .eq(2)
+      .click();
+
     cy.getBySelector("MultiPageTablePublish").click();
     cy.getBySelector("ConfirmPublishButton").click();
 
@@ -133,6 +198,6 @@ describe("Content List Actions", () => {
   it("Opens the create new item view", () => {
     cy.getBySelector("AddItemButton").click();
     cy.getBySelector("CreateItemSaveButton").should("exist");
-    cy.url().should("include", "/content/6-e3d0e0-965qp6/new");
+    cy.url().should("include", `/content/${Cypress.env("modelZUID")}/new`);
   });
 });

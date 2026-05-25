@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 import {
   Box,
   Button,
@@ -50,6 +50,7 @@ type DetailsProps = {
   isDeletingField?: boolean;
   isUndeletingField?: boolean;
   canDeactivate?: boolean;
+  repeaterFieldName?: string;
 };
 
 export const Details = ({
@@ -65,6 +66,7 @@ export const Details = ({
   isDeletingField,
   isUndeletingField,
   canDeactivate,
+  repeaterFieldName,
 }: DetailsProps) => {
   const { data: allModels, isLoading: isLoadingModels } =
     useGetContentModelsQuery();
@@ -208,6 +210,20 @@ export const Details = ({
           autocompleteConfig.maxHeight = 256;
         }
 
+        let startAdornment: React.ReactNode;
+
+        if (fieldConfig.name === "name" && repeaterFieldName) {
+          startAdornment = (
+            <Typography
+              variant="body2"
+              color="text.disabled"
+              sx={{ whiteSpace: "nowrap" }}
+            >
+              {repeaterFieldName}.
+            </Typography>
+          );
+        }
+
         return (
           <FieldFormInput
             key={index}
@@ -222,6 +238,7 @@ export const Details = ({
             autocompleteConfig={autocompleteConfig}
             integrationFieldConfig={integrationFieldConfig}
             isUpdateField={isUpdateField}
+            startAdornment={startAdornment}
           />
         );
       })}

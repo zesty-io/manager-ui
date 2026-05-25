@@ -1,7 +1,7 @@
 import { RefObject } from "react";
 import { Box, Typography, Autocomplete, Paper, TextField } from "@mui/material";
 
-import { COLOR_MAP } from "../configs";
+import { COLOR_MAP } from "../constants";
 import { getKeyValue } from "../utils";
 import { IntegrationTypes } from "../../../services/types";
 import { validateUrl } from "../utils";

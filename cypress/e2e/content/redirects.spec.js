@@ -200,7 +200,9 @@ describe("Content item redirects", () => {
       })
       .click();
 
+    cy.intercept("POST", "**/web/redirects").as("createContentRedirect");
     cy.getElement('[data-cy="RedirectContentItemConfirmButton"]').click();
+    cy.wait("@createContentRedirect");
 
     cy.getElement('[data-cy="ContentRedirectHeader"]').should(
       "contain",
@@ -219,8 +221,10 @@ describe("Content item redirects", () => {
   });
 
   it("Stop Content Item Redirect", () => {
+    cy.intercept("DELETE", "**/web/redirects/**").as("deleteContentRedirect");
     cy.getElement('[data-cy="RedirectContentItemButton"]').click();
     cy.getElement('[data-cy="StopRedirectContentItemConfirmButton"]').click();
+    cy.wait("@deleteContentRedirect");
 
     cy.getElement('[data-cy="toast"]').should("contain", "1 Redirect Deleted", {
       matchCase: false,

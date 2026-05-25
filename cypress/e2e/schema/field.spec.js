@@ -92,7 +92,6 @@ describe("Schema: Fields", () => {
   });
 
   it("Opens Add Field Modal via button click", () => {
-    cy.wait(3000);
     // Open the modal
     cy.getBySelector(SELECTORS.ADD_FIELD_BTN).should("exist").click();
     cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("exist");
@@ -336,11 +335,11 @@ describe("Schema: Fields", () => {
 
     cy.wait("@getFields");
 
-    cy.wait(3000);
-
     // Select a related field
     cy.getBySelector(SELECTORS.AUTOCOMPLETE_FIELED_ZUID)
       .should("exist")
+      .find("input")
+      .should("not.be.disabled")
       .click();
     cy.get("[role=listbox] [role=option]").first().click();
 

@@ -1,8 +1,8 @@
 describe("Release", () => {
   it("create release", () => {
     cy.visit("/release/create");
-    cy.intercept("/v1/releases").as("loadReleases");
-    cy.wait("@loadReleases");
+    // Releases may load from IndexedDB cache — wait for UI instead of network
+    cy.get("[data-cy=release-name]").should("exist");
 
     const timestamp = Date.now();
     const title = `Title - ${timestamp}`;
