@@ -715,12 +715,14 @@ describe("Content Specs", () => {
 
       cy.getBySelector("subfield:date")
         .find('[data-cy="datePickerInputField"] input')
+        .clear({ force: true })
         .type("Jan 15 2025")
-        .should("have.value", "Jan 15 2025");
+        .should("have.value", "Jan 15, 2025");
       cy.getBySelector("subfield:datetime")
         .find('[data-cy="datePickerInputField"] input')
+        .clear({ force: true })
         .type("Jan 15 2025")
-        .should("have.value", "Jan 15 2025");
+        .should("have.value", "Jan 15, 2025");
 
       cy.getBySelector("SaveRepeaterRowItemBtn").scrollIntoView().click();
       cy.getBySelector("field:repeater")
@@ -737,7 +739,7 @@ describe("Content Specs", () => {
 
       cy.getBySelector("subfield:date")
         .find('[data-cy="datePickerInputField"] input')
-        .should("not.have.value", "");
+        .should("have.value", "Jan 15, 2025");
 
       cy.getBySelector("subfield:datetime")
         .find('[data-cy="datePickerInputField"] input')
