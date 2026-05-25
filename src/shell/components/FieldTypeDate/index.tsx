@@ -178,7 +178,11 @@ export const FieldTypeDate = memo(
       return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <Stack direction="row" gap={0.5} alignItems="center">
-            <Box maxWidth={160} flexShrink={0}>
+            <Box
+              {...(compact
+                ? { flex: 1, minWidth: 0 }
+                : { maxWidth: 160, flexShrink: 0 })}
+            >
               <DatePicker
                 reduceAnimations
                 open={isOpen}

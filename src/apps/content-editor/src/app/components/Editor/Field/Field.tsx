@@ -376,7 +376,7 @@ export const Field = memo(
               onChange={(e) => onLocalChange(e.target.value)}
               fullWidth
               multiline
-              rows={compact ? 5 : 6}
+              rows={compact ? 4 : 6}
               inputProps={{
                 "data-cy": `EditorField-${fieldData?.name || name}`,
               }}
