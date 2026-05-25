@@ -69,17 +69,29 @@ if (["stage", "production"].includes(__CONFIG__?.ENV)) {
       return breadcrumb;
     },
     beforeSendTransaction(event) {
-      const isIgnoredN1 = event.spans?.some((span) => {
+      // Keep only the first span per ignored endpoint to suppress N+1 noise
+      // while still preserving one span so the call is visible in Sentry.
+      const seenEndpoints = new Set();
+
+      event.spans = event.spans?.filter((span) => {
         const { op, description } = spanToJSON(span);
-        return (
+
+        const isIgnoredEndpoint =
           op === "http.client" &&
           N1_IGNORED_ENDPOINTS.some((pattern) =>
             pattern.test(description ?? "")
-          )
-        );
-      });
+          );
 
-      if (isIgnoredN1) return null;
+        if (!isIgnoredEndpoint) {
+          return true;
+        }
+        if (seenEndpoints.has(description)) {
+          return false;
+        }
+
+        seenEndpoints.add(description);
+        return true;
+      });
 
       return event;
     },
