@@ -22,7 +22,7 @@
       "settings": {
         "maxValue": 2,
         "integrationFieldConfig": {
-          "endpoint": "https://8xbq19z1-dev.preview.stage.zesty.io/api/generic.json",
+          "endpoint": "https://example.invalid/generic.json",
           "headers": null,
           "type": "simple",
           "keyPaths": {
