@@ -165,9 +165,6 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
         "& .tox.tox-tinymce": {
           borderColor: error && "error.main",
         },
-        ".tox-fullscreen .tox.tox-tinymce-aux": {
-          zIndex: (theme) => theme.zIndex.modal + 1,
-        },
         "&:has(div.tox-fullscreen)": {
           backgroundColor: alpha(theme.palette.grey[900], 0.5),
           position: "fixed",
