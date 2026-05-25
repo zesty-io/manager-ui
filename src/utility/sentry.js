@@ -6,7 +6,7 @@ import history from "utility/history";
 const N1_IGNORED_ENDPOINTS = [
   /\/v1\/search\/items/,
   // This endpoint is currently added in the allow list but should ideally be updated to a batch api call
-  /accounts\.api\.zesty\.io\/v1\/instances\/[^/]+\/comments/,
+  /\/v1\/instances\/[^/]+\/comments/,
   /\/v1\/content\/models\/[^/]+\/items/,
 ];
 
