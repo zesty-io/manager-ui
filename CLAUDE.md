@@ -144,9 +144,15 @@ Custom commands (`cypress/support/commands.js`) — use these instead of hand-ro
 
 Fixtures (`cypress/fixtures/`) seed instance/content/model JSON. Don't hand-roll fixtures inline in specs.
 
-**Tests hit a real dev instance, not mocks.** `cypress/support/api.js` exposes seeding helpers — `cy.createModel`, `cy.deleteModel(s)`, `cy.createField`, `cy.createStatusLabel`, `cy.deleteStatusLabels` — that POST/DELETE against the dev API (`API_ENDPOINTS.devInstance`). Use them in `before` / `after` hooks and clean up everything you create; leaked records pollute later runs. Hardcoded ZUIDs in specs (e.g. `/content/6-0c960c-d1n0kx`) reference seed data on the configured instance — don't repoint specs at a different instance without re-seeding.
+**Tests hit a real dev instance, not mocks.** `cypress/support/api.js` exposes seeding helpers — `cy.createModel`, `cy.deleteModel(s)`, `cy.createField`, `cy.createStatusLabel`, `cy.deleteStatusLabels` — that POST/DELETE against the dev API (`API_ENDPOINTS.devInstance`). Use them in `before` / `after` hooks and clean up everything you create; leaked records pollute later runs within the same day. Hardcoded ZUIDs in specs (e.g. `/content/6-0c960c-d1n0kx`) reference seed data on the configured instance — don't repoint specs at a different instance without re-seeding.
 
-**`data-cy` is the only selector strategy.** Tests use `cy.getBySelector("Foo")` exclusively; class-based selectors, MUI class hooks, and text-matching for clicks are flake risks. New interactive controls (buttons, inputs, menu items, table rows) MUST expose a stable `data-cy="…"` attribute or they're effectively untestable.
+**The dev instance is synced nightly from prod.** Test data created during a run is wiped on the next nightly sync, so specs must not rely on data from a previous day's run still being present — always seed what you need in `before` hooks. Instance-level configuration (integrations, fonts, analytics connections) reflects prod state after each sync.
+
+**`data-cy` is the only selector strategy.** Tests use `cy.getBySelector("Foo")` exclusively; class-based selectors, MUI class hooks, and text-matching for clicks are flake risks. When writing or modifying a component, add a `data-cy="…"` attribute to every interactive element (button, input, menu item, table row) that a test may need to target — never rely on class names or MUI internals. New interactive controls without a `data-cy` are effectively untestable.
+
+**No hard waits.** Do not use `cy.wait(ms)` with a fixed number. Use `cy.waitOn(path, cb)` to wait for a network request, or Cypress's built-in retry-ability (`.should(…)`, `.contains(…)` with a `timeout` option). Hard waits make tests slow and mask real timing issues.
+
+**Use `uuidv4` for unique test data names, not timestamps.** Import `{ v4 as uuidv4 } from "uuid"` and append the result to test record names (e.g. `` `My Model | ${uuidv4()}` ``). UUIDs are collision-resistant across parallel runners; timestamps are not. Derive any dependent values (e.g. reference IDs) programmatically from the same constant rather than hardcoding expected strings.
 
 ## Code conventions
 
@@ -186,6 +192,7 @@ Things the codebase actively avoids — flag if you see them in a PR:
 
 - PRs target **`dev`**. After merge, automation cascades changes through `dev → stage → beta → stable` via auto-generated PRs (`.github/workflows/cd-*.yaml`). Each promotion still requires a human merge.
 - **CI runs Cypress only.** `.github/workflows/ci.yaml` runs `npm run ci`, which is `start-server-and-test start … test` — there is **no lint step, no typecheck step, no build gate**. If you've touched TypeScript, run `npx tsc --noEmit` locally before opening a PR; the pipeline will not catch type errors for you.
+- **CI is parallelized across 5 runners** using `cypress-split`. Runner 4 is dedicated to publish-related specs (`content/actions`, `content/list`, `content/redirects`, `settings/workflows`) to prevent cross-runner interference — `workflows.spec.js` creates a publish-blocking workflow label that causes concurrent publish tests on other runners to fail. Runners 0–3 split the remaining specs using `SPLIT=4` and `SKIP_SPEC`. To add more general runners, increment the matrix array and `SPLIT` together and update the `if: matrix.split_index != 4` condition. A `timings.json` at the repo root enables runtime-based distribution for runners 0–3; if absent, cypress-split falls back to spec count. Refresh `timings.json` by downloading the `merged-timings` artifact after a CI run and committing it. Update it every 1–2 months or when runners become noticeably unbalanced.
 - Coverage from Cypress is posted as a PR comment by `ci.yaml`. Treat dropping coverage on changed files as a review signal, not a hard gate.
 - Pre-commit (`.husky/pre-commit`) runs `pretty-quick --staged` only. There is no pre-push hook.
 - Commit/PR titles follow `[Area] - Description` (e.g. `Content - Prevent app from crashing…`); the PR number is appended on merge by GitHub. No conventional-commits prefixes.
