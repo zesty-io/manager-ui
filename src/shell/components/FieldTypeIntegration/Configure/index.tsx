@@ -180,7 +180,7 @@ const IntegrationFieldConfigure = ({
               <InputBase
                 data-cy="integrationApiUrl"
                 readOnly
-                value={endpoint || integrationFieldConfig?.endpoint}
+                value={endpoint}
                 sx={{ flexGrow: 1 }}
                 slotProps={{
                   input: {
@@ -198,7 +198,7 @@ const IntegrationFieldConfigure = ({
               <InputBase
                 data-cy="integrationDisplayType"
                 readOnly
-                value={type || integrationFieldConfig?.type}
+                value={type}
                 sx={{ flexGrow: 1 }}
                 slotProps={{
                   input: {
