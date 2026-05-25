@@ -536,7 +536,7 @@ export const SubField = memo(
             <FieldTypeDate
               name={field.name}
               required={field.required}
-              value={value ? new Date((value as string) + "T00:00:00") : null}
+              value={value ? new Date(value + "T00:00:00") : null}
               onChange={(date) => {
                 onChange(date ? format(date, "yyyy-MM-dd") : null, field.name);
               }}
@@ -549,15 +549,17 @@ export const SubField = memo(
       case "datetime":
         content = (
           <FieldShell settings={field} errors={errors} withComment={false}>
-            <FieldTypeDateTime
-              name={field.name}
-              required={field.required}
-              value={(value as string) ?? null}
-              onChange={(datetime) => {
-                onChange(datetime, field.name);
-              }}
-              error={hasError}
-            />
+            <Box maxWidth={360}>
+              <FieldTypeDateTime
+                name={field.name}
+                required={field.required}
+                value={(value as string) ?? null}
+                onChange={(datetime) => {
+                  onChange(datetime, field.name);
+                }}
+                error={hasError}
+              />
+            </Box>
           </FieldShell>
         );
         break;
