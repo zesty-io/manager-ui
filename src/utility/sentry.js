@@ -69,28 +69,30 @@ if (["stage", "production"].includes(__CONFIG__?.ENV)) {
       return breadcrumb;
     },
     beforeSendTransaction(event) {
-      // Keep only the first span per ignored endpoint to suppress N+1 noise
+      // Keep only the first span per ignored endpoint pattern to suppress N+1 noise
       // while still preserving one span so the call is visible in Sentry.
-      const seenEndpoints = new Set();
+      // Keyed by pattern (not URL) so endpoints with variable IDs are grouped correctly.
+      const seenPatterns = new Set();
 
       event.spans = event.spans?.filter((span) => {
         const { op, description } = spanToJSON(span);
 
-        const isIgnoredEndpoint =
-          op === "http.client" &&
-          N1_IGNORED_ENDPOINTS.some((pattern) =>
-            pattern.test(description ?? "")
-          );
+        const matchedPattern =
+          op === "http.client"
+            ? N1_IGNORED_ENDPOINTS.find((pattern) =>
+                pattern.test(description ?? "")
+              )
+            : undefined;
 
-        if (!isIgnoredEndpoint) {
+        if (!matchedPattern) {
           return true;
         }
 
-        if (seenEndpoints.has(description)) {
+        if (seenPatterns.has(matchedPattern)) {
           return false;
         }
 
-        seenEndpoints.add(description);
+        seenPatterns.add(matchedPattern);
         return true;
       });
 
