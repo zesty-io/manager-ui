@@ -113,7 +113,8 @@ const appTheme = createTheme(theme, {
             backgroundColor: theme.palette.grey[300],
             borderRadius: "4px",
           },
-          // Ensure TinyMCE popups appear above the fullscreen editor
+          // TinyMCE 6: in fullscreen mode, the aux element (dialogs/popovers)
+          // is a sibling of .tox-tinymce-aux and needs a higher z-index to appear above it.
           "&.tox-fullscreen .tox.tox-tinymce-aux": {
             zIndex: theme.zIndex.modal + 1,
           },

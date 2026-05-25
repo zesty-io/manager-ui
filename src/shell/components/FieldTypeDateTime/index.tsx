@@ -254,35 +254,19 @@ export const FieldTypeDateTime = ({
                   }
                 }}
                 onInputChange={(_, v) => setInputValue(v)}
-                sx={
-                  compact
-                    ? {
-                        flex: 1,
-                        minWidth: 0,
-                        "& .MuiAutocomplete-inputRoot": {
-                          py: 0.75,
-                          px: 1,
-                          "& input.MuiOutlinedInput-input.MuiAutocomplete-input":
-                            {
-                              p: 0,
-                              height: 28,
-                            },
-                        },
-                      }
-                    : {
-                        width: 96,
-                        flexShrink: 0,
-                        "& .MuiAutocomplete-inputRoot": {
-                          py: 0.75,
-                          px: 1,
-                          "& input.MuiOutlinedInput-input.MuiAutocomplete-input":
-                            {
-                              p: 0,
-                              height: 28,
-                            },
-                        },
-                      }
-                }
+                sx={{
+                  ...(compact
+                    ? { flex: 1, minWidth: 0 }
+                    : { width: 96, flexShrink: 0 }),
+                  "& .MuiAutocomplete-inputRoot": {
+                    py: 0.75,
+                    px: 1,
+                    "& input.MuiOutlinedInput-input.MuiAutocomplete-input": {
+                      p: 0,
+                      height: 28,
+                    },
+                  },
+                }}
                 slotProps={{
                   paper: {
                     elevation: 8,

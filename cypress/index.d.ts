@@ -64,8 +64,8 @@ declare global {
         path: string
       ): Chainable<{
         model: Partial<ContentModel>;
-        fields: Partial<ContentModelField>[];
-        items: Partial<ContentItem>[];
+        fields: Partial<ContentModelField>;
+        items: Partial<ContentItem>;
       }>;
       task(event: "cleanup:labels"): Chainable<string[]>;
       task(

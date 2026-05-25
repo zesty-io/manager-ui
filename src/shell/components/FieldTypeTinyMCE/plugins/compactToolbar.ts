@@ -1,15 +1,15 @@
 import { Editor } from "tinymce";
+import tinymce from "tinymce/tinymce";
 
 interface BlockFormat {
-  name?: string;
   text: string;
   icon: string;
   block: string;
 }
 
 const COMPACT_BLOCK_FORMATS: BlockFormat[] = [
-  { name: "heading1", text: "Heading 1", icon: "heading1", block: "h1" },
-  { name: "heading2", text: "Heading 2", icon: "heading2", block: "h2" },
+  { text: "Heading 1", icon: "heading1", block: "h1" },
+  { text: "Heading 2", icon: "heading2", block: "h2" },
   { text: "Heading 3", icon: "heading3", block: "h3" },
   { text: "Heading 4", icon: "heading4", block: "h4" },
   { text: "Heading 5", icon: "heading5", block: "h5" },
@@ -19,7 +19,6 @@ const COMPACT_BLOCK_FORMATS: BlockFormat[] = [
     text: "Blockquote",
     icon: "quote",
     block: "blockquote",
-    name: "blockquote",
   },
   { text: "Preformatted", icon: "textSnippet", block: "pre" },
 ];
@@ -31,7 +30,7 @@ const setup = (editor: Editor): void => {
     tooltip: "Block formatting",
     onSetup: (buttonApi: any) => {
       // Use a debounced or delayed update to prevent interference
-      let updateTimeout: any;
+      let updateTimeout: ReturnType<typeof setTimeout> | null = null;
 
       const updateButtonIcon = () => {
         // Clear previous timeout
@@ -144,7 +143,7 @@ const setup = (editor: Editor): void => {
     icon: "unordered-list",
     tooltip: "Lists",
     onSetup: (buttonApi: any) => {
-      let updateTimeout: any;
+      let updateTimeout: ReturnType<typeof setTimeout> | null = null;
 
       const updateButtonIcon = () => {
         if (updateTimeout) {
@@ -157,8 +156,6 @@ const setup = (editor: Editor): void => {
 
           if (editor.dom.getParent(node, "ol", body)) {
             buttonApi.setIcon("ordered-list");
-          } else if (editor.dom.getParent(node, "ul", body)) {
-            buttonApi.setIcon("unordered-list");
           } else {
             buttonApi.setIcon("unordered-list");
           }
@@ -202,17 +199,15 @@ const setup = (editor: Editor): void => {
   });
 };
 
-declare const tinymce: any;
-
 tinymce.PluginManager.add("compactToolbar", (editor: Editor) => {
   setup(editor);
 
   return {
     getMetadata: () => ({
       name: "Compact Toolbar",
-import tinymce from "tinymce/tinymce";
-
-tinymce.PluginManager.add("compactToolbar", (editor: Editor) => {
+      url: "https://zesty.io",
+    }),
+  };
 });
 
 export default setup;

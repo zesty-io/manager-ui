@@ -46,7 +46,6 @@ import "tinymce/plugins/emoticons/js/emojis";
 import { File } from "../../services/types";
 import { useGetInstanceSettingsQuery } from "../../services/instance";
 
-// const EDITOR_HEIGHT = 560;
 const IMAGE_FILE_TYPES = [
   ".jpg",
   ".jpeg",
@@ -123,12 +122,15 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
   const [initialValue, setInitialValue] = useState(value);
   const [isSkinLoaded, setIsSkinLoaded] = useState(false);
   const { data: rawInstanceSettings } = useGetInstanceSettingsQuery();
-  const [toolbarConfig, setToolbarConfig] = useState(normalToolbarConfig);
+  const [toolbarConfig, setToolbarConfig] = useState(
+    compact ? compactToolbarConfig : normalToolbarConfig
+  );
   const [editorKey, setEditorKey] = useState(0);
   const pendingFullscreenRef = useRef(false);
   const allowNextFullscreenRef = useRef(false);
   const compactRef = useRef(compact);
   const currentContentRef = useRef<string>(value ?? "");
+  const didMountRef = useRef(false);
 
   const EDITOR_HEIGHT = compact ? COMPACT_EDITOR_HEIGHT : NORMAL_EDITOR_HEIGHT;
   useEffect(() => {
@@ -152,6 +154,10 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
   }, [version]);
 
   useEffect(() => {
+    if (!didMountRef.current) {
+      didMountRef.current = true;
+      return;
+    }
     setInitialValue(currentContentRef.current);
     setToolbarConfig(compact ? compactToolbarConfig : normalToolbarConfig);
     setEditorKey((prev) => prev + 1);
@@ -160,8 +166,24 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
   return (
     <Box
       id="tinyMceWrapper"
+      data-compact={compact}
       sx={{
         minHeight: EDITOR_HEIGHT,
+        "&[data-compact='true']": {
+          "& .tox-editor-header": {
+            "& .tox-toolbar__group": {
+              "& button": {
+                scale: "0.8",
+              },
+            },
+            "& .tox-toolbar__group:has(button[aria-label='Fullscreen'])": {
+              flexGrow: 1,
+              display: "flex",
+              justifyContent: "flex-end",
+            },
+          },
+        },
+
         "& .tox.tox-tinymce": {
           borderColor: error && "error.main",
         },
@@ -394,11 +416,15 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
                 }
               });
 
+              // Two-pass fullscreen handoff: when compact is true, entering fullscreen
+              // remounts with normalToolbarConfig first (pass 1), then the new editor's
+              // onInit re-triggers fullscreen via pendingFullscreenRef (pass 2).
+              // allowNextFullscreenRef prevents the second BeforeExecCommand from looping.
               editor.on("BeforeExecCommand", (evt: any) => {
                 if (
                   evt.command === "mceFullScreen" &&
                   compactRef.current &&
-                  !editor.plugins.fullscreen.isFullscreen() &&
+                  !editor.plugins.fullscreen?.isFullscreen() &&
                   !allowNextFullscreenRef.current
                 ) {
                   evt.preventDefault();
@@ -421,7 +447,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
 
               editor.on("keydown", (evt: any) => {
                 if (evt.key === "Escape") {
-                  if (editor.plugins.fullscreen.isFullscreen()) {
+                  if (editor.plugins.fullscreen?.isFullscreen()) {
                     editor.execCommand("mceFullScreen");
                     evt.preventDefault();
                   }

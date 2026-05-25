@@ -410,12 +410,13 @@ export const FieldTypeMedia = forwardRef(
                     : "Drag & Drop your files"}
                 </Typography>
                 {!isDragActive && (
-                  <Stack direction="row" gap={1}>
+                  <Stack direction="row" gap={2}>
                     <Button
                       size="small"
                       variant="text"
                       onClick={open}
-                      startIcon={<UploadRounded />}
+                      startIcon={<UploadRounded fontSize="medium" />}
+                      sx={{ px: 1.5 }}
                     >
                       Upload Media
                     </Button>
@@ -423,13 +424,14 @@ export const FieldTypeMedia = forwardRef(
                       data-cy="selectFromMediaButton"
                       size="small"
                       variant="text"
+                      sx={{ px: 1.5 }}
                       onClick={() => {
                         openMediaBrowser({
                           limit,
                           callback: addZestyImage,
                         });
                       }}
-                      startIcon={<AddCircleRounded />}
+                      startIcon={<AddCircleRounded fontSize="medium" />}
                     >
                       Add from Media
                     </Button>
@@ -730,44 +732,42 @@ export const MediaItem = ({
     });
   };
 
-  const [{ isDragging }, drag, preview] = effectiveHideDrag
-    ? [{ isDragging: false }, null, null]
-    : useDrag(
-        {
-          type: "FIELD_TYPE_MEDIA",
-          item: () => {
-            setDraggedIndex?.(index);
-            return { index, imageZUID };
-          },
-          collect: (monitor) => ({
-            isDragging: monitor.isDragging(),
-          }),
-          end: () => {
-            onReorder?.();
-            lastHoveredIndexRef.current = null;
-          },
-        },
-        [index, imageZUID, onReorder, setDraggedIndex]
-      );
+  const [{ isDragging }, drag, preview] = useDrag(
+    {
+      type: "FIELD_TYPE_MEDIA",
+      canDrag: !effectiveHideDrag,
+      item: () => {
+        setDraggedIndex?.(index);
+        return { index, imageZUID };
+      },
+      collect: (monitor) => ({
+        isDragging: monitor.isDragging(),
+      }),
+      end: () => {
+        onReorder?.();
+        lastHoveredIndexRef.current = null;
+      },
+    },
+    [index, imageZUID, onReorder, setDraggedIndex, effectiveHideDrag]
+  );
 
-  const [, drop] = effectiveHideDrag
-    ? [, null]
-    : useDrop(
-        {
-          accept: "FIELD_TYPE_MEDIA",
-          hover: (item: { index: number; imageZUID: string }, monitor) => {
-            if (
-              !monitor.isOver({ shallow: true }) ||
-              lastHoveredIndexRef.current === index
-            ) {
-              return;
-            }
-            setHoveredIndex?.(index);
-            lastHoveredIndexRef.current = index;
-          },
-        },
-        [index, setHoveredIndex]
-      );
+  const [, drop] = useDrop(
+    {
+      accept: "FIELD_TYPE_MEDIA",
+      canDrop: () => !effectiveHideDrag,
+      hover: (item: { index: number; imageZUID: string }, monitor) => {
+        if (
+          !monitor.isOver({ shallow: true }) ||
+          lastHoveredIndexRef.current === index
+        ) {
+          return;
+        }
+        setHoveredIndex?.(index);
+        lastHoveredIndexRef.current = index;
+      },
+    },
+    [index, setHoveredIndex, effectiveHideDrag]
+  );
 
   const dragDropRef = useCallback(
     (node: HTMLElement | null) => {
@@ -832,7 +832,7 @@ export const MediaItem = ({
         )}
         {!effectiveHideDrag && (
           <IconButton
-            ref={!!effectiveHideDrag ? null : drag}
+            ref={drag}
             disableRipple
             disableFocusRipple
             disableTouchRipple
