@@ -24,6 +24,7 @@ type FieldTypeDateTimeProps = {
   selectedTimezone?: string;
   onTimezoneChange?: (timezone: string) => void;
   disablePast?: boolean;
+  compact?: boolean;
 };
 
 // --- helpers (local) ---
@@ -87,6 +88,7 @@ export const FieldTypeDateTime = ({
   selectedTimezone,
   onTimezoneChange,
   disablePast = false,
+  compact,
 }: FieldTypeDateTimeProps) => {
   const timeFieldRef = useRef<HTMLDivElement>(null);
   const optionsRef = useRef<HTMLDivElement>(null);
@@ -195,6 +197,7 @@ export const FieldTypeDateTime = ({
           setInputValue("");
         }}
         error={error}
+        compact={compact}
         slots={{
           timePicker: (
             <Tooltip

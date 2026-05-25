@@ -376,7 +376,7 @@ export const Field = memo(
               onChange={(e) => onLocalChange(e.target.value)}
               fullWidth
               multiline
-              rows={compact ? 4 : 6}
+              rows={compact ? 5 : 6}
               inputProps={{
                 "data-cy": `EditorField-${fieldData?.name || name}`,
               }}
@@ -462,6 +462,7 @@ export const Field = memo(
                 error={
                   errors && Object.values(errors)?.some((error) => !!error)
                 }
+                compact={compact}
               />
             </AIFieldShell>
             {imageModal && renderMediaModal()}
@@ -757,7 +758,7 @@ export const Field = memo(
       case "datetime":
         return (
           <FieldShell settings={fieldData} errors={errors}>
-            <Box maxWidth={360}>
+            <Box {...(!compact && { maxWidth: 360 })}>
               <FieldTypeDateTime
                 name={name}
                 required={required}
@@ -768,6 +769,7 @@ export const Field = memo(
                 error={
                   errors && Object.values(errors)?.some((error) => !!error)
                 }
+                compact={compact}
               />
             </Box>
           </FieldShell>
