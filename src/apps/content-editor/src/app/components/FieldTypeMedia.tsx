@@ -402,15 +402,7 @@ export const FieldTypeMedia = forwardRef(
             }}
           >
             {compact ? (
-              <Stack
-                direction="row"
-                alignItems="center"
-                gap={2}
-                px={2}
-                py={1.5}
-                justifyContent="space-between"
-                flexWrap="wrap"
-              >
+              <Stack alignItems="center" gap={1.5} px={2} py={1.5}>
                 <Typography variant="body2" color="text.secondary">
                   {isDragActive
                     ? "Drop your files here"
@@ -562,6 +554,7 @@ export const FieldTypeMedia = forwardRef(
                   hideDrag={hideDrag || limit === 1}
                   isBynderAsset={isBynderAsset}
                   isBynderSessionValid={!!isBynderSessionValid}
+                  compact={compact}
                 />
               );
             })}
@@ -646,6 +639,7 @@ type MediaItemProps = {
   isBynderAsset: boolean;
   isBynderSessionValid: boolean;
   hideActionButtons?: boolean;
+  compact?: boolean;
 };
 export const MediaItem = ({
   imageZUID,
@@ -660,11 +654,13 @@ export const MediaItem = ({
   isBynderAsset,
   isBynderSessionValid,
   hideActionButtons,
+  compact,
 }: MediaItemProps) => {
   const lastHoveredIndexRef = useRef(null);
   const mediaItemContainerRef = useRef(null);
   const [isDraggable, setIsDraggable] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const effectiveHideDrag = compact || hideDrag;
   const intersection = useIntersection(mediaItemContainerRef, {
     threshold: 1,
   });
@@ -733,7 +729,7 @@ export const MediaItem = ({
     });
   };
 
-  const [{ isDragging }, drag, preview] = hideDrag
+  const [{ isDragging }, drag, preview] = effectiveHideDrag
     ? [{ isDragging: false }, null, null]
     : useDrag(
         {
@@ -753,7 +749,7 @@ export const MediaItem = ({
         [index, imageZUID, onReorder, setDraggedIndex]
       );
 
-  const [, drop] = hideDrag
+  const [, drop] = effectiveHideDrag
     ? [, null]
     : useDrop(
         {
@@ -774,23 +770,23 @@ export const MediaItem = ({
 
   const dragDropRef = useCallback(
     (node: HTMLElement | null) => {
-      if (hideDrag) return;
+      if (effectiveHideDrag) return;
 
       drag(node);
       drop(node);
       preview(node);
     },
-    [drag, drop, preview, hideDrag]
+    [drag, drop, preview, effectiveHideDrag]
   );
 
   return (
     <Box ref={mediaItemContainerRef}>
       <Box
-        ref={hideDrag ? null : dragDropRef}
+        ref={effectiveHideDrag ? null : dragDropRef}
         data-cy="mediaItem"
         display="grid"
         gridTemplateColumns={
-          hideDrag ? "min-content 1fr" : "repeat(2, min-content) 1fr"
+          effectiveHideDrag ? "min-content 1fr" : "repeat(2, min-content) 1fr"
         }
         draggable={isDraggable}
         onClick={() => {
@@ -816,7 +812,7 @@ export const MediaItem = ({
             height={24}
             borderRadius={100}
             position="absolute"
-            left={hideDrag ? 52 : 84}
+            left={effectiveHideDrag ? 52 : 84}
             top={52}
             zIndex={2}
             px={0.25}
@@ -833,9 +829,9 @@ export const MediaItem = ({
             />
           </Box>
         )}
-        {!hideDrag && (
+        {!effectiveHideDrag && (
           <IconButton
-            ref={!!hideDrag ? null : drag}
+            ref={!!effectiveHideDrag ? null : drag}
             disableRipple
             disableFocusRipple
             disableTouchRipple
@@ -897,125 +893,256 @@ export const MediaItem = ({
           )}
           {!hideActionButtons && (
             <Box display="flex" gap={1} justifyContent="flex-end">
-              {!isBynderAsset || (isBynderAsset && isBynderSessionValid) ? (
-                <Tooltip title="Swap File" placement="bottom" enterDelay={800}>
-                  <IconButton
-                    size="small"
-                    onClick={(event: any) => {
-                      event.stopPropagation();
-                      onReplace && onReplace(imageZUID);
-                    }}
+              {compact ? (
+                <>
+                  <Tooltip
+                    title="More Options"
+                    placement="bottom"
+                    enterDelay={800}
                   >
-                    <ImageSync fontSize="small" />
-                  </IconButton>
-                </Tooltip>
+                    <IconButton
+                      size="small"
+                      onClick={(event: any) => {
+                        event.stopPropagation();
+                        setAnchorEl(event.currentTarget);
+                      }}
+                    >
+                      <MoreHorizRounded fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                  <Menu
+                    anchorEl={anchorEl}
+                    open={Boolean(anchorEl)}
+                    onClose={(event: any) => {
+                      event.stopPropagation();
+                      setAnchorEl(null);
+                    }}
+                    PaperProps={{ style: { width: "288px" } }}
+                    anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                    transformOrigin={{ vertical: "top", horizontal: "right" }}
+                  >
+                    {!isURL && data && (
+                      <MenuItem
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          setAnchorEl(null);
+                          onPreview && onPreview(imageZUID);
+                        }}
+                      >
+                        <ListItemIcon>
+                          <EditRounded />
+                        </ListItemIcon>
+                        <ListItemText>Edit File</ListItemText>
+                      </MenuItem>
+                    )}
+                    {(!isBynderAsset ||
+                      (isBynderAsset && isBynderSessionValid)) && (
+                      <MenuItem
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          setAnchorEl(null);
+                          onReplace && onReplace(imageZUID);
+                        }}
+                      >
+                        <ListItemIcon>
+                          <ImageSync fontSize="small" />
+                        </ListItemIcon>
+                        <ListItemText>Swap File</ListItemText>
+                      </MenuItem>
+                    )}
+                    {!isURL && !isBynderAsset && data && (
+                      <MenuItem
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          setAnchorEl(null);
+                          setShowRenameFileModal(true);
+                        }}
+                      >
+                        <ListItemIcon>
+                          <DriveFileRenameOutlineRounded />
+                        </ListItemIcon>
+                        <ListItemText>Rename File</ListItemText>
+                      </MenuItem>
+                    )}
+                    {!isURL && !isBynderAsset && data && (
+                      <MenuItem
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          handleCopyClick(imageZUID, true);
+                        }}
+                      >
+                        <ListItemIcon>
+                          {isCopiedZuid ? <CheckRounded /> : <WidgetsRounded />}
+                        </ListItemIcon>
+                        <ListItemText>Copy ZUID</ListItemText>
+                      </MenuItem>
+                    )}
+                    {data && (
+                      <MenuItem
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          handleCopyClick(isURL ? imageZUID : data?.url, false);
+                        }}
+                      >
+                        <ListItemIcon>
+                          {isCopied ? <CheckRounded /> : <LinkRounded />}
+                        </ListItemIcon>
+                        <ListItemText>Copy File URL</ListItemText>
+                      </MenuItem>
+                    )}
+                    <MenuItem
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        setAnchorEl(null);
+                        onRemove && onRemove(imageZUID);
+                      }}
+                    >
+                      <ListItemIcon>
+                        <CloseRounded />
+                      </ListItemIcon>
+                      <ListItemText>Remove File</ListItemText>
+                    </MenuItem>
+                  </Menu>
+                </>
               ) : (
-                <></>
-              )}
-              {!isURL && data && (
-                <Tooltip title="Edit File" placement="bottom" enterDelay={800}>
-                  <IconButton size="small">
-                    <EditRounded fontSize="small" />
-                  </IconButton>
-                </Tooltip>
-              )}
-              <Tooltip title="More Options" placement="bottom" enterDelay={800}>
-                <IconButton
-                  size="small"
-                  onClick={(event: any) => {
-                    event.stopPropagation();
-                    setAnchorEl(event.currentTarget);
-                  }}
-                >
-                  <MoreHorizRounded fontSize="small" />
-                </IconButton>
-              </Tooltip>
-              <Menu
-                anchorEl={anchorEl}
-                open={Boolean(anchorEl)}
-                onClose={(event: any) => {
-                  event.stopPropagation();
-                  setAnchorEl(null);
-                }}
-                PaperProps={{
-                  style: {
-                    width: "288px",
-                  },
-                }}
-                anchorOrigin={{
-                  vertical: "bottom",
-                  horizontal: "right",
-                }}
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-              >
-                {!isURL && !isBynderAsset && data && (
-                  <Box>
-                    <MenuItem
-                      onClick={(event) => {
+                <>
+                  {!isBynderAsset || (isBynderAsset && isBynderSessionValid) ? (
+                    <Tooltip
+                      title="Swap File"
+                      placement="bottom"
+                      enterDelay={800}
+                    >
+                      <IconButton
+                        size="small"
+                        onClick={(event: any) => {
+                          event.stopPropagation();
+                          onReplace && onReplace(imageZUID);
+                        }}
+                      >
+                        <ImageSync fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  ) : (
+                    <></>
+                  )}
+                  {!isURL && data && (
+                    <Tooltip
+                      title="Edit File"
+                      placement="bottom"
+                      enterDelay={800}
+                    >
+                      <IconButton size="small">
+                        <EditRounded fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  )}
+                  <Tooltip
+                    title="More Options"
+                    placement="bottom"
+                    enterDelay={800}
+                  >
+                    <IconButton
+                      size="small"
+                      onClick={(event: any) => {
                         event.stopPropagation();
-                        setAnchorEl(null);
-                        setShowRenameFileModal(true);
+                        setAnchorEl(event.currentTarget);
                       }}
                     >
-                      <ListItemIcon>
-                        <DriveFileRenameOutlineRounded />
-                      </ListItemIcon>
-                      <ListItemText>Rename</ListItemText>
-                    </MenuItem>
-                    <MenuItem
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        setAnchorEl(null);
-                        setIsReplaceFileModalOpen(true);
-                      }}
-                    >
-                      <ListItemIcon>
-                        <FileReplace />
-                      </ListItemIcon>
-                      <ListItemText>Replace File</ListItemText>
-                    </MenuItem>
-                    <MenuItem
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        handleCopyClick(imageZUID, true);
-                      }}
-                    >
-                      <ListItemIcon>
-                        {isCopiedZuid ? <CheckRounded /> : <WidgetsRounded />}
-                      </ListItemIcon>
-                      <ListItemText>Copy ZUID</ListItemText>
-                    </MenuItem>
-                  </Box>
-                )}
-                {data && (
-                  <MenuItem
-                    onClick={(event) => {
+                      <MoreHorizRounded fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                  <Menu
+                    anchorEl={anchorEl}
+                    open={Boolean(anchorEl)}
+                    onClose={(event: any) => {
                       event.stopPropagation();
-                      handleCopyClick(isURL ? imageZUID : data?.url, false);
+                      setAnchorEl(null);
+                    }}
+                    PaperProps={{
+                      style: {
+                        width: "288px",
+                      },
+                    }}
+                    anchorOrigin={{
+                      vertical: "bottom",
+                      horizontal: "right",
+                    }}
+                    transformOrigin={{
+                      vertical: "top",
+                      horizontal: "right",
                     }}
                   >
-                    <ListItemIcon>
-                      {isCopied ? <CheckRounded /> : <LinkRounded />}
-                    </ListItemIcon>
-                    <ListItemText>Copy File Url</ListItemText>
-                  </MenuItem>
-                )}
-                <MenuItem
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    setAnchorEl(null);
-                    onRemove && onRemove(imageZUID);
-                  }}
-                >
-                  <ListItemIcon>
-                    <CloseRounded />
-                  </ListItemIcon>
-                  <ListItemText>Remove</ListItemText>
-                </MenuItem>
-              </Menu>
+                    {!isURL && !isBynderAsset && data && (
+                      <Box>
+                        <MenuItem
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            setAnchorEl(null);
+                            setShowRenameFileModal(true);
+                          }}
+                        >
+                          <ListItemIcon>
+                            <DriveFileRenameOutlineRounded />
+                          </ListItemIcon>
+                          <ListItemText>Rename</ListItemText>
+                        </MenuItem>
+                        <MenuItem
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            setAnchorEl(null);
+                            setIsReplaceFileModalOpen(true);
+                          }}
+                        >
+                          <ListItemIcon>
+                            <FileReplace />
+                          </ListItemIcon>
+                          <ListItemText>Replace File</ListItemText>
+                        </MenuItem>
+                        <MenuItem
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            handleCopyClick(imageZUID, true);
+                          }}
+                        >
+                          <ListItemIcon>
+                            {isCopiedZuid ? (
+                              <CheckRounded />
+                            ) : (
+                              <WidgetsRounded />
+                            )}
+                          </ListItemIcon>
+                          <ListItemText>Copy ZUID</ListItemText>
+                        </MenuItem>
+                      </Box>
+                    )}
+                    {data && (
+                      <MenuItem
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          handleCopyClick(isURL ? imageZUID : data?.url, false);
+                        }}
+                      >
+                        <ListItemIcon>
+                          {isCopied ? <CheckRounded /> : <LinkRounded />}
+                        </ListItemIcon>
+                        <ListItemText>Copy File Url</ListItemText>
+                      </MenuItem>
+                    )}
+                    <MenuItem
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        setAnchorEl(null);
+                        onRemove && onRemove(imageZUID);
+                      }}
+                    >
+                      <ListItemIcon>
+                        <CloseRounded />
+                      </ListItemIcon>
+                      <ListItemText>Remove</ListItemText>
+                    </MenuItem>
+                  </Menu>
+                </>
+              )}
             </Box>
           )}
         </Box>
