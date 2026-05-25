@@ -5,8 +5,8 @@ import CardActionArea from "@mui/material/CardActionArea";
 
 import DragIndicatorRoundedIcon from "@mui/icons-material/DragIndicatorRounded";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import { DisplayOptionCardProps } from "../configs";
-import DisplayCard from "../components/DisplayCard";
+import { DisplayOptionCardProps } from "../types";
+import DisplayCard from "../Shared/DisplayCard";
 import { alpha, Avatar, Grid, Paper, Stack } from "@mui/material";
 
 const DisplayOption = ({

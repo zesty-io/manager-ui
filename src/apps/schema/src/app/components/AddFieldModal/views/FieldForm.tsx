@@ -319,11 +319,8 @@ const FieldFormContent = ({
     }
 
     if (type === "integration") {
-      body.settings.integrationFieldConfig = (
-        isUpdateField
-          ? fieldData?.settings?.integrationFieldConfig
-          : formData?.integrationFieldConfig
-      ) as IntegrationFieldConfig;
+      body.settings.integrationFieldConfig =
+        formData?.integrationFieldConfig as IntegrationFieldConfig;
     }
 
     if (isUpdateField) {

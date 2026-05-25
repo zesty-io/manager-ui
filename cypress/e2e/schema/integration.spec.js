@@ -1,7 +1,7 @@
 import genericApi from "../../fixtures/integration/generic.json";
 import specialApi from "../../fixtures/integration/special.json";
 
-import { DISPLAY_OPTIONS_CONFIG } from "../../../src/shell/components/FieldTypeIntegration/configs";
+import { DISPLAY_OPTIONS_CONFIG } from "../../../src/shell/components/FieldTypeIntegration/constants";
 
 const forceClick = { force: true };
 
@@ -213,6 +213,68 @@ describe("Integration Field", () => {
       cy.wait("@saveItem");
 
       cy.get('[data-cy="toast"]').contains("Created Item");
+    });
+  });
+
+  describe("Search Filter with Non-string KeyPath", () => {
+    it("Does not crash when a configured keyPath resolves to a number", () => {
+      const modelZUID = Cypress.env("modelZUID");
+
+      cy.visit(`/content/${modelZUID}/new`);
+      cy.get('[data-cy="field:title"]').find("input").type(MODEL?.label);
+
+      cy.get(
+        `[data-cy="field:details"] [data-cy="integrationSelectItemsButton"]`
+      ).click();
+      cy.get('[data-cy="integrationSelectionFormDialog"]').should("exist");
+
+      cy.get('[data-cy="integrationSelectionFormSearchBox"] input')
+        .clear()
+        .type(genericApi[0].name);
+
+      cy.get('[data-cy="integrationSelectionFormDialog"]').should("exist");
+      cy.get(".integrationSelectionFormListContainer")
+        .children()
+        .should("have.length.at.least", 1);
+    });
+  });
+
+  describe("Reconfigure Display Options", () => {
+    it("Persists keyPath changes when updating an integration field", () => {
+      cy.intercept("**/get-url?url=*", {
+        statusCode: 200,
+        body: genericApi,
+      }).as("reconfigureGetUrl");
+
+      cy.visit(`/schema/${Cypress.env("modelZUID")}/fields`);
+
+      cy.get('[data-cy="Field_text"]').click();
+
+      cy.wait("@reconfigureGetUrl");
+
+      cy.intercept("PUT", "**/content/models/*/fields/*").as("updateField");
+
+      cy.get('[data-cy="integrationConfigureButton"]').click();
+      cy.get('[data-cy="integrationFormDialog"]').should("exist");
+
+      cy.get('[data-cy="integrationConfigureOptionNextButton"]').click();
+
+      cy.get('[data-cy="integrationKeyPathSelector-subHeading"]').click();
+      cy.get(`.MuiAutocomplete-listbox li:contains("position")`).click(
+        forceClick
+      );
+
+      cy.get(
+        '[data-cy="integrationConfigureDisplayOptionsDoneButton"]'
+      ).click();
+
+      cy.get('[data-cy="FieldFormAddFieldBtn"]').click();
+
+      cy.wait("@updateField").then(({ request }) => {
+        expect(
+          request.body.settings.integrationFieldConfig.keyPaths.subHeading
+        ).to.equal("position");
+      });
     });
   });
 });

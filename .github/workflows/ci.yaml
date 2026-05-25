@@ -5,9 +5,8 @@ on:
     branches: [dev, beta, stable, master]
 
 jobs:
-  run_tests:
+  setup:
     runs-on: ubuntu-latest
-
     steps:
       # This Clean step simply checks if there's already a workflow running from the last
       # commit and cancels it if there is. This helps us save on cloud cost in the long run.
@@ -17,8 +16,6 @@ jobs:
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         if: "github.ref != 'refs/heads/master'"
-      - name: Checkout Repo
-        uses: actions/checkout@v4
       - name: Auth with Gcloud
         uses: google-github-actions/auth@v0
         with:
@@ -29,6 +26,22 @@ jobs:
           project_id: zesty-dev
       - name: Delete Old Screenshots
         run: gsutil rm gs://cypress_screenshots/* || true
+
+  # Runs 5 parallel jobs. Runners 0-3 split the non-publish specs evenly (SPLIT=4).
+  # Runner 4 is dedicated to publish-related specs to avoid cross-runner interference.
+  # cypress-split distributes specs based on SPLIT and SPLIT_INDEX.
+  # Repo: https://github.com/bahmutov/cypress-split
+  run_tests:
+    needs: setup
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false # Don't cancel other runners if one fails
+      matrix:
+        split_index: [0, 1, 2, 3, 4]
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
       - name: Set up Node
         uses: actions/setup-node@v4.1.0
         with:
@@ -37,19 +50,142 @@ jobs:
           cache-dependency-path: package-lock.json
       - name: Install Dependencies
         run: npm install --legacy-peer-deps
+      - name: Auth with Gcloud
+        uses: google-github-actions/auth@v0
+        with:
+          credentials_json: ${{ secrets.GCP_DEV_SA_KEY }}
+      - name: Set up Gcloud SDK
+        uses: google-github-actions/setup-gcloud@v0
+        with:
+          project_id: zesty-dev
       - name: Setup Testing Environment
         run: npm run ci:test:setup
       - name: Run Tests
+        if: matrix.split_index != 4
         run: npm run ci
         env:
           CYPRESS_COVERAGE: "true"
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SPLIT: 4
+          SPLIT_INDEX: ${{ matrix.split_index }}
+          SPLIT_FILE: timings.json
+          SKIP_SPEC: "cypress/e2e/content/actions.spec.js,cypress/e2e/content/list.spec.js,cypress/e2e/content/redirects.spec.js,cypress/e2e/content/workflows.spec.js,cypress/e2e/settings/workflows.spec.js"
+      # Runner 4 runs all publish-related specs together so that workflows.spec.js
+      # (which creates a publish-blocking workflow label) and the publish action specs
+      # run sequentially on the same runner, avoiding cross-runner interference.
+      - name: Run Tests
+        if: matrix.split_index == 4
+        run: npm run ci
+        env:
+          CYPRESS_COVERAGE: "true"
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SPLIT: 1
+          SPLIT_INDEX: 0
+          SPEC: "cypress/e2e/content/actions.spec.js,cypress/e2e/content/list.spec.js,cypress/e2e/content/redirects.spec.js,cypress/e2e/content/workflows.spec.js,cypress/e2e/settings/workflows.spec.js"
+      # Rename so artifacts from each runner have unique filenames and don't overwrite each other.
+      - name: Rename Coverage Output
+        if: ${{ success() }}
+        run: |
+          if [ -f .nyc_output/out.json ]; then
+            mv .nyc_output/out.json .nyc_output/out-${{ matrix.split_index }}.json
+          fi
+      - name: Upload Coverage
+        uses: actions/upload-artifact@v4
+        if: ${{ success() }}
+        with:
+          name: coverage-${{ matrix.split_index }}
+          path: .nyc_output/out-${{ matrix.split_index }}.json
+      # Upload partial timings so merge_timings can combine them into a single file.
+      # if-no-files-found: ignore handles the case where no timings were recorded (e.g. all specs failed).
+      - name: Upload Timings
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: timings-partial-${{ matrix.split_index }}
+          path: timings.json
+          if-no-files-found: ignore
+      - name: Upload Screenshots
+        if: ${{ failure() }}
+        run: ./ci/scripts/upload_debug_screenshots_to_gcp.sh
+
+  # Aggregates all matrix runner results into a single status check.
+  # Branch protection should require this job, not run_tests, because matrix jobs
+  # produce individual checks (run_tests (0), run_tests (1), …) — never a single run_tests check.
+  all_tests_passed:
+    needs: run_tests
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Check matrix results
+        run: |
+          if [ "${{ needs.run_tests.result }}" != "success" ]; then
+            echo "One or more test runners failed or were cancelled"
+            exit 1
+          fi
+
+  # Merges partial timings.json from each runner into a single file and uploads it as an artifact.
+  # Download the artifact after CI runs and commit timings.json to the repo to enable
+  # runtime-based spec distribution on subsequent runs.
+  merge_timings:
+    needs: run_tests
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4.1.0
+        with:
+          node-version: "22.19.0"
+          cache: "npm"
+          cache-dependency-path: package-lock.json
+      - name: Install Dependencies
+        run: npm install --legacy-peer-deps
+      # Each artifact is downloaded into its own subdirectory: partials/timings-partial-N/timings.json
+      # cypress-split-merge looks for timings.json in each subdirectory of --parent-folder.
+      - name: Download Timings Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: timings-partial-*
+          path: partials
+      - name: Merge Timings
+        run: npx cypress-split-merge --parent-folder partials --split-file timings.json --output timings.json
+      - name: Upload Merged Timings
+        uses: actions/upload-artifact@v4
+        with:
+          name: merged-timings
+          path: timings.json
+          if-no-files-found: ignore
+
+  # Merges coverage output from all 4 runners and posts a single comment on the PR.
+  # nyc report reads all out-N.json files in .nyc_output/ and merges them automatically.
+  coverage:
+    needs: run_tests
+    runs-on: ubuntu-latest
+    if: ${{ success() }}
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4.1.0
+        with:
+          node-version: "22.19.0"
+          cache: "npm"
+          cache-dependency-path: package-lock.json
+      - name: Install Dependencies
+        run: npm install --legacy-peer-deps
+      - name: Download Coverage Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: coverage-*
+          path: .nyc_output
+          merge-multiple: true
       - name: Coverage Summary
         run: npx nyc report --reporter=text-summary --reporter=text --reporter=json-summary
-        if: ${{ success() }}
       - name: Coverage Comment
         uses: actions/github-script@v7
-        if: ${{ success() }}
         with:
           script: |
             const fs = require("fs");
@@ -151,6 +287,3 @@ jobs:
                 body,
               });
             }
-      - name: Upload Screenshots
-        if: ${{ failure() }}
-        run: ./ci/scripts/upload_debug_screenshots_to_gcp.sh
