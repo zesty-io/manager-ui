@@ -26,6 +26,7 @@ import {
 import { FieldWrapper } from "../../../../../seo/src/app/components/RedirectsDialogProvider/CreateRedirects/CreateForm";
 import SearchField from "../../../../../seo/src/app/components/RedirectsDialogProvider/CreateRedirects/SearchField";
 import PathField from "../../../../../seo/src/app/components/RedirectsDialogProvider/CreateRedirects/PathField";
+import { validateUrl } from "utility/validateUrl";
 import { searchItems } from "shell/store/content";
 export type ContentRedirectModalProps = {
   open: boolean;
@@ -33,21 +34,6 @@ export type ContentRedirectModalProps = {
   loading: boolean;
   currentItem: ContentItemProps | null;
   options: ContentItemProps[];
-};
-
-export const validateUrl = (url: string) => {
-  const validProtocols = ["http://", "https://"];
-
-  const hasValidProtocol = validProtocols.some((protocol) =>
-    url.startsWith(protocol)
-  );
-  if (!hasValidProtocol) return false;
-  try {
-    new URL(url);
-    return true;
-  } catch (_) {
-    return false;
-  }
 };
 
 export const ContentRedirectModal: FC<ContentRedirectModalProps> = ({

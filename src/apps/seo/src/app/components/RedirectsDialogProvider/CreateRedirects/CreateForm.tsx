@@ -37,6 +37,7 @@ import NotInterestedIcon from "@mui/icons-material/NotInterested";
 import SearchField from "./SearchField";
 import { AppState } from "shell/store/types";
 import { searchItems } from "shell/store/content";
+import { validateUrl } from "utility/validateUrl";
 
 type CreateFormProps = {
   open: boolean;
@@ -50,21 +51,6 @@ type PathProps = {
 };
 
 export type PublishingsMap = Record<string, Publishing>;
-
-export const validateUrl = (url: string) => {
-  const validProtocols = ["http://", "https://"];
-
-  const hasValidProtocol = validProtocols.some((protocol) =>
-    url.startsWith(protocol)
-  );
-  if (!hasValidProtocol) return false;
-  try {
-    new URL(url);
-    return true;
-  } catch (_) {
-    return false;
-  }
-};
 
 const CreateForm: FC<CreateFormProps> = ({
   open,
