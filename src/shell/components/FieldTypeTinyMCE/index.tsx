@@ -6,8 +6,7 @@ import { theme } from "@zesty-io/material";
 import openBynder from "../../../utility/openBynder";
 
 // TinyMCE so the global var exists
-import tinymce, { Editor as TinyMCEEditor } from "tinymce/tinymce";
-
+import tinymce from "tinymce/tinymce";
 // DOM model
 import "tinymce/models/dom/model";
 // Theme
@@ -39,6 +38,7 @@ import "tinymce/plugins/autoresize";
 import "./plugins/slashcommands";
 import "./plugins/socialmediaembed";
 import "./plugins/imageresizer";
+import "./plugins/compactToolbar";
 
 // importing plugin resources
 import "tinymce/plugins/emoticons/js/emojis";
@@ -46,8 +46,7 @@ import "tinymce/plugins/emoticons/js/emojis";
 import { File } from "../../services/types";
 import { useGetInstanceSettingsQuery } from "../../services/instance";
 
-const DEFAULT_EDITOR_HEIGHT = 560;
-const COMPACT_EDITOR_HEIGHT = 140;
+// const EDITOR_HEIGHT = 560;
 const IMAGE_FILE_TYPES = [
   ".jpg",
   ".jpeg",
@@ -71,6 +70,24 @@ const VIDEO_FILE_TYPES = [
   ".avch",
   ".html5",
 ] as const;
+
+const NORMAL_EDITOR_HEIGHT = 560;
+const COMPACT_EDITOR_HEIGHT = 259;
+
+const normalToolbarConfig =
+  "slashcommands blocks | \
+              bold italic underline backcolor | \
+              zestyMediaApp media bynder link socialmediaembed table | \
+              align bullist numlist outdent indent | \
+              searchreplace | \
+              superscript subscript strikethrough removeformat | \
+              codesample insertdatetime charmap emoticons | \
+              undo redo | \
+              code help | \
+              fullscreen";
+
+const compactToolbarConfig =
+  "compactBlocks | bold italic underline | compactAlign | compactLists | zestyMediaApp media link | fullscreen";
 
 type FieldTypeTinyMCEProps = {
   value: any;
@@ -105,13 +122,18 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
   // NOTE: controlled component
   const [initialValue, setInitialValue] = useState(value);
   const [isSkinLoaded, setIsSkinLoaded] = useState(false);
-  const [editorKey, setEditorKey] = useState(0);
-  const contentRef = useRef(value);
-  const isFirstMount = useRef(true);
   const { data: rawInstanceSettings } = useGetInstanceSettingsQuery();
+  const [toolbarConfig, setToolbarConfig] = useState(normalToolbarConfig);
+  const [editorKey, setEditorKey] = useState(0);
+  const pendingFullscreenRef = useRef(false);
+  const allowNextFullscreenRef = useRef(false);
+  const compactRef = useRef(compact);
+  const currentContentRef = useRef<string>(value ?? "");
 
-  const EDITOR_HEIGHT = compact ? COMPACT_EDITOR_HEIGHT : DEFAULT_EDITOR_HEIGHT;
-
+  const EDITOR_HEIGHT = compact ? COMPACT_EDITOR_HEIGHT : NORMAL_EDITOR_HEIGHT;
+  useEffect(() => {
+    compactRef.current = compact;
+  }, [compact]);
   // Checks if the bynder portal and token are set
   const isBynderSessionValid =
     localStorage.getItem("cvrt") && localStorage.getItem("cvad");
@@ -129,40 +151,22 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
     setInitialValue(value);
   }, [version]);
 
-  // When compact mode toggles, remount the editor preserving the current content
   useEffect(() => {
-    if (isFirstMount.current) {
-      isFirstMount.current = false;
-      return;
-    }
-    setIsSkinLoaded(false);
-    setInitialValue(contentRef.current);
+    setInitialValue(currentContentRef.current);
+    setToolbarConfig(compact ? compactToolbarConfig : normalToolbarConfig);
     setEditorKey((prev) => prev + 1);
   }, [compact]);
 
   return (
     <Box
       id="tinyMceWrapper"
-      data-compact={compact}
       sx={{
         minHeight: EDITOR_HEIGHT,
         "& .tox.tox-tinymce": {
           borderColor: error && "error.main",
         },
-        "&[data-compact='true']": {
-          "& .tox-editor-header .tox-toolbar__primary": {
-            "& .tox-toolbar__group": {
-              px: 0.5,
-              "& button .tox-icon.tox-tbtn__icon-wrap svg": {
-                scale: "0.85",
-              },
-            },
-            "& .tox-toolbar__group:has(button[aria-label='Fullscreen'])": {
-              flexGrow: 1,
-              display: "flex",
-              justifyContent: "flex-end",
-            },
-          },
+        ".tox-fullscreen .tox.tox-tinymce-aux": {
+          zIndex: (theme) => theme.zIndex.modal + 1,
         },
         "&:has(div.tox-fullscreen)": {
           backgroundColor: alpha(theme.palette.grey[900], 0.5),
@@ -179,19 +183,19 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
           evt.target instanceof Element &&
           evt.target.id === "tinyMceWrapper"
         ) {
-          tinymce?.activeEditor?.execCommand("mceFullScreen");
+          tinymce.activeEditor.execCommand("mceFullScreen");
         }
       }}
     >
-      <Box sx={{ visibility: isSkinLoaded ? "visibile" : "hidden" }}>
+      <Box sx={{ visibility: isSkinLoaded ? "visible" : "hidden" }}>
         <Editor
-          key={editorKey}
           id={name}
+          key={editorKey}
           onFocusIn={onFocus}
           onFocusOut={onBlur}
           initialValue={initialValue}
           onEditorChange={(content, editor) => {
-            contentRef.current = content;
+            currentContentRef.current = content;
             onChange(content, name, datatype);
 
             const charCount =
@@ -279,37 +283,25 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
               "slashcommands",
               "socialmediaembed",
               "imageresizer",
+              "compactToolbar",
               // "bynder",
             ],
             // NOTE: premium plugins are being loaded from a self hosted location
             // specific to our application. Making this component not usable outside of our context.
             external_plugins: externalPlugins ?? {},
 
-            // Editor Settings
-            toolbar: compact
-              ? "compactBlocks | bold italic underline | compactAlign | compactLists | zestyMediaApp media link | fullscreen"
-              : "slashcommands blocks | \
-              bold italic underline backcolor | \
-              zestyMediaApp media bynder link socialmediaembed table | \
-              align bullist numlist outdent indent | \
-              searchreplace | \
-              superscript subscript strikethrough removeformat | \
-              codesample insertdatetime charmap emoticons | \
-              undo redo | \
-              code help | \
-              fullscreen",
+            toolbar: toolbarConfig,
             contextmenu: "bold italic link | copy paste",
-            toolbar_mode: compact ? "sliding" : "wrap",
+            toolbar_mode: "wrap",
             relative_urls: false,
             branding: false,
             menubar: false,
             statusbar: false,
             object_resizing: true,
             block_formats:
-              "Paragraph=p; Heading 1=h1; Heading 2=h2; Heading 3=h3; Heading 4=h4; Heading 5=h5; Heading 6=h6; Blockquote=blockquote; Preformatted=pre",
+              "Paragraph=p; Heading 1=h1; Heading 2=h2; Heading 3=h3; Heading 4=h4; Heading 5=h5; Heading 6=h6; Blockquoute=blockquote; Preformatted=pre",
             color_default_background: "none",
             help_tabs: ["shortcuts", "keyboardnav", "versions"],
-            autoresize_overflow_padding: 0,
 
             // file_picker_callback: (callback, value, meta) => {
             //   console.log(callback, value, meta);
@@ -333,8 +325,10 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
             // Plugin Settings
             quickbars_insert_toolbar: false,
             quickbars_image_toolbar: false,
-            quickbars_selection_toolbar:
-              "blocks | bold italic underline backcolor link superscript subscript strikethrough | align bullist numlist outdent indent | removeformat",
+            quickbars_selection_toolbar: compact
+              ? false
+              : "blocks | bold italic underline backcolor link superscript subscript strikethrough | align bullist numlist outdent indent | removeformat",
+
             help_accessibility: false,
 
             // powerpaste_word_import: "prompt",
@@ -349,7 +343,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
             // Therefore we opt for the resize handle over auto resizing
             resize: false,
             min_height: EDITOR_HEIGHT,
-            ...(compact && { max_height: COMPACT_EDITOR_HEIGHT + 120 }),
+            ...(compact && { max_height: COMPACT_EDITOR_HEIGHT }),
 
             // skin: false,
             skin_url: "/vendors/tinymce/skins/ui/Zesty",
@@ -389,136 +383,40 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
             // },
 
             // Customize editor buttons and actions
-            setup: (editor: TinyMCEEditor) => {
-              if (compact) {
-                const COMPACT_BLOCK_FORMATS = [
-                  {
-                    name: "heading1",
-                    text: "Heading 1",
-                    icon: "heading1",
-                    block: "h1",
-                  },
-                  {
-                    name: "heading2",
-                    text: "Heading 2",
-                    icon: "heading2",
-                    block: "h2",
-                  },
-                  { text: "Heading 3", icon: "heading3", block: "h3" },
-                  { text: "Heading 4", icon: "heading4", block: "h4" },
-                  { text: "Heading 5", icon: "heading5", block: "h5" },
-                  { text: "Heading 6", icon: "heading6", block: "h6" },
-                  { text: "Paragraph", icon: "title", block: "p" },
-                  {
-                    text: "Blockquote",
-                    icon: "quote",
-                    block: "blockquote",
-                    name: "blockquote",
-                  },
-                  { text: "Preformatted", icon: "textSnippet", block: "pre" },
-                ];
-
-                editor.ui.registry.addMenuButton("compactBlocks", {
-                  icon: "heading1",
-                  onSetup: (buttonApi: any) => {
-                    const onNodeChange = () => {
-                      const node = editor.selection.getNode();
-                      const body = editor.getBody();
-                      // blockquote wraps a <p>, so check it before other blocks
-                      if (editor.dom.getParent(node, "blockquote", body)) {
-                        buttonApi.setIcon("quote");
-                        return;
-                      }
-                      const blockEl = editor.dom.getParent(
-                        node,
-                        "h1,h2,h3,h4,h5,h6,p,pre",
-                        body
-                      );
-                      const tagName = blockEl?.tagName?.toLowerCase() ?? "p";
-                      const fmt = COMPACT_BLOCK_FORMATS.find(
-                        (f) => f.block === tagName
-                      );
-                      if (fmt) buttonApi.setIcon(fmt.icon);
-                    };
-                    editor.on("NodeChange", onNodeChange);
-                    return () => editor.off("NodeChange", onNodeChange);
-                  },
-                  fetch: (callback: (items: any[]) => void) => {
-                    callback(
-                      COMPACT_BLOCK_FORMATS.map((fmt) => ({
-                        type: "menuitem",
-                        text: fmt.text,
-                        icon: fmt.icon,
-                        title: fmt.text,
-                        wrapper: false,
-                        block: fmt.block,
-                        onAction: () =>
-                          editor.execCommand("FormatBlock", false, fmt.block),
-                      }))
-                    );
-                  },
-                });
-
-                editor.ui.registry.addMenuButton("compactAlign", {
-                  icon: "align-left",
-                  fetch: (callback: (items: any[]) => void) => {
-                    callback([
-                      {
-                        type: "menuitem",
-                        text: "Left Aligned",
-                        icon: "align-left",
-                        onAction: () => editor.execCommand("JustifyLeft"),
-                      },
-                      {
-                        type: "menuitem",
-                        text: "Center Aligned",
-                        icon: "align-center",
-                        onAction: () => editor.execCommand("JustifyCenter"),
-                      },
-                      {
-                        type: "menuitem",
-                        text: "Right Aligned",
-                        icon: "align-right",
-                        onAction: () => editor.execCommand("JustifyRight"),
-                      },
-                      {
-                        type: "menuitem",
-                        text: "Justify Text",
-                        icon: "align-justify",
-                        onAction: () => editor.execCommand("JustifyFull"),
-                      },
-                    ]);
-                  },
-                });
-
-                editor.ui.registry.addMenuButton("compactLists", {
-                  icon: "unordered-list",
-                  fetch: (callback: (items: any[]) => void) => {
-                    callback([
-                      {
-                        type: "menuitem",
-                        text: "Numbered List",
-                        icon: "ordered-list",
-                        onAction: () => editor.execCommand("InsertOrderedList"),
-                      },
-                      {
-                        type: "menuitem",
-                        text: "Bullet List",
-                        icon: "unordered-list",
-                        onAction: () =>
-                          editor.execCommand("InsertUnorderedList"),
-                      },
-                    ]);
-                  },
-                });
-              }
-
+            setup: (editor: any) => {
               editor.on("init", function () {
                 editor.addShortcut("meta+p", "", () => {
                   window.dispatchEvent(
                     new KeyboardEvent("keydown", { key: "p", metaKey: true })
                   );
                 });
+                if (pendingFullscreenRef.current) {
+                  pendingFullscreenRef.current = false;
+                  allowNextFullscreenRef.current = true;
+                  setTimeout(() => editor.execCommand("mceFullScreen"), 0);
+                }
+              });
+
+              editor.on("BeforeExecCommand", (evt: any) => {
+                if (
+                  evt.command === "mceFullScreen" &&
+                  compactRef.current &&
+                  !editor.plugins.fullscreen.isFullscreen() &&
+                  !allowNextFullscreenRef.current
+                ) {
+                  evt.preventDefault();
+                  pendingFullscreenRef.current = true;
+                  setInitialValue(editor.getContent());
+                  setToolbarConfig(normalToolbarConfig);
+                  setEditorKey((prev) => prev + 1);
+                  return;
+                }
+                if (
+                  allowNextFullscreenRef.current &&
+                  evt.command === "mceFullScreen"
+                ) {
+                  allowNextFullscreenRef.current = false;
+                }
               });
               editor.on("SkinLoaded", () => {
                 setIsSkinLoaded(true);
@@ -542,6 +440,11 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
                   editor.contentDocument.documentElement.style.display =
                     "block";
                   editor.contentDocument.body.style.width = "auto";
+                  if (compactRef.current) {
+                    setInitialValue(editor.getContent());
+                    setToolbarConfig(compactToolbarConfig);
+                    setEditorKey((prev) => prev + 1);
+                  }
                 }
               });
 
@@ -564,7 +467,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
               /**
                * Zesty Media App
                */
-              const mediaBrowserDialog = (ui?: any, filetype?: string) => {
+              const mediaBrowserDialog = (ui?: boolean, filetype?: string) => {
                 mediaBrowser({
                   limit: 10,
                   filetype,
@@ -609,10 +512,10 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
               // Bynder App
               const handleOpenBynder = () => {
                 openBynder({
-                  url: bynderPortalUrlSetting?.value || "",
+                  url: bynderPortalUrlSetting?.value,
                   onSuccess: (assets) => {
                     if (assets?.length) {
-                      tinymce?.activeEditor?.insertContent(
+                      tinymce.activeEditor.insertContent(
                         assets
                           .map((asset) => {
                             const filename = asset.originalUrl.split("/").pop();
