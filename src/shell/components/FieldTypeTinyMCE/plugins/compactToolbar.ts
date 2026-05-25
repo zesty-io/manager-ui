@@ -210,9 +210,9 @@ tinymce.PluginManager.add("compactToolbar", (editor: Editor) => {
   return {
     getMetadata: () => ({
       name: "Compact Toolbar",
-      url: "https://zesty.io",
-    }),
-  };
+import tinymce from "tinymce/tinymce";
+
+tinymce.PluginManager.add("compactToolbar", (editor: Editor) => {
 });
 
 export default setup;
