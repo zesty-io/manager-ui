@@ -1,0 +1,59 @@
+{
+  "model": {
+    "label": "Studio - Compact Fields",
+    "type": "pageset",
+    "listed": true
+  },
+  "fields": [
+    {
+      "label": "Title",
+      "name": "title",
+      "datatype": "text",
+      "sort": 0,
+      "settings": {
+        "list": true
+      }
+    },
+    {
+      "label": "Body",
+      "name": "body",
+      "datatype": "markdown",
+      "sort": 1,
+      "settings": {
+        "list": false
+      }
+    },
+    {
+      "label": "Published Date",
+      "name": "published_date",
+      "datatype": "datetime",
+      "sort": 2,
+      "settings": {
+        "list": false
+      }
+    },
+    {
+      "label": "Images",
+      "name": "images",
+      "datatype": "images",
+      "sort": 3,
+      "settings": {
+        "list": false,
+        "limit": 3
+      }
+    }
+  ],
+  "items": [
+    {
+      "web": {
+        "metaTitle": "Compact Fields Page",
+        "metaLinkText": "Compact Fields Page"
+      },
+      "data": {
+        "title": "Compact Fields Test",
+        "body": "Sample body text",
+        "images": "3-6d7e8b3-4dv81"
+      }
+    }
+  ]
+}
