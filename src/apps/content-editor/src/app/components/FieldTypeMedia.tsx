@@ -66,6 +66,7 @@ type FieldTypeMediaProps = {
   hideDrag?: boolean;
   lockedToGroupId: string | null;
   settings?: any;
+  compact?: boolean;
 };
 
 export const FieldTypeMedia = forwardRef(
@@ -80,6 +81,7 @@ export const FieldTypeMedia = forwardRef(
       hideDrag,
       lockedToGroupId,
       settings,
+      compact,
     }: FieldTypeMediaProps,
     ref
   ) => {
@@ -399,84 +401,128 @@ export const FieldTypeMedia = forwardRef(
               borderColor: hasError ? "error.main" : "primary.main",
             }}
           >
-            <Stack alignItems="center" gap={2} py={4} justifyContent="center">
-              {isDragActive ? (
-                <UploadRounded color="primary" />
-              ) : (
-                <AttachmentRounded color="primary" />
-              )}
-              <Typography
-                align="center"
-                variant="h5"
-                color="primary"
-                fontWeight={600}
+            {compact ? (
+              <Stack
+                direction="row"
+                alignItems="center"
+                gap={2}
+                px={2}
+                py={1.5}
+                justifyContent="space-between"
+                flexWrap="wrap"
               >
-                {isDragActive ? (
-                  "Drop your files here to Upload"
-                ) : (
-                  <>
-                    Drag and drop your files here <br /> or
-                  </>
-                )}
-              </Typography>
-              {!isDragActive && (
-                <Box
-                  display="flex"
-                  gap={1}
-                  justifyContent="center"
-                  flexWrap="wrap"
-                >
-                  <Button
-                    size="large"
-                    variant="outlined"
-                    onClick={open}
-                    startIcon={<UploadRounded />}
-                    fullWidth
-                    sx={{
-                      maxWidth: "196px",
-                      flexShrink: 0,
-                    }}
-                  >
-                    Upload
-                  </Button>
-                  <Button
-                    data-cy="selectFromMediaButton"
-                    fullWidth
-                    size="large"
-                    startIcon={<AddRounded />}
-                    variant="outlined"
-                    onClick={() => {
-                      openMediaBrowser({
-                        limit,
-                        callback: addZestyImage,
-                      });
-                    }}
-                    sx={{
-                      maxWidth: "196px",
-                      flexShrink: 0,
-                    }}
-                  >
-                    Add from Media
-                  </Button>
-                  {isBynderSessionValid && (
+                <Typography variant="body2" color="text.secondary">
+                  {isDragActive
+                    ? "Drop your files here"
+                    : "Drag & Drop your files"}
+                </Typography>
+                {!isDragActive && (
+                  <Stack direction="row" gap={1}>
                     <Button
-                      data-cy="addFromBynderBtn"
+                      size="small"
+                      variant="outlined"
+                      onClick={open}
+                      startIcon={<UploadRounded />}
+                    >
+                      Upload Media
+                    </Button>
+                    <Button
+                      data-cy="selectFromMediaButton"
+                      size="small"
+                      variant="outlined"
+                      onClick={() => {
+                        openMediaBrowser({
+                          limit,
+                          callback: addZestyImage,
+                        });
+                      }}
+                      startIcon={<AddRounded />}
+                    >
+                      Add from Media
+                    </Button>
+                  </Stack>
+                )}
+              </Stack>
+            ) : (
+              <Stack alignItems="center" gap={2} py={4} justifyContent="center">
+                {isDragActive ? (
+                  <UploadRounded color="primary" />
+                ) : (
+                  <AttachmentRounded color="primary" />
+                )}
+                <Typography
+                  align="center"
+                  variant="h5"
+                  color="primary"
+                  fontWeight={600}
+                >
+                  {isDragActive ? (
+                    "Drop your files here to Upload"
+                  ) : (
+                    <>
+                      Drag and drop your files here <br /> or
+                    </>
+                  )}
+                </Typography>
+                {!isDragActive && (
+                  <Box
+                    display="flex"
+                    gap={1}
+                    justifyContent="center"
+                    flexWrap="wrap"
+                  >
+                    <Button
                       size="large"
                       variant="outlined"
-                      onClick={handleOpenBynder}
-                      startIcon={<Bynder />}
+                      onClick={open}
+                      startIcon={<UploadRounded />}
                       fullWidth
                       sx={{
-                        maxWidth: "240px",
+                        maxWidth: "196px",
                         flexShrink: 0,
                       }}
                     >
-                      Add from Bynder
+                      Upload
                     </Button>
-                  )}
-                </Box>
-              )}
-            </Stack>
+                    <Button
+                      data-cy="selectFromMediaButton"
+                      fullWidth
+                      size="large"
+                      startIcon={<AddRounded />}
+                      variant="outlined"
+                      onClick={() => {
+                        openMediaBrowser({
+                          limit,
+                          callback: addZestyImage,
+                        });
+                      }}
+                      sx={{
+                        maxWidth: "196px",
+                        flexShrink: 0,
+                      }}
+                    >
+                      Add from Media
+                    </Button>
+                    {isBynderSessionValid && (
+                      <Button
+                        data-cy="addFromBynderBtn"
+                        size="large"
+                        variant="outlined"
+                        onClick={handleOpenBynder}
+                        startIcon={<Bynder />}
+                        fullWidth
+                        sx={{
+                          maxWidth: "240px",
+                          flexShrink: 0,
+                        }}
+                      >
+                        Add from Bynder
+                      </Button>
+                    )}
+                  </Box>
+                )}
+              </Stack>
+            )}
           </Box>
           {selectionError && (
             <Typography variant="body2" color="error.dark" mt={0.5}>
@@ -522,7 +568,7 @@ export const FieldTypeMedia = forwardRef(
           </DndContextProvider>
           {limit > images.length && (
             <Box display="flex" gap={1}>
-              {!isBynderSessionValid && (
+              {!compact && !isBynderSessionValid && (
                 <Button
                   size="large"
                   variant="outlined"
@@ -548,7 +594,7 @@ export const FieldTypeMedia = forwardRef(
               >
                 Add More from Media
               </Button>
-              {isBynderSessionValid && (
+              {!compact && isBynderSessionValid && (
                 <Button
                   data-cy="addFromBynderBtn"
                   size="large"

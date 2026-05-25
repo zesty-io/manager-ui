@@ -500,6 +500,7 @@ export const Field = memo(
                     ? settings.group_id
                     : null
                 }
+                compact={compact}
               />
             </FieldShell>
             {imageModal && (
