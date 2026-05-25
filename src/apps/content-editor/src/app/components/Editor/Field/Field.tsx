@@ -759,7 +759,7 @@ export const Field = memo(
       case "datetime":
         return (
           <FieldShell settings={fieldData} errors={errors}>
-            <Box {...(!compact && { maxWidth: 360 })}>
+            <Box maxWidth={compact ? undefined : 360}>
               <FieldTypeDateTime
                 name={name}
                 required={required}
