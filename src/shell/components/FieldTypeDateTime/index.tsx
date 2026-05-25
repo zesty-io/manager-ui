@@ -211,7 +211,7 @@ export const FieldTypeDateTime = ({
                 key={timeKeyCount}
                 open={isTimeFieldActive}
                 value={timeString}
-                forcePopupIcon={compact ? true : false}
+                forcePopupIcon={!!compact}
                 inputValue={inputValue}
                 options={TIME_OPTIONS}
                 getOptionLabel={(option) => {
