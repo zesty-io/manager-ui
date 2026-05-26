@@ -7,6 +7,13 @@ interface BlockFormat {
   block: string;
 }
 
+interface MenuItemSpec {
+  type: "menuitem";
+  text: string;
+  icon: string;
+  onAction: () => void;
+}
+
 const COMPACT_BLOCK_FORMATS: BlockFormat[] = [
   { text: "Heading 1", icon: "heading1", block: "h1" },
   { text: "Heading 2", icon: "heading2", block: "h2" },
@@ -28,7 +35,7 @@ const setup = (editor: Editor): void => {
   editor.ui.registry.addMenuButton("compactBlocks", {
     icon: "format",
     tooltip: "Block formatting",
-    onSetup: (buttonApi: any) => {
+    onSetup: (buttonApi) => {
       // Use a debounced or delayed update to prevent interference
       let updateTimeout: ReturnType<typeof setTimeout> | null = null;
 
@@ -78,7 +85,7 @@ const setup = (editor: Editor): void => {
         editor.off("SelectionChange", updateButtonIcon);
       };
     },
-    fetch: (callback: (items: any[]) => void) => {
+    fetch: (callback: (items: MenuItemSpec[]) => void) => {
       const items = COMPACT_BLOCK_FORMATS.map((format) => ({
         type: "menuitem" as const,
         text: format.text,
@@ -96,7 +103,7 @@ const setup = (editor: Editor): void => {
   editor.ui.registry.addMenuButton("compactAlign", {
     icon: "align-left",
     tooltip: "Text alignment",
-    fetch: (callback: (items: any[]) => void) => {
+    fetch: (callback: (items: MenuItemSpec[]) => void) => {
       callback([
         {
           type: "menuitem" as const,
@@ -142,7 +149,7 @@ const setup = (editor: Editor): void => {
   editor.ui.registry.addMenuButton("compactLists", {
     icon: "unordered-list",
     tooltip: "Lists",
-    onSetup: (buttonApi: any) => {
+    onSetup: (buttonApi) => {
       let updateTimeout: ReturnType<typeof setTimeout> | null = null;
 
       const updateButtonIcon = () => {
@@ -174,7 +181,7 @@ const setup = (editor: Editor): void => {
         editor.off("SelectionChange", updateButtonIcon);
       };
     },
-    fetch: (callback: (items: any[]) => void) => {
+    fetch: (callback: (items: MenuItemSpec[]) => void) => {
       callback([
         {
           type: "menuitem" as const,

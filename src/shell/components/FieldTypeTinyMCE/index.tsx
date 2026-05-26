@@ -73,20 +73,14 @@ const VIDEO_FILE_TYPES = [
 const NORMAL_EDITOR_HEIGHT = 560;
 const COMPACT_EDITOR_HEIGHT = 259;
 
-const normalToolbarConfig =
-  "slashcommands blocks | \
-              bold italic underline backcolor | \
-              zestyMediaApp media bynder link socialmediaembed table | \
-              align bullist numlist outdent indent | \
-              searchreplace | \
-              superscript subscript strikethrough removeformat | \
-              codesample insertdatetime charmap emoticons | \
-              undo redo | \
-              code help | \
-              fullscreen";
-
-const compactToolbarConfig =
-  "compactBlocks | bold italic underline | compactAlign | compactLists | zestyMediaApp media link | fullscreen";
+const mergedToolbarConfig =
+  "compactBlocks | slashcommands blocks | bold italic underline | backcolor | " +
+  "compactAlign | align | " +
+  "compactLists | bullist numlist outdent indent | " +
+  "zestyMediaApp media link | bynder socialmediaembed table | " +
+  "searchreplace | superscript subscript strikethrough removeformat | " +
+  "codesample insertdatetime charmap emoticons | " +
+  "undo redo | code help | fullscreen";
 
 type FieldTypeTinyMCEProps = {
   value: any;
@@ -121,21 +115,12 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
   // NOTE: controlled component
   const [initialValue, setInitialValue] = useState(value);
   const [isSkinLoaded, setIsSkinLoaded] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const { data: rawInstanceSettings } = useGetInstanceSettingsQuery();
-  const [toolbarConfig, setToolbarConfig] = useState(
-    compact ? compactToolbarConfig : normalToolbarConfig
-  );
-  const [editorKey, setEditorKey] = useState(0);
-  const pendingFullscreenRef = useRef(false);
-  const allowNextFullscreenRef = useRef(false);
-  const compactRef = useRef(compact);
   const currentContentRef = useRef<string>(value ?? "");
-  const didMountRef = useRef(false);
 
+  const effectiveCompact = compact && !isFullscreen;
   const EDITOR_HEIGHT = compact ? COMPACT_EDITOR_HEIGHT : NORMAL_EDITOR_HEIGHT;
-  useEffect(() => {
-    compactRef.current = compact;
-  }, [compact]);
   // Checks if the bynder portal and token are set
   const isBynderSessionValid =
     localStorage.getItem("cvrt") && localStorage.getItem("cvad");
@@ -153,39 +138,50 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
     setInitialValue(value);
   }, [version]);
 
-  useEffect(() => {
-    if (!didMountRef.current) {
-      didMountRef.current = true;
-      return;
-    }
-    setInitialValue(currentContentRef.current);
-    setToolbarConfig(compact ? compactToolbarConfig : normalToolbarConfig);
-    setEditorKey((prev) => prev + 1);
-  }, [compact]);
-
   return (
     <Box
       id="tinyMceWrapper"
-      data-compact={compact}
+      data-compact={effectiveCompact}
       sx={{
         minHeight: EDITOR_HEIGHT,
         "&[data-compact='true']": {
-          "& .tox-editor-header": {
-            "& .tox-toolbar__group": {
-              "& button": {
-                scale: "0.8",
-              },
-            },
-            "& .tox-toolbar__group:has(button[aria-label='Fullscreen'])": {
-              flexGrow: 1,
-              display: "flex",
-              justifyContent: "flex-end",
-            },
+          "& .tox-editor-header .tox-toolbar__group button": { scale: "0.8" },
+          // Hide all groups, then explicitly show the compact subset
+          "& .tox-toolbar__group": { display: "none" },
+          "& .tox-toolbar__group:has(button[aria-label='Block formatting'])": {
+            display: "flex",
+          },
+          "& .tox-toolbar__group:has(button[aria-label='Bold'])": {
+            display: "flex",
+          },
+          "& .tox-toolbar__group:has(button[aria-label='Text alignment'])": {
+            display: "flex",
+          },
+          "& .tox-toolbar__group:has(button[aria-label='Lists'])": {
+            display: "flex",
+          },
+          "& .tox-toolbar__group:has(button[aria-label='Select media from your uploaded assets'])":
+            { display: "flex" },
+          "& .tox-toolbar__group:has(button[aria-label='Fullscreen'])": {
+            display: "flex",
+            flexGrow: 1,
+            justifyContent: "flex-end",
+          },
+        },
+        "&:not([data-compact='true'])": {
+          "& .tox-toolbar__group:has(button[aria-label='Block formatting'])": {
+            display: "none",
+          },
+          "& .tox-toolbar__group:has(button[aria-label='Text alignment'])": {
+            display: "none",
+          },
+          "& .tox-toolbar__group:has(button[aria-label='Lists'])": {
+            display: "none",
           },
         },
 
         "& .tox.tox-tinymce": {
-          borderColor: error && "error.main",
+          borderColor: error ? "error.main" : undefined,
         },
         "&:has(div.tox-fullscreen)": {
           backgroundColor: alpha(theme.palette.grey[900], 0.5),
@@ -209,7 +205,6 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
       <Box sx={{ visibility: isSkinLoaded ? "visible" : "hidden" }}>
         <Editor
           id={name}
-          key={editorKey}
           onFocusIn={onFocus}
           onFocusOut={onBlur}
           initialValue={initialValue}
@@ -309,7 +304,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
             // specific to our application. Making this component not usable outside of our context.
             external_plugins: externalPlugins ?? {},
 
-            toolbar: toolbarConfig,
+            toolbar: mergedToolbarConfig,
             contextmenu: "bold italic link | copy paste",
             toolbar_mode: "wrap",
             relative_urls: false,
@@ -344,9 +339,8 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
             // Plugin Settings
             quickbars_insert_toolbar: false,
             quickbars_image_toolbar: false,
-            quickbars_selection_toolbar: compact
-              ? false
-              : "blocks | bold italic underline backcolor link superscript subscript strikethrough | align bullist numlist outdent indent | removeformat",
+            quickbars_selection_toolbar:
+              "blocks | bold italic underline backcolor link superscript subscript strikethrough | align bullist numlist outdent indent | removeformat",
 
             help_accessibility: false,
 
@@ -362,7 +356,6 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
             // Therefore we opt for the resize handle over auto resizing
             resize: false,
             min_height: EDITOR_HEIGHT,
-            ...(compact && { max_height: COMPACT_EDITOR_HEIGHT }),
 
             // skin: false,
             skin_url: "/vendors/tinymce/skins/ui/Zesty",
@@ -409,38 +402,8 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
                     new KeyboardEvent("keydown", { key: "p", metaKey: true })
                   );
                 });
-                if (pendingFullscreenRef.current) {
-                  pendingFullscreenRef.current = false;
-                  allowNextFullscreenRef.current = true;
-                  setTimeout(() => editor.execCommand("mceFullScreen"), 0);
-                }
               });
 
-              // Two-pass fullscreen handoff: when compact is true, entering fullscreen
-              // remounts with normalToolbarConfig first (pass 1), then the new editor's
-              // onInit re-triggers fullscreen via pendingFullscreenRef (pass 2).
-              // allowNextFullscreenRef prevents the second BeforeExecCommand from looping.
-              editor.on("BeforeExecCommand", (evt: any) => {
-                if (
-                  evt.command === "mceFullScreen" &&
-                  compactRef.current &&
-                  !editor.plugins.fullscreen?.isFullscreen() &&
-                  !allowNextFullscreenRef.current
-                ) {
-                  evt.preventDefault();
-                  pendingFullscreenRef.current = true;
-                  setInitialValue(editor.getContent());
-                  setToolbarConfig(normalToolbarConfig);
-                  setEditorKey((prev) => prev + 1);
-                  return;
-                }
-                if (
-                  allowNextFullscreenRef.current &&
-                  evt.command === "mceFullScreen"
-                ) {
-                  allowNextFullscreenRef.current = false;
-                }
-              });
               editor.on("SkinLoaded", () => {
                 setIsSkinLoaded(true);
               });
@@ -456,6 +419,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
 
               // Limits the content width to 640px when in fullscreen
               editor.on("FullscreenStateChanged", (evt: any) => {
+                setIsFullscreen(evt.state);
                 if (evt.state) {
                   editor.contentDocument.documentElement.style.display = "flex";
                   editor.contentDocument.body.style.width = "640px";
@@ -463,11 +427,6 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
                   editor.contentDocument.documentElement.style.display =
                     "block";
                   editor.contentDocument.body.style.width = "auto";
-                  if (compactRef.current) {
-                    setInitialValue(editor.getContent());
-                    setToolbarConfig(compactToolbarConfig);
-                    setEditorKey((prev) => prev + 1);
-                  }
                 }
               });
 
