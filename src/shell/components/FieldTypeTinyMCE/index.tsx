@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import { Box, alpha } from "@mui/material";
 import { theme } from "@zesty-io/material";
@@ -117,8 +117,6 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
   const [isSkinLoaded, setIsSkinLoaded] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const { data: rawInstanceSettings } = useGetInstanceSettingsQuery();
-  const currentContentRef = useRef<string>(value ?? "");
-
   const effectiveCompact = compact && !isFullscreen;
   const EDITOR_HEIGHT = compact ? COMPACT_EDITOR_HEIGHT : NORMAL_EDITOR_HEIGHT;
   // Checks if the bynder portal and token are set
@@ -209,7 +207,6 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
           onFocusOut={onBlur}
           initialValue={initialValue}
           onEditorChange={(content, editor) => {
-            currentContentRef.current = content;
             onChange(content, name, datatype);
 
             const charCount =

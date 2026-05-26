@@ -113,8 +113,9 @@ const appTheme = createTheme(theme, {
             backgroundColor: theme.palette.grey[300],
             borderRadius: "4px",
           },
-          // TinyMCE 6: in fullscreen mode, the aux element (dialogs/popovers)
-          // is a sibling of .tox-tinymce-aux and needs a higher z-index to appear above it.
+          // TinyMCE 6: in fullscreen mode, <body> gets class tox-fullscreen and
+          // .tox-tinymce-aux (dialogs/popovers container) is a direct child of <body>
+          // that needs a higher z-index to appear above the fullscreen editor.
           "&.tox-fullscreen .tox.tox-tinymce-aux": {
             zIndex: theme.zIndex.modal + 1,
           },

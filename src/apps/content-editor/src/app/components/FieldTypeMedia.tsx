@@ -412,6 +412,7 @@ export const FieldTypeMedia = forwardRef(
                 {!isDragActive && (
                   <Stack direction="row" gap={2}>
                     <Button
+                      data-cy="uploadMediaButton"
                       size="small"
                       variant="text"
                       onClick={open}
@@ -964,6 +965,20 @@ export const MediaItem = ({
                           <DriveFileRenameOutlineRounded />
                         </ListItemIcon>
                         <ListItemText>Rename File</ListItemText>
+                      </MenuItem>
+                    )}
+                    {!isURL && !isBynderAsset && data && (
+                      <MenuItem
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          setAnchorEl(null);
+                          setIsReplaceFileModalOpen(true);
+                        }}
+                      >
+                        <ListItemIcon>
+                          <FileReplace />
+                        </ListItemIcon>
+                        <ListItemText>Replace File</ListItemText>
                       </MenuItem>
                     )}
                     {!isURL && !isBynderAsset && data && (

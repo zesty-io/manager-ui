@@ -256,6 +256,7 @@ export const FieldTypeDate = memo(
               (compact ? (
                 <IconButton
                   data-cy="dateFieldClearButton"
+                  aria-label="Clear"
                   size="small"
                   onClick={handleClear}
                 >
