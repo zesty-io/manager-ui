@@ -25,7 +25,6 @@ const LABEL_DATA = {
   },
 };
 const cleanUp = () => {
-  // Delete test content item
   cy.task("cleanup:labels", [TITLES.publishLabel, TITLES.testLabel]);
 };
 
@@ -34,7 +33,6 @@ describe("Content Item Workflows", () => {
   before(() => {
     cleanUp();
 
-    // Create allow publish workflow label
     Object.values(LABEL_DATA).forEach((data) => {
       cy.task("api:createLabel", data);
     });
@@ -133,7 +131,7 @@ describe("Content Item Workflows", () => {
     ContentItemPage.elements.addWorkflowStatusLabel().should("exist").click();
     ContentItemPage.elements
       .workflowStatusLabelOption()
-      .contains(TITLES.publishLabel)
+      .contains(`Publish Approval - ${NOW}`)
       .should("exist")
       .click({ force: true });
 

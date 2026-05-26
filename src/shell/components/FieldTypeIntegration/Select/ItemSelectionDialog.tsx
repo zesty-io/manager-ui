@@ -297,7 +297,10 @@ const ItemSelectionDialog = ({
 
     const filtered = items.filter((item) => {
       const searchString = validKeys
-        ?.map((itemKey) => getKeyValue(item, itemKey)?.trim())
+        ?.map((itemKey) => {
+          const value = getKeyValue(item, itemKey);
+          return typeof value === "string" ? value.trim() : "";
+        })
         .join("\n")
         .toLowerCase();
 
@@ -336,7 +339,6 @@ const ItemSelectionDialog = ({
             maxHeight: "1080px",
             my: 2.5,
             position: "relative",
-            border: "2px solid green",
           },
         },
       }}
