@@ -441,9 +441,11 @@ const COMMON_FIELDS: InputField[] = [
     required: false,
     fullWidth: true,
     multiline: true,
+    maxLength: 500,
     gridSize: 12,
     tooltip:
       "Appears below the display label. Use this to provide instructions to content writers and API users.",
+    validate: ["length"],
   },
   {
     name: "required",
