@@ -58,13 +58,15 @@ jobs:
         run: npm install --legacy-peer-deps
 
       # Required by pull_ci_secrets.sh (gsutil + gcloud kms decrypt).
+      # @v0 was end-of-life; @v2 takes the same inputs (`credentials_json`, `project_id`) and
+      # matches what the cd-*.yaml workflows in this repo already use.
       - name: Auth with Gcloud
-        uses: google-github-actions/auth@v0
+        uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.GCP_DEV_SA_KEY }}
 
       - name: Set up Gcloud SDK
-        uses: google-github-actions/setup-gcloud@v0
+        uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: zesty-dev
 
@@ -108,10 +110,21 @@ jobs:
             '{cookies:[{name:$name,value:$value,domain:".dev.zesty.io",path:"/",httpOnly:false,secure:false,sameSite:"Lax"}],origins:[]}' \
             > "$GITHUB_WORKSPACE/storage_state.json"
           # Tighten file perms — defense-in-depth so a stray `cat` from the agent in another step
-          # at least can't read the cookie value by accident. The skill instructs the agent to read
-          # this file only for the auth-fallback path, and never to quote the cookie value.
+          # at least can't read the cookie value by accident. The skill no longer instructs the agent
+          # to read this file in CI mode (the auth-fallback path was removed for security).
           chmod 600 "$GITHUB_WORKSPACE/storage_state.json"
-          echo "Wrote storage_state.json (cookie ${COOKIE_NAME})."
+          # Wipe the decrypted creds file — we have everything we need (the cookie is in
+          # storage_state.json) and TEST_USER_EMAIL/TEST_USER_PASSWORD have no further consumer in
+          # this workflow. Removes them from the agent's Read reach.
+          rm -f ./ci/.env
+          # Also stash the token/email/password values for the post-step exfil scrub. RUNNER_TEMP is
+          # per-job ephemeral; perms 600 + we delete the dir contents right after the scrub runs.
+          mkdir -p "$RUNNER_TEMP/qa-scrub" && chmod 700 "$RUNNER_TEMP/qa-scrub"
+          printf '%s' "$TOKEN" > "$RUNNER_TEMP/qa-scrub/token"
+          printf '%s' "$EMAIL" > "$RUNNER_TEMP/qa-scrub/email"
+          printf '%s' "$PASSWORD" > "$RUNNER_TEMP/qa-scrub/password"
+          chmod 600 "$RUNNER_TEMP/qa-scrub/"*
+          echo "Wrote storage_state.json (cookie ${COOKIE_NAME}); wiped ./ci/.env; staged scrub patterns."
 
       # Install the Chromium build for the EXACT Playwright version @playwright/mcp@$MCP_VERSION
       # pins, so the browser the MCP launches at runtime is guaranteed to exist (a `npx playwright`
@@ -209,6 +222,12 @@ jobs:
             --mcp-config '{"mcpServers":{"playwright":{"command":"npx","args":["-y","@playwright/mcp@${{ env.MCP_VERSION }}","--headless","--isolated","--no-sandbox","--storage-state","${{ github.workspace }}/storage_state.json"]}}}'
             --allowedTools "Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh issue view:*),Read,Write,Grep,Glob,mcp__playwright__browser_navigate,mcp__playwright__browser_snapshot,mcp__playwright__browser_click,mcp__playwright__browser_type,mcp__playwright__browser_fill_form,mcp__playwright__browser_select_option,mcp__playwright__browser_hover,mcp__playwright__browser_press_key,mcp__playwright__browser_wait_for,mcp__playwright__browser_console_messages,mcp__playwright__browser_network_requests,mcp__playwright__browser_evaluate"
 
+      # The MCP server has already consumed storage_state.json at startup; nothing else needs the
+      # cookie file. Delete it so any subsequent step (or stray Read) can't pick it up.
+      - name: Cleanup auth state
+        if: always()
+        run: rm -f "$GITHUB_WORKSPACE/storage_state.json"
+
       # Post the agent's QA report (written to qa-comment.md) — or UPDATE the existing QA comment in
       # place (found by the <!-- cv-verifier --> marker) so repeated pushes don't pile up comments or
       # re-notify subscribers. Also parses the agent's machine verdict here for the QA gate.
@@ -247,13 +266,27 @@ jobs:
           echo "verdict=${VERDICT:-}" >> "$GITHUB_OUTPUT"
           echo "Parsed QA verdict: ${VERDICT:-<none>}"
 
-          # Cookie-exfiltration guard: refuse to post a body that mentions the session-cookie name.
-          # The skill explicitly forbids the agent from quoting the cookie value, but a sufficiently
-          # crafted prompt-injection in the PR diff could coerce the model to ignore that rule.
-          # If `DEV_APP_SID` (or a `DEV_APP_SID=` assignment) shows up in the body, fail the step;
-          # the report stays in $FILE and is uploadable from the run for investigation.
+          # Cookie/credential exfiltration guard: refuse to post a body that contains the cookie
+          # name, the cookie VALUE, the test-user email, or the test-user password. The skill
+          # forbids the agent from quoting any of these, but a crafted prompt-injection in the PR
+          # diff could coerce the model past that rule — this is the deterministic backstop.
+          # The report stays in $FILE and is recoverable from the run for investigation.
+          SCRUB_FAILED=0
           if printf '%s' "$BODY" | grep -qiE 'DEV_APP_SID'; then
-            echo "::error::QA report contains the string DEV_APP_SID — refusing to post (likely cookie leak via prompt injection). Inspect qa-comment.md in the run logs."
+            echo "::error::QA report mentions DEV_APP_SID — refusing to post."
+            SCRUB_FAILED=1
+          fi
+          for label in token email password; do
+            f="$RUNNER_TEMP/qa-scrub/$label"
+            if [ -s "$f" ] && printf '%s' "$BODY" | grep -qF "$(cat "$f")"; then
+              echo "::error::QA report contains the literal ${label} value — refusing to post."
+              SCRUB_FAILED=1
+            fi
+          done
+          # Best-effort cleanup of the scrub patterns whether we pass or fail.
+          rm -rf "$RUNNER_TEMP/qa-scrub"
+          if [ "$SCRUB_FAILED" = "1" ]; then
+            echo "::error::See qa-comment.md in the run logs for the report that was withheld."
             exit 1
           fi
 
