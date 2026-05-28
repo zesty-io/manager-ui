@@ -1,3 +1,4 @@
-# Glob patterns for files to copy from the repo root into each new worktree.
+# Files to copy from the repo root into each new worktree.
 # Used by the Claude Code worktree setup to make local env files available.
+cypress.env.json
 *.env*
