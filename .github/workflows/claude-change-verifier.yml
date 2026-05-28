@@ -19,13 +19,16 @@ on:
   pull_request:
     branches: [dev]
     types: [opened, synchronize, reopened, ready_for_review]
-    # Skip the full Verifier (boot + browser + agent, ~10–15 min) on PRs with no app surface to
+    # Skip the full Verifier (boot + browser + agent, ~10–15 min) on PRs with NO app surface to
     # verify. The skill's step 3 would just say "browser verification not applicable" for these.
+    # Be specific (not `**/*.md`): SKILL.md changes ARE app-surface — they change Verifier behaviour
+    # and should self-test on the same run.
     paths-ignore:
-      - "**/*.md"
+      - "README*"
       - "**/CHANGELOG*"
       - "docs/**"
       - "LICENSE*"
+      - ".gitignore"
 
 jobs:
   verify:
@@ -283,7 +286,10 @@ jobs:
           # marker after the real one to flip the verdict"; a true marker count = 1 means the
           # gate reads the agent's intended answer unambiguously). Missing marker (count = 0)
           # still ⇒ empty verdict ⇒ gate green per the existing "uncertainty doesn't block" rule.
-          MARKER_COUNT=$(printf '%s' "$BODY" | grep -ciE '<!-- qa-verdict:[[:space:]]*(PASS|FAIL|INCONCLUSIVE)' || true)
+          # Count actual MATCHES (not matching lines). `grep -c` counts lines, so two markers on
+          # the same line would still register as 1 and bypass the anti-tamper check.
+          MARKER_COUNT=$(printf '%s' "$BODY" | grep -oiE '<!-- qa-verdict:[[:space:]]*(PASS|FAIL|INCONCLUSIVE)' | wc -l | tr -d ' ' || true)
+          MARKER_COUNT=${MARKER_COUNT:-0}
           if [ "$MARKER_COUNT" -gt 1 ]; then
             echo "::error::QA report contains $MARKER_COUNT qa-verdict markers; expected exactly 1. Refusing to post (possible prompt-injection tampering or LLM template-echo). Inspect qa-comment.md in the run logs."
             exit 1
