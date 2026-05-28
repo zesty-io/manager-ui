@@ -20,9 +20,10 @@ CI passes these explicitly; locally, infer or ask:
   `window.location.host.split(".")[0]`, so it CANNOT run at `localhost`. CI always runs HTTP and
   passes the URL explicitly; **locally** the precondition probes HTTPS first (some work requires it),
   falls back to HTTP, and spins one up (asking which) if neither is responding.
-- `REPO`, `PR_NUMBER`, `ISSUE_NUMBER`, `REPORT_FILE` — CI provides these. `PR_NUMBER` and `REPORT_FILE`
-  are CI-only (local runs just print). Locally, derive `ISSUE_NUMBER` from the branch name (leading
-  `<number>-`); else ask — empty ⇒ change-only mode.
+- `REPO`, `PR_NUMBER`, `ISSUE_NUMBER`, `REPORT_FILE` — CI provides these (the workflow's
+  `Resolve linked issue` step already passes `ISSUE_NUMBER`). `PR_NUMBER` and `REPORT_FILE` are
+  CI-only (local runs just print). Locally, resolve `ISSUE_NUMBER` per step 1 below — branch name
+  → open PR's Development-sidebar link → ASK the dev → empty ⇒ change-only mode.
 
 ## 0) Preconditions
 
@@ -71,12 +72,36 @@ one); the cert is in the repo and may not be in the OS/browser trust store.
 
 ## 1) Resolve the ticket
 
-If `ISSUE_NUMBER` is set, run `gh issue view <ISSUE_NUMBER> --repo <REPO> --comments` and read the FULL
-issue: its Problem / Expected behavior / Solution, the COMMENTS (which often hold clarifications or
-scope decisions), and any linked DESIGN (the issue template has a "Design" UI link — note what it
-implies). Derive a SHORT numbered list of testable ACCEPTANCE CRITERIA (what must be true for this work
-to be "done"). If there is no issue, enter CHANGE-ONLY MODE: there are no criteria to check against, so
-instead verify the change itself behaves, and say "No linked issue found".
+**Get a number to work with.**
+
+- **CI**: `ISSUE_NUMBER` is provided by the workflow (the `Resolve linked issue` step). Empty value ⇒
+  go straight to CHANGE-ONLY MODE below.
+- **Local** — try in this order, stop at the first hit:
+  1. **Branch name**: extract a leading number from `git branch --show-current` matching the regex
+     `(^|/)([0-9]+)-` (covers both `1234-foo` and `feat/1234-foo`).
+  2. **Open PR for this branch**: if there's an open PR for the current branch, use its
+     Development-sidebar / `Closes #N` link. Get owner+repo with
+     `gh repo view --json nameWithOwner --jq .nameWithOwner`, then:
+     `gh api graphql -f query='query($o:String!,$r:String!,$b:String!){repository(owner:$o,name:$r){pullRequests(headRefName:$b,first:1,states:OPEN){nodes{closingIssuesReferences(first:1){nodes{number}}}}}}' -F o=<owner> -F r=<repo> -F b="$(git branch --show-current)" --jq '.data.repository.pullRequests.nodes[0].closingIssuesReferences.nodes[0].number // empty'`
+     (GraphQL is version-independent; the `gh pr view --json closingIssuesReferences` shortcut isn't
+     available on older `gh` versions.)
+  3. **ASK the dev**: "Is there a GitHub issue # to verify against, or should I run change-only QA?"
+  4. If still nothing, go to CHANGE-ONLY MODE below.
+
+**Fetch the issue (when you have a number).** Use the JSON form, not the default
+`gh issue view --comments`:
+
+`gh issue view <ISSUE_NUMBER> --repo <REPO> --json title,body,comments,labels,assignees`
+
+(The default `--comments` form currently triggers a GitHub GraphQL deprecation error on
+`repository.issue.projectCards` and returns nothing — the `--json <fields>` form avoids that field
+entirely.) Read the title, body (Problem / Expected behavior / Solution), comments (often hold
+clarifications and scope decisions), and any linked DESIGN (the issue template has a "Design" UI
+link — note what it implies). Derive a SHORT numbered list of testable ACCEPTANCE CRITERIA (what
+must be true for this work to be "done").
+
+**CHANGE-ONLY MODE** (no issue): there are no criteria to check against, so instead verify the
+change itself behaves, and say "No linked issue found — change-only QA" in the comment.
 
 ## 2) Understand the change
 
