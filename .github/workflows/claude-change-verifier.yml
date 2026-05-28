@@ -35,6 +35,7 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
+      issues: read # the skill's step 1 calls `gh issue view` on the linked issue
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
@@ -100,6 +101,10 @@ jobs:
           jq -n --arg name "$COOKIE_NAME" --arg value "$TOKEN" \
             '{cookies:[{name:$name,value:$value,domain:".dev.zesty.io",path:"/",httpOnly:false,secure:false,sameSite:"Lax"}],origins:[]}' \
             > "$GITHUB_WORKSPACE/storage_state.json"
+          # Tighten file perms — defense-in-depth so a stray `cat` from the agent in another step
+          # at least can't read the cookie value by accident. The skill instructs the agent to read
+          # this file only for the auth-fallback path, and never to quote the cookie value.
+          chmod 600 "$GITHUB_WORKSPACE/storage_state.json"
           echo "Wrote storage_state.json (cookie ${COOKIE_NAME})."
 
       # Install the Chromium build for the EXACT Playwright version @playwright/mcp@$MCP_VERSION
@@ -118,7 +123,11 @@ jobs:
       - name: Start dev server
         run: |
           nohup npm start > "$GITHUB_WORKSPACE/devserver.log" 2>&1 &
-          npx wait-on -t 300000 http://localhost:8080
+          # Probe the SPOOFED host (not localhost). The dev server's historyApiFallback selects a
+          # different HTML entry per hostname (per CLAUDE.md), so localhost:8080 returning 200
+          # doesn't prove the /etc/hosts rewrite worked. Hitting the real host fails loudly if it
+          # didn't, instead of silently sending the agent to a wrong-entry / 404 page.
+          npx wait-on -t 300000 http://8-f48cf3a682-7fthvk.manager.dev.zesty.io:8080
 
       # Resolve the GitHub issue this PR addresses. This repo names branches `<issue#>-slug` and
       # uses `Closes #N`, so try the branch name first, then GitHub's native closing references,
@@ -133,9 +142,10 @@ jobs:
         run: |
           set -uo pipefail
           NUM=""
-          # 1) Branch convention: leading issue number, e.g. 1042-setting-font-...
-          if printf '%s' "$HEAD_REF" | grep -qE '^[0-9]+-'; then
-            NUM=$(printf '%s' "$HEAD_REF" | grep -oE '^[0-9]+')
+          # 1) Branch convention: match `1042-setting-font-...` AND prefixed forms like
+          # `feat/1042-...` / `fix/1042-...`. Mirrors SKILL.md step 1.1's regex.
+          if printf '%s' "$HEAD_REF" | grep -qE '(^|/)[0-9]+-'; then
+            NUM=$(printf '%s' "$HEAD_REF" | grep -oE '(^|/)[0-9]+-' | grep -oE '[0-9]+' | head -1)
           fi
           # 2) GitHub's native closing references — covers BOTH "Closes #N" keyword links AND
           # issues tied via the PR's Development sidebar. Uses GraphQL directly because the
@@ -196,7 +206,10 @@ jobs:
           REPO: ${{ github.repository }}
           PR: ${{ github.event.pull_request.number }}
         run: |
-          set -uo pipefail
+          # set -e so a failed gh api PATCH/POST below aborts the step instead of silently
+          # printing "Updated..." while the comment didn't update — that would let the gate read a
+          # stale verdict as green.
+          set -euo pipefail
           FILE="$GITHUB_WORKSPACE/qa-comment.md"
           if [ ! -f "$FILE" ]; then
             echo "No qa-comment.md produced by the agent; nothing to post."
@@ -204,9 +217,12 @@ jobs:
           fi
           BODY=$(cat "$FILE")
 
-          # Machine verdict for the QA gate step. Empty if absent -> the gate treats it as green.
-          VERDICT=$(printf '%s' "$BODY" | grep -oiE 'qa-verdict:[[:space:]]*(PASS|FAIL|INCONCLUSIVE)' \
-            | grep -oiE '(PASS|FAIL|INCONCLUSIVE)' | head -n1 | tr '[:lower:]' '[:upper:]')
+          # Machine verdict for the QA gate step. Anchor on the HTML-comment marker (the skill's
+          # canonical form) so an LLM that echoes the template line above the real marker can't
+          # pin us to a wrong verdict. Take the LAST occurrence so the final answer wins.
+          # `|| true` keeps no-match from aborting under set -e — missing verdict ⇒ empty ⇒ green.
+          VERDICT=$(printf '%s' "$BODY" | grep -oE '<!-- qa-verdict:[[:space:]]*(PASS|FAIL|INCONCLUSIVE)' \
+            | grep -oiE '(PASS|FAIL|INCONCLUSIVE)' | tail -n1 | tr '[:lower:]' '[:upper:]' || true)
           echo "verdict=${VERDICT:-}" >> "$GITHUB_OUTPUT"
           echo "Parsed QA verdict: ${VERDICT:-<none>}"
 

@@ -149,6 +149,10 @@ build/config/CI/test-only change), say so and treat browser verification as not 
   Fallback: if `cypress.env.json` is missing or the login returns no token, ask the dev to sign in
   manually — never prompt them for credentials yourself.
 
+**Secrets handling (applies to BOTH paths above).** The cookie / token is a real session credential.
+**NEVER quote, paraphrase, or echo it** in the QA Review report, in "Gaps & concerns", in chat replies,
+or in any other output. Inject it via `browser_evaluate` and that's it.
+
 ## 5) QA in the browser
 
 **Test the verb, not a proxy for it.** When a criterion names a behavior (expands, scrolls,
