@@ -22,7 +22,13 @@ on:
 
 jobs:
   verify:
-    if: github.event.pull_request.draft == false
+    # Skip drafts AND fork PRs. Fork PRs on a public repo don't get secrets (GCP_DEV_SA_KEY,
+    # ANTHROPIC_API_KEY), so every step from gcloud auth onward would fail noisily. The same-repo
+    # check also makes the invariant explicit so a future contributor can't accidentally elevate
+    # this to `pull_request_target` (which WOULD pass secrets to fork code — a secrets-leak path).
+    if: >-
+      github.event.pull_request.draft == false &&
+      github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     timeout-minutes: 25 # webpack dev boot + browser drive needs more than the reviewer's 15
     env:
@@ -114,6 +120,14 @@ jobs:
         run: |
           set -euo pipefail
           PW_VERSION=$(npm view "@playwright/mcp@${MCP_VERSION}" dependencies.playwright)
+          # Fail loudly if the resolution returned empty — otherwise we'd run
+          # `npx -y "playwright@" install`, which silently resolves to the LATEST playwright
+          # release (the exact version drift this step is supposed to prevent). Empty means the
+          # MCP changed how it declares its Playwright dep (e.g. moved to peerDependencies).
+          if [ -z "$PW_VERSION" ]; then
+            echo "::error::Could not resolve a pinned playwright version from @playwright/mcp@${MCP_VERSION} dependencies. Inspect: \`npm view @playwright/mcp@${MCP_VERSION}\`"
+            exit 1
+          fi
           echo "Installing Chromium for playwright@${PW_VERSION} (pinned by @playwright/mcp@${MCP_VERSION})"
           npx -y "playwright@${PW_VERSION}" install --with-deps chromium
 
@@ -160,7 +174,7 @@ jobs:
           # 3) Fallback: grep the PR body for clos/fix/resolv #N.
           if [ -z "$NUM" ]; then
             NUM=$(gh pr view "$PR" --repo "$REPO" --json body --jq '.body' 2>/dev/null \
-              | grep -oiE '(clos|fix|resolv)[a-z]*[[:space:]]+#[0-9]+' | grep -oE '[0-9]+' | head -1 || true)
+              | grep -oiE '(clos|fix|resolv)[a-z]*:?[[:space:]]+#[0-9]+' | grep -oE '[0-9]+' | head -1 || true)
           fi
           echo "issue_number=${NUM:-}" >> "$GITHUB_OUTPUT"
           if [ -n "${NUM:-}" ]; then
@@ -247,9 +261,13 @@ jobs:
           PAYLOAD=$(BODY="$BODY" python3 -c 'import os,json,sys; sys.stdout.write(json.dumps({"body": os.environ["BODY"]}))')
 
           # Upsert: update the existing QA comment (by the cv-verifier marker) in place, else create.
+          # Important: `gh api --paginate --jq` runs the jq filter against EACH page separately and
+          # concatenates the outputs. So `map(...) | first | .id` would emit one id-or-`null` per page
+          # and `$CID` could become a multi-line `"null\n12345"` on PRs with >30 comments. Instead,
+          # emit one id per match per page (no `map`, no `first`) and `head -n1` picks the earliest.
           CID=$(gh api "repos/$REPO/issues/$PR/comments" --paginate \
-            --jq 'map(select(.body | contains("<!-- cv-verifier -->"))) | first | .id')
-          if [ -n "${CID:-}" ] && [ "$CID" != "null" ]; then
+            --jq '.[] | select(.body | contains("<!-- cv-verifier -->")) | .id' | head -n1)
+          if [ -n "${CID:-}" ]; then
             printf '%s' "$PAYLOAD" | gh api -X PATCH "repos/$REPO/issues/comments/$CID" --input - --silent
             echo "Updated existing QA comment $CID."
           else

@@ -140,9 +140,14 @@ build/config/CI/test-only change), say so and treat browser verification as not 
   (file is at the repo root and gitignored). Do this BEFORE step 5's first real navigation:
 
   1. `EMAIL=$(jq -r .email cypress.env.json)` / `PASSWORD=$(jq -r .password cypress.env.json)`.
-  2. `TOKEN=$(curl -s --form-string "email=$EMAIL" --form-string "password=$PASSWORD" https://auth.api.dev.zesty.io/login | jq -r '.meta.token // empty')`.
-     (Use `--form-string`, NOT `-F`/`--form`: `-F` interprets `;`, `@`, `<` in field values as
-     multipart delimiters and silently truncates passwords that contain them, producing a 401.)
+  2. `TOKEN=$(curl -s --fail --form-string "email=$EMAIL" --form-string "password=$PASSWORD" https://auth.api.dev.zesty.io/login | jq -r '.meta.token // empty')`.
+     - Use `--form-string`, NOT `-F`/`--form`: `-F` interprets `;`, `@`, `<` in field values as
+       multipart delimiters and silently truncates passwords that contain them, producing a 401.
+     - `--fail` makes a 4xx exit non-zero with no response body emitted, so the agent never sees
+       the login endpoint's reply (which on misconfigurations could echo the request).
+     - **NEVER echo the `$PASSWORD` value, the full curl command, or the login response body in any
+       chat output, the QA Review report, "Gaps & concerns", or anywhere else.** Use the variables,
+       don't restate them. Same posture as the cookie/token rule below.
   3. `browser_navigate` to `APP_BASE_URL` once (you'll land on the login screen — expected).
   4. `browser_evaluate` with
      `() => { document.cookie = "DEV_APP_SID=<TOKEN>; domain=.dev.zesty.io; path=/"; }`
