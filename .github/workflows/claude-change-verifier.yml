@@ -1,0 +1,239 @@
+name: Claude Change Verifier
+
+# Complements claude-auto-reviewer.yml. Acts as a senior QA: it resolves the GitHub issue the
+# PR addresses (branch `<issue#>-slug` or `Closes #N`), boots the dev build, drives the changed
+# view in a headless browser (Playwright MCP) to validate the change against the issue's
+# acceptance criteria, and posts ONE QA sign-off comment — per-criterion results, what the change
+# does, gaps, and prose Cypress automation suggestions. On later pushes it UPDATES that same comment
+# in place (upsert) rather than piling on new ones.
+#
+# The check fails (red) ONLY when a criterion is directly observed UNMET or a hard regression is
+# seen; "could not verify" always stays green so uncertainty never blocks a PR. With no linked
+# issue it degrades to change-only QA.
+#
+# It reuses the existing Cypress CI plumbing: ci/scripts/update_etc_hosts.sh spoofs the instance
+# host so the bundle targets the DEV API, and ci/scripts/pull_ci_secrets.sh (run via
+# `npm run ci:test:setup`) KMS-decrypts the dev login creds into ./ci/.env.
+
+on:
+  pull_request:
+    branches: [dev]
+    types: [opened, synchronize, reopened, ready_for_review]
+
+jobs:
+  verify:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 25 # webpack dev boot + browser drive needs more than the reviewer's 15
+    env:
+      # Pin the Playwright MCP server version in ONE place. The browser-install step derives the
+      # matching Playwright version from it so the installed Chromium can't drift from the MCP's.
+      MCP_VERSION: "0.0.75"
+    concurrency:
+      group: claude-verify-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          fetch-depth: 1 # agent reads the checked-out PR head; `gh pr diff` uses the API
+
+      - name: Set up Node
+        uses: actions/setup-node@v4.1.0
+        with:
+          node-version: "22.19.0"
+          cache: "npm"
+          cache-dependency-path: package-lock.json
+
+      - name: Install Dependencies
+        run: npm install --legacy-peer-deps
+
+      # Required by pull_ci_secrets.sh (gsutil + gcloud kms decrypt).
+      - name: Auth with Gcloud
+        uses: google-github-actions/auth@v0
+        with:
+          credentials_json: ${{ secrets.GCP_DEV_SA_KEY }}
+
+      - name: Set up Gcloud SDK
+        uses: google-github-actions/setup-gcloud@v0
+        with:
+          project_id: zesty-dev
+
+      # Decrypts dev creds into ./ci/.env AND adds the 8-f48cf3a682-7fthvk.manager.dev.zesty.io
+      # entry to /etc/hosts (same setup the Cypress job uses).
+      - name: Setup Testing Environment
+        run: npm run ci:test:setup
+
+      # Mirrors cy.login(): POST the dev creds to ${API_AUTH}/login, take meta.token, and write it
+      # as the DEV_APP_SID cookie into a Playwright storage-state so the browser boots already
+      # authenticated. Fails loudly if login fails — we never want to post a comment that falsely
+      # claims "could not verify" when the real problem was a broken token.
+      - name: Build auth storage-state
+        run: |
+          set -euo pipefail
+          # ./ci/.env (KMS-decrypted by ci:test:setup) holds TEST_USER_EMAIL / TEST_USER_PASSWORD.
+          # Parse it with the SAME dotenv parser Cypress uses (cypress/plugins/index.js) so quoting
+          # and special characters in the password are handled identically — don't shell-source it.
+          EMAIL=$(node -e "const e=require('dotenv').config({path:'./ci/.env'}).parsed||{};process.stdout.write(e.TEST_USER_EMAIL||'')")
+          PASSWORD=$(node -e "const e=require('dotenv').config({path:'./ci/.env'}).parsed||{};process.stdout.write(e.TEST_USER_PASSWORD||'')")
+          if [ -z "$EMAIL" ] || [ -z "$PASSWORD" ]; then
+            echo "::error::TEST_USER_EMAIL/TEST_USER_PASSWORD not found in ./ci/.env."
+            exit 1
+          fi
+          echo "::add-mask::$PASSWORD"
+          API_AUTH="https://auth.api.dev.zesty.io"
+          COOKIE_NAME="DEV_APP_SID"
+          TOKEN=$(curl -s -F "email=${EMAIL}" -F "password=${PASSWORD}" "${API_AUTH}/login" | jq -r '.meta.token // empty')
+          if [ -z "$TOKEN" ]; then
+            echo "::error::Failed to obtain auth token from ${API_AUTH}/login — aborting so we don't post a misleading verification comment."
+            exit 1
+          fi
+          echo "::add-mask::$TOKEN"
+          # Cookie scoped to the registrable parent so it reaches *.dev.zesty.io (incl. the manager host).
+          # http (not https) + JS-readable, matching how cy.login scopes the dev cookie.
+          jq -n --arg name "$COOKIE_NAME" --arg value "$TOKEN" \
+            '{cookies:[{name:$name,value:$value,domain:".dev.zesty.io",path:"/",httpOnly:false,secure:false,sameSite:"Lax"}],origins:[]}' \
+            > "$GITHUB_WORKSPACE/storage_state.json"
+          echo "Wrote storage_state.json (cookie ${COOKIE_NAME})."
+
+      # Install the Chromium build for the EXACT Playwright version @playwright/mcp@$MCP_VERSION
+      # pins, so the browser the MCP launches at runtime is guaranteed to exist (a `npx playwright`
+      # at a different version installs a non-matching Chromium revision -> "browser not found").
+      - name: Install Playwright browser (matched to the MCP's Playwright)
+        run: |
+          set -euo pipefail
+          PW_VERSION=$(npm view "@playwright/mcp@${MCP_VERSION}" dependencies.playwright)
+          echo "Installing Chromium for playwright@${PW_VERSION} (pinned by @playwright/mcp@${MCP_VERSION})"
+          npx -y "playwright@${PW_VERSION}" install --with-deps chromium
+
+      # The app derives its instance ZUID from the hostname, so it must be reached at the
+      # spoofed host (which targets the DEV API), NOT localhost. localhost:8080 is only the
+      # readiness probe. nohup keeps the server alive across subsequent steps.
+      - name: Start dev server
+        run: |
+          nohup npm start > "$GITHUB_WORKSPACE/devserver.log" 2>&1 &
+          npx wait-on -t 300000 http://localhost:8080
+
+      # Resolve the GitHub issue this PR addresses. This repo names branches `<issue#>-slug` and
+      # uses `Closes #N`, so try the branch name first, then GitHub's native closing references,
+      # then a body grep. Empty output -> the QA degrades to change-only verification.
+      - name: Resolve linked issue
+        id: issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+          HEAD_REF: ${{ github.head_ref }}
+        run: |
+          set -uo pipefail
+          NUM=""
+          # 1) Branch convention: leading issue number, e.g. 1042-setting-font-...
+          if printf '%s' "$HEAD_REF" | grep -qE '^[0-9]+-'; then
+            NUM=$(printf '%s' "$HEAD_REF" | grep -oE '^[0-9]+')
+          fi
+          # 2) GitHub's native closing references (PR body "Closes #N" / linked issues).
+          if [ -z "$NUM" ]; then
+            NUM=$(gh pr view "$PR" --repo "$REPO" --json closingIssuesReferences \
+              --jq '.closingIssuesReferences[0].number // empty' 2>/dev/null || true)
+          fi
+          # 3) Fallback: grep the PR body for clos/fix/resolv #N.
+          if [ -z "$NUM" ]; then
+            NUM=$(gh pr view "$PR" --repo "$REPO" --json body --jq '.body' 2>/dev/null \
+              | grep -oiE '(clos|fix|resolv)[a-z]*[[:space:]]+#[0-9]+' | grep -oE '[0-9]+' | head -1 || true)
+          fi
+          echo "issue_number=${NUM:-}" >> "$GITHUB_OUTPUT"
+          if [ -n "${NUM:-}" ]; then
+            echo "Resolved linked issue: #$NUM"
+          else
+            echo "No linked issue found; QA will run in change-only mode."
+          fi
+
+      - uses: anthropics/claude-code-action@1dc994ee7a008f0ecc866d9ac23ef036b7229f84 # v1.0.127
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          # The QA methodology lives in the repo skill .claude/skills/qa-verify/SKILL.md (shared with
+          # local dev runs). This prompt only invokes it with CI inputs. If a run shows the skill was
+          # NOT loaded/used, fall back to injecting the file: read SKILL.md into an env var and inline
+          # it here (it stays the single source of truth either way).
+          prompt: |
+            Use the "qa-verify" skill (defined in .claude/skills/qa-verify/SKILL.md) to QA this pull
+            request as a senior QA engineer. Run it with these inputs:
+              OUTPUT_MODE   = ci
+              APP_BASE_URL  = http://8-f48cf3a682-7fthvk.manager.dev.zesty.io:8080
+              REPO          = ${{ github.repository }}
+              PR_NUMBER     = ${{ github.event.pull_request.number }}
+              ISSUE_NUMBER  = ${{ steps.issue.outputs.issue_number }}   (empty = no linked issue → change-only mode)
+              REPORT_FILE   = ${{ github.workspace }}/qa-comment.md
+
+            Follow the skill exactly. In CI mode it WRITES the QA report (with the cv-verifier /
+            qa-verdict markers) to REPORT_FILE and does NOT post a comment — a later workflow step
+            posts/updates the comment. Do not return the report as a chat message.
+
+          claude_args: |
+            --mcp-config '{"mcpServers":{"playwright":{"command":"npx","args":["-y","@playwright/mcp@${{ env.MCP_VERSION }}","--headless","--isolated","--no-sandbox","--storage-state","${{ github.workspace }}/storage_state.json"]}}}'
+            --allowedTools "Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh issue view:*),Read,Write,Grep,Glob,mcp__playwright__browser_navigate,mcp__playwright__browser_snapshot,mcp__playwright__browser_click,mcp__playwright__browser_type,mcp__playwright__browser_fill_form,mcp__playwright__browser_select_option,mcp__playwright__browser_hover,mcp__playwright__browser_press_key,mcp__playwright__browser_wait_for,mcp__playwright__browser_console_messages,mcp__playwright__browser_network_requests,mcp__playwright__browser_evaluate"
+
+      # Post the agent's QA report (written to qa-comment.md) — or UPDATE the existing QA comment in
+      # place (found by the <!-- cv-verifier --> marker) so repeated pushes don't pile up comments or
+      # re-notify subscribers. Also parses the agent's machine verdict here for the QA gate.
+      - name: Post or update QA comment
+        id: qa
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          set -uo pipefail
+          FILE="$GITHUB_WORKSPACE/qa-comment.md"
+          if [ ! -f "$FILE" ]; then
+            echo "No qa-comment.md produced by the agent; nothing to post."
+            exit 0
+          fi
+          BODY=$(cat "$FILE")
+
+          # Machine verdict for the QA gate step. Empty if absent -> the gate treats it as green.
+          VERDICT=$(printf '%s' "$BODY" | grep -oiE 'qa-verdict:[[:space:]]*(PASS|FAIL|INCONCLUSIVE)' \
+            | grep -oiE '(PASS|FAIL|INCONCLUSIVE)' | head -n1 | tr '[:lower:]' '[:upper:]')
+          echo "verdict=${VERDICT:-}" >> "$GITHUB_OUTPUT"
+          echo "Parsed QA verdict: ${VERDICT:-<none>}"
+
+          # python escapes the multi-line body safely for the JSON request.
+          PAYLOAD=$(BODY="$BODY" python3 -c 'import os,json,sys; sys.stdout.write(json.dumps({"body": os.environ["BODY"]}))')
+
+          # Upsert: update the existing QA comment (by the cv-verifier marker) in place, else create.
+          CID=$(gh api "repos/$REPO/issues/$PR/comments" --paginate \
+            --jq 'map(select(.body | contains("<!-- cv-verifier -->"))) | first | .id')
+          if [ -n "${CID:-}" ] && [ "$CID" != "null" ]; then
+            printf '%s' "$PAYLOAD" | gh api -X PATCH "repos/$REPO/issues/comments/$CID" --input - --silent
+            echo "Updated existing QA comment $CID."
+          else
+            printf '%s' "$PAYLOAD" | gh api -X POST "repos/$REPO/issues/$PR/comments" --input - --silent
+            echo "Created QA comment."
+          fi
+
+      # Helps debug a failed boot (the comment-side honesty rule covers the verification path).
+      - name: Upload dev server log
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: change-verifier-devserver-log
+          path: ${{ github.workspace }}/devserver.log
+          if-no-files-found: ignore
+
+      # Senior-QA gate: turn the check red ONLY when the agent's verdict is FAIL (a criterion it
+      # DIRECTLY observed unmet, or a hard regression). INCONCLUSIVE / "could not verify" / a missing
+      # verdict all stay green — uncertainty must never block a PR. (To actually block merges, a repo
+      # admin must add this check to branch protection, like ci.yaml's all_tests_passed.)
+      - name: QA gate
+        if: always()
+        run: |
+          V="${{ steps.qa.outputs.verdict }}"
+          echo "QA verdict: ${V:-<none>}"
+          if [ "$V" = "FAIL" ]; then
+            echo "::error::QA found an unmet acceptance criterion or a hard regression — see the QA Review comment."
+            exit 1
+          fi
