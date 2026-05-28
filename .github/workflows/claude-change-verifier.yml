@@ -105,9 +105,16 @@ jobs:
           fi
           echo "::add-mask::$TOKEN"
           # Cookie scoped to the registrable parent so it reaches *.dev.zesty.io (incl. the manager host).
-          # http (not https) + JS-readable, matching how cy.login scopes the dev cookie.
+          # httpOnly:true — Playwright sends the cookie on every request automatically, so the page's
+          #   JS never needs to read it. With httpOnly the browser hides this cookie from
+          #   `document.cookie`, which closes the cleanest exfiltration path under prompt injection
+          #   (agent reads PR diff → coerced to `return document.cookie` via `browser_evaluate` → token
+          #   lands in qa-comment.md, dodging the literal-string scrub via base64/etc.).
+          #   The local-skill path uses a different mechanism (JS-set via `document.cookie =` at
+          #   session start), so it's unaffected by this CI-side change.
+          # secure:false — dev server speaks plain http; a `secure: true` cookie wouldn't be sent.
           jq -n --arg name "$COOKIE_NAME" --arg value "$TOKEN" \
-            '{cookies:[{name:$name,value:$value,domain:".dev.zesty.io",path:"/",httpOnly:false,secure:false,sameSite:"Lax"}],origins:[]}' \
+            '{cookies:[{name:$name,value:$value,domain:".dev.zesty.io",path:"/",httpOnly:true,secure:false,sameSite:"Lax"}],origins:[]}' \
             > "$GITHUB_WORKSPACE/storage_state.json"
           # Tighten file perms — defense-in-depth so a stray `cat` from the agent in another step
           # at least can't read the cookie value by accident. The skill no longer instructs the agent
