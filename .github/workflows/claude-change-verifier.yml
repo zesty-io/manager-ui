@@ -98,7 +98,9 @@ jobs:
           # delimiters and silently truncates passwords that contain them, producing a 401.
           # --form-string sends the value literally while still using multipart/form-data, which
           # is what the auth endpoint requires.
-          TOKEN=$(curl -s --form-string "email=${EMAIL}" --form-string "password=${PASSWORD}" "${API_AUTH}/login" | jq -r '.meta.token // empty')
+          # --fail makes a 4xx exit non-zero with no body printed (mirrors the local skill path),
+          # so a reflective error response can't surface request details through jq / runner logs.
+          TOKEN=$(curl -s --fail --form-string "email=${EMAIL}" --form-string "password=${PASSWORD}" "${API_AUTH}/login" | jq -r '.meta.token // empty')
           if [ -z "$TOKEN" ]; then
             echo "::error::Failed to obtain auth token from ${API_AUTH}/login — aborting so we don't post a misleading verification comment."
             exit 1
@@ -113,13 +115,15 @@ jobs:
           #   The local-skill path uses a different mechanism (JS-set via `document.cookie =` at
           #   session start), so it's unaffected by this CI-side change.
           # secure:false — dev server speaks plain http; a `secure: true` cookie wouldn't be sent.
+          # Write to $RUNNER_TEMP, NOT $GITHUB_WORKSPACE — keeps the cookie file outside the agent's
+          # Read working directory. The MCP server reads it directly via the absolute path we pass
+          # to --storage-state, so location doesn't matter for the runtime; it does matter that the
+          # agent can't `Read storage_state.json` and pipe the value somewhere.
           jq -n --arg name "$COOKIE_NAME" --arg value "$TOKEN" \
             '{cookies:[{name:$name,value:$value,domain:".dev.zesty.io",path:"/",httpOnly:true,secure:false,sameSite:"Lax"}],origins:[]}' \
-            > "$GITHUB_WORKSPACE/storage_state.json"
-          # Tighten file perms — defense-in-depth so a stray `cat` from the agent in another step
-          # at least can't read the cookie value by accident. The skill no longer instructs the agent
-          # to read this file in CI mode (the auth-fallback path was removed for security).
-          chmod 600 "$GITHUB_WORKSPACE/storage_state.json"
+            > "$RUNNER_TEMP/storage_state.json"
+          # Tighten file perms — defense-in-depth even though the file is now outside the workspace.
+          chmod 600 "$RUNNER_TEMP/storage_state.json"
           # Wipe the decrypted creds file — we have everything we need (the cookie is in
           # storage_state.json) and TEST_USER_EMAIL/TEST_USER_PASSWORD have no further consumer in
           # this workflow. Removes them from the agent's Read reach.
@@ -226,14 +230,14 @@ jobs:
             posts/updates the comment. Do not return the report as a chat message.
 
           claude_args: |
-            --mcp-config '{"mcpServers":{"playwright":{"command":"npx","args":["-y","@playwright/mcp@${{ env.MCP_VERSION }}","--headless","--isolated","--no-sandbox","--storage-state","${{ github.workspace }}/storage_state.json"]}}}'
+            --mcp-config '{"mcpServers":{"playwright":{"command":"npx","args":["-y","@playwright/mcp@${{ env.MCP_VERSION }}","--headless","--isolated","--no-sandbox","--storage-state","${{ runner.temp }}/storage_state.json"]}}}'
             --allowedTools "Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh issue view:*),Read,Write,Grep,Glob,mcp__playwright__browser_navigate,mcp__playwright__browser_snapshot,mcp__playwright__browser_click,mcp__playwright__browser_type,mcp__playwright__browser_fill_form,mcp__playwright__browser_select_option,mcp__playwright__browser_hover,mcp__playwright__browser_press_key,mcp__playwright__browser_wait_for,mcp__playwright__browser_console_messages,mcp__playwright__browser_network_requests,mcp__playwright__browser_evaluate"
 
-      # The MCP server has already consumed storage_state.json at startup; nothing else needs the
-      # cookie file. Delete it so any subsequent step (or stray Read) can't pick it up.
+      # The MCP server has already consumed storage_state.json at startup; nothing else needs it.
+      # Delete it from $RUNNER_TEMP (where we stored it, outside the workspace) for hygiene.
       - name: Cleanup auth state
         if: always()
-        run: rm -f "$GITHUB_WORKSPACE/storage_state.json"
+        run: rm -f "$RUNNER_TEMP/storage_state.json"
 
       # Post the agent's QA report (written to qa-comment.md) — or UPDATE the existing QA comment in
       # place (found by the <!-- cv-verifier --> marker) so repeated pushes don't pile up comments or
@@ -262,16 +266,21 @@ jobs:
           fi
           BODY=$(cat "$FILE")
 
-          # Machine verdict for the QA gate step. Anchor on the HTML-comment marker (the skill's
-          # canonical form) so an LLM that echoes the template line above the real marker can't
-          # pin us to a wrong verdict. Take the LAST occurrence so the final answer wins.
-          # `|| true` keeps no-match from aborting under set -e — missing verdict ⇒ empty ⇒ green.
-          # Both greps are case-insensitive so `pass`/`Pass`/etc. from an LLM that improvises
-          # casing is still caught; `tr` then normalizes to uppercase for the gate comparison.
+          # Machine verdict for the QA gate step. The skill template has EXACTLY one qa-verdict
+          # marker — any other count is anomalous and refused outright (defends against both
+          # "LLM echoes template above the real marker" and "prompt-injection appends a fake
+          # marker after the real one to flip the verdict"; a true marker count = 1 means the
+          # gate reads the agent's intended answer unambiguously). Missing marker (count = 0)
+          # still ⇒ empty verdict ⇒ gate green per the existing "uncertainty doesn't block" rule.
+          MARKER_COUNT=$(printf '%s' "$BODY" | grep -ciE '<!-- qa-verdict:[[:space:]]*(PASS|FAIL|INCONCLUSIVE)' || true)
+          if [ "$MARKER_COUNT" -gt 1 ]; then
+            echo "::error::QA report contains $MARKER_COUNT qa-verdict markers; expected exactly 1. Refusing to post (possible prompt-injection tampering or LLM template-echo). Inspect qa-comment.md in the run logs."
+            exit 1
+          fi
           VERDICT=$(printf '%s' "$BODY" | grep -oiE '<!-- qa-verdict:[[:space:]]*(PASS|FAIL|INCONCLUSIVE)' \
-            | grep -oiE '(PASS|FAIL|INCONCLUSIVE)' | tail -n1 | tr '[:lower:]' '[:upper:]' || true)
+            | grep -oiE '(PASS|FAIL|INCONCLUSIVE)' | head -n1 | tr '[:lower:]' '[:upper:]' || true)
           echo "verdict=${VERDICT:-}" >> "$GITHUB_OUTPUT"
-          echo "Parsed QA verdict: ${VERDICT:-<none>}"
+          echo "Parsed QA verdict: ${VERDICT:-<none>} (marker_count=$MARKER_COUNT)"
 
           # Cookie/credential exfiltration guard: refuse to post a body that contains the cookie
           # name, the cookie VALUE, the test-user email, or the test-user password. The skill
@@ -279,8 +288,11 @@ jobs:
           # diff could coerce the model past that rule — this is the deterministic backstop.
           # The report stays in $FILE and is recoverable from the run for investigation.
           SCRUB_FAILED=0
-          if printf '%s' "$BODY" | grep -qiE 'DEV_APP_SID'; then
-            echo "::error::QA report mentions DEV_APP_SID — refusing to post."
+          # Pin to assignment form (`DEV_APP_SID=…` or `DEV_APP_SID: …`) so a benign prose mention
+          # of the cookie name (e.g. "verifier authenticates via DEV_APP_SID") doesn't trip the
+          # guard; an actual leak almost always looks like an assignment or HTTP-header form.
+          if printf '%s' "$BODY" | grep -qiE 'DEV_APP_SID[[:space:]]*[=:]'; then
+            echo "::error::QA report contains a DEV_APP_SID assignment — refusing to post."
             SCRUB_FAILED=1
           fi
           for label in token email password; do
