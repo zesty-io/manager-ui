@@ -19,6 +19,13 @@ on:
   pull_request:
     branches: [dev]
     types: [opened, synchronize, reopened, ready_for_review]
+    # Skip the full Verifier (boot + browser + agent, ~10–15 min) on PRs with no app surface to
+    # verify. The skill's step 3 would just say "browser verification not applicable" for these.
+    paths-ignore:
+      - "**/*.md"
+      - "**/CHANGELOG*"
+      - "docs/**"
+      - "LICENSE*"
 
 jobs:
   verify:
@@ -91,6 +98,10 @@ jobs:
             echo "::error::TEST_USER_EMAIL/TEST_USER_PASSWORD not found in ./ci/.env."
             exit 1
           fi
+          # Mask both — the scrub at the post-step treats the email as a credential too (it'll
+          # refuse to post a body containing the literal value), so it deserves the same masking
+          # posture in runner logs.
+          echo "::add-mask::$EMAIL"
           echo "::add-mask::$PASSWORD"
           API_AUTH="https://auth.api.dev.zesty.io"
           COOKIE_NAME="DEV_APP_SID"
