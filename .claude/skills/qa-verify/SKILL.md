@@ -157,6 +157,13 @@ build/config/CI/test-only change), say so and treat browser verification as not 
   Fallback: if `cypress.env.json` is missing or the login returns no token, ask the dev to sign in
   manually — never prompt them for credentials yourself.
 
+  **Asymmetry vs CI: local is strictly weaker.** The CI side loads the cookie via Playwright's
+  storage-state with `httpOnly: true`, so `document.cookie` (and therefore `browser_evaluate`
+  reading it) returns empty for the cookie even under prompt-injection. Locally we inject via
+  `document.cookie = "DEV_APP_SID=…"`, which means the cookie is NOT `httpOnly` (JS-set cookies
+  can't be), so `browser_evaluate` can read it back. This isn't a bug — local needs the dev in
+  the loop anyway — but it's why the next paragraph matters more than in CI.
+
   **When NOT to auto-login locally.** If you're running this skill against a PR / branch you didn't
   author (e.g. reviewing someone else's PR), the diff content goes into the agent's context AND the
   cookie gets injected into the same browser session. A prompt-injection in that diff could coerce

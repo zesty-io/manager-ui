@@ -90,6 +90,7 @@ jobs:
       # authenticated. Fails loudly if login fails — we never want to post a comment that falsely
       # claims "could not verify" when the real problem was a broken token.
       - name: Build auth storage-state
+        id: auth
         run: |
           set -euo pipefail
           # ./ci/.env (KMS-decrypted by ci:test:setup) holds TEST_USER_EMAIL / TEST_USER_PASSWORD.
@@ -112,9 +113,11 @@ jobs:
           # delimiters and silently truncates passwords that contain them, producing a 401.
           # --form-string sends the value literally while still using multipart/form-data, which
           # is what the auth endpoint requires.
-          # --fail makes a 4xx exit non-zero with no body printed (mirrors the local skill path),
-          # so a reflective error response can't surface request details through jq / runner logs.
-          TOKEN=$(curl -s --fail --form-string "email=${EMAIL}" --form-string "password=${PASSWORD}" "${API_AUTH}/login" | jq -r '.meta.token // empty')
+          # -sS: silent progress bar but KEEP error messages (so a 401 from the auth endpoint shows
+          # up in the runner log as "curl: (22) The requested URL returned error: 401" instead of
+          # bare "Failed to obtain auth token"); --fail still prevents a reflective error body from
+          # being echoed, so request details can't leak through jq / the log.
+          TOKEN=$(curl -sS --fail --form-string "email=${EMAIL}" --form-string "password=${PASSWORD}" "${API_AUTH}/login" | jq -r '.meta.token // empty')
           if [ -z "$TOKEN" ]; then
             echo "::error::Failed to obtain auth token from ${API_AUTH}/login — aborting so we don't post a misleading verification comment."
             exit 1
@@ -142,14 +145,19 @@ jobs:
           # storage_state.json) and TEST_USER_EMAIL/TEST_USER_PASSWORD have no further consumer in
           # this workflow. Removes them from the agent's Read reach.
           rm -f ./ci/.env
-          # Also stash the token/email/password values for the post-step exfil scrub. RUNNER_TEMP is
-          # per-job ephemeral; perms 600 + we delete the dir contents right after the scrub runs.
-          mkdir -p "$RUNNER_TEMP/qa-scrub" && chmod 700 "$RUNNER_TEMP/qa-scrub"
-          printf '%s' "$TOKEN" > "$RUNNER_TEMP/qa-scrub/token"
-          printf '%s' "$EMAIL" > "$RUNNER_TEMP/qa-scrub/email"
-          printf '%s' "$PASSWORD" > "$RUNNER_TEMP/qa-scrub/password"
-          chmod 600 "$RUNNER_TEMP/qa-scrub/"*
-          echo "Wrote storage_state.json (cookie ${COOKIE_NAME}); wiped ./ci/.env; staged scrub patterns."
+          # Pass the scrub patterns to the post-step via GITHUB_OUTPUT instead of stashing them
+          # as files. The previous file-based approach (RUNNER_TEMP/qa-scrub/*) put the literal
+          # secrets back on disk where the agent's Read tool could in principle reach them,
+          # which is exactly what the scrub is meant to defend against. Step outputs are stored
+          # by the runner runtime (not in the workspace or RUNNER_TEMP filesystem), are masked
+          # in logs, and get interpolated into the consuming step's env at step-launch time —
+          # the agent step in between has no path to read them.
+          {
+            echo "scrub_token=$TOKEN"
+            echo "scrub_email=$EMAIL"
+            echo "scrub_password=$PASSWORD"
+          } >> "$GITHUB_OUTPUT"
+          echo "Wrote storage_state.json (cookie ${COOKIE_NAME}); wiped ./ci/.env; staged scrub patterns as step outputs."
 
       # Install the Chromium build for the EXACT Playwright version @playwright/mcp@$MCP_VERSION
       # pins, so the browser the MCP launches at runtime is guaranteed to exist (a `npx playwright`
@@ -263,6 +271,13 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
           PR: ${{ github.event.pull_request.number }}
+          # Scrub patterns delivered via step outputs (masked in logs; the agent step had no path to
+          # read them since they were never on disk). The previous file-based approach put the
+          # literal secrets back in $RUNNER_TEMP where the agent's Read tool could potentially
+          # reach them — exactly the surface the scrub is meant to defend.
+          SCRUB_TOKEN: ${{ steps.auth.outputs.scrub_token }}
+          SCRUB_EMAIL: ${{ steps.auth.outputs.scrub_email }}
+          SCRUB_PASSWORD: ${{ steps.auth.outputs.scrub_password }}
         run: |
           # set -e so a failed gh api PATCH/POST below aborts the step instead of silently
           # printing "Updated..." while the comment didn't update — that would let the gate read a
@@ -291,38 +306,47 @@ jobs:
           MARKER_COUNT=$(printf '%s' "$BODY" | grep -oiE '<!-- qa-verdict:[[:space:]]*(PASS|FAIL|INCONCLUSIVE)' | wc -l | tr -d ' ' || true)
           MARKER_COUNT=${MARKER_COUNT:-0}
           if [ "$MARKER_COUNT" -gt 1 ]; then
-            echo "::error::QA report contains $MARKER_COUNT qa-verdict markers; expected exactly 1. Refusing to post (possible prompt-injection tampering or LLM template-echo). Inspect qa-comment.md in the run logs."
+            echo "::error::QA report contains $MARKER_COUNT qa-verdict markers; expected exactly 1. Refusing to post (possible prompt-injection tampering or LLM template-echo). See the 'Show QA report on failure' step below for the body (registered secrets masked)."
             exit 1
           fi
+          # NOTE: we parse the verdict into a local var here but do NOT write to $GITHUB_OUTPUT
+          # until AFTER the scrub passes and the comment posts. Otherwise the QA gate (if:always())
+          # would read a stale verdict on a run where the comment was actually withheld, giving the
+          # appearance of a successful gate evaluation even though the post path failed.
           VERDICT=$(printf '%s' "$BODY" | grep -oiE '<!-- qa-verdict:[[:space:]]*(PASS|FAIL|INCONCLUSIVE)' \
             | grep -oiE '(PASS|FAIL|INCONCLUSIVE)' | head -n1 | tr '[:lower:]' '[:upper:]' || true)
-          echo "verdict=${VERDICT:-}" >> "$GITHUB_OUTPUT"
-          echo "Parsed QA verdict: ${VERDICT:-<none>} (marker_count=$MARKER_COUNT)"
+          echo "Parsed QA verdict (pending scrub + post): ${VERDICT:-<none>} (marker_count=$MARKER_COUNT)"
 
-          # Cookie/credential exfiltration guard: refuse to post a body that contains the cookie
-          # name, the cookie VALUE, the test-user email, or the test-user password. The skill
-          # forbids the agent from quoting any of these, but a crafted prompt-injection in the PR
-          # diff could coerce the model past that rule — this is the deterministic backstop.
-          # The report stays in $FILE and is recoverable from the run for investigation.
+          # Cookie/credential exfiltration guard: refuse to post a body that contains a real
+          # token-shape DEV_APP_SID assignment, OR the literal token / email / password values.
+          # The skill forbids the agent from quoting any of these, but a crafted prompt-injection
+          # in the PR diff could coerce the model past that rule — this is the deterministic
+          # backstop. The report stays in $FILE and is uploaded as an artifact for investigation.
           SCRUB_FAILED=0
-          # Pin to assignment form (`DEV_APP_SID=…` or `DEV_APP_SID: …`) so a benign prose mention
-          # of the cookie name (e.g. "verifier authenticates via DEV_APP_SID") doesn't trip the
-          # guard; an actual leak almost always looks like an assignment or HTTP-header form.
-          if printf '%s' "$BODY" | grep -qiE 'DEV_APP_SID[[:space:]]*[=:]'; then
-            echo "::error::QA report contains a DEV_APP_SID assignment — refusing to post."
+          # Tightened: require a token-shape value (20+ alphanumeric/[._/+=-]) AFTER the assignment.
+          # Allows benign instructional mentions like `DEV_APP_SID=<value>` or
+          # `document.cookie = "DEV_APP_SID=<TOKEN>; ..."` in skill explanations; catches actual
+          # leaks (where the value is the real ~32+ char token).
+          if printf '%s' "$BODY" | grep -qiE 'DEV_APP_SID[[:space:]]*[=:][[:space:]]*"?[A-Za-z0-9._/+=-]{20,}'; then
+            echo "::error::QA report contains a DEV_APP_SID assignment with a token-shape value — refusing to post."
             SCRUB_FAILED=1
           fi
-          for label in token email password; do
-            f="$RUNNER_TEMP/qa-scrub/$label"
-            if [ -s "$f" ] && printf '%s' "$BODY" | grep -qF "$(cat "$f")"; then
-              echo "::error::QA report contains the literal ${label} value — refusing to post."
-              SCRUB_FAILED=1
-            fi
-          done
-          # Best-effort cleanup of the scrub patterns whether we pass or fail.
-          rm -rf "$RUNNER_TEMP/qa-scrub"
+          # Check actual literal values delivered via step-output env. printf '%s' avoids the
+          # trailing-newline issue that command-substitution from a file had.
+          if [ -n "${SCRUB_TOKEN:-}" ] && printf '%s' "$BODY" | grep -qF "$SCRUB_TOKEN"; then
+            echo "::error::QA report contains the literal token value — refusing to post."
+            SCRUB_FAILED=1
+          fi
+          if [ -n "${SCRUB_EMAIL:-}" ] && printf '%s' "$BODY" | grep -qF "$SCRUB_EMAIL"; then
+            echo "::error::QA report contains the literal email value — refusing to post."
+            SCRUB_FAILED=1
+          fi
+          if [ -n "${SCRUB_PASSWORD:-}" ] && printf '%s' "$BODY" | grep -qF "$SCRUB_PASSWORD"; then
+            echo "::error::QA report contains the literal password value — refusing to post."
+            SCRUB_FAILED=1
+          fi
           if [ "$SCRUB_FAILED" = "1" ]; then
-            echo "::error::See qa-comment.md in the run logs for the report that was withheld."
+            echo "::error::See the 'Show QA report on failure' step below for the withheld report (registered secrets are masked in the log)."
             exit 1
           fi
 
@@ -342,6 +366,25 @@ jobs:
           else
             printf '%s' "$PAYLOAD" | gh api -X POST "repos/$REPO/issues/$PR/comments" --input - --silent
             echo "Created QA comment."
+          fi
+          # Only NOW expose the verdict to the gate — we've successfully posted (or PATCH'd) the
+          # comment. The gate's "verdict present" means "comment also posted".
+          echo "verdict=${VERDICT:-}" >> "$GITHUB_OUTPUT"
+
+      # On failure, print qa-comment.md to the workflow log instead of uploading as an artifact.
+      # The runner masks ::add-mask::-registered values (token / email / password) on output, so
+      # structure / scrub-trigger context is visible while real secret values come through as `***`.
+      # An artifact would have contained the literal report unmasked — defeating the whole point
+      # of the scrub refusing to post a body that contains those values.
+      - name: Show QA report on failure (masked in logs)
+        if: failure()
+        run: |
+          if [ -f "$GITHUB_WORKSPACE/qa-comment.md" ]; then
+            echo "::group::qa-comment.md (registered secrets masked by runner)"
+            cat "$GITHUB_WORKSPACE/qa-comment.md"
+            echo "::endgroup::"
+          else
+            echo "(no qa-comment.md was produced)"
           fi
 
       # Helps debug a failed boot (the comment-side honesty rule covers the verification path).
