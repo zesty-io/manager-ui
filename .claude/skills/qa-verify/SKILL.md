@@ -127,12 +127,15 @@ build/config/CI/test-only change), say so and treat browser verification as not 
 
 ## 4) Authenticate
 
-- CI: a Playwright storage-state with the `DEV_APP_SID` cookie was pre-seeded, so the browser should
-  boot logged in. If, after your first `browser_navigate` to `APP_BASE_URL`, you see a login screen OR a
-  401 on `/verify` in the network log: Read `storage_state.json` in the workspace, take the cookie
-  `value`, run `browser_evaluate` with
-  `() => { document.cookie = "DEV_APP_SID=<value>; domain=.dev.zesty.io; path=/"; }` then reload. If you
-  STILL cannot reach an authenticated view, do NOT claim verification.
+- **CI**: a Playwright storage-state with the `DEV_APP_SID` cookie was pre-seeded, so the browser
+  should boot logged in. **If, after your first `browser_navigate` to `APP_BASE_URL`, you see a login
+  screen OR a 401 on `/verify` in the network log, STOP — do NOT read `storage_state.json` and do NOT
+  inject the cookie via `browser_evaluate`.** That path exists for the local flow only; in CI it would
+  give the agent (which has already read attacker-controlled PR diff content via `gh pr diff`) a way to
+  pipe the session token into the page. Instead, report this criterion / the whole change as
+  `⚠️ INCONCLUSIVE` with reason "CI storage-state cookie did not take effect — infrastructure
+  investigation needed" so a human looks at it (cookie scope wrong, MCP didn't load the state, dev
+  API rejected the token, etc.).
 - **Local**: auto-login using the same `cypress.env.json` creds the dev already uses for Cypress
   (file is at the repo root and gitignored). Do this BEFORE step 5's first real navigation:
 

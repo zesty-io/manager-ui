@@ -212,7 +212,12 @@ jobs:
           set -euo pipefail
           FILE="$GITHUB_WORKSPACE/qa-comment.md"
           if [ ! -f "$FILE" ]; then
-            echo "No qa-comment.md produced by the agent; nothing to post."
+            # Distinguish "agent ran and was inconclusive" (verdict=INCONCLUSIVE, file present, gate
+            # green) from "agent never wrote a report" (this branch). The latter is an infrastructure
+            # failure (auth/boot/Anthropic API/agent crash); the gate fails red on it so a broken
+            # Verifier doesn't silently look like a clean PASS.
+            echo "::warning::No qa-comment.md produced by the agent. The QA gate will fail with reason 'Verifier infrastructure failure'."
+            echo "no_report=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           BODY=$(cat "$FILE")
@@ -221,10 +226,22 @@ jobs:
           # canonical form) so an LLM that echoes the template line above the real marker can't
           # pin us to a wrong verdict. Take the LAST occurrence so the final answer wins.
           # `|| true` keeps no-match from aborting under set -e — missing verdict ⇒ empty ⇒ green.
-          VERDICT=$(printf '%s' "$BODY" | grep -oE '<!-- qa-verdict:[[:space:]]*(PASS|FAIL|INCONCLUSIVE)' \
+          # Both greps are case-insensitive so `pass`/`Pass`/etc. from an LLM that improvises
+          # casing is still caught; `tr` then normalizes to uppercase for the gate comparison.
+          VERDICT=$(printf '%s' "$BODY" | grep -oiE '<!-- qa-verdict:[[:space:]]*(PASS|FAIL|INCONCLUSIVE)' \
             | grep -oiE '(PASS|FAIL|INCONCLUSIVE)' | tail -n1 | tr '[:lower:]' '[:upper:]' || true)
           echo "verdict=${VERDICT:-}" >> "$GITHUB_OUTPUT"
           echo "Parsed QA verdict: ${VERDICT:-<none>}"
+
+          # Cookie-exfiltration guard: refuse to post a body that mentions the session-cookie name.
+          # The skill explicitly forbids the agent from quoting the cookie value, but a sufficiently
+          # crafted prompt-injection in the PR diff could coerce the model to ignore that rule.
+          # If `DEV_APP_SID` (or a `DEV_APP_SID=` assignment) shows up in the body, fail the step;
+          # the report stays in $FILE and is uploadable from the run for investigation.
+          if printf '%s' "$BODY" | grep -qiE 'DEV_APP_SID'; then
+            echo "::error::QA report contains the string DEV_APP_SID — refusing to post (likely cookie leak via prompt injection). Inspect qa-comment.md in the run logs."
+            exit 1
+          fi
 
           # python escapes the multi-line body safely for the JSON request.
           PAYLOAD=$(BODY="$BODY" python3 -c 'import os,json,sys; sys.stdout.write(json.dumps({"body": os.environ["BODY"]}))')
@@ -249,15 +266,22 @@ jobs:
           path: ${{ github.workspace }}/devserver.log
           if-no-files-found: ignore
 
-      # Senior-QA gate: turn the check red ONLY when the agent's verdict is FAIL (a criterion it
-      # DIRECTLY observed unmet, or a hard regression). INCONCLUSIVE / "could not verify" / a missing
-      # verdict all stay green — uncertainty must never block a PR. (To actually block merges, a repo
-      # admin must add this check to branch protection, like ci.yaml's all_tests_passed.)
+      # Senior-QA gate. Red when:
+      #   1. agent's verdict is FAIL (a criterion it DIRECTLY observed unmet, or a hard regression);
+      #   2. OR the agent never produced a qa-comment.md at all (infrastructure failure — distinct
+      #      from "ran but inconclusive", which still stays green so uncertainty doesn't block).
+      # INCONCLUSIVE / "could not verify" / agent-ran-but-empty-verdict ⇒ green. (To actually block
+      # merges, a repo admin must add this check to branch protection, like ci.yaml's all_tests_passed.)
       - name: QA gate
         if: always()
         run: |
           V="${{ steps.qa.outputs.verdict }}"
-          echo "QA verdict: ${V:-<none>}"
+          NO_REPORT="${{ steps.qa.outputs.no_report }}"
+          echo "QA verdict: ${V:-<none>} (no_report=${NO_REPORT:-false})"
+          if [ "$NO_REPORT" = "true" ]; then
+            echo "::error::Verifier infrastructure failure — the agent didn't produce a QA report. Check the workflow logs (auth, dev server boot, Anthropic API, agent execution)."
+            exit 1
+          fi
           if [ "$V" = "FAIL" ]; then
             echo "::error::QA found an unmet acceptance criterion or a hard regression — see the QA Review comment."
             exit 1
