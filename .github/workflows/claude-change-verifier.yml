@@ -85,7 +85,11 @@ jobs:
           echo "::add-mask::$PASSWORD"
           API_AUTH="https://auth.api.dev.zesty.io"
           COOKIE_NAME="DEV_APP_SID"
-          TOKEN=$(curl -s -F "email=${EMAIL}" -F "password=${PASSWORD}" "${API_AUTH}/login" | jq -r '.meta.token // empty')
+          # NOTE: --form-string (NOT -F): curl's -F treats ';', '@', '<' in values as multipart
+          # delimiters and silently truncates passwords that contain them, producing a 401.
+          # --form-string sends the value literally while still using multipart/form-data, which
+          # is what the auth endpoint requires.
+          TOKEN=$(curl -s --form-string "email=${EMAIL}" --form-string "password=${PASSWORD}" "${API_AUTH}/login" | jq -r '.meta.token // empty')
           if [ -z "$TOKEN" ]; then
             echo "::error::Failed to obtain auth token from ${API_AUTH}/login — aborting so we don't post a misleading verification comment."
             exit 1
