@@ -14,20 +14,60 @@ report honestly and suggest automation so quality stays high.
 CI passes these explicitly; locally, infer or ask:
 
 - `OUTPUT_MODE` — `ci` or `local`. Default `local`.
-- `APP_BASE_URL` — the running app's base URL. The app derives its instance ZUID from
-  `window.location.host.split(".")[0]`, so it CANNOT run at `localhost`.
-  - CI: provided (a dev-instance host).
-  - Local: ask the dev for their running dev server URL (e.g. `http://<ZUID>.manager.zesty.io:8080`).
+- `APP_BASE_URL` — always the host `8-f48cf3a682-7fthvk.manager.dev.zesty.io:8080` (the shared dev
+  test instance — same one Cypress targets), but the **scheme is resolved at runtime**: either
+  `https://…:8080` or `http://…:8080`. The app derives its instance ZUID from
+  `window.location.host.split(".")[0]`, so it CANNOT run at `localhost`. CI always runs HTTP and
+  passes the URL explicitly; **locally** the precondition probes HTTPS first (some work requires it),
+  falls back to HTTP, and spins one up (asking which) if neither is responding.
 - `REPO`, `PR_NUMBER`, `ISSUE_NUMBER`, `REPORT_FILE` — CI provides these. `PR_NUMBER` and `REPORT_FILE`
   are CI-only (local runs just print). Locally, derive `ISSUE_NUMBER` from the branch name (leading
   `<number>-`); else ask — empty ⇒ change-only mode.
 
-## 0) Precondition
+## 0) Preconditions
+
+### Playwright MCP available
 
 Confirm the Playwright MCP browser tools are available (browser_navigate, browser_snapshot,
 browser_click, browser_type, browser_wait_for, browser_console_messages, browser_network_requests,
 browser_evaluate). If they are not, stop and say so — do NOT substitute reading code or manual reasoning
 for actually driving the app.
+
+### Dev server reachable at APP_BASE_URL — spin up if needed
+
+**If `OUTPUT_MODE = ci`, SKIP this entire subsection** — the workflow has already booted the server
+and passed `APP_BASE_URL`. Use the value you were given and continue to step 1.
+
+The rest of this subsection applies **locally only**. The skill always drives the host
+`8-f48cf3a682-7fthvk.manager.dev.zesty.io:8080`, but either HTTP or HTTPS can be the running scheme.
+Resolve and (if needed) spin up:
+
+1. **Probe HTTPS first** (some local work requires it):
+   `curl -ksSI -o /dev/null -w "%{http_code}\n" --max-time 5 https://8-f48cf3a682-7fthvk.manager.dev.zesty.io:8080`
+   - `200`/`302` → set `APP_BASE_URL = https://8-f48cf3a682-7fthvk.manager.dev.zesty.io:8080` and skip to step 1 (Resolve the ticket).
+2. **Then probe HTTP**:
+   `curl -sSI -o /dev/null -w "%{http_code}\n" --max-time 5 http://8-f48cf3a682-7fthvk.manager.dev.zesty.io:8080`
+   - `200`/`302` → set `APP_BASE_URL = http://8-f48cf3a682-7fthvk.manager.dev.zesty.io:8080` and skip to step 1.
+3. **Neither up — ASK the dev: spin up HTTP or HTTPS?** Then:
+   a. **Set up the host + creds** if not already done (idempotent): `npm run ci:test:setup`
+   (adds the `/etc/hosts` entry and KMS-decrypts dev creds into `./ci/.env`; needs GCP KMS access).
+   b. **Check port 8080 is free**: `lsof -nP -iTCP:8080 -sTCP:LISTEN || true`. If something else owns
+   it, stop and ask the dev to free it (do not kill processes for them).
+   c. **Start the dev server in the background** (per the dev's choice):
+   - HTTP: `nohup npm start > /tmp/qa-verify-devserver.log 2>&1 & disown`
+   - HTTPS: `nohup npm run serve:webpack:ssl > /tmp/qa-verify-devserver.log 2>&1 & disown`
+     (requires `./etc/ssl/_.manager.dev.zesty.io.{key,crt}` to exist — see the project README's
+     local-dev section if they're missing.)
+     d. **Wait for readiness** on the chosen scheme (the wildcard cert covers this hostname for HTTPS):
+     `npx wait-on -t 300000 <scheme>://8-f48cf3a682-7fthvk.manager.dev.zesty.io:8080`
+     e. **Set** `APP_BASE_URL` to that `<scheme>://…:8080`.
+
+If wait-on times out, dump the tail of `/tmp/qa-verify-devserver.log` and stop. Leave the server
+running when you finish — the dev can keep using it. Tell the dev that's what you did.
+
+If you chose HTTPS and `browser_navigate` later fails on the cert, ask the dev to relaunch the
+Playwright MCP server with a flag that accepts self-signed certs (the default MCP config doesn't set
+one); the cert is in the repo and may not be in the OS/browser trust store.
 
 ## 1) Resolve the ticket
 
