@@ -151,6 +151,11 @@ build/config/CI/test-only change), say so and treat browser verification as not 
 
 ## 5) QA in the browser
 
+**Test the verb, not a proxy for it.** When a criterion names a behavior (expands, scrolls,
+retries, debounces, syncs), exercise that behavior and observe the outcome — a static stand-in
+("it looks smaller") is not proof. Treat the requirement's own wording as the test spec, and never
+confirm the code matches the diff in place of confirming it matches the requirement.
+
 Navigate to `APP_BASE_URL` + the route(s) and exercise each acceptance criterion (in change-only mode,
 exercise the changed behavior). Use `browser_wait_for` / `browser_snapshot` to confirm load; click/type/
 select to reach the changed flow. Beyond the golden path, where relevant probe EDGE & NEGATIVE cases —
