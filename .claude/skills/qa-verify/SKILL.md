@@ -133,8 +133,19 @@ build/config/CI/test-only change), say so and treat browser verification as not 
   `value`, run `browser_evaluate` with
   `() => { document.cookie = "DEV_APP_SID=<value>; domain=.dev.zesty.io; path=/"; }` then reload. If you
   STILL cannot reach an authenticated view, do NOT claim verification.
-- Local: if you hit a login screen, ask the dev to sign in in the browser, then continue — do not handle
-  their credentials yourself.
+- **Local**: auto-login using the same `cypress.env.json` creds the dev already uses for Cypress
+  (file is at the repo root and gitignored). Do this BEFORE step 5's first real navigation:
+
+  1. `EMAIL=$(jq -r .email cypress.env.json)` / `PASSWORD=$(jq -r .password cypress.env.json)`.
+  2. `TOKEN=$(curl -s -F "email=$EMAIL" -F "password=$PASSWORD" https://auth.api.dev.zesty.io/login | jq -r '.meta.token // empty')`.
+  3. `browser_navigate` to `APP_BASE_URL` once (you'll land on the login screen — expected).
+  4. `browser_evaluate` with
+     `() => { document.cookie = "DEV_APP_SID=<TOKEN>; domain=.dev.zesty.io; path=/"; }`
+     (substitute the real token value).
+  5. `browser_navigate` to `APP_BASE_URL` again — you should land authenticated.
+
+  Fallback: if `cypress.env.json` is missing or the login returns no token, ask the dev to sign in
+  manually — never prompt them for credentials yourself.
 
 ## 5) QA in the browser
 
