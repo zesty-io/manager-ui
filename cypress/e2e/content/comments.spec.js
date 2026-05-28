@@ -57,39 +57,49 @@ describe("Content Item: Comments", () => {
   it("Updates an existing comment", () => {
     const UPDATED_TEXT = "I am updating this comment now.";
 
+    // Register the intercept before the action that triggers it. If it is set
+    // up after the click, the request can fire before the route exists and
+    // cy.wait() flakes with "no request ever occurred".
+    cy.intercept("/v1/comments/*?showReplies=true&showResolved=true").as(
+      "getReplies"
+    );
+
     cy.getBySelector("CommentMenuButton").first().click(forceClick);
     cy.getBySelector("EditCommentButton").click();
     cy.get(commentBox).type(`{selectall}{backspace}${UPDATED_TEXT}`);
     cy.getBySelector("SubmitNewComment").click();
-    cy.intercept("/v1/comments/*?showReplies=true&showResolved=true").as(
-      "getReplies"
-    );
     cy.wait("@getReplies");
     cy.getBySelector("CommentItem").first().contains(UPDATED_TEXT);
   });
 
   it("Resolves a comment", () => {
-    cy.getBySelector("ResolveCommentButton").click(forceClick);
+    // Intercepts must be registered before the click that triggers the
+    // requests, otherwise they can fire first and cy.wait() flakes with
+    // "no request ever occurred".
     cy.intercept("/v1/comments/*?showReplies=true&showResolved=true").as(
       "getReplies"
     );
     cy.intercept("/v1/instances/*/comments?resource=*").as(
       "getCommentResourceData"
     );
+    cy.getBySelector("ResolveCommentButton").click(forceClick);
     cy.wait("@getReplies");
     cy.wait("@getCommentResourceData");
     cy.getBySelector("ResolveCommentButton").should("not.exist");
   });
 
   it("Reopens a comment when there is a new reply", () => {
-    cy.get(commentBox).type("Reopening ticket.");
-    cy.getBySelector("SubmitNewComment").click();
+    // Register intercepts before submitting the reply so the resulting
+    // requests are always captured (prevents a "no request ever occurred"
+    // flake).
     cy.intercept("/v1/comments/*?showReplies=true&showResolved=true").as(
       "getReplies"
     );
     cy.intercept("/v1/instances/*/comments?resource=*").as(
       "getCommentResourceData"
     );
+    cy.get(commentBox).type("Reopening ticket.");
+    cy.getBySelector("SubmitNewComment").click();
     cy.wait("@getReplies");
     cy.wait("@getCommentResourceData");
     cy.getBySelector("ResolveCommentButton").should("exist");
