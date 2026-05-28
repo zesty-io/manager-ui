@@ -223,6 +223,13 @@ workflow find/update the comment and read the verdict for the gate):
 
 Set `<!-- qa-verdict: ... -->` to your overall verdict from step 7.
 
+**Never write `#<number>` to refer to acceptance criteria** (e.g. `#1`, `#2`, `criterion #3`). GitHub
+auto-links any `#<digits>` in a comment body to an issue/PR with that number in the same repo, which
+posts noisy back-references on unrelated issues. Use plain Markdown ordered lists (`1.`, `2.`, `3.`)
+for the criteria themselves and prose like "criterion 1", "AC 2", or "the first criterion" when you
+need to refer to one in another section. The ONLY legitimate `#<number>` in the report is the
+`Validates #<issue>` header pointing to the actual ticket.
+
 ### Delivering the report
 
 - **CI mode** (`OUTPUT_MODE = ci`): WRITE the report to `REPORT_FILE` using the Write tool. Do NOT post a
