@@ -375,9 +375,11 @@ export const Field = memo(
               onChange={(e) => onLocalChange(e.target.value)}
               fullWidth
               multiline
-              rows={compact ? 4 : 6}
-              inputProps={{
-                "data-cy": `EditorField-${fieldData?.name || name}`,
+              minRows={compact ? 4 : 6}
+              slotProps={{
+                htmlInput: {
+                  "data-cy": `EditorField-${fieldData?.name || name}`,
+                },
               }}
               error={errors && Object.values(errors)?.some((error) => !!error)}
             />
