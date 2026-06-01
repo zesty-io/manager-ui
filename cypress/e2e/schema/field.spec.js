@@ -19,6 +19,7 @@ const SELECTORS = {
   FIELD_SELECT_ONE_TO_ONE: "FieldItem_one_to_one",
   FIELD_SELECT_CURRENCY: "FieldItem_currency",
   FIELD_SELECT_BLOCK_SELECTOR: "FieldItem_block_selector",
+  FIELD_SELECT_REPEATER: "FieldItem_repeater",
   MEDIA_CHECKBOX_LIMIT: "MediaCheckbox_limit",
   MEDIA_CHECKBOX_LOCK: "MediaCheckbox_group_id",
   DROPDOWN_ADD_OPTION: "DropdownAddOption",
@@ -28,6 +29,8 @@ const SELECTORS = {
   AUTOCOMPLETE_FIELD_CURRENCY: "Autocomplete_currency",
   INPUT_LABEL: "FieldFormInput_label",
   INPUT_NAME: "FieldFormInput_name",
+  INPUT_DESCRIPTION: "FieldFormInput_description",
+  ERROR_MESSAGE_DESCRIPTION: "ErrorMsg_description",
   INPUT_OPTION_LABEL: "OptionLabel",
   ERROR_MESSAGE_OPTION_VALUE: "OptionValueErrorMsg",
   ERROR_MESSAGE_LABEL: "ErrorMsg_label",
@@ -512,6 +515,43 @@ describe("Schema: Fields", () => {
 
     // Close the modal
     cy.getBySelector(SELECTORS.ADD_FIELD_MODAL_CLOSE).should("exist").click();
+  });
+
+  it("Blocks field creation when description exceeds 500 characters", () => {
+    const longDescription = "a".repeat(501);
+
+    // Open the add field modal
+    cy.getBySelector(SELECTORS.ADD_FIELD_BTN)
+      .should("exist")
+      .click({ force: true });
+    cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("exist");
+
+    // Select Repeater field
+    cy.getBySelector(SELECTORS.FIELD_SELECT_REPEATER).should("exist").click();
+
+    // Fill in a valid label
+    cy.getBySelector(SELECTORS.INPUT_LABEL).should("exist").type("Test Field");
+
+    // Type a description that exceeds the 500 character limit
+    cy.getBySelector(SELECTORS.INPUT_DESCRIPTION).type(longDescription);
+
+    // Attempt to submit
+    cy.getBySelector(SELECTORS.SAVE_FIELD_BUTTON).should("exist").click();
+
+    // Inline error should appear and modal should remain open
+    cy.getBySelector(SELECTORS.ERROR_MESSAGE_DESCRIPTION)
+      .should("exist")
+      .and("contain", "Shorten to less than 500 characters");
+    cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("exist");
+
+    // Fix the description — error should clear and submission should succeed
+    cy.getBySelector(SELECTORS.INPUT_DESCRIPTION)
+      .clear()
+      .type("A valid description.");
+    cy.getBySelector(SELECTORS.ERROR_MESSAGE_DESCRIPTION).should("not.exist");
+
+    cy.getBySelector(SELECTORS.SAVE_FIELD_BUTTON).click();
+    cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("not.exist");
   });
 
   it("Opens Add Field Modal via end of list button", () => {
