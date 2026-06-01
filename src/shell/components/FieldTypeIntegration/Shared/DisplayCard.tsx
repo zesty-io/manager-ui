@@ -36,7 +36,10 @@ const DisplayCard = ({
   showPlayIcon,
   loading,
 }: DisplayCardProps) => {
-  const renderValue = (value: unknown, placeholder: string) => {
+  const renderValue = (
+    value: string | number | boolean | null | undefined,
+    placeholder: string
+  ) => {
     if (value === null || value === undefined || value === "")
       return placeholder;
     return String(value);
