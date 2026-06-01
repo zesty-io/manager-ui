@@ -94,7 +94,7 @@ const ConnectToApi = ({
   setActiveStep: (step: number) => void;
   closeForm?: () => void;
 }) => {
-  const focusRef = useRef<string | "url">("url");
+  const focusRef = useRef<string>("url");
   const { data, status, fetchApiData } = useIntegrationField();
 
   const [isValidUrl, setIsValidUrl] = useState(true);
