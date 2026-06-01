@@ -120,6 +120,9 @@ export const SchedulePublish = ({
     let actionDispatch = null;
 
     if (isForUnpublish) {
+      // The API has no dedicated "remove unpublishAt" endpoint. Re-publishing with
+      // unpublishAt: "never" overwrites the existing publishing record in place,
+      // clearing the scheduled takedown while keeping the item live.
       actionDispatch = publish(
         item?.meta?.contentModelZUID,
         item?.meta?.ZUID,
