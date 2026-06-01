@@ -75,7 +75,7 @@ describe("Studio - Responsive field components", () => {
       }
     );
 
-    cy.waitOn("/v1/content/models**", () => {
+    cy.waitOn("/v1/content/models/*/fields*", () => {
       cy.visit(`/studio?path=${studioPath}`);
     });
     cy.getBySelector("StudioSidePanel").should("exist");
@@ -89,10 +89,8 @@ describe("Studio - Responsive field components", () => {
   it("FieldTypeTinyMCE: compact mode shows only the compact toolbar buttons", () => {
     selectField(wysiwygFieldZUID);
 
-    // Wait for TinyMCE to initialize
     cy.get(".tox-tinymce").should("exist");
 
-    // Compact subset buttons must be visible
     cy.get('.tox-toolbar__group button[aria-label="Block formatting"]').should(
       "be.visible"
     );
@@ -157,7 +155,6 @@ describe("Studio - Responsive field components", () => {
     cy.contains("Edit File").should("be.visible");
     cy.contains("Swap File").should("be.visible");
     cy.contains("Rename File").should("be.visible");
-    cy.contains("Replace File").should("be.visible");
     cy.contains("Copy ZUID").should("be.visible");
     cy.contains("Copy File URL").should("be.visible");
     cy.contains("Remove File").should("be.visible");

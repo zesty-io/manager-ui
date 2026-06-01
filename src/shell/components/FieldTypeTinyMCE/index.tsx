@@ -164,16 +164,17 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
         minHeight: EDITOR_HEIGHT,
 
         "&[data-compact='true']": {
-          "& .tox-toolbar__group ": {
+          "& .tox-toolbar__group": {
             "& .tox-tbtn": {
-              transform: "scale(0.9)",
+              transform: "scale(0.85)",
             },
           },
-          // When in compact mode, move the fullscreen button to the end of the toolbar for better accessibility
-          "& .tox-toolbar__group:has(button[aria-label='Fullscreen'])": {
-            flexGrow: 1,
-            justifyContent: "end",
-          },
+          // When in compact mode, move the fullscreen button to the end of the toolbar
+          "& .tox-toolbar__primary .tox-toolbar__group:has(button[aria-label='Fullscreen'])":
+            {
+              flexGrow: 1,
+              justifyContent: "end",
+            },
         },
 
         "& .tox.tox-tinymce": {
@@ -303,7 +304,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
 
             toolbar: toolbar,
             contextmenu: "bold italic link | copy paste",
-            toolbar_mode: "wrap",
+            toolbar_mode: effectiveCompact ? "sliding" : "wrap",
             relative_urls: false,
             branding: false,
             menubar: false,

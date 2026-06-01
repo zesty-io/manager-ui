@@ -9,6 +9,7 @@ import { useGetContentModelFieldsQuery } from "../../../../../../shell/services/
 import { DYNAMIC_META_FIELD_NAMES } from "../../views/ItemEdit/Meta";
 import { FieldsLoader } from "./FieldsLoader";
 import { UsedBlocks } from "../UsedBlocks";
+import { useContainerQuery } from "shell/hooks/useContainerQuery";
 
 export const MaxLengths = {
   text: 150,
@@ -33,8 +34,8 @@ export default memo(function Editor({
   fieldErrors,
   isLoadingItem,
   visibleFieldName,
-  compact = false,
 }) {
+  const [ref, isCompact] = useContainerQuery("(max-width:390px)");
   const dispatch = useDispatch();
   const isNewItem = itemZUID.slice(0, 3) === "new";
   const { data: fields, isFetching: isFetchingFields } =
@@ -413,6 +414,7 @@ export default memo(function Editor({
             id={field.ZUID}
             className={styles.Field}
             data-cy={`field:${field.name}`}
+            ref={ref}
           >
             <Field
               ZUID={field.ZUID}
@@ -437,7 +439,7 @@ export default memo(function Editor({
                 field.settings?.maxCharLimit ?? MaxLengths[field.datatype]
               }
               minLength={field.settings?.minCharLimit ?? 0}
-              compact={compact}
+              compact={isCompact}
             />
           </div>
         );
