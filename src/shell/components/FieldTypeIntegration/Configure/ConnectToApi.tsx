@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import {
   Button,
   Box,
@@ -30,6 +30,7 @@ import { FieldWrapper } from "../Shared/FieldWrapper";
 import { IntegrationRequestHeaders } from "../../../services/types";
 import { validateUrl } from "../utils";
 import useIntegrationField from "../useIntegrationField";
+import { v4 as uuidv4 } from "uuid";
 
 const CONNECTION_STATUSES: {
   [key: string]: {
@@ -93,7 +94,7 @@ const ConnectToApi = ({
   setActiveStep: (step: number) => void;
   closeForm?: () => void;
 }) => {
-  const focusRef = useRef<number | "url">("url");
+  const focusRef = useRef<string | "url">("url");
   const { data, status, fetchApiData } = useIntegrationField();
 
   const [isValidUrl, setIsValidUrl] = useState(true);
@@ -102,19 +103,21 @@ const ConnectToApi = ({
   const [endpointLocal, setEndpointLocal] = useState<string>(endpoint || "");
 
   const [headersLocal, setHeadersLocal] = useState<
-    { key: string; value: string }[]
+    Record<string, { key: string; value: string }>
   >(() => {
     if (!headers || Object.keys(headers).length === 0) {
-      return [{ key: "", value: "" }];
+      const id = uuidv4();
+      return { [id]: { key: "", value: "" } };
     }
-    return Object.entries(headers).map(([key, value]) => ({
-      key,
-      value: String(value),
-    }));
+    return Object.entries(headers).reduce((acc, [key, value]) => {
+      const id = uuidv4();
+      acc[id] = { key, value: String(value) };
+      return acc;
+    }, {} as Record<string, { key: string; value: string }>);
   });
 
   const handleNext = () => {
-    const headersWithKeys = headersLocal.filter((h) => !!h.key);
+    const headersWithKeys = Object.values(headersLocal).filter((h) => !!h.key);
     const reqHeaders = !headersWithKeys.length
       ? null
       : headersWithKeys.reduce((acc: any, { key, value }) => {
@@ -136,7 +139,7 @@ const ConnectToApi = ({
   const handleApiConnect = useCallback(() => {
     setReqAborted(false);
     setApiData(null);
-    const headersWithKeys = headersLocal.filter((h) => !!h.key);
+    const headersWithKeys = Object.values(headersLocal).filter((h) => !!h.key);
     const options = !headersWithKeys.length
       ? {}
       : {
@@ -238,10 +241,10 @@ const ConnectToApi = ({
             width="100%"
             data-cy="integrationHeadersContainer"
           >
-            {headersLocal.map((header, i) => (
+            {Object.entries(headersLocal).map(([entryId, header], i) => (
               <Grid
                 data-cy={`integrationHeadersContainerRow-${i}`}
-                key={i}
+                key={`header-${entryId}`}
                 container
                 size={16}
                 spacing={1}
@@ -250,18 +253,17 @@ const ConnectToApi = ({
               >
                 <Grid size={8}>
                   <TextField
-                    autoFocus={i === focusRef.current}
+                    autoFocus={entryId === focusRef.current}
                     className="keyInput"
                     fullWidth
                     size="small"
                     placeholder="Key"
                     value={header.key}
-                    onChange={(e: any) => {
-                      setHeadersLocal(
-                        headersLocal.map((h, idx) =>
-                          idx === i ? { ...h, key: e.target.value } : h
-                        )
-                      );
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      setHeadersLocal((prev) => ({
+                        ...prev,
+                        [entryId]: { ...prev[entryId], key: e.target.value },
+                      }));
                     }}
                   />
                 </Grid>
@@ -277,12 +279,11 @@ const ConnectToApi = ({
                     size="small"
                     placeholder="Value"
                     value={header.value}
-                    onChange={(e: any) => {
-                      setHeadersLocal(
-                        headersLocal.map((h, idx) =>
-                          idx === i ? { ...h, value: e.target.value } : h
-                        )
-                      );
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      setHeadersLocal((prev) => ({
+                        ...prev,
+                        [entryId]: { ...prev[entryId], value: e.target.value },
+                      }));
                     }}
                     sx={{ flexGrow: 1 }}
                   />
@@ -299,9 +300,12 @@ const ConnectToApi = ({
                       data-cy="removeHeaderButton"
                       sx={{ flexGrow: 0 }}
                       onClick={() => {
-                        setHeadersLocal((prev) =>
-                          prev.filter((_, idx) => idx !== i)
-                        );
+                        setHeadersLocal((prev) => {
+                          if (!prev[entryId]) return prev;
+                          const updated = { ...prev };
+                          delete updated[entryId];
+                          return updated;
+                        });
                       }}
                     >
                       <CloseOutlinedIcon />
@@ -317,8 +321,12 @@ const ConnectToApi = ({
             variant="outlined"
             startIcon={<AddCircleIcon />}
             onClick={() => {
-              focusRef.current = headersLocal.length;
-              setHeadersLocal((prev) => [...prev, { key: "", value: "" }]);
+              const keyId: string = uuidv4();
+              focusRef.current = keyId;
+              setHeadersLocal((prev) => ({
+                ...prev,
+                [keyId]: { key: "", value: "" },
+              }));
             }}
           >
             Add HTTP Header
