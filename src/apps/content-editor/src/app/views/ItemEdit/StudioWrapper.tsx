@@ -1,6 +1,14 @@
 import CloudUploadRoundedIcon from "@mui/icons-material/CloudUploadRounded";
 import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
-import { Alert, Box, Button, CircularProgress, Dialog } from "@mui/material";
+import {
+  Alert,
+  Box,
+  Button,
+  CircularProgress,
+  Dialog,
+  Paper,
+} from "@mui/material";
+import TrapFocus from "@mui/material/Unstable_TrapFocus";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { MemoryRouter, useHistory, useLocation } from "react-router";
@@ -1087,23 +1095,25 @@ export const StudioWrapper = () => {
 
   return (
     <>
-      <Dialog
-        open
-        fullScreen
-        PaperProps={{
-          sx: {
-            overflow: "hidden",
+      <TrapFocus open disableAutoFocus disableEnforceFocus>
+        <Paper
+          role="dialog"
+          aria-modal="false"
+          square
+          variant="outlined"
+          tabIndex={-1}
+          sx={{
+            position: "fixed",
+            display: "flex",
+            flexDirection: "column",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
             bgcolor: "grey.900",
-            borderRadius: 0,
-          },
-        }}
-      >
-        <Box
-          display="flex"
-          flexDirection="column"
-          height="100%"
-          width="100%"
-          position="relative"
+            overflow: "hidden",
+            zIndex: (theme) => theme.zIndex.drawer,
+          }}
         >
           <StudioHeader
             onLanguageChange={handleLanguageChange}
@@ -1253,15 +1263,17 @@ export const StudioWrapper = () => {
               handleDiscardPendingLayoutSave(onProceed);
             }}
           />
-        </Box>
-      </Dialog>
+        </Paper>
+      </TrapFocus>
       {imageEditState && (
         <MemoryRouter>
           <Dialog
             open
             fullScreen
             sx={{ my: 2.5, mx: 10 }}
-            PaperProps={{ style: { borderRadius: "4px", overflow: "hidden" } }}
+            slotProps={{
+              paper: { style: { borderRadius: "4px", overflow: "hidden" } },
+            }}
             onClose={() => setImageEditState(null)}
           >
             <MediaApp
