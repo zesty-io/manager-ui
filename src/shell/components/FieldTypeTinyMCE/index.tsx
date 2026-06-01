@@ -418,6 +418,17 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
                 }
               });
 
+              // In compact mode, intercept the fullscreen command before TinyMCE
+              // executes it. Cancel, capture latest content, then remount with the
+              // normal toolbar. The init handler re-enters fullscreen on the new mount.
+              editor.on("BeforeExecCommand", (evt: any) => {
+                if (evt.command === "mceFullScreen" && effectiveCompact) {
+                  evt.preventDefault();
+                  valueRef.current = editor.getContent();
+                  setIsFullscreen(true);
+                }
+              });
+
               // Limits the content width to 640px when in fullscreen
               editor.on("FullscreenStateChanged", (evt: any) => {
                 setIsFullscreen(evt.state);

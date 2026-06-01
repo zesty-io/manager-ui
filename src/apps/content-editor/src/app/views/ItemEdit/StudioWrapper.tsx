@@ -6,9 +6,10 @@ import {
   Button,
   CircularProgress,
   Dialog,
+  Modal,
   Paper,
 } from "@mui/material";
-import TrapFocus from "@mui/material/Unstable_TrapFocus";
+
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { MemoryRouter, useHistory, useLocation } from "react-router";
@@ -1076,7 +1077,6 @@ export const StudioWrapper = () => {
         fieldErrors={fieldErrors}
         isLoadingItem={isSelectedItemLoading}
         visibleFieldName={filteredFieldName || undefined}
-        compact={true}
       />
       {filteredFieldName ? (
         <Button
@@ -1095,22 +1095,26 @@ export const StudioWrapper = () => {
 
   return (
     <>
-      <TrapFocus open disableAutoFocus disableEnforceFocus>
+      <Modal
+        open
+        hideBackdrop
+        disableEnforceFocus
+        disableAutoFocus
+        disablePortal
+        role="dialog"
+        aria-modal="true"
+        aria-label="Studio editor"
+      >
         <Paper
-          square
           variant="outlined"
-          tabIndex={-1}
+          square
           sx={{
-            position: "fixed",
             display: "flex",
             flexDirection: "column",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
+            height: "100%",
+            width: "100%",
             bgcolor: "grey.900",
             overflow: "hidden",
-            zIndex: (theme) => theme.zIndex.drawer,
           }}
         >
           <StudioHeader
@@ -1262,7 +1266,7 @@ export const StudioWrapper = () => {
             }}
           />
         </Paper>
-      </TrapFocus>
+      </Modal>
       {imageEditState && (
         <MemoryRouter>
           <Dialog

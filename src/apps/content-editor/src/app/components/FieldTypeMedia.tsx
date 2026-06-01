@@ -968,20 +968,7 @@ export const MediaItem = ({
                         <ListItemText>Rename File</ListItemText>
                       </MenuItem>
                     )}
-                    {!isURL && !isBynderAsset && data && (
-                      <MenuItem
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          setAnchorEl(null);
-                          setIsReplaceFileModalOpen(true);
-                        }}
-                      >
-                        <ListItemIcon>
-                          <FileReplace />
-                        </ListItemIcon>
-                        <ListItemText>Replace File</ListItemText>
-                      </MenuItem>
-                    )}
+
                     {!isURL && !isBynderAsset && data && (
                       <MenuItem
                         onClick={(event) => {
