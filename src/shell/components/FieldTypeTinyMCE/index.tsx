@@ -1,12 +1,12 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { Editor } from "@tinymce/tinymce-react";
-import { Box, alpha } from "@mui/material";
+import React, { useEffect, useMemo, useState, useRef } from "react";
+import { Editor, IAllProps } from "@tinymce/tinymce-react";
+import { Box, alpha, useForkRef } from "@mui/material";
 import { theme } from "@zesty-io/material";
 
 import openBynder from "../../../utility/openBynder";
 
 // TinyMCE so the global var exists
-import tinymce from "tinymce/tinymce";
+import tinymce, { EditorOptions } from "tinymce/tinymce";
 // DOM model
 import "tinymce/models/dom/model";
 // Theme
@@ -43,7 +43,7 @@ import "./plugins/compactToolbar";
 // importing plugin resources
 import "tinymce/plugins/emoticons/js/emojis";
 
-import { File } from "../../services/types";
+import { File, InstanceSetting } from "../../services/types";
 import { useGetInstanceSettingsQuery } from "../../services/instance";
 
 const IMAGE_FILE_TYPES = [
@@ -73,10 +73,12 @@ const VIDEO_FILE_TYPES = [
 const NORMAL_EDITOR_HEIGHT = 560;
 const COMPACT_EDITOR_HEIGHT = 259;
 
-const mergedToolbarConfig =
-  "compactBlocks | slashcommands blocks | bold italic underline | backcolor | " +
-  "compactAlign | align | " +
-  "compactLists | bullist numlist outdent indent | " +
+const compactToolbar =
+  "compactBlocks | bold italic underline compactAlign compactLists | zestyMediaApp media link | fullscreen";
+const normalToolbar =
+  "slashcommands blocks | bold italic underline | backcolor | " +
+  "align | " +
+  "bullist numlist outdent indent | " +
   "zestyMediaApp media link | bynder socialmediaembed table | " +
   "searchreplace | superscript subscript strikethrough removeformat | " +
   "codesample insertdatetime charmap emoticons | " +
@@ -118,7 +120,13 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const { data: rawInstanceSettings } = useGetInstanceSettingsQuery();
   const effectiveCompact = compact && !isFullscreen;
-  const EDITOR_HEIGHT = compact ? COMPACT_EDITOR_HEIGHT : NORMAL_EDITOR_HEIGHT;
+  const toolbar = effectiveCompact ? compactToolbar : normalToolbar;
+
+  const valueRef = useRef<string>(value || "");
+
+  const EDITOR_HEIGHT = effectiveCompact
+    ? COMPACT_EDITOR_HEIGHT
+    : NORMAL_EDITOR_HEIGHT;
   // Checks if the bynder portal and token are set
   const isBynderSessionValid =
     localStorage.getItem("cvrt") && localStorage.getItem("cvad");
@@ -136,45 +144,29 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
     setInitialValue(value);
   }, [version]);
 
+  // retrieve editors current contents from ref so that when toggling fullscreen,
+  // the content does not reset due to unmounting the editor
+  useEffect(() => {
+    setInitialValue(valueRef?.current);
+  }, [effectiveCompact, valueRef?.current]);
+
   return (
     <Box
       id="tinyMceWrapper"
       data-compact={effectiveCompact}
       sx={{
         minHeight: EDITOR_HEIGHT,
+
         "&[data-compact='true']": {
-          "& .tox-editor-header .tox-toolbar__group button": { scale: "0.8" },
-          // Hide all groups, then explicitly show the compact subset
-          "& .tox-toolbar__group": { display: "none" },
-          "& .tox-toolbar__group:has(button[aria-label='Block formatting'])": {
-            display: "flex",
+          "& .tox-toolbar__group ": {
+            "& .tox-tbtn": {
+              scale: "0.9",
+            },
           },
-          "& .tox-toolbar__group:has(button[aria-label='Bold'])": {
-            display: "flex",
-          },
-          "& .tox-toolbar__group:has(button[aria-label='Text alignment'])": {
-            display: "flex",
-          },
-          "& .tox-toolbar__group:has(button[aria-label='Lists'])": {
-            display: "flex",
-          },
-          "& .tox-toolbar__group:has(button[aria-label='Select media from your uploaded assets'])":
-            { display: "flex" },
+          // When in compact mode, move the fullscreen button to the end of the toolbar for better accessibility
           "& .tox-toolbar__group:has(button[aria-label='Fullscreen'])": {
-            display: "flex",
             flexGrow: 1,
-            justifyContent: "flex-end",
-          },
-        },
-        "&:not([data-compact='true'])": {
-          "& .tox-toolbar__group:has(button[aria-label='Block formatting'])": {
-            display: "none",
-          },
-          "& .tox-toolbar__group:has(button[aria-label='Text alignment'])": {
-            display: "none",
-          },
-          "& .tox-toolbar__group:has(button[aria-label='Lists'])": {
-            display: "none",
+            justifyContent: "end",
           },
         },
 
@@ -196,12 +188,13 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
           evt.target instanceof Element &&
           evt.target.id === "tinyMceWrapper"
         ) {
-          tinymce.activeEditor.execCommand("mceFullScreen");
+          tinymce?.activeEditor?.execCommand("mceFullScreen");
         }
       }}
     >
       <Box sx={{ visibility: isSkinLoaded ? "visible" : "hidden" }}>
         <Editor
+          key={toolbar} // Force re-mount editor when toolbar changes to avoid issues with dynamic toolbar changes
           id={name}
           onFocusIn={onFocus}
           onFocusOut={onBlur}
@@ -301,7 +294,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
             // specific to our application. Making this component not usable outside of our context.
             external_plugins: externalPlugins ?? {},
 
-            toolbar: mergedToolbarConfig,
+            toolbar: toolbar,
             contextmenu: "bold italic link | copy paste",
             toolbar_mode: "wrap",
             relative_urls: false,
@@ -310,7 +303,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
             statusbar: false,
             object_resizing: true,
             block_formats:
-              "Paragraph=p; Heading 1=h1; Heading 2=h2; Heading 3=h3; Heading 4=h4; Heading 5=h5; Heading 6=h6; Blockquoute=blockquote; Preformatted=pre",
+              "Paragraph=p; Heading 1=h1; Heading 2=h2; Heading 3=h3; Heading 4=h4; Heading 5=h5; Heading 6=h6; Blockquote=blockquote; Preformatted=pre",
             color_default_background: "none",
             help_tabs: ["shortcuts", "keyboardnav", "versions"],
 
@@ -336,8 +329,9 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
             // Plugin Settings
             quickbars_insert_toolbar: false,
             quickbars_image_toolbar: false,
-            quickbars_selection_toolbar:
-              "blocks | bold italic underline backcolor link superscript subscript strikethrough | align bullist numlist outdent indent | removeformat",
+            quickbars_selection_toolbar: effectiveCompact
+              ? false
+              : "blocks | bold italic underline backcolor link superscript subscript strikethrough | align bullist numlist outdent indent | removeformat",
 
             help_accessibility: false,
 
@@ -353,7 +347,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
             // Therefore we opt for the resize handle over auto resizing
             resize: false,
             min_height: EDITOR_HEIGHT,
-
+            ...(effectiveCompact && { max_height: EDITOR_HEIGHT }),
             // skin: false,
             skin_url: "/vendors/tinymce/skins/ui/Zesty",
             icon_url: "/vendors/tinymce/icons/material-rounded/icons.js",
@@ -399,6 +393,9 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
                     new KeyboardEvent("keydown", { key: "p", metaKey: true })
                   );
                 });
+                if (isFullscreen) {
+                  editor.execCommand("mceFullScreen");
+                }
               });
 
               editor.on("SkinLoaded", () => {
@@ -417,6 +414,8 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
               // Limits the content width to 640px when in fullscreen
               editor.on("FullscreenStateChanged", (evt: any) => {
                 setIsFullscreen(evt.state);
+                // store the current content in a ref to persist current content when remounting the editor on fullscreen toggle
+                valueRef.current = editor.getContent();
                 if (evt.state) {
                   editor.contentDocument.documentElement.style.display = "flex";
                   editor.contentDocument.body.style.width = "640px";
@@ -491,10 +490,10 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
               // Bynder App
               const handleOpenBynder = () => {
                 openBynder({
-                  url: bynderPortalUrlSetting?.value,
+                  url: bynderPortalUrlSetting?.value || "",
                   onSuccess: (assets) => {
                     if (assets?.length) {
-                      tinymce.activeEditor.insertContent(
+                      tinymce?.activeEditor?.insertContent(
                         assets
                           .map((asset) => {
                             const filename = asset.originalUrl.split("/").pop();

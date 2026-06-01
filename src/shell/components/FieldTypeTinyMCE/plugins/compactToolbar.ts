@@ -31,56 +31,35 @@ const COMPACT_BLOCK_FORMATS: BlockFormat[] = [
 ];
 
 const setup = (editor: Editor): void => {
-  // Register compact blocks menu button with dynamic icon
   editor.ui.registry.addMenuButton("compactBlocks", {
     icon: "format",
     tooltip: "Block formatting",
     onSetup: (buttonApi) => {
-      // Use a debounced or delayed update to prevent interference
-      let updateTimeout: ReturnType<typeof setTimeout> | null = null;
-
       const updateButtonIcon = () => {
-        // Clear previous timeout
-        if (updateTimeout) {
-          clearTimeout(updateTimeout);
+        const node = editor.selection.getNode();
+        const body = editor.getBody();
+        if (editor.dom.getParent(node, "blockquote", body)) {
+          buttonApi.setIcon("quote");
+          return;
         }
+        const blockEl = editor.dom.getParent(
+          node,
+          "h1,h2,h3,h4,h5,h6,p,pre",
+          body
+        );
+        const tagName = blockEl?.tagName?.toLowerCase() ?? "p";
+        const format = COMPACT_BLOCK_FORMATS.find((f) => f.block === tagName);
 
-        // Delay the update to avoid interfering with menu opening
-        updateTimeout = setTimeout(() => {
-          const node = editor.selection.getNode();
-          const body = editor.getBody();
-
-          if (editor.dom.getParent(node, "blockquote", body)) {
-            buttonApi.setIcon("quote");
-            return;
-          }
-
-          const blockEl = editor.dom.getParent(
-            node,
-            "h1,h2,h3,h4,h5,h6,p,pre",
-            body
-          );
-          const tagName = blockEl?.tagName?.toLowerCase() ?? "p";
-          const format = COMPACT_BLOCK_FORMATS.find((f) => f.block === tagName);
-
-          if (format) {
-            buttonApi.setIcon(format.icon);
-          } else {
-            buttonApi.setIcon("format");
-          }
-        }, 50);
+        if (format) {
+          buttonApi.setIcon(format.icon);
+        } else {
+          buttonApi.setIcon("format");
+        }
       };
-
-      // Use a more specific set of events
       editor.on("NodeChange", updateButtonIcon);
       editor.on("SelectionChange", updateButtonIcon);
-
       updateButtonIcon();
-
       return () => {
-        if (updateTimeout) {
-          clearTimeout(updateTimeout);
-        }
         editor.off("NodeChange", updateButtonIcon);
         editor.off("SelectionChange", updateButtonIcon);
       };
@@ -103,6 +82,27 @@ const setup = (editor: Editor): void => {
   editor.ui.registry.addMenuButton("compactAlign", {
     icon: "align-left",
     tooltip: "Text alignment",
+    onSetup: (api) => {
+      const updateButton = () => {
+        const format = editor.formatter;
+        if (format.match("aligncenter")) {
+          api.setIcon("align-center");
+        } else if (format.match("alignright")) {
+          api.setIcon("align-right");
+        } else if (format.match("alignjustify")) {
+          api.setIcon("align-justify");
+        } else {
+          api.setIcon("align-left");
+        }
+      };
+      editor.on("NodeChange", updateButton);
+      editor.on("SelectionChange", updateButton);
+      updateButton();
+      return () => {
+        editor.off("NodeChange", updateButton);
+        editor.off("SelectionChange", updateButton);
+      };
+    },
     fetch: (callback: (items: MenuItemSpec[]) => void) => {
       callback([
         {
@@ -150,33 +150,19 @@ const setup = (editor: Editor): void => {
     icon: "unordered-list",
     tooltip: "Lists",
     onSetup: (buttonApi) => {
-      let updateTimeout: ReturnType<typeof setTimeout> | null = null;
-
       const updateButtonIcon = () => {
-        if (updateTimeout) {
-          clearTimeout(updateTimeout);
+        const node = editor.selection.getNode();
+        const body = editor.getBody();
+        if (editor.dom.getParent(node, "ol", body)) {
+          buttonApi.setIcon("ordered-list");
+        } else {
+          buttonApi.setIcon("unordered-list");
         }
-
-        updateTimeout = setTimeout(() => {
-          const node = editor.selection.getNode();
-          const body = editor.getBody();
-
-          if (editor.dom.getParent(node, "ol", body)) {
-            buttonApi.setIcon("ordered-list");
-          } else {
-            buttonApi.setIcon("unordered-list");
-          }
-        }, 50);
       };
-
       editor.on("NodeChange", updateButtonIcon);
       editor.on("SelectionChange", updateButtonIcon);
       updateButtonIcon();
-
       return () => {
-        if (updateTimeout) {
-          clearTimeout(updateTimeout);
-        }
         editor.off("NodeChange", updateButtonIcon);
         editor.off("SelectionChange", updateButtonIcon);
       };
@@ -208,13 +194,5 @@ const setup = (editor: Editor): void => {
 
 tinymce.PluginManager.add("compactToolbar", (editor: Editor) => {
   setup(editor);
-
-  return {
-    getMetadata: () => ({
-      name: "Compact Toolbar",
-      url: "https://zesty.io",
-    }),
-  };
+  return {};
 });
-
-export default setup;
