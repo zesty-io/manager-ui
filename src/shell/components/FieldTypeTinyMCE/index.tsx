@@ -144,11 +144,11 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
     setInitialValue(value);
   }, [version]);
 
-  // retrieve editors current contents from ref so that when toggling fullscreen,
-  // the content does not reset due to unmounting the editor
+  // retrieve editor's current contents from ref so that when toggling fullscreen,
+  // the content does not reset due to unmounting the editor on `key={toolbar}` change
   useEffect(() => {
-    setInitialValue(valueRef?.current);
-  }, [effectiveCompact, valueRef?.current]);
+    setInitialValue(valueRef.current);
+  }, [effectiveCompact]);
 
   return (
     <Box
