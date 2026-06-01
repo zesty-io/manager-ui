@@ -113,9 +113,6 @@ const appTheme = createTheme(theme, {
             backgroundColor: theme.palette.grey[300],
             borderRadius: "4px",
           },
-          // TinyMCE 6: in fullscreen mode, <body> gets class tox-fullscreen and
-          // .tox-tinymce-aux (dialogs/popovers container) is a direct child of <body>
-          // that needs a higher z-index to appear above the fullscreen editor.
         },
       }),
     },

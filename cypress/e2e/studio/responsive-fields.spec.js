@@ -82,7 +82,7 @@ describe("Studio - Responsive field components", () => {
     cy.getBySelector("StudioSidePanel").should("exist");
   });
 
-  it("FieldTypeTextarea: field renders in compact mode", () => {
+  it("FieldTypeTextarea: field renders when selected", () => {
     selectField(textareaFieldZUID);
 
     cy.getBySelector("EditorField-multi_line_text_field").should("exist");

@@ -41,6 +41,7 @@ import { FieldTypeSort } from "../../../../../../../shell/components/FieldTypeSo
 import { FieldTypeNumber } from "../../../../../../../shell/components/FieldTypeNumber";
 import { FieldTypeBlockSelector } from "../../../../../../../shell/components/FieldTypeBlockSelector";
 import { InternalLink } from "./InternalLink";
+import styles from "./Field.less";
 import { MemoryRouter } from "react-router";
 import { withAI } from "../../../../../../../shell/components/withAi";
 import { useGetContentModelFieldsQuery } from "../../../../../../../shell/services/instance";
@@ -391,7 +392,7 @@ export const Field = memo(
         const [characterCount, setCharacterCount] = useState(0);
 
         return (
-          <div>
+          <div {...(!compact && { className: styles.WYSIWYGFieldType })}>
             <AIFieldShell
               ZUID={fieldData?.ZUID}
               name={fieldData?.name}
@@ -433,7 +434,7 @@ export const Field = memo(
       case "markdown":
       case "article_writer":
         return (
-          <div>
+          <div {...(!compact && { className: styles.WYSIWYGFieldType })}>
             <AIFieldShell
               key={rerenderKey}
               ZUID={fieldData?.ZUID}
