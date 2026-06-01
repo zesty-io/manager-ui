@@ -1,12 +1,12 @@
 import React, { useEffect, useMemo, useState, useRef } from "react";
-import { Editor, IAllProps } from "@tinymce/tinymce-react";
-import { Box, alpha, useForkRef } from "@mui/material";
+import { Editor } from "@tinymce/tinymce-react";
+import { Box, alpha } from "@mui/material";
 import { theme } from "@zesty-io/material";
 
 import openBynder from "../../../utility/openBynder";
 
 // TinyMCE so the global var exists
-import tinymce, { EditorOptions } from "tinymce/tinymce";
+import tinymce from "tinymce/tinymce";
 // DOM model
 import "tinymce/models/dom/model";
 // Theme
@@ -43,7 +43,7 @@ import "./plugins/compactToolbar";
 // importing plugin resources
 import "tinymce/plugins/emoticons/js/emojis";
 
-import { File, InstanceSetting } from "../../services/types";
+import { File } from "../../services/types";
 import { useGetInstanceSettingsQuery } from "../../services/instance";
 
 const IMAGE_FILE_TYPES = [
@@ -115,13 +115,18 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
   compact = false,
 }: FieldTypeTinyMCEProps) {
   // NOTE: controlled component
-  const [initialValue, setInitialValue] = useState(value);
+  // initialValue state is the only thing that drives tinymce-react's setContent
+  // reset path (componentDidUpdate). It must NOT change on normal edits — only
+  // on version bumps (external content change) or compact toggling (remount).
+  const [initialValue, setInitialValue] = useState<string>(value ?? "");
   const [isSkinLoaded, setIsSkinLoaded] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const { data: rawInstanceSettings } = useGetInstanceSettingsQuery();
   const effectiveCompact = compact && !isFullscreen;
   const toolbar = effectiveCompact ? compactToolbar : normalToolbar;
 
+  // Tracks live editor content; read on compact/fullscreen toggle to seed
+  // initialValue for the remounted editor without triggering setContent mid-edit.
   const valueRef = useRef<string>(value || "");
 
   const EDITOR_HEIGHT = effectiveCompact
@@ -141,11 +146,12 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
 
   // NOTE: update if version changes
   useEffect(() => {
-    setInitialValue(value);
+    valueRef.current = value;
+    setInitialValue(value ?? "");
   }, [version]);
 
-  // retrieve editor's current contents from ref so that when toggling fullscreen,
-  // the content does not reset due to unmounting the editor on `key={toolbar}` change
+  // When compact/fullscreen toggles the editor remounts (key={toolbar} changes).
+  // Seed the new mount with whatever the user had typed so far.
   useEffect(() => {
     setInitialValue(valueRef.current);
   }, [effectiveCompact]);
@@ -160,7 +166,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
         "&[data-compact='true']": {
           "& .tox-toolbar__group ": {
             "& .tox-tbtn": {
-              scale: "0.9",
+              transform: "scale(0.9)",
             },
           },
           // When in compact mode, move the fullscreen button to the end of the toolbar for better accessibility
@@ -202,6 +208,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
           onEditorChange={(content, editor) => {
             onChange(content, name, datatype);
 
+            valueRef.current = content;
             const charCount =
               editor.plugins?.wordcount?.body?.getCharacterCount() ?? 0;
 
@@ -414,8 +421,6 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
               // Limits the content width to 640px when in fullscreen
               editor.on("FullscreenStateChanged", (evt: any) => {
                 setIsFullscreen(evt.state);
-                // store the current content in a ref to persist current content when remounting the editor on fullscreen toggle
-                valueRef.current = editor.getContent();
                 if (evt.state) {
                   editor.contentDocument.documentElement.style.display = "flex";
                   editor.contentDocument.body.style.width = "640px";

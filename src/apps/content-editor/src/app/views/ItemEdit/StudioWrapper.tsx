@@ -1097,8 +1097,6 @@ export const StudioWrapper = () => {
     <>
       <TrapFocus open disableAutoFocus disableEnforceFocus>
         <Paper
-          role="dialog"
-          aria-modal="false"
           square
           variant="outlined"
           tabIndex={-1}

@@ -15,7 +15,7 @@ import {
   FieldTypeMedia,
   MediaItem,
 } from "../../../../components/FieldTypeMedia";
-import DndContextProvider from "../../../../../../../../shell/components/DndContextProvider";
+import DndContextProvider from "shell/components/DndContextProvider";
 import { MediaApp } from "../../../../../../../media/src/app";
 import { useLazyGetFileQuery } from "../../../../../../../../shell/services/mediaManager";
 import { fileExtension } from "../../../../../../../media/src/app/utils/fileUtils";

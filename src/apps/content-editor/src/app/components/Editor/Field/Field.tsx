@@ -392,7 +392,7 @@ export const Field = memo(
         const [characterCount, setCharacterCount] = useState(0);
 
         return (
-          <div {...(!compact && { className: styles.WYSIWYGFieldType })}>
+          <div className={!compact ? styles.WYSIWYGFieldType : undefined}>
             <AIFieldShell
               ZUID={fieldData?.ZUID}
               name={fieldData?.name}
@@ -434,7 +434,7 @@ export const Field = memo(
       case "markdown":
       case "article_writer":
         return (
-          <div {...(!compact && { className: styles.WYSIWYGFieldType })}>
+          <div className={!compact ? styles.WYSIWYGFieldType : undefined}>
             <AIFieldShell
               key={rerenderKey}
               ZUID={fieldData?.ZUID}

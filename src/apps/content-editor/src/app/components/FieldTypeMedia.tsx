@@ -758,6 +758,7 @@ export const MediaItem = ({
       canDrop: () => !effectiveHideDrag,
       hover: (item: { index: number; imageZUID: string }, monitor) => {
         if (
+          effectiveHideDrag ||
           !monitor.isOver({ shallow: true }) ||
           lastHoveredIndexRef.current === index
         ) {

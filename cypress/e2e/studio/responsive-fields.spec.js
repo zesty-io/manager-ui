@@ -62,7 +62,6 @@ describe("Studio - Responsive field components", () => {
           url: `${Cypress.env("API_INSTANCE_URL")}/web/views`,
           method: "GET",
         }).then((resData) => {
-          console.debug("resData", { resData });
           const viewFile = resData?.data?.find(
             (data) => data?.contentModelZUID === modelZUID
           );
@@ -84,7 +83,6 @@ describe("Studio - Responsive field components", () => {
 
   it("FieldTypeTextarea: field renders when selected", () => {
     selectField(textareaFieldZUID);
-
     cy.getBySelector("EditorField-multi_line_text_field").should("exist");
   });
 
@@ -92,7 +90,7 @@ describe("Studio - Responsive field components", () => {
     selectField(wysiwygFieldZUID);
 
     // Wait for TinyMCE to initialize
-    cy.get(".tox-tinymce", { timeout: 10000 }).should("exist");
+    cy.get(".tox-tinymce").should("exist");
 
     // Compact subset buttons must be visible
     cy.get('.tox-toolbar__group button[aria-label="Block formatting"]').should(
