@@ -399,7 +399,6 @@ export const ItemEditHeaderActions = ({
               promise.value.error.data?.message ||
               "An error occurred while publishing. Please try again.";
             dispatch(notify({ message, kind: "error" }));
-            dispatch(notify({ message, kind: "error" }));
           }
         });
 
