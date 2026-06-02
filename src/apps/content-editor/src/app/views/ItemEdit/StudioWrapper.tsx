@@ -45,6 +45,10 @@ import { MediaApp } from "../../../../../media/src/app";
 
 const drawerWidth = 440;
 
+// Duration the dark refresh overlay takes to fade in/out. Kept in sync with
+// the `transition` on the overlay in StudioPreview.
+const REFRESH_FADE_MS = 200;
+
 const withCodeIdBreadcrumbRoot = (
   codeId: string,
   breadcrumb: LayoutBreadcrumbItem[],
@@ -218,6 +222,8 @@ export const StudioWrapper = () => {
     [buildIframeSrc, previewPath]
   );
   const [isNavigating, setIsNavigating] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const refreshTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const selectedItemZUID = selectedElement?.itemZuid || pageItemZUID;
   const selectedModelZUID = selectedElement?.modelZuid || pageModelZUID;
 
@@ -492,13 +498,30 @@ export const StudioWrapper = () => {
     return () => iframeEl.removeEventListener("load", handleLoad);
   }, []);
 
+  useEffect(
+    () => () => {
+      if (refreshTimeoutRef.current) {
+        clearTimeout(refreshTimeoutRef.current);
+      }
+    },
+    []
+  );
+
   const refreshPreviewFrame = useCallback(
     (onReloadComplete?: () => void) => {
       previewReloadContinuationRef.current = onReloadComplete || null;
-      setIsNavigating(true);
-      if (iframeRef.current) {
-        iframeRef.current.src = iframeSrc;
+      // Fade the dark overlay in first, then reload the iframe underneath it
+      // so the blank reload is hidden and edits are blocked until it finishes.
+      setIsRefreshing(true);
+      if (refreshTimeoutRef.current) {
+        clearTimeout(refreshTimeoutRef.current);
       }
+      refreshTimeoutRef.current = setTimeout(() => {
+        refreshTimeoutRef.current = null;
+        if (iframeRef.current) {
+          iframeRef.current.src = iframeSrc;
+        }
+      }, REFRESH_FADE_MS);
     },
     [iframeSrc]
   );
@@ -988,6 +1011,13 @@ export const StudioWrapper = () => {
     onStaticEditImage: setImageEditState,
   });
 
+  const handlePreviewFrameLoad = useCallback(() => {
+    // The refreshed page has painted — drop the overlay, then run the
+    // existing bridge load handler.
+    setIsRefreshing(false);
+    handlePreviewLoad();
+  }, [handlePreviewLoad]);
+
   const renderInfoPanel = () => {
     if (!isResolved) {
       return (
@@ -1091,7 +1121,8 @@ export const StudioWrapper = () => {
               iframeRef={iframeRef}
               iframeSrc={iframeSrc}
               isNavigating={isNavigating}
-              onLoad={handlePreviewLoad}
+              isBusy={isRefreshing || studioSaving || isSavingLayout}
+              onLoad={handlePreviewFrameLoad}
             />
             {interactionMode === "content" ? (
               <StudioSidePanel
