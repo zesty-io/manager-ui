@@ -124,12 +124,8 @@ jobs:
           fi
           echo "::add-mask::$TOKEN"
           # Cookie scoped to the registrable parent so it reaches *.dev.zesty.io (incl. the manager host).
-          # httpOnly:true — re-tightening (was briefly flipped to false to bisect a CI auth failure;
-          #   see commit f3ece9d5e). With httpOnly:true the agent's browser_evaluate cannot read the
-          #   cookie via document.cookie — a defense-in-depth layer on top of the post-step literal-
-          #   value scrub. If this re-tightening breaks auth again, revert to httpOnly:false with a
-          #   note that @playwright/mcp@0.0.75's --storage-state doesn't honor httpOnly cookies under
-          #   --isolated, and rely solely on the scrub.
+          # httpOnly:true — the agent's browser_evaluate cannot read the cookie via document.cookie,
+          #   a defense-in-depth layer on top of the post-step literal-value scrub.
           # secure:false — dev server speaks plain http; a `secure: true` cookie wouldn't be sent.
           # Write to $RUNNER_TEMP, NOT $GITHUB_WORKSPACE — keeps the cookie file outside the agent's
           # Read working directory. The MCP server reads it directly via the absolute path we pass
@@ -157,42 +153,6 @@ jobs:
             echo "scrub_password=$PASSWORD"
           } >> "$GITHUB_OUTPUT"
           echo "Wrote storage_state.json (cookie ${COOKIE_NAME}); wiped ./ci/.env; staged scrub patterns as step outputs."
-
-      # DIAGNOSTIC — temporary, behavior-neutral. Helps pin where the CI auth fails when the
-      # agent reports "401 on /verify" after the first browser_navigate. We test the freshly-minted
-      # token directly against the dev auth API two ways, and only print status codes (never the
-      # token value, never the response body). Combined with the httpOnly:false bisect above:
-      #   cookie 200 + bisect makes auth work  ⇒ httpOnly:true × MCP storage-state was the bug.
-      #   cookie 200 + bisect still fails      ⇒ Playwright storage-state isn't loading at all.
-      #   cookie 401 + bearer 200              ⇒ the API doesn't accept this cookie form; auth contract wrong.
-      #   cookie 401 + bearer 401              ⇒ the API issued a token it then rejects; upstream issue.
-      - name: Diagnose CI auth (token reachability)
-        if: always()
-        env:
-          SCRUB_TOKEN: ${{ steps.auth.outputs.scrub_token }}
-        run: |
-          set +e
-          API_AUTH="https://auth.api.dev.zesty.io"
-          if [ -z "${SCRUB_TOKEN:-}" ]; then
-            echo "::warning::No token from auth step output — skipping diagnostic (the storage-state build itself must have failed)."
-            exit 0
-          fi
-          # 1) Token as Cookie (this is how Playwright would send it once loaded from storage-state).
-          code=$(curl -sS -o /dev/null -w "%{http_code}" --max-time 10 \
-            -H "Cookie: DEV_APP_SID=$SCRUB_TOKEN" \
-            "$API_AUTH/verify")
-          echo "diagnostic: verify HTTP (cookie form) = $code"
-          # 2) Token as Bearer (in case the API expects Bearer for /verify; ruled out if Cookie works).
-          code=$(curl -sS -o /dev/null -w "%{http_code}" --max-time 10 \
-            -H "Authorization: Bearer $SCRUB_TOKEN" \
-            "$API_AUTH/verify")
-          echo "diagnostic: verify HTTP (bearer form) = $code"
-          # 3) Token also tried against the instance API (/v1/content/models) — that's the call
-          # the agent saw 401 on after the login redirect. Same cookie form, different host.
-          code=$(curl -sS -o /dev/null -w "%{http_code}" --max-time 10 \
-            -H "Cookie: DEV_APP_SID=$SCRUB_TOKEN" \
-            "https://8-f48cf3a682-7fthvk.api.dev.zesty.io/v1/content/models")
-          echo "diagnostic: instance /v1/content/models HTTP (cookie form) = $code"
 
       # Install the Chromium build for the EXACT Playwright version @playwright/mcp@$MCP_VERSION
       # pins, so the browser the MCP launches at runtime is guaranteed to exist (a `npx playwright`
