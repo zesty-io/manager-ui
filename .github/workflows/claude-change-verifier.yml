@@ -124,19 +124,19 @@ jobs:
           fi
           echo "::add-mask::$TOKEN"
           # Cookie scoped to the registrable parent so it reaches *.dev.zesty.io (incl. the manager host).
-          # httpOnly:false — temporarily reverted from `true` while debugging why the storage-state
-          #   cookie wasn't taking effect in CI (every run landed on the login screen + 401 on
-          #   /verify). Cypress's cy.login produces a non-httpOnly cookie that works fine; we're
-          #   bisecting whether @playwright/mcp's --storage-state honors httpOnly cookies correctly
-          #   with --isolated. The deterministic backstop against agent leaking the cookie via
-          #   `document.cookie` is the post-step exfil scrub (literal token/email/password values).
+          # httpOnly:true — re-tightening (was briefly flipped to false to bisect a CI auth failure;
+          #   see commit f3ece9d5e). With httpOnly:true the agent's browser_evaluate cannot read the
+          #   cookie via document.cookie — a defense-in-depth layer on top of the post-step literal-
+          #   value scrub. If this re-tightening breaks auth again, revert to httpOnly:false with a
+          #   note that @playwright/mcp@0.0.75's --storage-state doesn't honor httpOnly cookies under
+          #   --isolated, and rely solely on the scrub.
           # secure:false — dev server speaks plain http; a `secure: true` cookie wouldn't be sent.
           # Write to $RUNNER_TEMP, NOT $GITHUB_WORKSPACE — keeps the cookie file outside the agent's
           # Read working directory. The MCP server reads it directly via the absolute path we pass
           # to --storage-state, so location doesn't matter for the runtime; it does matter that the
           # agent can't `Read storage_state.json` and pipe the value somewhere.
           jq -n --arg name "$COOKIE_NAME" --arg value "$TOKEN" \
-            '{cookies:[{name:$name,value:$value,domain:".dev.zesty.io",path:"/",httpOnly:false,secure:false,sameSite:"Lax"}],origins:[]}' \
+            '{cookies:[{name:$name,value:$value,domain:".dev.zesty.io",path:"/",httpOnly:true,secure:false,sameSite:"Lax"}],origins:[]}' \
             > "$RUNNER_TEMP/storage_state.json"
           # Tighten file perms — defense-in-depth even though the file is now outside the workspace.
           chmod 600 "$RUNNER_TEMP/storage_state.json"
