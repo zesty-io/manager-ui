@@ -221,7 +221,7 @@ export const ItemParent = ({ onChange }: ItemParentProps) => {
           });
       }
     }
-  }, [rawNavData]);
+  }, [rawNavData, item]);
 
   useEffect(() => {
     const normalizedSearch = searchText.toLowerCase();
