@@ -221,7 +221,13 @@ export const ItemParent = ({ onChange }: ItemParentProps) => {
           });
       }
     }
-  }, [rawNavData, item]);
+  }, [
+    rawNavData,
+    item?.web?.parentZUID,
+    item?.meta?.ZUID,
+    item?.web?.path,
+    item?.meta?.langID,
+  ]);
 
   useEffect(() => {
     const normalizedSearch = searchText.toLowerCase();
