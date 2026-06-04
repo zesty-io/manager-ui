@@ -151,7 +151,10 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
   }, [version]);
 
   // When compact/fullscreen toggles the editor remounts (key={toolbar} changes).
-  // Seed the new mount with whatever the user had typed so far.
+  // Seed the new mount with the latest content. This effect fires after the new
+  // Editor mounts, so the mount briefly renders with the previous initialValue,
+  // but tinymce-react calls setContent via componentDidUpdate immediately after,
+  // so no visible flash occurs. This two-step is intentional.
   useEffect(() => {
     setInitialValue(valueRef.current);
   }, [effectiveCompact]);
@@ -201,7 +204,10 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
     >
       <Box sx={{ visibility: isSkinLoaded ? "visible" : "hidden" }}>
         <Editor
-          key={toolbar} // Force re-mount editor when toolbar changes to avoid issues with dynamic toolbar changes
+          // key must change whenever effectiveCompact changes: the BeforeExecCommand
+          // handler closes over effectiveCompact at init time and must be re-registered
+          // on each toggle. Simplifying this key will break compact→fullscreen silently.
+          key={toolbar}
           id={name}
           onFocusIn={onFocus}
           onFocusOut={onBlur}

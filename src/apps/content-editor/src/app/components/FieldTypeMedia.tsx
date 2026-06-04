@@ -565,7 +565,7 @@ export const FieldTypeMedia = forwardRef(
           </DndContextProvider>
           {limit > images.length && (
             <Box display="flex" gap={1}>
-              {!compact && !isBynderSessionValid && (
+              {!isBynderSessionValid && (
                 <Button
                   size="large"
                   variant="outlined"
@@ -591,7 +591,7 @@ export const FieldTypeMedia = forwardRef(
               >
                 Add More from Media
               </Button>
-              {!compact && isBynderSessionValid && (
+              {isBynderSessionValid && (
                 <Button
                   data-cy="addFromBynderBtn"
                   size="large"
