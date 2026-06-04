@@ -320,6 +320,12 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          # DEBUG: surface the full agent SDK output (tool-calls, browser_navigate args, network
+          # responses, console messages) to the runner log. Default is `false` for security/log
+          # noise; enable here only on the PR #4147 test branch while debugging why the browser
+          # session lands on the login screen despite a valid storage-state cookie. Revert before
+          # promoting to PR #4132 — leaks more agent context than we want in regular runs.
+          show_full_output: true
           # The QA methodology lives in the repo skill .claude/skills/qa-verify/SKILL.md (shared with
           # local dev runs). This prompt only invokes it with CI inputs. If a run shows the skill was
           # NOT loaded/used, fall back to injecting the file: read SKILL.md into an env var and inline
