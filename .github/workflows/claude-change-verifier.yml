@@ -141,23 +141,38 @@ jobs:
             exit 1
           fi
           echo "::add-mask::$TOKEN"
-          # Cookie scoped to the registrable parent so it reaches *.dev.zesty.io (incl. the manager host).
-          # httpOnly:true — the agent's browser_evaluate cannot read the cookie via document.cookie,
-          #   a defense-in-depth layer on top of the post-step literal-value scrub.
-          # secure:false — dev server speaks plain http; a `secure: true` cookie wouldn't be sent.
-          # Write to $RUNNER_TEMP (NOT $GITHUB_WORKSPACE) for two narrow reasons:
+          # Cookie setup matches Cypress's `cy.login()` (`cy.setCookie(NAME, token)` with no options),
+          # which uses host-scoped, non-httpOnly, non-secure cookies derived from the page URL. Our
+          # earlier attempt at `.dev.zesty.io` + `httpOnly:true` consistently produced login screen +
+          # 401 on /verify in the Playwright MCP browser (PR #4147 attempts 1-7), even though the
+          # raw token was valid (diagnostic bearer 200). Cypress's pattern works against the same dev
+          # API with the same creds, so we mirror it exactly: separate cookie entries for each host
+          # the manager app actually talks to (manager-spoofed host + auth API + instance API),
+          # httpOnly:false (browser cookies set via JS / cy.setCookie are non-httpOnly by default),
+          # secure:false (dev API speaks plain http), sameSite:Lax (default).
+          # Trade-off vs httpOnly:true: the agent could in principle read this cookie via
+          # browser_evaluate (`document.cookie`). We deliberately omit `mcp__playwright__browser_evaluate`
+          # from --allowedTools (see the agent step below) so that channel is closed at the tool level
+          # instead of at the cookie level. The post-step literal-value scrub remains the last-line
+          # defense if a future contributor re-adds browser_evaluate to the allowlist.
+          # Hosts:
+          #   8-f48cf3a682-7fthvk.manager.dev.zesty.io  — the app's spoofed host (where the SPA runs)
+          #   auth.api.dev.zesty.io                     — /verify, /login, etc.
+          #   8-f48cf3a682-7fthvk.api.dev.zesty.io      — instance API (/v1/content, /v1/schema, ...)
+          # Write to $RUNNER_TEMP (NOT $GITHUB_WORKSPACE) for hygiene:
           #   1) It's outside the workspace, so a stray `ls` / glob over the workspace doesn't list it.
           #   2) Cleanup is automatic at job end (the runner wipes RUNNER_TEMP).
-          # IT DOES NOT prevent the agent from reading it. Claude Code's `Read` accepts absolute paths
-          # and runs as the same runner user as the file, so `Read /home/runner/_temp/storage_state.json`
-          # succeeds while the file exists (which is the whole agent step). The defenses that actually
-          # bound the blast radius of a reachable file are, in order:
-          #   - httpOnly:true (below) — stops `document.cookie` exfil from browser_evaluate.
-          #   - The literal-value scrub in the post step — stops in-comment leaks of the literal token.
-          #   - The same-repo + non-draft job-level `if:` (top of this file) — stops untrusted authors
-          #     from running the agent at all. That's the load-bearing trust assumption.
+          # IT DOES NOT prevent the agent from reading it (Read accepts absolute paths and runs as
+          # the same uid). The deterministic defenses against that reach are:
+          #   - browser_evaluate omitted from --allowedTools (no `document.cookie` read in the browser).
+          #   - The literal-value scrub in the post step (in-comment leak refused).
+          #   - The same-repo + non-draft job-level `if:` (untrusted authors blocked from the agent).
           jq -n --arg name "$COOKIE_NAME" --arg value "$TOKEN" \
-            '{cookies:[{name:$name,value:$value,domain:".dev.zesty.io",path:"/",httpOnly:true,secure:false,sameSite:"Lax"}],origins:[]}' \
+            '{cookies:[
+                {name:$name,value:$value,domain:"8-f48cf3a682-7fthvk.manager.dev.zesty.io",path:"/",httpOnly:false,secure:false,sameSite:"Lax"},
+                {name:$name,value:$value,domain:"auth.api.dev.zesty.io",path:"/",httpOnly:false,secure:false,sameSite:"Lax"},
+                {name:$name,value:$value,domain:"8-f48cf3a682-7fthvk.api.dev.zesty.io",path:"/",httpOnly:false,secure:false,sameSite:"Lax"}
+              ],origins:[]}' \
             > "$RUNNER_TEMP/storage_state.json"
           # Tighten file perms — defense-in-depth even though the file is now outside the workspace.
           chmod 600 "$RUNNER_TEMP/storage_state.json"
