@@ -417,8 +417,14 @@ jobs:
           # always written by us under the default GITHUB_TOKEN, which posts as `github-actions[bot]`,
           # so we filter on that identity. NOTE: if the future SDK switches the post step to use a
           # PAT or a GitHub App token, update this filter to match the new identity.
+          # ANCHORED MARKER (`startswith` not `contains`): the sibling claude-auto-reviewer workflow
+          # also posts as `github-actions[bot]` and its review body can quote our source code,
+          # which contains the literal string `<!-- cv-verifier -->` in the SKILL template. With a
+          # plain `contains` filter, the auto-reviewer's review comment would match and we could
+          # PATCH the wrong comment. The Verifier always emits the marker as line 1 of the body
+          # (skill template); the auto-reviewer always quotes it mid-body. `startswith` distinguishes.
           CID=$(gh api "repos/$REPO/issues/$PR/comments" --paginate \
-            --jq '.[] | select(.user.login == "github-actions[bot]") | select(.body | contains("<!-- cv-verifier -->")) | .id' | head -n1)
+            --jq '.[] | select(.user.login == "github-actions[bot]") | select(.body | startswith("<!-- cv-verifier -->")) | .id' | head -n1)
           if [ -n "${CID:-}" ]; then
             printf '%s' "$PAYLOAD" | gh api -X PATCH "repos/$REPO/issues/comments/$CID" --input - --silent
             echo "Updated existing QA comment $CID."
