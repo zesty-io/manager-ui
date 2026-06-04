@@ -358,19 +358,19 @@ jobs:
           # file to $RUNNER_TEMP/qa-skill.md in the previous step and point the agent there.
           prompt: |
             Your first action MUST be to read the qa-verify skill from this absolute path:
-              /home/runner/_temp/qa-skill.md
+              ${{ runner.temp }}/qa-skill.md
             (Use the Read tool with that exact path. The in-repo path .claude/skills/qa-verify/
             SKILL.md may not exist — the action restored .claude/ from the base branch. The
-            staged copy at /home/runner/_temp/qa-skill.md is the authoritative source for this
+            staged copy at ${{ runner.temp }}/qa-skill.md is the authoritative source for this
             run.)
 
-            If you cannot read /home/runner/_temp/qa-skill.md, do NOT fall back to inferring the
+            If you cannot read ${{ runner.temp }}/qa-skill.md, do NOT fall back to inferring the
             methodology from this prompt. Instead, write EXACTLY this to REPORT_FILE and stop:
 
               <!-- cv-verifier -->
               ## QA Review — INCONCLUSIVE
               Verifier infrastructure failure: qa-verify skill could not be loaded from
-              /home/runner/_temp/qa-skill.md. The CI workflow stages SKILL.md there before
+              ${{ runner.temp }}/qa-skill.md. The CI workflow stages SKILL.md there before
               invoking this agent; if it is missing, the staging step failed and there is no
               authoritative methodology to follow. Re-run the workflow.
               <!-- qa-verdict: INCONCLUSIVE -->
