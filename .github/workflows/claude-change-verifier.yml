@@ -185,6 +185,54 @@ jobs:
           } >> "$GITHUB_OUTPUT"
           echo "Wrote storage_state.json (cookie ${COOKIE_NAME}); wiped ./ci/.env; staged scrub patterns as step outputs."
 
+      # DIAGNOSTIC — temporary (on PR #4147's branch only). Three consecutive Verifier runs on
+      # this branch (attempts 1/2/3 of run 26971709335) all landed on the login screen with 401
+      # on /verify, while PR #4132's last six runs were green using the IDENTICAL workflow file.
+      # We need direct evidence of whether the freshly minted token is valid against the dev API
+      # before deciding if this is a token issue (mint problem) or a Playwright-context issue
+      # (MCP isn't loading storage-state). We print only HTTP status codes; never the token value.
+      #
+      # Interpretation:
+      #   cookie 200 + bearer 200  ⇒ token is valid; the failure is downstream (MCP storage-state
+      #                              loading, cookie scope, or some other browser-context issue).
+      #   cookie 401 + bearer 200  ⇒ dev auth API rejects raw curl cookie requests (no Origin /
+      #                              Referer) but accepts the token; this was the pattern on PR
+      #                              #4132's runs too — diagnostic is not a faithful proxy for
+      #                              browser auth, the browser there ALSO auths fine.
+      #   cookie 401 + bearer 401  ⇒ the API issued a token it now rejects ⇒ upstream issue
+      #                              (rate limit, session invalidation by another login, etc.).
+      - name: Diagnose CI auth (token reachability)
+        if: always()
+        env:
+          SCRUB_TOKEN: ${{ steps.auth.outputs.scrub_token }}
+        run: |
+          set +e
+          API_AUTH="https://auth.api.dev.zesty.io"
+          if [ -z "${SCRUB_TOKEN:-}" ]; then
+            echo "::warning::No token from auth step output — skipping diagnostic (the storage-state build itself must have failed)."
+            exit 0
+          fi
+          # 1) Token as Cookie against /verify.
+          code=$(curl -sS -o /dev/null -w "%{http_code}" --max-time 10 \
+            -H "Cookie: DEV_APP_SID=$SCRUB_TOKEN" \
+            "$API_AUTH/verify")
+          echo "diagnostic: verify HTTP (cookie form) = $code"
+          # 2) Token as Bearer against /verify (in case the API expects Bearer).
+          code=$(curl -sS -o /dev/null -w "%{http_code}" --max-time 10 \
+            -H "Authorization: Bearer $SCRUB_TOKEN" \
+            "$API_AUTH/verify")
+          echo "diagnostic: verify HTTP (bearer form) = $code"
+          # 3) Token as Cookie against the instance API (matches what the agent saw 401 on).
+          code=$(curl -sS -o /dev/null -w "%{http_code}" --max-time 10 \
+            -H "Cookie: DEV_APP_SID=$SCRUB_TOKEN" \
+            "https://8-f48cf3a682-7fthvk.api.dev.zesty.io/v1/content/models")
+          echo "diagnostic: instance /v1/content/models HTTP (cookie form) = $code"
+          # 4) ALSO: did we even mint a fresh token? Print the token's first 4 + last 4 chars
+          # so we can confirm the storage-state cookie value matches what curl is sending here.
+          # The ::add-mask:: registration in the auth step still masks the full value in logs.
+          LEN=${#SCRUB_TOKEN}
+          echo "diagnostic: token length = $LEN  (first4=${SCRUB_TOKEN:0:4}  last4=${SCRUB_TOKEN: -4})"
+
       # Install the Chromium build for the EXACT Playwright version @playwright/mcp@$MCP_VERSION
       # pins, so the browser the MCP launches at runtime is guaranteed to exist (a `npx playwright`
       # at a different version installs a non-matching Chromium revision -> "browser not found").
