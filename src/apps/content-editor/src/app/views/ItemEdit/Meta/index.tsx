@@ -154,9 +154,6 @@ export const Meta = forwardRef(
       useState<(typeof FlowType)[keyof typeof FlowType]>(null);
     const metaDescriptionButtonRef = useRef(null);
     const metaTitleButtonRef = useRef(null);
-    const showSEOPreview =
-      instanceSettings?.find((setting) => setting.key === "disable_seo_preview")
-        ?.value !== "1" && model?.type !== "dataset";
 
     // @ts-expect-error untyped
     const siteName = useMemo(() => dispatch(fetchGlobalItem())?.site_name, []);
@@ -608,7 +605,14 @@ export const Meta = forwardRef(
               isAIAssistedFlow={flowType === FlowType.AIGenerated}
               required={REQUIRED_FIELDS.includes("metaDescription")}
             />
-            <MetaImage onChange={handleOnChange} />
+            <MetaImage
+              onChange={handleOnChange}
+              skipImageFallback={
+                instanceSettings?.find(
+                  (setting) => setting.key === "disable_seo_preview"
+                )?.value === "1"
+              }
+            />
             {"og_title" in metaFields && (
               <OGTitle
                 value={data.og_title as string}
@@ -735,7 +739,7 @@ export const Meta = forwardRef(
             }}
           >
             <Box maxWidth={620}>
-              {showSEOPreview && (
+              {model?.type !== "dataset" && (
                 <>
                   <SocialMediaPreview />
                   <Divider sx={{ my: 1.5 }} />
