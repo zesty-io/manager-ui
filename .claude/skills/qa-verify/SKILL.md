@@ -241,9 +241,13 @@ workflow find/update the comment and read the verdict for the gate):
     ### Suggested Cypress coverage
     <real spec file name + prose cases>
 
-    <!-- qa-verdict: PASS|FAIL|INCONCLUSIVE -->
+    <!-- qa-verdict: <PASS_OR_FAIL_OR_INCONCLUSIVE> -->
 
-Set `<!-- qa-verdict: ... -->` to your overall verdict from step 7.
+Replace `<PASS_OR_FAIL_OR_INCONCLUSIVE>` with one of `PASS`, `FAIL`, `INCONCLUSIVE` (your overall
+verdict from step 7). The placeholder is deliberately written that way (not as a literal alternation
+`PASS|FAIL|INCONCLUSIVE`) so that an echoed template can't accidentally satisfy the CI marker-count
+check — the post-step regex anchors to `<!-- qa-verdict: <one-word> -->`, and the unsubstituted
+placeholder doesn't match.
 
 **Never write `#<number>` to refer to acceptance criteria** (e.g. `#1`, `#2`, `criterion #3`). GitHub
 auto-links any `#<digits>` in a comment body to an issue/PR with that number in the same repo, which

