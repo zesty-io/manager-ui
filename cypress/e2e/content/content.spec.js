@@ -713,10 +713,37 @@ describe("Content Specs", () => {
 
       cy.getBySelector("subfield:sort").find("input").clear().type("99");
 
+      cy.getBySelector("subfield:date")
+        .find('[data-cy="datePickerInputField"] input')
+        .type("Jan 15 2025")
+        .should("have.value", "Jan 15 2025");
+      cy.getBySelector("subfield:datetime")
+        .find('[data-cy="datePickerInputField"] input')
+        .type("Jan 15 2025")
+        .should("have.value", "Jan 15 2025");
+
       cy.getBySelector("SaveRepeaterRowItemBtn").scrollIntoView().click();
       cy.getBySelector("field:repeater")
         .find(".MuiDataGrid-row")
         .should("have.length", 1);
+    });
+
+    it("should populate date pickers with saved values when editing an existing row", () => {
+      // Reopen the row saved in the previous test to verify round-trip
+      cy.getBySelector("field:repeater")
+        .find(".MuiDataGrid-row")
+        .first()
+        .click({ force: true });
+
+      cy.getBySelector("subfield:date")
+        .find('[data-cy="datePickerInputField"] input')
+        .should("not.have.value", "");
+
+      cy.getBySelector("subfield:datetime")
+        .find('[data-cy="datePickerInputField"] input')
+        .should("not.have.value", "");
+
+      cy.getBySelector("CloseAddRepeaterRowDialogBtn").click();
     });
 
     it("should be able to update a row item", () => {
