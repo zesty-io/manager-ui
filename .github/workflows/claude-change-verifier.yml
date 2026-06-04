@@ -261,7 +261,20 @@ jobs:
           # different HTML entry per hostname (per CLAUDE.md), so localhost:8080 returning 200
           # doesn't prove the /etc/hosts rewrite worked. Hitting the real host fails loudly if it
           # didn't, instead of silently sending the agent to a wrong-entry / 404 page.
-          npx wait-on -t 300000 http://8-f48cf3a682-7fthvk.manager.dev.zesty.io:8080
+          #
+          # ALSO wait on /main.js. webpack-dev-server's HTML is served by webpack's middleware as
+          # soon as the server starts listening — BEFORE the JS bundle has finished compiling.
+          # Waiting only on the HTML root returns the moment nginx serves it, so the agent's
+          # first browser_navigate can land on a page that loads the HTML but then 404s the JS
+          # bundle (or loads a stale one), the app initializes in a broken state, /verify fires
+          # without a cookie or with stale auth state, returns 401, and the agent sees the
+          # login screen even though storage-state contains a valid token. Waiting on the bundle
+          # URL too closes that race — the URL returns 200 only after webpack's first compile
+          # completes. Bundle name from webpack.config.js: development entry `main` -> `main.js`.
+          # Bumped timeout to 600000 because waiting for the full compile adds ~30-60s vs HTML.
+          npx wait-on -t 600000 \
+            http://8-f48cf3a682-7fthvk.manager.dev.zesty.io:8080 \
+            http://8-f48cf3a682-7fthvk.manager.dev.zesty.io:8080/main.js
 
       # Resolve the GitHub issue this PR addresses. This repo names branches `<issue#>-slug` and
       # uses `Closes #N`, so try the branch name first, then GitHub's native closing references,
