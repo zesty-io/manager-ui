@@ -316,6 +316,33 @@ jobs:
             echo "No linked issue found; QA will run in change-only mode."
           fi
 
+      # Stage SKILL.md OUTSIDE the workspace so the claude-code-action's "restore .claude/ from
+      # origin/dev (PR head is untrusted)" step CANNOT wipe it.
+      #
+      # Why this is load-bearing: the action treats the PR head as untrusted and replaces the
+      # checked-out `.claude/` directory with the one from origin/dev BEFORE the agent runs.
+      # If SKILL.md is only in the PR head (because PR #4132 hasn't merged yet, OR because a
+      # downstream PR depends on a SKILL change that isn't on origin/dev yet), the agent boots
+      # with no skill at the expected path. On PR #4147 we directly observed the agent failing
+      # `ls .claude/skills/qa-verify/` with "No such file or directory" and then guessing the
+      # methodology from the prompt — which made it skip the CI auth contract and report
+      # INCONCLUSIVE for every criterion.
+      #
+      # Fix: copy SKILL.md to $RUNNER_TEMP/qa-skill.md (outside the workspace, untouched by the
+      # restore). Fail this step LOUDLY if the file is missing — the workflow has no meaningful
+      # behavior without the skill, so fail-fast is better than producing a misleading INCONCLUSIVE.
+      - name: Stage skill outside workspace (defeat .claude/ restore)
+        run: |
+          set -euo pipefail
+          SRC="$GITHUB_WORKSPACE/.claude/skills/qa-verify/SKILL.md"
+          DEST="$RUNNER_TEMP/qa-skill.md"
+          if [ ! -f "$SRC" ]; then
+            echo "::error::qa-verify skill not found at $SRC — Verifier cannot run without it. Did you remove .claude/skills/qa-verify/SKILL.md from the PR? The whole methodology lives in that file; the prompt only references it."
+            exit 1
+          fi
+          cp "$SRC" "$DEST"
+          echo "Staged $SRC -> $DEST (size: $(wc -c < "$DEST") bytes)"
+
       - uses: anthropics/claude-code-action@1dc994ee7a008f0ecc866d9ac23ef036b7229f84 # v1.0.127
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -326,13 +353,29 @@ jobs:
           # session lands on the login screen despite a valid storage-state cookie. Revert before
           # promoting to PR #4132 — leaks more agent context than we want in regular runs.
           show_full_output: true
-          # The QA methodology lives in the repo skill .claude/skills/qa-verify/SKILL.md (shared with
-          # local dev runs). This prompt only invokes it with CI inputs. If a run shows the skill was
-          # NOT loaded/used, fall back to injecting the file: read SKILL.md into an env var and inline
-          # it here (it stays the single source of truth either way).
+          # The QA methodology lives in SKILL.md (shared with local dev runs). The action restores
+          # .claude/ from origin/dev so the in-repo path may not exist at run time; we stage the
+          # file to $RUNNER_TEMP/qa-skill.md in the previous step and point the agent there.
           prompt: |
-            Use the "qa-verify" skill (defined in .claude/skills/qa-verify/SKILL.md) to QA this pull
-            request as a senior QA engineer. Run it with these inputs:
+            Your first action MUST be to read the qa-verify skill from this absolute path:
+              /home/runner/_temp/qa-skill.md
+            (Use the Read tool with that exact path. The in-repo path .claude/skills/qa-verify/
+            SKILL.md may not exist — the action restored .claude/ from the base branch. The
+            staged copy at /home/runner/_temp/qa-skill.md is the authoritative source for this
+            run.)
+
+            If you cannot read /home/runner/_temp/qa-skill.md, do NOT fall back to inferring the
+            methodology from this prompt. Instead, write EXACTLY this to REPORT_FILE and stop:
+
+              <!-- cv-verifier -->
+              ## QA Review — INCONCLUSIVE
+              Verifier infrastructure failure: qa-verify skill could not be loaded from
+              /home/runner/_temp/qa-skill.md. The CI workflow stages SKILL.md there before
+              invoking this agent; if it is missing, the staging step failed and there is no
+              authoritative methodology to follow. Re-run the workflow.
+              <!-- qa-verdict: INCONCLUSIVE -->
+
+            After reading the skill, run it as a senior QA engineer with these inputs:
               OUTPUT_MODE   = ci
               APP_BASE_URL  = http://8-f48cf3a682-7fthvk.manager.dev.zesty.io:8080
               REPO          = ${{ github.repository }}
