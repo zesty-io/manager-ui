@@ -14,7 +14,14 @@ import {
   useMemo,
 } from "react";
 import Button from "@mui/material/Button";
-import { Typography, Stack, Box, TextField, IconButton } from "@mui/material";
+import {
+  Typography,
+  Stack,
+  Box,
+  TextField,
+  IconButton,
+  Tooltip,
+} from "@mui/material";
 import { format, isValid } from "date-fns";
 import CalendarTodayRoundedIcon from "@mui/icons-material/CalendarTodayRounded";
 import CloseRounded from "@mui/icons-material/CloseRounded";
@@ -254,14 +261,16 @@ export const FieldTypeDate = memo(
 
             {showClearButton &&
               (compact ? (
-                <IconButton
-                  data-cy="dateFieldClearButton"
-                  size="small"
-                  onClick={handleClear}
-                  aria-label="Clear"
-                >
-                  <CloseRounded fontSize="small" />
-                </IconButton>
+                <Tooltip title="Clear">
+                  <IconButton
+                    data-cy="dateFieldClearButton"
+                    size="small"
+                    onClick={handleClear}
+                    aria-label="Clear"
+                  >
+                    <CloseRounded fontSize="small" />
+                  </IconButton>
+                </Tooltip>
               ) : (
                 <Button
                   data-cy="dateFieldClearButton"

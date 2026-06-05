@@ -155,11 +155,11 @@ describe("Studio - Responsive field components", () => {
 
     cy.getBySelector("mediaItemMenuButton").click();
 
-    cy.contains("Edit File").should("be.visible");
-    cy.contains("Swap File").should("be.visible");
-    cy.contains("Rename File").should("be.visible");
-    cy.contains("Copy ZUID").should("be.visible");
-    cy.contains("Copy File URL").should("be.visible");
-    cy.contains("Remove File").should("be.visible");
+    cy.getBySelector("mediaMenuItem-editFile").should("be.visible");
+    cy.getBySelector("mediaMenuItem-swapFile").should("be.visible");
+    cy.getBySelector("mediaMenuItem-renameFile").should("be.visible");
+    cy.getBySelector("mediaMenuItem-copyZUID").should("be.visible");
+    cy.getBySelector("mediaMenuItem-copyFileURL").should("be.visible");
+    cy.getBySelector("mediaMenuItem-removeFile").should("be.visible");
   });
 });

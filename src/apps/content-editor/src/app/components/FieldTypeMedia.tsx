@@ -956,6 +956,7 @@ export const MediaItem = ({
                     {!isURL && data && (
                       <MenuItem
                         dense
+                        data-cy="mediaMenuItem-editFile"
                         onClick={(event) => {
                           event.stopPropagation();
                           setAnchorEl(null);
@@ -972,6 +973,7 @@ export const MediaItem = ({
                       (isBynderAsset && isBynderSessionValid)) && (
                       <MenuItem
                         dense
+                        data-cy="mediaMenuItem-swapFile"
                         onClick={(event) => {
                           event.stopPropagation();
                           setAnchorEl(null);
@@ -987,6 +989,7 @@ export const MediaItem = ({
                     {!isURL && !isBynderAsset && data && (
                       <MenuItem
                         dense
+                        data-cy="mediaMenuItem-renameFile"
                         onClick={(event) => {
                           event.stopPropagation();
                           setAnchorEl(null);
@@ -1003,6 +1006,7 @@ export const MediaItem = ({
                     {!isURL && !isBynderAsset && data && (
                       <MenuItem
                         dense
+                        data-cy="mediaMenuItem-copyZUID"
                         onClick={(event) => {
                           event.stopPropagation();
                           handleCopyClick(imageZUID, true);
@@ -1017,6 +1021,7 @@ export const MediaItem = ({
                     {data && (
                       <MenuItem
                         dense
+                        data-cy="mediaMenuItem-copyFileURL"
                         onClick={(event) => {
                           event.stopPropagation();
                           handleCopyClick(isURL ? imageZUID : data?.url, false);
@@ -1030,6 +1035,7 @@ export const MediaItem = ({
                     )}
                     <MenuItem
                       dense
+                      data-cy="mediaMenuItem-removeFile"
                       onClick={(event) => {
                         event.stopPropagation();
                         setAnchorEl(null);

@@ -434,6 +434,7 @@ export default memo(function Editor({
       data-cy="FieldsContainer"
       ref={containerRef}
       sx={{
+        pr: 1,
         display: "block",
         width: "100%",
         position: "relative",
