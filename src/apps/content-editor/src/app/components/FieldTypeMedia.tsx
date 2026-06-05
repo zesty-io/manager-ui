@@ -404,7 +404,11 @@ export const FieldTypeMedia = forwardRef(
           >
             {compact ? (
               <Stack alignItems="center" gap={1.5} px={2} py={1.5}>
-                <Typography variant="body2" color="text.secondary">
+                <Typography
+                  variant="body3"
+                  color="text.secondary"
+                  fontWeight={600}
+                >
                   {isDragActive
                     ? "Drop your files here"
                     : "Drag & Drop your files"}
@@ -416,8 +420,10 @@ export const FieldTypeMedia = forwardRef(
                       size="small"
                       variant="text"
                       onClick={open}
-                      startIcon={<UploadRounded fontSize="medium" />}
-                      sx={{ px: 1.5 }}
+                      startIcon={
+                        <UploadRounded sx={{ width: "20px", height: "20px" }} />
+                      }
+                      sx={{ px: 1.25 }}
                     >
                       Upload Media
                     </Button>
@@ -425,14 +431,18 @@ export const FieldTypeMedia = forwardRef(
                       data-cy="selectFromMediaButton"
                       size="small"
                       variant="text"
-                      sx={{ px: 1.5 }}
+                      sx={{ px: 1.25 }}
                       onClick={() => {
                         openMediaBrowser({
                           limit,
                           callback: addZestyImage,
                         });
                       }}
-                      startIcon={<AddCircleRounded fontSize="medium" />}
+                      startIcon={
+                        <AddCircleRounded
+                          sx={{ width: "20px", height: "20px" }}
+                        />
+                      }
                     >
                       Add from Media
                     </Button>
@@ -921,12 +931,31 @@ export const MediaItem = ({
                       event.stopPropagation();
                       setAnchorEl(null);
                     }}
-                    PaperProps={{ style: { width: "288px" } }}
+                    slotProps={{
+                      paper: {
+                        style: { width: "160px" },
+                      },
+                      list: {
+                        style: { minWidth: "fit-content" },
+                      },
+                    }}
                     anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
                     transformOrigin={{ vertical: "top", horizontal: "right" }}
+                    sx={{
+                      "& .MuiPaper-root .MuiList-root .MuiButtonBase-root": {
+                        "& .MuiListItemIcon-root svg": {
+                          fill: "action.inactive",
+                        },
+                        "& .MuiListItemText-root .MuiTypography-root": {
+                          fontWeight: 500,
+                          color: "text.secondary",
+                        },
+                      },
+                    }}
                   >
                     {!isURL && data && (
                       <MenuItem
+                        dense
                         onClick={(event) => {
                           event.stopPropagation();
                           setAnchorEl(null);
@@ -942,6 +971,7 @@ export const MediaItem = ({
                     {(!isBynderAsset ||
                       (isBynderAsset && isBynderSessionValid)) && (
                       <MenuItem
+                        dense
                         onClick={(event) => {
                           event.stopPropagation();
                           setAnchorEl(null);
@@ -949,13 +979,14 @@ export const MediaItem = ({
                         }}
                       >
                         <ListItemIcon>
-                          <ImageSync fontSize="small" />
+                          <ImageSync />
                         </ListItemIcon>
                         <ListItemText>Swap File</ListItemText>
                       </MenuItem>
                     )}
                     {!isURL && !isBynderAsset && data && (
                       <MenuItem
+                        dense
                         onClick={(event) => {
                           event.stopPropagation();
                           setAnchorEl(null);
@@ -971,6 +1002,7 @@ export const MediaItem = ({
 
                     {!isURL && !isBynderAsset && data && (
                       <MenuItem
+                        dense
                         onClick={(event) => {
                           event.stopPropagation();
                           handleCopyClick(imageZUID, true);
@@ -984,6 +1016,7 @@ export const MediaItem = ({
                     )}
                     {data && (
                       <MenuItem
+                        dense
                         onClick={(event) => {
                           event.stopPropagation();
                           handleCopyClick(isURL ? imageZUID : data?.url, false);
@@ -996,6 +1029,7 @@ export const MediaItem = ({
                       </MenuItem>
                     )}
                     <MenuItem
+                      dense
                       onClick={(event) => {
                         event.stopPropagation();
                         setAnchorEl(null);
@@ -1036,7 +1070,13 @@ export const MediaItem = ({
                       placement="bottom"
                       enterDelay={800}
                     >
-                      <IconButton size="small">
+                      <IconButton
+                        size="small"
+                        onClick={(event: any) => {
+                          event.stopPropagation();
+                          onPreview && onPreview(imageZUID);
+                        }}
+                      >
                         <EditRounded fontSize="small" />
                       </IconButton>
                     </Tooltip>

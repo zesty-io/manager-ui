@@ -144,7 +144,10 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
     [rawInstanceSettings]
   );
 
-  // NOTE: update if version changes
+  // Intentionally omits `value` from deps — re-syncing on every keystroke
+  // would reset the cursor. Only re-sync when the version stamp increments
+  // (i.e. a save or external overwrite).
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     valueRef.current = value;
     setInitialValue(value ?? "");
@@ -198,7 +201,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
           evt.target instanceof Element &&
           evt.target.id === "tinyMceWrapper"
         ) {
-          tinymce?.activeEditor?.execCommand("mceFullScreen");
+          tinymce.activeEditor.execCommand("mceFullScreen");
         }
       }}
     >
@@ -206,8 +209,9 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
         <Editor
           // key must change whenever effectiveCompact changes: the BeforeExecCommand
           // handler closes over effectiveCompact at init time and must be re-registered
-          // on each toggle. Simplifying this key will break compact→fullscreen silently.
-          key={toolbar}
+          // on each toggle. Keyed on effectiveCompact directly so toolbar string refactors
+          // can't silently break compact↔fullscreen.
+          key={String(effectiveCompact)}
           id={name}
           onFocusIn={onFocus}
           onFocusOut={onBlur}
@@ -270,10 +274,10 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
             // We want the width to automatically be set to preserve the image proportions
             newImageNode.removeAttribute("height");
 
-            const currentValue = tinymce?.activeEditor?.getContent() ?? "";
+            const currentValue = tinymce.activeEditor.getContent();
 
             // Update the content with the new image data
-            tinymce?.activeEditor?.setContent(
+            tinymce.activeEditor.setContent(
               currentValue.replace(
                 clonedCurrentNode.outerHTML?.replaceAll("&", "&amp;"),
                 newImageNode.outerHTML
@@ -516,7 +520,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
                   url: bynderPortalUrlSetting?.value || "",
                   onSuccess: (assets) => {
                     if (assets?.length) {
-                      tinymce?.activeEditor?.insertContent(
+                      tinymce.activeEditor?.insertContent(
                         assets
                           .map((asset) => {
                             const filename = asset.originalUrl.split("/").pop();

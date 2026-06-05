@@ -1,15 +1,14 @@
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { Box } from "@mui/material";
 import { useDispatch } from "react-redux";
 import { AppLink } from "shell/components/AppLink";
 import { unescape } from "lodash";
 import { Field } from "./Field";
-import styles from "./Editor.less";
 import { cloneDeep, isEqual } from "lodash";
 import { useGetContentModelFieldsQuery } from "../../../../../../shell/services/instance";
 import { DYNAMIC_META_FIELD_NAMES } from "../../views/ItemEdit/Meta";
 import { FieldsLoader } from "./FieldsLoader";
 import { UsedBlocks } from "../UsedBlocks";
-import { useContainerQuery } from "shell/hooks/useContainerQuery";
 
 export const MaxLengths = {
   text: 150,
@@ -35,7 +34,6 @@ export default memo(function Editor({
   isLoadingItem,
   visibleFieldName,
 }) {
-  const [ref, isCompact] = useContainerQuery("(max-width:390px)");
   const dispatch = useDispatch();
   const isNewItem = itemZUID.slice(0, 3) === "new";
   const { data: fields, isFetching: isFetchingFields } =
@@ -406,44 +404,50 @@ export default memo(function Editor({
   if (!isLoaded) return null;
 
   return (
-    <div className={styles.Fields}>
+    <Box
+      data-cy="FieldsContainer"
+      sx={{
+        display: "block",
+        width: "100%",
+        position: "relative",
+        boxSizing: "border-box",
+        overflow: "auto",
+        scrollbarWidth: "none" /* Firefox */,
+        msOverflowStyle: "none" /* Edge (note: camelCase) */,
+        "&::-webkit-scrollbar": {
+          display: "none",
+        },
+      }}
+    >
       {renderedFields?.map((field) => {
         return (
-          <div
+          <Field
             key={`${field.ZUID}`}
-            id={field.ZUID}
-            className={styles.Field}
-            data-cy={`field:${field.name}`}
-            ref={ref}
-          >
-            <Field
-              ZUID={field.ZUID}
-              contentModelZUID={field.contentModelZUID}
-              active={active === field.ZUID}
-              name={field.name}
-              label={field.label}
-              description={field.description}
-              required={field.required}
-              relatedFieldZUID={field.relatedFieldZUID}
-              relatedModelZUID={field.relatedModelZUID}
-              datatype={field.datatype}
-              options={field.options}
-              settings={field.settings}
-              onChange={onChange}
-              onSave={onSave}
-              value={item?.data?.[field.name]}
-              version={item?.meta?.version}
-              langID={item?.meta?.langID}
-              errors={fieldErrors[field.name]}
-              maxLength={
-                field.settings?.maxCharLimit ?? MaxLengths[field.datatype]
-              }
-              minLength={field.settings?.minCharLimit ?? 0}
-              compact={isCompact}
-            />
-          </div>
+            ZUID={field.ZUID}
+            contentModelZUID={field.contentModelZUID}
+            active={active === field.ZUID}
+            name={field.name}
+            label={field.label}
+            description={field.description}
+            required={field.required}
+            relatedFieldZUID={field.relatedFieldZUID}
+            relatedModelZUID={field.relatedModelZUID}
+            datatype={field.datatype}
+            options={field.options}
+            settings={field.settings}
+            onChange={onChange}
+            onSave={onSave}
+            value={item?.data?.[field.name]}
+            version={item?.meta?.version}
+            langID={item?.meta?.langID}
+            errors={fieldErrors[field.name]}
+            maxLength={
+              field.settings?.maxCharLimit ?? MaxLengths[field.datatype]
+            }
+            minLength={field.settings?.minCharLimit ?? 0}
+          />
         );
       })}
-    </div>
+    </Box>
   );
 });
