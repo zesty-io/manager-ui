@@ -89,6 +89,9 @@ describe("Studio - Responsive field components", () => {
   it("FieldTypeTinyMCE: compact mode shows only the compact toolbar buttons", () => {
     selectField(wysiwygFieldZUID);
 
+    // TinyMCE renders its own DOM — we don't control its markup and cannot add
+    // data-cy attributes. Class + aria-label selectors are the only stable
+    // hooks into TinyMCE's toolbar; acceptable exception to the data-cy rule.
     cy.get(".tox-tinymce").should("exist");
 
     cy.get('.tox-toolbar__group button[aria-label="Block formatting"]').should(

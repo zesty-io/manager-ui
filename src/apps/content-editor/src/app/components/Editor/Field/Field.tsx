@@ -1,4 +1,12 @@
-import { useMemo, useState, useEffect, ChangeEvent, memo, useRef } from "react";
+import {
+  useMemo,
+  useState,
+  useEffect,
+  useLayoutEffect,
+  ChangeEvent,
+  memo,
+  useRef,
+} from "react";
 import ReactDOM from "react-dom";
 import { useDispatch } from "react-redux";
 
@@ -83,6 +91,7 @@ type FieldProps = {
   errors: Error;
   maxLength: number;
   minLength: number;
+  compact?: boolean;
 };
 
 export const Field = memo(
@@ -104,10 +113,8 @@ export const Field = memo(
     maxLength,
     minLength,
     version,
+    compact = false,
   }: FieldProps) => {
-    const containerRef = useRef(null);
-    const rects = useResizeObserver(containerRef);
-    const [compact, setCompact] = useState(false);
     const dispatch = useDispatch();
     const { data: fields } = useGetContentModelFieldsQuery({
       modelZUID: contentModelZUID,
@@ -122,13 +129,6 @@ export const Field = memo(
     const { local, onLocalChange } = useDebouncedInput(value, (v) => {
       onChange(v, name);
     });
-
-    useEffect(() => {
-      if (rects) {
-        const isCompact = rects.width <= COMPACT_MAX_WIDTH;
-        setCompact(isCompact);
-      }
-    }, [rects?.width]);
 
     const handle = useMemo<any>(
       () => ({
@@ -263,636 +263,589 @@ export const Field = memo(
       return options;
     };
 
-    const renderField = () => {
-      switch (datatype) {
-        case "text":
-          return (
+    switch (datatype) {
+      case "text":
+        return (
+          <AIFieldShell
+            ZUID={fieldData?.ZUID}
+            name={fieldData?.name || name}
+            label={fieldData?.label || label}
+            valueLength={(local as string)?.length ?? 0}
+            settings={
+              fieldData || {
+                name: name,
+                label: label,
+                required: required,
+              }
+            }
+            onChange={(evt: ChangeEvent<HTMLInputElement>) =>
+              onChange(evt.target.value, name)
+            }
+            withLengthCounter
+            maxLength={maxLength}
+            minLength={minLength}
+            errors={errors}
+            aiType="text"
+            value={local}
+          >
+            <TextField
+              value={local}
+              onChange={(e) => onLocalChange(e.target.value)}
+              fullWidth
+              inputProps={{
+                name: fieldData?.name || name,
+                "data-cy": `EditorField-${fieldData?.name || name}`,
+              }}
+              error={errors && Object.values(errors)?.some((error) => !!error)}
+            />
+          </AIFieldShell>
+        );
+
+      case "fontawesome":
+        return (
+          <FieldShell
+            settings={fieldData}
+            valueLength={(local as string)?.length ?? 0}
+            errors={errors}
+          >
+            <TextField
+              value={local}
+              onChange={(e) => onLocalChange(e.target.value)}
+              fullWidth
+              error={errors && Object.values(errors)?.some((error) => !!error)}
+            />
+          </FieldShell>
+        );
+
+      case "link":
+        return (
+          <FieldShell
+            settings={fieldData}
+            valueLength={(local as string)?.length ?? 0}
+            errors={errors}
+            maxLength={maxLength}
+            withLengthCounter
+          >
+            <TextField
+              value={local}
+              onChange={(e) => onLocalChange(e.target.value)}
+              fullWidth
+              type="url"
+              error={errors && Object.values(errors)?.some((error) => !!error)}
+            />
+          </FieldShell>
+        );
+
+      case "uuid":
+        //Note we should generate the UUID here if one does not exist
+        return (
+          <FieldShell
+            settings={fieldData}
+            valueLength={(value as string)?.length ?? 0}
+            errors={errors}
+          >
+            <FieldTypeUUID
+              // @ts-ignore component not typed
+              name={name}
+              placeholder="UUID field values are auto-generated"
+              value={value}
+              onChange={onChange} // Is used to set the UUID value on new item creation
+            />
+          </FieldShell>
+        );
+
+      case "textarea":
+        return (
+          <AIFieldShell
+            ZUID={fieldData?.ZUID}
+            name={fieldData?.name}
+            label={fieldData?.label}
+            valueLength={(local as string)?.length ?? 0}
+            settings={fieldData}
+            onChange={(evt: ChangeEvent<HTMLInputElement>) =>
+              onChange(evt.target.value, name)
+            }
+            withLengthCounter
+            errors={errors}
+            aiType="word"
+            maxLength={maxLength}
+            minLength={minLength}
+            value={local}
+          >
+            <TextField
+              value={local}
+              onChange={(e) => onLocalChange(e.target.value)}
+              fullWidth
+              multiline
+              minRows={6}
+              slotProps={{
+                htmlInput: {
+                  "data-cy": `EditorField-${fieldData?.name || name}`,
+                },
+              }}
+              error={errors && Object.values(errors)?.some((error) => !!error)}
+            />
+          </AIFieldShell>
+        );
+
+      case "wysiwyg_advanced":
+      case "wysiwyg_basic":
+        const [characterCount, setCharacterCount] = useState(0);
+
+        return (
+          <div className={!compact ? styles.WYSIWYGFieldType : undefined}>
             <AIFieldShell
               ZUID={fieldData?.ZUID}
-              name={fieldData?.name || name}
-              label={fieldData?.label || label}
-              valueLength={(local as string)?.length ?? 0}
-              settings={
-                fieldData || {
-                  name: name,
-                  label: label,
-                  required: required,
-                }
-              }
-              onChange={(evt: ChangeEvent<HTMLInputElement>) =>
-                onChange(evt.target.value, name)
-              }
+              name={fieldData?.name}
+              label={fieldData?.label}
+              valueLength={characterCount}
+              settings={fieldData}
+              onChange={onChange}
+              errors={errors}
+              aiType="word"
+              datatype={fieldData?.datatype}
               withLengthCounter
               maxLength={maxLength}
-              minLength={minLength}
-              errors={errors}
-              aiType="text"
               value={local}
             >
-              <TextField
+              <FieldTypeTinyMCE
+                key={rerenderKey}
+                name={name}
                 value={local}
-                onChange={(e) => onLocalChange(e.target.value)}
-                fullWidth
-                inputProps={{
-                  name: fieldData?.name || name,
-                  "data-cy": `EditorField-${fieldData?.name || name}`,
+                version={version}
+                onChange={(value) => onLocalChange(value)}
+                onSave={onSave}
+                onCharacterCountChange={(charCount: number) =>
+                  setCharacterCount(charCount)
+                }
+                datatype={datatype}
+                mediaBrowser={(opts: any) => {
+                  setImageModal(opts);
                 }}
                 error={
                   errors && Object.values(errors)?.some((error) => !!error)
                 }
+                compact={compact}
               />
             </AIFieldShell>
-          );
+            {imageModal && renderMediaModal()}
+          </div>
+        );
 
-        case "fontawesome":
-          return (
-            <FieldShell
-              settings={fieldData}
-              valueLength={(local as string)?.length ?? 0}
-              errors={errors}
-            >
-              <TextField
-                value={local}
-                onChange={(e) => onLocalChange(e.target.value)}
-                fullWidth
-                error={
-                  errors && Object.values(errors)?.some((error) => !!error)
-                }
-              />
-            </FieldShell>
-          );
-
-        case "link":
-          return (
-            <FieldShell
-              settings={fieldData}
-              valueLength={(local as string)?.length ?? 0}
-              errors={errors}
-              maxLength={maxLength}
-              withLengthCounter
-            >
-              <TextField
-                value={local}
-                onChange={(e) => onLocalChange(e.target.value)}
-                fullWidth
-                type="url"
-                error={
-                  errors && Object.values(errors)?.some((error) => !!error)
-                }
-              />
-            </FieldShell>
-          );
-
-        case "uuid":
-          //Note we should generate the UUID here if one does not exist
-          return (
-            <FieldShell
-              settings={fieldData}
-              valueLength={(value as string)?.length ?? 0}
-              errors={errors}
-            >
-              <FieldTypeUUID
-                // @ts-ignore component not typed
-                name={name}
-                placeholder="UUID field values are auto-generated"
-                value={value}
-                onChange={onChange} // Is used to set the UUID value on new item creation
-              />
-            </FieldShell>
-          );
-
-        case "textarea":
-          return (
+      case "markdown":
+      case "article_writer":
+        return (
+          <div className={!compact ? styles.WYSIWYGFieldType : undefined}>
             <AIFieldShell
+              key={rerenderKey}
               ZUID={fieldData?.ZUID}
               name={fieldData?.name}
               label={fieldData?.label}
               valueLength={(local as string)?.length ?? 0}
               settings={fieldData}
-              onChange={(evt: ChangeEvent<HTMLInputElement>) =>
-                onChange(evt.target.value, name)
-              }
-              withLengthCounter
+              onChange={onChange}
               errors={errors}
               aiType="word"
-              maxLength={maxLength}
-              minLength={minLength}
+              datatype={fieldData?.datatype}
+              editorType={editorType}
+              onEditorChange={(value: EditorType) => setEditorType(value)}
               value={local}
             >
-              <TextField
+              <FieldTypeEditor
+                // @ts-ignore component not typed
+                name={name}
                 value={local}
-                onChange={(e) => onLocalChange(e.target.value)}
-                fullWidth
-                multiline
-                minRows={6}
-                slotProps={{
-                  htmlInput: {
-                    "data-cy": `EditorField-${fieldData?.name || name}`,
-                  },
+                version={version}
+                onChange={(value: string) => onLocalChange(value)}
+                datatype={datatype}
+                mediaBrowser={(opts: any) => {
+                  setImageModal(opts);
                 }}
+                editor={editorType}
                 error={
                   errors && Object.values(errors)?.some((error) => !!error)
                 }
+                compact={compact}
               />
             </AIFieldShell>
-          );
+            {imageModal && renderMediaModal()}
+          </div>
+        );
 
-        case "wysiwyg_advanced":
-        case "wysiwyg_basic":
-          const [characterCount, setCharacterCount] = useState(0);
+      case "files":
+      case "images":
+        const images = useMemo(
+          () => ((value as string) || "").split(",").filter((el: string) => el),
+          [value]
+        );
+        const error = errors && Object.values(errors)?.some((error) => !!error);
 
-          return (
-            <div className={!compact ? styles.WYSIWYGFieldType : undefined}>
-              <AIFieldShell
-                ZUID={fieldData?.ZUID}
-                name={fieldData?.name}
-                label={fieldData?.label}
-                valueLength={characterCount}
-                settings={fieldData}
+        return (
+          <>
+            <FieldShell settings={fieldData} errors={errors}>
+              <FieldTypeMedia
+                hasError={error}
+                limit={(settings && settings.limit) || 1}
+                images={images}
+                openMediaBrowser={(opts: any) => {
+                  setImageModal({
+                    ...opts,
+                    locked: Boolean(
+                      settings && settings.group_id && settings.group_id != "0"
+                    ),
+                  });
+                }}
+                settings={settings}
+                name={name}
                 onChange={onChange}
-                errors={errors}
-                aiType="word"
-                datatype={fieldData?.datatype}
-                withLengthCounter
-                maxLength={maxLength}
-                value={local}
-              >
-                <FieldTypeTinyMCE
-                  key={rerenderKey}
-                  name={name}
-                  value={local}
-                  version={version}
-                  onChange={(value) => onLocalChange(value)}
-                  onSave={onSave}
-                  onCharacterCountChange={(charCount: number) =>
-                    setCharacterCount(charCount)
-                  }
-                  datatype={datatype}
-                  mediaBrowser={(opts: any) => {
-                    setImageModal(opts);
+                lockedToGroupId={
+                  settings?.group_id && settings?.group_id !== "0"
+                    ? settings.group_id
+                    : null
+                }
+                compact={compact}
+              />
+            </FieldShell>
+            {imageModal && (
+              <MemoryRouter>
+                <Dialog
+                  open
+                  fullScreen
+                  sx={{ my: 2.5, mx: 10 }}
+                  PaperProps={{
+                    style: {
+                      borderRadius: "4px",
+                      overflow: "hidden",
+                    },
                   }}
-                  error={
-                    errors && Object.values(errors)?.some((error) => !!error)
-                  }
-                  compact={compact}
-                />
-              </AIFieldShell>
-              {imageModal && renderMediaModal()}
-            </div>
-          );
+                  onClose={closeImageModal}
+                >
+                  <IconButton
+                    data-cy="closeMediaDialogBtn"
+                    sx={{
+                      position: "fixed",
+                      right: 5,
+                      top: 0,
+                    }}
+                    onClick={closeImageModal}
+                  >
+                    <CloseIcon sx={{ color: "common.white" }} />
+                  </IconButton>
+                  <MediaApp
+                    limitSelected={
+                      imageModal.isReplace
+                        ? 1
+                        : imageModal.limit - images.length
+                    }
+                    isSelectDialog={true}
+                    showHeaderActions={false}
+                    lockedToGroupId={
+                      settings?.group_id && settings?.group_id !== "0"
+                        ? settings.group_id
+                        : null
+                    }
+                    addImagesCallback={(images) => {
+                      imageModal.callback(images);
+                      closeImageModal();
+                    }}
+                    isReplace={imageModal.isReplace}
+                  />
+                </Dialog>
+              </MemoryRouter>
+            )}
+          </>
+        );
 
-        case "markdown":
-        case "article_writer":
-          return (
-            <div className={!compact ? styles.WYSIWYGFieldType : undefined}>
-              <AIFieldShell
-                key={rerenderKey}
-                ZUID={fieldData?.ZUID}
-                name={fieldData?.name}
-                label={fieldData?.label}
-                valueLength={(local as string)?.length ?? 0}
-                settings={fieldData}
-                onChange={onChange}
-                errors={errors}
-                aiType="word"
-                datatype={fieldData?.datatype}
-                editorType={editorType}
-                onEditorChange={(value: EditorType) => setEditorType(value)}
-                value={local}
-              >
-                <FieldTypeEditor
-                  // @ts-ignore component not typed
-                  name={name}
-                  value={local}
-                  version={version}
-                  onChange={(value: string) => onLocalChange(value)}
-                  datatype={datatype}
-                  mediaBrowser={(opts: any) => {
-                    setImageModal(opts);
-                  }}
-                  editor={editorType}
-                  error={
-                    errors && Object.values(errors)?.some((error) => !!error)
-                  }
-                  compact={compact}
-                />
-              </AIFieldShell>
-              {imageModal && renderMediaModal()}
-            </div>
-          );
-
-        case "files":
-        case "images":
-          const images = useMemo(
-            () =>
-              ((value as string) || "").split(",").filter((el: string) => el),
-            [value]
-          );
+      case "yes_no":
+        if (settings.options) {
+          const binaryFieldOpts = Object.values(settings.options);
           const error =
             errors && Object.values(errors)?.some((error) => !!error);
 
           return (
-            <>
-              <FieldShell settings={fieldData} errors={errors}>
-                <FieldTypeMedia
-                  hasError={error}
-                  limit={(settings && settings.limit) || 1}
-                  images={images}
-                  openMediaBrowser={(opts: any) => {
-                    setImageModal({
-                      ...opts,
-                      locked: Boolean(
-                        settings &&
-                          settings.group_id &&
-                          settings.group_id != "0"
-                      ),
-                    });
-                  }}
-                  settings={settings}
-                  name={name}
-                  onChange={onChange}
-                  lockedToGroupId={
-                    settings?.group_id && settings?.group_id !== "0"
-                      ? settings.group_id
-                      : null
+            <FieldShell settings={fieldData} errors={errors}>
+              <ToggleButtonGroup
+                color="primary"
+                size="small"
+                value={value}
+                exclusive
+                onChange={(_, val) => {
+                  if (val !== null) {
+                    onChange(val, name);
                   }
-                  compact={compact}
-                />
-              </FieldShell>
-              {imageModal && (
-                <MemoryRouter>
-                  <Dialog
-                    open
-                    fullScreen
-                    sx={{ my: 2.5, mx: 10 }}
-                    PaperProps={{
-                      style: {
-                        borderRadius: "4px",
-                        overflow: "hidden",
-                      },
-                    }}
-                    onClose={closeImageModal}
-                  >
-                    <IconButton
-                      data-cy="closeMediaDialogBtn"
-                      sx={{
-                        position: "fixed",
-                        right: 5,
-                        top: 0,
-                      }}
-                      onClick={closeImageModal}
-                    >
-                      <CloseIcon sx={{ color: "common.white" }} />
-                    </IconButton>
-                    <MediaApp
-                      limitSelected={
-                        imageModal.isReplace
-                          ? 1
-                          : imageModal.limit - images.length
-                      }
-                      isSelectDialog={true}
-                      showHeaderActions={false}
-                      lockedToGroupId={
-                        settings?.group_id && settings?.group_id !== "0"
-                          ? settings.group_id
-                          : null
-                      }
-                      addImagesCallback={(images) => {
-                        imageModal.callback(images);
-                        closeImageModal();
-                      }}
-                      isReplace={imageModal.isReplace}
-                    />
-                  </Dialog>
-                </MemoryRouter>
-              )}
-            </>
-          );
-
-        case "yes_no":
-          if (settings.options) {
-            const binaryFieldOpts = Object.values(settings.options);
-            const error =
-              errors && Object.values(errors)?.some((error) => !!error);
-
-            return (
-              <FieldShell settings={fieldData} errors={errors}>
-                <ToggleButtonGroup
-                  color="primary"
-                  size="small"
-                  value={value}
-                  exclusive
-                  onChange={(_, val) => {
-                    if (val !== null) {
-                      onChange(val, name);
-                    }
+                }}
+              >
+                <ToggleButton
+                  data-cy="yes_no:no"
+                  value={0}
+                  sx={{
+                    borderColor: error ? "error.main" : "rgba(0, 0, 0, 0.12)",
                   }}
                 >
-                  <ToggleButton
-                    data-cy="yes_no:no"
-                    value={0}
-                    sx={{
-                      borderColor: error ? "error.main" : "rgba(0, 0, 0, 0.12)",
-                    }}
-                  >
-                    {binaryFieldOpts[0] || "No"}{" "}
-                  </ToggleButton>
-                  <ToggleButton
-                    data-cy="yes_no:yes"
-                    value={1}
-                    sx={{
-                      borderColor: error ? "error.main" : "rgba(0, 0, 0, 0.12)",
-                    }}
-                  >
-                    {binaryFieldOpts[1] || "Yes"}{" "}
-                  </ToggleButton>
-                </ToggleButtonGroup>
-              </FieldShell>
-            );
-          } else {
-            return (
-              <h1 style={{ color: "#e53c05" }}>
-                <FontAwesomeIcon icon={faExclamationTriangle} />
-                &nbsp;
-                <AppLink to={`/schema/${contentModelZUID}/field/${ZUID}`}>
-                  The <em>{label}</em> field is missing option settings. Edit
-                  the field to add yes/no values.
-                </AppLink>
-              </h1>
-            );
-          }
-
-        case "dropdown":
-          const dropdownOptions = useMemo(() => {
-            return settings.options
-              ? Object.keys(settings.options).map((name) => {
-                  return {
-                    value: name,
-                    text: settings.options[name],
-                  };
-                })
-              : [];
-          }, [settings.options]);
-
-          return (
-            <FieldShell settings={fieldData} errors={errors}>
-              <Autocomplete
-                clearOnBlur
-                disablePortal
-                options={dropdownOptions}
-                value={
-                  dropdownOptions.find((option) => option.value === value) ||
-                  null
-                }
-                onChange={(e, newValue) =>
-                  onChange(newValue?.value || "", name)
-                }
-                isOptionEqualToValue={(option, value) =>
-                  option.value === value.value
-                }
-                getOptionLabel={(option) => option.text || ""}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    name={name}
-                    placeholder="Select"
-                    variant="outlined"
-                    error={
-                      errors && Object.values(errors)?.some((error) => !!error)
-                    }
-                  />
-                )}
-              />
-            </FieldShell>
-          );
-
-        case "internal_link":
-          return (
-            <FieldShell settings={fieldData} errors={errors}>
-              <InternalLink
-                name={name}
-                value={value as string}
-                onChange={onChange}
-                error={
-                  errors && Object.values(errors)?.some((error) => !!error)
-                }
-                langID={langID}
-              />
-            </FieldShell>
-          );
-
-        case "one_to_one":
-          return (
-            <FieldShell settings={fieldData} errors={errors}>
-              <RelationalFieldBase
-                name={name}
-                value={!!value ? String(value) : null}
-                fieldZUID={ZUID}
-                relatedModelZUID={relatedModelZUID}
-                relatedFieldZUID={relatedFieldZUID}
-                onChange={onChange}
-                fieldLabel={fieldData?.label}
-              />
-            </FieldShell>
-          );
-
-        case "one_to_many":
-          return (
-            <FieldShell settings={fieldData} errors={errors}>
-              <RelationalFieldBase
-                name={name}
-                multiselect
-                value={!!value ? String(value) : null}
-                fieldZUID={ZUID}
-                relatedModelZUID={relatedModelZUID}
-                relatedFieldZUID={relatedFieldZUID}
-                onChange={onChange}
-                fieldLabel={fieldData?.label}
-              />
-            </FieldShell>
-          );
-
-        case "color":
-          return (
-            <Box maxWidth={300}>
-              <FieldShell settings={fieldData} errors={errors}>
-                <FieldTypeColor
-                  name={name}
-                  value={value || "#FFFFFF"}
-                  onChange={(evt) => onChange(evt.target.value, name)}
-                  error={
-                    errors && Object.values(errors)?.some((error) => !!error)
-                  }
-                />
-              </FieldShell>
-            </Box>
-          );
-
-        case "number":
-          return (
-            <FieldShell settings={fieldData} errors={errors}>
-              <FieldTypeNumber
-                value={+value || 0}
-                name={name}
-                required={required}
-                onChange={onChange}
-                hasError={
-                  errors && Object.values(errors)?.some((error) => !!error)
-                }
-              />
-            </FieldShell>
-          );
-
-        case "currency":
-          return (
-            <FieldShell
-              settings={fieldData}
-              customTooltip={`View this value in different currencies based upon your locale "${window.navigator.language}"`}
-              errors={errors}
-            >
-              <FieldTypeCurrency
-                name={name}
-                currency={settings?.currency ?? "USD"}
-                value={String(value)}
-                onChange={onChange}
-                error={
-                  errors && Object.values(errors)?.some((error) => !!error)
-                }
-              />
-            </FieldShell>
-          );
-
-        case "date":
-          return (
-            <FieldShell settings={fieldData} errors={errors}>
-              <FieldTypeDate
-                name={name}
-                required={required}
-                // By appending "T00:00:00", we force JS to parse it as local midnight,
-                value={value ? new Date(value + "T00:00:00") : null}
-                // format="MMM dd, yyyy"
-                onChange={(date) => {
-                  onChange(
-                    date ? fmt(date, "yyyy-MM-dd") : null,
-                    name,
-                    datatype
-                  );
-                }}
-                error={
-                  errors && Object.values(errors)?.some((error) => !!error)
-                }
-              />
-            </FieldShell>
-          );
-
-        case "datetime":
-          return (
-            <FieldShell settings={fieldData} errors={errors}>
-              <Box maxWidth={compact ? undefined : 360}>
-                <FieldTypeDateTime
-                  name={name}
-                  required={required}
-                  value={(value as string) ?? null}
-                  onChange={(datetime) => {
-                    onChange(datetime, name, datatype);
+                  {binaryFieldOpts[0] || "No"}{" "}
+                </ToggleButton>
+                <ToggleButton
+                  data-cy="yes_no:yes"
+                  value={1}
+                  sx={{
+                    borderColor: error ? "error.main" : "rgba(0, 0, 0, 0.12)",
                   }}
+                >
+                  {binaryFieldOpts[1] || "Yes"}{" "}
+                </ToggleButton>
+              </ToggleButtonGroup>
+            </FieldShell>
+          );
+        } else {
+          return (
+            <h1 style={{ color: "#e53c05" }}>
+              <FontAwesomeIcon icon={faExclamationTriangle} />
+              &nbsp;
+              <AppLink to={`/schema/${contentModelZUID}/field/${ZUID}`}>
+                The <em>{label}</em> field is missing option settings. Edit the
+                field to add yes/no values.
+              </AppLink>
+            </h1>
+          );
+        }
+
+      case "dropdown":
+        const dropdownOptions = useMemo(() => {
+          return settings.options
+            ? Object.keys(settings.options).map((name) => {
+                return {
+                  value: name,
+                  text: settings.options[name],
+                };
+              })
+            : [];
+        }, [settings.options]);
+
+        return (
+          <FieldShell settings={fieldData} errors={errors}>
+            <Autocomplete
+              clearOnBlur
+              disablePortal
+              options={dropdownOptions}
+              value={
+                dropdownOptions.find((option) => option.value === value) || null
+              }
+              onChange={(e, newValue) => onChange(newValue?.value || "", name)}
+              isOptionEqualToValue={(option, value) =>
+                option.value === value.value
+              }
+              getOptionLabel={(option) => option.text || ""}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  name={name}
+                  placeholder="Select"
+                  variant="outlined"
                   error={
                     errors && Object.values(errors)?.some((error) => !!error)
                   }
-                  compact={compact}
                 />
-              </Box>
-            </FieldShell>
-          );
+              )}
+            />
+          </FieldShell>
+        );
 
-        case "sort":
-          return (
+      case "internal_link":
+        return (
+          <FieldShell settings={fieldData} errors={errors}>
+            <InternalLink
+              name={name}
+              value={value as string}
+              onChange={onChange}
+              error={errors && Object.values(errors)?.some((error) => !!error)}
+              langID={langID}
+            />
+          </FieldShell>
+        );
+
+      case "one_to_one":
+        return (
+          <FieldShell settings={fieldData} errors={errors}>
+            <RelationalFieldBase
+              name={name}
+              value={!!value ? String(value) : null}
+              fieldZUID={ZUID}
+              relatedModelZUID={relatedModelZUID}
+              relatedFieldZUID={relatedFieldZUID}
+              onChange={onChange}
+              fieldLabel={fieldData?.label}
+            />
+          </FieldShell>
+        );
+
+      case "one_to_many":
+        return (
+          <FieldShell settings={fieldData} errors={errors}>
+            <RelationalFieldBase
+              name={name}
+              multiselect
+              value={!!value ? String(value) : null}
+              fieldZUID={ZUID}
+              relatedModelZUID={relatedModelZUID}
+              relatedFieldZUID={relatedFieldZUID}
+              onChange={onChange}
+              fieldLabel={fieldData?.label}
+            />
+          </FieldShell>
+        );
+
+      case "color":
+        return (
+          <Box maxWidth={300}>
             <FieldShell settings={fieldData} errors={errors}>
-              <FieldTypeSort
+              <FieldTypeColor
                 name={name}
-                required={required}
-                value={value?.toString() || "0"}
-                onChange={(evt) => {
-                  onChange(parseInt(evt.target.value) || 0, name);
-                }}
+                value={value || "#FFFFFF"}
+                onChange={(evt) => onChange(evt.target.value, name)}
                 error={
                   errors && Object.values(errors)?.some((error) => !!error)
                 }
               />
             </FieldShell>
-          );
+          </Box>
+        );
 
-        case "block_selector":
-          return (
-            <FieldShell settings={fieldData} errors={errors}>
-              <FieldTypeBlockSelector
-                value={value ? value?.toString() : null}
-                onChange={(value) => onChange(value, name, datatype)}
-                requiredError={errors?.MISSING_REQUIRED}
-                missingVariantError={errors?.INVALID_BLOCK_VARIANT}
-              />
-            </FieldShell>
-          );
-        case "integration":
-          return (
-            <FieldShell settings={fieldData} errors={errors}>
-              <IntegrationFieldSelect
+      case "number":
+        return (
+          <FieldShell settings={fieldData} errors={errors}>
+            <FieldTypeNumber
+              value={+value || 0}
+              name={name}
+              required={required}
+              onChange={onChange}
+              hasError={
+                errors && Object.values(errors)?.some((error) => !!error)
+              }
+            />
+          </FieldShell>
+        );
+
+      case "currency":
+        return (
+          <FieldShell
+            settings={fieldData}
+            customTooltip={`View this value in different currencies based upon your locale "${window.navigator.language}"`}
+            errors={errors}
+          >
+            <FieldTypeCurrency
+              name={name}
+              currency={settings?.currency ?? "USD"}
+              value={String(value)}
+              onChange={onChange}
+              error={errors && Object.values(errors)?.some((error) => !!error)}
+            />
+          </FieldShell>
+        );
+
+      case "date":
+        return (
+          <FieldShell settings={fieldData} errors={errors}>
+            <FieldTypeDate
+              name={name}
+              required={required}
+              compact={compact}
+              // By appending "T00:00:00", we force JS to parse it as local midnight,
+              value={value ? new Date(value + "T00:00:00") : null}
+              // format="MMM dd, yyyy"
+              onChange={(date) => {
+                onChange(date ? fmt(date, "yyyy-MM-dd") : null, name, datatype);
+              }}
+              error={errors && Object.values(errors)?.some((error) => !!error)}
+            />
+          </FieldShell>
+        );
+
+      case "datetime":
+        return (
+          <FieldShell settings={fieldData} errors={errors}>
+            <Box maxWidth={compact ? undefined : 360}>
+              <FieldTypeDateTime
                 name={name}
-                label={label}
-                maxItems={settings?.maxValue}
-                config={settings?.integrationFieldConfig}
-                value={value ? (value as Record<string, any>[]) : null}
-                onChange={(value) => onChange(value, name)}
+                required={required}
+                value={(value as string) ?? null}
+                onChange={(datetime) => {
+                  onChange(datetime, name, datatype);
+                }}
+                error={
+                  errors && Object.values(errors)?.some((error) => !!error)
+                }
+                compact={compact}
               />
-            </FieldShell>
-          );
+            </Box>
+          </FieldShell>
+        );
 
-        case "repeater":
-          const hasBaseColumns = (fieldData?.settings?.subFields || []).filter(
-            (f) => f.settings?.list
-          ).length;
+      case "sort":
+        return (
+          <FieldShell settings={fieldData} errors={errors}>
+            <FieldTypeSort
+              name={name}
+              required={required}
+              value={value?.toString() || "0"}
+              onChange={(evt) => {
+                onChange(parseInt(evt.target.value) || 0, name);
+              }}
+              error={errors && Object.values(errors)?.some((error) => !!error)}
+            />
+          </FieldShell>
+        );
 
-          if (!hasBaseColumns) {
-            return <></>;
-          }
+      case "block_selector":
+        return (
+          <FieldShell settings={fieldData} errors={errors}>
+            <FieldTypeBlockSelector
+              value={value ? value?.toString() : null}
+              onChange={(value) => onChange(value, name, datatype)}
+              requiredError={errors?.MISSING_REQUIRED}
+              missingVariantError={errors?.INVALID_BLOCK_VARIANT}
+            />
+          </FieldShell>
+        );
+      case "integration":
+        return (
+          <FieldShell settings={fieldData} errors={errors}>
+            <IntegrationFieldSelect
+              name={name}
+              label={label}
+              maxItems={settings?.maxValue}
+              config={settings?.integrationFieldConfig}
+              value={value ? (value as Record<string, any>[]) : null}
+              onChange={(value) => onChange(value, name)}
+            />
+          </FieldShell>
+        );
 
-          return (
-            <FieldShell settings={fieldData} errors={errors}>
-              <FieldTypeRepeater
-                field={fieldData}
-                value={value}
-                onChange={(value) => onChange(value, name, datatype)}
-              />
-            </FieldShell>
-          );
+      case "repeater":
+        const hasBaseColumns = (fieldData?.settings?.subFields || []).filter(
+          (f) => f.settings?.list
+        ).length;
 
-        default:
-          return (
-            <AppLink to={`/schema/${contentModelZUID}/field/${ZUID}`}>
-              Failed loading {label} field. Click here to view field schema.
-            </AppLink>
-          );
-      }
-    };
+        if (!hasBaseColumns) {
+          return <></>;
+        }
 
-    return (
-      <Box
-        id={ZUID}
-        ref={containerRef}
-        data-cy={`field:${name}`}
-        sx={{
-          py: 1.5,
-          px: 0,
-          "&:first-of-type": {
-            px: 0,
-            pt: 0,
-            pb: 1,
-          },
-        }}
-      >
-        {renderField()}
-      </Box>
-    );
+        return (
+          <FieldShell settings={fieldData} errors={errors}>
+            <FieldTypeRepeater
+              field={fieldData}
+              value={value}
+              onChange={(value) => onChange(value, name, datatype)}
+            />
+          </FieldShell>
+        );
+
+      default:
+        return (
+          <AppLink to={`/schema/${contentModelZUID}/field/${ZUID}`}>
+            Failed loading {label} field. Click here to view field schema.
+          </AppLink>
+        );
+    }
   }
 );
 

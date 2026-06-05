@@ -1106,6 +1106,9 @@ export const StudioWrapper = () => {
         aria-label="Studio editor"
       >
         <Paper
+          role="dialog"
+          aria-modal="true"
+          aria-label="Studio editor"
           variant="outlined"
           square
           sx={{

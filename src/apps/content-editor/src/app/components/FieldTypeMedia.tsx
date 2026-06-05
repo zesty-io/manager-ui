@@ -1103,10 +1103,8 @@ export const MediaItem = ({
                       event.stopPropagation();
                       setAnchorEl(null);
                     }}
-                    PaperProps={{
-                      style: {
-                        width: "288px",
-                      },
+                    slotProps={{
+                      paper: { style: { width: "288px" } },
                     }}
                     anchorOrigin={{
                       vertical: "bottom",
@@ -1118,7 +1116,7 @@ export const MediaItem = ({
                     }}
                   >
                     {!isURL && !isBynderAsset && data && (
-                      <Box>
+                      <>
                         <MenuItem
                           onClick={(event) => {
                             event.stopPropagation();
@@ -1158,7 +1156,7 @@ export const MediaItem = ({
                           </ListItemIcon>
                           <ListItemText>Copy ZUID</ListItemText>
                         </MenuItem>
-                      </Box>
+                      </>
                     )}
                     {data && (
                       <MenuItem
@@ -1170,7 +1168,7 @@ export const MediaItem = ({
                         <ListItemIcon>
                           {isCopied ? <CheckRounded /> : <LinkRounded />}
                         </ListItemIcon>
-                        <ListItemText>Copy File Url</ListItemText>
+                        <ListItemText>Copy File URL</ListItemText>
                       </MenuItem>
                     )}
                     <MenuItem
