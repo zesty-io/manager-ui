@@ -279,7 +279,8 @@ export const SchedulePublish = ({
                 sx={{ mt: 2.5 }}
               >
                 {`Since the selected time is a current or past date, this will be
-                immediately ${scheduledAction}.`}
+                {`Since the selected time is a current or past date, this will be
+                immediately ${isForUnpublish ? "unpublished" : "published"}.`}
               </Alert>
             )}
           </>
