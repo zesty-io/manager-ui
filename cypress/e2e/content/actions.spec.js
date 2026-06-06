@@ -247,6 +247,65 @@ describe("Actions in content editor", () => {
 
   it("Schedules an item for unpublishing", () => {
     const { items, publishItem, publishings } = awaitRequests();
+    cy.visit(
+      `/content/${Cypress.env("modelZUID")}/${CONTENT_ITEMS?.[4]?.meta?.ZUID}`
+    );
+    cy.wait([items, publishings], { requestTimeout });
+
+    cy.getBySelector("PublishMenuButton").should("exist").should("be.enabled");
+    cy.getBySelector("PublishMenuButton").trigger("click");
+
+    cy.getBySelector("publishingMenu")
+      .should("exist")
+      .within(() => {
+        cy.getBySelector("UnpublishScheduleButton").should("exist");
+        cy.getBySelector("UnpublishScheduleButton").trigger("click");
+      });
+
+    cy.getBySelector("SchedulePublishModal")
+      .should("exist")
+      .within(() => {
+        // Assert labeling is correct for the unpublish flow
+        cy.contains("Schedule Unpublish:").should("exist");
+        cy.contains("Unpublish on").should("exist");
+        cy.getBySelector("SchedulePublishButton")
+          .should("exist")
+          .should("contain.text", "Schedule Unpublish");
+        cy.getBySelector("SchedulePublishButton").trigger("click");
+      });
+
+    // Assert the API payload branches correctly for scheduled unpublish
+    cy.wait(publishItem).then((interception) => {
+      const body = interception.request.body;
+      expect(body.publishAt).to.equal("now");
+      expect(body.unpublishAt).to.match(
+        /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/
+      );
+      expect(body.version).to.be.a("number");
+    });
+    cy.wait(publishings);
+
+    cy.getBySelector("ScheduledUnpublishIndicator").should("exist");
+
+    // Assert the menu toggle label flips to "Unschedule Unpublish"
+    cy.getBySelector("PublishMenuButton").trigger("click");
+    cy.getBySelector("publishingMenu").within(() => {
+      cy.getBySelector("UnpublishScheduleButton").should(
+        "contain.text",
+        "Unschedule Unpublish"
+      );
+    });
+    cy.get("body").type("{esc}");
+  });
+
+  it("Cancels a scheduled unpublish", () => {
+    const { items, publishItem, publishings } = awaitRequests();
+    cy.visit(
+      `/content/${Cypress.env("modelZUID")}/${CONTENT_ITEMS?.[4]?.meta?.ZUID}`
+    );
+    cy.wait([items, publishings], { requestTimeout });
+
+    // Schedule an unpublish first so this test is self-contained
     cy.getBySelector("PublishMenuButton").should("exist").should("be.enabled");
     cy.getBySelector("PublishMenuButton").trigger("click");
 
@@ -268,11 +327,8 @@ describe("Actions in content editor", () => {
     cy.wait(publishings);
 
     cy.getBySelector("ScheduledUnpublishIndicator").should("exist");
-  });
 
-  it("Cancels a scheduled unpublish", () => {
-    const { items, publishItem, publishings } = awaitRequests();
-    cy.getBySelector("PublishMenuButton").should("exist").should("be.enabled");
+    // Now cancel the scheduled unpublish
     cy.getBySelector("PublishMenuButton").trigger("click");
 
     cy.getBySelector("publishingMenu")
@@ -285,6 +341,9 @@ describe("Actions in content editor", () => {
     cy.getBySelector("SchedulePublishModal")
       .should("exist")
       .within(() => {
+        // Assert the scheduled date is rendered in the dialog (not blank)
+        cy.contains("scheduled to unpublish on").should("exist");
+        cy.contains(/\w{3} \d{1,2}, \d{4} at \d{1,2}:\d{2}/).should("exist");
         cy.getBySelector("UnschedulePublishButton").should("exist");
         cy.getBySelector("UnschedulePublishButton").trigger("click");
       });

@@ -29,6 +29,7 @@ type SchedulePublishProps = {
   item: ContentItemWithDirtyAndPublishing;
   onClose: () => void;
   onPublishNow: () => void;
+  onUnpublishNow?: () => void;
   onScheduleSuccess?: () => void;
   onUnscheduleSuccess?: () => void;
   scheduledAction?: "publish" | "unpublish" | null;
@@ -38,6 +39,7 @@ export const SchedulePublish = ({
   onClose,
   item,
   onPublishNow,
+  onUnpublishNow,
   onScheduleSuccess,
   onUnscheduleSuccess,
   scheduledAction,
@@ -74,6 +76,21 @@ export const SchedulePublish = ({
     : false;
 
   const isForUnpublish = scheduledAction === "unpublish";
+
+  const hasSchedulePublish =
+    item?.meta?.version === item?.scheduling?.version &&
+    item?.scheduling?.isScheduled;
+
+  const hasScheduleUnpublish =
+    item?.meta?.version === item?.publishing?.version &&
+    item?.publishing?.unpublishAt &&
+    new Date(item?.publishing?.unpublishAt).getTime() > Date.now();
+
+  // Gate "already scheduled" UI on the flow the user is in — avoids showing the
+  // unschedule prompt when the opposing schedule type exists but is irrelevant.
+  const hasExistingSchedule = isForUnpublish
+    ? hasScheduleUnpublish
+    : hasSchedulePublish;
 
   // API value must be UTC "YYYY-MM-DD HH:mm:ss"
   const publishAtUtcStr = formatInTimeZone(
@@ -129,7 +146,7 @@ export const SchedulePublish = ({
         {
           publishAt: "now",
           unpublishAt: "never",
-          version: item?.meta?.version,
+          version: item?.publishing?.version,
         },
         {
           localTime: localPretty,
@@ -155,22 +172,23 @@ export const SchedulePublish = ({
   };
 
   const guessedTz = tzGuess;
-  const scheduledLocalText = item?.scheduling?.publishAt
-    ? formatInTimeZone(
-        item.scheduling.publishAt,
-        guessedTz,
-        "MMM d, yyyy 'at' h:mm a"
-      )
+
+  const dateText = isForUnpublish
+    ? item?.publishing?.unpublishAt
+    : item?.scheduling?.publishAt;
+
+  const scheduledLocalText = dateText
+    ? formatInTimeZone(dateText, guessedTz, "MMM d, yyyy 'at' h:mm a")
     : "";
 
   const tzLabel =
     TIMEZONES.find((tz) => tz.id === guessedTz)?.label || guessedTz;
 
-  const publishHeader = item?.scheduling?.isScheduled
+  const publishHeader = hasSchedulePublish
     ? "Unschedule Publish:"
     : "Schedule Publish:";
 
-  const unpublishHeader = item?.publishing?.unpublishAt
+  const unpublishHeader = hasScheduleUnpublish
     ? "Unschedule Unpublish:"
     : "Schedule Unpublish:";
 
@@ -194,7 +212,7 @@ export const SchedulePublish = ({
               alignItems: "center",
             }}
           >
-            {item?.scheduling?.isScheduled || item?.publishing?.unpublishAt ? (
+            {hasExistingSchedule ? (
               <CalendarTodayRoundedIcon color="warning" />
             ) : (
               <ScheduleRoundedIcon color="warning" />
@@ -212,7 +230,7 @@ export const SchedulePublish = ({
             </Box>
 
             <Typography variant="body2" color="text.secondary">
-              {item?.scheduling?.isScheduled || item?.publishing?.unpublishAt
+              {hasExistingSchedule
                 ? `v${item?.web?.version} is scheduled to ${
                     isForUnpublish ? "unpublish" : "publish"
                   } on ${scheduledLocalText} in ${tzLabel}.`
@@ -231,7 +249,7 @@ export const SchedulePublish = ({
       </DialogTitle>
 
       <DialogContent data-cy="PublishScheduleModal">
-        {item?.scheduling?.isScheduled || item?.publishing?.unpublishAt ? (
+        {hasExistingSchedule ? (
           <Alert severity="info" icon={<InfoRoundedIcon />}>
             This will enable the ability to schedule or publish other versions
             of this content item
@@ -260,8 +278,8 @@ export const SchedulePublish = ({
                 icon={<WarningRoundedIcon fontSize="inherit" />}
                 sx={{ mt: 2.5 }}
               >
-                Since the selected time is a current or past date, this will be
-                immediately published.
+                {`Since the selected time is a current or past date, this will be
+                immediately ${scheduledAction}.`}
               </Alert>
             )}
           </>
@@ -279,7 +297,7 @@ export const SchedulePublish = ({
           Cancel
         </Button>
 
-        {item?.scheduling?.isScheduled || item?.publishing?.unpublishAt ? (
+        {hasExistingSchedule ? (
           <Button
             data-cy="UnschedulePublishButton"
             variant="contained"
@@ -288,7 +306,7 @@ export const SchedulePublish = ({
             onClick={handleUnschedulePublish}
             loading={isLoading}
           >
-            {isForUnpublish
+            {isForUnpublish && hasScheduleUnpublish
               ? "Cancel Scheduled Unpublish"
               : "Unschedule Publish"}
           </Button>
@@ -299,7 +317,11 @@ export const SchedulePublish = ({
             startIcon={<ScheduleRoundedIcon />}
             onClick={() => {
               if (isSelectedDatetimePast) {
-                onPublishNow();
+                if (isForUnpublish) {
+                  onUnpublishNow?.();
+                } else {
+                  onPublishNow();
+                }
               } else {
                 handleSchedulePublish();
               }

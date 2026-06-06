@@ -118,8 +118,6 @@ export const ItemEditHeaderActions = ({
     (state: AppState) =>
       state.content[resolvedItemZUID] as ContentItemWithDirtyAndPublishing
   );
-  const hasScheduledUnpublish =
-    !!item?.publishing?.publishAt && !!item?.publishing?.unpublishAt;
 
   const [scheduledAction, setScheduledAction] = useState<
     "publish" | "unpublish" | null
@@ -164,6 +162,11 @@ export const ItemEditHeaderActions = ({
   const activePublishing = itemPublishings?.find(
     (itemPublishing) => itemPublishing._active
   );
+
+  const hasScheduledUnpublish =
+    item?.publishing?.version === item?.meta?.version &&
+    new Date(item?.publishing?.unpublishAt).getTime() > Date.now();
+
   const { data: statusLabels } = useGetWorkflowStatusLabelsQuery();
   const { data: itemWorkflowStatus, isLoading: isLoadingItemWorkflowStatus } =
     useGetItemWorkflowStatusQuery(
@@ -326,7 +329,10 @@ export const ItemEditHeaderActions = ({
   const itemState = (() => {
     if (item?.dirty) {
       return ITEM_STATES.dirty;
-    } else if (item?.scheduling?.isScheduled && !item?.publishing?.publishAt) {
+    } else if (
+      item?.scheduling?.version === item?.meta.version &&
+      item?.scheduling?.isScheduled
+    ) {
       return ITEM_STATES.scheduled;
     } else if (activePublishing?.version === item?.meta.version) {
       return ITEM_STATES.published;
@@ -460,6 +466,10 @@ export const ItemEditHeaderActions = ({
       // Retain non rtk-query fetch of item publishing for legacy code
       dispatch(fetchItemPublishing(resolvedModelZUID, resolvedItemZUID));
       setUnpublishDialogOpen(false);
+
+      if (scheduledPublishDialogOpen) {
+        setScheduledPublishDialogOpen(false);
+      }
     });
   };
 
@@ -564,7 +574,7 @@ export const ItemEditHeaderActions = ({
         )}
       </Tooltip>
       {((itemState !== ITEM_STATES.scheduled && canPublish) ||
-        hasScheduledUnpublish) && (
+        itemState === ITEM_STATES.published) && (
         <Box position="relative">
           <Tooltip
             enterDelay={1000}
@@ -654,12 +664,19 @@ export const ItemEditHeaderActions = ({
                 <Box display="flex" gap={1} alignItems="center">
                   <CheckCircleRounded fontSize="small" color="success" />
                   <Typography
+                    data-cy={
+                      hasScheduledUnpublish
+                        ? "ScheduledUnpublishIndicator"
+                        : undefined
+                    }
                     variant="body2"
                     color="success.main"
                     fontWeight={500}
                     letterSpacing="0.46px"
                   >
-                    Published
+                    {hasScheduledUnpublish
+                      ? "Published w/ Unpublish Scheduled"
+                      : "Published"}
                   </Typography>
                 </Box>
                 <IconButton
@@ -674,42 +691,6 @@ export const ItemEditHeaderActions = ({
               </Box>
             )}
           </Tooltip>
-          {hasScheduledUnpublish && (
-            <Tooltip
-              title={
-                <div>
-                  v{activePublishing?.version} scheduled to unpublish{" "}
-                  {datePreposition(activePublishing?.unpublishAt)}
-                  <br />
-                  {formatDate(activePublishing?.unpublishAt)} <br />
-                  by {publisherFullName}
-                </div>
-              }
-              enterDelay={1000}
-              enterNextDelay={1000}
-              placement="bottom-start"
-            >
-              <Box
-                display="flex"
-                flexDirection="row"
-                justifyContent="flex-start"
-                alignItems="center"
-                columnGap={1}
-                data-cy="ScheduledUnpublishIndicator"
-                sx={{
-                  whiteSpace: "nowrap",
-                  position: "absolute",
-                  right: 0,
-                  top: "calc(100% + 10px)",
-                }}
-              >
-                <ScheduleRoundedIcon fontSize="small" color="warning" />
-                <Typography variant="body2" color="warning.main">
-                  {`v${activePublishing?.version} Scheduled Unpublish`}
-                </Typography>
-              </Box>
-            </Tooltip>
-          )}
         </Box>
       )}
       {itemState === ITEM_STATES.scheduled && canPublish && (
@@ -846,10 +827,15 @@ export const ItemEditHeaderActions = ({
           item={item}
           onClose={() => {
             setScheduledPublishDialogOpen(false);
+            setScheduledAction(null);
           }}
           onPublishNow={() => {
             handlePublish();
             setScheduledPublishDialogOpen(false);
+          }}
+          onUnpublishNow={() => {
+            // setScheduledPublishDialogOpen(false);
+            setUnpublishDialogOpen(true);
           }}
           onUnscheduleSuccess={() => {
             if (publishAfterUnschedule) {
