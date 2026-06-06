@@ -305,7 +305,31 @@ describe("Actions in content editor", () => {
     );
     cy.wait([items, publishings], { requestTimeout });
 
-    // Schedule an unpublish first so this test is self-contained
+    // If a prior test left a scheduled unpublish on this item, cancel it first
+    // so the scheduling step below reliably opens the SchedulePublishButton view.
+    cy.getBySelector("PublishMenuButton").should("exist").should("be.enabled");
+    cy.getBySelector("PublishMenuButton").trigger("click");
+    cy.getBySelector("publishingMenu")
+      .should("exist")
+      .within(() => {
+        cy.getBySelector("UnpublishScheduleButton").trigger("click");
+      });
+    cy.getBySelector("SchedulePublishModal")
+      .should("exist")
+      .then(($modal) => {
+        if ($modal.find("[data-cy='UnschedulePublishButton']").length) {
+          // Already scheduled — cancel it to restore clean state
+          cy.wrap($modal)
+            .find("[data-cy='UnschedulePublishButton']")
+            .trigger("click");
+          cy.wait(publishItem);
+          cy.wait(publishings);
+        } else {
+          cy.getBySelector("CancelSchedulePublishButton").trigger("click");
+        }
+      });
+
+    // Schedule an unpublish so this test is fully self-contained
     cy.getBySelector("PublishMenuButton").should("exist").should("be.enabled");
     cy.getBySelector("PublishMenuButton").trigger("click");
 

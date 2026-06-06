@@ -64,8 +64,6 @@ import {
   PUBLISH_ATTEMPT_WITHOUT_ALLOW_PUBLISH_STATUS,
   SCHEDULE_PUBLISH_ATTEMPT_WITHOUT_ALLOW_PUBLISH_STATUS,
 } from "../../../../../../../../amplitude-events";
-import ScheduleRoundedIcon from "@mui/icons-material/ScheduleRounded";
-
 const ITEM_STATES = {
   dirty: "dirty",
   published: "published",
@@ -165,6 +163,7 @@ export const ItemEditHeaderActions = ({
 
   const hasScheduledUnpublish =
     item?.publishing?.version === item?.meta?.version &&
+    !!item?.publishing?.unpublishAt &&
     new Date(item?.publishing?.unpublishAt).getTime() > Date.now();
 
   const { data: statusLabels } = useGetWorkflowStatusLabelsQuery();
@@ -179,6 +178,13 @@ export const ItemEditHeaderActions = ({
   );
   const publisherFullName = `${publishedByUser?.firstName || ""} ${
     publishedByUser?.lastName || ""
+  }`.trim();
+
+  const scheduledByUser = users?.find(
+    (user: any) => user.ZUID === item?.scheduling?.publishedByUserZUID
+  );
+  const scheduledByFullName = `${scheduledByUser?.firstName || ""} ${
+    scheduledByUser?.lastName || ""
   }`.trim();
 
   useEffect(() => {
@@ -466,10 +472,6 @@ export const ItemEditHeaderActions = ({
       // Retain non rtk-query fetch of item publishing for legacy code
       dispatch(fetchItemPublishing(resolvedModelZUID, resolvedItemZUID));
       setUnpublishDialogOpen(false);
-
-      if (scheduledPublishDialogOpen) {
-        setScheduledPublishDialogOpen(false);
-      }
     });
   };
 
@@ -573,8 +575,7 @@ export const ItemEditHeaderActions = ({
           </Box>
         )}
       </Tooltip>
-      {((itemState !== ITEM_STATES.scheduled && canPublish) ||
-        itemState === ITEM_STATES.published) && (
+      {itemState !== ITEM_STATES.scheduled && canPublish && (
         <Box position="relative">
           <Tooltip
             enterDelay={1000}
@@ -701,7 +702,7 @@ export const ItemEditHeaderActions = ({
             <div>
               v{item?.scheduling?.version} published on <br />
               {formatDate(item?.scheduling?.publishAt)} <br />
-              by {publisherFullName}
+              by {scheduledByFullName}
             </div>
           }
           placement="bottom-start"
@@ -1008,9 +1009,6 @@ const PublishingMenu = ({
                 break;
               case ITEM_STATES.scheduled:
                 setScheduledPublishDialogOpen(true, "publish");
-                break;
-              case ITEM_STATES.published:
-                setScheduledPublishDialogOpen(true, "unpublish");
                 break;
               case ITEM_STATES.draft:
                 setScheduledPublishDialogOpen(true, "publish");

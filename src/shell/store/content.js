@@ -886,6 +886,8 @@ export function publish(modelZUID, itemZUID, data, meta = {}) {
           data?.unpublishAt !== "never"
         ) {
           message = `Scheduled ${title} to unpublish on ${meta.localTime} in the ${meta.localTimezone} timezone`;
+        } else if (data.publishAt === "now" && data?.unpublishAt === "never") {
+          message = `Cancelled scheduled unpublish for ${title}`;
         }
 
         return dispatch(notify({ message, kind: "save" }));

@@ -278,9 +278,9 @@ export const SchedulePublish = ({
                 icon={<WarningRoundedIcon fontSize="inherit" />}
                 sx={{ mt: 2.5 }}
               >
-                {`Since the selected time is a current or past date, this will be
-                {`Since the selected time is a current or past date, this will be
-                immediately ${isForUnpublish ? "unpublished" : "published"}.`}
+                {`Since the selected time is a current or past date, this will be immediately ${
+                  isForUnpublish ? "unpublished" : "published"
+                }.`}
               </Alert>
             )}
           </>
