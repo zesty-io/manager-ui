@@ -834,7 +834,7 @@ export const ItemEditHeaderActions = ({
             setScheduledPublishDialogOpen(false);
           }}
           onUnpublishNow={() => {
-            // setScheduledPublishDialogOpen(false);
+            setScheduledPublishDialogOpen(false);
             setUnpublishDialogOpen(true);
           }}
           onUnscheduleSuccess={() => {
