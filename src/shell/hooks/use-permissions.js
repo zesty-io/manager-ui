@@ -12,11 +12,7 @@ const selectRole = createSelector([getRole], (role) => role);
 
 export function hasPermission(user, role, action, zuid = instanceZUID) {
   // "With great power comes great responsibility" - Benjamin Franklin Parker
-  if (user?.staff) {
-    return true;
-  }
-
-  if (role?.systemRole?.super) {
+  if (user?.staff || role?.systemRole?.super) {
     return true;
   }
 
