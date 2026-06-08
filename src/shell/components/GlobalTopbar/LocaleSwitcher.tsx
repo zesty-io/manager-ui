@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Menu, MenuItem, Box, Tooltip } from "@mui/material";
 import { KeyboardArrowDownRounded } from "@mui/icons-material";
 import { Flag, getCountryCode } from "../Flag";
@@ -20,6 +20,10 @@ const LOCALES: Locale[] = [
 export const LocaleSwitcher = () => {
   const [activeLocale, setActiveLocale] = useState<Locale>(LOCALES[0]);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+  useEffect(() => {
+    document.documentElement.lang = activeLocale.tag;
+  }, [activeLocale.tag]);
 
   const handleSelect = (locale: Locale) => {
     setActiveLocale(locale);
