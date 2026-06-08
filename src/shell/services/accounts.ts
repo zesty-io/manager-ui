@@ -2,6 +2,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 import instanceZUID from "../../utility/instanceZUID";
 import { getResponseData, prepareHeaders } from "./util";
+import { fetchUser } from "../store/user";
 import {
   User,
   UserRole,
@@ -22,7 +23,7 @@ export const accountsApi = createApi({
     baseUrl: `${__CONFIG__.API_ACCOUNTS}/`,
     prepareHeaders,
   }),
-  tagTypes: ["Comments", "CommentThread"],
+  tagTypes: ["Comments", "CommentThread", "User"],
   // always use the instanceZUID from the URL
   endpoints: (builder) => ({
     getDomains: builder.query<Domain[], void>({
@@ -65,6 +66,28 @@ export const accountsApi = createApi({
     getCurrentUserRoles: builder.query<Role[], void>({
       query: () => `/roles`,
       transformResponse: getResponseData,
+    }),
+    updateUser: builder.mutation<
+      User,
+      {
+        userZUID: string;
+        firstName: string;
+        lastName: string;
+        prefs: string;
+      }
+    >({
+      query: ({ userZUID, firstName, lastName, prefs }) => ({
+        url: `users/${userZUID}`,
+        method: "PUT",
+        body: { firstName, lastName, prefs },
+      }),
+      invalidatesTags: ["User"],
+      async onQueryStarted({ userZUID }, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          dispatch(fetchUser(userZUID));
+        } catch {}
+      },
     }),
     getInstalledApps: builder.query<InstalledApp[], void>({
       query: () => `instances/${instanceZUID}/app-installs`,
@@ -235,6 +258,7 @@ export const {
   useGetUsersRolesQuery,
   useCreateUserInviteMutation,
   useGetCurrentUserRolesQuery,
+  useUpdateUserMutation,
   useGetInstalledAppsQuery,
   useCreateCommentMutation,
   useCreateReplyMutation,

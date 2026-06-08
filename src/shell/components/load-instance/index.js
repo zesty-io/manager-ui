@@ -4,6 +4,8 @@ import { Box, Link, Typography } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 
+import i18n from "shell/i18n";
+import { store } from "shell/store";
 import { fetchInstance, fetchDomains } from "shell/store/instance";
 import { fetchUser } from "shell/store/user";
 import { fetchUserRole } from "shell/store/userRole";
@@ -40,7 +42,20 @@ export default connect((state) => {
         return;
       }
 
-      props.dispatch(fetchUser(props.user.ZUID));
+      props.dispatch(fetchUser(props.user.ZUID)).then(() => {
+        const { prefs } = store.getState().user;
+
+        if (prefs) {
+          const { locale } = JSON.parse(prefs);
+          const currentLocale = localStorage.getItem("app_locale");
+
+          if (locale && locale !== currentLocale) {
+            i18n.changeLanguage(locale);
+            localStorage.setItem("app_locale", locale);
+            document.documentElement.lang = locale;
+          }
+        }
+      });
       props
         .dispatch(fetchInstance())
         .then((res) => {

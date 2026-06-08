@@ -61,16 +61,16 @@ Spec: https://docs.google.com/document/d/1l5RdyDxQLTwXdz80Gk1_y8GdVv_KoQG5VfSmdv
 - [x] Build `LocaleSwitcher` UI component (`src/shell/components/GlobalTopbar/LocaleSwitcher.tsx`)
 - [x] Mount `LocaleSwitcher` in `GlobalTopbar` before the Brain icon
 - [x] Set `document.documentElement.lang` to the active BCP 47 tag on mount and on every locale change
-- [ ] Wire `LocaleSwitcher` to `i18n.changeLanguage(tag)` on selection
+- [x] Wire `LocaleSwitcher` to `i18n.changeLanguage(tag)` on selection
   - i18next automatically writes the new locale to `localStorage` (`app_locale`) via LanguageDetector's `caches` config — no manual write needed
-- [ ] Add `updateUser` mutation to `src/shell/services/accounts.ts`:
-  - PATCHes `/users/{userZUID}` with a body of `{ prefs: JSON.stringify({ ...existingPrefs, locale }) }`
+- [x] Add `updateUser` mutation to `src/shell/services/accounts.ts`:
+  - PUTs `/users/{userZUID}` with a body of `{ prefs: JSON.stringify({ ...existingPrefs, locale }) }`
   - Must merge into existing `prefs` to avoid clobbering keys like `favorite_sites`
   - Add `"User"` to `tagTypes` in `accountsApi` and tag the existing `fetchUser` plain-Redux call's data source so both layers stay in sync
   - On mutation success, invalidate the `"User"` RTK Query tag so any RTK Query consumers re-fetch fresh user data
   - Also dispatch `FETCH_USER_SUCCESS` to update the plain Redux `user` slice directly — RTK Query invalidation alone won't update the Redux store since `fetchUser` is a legacy thunk, not an RTK Query endpoint
-- [ ] Call `updateUser` on every locale change (fire-and-forget, non-blocking) — this keeps the DB in sync so the correct locale is available on first login from a new device
-- [ ] On app boot, apply DB locale preference before first render (`src/shell/components/load-instance/index.js:43`):
+- [x] Call `updateUser` on every locale change (fire-and-forget, non-blocking) — this keeps the DB in sync so the correct locale is available on first login from a new device
+- [x] On app boot, apply DB locale preference before first render (`src/shell/components/load-instance/index.js:43`):
   - Chain `.then()` onto the existing `fetchUser` dispatch
   - Parse `user.prefs`, extract `locale`, and compare against `localStorage.getItem("app_locale")`
   - Only call `i18n.changeLanguage(locale)` if they differ — avoids an unnecessary localStorage write and re-render

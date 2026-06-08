@@ -35,8 +35,10 @@ i18n
     },
 
     detection: {
-      order: ["localStorage", "navigator"],
-      caches: ["localStorage"],
+      order: ["localStorage"],
+      // caches intentionally omitted — we write app_locale manually on explicit
+      // changeLanguage() calls only, to prevent auto-write on fallback detection
+      caches: [],
       lookupLocalStorage: "app_locale",
     },
 
