@@ -1,4 +1,5 @@
-import { StrictMode } from "react";
+import "./i18n";
+import { StrictMode, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { Router } from "react-router-dom";
@@ -130,31 +131,34 @@ amplitude.identify(preLoginIdentify);
 // TODO: Add a context here that will store all draft comments
 const App = Sentry.withProfiler(() => (
   <StrictMode>
-    <Sentry.ErrorBoundary
-      fallback={() => <AppError />}
-      beforeCapture={(scope) => {
-        scope.setLevel("fatal");
-        scope.setTag("error_boundary", true);
-      }}
-    >
-      <ThemeProvider theme={appTheme}>
-        <CssBaseline>
-          <Provider store={store}>
-            <Router history={history}>
-              <CommentProvider>
-                <CreateContentItemDialogProvider>
-                  <PrivateRoute>
-                    <LoadInstance>
-                      <Shell />
-                    </LoadInstance>
-                  </PrivateRoute>
-                </CreateContentItemDialogProvider>
-              </CommentProvider>
-            </Router>
-          </Provider>
-        </CssBaseline>
-      </ThemeProvider>
-    </Sentry.ErrorBoundary>
+    {/* null fallback intentionally blocks render until i18n is ready, preventing raw key flash */}
+    <Suspense fallback={null}>
+      <Sentry.ErrorBoundary
+        fallback={() => <AppError />}
+        beforeCapture={(scope) => {
+          scope.setLevel("fatal");
+          scope.setTag("error_boundary", true);
+        }}
+      >
+        <ThemeProvider theme={appTheme}>
+          <CssBaseline>
+            <Provider store={store}>
+              <Router history={history}>
+                <CommentProvider>
+                  <CreateContentItemDialogProvider>
+                    <PrivateRoute>
+                      <LoadInstance>
+                        <Shell />
+                      </LoadInstance>
+                    </PrivateRoute>
+                  </CreateContentItemDialogProvider>
+                </CommentProvider>
+              </Router>
+            </Provider>
+          </CssBaseline>
+        </ThemeProvider>
+      </Sentry.ErrorBoundary>
+    </Suspense>
   </StrictMode>
 ));
 
