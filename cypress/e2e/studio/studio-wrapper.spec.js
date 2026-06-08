@@ -3,6 +3,7 @@ import { API_ENDPOINTS } from "../../support/api";
 describe("Studio Wrapper", () => {
   let studioPath = "/";
   let itemZUID = "";
+  let modelZUID = "";
   const codeId = "11-studio-test-view";
   const templateSource = `
     <div data-layout-id="1">One</div>
@@ -103,9 +104,26 @@ describe("Studio Wrapper", () => {
   before(() => {
     cy.task("seed:content", "fixtures/studio.json").then(({ items }) => {
       itemZUID = items[0].meta.ZUID;
+      modelZUID = items[0].meta.contentModelZUID;
       studioPath = `/${items[0].web.pathPart}`;
     });
   });
+
+  // Open the Save Changes modal from the given mode's bar and commit via
+  // Save All / Save & Publish All.
+  const saveAllViaModal = (mode = "layout") => {
+    const prefix = mode === "layout" ? "StudioLayout" : "StudioContent";
+    cy.getBySelector(`${prefix}SaveChangesButton`).click();
+    cy.getBySelector("StudioSaveChangesModal").should("exist");
+    cy.getBySelector("StudioSaveAllButton").click();
+  };
+
+  const savePublishAllViaModal = (mode = "layout") => {
+    const prefix = mode === "layout" ? "StudioLayout" : "StudioContent";
+    cy.getBySelector(`${prefix}SaveChangesButton`).click();
+    cy.getBySelector("StudioSaveChangesModal").should("exist");
+    cy.getBySelector("StudioSaveAndPublishAllButton").click();
+  };
 
   const selectAndDirtyContent = () => {
     cy.window().then((win) => {
@@ -169,8 +187,22 @@ describe("Studio Wrapper", () => {
 
     cy.getBySelector("StudioLayoutSaveBar").should("exist");
     cy.getBySelector("StudioLayoutCancelButton").should("exist");
-    cy.getBySelector("StudioLayoutSaveButton").should("exist");
-    cy.getBySelector("StudioLayoutSavePublishButton").should("exist");
+    cy.getBySelector("StudioLayoutSaveChangesButton").should("exist");
+  });
+
+  it("opens the Save Changes modal listing the staged code change", () => {
+    createPendingLayoutSave();
+
+    cy.getBySelector("StudioLayoutSaveChangesButton").click();
+    cy.getBySelector("StudioSaveChangesModal").should("exist");
+    cy.getBySelector("StudioSaveChangeRow").should("have.length", 1);
+    cy.getBySelector("StudioSaveChangeRow").should("contain.text", "Code");
+    cy.getBySelector("StudioSaveAllButton").should("exist");
+    cy.getBySelector("StudioSaveAndPublishAllButton").should("exist");
+
+    cy.getBySelector("StudioSaveChangesCancelButton").click();
+    cy.getBySelector("StudioSaveChangesModal").should("not.exist");
+    cy.getBySelector("StudioLayoutSaveBar").should("exist");
   });
 
   it("hides the layout save bar when cancel is clicked", () => {
@@ -199,14 +231,17 @@ describe("Studio Wrapper", () => {
     cy.getBySelector("DirtyCodeModal").should("not.exist");
   });
 
-  it("prompts for unsaved layout changes when selecting another code boundary", () => {
+  it("keeps staged layout changes when selecting another code boundary (multi-file staging)", () => {
     setStudioMode("layout");
     selectLayout(codeId, "2");
     createPendingLayoutSave();
 
+    cy.getBySelector("StudioLayoutSaveBar").should("exist");
+
     selectLayout("11-other-code-view", "9");
 
-    cy.getBySelector("DirtyCodeModal").should("exist");
+    cy.getBySelector("DirtyCodeModal").should("not.exist");
+    cy.getBySelector("StudioLayoutSaveBar").should("exist");
   });
 
   it("prompts for unsaved content changes when switching to layout mode", () => {
@@ -257,7 +292,7 @@ describe("Studio Wrapper", () => {
 
       createPendingLayoutSave(webView.ZUID);
 
-      cy.getBySelector("StudioLayoutSaveButton").click();
+      saveAllViaModal("layout");
 
       cy.wait("@updateWebView").then(({ request }) => {
         expect(request.body.code).to.contain("<div>Two</div><div>One</div>");
@@ -277,7 +312,7 @@ describe("Studio Wrapper", () => {
 
       createNestedPendingLayoutSave(webView.ZUID);
 
-      cy.getBySelector("StudioLayoutSaveButton").click();
+      saveAllViaModal("layout");
 
       cy.wait("@updateWebView").then(({ request }) => {
         expect(request.body.code).to.contain(
@@ -332,8 +367,7 @@ describe("Studio Wrapper", () => {
     });
 
     cy.getBySelector("StudioLayoutSaveBar").should("exist");
-    cy.getBySelector("StudioLayoutSaveButton").should("exist");
-    cy.getBySelector("StudioLayoutSavePublishButton").should("exist");
+    cy.getBySelector("StudioLayoutSaveChangesButton").should("exist");
   });
 
   it("saves static content edit with updated text and no layout-id attributes", () => {
@@ -359,7 +393,7 @@ describe("Studio Wrapper", () => {
         innerHtml: "Updated text",
       });
 
-      cy.getBySelector("StudioLayoutSaveButton").click();
+      saveAllViaModal("layout");
 
       cy.wait("@updateWebView").then(({ request }) => {
         expect(request.body.code).to.contain("Updated text");
@@ -399,7 +433,7 @@ describe("Studio Wrapper", () => {
         innerHtml: "Second edit",
       });
 
-      cy.getBySelector("StudioLayoutSaveButton").click();
+      saveAllViaModal("layout");
 
       cy.wait("@updateWebView").then(({ request }) => {
         expect(request.body.code).to.contain("Second edit");
@@ -448,7 +482,7 @@ describe("Studio Wrapper", () => {
         innerHtml: "Two (edited)",
       });
 
-      cy.getBySelector("StudioLayoutSaveButton").click();
+      saveAllViaModal("layout");
 
       cy.wait("@updateWebView").then(({ request }) => {
         // Reorder order preserved: block 2 still before block 1
@@ -538,7 +572,7 @@ describe("Studio Wrapper", () => {
 
       cy.getBySelector("StudioLayoutSaveBar").should("exist");
 
-      cy.getBySelector("StudioLayoutSaveButton").click();
+      saveAllViaModal("layout");
 
       cy.wait("@updateWebView").then(({ request }) => {
         expect(request.body.code).not.to.contain("old.jpg");
@@ -587,7 +621,7 @@ describe("Studio Wrapper", () => {
 
       cy.contains("Done").click();
 
-      cy.getBySelector("StudioLayoutSaveButton").click();
+      saveAllViaModal("layout");
 
       cy.wait("@updateWebView").then(({ request }) => {
         expect(request.body.code).not.to.contain("old.jpg");
@@ -615,7 +649,7 @@ describe("Studio Wrapper", () => {
 
       createPendingLayoutSave(webView.ZUID);
 
-      cy.getBySelector("StudioLayoutSavePublishButton").click();
+      savePublishAllViaModal("layout");
 
       cy.wait("@updateWebView").then(({ request }) => {
         expect(request.body.code).to.contain("<div>Two</div><div>One</div>");
@@ -624,5 +658,110 @@ describe("Studio Wrapper", () => {
 
       cy.wait("@publishWebView");
     });
+  });
+
+  // ── Content staging (multi-item save) ───────────────────────────────────────
+
+  // Marks the loaded page item dirty so the content save bar appears. Waits for
+  // the item to be hydrated into the store first so MARK_ITEM_DIRTY isn't a
+  // no-op (the reducer only flips items already present in state.content).
+  const dirtyPageContent = () => {
+    cy.getBySelector("StudioSidePanel").should("exist");
+    cy.window().should((win) => {
+      expect(
+        win.zestyStore.getState().content[itemZUID]?.meta?.ZUID,
+        "page item hydrated in store"
+      ).to.eq(itemZUID);
+    });
+    cy.window().then((win) => {
+      win.zestyStore.dispatch({ type: "MARK_ITEM_DIRTY", itemZUID });
+    });
+  };
+
+  it("shows the content save bar when a content item is staged", () => {
+    dirtyPageContent();
+
+    cy.getBySelector("StudioContentSaveBar").should("exist");
+    cy.getBySelector("StudioContentCancelButton").should("exist");
+    cy.getBySelector("StudioContentSaveChangesButton").should("exist");
+  });
+
+  it("opens the Save Changes modal listing the staged content edit", () => {
+    dirtyPageContent();
+
+    cy.getBySelector("StudioContentSaveChangesButton").click();
+    cy.getBySelector("StudioSaveChangesModal").should("exist");
+    cy.getBySelector("StudioSaveChangeRow").should("have.length", 1);
+    cy.getBySelector("StudioSaveChangeRow").should("contain.text", "Content");
+    cy.getBySelector("StudioSaveAllButton").should("exist");
+    cy.getBySelector("StudioSaveAndPublishAllButton").should("exist");
+
+    cy.getBySelector("StudioSaveChangesCancelButton").click();
+    cy.getBySelector("StudioSaveChangesModal").should("not.exist");
+    cy.getBySelector("StudioContentSaveBar").should("exist");
+  });
+
+  it("discards staged content edits when the bar cancel is clicked", () => {
+    dirtyPageContent();
+
+    cy.getBySelector("StudioContentSaveBar").should("exist");
+    cy.getBySelector("StudioContentCancelButton").click();
+    cy.getBySelector("StudioContentSaveBar").should("not.exist");
+  });
+
+  it("saves all staged content edits via the modal", () => {
+    dirtyPageContent();
+
+    cy.intercept("PUT", `/v1/content/models/${modelZUID}/items/${itemZUID}`).as(
+      "saveItem"
+    );
+
+    saveAllViaModal("content");
+
+    cy.wait("@saveItem")
+      .its("response.statusCode")
+      .should("be.oneOf", [200, 201]);
+    cy.getBySelector("StudioSaveChangesModal").should("not.exist");
+    cy.getBySelector("StudioContentSaveBar").should("not.exist");
+  });
+
+  it("saves and publishes all staged content edits via the modal", () => {
+    dirtyPageContent();
+
+    cy.intercept("PUT", `/v1/content/models/${modelZUID}/items/${itemZUID}`).as(
+      "saveItem"
+    );
+    cy.intercept(
+      "POST",
+      `/v1/content/models/${modelZUID}/items/${itemZUID}/publishings`
+    ).as("publishItem");
+
+    savePublishAllViaModal("content");
+
+    cy.wait("@saveItem");
+    cy.wait("@publishItem");
+    cy.getBySelector("StudioContentSaveBar").should("not.exist");
+  });
+
+  it("does not prompt when selecting a field on another item while staged (multi-item staging)", () => {
+    dirtyPageContent();
+
+    cy.getBySelector("StudioContentSaveBar").should("exist");
+
+    postBridgeMessage({
+      type: "DOM_EVENT",
+      eventType: "click",
+      element: {
+        dataset: {
+          studioId: "studio-other-item",
+          fieldZuid: "12-other-field-zuid",
+          itemZuid: "7-other-item-zuid",
+          modelZuid: "6-other-model-zuid",
+        },
+      },
+    });
+
+    cy.getBySelector("PendingEditsModal").should("not.exist");
+    cy.getBySelector("StudioContentSaveBar").should("exist");
   });
 });
