@@ -158,6 +158,10 @@ export const ItemEditHeaderActions = ({
     (itemPublishing) => itemPublishing._active
   );
 
+  const lastItemUpdateAudit = itemAudit?.find(
+    (audit) => audit.action === 2 || audit.action === 1
+  );
+
   const hasScheduledPublish =
     !!item?.scheduling?.isScheduled &&
     new Date(item?.scheduling?.publishAt).getTime() > Date.now();
@@ -535,7 +539,12 @@ export const ItemEditHeaderActions = ({
             <div>
               v{item?.meta?.version} saved on <br />
               {formatDate(item?.meta?.updatedAt)} <br />
-              by {getUserFullName(item?.meta.createdByUserZUID || "")}
+              by{" "}
+              {lastItemUpdateAudit
+                ? `${lastItemUpdateAudit.firstName ?? ""} ${
+                    lastItemUpdateAudit.lastName ?? ""
+                  }`.trim()
+                : getUserFullName(item?.meta?.createdByUserZUID || "")}
             </div>
           )
         }
@@ -819,9 +828,11 @@ export const ItemEditHeaderActions = ({
           onPublishNow={() => {
             handlePublish();
             setScheduledPublishDialogOpen(false);
+            setScheduledAction(null);
           }}
           onUnpublishNow={() => {
             setScheduledPublishDialogOpen(false);
+            setScheduledAction(null);
             setUnpublishDialogOpen(true);
           }}
           onUnscheduleSuccess={() => {

@@ -252,6 +252,29 @@ describe("Actions in content editor", () => {
     );
     cy.wait([items, publishings], { requestTimeout });
 
+    // Cancel any stale scheduled unpublish from a prior run so the scheduling
+    // step below reliably opens the SchedulePublishButton (not Unschedule) view.
+    cy.getBySelector("PublishMenuButton").should("exist").should("be.enabled");
+    cy.getBySelector("PublishMenuButton").trigger("click");
+    cy.getBySelector("publishingMenu").within(() => {
+      cy.getBySelector("UnpublishScheduleButton").trigger("click");
+    });
+    cy.getBySelector("SchedulePublishModal")
+      .should("exist")
+      .then(($modal) => {
+        if ($modal.find("[data-cy='UnschedulePublishButton']").length) {
+          cy.wrap($modal)
+            .find("[data-cy='UnschedulePublishButton']")
+            .trigger("click");
+          cy.wait(publishItem);
+          cy.wait(publishings);
+        } else {
+          cy.wrap($modal)
+            .find("[data-cy='CancelSchedulePublishButton']")
+            .trigger("click");
+        }
+      });
+
     cy.getBySelector("PublishMenuButton").should("exist").should("be.enabled");
     cy.getBySelector("PublishMenuButton").trigger("click");
 

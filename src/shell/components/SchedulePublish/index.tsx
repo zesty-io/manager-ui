@@ -77,50 +77,38 @@ export const SchedulePublish = ({
 
   const isForUnpublish = scheduledAction === "unpublish";
 
-  const hasSchedulePublish =
-    item?.meta?.version === item?.scheduling?.version &&
-    item?.scheduling?.isScheduled;
+  // ── Publish flow (original behaviour) ────────────────────────────────────
+  // Uses item?.scheduling?.isScheduled directly, matching the pre-PR component.
+  const isAlreadyScheduledPublish = item?.scheduling?.isScheduled;
 
-  // Broader check used only for conflict resolution: any active future-scheduled
-  // publish blocks the API from accepting a new POST to /publishings, regardless
-  // of which version is involved.
-  const hasAnyScheduledPublish = !!item?.scheduling?.ZUID;
-
-  const hasScheduleUnpublish =
-    item?.meta?.version === item?.publishing?.version &&
-    item?.publishing?.unpublishAt &&
-    new Date(item?.publishing?.unpublishAt).getTime() > Date.now();
-
-  // Gate "already scheduled" UI on the flow the user is in — avoids showing the
-  // unschedule prompt when the opposing schedule type exists but is irrelevant.
-  const hasExistingSchedule = isForUnpublish
-    ? hasScheduleUnpublish
-    : hasSchedulePublish;
-
-  // API value must be UTC "YYYY-MM-DD HH:mm:ss"
-  const publishAtUtcStr = formatInTimeZone(
-    selectedUtc,
-    "UTC",
-    "yyyy-MM-dd HH:mm:ss"
-  );
-
-  // Pretty local confirmation text in the chosen timezone
-  const localPretty = formatInTimeZone(
-    selectedUtc,
-    publishTimezone,
-    "MMMM do yyyy, 'at' h:mm a"
-  );
+  const publishScheduledLocalText = item?.scheduling?.publishAt
+    ? formatInTimeZone(
+        item.scheduling.publishAt,
+        tzGuess,
+        "MMM d, yyyy 'at' h:mm a"
+      )
+    : "";
 
   const handleSchedulePublish = () => {
     setIsLoading(true);
+
+    const publishAtUtcStr = formatInTimeZone(
+      selectedUtc,
+      "UTC",
+      "yyyy-MM-dd HH:mm:ss"
+    );
+    const localPretty = formatInTimeZone(
+      selectedUtc,
+      publishTimezone,
+      "MMMM do yyyy, 'at' h:mm a"
+    );
 
     dispatch(
       publish(
         item?.meta?.contentModelZUID,
         item?.meta?.ZUID,
         {
-          publishAt: isForUnpublish ? "now" : publishAtUtcStr,
-          unpublishAt: isForUnpublish ? publishAtUtcStr : "never",
+          publishAt: publishAtUtcStr,
           version: item?.meta?.version,
         },
         {
@@ -136,43 +124,92 @@ export const SchedulePublish = ({
     });
   };
 
-  const handleUnschedulePublish = async () => {
+  const handleUnschedulePublish = () => {
+    setIsLoading(true);
+
+    dispatch(
+      unpublish(
+        item?.meta?.contentModelZUID,
+        item?.meta?.ZUID,
+        item?.scheduling?.ZUID,
+        { version: item?.scheduling?.version }
+      )
+      // @ts-expect-error untyped action
+    ).finally(() => {
+      setIsLoading(false);
+      onClose();
+      onUnscheduleSuccess?.();
+    });
+  };
+
+  // ── Unpublish flow (new behaviour) ────────────────────────────────────────
+  // Broader check: any active future-scheduled publish blocks the API from
+  // accepting a new POST to /publishings, regardless of version.
+  const hasAnyScheduledPublish =
+    !!item?.scheduling?.ZUID &&
+    !!item?.scheduling?.publishAt &&
+    new Date(item?.scheduling?.publishAt).getTime() > Date.now();
+
+  const isAlreadyScheduledUnpublish = !!(
+    item?.meta?.version === item?.publishing?.version &&
+    item?.publishing?.unpublishAt &&
+    new Date(item?.publishing?.unpublishAt).getTime() > Date.now()
+  );
+
+  const unpublishScheduledLocalText = item?.publishing?.unpublishAt
+    ? formatInTimeZone(
+        item.publishing.unpublishAt,
+        tzGuess,
+        "MMM d, yyyy 'at' h:mm a"
+      )
+    : "";
+
+  const handleScheduleUnpublish = () => {
+    setIsLoading(true);
+
+    const publishAtUtcStr = formatInTimeZone(
+      selectedUtc,
+      "UTC",
+      "yyyy-MM-dd HH:mm:ss"
+    );
+    const localPretty = formatInTimeZone(
+      selectedUtc,
+      publishTimezone,
+      "MMMM do yyyy, 'at' h:mm a"
+    );
+
+    dispatch(
+      publish(
+        item?.meta?.contentModelZUID,
+        item?.meta?.ZUID,
+        {
+          publishAt: "now",
+          unpublishAt: publishAtUtcStr,
+          version: item?.meta?.version,
+        },
+        {
+          localTime: localPretty,
+          localTimezone: publishTimezone,
+        }
+      )
+      // @ts-expect-error untyped action
+    ).finally(() => {
+      onScheduleSuccess?.();
+      setIsLoading(false);
+      onClose();
+    });
+  };
+
+  const handleUnscheduleUnpublish = async () => {
     setIsLoading(true);
 
     try {
-      if (isForUnpublish && hasScheduleUnpublish) {
-        // The API has no dedicated "remove unpublishAt" endpoint. Re-publishing with
-        // unpublishAt: "never" clears the scheduled takedown while keeping the item live.
-        // However, when a scheduled future publish also exists, the API rejects creating
-        // a new publishing record with "already has a scheduled publish event." Delete
-        // the scheduled publish first to unblock the POST.
-        if (hasAnyScheduledPublish) {
-          await (dispatch as Function)(
-            unpublish(
-              item?.meta?.contentModelZUID,
-              item?.meta?.ZUID,
-              item?.scheduling?.ZUID,
-              { version: item?.scheduling?.version }
-            )
-          );
-        }
-
-        await (dispatch as Function)(
-          publish(
-            item?.meta?.contentModelZUID,
-            item?.meta?.ZUID,
-            {
-              publishAt: "now",
-              unpublishAt: "never",
-              version: item?.publishing?.version,
-            },
-            {
-              localTime: localPretty,
-              localTimezone: publishTimezone,
-            }
-          )
-        );
-      } else {
+      // The API has no dedicated "remove unpublishAt" endpoint. Re-publishing with
+      // unpublishAt: "never" clears the scheduled takedown while keeping the item live.
+      // However, when a scheduled future publish also exists, the API rejects creating
+      // a new publishing record with "already has a scheduled publish event." Delete
+      // the scheduled publish first to unblock the POST.
+      if (hasAnyScheduledPublish) {
         await (dispatch as Function)(
           unpublish(
             item?.meta?.contentModelZUID,
@@ -182,34 +219,191 @@ export const SchedulePublish = ({
           )
         );
       }
+
+      await (dispatch as Function)(
+        publish(
+          item?.meta?.contentModelZUID,
+          item?.meta?.ZUID,
+          {
+            publishAt: "now",
+            unpublishAt: "never",
+            version: item?.publishing?.version,
+          },
+          {
+            localTime: "",
+            localTimezone: publishTimezone,
+          }
+        )
+      );
+
       onUnscheduleSuccess?.();
+    } catch {
+      // Error notification is handled by the thunk; swallow here so the
+      // finally block always closes the dialog cleanly.
     } finally {
       setIsLoading(false);
       onClose();
     }
   };
 
-  const guessedTz = tzGuess;
+  // ── Shared timezone label ─────────────────────────────────────────────────
+  const tzLabel = TIMEZONES.find((tz) => tz.id === tzGuess)?.label || tzGuess;
 
-  const dateText = isForUnpublish
-    ? item?.publishing?.unpublishAt
-    : item?.scheduling?.publishAt;
+  // ── Render ────────────────────────────────────────────────────────────────
+  if (isForUnpublish) {
+    // New unpublish scheduling flow
+    return (
+      <Dialog
+        data-cy="SchedulePublishModal"
+        open
+        onClose={onClose}
+        PaperProps={{ sx: { maxWidth: 640, width: 640 } }}
+      >
+        <DialogTitle>
+          <Stack gap={1.5}>
+            <Box
+              sx={{
+                backgroundColor: "warning.light",
+                borderRadius: "100%",
+                width: 40,
+                height: 40,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              {isAlreadyScheduledUnpublish ? (
+                <CalendarTodayRoundedIcon color="warning" />
+              ) : (
+                <ScheduleRoundedIcon color="warning" />
+              )}
+            </Box>
+            <Box>
+              <Box mb={1}>
+                <Typography variant="h5" display="inline" fontWeight={700}>
+                  {isAlreadyScheduledUnpublish
+                    ? "Unschedule Unpublish:"
+                    : "Schedule Unpublish:"}
+                  &nbsp;
+                </Typography>
+                <Typography variant="h5" display="inline">
+                  {item?.web?.metaLinkText}
+                </Typography>
+              </Box>
 
-  const scheduledLocalText = dateText
-    ? formatInTimeZone(dateText, guessedTz, "MMM d, yyyy 'at' h:mm a")
-    : "";
+              <Typography variant="body2" color="text.secondary">
+                {isAlreadyScheduledUnpublish
+                  ? `v${item?.web?.version} is scheduled to unpublish on ${unpublishScheduledLocalText} in ${tzLabel}.`
+                  : `v${item?.web?.version} saved ${
+                      item?.web?.createdAt
+                        ? formatDistanceToNow(new Date(item.web.createdAt), {
+                            addSuffix: true,
+                          })
+                        : ""
+                    } by ${latestChangeCreator?.firstName ?? ""} ${
+                      latestChangeCreator?.lastName ?? ""
+                    }`}
+              </Typography>
+            </Box>
+          </Stack>
+        </DialogTitle>
 
-  const tzLabel =
-    TIMEZONES.find((tz) => tz.id === guessedTz)?.label || guessedTz;
+        <DialogContent data-cy="PublishScheduleModal">
+          {isAlreadyScheduledUnpublish ? (
+            <>
+              <Alert severity="info" icon={<InfoRoundedIcon />}>
+                This will enable the ability to schedule or publish other
+                versions of this content item
+              </Alert>
+              {hasAnyScheduledPublish && (
+                <Alert
+                  severity="warning"
+                  icon={<WarningRoundedIcon fontSize="inherit" />}
+                  sx={{ mt: 1.5 }}
+                >
+                  {`This will also cancel the scheduled publish for v${item?.scheduling?.version}.`}
+                </Alert>
+              )}
+            </>
+          ) : (
+            <>
+              <Typography variant="subtitle2" fontWeight={600} mb={0.5}>
+                Unpublish on
+              </Typography>
+              <FieldTypeDateTime
+                disablePast
+                showTimezonePicker
+                showClearButton={false}
+                name="publishDateTime"
+                value={publishDateTime}
+                selectedTimezone={publishTimezone}
+                onChange={(datetime: any) => {
+                  const normalized = String(datetime).replace(/\.\d+$/, "");
+                  setPublishDateTime(normalized);
+                }}
+                onTimezoneChange={(timezone: any) =>
+                  setPublishTimezone(timezone)
+                }
+              />
+              {isSelectedDatetimePast && (
+                <Alert
+                  severity="warning"
+                  icon={<WarningRoundedIcon fontSize="inherit" />}
+                  sx={{ mt: 2.5 }}
+                >
+                  Since the selected time is a current or past date, this will
+                  be immediately unpublished.
+                </Alert>
+              )}
+            </>
+          )}
+        </DialogContent>
 
-  const publishHeader = hasSchedulePublish
-    ? "Unschedule Publish:"
-    : "Schedule Publish:";
+        <DialogActions>
+          <Button
+            data-cy="CancelSchedulePublishButton"
+            variant="text"
+            color="inherit"
+            onClick={onClose}
+            disabled={isLoading}
+          >
+            Cancel
+          </Button>
 
-  const unpublishHeader = hasScheduleUnpublish
-    ? "Unschedule Unpublish:"
-    : "Schedule Unpublish:";
+          {isAlreadyScheduledUnpublish ? (
+            <Button
+              data-cy="UnschedulePublishButton"
+              variant="contained"
+              color="warning"
+              startIcon={<CalendarTodayRoundedIcon />}
+              onClick={handleUnscheduleUnpublish}
+              loading={isLoading}
+            >
+              Cancel Scheduled Unpublish
+            </Button>
+          ) : (
+            <Button
+              data-cy="SchedulePublishButton"
+              variant="contained"
+              startIcon={<ScheduleRoundedIcon />}
+              onClick={() => {
+                if (isSelectedDatetimePast) {
+                  onUnpublishNow?.();
+                } else {
+                  handleScheduleUnpublish();
+                }
+              }}
+              loading={isLoading}
+            >
+              Schedule Unpublish
+            </Button>
+          )}
+        </DialogActions>
+      </Dialog>
+    );
+  }
 
+  // Original publish scheduling flow (unchanged from pre-PR behaviour)
   return (
     <Dialog
       data-cy="SchedulePublishModal"
@@ -230,7 +424,7 @@ export const SchedulePublish = ({
               alignItems: "center",
             }}
           >
-            {hasExistingSchedule ? (
+            {isAlreadyScheduledPublish ? (
               <CalendarTodayRoundedIcon color="warning" />
             ) : (
               <ScheduleRoundedIcon color="warning" />
@@ -239,7 +433,9 @@ export const SchedulePublish = ({
           <Box>
             <Box mb={1}>
               <Typography variant="h5" display="inline" fontWeight={700}>
-                {isForUnpublish ? unpublishHeader : publishHeader}
+                {isAlreadyScheduledPublish
+                  ? "Unschedule Publish:"
+                  : "Schedule Publish:"}
                 &nbsp;
               </Typography>
               <Typography variant="h5" display="inline">
@@ -248,10 +444,8 @@ export const SchedulePublish = ({
             </Box>
 
             <Typography variant="body2" color="text.secondary">
-              {hasExistingSchedule
-                ? `v${item?.web?.version} is scheduled to ${
-                    isForUnpublish ? "unpublish" : "publish"
-                  } on ${scheduledLocalText} in ${tzLabel}.`
+              {isAlreadyScheduledPublish
+                ? `v${item?.web?.version} is scheduled to publish on ${publishScheduledLocalText} in ${tzLabel}.`
                 : `v${item?.web?.version} saved ${
                     item?.web?.createdAt
                       ? formatDistanceToNow(new Date(item.web.createdAt), {
@@ -267,7 +461,7 @@ export const SchedulePublish = ({
       </DialogTitle>
 
       <DialogContent data-cy="PublishScheduleModal">
-        {hasExistingSchedule ? (
+        {isAlreadyScheduledPublish ? (
           <Alert severity="info" icon={<InfoRoundedIcon />}>
             This will enable the ability to schedule or publish other versions
             of this content item
@@ -275,7 +469,7 @@ export const SchedulePublish = ({
         ) : (
           <>
             <Typography variant="subtitle2" fontWeight={600} mb={0.5}>
-              {`${isForUnpublish ? "Unpublish" : "Publish"} on`}
+              Publish on
             </Typography>
             <FieldTypeDateTime
               disablePast
@@ -296,9 +490,8 @@ export const SchedulePublish = ({
                 icon={<WarningRoundedIcon fontSize="inherit" />}
                 sx={{ mt: 2.5 }}
               >
-                {`Since the selected time is a current or past date, this will be immediately ${
-                  isForUnpublish ? "unpublished" : "published"
-                }.`}
+                Since the selected time is a current or past date, this will be
+                immediately published.
               </Alert>
             )}
           </>
@@ -316,7 +509,7 @@ export const SchedulePublish = ({
           Cancel
         </Button>
 
-        {hasExistingSchedule ? (
+        {isAlreadyScheduledPublish ? (
           <Button
             data-cy="UnschedulePublishButton"
             variant="contained"
@@ -325,9 +518,7 @@ export const SchedulePublish = ({
             onClick={handleUnschedulePublish}
             loading={isLoading}
           >
-            {isForUnpublish && hasScheduleUnpublish
-              ? "Cancel Scheduled Unpublish"
-              : "Unschedule Publish"}
+            Unschedule Publish
           </Button>
         ) : (
           <Button
@@ -336,18 +527,14 @@ export const SchedulePublish = ({
             startIcon={<ScheduleRoundedIcon />}
             onClick={() => {
               if (isSelectedDatetimePast) {
-                if (isForUnpublish) {
-                  onUnpublishNow?.();
-                } else {
-                  onPublishNow();
-                }
+                onPublishNow();
               } else {
                 handleSchedulePublish();
               }
             }}
             loading={isLoading}
           >
-            {`Schedule ${isForUnpublish ? "Unpublish" : "Publish"}`}
+            Schedule Publish
           </Button>
         )}
       </DialogActions>
