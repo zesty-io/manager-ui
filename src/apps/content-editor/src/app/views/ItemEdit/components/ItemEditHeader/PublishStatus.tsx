@@ -123,7 +123,13 @@ export const PublishStatus = ({ currentVersion }: PublishStatusProps) => {
           >
             <Stack direction="row" gap={1} alignItems="center">
               <ScheduleRounded fontSize="small" color="warning" />
-              <Typography variant="body2" color="warning.main">
+              <Typography
+                variant="body2"
+                color="warning.main"
+                fontWeight={500}
+                lineHeight="24px"
+                letterSpacing="0.46px"
+              >
                 {`v${scheduledUnpublishing?.version} Scheduled Unpublish`}
               </Typography>
             </Stack>

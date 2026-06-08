@@ -901,15 +901,15 @@ export function publish(modelZUID, itemZUID, data, meta = {}) {
         return dispatch(fetchItemPublishing(modelZUID, itemZUID));
       })
       .catch((err) => {
-        const message = data.publishAt
-          ? `Error scheduling ${title}`
-          : `Error publishing ${title}`;
-        dispatch(
-          notify({
-            message,
-            kind: "error",
-          })
-        );
+        let message;
+        if (data.publishAt === "now" && data?.unpublishAt === "never") {
+          message = `Error cancelling scheduled unpublish for ${title}`;
+        } else if (data.publishAt !== "now" && !!data.publishAt) {
+          message = `Error scheduling ${title}`;
+        } else {
+          message = `Error publishing ${title}`;
+        }
+        dispatch(notify({ message, kind: "error" }));
         throw err;
       });
   };

@@ -84,8 +84,7 @@ export const SchedulePublish = ({
   // Broader check used only for conflict resolution: any active future-scheduled
   // publish blocks the API from accepting a new POST to /publishings, regardless
   // of which version is involved.
-  const hasAnyScheduledPublish =
-    !!item?.scheduling?.ZUID && !!item?.scheduling?.isScheduled;
+  const hasAnyScheduledPublish = !!item?.scheduling?.ZUID;
 
   const hasScheduleUnpublish =
     item?.meta?.version === item?.publishing?.version &&
@@ -183,10 +182,10 @@ export const SchedulePublish = ({
           )
         );
       }
+      onUnscheduleSuccess?.();
     } finally {
       setIsLoading(false);
       onClose();
-      onUnscheduleSuccess?.();
     }
   };
 

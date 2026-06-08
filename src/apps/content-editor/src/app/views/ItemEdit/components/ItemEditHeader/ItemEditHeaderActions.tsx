@@ -139,9 +139,6 @@ export const ItemEditHeaderActions = ({
   const [createPublishing] = useCreateItemPublishingMutation();
   const [deleteItemPublishing, { isLoading: unpublishing }] =
     useDeleteItemPublishingMutation();
-  const lastItemUpdateAudit = itemAudit?.find(
-    (audit) => audit.action === 2 || audit.action === 1
-  );
   const { data: itemPublishings, isFetching } = useGetItemPublishingsQuery({
     modelZUID: resolvedModelZUID,
     itemZUID: resolvedItemZUID,
@@ -184,20 +181,6 @@ export const ItemEditHeaderActions = ({
     const user = users?.find((user: any) => user.ZUID === userZUID);
     return `${user?.firstName || ""} ${user?.lastName || ""}`.trim();
   };
-
-  const publishedByUser = users?.find(
-    (user: any) => user.ZUID === activePublishing?.publishedByUserZUID
-  );
-  const publisherFullName = `${publishedByUser?.firstName || ""} ${
-    publishedByUser?.lastName || ""
-  }`.trim();
-
-  const scheduledByUser = users?.find(
-    (user: any) => user.ZUID === item?.scheduling?.publishedByUserZUID
-  );
-  const scheduledByFullName = `${scheduledByUser?.firstName || ""} ${
-    scheduledByUser?.lastName || ""
-  }`.trim();
 
   useEffect(() => {
     // Automatically opens the create redirect modal
@@ -583,124 +566,119 @@ export const ItemEditHeaderActions = ({
         )}
       </Tooltip>
       {itemState !== ITEM_STATES.scheduled && canPublish && (
-        <Box position="relative">
-          <Tooltip
-            enterDelay={1000}
-            enterNextDelay={1000}
-            title={
-              itemState === ITEM_STATES.draft ||
-              itemState === ITEM_STATES.dirty ? (
-                <div>
-                  {publishButtonTooltipLabel} <br />
-                  {publishShortcut}
-                </div>
-              ) : (
-                <div>
-                  v{activePublishing?.version} published{" "}
-                  {datePreposition(activePublishing?.publishAt)}
-                  <br />
-                  {!!activePublishing &&
-                    formatDate(activePublishing?.publishAt)}
-                  <br />
-                  by{" "}
-                  {getUserFullName(activePublishing?.publishedByUserZUID || "")}
-                </div>
-              )
-            }
-            placement="bottom-start"
-          >
-            {itemState === ITEM_STATES.draft ||
-            itemState === ITEM_STATES.dirty ||
-            publishAfterSave ||
-            isFetching ||
-            saving ? (
-              <ButtonGroup
-                variant="contained"
-                color="success"
-                size="small"
+        <Tooltip
+          enterDelay={1000}
+          enterNextDelay={1000}
+          title={
+            itemState === ITEM_STATES.draft ||
+            itemState === ITEM_STATES.dirty ? (
+              <div>
+                {publishButtonTooltipLabel} <br />
+                {publishShortcut}
+              </div>
+            ) : (
+              <div>
+                v{activePublishing?.version} published{" "}
+                {datePreposition(activePublishing?.publishAt)}
+                <br />
+                {!!activePublishing && formatDate(activePublishing?.publishAt)}
+                <br />
+                by{" "}
+                {getUserFullName(activePublishing?.publishedByUserZUID || "")}
+              </div>
+            )
+          }
+          placement="bottom-start"
+        >
+          {itemState === ITEM_STATES.draft ||
+          itemState === ITEM_STATES.dirty ||
+          publishAfterSave ||
+          isFetching ||
+          saving ? (
+            <ButtonGroup
+              variant="contained"
+              color="success"
+              size="small"
+              sx={{
+                "& .MuiButtonGroup-grouped:not(:last-of-type)": {
+                  borderColor: "green.600",
+                },
+              }}
+            >
+              <Button
+                startIcon={<CloudUploadRounded />}
                 sx={{
-                  "& .MuiButtonGroup-grouped:not(:last-of-type)": {
-                    borderColor: "green.600",
-                  },
+                  color: "common.white",
+                  whiteSpace: "nowrap",
+                }}
+                onClick={() => {
+                  if (itemState === ITEM_STATES.dirty) {
+                    setPublishAfterSave(true);
+                    onSave();
+                  } else {
+                    setIsConfirmPublishModalOpen(true);
+                  }
+                }}
+                loading={isPublishing || saving || isFetching}
+                color="success"
+                variant="contained"
+                id="PublishButton"
+                data-cy="PublishButton"
+              >
+                {itemState === ITEM_STATES.dirty ? "Save & Publish" : "Publish"}
+              </Button>
+              <Button
+                sx={{
+                  color: "common.white",
+                  width: 32,
+                  // Override MUI default minWidth of 40px one-off
+                  minWidth: "unset !important",
+                }}
+                onClick={(e) => {
+                  setPublishMenu(e.currentTarget);
+                }}
+                disabled={isPublishing || saving || isFetching}
+                data-cy="PublishMenuButton"
+              >
+                <ArrowDropDownRounded fontSize="small" />
+              </Button>
+            </ButtonGroup>
+          ) : (
+            <Box
+              data-cy="ContentPublishedIndicator"
+              display="flex"
+              alignItems="center"
+              pl="10px"
+              pr="4px"
+            >
+              <Box display="flex" gap={1} alignItems="center">
+                <CheckCircleRounded fontSize="small" color="success" />
+                <Typography
+                  data-cy={
+                    hasScheduledUnpublish
+                      ? "ScheduledUnpublishIndicator"
+                      : undefined
+                  }
+                  variant="body2"
+                  color="success.main"
+                  fontWeight={500}
+                  letterSpacing="0.46px"
+                >
+                  Published
+                </Typography>
+              </Box>
+              <IconButton
+                data-cy="PublishMenuButton"
+                size="small"
+                onClick={(e) => {
+                  setPublishMenu(e.currentTarget);
                 }}
               >
-                <Button
-                  startIcon={<CloudUploadRounded />}
-                  sx={{
-                    color: "common.white",
-                    whiteSpace: "nowrap",
-                  }}
-                  onClick={() => {
-                    if (itemState === ITEM_STATES.dirty) {
-                      setPublishAfterSave(true);
-                      onSave();
-                    } else {
-                      setIsConfirmPublishModalOpen(true);
-                    }
-                  }}
-                  loading={isPublishing || saving || isFetching}
-                  color="success"
-                  variant="contained"
-                  id="PublishButton"
-                  data-cy="PublishButton"
-                >
-                  {itemState === ITEM_STATES.dirty
-                    ? "Save & Publish"
-                    : "Publish"}
-                </Button>
-                <Button
-                  sx={{
-                    color: "common.white",
-                    width: 32,
-                    // Override MUI default minWidth of 40px one-off
-                    minWidth: "unset !important",
-                  }}
-                  onClick={(e) => {
-                    setPublishMenu(e.currentTarget);
-                  }}
-                  disabled={isPublishing || saving || isFetching}
-                  data-cy="PublishMenuButton"
-                >
-                  <ArrowDropDownRounded fontSize="small" />
-                </Button>
-              </ButtonGroup>
-            ) : (
-              <Box
-                data-cy="ContentPublishedIndicator"
-                display="flex"
-                alignItems="center"
-                pl="10px"
-                pr="4px"
-              >
-                <Box display="flex" gap={1} alignItems="center">
-                  <CheckCircleRounded fontSize="small" color="success" />
-                  <Typography
-                    data-cy={
-                      hasScheduledUnpublish
-                        ? "ScheduledUnpublishIndicator"
-                        : undefined
-                    }
-                    variant="body2"
-                    color="success.main"
-                    fontWeight={500}
-                    letterSpacing="0.46px"
-                  >
-                    Published
-                  </Typography>
-                </Box>
-                <IconButton
-                  data-cy="PublishMenuButton"
-                  size="small"
-                  onClick={(e) => {
-                    setPublishMenu(e.currentTarget);
-                  }}
-                >
-                  <ArrowDropDownRounded fontSize="small" />
-                </IconButton>
-              </Box>
-            )}
-          </Tooltip>
-        </Box>
+                <ArrowDropDownRounded fontSize="small" />
+              </IconButton>
+            </Box>
+          )}
+        </Tooltip>
       )}
       {itemState === ITEM_STATES.scheduled && canPublish && (
         <Tooltip
@@ -942,7 +920,6 @@ const MENU_ACTION_LABELS: Record<string, string> = {
 const SCHEDULE_ACTION_LABELS: Record<string, string> = {
   [ITEM_STATES.dirty]: "Save & Schedule Publish",
   [ITEM_STATES.scheduled]: "Unschedule Publish",
-  [ITEM_STATES.published]: "Schedule Unpublish",
   [ITEM_STATES.draft]: "Schedule Publish",
 };
 
