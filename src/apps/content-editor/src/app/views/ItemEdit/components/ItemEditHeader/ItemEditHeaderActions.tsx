@@ -161,6 +161,10 @@ export const ItemEditHeaderActions = ({
     (itemPublishing) => itemPublishing._active
   );
 
+  const hasScheduledPublish =
+    !!item?.scheduling?.isScheduled &&
+    new Date(item?.scheduling?.publishAt).getTime() > Date.now();
+
   const hasScheduledUnpublish =
     item?.publishing?.version === item?.meta?.version &&
     !!item?.publishing?.unpublishAt &&
@@ -172,6 +176,14 @@ export const ItemEditHeaderActions = ({
       { itemZUID: resolvedItemZUID, modelZUID: resolvedModelZUID },
       { skip: !resolvedItemZUID || !resolvedModelZUID }
     );
+
+  const getUserFullName = (userZUID: string) => {
+    if (!userZUID) {
+      return "";
+    }
+    const user = users?.find((user: any) => user.ZUID === userZUID);
+    return `${user?.firstName || ""} ${user?.lastName || ""}`.trim();
+  };
 
   const publishedByUser = users?.find(
     (user: any) => user.ZUID === activePublishing?.publishedByUserZUID
@@ -336,11 +348,14 @@ export const ItemEditHeaderActions = ({
     if (item?.dirty) {
       return ITEM_STATES.dirty;
     } else if (
-      item?.scheduling?.version === item?.meta.version &&
-      item?.scheduling?.isScheduled
+      item?.scheduling?.isScheduled &&
+      item?.scheduling?.version === item?.meta.version
     ) {
       return ITEM_STATES.scheduled;
-    } else if (activePublishing?.version === item?.meta.version) {
+    } else if (
+      item?.publishing?.isPublished &&
+      item?.publishing?.version === item?.meta.version
+    ) {
       return ITEM_STATES.published;
     } else {
       return ITEM_STATES.draft;
@@ -385,7 +400,7 @@ export const ItemEditHeaderActions = ({
         // Delete scheduled publishings first
         const deleteScheduledPromises = [
           // Delete main item's scheduled publishing if it exists
-          itemState === ITEM_STATES.scheduled &&
+          hasScheduledPublish &&
             deleteItemPublishing({
               modelZUID: resolvedModelZUID,
               itemZUID: resolvedItemZUID,
@@ -537,15 +552,7 @@ export const ItemEditHeaderActions = ({
             <div>
               v{item?.meta?.version} saved on <br />
               {formatDate(item?.meta?.updatedAt)} <br />
-              by{" "}
-              {lastItemUpdateAudit?.firstName ||
-                users?.find(
-                  (user) => user.ZUID === item?.meta?.createdByUserZUID
-                )?.firstName}{" "}
-              {lastItemUpdateAudit?.lastName ||
-                users?.find(
-                  (user) => user.ZUID === item?.meta?.createdByUserZUID
-                )?.lastName}
+              by {getUserFullName(item?.meta.createdByUserZUID || "")}
             </div>
           )
         }
@@ -592,8 +599,11 @@ export const ItemEditHeaderActions = ({
                   v{activePublishing?.version} published{" "}
                   {datePreposition(activePublishing?.publishAt)}
                   <br />
-                  {formatDate(activePublishing?.publishAt)} <br />
-                  by {publisherFullName}
+                  {!!activePublishing &&
+                    formatDate(activePublishing?.publishAt)}
+                  <br />
+                  by{" "}
+                  {getUserFullName(activePublishing?.publishedByUserZUID || "")}
                 </div>
               )
             }
@@ -675,9 +685,7 @@ export const ItemEditHeaderActions = ({
                     fontWeight={500}
                     letterSpacing="0.46px"
                   >
-                    {hasScheduledUnpublish
-                      ? "Published w/ Unpublish Scheduled"
-                      : "Published"}
+                    Published
                   </Typography>
                 </Box>
                 <IconButton
@@ -702,7 +710,7 @@ export const ItemEditHeaderActions = ({
             <div>
               v{item?.scheduling?.version} published on <br />
               {formatDate(item?.scheduling?.publishAt)} <br />
-              by {scheduledByFullName}
+              by {getUserFullName(item?.scheduling?.publishedByUserZUID || "")}
             </div>
           }
           placement="bottom-start"

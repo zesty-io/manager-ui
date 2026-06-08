@@ -81,6 +81,12 @@ export const SchedulePublish = ({
     item?.meta?.version === item?.scheduling?.version &&
     item?.scheduling?.isScheduled;
 
+  // Broader check used only for conflict resolution: any active future-scheduled
+  // publish blocks the API from accepting a new POST to /publishings, regardless
+  // of which version is involved.
+  const hasAnyScheduledPublish =
+    !!item?.scheduling?.ZUID && !!item?.scheduling?.isScheduled;
+
   const hasScheduleUnpublish =
     item?.meta?.version === item?.publishing?.version &&
     item?.publishing?.unpublishAt &&
@@ -131,44 +137,57 @@ export const SchedulePublish = ({
     });
   };
 
-  const handleUnschedulePublish = () => {
+  const handleUnschedulePublish = async () => {
     setIsLoading(true);
 
-    let actionDispatch = null;
-
-    if (isForUnpublish) {
-      // The API has no dedicated "remove unpublishAt" endpoint. Re-publishing with
-      // unpublishAt: "never" overwrites the existing publishing record in place,
-      // clearing the scheduled takedown while keeping the item live.
-      actionDispatch = publish(
-        item?.meta?.contentModelZUID,
-        item?.meta?.ZUID,
-        {
-          publishAt: "now",
-          unpublishAt: "never",
-          version: item?.publishing?.version,
-        },
-        {
-          localTime: localPretty,
-          localTimezone: publishTimezone,
+    try {
+      if (isForUnpublish && hasScheduleUnpublish) {
+        // The API has no dedicated "remove unpublishAt" endpoint. Re-publishing with
+        // unpublishAt: "never" clears the scheduled takedown while keeping the item live.
+        // However, when a scheduled future publish also exists, the API rejects creating
+        // a new publishing record with "already has a scheduled publish event." Delete
+        // the scheduled publish first to unblock the POST.
+        if (hasAnyScheduledPublish) {
+          await (dispatch as Function)(
+            unpublish(
+              item?.meta?.contentModelZUID,
+              item?.meta?.ZUID,
+              item?.scheduling?.ZUID,
+              { version: item?.scheduling?.version }
+            )
+          );
         }
-      );
-    } else {
-      actionDispatch = unpublish(
-        item?.meta?.contentModelZUID,
-        item?.meta?.ZUID,
-        item?.scheduling?.ZUID,
-        { version: item?.scheduling?.version }
-      );
-    }
-    dispatch(
-      actionDispatch
-      // @ts-expect-error untyped action
-    ).finally(() => {
+
+        await (dispatch as Function)(
+          publish(
+            item?.meta?.contentModelZUID,
+            item?.meta?.ZUID,
+            {
+              publishAt: "now",
+              unpublishAt: "never",
+              version: item?.publishing?.version,
+            },
+            {
+              localTime: localPretty,
+              localTimezone: publishTimezone,
+            }
+          )
+        );
+      } else {
+        await (dispatch as Function)(
+          unpublish(
+            item?.meta?.contentModelZUID,
+            item?.meta?.ZUID,
+            item?.scheduling?.ZUID,
+            { version: item?.scheduling?.version }
+          )
+        );
+      }
+    } finally {
       setIsLoading(false);
       onClose();
       onUnscheduleSuccess?.();
-    });
+    }
   };
 
   const guessedTz = tzGuess;
