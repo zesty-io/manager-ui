@@ -8,6 +8,7 @@ import Box from "@mui/material/Box";
 import { memo } from "react";
 
 import { DomainSwitcher } from "./DomainSwitcher";
+import { LocaleSwitcher } from "./LocaleSwitcher";
 import { IconButton } from "@mui/material";
 import { useSelector } from "react-redux";
 import { AppState } from "../../store/types";
@@ -45,7 +46,8 @@ export const GlobalTopbar = memo(({ onShowAiDrawerToggle }: Props) => {
       >
         <GlobalTabs />
       </Box>
-      <Stack direction="row" flexBasis={72} alignItems="baseline" gap={1}>
+      <Stack direction="row" alignItems="center" gap={1} pr={1}>
+        <LocaleSwitcher />
         <IconButton
           onClick={() => {
             onShowAiDrawerToggle();
