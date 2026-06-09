@@ -31,6 +31,7 @@ Spec: https://docs.google.com/document/d/1l5RdyDxQLTwXdz80Gk1_y8GdVv_KoQG5VfSmdv
   - Fallback language: `en-US`
   - Default / initial namespace: `common`; also loads `shell` at init
   - `useSuspense: true`
+  - `nsSeparator: "."` and `keySeparator: false` — enables `t("namespace.key")` qualified-key syntax
   - Cache busting via `defaultVersion` tied to the build's git hash (injected via webpack `DefinePlugin` as `__GIT_HASH__`)
   - LocalStorage cache TTL: `i18next-localstorage-backend` default (7 days)
   - HTTP load path: `/locales/{{lng}}/{{ns}}.json`
@@ -80,11 +81,19 @@ Spec: https://docs.google.com/document/d/1l5RdyDxQLTwXdz80Gk1_y8GdVv_KoQG5VfSmdv
 
 ## Phase 3 — Common & Shell Namespaces
 
+### Key naming convention
+
+**Always qualify keys with their namespace prefix** — `t("common.save")`, `t("shell.expandSidebar")`, `t("content.publishItem")`. Never use bare `t("save")` even when the default namespace would resolve it. This makes the source namespace unambiguous at a glance.
+
+All components use `useTranslation()` (no namespace argument). The namespace is expressed in the key string itself. `nsSeparator: "."` and `keySeparator: false` are set in both the runtime config (`src/shell/i18n.ts`) and the parser config (`i18next-parser.config.js`) to support this syntax.
+
 ### `common`
 
 Simple, universal words and short phrases reused across the entire app. If a string is a single generic word or short action label, it belongs here.
 
 Examples: `Save`, `Cancel`, `Edit`, `Delete`, `Confirm`, `Close`, `Back`, `Next`, `Search`, `Loading`, `Error`, `Success`
+
+**Cross-namespace rule:** If the same word or phrase ends up in two or more namespace files (e.g. both `shell.json` and `content.json` define `"comment": "Comment"`), that is a signal it belongs in `common` instead. Consolidate it there and update all call sites to `t("common.key")`.
 
 - [x] Identify and list all common words/phrases used across sub-apps
 - [x] Populate `public/locales/en-US/common.json`
@@ -96,12 +105,48 @@ Examples: `Save`, `Cancel`, `Edit`, `Delete`, `Confirm`, `Close`, `Back`, `Next`
 
 Strings specific to the app shell — sidebar, topbar, global search, notifications, AI drawer, loading screen, and other chrome-level UI. These are not sub-app strings but are too specific to belong in `common`.
 
-- [ ] Audit `src/shell/components/` and `src/shell/views/` for hardcoded strings
+- [x] Audit `src/shell/components/` and `src/shell/views/` for hardcoded strings — including **functions that return strings** (helpers, getters, conditional label functions), **module-level object maps/arrays** whose string values are rendered as UI copy (`t()` can't be called at module level — move the lookup inside the component), and **strings passed as props** (translate at the call site, not inside the receiving component). Skip strings that originate from the database.
 - [x] Create `public/locales/{locale}/shell.json` for all 6 locales (empty placeholders)
 - [ ] Populate `public/locales/en-US/shell.json`
 - [ ] Replace hardcoded strings with `t("key")` using `useTranslation("shell")`
 - [ ] Run `i18next-parser` to validate no keys are missing
 - [ ] Translate `shell.json` into all 5 non-English locales
+
+#### Tier 1 — Low effort, low risk (static strings, small components)
+
+| File                                                          | Strings | Status |
+| ------------------------------------------------------------- | ------- | ------ |
+| `components/ResizeableContainer.tsx`                          | 2       | [ ]    |
+| `components/InvalidUrl.tsx`                                   | 4       | [ ]    |
+| `components/Filters/UserFilter.tsx`                           | 3       | [ ]    |
+| `components/global-tabs/GlobalDirtyCodeModal.tsx`             | 2       | [ ]    |
+| `components/Comment/ConfirmDeleteModal.tsx`                   | 3       | [ ]    |
+| `components/global-sidebar/.../InstanceMenu/DropdownMenu.tsx` | 12      | [ ]    |
+| `components/Comment/index.tsx`                                | 2       | [ ]    |
+| `components/Favicon/index.tsx`                                | 1       | [ ]    |
+| `components/GlobalDomainsMenu/index.tsx`                      | 5       | [ ]    |
+
+#### Tier 2 — Medium effort, medium risk (some dynamic interpolation)
+
+| File                                                                   | Strings | Risk driver                                                       | Status |
+| ---------------------------------------------------------------------- | ------- | ----------------------------------------------------------------- | ------ |
+| `components/AccessDenied.tsx`                                          | 5       | `{userRole?.name}` and `{appRoute}` interpolation                 | [ ]    |
+| `components/InviteMembersModal/index.tsx`                              | 8       | Already uses `useTranslation` inconsistently — needs cleanup pass | [ ]    |
+| `components/Filters/DateFilter/DateFilter.tsx`                         | 15      | Date-formatted strings (`On ${fmt(...)}`)                         | [ ]    |
+| `components/global-tabs/Dropdown.tsx`                                  | 5       | `${count} Results` plural                                         | [ ]    |
+| `components/global-sidebar/.../InstanceMenu/Flyouts/InstancesList.tsx` | 6       | "No results" message with dynamic query string                    | [ ]    |
+| `components/ConfirmPublishModal.tsx`                                   | 5       | Conditional button label + count                                  | [ ]    |
+| `components/load-instance/NoInstancePermission.tsx`                    | 6       | `{user?.email}` embedded in sentence                              | [ ]    |
+
+#### Tier 3 — High effort, high risk (complex interpolation, large files, critical paths)
+
+| File                                         | Strings | Risk driver                                                                  | Status |
+| -------------------------------------------- | ------- | ---------------------------------------------------------------------------- | ------ |
+| `components/GlobalSearch/index.tsx`          | 10+     | 866 lines, complex conditional text, multiple UI states                      | [ ]    |
+| `components/GlobalSearch/AdvancedSearch.tsx` | 10+     | 634 lines, dynamic date range labels in filter chips                         | [ ]    |
+| `components/Comment/CommentItem.tsx`         | 6       | HTML injection with regex URL replacement inside strings                     | [ ]    |
+| `components/withAi/AIGenerator.tsx`          | 15+     | 890 lines, conditional headings, tone options with descriptions              | [ ]    |
+| `views/Shell/AIDrawer.tsx`                   | 10+     | 780 lines — some "strings" are AI prompt templates; decide what to translate | [ ]    |
 
 ---
 
@@ -144,12 +189,15 @@ For each sub-app:
 Per-namespace checklist (repeat for each):
 
 1. Audit sub-app source for hardcoded user-facing strings
-2. Replace strings with `t("key")` using `useTranslation("namespace")`
-3. Use `defaultValue` temporarily during migration so i18next-parser can auto-populate the English locale file
-4. Run `i18next-parser` to generate / update `public/locales/en-US/<namespace>.json`
-5. Remove `defaultValue` from `t()` calls once locale file is confirmed correct
-6. Translate into all 5 non-English locales
-7. Handle string interpolation (`{{variable}}`) and pluralization (`_one` / `_other` key suffixes) where needed
+   - Check JSX text nodes and string props (`label`, `placeholder`, `title`, `aria-label`, etc.)
+   - **Also check functions that return strings** — helpers like `getLabel()`, `getPrimaryButtonText()`, `getErrorMessage()`, `renderTitle()` and similar are a common source of untranslated strings. Translate these the same way. Skip strings that come from the database (API responses, user-entered content, model labels, field names) — those are data, not UI copy.
+   - **Also check module-level object maps and arrays** — constants like `const CHIP_TITLE = { live: "Prod", dev: "Stage" }` defined outside a component are unreachable by `t()`. Move the lookup inside the component (ternary or function that receives `t`) and delete the constant. Verify the constant isn't imported/used elsewhere before removing it.
+   - **Also check strings passed as props** — if a hardcoded string is passed as a prop (e.g. `<Dialog title="Delete Item" />`), it must be translated at the call site, not inside the receiving component. The component receiving the prop is not responsible for translation — the parent passing it is.
+2. Replace strings with `t("namespace.key", { defaultValue: "..." })` using `useTranslation()` (no namespace arg — namespace is always in the key)
+3. Run `i18next-parser` to generate / update `public/locales/en-US/<namespace>.json`
+4. Remove `defaultValue` from `t()` calls once locale file is confirmed correct
+5. Translate into all 5 non-English locales
+6. Handle string interpolation (`{{variable}}`) and pluralization (`_one` / `_other` key suffixes) where needed
 
 ---
 

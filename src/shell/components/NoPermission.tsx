@@ -107,7 +107,7 @@ export const NoPermission = ({
       </DialogContent>
       <DialogActions>
         <Button color="primary" variant="contained" onClick={onClose}>
-          {t("done")}
+          {t("common.done")}
         </Button>
       </DialogActions>
     </Dialog>

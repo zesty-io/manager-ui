@@ -271,7 +271,7 @@ export const DifferActions = memo(function DifferActions(
                   history.push(`/code/file/${props.fileType}/${props.fileZUID}`)
                 }
               >
-                {t("cancel")}
+                {t("common.cancel")}
               </Button>
             </>
           ) : (

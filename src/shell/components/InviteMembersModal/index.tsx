@@ -366,7 +366,7 @@ const InviteMembersModal = ({ onClose }: Props) => {
         </DialogContent>
         <DialogActions>
           <Button color="inherit" onClick={() => onClose()}>
-            {t("cancel")}
+            {t("common.cancel")}
           </Button>
           <Button
             variant="contained"

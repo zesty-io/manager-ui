@@ -93,7 +93,7 @@ export const DeleteDialog = memo(function DeleteDialog(
       </DialogTitle>
       <DialogActions>
         <Button variant="text" color="inherit" onClick={onClose}>
-          {t("cancel")}
+          {t("common.cancel")}
         </Button>
         <Button
           data-cy="DeleteContentItemConfirmButton"
@@ -102,7 +102,7 @@ export const DeleteDialog = memo(function DeleteDialog(
           onClick={handleDeleteFile}
           loading={deleting}
         >
-          {t("delete")}
+          {t("common.delete")}
         </Button>
       </DialogActions>
     </Dialog>

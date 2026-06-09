@@ -111,7 +111,7 @@ export const ItemList = () => {
   const { stagedChanges } = useStagedChanges();
   const [selectedItems] = useSelectedItems();
   const searchRef = useRef<HTMLInputElement>(null);
-  const search = params.get("search");
+  const search = params.get("common.search");
   // const sort = params.get("sort");
   const statusFilter = params.get("statusFilter");
   const dateFilter = useMemo(() => {

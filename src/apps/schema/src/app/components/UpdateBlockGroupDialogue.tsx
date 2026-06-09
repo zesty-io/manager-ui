@@ -125,14 +125,14 @@ export const UpdateBlockGroupDialogue = ({
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="inherit">
-          {t("cancel")}
+          {t("common.cancel")}
         </Button>
         <Button
           onClick={handleSave}
           loading={isCreatingGroup}
           variant="contained"
         >
-          {t("save")}
+          {t("common.save")}
         </Button>
       </DialogActions>
     </Dialog>

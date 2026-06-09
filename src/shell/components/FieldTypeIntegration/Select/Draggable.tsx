@@ -217,7 +217,7 @@ const MoreOptions: React.FC<MoreOptionsProps> = ({
         >
           <ClearIcon color="action" sx={{ mr: 1 }} />
           <Typography variant="body1" color="text.primary">
-            {t("remove")}
+            {t("common.remove")}
           </Typography>
         </MenuItem>
       </Menu>

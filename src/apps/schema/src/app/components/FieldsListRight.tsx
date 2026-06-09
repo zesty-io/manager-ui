@@ -235,7 +235,7 @@ export const FieldsListRight = ({ model }: Props) => {
             onClick={() => handleSave("parentZUID")}
             sx={{ mt: 1.5 }}
           >
-            {t("save")}
+            {t("common.save")}
           </Button>
         )}
       </Box>
@@ -302,7 +302,7 @@ export const FieldsListRight = ({ model }: Props) => {
           onClick={() => handleSave("description")}
           sx={{ mt: 1.5 }}
         >
-          {t("save")}
+          {t("common.save")}
         </Button>
       )}
       {/* <Box

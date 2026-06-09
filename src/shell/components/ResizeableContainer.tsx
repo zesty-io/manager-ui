@@ -5,6 +5,7 @@ import {
   KeyboardDoubleArrowLeft,
   KeyboardDoubleArrowRight,
 } from "@mui/icons-material";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   children: React.ReactNode;
@@ -21,6 +22,7 @@ export const ResizableContainer = ({
   defaultWidth,
   id,
 }: Props) => {
+  const { t } = useTranslation();
   const [isResizing, setIsResizing] = useState(false);
   const [initialPos, setInitialPos] = useState(0);
   const [initialWidth, setInitialWidth] = useState(0);
@@ -103,7 +105,11 @@ export const ResizableContainer = ({
         display={collapsed ? "none" : "block"}
       />
       <Tooltip
-        title={collapsed ? "Expand Sidebar" : "Collapse Sidebar"}
+        title={
+          collapsed
+            ? t("shell.expandSidebar", { defaultValue: "Expand Sidebar" })
+            : t("shell.collapseSidebar", { defaultValue: "Collapse Sidebar" })
+        }
         placement="right-start"
         enterDelay={1000}
         enterNextDelay={1000}

@@ -22,6 +22,7 @@ export const ConfirmDeleteModal = ({
   isDeletingComment,
 }: ConfirmDeleteModalProps) => {
   const { t } = useTranslation();
+
   return (
     <Dialog open onClose={onClose}>
       <DialogTitle sx={{ pb: 1 }}>
@@ -40,18 +41,21 @@ export const ConfirmDeleteModal = ({
             <DeleteRoundedIcon color="error" />
           </Box>
           <Typography variant="h5" display="inline" fontWeight={700}>
-            Delete Comment?
+            {t("shell.deleteCommentTitle", { defaultValue: "Delete Comment?" })}
           </Typography>
         </Stack>
       </DialogTitle>
       <DialogContent>
         <Typography variant="body2" color="text.secondary">
-          Deleting this comment will also remove all replies associated with it.
+          {t("shell.deleteCommentBody", {
+            defaultValue:
+              "Deleting this comment will also remove all replies associated with it.",
+          })}
         </Typography>
       </DialogContent>
       <DialogActions>
         <Button variant="text" color="inherit" onClick={onClose}>
-          {t("cancel")}
+          {t("common.cancel")}
         </Button>
         <Button
           data-cy="ConfirmDeleteCommentButton"
@@ -60,7 +64,7 @@ export const ConfirmDeleteModal = ({
           onClick={onConfirmDelete}
           loading={isDeletingComment}
         >
-          Delete Forever
+          {t("shell.deleteForever", { defaultValue: "Delete Forever" })}
         </Button>
       </DialogActions>
     </Dialog>

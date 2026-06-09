@@ -11,12 +11,12 @@ export function PlanTable({ members }) {
           <th className={styles.subheadline}>Lang</th>
           <th className={styles.subheadline}>Version</th>
 
-          <th className={styles.subheadline}>{t("preview")}</th>
+          <th className={styles.subheadline}>{t("common.preview")}</th>
           {/* sorting by title would be cool but could be a stretch goal */}
           <th className={styles.subheadline}>Title</th>
 
           <th className={styles.subheadline}>Last Publish</th>
-          <th className={styles.subheadline}>{t("remove")}</th>
+          <th className={styles.subheadline}>{t("common.remove")}</th>
         </tr>
       </thead>
       <tbody>

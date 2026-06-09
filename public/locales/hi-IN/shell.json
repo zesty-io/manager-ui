@@ -1,1 +1,26 @@
-{}
+{
+  "addNewComment": "नया कमेंट जोड़ें",
+  "cancelEsc": "रद्द करें (ESC)",
+  "collapseSidebar": "साइडबार समेटें",
+  "contactSupport": "सहायता से संपर्क करें",
+  "copyInstanceZUID": "इंस्टेंस ZUID कॉपी करें",
+  "deleteCommentBody": "इस कमेंट को हटाने से इससे जुड़े सभी उत्तर भी हट जाएंगे।",
+  "deleteCommentTitle": "कमेंट हटाएं?",
+  "deleteForever": "हमेशा के लिए हटाएं",
+  "expandSidebar": "साइडबार का विस्तार करें",
+  "failedCopyInstanceZUID": "इंस्टेंस ZUID कॉपी करने में विफल",
+  "failedRefreshCdnCache": "CDN कैश रीफ्रेश करने में विफल",
+  "failedUpdateFavicon": "फ़ेविकॉन अपडेट करने में विफल",
+  "faviconUpdated": "फ़ेविकॉन अपडेट हो गया",
+  "invalidUrlBody": "आपके द्वारा दर्ज किया गया URL अमान्य है या मौजूद नहीं है। यदि आपको लगता है कि यह एक त्रुटि है, तो हमसे यहां संपर्क करें",
+  "invalidUrlHeading": "अमान्य URL। कृपया अपना URL जांचें और पुनः प्रयास करें।",
+  "manageInstanceHeadTags": "इंस्टेंस हेड टैग प्रबंधित करें",
+  "refreshCdnCache": "CDN कैश रीफ्रेश करें",
+  "saveFavicon": "फ़ेविकॉन सहेजें",
+  "searchUsers": "उपयोगकर्ता खोजें",
+  "selectInstanceFavicon": "इंस्टेंस फ़ेविकॉन चुनें",
+  "unsavedChangesBody": "कृपया इस टैब को अनपिन करने से पहले अपने परिवर्तनों को सहेजें या छोड़ दें",
+  "updateFavicon": "फ़ेविकॉन अपडेट करें",
+  "viewOpenComment": "खुला कमेंट देखें",
+  "viewWebEnginePreview": "WebEngine पूर्वावलोकन (स्टेज) देखें"
+}

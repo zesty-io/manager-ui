@@ -295,7 +295,7 @@ export const StarterBlocksSelection: React.FC<StarterBlocksSelectionProps> = ({
         }}
       >
         <Button variant="outlined" color="inherit" onClick={onClose}>
-          {t("cancel")}
+          {t("common.cancel")}
         </Button>
         <Button
           variant="contained"
@@ -309,7 +309,7 @@ export const StarterBlocksSelection: React.FC<StarterBlocksSelectionProps> = ({
           }
           data-cy="select-block-type-next-button"
         >
-          {t("next")}
+          {t("common.next")}
         </Button>
       </DialogActions>
     </Box>

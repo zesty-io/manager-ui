@@ -258,7 +258,7 @@ const CreateFile = memo(function CreateFile({
           color="inherit"
           onClick={onClose}
         >
-          {t("cancel")}
+          {t("common.cancel")}
         </Button>
         <Button
           data-cy="CreateFileCreateButton"

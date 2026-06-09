@@ -147,7 +147,7 @@ export const ReplaceFileModal = ({
             variant="contained"
             onClick={handleCloseUploadingFileModal}
           >
-            {t("done")}
+            {t("common.done")}
           </Button>
         </DialogActions>
       </Dialog>
@@ -194,7 +194,7 @@ export const ReplaceFileModal = ({
         </DialogContent>
         <DialogActions>
           <Button color="inherit" onClick={onCancel}>
-            {t("cancel")}
+            {t("common.cancel")}
           </Button>
           <Button
             variant="contained"
@@ -204,7 +204,7 @@ export const ReplaceFileModal = ({
               hiddenFileInput.current.click();
             }}
           >
-            {t("replace")}
+            {t("common.replace")}
           </Button>
         </DialogActions>
       </Dialog>

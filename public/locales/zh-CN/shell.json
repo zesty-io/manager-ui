@@ -1,1 +1,26 @@
-{}
+{
+  "addNewComment": "添加新评论",
+  "cancelEsc": "取消 (ESC)",
+  "collapseSidebar": "折叠侧边栏",
+  "contactSupport": "联系支持",
+  "copyInstanceZUID": "复制实例 ZUID",
+  "deleteCommentBody": "删除此评论也将移除与其相关的所有回复。",
+  "deleteCommentTitle": "删除评论？",
+  "deleteForever": "永久删除",
+  "expandSidebar": "展开侧边栏",
+  "failedCopyInstanceZUID": "复制实例 ZUID 失败",
+  "failedRefreshCdnCache": "刷新 CDN 缓存失败",
+  "failedUpdateFavicon": "更新 Favicon 失败",
+  "faviconUpdated": "Favicon 已更新",
+  "invalidUrlBody": "您输入的 URL 无效或不存在。如果您认为这是一个错误，请联系我们：",
+  "invalidUrlHeading": "无效的 URL。请检查您的 URL 并重试。",
+  "manageInstanceHeadTags": "管理实例 Head 标签",
+  "refreshCdnCache": "刷新 CDN 缓存",
+  "saveFavicon": "保存 Favicon",
+  "searchUsers": "搜索用户",
+  "selectInstanceFavicon": "选择实例 Favicon",
+  "unsavedChangesBody": "在取消固定此标签页之前，请保存或放弃您的更改",
+  "updateFavicon": "更新 Favicon",
+  "viewOpenComment": "查看打开的评论",
+  "viewWebEnginePreview": "查看 WebEngine 预览 (Stage)"
+}

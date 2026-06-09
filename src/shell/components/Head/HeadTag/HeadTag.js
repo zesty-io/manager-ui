@@ -178,7 +178,7 @@ export const HeadTag = (props) => {
               <Button
                 variant="contained"
                 color="error"
-                title={t("cancel")}
+                title={t("common.cancel")}
                 onClick={onCancel}
                 type="error"
                 startIcon={<DeleteIcon />}
@@ -187,7 +187,7 @@ export const HeadTag = (props) => {
                   marginLeft: "auto",
                 }}
               >
-                {t("cancel")}
+                {t("common.cancel")}
               </Button>
             )}
           </Box>

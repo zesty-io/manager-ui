@@ -189,7 +189,7 @@ export const ErrorDialog: FC<ErrorDialogProps> = ({ open, onClose, data }) => {
             size="medium"
             onClick={onClose}
           >
-            {t("done")}
+            {t("common.done")}
           </Button>
         </DialogActions>
       </Dialog>

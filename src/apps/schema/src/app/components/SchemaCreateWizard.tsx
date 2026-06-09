@@ -146,7 +146,7 @@ export const SchemaCreateWizard = () => {
             onClick={handleNext}
             disabled={selectedTemplateIndex === null}
           >
-            {t("next")}
+            {t("common.next")}
           </Button>
         </DialogActions>
       </Dialog>

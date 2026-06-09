@@ -346,7 +346,7 @@ export const DuplicateModelDialogue = ({ onClose, model }: Props) => {
       </DialogContent>
       <DialogActions sx={{ pt: 2.5 }}>
         <Button variant="outlined" color="inherit" onClick={onClose}>
-          {t("cancel")}
+          {t("common.cancel")}
         </Button>
         <Button
           variant="contained"

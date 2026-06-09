@@ -58,7 +58,7 @@ export const DirtyCodeModal: FC<DirtyCodeModal> = ({
             textDecoration: "none",
           }}
         >
-          {t("cancel")}
+          {t("common.cancel")}
         </Button>
         <Stack direction="row" sx={{ gap: "8px" }}>
           <Button
@@ -68,7 +68,7 @@ export const DirtyCodeModal: FC<DirtyCodeModal> = ({
             disabled={loading}
             onClick={onDiscard}
           >
-            {t("discard")}
+            {t("common.discard")}
           </Button>
           <Button
             data-cy="DirtyCodeModalSave"
@@ -77,7 +77,7 @@ export const DirtyCodeModal: FC<DirtyCodeModal> = ({
             disabled={loading || saveDisabled}
             onClick={onSave}
           >
-            {t("save")}
+            {t("common.save")}
           </Button>
         </Stack>
       </Stack>

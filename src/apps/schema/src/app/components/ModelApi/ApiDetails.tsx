@@ -112,7 +112,7 @@ export const ApiDetails = () => {
               )
             }
           >
-            {t("back")}
+            {t("common.back")}
           </Button>
         </Box>
         <Box pr={1}>

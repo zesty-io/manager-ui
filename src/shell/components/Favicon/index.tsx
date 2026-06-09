@@ -1,5 +1,6 @@
 import { useEffect, useReducer, useState } from "react";
 import { MemoryRouter } from "react-router";
+import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { Dialog, IconButton, Button, Skeleton } from "@mui/material";
 import { Close, Save, DoDisturbAlt } from "@mui/icons-material";
@@ -35,6 +36,7 @@ type FaviconProps = {
   onCloseFaviconModal: () => void;
 };
 export const Favicon = ({ onCloseFaviconModal }: FaviconProps) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const ui = useSelector((state: AppState) => state.ui);
   const instance = useSelector((state: AppState) => state.instance);
@@ -82,8 +84,10 @@ export const Favicon = ({ onCloseFaviconModal }: FaviconProps) => {
       dispatch(
         notify({
           message: !!faviconUpdateError
-            ? "Failed to update favicon"
-            : "Favicon updated",
+            ? t("shell.failedUpdateFavicon", {
+                defaultValue: "Failed to update favicon",
+              })
+            : t("shell.faviconUpdated", { defaultValue: "Favicon updated" }),
           kind: !!faviconUpdateError ? "warn" : "success",
         })
       );
@@ -229,7 +233,11 @@ export const Favicon = ({ onCloseFaviconModal }: FaviconProps) => {
         onClose={() => onCloseFaviconModal()}
       >
         <ModalHeader>
-          <h1 className={styles.headline}>Select Instance Favicon</h1>
+          <h1 className={styles.headline}>
+            {t("shell.selectInstanceFavicon", {
+              defaultValue: "Select Instance Favicon",
+            })}
+          </h1>
         </ModalHeader>
         <ModalContent>
           {isLoading ? (
@@ -308,7 +316,9 @@ export const Favicon = ({ onCloseFaviconModal }: FaviconProps) => {
                 }}
               >
                 <FontAwesomeIcon icon={faCog} />
-                Manage Instance Head Tags
+                {t("shell.manageInstanceHeadTags", {
+                  defaultValue: "Manage Instance Head Tags",
+                })}
               </AppLink>
             </>
           )}
@@ -321,7 +331,7 @@ export const Favicon = ({ onCloseFaviconModal }: FaviconProps) => {
             }}
             startIcon={<DoDisturbAlt />}
           >
-            Cancel (ESC)
+            {t("shell.cancelEsc", { defaultValue: "Cancel (ESC)" })}
           </Button>
           <Button
             variant="contained"
@@ -333,7 +343,7 @@ export const Favicon = ({ onCloseFaviconModal }: FaviconProps) => {
             loading={isUpdatingFavicon}
             startIcon={<Save />}
           >
-            Save Favicon
+            {t("shell.saveFavicon", { defaultValue: "Save Favicon" })}
           </Button>
         </ModalFooter>
       </Modal>

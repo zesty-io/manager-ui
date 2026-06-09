@@ -143,7 +143,7 @@ export const HeadlessSwitcher = ({ instanceSetting }: Props) => {
         </DialogTitle>
         <DialogActions>
           <Button onClick={() => setSelected(null)} color="primary">
-            {t("cancel")}
+            {t("common.cancel")}
           </Button>
           <Button
             loading={isLoading}

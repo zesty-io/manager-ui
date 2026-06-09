@@ -1,1 +1,26 @@
-{}
+{
+  "addNewComment": "Добавить новый комментарий",
+  "cancelEsc": "Отмена (ESC)",
+  "collapseSidebar": "Свернуть боковую панель",
+  "contactSupport": "Связаться с техподдержкой",
+  "copyInstanceZUID": "Копировать ZUID инстанса",
+  "deleteCommentBody": "Удаление этого комментария также приведет к удалению всех связанных с ним ответов.",
+  "deleteCommentTitle": "Удалить комментарий?",
+  "deleteForever": "Удалить навсегда",
+  "expandSidebar": "Развернуть боковую панель",
+  "failedCopyInstanceZUID": "Не удалось скопировать ZUID инстанса",
+  "failedRefreshCdnCache": "Не удалось обновить кэш CDN",
+  "failedUpdateFavicon": "Не удалось обновить фавикон",
+  "faviconUpdated": "Фавикон обновлен",
+  "invalidUrlBody": "Введенный вами URL-адрес недействителен или не существует. Если вы считаете, что это ошибка, свяжитесь с нами по адресу",
+  "invalidUrlHeading": "Неверный URL-адрес. Пожалуйста, проверьте URL-адрес и попробуйте еще раз.",
+  "manageInstanceHeadTags": "Управление тегами Head инстанса",
+  "refreshCdnCache": "Обновить кэш CDN",
+  "saveFavicon": "Сохранить фавикон",
+  "searchUsers": "Поиск пользователей",
+  "selectInstanceFavicon": "Выбрать фавикон инстанса",
+  "unsavedChangesBody": "Пожалуйста, сохраните или отмените изменения перед откреплением этой вкладки",
+  "updateFavicon": "Обновить фавикон",
+  "viewOpenComment": "Просмотреть открытый комментарий",
+  "viewWebEnginePreview": "Просмотреть предпросмотр WebEngine (Stage)"
+}

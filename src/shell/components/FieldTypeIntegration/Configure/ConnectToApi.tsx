@@ -354,7 +354,7 @@ const ConnectToApi = ({
       </DialogContent>
       <DialogActions>
         <Button color="inherit" onClick={closeForm}>
-          {t("cancel")}
+          {t("common.cancel")}
         </Button>
         <Button
           data-cy="integrationConnectButton"

@@ -80,7 +80,7 @@ const RedirectsDelete: FC<RedirectsDeleteProps> = ({ selectedRedirects }) => {
           onClick={() => handleDelete()}
           startIcon={<DeleteIcon />}
         >
-          {t("delete")}
+          {t("common.delete")}
         </Button>
       </Box>
     </Box>

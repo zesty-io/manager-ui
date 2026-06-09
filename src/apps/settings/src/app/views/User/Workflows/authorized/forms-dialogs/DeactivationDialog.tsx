@@ -107,7 +107,7 @@ const DeactivationDialog: FC<DeactivationDialogProps> = ({
           variant="text"
           color="inherit"
         >
-          {t("cancel")}
+          {t("common.cancel")}
         </Button>
 
         <Button

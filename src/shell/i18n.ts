@@ -41,6 +41,9 @@ i18n
       lookupLocalStorage: "app_locale",
     },
 
+    nsSeparator: ".",
+    keySeparator: false,
+
     interpolation: {
       escapeValue: false,
     },

@@ -133,7 +133,7 @@ export const OTFEditor = ({
             <Typography variant="body1">On The Fly Image Editor</Typography>
           </Stack>
           <Button size="small" variant="contained" onClick={handleDone}>
-            {t("done")}
+            {t("common.done")}
           </Button>
         </Stack>
       </Box>

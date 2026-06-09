@@ -558,7 +558,7 @@ const CreateForm: FC<CreateFormProps> = ({
             loading={submitType === "single" && isRedirectsLoading}
             onClick={() => handleSubmit("single")}
           >
-            {isEdit ? t("save") : "Create Redirect"}
+            {isEdit ? t("common.save") : "Create Redirect"}
           </Button>
         </Stack>
       </DialogActions>

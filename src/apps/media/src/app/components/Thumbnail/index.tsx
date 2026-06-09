@@ -211,7 +211,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
       <Chip
         label={
           <Typography variant="body3" color="text.secondary">
-            {isCopied ? t("copied") : "Copy URL"}
+            {isCopied ? t("common.copied") : "Copy URL"}
           </Typography>
         }
         color="default"
@@ -245,7 +245,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
       <Chip
         label={
           <Typography variant="body3" color="text.secondary">
-            {t("preview")}
+            {t("common.preview")}
           </Typography>
         }
         color="default"

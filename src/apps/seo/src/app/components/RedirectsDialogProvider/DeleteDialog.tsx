@@ -154,7 +154,7 @@ export const DeleteDialog: FC<DeleteDialogProps> = ({
       </DialogContent>
       <DialogActions sx={{ p: "20px" }}>
         <Button variant="text" color="inherit" onClick={onClose}>
-          {t("cancel")}
+          {t("common.cancel")}
         </Button>
         <Button
           data-cy="DeleteContentItemConfirmButton"

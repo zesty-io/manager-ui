@@ -1,1 +1,26 @@
-{}
+{
+  "addNewComment": "Add New Comment",
+  "cancelEsc": "Cancel (ESC)",
+  "collapseSidebar": "Collapse Sidebar",
+  "contactSupport": "Contact Support",
+  "copyInstanceZUID": "Copy Instance ZUID",
+  "deleteCommentBody": "Deleting this comment will also remove all replies associated with it.",
+  "deleteCommentTitle": "Delete Comment?",
+  "deleteForever": "Delete Forever",
+  "expandSidebar": "Expand Sidebar",
+  "failedCopyInstanceZUID": "Failed to copy instance ZUID",
+  "failedRefreshCdnCache": "Failed to refresh the CDN cache",
+  "failedUpdateFavicon": "Failed to update favicon",
+  "faviconUpdated": "Favicon updated",
+  "invalidUrlBody": "The URL you entered is invalid or does not exist. If you believe this is an error, contact us at",
+  "invalidUrlHeading": "Invalid URL. Please check your URL and try again.",
+  "manageInstanceHeadTags": "Manage Instance Head Tags",
+  "refreshCdnCache": "Refresh CDN Cache",
+  "saveFavicon": "Save Favicon",
+  "searchUsers": "Search Users",
+  "selectInstanceFavicon": "Select Instance Favicon",
+  "unsavedChangesBody": "Please save or discard your changes before unpinning this tab",
+  "updateFavicon": "Update Favicon",
+  "viewOpenComment": "View Open Comment",
+  "viewWebEnginePreview": "View WebEngine Preview (Stage)"
+}

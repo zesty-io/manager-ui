@@ -53,7 +53,7 @@ const ConfirmSaveDialog: FC<ConfirmSaveDialogProps> = ({
       </DialogTitle>
       <DialogActions>
         <Button variant="text" color="inherit" onClick={onClose}>
-          {t("cancel")}
+          {t("common.cancel")}
         </Button>
         <Button
           variant="contained"
@@ -65,7 +65,7 @@ const ConfirmSaveDialog: FC<ConfirmSaveDialogProps> = ({
           autoFocus
           data-cy="ConfirmSaveSettings"
         >
-          {t("save")}
+          {t("common.save")}
         </Button>
       </DialogActions>
     </Dialog>

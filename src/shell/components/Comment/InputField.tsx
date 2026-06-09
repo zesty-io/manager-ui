@@ -114,13 +114,13 @@ export const InputField = ({
 
   const getPrimaryButtonText = () => {
     if (isEditMode) {
-      return "Save";
+      return t("common.save");
     }
 
     if (isFirstComment) {
-      return "Comment";
+      return t("common.comment");
     } else {
-      return "Reply";
+      return t("common.reply");
     }
   };
 
@@ -372,7 +372,7 @@ export const InputField = ({
               onClick={onCancel}
               disabled={isLoading}
             >
-              {t("cancel")}
+              {t("common.cancel")}
             </Button>
             <Button
               data-cy="SubmitNewComment"

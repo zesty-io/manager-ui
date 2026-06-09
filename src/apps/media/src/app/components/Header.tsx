@@ -276,7 +276,7 @@ export const Header = ({
                     onClick={() => setShowDeleteFileDialog(true)}
                     startIcon={<DeleteIcon color="action" fontSize="small" />}
                   >
-                    {t("delete")}
+                    {t("common.delete")}
                   </Button>
                   <Button
                     variant="contained"
@@ -306,7 +306,7 @@ export const Header = ({
                   }
                   ref={doneButtonRef}
                 >
-                  {isReplace ? t("replace") : t("done")}
+                  {isReplace ? t("common.replace") : t("common.done")}
                 </Button>
               )}
             </Box>

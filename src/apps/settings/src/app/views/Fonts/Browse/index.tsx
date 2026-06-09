@@ -316,7 +316,7 @@ const Browse = () => {
                     width: 64,
                   }}
                 >
-                  {t("next")}
+                  {t("common.next")}
                 </Button>
               </Box>
             </>

@@ -43,7 +43,9 @@ export const ItemListActions = forwardRef((props, ref) => {
   const codePath = useFilePath(modelZUID);
   const [isCopied, setIsCopied] = useState(false);
   const [params, setParams] = useParams();
-  const [searchTerm, setSearchTerm] = useState(params.get("search") || "");
+  const [searchTerm, setSearchTerm] = useState(
+    params.get("common.search") || ""
+  );
   const isDataset =
     contentModels?.find((model) => model.ZUID === modelZUID)?.type ===
     "dataset";

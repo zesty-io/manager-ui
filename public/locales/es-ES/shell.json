@@ -1,1 +1,26 @@
-{}
+{
+  "addNewComment": "Añadir nuevo comentario",
+  "cancelEsc": "Cancelar (ESC)",
+  "collapseSidebar": "Contraer barra lateral",
+  "contactSupport": "Contactar con soporte",
+  "copyInstanceZUID": "Copiar ZUID de la instancia",
+  "deleteCommentBody": "Eliminar este comentario también eliminará todas las respuestas asociadas.",
+  "deleteCommentTitle": "¿Eliminar comentario?",
+  "deleteForever": "Eliminar permanentemente",
+  "expandSidebar": "Expandir barra lateral",
+  "failedCopyInstanceZUID": "Error al copiar el ZUID de la instancia",
+  "failedRefreshCdnCache": "Error al actualizar la caché de CDN",
+  "failedUpdateFavicon": "Error al actualizar el favicon",
+  "faviconUpdated": "Favicon actualizado",
+  "invalidUrlBody": "La URL ingresada no es válida o no existe. Si cree que esto es un error, contáctenos en",
+  "invalidUrlHeading": "URL no válida. Verifique su URL e intente de nuevo.",
+  "manageInstanceHeadTags": "Administrar etiquetas Head de la instancia",
+  "refreshCdnCache": "Actualizar caché de CDN",
+  "saveFavicon": "Guardar favicon",
+  "searchUsers": "Buscar usuarios",
+  "selectInstanceFavicon": "Seleccionar favicon de la instancia",
+  "unsavedChangesBody": "Guarde o descarte sus cambios antes de desanclar esta pestaña",
+  "updateFavicon": "Actualizar favicon",
+  "viewOpenComment": "Ver comentario abierto",
+  "viewWebEnginePreview": "Ver vista previa de WebEngine (Stage)"
+}

@@ -83,7 +83,7 @@ export const UpdateParentModelDialogue = ({ onClose, model }: Props) => {
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="inherit">
-          {t("cancel")}
+          {t("common.cancel")}
         </Button>
         <Button
           onClick={() =>
@@ -95,7 +95,7 @@ export const UpdateParentModelDialogue = ({ onClose, model }: Props) => {
           loading={isLoading}
           variant="contained"
         >
-          {t("save")}
+          {t("common.save")}
         </Button>
       </DialogActions>
     </Dialog>

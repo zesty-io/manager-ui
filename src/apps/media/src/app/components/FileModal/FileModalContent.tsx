@@ -380,7 +380,7 @@ export const FileModalContent: FC<Props> = ({
               <ListItemIcon>
                 <DeleteRoundedIcon />
               </ListItemIcon>
-              <ListItemText>{t("delete")}</ListItemText>
+              <ListItemText>{t("common.delete")}</ListItemText>
             </MenuItem>
           </Menu>
         </Box>
@@ -414,7 +414,7 @@ export const FileModalContent: FC<Props> = ({
               {isLoadingUpdateAltText ? (
                 <CircularProgress size="24px" color="inherit" />
               ) : (
-                t("save")
+                t("common.save")
               )}
             </Button>
           )}

@@ -355,7 +355,7 @@ export const CreateModelDialogue = ({
           </DialogContent>
           <DialogActions sx={{ pt: 2.5 }}>
             <Button variant="outlined" color="inherit" onClick={onClose}>
-              {t("cancel")}
+              {t("common.cancel")}
             </Button>
             <Button
               variant="contained"
@@ -366,7 +366,7 @@ export const CreateModelDialogue = ({
               disabled={!type}
               data-cy="create-model-next-button"
             >
-              {t("next")}
+              {t("common.next")}
             </Button>
           </DialogActions>
         </>
@@ -553,7 +553,7 @@ export const CreateModelDialogue = ({
               </DialogContent>
               <DialogActions sx={{ pt: 2.5 }}>
                 <Button variant="outlined" color="inherit" onClick={onClose}>
-                  {t("cancel")}
+                  {t("common.cancel")}
                 </Button>
                 <Button
                   data-cy="create-model-submit-button"

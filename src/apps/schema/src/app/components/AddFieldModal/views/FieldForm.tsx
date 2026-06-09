@@ -545,7 +545,7 @@ const FieldFormContent = ({
               mr: 1,
             }}
           >
-            {t("cancel")}
+            {t("common.cancel")}
           </Button>
           <Button
             data-cy="FieldFormAddFieldBtn"
@@ -554,7 +554,7 @@ const FieldFormContent = ({
             variant="contained"
             startIcon={<SaveRoundedIcon />}
           >
-            {t("save")}
+            {t("common.save")}
           </Button>
         </DialogActions>
       ) : (
@@ -567,7 +567,7 @@ const FieldFormContent = ({
           }}
         >
           <Button variant="outlined" color="inherit" onClick={onBackClick}>
-            {t("cancel")}
+            {t("common.cancel")}
           </Button>
           <Box>
             <Button

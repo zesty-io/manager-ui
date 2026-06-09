@@ -180,7 +180,7 @@ export const ResourceDetails = () => {
               history.push(resolveUrlFromAudit(actionsByZuid[0], category));
             }}
           >
-            {t("open")}
+            {t("common.open")}
           </Button>
           <Button
             sx={{ height: "max-content" }}

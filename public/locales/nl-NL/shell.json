@@ -1,1 +1,26 @@
-{}
+{
+  "addNewComment": "Nieuw commentaar toevoegen",
+  "cancelEsc": "Annuleren (ESC)",
+  "collapseSidebar": "Zijbalk inklappen",
+  "contactSupport": "Contact opnemen met support",
+  "copyInstanceZUID": "Instantie ZUID kopiëren",
+  "deleteCommentBody": "Als u dit commentaar verwijdert, worden ook alle bijbehorende reacties verwijderd.",
+  "deleteCommentTitle": "Commentaar verwijderen?",
+  "deleteForever": "Permanent verwijderen",
+  "expandSidebar": "Zijbalk uitklappen",
+  "failedCopyInstanceZUID": "Kopiëren van instantie ZUID mislukt",
+  "failedRefreshCdnCache": "Vernieuwen van CDN-cache mislukt",
+  "failedUpdateFavicon": "Bijwerken van favicon mislukt",
+  "faviconUpdated": "Favicon bijgewerkt",
+  "invalidUrlBody": "De ingevoerde URL is ongeldig of bestaat niet. Als u denkt dat dit een fout is, neem dan contact met ons op via",
+  "invalidUrlHeading": "Ongeldige URL. Controleer uw URL en probeer het opnieuw.",
+  "manageInstanceHeadTags": "Instantie Head-tags beheren",
+  "refreshCdnCache": "CDN-cache vernieuwen",
+  "saveFavicon": "Favicon opslaan",
+  "searchUsers": "Gebruikers zoeken",
+  "selectInstanceFavicon": "Instantie-favicon selecteren",
+  "unsavedChangesBody": "Sla uw wijzigingen op of werp ze weg voordat u dit tabblad losmaakt",
+  "updateFavicon": "Favicon bijwerken",
+  "viewOpenComment": "Open commentaar bekijken",
+  "viewWebEnginePreview": "WebEngine-voorbeeld bekijken (Stage)"
+}
