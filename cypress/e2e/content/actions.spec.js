@@ -316,15 +316,22 @@ describe("Actions in content editor", () => {
 
     cy.getBySelector("ScheduledUnpublishIndicator").should("exist");
 
-    // Assert the menu toggle label flips to "Unschedule Unpublish"
+    // Assert the menu toggle label flips to "Unschedule Unpublish",
+    // then cancel the schedule so the item is clean for subsequent tests.
+    awaitRequests();
     cy.getBySelector("PublishMenuButton").trigger("click");
     cy.getBySelector("publishingMenu").within(() => {
-      cy.getBySelector("UnpublishScheduleButton").should(
-        "contain.text",
-        "Unschedule Unpublish"
-      );
+      cy.getBySelector("UnpublishScheduleButton")
+        .should("contain.text", "Unschedule Unpublish")
+        .trigger("click");
     });
-    cy.get("body").type("{esc}");
+    cy.getBySelector("SchedulePublishModal")
+      .should("exist")
+      .within(() => {
+        cy.getBySelector("UnschedulePublishButton").trigger("click");
+      });
+    cy.wait("@publishItem");
+    cy.wait("@publishings");
   });
 
   it("Cancels a scheduled unpublish", () => {
