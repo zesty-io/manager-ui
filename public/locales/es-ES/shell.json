@@ -1,5 +1,19 @@
 {
   "addNewComment": "Añadir nuevo comentario",
+  "navAppTooltip": "Aplicación {{name}}",
+  "navApps": "Aplicaciones",
+  "navBlocks": "Bloques",
+  "navCode": "Código",
+  "navContent": "Contenido",
+  "navLaunchpad": "Panel de inicio",
+  "navLeads": "Prospectos",
+  "navMedia": "Medios",
+  "navRedirects": "Redirecciones",
+  "navRelease": "Lanzamientos",
+  "navReports": "Informes",
+  "navSchema": "Esquema",
+  "navSettings": "Configuración",
+  "navStudio": "Studio",
   "cancelEsc": "Cancelar (ESC)",
   "collapseSidebar": "Contraer barra lateral",
   "contactSupport": "Contactar con soporte",
@@ -22,5 +36,6 @@
   "unsavedChangesBody": "Guarde o descarte sus cambios antes de desanclar esta pestaña",
   "updateFavicon": "Actualizar favicon",
   "viewOpenComment": "Ver comentario abierto",
+  "viewSourceCommit": "Ver commit del código fuente",
   "viewWebEnginePreview": "Ver vista previa de WebEngine (Stage)"
 }

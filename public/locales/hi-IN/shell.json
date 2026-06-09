@@ -1,5 +1,19 @@
 {
   "addNewComment": "नया कमेंट जोड़ें",
+  "navAppTooltip": "{{name}} ऐप",
+  "navApps": "ऐप्स",
+  "navBlocks": "ब्लॉक्स",
+  "navCode": "कोड",
+  "navContent": "सामग्री",
+  "navLaunchpad": "लॉन्चपैड",
+  "navLeads": "लीड्स",
+  "navMedia": "मीडिया",
+  "navRedirects": "रीडायरेक्ट",
+  "navRelease": "रिलीज़",
+  "navReports": "रिपोर्ट",
+  "navSchema": "स्कीमा",
+  "navSettings": "सेटिंग्स",
+  "navStudio": "स्टूडियो",
   "cancelEsc": "रद्द करें (ESC)",
   "collapseSidebar": "साइडबार समेटें",
   "contactSupport": "सहायता से संपर्क करें",
@@ -22,5 +36,6 @@
   "unsavedChangesBody": "कृपया इस टैब को अनपिन करने से पहले अपने परिवर्तनों को सहेजें या छोड़ दें",
   "updateFavicon": "फ़ेविकॉन अपडेट करें",
   "viewOpenComment": "खुला कमेंट देखें",
+  "viewSourceCommit": "सोर्स कोड कमिट देखें",
   "viewWebEnginePreview": "WebEngine पूर्वावलोकन (स्टेज) देखें"
 }

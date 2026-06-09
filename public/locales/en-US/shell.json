@@ -1,5 +1,19 @@
 {
   "addNewComment": "Add New Comment",
+  "navAppTooltip": "{{name}} App",
+  "navApps": "Apps",
+  "navBlocks": "Blocks",
+  "navCode": "Code",
+  "navContent": "Content",
+  "navLaunchpad": "Launchpad",
+  "navLeads": "Leads",
+  "navMedia": "Media",
+  "navRedirects": "Redirects",
+  "navRelease": "Release",
+  "navReports": "Reports",
+  "navSchema": "Schema",
+  "navSettings": "Settings",
+  "navStudio": "Studio",
   "cancelEsc": "Cancel (ESC)",
   "collapseSidebar": "Collapse Sidebar",
   "contactSupport": "Contact Support",
@@ -22,5 +36,6 @@
   "unsavedChangesBody": "Please save or discard your changes before unpinning this tab",
   "updateFavicon": "Update Favicon",
   "viewOpenComment": "View Open Comment",
+  "viewSourceCommit": "View source code commit",
   "viewWebEnginePreview": "View WebEngine Preview (Stage)"
 }

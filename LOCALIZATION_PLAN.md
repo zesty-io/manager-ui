@@ -126,17 +126,26 @@ Strings specific to the app shell — sidebar, topbar, global search, notificati
 | `components/Favicon/index.tsx`                                | 1       | [x]    |
 | `components/GlobalDomainsMenu/index.tsx`                      | 5       | [x]    |
 
+#### Tier 1 (additions) — missed in initial audit
+
+| File                                          | Strings | Notes                                                                                                                             | Status |
+| --------------------------------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| `components/GlobalAccountMenu/config.ts`      | 7       | Module-level `MENU_ITEMS` array — move `text` lookup inside component                                                             | [ ]    |
+| `components/global-sidebar/GlobalSidebar.tsx` | 1       | `title="View source code commit"` tooltip on a `<Link>`                                                                           | [x]    |
+| `components/global-menu/index.tsx`            | 14      | Replaced slug-to-name conversion with `productLabels` map using `t()`; tooltip uses `navAppTooltip` with `{{name}}` interpolation | [x]    |
+
 #### Tier 2 — Medium effort, medium risk (some dynamic interpolation)
 
-| File                                                                   | Strings | Risk driver                                                       | Status |
-| ---------------------------------------------------------------------- | ------- | ----------------------------------------------------------------- | ------ |
-| `components/AccessDenied.tsx`                                          | 5       | `{userRole?.name}` and `{appRoute}` interpolation                 | [ ]    |
-| `components/InviteMembersModal/index.tsx`                              | 8       | Already uses `useTranslation` inconsistently — needs cleanup pass | [ ]    |
-| `components/Filters/DateFilter/DateFilter.tsx`                         | 15      | Date-formatted strings (`On ${fmt(...)}`)                         | [ ]    |
-| `components/global-tabs/Dropdown.tsx`                                  | 5       | `${count} Results` plural                                         | [ ]    |
-| `components/global-sidebar/.../InstanceMenu/Flyouts/InstancesList.tsx` | 6       | "No results" message with dynamic query string                    | [ ]    |
-| `components/ConfirmPublishModal.tsx`                                   | 5       | Conditional button label + count                                  | [ ]    |
-| `components/load-instance/NoInstancePermission.tsx`                    | 6       | `{user?.email}` embedded in sentence                              | [ ]    |
+| File                                                                   | Strings | Risk driver                                                                                       | Status |
+| ---------------------------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------- | ------ |
+| `components/GlobalDocsMenu/config.ts` + `index.tsx`                    | 25+     | Module-level `MAIN_DOC_ITEMS` / `SUB_DOC_ITEMS` arrays + `Learn more about {{app}}` interpolation | [ ]    |
+| `components/AccessDenied.tsx`                                          | 5       | `{userRole?.name}` and `{appRoute}` interpolation                                                 | [ ]    |
+| `components/InviteMembersModal/index.tsx`                              | 8       | Already uses `useTranslation` inconsistently — needs cleanup pass                                 | [ ]    |
+| `components/Filters/DateFilter/DateFilter.tsx`                         | 15      | Date-formatted strings (`On ${fmt(...)}`)                                                         | [ ]    |
+| `components/global-tabs/Dropdown.tsx`                                  | 5       | `${count} Results` plural                                                                         | [ ]    |
+| `components/global-sidebar/.../InstanceMenu/Flyouts/InstancesList.tsx` | 6       | "No results" message with dynamic query string                                                    | [ ]    |
+| `components/ConfirmPublishModal.tsx`                                   | 5       | Conditional button label + count                                                                  | [ ]    |
+| `components/load-instance/NoInstancePermission.tsx`                    | 6       | `{user?.email}` embedded in sentence                                                              | [ ]    |
 
 #### Tier 3 — High effort, high risk (complex interpolation, large files, critical paths)
 

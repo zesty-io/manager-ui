@@ -1,5 +1,19 @@
 {
   "addNewComment": "Добавить новый комментарий",
+  "navAppTooltip": "Приложение {{name}}",
+  "navApps": "Приложения",
+  "navBlocks": "Блоки",
+  "navCode": "Код",
+  "navContent": "Контент",
+  "navLaunchpad": "Лаунчпад",
+  "navLeads": "Лиды",
+  "navMedia": "Медиа",
+  "navRedirects": "Перенаправления",
+  "navRelease": "Релизы",
+  "navReports": "Отчёты",
+  "navSchema": "Схема",
+  "navSettings": "Настройки",
+  "navStudio": "Студия",
   "cancelEsc": "Отмена (ESC)",
   "collapseSidebar": "Свернуть боковую панель",
   "contactSupport": "Связаться с техподдержкой",
@@ -22,5 +36,6 @@
   "unsavedChangesBody": "Пожалуйста, сохраните или отмените изменения перед откреплением этой вкладки",
   "updateFavicon": "Обновить фавикон",
   "viewOpenComment": "Просмотреть открытый комментарий",
+  "viewSourceCommit": "Просмотреть коммит исходного кода",
   "viewWebEnginePreview": "Просмотреть предпросмотр WebEngine (Stage)"
 }

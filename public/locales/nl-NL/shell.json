@@ -1,5 +1,19 @@
 {
   "addNewComment": "Nieuw commentaar toevoegen",
+  "navAppTooltip": "{{name}}-app",
+  "navApps": "Apps",
+  "navBlocks": "Blokken",
+  "navCode": "Code",
+  "navContent": "Inhoud",
+  "navLaunchpad": "Startscherm",
+  "navLeads": "Leads",
+  "navMedia": "Media",
+  "navRedirects": "Doorverwijzingen",
+  "navRelease": "Releases",
+  "navReports": "Rapporten",
+  "navSchema": "Schema",
+  "navSettings": "Instellingen",
+  "navStudio": "Studio",
   "cancelEsc": "Annuleren (ESC)",
   "collapseSidebar": "Zijbalk inklappen",
   "contactSupport": "Contact opnemen met support",
@@ -22,5 +36,6 @@
   "unsavedChangesBody": "Sla uw wijzigingen op of werp ze weg voordat u dit tabblad losmaakt",
   "updateFavicon": "Favicon bijwerken",
   "viewOpenComment": "Open commentaar bekijken",
+  "viewSourceCommit": "Broncode-commit bekijken",
   "viewWebEnginePreview": "WebEngine-voorbeeld bekijken (Stage)"
 }

@@ -1,5 +1,19 @@
 {
   "addNewComment": "添加新评论",
+  "navAppTooltip": "{{name}}应用",
+  "navApps": "应用",
+  "navBlocks": "区块",
+  "navCode": "代码",
+  "navContent": "内容",
+  "navLaunchpad": "启动台",
+  "navLeads": "线索",
+  "navMedia": "媒体",
+  "navRedirects": "重定向",
+  "navRelease": "发布",
+  "navReports": "报告",
+  "navSchema": "架构",
+  "navSettings": "设置",
+  "navStudio": "工作室",
   "cancelEsc": "取消 (ESC)",
   "collapseSidebar": "折叠侧边栏",
   "contactSupport": "联系支持",
@@ -22,5 +36,6 @@
   "unsavedChangesBody": "在取消固定此标签页之前，请保存或放弃您的更改",
   "updateFavicon": "更新 Favicon",
   "viewOpenComment": "查看打开的评论",
+  "viewSourceCommit": "查看源代码提交",
   "viewWebEnginePreview": "查看 WebEngine 预览 (Stage)"
 }
