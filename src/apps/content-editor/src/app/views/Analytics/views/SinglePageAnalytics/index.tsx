@@ -123,49 +123,53 @@ export const SinglePageAnalytics = ({ item, loading }: Props) => {
   const averageEngagementTime = useMemo(() => {
     // TODO: calculate compared avg engagement time
     // Get all user count
-    const dr0New =
-      +findValuesForDimensions(
-        totalUsersReport?.rows,
-        ["date_range_0", "new"],
-        0
-      ) ?? 0;
-    const dr0Returning =
-      +findValuesForDimensions(
-        totalUsersReport?.rows,
-        ["date_range_0", "returning"],
-        0
-      ) ?? 0;
-    const dr1New =
-      +findValuesForDimensions(
-        totalUsersReport?.rows,
-        ["date_range_1", "new"],
-        0
-      ) ?? 0;
-    const dr1Returning =
-      +findValuesForDimensions(
-        totalUsersReport?.rows,
-        ["date_range_1", "returning"],
-        0
-      ) ?? 0;
-    const comparedNew =
-      +findValuesForDimensions(comparedTotalUsersReport?.rows, ["new"], 0) ?? 0;
-    const comparedReturning =
-      +findValuesForDimensions(
-        comparedTotalUsersReport?.rows,
-        ["returning"],
-        0
-      ) ?? 0;
-    const dr0TotalUsers = dr0New + dr0Returning ?? 0;
-    const dr1TotalUsers = dr1New + dr1Returning ?? 0;
-    const comparedTotalUsers = comparedNew + comparedReturning ?? 0;
+    const dr0New = +findValuesForDimensions(
+      totalUsersReport?.rows,
+      ["date_range_0", "new"],
+      0
+    );
+    const dr0Returning = +findValuesForDimensions(
+      totalUsersReport?.rows,
+      ["date_range_0", "returning"],
+      0
+    );
+    const dr1New = +findValuesForDimensions(
+      totalUsersReport?.rows,
+      ["date_range_1", "new"],
+      0
+    );
+    const dr1Returning = +findValuesForDimensions(
+      totalUsersReport?.rows,
+      ["date_range_1", "returning"],
+      0
+    );
+    const comparedNew = +findValuesForDimensions(
+      comparedTotalUsersReport?.rows,
+      ["new"],
+      0
+    );
+    const comparedReturning = +findValuesForDimensions(
+      comparedTotalUsersReport?.rows,
+      ["returning"],
+      0
+    );
+    const dr0TotalUsers = dr0New + dr0Returning;
+    const dr1TotalUsers = dr1New + dr1Returning;
+    const comparedTotalUsers = comparedNew + comparedReturning;
 
     // Get total engagement time
-    const dr0EngagementTime =
-      +findValuesForDimensions(metricsReport?.rows, ["date_range_0"], 4) ?? 0;
-    const dr1EngagementTime =
-      +findValuesForDimensions(metricsReport?.rows, ["date_range_1"], 4) ?? 0;
+    const dr0EngagementTime = +findValuesForDimensions(
+      metricsReport?.rows,
+      ["date_range_0"],
+      4
+    );
+    const dr1EngagementTime = +findValuesForDimensions(
+      metricsReport?.rows,
+      ["date_range_1"],
+      4
+    );
     const comparedEngagementTime =
-      +comparedMetricsReport?.rows?.[0]?.metricValues?.[4]?.value ?? 0;
+      +comparedMetricsReport?.rows?.[0]?.metricValues?.[4]?.value;
 
     // Calculate avg engagement time
     const dr0AvgEngagementTime =

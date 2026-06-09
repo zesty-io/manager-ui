@@ -41,7 +41,7 @@ export const UserHeaderTitle = ({
     if (usersRoles) {
       const user = usersRoles?.find((userRole) => userRole.ZUID === id);
       return {
-        name: `${user?.firstName} ${user?.lastName}` ?? "",
+        name: `${user?.firstName} ${user?.lastName}`,
         imageUrl: `https://www.gravatar.com/avatar/${MD5(
           user?.email
         )}.jpg?s=40`,

@@ -76,7 +76,7 @@ export const SettingsNav = memo(() => {
           label: startCase(category.replace(/_|-/g, " ")),
           path: `/settings/instance/${category}`,
           icon: SettingsRoundedIcon,
-          children: [],
+          children: [] as TreeItem[],
         })
       );
 
@@ -90,7 +90,7 @@ export const SettingsNav = memo(() => {
           label: "Bynder",
           path: "/settings/instance/bynder",
           icon: SettingsRoundedIcon,
-          children: [],
+          children: [] as TreeItem[],
         });
       }
 
@@ -108,7 +108,7 @@ export const SettingsNav = memo(() => {
           label: setting.name,
           path: `/settings/styles/${setting.ID}`,
           icon: PaletteRoundedIcon,
-          children: [],
+          children: [] as TreeItem[],
         }));
     }
 

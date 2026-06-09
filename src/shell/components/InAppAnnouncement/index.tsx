@@ -100,10 +100,7 @@ export const InAppAnnouncement = () => {
           <Box
             component="img"
             alt="announcement-banner-image"
-            src={
-              `${latestAnnouncement?.feature_image?.data[0]?.url}?fit=cover&width=1280` ??
-              ""
-            }
+            src={`${latestAnnouncement?.feature_image?.data[0]?.url}?fit=cover&width=1280`}
             maxWidth="100%"
             maxHeight="100%"
           />
