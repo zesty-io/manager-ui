@@ -158,7 +158,7 @@ export const ItemEditHeaderActions = ({
     (itemPublishing) => itemPublishing._active
   );
 
-  const lastItemUpdateAudit = itemAudit?.find(
+  const lastItemUpdateAudit = itemAudit?.findLast(
     (audit) => audit.action === 2 || audit.action === 1
   );
 

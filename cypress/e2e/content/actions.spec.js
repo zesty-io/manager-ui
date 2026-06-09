@@ -268,10 +268,16 @@ describe("Actions in content editor", () => {
             .trigger("click");
           cy.wait(publishItem);
           cy.wait(publishings);
-        } else {
+        } else if (
+          $modal.find("[data-cy='CancelSchedulePublishButton']").length
+        ) {
           cy.wrap($modal)
             .find("[data-cy='CancelSchedulePublishButton']")
             .trigger("click");
+        } else {
+          throw new Error(
+            "SchedulePublishModal opened in unexpected state — neither UnschedulePublishButton nor CancelSchedulePublishButton found"
+          );
         }
       });
 

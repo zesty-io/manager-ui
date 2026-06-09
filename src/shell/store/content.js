@@ -961,12 +961,8 @@ export function unpublish(modelZUID, itemZUID, publishZUID, options = {}) {
         const message = options.version
           ? `Error Unscheduling version ${options.version}`
           : `Error Unpublishing ${title}`;
-        return dispatch(
-          notify({
-            message,
-            kind: "error",
-          })
-        );
+        dispatch(notify({ message, kind: "error" }));
+        throw err;
       });
   };
 }
