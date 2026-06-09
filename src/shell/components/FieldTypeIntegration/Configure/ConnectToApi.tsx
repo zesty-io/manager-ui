@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from "react";
+import { useCallback, useRef, useState, ChangeEvent, ReactNode } from "react";
 import {
   Button,
   Box,
@@ -34,11 +34,11 @@ import { v4 as uuidv4 } from "uuid";
 
 const CONNECTION_STATUSES: {
   [key: string]: {
-    icon: React.ReactNode;
+    icon: ReactNode;
     title: string;
     subTitle: string;
     buttonLabel: string;
-    buttonIcon: React.ReactNode;
+    buttonIcon: ReactNode;
     variant: "contained" | "outlined";
     color: "primary" | "inherit";
   };
@@ -120,10 +120,13 @@ const ConnectToApi = ({
     const headersWithKeys = Object.values(headersLocal).filter((h) => !!h.key);
     const reqHeaders = !headersWithKeys.length
       ? null
-      : headersWithKeys.reduce((acc: any, { key, value }) => {
-          acc[key] = value;
-          return acc;
-        }, {});
+      : headersWithKeys.reduce<Record<string, string>>(
+          (acc, { key, value }) => {
+            acc[key] = value;
+            return acc;
+          },
+          {}
+        );
 
     setApiData(data);
     setHeaders(reqHeaders);
@@ -143,10 +146,13 @@ const ConnectToApi = ({
     const options = !headersWithKeys.length
       ? {}
       : {
-          headers: headersWithKeys.reduce((acc: any, { key, value }) => {
-            acc[key] = value;
-            return acc;
-          }, {}),
+          headers: headersWithKeys.reduce<Record<string, string>>(
+            (acc, { key, value }) => {
+              acc[key] = value;
+              return acc;
+            },
+            {}
+          ),
         };
     fetchApiData(endpointLocal, options);
   }, [endpointLocal, headersLocal]);
@@ -202,7 +208,7 @@ const ConnectToApi = ({
             autoFocus={focusRef?.current === "url"}
             placeholder="https://api.example.com/endpoint"
             value={endpointLocal}
-            onInput={(e: any) => {
+            onChange={(e: ChangeEvent<HTMLInputElement>) => {
               const validUrl = !!e.target.value && validateUrl(e.target.value);
               setIsValidUrl(validUrl);
               setEndpointLocal(e.target.value);
@@ -259,7 +265,7 @@ const ConnectToApi = ({
                     size="small"
                     placeholder="Key"
                     value={header.key}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => {
                       setHeadersLocal((prev) => ({
                         ...prev,
                         [entryId]: { ...prev[entryId], key: e.target.value },
@@ -279,7 +285,7 @@ const ConnectToApi = ({
                     size="small"
                     placeholder="Value"
                     value={header.value}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => {
                       setHeadersLocal((prev) => ({
                         ...prev,
                         [entryId]: { ...prev[entryId], value: e.target.value },
