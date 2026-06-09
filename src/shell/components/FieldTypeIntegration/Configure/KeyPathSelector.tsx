@@ -4,7 +4,7 @@ import { Box, Typography, Autocomplete, Paper, TextField } from "@mui/material";
 import { COLOR_MAP } from "../constants";
 import { get } from "lodash";
 import { IntegrationTypes } from "../../../services/types";
-import { validateUrl } from "utility/validateUrl";
+import { validateUrl } from "../../../../utility/validateUrl";
 
 const KeyPathSelector = ({
   value,

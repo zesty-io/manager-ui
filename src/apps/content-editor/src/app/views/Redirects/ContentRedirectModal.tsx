@@ -23,10 +23,10 @@ import {
   TARGET_OPTIONS,
   TOOL_TIPS,
 } from "../../../../../seo/src/app/components/RedirectsDialogProvider/constants";
-import { FieldWrapper } from "../../../../../seo/src/app/components/RedirectsDialogProvider/CreateRedirects/CreateForm";
+import { FieldWrapper } from "../../../../../seo/src/app/components/RedirectsDialogProvider/CreateRedirects/FieldWrapper";
 import SearchField from "../../../../../seo/src/app/components/RedirectsDialogProvider/CreateRedirects/SearchField";
 import PathField from "../../../../../seo/src/app/components/RedirectsDialogProvider/CreateRedirects/PathField";
-import { validateUrl } from "utility/validateUrl";
+import { validateUrl } from "../../../../../../utility/validateUrl";
 import { searchItems } from "shell/store/content";
 export type ContentRedirectModalProps = {
   open: boolean;
@@ -93,12 +93,6 @@ export const ContentRedirectModal: FC<ContentRedirectModalProps> = ({
       openErrorDialog(resubmitData);
     }
     onClose();
-  };
-
-  const urlValidation = (url: string) => {
-    const isValidUrl = validateUrl(url);
-    setInvalidTarget(!isValidUrl);
-    return isValidUrl;
   };
 
   const handleSearch = (term: string) => {
@@ -242,7 +236,13 @@ export const ContentRedirectModal: FC<ContentRedirectModalProps> = ({
                       setTargetPath(value);
                     }}
                     validation={
-                      targetType === "external" ? urlValidation : null
+                      targetType === "external"
+                        ? (url: string) => {
+                            const isValid = validateUrl(url);
+                            setInvalidTarget(!isValid);
+                            return isValid;
+                          }
+                        : null
                     }
                   />
                 )}

@@ -28,7 +28,7 @@ import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import { FormWrapper } from "../Shared/FormWrapper";
 import { FieldWrapper } from "../Shared/FieldWrapper";
 import { IntegrationRequestHeaders } from "../../../services/types";
-import { validateUrl } from "utility/validateUrl";
+import { validateUrl } from "../../../../utility/validateUrl";
 import useIntegrationField from "../useIntegrationField";
 import { v4 as uuidv4 } from "uuid";
 
