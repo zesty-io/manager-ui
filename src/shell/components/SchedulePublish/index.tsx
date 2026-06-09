@@ -97,11 +97,14 @@ export const SchedulePublish = ({
         { localTime: localPretty, localTimezone: publishTimezone }
       )
       // @ts-expect-error untyped action
-    ).finally(() => {
-      onScheduleSuccess?.();
-      setIsLoading(false);
-      onClose();
-    });
+    )
+      .then(() => {
+        onScheduleSuccess?.();
+      })
+      .finally(() => {
+        setIsLoading(false);
+        onClose();
+      });
   };
 
   const handleUnschedulePublish = () => {
@@ -117,6 +120,9 @@ export const SchedulePublish = ({
     )
       .then(() => {
         onUnscheduleSuccess?.();
+      })
+      .catch(() => {
+        // Error notification handled by the thunk
       })
       .finally(() => {
         setIsLoading(false);
@@ -164,11 +170,14 @@ export const SchedulePublish = ({
         { localTime: localPretty, localTimezone: publishTimezone }
       )
       // @ts-expect-error untyped action
-    ).finally(() => {
-      onScheduleSuccess?.();
-      setIsLoading(false);
-      onClose();
-    });
+    )
+      .then(() => {
+        onScheduleSuccess?.();
+      })
+      .finally(() => {
+        setIsLoading(false);
+        onClose();
+      });
   };
 
   const handleUnscheduleUnpublish = async () => {

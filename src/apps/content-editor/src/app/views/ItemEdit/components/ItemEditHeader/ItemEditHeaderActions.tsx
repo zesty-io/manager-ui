@@ -47,6 +47,7 @@ import { formatDate } from "../../../../../../../../utility/formatDate";
 import { UnpublishDialog } from "./UnpublishDialog";
 import { usePermission } from "../../../../../../../../shell/hooks/use-permissions";
 import {
+  Audit,
   ContentItemWithDirtyAndPublishing,
   ContentModel,
   RedirectsCodes,
@@ -158,18 +159,20 @@ export const ItemEditHeaderActions = ({
     (itemPublishing) => itemPublishing._active
   );
 
-  const lastItemUpdateAudit = itemAudit?.findLast(
-    (audit) => audit.action === 2 || audit.action === 1
-  );
+  const lastItemUpdateAudit = itemAudit
+    ?.slice()
+    .reverse()
+    .find((audit: Audit) => audit.action === 2 || audit.action === 1);
 
   const hasScheduledPublish =
     !!item?.scheduling?.isScheduled &&
     new Date(item?.scheduling?.publishAt).getTime() > Date.now();
 
-  const hasScheduledUnpublish =
+  const hasScheduledUnpublish = !!(
     item?.publishing?.version === item?.meta?.version &&
     !!item?.publishing?.unpublishAt &&
-    new Date(item?.publishing?.unpublishAt).getTime() > Date.now();
+    new Date(item?.publishing?.unpublishAt).getTime() > Date.now()
+  );
 
   const { data: statusLabels } = useGetWorkflowStatusLabelsQuery();
   const { data: itemWorkflowStatus, isLoading: isLoadingItemWorkflowStatus } =
