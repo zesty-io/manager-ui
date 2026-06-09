@@ -128,11 +128,23 @@ const preLoginIdentify = new amplitude.Identify();
 preLoginIdentify.set("env", window.CONFIG.ENV);
 amplitude.identify(preLoginIdentify);
 
+// Reuse the server/static boot skeleton while React Suspense waits on i18n.
+// This keeps the visual handoff continuous instead of replacing the loader
+// with a blank screen after React mounts but before translations are ready.
+const InitialLoadingFallback = ({ markup }) =>
+  markup ? (
+    <div
+      style={{ display: "contents" }}
+      dangerouslySetInnerHTML={{ __html: markup }}
+    />
+  ) : null;
+
 // TODO: Add a context here that will store all draft comments
-const App = Sentry.withProfiler(() => (
+const App = Sentry.withProfiler(({ initialLoadingMarkup }) => (
   <StrictMode>
-    {/* null fallback intentionally blocks render until i18n is ready, preventing raw key flash */}
-    <Suspense fallback={null}>
+    <Suspense
+      fallback={<InitialLoadingFallback markup={initialLoadingMarkup} />}
+    >
       <Sentry.ErrorBoundary
         fallback={() => <AppError />}
         beforeCapture={(scope) => {
@@ -164,9 +176,13 @@ const App = Sentry.withProfiler(() => (
 
 function render() {
   const container = document.getElementById("root");
+  // Capture only the static loader that shipped in index-*.html before
+  // createRoot() clears/reconciles #root. The captured markup is used only as
+  // the temporary Suspense fallback during app initialization.
+  const initialLoadingMarkup = container.innerHTML;
   const root = createRoot(container);
 
-  root.render(<App />);
+  root.render(<App initialLoadingMarkup={initialLoadingMarkup} />);
 }
 
 // Load IndexedDB cache
