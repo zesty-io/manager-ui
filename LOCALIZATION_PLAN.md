@@ -32,7 +32,7 @@ Spec: https://docs.google.com/document/d/1l5RdyDxQLTwXdz80Gk1_y8GdVv_KoQG5VfSmdv
   - Default / initial namespace: `common`
   - `useSuspense: true`
   - Cache busting via `defaultVersion` tied to the build's git hash (injected via webpack `DefinePlugin` as `__GIT_HASH__`)
-  - LocalStorage cache TTL: 24 h
+  - LocalStorage cache TTL: use `i18next-localstorage-backend` default
   - HTTP load path: `/locales/{{lng}}/{{ns}}.json`
 - [x] Import `src/shell/i18n.ts` in `src/shell/index.js` (app entry point) — must be imported before the React root renders
 - [x] Create `public/locales/` directory structure:

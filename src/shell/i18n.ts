@@ -25,7 +25,6 @@ i18n
       backendOptions: [
         {
           prefix: "i18next_res_",
-          expirationTime: 24 * 60 * 60 * 1000,
           defaultVersion: gitHash,
         },
         {
