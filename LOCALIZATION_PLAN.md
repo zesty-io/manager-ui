@@ -78,17 +78,29 @@ Spec: https://docs.google.com/document/d/1l5RdyDxQLTwXdz80Gk1_y8GdVv_KoQG5VfSmdv
 
 ---
 
-## Phase 3 — Common Namespace
+## Phase 3 — Common & Shell Namespaces
 
-Covers shared UI strings used across all sub-apps: button labels, generic notifications, form actions, error messages, loading states.
+### `common`
 
-- [ ] Audit shell-level components for hardcoded strings:
-  - `src/shell/components/`
-  - `src/shell/views/`
-- [ ] Populate `public/locales/en-US/common.json` with extracted keys
-- [ ] Replace hardcoded strings with `t("key")` calls (using `useTranslation()` or `useTranslation("common")`)
+Simple, universal words and short phrases reused across the entire app. If a string is a single generic word or short action label, it belongs here.
+
+Examples: `Save`, `Cancel`, `Edit`, `Delete`, `Confirm`, `Close`, `Back`, `Next`, `Search`, `Loading`, `Error`, `Success`
+
+- [ ] Identify and list all common words/phrases used across sub-apps
+- [ ] Populate `public/locales/en-US/common.json`
+- [ ] Add `public/locales/{locale}/common.json` for all 5 non-English locales
+- [ ] Replace occurrences with `t("key")` using `useTranslation()` (defaults to `common` namespace)
+
+### `shell`
+
+Strings specific to the app shell — sidebar, topbar, global search, notifications, AI drawer, loading screen, and other chrome-level UI. These are not sub-app strings but are too specific to belong in `common`.
+
+- [ ] Audit `src/shell/components/` and `src/shell/views/` for hardcoded strings
+- [ ] Populate `public/locales/en-US/shell.json`
+- [ ] Create `public/locales/{locale}/shell.json` for all 5 non-English locales
+- [ ] Replace hardcoded strings with `t("key")` using `useTranslation("shell")`
 - [ ] Run `i18next-parser` to validate no keys are missing
-- [ ] Translate `common.json` into all 5 non-English locales
+- [ ] Translate both `common.json` and `shell.json` into all 5 non-English locales
 
 ---
 
