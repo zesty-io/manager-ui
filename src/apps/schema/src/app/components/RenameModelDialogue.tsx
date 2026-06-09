@@ -11,6 +11,7 @@ import {
   Tooltip,
 } from "@mui/material";
 import { useEffect, useReducer } from "react";
+import { useTranslation } from "react-i18next";
 import DriveFileRenameOutlineRoundedIcon from "@mui/icons-material/DriveFileRenameOutlineRounded";
 import { useUpdateContentModelMutation } from "../../../../../shell/services/instance";
 import { ContentModel } from "../../../../../shell/services/types";
@@ -24,6 +25,7 @@ interface Props {
 }
 
 export const RenameModelDialogue = ({ onClose, model }: Props) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const [newModel, updateNewModel] = useReducer(
     (prev: Partial<ContentModel>, next: Partial<ContentModel>) => {
@@ -144,14 +146,14 @@ export const RenameModelDialogue = ({ onClose, model }: Props) => {
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="inherit">
-          Cancel
+          {t("cancel", { defaultValue: "Cancel" })}
         </Button>
         <Button
           onClick={() => updateModel({ ZUID: model.ZUID, body: newModel })}
           loading={isLoading}
           variant="contained"
         >
-          Save
+          {t("save", { defaultValue: "Save" })}
         </Button>
       </DialogActions>
     </Dialog>

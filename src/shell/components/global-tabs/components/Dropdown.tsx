@@ -1,6 +1,7 @@
 import { useState, FC } from "react";
 import { Link as Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 import { ConfirmDialog } from "@zesty-io/material";
 import PinIcon from "@mui/icons-material/PushPin";
@@ -36,6 +37,7 @@ export const Dropdown: FC<Dropdown> = ({
   removeMany,
   tabWidth,
 }) => {
+  const { t } = useTranslation();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const [filter, setFilter] = useState("");
@@ -259,7 +261,7 @@ export const Dropdown: FC<Dropdown> = ({
           }}
           onClick={() => setConfirmOpen(false)}
         >
-          Cancel
+          {t("cancel", { defaultValue: "Cancel" })}
         </Button>
         <Button
           onClick={() => {

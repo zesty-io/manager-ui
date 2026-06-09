@@ -14,6 +14,7 @@ import { ContentModel } from "../../../../../shell/services/types";
 import { notify } from "../../../../../shell/store/notifications";
 import { useDispatch } from "react-redux";
 import { SelectModelParentInput } from "./SelectModelParentInput";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   onClose: () => void;
@@ -21,6 +22,7 @@ interface Props {
 }
 
 export const UpdateParentModelDialogue = ({ onClose, model }: Props) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const [newParentZUID, setNewParentZUID] = useState(
     model.parentZUID === "0" ? null : model.parentZUID
@@ -81,7 +83,7 @@ export const UpdateParentModelDialogue = ({ onClose, model }: Props) => {
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="inherit">
-          Cancel
+          {t("cancel", { defaultValue: "Cancel" })}
         </Button>
         <Button
           onClick={() =>
@@ -93,7 +95,7 @@ export const UpdateParentModelDialogue = ({ onClose, model }: Props) => {
           loading={isLoading}
           variant="contained"
         >
-          Save
+          {t("save", { defaultValue: "Save" })}
         </Button>
       </DialogActions>
     </Dialog>

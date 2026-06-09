@@ -1,4 +1,5 @@
 import { FC } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Button,
   Dialog,
@@ -31,6 +32,7 @@ export const DeleteDialog: FC<DeleteDialogProps> = ({
   onClose,
   redirects,
 }) => {
+  const { t } = useTranslation();
   const [deleteRedirect, { isLoading: isDeleting }] =
     useDeleteRedirectMutation();
 
@@ -152,7 +154,7 @@ export const DeleteDialog: FC<DeleteDialogProps> = ({
       </DialogContent>
       <DialogActions sx={{ p: "20px" }}>
         <Button variant="text" color="inherit" onClick={onClose}>
-          Cancel
+          {t("cancel", { defaultValue: "Cancel" })}
         </Button>
         <Button
           data-cy="DeleteContentItemConfirmButton"

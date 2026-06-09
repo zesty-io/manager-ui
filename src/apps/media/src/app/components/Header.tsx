@@ -1,4 +1,5 @@
 import { MouseEvent, useEffect, useRef, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Box, Button, Typography, IconButton, Stack } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
@@ -56,6 +57,7 @@ export const Header = ({
   showBackButton,
   showBreadcrumbs,
 }: Props) => {
+  const { t } = useTranslation();
   const doneButtonRef = useRef<HTMLButtonElement>(null);
   const [openDialog, setOpenDialog] = useState<Dialogs>(null);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -274,7 +276,7 @@ export const Header = ({
                     onClick={() => setShowDeleteFileDialog(true)}
                     startIcon={<DeleteIcon color="action" fontSize="small" />}
                   >
-                    Delete
+                    {t("delete", { defaultValue: "Delete" })}
                   </Button>
                   <Button
                     variant="contained"
@@ -304,7 +306,9 @@ export const Header = ({
                   }
                   ref={doneButtonRef}
                 >
-                  {isReplace ? "Replace" : "Done"}
+                  {isReplace
+                    ? t("replace", { defaultValue: "Replace" })
+                    : t("done", { defaultValue: "Done" })}
                 </Button>
               )}
             </Box>

@@ -1,4 +1,5 @@
 import { FC } from "react";
+import { useTranslation } from "react-i18next";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
@@ -25,6 +26,7 @@ const DeactivationDialog: FC<DeactivationDialogProps> = ({
   ZUID,
   callBack,
 }) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const [deactivateWorkflowStatusLabel, { isLoading }] =
     useDeactivateWorkflowStatusLabelMutation();
@@ -105,7 +107,7 @@ const DeactivationDialog: FC<DeactivationDialogProps> = ({
           variant="text"
           color="inherit"
         >
-          Cancel
+          {t("cancel", { defaultValue: "Cancel" })}
         </Button>
 
         <Button

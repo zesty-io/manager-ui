@@ -29,6 +29,7 @@ import RefreshRoundedIcon from "@mui/icons-material/RefreshRounded";
 import LanguageRoundedIcon from "@mui/icons-material/LanguageRounded";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import { Brain } from "@zesty-io/material";
+import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useParams } from "react-router";
 
@@ -104,6 +105,7 @@ export const AIGenerator = ({
   fieldZUID,
   isAIAssistedFlow,
 }: Props) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const location = useLocation();
   const isCreateItemPage = location?.pathname?.split("/")?.pop() === "new";
@@ -590,7 +592,7 @@ export const AIGenerator = ({
               handleClose("close");
             }}
           >
-            Cancel
+            {t("cancel", { defaultValue: "Cancel" })}
           </Button>
           {!!data?.length ? (
             <Box>
@@ -847,7 +849,7 @@ export const AIGenerator = ({
             handleClose("close");
           }}
         >
-          Cancel
+          {t("cancel", { defaultValue: "Cancel" })}
         </Button>
         {!!data?.length ? (
           <Box>

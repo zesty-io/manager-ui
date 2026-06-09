@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useParams } from "react-router";
 import { useDispatch } from "react-redux";
 import {
@@ -86,6 +87,7 @@ const FieldFormContent = ({
   sortIndex,
   onCreateAnotherField,
 }: FieldFormProps) => {
+  const { t } = useTranslation();
   const isUpdateField = !isEmpty(fieldData);
   const showRepeaterFieldsTab = type === "repeater" && isUpdateField;
   const [activeTab, setActiveTab] = useState<ActiveTab>(
@@ -543,7 +545,7 @@ const FieldFormContent = ({
               mr: 1,
             }}
           >
-            Cancel
+            {t("cancel", { defaultValue: "Cancel" })}
           </Button>
           <Button
             data-cy="FieldFormAddFieldBtn"
@@ -552,7 +554,7 @@ const FieldFormContent = ({
             variant="contained"
             startIcon={<SaveRoundedIcon />}
           >
-            Save
+            {t("save", { defaultValue: "Save" })}
           </Button>
         </DialogActions>
       ) : (
@@ -565,7 +567,7 @@ const FieldFormContent = ({
           }}
         >
           <Button variant="outlined" color="inherit" onClick={onBackClick}>
-            Cancel
+            {t("cancel", { defaultValue: "Cancel" })}
           </Button>
           <Box>
             <Button

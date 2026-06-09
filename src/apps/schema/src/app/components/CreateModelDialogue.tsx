@@ -19,6 +19,7 @@ import {
   Checkbox,
 } from "@mui/material";
 import { useEffect, useReducer, useState } from "react";
+import { useTranslation } from "react-i18next";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
@@ -86,6 +87,7 @@ export const CreateModelDialogue = ({
   modelType = "templateset",
   typeIsSet = false,
 }: Props) => {
+  const { t } = useTranslation();
   const [referenceIDError, setReferenceIDError] = useState<string | null>(null);
   const [type, setType] = useState(modelType);
   const [isTypeSet, setIsTypeSet] = useState(typeIsSet);
@@ -353,7 +355,7 @@ export const CreateModelDialogue = ({
           </DialogContent>
           <DialogActions sx={{ pt: 2.5 }}>
             <Button variant="outlined" color="inherit" onClick={onClose}>
-              Cancel
+              {t("cancel", { defaultValue: "Cancel" })}
             </Button>
             <Button
               variant="contained"
@@ -364,7 +366,7 @@ export const CreateModelDialogue = ({
               disabled={!type}
               data-cy="create-model-next-button"
             >
-              Next
+              {t("next", { defaultValue: "Next" })}
             </Button>
           </DialogActions>
         </>
@@ -551,7 +553,7 @@ export const CreateModelDialogue = ({
               </DialogContent>
               <DialogActions sx={{ pt: 2.5 }}>
                 <Button variant="outlined" color="inherit" onClick={onClose}>
-                  Cancel
+                  {t("cancel", { defaultValue: "Cancel" })}
                 </Button>
                 <Button
                   data-cy="create-model-submit-button"

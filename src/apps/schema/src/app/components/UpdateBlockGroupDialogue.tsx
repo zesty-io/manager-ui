@@ -14,6 +14,7 @@ import { notify } from "../../../../../shell/store/notifications";
 import { useDispatch } from "react-redux";
 import { SelectBlockGroupInput, GroupType } from "./SelectBlockGroupInput";
 import { useParams } from "react-router";
+import { useTranslation } from "react-i18next";
 
 type UpdateBlockGroupDialogueProps = {
   onClose: () => void;
@@ -21,6 +22,7 @@ type UpdateBlockGroupDialogueProps = {
 export const UpdateBlockGroupDialogue = ({
   onClose,
 }: UpdateBlockGroupDialogueProps) => {
+  const { t } = useTranslation();
   const params = useParams<{ id: string }>();
   const { id } = params;
   const dispatch = useDispatch();
@@ -123,14 +125,14 @@ export const UpdateBlockGroupDialogue = ({
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="inherit">
-          Cancel
+          {t("cancel", { defaultValue: "Cancel" })}
         </Button>
         <Button
           onClick={handleSave}
           loading={isCreatingGroup}
           variant="contained"
         >
-          Save
+          {t("save", { defaultValue: "Save" })}
         </Button>
       </DialogActions>
     </Dialog>

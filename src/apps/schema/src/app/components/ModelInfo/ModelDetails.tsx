@@ -1,4 +1,5 @@
 import { Box, Tooltip, Typography, Button } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
@@ -21,6 +22,7 @@ type Params = {
 };
 
 export const ModelDetails = () => {
+  const { t } = useTranslation();
   const params = useParams<Params>();
   const { id } = params;
   const history = useHistory();
@@ -103,7 +105,7 @@ export const ModelDetails = () => {
             </Box>
             <Box py={1.5}>
               <Button size="small" onClick={() => setShowDialogue("rename")}>
-                Update
+                {t("update", { defaultValue: "Update" })}
               </Button>
             </Box>
           </Box>
@@ -145,7 +147,7 @@ export const ModelDetails = () => {
                 size="small"
                 onClick={() => setShowDialogue("updateDescription")}
               >
-                Update
+                {t("update", { defaultValue: "Update" })}
               </Button>
             </Box>
           </Box>
@@ -182,7 +184,9 @@ export const ModelDetails = () => {
             </Box>
             <Box display="flex" py={1.5}>
               <Button size="small" onClick={() => handleCopy(model?.name)}>
-                {isCopied === model?.name ? "Copied" : "Copy"}
+                {isCopied === model?.name
+                  ? t("copied", { defaultValue: "Copied" })
+                  : t("copy", { defaultValue: "Copy" })}
               </Button>
               <Box
                 sx={{
@@ -192,7 +196,7 @@ export const ModelDetails = () => {
                 }}
               />
               <Button size="small" onClick={() => setShowDialogue("rename")}>
-                Update
+                {t("update", { defaultValue: "Update" })}
               </Button>
             </Box>
           </Box>
@@ -238,7 +242,7 @@ export const ModelDetails = () => {
                       history.push(`/schema/${parentModel?.contentModelZUID}`)
                     }
                   >
-                    View
+                    {t("view", { defaultValue: "View" })}
                   </Button>
                   <Box
                     sx={{
@@ -254,7 +258,7 @@ export const ModelDetails = () => {
                 size="small"
                 onClick={() => setShowDialogue("updateParent")}
               >
-                Update
+                {t("update", { defaultValue: "Update" })}
               </Button>
             </Box>
           </Box>
@@ -349,7 +353,9 @@ export const ModelDetails = () => {
             </Box>
             <Box py={1.5}>
               <Button size="small" onClick={() => handleCopy(model?.ZUID)}>
-                {isCopied === model?.ZUID ? "Copied" : "Copy"}
+                {isCopied === model?.ZUID
+                  ? t("copied", { defaultValue: "Copied" })
+                  : t("copy", { defaultValue: "Copy" })}
               </Button>
             </Box>
           </Box>

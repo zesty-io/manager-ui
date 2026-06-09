@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { notify } from "shell/store/notifications";
 
@@ -33,6 +34,7 @@ import { FormControl, FormLabel, Select, MenuItem } from "@mui/material";
 
 import styles from "./HeadTag.less";
 export const HeadTag = (props) => {
+  const { t } = useTranslation();
   const [saving, setSaving] = useState(false);
 
   const onCreate = () => {
@@ -176,7 +178,7 @@ export const HeadTag = (props) => {
               <Button
                 variant="contained"
                 color="error"
-                title="Cancel"
+                title={t("cancel", { defaultValue: "Cancel" })}
                 onClick={onCancel}
                 type="error"
                 startIcon={<DeleteIcon />}
@@ -185,7 +187,7 @@ export const HeadTag = (props) => {
                   marginLeft: "auto",
                 }}
               >
-                Cancel
+                {t("cancel", { defaultValue: "Cancel" })}
               </Button>
             )}
           </Box>

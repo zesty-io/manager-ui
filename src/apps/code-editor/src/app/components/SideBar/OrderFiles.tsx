@@ -23,6 +23,7 @@ import ZoomOutMapIcon from "@mui/icons-material/ZoomOutMap";
 import { resolvePathPart } from "../../../store/files";
 import { fetchHeaders, saveSort } from "../../../store/headers";
 import CloseIcon from "@mui/icons-material/Close";
+import { useTranslation } from "react-i18next";
 
 interface FileHeader {
   ZUID: string;
@@ -174,6 +175,7 @@ const mapStateToProps = (state: any, props: { type: string }) => {
 const connector = connect(mapStateToProps);
 
 const OrderFiles = (props: OrderFilesProps) => {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [files, setFiles] = useState<FileHeader[]>(props.fileHeaders);
 
@@ -322,7 +324,7 @@ const OrderFiles = (props: OrderFilesProps) => {
         sx={{ p: "20px", borderTop: "1px solid", borderColor: "border" }}
       >
         <Button variant="outlined" color="inherit" onClick={handleClose}>
-          Cancel
+          {t("cancel", { defaultValue: "Cancel" })}
         </Button>
         <Button
           variant="contained"

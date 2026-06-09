@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Dialog,
   DialogContent,
@@ -30,6 +31,7 @@ export const MoveFileDialog = ({
   fileCount,
   showSpinner,
 }: Props) => {
+  const { t } = useTranslation();
   const { data: binGroups } = useGetBinGroupsQuery(binId);
   const [selectedGroup, setSelectedGroup] = useState<Group | null>({
     name: "None",
@@ -90,7 +92,7 @@ export const MoveFileDialog = ({
           onClick={() => onClose()}
           disabled={showSpinner}
         >
-          Cancel
+          {t("cancel", { defaultValue: "Cancel" })}
         </Button>
         <Button
           variant="contained"

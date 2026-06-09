@@ -1,4 +1,5 @@
 import { FC, useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Button,
   Dialog,
@@ -24,6 +25,7 @@ type ErrorDialogProps = {
 
 export const ErrorDialog: FC<ErrorDialogProps> = ({ open, onClose, data }) => {
   const dispatch = useDispatch();
+  const { t } = useTranslation();
 
   const [errorPaths, setErrorPaths] = useState<ErrorPathProps[]>([]);
 
@@ -187,7 +189,7 @@ export const ErrorDialog: FC<ErrorDialogProps> = ({ open, onClose, data }) => {
             size="medium"
             onClick={onClose}
           >
-            Done
+            {t("done", { defaultValue: "Done" })}
           </Button>
         </DialogActions>
       </Dialog>

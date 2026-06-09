@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Box,
   InputLabel,
@@ -35,6 +36,7 @@ export const OTFEditor = ({
   imageSettings,
   setImageSettings,
 }: Props) => {
+  const { t } = useTranslation();
   const [isCopied, setIsCopied] = useState(false);
 
   const newUrl = `${url}?${new URLSearchParams(
@@ -131,7 +133,7 @@ export const OTFEditor = ({
             <Typography variant="body1">On The Fly Image Editor</Typography>
           </Stack>
           <Button size="small" variant="contained" onClick={handleDone}>
-            Done
+            {t("done", { defaultValue: "Done" })}
           </Button>
         </Stack>
       </Box>

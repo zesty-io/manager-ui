@@ -1,4 +1,5 @@
 import { memo, useState, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router";
 import {
   Button,
@@ -25,6 +26,7 @@ export const DeleteDialog = memo(function DeleteDialog(
   props: DeleteDialogProps
 ) {
   const { open, onClose, fileZUID, fileName, status } = props;
+  const { t } = useTranslation();
 
   const [deleting, setDeleting] = useState(false);
   const history = useHistory();
@@ -91,7 +93,7 @@ export const DeleteDialog = memo(function DeleteDialog(
       </DialogTitle>
       <DialogActions>
         <Button variant="text" color="inherit" onClick={onClose}>
-          Cancel
+          {t("cancel", { defaultValue: "Cancel" })}
         </Button>
         <Button
           data-cy="DeleteContentItemConfirmButton"
@@ -100,7 +102,7 @@ export const DeleteDialog = memo(function DeleteDialog(
           onClick={handleDeleteFile}
           loading={deleting}
         >
-          Delete
+          {t("delete", { defaultValue: "Delete" })}
         </Button>
       </DialogActions>
     </Dialog>

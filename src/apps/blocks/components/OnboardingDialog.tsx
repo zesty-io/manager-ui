@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Box, Button, Dialog, Typography, MobileStepper } from "@mui/material";
 
 import blocksOnboarding1 from "../../../../public/images/blocksOnboarding1.png";
@@ -27,6 +28,7 @@ const stepMapping = [
 ];
 
 export const OnboardingDialog = ({ onClose }: { onClose: () => void }) => {
+  const { t } = useTranslation();
   const [step, setStep] = useState(0);
   return (
     <Dialog
@@ -90,7 +92,7 @@ export const OnboardingDialog = ({ onClose }: { onClose: () => void }) => {
               setStep(step - 1);
             }}
           >
-            Back
+            {t("back", { defaultValue: "Back" })}
           </Button>
         )}
         <Button
@@ -105,7 +107,9 @@ export const OnboardingDialog = ({ onClose }: { onClose: () => void }) => {
             }
           }}
         >
-          {step === stepMapping.length - 1 ? "Done" : "Next"}
+          {step === stepMapping.length - 1
+            ? t("done", { defaultValue: "Done" })
+            : t("next", { defaultValue: "Next" })}
         </Button>
       </Box>
     </Dialog>

@@ -10,6 +10,7 @@ import {
 import { useParams } from "../../../../../shell/hooks/useParams";
 import { useHistory } from "react-router";
 import { IconButton } from "@zesty-io/material";
+import { useTranslation } from "react-i18next";
 
 export type UploadButton = {
   currentGroupId?: string;
@@ -28,6 +29,7 @@ export const UploadButton: FC<UploadButton> = ({
   isIconButton = false,
   id = "fileUploadButton",
 }) => {
+  const { t } = useTranslation();
   const [filesToUpload, setFilesToUpload] = useState<FileList>(null);
   const dispatch = useDispatch();
   const hiddenFileInput = useRef(null);
@@ -105,7 +107,7 @@ export const UploadButton: FC<UploadButton> = ({
           startIcon={<FileUploadRoundedIcon />}
           disabled={loading || !binData}
         >
-          {text || "Upload"}
+          {text || t("upload", { defaultValue: "Upload" })}
         </Button>
       )}
 

@@ -1,4 +1,5 @@
 import { useRef, useEffect, useState, useContext } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Stack,
   Typography,
@@ -68,6 +69,7 @@ export const CommentItem = ({
   onParentCommentDeleted,
   commentCount,
 }: CommentItemProps) => {
+  const { t } = useTranslation();
   const { resourceZUID } = useParams<PathParams>();
   const location = useLocation();
   const [_, __, commentZUIDtoEdit, setCommentZUIDtoEdit] =
@@ -287,7 +289,9 @@ export const CommentItem = ({
                 <ListItemIcon>
                   <DriveFileRenameOutlineRoundedIcon />
                 </ListItemIcon>
-                <ListItemText>Edit</ListItemText>
+                <ListItemText>
+                  {t("edit", { defaultValue: "Edit" })}
+                </ListItemText>
               </MenuItem>
             )}
             <MenuItem data-cy="CopyCommentLinkButton" onClick={handleCopyClick}>
@@ -320,7 +324,9 @@ export const CommentItem = ({
                 <ListItemIcon>
                   <DeleteRoundedIcon />
                 </ListItemIcon>
-                <ListItemText>Delete</ListItemText>
+                <ListItemText>
+                  {t("delete", { defaultValue: "Delete" })}
+                </ListItemText>
               </MenuItem>
             )}
           </Menu>

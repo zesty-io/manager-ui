@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useParams } from "react-router";
 import {
   Box,
@@ -65,6 +66,7 @@ const SubFieldFormContent = ({
   onSubmit,
   repeaterFieldName,
 }: SubFieldFormProps) => {
+  const { t } = useTranslation();
   const isUpdateField = !isEmpty(fieldData);
   const [activeTab, setActiveTab] = useState<ActiveTab>("details");
   const [isSubmitClicked, setIsSubmitClicked] = useState(false);
@@ -316,7 +318,7 @@ const SubFieldFormContent = ({
               mr: 1,
             }}
           >
-            Cancel
+            {t("cancel", { defaultValue: "Cancel" })}
           </Button>
           <Button
             data-cy="SubFieldFormAddFieldBtn"
@@ -324,7 +326,7 @@ const SubFieldFormContent = ({
             variant="contained"
             startIcon={<SaveRoundedIcon />}
           >
-            Save
+            {t("save", { defaultValue: "Save" })}
           </Button>
         </DialogActions>
       ) : (
@@ -337,7 +339,7 @@ const SubFieldFormContent = ({
           }}
         >
           <Button variant="outlined" color="inherit" onClick={onBackClick}>
-            Cancel
+            {t("cancel", { defaultValue: "Cancel" })}
           </Button>
           <Box>
             <Button

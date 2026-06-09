@@ -1,7 +1,9 @@
+import { useTranslation } from "react-i18next";
 import { PlanStep } from "../PlanStep";
 
 import styles from "./PlanTable.less";
 export function PlanTable({ members }) {
+  const { t } = useTranslation();
   return (
     <table data-cy="PlanTable" className={styles.PlanTable}>
       <thead>
@@ -9,12 +11,16 @@ export function PlanTable({ members }) {
           <th className={styles.subheadline}>Lang</th>
           <th className={styles.subheadline}>Version</th>
 
-          <th className={styles.subheadline}>Preview</th>
+          <th className={styles.subheadline}>
+            {t("preview", { defaultValue: "Preview" })}
+          </th>
           {/* sorting by title would be cool but could be a stretch goal */}
           <th className={styles.subheadline}>Title</th>
 
           <th className={styles.subheadline}>Last Publish</th>
-          <th className={styles.subheadline}>Remove</th>
+          <th className={styles.subheadline}>
+            {t("remove", { defaultValue: "Remove" })}
+          </th>
         </tr>
       </thead>
       <tbody>

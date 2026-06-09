@@ -16,6 +16,7 @@ import {
   Alert,
 } from "@mui/material";
 import { useEffect, useReducer, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import { useSelector } from "react-redux";
 import { cloneDeep } from "lodash";
@@ -46,6 +47,7 @@ interface Props {
 }
 
 export const DuplicateModelDialogue = ({ onClose, model }: Props) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const history = useHistory();
   const [newModel, updateNewModel] = useReducer(
@@ -344,7 +346,7 @@ export const DuplicateModelDialogue = ({ onClose, model }: Props) => {
       </DialogContent>
       <DialogActions sx={{ pt: 2.5 }}>
         <Button variant="outlined" color="inherit" onClick={onClose}>
-          Cancel
+          {t("cancel", { defaultValue: "Cancel" })}
         </Button>
         <Button
           variant="contained"

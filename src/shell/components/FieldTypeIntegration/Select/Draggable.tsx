@@ -1,4 +1,5 @@
 import React, { useRef, useState, type ReactElement } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Box,
   Paper,
@@ -158,6 +159,7 @@ const MoreOptions: React.FC<MoreOptionsProps> = ({
   onDelete,
   onView,
 }) => {
+  const { t } = useTranslation();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
@@ -215,7 +217,7 @@ const MoreOptions: React.FC<MoreOptionsProps> = ({
         >
           <ClearIcon color="action" sx={{ mr: 1 }} />
           <Typography variant="body1" color="text.primary">
-            Remove
+            {t("remove", { defaultValue: "Remove" })}
           </Typography>
         </MenuItem>
       </Menu>

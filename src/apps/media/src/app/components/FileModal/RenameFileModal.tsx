@@ -1,4 +1,5 @@
 import { FC, useEffect, useState, Dispatch } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Box,
   Dialog,
@@ -41,6 +42,7 @@ export const RenameFileModal: FC<Props> = ({
   extension,
   src,
 }) => {
+  const { t } = useTranslation();
   const [renamedFilename, setRenamedFilename] = useState<string>(newFilename);
 
   useEffect(() => {
@@ -121,7 +123,7 @@ export const RenameFileModal: FC<Props> = ({
       </DialogContent>
       <DialogActions>
         <Button color="inherit" onClick={() => onClose()}>
-          Cancel
+          {t("cancel", { defaultValue: "Cancel" })}
         </Button>
         <Button
           variant="contained"
@@ -131,7 +133,7 @@ export const RenameFileModal: FC<Props> = ({
           {isLoadingUpdate ? (
             <CircularProgress size="24px" color="inherit" />
           ) : (
-            "Update"
+            t("update", { defaultValue: "Update" })
           )}
         </Button>
       </DialogActions>

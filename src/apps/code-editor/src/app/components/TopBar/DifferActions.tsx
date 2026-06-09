@@ -1,4 +1,5 @@
 import { memo, useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 import { useHistory } from "react-router";
 import { Select, Button, MenuItem, Box, Typography } from "@mui/material";
@@ -38,6 +39,7 @@ interface FileVersion {
 export const DifferActions = memo(function DifferActions(
   props: DifferActionsProps
 ) {
+  const { t } = useTranslation();
   const [saving, setSaving] = useState(false);
   const [versions, setVersions] = useState<FileVersion[]>([]);
   const [selectedVersion, setSelectedVersion] = useState<string | "local">(
@@ -269,7 +271,7 @@ export const DifferActions = memo(function DifferActions(
                   history.push(`/code/file/${props.fileType}/${props.fileZUID}`)
                 }
               >
-                Cancel
+                {t("cancel", { defaultValue: "Cancel" })}
               </Button>
             </>
           ) : (

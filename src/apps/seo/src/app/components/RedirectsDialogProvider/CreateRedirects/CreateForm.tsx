@@ -1,4 +1,5 @@
 import { useState, FC, useRef, useMemo, ReactNode, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Button,
   Dialog,
@@ -73,6 +74,7 @@ const CreateForm: FC<CreateFormProps> = ({
   isInternal = false,
 }) => {
   const dispatch = useDispatch();
+  const { t } = useTranslation();
   const lastPathRef = useRef(null);
   const [paths, setPaths] = useState<PathProps[]>([
     { id: new Date().getTime() + 1000, path: "" },
@@ -556,7 +558,7 @@ const CreateForm: FC<CreateFormProps> = ({
             loading={submitType === "single" && isRedirectsLoading}
             onClick={() => handleSubmit("single")}
           >
-            {isEdit ? "Save" : "Create Redirect"}
+            {isEdit ? t("save", { defaultValue: "Save" }) : "Create Redirect"}
           </Button>
         </Stack>
       </DialogActions>

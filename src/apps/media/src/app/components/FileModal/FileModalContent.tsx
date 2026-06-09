@@ -1,4 +1,5 @@
 import { FC, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Typography,
   Box,
@@ -76,6 +77,7 @@ export const FileModalContent: FC<Props> = ({
   setShowEdit,
   onOpenReplaceFileModal,
 }) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const [newTitle, setNewTitle] = useState(title);
   const [isCopied, setIsCopied] = useState<boolean>(false);
@@ -378,7 +380,9 @@ export const FileModalContent: FC<Props> = ({
               <ListItemIcon>
                 <DeleteRoundedIcon />
               </ListItemIcon>
-              <ListItemText>Delete</ListItemText>
+              <ListItemText>
+                {t("delete", { defaultValue: "Delete" })}
+              </ListItemText>
             </MenuItem>
           </Menu>
         </Box>
@@ -412,7 +416,7 @@ export const FileModalContent: FC<Props> = ({
               {isLoadingUpdateAltText ? (
                 <CircularProgress size="24px" color="inherit" />
               ) : (
-                "Save"
+                t("save", { defaultValue: "Save" })
               )}
             </Button>
           )}

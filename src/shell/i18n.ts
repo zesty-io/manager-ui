@@ -17,7 +17,7 @@ i18n
     fallbackLng: "en-US",
     supportedLngs: ["en-US", "es-ES", "hi-IN", "zh-CN", "ru-RU", "nl-NL"],
 
-    ns: ["common"],
+    ns: ["common", "shell"],
     defaultNS: "common",
 
     backend: {

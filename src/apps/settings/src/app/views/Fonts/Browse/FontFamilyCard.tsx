@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import Box from "@mui/material/Box";
 import { Typography, FormGroup } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
@@ -30,6 +31,7 @@ const FontFamilyCard = ({
   previewText,
   activePage,
 }: FontFamilyCardProps) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const instance = useSelector((state: AppState) => state.instance);
 
@@ -219,7 +221,7 @@ const FontFamilyCard = ({
               minWidth: "fit-content",
             }}
           >
-            Add
+            {t("add", { defaultValue: "Add" })}
           </LoadingButton>
         </Box>
         <Typography

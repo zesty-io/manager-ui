@@ -35,6 +35,7 @@ import {
 import { alpha } from "@mui/material/styles";
 import { Bynder, FileReplace } from "@zesty-io/material";
 import { useIntersection } from "react-use";
+import { useTranslation } from "react-i18next";
 
 import {
   useGetBinsQuery,
@@ -615,6 +616,7 @@ export const MediaItem = ({
   isBynderSessionValid,
   hideActionButtons,
 }: MediaItemProps) => {
+  const { t } = useTranslation();
   const lastHoveredIndexRef = useRef(null);
   const mediaItemContainerRef = useRef(null);
   const [isDraggable, setIsDraggable] = useState(false);
@@ -967,7 +969,9 @@ export const MediaItem = ({
                   <ListItemIcon>
                     <CloseRounded />
                   </ListItemIcon>
-                  <ListItemText>Remove</ListItemText>
+                  <ListItemText>
+                    {t("remove", { defaultValue: "Remove" })}
+                  </ListItemText>
                 </MenuItem>
               </Menu>
             </Box>

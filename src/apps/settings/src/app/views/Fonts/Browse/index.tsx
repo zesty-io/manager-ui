@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
@@ -43,6 +44,7 @@ export const getFontDataFromHref = (url: string): FontAndVariants => {
 };
 
 const Browse = () => {
+  const { t } = useTranslation();
   const [loadComplete, setLoadComplete] = useState<boolean>(false);
   const [search, setSearch] = useState<string>("");
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -314,7 +316,7 @@ const Browse = () => {
                     width: 64,
                   }}
                 >
-                  Next
+                  {t("next", { defaultValue: "Next" })}
                 </Button>
               </Box>
             </>

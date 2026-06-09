@@ -1,4 +1,5 @@
 import { Box, Typography, Button } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import AddIcon from "@mui/icons-material/Add";
 import { useRedirectsDialog } from "../../../app/components/RedirectsDialogProvider";
 import { useRedirectsTable } from "../RedirectsTable/RedirectsTableContextProvider";
@@ -11,6 +12,7 @@ import { useEffect, useState } from "react";
 import { GridRowId } from "@mui/x-data-grid-pro";
 
 export default function RedirectActions() {
+  const { t } = useTranslation();
   const { openCreateForm } = useRedirectsDialog();
   const { redirects, searchFilter, setSearchFilter, apiRef, isTableLoaded } =
     useRedirectsTable();
@@ -98,7 +100,7 @@ export default function RedirectActions() {
               onClick={() => openCreateForm()}
               startIcon={<AddIcon />}
             >
-              Create
+              {t("create", { defaultValue: "Create" })}
             </Button>
           </Box>
         </Box>

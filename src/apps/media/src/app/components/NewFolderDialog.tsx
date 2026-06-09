@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Button,
   Dialog,
@@ -27,6 +28,7 @@ interface Props {
 }
 
 export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
+  const { t } = useTranslation();
   const [name, setName] = useState("Untitled");
   const [selectedGroup, setSelectedGroup] = useState<Group | null>();
   const [params, setParams] = useParams();
@@ -162,7 +164,7 @@ export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="inherit">
-          Cancel
+          {t("cancel", { defaultValue: "Cancel" })}
         </Button>
         <Button
           loading={isCreatingGroup}
@@ -170,7 +172,7 @@ export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
           variant="contained"
           onClick={handleCreate}
         >
-          Create
+          {t("create", { defaultValue: "Create" })}
         </Button>
       </DialogActions>
     </Dialog>

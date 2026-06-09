@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { Box, Button, Stack, SvgIcon, Typography } from "@mui/material";
 import { useParams } from "shell/hooks/useParams";
 import { format, subMonths, isValid } from "date-fns";
@@ -36,6 +37,7 @@ const Crumbs = [
 ];
 
 export const ResourceDetails = () => {
+  const { t } = useTranslation();
   const history = useHistory();
   const [params, setParams] = useParams();
   const [initialized, setInitialized] = useState(false);
@@ -178,7 +180,7 @@ export const ResourceDetails = () => {
               history.push(resolveUrlFromAudit(actionsByZuid[0], category));
             }}
           >
-            Open
+            {t("open", { defaultValue: "Open" })}
           </Button>
           <Button
             sx={{ height: "max-content" }}

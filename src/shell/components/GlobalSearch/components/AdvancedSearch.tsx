@@ -1,4 +1,5 @@
 import { FC, useReducer, useMemo, useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Dialog,
   DialogTitle,
@@ -64,6 +65,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
   onSearch,
   searchAccelerator = null,
 }) => {
+  const { t } = useTranslation();
   const history = useHistory();
   const location = useLocation();
   const { data: users, isLoading: isLoadingUsers } = useGetUsersQuery();
@@ -580,7 +582,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
             </Button>
             <Box>
               <Button color="inherit" sx={{ mr: 1 }} onClick={onClose}>
-                Cancel
+                {t("cancel", { defaultValue: "Cancel" })}
               </Button>
               <Button
                 data-cy="AdvanceSearchSubmitButton"
@@ -589,7 +591,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
                 onClick={handleSearchClicked}
                 disabled={!searchData.keyword && !searchData.user}
               >
-                Search
+                {t("search", { defaultValue: "Search" })}
               </Button>
             </Box>
           </Stack>

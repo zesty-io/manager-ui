@@ -1,4 +1,5 @@
 import { FC, useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import FileUploadRoundedIcon from "@mui/icons-material/FileUploadRounded";
 import Button from "@mui/material/Button";
 import { importCSVFile, IMPORT_REDIRECTS } from "../../../store/imports";
@@ -100,6 +101,8 @@ const ImportErrorDialog: FC<ImportErrorDialogProps> = ({
   onRetry,
   clearFiles,
 }) => {
+  const { t } = useTranslation();
+
   const handleCancel = () => {
     clearFiles();
     onClose();
@@ -159,7 +162,7 @@ const ImportErrorDialog: FC<ImportErrorDialogProps> = ({
       </DialogTitle>
       <DialogActions sx={{ p: "20px" }}>
         <Button variant="text" color="inherit" onClick={handleCancel}>
-          Cancel
+          {t("cancel", { defaultValue: "Cancel" })}
         </Button>
         <Button
           data-cy="RedirectsImportRetryButton"

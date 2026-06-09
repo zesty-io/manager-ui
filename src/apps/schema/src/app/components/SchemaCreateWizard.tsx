@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Box,
   Button,
@@ -57,6 +58,7 @@ const templates = [
 ];
 
 export const SchemaCreateWizard = () => {
+  const { t } = useTranslation();
   const history = useHistory();
   const instance = useSelector((state: AppState) => state.instance);
   const models = useSelector((state: AppState) => state.models);
@@ -144,7 +146,7 @@ export const SchemaCreateWizard = () => {
             onClick={handleNext}
             disabled={selectedTemplateIndex === null}
           >
-            Next
+            {t("next", { defaultValue: "Next" })}
           </Button>
         </DialogActions>
       </Dialog>

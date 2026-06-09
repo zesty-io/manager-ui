@@ -1,4 +1,5 @@
 import { memo, useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import {
@@ -32,6 +33,7 @@ const CreateFile = memo(function CreateFile({
   defaultType,
   title = "Create File",
 }: CreateFileProps) {
+  const { t } = useTranslation();
   const history = useHistory();
 
   const dispatch = useDispatch();
@@ -256,7 +258,7 @@ const CreateFile = memo(function CreateFile({
           color="inherit"
           onClick={onClose}
         >
-          Cancel
+          {t("cancel", { defaultValue: "Cancel" })}
         </Button>
         <Button
           data-cy="CreateFileCreateButton"

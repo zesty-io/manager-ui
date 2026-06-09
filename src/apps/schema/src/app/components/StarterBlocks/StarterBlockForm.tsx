@@ -1,4 +1,5 @@
 import React, { useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router";
 import {
   Box,
@@ -123,6 +124,7 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
   onClose,
   setActiveStep,
 }) => {
+  const { t } = useTranslation();
   const history = useHistory();
   const [isLoading, setIsLoading] = useState(false);
   const [blockModelData, setBlockModelData] = useState({ ...block });
@@ -417,7 +419,7 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
                     },
                   }}
                 >
-                  Preview
+                  {t("preview", { defaultValue: "Preview" })}
                   <OpenInNewRoundedIcon fontSize="small" />
                 </Link>
                 <Link
@@ -483,7 +485,7 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
           color="inherit"
           onClick={() => setActiveStep("selection")}
         >
-          Back
+          {t("back", { defaultValue: "Back" })}
         </Button>
         <Button
           variant="contained"

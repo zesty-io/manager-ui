@@ -1,4 +1,5 @@
 import { useCallback, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Button,
   Box,
@@ -94,6 +95,7 @@ const ConnectToApi = ({
   setActiveStep: (step: number) => void;
   closeForm?: () => void;
 }) => {
+  const { t } = useTranslation();
   const focusRef = useRef<string>("url");
   const { data, status, fetchApiData } = useIntegrationField();
 
@@ -352,7 +354,7 @@ const ConnectToApi = ({
       </DialogContent>
       <DialogActions>
         <Button color="inherit" onClick={closeForm}>
-          Cancel
+          {t("cancel", { defaultValue: "Cancel" })}
         </Button>
         <Button
           data-cy="integrationConnectButton"

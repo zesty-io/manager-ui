@@ -1,4 +1,5 @@
 import { FC, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Box, Typography, Button } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ClearIcon from "@mui/icons-material/Clear";
@@ -12,6 +13,7 @@ type RedirectsDeleteProps = {
 };
 
 const RedirectsDelete: FC<RedirectsDeleteProps> = ({ selectedRedirects }) => {
+  const { t } = useTranslation();
   const { openDeleteDialog } = useRedirectsDialog();
   const { apiRef, redirects } = useRedirectsTable();
 
@@ -78,7 +80,7 @@ const RedirectsDelete: FC<RedirectsDeleteProps> = ({ selectedRedirects }) => {
           onClick={() => handleDelete()}
           startIcon={<DeleteIcon />}
         >
-          Delete
+          {t("delete", { defaultValue: "Delete" })}
         </Button>
       </Box>
     </Box>

@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Button,
   DialogActions,
@@ -110,6 +111,7 @@ const ConfigureDisplayOptions = ({
   setActiveStep?: (step: number) => void;
   onSave: () => void;
 }) => {
+  const { t } = useTranslation();
   const lastDetailRef = useRef(null);
   const [apiPathOptions, setApiPathOptions] = useState<string[]>([]);
   const [rootPathOptions, setRootPathOptions] = useState<string[]>([]);
@@ -437,7 +439,7 @@ const ConfigureDisplayOptions = ({
           color="inherit"
           onClick={() => setActiveStep?.(1)}
         >
-          Back
+          {t("back", { defaultValue: "Back" })}
         </Button>
         <Button
           data-cy="integrationConfigureDisplayOptionsDoneButton"
@@ -446,7 +448,7 @@ const ConfigureDisplayOptions = ({
           disabled={!isCompleted}
           onClick={handleSave}
         >
-          Done
+          {t("done", { defaultValue: "Done" })}
         </Button>
       </DialogActions>
     </FormWrapper>

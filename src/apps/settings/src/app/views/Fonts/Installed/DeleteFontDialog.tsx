@@ -1,4 +1,5 @@
 import { FC, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Dialog,
   DialogTitle,
@@ -35,6 +36,7 @@ const DeleteFontDialog = ({
   variant,
   ZUID,
 }: DeleteFontDialogProps) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const fontLabel = `${family} (${variant})`;
 
@@ -148,7 +150,7 @@ const DeleteFontDialog = ({
         <DialogContent></DialogContent>
         <DialogActions>
           <Button onClick={onClose} color="inherit">
-            Cancel
+            {t("cancel", { defaultValue: "Cancel" })}
           </Button>
           <LoadingButton
             data-cy="DeleteFontDialogConfirmButton"
@@ -157,7 +159,7 @@ const DeleteFontDialog = ({
             onClick={handleFontDelete}
             loading={isDeleting || isUpdating}
           >
-            Remove
+            {t("remove", { defaultValue: "Remove" })}
           </LoadingButton>
         </DialogActions>
       </Dialog>

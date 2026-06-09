@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import {
   DialogTitle,
   DialogActions,
@@ -29,6 +30,7 @@ export const NoPermission = ({
   headerSubtitle,
   headerTitle,
 }: NoPermissionProps) => {
+  const { t } = useTranslation();
   const { data: users } = useGetUsersRolesQuery();
 
   const ownersAndAdmins = useMemo(() => {
@@ -105,7 +107,7 @@ export const NoPermission = ({
       </DialogContent>
       <DialogActions>
         <Button color="primary" variant="contained" onClick={onClose}>
-          Done
+          {t("done", { defaultValue: "Done" })}
         </Button>
       </DialogActions>
     </Dialog>

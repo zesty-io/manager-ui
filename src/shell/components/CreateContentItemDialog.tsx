@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Box,
   Button,
@@ -29,6 +30,7 @@ export const CreateContentItemDialog = ({
   onClose,
   limitTo,
 }: Props) => {
+  const { t } = useTranslation();
   const { data: models } = useGetContentModelsQuery();
   const history = useHistory();
   const [selectedModel, setSelectedModel] = useState(null);
@@ -154,7 +156,7 @@ export const CreateContentItemDialog = ({
           onClick={onClose}
           color="inherit"
         >
-          Discard
+          {t("discard", { defaultValue: "Discard" })}
         </Button>
         <Button
           data-cy="create_new_content_item_btn"
@@ -162,7 +164,7 @@ export const CreateContentItemDialog = ({
           color="primary"
           onClick={onCreateClick}
         >
-          Create
+          {t("create", { defaultValue: "Create" })}
         </Button>
       </DialogActions>
     </Dialog>

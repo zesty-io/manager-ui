@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Box,
   InputLabel,
@@ -28,6 +29,7 @@ interface Props {
 }
 
 export const FieldsListRight = ({ model }: Props) => {
+  const { t } = useTranslation();
   const history = useHistory();
   const [description, setDescription] = useState("");
   const [isCopied, setIsCopied] = useState(null);
@@ -233,7 +235,7 @@ export const FieldsListRight = ({ model }: Props) => {
             onClick={() => handleSave("parentZUID")}
             sx={{ mt: 1.5 }}
           >
-            Save
+            {t("save", { defaultValue: "Save" })}
           </Button>
         )}
       </Box>
@@ -300,7 +302,7 @@ export const FieldsListRight = ({ model }: Props) => {
           onClick={() => handleSave("description")}
           sx={{ mt: 1.5 }}
         >
-          Save
+          {t("save", { defaultValue: "Save" })}
         </Button>
       )}
       {/* <Box

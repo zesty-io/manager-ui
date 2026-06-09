@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import Button from "@mui/material/Button";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
@@ -31,6 +32,7 @@ const SelectDisplayOptions = ({
   closeForm,
   resetKeyPaths,
 }: SelectDisplayOptionsProps) => {
+  const { t } = useTranslation();
   const [recommendedType, setRecommendedType] =
     useState<IntegrationTypes | null>(null);
 
@@ -281,7 +283,7 @@ const SelectDisplayOptions = ({
         }}
       >
         <Button variant="outlined" color="inherit" onClick={closeForm}>
-          Cancel
+          {t("cancel", { defaultValue: "Cancel" })}
         </Button>
         <Button
           data-cy="integrationConfigureOptionNextButton"
@@ -289,7 +291,7 @@ const SelectDisplayOptions = ({
           onClick={handleNext}
           disabled={!displayType}
         >
-          Next
+          {t("next", { defaultValue: "Next" })}
         </Button>
       </DialogActions>
     </FormWrapper>

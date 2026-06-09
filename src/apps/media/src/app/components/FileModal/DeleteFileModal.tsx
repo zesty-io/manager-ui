@@ -1,4 +1,5 @@
 import { FC, useEffect, useState, Dispatch } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Dialog,
   DialogContent,
@@ -30,6 +31,7 @@ export const DeleteFileModal: FC<Props> = ({
   fileCount,
   isLoadingDelete,
 }) => {
+  const { t } = useTranslation();
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
 
@@ -66,7 +68,7 @@ export const DeleteFileModal: FC<Props> = ({
           disabled={isLoadingDelete}
           onClick={() => onClose()}
         >
-          Cancel
+          {t("cancel", { defaultValue: "Cancel" })}
         </Button>
         <Button
           variant="contained"
@@ -78,7 +80,11 @@ export const DeleteFileModal: FC<Props> = ({
           {isLoadingDelete ? (
             <CircularProgress size="24px" color="inherit" />
           ) : (
-            <>{fileCount > 1 ? `Delete (${fileCount})` : "Delete"}</>
+            <>
+              {fileCount > 1
+                ? `Delete (${fileCount})`
+                : t("delete", { defaultValue: "Delete" })}
+            </>
           )}
         </Button>
       </DialogActions>

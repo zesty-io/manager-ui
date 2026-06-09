@@ -1,4 +1,5 @@
 import { useReducer, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Autocomplete,
   Button,
@@ -52,6 +53,7 @@ const roles = [
 const emailAddressRegexp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
 const InviteMembersModal = ({ onClose }: Props) => {
+  const { t } = useTranslation();
   const [emails, setEmails] = useState<string[]>([]);
   const [emailError, setEmailError] = useState(false);
   const [inputValue, setInputValue] = useState("");
@@ -364,7 +366,7 @@ const InviteMembersModal = ({ onClose }: Props) => {
         </DialogContent>
         <DialogActions>
           <Button color="inherit" onClick={() => onClose()}>
-            Cancel
+            {t("cancel", { defaultValue: "Cancel" })}
           </Button>
           <Button
             variant="contained"

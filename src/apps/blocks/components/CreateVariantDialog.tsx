@@ -1,4 +1,5 @@
 import { KeyboardEvent, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Box,
   Button,
@@ -23,6 +24,7 @@ export const CreateVariantDialog = ({
   onClose: () => void;
   model: ContentModel;
 }) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const history = useHistory();
   const [variantName, setVariantName] = useState("Untitled");
@@ -101,7 +103,7 @@ export const CreateVariantDialog = ({
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="inherit">
-          Cancel
+          {t("cancel", { defaultValue: "Cancel" })}
         </Button>
         <Button
           disabled={isFieldsLoading}
@@ -110,7 +112,7 @@ export const CreateVariantDialog = ({
           variant="contained"
           data-cy="create-variant-confirm-button"
         >
-          Create
+          {t("create", { defaultValue: "Create" })}
         </Button>
       </DialogActions>
     </Dialog>

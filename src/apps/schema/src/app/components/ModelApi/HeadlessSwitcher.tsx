@@ -13,12 +13,14 @@ import headlessLogos from "../../../../../../../public/images/headlessLogos.jpg"
 import hybridLogos from "../../../../../../../public/images/hybridLogos.jpg";
 import { InstanceSetting } from "../../../../../../shell/services/types";
 import { useUpdateInstanceSettingMutation } from "../../../../../../shell/services/instance";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   instanceSetting: InstanceSetting;
 };
 
 export const HeadlessSwitcher = ({ instanceSetting }: Props) => {
+  const { t } = useTranslation();
   const [selected, setSelected] = useState<"hybrid" | "headless" | null>(null);
   const [updateInstanceSetting, { isLoading }] =
     useUpdateInstanceSettingMutation();
@@ -141,7 +143,7 @@ export const HeadlessSwitcher = ({ instanceSetting }: Props) => {
         </DialogTitle>
         <DialogActions>
           <Button onClick={() => setSelected(null)} color="primary">
-            Cancel
+            {t("cancel", { defaultValue: "Cancel" })}
           </Button>
           <Button
             loading={isLoading}

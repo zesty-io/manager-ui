@@ -10,6 +10,7 @@ import {
   TextField,
 } from "@mui/material";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
 import { useDeleteContentModelMutation } from "../../../../../shell/services/instance";
 import { ContentModel, WebView } from "../../../../../shell/services/types";
@@ -23,6 +24,7 @@ interface Props {
 }
 
 export const DeleteModelDialogue = ({ onClose, model }: Props) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const history = useHistory();
   const [deleteConfirmation, setDeleteConfirmation] = useState("");
@@ -116,7 +118,7 @@ export const DeleteModelDialogue = ({ onClose, model }: Props) => {
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="inherit">
-          Cancel
+          {t("cancel", { defaultValue: "Cancel" })}
         </Button>
         <Button
           disabled={deleteConfirmation !== model.label}

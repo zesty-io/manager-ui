@@ -1,4 +1,5 @@
 import { FC } from "react";
+import { useTranslation } from "react-i18next";
 import { Dialog, DialogActions, DialogTitle, Typography } from "@mui/material";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
@@ -19,6 +20,7 @@ const ConfirmSaveDialog: FC<ConfirmSaveDialogProps> = ({
   title,
   isSaving = false,
 }) => {
+  const { t } = useTranslation();
   return (
     <Dialog open={open} fullWidth maxWidth="xs" onClose={onClose}>
       <DialogTitle>
@@ -51,7 +53,7 @@ const ConfirmSaveDialog: FC<ConfirmSaveDialogProps> = ({
       </DialogTitle>
       <DialogActions>
         <Button variant="text" color="inherit" onClick={onClose}>
-          Cancel
+          {t("cancel", { defaultValue: "Cancel" })}
         </Button>
         <Button
           variant="contained"
@@ -63,7 +65,7 @@ const ConfirmSaveDialog: FC<ConfirmSaveDialogProps> = ({
           autoFocus
           data-cy="ConfirmSaveSettings"
         >
-          Save
+          {t("save", { defaultValue: "Save" })}
         </Button>
       </DialogActions>
     </Dialog>

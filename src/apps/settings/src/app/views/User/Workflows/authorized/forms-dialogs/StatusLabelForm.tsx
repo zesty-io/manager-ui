@@ -1,4 +1,5 @@
 import { FC, FormEvent, ReactNode, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Box,
   Button,
@@ -286,6 +287,7 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
   values,
   isDeactivated = false,
 }) => {
+  const { t } = useTranslation();
   const ZUID = values?.ZUID || undefined;
   const [rolesMenuItems, setRolesMenuItems] = useState<RoleMenu[]>([]);
   const {
@@ -550,7 +552,7 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
           variant="outlined"
           color="inherit"
         >
-          Cancel
+          {t("cancel", { defaultValue: "Cancel" })}
         </Button>
         <Button
           data-amp-track-id="workflows-create-status-label-submit-button"
@@ -561,7 +563,7 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
           loading={createLabelIsLoading || editLabelIsLoading}
           startIcon={<SaveIcon />}
         >
-          {ZUID ? "Save" : "Create Status"}
+          {ZUID ? t("save", { defaultValue: "Save" }) : "Create Status"}
         </Button>
       </DialogActions>
     </Dialog>

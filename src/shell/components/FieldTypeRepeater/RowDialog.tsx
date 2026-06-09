@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Dialog,
   DialogTitle,
@@ -38,6 +39,7 @@ export const RowDialog = ({
   editRowData,
   isUpdate,
 }: RowDialogProps) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [formErrors, setFormErrors] = useState<Record<string, Error>>({});
   const [resetKey, setResetKey] = useState(0);
@@ -344,21 +346,21 @@ export const RowDialog = ({
                 onClick={onClose}
                 color="inherit"
               >
-                Cancel
+                {t("cancel", { defaultValue: "Cancel" })}
               </Button>
               <Button
                 data-cy="SaveRepeaterRowItemBtn"
                 variant="contained"
                 onClick={() => handleSubmit()}
               >
-                Done
+                {t("done", { defaultValue: "Done" })}
               </Button>
             </Stack>
           </>
         ) : (
           <>
             <Button variant="outlined" onClick={onClose} color="inherit">
-              Cancel
+              {t("cancel", { defaultValue: "Cancel" })}
             </Button>
             <Stack direction="row" spacing={2}>
               <Button
@@ -374,7 +376,7 @@ export const RowDialog = ({
                 variant="contained"
                 onClick={() => handleSubmit()}
               >
-                Save
+                {t("save", { defaultValue: "Save" })}
               </Button>
             </Stack>
           </>

@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Box,
   Button,
@@ -32,6 +33,7 @@ export const ConfirmPublishModal = ({
   children,
   relatedItemsToPublishCount,
 }: ConfirmPublishModal) => {
+  const { t } = useTranslation();
   const actionRef = useRef<ButtonBaseActions | null>(null);
   const onEntered = () => actionRef?.current?.focusVisible();
   return (
@@ -77,7 +79,7 @@ export const ConfirmPublishModal = ({
           onClick={onCancel}
           disabled={isPublishing}
         >
-          Cancel
+          {t("cancel", { defaultValue: "Cancel" })}
         </Button>
         <Button
           loading={isPublishing}

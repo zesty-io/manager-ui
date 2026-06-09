@@ -5,12 +5,14 @@ import {
 } from "../../../../../../shell/services/instance";
 import { useHistory, useParams } from "react-router";
 import { modelIconMap } from "../../utils";
+import { useTranslation } from "react-i18next";
 
 type Params = {
   id: string;
 };
 
 export const RelatedModels = () => {
+  const { t } = useTranslation();
   const params = useParams<Params>();
   const { id } = params;
   const history = useHistory();
@@ -58,7 +60,7 @@ export const RelatedModels = () => {
                 size="small"
                 onClick={() => history.push(`/schema/${model?.ZUID}`)}
               >
-                View
+                {t("view", { defaultValue: "View" })}
               </Button>
             </Box>
           );

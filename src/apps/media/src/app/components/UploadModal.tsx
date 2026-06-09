@@ -1,4 +1,5 @@
 import { FC, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "../../../../../shell/store/types";
 import {
@@ -30,6 +31,7 @@ import { mediaManagerApi } from "../../../../../shell/services/mediaManager";
 import pluralizeWord from "../../../../../utility/pluralizeWord";
 
 export const UploadModal: FC = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const uploads = useSelector((state: AppState) =>
     state.mediaRevamp.uploads.filter((upload) => !upload.replacementFile)
@@ -150,7 +152,7 @@ export const UploadModal: FC = () => {
             disabled={loading}
             onClick={handleDismiss}
           >
-            Done
+            {t("done", { defaultValue: "Done" })}
           </Button>
         </DialogActions>
       </Dialog>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Dialog,
   DialogActions,
@@ -40,6 +41,7 @@ export const SchedulePublish = ({
   onScheduleSuccess,
   onUnscheduleSuccess,
 }: SchedulePublishProps) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const { data: users } = useGetUsersQuery();
 
@@ -241,7 +243,7 @@ export const SchedulePublish = ({
           onClick={onClose}
           disabled={isLoading}
         >
-          Cancel
+          {t("cancel", { defaultValue: "Cancel" })}
         </Button>
 
         {item?.scheduling?.isScheduled ? (

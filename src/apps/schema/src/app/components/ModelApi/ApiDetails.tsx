@@ -30,6 +30,7 @@ import {
 } from "../../../../../../shell/services/instance";
 import { HeadlessSwitcher } from "./HeadlessSwitcher";
 import { useEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 
 const apiTypeIconMap: Record<ApiType, SvgIconComponent> = {
   "quick-access": BoltRoundedIcon,
@@ -48,6 +49,7 @@ const apiTypesWithEndpoints = [
 ];
 
 export const ApiDetails = () => {
+  const { t } = useTranslation();
   const history = useHistory();
   const location = useLocation();
   const { contentModelZUID } = useParams<{ contentModelZUID: string }>();
@@ -110,7 +112,7 @@ export const ApiDetails = () => {
               )
             }
           >
-            Back
+            {t("back", { defaultValue: "Back" })}
           </Button>
         </Box>
         <Box pr={1}>

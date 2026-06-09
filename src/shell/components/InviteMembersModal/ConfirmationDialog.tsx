@@ -19,6 +19,7 @@ import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import pluralizeWord from "../../../utility/pluralizeWord";
+import { useTranslation } from "react-i18next";
 
 type ConfirmationModalProps = {
   sentEmails: string[];
@@ -34,6 +35,7 @@ export const ConfirmationModal = ({
   roleName,
   failedInvites,
 }: ConfirmationModalProps) => {
+  const { t } = useTranslation();
   const hasFailedInvites = !!Object.keys(failedInvites).length;
   const hasSuccessfulInvites = !!sentEmails.length;
 
@@ -132,7 +134,7 @@ export const ConfirmationModal = ({
           Invite More People
         </Button>
         <Button color="primary" variant="contained" onClick={() => onClose()}>
-          Done
+          {t("done", { defaultValue: "Done" })}
         </Button>
       </DialogActions>
     </Dialog>

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useContext } from "react";
+import { useTranslation } from "react-i18next";
 import { Box, Typography, Button, Stack } from "@mui/material";
 import { Editor } from "@tinymce/tinymce-react";
 import { theme } from "@zesty-io/material";
@@ -34,6 +35,7 @@ export const InputField = ({
   editModeValue = "",
   commentCount,
 }: InputFieldProps) => {
+  const { t } = useTranslation();
   const [
     createComment,
     {
@@ -370,7 +372,7 @@ export const InputField = ({
               onClick={onCancel}
               disabled={isLoading}
             >
-              Cancel
+              {t("cancel", { defaultValue: "Cancel" })}
             </Button>
             <Button
               data-cy="SubmitNewComment"

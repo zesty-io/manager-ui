@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Dialog,
   DialogTitle,
@@ -40,6 +41,7 @@ type Props = {
 };
 
 export const CompareDialog = ({ onClose }: Props) => {
+  const { t } = useTranslation();
   const [params, setParams] = useParams();
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -145,7 +147,7 @@ export const CompareDialog = ({ onClose }: Props) => {
                 ),
               }}
               inputRef={inputRef}
-              placeholder="Search"
+              placeholder={t("search", { defaultValue: "Search" })}
               fullWidth
             />
           </Box>

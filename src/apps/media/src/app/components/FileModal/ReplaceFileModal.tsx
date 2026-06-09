@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Dialog,
   DialogActions,
@@ -38,6 +39,7 @@ export const ReplaceFileModal = ({
   originalFile,
   onCancel,
 }: ReplaceFileModalProps) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const [newFile, setNewFile] = useState<File>(null);
   const [showUploadingFileModal, setShowUploadingFileModal] = useState(false);
@@ -145,7 +147,7 @@ export const ReplaceFileModal = ({
             variant="contained"
             onClick={handleCloseUploadingFileModal}
           >
-            Done
+            {t("done", { defaultValue: "Done" })}
           </Button>
         </DialogActions>
       </Dialog>
@@ -192,7 +194,7 @@ export const ReplaceFileModal = ({
         </DialogContent>
         <DialogActions>
           <Button color="inherit" onClick={onCancel}>
-            Cancel
+            {t("cancel", { defaultValue: "Cancel" })}
           </Button>
           <Button
             variant="contained"
@@ -202,7 +204,7 @@ export const ReplaceFileModal = ({
               hiddenFileInput.current.click();
             }}
           >
-            Replace
+            {t("replace", { defaultValue: "Replace" })}
           </Button>
         </DialogActions>
       </Dialog>

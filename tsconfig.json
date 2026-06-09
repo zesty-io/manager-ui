@@ -1,6 +1,7 @@
 {
   "include": ["src", "index.d.ts"],
   "compilerOptions": {
+    "skipLibCheck": true,
     "noImplicitAny": true,
     "allowJs": true,
     "module": "es6",

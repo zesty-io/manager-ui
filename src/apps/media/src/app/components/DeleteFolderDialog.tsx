@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Button,
   Dialog,
@@ -24,6 +25,7 @@ interface Props {
 }
 
 export const DeleteFolderDialog = ({ open, onClose, id, groupId }: Props) => {
+  const { t } = useTranslation();
   const [deleteGroup, { isLoading, isSuccess }] = useDeleteGroupMutation();
   const instanceId = useSelector((state: any) => state.instance.ID);
   const ecoId = useSelector((state: any) => state.instance.ecoID);
@@ -65,7 +67,7 @@ export const DeleteFolderDialog = ({ open, onClose, id, groupId }: Props) => {
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="inherit">
-          Cancel
+          {t("cancel", { defaultValue: "Cancel" })}
         </Button>
         <Button
           disabled={isLoading}

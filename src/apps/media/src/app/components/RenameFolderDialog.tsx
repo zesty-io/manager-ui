@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Button,
   Dialog,
@@ -25,6 +26,7 @@ export const RenameFolderDialog = ({
   id,
   groupId,
 }: Props) => {
+  const { t } = useTranslation();
   const [newName, setNewName] = useState(name);
 
   const [
@@ -73,10 +75,10 @@ export const RenameFolderDialog = ({
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="inherit">
-          Cancel
+          {t("cancel", { defaultValue: "Cancel" })}
         </Button>
         <Button disabled={isLoading} variant="contained" onClick={handleUpdate}>
-          Update
+          {t("update", { defaultValue: "Update" })}
         </Button>
       </DialogActions>
     </Dialog>

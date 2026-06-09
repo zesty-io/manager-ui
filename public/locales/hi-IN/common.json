@@ -1,1 +1,22 @@
-{}
+{
+  "cancel": "Cancel",
+  "create": "Create",
+  "back": "Back",
+  "done": "Done",
+  "next": "Next",
+  "delete": "Delete",
+  "remove": "Remove",
+  "search": "Search",
+  "save": "Save",
+  "update": "Update",
+  "replace": "Replace",
+  "copied": "Copied",
+  "preview": "Preview",
+  "upload": "Upload",
+  "open": "Open",
+  "copy": "Copy",
+  "view": "View",
+  "add": "Add",
+  "edit": "Edit",
+  "discard": "Discard"
+}

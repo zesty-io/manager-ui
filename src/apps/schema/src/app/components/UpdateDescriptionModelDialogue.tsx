@@ -17,6 +17,7 @@ import { ContentModel } from "../../../../../shell/services/types";
 import { notify } from "../../../../../shell/store/notifications";
 import { useDispatch } from "react-redux";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   onClose: () => void;
@@ -24,6 +25,7 @@ interface Props {
 }
 
 export const UpdateDescriptionModelDialogue = ({ onClose, model }: Props) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const [newDescription, setNewDescription] = useState(model.description);
 
@@ -101,7 +103,7 @@ export const UpdateDescriptionModelDialogue = ({ onClose, model }: Props) => {
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="inherit">
-          Cancel
+          {t("cancel", { defaultValue: "Cancel" })}
         </Button>
         <Button
           onClick={() =>
@@ -113,7 +115,7 @@ export const UpdateDescriptionModelDialogue = ({ onClose, model }: Props) => {
           loading={isLoading}
           variant="contained"
         >
-          Save
+          {t("save", { defaultValue: "Save" })}
         </Button>
       </DialogActions>
     </Dialog>

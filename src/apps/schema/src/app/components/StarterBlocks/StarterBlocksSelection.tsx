@@ -22,6 +22,8 @@ import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import PlayCircleOutlineRoundedIcon from "@mui/icons-material/PlayCircleOutlineRounded";
 import SearchIcon from "@mui/icons-material/Search";
 
+import { useTranslation } from "react-i18next";
+
 import { NoResults } from "../NoResults";
 import { StarterBlockProps, STARTER_BLOCKS } from "./configs";
 import SearchBox from "../../../../../../shell/components/SearchBox";
@@ -125,6 +127,7 @@ export const StarterBlocksSelection: React.FC<StarterBlocksSelectionProps> = ({
   selectBlank,
   blockType,
 }) => {
+  const { t } = useTranslation();
   const searchRef = useRef<HTMLDivElement>();
   const [filteredBlockTypes, setFilteredBlockTypes] =
     useState<StarterBlockProps[]>(STARTER_BLOCKS);
@@ -292,7 +295,7 @@ export const StarterBlocksSelection: React.FC<StarterBlocksSelectionProps> = ({
         }}
       >
         <Button variant="outlined" color="inherit" onClick={onClose}>
-          Cancel
+          {t("cancel", { defaultValue: "Cancel" })}
         </Button>
         <Button
           variant="contained"
@@ -306,7 +309,7 @@ export const StarterBlocksSelection: React.FC<StarterBlocksSelectionProps> = ({
           }
           data-cy="select-block-type-next-button"
         >
-          Next
+          {t("next", { defaultValue: "Next" })}
         </Button>
       </DialogActions>
     </Box>

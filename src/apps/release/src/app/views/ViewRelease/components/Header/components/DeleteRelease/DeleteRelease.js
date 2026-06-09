@@ -1,6 +1,7 @@
 import { memo, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useHistory, useParams } from "react-router";
+import { useTranslation } from "react-i18next";
 
 import Button from "@mui/material/Button";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -18,6 +19,7 @@ import { usePermission } from "shell/hooks/use-permissions";
 
 import styles from "./DeleteRelease.less";
 export const DeleteRelease = memo(function DeleteRelease({ isContentSubpage }) {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const params = useParams();
   const history = useHistory();
@@ -43,7 +45,7 @@ export const DeleteRelease = memo(function DeleteRelease({ isContentSubpage }) {
         disabled={!canPublish || loading}
         startIcon={<DeleteIcon />}
       >
-        Delete
+        {t("delete", { defaultValue: "Delete" })}
       </Button>
 
       <Modal
