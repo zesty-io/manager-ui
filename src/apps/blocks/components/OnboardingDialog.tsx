@@ -92,7 +92,7 @@ export const OnboardingDialog = ({ onClose }: { onClose: () => void }) => {
               setStep(step - 1);
             }}
           >
-            {t("back", { defaultValue: "Back" })}
+            {t("back")}
           </Button>
         )}
         <Button
@@ -107,9 +107,7 @@ export const OnboardingDialog = ({ onClose }: { onClose: () => void }) => {
             }
           }}
         >
-          {step === stepMapping.length - 1
-            ? t("done", { defaultValue: "Done" })
-            : t("next", { defaultValue: "Next" })}
+          {step === stepMapping.length - 1 ? t("done") : t("next")}
         </Button>
       </Box>
     </Dialog>

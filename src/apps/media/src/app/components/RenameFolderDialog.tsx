@@ -75,10 +75,10 @@ export const RenameFolderDialog = ({
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="inherit">
-          {t("cancel", { defaultValue: "Cancel" })}
+          {t("cancel")}
         </Button>
         <Button disabled={isLoading} variant="contained" onClick={handleUpdate}>
-          {t("update", { defaultValue: "Update" })}
+          {t("update")}
         </Button>
       </DialogActions>
     </Dialog>

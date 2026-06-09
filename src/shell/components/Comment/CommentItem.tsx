@@ -289,9 +289,7 @@ export const CommentItem = ({
                 <ListItemIcon>
                   <DriveFileRenameOutlineRoundedIcon />
                 </ListItemIcon>
-                <ListItemText>
-                  {t("edit", { defaultValue: "Edit" })}
-                </ListItemText>
+                <ListItemText>{t("edit")}</ListItemText>
               </MenuItem>
             )}
             <MenuItem data-cy="CopyCommentLinkButton" onClick={handleCopyClick}>
@@ -324,9 +322,7 @@ export const CommentItem = ({
                 <ListItemIcon>
                   <DeleteRoundedIcon />
                 </ListItemIcon>
-                <ListItemText>
-                  {t("delete", { defaultValue: "Delete" })}
-                </ListItemText>
+                <ListItemText>{t("delete")}</ListItemText>
               </MenuItem>
             )}
           </Menu>

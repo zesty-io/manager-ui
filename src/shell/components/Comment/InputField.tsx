@@ -372,7 +372,7 @@ export const InputField = ({
               onClick={onCancel}
               disabled={isLoading}
             >
-              {t("cancel", { defaultValue: "Cancel" })}
+              {t("cancel")}
             </Button>
             <Button
               data-cy="SubmitNewComment"

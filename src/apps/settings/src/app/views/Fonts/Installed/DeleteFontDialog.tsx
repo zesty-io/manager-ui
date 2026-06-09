@@ -150,7 +150,7 @@ const DeleteFontDialog = ({
         <DialogContent></DialogContent>
         <DialogActions>
           <Button onClick={onClose} color="inherit">
-            {t("cancel", { defaultValue: "Cancel" })}
+            {t("cancel")}
           </Button>
           <LoadingButton
             data-cy="DeleteFontDialogConfirmButton"
@@ -159,7 +159,7 @@ const DeleteFontDialog = ({
             onClick={handleFontDelete}
             loading={isDeleting || isUpdating}
           >
-            {t("remove", { defaultValue: "Remove" })}
+            {t("remove")}
           </LoadingButton>
         </DialogActions>
       </Dialog>

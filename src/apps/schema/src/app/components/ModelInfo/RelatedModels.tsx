@@ -60,7 +60,7 @@ export const RelatedModels = () => {
                 size="small"
                 onClick={() => history.push(`/schema/${model?.ZUID}`)}
               >
-                {t("view", { defaultValue: "View" })}
+                {t("view")}
               </Button>
             </Box>
           );

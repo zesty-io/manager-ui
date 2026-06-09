@@ -552,7 +552,7 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
           variant="outlined"
           color="inherit"
         >
-          {t("cancel", { defaultValue: "Cancel" })}
+          {t("cancel")}
         </Button>
         <Button
           data-amp-track-id="workflows-create-status-label-submit-button"
@@ -563,7 +563,7 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
           loading={createLabelIsLoading || editLabelIsLoading}
           startIcon={<SaveIcon />}
         >
-          {ZUID ? t("save", { defaultValue: "Save" }) : "Create Status"}
+          {ZUID ? t("save") : "Create Status"}
         </Button>
       </DialogActions>
     </Dialog>

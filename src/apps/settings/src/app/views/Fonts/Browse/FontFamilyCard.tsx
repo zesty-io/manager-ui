@@ -221,7 +221,7 @@ const FontFamilyCard = ({
               minWidth: "fit-content",
             }}
           >
-            {t("add", { defaultValue: "Add" })}
+            {t("add")}
           </LoadingButton>
         </Box>
         <Typography

@@ -146,14 +146,14 @@ export const RenameModelDialogue = ({ onClose, model }: Props) => {
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="inherit">
-          {t("cancel", { defaultValue: "Cancel" })}
+          {t("cancel")}
         </Button>
         <Button
           onClick={() => updateModel({ ZUID: model.ZUID, body: newModel })}
           loading={isLoading}
           variant="contained"
         >
-          {t("save", { defaultValue: "Save" })}
+          {t("save")}
         </Button>
       </DialogActions>
     </Dialog>

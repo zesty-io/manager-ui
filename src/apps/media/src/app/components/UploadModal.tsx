@@ -152,7 +152,7 @@ export const UploadModal: FC = () => {
             disabled={loading}
             onClick={handleDismiss}
           >
-            {t("done", { defaultValue: "Done" })}
+            {t("done")}
           </Button>
         </DialogActions>
       </Dialog>

@@ -105,7 +105,7 @@ export const ModelDetails = () => {
             </Box>
             <Box py={1.5}>
               <Button size="small" onClick={() => setShowDialogue("rename")}>
-                {t("update", { defaultValue: "Update" })}
+                {t("update")}
               </Button>
             </Box>
           </Box>
@@ -147,7 +147,7 @@ export const ModelDetails = () => {
                 size="small"
                 onClick={() => setShowDialogue("updateDescription")}
               >
-                {t("update", { defaultValue: "Update" })}
+                {t("update")}
               </Button>
             </Box>
           </Box>
@@ -184,9 +184,7 @@ export const ModelDetails = () => {
             </Box>
             <Box display="flex" py={1.5}>
               <Button size="small" onClick={() => handleCopy(model?.name)}>
-                {isCopied === model?.name
-                  ? t("copied", { defaultValue: "Copied" })
-                  : t("copy", { defaultValue: "Copy" })}
+                {isCopied === model?.name ? t("copied") : t("copy")}
               </Button>
               <Box
                 sx={{
@@ -196,7 +194,7 @@ export const ModelDetails = () => {
                 }}
               />
               <Button size="small" onClick={() => setShowDialogue("rename")}>
-                {t("update", { defaultValue: "Update" })}
+                {t("update")}
               </Button>
             </Box>
           </Box>
@@ -242,7 +240,7 @@ export const ModelDetails = () => {
                       history.push(`/schema/${parentModel?.contentModelZUID}`)
                     }
                   >
-                    {t("view", { defaultValue: "View" })}
+                    {t("view")}
                   </Button>
                   <Box
                     sx={{
@@ -258,7 +256,7 @@ export const ModelDetails = () => {
                 size="small"
                 onClick={() => setShowDialogue("updateParent")}
               >
-                {t("update", { defaultValue: "Update" })}
+                {t("update")}
               </Button>
             </Box>
           </Box>
@@ -353,9 +351,7 @@ export const ModelDetails = () => {
             </Box>
             <Box py={1.5}>
               <Button size="small" onClick={() => handleCopy(model?.ZUID)}>
-                {isCopied === model?.ZUID
-                  ? t("copied", { defaultValue: "Copied" })
-                  : t("copy", { defaultValue: "Copy" })}
+                {isCopied === model?.ZUID ? t("copied") : t("copy")}
               </Button>
             </Box>
           </Box>

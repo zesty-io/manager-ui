@@ -51,7 +51,7 @@ export const ConfirmDeleteModal = ({
       </DialogContent>
       <DialogActions>
         <Button variant="text" color="inherit" onClick={onClose}>
-          {t("cancel", { defaultValue: "Cancel" })}
+          {t("cancel")}
         </Button>
         <Button
           data-cy="ConfirmDeleteCommentButton"

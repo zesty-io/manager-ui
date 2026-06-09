@@ -67,7 +67,7 @@ export const DeleteFolderDialog = ({ open, onClose, id, groupId }: Props) => {
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="inherit">
-          {t("cancel", { defaultValue: "Cancel" })}
+          {t("cancel")}
         </Button>
         <Button
           disabled={isLoading}

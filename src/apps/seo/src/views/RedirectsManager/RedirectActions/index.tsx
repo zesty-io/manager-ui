@@ -100,7 +100,7 @@ export default function RedirectActions() {
               onClick={() => openCreateForm()}
               startIcon={<AddIcon />}
             >
-              {t("create", { defaultValue: "Create" })}
+              {t("create")}
             </Button>
           </Box>
         </Box>

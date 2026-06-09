@@ -27,12 +27,12 @@ Spec: https://docs.google.com/document/d/1l5RdyDxQLTwXdz80Gk1_y8GdVv_KoQG5VfSmdv
   - `i18next-parser` (dev dependency — key extraction CLI)
 - [x] Create `src/shell/i18n.ts` — configure i18next with:
   - ChainedBackend (LocalStorage → HTTP)
-  - LanguageDetector (order: localStorage → navigator)
+  - LanguageDetector (order: `localStorage` only — `navigator` excluded, `caches: []` so detection never auto-writes)
   - Fallback language: `en-US`
-  - Default / initial namespace: `common`
+  - Default / initial namespace: `common`; also loads `shell` at init
   - `useSuspense: true`
   - Cache busting via `defaultVersion` tied to the build's git hash (injected via webpack `DefinePlugin` as `__GIT_HASH__`)
-  - LocalStorage cache TTL: use `i18next-localstorage-backend` default
+  - LocalStorage cache TTL: `i18next-localstorage-backend` default (7 days)
   - HTTP load path: `/locales/{{lng}}/{{ns}}.json`
 - [x] Import `src/shell/i18n.ts` in `src/shell/index.js` (app entry point) — must be imported before the React root renders
 - [x] Create `public/locales/` directory structure:
@@ -86,21 +86,22 @@ Simple, universal words and short phrases reused across the entire app. If a str
 
 Examples: `Save`, `Cancel`, `Edit`, `Delete`, `Confirm`, `Close`, `Back`, `Next`, `Search`, `Loading`, `Error`, `Success`
 
-- [ ] Identify and list all common words/phrases used across sub-apps
-- [ ] Populate `public/locales/en-US/common.json`
-- [ ] Add `public/locales/{locale}/common.json` for all 5 non-English locales
-- [ ] Replace occurrences with `t("key")` using `useTranslation()` (defaults to `common` namespace)
+- [x] Identify and list all common words/phrases used across sub-apps
+- [x] Populate `public/locales/en-US/common.json`
+- [x] Add `public/locales/{locale}/common.json` for all 5 non-English locales (translations added)
+- [x] Replace occurrences with `t("key")` using `useTranslation()` (defaults to `common` namespace)
+- [x] Remove temporary `defaultValue` props from all `t()` calls
 
 ### `shell`
 
 Strings specific to the app shell — sidebar, topbar, global search, notifications, AI drawer, loading screen, and other chrome-level UI. These are not sub-app strings but are too specific to belong in `common`.
 
 - [ ] Audit `src/shell/components/` and `src/shell/views/` for hardcoded strings
+- [x] Create `public/locales/{locale}/shell.json` for all 6 locales (empty placeholders)
 - [ ] Populate `public/locales/en-US/shell.json`
-- [ ] Create `public/locales/{locale}/shell.json` for all 5 non-English locales
 - [ ] Replace hardcoded strings with `t("key")` using `useTranslation("shell")`
 - [ ] Run `i18next-parser` to validate no keys are missing
-- [ ] Translate both `common.json` and `shell.json` into all 5 non-English locales
+- [ ] Translate `shell.json` into all 5 non-English locales
 
 ---
 
@@ -155,9 +156,9 @@ Per-namespace checklist (repeat for each):
 ## Phase 5 — Caching & Cache Busting
 
 - [ ] Confirm chained backend config (LocalStorage first, HTTP fallback) is working correctly — verify no redundant fetches on navigation
-- [ ] Inject git hash at build time via webpack `DefinePlugin` (`__GIT_HASH__`)
-- [ ] Pass `__GIT_HASH__` as `defaultVersion` in the LocalStorage backend options so deploying a new build invalidates the cache
-- [ ] Verify first-load blocks render until translation data is ready (no UI flicker / raw key flash)
+- [x] Inject git hash at build time via webpack `DefinePlugin` (`__GIT_HASH__`)
+- [x] Pass `__GIT_HASH__` as `defaultVersion` in the LocalStorage backend options so deploying a new build invalidates the cache
+- [x] Verify first-load blocks render until translation data is ready (no UI flicker / raw key flash)
 
 ---
 

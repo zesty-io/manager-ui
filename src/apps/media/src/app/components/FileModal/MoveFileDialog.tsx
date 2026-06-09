@@ -92,7 +92,7 @@ export const MoveFileDialog = ({
           onClick={() => onClose()}
           disabled={showSpinner}
         >
-          {t("cancel", { defaultValue: "Cancel" })}
+          {t("cancel")}
         </Button>
         <Button
           variant="contained"

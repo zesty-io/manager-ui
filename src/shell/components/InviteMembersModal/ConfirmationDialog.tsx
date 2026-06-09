@@ -134,7 +134,7 @@ export const ConfirmationModal = ({
           Invite More People
         </Button>
         <Button color="primary" variant="contained" onClick={() => onClose()}>
-          {t("done", { defaultValue: "Done" })}
+          {t("done")}
         </Button>
       </DialogActions>
     </Dialog>

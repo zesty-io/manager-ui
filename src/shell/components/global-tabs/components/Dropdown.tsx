@@ -261,7 +261,7 @@ export const Dropdown: FC<Dropdown> = ({
           }}
           onClick={() => setConfirmOpen(false)}
         >
-          {t("cancel", { defaultValue: "Cancel" })}
+          {t("cancel")}
         </Button>
         <Button
           onClick={() => {

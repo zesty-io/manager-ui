@@ -969,9 +969,7 @@ export const MediaItem = ({
                   <ListItemIcon>
                     <CloseRounded />
                   </ListItemIcon>
-                  <ListItemText>
-                    {t("remove", { defaultValue: "Remove" })}
-                  </ListItemText>
+                  <ListItemText>{t("remove")}</ListItemText>
                 </MenuItem>
               </Menu>
             </Box>

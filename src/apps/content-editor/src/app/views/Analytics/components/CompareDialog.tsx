@@ -147,7 +147,7 @@ export const CompareDialog = ({ onClose }: Props) => {
                 ),
               }}
               inputRef={inputRef}
-              placeholder={t("search", { defaultValue: "Search" })}
+              placeholder={t("search")}
               fullWidth
             />
           </Box>

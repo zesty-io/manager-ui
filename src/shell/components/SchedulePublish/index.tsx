@@ -243,7 +243,7 @@ export const SchedulePublish = ({
           onClick={onClose}
           disabled={isLoading}
         >
-          {t("cancel", { defaultValue: "Cancel" })}
+          {t("cancel")}
         </Button>
 
         {item?.scheduling?.isScheduled ? (

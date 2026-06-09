@@ -103,7 +103,7 @@ export const CreateVariantDialog = ({
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="inherit">
-          {t("cancel", { defaultValue: "Cancel" })}
+          {t("cancel")}
         </Button>
         <Button
           disabled={isFieldsLoading}
@@ -112,7 +112,7 @@ export const CreateVariantDialog = ({
           variant="contained"
           data-cy="create-variant-confirm-button"
         >
-          {t("create", { defaultValue: "Create" })}
+          {t("create")}
         </Button>
       </DialogActions>
     </Dialog>

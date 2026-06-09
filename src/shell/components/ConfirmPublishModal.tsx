@@ -79,7 +79,7 @@ export const ConfirmPublishModal = ({
           onClick={onCancel}
           disabled={isPublishing}
         >
-          {t("cancel", { defaultValue: "Cancel" })}
+          {t("cancel")}
         </Button>
         <Button
           loading={isPublishing}

@@ -68,7 +68,7 @@ export const DeleteFileModal: FC<Props> = ({
           disabled={isLoadingDelete}
           onClick={() => onClose()}
         >
-          {t("cancel", { defaultValue: "Cancel" })}
+          {t("cancel")}
         </Button>
         <Button
           variant="contained"
@@ -80,11 +80,7 @@ export const DeleteFileModal: FC<Props> = ({
           {isLoadingDelete ? (
             <CircularProgress size="24px" color="inherit" />
           ) : (
-            <>
-              {fileCount > 1
-                ? `Delete (${fileCount})`
-                : t("delete", { defaultValue: "Delete" })}
-            </>
+            <>{fileCount > 1 ? `Delete (${fileCount})` : t("delete")}</>
           )}
         </Button>
       </DialogActions>

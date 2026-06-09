@@ -318,7 +318,7 @@ const SubFieldFormContent = ({
               mr: 1,
             }}
           >
-            {t("cancel", { defaultValue: "Cancel" })}
+            {t("cancel")}
           </Button>
           <Button
             data-cy="SubFieldFormAddFieldBtn"
@@ -326,7 +326,7 @@ const SubFieldFormContent = ({
             variant="contained"
             startIcon={<SaveRoundedIcon />}
           >
-            {t("save", { defaultValue: "Save" })}
+            {t("save")}
           </Button>
         </DialogActions>
       ) : (
@@ -339,7 +339,7 @@ const SubFieldFormContent = ({
           }}
         >
           <Button variant="outlined" color="inherit" onClick={onBackClick}>
-            {t("cancel", { defaultValue: "Cancel" })}
+            {t("cancel")}
           </Button>
           <Box>
             <Button

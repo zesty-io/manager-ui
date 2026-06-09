@@ -156,7 +156,7 @@ export const CreateContentItemDialog = ({
           onClick={onClose}
           color="inherit"
         >
-          {t("discard", { defaultValue: "Discard" })}
+          {t("discard")}
         </Button>
         <Button
           data-cy="create_new_content_item_btn"
@@ -164,7 +164,7 @@ export const CreateContentItemDialog = ({
           color="primary"
           onClick={onCreateClick}
         >
-          {t("create", { defaultValue: "Create" })}
+          {t("create")}
         </Button>
       </DialogActions>
     </Dialog>

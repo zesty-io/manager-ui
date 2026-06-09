@@ -123,7 +123,7 @@ export const RenameFileModal: FC<Props> = ({
       </DialogContent>
       <DialogActions>
         <Button color="inherit" onClick={() => onClose()}>
-          {t("cancel", { defaultValue: "Cancel" })}
+          {t("cancel")}
         </Button>
         <Button
           variant="contained"
@@ -133,7 +133,7 @@ export const RenameFileModal: FC<Props> = ({
           {isLoadingUpdate ? (
             <CircularProgress size="24px" color="inherit" />
           ) : (
-            t("update", { defaultValue: "Update" })
+            t("update")
           )}
         </Button>
       </DialogActions>

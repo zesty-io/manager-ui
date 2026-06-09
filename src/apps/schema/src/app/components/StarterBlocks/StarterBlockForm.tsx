@@ -419,7 +419,7 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
                     },
                   }}
                 >
-                  {t("preview", { defaultValue: "Preview" })}
+                  {t("preview")}
                   <OpenInNewRoundedIcon fontSize="small" />
                 </Link>
                 <Link
@@ -485,7 +485,7 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
           color="inherit"
           onClick={() => setActiveStep("selection")}
         >
-          {t("back", { defaultValue: "Back" })}
+          {t("back")}
         </Button>
         <Button
           variant="contained"

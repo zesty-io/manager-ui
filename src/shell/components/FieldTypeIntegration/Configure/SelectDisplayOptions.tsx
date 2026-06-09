@@ -283,7 +283,7 @@ const SelectDisplayOptions = ({
         }}
       >
         <Button variant="outlined" color="inherit" onClick={closeForm}>
-          {t("cancel", { defaultValue: "Cancel" })}
+          {t("cancel")}
         </Button>
         <Button
           data-cy="integrationConfigureOptionNextButton"
@@ -291,7 +291,7 @@ const SelectDisplayOptions = ({
           onClick={handleNext}
           disabled={!displayType}
         >
-          {t("next", { defaultValue: "Next" })}
+          {t("next")}
         </Button>
       </DialogActions>
     </FormWrapper>

@@ -45,7 +45,7 @@ export const DeleteRelease = memo(function DeleteRelease({ isContentSubpage }) {
         disabled={!canPublish || loading}
         startIcon={<DeleteIcon />}
       >
-        {t("delete", { defaultValue: "Delete" })}
+        {t("delete")}
       </Button>
 
       <Modal

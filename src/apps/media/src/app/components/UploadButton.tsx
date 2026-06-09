@@ -107,7 +107,7 @@ export const UploadButton: FC<UploadButton> = ({
           startIcon={<FileUploadRoundedIcon />}
           disabled={loading || !binData}
         >
-          {text || t("upload", { defaultValue: "Upload" })}
+          {text || t("upload")}
         </Button>
       )}
 

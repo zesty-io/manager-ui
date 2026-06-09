@@ -346,21 +346,21 @@ export const RowDialog = ({
                 onClick={onClose}
                 color="inherit"
               >
-                {t("cancel", { defaultValue: "Cancel" })}
+                {t("cancel")}
               </Button>
               <Button
                 data-cy="SaveRepeaterRowItemBtn"
                 variant="contained"
                 onClick={() => handleSubmit()}
               >
-                {t("done", { defaultValue: "Done" })}
+                {t("done")}
               </Button>
             </Stack>
           </>
         ) : (
           <>
             <Button variant="outlined" onClick={onClose} color="inherit">
-              {t("cancel", { defaultValue: "Cancel" })}
+              {t("cancel")}
             </Button>
             <Stack direction="row" spacing={2}>
               <Button
@@ -376,7 +376,7 @@ export const RowDialog = ({
                 variant="contained"
                 onClick={() => handleSubmit()}
               >
-                {t("save", { defaultValue: "Save" })}
+                {t("save")}
               </Button>
             </Stack>
           </>

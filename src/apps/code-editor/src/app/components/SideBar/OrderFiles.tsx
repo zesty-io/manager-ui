@@ -324,7 +324,7 @@ const OrderFiles = (props: OrderFilesProps) => {
         sx={{ p: "20px", borderTop: "1px solid", borderColor: "border" }}
       >
         <Button variant="outlined" color="inherit" onClick={handleClose}>
-          {t("cancel", { defaultValue: "Cancel" })}
+          {t("cancel")}
         </Button>
         <Button
           variant="contained"

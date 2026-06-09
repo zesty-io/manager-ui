@@ -164,7 +164,7 @@ export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="inherit">
-          {t("cancel", { defaultValue: "Cancel" })}
+          {t("cancel")}
         </Button>
         <Button
           loading={isCreatingGroup}
@@ -172,7 +172,7 @@ export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
           variant="contained"
           onClick={handleCreate}
         >
-          {t("create", { defaultValue: "Create" })}
+          {t("create")}
         </Button>
       </DialogActions>
     </Dialog>

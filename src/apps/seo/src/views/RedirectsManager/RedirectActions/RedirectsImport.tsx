@@ -162,7 +162,7 @@ const ImportErrorDialog: FC<ImportErrorDialogProps> = ({
       </DialogTitle>
       <DialogActions sx={{ p: "20px" }}>
         <Button variant="text" color="inherit" onClick={handleCancel}>
-          {t("cancel", { defaultValue: "Cancel" })}
+          {t("cancel")}
         </Button>
         <Button
           data-cy="RedirectsImportRetryButton"

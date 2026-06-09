@@ -439,7 +439,7 @@ const ConfigureDisplayOptions = ({
           color="inherit"
           onClick={() => setActiveStep?.(1)}
         >
-          {t("back", { defaultValue: "Back" })}
+          {t("back")}
         </Button>
         <Button
           data-cy="integrationConfigureDisplayOptionsDoneButton"
@@ -448,7 +448,7 @@ const ConfigureDisplayOptions = ({
           disabled={!isCompleted}
           onClick={handleSave}
         >
-          {t("done", { defaultValue: "Done" })}
+          {t("done")}
         </Button>
       </DialogActions>
     </FormWrapper>

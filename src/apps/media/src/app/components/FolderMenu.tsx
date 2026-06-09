@@ -77,9 +77,7 @@ export const FolderMenu: FC<Props> = ({
             <ListItemIcon>
               <DeleteIcon fontSize="small" />
             </ListItemIcon>
-            <ListItemText>
-              {t("delete", { defaultValue: "Delete" })}
-            </ListItemText>
+            <ListItemText>{t("delete")}</ListItemText>
           </MenuItem>
         )}
         {!!id && (

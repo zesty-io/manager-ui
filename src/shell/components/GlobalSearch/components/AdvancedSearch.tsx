@@ -582,7 +582,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
             </Button>
             <Box>
               <Button color="inherit" sx={{ mr: 1 }} onClick={onClose}>
-                {t("cancel", { defaultValue: "Cancel" })}
+                {t("cancel")}
               </Button>
               <Button
                 data-cy="AdvanceSearchSubmitButton"
@@ -591,7 +591,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
                 onClick={handleSearchClicked}
                 disabled={!searchData.keyword && !searchData.user}
               >
-                {t("search", { defaultValue: "Search" })}
+                {t("search")}
               </Button>
             </Box>
           </Stack>

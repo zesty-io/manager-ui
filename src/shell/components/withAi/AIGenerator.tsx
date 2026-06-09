@@ -592,7 +592,7 @@ export const AIGenerator = ({
               handleClose("close");
             }}
           >
-            {t("cancel", { defaultValue: "Cancel" })}
+            {t("cancel")}
           </Button>
           {!!data?.length ? (
             <Box>
@@ -849,7 +849,7 @@ export const AIGenerator = ({
             handleClose("close");
           }}
         >
-          {t("cancel", { defaultValue: "Cancel" })}
+          {t("cancel")}
         </Button>
         {!!data?.length ? (
           <Box>
