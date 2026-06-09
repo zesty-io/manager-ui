@@ -77,8 +77,7 @@ export const UserFilter: FC<UserFilterProps> = ({
   const activeUserFilter = options?.find((user) => user?.ZUID === value);
   const buttonText = activeUserFilter
     ? `${activeUserFilter.firstName} ${activeUserFilter.lastName}`
-    : defaultButtonText ??
-      t("common.createdBy", { defaultValue: "Created By" });
+    : defaultButtonText ?? t("common.createdBy");
 
   const handleOpenMenuClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     setMenuAnchorEl(e.currentTarget);
@@ -154,9 +153,7 @@ export const UserFilter: FC<UserFilterProps> = ({
           <TextField
             autoFocus
             fullWidth
-            placeholder={t("shell.searchUsers", {
-              defaultValue: "Search Users",
-            })}
+            placeholder={t("shell.searchUsers")}
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
             InputProps={{
@@ -176,9 +173,7 @@ export const UserFilter: FC<UserFilterProps> = ({
 
         {!filteredUsers?.length && Boolean(filter) && (
           <ListItem sx={{ pb: 2 }}>
-            <ListItemText>
-              {t("common.noUsersFound", { defaultValue: "No users found" })}
-            </ListItemText>
+            <ListItemText>{t("common.noUsersFound")}</ListItemText>
           </ListItem>
         )}
 

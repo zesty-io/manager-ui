@@ -72,9 +72,7 @@ export const Comment = ({ resourceZUID }: CommentProps) => {
       <Box ref={buttonContainerRef}>
         {parentComment ? (
           <Tooltip
-            title={t("shell.viewOpenComment", {
-              defaultValue: "View Open Comment",
-            })}
+            title={t("shell.viewOpenComment")}
             disableInteractive
             placement="top-start"
           >
@@ -129,9 +127,7 @@ export const Comment = ({ resourceZUID }: CommentProps) => {
           </Tooltip>
         ) : (
           <Tooltip
-            title={t("shell.addNewComment", {
-              defaultValue: "Add New Comment",
-            })}
+            title={t("shell.addNewComment")}
             disableInteractive
             placement="top-start"
           >

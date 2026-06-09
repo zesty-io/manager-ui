@@ -106,9 +106,7 @@ export const ResizableContainer = ({
       />
       <Tooltip
         title={
-          collapsed
-            ? t("shell.expandSidebar", { defaultValue: "Expand Sidebar" })
-            : t("shell.collapseSidebar", { defaultValue: "Collapse Sidebar" })
+          collapsed ? t("shell.expandSidebar") : t("shell.collapseSidebar")
         }
         placement="right-start"
         enterDelay={1000}

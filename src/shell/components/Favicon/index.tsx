@@ -84,10 +84,8 @@ export const Favicon = ({ onCloseFaviconModal }: FaviconProps) => {
       dispatch(
         notify({
           message: !!faviconUpdateError
-            ? t("shell.failedUpdateFavicon", {
-                defaultValue: "Failed to update favicon",
-              })
-            : t("shell.faviconUpdated", { defaultValue: "Favicon updated" }),
+            ? t("shell.failedUpdateFavicon")
+            : t("shell.faviconUpdated"),
           kind: !!faviconUpdateError ? "warn" : "success",
         })
       );
@@ -234,9 +232,7 @@ export const Favicon = ({ onCloseFaviconModal }: FaviconProps) => {
       >
         <ModalHeader>
           <h1 className={styles.headline}>
-            {t("shell.selectInstanceFavicon", {
-              defaultValue: "Select Instance Favicon",
-            })}
+            {t("shell.selectInstanceFavicon")}
           </h1>
         </ModalHeader>
         <ModalContent>
@@ -316,9 +312,7 @@ export const Favicon = ({ onCloseFaviconModal }: FaviconProps) => {
                 }}
               >
                 <FontAwesomeIcon icon={faCog} />
-                {t("shell.manageInstanceHeadTags", {
-                  defaultValue: "Manage Instance Head Tags",
-                })}
+                {t("shell.manageInstanceHeadTags")}
               </AppLink>
             </>
           )}
@@ -331,7 +325,7 @@ export const Favicon = ({ onCloseFaviconModal }: FaviconProps) => {
             }}
             startIcon={<DoDisturbAlt />}
           >
-            {t("shell.cancelEsc", { defaultValue: "Cancel (ESC)" })}
+            {t("shell.cancelEsc")}
           </Button>
           <Button
             variant="contained"
@@ -343,7 +337,7 @@ export const Favicon = ({ onCloseFaviconModal }: FaviconProps) => {
             loading={isUpdatingFavicon}
             startIcon={<Save />}
           >
-            {t("shell.saveFavicon", { defaultValue: "Save Favicon" })}
+            {t("shell.saveFavicon")}
           </Button>
         </ModalFooter>
       </Modal>

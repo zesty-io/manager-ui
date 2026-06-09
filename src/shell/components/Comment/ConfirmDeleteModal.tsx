@@ -41,16 +41,13 @@ export const ConfirmDeleteModal = ({
             <DeleteRoundedIcon color="error" />
           </Box>
           <Typography variant="h5" display="inline" fontWeight={700}>
-            {t("shell.deleteCommentTitle", { defaultValue: "Delete Comment?" })}
+            {t("shell.deleteCommentTitle")}
           </Typography>
         </Stack>
       </DialogTitle>
       <DialogContent>
         <Typography variant="body2" color="text.secondary">
-          {t("shell.deleteCommentBody", {
-            defaultValue:
-              "Deleting this comment will also remove all replies associated with it.",
-          })}
+          {t("shell.deleteCommentBody")}
         </Typography>
       </DialogContent>
       <DialogActions>
@@ -64,7 +61,7 @@ export const ConfirmDeleteModal = ({
           onClick={onConfirmDelete}
           loading={isDeletingComment}
         >
-          {t("shell.deleteForever", { defaultValue: "Delete Forever" })}
+          {t("shell.deleteForever")}
         </Button>
       </DialogActions>
     </Dialog>

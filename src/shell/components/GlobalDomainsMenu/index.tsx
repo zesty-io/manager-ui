@@ -64,9 +64,7 @@ export const GlobalDomainsMenu: FC<GlobalDomainsMenuProps> = ({
     if (isError) {
       dispatch(
         notify({
-          message: t("shell.failedRefreshCdnCache", {
-            defaultValue: "Failed to refresh the CDN cache",
-          }),
+          message: t("shell.failedRefreshCdnCache"),
           kind: "error",
         })
       );
@@ -87,7 +85,7 @@ export const GlobalDomainsMenu: FC<GlobalDomainsMenuProps> = ({
           </IconButton>
         )}
         <Typography variant="h5" fontWeight={600}>
-          {t("common.domains", { defaultValue: "Domains" })}
+          {t("common.domains")}
         </Typography>
       </Stack>
       <Divider />
@@ -104,7 +102,7 @@ export const GlobalDomainsMenu: FC<GlobalDomainsMenuProps> = ({
               )
             }
           >
-            {t("common.manage", { defaultValue: "Manage" })}
+            {t("common.manage")}
           </Button>
           <Button
             data-cy="RefreshCache"
@@ -126,7 +124,7 @@ export const GlobalDomainsMenu: FC<GlobalDomainsMenuProps> = ({
             }
             onClick={() => refreshCache()}
           >
-            {t("shell.refreshCdnCache", { defaultValue: "Refresh CDN Cache" })}
+            {t("shell.refreshCdnCache")}
           </Button>
         </Stack>
       </MenuList>
@@ -158,10 +156,7 @@ export const GlobalDomainsMenu: FC<GlobalDomainsMenuProps> = ({
               {stageDomainText}
             </ListItemText>
           </Tooltip>
-          <Chip
-            size="small"
-            label={t("common.stage", { defaultValue: "Stage" })}
-          />
+          <Chip size="small" label={t("common.stage")} />
         </MenuItem>
         {isLoadingDomains
           ? [...Array(5)].map((_, index) => (

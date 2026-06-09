@@ -98,7 +98,7 @@ Examples: `Save`, `Cancel`, `Edit`, `Delete`, `Confirm`, `Close`, `Back`, `Next`
 - [x] Identify and list all common words/phrases used across sub-apps
 - [x] Populate `public/locales/en-US/common.json`
 - [x] Add `public/locales/{locale}/common.json` for all 5 non-English locales (translations added)
-- [x] Replace occurrences with `t("key")` using `useTranslation()` (defaults to `common` namespace)
+- [x] Replace occurrences with `t("common.key")` using `useTranslation()` (no namespace arg — namespace is in the key)
 - [x] Remove temporary `defaultValue` props from all `t()` calls
 
 ### `shell`
@@ -107,8 +107,8 @@ Strings specific to the app shell — sidebar, topbar, global search, notificati
 
 - [x] Audit `src/shell/components/` and `src/shell/views/` for hardcoded strings — including **functions that return strings** (helpers, getters, conditional label functions), **module-level object maps/arrays** whose string values are rendered as UI copy (`t()` can't be called at module level — move the lookup inside the component), and **strings passed as props** (translate at the call site, not inside the receiving component). Skip strings that originate from the database.
 - [x] Create `public/locales/{locale}/shell.json` for all 6 locales (empty placeholders)
-- [ ] Populate `public/locales/en-US/shell.json`
-- [ ] Replace hardcoded strings with `t("key")` using `useTranslation("shell")`
+- [x] Populate `public/locales/en-US/shell.json`
+- [x] Replace hardcoded strings with `t("shell.key")` / `t("common.key")` using `useTranslation()` (no namespace arg)
 - [ ] Run `i18next-parser` to validate no keys are missing
 - [ ] Translate `shell.json` into all 5 non-English locales
 
@@ -116,15 +116,15 @@ Strings specific to the app shell — sidebar, topbar, global search, notificati
 
 | File                                                          | Strings | Status |
 | ------------------------------------------------------------- | ------- | ------ |
-| `components/ResizeableContainer.tsx`                          | 2       | [ ]    |
-| `components/InvalidUrl.tsx`                                   | 4       | [ ]    |
-| `components/Filters/UserFilter.tsx`                           | 3       | [ ]    |
-| `components/global-tabs/GlobalDirtyCodeModal.tsx`             | 2       | [ ]    |
-| `components/Comment/ConfirmDeleteModal.tsx`                   | 3       | [ ]    |
-| `components/global-sidebar/.../InstanceMenu/DropdownMenu.tsx` | 12      | [ ]    |
-| `components/Comment/index.tsx`                                | 2       | [ ]    |
-| `components/Favicon/index.tsx`                                | 1       | [ ]    |
-| `components/GlobalDomainsMenu/index.tsx`                      | 5       | [ ]    |
+| `components/ResizeableContainer.tsx`                          | 2       | [x]    |
+| `components/InvalidUrl.tsx`                                   | 4       | [x]    |
+| `components/Filters/UserFilter.tsx`                           | 3       | [x]    |
+| `components/global-tabs/GlobalDirtyCodeModal.tsx`             | 2       | [x]    |
+| `components/Comment/ConfirmDeleteModal.tsx`                   | 3       | [x]    |
+| `components/global-sidebar/.../InstanceMenu/DropdownMenu.tsx` | 12      | [x]    |
+| `components/Comment/index.tsx`                                | 2       | [x]    |
+| `components/Favicon/index.tsx`                                | 1       | [x]    |
+| `components/GlobalDomainsMenu/index.tsx`                      | 5       | [x]    |
 
 #### Tier 2 — Medium effort, medium risk (some dynamic interpolation)
 

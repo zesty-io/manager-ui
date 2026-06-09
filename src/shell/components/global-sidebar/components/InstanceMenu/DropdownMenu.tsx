@@ -85,9 +85,7 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({ anchorEl, onClose }) => {
     if (isCacheRefreshFailed) {
       dispatch(
         notify({
-          message: t("shell.failedRefreshCdnCache", {
-            defaultValue: "Failed to refresh the CDN cache",
-          }),
+          message: t("shell.failedRefreshCdnCache"),
           kind: "error",
         })
       );
@@ -107,9 +105,7 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({ anchorEl, onClose }) => {
     } catch (error) {
       dispatch(
         notify({
-          message: t("shell.failedCopyInstanceZUID", {
-            defaultValue: "Failed to copy instance ZUID",
-          }),
+          message: t("shell.failedCopyInstanceZUID"),
           kind: "error",
         })
       );
@@ -174,9 +170,7 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({ anchorEl, onClose }) => {
             <ListItemIcon>
               <ImageRoundedIcon />
             </ListItemIcon>
-            <ListItemText>
-              {t("shell.updateFavicon", { defaultValue: "Update Favicon" })}
-            </ListItemText>
+            <ListItemText>{t("shell.updateFavicon")}</ListItemText>
           </MenuItem>
           <MenuItem
             onClick={() =>
@@ -190,11 +184,7 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({ anchorEl, onClose }) => {
             <ListItemIcon>
               <RemoveRedEyeRoundedIcon />
             </ListItemIcon>
-            <ListItemText>
-              {t("shell.viewWebEnginePreview", {
-                defaultValue: "View WebEngine Preview (Stage)",
-              })}
-            </ListItemText>
+            <ListItemText>{t("shell.viewWebEnginePreview")}</ListItemText>
           </MenuItem>
           <MenuItem onClick={handleCopyInstanceZUID} data-cy="CopyInstanceZUID">
             <ListItemIcon>
@@ -204,11 +194,7 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({ anchorEl, onClose }) => {
                 <ContentCopyRoundedIcon />
               )}
             </ListItemIcon>
-            <ListItemText>
-              {t("shell.copyInstanceZUID", {
-                defaultValue: "Copy Instance ZUID",
-              })}
-            </ListItemText>
+            <ListItemText>{t("shell.copyInstanceZUID")}</ListItemText>
           </MenuItem>
           <MenuItem onClick={() => refreshCache()} data-cy="RefreshCache">
             <ListItemIcon>
@@ -224,11 +210,7 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({ anchorEl, onClose }) => {
                 />
               )}
             </ListItemIcon>
-            <ListItemText>
-              {t("shell.refreshCdnCache", {
-                defaultValue: "Refresh CDN Cache",
-              })}
-            </ListItemText>
+            <ListItemText>{t("shell.refreshCdnCache")}</ListItemText>
           </MenuItem>
           <Divider />
           <MenuItem
@@ -241,9 +223,7 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({ anchorEl, onClose }) => {
             <ListItemIcon>
               <PeopleRoundedIcon />
             </ListItemIcon>
-            <ListItemText>
-              {t("common.users", { defaultValue: "Users" })}
-            </ListItemText>
+            <ListItemText>{t("common.users")}</ListItemText>
           </MenuItem>
           <MenuItem
             onClick={() =>
@@ -255,9 +235,7 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({ anchorEl, onClose }) => {
             <ListItemIcon>
               <GroupsRoundedIcon />
             </ListItemIcon>
-            <ListItemText>
-              {t("common.teams", { defaultValue: "Teams" })}
-            </ListItemText>
+            <ListItemText>{t("common.teams")}</ListItemText>
           </MenuItem>
           <CascadingMenuItem
             data-cy="DomainSwitcherMenuItem"
@@ -266,9 +244,7 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({ anchorEl, onClose }) => {
                 <ListItemIcon>
                   <LanguageRoundedIcon />
                 </ListItemIcon>
-                <ListItemText>
-                  {t("common.domains", { defaultValue: "Domains" })}
-                </ListItemText>
+                <ListItemText>{t("common.domains")}</ListItemText>
                 <ArrowForwardIosRoundedIcon color="action" fontSize="small" />
               </>
             }
@@ -308,9 +284,7 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({ anchorEl, onClose }) => {
             <ListItemIcon>
               <BarChartRoundedIcon />
             </ListItemIcon>
-            <ListItemText>
-              {t("common.usage", { defaultValue: "Usage" })}
-            </ListItemText>
+            <ListItemText>{t("common.usage")}</ListItemText>
           </MenuItem>
           <MenuItem
             onClick={() =>
@@ -322,9 +296,7 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({ anchorEl, onClose }) => {
             <ListItemIcon>
               <TranslateRoundedIcon />
             </ListItemIcon>
-            <ListItemText>
-              {t("common.locales", { defaultValue: "Locales" })}
-            </ListItemText>
+            <ListItemText>{t("common.locales")}</ListItemText>
           </MenuItem>
           <MenuItem
             onClick={() =>
@@ -336,9 +308,7 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({ anchorEl, onClose }) => {
             <ListItemIcon>
               <ApiRoundedIcon />
             </ListItemIcon>
-            <ListItemText>
-              {t("common.apis", { defaultValue: "APIs" })}
-            </ListItemText>
+            <ListItemText>{t("common.apis")}</ListItemText>
           </MenuItem>
           <MenuItem
             onClick={() =>
@@ -350,9 +320,7 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({ anchorEl, onClose }) => {
             <ListItemIcon>
               <WebhookRoundedIcon />
             </ListItemIcon>
-            <ListItemText>
-              {t("common.webhooks", { defaultValue: "Webhooks" })}
-            </ListItemText>
+            <ListItemText>{t("common.webhooks")}</ListItemText>
           </MenuItem>
           <MenuItem
             onClick={() =>
@@ -365,9 +333,7 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({ anchorEl, onClose }) => {
             <ListItemIcon>
               <SupportAgentRoundedIcon />
             </ListItemIcon>
-            <ListItemText>
-              {t("shell.contactSupport", { defaultValue: "Contact Support" })}
-            </ListItemText>
+            <ListItemText>{t("shell.contactSupport")}</ListItemText>
           </MenuItem>
         </MenuList>
       </Menu>

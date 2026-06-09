@@ -48,18 +48,12 @@ const InvalidUrl = () => {
             }}
           >
             <Typography variant="h3" color="text.primary" fontWeight={700}>
-              {t("shell.invalidUrlHeading", {
-                defaultValue:
-                  "Invalid URL. Please check your URL and try again.",
-              })}
+              {t("shell.invalidUrlHeading")}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              {t("shell.invalidUrlBody", {
-                defaultValue:
-                  "The URL you entered is invalid or does not exist. If you believe this is an error, contact us at",
-              })}
+              {t("shell.invalidUrlBody")}
               <Link
-                title={t("common.support", { defaultValue: "Support" })}
+                title={t("common.support")}
                 href="mailto:support@zesty.io"
                 color="secondary"
                 underline="none"
@@ -79,7 +73,7 @@ const InvalidUrl = () => {
               color="primary"
               onClick={() => history.goBack()}
             >
-              {t("common.goBack", { defaultValue: "Go Back" })}
+              {t("common.goBack")}
             </Button>
           </Box>
         </Box>

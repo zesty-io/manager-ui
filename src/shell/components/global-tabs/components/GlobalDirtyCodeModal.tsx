@@ -28,11 +28,8 @@ export const GlobalDirtyCodeModal: FC = () => {
 
   return (
     <DirtyCodeModal
-      title={t("common.unsavedChanges", { defaultValue: "Unsaved Changes" })}
-      content={t("shell.unsavedChangesBody", {
-        defaultValue:
-          "Please save or discard your changes before unpinning this tab",
-      })}
+      title={t("common.unsavedChanges")}
+      content={t("shell.unsavedChangesBody")}
       loading={loading}
       open={Boolean(dirtyCodeZuid)}
       onDiscard={async () => {
