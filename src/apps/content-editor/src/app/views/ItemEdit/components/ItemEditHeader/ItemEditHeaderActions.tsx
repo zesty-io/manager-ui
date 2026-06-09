@@ -159,10 +159,9 @@ export const ItemEditHeaderActions = ({
     (itemPublishing) => itemPublishing._active
   );
 
-  const lastItemUpdateAudit = itemAudit
-    ?.slice()
-    .reverse()
-    .find((audit: Audit) => audit.action === 2 || audit.action === 1);
+  const lastItemUpdateAudit = itemAudit?.find(
+    (audit: Audit) => audit.action === 2 || audit.action === 1
+  );
 
   const hasScheduledPublish =
     !!item?.scheduling?.isScheduled &&

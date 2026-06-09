@@ -96,10 +96,12 @@ export const SchedulePublish = ({
         { publishAt: publishAtUtcStr, version: item?.meta?.version },
         { localTime: localPretty, localTimezone: publishTimezone }
       )
-      // @ts-expect-error untyped action
-    )
+    ) // @ts-expect-error untyped action
       .then(() => {
         onScheduleSuccess?.();
+      })
+      .catch(() => {
+        // Error notification handled by the thunk
       })
       .finally(() => {
         setIsLoading(false);
@@ -116,8 +118,7 @@ export const SchedulePublish = ({
         item?.scheduling?.ZUID,
         { version: item?.scheduling?.version }
       )
-      // @ts-expect-error untyped action
-    )
+    ) // @ts-expect-error untyped action
       .then(() => {
         onUnscheduleSuccess?.();
       })
@@ -169,10 +170,12 @@ export const SchedulePublish = ({
         },
         { localTime: localPretty, localTimezone: publishTimezone }
       )
-      // @ts-expect-error untyped action
-    )
+    ) // @ts-expect-error untyped action
       .then(() => {
         onScheduleSuccess?.();
+      })
+      .catch(() => {
+        // Error notification handled by the thunk
       })
       .finally(() => {
         setIsLoading(false);
@@ -189,7 +192,7 @@ export const SchedulePublish = ({
       // a new publishing record with "already has a scheduled publish event." Delete
       // the scheduled publish first to unblock the POST.
       if (hasAnyScheduledPublish) {
-        await (dispatch as Function)(
+        await dispatch(
           unpublish(
             item?.meta?.contentModelZUID,
             item?.meta?.ZUID,
@@ -198,7 +201,7 @@ export const SchedulePublish = ({
           )
         );
       }
-      await (dispatch as Function)(
+      await dispatch(
         publish(
           item?.meta?.contentModelZUID,
           item?.meta?.ZUID,
