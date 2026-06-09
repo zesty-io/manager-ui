@@ -21,3 +21,4 @@ skills-lock.json
 .agents
 .playwright-mcp
 .claude/worktrees
+.zed
