@@ -738,9 +738,10 @@ export const StudioWrapper = () => {
           id: codeId,
           title: codeFileNameById[codeId] || webView?.fileName || codeId,
           type: "Code",
-          versions: webView?.version
-            ? [{ version: webView.version, state: "published" }]
-            : [],
+          versions:
+            typeof webView?.version === "number"
+              ? [{ version: webView.version, state: "published" }]
+              : [],
         };
       });
     }
@@ -1304,7 +1305,13 @@ export const StudioWrapper = () => {
             show={hasPendingContentChanges}
             loading={studioSaving}
             onSave={async () => {
-              await saveAllContent();
+              // Throw on partial failure so PendingEditsModal runs answer(false)
+              // and keeps the user in content mode to fix the failed items
+              // instead of navigating away and abandoning the dirty edits.
+              const result = await saveAllContent();
+              if (result.failedCount > 0) {
+                throw new Error(`${result.failedCount} item(s) failed to save`);
+              }
             }}
             onDiscard={discardAllContent}
           />

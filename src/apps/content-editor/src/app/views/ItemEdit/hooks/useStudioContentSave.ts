@@ -2,6 +2,7 @@ import { useCallback } from "react";
 import { useStore } from "react-redux";
 import { chunk } from "lodash";
 import { AppState } from "../../../../../../../shell/store/types";
+import { ContentItemWithDirtyAndPublishing } from "../../../../../../../shell/services/types";
 import {
   fetchAllModelPublishings,
   fetchItem,
@@ -15,6 +16,10 @@ import { useCreateItemPublishingMutation } from "../../../../../../../shell/serv
 // when committing many staged content edits at once.
 const PUBLISH_BATCH_SIZE = 15;
 
+// The shell store is a legacy JS thunk store whose AppState is almost entirely
+// `any` (see the TODO in shell/store/types.ts), so dispatch must accept thunks
+// and items typed as `any`. Typing it precisely would require typing the whole
+// store; `any` here is the established interface to that untyped layer.
 type DispatchFn = (action: any) => any;
 
 export type StudioDirtyContentItem = {
@@ -54,7 +59,7 @@ function asyncBatch<T>(
   );
 }
 
-const buildLabel = (item: any): string =>
+const buildLabel = (item: ContentItemWithDirtyAndPublishing): string =>
   item?.web?.metaTitle ||
   item?.web?.metaLinkText ||
   item?.meta?.ZUID ||
@@ -67,10 +72,9 @@ export const collectDirtyContentItems = (
   return Object.keys(content)
     .map((zuid) => content[zuid])
     .filter(
-      (item: any) =>
-        item?.dirty && item?.meta?.ZUID && item?.meta?.contentModelZUID
+      (item) => item?.dirty && item?.meta?.ZUID && item?.meta?.contentModelZUID
     )
-    .map((item: any) => ({
+    .map((item) => ({
       itemZUID: item.meta.ZUID,
       modelZUID: item.meta.contentModelZUID,
       label: buildLabel(item),
@@ -82,6 +86,7 @@ type UseStudioContentSaveArgs = {
   refreshPreviewFrame: (onReloadComplete?: () => void) => void;
   // Maps a saveItem() response's validation/server errors into the shared
   // fieldErrors UI state. Reused from StudioWrapper's single-item save path.
+  // `res` is the untyped saveItem() thunk return (legacy JS store, see above).
   applyItemSaveErrors: (res: any, itemLabel: string) => void;
   setStudioSaving: (saving: boolean) => void;
 };
