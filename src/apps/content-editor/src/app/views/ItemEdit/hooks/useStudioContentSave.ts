@@ -28,11 +28,7 @@ export type StudioDirtyContentItem = {
   label: string;
 };
 
-type SavedContentItem = {
-  itemZUID: string;
-  modelZUID: string;
-  label: string;
-};
+type SavedContentItem = StudioDirtyContentItem;
 
 type SaveAllResult = {
   saved: SavedContentItem[];
@@ -87,7 +83,13 @@ type UseStudioContentSaveArgs = {
   // Maps a saveItem() response's validation/server errors into the shared
   // fieldErrors UI state. Reused from StudioWrapper's single-item save path.
   // `res` is the untyped saveItem() thunk return (legacy JS store, see above).
-  applyItemSaveErrors: (res: any, itemLabel: string) => void;
+  // `applyFieldErrors: false` skips the field-panel write (which is scoped to
+  // the selected item) so a non-selected item's failure only toasts.
+  applyItemSaveErrors: (
+    res: any,
+    itemLabel: string,
+    options?: { applyFieldErrors?: boolean }
+  ) => void;
   setStudioSaving: (saving: boolean) => void;
 };
 
@@ -126,7 +128,9 @@ export const useStudioContentSave = ({
         saved.push(item);
       } else {
         failedCount += 1;
-        applyItemSaveErrors(res, item.label);
+        // Batch saves cover items the user isn't actively editing, so don't
+        // write field errors into the selected item's panel — toast only.
+        applyItemSaveErrors(res, item.label, { applyFieldErrors: false });
       }
     }
 

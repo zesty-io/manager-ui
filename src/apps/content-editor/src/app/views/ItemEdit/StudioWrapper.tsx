@@ -522,56 +522,62 @@ export const StudioWrapper = () => {
   // fieldErrors UI state and surfaces a notification. Shared by the single-item
   // save (handleSave) and the staged batch save (useStudioContentSave).
   const applyItemSaveErrors = useCallback(
-    (res: any, itemLabel: string) => {
+    (res: any, itemLabel: string, options?: { applyFieldErrors?: boolean }) => {
+      // `setFieldErrors` / `activeFields` are scoped to the selected item, so
+      // callers batch-saving non-selected items pass applyFieldErrors: false to
+      // get the toast without polluting the active item's field panel.
+      const applyFieldErrors = options?.applyFieldErrors ?? true;
       if (res?.err === "VALIDATION_ERROR") {
-        setFieldErrors((prev) => {
-          const errors = cloneDeep(prev);
+        if (applyFieldErrors) {
+          setFieldErrors((prev) => {
+            const errors = cloneDeep(prev);
 
-          res?.missingRequired?.forEach((field: any) => {
-            errors[field.name] = {
-              ...(errors[field.name] ?? {}),
-              MISSING_REQUIRED: true,
-            };
+            res?.missingRequired?.forEach((field: any) => {
+              errors[field.name] = {
+                ...(errors[field.name] ?? {}),
+                MISSING_REQUIRED: true,
+              };
+            });
+
+            res?.lackingCharLength?.forEach((field: any) => {
+              errors[field.name] = {
+                ...(errors[field.name] ?? {}),
+                LACKING_MINLENGTH: field.settings?.minCharLimit,
+              };
+            });
+
+            res?.regexPatternMismatch?.forEach((field: any) => {
+              errors[field.name] = {
+                ...(errors[field.name] ?? {}),
+                REGEX_PATTERN_MISMATCH: field.settings?.regexMatchErrorMessage,
+              };
+            });
+
+            res?.regexRestrictPatternMatch?.forEach((field: any) => {
+              errors[field.name] = {
+                ...(errors[field.name] ?? {}),
+                REGEX_RESTRICT_PATTERN_MATCH:
+                  field.settings?.regexRestrictErrorMessage,
+              };
+            });
+
+            res?.invalidRange?.forEach((field: any) => {
+              errors[field.name] = {
+                ...(errors[field.name] ?? {}),
+                INVALID_RANGE: `Value must be between ${field.settings?.minValue} and ${field.settings?.maxValue}`,
+              };
+            });
+
+            res?.invalidBlockVariantValue?.forEach((field: any) => {
+              errors[field.name] = {
+                ...(errors[field.name] ?? {}),
+                INVALID_BLOCK_VARIANT: true,
+              };
+            });
+
+            return errors;
           });
-
-          res?.lackingCharLength?.forEach((field: any) => {
-            errors[field.name] = {
-              ...(errors[field.name] ?? {}),
-              LACKING_MINLENGTH: field.settings?.minCharLimit,
-            };
-          });
-
-          res?.regexPatternMismatch?.forEach((field: any) => {
-            errors[field.name] = {
-              ...(errors[field.name] ?? {}),
-              REGEX_PATTERN_MISMATCH: field.settings?.regexMatchErrorMessage,
-            };
-          });
-
-          res?.regexRestrictPatternMatch?.forEach((field: any) => {
-            errors[field.name] = {
-              ...(errors[field.name] ?? {}),
-              REGEX_RESTRICT_PATTERN_MATCH:
-                field.settings?.regexRestrictErrorMessage,
-            };
-          });
-
-          res?.invalidRange?.forEach((field: any) => {
-            errors[field.name] = {
-              ...(errors[field.name] ?? {}),
-              INVALID_RANGE: `Value must be between ${field.settings?.minValue} and ${field.settings?.maxValue}`,
-            };
-          });
-
-          res?.invalidBlockVariantValue?.forEach((field: any) => {
-            errors[field.name] = {
-              ...(errors[field.name] ?? {}),
-              INVALID_BLOCK_VARIANT: true,
-            };
-          });
-
-          return errors;
-        });
+        }
 
         dispatch(
           notify({
@@ -583,7 +589,10 @@ export const StudioWrapper = () => {
       }
 
       if (res?.status === 400) {
-        if (res.error?.toLowerCase()?.includes("data too long")) {
+        if (
+          applyFieldErrors &&
+          res.error?.toLowerCase()?.includes("data too long")
+        ) {
           const dataLongErrorMatch = res.error?.match(/'([^']*)'/);
 
           if (dataLongErrorMatch?.[1]) {
@@ -712,11 +721,16 @@ export const StudioWrapper = () => {
       };
   // The "Save Changes" bar button opens the modal; the modal's Save All /
   // Save & Publish All buttons run the active mode's batch handlers and close.
+  // Close the modal on full success; keep it open on partial failure so the
+  // user sees which items remain (still listed + toasted) and can retry.
+  const closeModalUnlessFailed = (result: { failedCount?: number } | void) => {
+    if (!result || !result.failedCount) setShowSaveChangesModal(false);
+  };
   const handleModalSaveAll = () => {
     if (!saveBarCanSave) return;
     Promise.resolve(
       isLayoutMode ? handleSavePendingLayout() : saveAllContent()
-    ).finally(() => setShowSaveChangesModal(false));
+    ).then(closeModalUnlessFailed, () => {});
   };
   const handleModalSaveAndPublishAll = () => {
     if (!saveBarCanPublish) return;
@@ -724,7 +738,7 @@ export const StudioWrapper = () => {
       isLayoutMode
         ? handleSaveAndPublishPendingLayout()
         : saveAndPublishAllContent()
-    ).finally(() => setShowSaveChangesModal(false));
+    ).then(closeModalUnlessFailed, () => {});
   };
 
   // Rows shown in the Save Changes modal — scoped to the active mode: content

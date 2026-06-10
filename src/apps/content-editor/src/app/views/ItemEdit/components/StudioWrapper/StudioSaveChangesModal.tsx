@@ -68,7 +68,7 @@ export const StudioSaveChangesModal = ({
           Save Changes
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-          Would you like to save or save and publish your edits to this page?
+          Would you like to save or save and publish your changes?
         </Typography>
       </DialogTitle>
       <DialogContent>
