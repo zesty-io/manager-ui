@@ -44,17 +44,20 @@ export default connect((state) => {
 
       props.dispatch(fetchUser(props.user.ZUID)).then(() => {
         const { prefs } = store.getState().user;
+        const userLocale = prefs ? JSON.parse(prefs)?.locale : null;
 
-        if (prefs) {
-          const { locale } = JSON.parse(prefs);
-          const currentLocale = localStorage.getItem("app_locale");
+        // Resolve the UI locale authoritatively from the logged-in user, falling
+        // back to the default. This matters when switching users: localStorage
+        // and i18n still hold the previous user's locale after logout, so a user
+        // with no saved locale (or a different one) must reset to their own
+        // rather than inherit the prior session's language.
+        const targetLocale = userLocale || "en-US";
 
-          if (locale && locale !== currentLocale) {
-            i18n.changeLanguage(locale);
-            localStorage.setItem("app_locale", locale);
-            document.documentElement.lang = locale;
-          }
+        if (targetLocale !== i18n.language) {
+          i18n.changeLanguage(targetLocale);
+          document.documentElement.lang = targetLocale;
         }
+        localStorage.setItem("app_locale", targetLocale);
       });
       props
         .dispatch(fetchInstance())
