@@ -49,18 +49,22 @@ const TABS = [
   {
     name: "Resources",
     icon: CategoryRounded,
+    dataCy: "activityLogTabResources",
   },
   {
     name: "Users",
     icon: GroupsRounded,
+    dataCy: "activityLogTabUsers",
   },
   {
     name: "Timeline",
     icon: ViewTimelineRounded,
+    dataCy: "activityLogTabTimeline",
   },
   {
     name: "Insights",
     icon: InsightsRounded,
+    dataCy: "activityLogTabInsights",
   },
 ];
 
@@ -402,6 +406,7 @@ export const Home = () => {
           {TABS.map((tab) => (
             <Tab
               key={tab.name}
+              data-cy={tab.dataCy}
               icon={<SvgIcon component={tab.icon} fontSize="small" />}
               iconPosition="start"
               label={tab.name}

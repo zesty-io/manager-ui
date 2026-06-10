@@ -517,7 +517,9 @@ describe("Content Specs", () => {
     it("can publish an item", () => {
       cy.get(
         "[data-cy='field:one_to_one'] [data-cy='active-relational-item-more-button']"
-      ).click();
+      )
+        .scrollIntoView()
+        .click();
       cy.getBySelector("active-relational-item-publish-now-button").click();
       cy.getBySelector("ConfirmPublishModal").should("exist");
       cy.getBySelector("CancelPublishButton").click();
@@ -526,7 +528,9 @@ describe("Content Specs", () => {
     it("can schedule publish an item", () => {
       cy.get(
         "[data-cy='field:one_to_one'] [data-cy='active-relational-item-more-button']"
-      ).click();
+      )
+        .scrollIntoView()
+        .click();
       cy.getBySelector(
         "active-relational-item-schedule-publish-button"
       ).click();
@@ -537,7 +541,9 @@ describe("Content Specs", () => {
     it("can remove the selected item", () => {
       cy.get(
         "[data-cy='field:one_to_one'] [data-cy='active-relational-item-more-button']"
-      ).click();
+      )
+        .scrollIntoView()
+        .click();
       cy.getBySelector("active-relational-item-remove-item-button").click();
       cy.get(
         "[data-cy='field:one_to_one'] [data-cy='active-relational-item']"
@@ -639,8 +645,8 @@ describe("Content Specs", () => {
     });
 
     it("is should not be able to add an item if required fields are missing", () => {
-      cy.getBySelector("AddRepeaterRowItemBtn").click();
-      cy.getBySelector("SaveRepeaterRowItemBtn").click();
+      cy.getBySelector("AddRepeaterRowItemBtn").scrollIntoView().click();
+      cy.getBySelector("SaveRepeaterRowItemBtn").scrollIntoView().click();
       cy.contains("Required Field. Please enter a value.").should("exist");
     });
 
@@ -694,7 +700,7 @@ describe("Content Specs", () => {
 
       cy.getBySelector("subfield:sort").find("input").clear().type("99");
 
-      cy.getBySelector("SaveRepeaterRowItemBtn").click();
+      cy.getBySelector("SaveRepeaterRowItemBtn").scrollIntoView().click();
       cy.getBySelector("field:repeater")
         .find(".MuiDataGrid-row")
         .should("have.length", 1);
@@ -705,7 +711,7 @@ describe("Content Specs", () => {
       const updatedValue = "I am now updated";
 
       // Add a new row item
-      cy.getBySelector("AddRepeaterRowItemBtn").click();
+      cy.getBySelector("AddRepeaterRowItemBtn").scrollIntoView().click();
       cy.getBySelector("subfield:single_line_text")
         .find("input")
         .clear()
@@ -714,7 +720,7 @@ describe("Content Specs", () => {
         .find("input")
         .clear()
         .type("https://zesty.io");
-      cy.getBySelector("SaveRepeaterRowItemBtn").click();
+      cy.getBySelector("SaveRepeaterRowItemBtn").scrollIntoView().click();
 
       // Verify old value
       cy.getBySelector("field:repeater")
@@ -733,7 +739,7 @@ describe("Content Specs", () => {
         .clear()
         .type(updatedValue);
       cy.wait(500);
-      cy.getBySelector("SaveRepeaterRowItemBtn").click();
+      cy.getBySelector("SaveRepeaterRowItemBtn").scrollIntoView().click();
 
       // Verify updated value
       cy.getBySelector("field:repeater")
@@ -801,7 +807,7 @@ describe("Content Specs", () => {
     });
 
     it("should bulk remove checked rows", () => {
-      cy.getBySelector("AddRepeaterRowItemBtn").click();
+      cy.getBySelector("AddRepeaterRowItemBtn").scrollIntoView().click();
       cy.getBySelector("subfield:single_line_text")
         .find("input")
         .clear()
@@ -810,7 +816,7 @@ describe("Content Specs", () => {
         .find("input")
         .clear()
         .type("https://zesty.io");
-      cy.getBySelector("SaveRepeaterRowItemBtn").click();
+      cy.getBySelector("SaveRepeaterRowItemBtn").scrollIntoView().click();
 
       cy.getBySelector("field:repeater")
         .find(".MuiDataGrid-row")

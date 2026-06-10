@@ -4,24 +4,32 @@ describe("Reports > Activity Log > Home", () => {
   describe("Tabs", () => {
     it("Highlights tabs depending on URL", () => {
       cy.visit("/reports/activity-log/resources");
-      cy.get(".MuiTabs-root")
-        .contains("Resources")
-        .should("have.attr", "aria-selected", "true");
+      cy.getBySelector("activityLogTabResources").should(
+        "have.attr",
+        "aria-selected",
+        "true"
+      );
 
       cy.visit("/reports/activity-log/users");
-      cy.get(".MuiTabs-root")
-        .contains("Users")
-        .should("have.attr", "aria-selected", "true");
+      cy.getBySelector("activityLogTabUsers").should(
+        "have.attr",
+        "aria-selected",
+        "true"
+      );
 
       cy.visit("/reports/activity-log/timeline");
-      cy.get(".MuiTabs-root")
-        .contains("Timeline")
-        .should("have.attr", "aria-selected", "true");
+      cy.getBySelector("activityLogTabTimeline").should(
+        "have.attr",
+        "aria-selected",
+        "true"
+      );
 
       cy.visit("/reports/activity-log/insights");
-      cy.get(".MuiTabs-root")
-        .contains("Insights")
-        .should("have.attr", "aria-selected", "true");
+      cy.getBySelector("activityLogTabInsights").should(
+        "have.attr",
+        "aria-selected",
+        "true"
+      );
     });
 
     it("Navigates on tab click", () => {
