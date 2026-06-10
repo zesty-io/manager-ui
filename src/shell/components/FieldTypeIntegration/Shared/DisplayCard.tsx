@@ -25,6 +25,14 @@ export type DisplayCardProps = {
   loading?: boolean;
 };
 
+const hasValue = (value: unknown): boolean =>
+  value !== null && value !== undefined && value !== "";
+
+const renderValue = (value: unknown, placeholder: string): string => {
+  if (!hasValue(value) || typeof value === "object") return placeholder;
+  return String(value as string | number | boolean);
+};
+
 const DisplayCard = ({
   type,
   heading,
@@ -36,15 +44,6 @@ const DisplayCard = ({
   showPlayIcon,
   loading,
 }: DisplayCardProps) => {
-  const renderValue = (
-    value: string | number | boolean | null | undefined,
-    placeholder: string
-  ) => {
-    if (value === null || value === undefined || value === "")
-      return placeholder;
-    return String(value);
-  };
-
   const [noImage, setNoImage] = useState(false);
   const isVideoType = ["video", "youtube", "mux"].includes(type);
   const isSpecialType = ["shopify", "youtube", "mux", "classy"].includes(type);
@@ -141,50 +140,45 @@ const DisplayCard = ({
             alignItems="flex-start"
             sx={{ width: "100%" }}
           >
-            {details?.map(
-              (
-                item: Record<string, string | number | boolean | null>,
-                index: number
-              ) => (
-                <Box
-                  width="100%"
-                  display="flex"
-                  flexDirection="row"
-                  justifyContent="space-between"
-                  alignItems="center"
-                  key={`${item?.key}-${index}`}
+            {details?.map((item, index) => (
+              <Box
+                width="100%"
+                display="flex"
+                flexDirection="row"
+                justifyContent="space-between"
+                alignItems="center"
+                key={`${item?.key}-${index}`}
+              >
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  fontWeight={400}
+                  flexGrow={1}
                 >
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    fontWeight={400}
-                    flexGrow={1}
-                  >
-                    {loading ? (
-                      <Skeleton sx={{ width: "95%" }} />
-                    ) : (
-                      renderValue(item?.key, "+ Add Detail")
-                    )}
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    fontWeight={400}
-                  >
-                    {loading ? (
-                      <Skeleton
-                        sx={{
-                          width: "100px",
-                          height: "16px",
-                        }}
-                      />
-                    ) : (
-                      renderValue(item?.value, "")
-                    )}
-                  </Typography>
-                </Box>
-              )
-            )}
+                  {loading ? (
+                    <Skeleton sx={{ width: "95%" }} />
+                  ) : (
+                    renderValue(item?.key, "+ Add Detail")
+                  )}
+                </Typography>
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  fontWeight={400}
+                >
+                  {loading ? (
+                    <Skeleton
+                      sx={{
+                        width: "100px",
+                        height: "16px",
+                      }}
+                    />
+                  ) : (
+                    renderValue(item?.value, "")
+                  )}
+                </Typography>
+              </Box>
+            ))}
           </Box>
         </Box>
       );
@@ -268,7 +262,7 @@ const DisplayCard = ({
             >
               {headingValue}
             </Typography>
-            {type === "shopify" && !!detail && (
+            {type === "shopify" && hasValue(detail) && (
               <Typography
                 variant="body2"
                 noWrap
