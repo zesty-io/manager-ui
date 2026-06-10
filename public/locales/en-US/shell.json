@@ -1,4 +1,11 @@
 {
+  "accountChangePassword": "Change Password",
+  "accountGetHelp": "Get Help",
+  "accountLogOut": "Log Out",
+  "accountPreferences": "Preferences",
+  "accountReadDocs": "Read Docs",
+  "accountViewAllInstances": "View All Instances",
+  "accountYourProfile": "Your Profile",
   "addNewComment": "Add New Comment",
   "navAppTooltip": "{{name}} App",
   "navApps": "Apps",

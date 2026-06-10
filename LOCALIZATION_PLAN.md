@@ -130,7 +130,7 @@ Strings specific to the app shell — sidebar, topbar, global search, notificati
 
 | File                                          | Strings | Notes                                                                                                                             | Status |
 | --------------------------------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------- | ------ |
-| `components/GlobalAccountMenu/config.ts`      | 7       | Module-level `MENU_ITEMS` array — move `text` lookup inside component                                                             | [ ]    |
+| `components/GlobalAccountMenu/config.ts`      | 7       | Module-level `MENU_ITEMS` array — move `text` lookup inside component                                                             | [x]    |
 | `components/global-sidebar/GlobalSidebar.tsx` | 1       | `title="View source code commit"` tooltip on a `<Link>`                                                                           | [x]    |
 | `components/global-menu/index.tsx`            | 14      | Replaced slug-to-name conversion with `productLabels` map using `t()`; tooltip uses `navAppTooltip` with `{{name}}` interpolation | [x]    |
 

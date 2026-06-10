@@ -1,4 +1,11 @@
 {
+  "accountChangePassword": "Изменить пароль",
+  "accountGetHelp": "Получить помощь",
+  "accountLogOut": "Выйти",
+  "accountPreferences": "Настройки",
+  "accountReadDocs": "Читать документацию",
+  "accountViewAllInstances": "Просмотреть все инстансы",
+  "accountYourProfile": "Ваш профиль",
   "addNewComment": "Добавить новый комментарий",
   "navAppTooltip": "Приложение {{name}}",
   "navApps": "Приложения",

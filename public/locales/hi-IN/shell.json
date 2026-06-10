@@ -1,4 +1,11 @@
 {
+  "accountChangePassword": "पासवर्ड बदलें",
+  "accountGetHelp": "सहायता प्राप्त करें",
+  "accountLogOut": "लॉग आउट",
+  "accountPreferences": "प्राथमिकताएं",
+  "accountReadDocs": "दस्तावेज़ पढ़ें",
+  "accountViewAllInstances": "सभी इंस्टेंस देखें",
+  "accountYourProfile": "आपकी प्रोफ़ाइल",
   "addNewComment": "नया कमेंट जोड़ें",
   "navAppTooltip": "{{name}} ऐप",
   "navApps": "ऐप्स",

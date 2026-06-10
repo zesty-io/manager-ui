@@ -1,4 +1,11 @@
 {
+  "accountChangePassword": "修改密码",
+  "accountGetHelp": "获取帮助",
+  "accountLogOut": "退出登录",
+  "accountPreferences": "偏好设置",
+  "accountReadDocs": "阅读文档",
+  "accountViewAllInstances": "查看所有实例",
+  "accountYourProfile": "您的个人资料",
   "addNewComment": "添加新评论",
   "navAppTooltip": "{{name}}应用",
   "navApps": "应用",

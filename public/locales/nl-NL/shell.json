@@ -1,4 +1,11 @@
 {
+  "accountChangePassword": "Wachtwoord wijzigen",
+  "accountGetHelp": "Hulp krijgen",
+  "accountLogOut": "Uitloggen",
+  "accountPreferences": "Voorkeuren",
+  "accountReadDocs": "Documentatie lezen",
+  "accountViewAllInstances": "Alle instanties bekijken",
+  "accountYourProfile": "Je profiel",
   "addNewComment": "Nieuw commentaar toevoegen",
   "navAppTooltip": "{{name}}-app",
   "navApps": "Apps",

@@ -1,4 +1,11 @@
 {
+  "accountChangePassword": "Cambiar contraseña",
+  "accountGetHelp": "Obtener ayuda",
+  "accountLogOut": "Cerrar sesión",
+  "accountPreferences": "Preferencias",
+  "accountReadDocs": "Leer documentación",
+  "accountViewAllInstances": "Ver todas las instancias",
+  "accountYourProfile": "Tu perfil",
   "addNewComment": "Añadir nuevo comentario",
   "navAppTooltip": "Aplicación {{name}}",
   "navApps": "Aplicaciones",
