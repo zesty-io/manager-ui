@@ -39,10 +39,7 @@ export const PublishStatus = ({ currentVersion }: PublishStatusProps) => {
 
   const getUsername = (userZUID: string) => {
     const user = users?.find((user) => user.ZUID === userZUID);
-
-    if (user) {
-      return `${user.firstName} ${user.lastName}`;
-    }
+    return user ? `${user.firstName} ${user.lastName}` : "";
   };
 
   if (isFetchingPublishStatus) {
@@ -107,21 +104,28 @@ export const PublishStatus = ({ currentVersion }: PublishStatusProps) => {
           </Tooltip>
         )}
 
-      {scheduledUnpublishing &&
+      {!!scheduledUnpublishing &&
+        scheduledUnpublishing?._active &&
         scheduledUnpublishing.version === currentVersion && (
           <Tooltip
             enterDelay={1000}
             enterNextDelay={1000}
             title={
               <>
-                v{scheduledUnpublishing?.version} scheduled to unpublish <br />
+                v{scheduledUnpublishing?.version} scheduled to unpublish on{" "}
+                <br />
                 {formatDate(scheduledUnpublishing?.unpublishAt)} <br />
                 by {getUsername(scheduledUnpublishing?.publishedByUserZUID)}
               </>
             }
             placement="bottom-start"
           >
-            <Stack direction="row" gap={1} alignItems="center">
+            <Stack
+              data-cy="ScheduledUnpublishIndicator"
+              direction="row"
+              gap={1}
+              alignItems="center"
+            >
               <ScheduleRounded fontSize="small" color="warning" />
               <Typography
                 variant="body2"

@@ -467,7 +467,7 @@ export const ItemEditHeaderActions = ({
     }
   };
 
-  const handleUnpublish = async () => {
+  const handleUnpublish = () => {
     deleteItemPublishing({
       modelZUID: resolvedModelZUID,
       itemZUID: resolvedItemZUID,

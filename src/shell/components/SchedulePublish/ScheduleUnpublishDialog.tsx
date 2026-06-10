@@ -41,7 +41,6 @@ export type ScheduleUnpublishDialogProps = {
 export const ScheduleUnpublishDialog = ({
   itemName,
   currentVersion,
-  scheduledPublishVersion,
   scheduledLocalText,
   creatorName,
   savedAgo,
@@ -51,7 +50,6 @@ export const ScheduleUnpublishDialog = ({
   isLoading,
   isSelectedDatetimePast,
   isAlreadyScheduled,
-  hasAnyScheduledPublish,
   onClose,
   onUnpublishNow,
   onSchedule,
@@ -60,7 +58,7 @@ export const ScheduleUnpublishDialog = ({
   onTimezoneChange,
 }: ScheduleUnpublishDialogProps) => (
   <Dialog
-    data-cy="SchedulePublishModal"
+    data-cy="ScheduleUnpublishModal"
     open
     onClose={onClose}
     PaperProps={{ sx: { maxWidth: 640, width: 640 } }}
@@ -105,22 +103,13 @@ export const ScheduleUnpublishDialog = ({
       </Stack>
     </DialogTitle>
 
-    <DialogContent data-cy="PublishScheduleModal">
+    <DialogContent data-cy="UnpublishScheduleModal">
       {isAlreadyScheduled ? (
         <>
           <Alert severity="info" icon={<InfoRoundedIcon />}>
             This will enable the ability to schedule or publish other versions
             of this content item
           </Alert>
-          {hasAnyScheduledPublish && (
-            <Alert
-              severity="warning"
-              icon={<WarningRoundedIcon fontSize="inherit" />}
-              sx={{ mt: 1.5 }}
-            >
-              {`This will also cancel the scheduled publish for v${scheduledPublishVersion}.`}
-            </Alert>
-          )}
         </>
       ) : (
         <>
@@ -153,7 +142,7 @@ export const ScheduleUnpublishDialog = ({
 
     <DialogActions>
       <Button
-        data-cy="CancelSchedulePublishButton"
+        data-cy="CancelScheduleUnpublishButton"
         variant="text"
         color="inherit"
         onClick={onClose}
@@ -164,7 +153,7 @@ export const ScheduleUnpublishDialog = ({
 
       {isAlreadyScheduled ? (
         <Button
-          data-cy="UnschedulePublishButton"
+          data-cy="UnscheduleUnpublishButton"
           variant="contained"
           color="warning"
           startIcon={<CalendarTodayRoundedIcon />}
@@ -175,7 +164,7 @@ export const ScheduleUnpublishDialog = ({
         </Button>
       ) : (
         <Button
-          data-cy="SchedulePublishButton"
+          data-cy="ScheduleUnpublishButton"
           variant="contained"
           startIcon={<ScheduleRoundedIcon />}
           onClick={

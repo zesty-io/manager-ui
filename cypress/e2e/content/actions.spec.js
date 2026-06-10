@@ -253,31 +253,27 @@ describe("Actions in content editor", () => {
     cy.wait([items, publishings], { requestTimeout });
 
     // Cancel any stale scheduled unpublish from a prior run so the scheduling
-    // step below reliably opens the SchedulePublishButton (not Unschedule) view.
+    // step below reliably opens the ScheduleUnpublishButton (not Unschedule) view.
     cy.getBySelector("PublishMenuButton").should("exist").should("be.enabled");
     cy.getBySelector("PublishMenuButton").trigger("click");
     cy.getBySelector("publishingMenu").within(() => {
       cy.getBySelector("UnpublishScheduleButton").trigger("click");
     });
-    cy.getBySelector("SchedulePublishModal")
+    cy.getBySelector("ScheduleUnpublishModal")
       .should("exist")
       .then(($modal) => {
-        if ($modal.find("[data-cy='UnschedulePublishButton']").length) {
+        if ($modal.find("[data-cy='UnscheduleUnpublishButton']").length) {
           cy.wrap($modal)
-            .find("[data-cy='UnschedulePublishButton']")
+            .find("[data-cy='UnscheduleUnpublishButton']")
             .trigger("click");
           cy.wait(publishItem);
           cy.wait(publishings);
         } else if (
-          $modal.find("[data-cy='CancelSchedulePublishButton']").length
+          $modal.find("[data-cy='CancelScheduleUnpublishButton']").length
         ) {
           cy.wrap($modal)
-            .find("[data-cy='CancelSchedulePublishButton']")
+            .find("[data-cy='CancelScheduleUnpublishButton']")
             .trigger("click");
-        } else {
-          throw new Error(
-            "SchedulePublishModal opened in unexpected state — neither UnschedulePublishButton nor CancelSchedulePublishButton found"
-          );
         }
       });
 
@@ -291,16 +287,16 @@ describe("Actions in content editor", () => {
         cy.getBySelector("UnpublishScheduleButton").trigger("click");
       });
 
-    cy.getBySelector("SchedulePublishModal")
+    cy.getBySelector("ScheduleUnpublishModal")
       .should("exist")
       .within(() => {
         // Assert labeling is correct for the unpublish flow
         cy.contains("Schedule Unpublish:").should("exist");
         cy.contains("Unpublish on").should("exist");
-        cy.getBySelector("SchedulePublishButton")
+        cy.getBySelector("ScheduleUnpublishButton")
           .should("exist")
           .should("contain.text", "Schedule Unpublish");
-        cy.getBySelector("SchedulePublishButton").trigger("click");
+        cy.getBySelector("ScheduleUnpublishButton").trigger("click");
       });
 
     // Assert the API payload branches correctly for scheduled unpublish
@@ -325,10 +321,10 @@ describe("Actions in content editor", () => {
         .should("contain.text", "Unschedule Unpublish")
         .trigger("click");
     });
-    cy.getBySelector("SchedulePublishModal")
+    cy.getBySelector("ScheduleUnpublishModal")
       .should("exist")
       .within(() => {
-        cy.getBySelector("UnschedulePublishButton").trigger("click");
+        cy.getBySelector("UnscheduleUnpublishButton").trigger("click");
       });
     cy.wait("@publishItem");
     cy.wait("@publishings");
@@ -350,18 +346,18 @@ describe("Actions in content editor", () => {
       .within(() => {
         cy.getBySelector("UnpublishScheduleButton").trigger("click");
       });
-    cy.getBySelector("SchedulePublishModal")
+    cy.getBySelector("ScheduleUnpublishModal")
       .should("exist")
       .then(($modal) => {
-        if ($modal.find("[data-cy='UnschedulePublishButton']").length) {
+        if ($modal.find("[data-cy='UnscheduleUnpublishButton']").length) {
           // Already scheduled — cancel it to restore clean state
           cy.wrap($modal)
-            .find("[data-cy='UnschedulePublishButton']")
+            .find("[data-cy='UnscheduleUnpublishButton']")
             .trigger("click");
           cy.wait(publishItem);
           cy.wait(publishings);
         } else {
-          cy.getBySelector("CancelSchedulePublishButton").trigger("click");
+          cy.getBySelector("CancelScheduleUnpublishButton").trigger("click");
         }
       });
 
@@ -376,11 +372,11 @@ describe("Actions in content editor", () => {
         cy.getBySelector("UnpublishScheduleButton").trigger("click");
       });
 
-    cy.getBySelector("SchedulePublishModal")
+    cy.getBySelector("ScheduleUnpublishModal")
       .should("exist")
       .within(() => {
-        cy.getBySelector("SchedulePublishButton").should("exist");
-        cy.getBySelector("SchedulePublishButton").trigger("click");
+        cy.getBySelector("ScheduleUnpublishButton").should("exist");
+        cy.getBySelector("ScheduleUnpublishButton").trigger("click");
       });
 
     cy.wait(publishItem);
@@ -398,14 +394,14 @@ describe("Actions in content editor", () => {
         cy.getBySelector("UnpublishScheduleButton").trigger("click");
       });
 
-    cy.getBySelector("SchedulePublishModal")
+    cy.getBySelector("ScheduleUnpublishModal")
       .should("exist")
       .within(() => {
         // Assert the scheduled date is rendered in the dialog (not blank)
         cy.contains("scheduled to unpublish on").should("exist");
         cy.contains(/\w{3} \d{1,2}, \d{4} at \d{1,2}:\d{2}/).should("exist");
-        cy.getBySelector("UnschedulePublishButton").should("exist");
-        cy.getBySelector("UnschedulePublishButton").trigger("click");
+        cy.getBySelector("UnscheduleUnpublishButton").should("exist");
+        cy.getBySelector("UnscheduleUnpublishButton").trigger("click");
       });
 
     cy.wait(publishItem);
