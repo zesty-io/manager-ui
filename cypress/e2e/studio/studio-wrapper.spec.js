@@ -197,6 +197,7 @@ describe("Studio Wrapper", () => {
   });
 
   it("shows the layout save bar after a reorder output arrives", () => {
+    setStudioMode("layout");
     createPendingLayoutSave();
 
     cy.getBySelector("StudioLayoutSaveBar").should("exist");
@@ -205,6 +206,7 @@ describe("Studio Wrapper", () => {
   });
 
   it("opens the Save Changes modal listing the staged code change", () => {
+    setStudioMode("layout");
     createPendingLayoutSave();
 
     cy.getBySelector("StudioLayoutSaveChangesButton").click();
@@ -220,6 +222,7 @@ describe("Studio Wrapper", () => {
   });
 
   it("hides the layout save bar when cancel is clicked", () => {
+    setStudioMode("layout");
     createPendingLayoutSave();
 
     cy.getBySelector("StudioLayoutSaveBar").should("exist");
@@ -296,6 +299,7 @@ describe("Studio Wrapper", () => {
   });
 
   it("saves sanitized mapped source for a pending layout draft", () => {
+    setStudioMode("layout");
     cy.apiRequest({
       url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
     }).then(({ data }) => {
@@ -316,6 +320,7 @@ describe("Studio Wrapper", () => {
   });
 
   it("keeps nested code-region layout nodes out of outer mapped source", () => {
+    setStudioMode("layout");
     cy.apiRequest({
       url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
     }).then(({ data }) => {
@@ -366,6 +371,7 @@ describe("Studio Wrapper", () => {
   // ── Static inline text editing ─────────────────────────────────────────────
 
   it("shows save bar after a LAYOUT_CONTENT_UPDATE static edit", () => {
+    setStudioMode("layout");
     postBridgeMessage({
       type: "TEMPLATE_SOURCE_MAP",
       templateSourceByCodeId: {
@@ -385,6 +391,7 @@ describe("Studio Wrapper", () => {
   });
 
   it("saves static content edit with updated text and no layout-id attributes", () => {
+    setStudioMode("layout");
     cy.apiRequest({
       url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
     }).then(({ data }) => {
@@ -418,6 +425,7 @@ describe("Studio Wrapper", () => {
   });
 
   it("accumulates multiple static edits and saves the latest", () => {
+    setStudioMode("layout");
     cy.apiRequest({
       url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
     }).then(({ data }) => {
@@ -457,6 +465,7 @@ describe("Studio Wrapper", () => {
   });
 
   it("applies static edit on top of a pending reorder without repositioning the block", () => {
+    setStudioMode("layout");
     cy.apiRequest({
       url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
     }).then(({ data }) => {
@@ -553,6 +562,7 @@ describe("Studio Wrapper", () => {
   });
 
   it("saves updated image src after selecting from MediaDam", () => {
+    setStudioMode("layout");
     cy.apiRequest({
       url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
     }).then(({ data }) => {
@@ -605,6 +615,7 @@ describe("Studio Wrapper", () => {
   });
 
   it("saves updated src for an img nested inside a layout leaf", () => {
+    setStudioMode("layout");
     cy.apiRequest({
       url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
     }).then(({ data }) => {
@@ -653,6 +664,7 @@ describe("Studio Wrapper", () => {
   });
 
   it("saves and publishes a pending layout draft", () => {
+    setStudioMode("layout");
     cy.apiRequest({
       url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
     }).then(({ data }) => {

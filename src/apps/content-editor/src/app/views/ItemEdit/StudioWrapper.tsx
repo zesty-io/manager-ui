@@ -1010,7 +1010,8 @@ export const StudioWrapper = () => {
         })
       )) as any;
 
-      if (res?.status === 200) {
+      // Any 2xx is a successful save (saveItem resolves 201 on version create).
+      if (res?.status >= 200 && res?.status < 300) {
         dispatch(
           notify({
             kind: "success",

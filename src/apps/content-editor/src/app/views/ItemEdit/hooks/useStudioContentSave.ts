@@ -124,7 +124,9 @@ export const useStudioContentSave = ({
         })
       )) as any;
 
-      if (res?.status === 200) {
+      // Treat any 2xx as success — saveItem resolves 201 when the API creates a
+      // new version, and a 201 is still a successful save.
+      if (res?.status >= 200 && res?.status < 300) {
         saved.push(item);
       } else {
         failedCount += 1;
