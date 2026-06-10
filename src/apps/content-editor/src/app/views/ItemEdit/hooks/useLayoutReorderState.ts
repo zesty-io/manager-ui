@@ -688,8 +688,7 @@ export const useLayoutReorderState = ({
           : [];
 
         onSelectedLayoutBreadcrumbChange((current) => {
-          if (!current) return current;
-          if (!reorderedBreadcrumb.length) return current;
+          if (!current || !reorderedBreadcrumb.length) return current;
           return {
             codeId: primaryCodeId,
             layoutId: current.layoutId,

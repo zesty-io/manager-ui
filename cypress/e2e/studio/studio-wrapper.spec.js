@@ -41,16 +41,23 @@ describe("Studio Wrapper", () => {
 
     postBridgeMessage({
       type: "REORDER_OUTPUT",
-      codeId: nextCodeId,
-      selector: "[data-layout-id]",
-      orderedLayoutIds: ["2", "1"],
-      layoutStructure: [
-        { layoutId: "2", parentLayoutId: null },
-        { layoutId: "1", parentLayoutId: null },
+      regions: [
+        {
+          codeId: nextCodeId,
+          selector: "[data-layout-id]",
+          orderedLayoutIds: ["2", "1"],
+          layoutStructure: [
+            { layoutId: "2", parentLayoutId: null },
+            { layoutId: "1", parentLayoutId: null },
+          ],
+          outputHtml:
+            '<div data-layout-id="2">Two</div><div data-layout-id="1">One</div>',
+        },
       ],
-      outputHtml:
-        '<div data-layout-id="2">Two</div><div data-layout-id="1">One</div>',
+      primaryCodeId: nextCodeId,
+      selectedLayoutId: "2",
       selectedLayoutBreadcrumb: [{ layoutId: "2", label: "div" }],
+      selector: "[data-layout-id]",
     });
   };
 
@@ -75,17 +82,19 @@ describe("Studio Wrapper", () => {
 
     postBridgeMessage({
       type: "REORDER_OUTPUT",
-      codeId: nextCodeId,
-      selector: "[data-layout-id]",
-      orderedLayoutIds: ["1", "2", "4", "5", "3"],
-      layoutStructure: [
-        { layoutId: "1", parentLayoutId: null },
-        { layoutId: "2", parentLayoutId: "1" },
-        { layoutId: "4", parentLayoutId: "1" },
-        { layoutId: "5", parentLayoutId: "1" },
-        { layoutId: "3", parentLayoutId: "1" },
-      ],
-      outputHtml: `
+      regions: [
+        {
+          codeId: nextCodeId,
+          selector: "[data-layout-id]",
+          orderedLayoutIds: ["1", "2", "4", "5", "3"],
+          layoutStructure: [
+            { layoutId: "1", parentLayoutId: null },
+            { layoutId: "2", parentLayoutId: "1" },
+            { layoutId: "4", parentLayoutId: "1" },
+            { layoutId: "5", parentLayoutId: "1" },
+            { layoutId: "3", parentLayoutId: "1" },
+          ],
+          outputHtml: `
         <div data-layout-id="1">
           <div data-layout-id="2">seeya world</div>
           <div data-layout-id="4">goodbye world</div>
@@ -97,7 +106,12 @@ describe("Studio Wrapper", () => {
           </div>
         </div>
       `,
+        },
+      ],
+      primaryCodeId: nextCodeId,
+      selectedLayoutId: "4",
       selectedLayoutBreadcrumb: [{ layoutId: "4", label: "div" }],
+      selector: "[data-layout-id]",
     });
   };
 
@@ -462,16 +476,23 @@ describe("Studio Wrapper", () => {
       // Reorder: swap block 2 before block 1
       postBridgeMessage({
         type: "REORDER_OUTPUT",
-        codeId: webView.ZUID,
-        selector: "[data-layout-id]",
-        orderedLayoutIds: ["2", "1"],
-        layoutStructure: [
-          { layoutId: "2", parentLayoutId: null },
-          { layoutId: "1", parentLayoutId: null },
+        regions: [
+          {
+            codeId: webView.ZUID,
+            selector: "[data-layout-id]",
+            orderedLayoutIds: ["2", "1"],
+            layoutStructure: [
+              { layoutId: "2", parentLayoutId: null },
+              { layoutId: "1", parentLayoutId: null },
+            ],
+            outputHtml:
+              '<div data-layout-id="2">Two</div><div data-layout-id="1">One</div>',
+          },
         ],
-        outputHtml:
-          '<div data-layout-id="2">Two</div><div data-layout-id="1">One</div>',
+        primaryCodeId: webView.ZUID,
+        selectedLayoutId: "2",
         selectedLayoutBreadcrumb: [],
+        selector: "[data-layout-id]",
       });
 
       // Static edit on block 2 after reorder
