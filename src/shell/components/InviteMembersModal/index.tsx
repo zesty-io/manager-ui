@@ -131,12 +131,12 @@ const InviteMembersModal = ({ onClose }: Props) => {
           let errorMsg = "";
 
           if (error?.data?.error?.includes("already invited")) {
-            errorMsg = "Invite previously sent";
+            errorMsg = t("shell.invitePreviouslySent");
           } else if (
             error?.data?.error?.includes("already has a role associated") ||
             error?.data?.error?.includes("cannot invite self")
           ) {
-            errorMsg = "Already part of instance";
+            errorMsg = t("shell.alreadyPartOfInstance");
           }
 
           updateFailedInvites({
@@ -220,13 +220,13 @@ const InviteMembersModal = ({ onClose }: Props) => {
               mb: 1.5,
             }}
           />
-          <Box sx={{ fontWeight: 700 }}>Invite Users</Box>
+          <Box sx={{ fontWeight: 700 }}>{t("shell.inviteUsers")}</Box>
           <Typography sx={{ mt: 1 }} variant="body2" color="text.secondary">
-            These invites will be sent as emails
+            {t("shell.invitesSentAsEmails")}
           </Typography>
         </DialogTitle>
         <DialogContent>
-          <InputLabel>Invite</InputLabel>
+          <InputLabel>{t("shell.invite")}</InputLabel>
           <Autocomplete
             multiple
             value={emails}
@@ -246,11 +246,9 @@ const InviteMembersModal = ({ onClose }: Props) => {
                 ref={autocompleteRef}
                 error={emailError}
                 placeholder={
-                  emails.length ? "" : "Email, comma or space separated"
+                  emails.length ? "" : t("shell.emailCommaSeparated")
                 }
-                helperText={
-                  emailError ? "Please enter a valid email address." : " "
-                }
+                helperText={emailError ? t("shell.enterValidEmail") : " "}
                 onKeyDown={(event) => {
                   setEmailError(false);
                   if (
@@ -352,7 +350,7 @@ const InviteMembersModal = ({ onClose }: Props) => {
               ))
             }
           />
-          <InputLabel>Invite as</InputLabel>
+          <InputLabel>{t("shell.inviteAs")}</InputLabel>
           <Select
             fullWidth
             value={roleIndex}
@@ -373,7 +371,7 @@ const InviteMembersModal = ({ onClose }: Props) => {
             onClick={handleInvites}
             loading={sendingEmails}
           >
-            Invite
+            {t("shell.invite")}
           </Button>
         </DialogActions>
       </Dialog>

@@ -138,14 +138,14 @@ Strings specific to the app shell — sidebar, topbar, global search, notificati
 
 | File                                                                   | Strings | Risk driver                                                                                       | Status |
 | ---------------------------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------- | ------ |
-| `components/GlobalDocsMenu/config.ts` + `index.tsx`                    | 25+     | Module-level `MAIN_DOC_ITEMS` / `SUB_DOC_ITEMS` arrays + `Learn more about {{app}}` interpolation | [ ]    |
-| `components/AccessDenied.tsx`                                          | 5       | `{userRole?.name}` and `{appRoute}` interpolation                                                 | [ ]    |
-| `components/InviteMembersModal/index.tsx`                              | 8       | Already uses `useTranslation` inconsistently — needs cleanup pass                                 | [ ]    |
-| `components/Filters/DateFilter/DateFilter.tsx`                         | 15      | Date-formatted strings (`On ${fmt(...)}`)                                                         | [ ]    |
-| `components/global-tabs/Dropdown.tsx`                                  | 5       | `${count} Results` plural                                                                         | [ ]    |
-| `components/global-sidebar/.../InstanceMenu/Flyouts/InstancesList.tsx` | 6       | "No results" message with dynamic query string                                                    | [ ]    |
-| `components/ConfirmPublishModal.tsx`                                   | 5       | Conditional button label + count                                                                  | [ ]    |
-| `components/load-instance/NoInstancePermission.tsx`                    | 6       | `{user?.email}` embedded in sentence                                                              | [ ]    |
+| `components/GlobalDocsMenu/config.ts` + `index.tsx`                    | 25+     | Module-level `MAIN_DOC_ITEMS` / `SUB_DOC_ITEMS` arrays + `Learn more about {{app}}` interpolation | [x]    |
+| `components/AccessDenied.tsx`                                          | 5       | `{userRole?.name}` and `{appRoute}` interpolation                                                 | [x]    |
+| `components/InviteMembersModal/index.tsx`                              | 8       | Already uses `useTranslation` inconsistently — needs cleanup pass                                 | [x]    |
+| `components/Filters/DateFilter/DateFilter.tsx`                         | 15      | Date-formatted strings (`On ${fmt(...)}`)                                                         | [x]    |
+| `components/global-tabs/Dropdown.tsx`                                  | 5       | `${count} Results` plural                                                                         | [x]    |
+| `components/global-sidebar/.../InstanceMenu/Flyouts/InstancesList.tsx` | 6       | "No results" message with dynamic query string                                                    | [x]    |
+| `components/ConfirmPublishModal.tsx`                                   | 5       | Conditional button label + count                                                                  | [x]    |
+| `components/load-instance/NoInstancePermission.tsx`                    | 6       | `{user?.email}` embedded in sentence                                                              | [x]    |
 
 #### Tier 3 — High effort, high risk (complex interpolation, large files, critical paths)
 

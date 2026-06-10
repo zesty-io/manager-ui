@@ -65,12 +65,12 @@ export const Dropdown: FC<Dropdown> = ({
   const getDropdownHeader = () => {
     if (Boolean(filterTerm)) {
       if (filteredTabs.length) {
-        return `${filteredTabs.length} Results`;
+        return t("shell.tabsResults", { count: filteredTabs.length });
       } else {
-        return "No results found";
+        return t("shell.noResultsFound");
       }
     } else {
-      return "Pinned Tabs";
+      return t("shell.pinnedTabs");
     }
   };
 
@@ -109,7 +109,7 @@ export const Dropdown: FC<Dropdown> = ({
           aria-expanded={open ? "true" : undefined}
         >
           <Typography variant="body3" fontWeight={600} pl={1.5}>
-            More
+            {t("common.more")}
           </Typography>
           <IconButton disableTouchRipple disableRipple size="small">
             <ArrowDropDownIcon />
@@ -163,7 +163,7 @@ export const Dropdown: FC<Dropdown> = ({
             >
               <InputBase
                 fullWidth
-                placeholder="Search Tabs"
+                placeholder={t("shell.searchTabs")}
                 value={filter}
                 onChange={(evt) => setFilter(evt.target.value)}
                 startAdornment={
@@ -231,7 +231,9 @@ export const Dropdown: FC<Dropdown> = ({
                     borderColor: "border",
                   }}
                 >
-                  <Typography variant="overline">Unpin All</Typography>
+                  <Typography variant="overline">
+                    {t("shell.unpinAll")}
+                  </Typography>
                 </Button>
               )}
             </Stack>
@@ -247,8 +249,8 @@ export const Dropdown: FC<Dropdown> = ({
       </Box>
       <ConfirmDialog
         open={confirmOpen}
-        title="Unpin All Tabs in See More Menu?"
-        content="This  cannot be undone"
+        title={t("shell.unpinAllTabsTitle")}
+        content={t("shell.cannotBeUndone")}
         callback={() => {} /* TODO why is this required?? */}
         maxWidth="xs"
         fullWidth
@@ -272,7 +274,7 @@ export const Dropdown: FC<Dropdown> = ({
           }}
           sx={{ textTransform: "none" }}
         >
-          Unpin All
+          {t("shell.unpinAll")}
         </Button>
       </ConfirmDialog>
     </>

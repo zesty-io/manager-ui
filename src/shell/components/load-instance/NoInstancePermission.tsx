@@ -1,11 +1,13 @@
 import { Typography, Stack, Box, Button } from "@mui/material";
 import { GridViewRounded, PeopleRounded } from "@mui/icons-material";
+import { useTranslation } from "react-i18next";
 import restricted from "../../../../public/images/restricted.png";
 import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "../../store/types";
 import { logout } from "../../store/auth";
 
 export const NoInstancePermission = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const user = useSelector((state: AppState) => state.user);
 
@@ -19,17 +21,17 @@ export const NoInstancePermission = () => {
     >
       <Box sx={{ maxWidth: 540 }}>
         <Typography variant="h3" fontWeight={700} sx={{ mb: 1 }}>
-          Access Denied
+          {t("shell.accessDenied")}
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-          Your account does not have permission to access this instance. Please
-          contact the instance owner or administrator to be added.
+          {t("shell.noInstancePermissionBody1")}
           <br />
           <br />
-          If you believe you should have access, ensure you're using the correct
-          account.
-          <strong> Currently logged in as {user?.email}</strong> — try switching
-          to another account.
+          {t("shell.noInstancePermissionBody2")}{" "}
+          <strong>
+            {t("shell.currentlyLoggedInAs", { email: user?.email })}
+          </strong>{" "}
+          {t("shell.trySwitchingAccount")}
         </Typography>
         <Stack direction="row" gap={1.5}>
           <Button
@@ -39,7 +41,7 @@ export const NoInstancePermission = () => {
             // @ts-expect-error
             href={`${CONFIG.URL_ACCOUNTS}/instances`}
           >
-            View Your Instances
+            {t("shell.viewYourInstances")}
           </Button>
           <Button
             variant="outlined"
@@ -49,14 +51,14 @@ export const NoInstancePermission = () => {
               dispatch(logout());
             }}
           >
-            Switch Account
+            {t("shell.switchAccount")}
           </Button>
         </Stack>
       </Box>
       <Box
         component="img"
         src={restricted}
-        alt="No Permission"
+        alt={t("shell.noPermissionImageAlt")}
         loading="lazy"
         sx={{
           maxWidth: 320,

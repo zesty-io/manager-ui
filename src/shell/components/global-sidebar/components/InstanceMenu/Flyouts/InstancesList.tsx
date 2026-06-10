@@ -1,5 +1,6 @@
 import { useMemo, useState, useRef, CSSProperties } from "react";
 import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 import {
   TextField,
   ListSubheader,
@@ -32,8 +33,12 @@ interface ListRowData {
   type: "header" | "data" | "skeleton";
   data?: Instance;
   headerText?: string;
+  // Stable, locale-independent discriminator for the header rows. Used for the
+  // icon logic in Row() so it never depends on the (translated) headerText.
+  headerKey?: "favorites" | "all";
 }
 export const InstancesList = () => {
+  const { t } = useTranslation();
   const [filter, setFilter] = useState("");
   const searchField = useRef<HTMLInputElement | null>(null);
   const user: User = useSelector((state: AppState) => state.user);
@@ -126,16 +131,18 @@ export const InstancesList = () => {
     return [
       {
         type: "header",
-        headerText: "Favorites",
+        headerKey: "favorites",
+        headerText: t("shell.favorites"),
       },
       ...faveInstances,
       {
         type: "header",
-        headerText: "All Instances",
+        headerKey: "all",
+        headerText: t("shell.allInstances"),
       },
       ...allInstances,
     ];
-  }, [filteredInstances, filteredFavoriteInstances]);
+  }, [filteredInstances, filteredFavoriteInstances, t]);
 
   const handleResetFilter = () => {
     setFilter("");
@@ -150,7 +157,7 @@ export const InstancesList = () => {
           <ListItemIcon>
             <ManageSearchRoundedIcon />
           </ListItemIcon>
-          <ListItemText>Switch Instance</ListItemText>
+          <ListItemText>{t("shell.switchInstance")}</ListItemText>
           <ArrowForwardIosRoundedIcon color="action" fontSize="small" />
         </>
       }
@@ -195,7 +202,7 @@ export const InstancesList = () => {
           <TextField
             autoFocus
             fullWidth
-            placeholder="Search Instances"
+            placeholder={t("shell.searchInstances")}
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
             inputRef={searchField}
@@ -221,23 +228,22 @@ export const InstancesList = () => {
           >
             <img
               src={noSearchResults}
-              alt="No Search Results"
+              alt={t("shell.noSearchResultsAlt")}
               width={88}
               height={80}
             />
             <Typography variant="h5" fontWeight={600}>
-              Your search “{filter}” could not find any results
+              {t("shell.searchNoResults", { query: filter })}
             </Typography>
             <Typography variant="body2" color="text.secondary" pb={3}>
-              Try adjusting tour search. We suggest check all words are spelled
-              correctly or try using different keywords.
+              {t("shell.searchNoResultsSuggestion")}
             </Typography>
             <Button
               variant="contained"
               onClick={handleResetFilter}
               startIcon={<SearchRoundedIcon />}
             >
-              Search Again
+              {t("shell.searchAgain")}
             </Button>
           </Stack>
         ) : (
@@ -282,8 +288,8 @@ const Row = ({ index, data, style }: any) => {
   }
 
   if (instance.type === "header") {
-    const isFave = instance.headerText?.toLowerCase() === "favorites";
-    const isAll = instance.headerText?.toLowerCase() === "all instances";
+    const isFave = instance.headerKey === "favorites";
+    const isAll = instance.headerKey === "all";
 
     return (
       <MenuItem
