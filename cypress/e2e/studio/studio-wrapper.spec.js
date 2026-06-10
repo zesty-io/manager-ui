@@ -745,9 +745,10 @@ describe("Studio Wrapper", () => {
   it("saves all staged content edits via the modal", () => {
     dirtyPageContent();
 
-    cy.intercept("PUT", `/v1/content/models/${modelZUID}/items/${itemZUID}`).as(
-      "saveItem"
-    );
+    // saveItem PUTs to the cross-origin instance API
+    // (https://<zuid>.api.dev.zesty.io/...), so a path-only intercept never
+    // matches — use a glob keyed on the item ZUID.
+    cy.intercept({ method: "PUT", url: `**/items/${itemZUID}` }).as("saveItem");
 
     saveAllViaModal("content");
 
@@ -761,13 +762,11 @@ describe("Studio Wrapper", () => {
   it("saves and publishes all staged content edits via the modal", () => {
     dirtyPageContent();
 
-    cy.intercept("PUT", `/v1/content/models/${modelZUID}/items/${itemZUID}`).as(
-      "saveItem"
-    );
-    cy.intercept(
-      "POST",
-      `/v1/content/models/${modelZUID}/items/${itemZUID}/publishings`
-    ).as("publishItem");
+    cy.intercept({ method: "PUT", url: `**/items/${itemZUID}` }).as("saveItem");
+    cy.intercept({
+      method: "POST",
+      url: `**/items/${itemZUID}/publishings`,
+    }).as("publishItem");
 
     savePublishAllViaModal("content");
 
