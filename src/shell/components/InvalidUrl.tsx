@@ -94,7 +94,7 @@ const InvalidUrl = () => {
             height="100%"
             width="100%"
             image="/images/notFoundTransparent.png"
-            alt="Page Not Found"
+            alt={t("shell.accessDeniedImageAlt")}
           />
         </Card>
       </Box>

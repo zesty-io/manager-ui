@@ -62,14 +62,10 @@ export const NoPermission = ({
           }}
         />
         <Box fontWeight={700} mb={1}>
-          {headerTitle
-            ? headerTitle
-            : "You do not have permission to invite users"}
+          {headerTitle ?? t("shell.noInvitePermissionTitle")}
         </Box>
         <Typography color="text.secondary" variant="body2">
-          {headerSubtitle
-            ? headerSubtitle
-            : "Contact your instance owners or administrators listed below to change your role to Admin or Owner on this instance for user invitation priveleges."}
+          {headerSubtitle ?? t("shell.noInvitePermissionBody")}
         </Typography>
       </DialogTitle>
       <DialogContent>

@@ -168,13 +168,13 @@ otherwise-localized components, or legacy shell-level components.
 
 | File                                                     | Strings | Notes                                                                                          | Status |
 | -------------------------------------------------------- | ------- | ---------------------------------------------------------------------------------------------- | ------ |
-| `components/AppError/AppError.tsx`                       | 4       | Shell-level error fallback: image alt, heading, body, reload action                            | [ ]    |
-| `components/global-notifications/GlobalNotifications.js` | 4       | Topbar notification drawer chrome; notification message bodies remain data-driven              | [ ]    |
-| `components/InviteMembersModal/ConfirmationDialog.tsx`   | 1       | `Invite sent` status in invite confirmation list                                               | [ ]    |
-| `components/NoPermission.tsx`                            | 2       | Default invite-permission title/body; caller-provided overrides remain caller-owned            | [ ]    |
-| `components/InvalidUrl.tsx`                              | 1       | Remaining hardcoded image alt in an otherwise-localized component                              | [ ]    |
-| `components/login/Login.js`                              | 5+      | Login form and auth-code UI are shell/auth entry surfaces and should use the `shell` namespace | [ ]    |
-| `components/private-route/index.js` + `store/auth.js`    | 6+      | Auth/session notifications shown through shell notification system; include as shell copy      | [ ]    |
+| `components/AppError/AppError.tsx`                       | 4       | Shell-level error fallback: image alt, heading, body, reload action                            | [x]    |
+| `components/global-notifications/GlobalNotifications.js` | 4       | Topbar notification drawer chrome; notification message bodies remain data-driven              | [x]    |
+| `components/InviteMembersModal/ConfirmationDialog.tsx`   | 7       | Invite confirmation headings, list helper text, success status, and repeat-invite action       | [x]    |
+| `components/NoPermission.tsx`                            | 2       | Default invite-permission title/body; caller-provided overrides remain caller-owned            | [x]    |
+| `components/InvalidUrl.tsx`                              | 1       | Remaining hardcoded image alt in an otherwise-localized component                              | [x]    |
+| `components/login/Login.js`                              | 11      | Login form and auth-code UI are shell/auth entry surfaces and should use the `shell` namespace | [x]    |
+| `components/private-route/index.js` + `store/auth.js`    | 8       | Auth/session notifications shown through shell notification system; include as shell copy      | [x]    |
 
 ### Date & time localization (date-fns)
 

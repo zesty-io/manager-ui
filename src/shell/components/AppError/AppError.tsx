@@ -1,9 +1,12 @@
 import { Stack, Box, Typography, Button } from "@mui/material";
 import RefreshRoundedIcon from "@mui/icons-material/RefreshRounded";
+import { useTranslation } from "react-i18next";
 
 import notFound from "../../../../public/images/notFoundTransparent.png";
 
 export const AppError = () => {
+  const { t } = useTranslation();
+
   return (
     <Stack
       width="100%"
@@ -14,17 +17,16 @@ export const AppError = () => {
       <Box
         component="img"
         src={notFound}
-        alt="Not Found"
+        alt={t("shell.notFoundImageAlt")}
         width={320}
         height={320}
         mb={8}
       />
       <Typography variant="h4" fontWeight={600} mb={1} color="text.primary">
-        Oops, something went wrong
+        {t("shell.appErrorHeading")}
       </Typography>
       <Typography variant="body2" color="text.secondary" mb={3}>
-        This error has been sent to our team. Please reload our application to
-        continue.
+        {t("shell.appErrorBody")}
       </Typography>
       <Button
         variant="contained"
@@ -32,7 +34,7 @@ export const AppError = () => {
         startIcon={<RefreshRoundedIcon />}
         onClick={() => window.location.reload()}
       >
-        Reload Application
+        {t("shell.reloadApplication")}
       </Button>
     </Stack>
   );

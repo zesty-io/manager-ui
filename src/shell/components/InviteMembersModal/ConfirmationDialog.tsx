@@ -18,7 +18,6 @@ import ErrorRoundedIcon from "@mui/icons-material/ErrorRounded";
 import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import pluralizeWord from "../../../utility/pluralizeWord";
 import { useTranslation } from "react-i18next";
 
 type ConfirmationModalProps = {
@@ -41,25 +40,26 @@ export const ConfirmationModal = ({
 
   const generateHeaderText = () => {
     if (hasFailedInvites && hasSuccessfulInvites) {
-      return `Invites set to ${Object.keys(failedInvites).length} out of ${
-        Object.keys(failedInvites).length + sentEmails.length
-      } ${pluralizeWord(
-        "user",
-        Object.keys(failedInvites).length + sentEmails.length
-      )} (via email)`;
+      const failedCount = Object.keys(failedInvites).length;
+      const totalCount = failedCount + sentEmails.length;
+
+      return t("shell.invitesSentPartial", {
+        count: totalCount,
+        successCount: sentEmails.length,
+        totalCount,
+      });
     }
 
     if (hasFailedInvites && !hasSuccessfulInvites) {
-      return `Unable to invite ${
-        Object.keys(failedInvites).length
-      } ${pluralizeWord("user", Object.keys(failedInvites).length)}`;
+      return t("shell.unableToInviteUsers", {
+        count: Object.keys(failedInvites).length,
+      });
     }
 
     if (!hasFailedInvites && hasSuccessfulInvites) {
-      return `Invite sent to ${pluralizeWord(
-        "user",
-        sentEmails.length
-      )} (via email)`;
+      return t("shell.invitesSentSuccess", {
+        count: sentEmails.length,
+      });
     }
   };
 
@@ -84,7 +84,7 @@ export const ConfirmationModal = ({
         </Typography>
 
         <Typography sx={{ mt: 1 }} variant="body2" color="text.secondary">
-          See list below
+          {t("shell.seeListBelow")}
         </Typography>
       </DialogTitle>
       <DialogContent>
@@ -104,7 +104,7 @@ export const ConfirmationModal = ({
               <Typography variant="body2" color="text.primary">
                 {email}
               </Typography>
-              <Typography variant="body2">Invite sent</Typography>
+              <Typography variant="body2">{t("shell.inviteSent")}</Typography>
             </ListItemText>
           </ListItem>
         ))}
@@ -131,7 +131,7 @@ export const ConfirmationModal = ({
       </DialogContent>
       <DialogActions>
         <Button color="inherit" variant="outlined" onClick={onResetSentEmails}>
-          Invite More People
+          {t("shell.inviteMorePeople")}
         </Button>
         <Button color="primary" variant="contained" onClick={() => onClose()}>
           {t("common.done")}

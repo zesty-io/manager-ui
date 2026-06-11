@@ -1,5 +1,6 @@
 import { memo, useState, useEffect, useCallback, forwardRef } from "react";
 import { connect } from "react-redux";
+import { useTranslation } from "react-i18next";
 import { formatDistanceToNow } from "date-fns";
 import cx from "classnames";
 import useOnclickOutside from "react-cool-onclickoutside";
@@ -71,6 +72,7 @@ export default connect((state) => {
   };
 })(
   memo(function GlobalNotifications(props) {
+    const { t } = useTranslation();
     const [initialRender, setInitialRender] = useState(true);
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [showToast, setShowToast] = useState(false);
@@ -136,7 +138,7 @@ export default connect((state) => {
         <aside ref={ref} className={cx(styles.Notifications)}>
           <IconButton
             size="small"
-            aria-label="See All Notifications"
+            aria-label={t("shell.seeAllNotifications")}
             onClick={() => setDrawerOpen(!drawerOpen)}
           >
             <Badge
@@ -179,12 +181,18 @@ export default connect((state) => {
           >
             <Box className={styles.DrawerContent}>
               <Box component="header">
-                <Typography variant="h1">My Notifications</Typography>
-                <AppLink to="/reports/audit-trail">View All Logs</AppLink>
+                <Typography variant="h1">
+                  {t("shell.myNotifications")}
+                </Typography>
+                <AppLink to="/reports/audit-trail">
+                  {t("shell.viewAllLogs")}
+                </AppLink>
               </Box>
 
               {!props.notifications.length && (
-                <Typography variant="h2">No actions taken</Typography>
+                <Typography variant="h2">
+                  {t("shell.noActionsTaken")}
+                </Typography>
               )}
 
               <ul>
