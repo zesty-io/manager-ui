@@ -160,6 +160,22 @@ Strings specific to the app shell — sidebar, topbar, global search, notificati
 | `views/Shell/AIDrawer.tsx`                   | 10+     | 780 lines — some "strings" are AI prompt templates; decide what to translate | [x]    |
 | `views/SearchPage/`                          | 20+     | Full-page global search results, filters, sort labels, and result chips      | [x]    |
 
+#### Missed in follow-up shell audit
+
+These are still Phase 3 `shell` namespace work. They were missed by the initial
+shell audit because some are fallback/error/auth surfaces, partial leftovers in
+otherwise-localized components, or legacy shell-level components.
+
+| File                                                     | Strings | Notes                                                                                          | Status |
+| -------------------------------------------------------- | ------- | ---------------------------------------------------------------------------------------------- | ------ |
+| `components/AppError/AppError.tsx`                       | 4       | Shell-level error fallback: image alt, heading, body, reload action                            | [ ]    |
+| `components/global-notifications/GlobalNotifications.js` | 4       | Topbar notification drawer chrome; notification message bodies remain data-driven              | [ ]    |
+| `components/InviteMembersModal/ConfirmationDialog.tsx`   | 1       | `Invite sent` status in invite confirmation list                                               | [ ]    |
+| `components/NoPermission.tsx`                            | 2       | Default invite-permission title/body; caller-provided overrides remain caller-owned            | [ ]    |
+| `components/InvalidUrl.tsx`                              | 1       | Remaining hardcoded image alt in an otherwise-localized component                              | [ ]    |
+| `components/login/Login.js`                              | 5+      | Login form and auth-code UI are shell/auth entry surfaces and should use the `shell` namespace | [ ]    |
+| `components/private-route/index.js` + `store/auth.js`    | 6+      | Auth/session notifications shown through shell notification system; include as shell copy      | [ ]    |
+
 ### Date & time localization (date-fns)
 
 Calendar and date text come from `date-fns`, which is independent of the
@@ -211,21 +227,22 @@ labels). ~119 date-fns call sites exist and must be split by purpose:
 
 Each sub-app maps to one namespace. Namespaces are lazy-loaded on first navigation to that sub-app.
 
-| Sub-app dir      | Namespace     |
-| ---------------- | ------------- |
-| `home`           | `dashboard`   |
-| `content-editor` | `content`     |
-| `schema`         | `schema`      |
-| `media`          | `media`       |
-| `code-editor`    | `code`        |
-| `settings`       | `settings`    |
-| `seo`            | `seo`         |
-| `release`        | `release`     |
-| `reports`        | `reports`     |
-| `leads`          | `leads`       |
-| `marketplace`    | `marketplace` |
-| `blocks`         | `blocks`      |
-| `studio`         | `studio`      |
+| Sub-app dir      | Namespace        |
+| ---------------- | ---------------- |
+| `home`           | `dashboard`      |
+| `content-editor` | `content`        |
+| `schema`         | `schema`         |
+| `media`          | `media`          |
+| `code-editor`    | `code`           |
+| `settings`       | `settings`       |
+| `seo`            | `seo`            |
+| `release`        | `release`        |
+| `reports`        | `reports`        |
+| `leads`          | `leads`          |
+| `marketplace`    | `marketplace`    |
+| `blocks`         | `blocks`         |
+| `studio`         | `studio`         |
+| `active-preview` | `active-preview` |
 
 For each sub-app:
 
@@ -242,6 +259,7 @@ For each sub-app:
 - [ ] `marketplace`
 - [ ] `blocks`
 - [ ] `studio`
+- [ ] `active-preview`
 
 Per-namespace checklist (repeat for each):
 
