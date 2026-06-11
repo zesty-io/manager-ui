@@ -205,12 +205,12 @@ Date strings built with `date-fns` `format()` / `formatDistanceToNow()` _outside
 the pickers still render in en-US (e.g. comment timestamps, date-filter chip
 labels). ~119 date-fns call sites exist and must be split by purpose:
 
-- ~43 **machine** formats (`"yyyy-MM-dd"`, etc. → URL params, API bodies,
-  IndexedDB keys) **must stay locale-independent** — localizing them silently
-  breaks search params / storage.
-- ~43 **display** formats (`"MMM d, yyyy"`, etc.) + 16 `formatDistanceToNow`
-  calls → should pass `{ locale: getDateFnsLocale(i18n.language) }`.
-
+- [x] Identify ~43 **machine** formats (`"yyyy-MM-dd"`, etc. → URL params,
+      API bodies, IndexedDB keys) that must stay locale-independent —
+      localizing them silently breaks search params / storage.
+- [x] Identify and convert ~43 **display** formats (`"MMM d, yyyy"`, etc.) +
+      16 `formatDistanceToNow` calls to pass the current date-fns locale via
+      shared helpers.
 - [x] Add a shared `formatLocalized(date, fmt)` helper that reads `i18n.language`
       from the i18n singleton (so non-component utils work too).
 - [x] Add `formatDistanceToNowLocalized(date, options)` for relative display
@@ -219,25 +219,18 @@ labels). ~119 date-fns call sites exist and must be split by purpose:
 - [x] Localize `utility/formatDate.ts` literal display labels (`Today`,
       `Yesterday`, `Invalid Date`) through `common` keys; callers now use
       date-based helpers instead of inspecting English display output.
-- The cost and risk here is the **audit**, not the typing — accidentally
-  localizing a machine format breaks params/storage, so this is its own
-  reviewable task, scheduled after the shell namespace phase.
-- Machine formats such as `yyyy-MM-dd`, `yyyy-MM-dd HH:mm:ss`, analytics/API
-  payload dates, URL params, CSV filename date ranges, and storage/search keys
-  intentionally remain locale-independent.
-- Search/filter helper text that is not rendered UI, such as
-  `RelationalFieldBase/FieldSelectorDialog/keywordSearchFilter.ts`, also stays
-  locale-independent so keyword matching remains stable against stored data.
-- Skipped for a follow-up: `FieldTypeDateTime` time-only `h:mm a` display is
-  coupled to English-only parsing and static time options. Localizing only the
-  formatter would make localized AM/PM strings fail the existing parser, so it
-  needs a localized parsing/options pass.
+- [x] Keep machine formats such as `yyyy-MM-dd`, `yyyy-MM-dd HH:mm:ss`,
+      analytics/API payload dates, URL params, CSV filename date ranges, and
+      storage/search keys locale-independent.
+- [x] Keep search/filter helper text that is not rendered UI, such as
+      `RelationalFieldBase/FieldSelectorDialog/keywordSearchFilter.ts`,
+      locale-independent so keyword matching remains stable against stored data.
+- [ ] Follow-up: `FieldTypeDateTime` time-only `h:mm a` display is coupled to
+      English-only parsing and static time options. Localizing only the
+      formatter would make localized AM/PM strings fail the existing parser, so
+      it needs a localized parsing/options pass.
 
-> Surfaced during Part A (untranslated **UI copy**, not date formatting): the
-> `Filters/DateRangeFilter` prop defaults (`"Select a date range..."`,
-> `"Date range"`) have been folded into the shell cleanup pass. The media
-> `DateFilterModal` `{type}` title still belongs to the `media` namespace
-> (Phase 4).
+Surfaced during Part A (untranslated **UI copy**, not date formatting): the `Filters/DateRangeFilter` prop defaults (`"Select a date range..."`, `"Date range"`) have been folded into the shell cleanup pass. The media `DateFilterModal` `{type}` title still belongs to the `media` namespace (Phase 4).
 
 ---
 
