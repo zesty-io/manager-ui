@@ -42,11 +42,22 @@ export const GlobalTopbar = memo(({ onShowAiDrawerToggle }: Props) => {
       <Box
         sx={{
           flexGrow: 1,
+          // Allow this flex item to shrink below its tab grid's intrinsic
+          // width (default min-width:auto would not), so the tabs never push
+          // into / overlap the right-hand controls.
+          minWidth: 0,
+          overflow: "hidden",
         }}
       >
         <GlobalTabs />
       </Box>
-      <Stack direction="row" alignItems="center" gap={1} pr={1}>
+      <Stack
+        direction="row"
+        alignItems="center"
+        gap={1}
+        pr={1}
+        sx={{ flexShrink: 0 }}
+      >
         <LocaleSwitcher />
         <IconButton
           onClick={() => {
