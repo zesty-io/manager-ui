@@ -139,5 +139,6 @@
   "roleCanOnlyCreateEdit": "Can only create and edit content",
   "roleCannotPublish": "Cannot publish content. To publish new content, contributors must submit a workflow request to a user with publishing access.",
   "roleCanAccessMedia": "Can access media and add files, but they cannot delete files.",
-  "roleCannotDeleteUsers": "Cannot delete other users"
+  "roleCannotDeleteUsers": "Cannot delete other users",
+  "switchUiLanguage": "Switch UI Language"
 }

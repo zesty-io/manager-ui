@@ -139,5 +139,6 @@
   "roleCanOnlyCreateEdit": "Kan alleen inhoud maken en bewerken",
   "roleCannotPublish": "Kan geen inhoud publiceren. Om nieuwe inhoud te publiceren, moeten bijdragers een workflowverzoek indienen bij een gebruiker met publicatietoegang.",
   "roleCanAccessMedia": "Heeft toegang tot media en kan bestanden toevoegen, maar kan geen bestanden verwijderen.",
-  "roleCannotDeleteUsers": "Kan andere gebruikers niet verwijderen"
+  "roleCannotDeleteUsers": "Kan andere gebruikers niet verwijderen",
+  "switchUiLanguage": "Interfacetaal wijzigen"
 }

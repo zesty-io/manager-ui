@@ -138,5 +138,6 @@
   "roleCanOnlyCreateEdit": "只能创建和编辑内容",
   "roleCannotPublish": "无法发布内容。要发布新内容，贡献者必须向具有发布权限的用户提交工作流请求。",
   "roleCanAccessMedia": "可以访问媒体并添加文件，但无法删除文件。",
-  "roleCannotDeleteUsers": "无法删除其他用户"
+  "roleCannotDeleteUsers": "无法删除其他用户",
+  "switchUiLanguage": "切换界面语言"
 }

@@ -139,5 +139,6 @@
   "roleCanOnlyCreateEdit": "Solo puede crear y editar contenido",
   "roleCannotPublish": "No puede publicar contenido. Para publicar contenido nuevo, los colaboradores deben enviar una solicitud de flujo de trabajo a un usuario con acceso de publicación.",
   "roleCanAccessMedia": "Puede acceder a medios y agregar archivos, pero no puede eliminar archivos.",
-  "roleCannotDeleteUsers": "No puede eliminar a otros usuarios"
+  "roleCannotDeleteUsers": "No puede eliminar a otros usuarios",
+  "switchUiLanguage": "Cambiar idioma de la interfaz"
 }

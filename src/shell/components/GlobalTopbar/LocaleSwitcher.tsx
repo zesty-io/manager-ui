@@ -23,7 +23,7 @@ const LOCALES: Locale[] = [
 ];
 
 export const LocaleSwitcher = () => {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const activeLocale =
     LOCALES.find((l) => l.tag === i18n.language) ?? LOCALES[0];
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -49,7 +49,7 @@ export const LocaleSwitcher = () => {
   return (
     <>
       <Tooltip
-        title="Switch UI Language"
+        title={t("shell.switchUiLanguage")}
         enterDelay={1000}
         enterNextDelay={1000}
         placement="top-start"
