@@ -201,7 +201,7 @@ export const CommentItem = ({
             <Box>
               {withResolveButton && (
                 <Tooltip
-                  title="Mark as Resolved"
+                  title={t("shell.markAsResolved")}
                   placement="top-start"
                   disableInteractive
                 >
@@ -217,7 +217,7 @@ export const CommentItem = ({
                 </Tooltip>
               )}
               <Tooltip
-                title="More Options"
+                title={t("shell.moreOptions")}
                 placement="top-start"
                 disableInteractive
               >
@@ -296,7 +296,7 @@ export const CommentItem = ({
               <ListItemIcon>
                 {isCopied ? <CheckRoundedIcon /> : <LinkRoundedIcon />}
               </ListItemIcon>
-              <ListItemText>Copy Link</ListItemText>
+              <ListItemText>{t("shell.copyLink")}</ListItemText>
             </MenuItem>
             {withReopenButton && (
               <MenuItem
@@ -308,7 +308,7 @@ export const CommentItem = ({
                 <ListItemIcon>
                   <RestartAltRoundedIcon />
                 </ListItemIcon>
-                <ListItemText>Re-open</ListItemText>
+                <ListItemText>{t("shell.reopen")}</ListItemText>
               </MenuItem>
             )}
             {isLoggedInUserCommentCreator && (

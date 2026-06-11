@@ -1,4 +1,5 @@
 import { useState, useRef, useMemo, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import SearchIcon from "@mui/icons-material/SearchRounded";
 import InputAdornment from "@mui/material/InputAdornment";
 import {
@@ -71,6 +72,7 @@ export interface Suggestion {
 }
 
 export const GlobalSearch = () => {
+  const { t } = useTranslation();
   const [searchKeyword, setSearchKeyword] = useState("");
   const [chipSearchAccelerator, setChipSearchAccelerator] =
     useState<ResourceType | null>(null);
@@ -174,7 +176,7 @@ export const GlobalSearch = () => {
             url: isEmpty(content.meta)
               ? ""
               : `/content/${content.meta.contentModelZUID}/${content.meta.ZUID}`,
-            noUrlErrorMessage: "Selected item is missing meta data",
+            noUrlErrorMessage: t("shell.itemMissingMetaData"),
           };
         });
 
@@ -629,7 +631,7 @@ export const GlobalSearch = () => {
                     }}
                     key={option}
                   >
-                    Recent Searches
+                    {t("shell.recentSearches")}
                   </ListSubheader>
                 );
               }
@@ -649,7 +651,7 @@ export const GlobalSearch = () => {
                       size="small"
                       onClick={() => setIsAdvancedSearchOpen(true)}
                     >
-                      Advanced Search
+                      {t("shell.advancedSearch")}
                     </Button>
                   </ListItem>
                 );
@@ -680,11 +682,11 @@ export const GlobalSearch = () => {
                 !Boolean(searchKeyword)
               ) {
                 const types: Record<ResourceType, string> = {
-                  code: "Code Files",
-                  content: "Content Items",
-                  schema: "Models in Schema",
-                  media: "Media Items",
-                  block: "Blocks",
+                  code: t("shell.codeFiles"),
+                  content: t("shell.contentItems"),
+                  schema: t("shell.modelsInSchema"),
+                  media: t("shell.mediaItems"),
+                  block: t("shell.navBlocks"),
                 };
 
                 return (
@@ -701,11 +703,13 @@ export const GlobalSearch = () => {
                     }}
                     key={option}
                   >
-                    Recently{" "}
                     {chipSearchAccelerator === "media"
-                      ? "Uploaded"
-                      : "Modified"}{" "}
-                    {types[chipSearchAccelerator]}
+                      ? t("shell.recentlyUploadedItems", {
+                          items: types[chipSearchAccelerator],
+                        })
+                      : t("shell.recentlyModifiedItems", {
+                          items: types[chipSearchAccelerator],
+                        })}
                   </ListSubheader>
                 );
               }
@@ -745,7 +749,9 @@ export const GlobalSearch = () => {
                 fullWidth
                 data-cy="global-search-textfield"
                 variant="outlined"
-                placeholder={`Search Instance ${shortcutHelpText}`}
+                placeholder={t("shell.searchInstancePlaceholder", {
+                  shortcut: shortcutHelpText,
+                })}
                 sx={{
                   height: "40px",
                   "& .Mui-focused": {
@@ -795,7 +801,14 @@ export const GlobalSearch = () => {
                         <Chip
                           data-cy={`active-global-search-accelerator-${chipSearchAccelerator}`}
                           variant="filled"
-                          label={`in: ${SEARCH_ACCELERATORS[chipSearchAccelerator]?.text}`}
+                          label={`in: ${
+                            chipSearchAccelerator
+                              ? t(
+                                  SEARCH_ACCELERATORS[chipSearchAccelerator]
+                                    .textKey
+                                )
+                              : ""
+                          }`}
                           color="primary"
                           size="small"
                           onDelete={() => setChipSearchAccelerator(null)}

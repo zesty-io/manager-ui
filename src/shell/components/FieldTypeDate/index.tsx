@@ -4,6 +4,8 @@ import {
   DatePickerProps,
 } from "@mui/x-date-pickers-pro";
 import { AdapterDateFns } from "@mui/x-date-pickers-pro/AdapterDateFns";
+import { useTranslation } from "react-i18next";
+import { getDateFnsLocale } from "../../i18n-dates";
 import {
   memo,
   useEffect,
@@ -101,6 +103,7 @@ export const FieldTypeDate = memo(
       }: FieldTypeDateProps,
       ref
     ) => {
+      const { i18n } = useTranslation();
       const textFieldRef = useRef<HTMLInputElement>(null);
       const [isOpen, setIsOpen] = useState(false);
 
@@ -173,7 +176,10 @@ export const FieldTypeDate = memo(
       );
 
       return (
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <LocalizationProvider
+          dateAdapter={AdapterDateFns}
+          adapterLocale={getDateFnsLocale(i18n.language)}
+        >
           <Stack direction="row" gap={0.5} alignItems="center">
             <Box maxWidth={160} flexShrink={0}>
               <DatePicker

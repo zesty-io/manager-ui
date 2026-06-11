@@ -22,7 +22,6 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import CloseIcon from "@mui/icons-material/Close";
-import { upperFirst } from "lodash";
 import { useHistory, useLocation } from "react-router";
 import { format, parse } from "date-fns";
 
@@ -245,20 +244,34 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
 
       return (
         <MenuItem value="custom_date_value" selected>
-          {format(parse(dates.from, "yyyy-MM-dd", new Date()), "MMM d, yyyy")}{" "}
-          to {format(parse(dates.to, "yyyy-MM-dd", new Date()), "MMM d, yyyy")}
+          {t("shell.dateRangeValue", {
+            from: format(
+              parse(dates.from, "yyyy-MM-dd", new Date()),
+              "MMM d, yyyy"
+            ),
+            to: format(
+              parse(dates.to, "yyyy-MM-dd", new Date()),
+              "MMM d, yyyy"
+            ),
+          })}
         </MenuItem>
       );
     }
 
     // Custom menu item for single date
+    const formattedDate = format(
+      parse(searchData.date?.value as string, "yyyy-MM-dd", new Date()),
+      "MMM d, yyyy"
+    );
+    const singleDateLabels: Record<string, string> = {
+      on: t("shell.dateOnValue", { date: formattedDate }),
+      before: t("shell.dateBeforeValue", { date: formattedDate }),
+      after: t("shell.dateAfterValue", { date: formattedDate }),
+    };
+
     return (
       <MenuItem value="custom_date_value" selected>
-        {upperFirst(searchData.date?.type)}{" "}
-        {format(
-          parse(searchData.date?.value as string, "yyyy-MM-dd", new Date()),
-          "MMM d, yyyy"
-        )}
+        {singleDateLabels[searchData.date?.type as string] ?? formattedDate}
       </MenuItem>
     );
   };
@@ -347,27 +360,22 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
             justifyContent="space-between"
           >
             <Typography variant="h5" fontWeight={700}>
-              Advanced Search
+              {t("shell.advancedSearch")}
             </Typography>
             <IconButton size="small" onClick={onClose}>
               <CloseIcon fontSize="small" />
             </IconButton>
           </Stack>
           <Typography variant="body2" color="text.secondary" mt={1}>
-            As you and your team work together in Zesty, you'll create a
-            searchable archive of content, models, and code files. Use the form
-            below to find what you are looking for.
+            {t("shell.advancedSearchDescription")}
           </Typography>
         </DialogTitle>
         <DialogContent>
           <Stack gap={2.5} data-cy="AdvanceSearchModal">
             <Box>
               <InputLabel>
-                Keywords*
-                <Tooltip
-                  placement="top"
-                  title="Enter a term or multiple terms that match part of the resource name."
-                >
+                {t("shell.keywords")}*
+                <Tooltip placement="top" title={t("shell.keywordsTooltip")}>
                   <InfoRoundedIcon
                     sx={{ ml: 1, width: "12px", height: "12px" }}
                     color="action"
@@ -376,7 +384,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
               </InputLabel>
               <TextField
                 data-cy="AdvanceSearchKeyword"
-                placeholder="ex. Articles"
+                placeholder={t("shell.keywordsPlaceholder")}
                 fullWidth
                 value={searchData.keyword}
                 onChange={(e) => updateSearchData({ keyword: e.target.value })}
@@ -384,11 +392,8 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
             </Box>
             <Box>
               <InputLabel>
-                Resource Type
-                <Tooltip
-                  placement="top"
-                  title="Use this filter when you want to only view search results for a single resource type such as a content item, model (schema), or code file."
-                >
+                {t("shell.resourceType")}
+                <Tooltip placement="top" title={t("shell.resourceTypeTooltip")}>
                   <InfoRoundedIcon
                     sx={{ ml: 1, width: "12px", height: "12px" }}
                     color="action"
@@ -408,21 +413,18 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
                   });
                 }}
               >
-                <MenuItem value="">Any Type</MenuItem>
-                {Object.entries(RESOURCE_TYPES).map(([value, text]) => (
+                <MenuItem value="">{t("shell.anyType")}</MenuItem>
+                {Object.entries(RESOURCE_TYPES).map(([value, textKey]) => (
                   <MenuItem key={value} value={value}>
-                    {text}
+                    {t(textKey)}
                   </MenuItem>
                 ))}
               </Select>
             </Box>
             <Box>
               <InputLabel>
-                Created By
-                <Tooltip
-                  placement="top"
-                  title="Select a user from all users on the instance."
-                >
+                {t("common.createdBy")}
+                <Tooltip placement="top" title={t("shell.createdByTooltip")}>
                   <InfoRoundedIcon
                     sx={{ ml: 1, width: "12px", height: "12px" }}
                     color="action"
@@ -434,6 +436,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
                 fullWidth
                 options={userOptions || []}
                 disabled={isLoadingUsers}
+                noOptionsText={t("common.noUsersFound")}
                 value={searchData.user}
                 onChange={(_, newVal: User | null) => {
                   updateSearchData({ user: newVal });
@@ -444,7 +447,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
                 renderInput={(params: any) => (
                   <TextField
                     {...params}
-                    placeholder="Anyone"
+                    placeholder={t("shell.anyone")}
                     sx={{ height: "40px" }}
                     InputProps={{
                       ...params.InputProps,
@@ -473,11 +476,8 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
             </Box>
             <Box>
               <InputLabel>
-                Date Modified
-                <Tooltip
-                  placement="top"
-                  title="Select the date range for which you want to see results for."
-                >
+                {t("shell.dateModified")}
+                <Tooltip placement="top" title={t("shell.dateModifiedTooltip")}>
                   <InfoRoundedIcon
                     sx={{ ml: 1, width: "12px", height: "12px" }}
                     color="action"
@@ -512,28 +512,25 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
                   }
                 }}
               >
-                <MenuItem value="">Any Time</MenuItem>
+                <MenuItem value="">{t("shell.anyTime")}</MenuItem>
                 {PRESET_DATES.map((option) => (
                   <MenuItem key={option.value} value={option.value}>
-                    {option.text}
+                    {t(option.textKey)}
                   </MenuItem>
                 ))}
                 {renderCustomDateOption()}
                 <Divider />
                 {CUSTOM_DATES.map((option) => (
                   <MenuItem key={option.value} value={option.value}>
-                    {option.text}
+                    {t(option.textKey)}
                   </MenuItem>
                 ))}
               </Select>
             </Box>
             <Box>
               <InputLabel>
-                Language
-                <Tooltip
-                  placement="top"
-                  title="Select the language for which you want to see results for."
-                >
+                {t("shell.language")}
+                <Tooltip placement="top" title={t("shell.languageTooltip")}>
                   <InfoRoundedIcon
                     sx={{ ml: 1, width: "12px", height: "12px" }}
                     color="action"
@@ -553,7 +550,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
                   });
                 }}
               >
-                <MenuItem value="">Any Language</MenuItem>
+                <MenuItem value="">{t("shell.anyLanguage")}</MenuItem>
                 {sortedLangs?.map((lang) => (
                   <MenuItem key={lang.code} value={lang.code}>
                     {lang.code}
@@ -578,7 +575,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
                 });
               }}
             >
-              Clear All
+              {t("shell.clearAll")}
             </Button>
             <Box>
               <Button color="inherit" sx={{ mr: 1 }} onClick={onClose}>

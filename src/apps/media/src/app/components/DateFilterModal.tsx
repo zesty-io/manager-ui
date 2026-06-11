@@ -9,8 +9,10 @@ import { DateCalendar } from "@mui/x-date-pickers-pro";
 import { AdapterDateFns } from "@mui/x-date-pickers-pro/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers-pro";
 import { DialogContent, DialogTitle, DialogProps } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { AppState } from "../../../../../shell/store/types";
+import { getDateFnsLocale } from "shell/i18n-dates";
 
 type DateFilterModal = {
   open: boolean;
@@ -25,6 +27,7 @@ export const DateFilterModal: FC<DateFilterModal> = ({
   type,
   setDateCallback,
 }) => {
+  const { i18n } = useTranslation();
   const activeFilter = useSelector(
     (state: AppState) => state.mediaRevamp.dateRangeFilter
   );
@@ -51,7 +54,10 @@ export const DateFilterModal: FC<DateFilterModal> = ({
         </Stack>
       </DialogTitle>
       <DialogContent sx={{ px: 0 }}>
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <LocalizationProvider
+          dateAdapter={AdapterDateFns}
+          adapterLocale={getDateFnsLocale(i18n.language)}
+        >
           <DateCalendar
             onChange={(date, state) => {
               setDateCallback(date);

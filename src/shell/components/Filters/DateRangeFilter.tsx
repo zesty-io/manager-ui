@@ -13,6 +13,8 @@ import {
   DateRange,
 } from "@mui/x-date-pickers-pro";
 import { AdapterDateFns } from "@mui/x-date-pickers-pro/AdapterDateFns";
+import { useTranslation } from "react-i18next";
+import { getDateFnsLocale } from "../../i18n-dates";
 import CloseIcon from "@mui/icons-material/Close";
 import { format, parse, isValid } from "date-fns";
 
@@ -38,6 +40,7 @@ export const DateRangeFilter: FC<DateRangeFilterProps> = ({
   headerTitle = "Select a date range...",
   inactiveButtonText = "Date range",
 }) => {
+  const { i18n } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDateRange, setSelectedDateRange] = useState<DateRange<Date>>([
     null,
@@ -115,7 +118,10 @@ export const DateRangeFilter: FC<DateRangeFilterProps> = ({
             </Box>
           </DialogTitle>
           <DialogContent sx={{ px: 0, pb: 2.5 }}>
-            <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <LocalizationProvider
+              dateAdapter={AdapterDateFns}
+              adapterLocale={getDateFnsLocale(i18n.language)}
+            >
               <DateRangeCalendar
                 value={selectedDateRange}
                 onChange={(newValue, selectionState) => {

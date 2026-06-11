@@ -9,13 +9,26 @@ declare const __GIT_HASH__: string;
 
 const gitHash = typeof __GIT_HASH__ !== "undefined" ? __GIT_HASH__ : "dev";
 
+// Single source of truth for the supported locale tags. `SupportedLocale` is
+// derived from this so other modules (e.g. the date-fns locale map) can be
+// type-checked against it — adding a tag here surfaces gaps elsewhere via tsc.
+export const SUPPORTED_LOCALES = [
+  "en-US",
+  "es-ES",
+  "hi-IN",
+  "zh-CN",
+  "ru-RU",
+  "nl-NL",
+] as const;
+export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
+
 i18n
   .use(ChainedBackend)
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
     fallbackLng: "en-US",
-    supportedLngs: ["en-US", "es-ES", "hi-IN", "zh-CN", "ru-RU", "nl-NL"],
+    supportedLngs: [...SUPPORTED_LOCALES],
 
     ns: ["common", "shell"],
     defaultNS: "common",

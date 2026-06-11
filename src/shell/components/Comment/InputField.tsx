@@ -251,7 +251,7 @@ export const InputField = ({
             init={{
               inline: true,
               auto_focus: true,
-              placeholder: "Reply or add others with @",
+              placeholder: t("shell.commentPlaceholder"),
 
               setup: (editor) => {
                 editor.on("ResizeEditor", () => {

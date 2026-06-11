@@ -151,11 +151,56 @@ Strings specific to the app shell — sidebar, topbar, global search, notificati
 
 | File                                         | Strings | Risk driver                                                                  | Status |
 | -------------------------------------------- | ------- | ---------------------------------------------------------------------------- | ------ |
-| `components/GlobalSearch/index.tsx`          | 10+     | 866 lines, complex conditional text, multiple UI states                      | [ ]    |
-| `components/GlobalSearch/AdvancedSearch.tsx` | 10+     | 634 lines, dynamic date range labels in filter chips                         | [ ]    |
-| `components/Comment/CommentItem.tsx`         | 6       | HTML injection with regex URL replacement inside strings                     | [ ]    |
-| `components/withAi/AIGenerator.tsx`          | 15+     | 890 lines, conditional headings, tone options with descriptions              | [ ]    |
-| `views/Shell/AIDrawer.tsx`                   | 10+     | 780 lines — some "strings" are AI prompt templates; decide what to translate | [ ]    |
+| `components/GlobalSearch/index.tsx`          | 10+     | 866 lines, complex conditional text, multiple UI states                      | [x]    |
+| `components/GlobalSearch/AdvancedSearch.tsx` | 10+     | 634 lines, dynamic date range labels in filter chips                         | [x]    |
+| `components/Comment/CommentItem.tsx`         | 6       | HTML injection with regex URL replacement inside strings                     | [x]    |
+| `components/withAi/AIGenerator.tsx`          | 15+     | 890 lines, conditional headings, tone options with descriptions              | [x]    |
+| `views/Shell/AIDrawer.tsx`                   | 10+     | 780 lines — some "strings" are AI prompt templates; decide what to translate | [x]    |
+
+### Date & time localization (date-fns)
+
+Calendar and date text come from `date-fns`, which is independent of the
+i18next UI locale and must be wired up separately. This splits into two parts.
+
+**Part A — Date-picker calendar locale (DONE).** MUI X date pickers render
+their weekday/month names through `AdapterDateFns`, which defaulted to en-US
+regardless of the UI language.
+
+- [x] Add a centralized resolver `src/shell/i18n-dates.ts` — `getDateFnsLocale(tag)`
+      maps each supported locale to its date-fns locale, falling back to `en-US`
+      for any unmapped tag (degrades to English dates, never crashes).
+- [x] Export `SUPPORTED_LOCALES` / `SupportedLocale` from `src/shell/i18n.ts`
+      (single source of truth) and type the map as `Record<SupportedLocale, Locale>`,
+      so adding a supported locale without a date-fns entry is a `tsc` error
+      (verified — no silent drift).
+- [x] Pass `adapterLocale={getDateFnsLocale(i18n.language)}` to all 5
+      `LocalizationProvider`s: `Filters/DateFilter/DateFilterModal`,
+      `Filters/DateFilter/DateRangeFilterModal`, `Filters/DateRangeFilter`,
+      `FieldTypeDate`, and `apps/media/.../DateFilterModal`.
+
+**Part B — Standalone `format()` / `formatDistanceToNow()` display strings (TODO — larger task, ideally after this phase).**
+Date strings built with `date-fns` `format()` / `formatDistanceToNow()` _outside_
+the pickers still render in en-US (e.g. comment timestamps, date-filter chip
+labels). ~119 date-fns call sites exist and must be split by purpose:
+
+- ~43 **machine** formats (`"yyyy-MM-dd"`, etc. → URL params, API bodies,
+  IndexedDB keys) **must stay locale-independent** — localizing them silently
+  breaks search params / storage.
+- ~43 **display** formats (`"MMM d, yyyy"`, etc.) + 16 `formatDistanceToNow`
+  calls → should pass `{ locale: getDateFnsLocale(i18n.language) }`.
+
+- [ ] Add a shared `formatLocalized(date, fmt)` helper that reads `i18n.language`
+      from the i18n singleton (so non-component utils work too).
+- [ ] Audit each call site (display vs. machine) and convert only the display ones.
+- The cost and risk here is the **audit**, not the typing — accidentally
+  localizing a machine format breaks params/storage, so this is its own
+  reviewable task, scheduled after the current shell phase.
+
+> Surfaced during Part A (untranslated **UI copy**, not yet in any tier): the
+> `Filters/DateRangeFilter` prop defaults (`"Select a date range..."`,
+> `"Date range"`) and the media `DateFilterModal` `{type}` title. The media one
+> belongs to the `media` namespace (Phase 4); the `DateRangeFilter` strings are
+> shell and should be folded into a shell cleanup pass.
 
 ---
 

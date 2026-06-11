@@ -12,91 +12,93 @@ import {
 } from "../../../components/Filters/DateFilter/types";
 import { ResourceType } from "../../../services/types";
 
+// These maps live at module level, where t() can't run, so labels are stored
+// as translation keys and resolved with t() at the render site.
 interface PresetDate {
-  text: string;
+  textKey: string;
   value: PresetType;
 }
 export const PRESET_DATES: readonly PresetDate[] = [
   {
-    text: "Today",
+    textKey: "shell.dateToday",
     value: "today",
   },
   {
-    text: "Yesterday",
+    textKey: "shell.dateYesterday",
     value: "yesterday",
   },
   {
-    text: "Last 7 days",
+    textKey: "shell.dateLast7Days",
     value: "last_7_days",
   },
   {
-    text: "Last 30 days",
+    textKey: "shell.dateLast30Days",
     value: "last_30_days",
   },
   {
-    text: "Last 3 months",
+    textKey: "shell.dateLast3Months",
     value: "last_3_months",
   },
   {
-    text: "Last 12 months",
+    textKey: "shell.dateLast12Months",
     value: "last_12_months",
   },
 ] as const;
 
 interface CustomDate {
-  text: string;
+  textKey: string;
   value: DateFilterModalType;
 }
 export const CUSTOM_DATES: readonly CustomDate[] = [
   {
-    text: "On...",
+    textKey: "shell.dateOn",
     value: "on",
   },
   {
-    text: "Before...",
+    textKey: "shell.dateBefore",
     value: "before",
   },
   {
-    text: "After...",
+    textKey: "shell.dateAfter",
     value: "after",
   },
   {
-    text: "Custom date range",
+    textKey: "shell.customDateRange",
     value: "daterange",
   },
 ] as const;
 
 export const RESOURCE_TYPES: Record<ResourceType, string> = {
-  content: "Content Items",
-  schema: "Models",
-  code: "Code Files",
-  media: "Media",
-  block: "Blocks",
+  content: "shell.contentItems",
+  schema: "shell.models",
+  code: "shell.codeFiles",
+  media: "shell.navMedia",
+  block: "shell.navBlocks",
 } as const;
 
 interface SearchAccelerator {
   icon: SvgIconComponent;
-  text: string;
+  textKey: string;
 }
 export const SEARCH_ACCELERATORS: Record<ResourceType, SearchAccelerator> = {
   content: {
     icon: EditRounded,
-    text: "Content",
+    textKey: "shell.navContent",
   },
   schema: {
     icon: Database as SvgIconComponent,
-    text: "Schema",
+    textKey: "shell.navSchema",
   },
   media: {
     icon: ImageRounded,
-    text: "Media",
+    textKey: "shell.navMedia",
   },
   code: {
     icon: CodeRounded,
-    text: "Code",
+    textKey: "shell.navCode",
   },
   block: {
     icon: CodeRounded,
-    text: "Block",
+    textKey: "shell.block",
   },
 } as const;

@@ -1,4 +1,5 @@
 import { FC, useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Dialog,
   DialogTitle,
@@ -17,6 +18,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { format, isValid, parse } from "date-fns";
 
 import { DateRangeFilterValue, DateFilterModalType } from "./types";
+import { getDateFnsLocale } from "../../../i18n-dates";
 
 interface DateRangeFilterModal {
   date: DateRangeFilterValue;
@@ -39,6 +41,7 @@ export const DateRangeFilterModal: FC<DateRangeFilterModal> = ({
     null,
   ]);
   const [dateRangeState, setDateRangeState] = useState("");
+  const { t, i18n } = useTranslation();
 
   useEffect(() => {
     if (date?.from && date?.to) {
@@ -75,8 +78,8 @@ export const DateRangeFilterModal: FC<DateRangeFilterModal> = ({
     <Dialog open onClose={onClose} maxWidth="md">
       <DialogTitle>
         <Box display="flex" alignItems="center" justifyContent="space-between">
-          <Typography variant="h5" textTransform="capitalize" fontWeight={600}>
-            Select date range...
+          <Typography variant="h5" fontWeight={600}>
+            {t("shell.selectDateRange")}
           </Typography>
           <IconButton size="small" onClick={onClose}>
             <CloseIcon fontSize="small" />
@@ -84,7 +87,10 @@ export const DateRangeFilterModal: FC<DateRangeFilterModal> = ({
         </Box>
       </DialogTitle>
       <DialogContent sx={{ px: 0, pb: 2.5 }}>
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <LocalizationProvider
+          dateAdapter={AdapterDateFns}
+          adapterLocale={getDateFnsLocale(i18n.language)}
+        >
           <DateRangeCalendar
             disableHighlightToday
             value={selectedDateRange}
