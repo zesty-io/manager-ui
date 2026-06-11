@@ -141,23 +141,36 @@ jobs:
             exit 1
           fi
           echo "::add-mask::$TOKEN"
-          # Cookie scoped to the registrable parent so it reaches *.dev.zesty.io (incl. the manager host).
-          # httpOnly:true — the agent's browser_evaluate cannot read the cookie via document.cookie,
-          #   a defense-in-depth layer on top of the post-step literal-value scrub.
-          # secure:false — dev server speaks plain http; a `secure: true` cookie wouldn't be sent.
-          # Write to $RUNNER_TEMP (NOT $GITHUB_WORKSPACE) for two narrow reasons:
+          # Cookie setup matches Cypress's `cy.login()` (`cy.setCookie(NAME, token)` with no options),
+          # which uses host-scoped, non-httpOnly, non-secure cookies derived from the page URL.
+          # An earlier attempt at `.dev.zesty.io` + `httpOnly:true` consistently produced login screen
+          # + 401 on /verify in the Playwright MCP browser on PR #4147 (the first real ticketed-PR
+          # exercise), even though the raw token was valid via curl bearer. Cypress's pattern works
+          # against the same dev API with the same creds, so we mirror it exactly: separate cookie
+          # entries for each host the manager app talks to, httpOnly:false, secure:false, sameSite:Lax.
+          # Trade-off vs httpOnly:true: the agent could in principle read this cookie via
+          # browser_evaluate (`document.cookie`). We deliberately omit `mcp__playwright__browser_evaluate`
+          # from --allowedTools (see the agent step below) so that channel is closed at the tool level
+          # instead of at the cookie level. The post-step literal-value scrub remains the last-line
+          # defense if a future contributor re-adds browser_evaluate to the allowlist.
+          # Hosts:
+          #   8-f48cf3a682-7fthvk.manager.dev.zesty.io  — the app's spoofed host (where the SPA runs)
+          #   auth.api.dev.zesty.io                     — /verify, /login, etc.
+          #   8-f48cf3a682-7fthvk.api.dev.zesty.io      — instance API (/v1/content, /v1/schema, ...)
+          # Write to $RUNNER_TEMP (NOT $GITHUB_WORKSPACE) for hygiene:
           #   1) It's outside the workspace, so a stray `ls` / glob over the workspace doesn't list it.
           #   2) Cleanup is automatic at job end (the runner wipes RUNNER_TEMP).
-          # IT DOES NOT prevent the agent from reading it. Claude Code's `Read` accepts absolute paths
-          # and runs as the same runner user as the file, so `Read /home/runner/_temp/storage_state.json`
-          # succeeds while the file exists (which is the whole agent step). The defenses that actually
-          # bound the blast radius of a reachable file are, in order:
-          #   - httpOnly:true (below) — stops `document.cookie` exfil from browser_evaluate.
-          #   - The literal-value scrub in the post step — stops in-comment leaks of the literal token.
-          #   - The same-repo + non-draft job-level `if:` (top of this file) — stops untrusted authors
-          #     from running the agent at all. That's the load-bearing trust assumption.
+          # IT DOES NOT prevent the agent from reading it (Read accepts absolute paths and runs as
+          # the same uid). The deterministic defenses against that reach are:
+          #   - browser_evaluate omitted from --allowedTools (no `document.cookie` read in the browser).
+          #   - The literal-value scrub in the post step (in-comment leak refused).
+          #   - The same-repo + non-draft job-level `if:` (untrusted authors blocked from the agent).
           jq -n --arg name "$COOKIE_NAME" --arg value "$TOKEN" \
-            '{cookies:[{name:$name,value:$value,domain:".dev.zesty.io",path:"/",httpOnly:true,secure:false,sameSite:"Lax"}],origins:[]}' \
+            '{cookies:[
+                {name:$name,value:$value,domain:"8-f48cf3a682-7fthvk.manager.dev.zesty.io",path:"/",httpOnly:false,secure:false,sameSite:"Lax"},
+                {name:$name,value:$value,domain:"auth.api.dev.zesty.io",path:"/",httpOnly:false,secure:false,sameSite:"Lax"},
+                {name:$name,value:$value,domain:"8-f48cf3a682-7fthvk.api.dev.zesty.io",path:"/",httpOnly:false,secure:false,sameSite:"Lax"}
+              ],origins:[]}' \
             > "$RUNNER_TEMP/storage_state.json"
           # Tighten file perms — defense-in-depth even though the file is now outside the workspace.
           chmod 600 "$RUNNER_TEMP/storage_state.json"
@@ -213,7 +226,17 @@ jobs:
           # different HTML entry per hostname (per CLAUDE.md), so localhost:8080 returning 200
           # doesn't prove the /etc/hosts rewrite worked. Hitting the real host fails loudly if it
           # didn't, instead of silently sending the agent to a wrong-entry / 404 page.
-          npx wait-on -t 300000 http://8-f48cf3a682-7fthvk.manager.dev.zesty.io:8080
+          #
+          # Also wait on /main.js. webpack-dev-server serves the HTML root as soon as the server
+          # starts listening, BEFORE the JS bundle finishes compiling. Waiting only on the HTML root
+          # can return while the bundle is still building, so the agent's first browser_navigate
+          # would land on a page with a half-compiled or missing JS bundle. Waiting on /main.js
+          # too closes that race — the URL returns 200 only after webpack's first compile completes.
+          # Development entry name comes from src/shell/webpack.config.js: `main` -> `main.js`.
+          # Timeout bumped to 600000 because the bundle-compile wait adds ~30-60s vs HTML.
+          npx wait-on -t 600000 \
+            http://8-f48cf3a682-7fthvk.manager.dev.zesty.io:8080 \
+            http://8-f48cf3a682-7fthvk.manager.dev.zesty.io:8080/main.js
 
       # Resolve the GitHub issue this PR addresses. This repo names branches `<issue#>-slug` and
       # uses `Closes #N`, so try the branch name first, then GitHub's native closing references,
@@ -255,17 +278,71 @@ jobs:
             echo "No linked issue found; QA will run in change-only mode."
           fi
 
+      # Stage SKILL.md OUTSIDE the workspace so the claude-code-action's "restore .claude/ from
+      # origin/dev (PR head is untrusted)" step CANNOT wipe it.
+      #
+      # Why this is load-bearing: the action treats the PR head as untrusted and replaces the
+      # checked-out `.claude/` directory with the one from origin/dev BEFORE the agent runs.
+      # If SKILL.md is only in the PR head (because this PR introducing it hasn't merged yet,
+      # OR because a downstream PR depends on a SKILL change that isn't on origin/dev yet), the
+      # agent boots with no skill at the expected path and falls back to inferring the methodology
+      # from the prompt — observed on PR #4147 where the agent's `ls .claude/skills/qa-verify/`
+      # failed with "No such file or directory" and the resulting reports skipped the CI auth
+      # contract entirely.
+      #
+      # Fix: copy SKILL.md to $RUNNER_TEMP/qa-skill.md (outside the workspace, untouched by the
+      # restore). Fail this step LOUDLY if the file is missing — the workflow has no meaningful
+      # behavior without the skill, so fail-fast is better than producing a misleading INCONCLUSIVE.
+      - name: Stage skill outside workspace (defeat .claude/ restore)
+        run: |
+          set -euo pipefail
+          SRC="$GITHUB_WORKSPACE/.claude/skills/qa-verify/SKILL.md"
+          DEST="$RUNNER_TEMP/qa-skill.md"
+          if [ ! -f "$SRC" ]; then
+            echo "::error::qa-verify skill not found at $SRC — Verifier cannot run without it. Did you remove .claude/skills/qa-verify/SKILL.md from the PR? The whole methodology lives in that file; the prompt only references it."
+            exit 1
+          fi
+          cp "$SRC" "$DEST"
+          echo "Staged $SRC -> $DEST (size: $(wc -c < "$DEST") bytes)"
+
       - uses: anthropics/claude-code-action@1dc994ee7a008f0ecc866d9ac23ef036b7229f84 # v1.0.127
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          # The QA methodology lives in the repo skill .claude/skills/qa-verify/SKILL.md (shared with
-          # local dev runs). This prompt only invokes it with CI inputs. If a run shows the skill was
-          # NOT loaded/used, fall back to injecting the file: read SKILL.md into an env var and inline
-          # it here (it stays the single source of truth either way).
+          # Pin the model so a future action-default change doesn't silently swap us to a different
+          # tier. Opus 4.7 with the 1M-context variant — observed quality is high enough to catch
+          # subtle issues like missing data-cy attributes that a smaller model might miss. Cost is
+          # the main reason to consider Sonnet later; quality on this task is the reason to stay Opus.
+          model: claude-opus-4-7-1m
+          # Defensive cap on Anthropic credit spend per run. The observed PASS run on PR #4147 took
+          # ~25-40 tool-use turns (read skill, read PR diff, read issue, ~20 browser_* calls, write
+          # report). 100 leaves ~2x headroom for complex multi-criterion tickets while well under
+          # the 25-min job timeout's natural cap. If a real run hits 100, that's a signal worth a
+          # manual look (either the ticket is unusually complex or the agent looped).
+          max_turns: 100
+          # SKILL.md is staged to $RUNNER_TEMP/qa-skill.md by the previous step. The action restores
+          # .claude/ from origin/dev before the agent runs, so the in-repo path may not exist; the
+          # staged copy is the authoritative source for this run.
           prompt: |
-            Use the "qa-verify" skill (defined in .claude/skills/qa-verify/SKILL.md) to QA this pull
-            request as a senior QA engineer. Run it with these inputs:
+            Your first action MUST be to read the qa-verify skill from this absolute path:
+              ${{ runner.temp }}/qa-skill.md
+            (Use the Read tool with that exact path. The in-repo path .claude/skills/qa-verify/
+            SKILL.md may not exist — the action restored .claude/ from the base branch. The
+            staged copy at ${{ runner.temp }}/qa-skill.md is the authoritative source for this
+            run.)
+
+            If you cannot read ${{ runner.temp }}/qa-skill.md, do NOT fall back to inferring the
+            methodology from this prompt. Instead, write EXACTLY this to REPORT_FILE and stop:
+
+              <!-- cv-verifier -->
+              ## QA Review — INCONCLUSIVE
+              Verifier infrastructure failure: qa-verify skill could not be loaded from
+              ${{ runner.temp }}/qa-skill.md. The CI workflow stages SKILL.md there before
+              invoking this agent; if it is missing, the staging step failed and there is no
+              authoritative methodology to follow. Re-run the workflow.
+              <!-- qa-verdict: INCONCLUSIVE -->
+
+            After reading the skill, run it as a senior QA engineer with these inputs:
               OUTPUT_MODE   = ci
               APP_BASE_URL  = http://8-f48cf3a682-7fthvk.manager.dev.zesty.io:8080
               REPO          = ${{ github.repository }}
