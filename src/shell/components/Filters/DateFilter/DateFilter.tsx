@@ -4,6 +4,7 @@ import { Menu, MenuItem, ListItemText, Divider } from "@mui/material";
 import ChevronRightOutlinedIcon from "@mui/icons-material/ChevronRightOutlined";
 import { format, parse } from "date-fns";
 
+import { formatLocalized } from "../../../i18n-dates";
 import { FilterButton } from "../FilterButton";
 import { DateFilterModal } from "./DateFilterModal";
 import {
@@ -74,7 +75,7 @@ export const DateFilter: FC<DateFilterProps> = ({
   ];
 
   const fmt = (yyyyMmDd: string) =>
-    format(parse(yyyyMmDd, "yyyy-MM-dd", new Date()), "MMM d, yyyy");
+    formatLocalized(parse(yyyyMmDd, "yyyy-MM-dd", new Date()), "MMM d, yyyy");
 
   const activeFilterText = useMemo(() => {
     switch (value?.type) {

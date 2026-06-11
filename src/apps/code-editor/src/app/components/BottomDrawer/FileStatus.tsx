@@ -1,5 +1,6 @@
 import { useSelector } from "react-redux";
-import { formatDistanceToNow, isValid } from "date-fns";
+import { formatDistanceToNowLocalized } from "shell/i18n-dates";
+import { isValid } from "date-fns";
 import InfoIcon from "@mui/icons-material/Info";
 import { CopyButton } from "@zesty-io/material";
 import FlashOnIcon from "@mui/icons-material/FlashOn";
@@ -51,7 +52,7 @@ export default function FileStatus({ file, items }: FileStatusProps) {
 
   const edited = new Date(file.updatedAt);
   const editedText = isValid(edited)
-    ? formatDistanceToNow(edited, { addSuffix: true })
+    ? formatDistanceToNowLocalized(edited, { addSuffix: true })
     : "";
 
   const getWebLinkData = () => {

@@ -1,5 +1,6 @@
 import { useMemo } from "react";
-import { format, isValid, parse } from "date-fns";
+import { formatLocalized } from "shell/i18n-dates";
+import { isValid, parse } from "date-fns";
 import { default as MuiTimelineItem } from "@mui/lab/TimelineItem";
 import TimelineSeparator from "@mui/lab/TimelineSeparator";
 import TimelineConnector from "@mui/lab/TimelineConnector";
@@ -95,7 +96,10 @@ export const TimelineItem = (props) => {
           const [publishAt] = props.action?.meta?.message.split(" ").slice(-1);
           const d = new Date(publishAt || props.action?.happenedAt);
           return isValid(d)
-            ? `Scheduled to Publish on ${format(d, "MMMM dd 'at' hh:mm a")}`
+            ? `Scheduled to Publish on ${formatLocalized(
+                d,
+                "MMMM dd 'at' hh:mm a"
+              )}`
             : "Scheduled to Publish";
         default:
           return props.action?.meta?.message;
@@ -150,7 +154,7 @@ export const TimelineItem = (props) => {
           ) : (
             <>
               {isValid(new Date(props.action?.happenedAt))
-                ? format(new Date(props.action?.happenedAt), "hh:mm a")
+                ? formatLocalized(new Date(props.action?.happenedAt), "hh:mm a")
                 : "—"}
             </>
           )}

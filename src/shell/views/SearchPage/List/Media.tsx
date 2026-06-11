@@ -4,10 +4,11 @@ import {
   FolderRounded,
   SvgIconComponent,
 } from "@mui/icons-material";
-import { formatDistanceToNow, isValid } from "date-fns";
+import { isValid } from "date-fns";
 import { useTranslation } from "react-i18next";
 
 import { File, Group } from "../../../services/types";
+import { formatDistanceToNowLocalized } from "../../../i18n-dates";
 import { SearchListItem } from "./SearchListItem";
 
 interface Media {
@@ -27,7 +28,9 @@ export const Media: FC<Media> = ({ data, style, loading = false, subType }) => {
     const rel = (dt?: string) => {
       if (!dt) return "";
       const d = new Date(dt); // switch to parseISO(dt) if you hit parsing issues
-      return isValid(d) ? formatDistanceToNow(d, { addSuffix: true }) : "";
+      return isValid(d)
+        ? formatDistanceToNowLocalized(d, { addSuffix: true })
+        : "";
     };
 
     switch (subType) {

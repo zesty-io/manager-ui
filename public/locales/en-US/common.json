@@ -14,6 +14,7 @@
   "done": "Done",
   "edit": "Edit",
   "goBack": "Go Back",
+  "invalidDate": "Invalid Date",
   "locales": "Locales",
   "manage": "Manage",
   "next": "Next",
@@ -29,6 +30,7 @@
   "stage": "Stage",
   "support": "Support",
   "teams": "Teams",
+  "today": "Today",
   "unsavedChanges": "Unsaved Changes",
   "update": "Update",
   "upload": "Upload",
@@ -36,5 +38,6 @@
   "users": "Users",
   "view": "View",
   "webhooks": "Webhooks",
-  "more": "More"
+  "more": "More",
+  "yesterday": "Yesterday"
 }

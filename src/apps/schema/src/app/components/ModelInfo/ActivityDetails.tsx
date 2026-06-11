@@ -1,7 +1,8 @@
 import { Box, Typography, Button, Avatar } from "@mui/material";
 import { useGetContentModelsQuery } from "../../../../../../shell/services/instance";
 import { useHistory, useParams } from "react-router";
-import { format, isValid } from "date-fns";
+import { formatLocalized } from "shell/i18n-dates";
+import { isValid } from "date-fns";
 import { useGetUsersQuery } from "../../../../../../shell/services/accounts";
 import { useState } from "react";
 import { MD5 } from "../../../../../../utility/md5";
@@ -31,12 +32,12 @@ export const ActivityDetails = () => {
 
   const createdOn =
     createdDate && isValid(createdDate)
-      ? format(createdDate, "do MMMM, yyyy 'at' h:mm a")
+      ? formatLocalized(createdDate, "do MMMM, yyyy 'at' h:mm a")
       : "";
 
   const updatedOn =
     updatedDate && isValid(updatedDate)
-      ? format(updatedDate, "do MMMM, yyyy 'at' h:mm a")
+      ? formatLocalized(updatedDate, "do MMMM, yyyy 'at' h:mm a")
       : "";
 
   const handleCopy = (data: string) => {

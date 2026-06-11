@@ -10,7 +10,8 @@ import {
   useGetContentModelsQuery,
 } from "../../../../../shell/services/instance";
 import { ContentModel, ModelType } from "../../../../../shell/services/types";
-import { formatDistanceToNow, isValid } from "date-fns";
+import { formatDistanceToNowLocalized } from "shell/i18n-dates";
+import { isValid } from "date-fns";
 import { useMemo, useState, useReducer } from "react";
 import AutoSizer, { Size } from "react-virtualized-auto-sizer";
 import { useHistory } from "react-router";
@@ -184,7 +185,9 @@ export const ModelsTable = ({ search, onEmptySearch }: Props) => {
       width: 120,
       valueFormatter: (value: any) => {
         const d = new Date(value);
-        return isValid(d) ? formatDistanceToNow(d, { addSuffix: true }) : "";
+        return isValid(d)
+          ? formatDistanceToNowLocalized(d, { addSuffix: true })
+          : "";
       },
     },
     {

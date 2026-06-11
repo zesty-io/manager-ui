@@ -37,6 +37,7 @@
   "invalidUrlHeading": "Неверный URL-адрес. Пожалуйста, проверьте URL-адрес и попробуйте еще раз.",
   "manageInstanceHeadTags": "Управление тегами Head инстанса",
   "refreshCdnCache": "Обновить кэш CDN",
+  "rightNow": "прямо сейчас",
   "saveFavicon": "Сохранить фавикон",
   "searchUsers": "Поиск пользователей",
   "selectInstanceFavicon": "Выбрать фавикон инстанса",

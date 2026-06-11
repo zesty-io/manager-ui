@@ -21,7 +21,7 @@ import {
   TYPE_TEXT,
   FieldType,
 } from "../../../../../../schema/src/app/components/configs";
-import { format } from "date-fns";
+import { formatLocalized } from "shell/i18n-dates";
 
 type FieldTooltipBodyProps = {
   data: Partial<ContentModelField>;
@@ -84,7 +84,7 @@ export const FieldTooltipBody = ({ data }: FieldTooltipBodyProps) => {
           <Typography variant="body3" fontWeight={600} color="text.secondary">
             Field added on{" "}
             {data?.createdAt
-              ? format(new Date(data.createdAt), "MMM d, yyyy")
+              ? formatLocalized(new Date(data.createdAt), "MMM d, yyyy")
               : ""}
           </Typography>
           <Link

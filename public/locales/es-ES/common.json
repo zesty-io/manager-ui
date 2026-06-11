@@ -14,6 +14,7 @@
   "done": "Hecho",
   "edit": "Editar",
   "goBack": "Regresar",
+  "invalidDate": "Fecha no válida",
   "locales": "Configuraciones regionales",
   "manage": "Administrar",
   "next": "Siguiente",
@@ -29,6 +30,7 @@
   "stage": "Fase de prueba",
   "support": "Soporte",
   "teams": "Equipos",
+  "today": "Hoy",
   "unsavedChanges": "Cambios sin guardar",
   "update": "Actualizar",
   "upload": "Subir",
@@ -36,5 +38,6 @@
   "users": "Usuarios",
   "view": "Ver",
   "webhooks": "Webhooks",
-  "more": "Más"
+  "more": "Más",
+  "yesterday": "Ayer"
 }

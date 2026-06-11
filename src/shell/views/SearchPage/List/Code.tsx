@@ -1,11 +1,12 @@
 import { FC, useMemo } from "react";
 import { SvgIconComponent, CodeRounded } from "@mui/icons-material";
-import { formatDistanceToNow, isValid } from "date-fns";
+import { isValid } from "date-fns";
 import { useTranslation } from "react-i18next";
 
 import { File } from "../../../hooks/useSearchCodeFilesByKeyword";
 import { SearchListItem } from "./SearchListItem";
 import { useGetAuditsQuery } from "../../../services/instance";
+import { formatDistanceToNowLocalized } from "../../../i18n-dates";
 
 interface Code {
   data: File;
@@ -28,7 +29,9 @@ export const Code: FC<Code> = ({
     const rel = (dt?: string) => {
       if (!dt) return "";
       const d = new Date(dt);
-      return isValid(d) ? formatDistanceToNow(d, { addSuffix: true }) : "";
+      return isValid(d)
+        ? formatDistanceToNowLocalized(d, { addSuffix: true })
+        : "";
     };
 
     if (fileAudit?.length) {

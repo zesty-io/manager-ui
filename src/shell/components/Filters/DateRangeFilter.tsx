@@ -14,7 +14,7 @@ import {
 } from "@mui/x-date-pickers-pro";
 import { AdapterDateFns } from "@mui/x-date-pickers-pro/AdapterDateFns";
 import { useTranslation } from "react-i18next";
-import { getDateFnsLocale } from "../../i18n-dates";
+import { formatLocalized, getDateFnsLocale } from "../../i18n-dates";
 import CloseIcon from "@mui/icons-material/Close";
 import { format, parse, isValid } from "date-fns";
 
@@ -80,10 +80,10 @@ export const DateRangeFilter: FC<DateRangeFilterProps> = ({
   const isFilterActive = Boolean(value?.from && value?.to);
   const modalTitle = headerTitle ?? t("shell.selectDateRange");
   const buttonText = isFilterActive
-    ? `${format(parseYMDLocal(value.from)!, "MMM d, yyyy")} to ${format(
-        parseYMDLocal(value.to)!,
+    ? `${formatLocalized(
+        parseYMDLocal(value.from)!,
         "MMM d, yyyy"
-      )}`
+      )} to ${formatLocalized(parseYMDLocal(value.to)!, "MMM d, yyyy")}`
     : inactiveButtonText ?? t("shell.dateRange");
 
   return (

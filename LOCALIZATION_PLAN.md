@@ -175,8 +175,11 @@ otherwise-localized components, or legacy shell-level components.
 | `components/InvalidUrl.tsx`                              | 1       | Remaining hardcoded image alt in an otherwise-localized component                              | [x]    |
 | `components/login/Login.js`                              | 11      | Login form and auth-code UI are shell/auth entry surfaces and should use the `shell` namespace | [x]    |
 | `components/private-route/index.js` + `store/auth.js`    | 8       | Auth/session notifications shown through shell notification system; include as shell copy      | [x]    |
+| `components/Comment/CommentsList.tsx`                    | 1       | Draft/new-comment timestamp label (`right now`) missed in the comment popup                    | [x]    |
 
-### Date & time localization (date-fns)
+---
+
+## Phase 3.5 — Date & Time Localization
 
 Calendar and date text come from `date-fns`, which is independent of the
 i18next UI locale and must be wired up separately. This splits into two parts.
@@ -197,7 +200,7 @@ regardless of the UI language.
       `Filters/DateFilter/DateRangeFilterModal`, `Filters/DateRangeFilter`,
       `FieldTypeDate`, and `apps/media/.../DateFilterModal`.
 
-**Part B — Standalone `format()` / `formatDistanceToNow()` display strings (TODO — larger task, ideally after this phase).**
+**Part B — Standalone `format()` / `formatDistanceToNow()` display strings (DONE).**
 Date strings built with `date-fns` `format()` / `formatDistanceToNow()` _outside_
 the pickers still render in en-US (e.g. comment timestamps, date-filter chip
 labels). ~119 date-fns call sites exist and must be split by purpose:
@@ -208,12 +211,27 @@ labels). ~119 date-fns call sites exist and must be split by purpose:
 - ~43 **display** formats (`"MMM d, yyyy"`, etc.) + 16 `formatDistanceToNow`
   calls → should pass `{ locale: getDateFnsLocale(i18n.language) }`.
 
-- [ ] Add a shared `formatLocalized(date, fmt)` helper that reads `i18n.language`
+- [x] Add a shared `formatLocalized(date, fmt)` helper that reads `i18n.language`
       from the i18n singleton (so non-component utils work too).
-- [ ] Audit each call site (display vs. machine) and convert only the display ones.
+- [x] Add `formatDistanceToNowLocalized(date, options)` for relative display
+      timestamps.
+- [x] Audit each call site (display vs. machine) and convert only the display ones.
+- [x] Localize `utility/formatDate.ts` literal display labels (`Today`,
+      `Yesterday`, `Invalid Date`) through `common` keys; callers now use
+      date-based helpers instead of inspecting English display output.
 - The cost and risk here is the **audit**, not the typing — accidentally
   localizing a machine format breaks params/storage, so this is its own
-  reviewable task, scheduled after the current shell phase.
+  reviewable task, scheduled after the shell namespace phase.
+- Machine formats such as `yyyy-MM-dd`, `yyyy-MM-dd HH:mm:ss`, analytics/API
+  payload dates, URL params, CSV filename date ranges, and storage/search keys
+  intentionally remain locale-independent.
+- Search/filter helper text that is not rendered UI, such as
+  `RelationalFieldBase/FieldSelectorDialog/keywordSearchFilter.ts`, also stays
+  locale-independent so keyword matching remains stable against stored data.
+- Skipped for a follow-up: `FieldTypeDateTime` time-only `h:mm a` display is
+  coupled to English-only parsing and static time options. Localizing only the
+  formatter would make localized AM/PM strings fail the existing parser, so it
+  needs a localized parsing/options pass.
 
 > Surfaced during Part A (untranslated **UI copy**, not date formatting): the
 > `Filters/DateRangeFilter` prop defaults (`"Select a date range..."`,

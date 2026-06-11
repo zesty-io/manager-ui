@@ -9,6 +9,7 @@ import {
   startOfYear,
   subDays,
 } from "date-fns";
+import { formatLocalized } from "shell/i18n-dates";
 
 /* ---------- Numbers / formatting ---------- */
 
@@ -196,7 +197,12 @@ export const getDateRangeAndLabelsFromParams = (
   if (from && to) {
     const start = parseISO(from);
     const end = parseISO(to);
-    return [start, end, fmt(start, "eee d LLL"), fmt(end, "eee d LLL")];
+    return [
+      start,
+      end,
+      formatLocalized(start, "eee d LLL"),
+      formatLocalized(end, "eee d LLL"),
+    ];
   }
 
   const today = new Date();

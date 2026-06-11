@@ -14,6 +14,7 @@
   "done": "Gereed",
   "edit": "Bewerken",
   "goBack": "Ga terug",
+  "invalidDate": "Ongeldige datum",
   "locales": "Taalinstellingen",
   "manage": "Beheren",
   "next": "Volgende",
@@ -29,6 +30,7 @@
   "stage": "Testomgeving",
   "support": "Ondersteuning",
   "teams": "Teams",
+  "today": "Vandaag",
   "unsavedChanges": "Niet-opgeslagen wijzigingen",
   "update": "Bijwerken",
   "upload": "Uploaden",
@@ -36,5 +38,6 @@
   "users": "Gebruikers",
   "view": "Bekijken",
   "webhooks": "Webhooks",
-  "more": "Meer"
+  "more": "Meer",
+  "yesterday": "Gisteren"
 }

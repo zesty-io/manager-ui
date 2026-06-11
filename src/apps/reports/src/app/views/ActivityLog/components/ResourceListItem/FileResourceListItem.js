@@ -1,6 +1,7 @@
 import { faCode } from "@fortawesome/free-solid-svg-icons";
 import { useSelector } from "react-redux";
-import { format, isValid, isSameYear } from "date-fns";
+import { formatLocalized } from "shell/i18n-dates";
+import { isValid, isSameYear } from "date-fns";
 import { ListItem } from "./ListItem";
 
 const fileTypeName = {
@@ -17,8 +18,8 @@ export const FileResourceListItem = (props) => {
   const d = new Date(props.updatedAt);
   const lastAction = isValid(d)
     ? isSameYear(d, new Date())
-      ? format(d, "MMM d, h:mm a")
-      : format(d, "MMM d, yyyy, h:mm a")
+      ? formatLocalized(d, "MMM d, h:mm a")
+      : formatLocalized(d, "MMM d, yyyy, h:mm a")
     : "";
 
   const secondary = `Last action @ ${lastAction}${

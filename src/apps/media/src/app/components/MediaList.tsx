@@ -50,7 +50,8 @@ import defaultImg from "../../../../../../public/images/defaultImg.png";
 import jsIcon from "../../../../../../public/images/jsIcon.svg";
 import htmlIcon from "../../../../../../public/images/htmlIcon.svg";
 import cssIcon from "../../../../../../public/images/cssIcon.svg";
-import { format, isValid } from "date-fns";
+import { formatLocalized } from "shell/i18n-dates";
+import { isValid } from "date-fns";
 import {
   selectFile,
   clearSelectedFiles,
@@ -739,7 +740,7 @@ export const MediaList: FC<Props> = ({ files, groups }) => {
         return (
           <Box display="flex" height="100%" alignItems="center">
             <Typography variant="body2">
-              {isValid(d) && <>{format(d, "MMMM do yyyy")}</>}
+              {isValid(d) && <>{formatLocalized(d, "MMMM do yyyy")}</>}
             </Typography>
           </Box>
         );

@@ -7,7 +7,10 @@ import { fetchFiles, publishFile, saveFile } from "../../../store/files";
 import CloudUploadRoundedIcon from "@mui/icons-material/CloudUploadRounded";
 import { useDispatch } from "react-redux";
 import { ActionButton } from "./ActionButton";
-import { formatDate } from "../../../../../../utility/formatDate";
+import {
+  formatDate,
+  isTodayOrYesterday,
+} from "../../../../../../utility/formatDate";
 import { fetchAuditTrail } from "../../../store/auditTrail";
 
 interface EditorActionsProps {
@@ -43,9 +46,7 @@ export const EditorActions = memo(function EditorActions(
   const saveShortcut = useMetaKey("s", () => onSave());
   const publishShortcut = useMetaKey("p", () => onPublish());
 
-  const fileLastUpdate =
-    formatDate(props?.updatedAt).includes("Today") ||
-    formatDate(props?.updatedAt).includes("Yesterday");
+  const fileLastUpdate = isTodayOrYesterday(props?.updatedAt);
 
   const getUpdatedFiles = () => {
     dispatch(fetchFiles(props?.fileType));

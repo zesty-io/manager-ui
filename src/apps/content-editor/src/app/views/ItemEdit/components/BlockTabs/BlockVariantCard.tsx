@@ -13,7 +13,8 @@ import { AppState } from "../../../../../../../../shell/store/types";
 import { useGetUsersQuery } from "../../../../../../../../shell/services/accounts";
 import blockPlaceholder from "../../../../../../../../../public/images/blockPlaceholder.png";
 import { ContentItem } from "../../../../../../../../shell/services/types";
-import { format, isValid } from "date-fns";
+import { formatLocalized } from "shell/i18n-dates";
+import { isValid } from "date-fns";
 
 export const BlockVariantCard = ({ block }: { block: ContentItem }) => {
   const history = useHistory();
@@ -111,7 +112,7 @@ export const BlockVariantCard = ({ block }: { block: ContentItem }) => {
           >
             Updated on{" "}
             {isValid(new Date(block.web?.updatedAt))
-              ? format(new Date(block.web?.updatedAt), "MMM d, yyyy")
+              ? formatLocalized(new Date(block.web?.updatedAt), "MMM d, yyyy")
               : ""}{" "}
             by&nbsp;
             {updatedByUser?.firstName} {updatedByUser?.lastName}

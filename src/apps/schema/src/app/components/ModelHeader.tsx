@@ -17,7 +17,8 @@ import {
   useGetWebViewsQuery,
 } from "../../../../../shell/services/instance";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
-import { format, isValid } from "date-fns";
+import { formatLocalized } from "shell/i18n-dates";
+import { isValid } from "date-fns";
 import {
   InfoRounded,
   ApiRounded,
@@ -80,7 +81,7 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
   const updatedAt = model?.updatedAt ? new Date(model.updatedAt) : null;
   const lastUpdated =
     updatedAt && isValid(updatedAt)
-      ? format(updatedAt, "do MMMM yyyy 'at' h:mm a")
+      ? formatLocalized(updatedAt, "do MMMM yyyy 'at' h:mm a")
       : "";
 
   return (

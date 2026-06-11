@@ -1,7 +1,7 @@
 import { FC, useMemo } from "react";
 import { Create } from "@mui/icons-material";
 import { useSelector } from "react-redux";
-import { formatDistanceToNow, isValid } from "date-fns";
+import { isValid } from "date-fns";
 import { useTranslation } from "react-i18next";
 
 import { ContentItem } from "../../../services/types";
@@ -10,6 +10,7 @@ import {
   useGetContentModelQuery,
   useGetContentItemQuery,
 } from "../../../services/instance";
+import { formatDistanceToNowLocalized } from "../../../i18n-dates";
 import { SearchListItem } from "./SearchListItem";
 
 interface Content {
@@ -77,7 +78,9 @@ export const Content: FC<Content> = ({
   const rel = (dt?: string) => {
     if (!dt) return "";
     const d = new Date(dt);
-    return isValid(d) ? formatDistanceToNow(d, { addSuffix: true }) : "";
+    return isValid(d)
+      ? formatDistanceToNowLocalized(d, { addSuffix: true })
+      : "";
   };
 
   const actionDate = auditData?.[0]?.happenedAt;

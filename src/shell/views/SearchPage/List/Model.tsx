@@ -1,12 +1,13 @@
 import { FC, useMemo } from "react";
 import { Database } from "@zesty-io/material";
 import { SvgIconComponent } from "@mui/icons-material";
-import { formatDistanceToNow, isValid } from "date-fns";
+import { isValid } from "date-fns";
 import { useTranslation } from "react-i18next";
 
 import { ContentModel } from "../../../services/types";
 import { SearchListItem } from "./SearchListItem";
 import { useGetAuditsQuery } from "../../../services/instance";
+import { formatDistanceToNowLocalized } from "../../../i18n-dates";
 
 interface Model {
   data: ContentModel;
@@ -28,7 +29,9 @@ export const Model: FC<Model> = ({
     const rel = (dt?: string) => {
       if (!dt) return "";
       const d = new Date(dt); // switch to parseISO(dt) if you hit parsing issues
-      return isValid(d) ? formatDistanceToNow(d, { addSuffix: true }) : "";
+      return isValid(d)
+        ? formatDistanceToNowLocalized(d, { addSuffix: true })
+        : "";
     };
 
     if (modelAudit?.length) {

@@ -5,7 +5,7 @@ import {
 } from "@mui/x-date-pickers-pro";
 import { AdapterDateFns } from "@mui/x-date-pickers-pro/AdapterDateFns";
 import { useTranslation } from "react-i18next";
-import { getDateFnsLocale } from "../../i18n-dates";
+import { formatLocalized, getDateFnsLocale } from "../../i18n-dates";
 import {
   memo,
   useEffect,
@@ -131,7 +131,10 @@ export const FieldTypeDate = memo(
            */
           if (props.value === null) {
             props.onChange(new Date(), null);
-            textFieldRef.current.value = format(new Date(), "MMM dd, yyyy");
+            textFieldRef.current.value = formatLocalized(
+              new Date(),
+              "MMM dd, yyyy"
+            );
             textFieldRef.current.setSelectionRange(0, 3);
           }
 
@@ -149,7 +152,10 @@ export const FieldTypeDate = memo(
          * directly and not use the input field to manually enter the date
          */
         if (!isOpen && props.value) {
-          textFieldRef.current.value = format(props.value, "MMM dd, yyyy");
+          textFieldRef.current.value = formatLocalized(
+            props.value,
+            "MMM dd, yyyy"
+          );
         }
         textFieldRef.current.blur();
       }, [isOpen]);
@@ -159,7 +165,10 @@ export const FieldTypeDate = memo(
        */
       useEffect(() => {
         if (props.value) {
-          textFieldRef.current.value = format(props.value, "MMM dd, yyyy");
+          textFieldRef.current.value = formatLocalized(
+            props.value,
+            "MMM dd, yyyy"
+          );
         }
       }, []);
 
@@ -168,7 +177,10 @@ export const FieldTypeDate = memo(
         () => {
           return {
             setDefaultDate() {
-              textFieldRef.current.value = format(new Date(), "MMM dd, yyyy");
+              textFieldRef.current.value = formatLocalized(
+                new Date(),
+                "MMM dd, yyyy"
+              );
             },
           };
         },

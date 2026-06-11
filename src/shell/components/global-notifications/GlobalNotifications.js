@@ -1,7 +1,6 @@
 import { memo, useState, useEffect, useCallback, forwardRef } from "react";
 import { connect } from "react-redux";
 import { useTranslation } from "react-i18next";
-import { formatDistanceToNow } from "date-fns";
 import cx from "classnames";
 import useOnclickOutside from "react-cool-onclickoutside";
 
@@ -13,6 +12,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import { AppLink } from "shell/components/AppLink";
+import { formatDistanceToNowLocalized } from "shell/i18n-dates";
 import {
   Typography,
   Stack,
@@ -214,9 +214,12 @@ export default connect((state) => {
                       </p>
                       {notice.epoch && (
                         <small className={cx(styles.Timestamp, styles.caption)}>
-                          {formatDistanceToNow(new Date(notice.epoch), {
-                            addSuffix: true,
-                          })}
+                          {formatDistanceToNowLocalized(
+                            new Date(notice.epoch),
+                            {
+                              addSuffix: true,
+                            }
+                          )}
                         </small>
                       )}
                     </li>

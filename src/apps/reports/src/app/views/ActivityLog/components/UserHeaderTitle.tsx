@@ -7,7 +7,7 @@ import { useHistory } from "react-router";
 import { CustomBreadcrumbs } from "../../../../../../../shell/components/CustomBreadcrumbs";
 import { useGetUsersRolesQuery } from "../../../../../../../shell/services/accounts";
 import { MD5 } from "../../../../../../../utility/md5";
-import { format } from "date-fns";
+import { formatLocalized } from "shell/i18n-dates";
 
 const Crumbs = [
   {
@@ -50,7 +50,7 @@ export const UserHeaderTitle = ({
           `${actionCount} Action${actionCount === 1 ? "" : "s"}`,
           `Last action @ ${
             latestActionDateTime
-              ? format(new Date(latestActionDateTime), "hh:mm a")
+              ? formatLocalized(new Date(latestActionDateTime), "hh:mm a")
               : "N/A"
           }`,
         ],

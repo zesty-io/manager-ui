@@ -18,10 +18,11 @@ import DriveFileRenameOutlineRoundedIcon from "@mui/icons-material/DriveFileRena
 import LinkRoundedIcon from "@mui/icons-material/LinkRounded";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
 import RestartAltRoundedIcon from "@mui/icons-material/RestartAltRounded";
-import { formatDistanceToNow, isValid } from "date-fns";
+import { isValid } from "date-fns";
 import { useLocation, useParams } from "react-router";
 import { useSelector } from "react-redux";
 
+import { formatDistanceToNowLocalized } from "../../i18n-dates";
 import { useUpdateCommentStatusMutation } from "../../services/accounts";
 import { MD5 } from "../../../utility/md5";
 import { InputField } from "./InputField";
@@ -95,7 +96,7 @@ export const CommentItem = ({
   const createdDate = createdOn ? new Date(createdOn) : null;
   const createdAgo =
     createdDate && isValid(createdDate)
-      ? formatDistanceToNow(createdDate, { addSuffix: true })
+      ? formatDistanceToNowLocalized(createdDate, { addSuffix: true })
       : "";
 
   useEffect(() => {

@@ -11,9 +11,10 @@ import {
   Tooltip,
 } from "@mui/material";
 import { Search } from "@mui/icons-material";
-import { format, isValid } from "date-fns";
+import { isValid } from "date-fns";
 
 import { ContentItem } from "../../services/types";
+import { formatLocalized } from "../../i18n-dates";
 import { useGetUsersQuery } from "../../services/accounts";
 import { NoSearchResults } from "../NoSearchResults";
 import { NoVariant } from "./NoVariant";
@@ -133,7 +134,8 @@ export const VariantSelector = ({
             const d = variant.web?.updatedAt
               ? new Date(variant.web.updatedAt)
               : null;
-            const updatedOn = d && isValid(d) ? format(d, "MMMM d") : "";
+            const updatedOn =
+              d && isValid(d) ? formatLocalized(d, "MMMM d") : "";
             return (
               <MenuItem
                 ref={(node) => (variantsRef.current[index] = node)}

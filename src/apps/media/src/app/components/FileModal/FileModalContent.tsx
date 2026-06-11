@@ -43,7 +43,7 @@ import { MoveFileDialog } from "./MoveFileDialog";
 import { useDispatch } from "react-redux";
 import { notify } from "../../../../../../shell/store/notifications";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query";
-import { format } from "date-fns";
+import { formatLocalized } from "shell/i18n-dates";
 
 interface Props {
   id?: string;
@@ -517,12 +517,12 @@ export const FileModalContent: FC<Props> = ({
             </Box>
             <Box sx={{ pl: 2 }}>
               <Typography variant="body2">
-                {createdAt && format(new Date(createdAt), "PPP")}
+                {createdAt && formatLocalized(new Date(createdAt), "PPP")}
               </Typography>
               <Typography variant="body2" sx={{ color: "text.secondary" }}>
                 {createdAt && (
                   <>
-                    {format(new Date(createdAt), "EEE, h:mm a")}{" "}
+                    {formatLocalized(new Date(createdAt), "EEE, h:mm a")}{" "}
                     {new Date(createdAt)
                       .toLocaleTimeString("en-US", {
                         timeZoneName: "short",
@@ -550,12 +550,12 @@ export const FileModalContent: FC<Props> = ({
               </Box>
               <Box sx={{ pl: 2 }}>
                 <Typography variant="body2">
-                  {updatedAt && format(new Date(updatedAt), "PPP")}
+                  {updatedAt && formatLocalized(new Date(updatedAt), "PPP")}
                 </Typography>
                 <Typography variant="body2" sx={{ color: "text.secondary" }}>
                   {updatedAt && (
                     <>
-                      {format(new Date(updatedAt), "EEE, h:mm a")}{" "}
+                      {formatLocalized(new Date(updatedAt), "EEE, h:mm a")}{" "}
                       {new Date(updatedAt)
                         .toLocaleTimeString("en-US", {
                           timeZoneName: "short",

@@ -12,8 +12,9 @@ import { fetchAuditTrailDrafting } from "shell/store/logs";
 import cx from "classnames";
 import SharedWidgetStyles from "../SharedWidget.less";
 import { AppLink } from "shell/components/AppLink";
+import { formatDistanceToNowLocalized } from "shell/i18n-dates";
 import styles from "./WidgetDraftHistory.less";
-import { formatDistanceToNow, isValid } from "date-fns";
+import { isValid } from "date-fns";
 
 export default connect((state, props) => {
   return {
@@ -111,7 +112,7 @@ export default connect((state, props) => {
                     }}
                   >
                     {isValid(new Date(log.happenedAt))
-                      ? formatDistanceToNow(new Date(log.happenedAt), {
+                      ? formatDistanceToNowLocalized(new Date(log.happenedAt), {
                           addSuffix: true,
                         })
                       : ""}

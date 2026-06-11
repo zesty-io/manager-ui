@@ -15,7 +15,8 @@ import {
   DialogTitle,
   Typography,
 } from "@mui/material";
-import { format, fromUnixTime, isValid } from "date-fns";
+import { formatLocalized } from "shell/i18n-dates";
+import { fromUnixTime, isValid } from "date-fns";
 
 /**
  * This component is designed to be a generic view lock
@@ -37,7 +38,9 @@ export function LockedView(props) {
   const [name, setName] = useState(props.name);
 
   const d = fromUnixTime(lockData?.timestamp);
-  const formattedDate = isValid(d) ? format(d, "MMMM do, yyyy h:mm a") : "";
+  const formattedDate = isValid(d)
+    ? formatLocalized(d, "MMMM do, yyyy h:mm a")
+    : "";
 
   const onClose = useCallback(() => {
     history.goBack();

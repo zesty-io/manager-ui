@@ -9,7 +9,9 @@ import {
   Box,
 } from "@mui/material";
 import { LockOpenRounded, LockRounded } from "@mui/icons-material";
-import { format, fromUnixTime, isValid } from "date-fns";
+import { fromUnixTime, isValid } from "date-fns";
+
+import { formatLocalized } from "shell/i18n-dates";
 
 type LockedItemProps = {
   itemName: string;
@@ -28,7 +30,7 @@ export const LockedItem = ({
   onUnlock,
 }: LockedItemProps) => {
   const d = fromUnixTime(Number(viewTimestamp));
-  const viewedAt = isValid(d) ? format(d, "MMMM do, yyyy h:mm a") : "";
+  const viewedAt = isValid(d) ? formatLocalized(d, "MMMM do, yyyy h:mm a") : "";
   return (
     <Dialog
       open

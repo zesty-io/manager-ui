@@ -25,6 +25,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useHistory, useLocation } from "react-router";
 import { format, parse } from "date-fns";
 
+import { formatLocalized } from "../../../i18n-dates";
 import { useGetUsersQuery } from "../../../services/accounts";
 import {
   PresetType,
@@ -245,11 +246,11 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
       return (
         <MenuItem value="custom_date_value" selected>
           {t("shell.dateRangeValue", {
-            from: format(
+            from: formatLocalized(
               parse(dates.from, "yyyy-MM-dd", new Date()),
               "MMM d, yyyy"
             ),
-            to: format(
+            to: formatLocalized(
               parse(dates.to, "yyyy-MM-dd", new Date()),
               "MMM d, yyyy"
             ),
@@ -259,7 +260,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
     }
 
     // Custom menu item for single date
-    const formattedDate = format(
+    const formattedDate = formatLocalized(
       parse(searchData.date?.value as string, "yyyy-MM-dd", new Date()),
       "MMM d, yyyy"
     );

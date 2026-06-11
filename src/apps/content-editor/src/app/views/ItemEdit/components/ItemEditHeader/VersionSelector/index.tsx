@@ -16,7 +16,8 @@ import {
 } from "../../../../../../../../../shell/services/instance";
 import { Version } from "./VersionItem";
 import { WorkflowStatusLabel } from "../../../../../../../../../shell/services/types";
-import { format, isValid } from "date-fns";
+import { formatLocalized } from "shell/i18n-dates";
+import { isValid } from "date-fns";
 
 export let ROW_HEIGHTS: Record<number, number> = {};
 export const DEFAULT_ROW_HEIGHT = 66;
@@ -110,7 +111,7 @@ export const VersionSelector = memo(
           itemWorkflowZUID,
           labels,
           createdAt: isValid(new Date(v.web?.createdAt))
-            ? format(new Date(v.web?.createdAt), "MMM d yyyy, h:mm a")
+            ? formatLocalized(new Date(v.web?.createdAt), "MMM d yyyy, h:mm a")
             : "",
           isPublished: activeVersion?.version === v.meta?.version,
           isScheduled: scheduledVersion?.version === v.meta?.version,

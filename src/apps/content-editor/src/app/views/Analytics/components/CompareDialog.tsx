@@ -26,7 +26,8 @@ import {
 } from "../../../../../../../shell/services/instance";
 import { NoSearchResults } from "../../../../../../../shell/components/NoSearchResults";
 import CompareArrowsRoundedIcon from "@mui/icons-material/CompareArrowsRounded";
-import { formatDistanceToNow, isValid } from "date-fns";
+import { formatDistanceToNowLocalized } from "shell/i18n-dates";
+import { isValid } from "date-fns";
 import { useSelector } from "react-redux";
 import { User } from "../../../../../../../shell/services/types";
 import { useGetUsersQuery } from "../../../../../../../shell/services/accounts";
@@ -276,7 +277,7 @@ const PublishingItem = ({ publishing, divider, onClick }: any) => {
     : null;
   const relativeTime =
     publishDate && isValid(publishDate)
-      ? formatDistanceToNow(publishDate, { addSuffix: true })
+      ? formatDistanceToNowLocalized(publishDate, { addSuffix: true })
       : "";
 
   return (

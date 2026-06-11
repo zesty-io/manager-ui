@@ -4,7 +4,8 @@ import { DataGridPro } from "@mui/x-data-grid-pro";
 import { Box, Button, Chip } from "@mui/material";
 import { WithLoader } from "shell/components/legacy/WithLoader";
 import { instanceApi } from "../../../../../../shell/services/instance";
-import { isValid, format } from "date-fns";
+import { formatLocalized } from "shell/i18n-dates";
+import { isValid } from "date-fns";
 
 type Params = {
   modelZUID: string;
@@ -50,7 +51,7 @@ export const PublishState = ({ reloadItem }: Props) => {
         valueGetter: (_: any, row: any) => {
           if (!row.publishAt) return null;
           const d = new Date(row.publishAt);
-          return isValid(d) ? format(d, "MMM dd yyyy, h:mm a") : "";
+          return isValid(d) ? formatLocalized(d, "MMM dd yyyy, h:mm a") : "";
         },
       },
       {
@@ -60,7 +61,7 @@ export const PublishState = ({ reloadItem }: Props) => {
         valueGetter: (_: any, row: any) => {
           if (!row.unpublishAt) return null;
           const d = new Date(row.unpublishAt);
-          return isValid(d) ? format(d, "MMM dd yyyy, h:mm a") : "";
+          return isValid(d) ? formatLocalized(d, "MMM dd yyyy, h:mm a") : "";
         },
       },
       {
@@ -75,7 +76,7 @@ export const PublishState = ({ reloadItem }: Props) => {
         valueGetter: (_: any, row: any) => {
           if (!row.createdAt) return null;
           const d = new Date(row.createdAt);
-          return isValid(d) ? format(d, "MMM dd yyyy, h:mm a") : "";
+          return isValid(d) ? formatLocalized(d, "MMM dd yyyy, h:mm a") : "";
         },
       },
       {

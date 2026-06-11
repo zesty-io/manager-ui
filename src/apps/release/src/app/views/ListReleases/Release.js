@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { AppLink } from "shell/components/AppLink";
 
 import styles from "./ListReleases.less";
-import { format } from "date-fns";
+import { formatLocalized } from "shell/i18n-dates";
 
 export function Release(props) {
   const members = useSelector((state) => state.releaseMembers.data);
@@ -23,7 +23,7 @@ export function Release(props) {
       </td>
       <td>
         {props.release.createdAt &&
-          format(
+          formatLocalized(
             new Date(props.release.createdAt),
             "hh:mm a 'on' MMMM do, yyyy XXX"
           )}

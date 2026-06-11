@@ -20,7 +20,8 @@ import {
   modelIconMap,
 } from "../../../../../../schema/src/app/utils";
 import { AppState } from "../../../../../../../shell/store/types";
-import { isValid, format } from "date-fns";
+import { formatLocalized } from "shell/i18n-dates";
+import { isValid } from "date-fns";
 
 type ResourceHeaderTitleProps = {
   affectedZUID: string;
@@ -70,7 +71,7 @@ export const ResourceHeaderTitle = ({
       subTitle: [
         `
         Last Updated: ${
-          d && isValid(d) ? format(d, "do MMMM yyyy 'at' h:mm a") : ""
+          d && isValid(d) ? formatLocalized(d, "do MMMM yyyy 'at' h:mm a") : ""
         }
       `,
       ],

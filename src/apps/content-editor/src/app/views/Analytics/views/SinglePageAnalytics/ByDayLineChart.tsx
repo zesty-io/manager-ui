@@ -21,6 +21,7 @@ import {
   getYear,
   isValid,
 } from "date-fns";
+import { formatLocalized } from "shell/i18n-dates";
 
 import lineChartSkeleton from "../../../../../../../../../public/images/lineChartSkeleton.svg";
 import {
@@ -528,14 +529,14 @@ export const ByDayLineChart = ({
               >
                 {shouldCompare
                   ? dateRange0Label
-                  : fmt(
+                  : formatLocalized(
                       addDays(startDate, tooltipModel?.dataIndex ?? 0),
                       "eee d LLL"
                     )}{" "}
                 vs{" "}
                 {shouldCompare
                   ? dateRange1Label
-                  : fmt(
+                  : formatLocalized(
                       addDays(prevWindowStart, tooltipModel?.dataIndex ?? 0),
                       "eee d LLL"
                     )}

@@ -2,7 +2,10 @@ import { useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import cx from "classnames";
-import { format, formatDistanceToNow } from "date-fns";
+import {
+  formatDistanceToNowLocalized,
+  formatLocalized,
+} from "shell/i18n-dates";
 
 import { updateMember, deleteMember } from "shell/store/releaseMembers";
 
@@ -76,7 +79,7 @@ export function PlanStep(props) {
               {" "}
               [
               {content.meta.createdAt &&
-                format(
+                formatLocalized(
                   new Date(content.meta.createdAt),
                   "MMM do yyyy, 'at' h:mm a"
                 )}
@@ -183,7 +186,7 @@ export function PlanStep(props) {
         {item?.publishing?.isPublished
           ? `Version ${
               item?.publishing.version
-            } was published ${formatDistanceToNow(
+            } was published ${formatDistanceToNowLocalized(
               new Date(item?.publishing.publishAt),
               { addSuffix: true }
             )}`

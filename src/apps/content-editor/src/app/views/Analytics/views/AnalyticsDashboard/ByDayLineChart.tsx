@@ -11,12 +11,8 @@ import {
   Skeleton,
 } from "@mui/material";
 import { ChartEvent } from "chart.js";
-import {
-  addDays,
-  differenceInCalendarDays,
-  format as fmt,
-  getYear,
-} from "date-fns";
+import { addDays, differenceInCalendarDays, getYear } from "date-fns";
+import { formatLocalized } from "shell/i18n-dates";
 
 import "chartjs-adapter-date-fns";
 
@@ -222,9 +218,12 @@ export const ByDayLineChart = ({
             Sessions
           </Typography>
           <Typography variant="body1" color="text.secondary" sx={{ mt: 0.5 }}>
-            {fmt(addDays(startDate, tooltipModel?.dataIndex ?? 0), "eee d MMM")}{" "}
+            {formatLocalized(
+              addDays(startDate, tooltipModel?.dataIndex ?? 0),
+              "eee d MMM"
+            )}{" "}
             vs{" "}
-            {fmt(
+            {formatLocalized(
               addDays(
                 addDays(startDate, -daysSpan),
                 tooltipModel?.dataIndex ?? 0

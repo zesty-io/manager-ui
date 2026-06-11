@@ -29,8 +29,13 @@ import SortByAlphaIcon from "@mui/icons-material/SortByAlpha";
 import PersonIcon from "@mui/icons-material/Person";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import PersonSearchIcon from "@mui/icons-material/PersonSearch";
+import { isValid } from "date-fns";
 
 import { Loader } from "shell/components/legacy/Loader";
+import {
+  formatDistanceToNowLocalized,
+  formatLocalized,
+} from "shell/i18n-dates";
 
 import { searchItems } from "shell/store/content";
 import { notify } from "shell/store/notifications";
@@ -364,14 +369,14 @@ const ListOption = (props) => {
     : null;
   const createdOn =
     createdDate && isValid(createdDate)
-      ? format(createdDate, "MMM d, yyyy h:mm a")
+      ? formatLocalized(createdDate, "MMM d, yyyy h:mm a")
       : "";
   const editedDate = props.opt?.meta?.updatedAt
     ? new Date(props.opt.meta.updatedAt)
     : null;
   const editedAgo =
     editedDate && isValid(editedDate)
-      ? formatDistanceToNow(editedDate, { addSuffix: true })
+      ? formatDistanceToNowLocalized(editedDate, { addSuffix: true })
       : "";
 
   let modelIcon;

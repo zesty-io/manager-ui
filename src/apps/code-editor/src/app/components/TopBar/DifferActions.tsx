@@ -6,7 +6,8 @@ import { Select, Button, MenuItem, Box, Typography } from "@mui/material";
 import HistoryIcon from "@mui/icons-material/History";
 import SaveIcon from "@mui/icons-material/Save";
 import EastIcon from "@mui/icons-material/East";
-import { format, isValid } from "date-fns";
+import { formatLocalized } from "shell/i18n-dates";
+import { isValid } from "date-fns";
 
 import {
   fetchFileVersions,
@@ -143,7 +144,7 @@ export const DifferActions = memo(function DifferActions(
   const options = versions.map((version) => {
     const d = new Date(version.createdAt);
     const pretty = isValid(d)
-      ? format(d, "MMM do yyyy, 'at' h:mm a")
+      ? formatLocalized(d, "MMM do yyyy, 'at' h:mm a")
       : version.createdAt;
     let html = (
       <Box display="flex" alignItems="center" columnGap={0.5}>

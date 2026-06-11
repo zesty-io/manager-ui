@@ -43,7 +43,10 @@ import {
   fetchItemPublishing,
 } from "../../../../../../../../shell/store/content";
 import { useGetUsersQuery } from "../../../../../../../../shell/services/accounts";
-import { formatDate } from "../../../../../../../../utility/formatDate";
+import {
+  formatDate,
+  isTodayOrYesterday,
+} from "../../../../../../../../utility/formatDate";
 import { UnpublishDialog } from "./UnpublishDialog";
 import { usePermission } from "../../../../../../../../shell/hooks/use-permissions";
 import {
@@ -554,10 +557,7 @@ export const ItemEditHeaderActions = ({
             ) : (
               <div>
                 v{activePublishing?.version} published{" "}
-                {formatDate(activePublishing?.publishAt).includes("Today") ||
-                formatDate(activePublishing?.publishAt).includes("Yesterday")
-                  ? ""
-                  : "on"}
+                {isTodayOrYesterday(activePublishing?.publishAt) ? "" : "on"}
                 <br />
                 {formatDate(activePublishing?.publishAt)} <br />
                 by{" "}

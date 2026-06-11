@@ -19,7 +19,8 @@ import {
 import { useGetUsersQuery } from "../../../../../../../../../shell/services/accounts";
 import { startCase } from "lodash";
 import { useSelector } from "react-redux";
-import { format, parseISO, isValid as isValidDate } from "date-fns";
+import { formatLocalized } from "shell/i18n-dates";
+import { parseISO, isValid as isValidDate } from "date-fns";
 
 const SOURCE_DETAIL_MAP = {
   "(direct)": { color: "info.dark", bgcolor: "blue.100", icon: InboxRounded },
@@ -35,7 +36,7 @@ const fmtShort = (d?: string) => {
   if (!d) return "";
   const parsed = parseISO(d);
   const dateObj = isValidDate(parsed) ? parsed : new Date(d);
-  return isValidDate(dateObj) ? format(dateObj, "MMM d") : "";
+  return isValidDate(dateObj) ? formatLocalized(dateObj, "MMM d") : "";
 };
 
 export const NameCell = ({

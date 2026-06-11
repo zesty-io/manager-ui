@@ -22,8 +22,12 @@ import { useGetUsersQuery } from "../../services/accounts";
 import { FieldTypeDateTime } from "../FieldTypeDateTime";
 import { TIMEZONES } from "../FieldTypeDateTime/util";
 import { publish, unpublish } from "../../store/content";
+import {
+  formatDistanceToNowLocalized,
+  getDateFnsLocale,
+} from "../../i18n-dates";
 
-import { format as fmt, isBefore, formatDistanceToNow } from "date-fns";
+import { format as fmt, isBefore } from "date-fns";
 import { zonedTimeToUtc, formatInTimeZone } from "date-fns-tz";
 
 type SchedulePublishProps = {
@@ -41,7 +45,7 @@ export const SchedulePublish = ({
   onScheduleSuccess,
   onUnscheduleSuccess,
 }: SchedulePublishProps) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const dispatch = useDispatch();
   const { data: users } = useGetUsersQuery();
 
@@ -87,7 +91,8 @@ export const SchedulePublish = ({
     const localPretty = formatInTimeZone(
       selectedUtc,
       publishTimezone,
-      "MMMM do yyyy, 'at' h:mm a"
+      "MMMM do yyyy, 'at' h:mm a",
+      { locale: getDateFnsLocale(i18n.language) }
     );
 
     dispatch(
@@ -134,7 +139,8 @@ export const SchedulePublish = ({
     ? formatInTimeZone(
         item.scheduling.publishAt,
         guessedTz,
-        "MMM d, yyyy 'at' h:mm a"
+        "MMM d, yyyy 'at' h:mm a",
+        { locale: getDateFnsLocale(i18n.language) }
       )
     : "";
 
@@ -185,9 +191,12 @@ export const SchedulePublish = ({
                 ? `v${item?.web?.version} is scheduled to publish on ${scheduledLocalText} in ${tzLabel}.`
                 : `v${item?.web?.version} saved ${
                     item?.web?.createdAt
-                      ? formatDistanceToNow(new Date(item.web.createdAt), {
-                          addSuffix: true,
-                        })
+                      ? formatDistanceToNowLocalized(
+                          new Date(item.web.createdAt),
+                          {
+                            addSuffix: true,
+                          }
+                        )
                       : ""
                   } by ${latestChangeCreator?.firstName ?? ""} ${
                     latestChangeCreator?.lastName ?? ""

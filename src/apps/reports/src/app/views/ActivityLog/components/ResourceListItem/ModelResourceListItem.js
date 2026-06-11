@@ -3,7 +3,8 @@ import { faDatabase } from "@fortawesome/free-solid-svg-icons";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchModel } from "shell/store/models";
 import { ListItem } from "./ListItem";
-import { format, isValid, isSameYear } from "date-fns";
+import { formatLocalized } from "shell/i18n-dates";
+import { isValid, isSameYear } from "date-fns";
 
 export const ModelResourceListItem = (props) => {
   const dispatch = useDispatch();
@@ -26,9 +27,9 @@ export const ModelResourceListItem = (props) => {
   const d = new Date(props.updatedAt);
   const lastAction =
     isValid(d) && isSameYear(d, new Date())
-      ? format(d, "MMM d, h:mm a")
+      ? formatLocalized(d, "MMM d, h:mm a")
       : isValid(d)
-      ? format(d, "MMM d, yyyy, h:mm a")
+      ? formatLocalized(d, "MMM d, yyyy, h:mm a")
       : "";
 
   const secondary = `Last action @ ${lastAction} • Content Model`;

@@ -1,6 +1,11 @@
 import type { Locale } from "date-fns";
+import {
+  format as dateFnsFormat,
+  formatDistanceToNow as dateFnsFormatDistanceToNow,
+} from "date-fns";
 import { enUS, es, hi, zhCN, ru, nl } from "date-fns/locale";
 
+import i18n from "./i18n";
 import type { SupportedLocale } from "./i18n";
 
 // Maps each supported app locale (BCP 47 tag) to its date-fns locale, used as
@@ -30,3 +35,25 @@ const DATE_FNS_LOCALES: Record<SupportedLocale, Locale> = {
  */
 export const getDateFnsLocale = (tag: string | undefined): Locale =>
   DATE_FNS_LOCALES[tag as SupportedLocale] ?? enUS;
+
+export const formatLocalized = (
+  date: Date | number,
+  formatStr: string,
+  options?: Omit<NonNullable<Parameters<typeof dateFnsFormat>[2]>, "locale">
+): string =>
+  dateFnsFormat(date, formatStr, {
+    ...options,
+    locale: getDateFnsLocale(i18n.language),
+  });
+
+export const formatDistanceToNowLocalized = (
+  date: Date | number,
+  options?: Omit<
+    NonNullable<Parameters<typeof dateFnsFormatDistanceToNow>[1]>,
+    "locale"
+  >
+): string =>
+  dateFnsFormatDistanceToNow(date, {
+    ...options,
+    locale: getDateFnsLocale(i18n.language),
+  });
