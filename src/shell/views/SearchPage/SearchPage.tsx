@@ -3,6 +3,7 @@ import { Typography, Box, Stack, Skeleton } from "@mui/material";
 import { cloneDeep, isEmpty } from "lodash";
 import { useSelector } from "react-redux";
 import { parseISO, isValid } from "date-fns";
+import { useTranslation } from "react-i18next";
 import { useParams } from "../../../shell/hooks/useParams";
 import { NoSearchResults } from "../../components/NoSearchResults";
 import {
@@ -45,6 +46,7 @@ export interface SearchPageItem {
   langID?: number;
 }
 export const SearchPage: FC = () => {
+  const { t } = useTranslation();
   const [params, setParams] = useParams();
   const keyword = params.get("q") || "";
   const instanceId = useSelector((state: AppState) => state.instance.ID);
@@ -315,9 +317,15 @@ export const SearchPage: FC = () => {
           {isLoading ? (
             <Skeleton variant="text" width={200} />
           ) : (
-            `${filteredResults?.length} results ${
-              Boolean(keyword) ? `for "${keyword}"` : ""
-            }`
+            t(
+              Boolean(keyword)
+                ? "shell.searchPageResultsFor"
+                : "shell.searchPageResults",
+              {
+                count: filteredResults?.length,
+                query: keyword,
+              }
+            )
           )}
         </Typography>
         <BackButton />

@@ -1,5 +1,6 @@
 import { FC, useState, useMemo } from "react";
 import { Menu, MenuItem } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 import { FilterButton } from "../../../components/Filters";
 import { useGetLangsQuery } from "../../../services/instance";
@@ -12,6 +13,7 @@ export const LanguageFilter: FC<LanguageFilterProps> = ({
   onChange,
   value,
 }) => {
+  const { t } = useTranslation();
   const [anchorRef, setAnchorRef] = useState<HTMLElement | null>(null);
   const { data: langs } = useGetLangsQuery({});
 
@@ -28,7 +30,7 @@ export const LanguageFilter: FC<LanguageFilterProps> = ({
       <FilterButton
         filterId="language"
         isFilterActive={Boolean(value)}
-        buttonText={Boolean(value) ? value : "Language"}
+        buttonText={Boolean(value) ? value : t("shell.language")}
         onOpenMenu={(evt: React.MouseEvent<HTMLButtonElement>) =>
           setAnchorRef(evt.currentTarget)
         }

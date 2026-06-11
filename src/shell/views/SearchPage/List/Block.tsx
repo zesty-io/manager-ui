@@ -2,6 +2,7 @@ import { FC, useMemo } from "react";
 import { Block as BlockIcon } from "@zesty-io/material";
 import { SvgIconComponent } from "@mui/icons-material";
 import { isValid, formatDistanceToNow } from "date-fns";
+import { useTranslation } from "react-i18next";
 
 import { ContentModel } from "../../../services/types";
 import { SearchListItem } from "./SearchListItem";
@@ -31,6 +32,7 @@ export const Block: FC<Block> = ({
   style,
   loading: parentIsLoading = false,
 }) => {
+  const { t } = useTranslation();
   const isVariant = data?.type === "block" && !!data?.contentModelZUID;
   const createdRelative = useMemo(() => {
     if (!data?.createdAt) return "";
@@ -44,11 +46,14 @@ export const Block: FC<Block> = ({
         ? `${data?.contentModelLabel} • `
         : "";
 
-    const userName = !data?.createdByUserName
-      ? ""
-      : ` by ${data?.createdByUserName}`;
-    return `${preFix}Block • created ${createdRelative}${userName}`;
-  }, [data]);
+    const createdText = t("shell.searchPageCreated", {
+      date: createdRelative,
+    });
+    const userName = data?.createdByUserName
+      ? t("shell.searchPageByUser", { user: data.createdByUserName })
+      : "";
+    return `${preFix}${t("shell.block")} • ${createdText}${userName}`;
+  }, [createdRelative, data, isVariant, t]);
 
   const titlePrefix = !!data?.lang ? `(${data?.lang}) ` : "";
   const urlPath = isVariant

@@ -142,10 +142,12 @@ Strings specific to the app shell — sidebar, topbar, global search, notificati
 | `components/AccessDenied.tsx`                                          | 5       | `{userRole?.name}` and `{appRoute}` interpolation                                                 | [x]    |
 | `components/InviteMembersModal/index.tsx`                              | 8       | Already uses `useTranslation` inconsistently — needs cleanup pass                                 | [x]    |
 | `components/Filters/DateFilter/DateFilter.tsx`                         | 15      | Date-formatted strings (`On ${fmt(...)}`)                                                         | [x]    |
+| `components/Filters/DateRangeFilter.tsx`                               | 2       | Optional prop defaults (`headerTitle`, `inactiveButtonText`)                                      | [x]    |
 | `components/global-tabs/Dropdown.tsx`                                  | 5       | `${count} Results` plural                                                                         | [x]    |
 | `components/global-sidebar/.../InstanceMenu/Flyouts/InstancesList.tsx` | 6       | "No results" message with dynamic query string                                                    | [x]    |
 | `components/ConfirmPublishModal.tsx`                                   | 5       | Conditional button label + count                                                                  | [x]    |
 | `components/load-instance/NoInstancePermission.tsx`                    | 6       | `{user?.email}` embedded in sentence                                                              | [x]    |
+| `components/NoSearchResults/index.tsx`                                 | 8       | Shared empty state with search/filter variants and reset/back/search actions                      | [x]    |
 
 #### Tier 3 — High effort, high risk (complex interpolation, large files, critical paths)
 
@@ -156,6 +158,7 @@ Strings specific to the app shell — sidebar, topbar, global search, notificati
 | `components/Comment/CommentItem.tsx`         | 6       | HTML injection with regex URL replacement inside strings                     | [x]    |
 | `components/withAi/AIGenerator.tsx`          | 15+     | 890 lines, conditional headings, tone options with descriptions              | [x]    |
 | `views/Shell/AIDrawer.tsx`                   | 10+     | 780 lines — some "strings" are AI prompt templates; decide what to translate | [x]    |
+| `views/SearchPage/`                          | 20+     | Full-page global search results, filters, sort labels, and result chips      | [x]    |
 
 ### Date & time localization (date-fns)
 
@@ -196,11 +199,11 @@ labels). ~119 date-fns call sites exist and must be split by purpose:
   localizing a machine format breaks params/storage, so this is its own
   reviewable task, scheduled after the current shell phase.
 
-> Surfaced during Part A (untranslated **UI copy**, not yet in any tier): the
+> Surfaced during Part A (untranslated **UI copy**, not date formatting): the
 > `Filters/DateRangeFilter` prop defaults (`"Select a date range..."`,
-> `"Date range"`) and the media `DateFilterModal` `{type}` title. The media one
-> belongs to the `media` namespace (Phase 4); the `DateRangeFilter` strings are
-> shell and should be folded into a shell cleanup pass.
+> `"Date range"`) have been folded into the shell cleanup pass. The media
+> `DateFilterModal` `{type}` title still belongs to the `media` namespace
+> (Phase 4).
 
 ---
 

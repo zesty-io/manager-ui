@@ -37,10 +37,10 @@ const parseYMDLocal = (s?: string | null) =>
 export const DateRangeFilter: FC<DateRangeFilterProps> = ({
   value,
   onChange,
-  headerTitle = "Select a date range...",
-  inactiveButtonText = "Date range",
+  headerTitle,
+  inactiveButtonText,
 }) => {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDateRange, setSelectedDateRange] = useState<DateRange<Date>>([
     null,
@@ -78,12 +78,13 @@ export const DateRangeFilter: FC<DateRangeFilterProps> = ({
   }, [value]);
 
   const isFilterActive = Boolean(value?.from && value?.to);
+  const modalTitle = headerTitle ?? t("shell.selectDateRange");
   const buttonText = isFilterActive
     ? `${format(parseYMDLocal(value.from)!, "MMM d, yyyy")} to ${format(
         parseYMDLocal(value.to)!,
         "MMM d, yyyy"
       )}`
-    : inactiveButtonText;
+    : inactiveButtonText ?? t("shell.dateRange");
 
   return (
     <>
@@ -110,7 +111,7 @@ export const DateRangeFilter: FC<DateRangeFilterProps> = ({
                 textTransform="capitalize"
                 fontWeight={600}
               >
-                {headerTitle}
+                {modalTitle}
               </Typography>
               <IconButton size="small" onClick={() => setIsModalOpen(false)}>
                 <CloseIcon fontSize="small" />

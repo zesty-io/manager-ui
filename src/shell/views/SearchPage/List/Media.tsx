@@ -5,6 +5,7 @@ import {
   SvgIconComponent,
 } from "@mui/icons-material";
 import { formatDistanceToNow, isValid } from "date-fns";
+import { useTranslation } from "react-i18next";
 
 import { File, Group } from "../../../services/types";
 import { SearchListItem } from "./SearchListItem";
@@ -16,6 +17,7 @@ interface Media {
   subType: "folder" | "item";
 }
 export const Media: FC<Media> = ({ data, style, loading = false, subType }) => {
+  const { t } = useTranslation();
   const config = useMemo(() => {
     let icon: SvgIconComponent;
     let url: string;
@@ -34,7 +36,7 @@ export const Media: FC<Media> = ({ data, style, loading = false, subType }) => {
         icon = ImageRounded;
         url = `/media?fileId=${itemData.id}`;
         title = itemData.filename;
-        chips = `Media • ${rel(itemData.created_at)}`;
+        chips = `${t("shell.navMedia")} • ${rel(itemData.created_at)}`;
         break;
       }
 
@@ -43,7 +45,7 @@ export const Media: FC<Media> = ({ data, style, loading = false, subType }) => {
         icon = FolderRounded;
         url = `/media/folder/${folderData.id}`;
         title = folderData.name;
-        chips = `Media`;
+        chips = t("shell.navMedia");
         break;
       }
 
@@ -56,7 +58,7 @@ export const Media: FC<Media> = ({ data, style, loading = false, subType }) => {
     }
 
     return { icon, url, title, chips };
-  }, [subType, data]);
+  }, [subType, data, t]);
 
   return (
     <SearchListItem

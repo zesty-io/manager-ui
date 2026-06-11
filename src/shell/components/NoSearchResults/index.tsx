@@ -4,6 +4,7 @@ import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
+import { Trans, useTranslation } from "react-i18next";
 
 import Search from "@mui/icons-material/Search";
 import ArrowBack from "@mui/icons-material/ArrowBack";
@@ -29,6 +30,7 @@ export const NoSearchResults: FC<Props> = ({
   imageHeight = 200,
   isFilter,
 }) => {
+  const { t } = useTranslation();
   const history = useHistory();
   const [params, setParams] = useParams();
   const hasFilters =
@@ -59,7 +61,11 @@ export const NoSearchResults: FC<Props> = ({
         className="NoResultsState"
       >
         <Box width="400px">
-          <img src={noResults} height={`${imageHeight}px`} />
+          <img
+            src={noResults}
+            height={`${imageHeight}px`}
+            alt={t("shell.noSearchResultsAlt")}
+          />
           <Typography
             sx={{ mt: 4, mb: 1 }}
             variant="h4"
@@ -67,22 +73,25 @@ export const NoSearchResults: FC<Props> = ({
             color="text.primary"
           >
             {hasFilters ? (
-              "No results that matched your filters could be found"
+              t("shell.noFilterResults")
             ) : (
-              <>
-                Your {isFilter ? "filter" : "search"}
-                <Box component="strong" fontWeight="bold">
-                  {" "}
-                  "{query}"{" "}
-                </Box>
-                could not find any results
-              </>
+              <Trans
+                i18nKey={
+                  isFilter
+                    ? "shell.filterNoResultsRich"
+                    : "shell.searchNoResultsRich"
+                }
+                values={{ query }}
+                components={{
+                  strong: <Box component="strong" fontWeight="bold" />,
+                }}
+              />
             )}
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
             {hasFilters
-              ? "Try adjusting your filters to find what you're looking for"
-              : "Try adjusting your search. We suggest checking all words are spelled correctly or using different keywords."}
+              ? t("shell.noFilterResultsSuggestion")
+              : t("shell.searchNoResultsSuggestion")}
           </Typography>
           <Stack direction="row" justifyContent="center" sx={{ gap: 2 }}>
             {hasFilters ? (
@@ -100,7 +109,7 @@ export const NoSearchResults: FC<Props> = ({
                 color="primary"
                 startIcon={<RestartAltRoundedIcon />}
               >
-                Reset Filters
+                {t("shell.resetFilters")}
               </Button>
             ) : (
               <>
@@ -112,7 +121,7 @@ export const NoSearchResults: FC<Props> = ({
                     color="inherit"
                     variant="contained"
                   >
-                    Go Back
+                    {t("common.goBack")}
                   </Button>
                 )}
                 <Button
@@ -137,7 +146,7 @@ export const NoSearchResults: FC<Props> = ({
                   color="primary"
                   startIcon={<Search />}
                 >
-                  Search Again
+                  {t("shell.searchAgain")}
                 </Button>
               </>
             )}

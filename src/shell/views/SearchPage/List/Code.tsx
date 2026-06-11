@@ -1,6 +1,7 @@
 import { FC, useMemo } from "react";
 import { SvgIconComponent, CodeRounded } from "@mui/icons-material";
 import { formatDistanceToNow, isValid } from "date-fns";
+import { useTranslation } from "react-i18next";
 
 import { File } from "../../../hooks/useSearchCodeFilesByKeyword";
 import { SearchListItem } from "./SearchListItem";
@@ -17,6 +18,7 @@ export const Code: FC<Code> = ({
   style,
   loading: parentIsLoading = false,
 }) => {
+  const { t } = useTranslation();
   const { data: fileAudit, isLoading: loadingFileAudit } = useGetAuditsQuery(
     { affectedZUID: data.ZUID, limit: 1, dir: "desc", order: "created" },
     { skip: !data.ZUID }
@@ -33,11 +35,13 @@ export const Code: FC<Code> = ({
       const audit = fileAudit[0];
       const time = rel(audit?.happenedAt);
       const name = `${audit?.firstName} ${audit?.lastName}`;
-      return `Code File • ${time} by ${name}`;
+      return `${t("shell.codeFile")} • ${time}${t("shell.searchPageByUser", {
+        user: name,
+      })}`;
     }
 
-    return `Code File • ${rel(data?.createdAt)}`;
-  }, [fileAudit, data?.createdAt]);
+    return `${t("shell.codeFile")} • ${rel(data?.createdAt)}`;
+  }, [fileAudit, data?.createdAt, t]);
 
   const loading = loadingFileAudit || parentIsLoading;
 
