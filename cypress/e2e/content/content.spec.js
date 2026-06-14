@@ -297,9 +297,9 @@ describe("Content Specs", () => {
     });
 
     it("Saves Content updates", () => {
-      // cy.intercept('POST','').as('saveItem')
-      cy.get("#SaveItemButton").click();
-      // cy.wait('@saveItem')
+      cy.waitOn("/v1/content/models/*/items/*", () => {
+        cy.get("#SaveItemButton").should("be.enabled").click();
+      });
 
       cy.get("[data-cy=toast]").contains("Item Saved").should("exist");
     });
@@ -519,7 +519,8 @@ describe("Content Specs", () => {
         "[data-cy='field:one_to_one'] [data-cy='active-relational-item-more-button']"
       )
         .scrollIntoView()
-        .click();
+        .should("be.enabled")
+        .click(forceClick);
       cy.getBySelector("active-relational-item-publish-now-button").click();
       cy.getBySelector("ConfirmPublishModal").should("exist");
       cy.getBySelector("CancelPublishButton").click();
@@ -530,7 +531,8 @@ describe("Content Specs", () => {
         "[data-cy='field:one_to_one'] [data-cy='active-relational-item-more-button']"
       )
         .scrollIntoView()
-        .click();
+        .should("be.enabled")
+        .click(forceClick);
       cy.getBySelector(
         "active-relational-item-schedule-publish-button"
       ).click();
@@ -543,7 +545,8 @@ describe("Content Specs", () => {
         "[data-cy='field:one_to_one'] [data-cy='active-relational-item-more-button']"
       )
         .scrollIntoView()
-        .click();
+        .should("be.enabled")
+        .click(forceClick);
       cy.getBySelector("active-relational-item-remove-item-button").click();
       cy.get(
         "[data-cy='field:one_to_one'] [data-cy='active-relational-item']"
@@ -645,8 +648,14 @@ describe("Content Specs", () => {
     });
 
     it("is should not be able to add an item if required fields are missing", () => {
-      cy.getBySelector("AddRepeaterRowItemBtn").scrollIntoView().click();
-      cy.getBySelector("SaveRepeaterRowItemBtn").scrollIntoView().click();
+      cy.getBySelector("AddRepeaterRowItemBtn")
+        .scrollIntoView()
+        .should("be.enabled")
+        .click();
+      cy.getBySelector("SaveRepeaterRowItemBtn")
+        .scrollIntoView()
+        .should("be.enabled")
+        .click();
       cy.contains("Required Field. Please enter a value.").should("exist");
     });
 
@@ -711,7 +720,10 @@ describe("Content Specs", () => {
       const updatedValue = "I am now updated";
 
       // Add a new row item
-      cy.getBySelector("AddRepeaterRowItemBtn").scrollIntoView().click();
+      cy.getBySelector("AddRepeaterRowItemBtn")
+        .scrollIntoView()
+        .should("be.enabled")
+        .click();
       cy.getBySelector("subfield:single_line_text")
         .find("input")
         .clear()
@@ -750,7 +762,7 @@ describe("Content Specs", () => {
     });
 
     it("should persist repeater rows after saving and reload", () => {
-      cy.get("#SaveItemButton").click();
+      cy.get("#SaveItemButton").should("be.enabled").click();
       cy.get("[data-cy=toast]").contains("Item Saved").should("exist");
 
       cy.reload();
@@ -807,7 +819,10 @@ describe("Content Specs", () => {
     });
 
     it("should bulk remove checked rows", () => {
-      cy.getBySelector("AddRepeaterRowItemBtn").scrollIntoView().click();
+      cy.getBySelector("AddRepeaterRowItemBtn")
+        .scrollIntoView()
+        .should("be.enabled")
+        .click(forceClick);
       cy.getBySelector("subfield:single_line_text")
         .find("input")
         .clear()

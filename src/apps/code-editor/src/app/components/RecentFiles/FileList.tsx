@@ -74,7 +74,11 @@ const FileRowItem: FC<FileProps & { isLast: boolean }> = ({
           </Typography>
         </Grid>
         <Grid size={4}>
-          <Typography variant="body1" color="common.white">
+          <Typography
+            data-cy="AllFilesRowLastSaved"
+            variant="body1"
+            color="common.white"
+          >
             {isValid(new Date(lastSaved))
               ? formatDistanceToNow(new Date(lastSaved), { addSuffix: true })
               : "—"}

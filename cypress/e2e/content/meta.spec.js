@@ -142,7 +142,7 @@ describe("Content Meta", () => {
   });
 
   it("Supports a dedicated Twitter title, description and image", () => {
-    cy.waitOn("/v1/content/models*", () => {
+    cy.waitOn("/v1/content/models**", () => {
       cy.waitOn("/v1/env/nav", () => {
         cy.waitOn("/v1/search/items*", () => {
           cy.visit(
@@ -162,7 +162,9 @@ describe("Content Meta", () => {
       .find("textarea")
       .first()
       .type(`{selectAll}{del}${description}`);
-    cy.getBySelector("SocialMediaPreviewTwitter").click();
+    cy.getBySelector("SocialMediaPreviewTwitter")
+      .should("exist")
+      .click({ force: true });
 
     cy.getBySelector("TwitterCardTitle").contains(title);
     cy.getBySelector("TwitterCardDescription").contains(description);

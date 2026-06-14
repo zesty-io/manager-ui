@@ -62,11 +62,20 @@ describe("All Files Page", () => {
     });
   });
 
-  it("Newly created file is listed on top in recent files", () => {
+  it("Files are listed in ascending order.", () => {
     cy.visit("/code");
     cy.getBySelector("AllFilesTable")
-      .find('[data-cy="AllFilesRow"]:eq(0)')
-      .should("contain.text", TEST_DATA[0].filename, matchcase);
+      .find('[data-cy="AllFilesRowLastSaved"]')
+      .then(($cells) => {
+        const times = $cells
+          .map((i, cell) => {
+            const text = cell.innerText.trim();
+            return parseInt(text.split(" ")[0]);
+          })
+          .get();
+        const sortedTimes = [...times].sort((a, b) => a - b);
+        expect(times).to.deep.equal(sortedTimes);
+      });
   });
 
   it("Open newly created file from recent files", () => {

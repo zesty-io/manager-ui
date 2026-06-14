@@ -9,13 +9,17 @@ describe("Head Tags", () => {
     );
   });
   it("creates and deletes new head tag", () => {
-    cy.waitOn("/v1/content/models*", () => {
-      cy.visit(
-        `/content/${Cypress.env("modelZUID")}/${Cypress.env("itemZUID")}/head`
-      );
-    });
+    cy.intercept("GET", "**/v1/content/models").as("getContentModel");
+    cy.intercept("GET", "**/v1/content/models/*/items/*").as("getItems");
+    cy.intercept("GET", "**/v1/web/*").as("getWebData");
 
-    cy.contains("Create Head Tag").click();
+    cy.visit(
+      `/content/${Cypress.env("modelZUID")}/${Cypress.env("itemZUID")}/head`
+    );
+
+    cy.wait(["@getWebData", "@getContentModel", "@getItems"]);
+
+    cy.contains("Create Head Tag").should("exist").should("be.enabled").click();
 
     cy.getBySelector("newTagCard")
       .last()
