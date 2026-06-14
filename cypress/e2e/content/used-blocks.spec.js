@@ -28,7 +28,7 @@ describe("Used Blocks", () => {
         (data) => data?.contentModelZUID === Cypress.env("modelZUID")
       );
       const fileZuid = viewFile?.ZUID;
-      cy.apiRequest({
+      return cy.apiRequest({
         url: `${Cypress.env("API_INSTANCE_URL")}/web/views/${fileZuid}`,
         method: "PUT",
         body: {
@@ -36,12 +36,14 @@ describe("Used Blocks", () => {
         },
       });
     });
-
-    cy.intercept("GET", "**/v1/web/*").as("getWebData");
+    cy.intercept("GET", "**/v1/content/models").as("models");
+    cy.intercept("GET", "**/v1/web/views**").as("getViews");
+    cy.intercept("GET", "**/v1/web/scripts").as("getScripts");
+    cy.intercept("GET", "**/v1/web/stylesheets").as("getStylesheets");
 
     cy.visit(`/content/${Cypress.env("modelZUID")}/${Cypress.env("itemZUID")}`);
 
-    cy.wait("@getWebData");
+    cy.wait(["@models", "@getViews", "@getScripts", "@getStylesheets"]);
 
     cy.getBySelector("UsedBlockPreview").should("exist");
   });

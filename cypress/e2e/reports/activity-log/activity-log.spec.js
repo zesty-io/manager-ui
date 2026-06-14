@@ -307,9 +307,18 @@ describe("Reports > Activity Log > Home", () => {
 
 function awaitRequests(path) {
   cy.intercept("GET", "**/v1/content/models").as("getModels");
-  cy.intercept("GET", "**/v1/web/*").as("getWebData");
+  cy.intercept("GET", "**/v1/web/views**").as("getViews");
+  cy.intercept("GET", "**/v1/web/scripts").as("getScripts");
+  cy.intercept("GET", "**/v1/web/stylesheets").as("getStylesheets");
   cy.intercept("GET", "**/v1/env/audits**").as("getAudits");
   cy.intercept("GET", "**/v1/content/items/publishings**").as("getPublishings");
   cy.visit(path);
-  cy.wait(["@getModels", "@getWebData", "@getAudits", "@getPublishings"]);
+  cy.wait([
+    "@getModels",
+    "@getViews",
+    "@getScripts",
+    "@getStylesheets",
+    "@getAudits",
+    "@getPublishings",
+  ]);
 }

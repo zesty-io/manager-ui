@@ -22,7 +22,7 @@ describe("All Files Page", () => {
   });
 
   it("Renders all files page", () => {
-    cy.visit("/code");
+    awaitCodeData("/code");
     cy.getBySelector("AllFilesHeader").should("contain.text", "All Files");
     cy.getBySelector("AllFilesSearchInput").should("exist");
     cy.getBySelector("AllFilesCreateButton").should("exist");
@@ -31,12 +31,12 @@ describe("All Files Page", () => {
   });
 
   it("Automatically opens create file dialog if URL search param includes ?triggerCreate=true", () => {
-    cy.visit("/code?triggerCreate=true");
+    awaitCodeData("/code?triggerCreate=true");
     cy.getBySelector("CodeAppCreateFileDialog").should("exist");
   });
 
   it("Create New File", () => {
-    cy.visit("/code");
+    awaitCodeData("/code");
     cy.getBySelector("AllFilesCreateButton").click();
     cy.getBySelector("CodeAppCreateFileDialog").should("exist");
     cy.getBySelector("CreateFileFileNameInput")
@@ -63,23 +63,22 @@ describe("All Files Page", () => {
   });
 
   it("Files are listed in ascending order.", () => {
-    cy.visit("/code");
+    awaitCodeData("/code");
     cy.getBySelector("AllFilesTable")
       .find('[data-cy="AllFilesRowLastSaved"]')
       .then(($cells) => {
         const times = $cells
-          .map((i, cell) => {
-            const text = cell.innerText.trim();
-            return parseInt(text.split(" ")[0]);
-          })
-          .get();
-        const sortedTimes = [...times].sort((a, b) => a - b);
+          .map((i, cell) => parseInt(cell.dataset.lastUpdate, 10))
+          .get()
+          .filter((item) => !isNaN(item));
+        //sort list from latest to oldest
+        const sortedTimes = [...times].sort((a, b) => b - a);
         expect(times).to.deep.equal(sortedTimes);
       });
   });
 
   it("Open newly created file from recent files", () => {
-    cy.visit("/code");
+    awaitCodeData("/code");
     cy.getBySelector("AllFilesTable")
       .find(`[data-cy="AllFilesRow"]:contains(${TEST_DATA[0].filename})`)
       .click();
@@ -88,7 +87,7 @@ describe("All Files Page", () => {
 
   describe("Search Files", () => {
     it("Accurate Search results", () => {
-      cy.visit("/code");
+      awaitCodeData("/code");
       cy.getBySelector("AllFilesSearchInput")
         .find("input")
         .clear()
@@ -100,7 +99,7 @@ describe("All Files Page", () => {
     });
 
     it("No results found", () => {
-      cy.visit("/code");
+      awaitCodeData("/code");
       cy.getBySelector("AllFilesSearchInput")
         .find("input")
         .clear()
@@ -144,4 +143,20 @@ function deleteTestData() {
       });
     });
   });
+}
+
+function awaitCodeData(path) {
+  cy.intercept("GET", "**/v1/content/models").as("getModels");
+  cy.intercept("GET", "**/v1/web/views**").as("getViews");
+  cy.intercept("GET", "**/v1/web/scripts").as("getScripts");
+  cy.intercept("GET", "**/v1/web/stylesheets").as("getStylesheets");
+  cy.intercept("GET", "**/v1/content/items/publishings**").as("getPublishings");
+  cy.visit(path);
+  cy.wait([
+    "@getModels",
+    "@getViews",
+    "@getScripts",
+    "@getStylesheets",
+    "@getPublishings",
+  ]);
 }

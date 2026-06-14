@@ -76,6 +76,11 @@ const FileRowItem: FC<FileProps & { isLast: boolean }> = ({
         <Grid size={4}>
           <Typography
             data-cy="AllFilesRowLastSaved"
+            // this is used for cypress testing
+            // determine the list order
+            data-last-update={
+              isValid(new Date(lastSaved)) ? new Date(lastSaved).getTime() : "-"
+            }
             variant="body1"
             color="common.white"
           >

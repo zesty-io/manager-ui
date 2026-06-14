@@ -170,14 +170,19 @@ describe("Content item redirects", () => {
     );
     cy.getBySelector("AddIncomingRedirectButton").should("be.enabled").click();
 
+    cy.getBySelector("RedirectsFieldPath").eq(0).find("input").clear();
+
     cy.getBySelector("RedirectsFieldPath")
       .eq(0)
       .find("input")
-      .clear()
-      .wait(500)
-      .type(ADD_REDIRECTS.path);
+      .type(`{selectall}{backspace}${ADD_REDIRECTS.path}`);
+
+    cy.intercept("POST", "**/v1/web/redirects").as("createRedirect");
+    cy.intercept("GET", "**/v1/web/redirects").as("getRedirect");
 
     cy.getBySelector("RedirectsCreateButton").should("be.enabled").click();
+
+    cy.wait(["@createRedirect", "@getRedirect"]);
 
     cy.get(".MuiDataGrid-row").should("have.length", 2);
   });
@@ -192,8 +197,7 @@ describe("Content item redirects", () => {
 
     cy.getBySelector("RedirectsSearchFieldInputField")
       .clear()
-      .wait(500)
-      .type(REDIRECT_ITEMS[0]?.web.metaTitle);
+      .type(`${REDIRECT_ITEMS[0]?.web.metaTitle}`);
 
     cy.getBySelector("RedirectsTargetOptionsContainer")
       .find("ul li")
@@ -208,6 +212,7 @@ describe("Content item redirects", () => {
     cy.getBySelector("RedirectContentItemConfirmButton")
       .should("be.enabled")
       .click();
+
     cy.wait("@createContentRedirect");
 
     cy.getBySelector("ContentRedirectHeader").should(
@@ -232,6 +237,7 @@ describe("Content item redirects", () => {
     cy.getBySelector("StopRedirectContentItemConfirmButton")
       .should("be.enabled")
       .click();
+
     cy.wait("@deleteContentRedirect");
 
     cy.get('[data-cy="toast"]').should("contain", "1 Redirect Deleted", {
@@ -379,10 +385,9 @@ function deleteTestContents() {
 function awaitRedirectsData(path) {
   cy.intercept("GET", "**/v1/content/models").as("getModels");
   cy.intercept("GET", "**/v1/content/items/publishings**").as("getPublishings");
-
   cy.intercept("GET", "**/v1/web/redirects").as("getRedirects");
+  cy.intercept("GET", "**/v1/content/models/*/fields**").as("getFields");
 
   cy.visit(path);
-
-  cy.wait(["@getModels", "@getRedirects", "@getPublishings"]);
+  cy.wait(["@getModels", "@getPublishings", "@getRedirects", "@getFields"]);
 }

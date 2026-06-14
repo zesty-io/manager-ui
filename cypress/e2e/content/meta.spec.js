@@ -142,17 +142,14 @@ describe("Content Meta", () => {
   });
 
   it("Supports a dedicated Twitter title, description and image", () => {
-    cy.waitOn("/v1/content/models**", () => {
-      cy.waitOn("/v1/env/nav", () => {
-        cy.waitOn("/v1/search/items*", () => {
-          cy.visit(
-            `/content/${Cypress.env("modelZUID")}/${Cypress.env(
-              "itemZUID"
-            )}/meta`
-          );
-        });
-      });
-    });
+    cy.intercept("GET", "**/v1/content/models").as("getModels");
+    cy.intercept("GET", "**/v1/content/models/*/fields**").as("getFields");
+    cy.intercept("GET", "**/v1/env/settings").as("getSettings");
+    cy.intercept("GET", "**/v1/search/items**").as("getSearchItems");
+    cy.visit(
+      `/content/${Cypress.env("modelZUID")}/${Cypress.env("itemZUID")}/meta`
+    );
+    cy.wait(["@getModels", "@getFields", "@getSettings", "@getSearchItems"]);
 
     const title = `Twitter title ${today}`;
     const description = `Twitter description ${today}`;
@@ -162,9 +159,7 @@ describe("Content Meta", () => {
       .find("textarea")
       .first()
       .type(`{selectAll}{del}${description}`);
-    cy.getBySelector("SocialMediaPreviewTwitter")
-      .should("exist")
-      .click({ force: true });
+    cy.getBySelector("SocialMediaPreviewTwitter").should("exist").click();
 
     cy.getBySelector("TwitterCardTitle").contains(title);
     cy.getBySelector("TwitterCardDescription").contains(description);

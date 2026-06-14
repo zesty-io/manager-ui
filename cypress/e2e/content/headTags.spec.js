@@ -10,14 +10,26 @@ describe("Head Tags", () => {
   });
   it("creates and deletes new head tag", () => {
     cy.intercept("GET", "**/v1/content/models").as("getContentModel");
-    cy.intercept("GET", "**/v1/content/models/*/items/*").as("getItems");
-    cy.intercept("GET", "**/v1/web/*").as("getWebData");
+    cy.intercept("GET", "**/v1/web/headtags").as("getHeadtags");
+    cy.intercept("GET", "**/v1/env/settings").as("getSettings");
+    cy.intercept("GET", "**/v1/web/headers").as("getHeaders");
+    cy.intercept("GET", "**/v1/web/views**").as("getViews");
+    cy.intercept("GET", "**/v1/web/scripts").as("getScripts");
+    cy.intercept("GET", "**/v1/web/stylesheets").as("getStylesheets");
 
     cy.visit(
       `/content/${Cypress.env("modelZUID")}/${Cypress.env("itemZUID")}/head`
     );
 
-    cy.wait(["@getWebData", "@getContentModel", "@getItems"]);
+    cy.wait([
+      "@getContentModel",
+      "@getHeadtags",
+      "@getSettings",
+      "@getHeaders",
+      "@getViews",
+      "@getScripts",
+      "@getStylesheets",
+    ]);
 
     cy.contains("Create Head Tag").should("exist").should("be.enabled").click();
 
