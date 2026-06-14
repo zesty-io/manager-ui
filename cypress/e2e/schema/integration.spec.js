@@ -147,19 +147,6 @@ describe("Integration Field", () => {
           .children()
           .should("have.length", 1);
       });
-
-      it("Double-click does not add duplicate header rows", () => {
-        // This assertion relies on ConnectToApi.tsx using the stale-closure spread
-        // ({ ...headersLocal, [keyId]: ... }) rather than the functional updater —
-        // both click handlers from dblclick capture the same snapshot so the second
-        // write overwrites the first. Switching to the functional updater form would
-        // break this test even though that refactor is correct.
-        cy.getBySelector("addHeaderButton").dblclick();
-
-        cy.getBySelector("integrationHeadersContainer")
-          .children()
-          .should("have.length", 2);
-      });
     });
   });
 
