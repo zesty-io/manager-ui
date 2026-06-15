@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useState, useCallback } from "react";
 import {
   Button,
   Dialog,
@@ -26,7 +26,7 @@ import {
 import { FieldWrapper } from "../../../../../seo/src/app/components/RedirectsDialogProvider/CreateRedirects/FieldWrapper";
 import SearchField from "../../../../../seo/src/app/components/RedirectsDialogProvider/CreateRedirects/SearchField";
 import PathField from "../../../../../seo/src/app/components/RedirectsDialogProvider/CreateRedirects/PathField";
-import { validateUrl } from "../../../../../../utility/validateUrl";
+import { validateUrl } from "utility/validateUrl";
 import { searchItems } from "shell/store/content";
 export type ContentRedirectModalProps = {
   open: boolean;
@@ -57,6 +57,15 @@ export const ContentRedirectModal: FC<ContentRedirectModalProps> = ({
   } = useRedirectsDialog();
 
   const isLoading = isRedirectsLoading || loading;
+
+  const urlValidation = useCallback(
+    (url: string) => {
+      const isValid = validateUrl(url);
+      setInvalidTarget(!isValid);
+      return isValid;
+    },
+    [setInvalidTarget]
+  );
 
   const handleCreateRedirect = async () => {
     const requestData = {
@@ -236,13 +245,7 @@ export const ContentRedirectModal: FC<ContentRedirectModalProps> = ({
                       setTargetPath(value);
                     }}
                     validation={
-                      targetType === "external"
-                        ? (url: string) => {
-                            const isValid = validateUrl(url);
-                            setInvalidTarget(!isValid);
-                            return isValid;
-                          }
-                        : null
+                      targetType === "external" ? urlValidation : null
                     }
                   />
                 )}

@@ -1,4 +1,4 @@
-import { useState, FC, useRef, useMemo, useEffect } from "react";
+import { useState, FC, useRef, useMemo, useEffect, useCallback } from "react";
 import {
   Button,
   Dialog,
@@ -35,7 +35,7 @@ import { notify } from "../../../../../../../shell/store/notifications";
 import SearchField from "./SearchField";
 import { AppState } from "shell/store/types";
 import { searchItems } from "shell/store/content";
-import { validateUrl } from "../../../../../../../utility/validateUrl";
+import { validateUrl } from "utility/validateUrl";
 import { FieldWrapper } from "./FieldWrapper";
 
 type CreateFormProps = {
@@ -69,6 +69,15 @@ const CreateForm: FC<CreateFormProps> = ({
   const [submitType, setSubmitType] = useState<"single" | "multiple">("single");
   const target = targetType === "page" ? targetInternal?.ZUID : targetPath;
   const [invalidTarget, setInvalidTarget] = useState<boolean>(false);
+
+  const urlValidation = useCallback(
+    (url: string) => {
+      const isValid = validateUrl(url);
+      setInvalidTarget(!isValid);
+      return isValid;
+    },
+    [setInvalidTarget]
+  );
 
   const isEdit = !!defaultValues?.ZUID;
   const actionType = !!isEdit ? "edit" : "create";
@@ -487,15 +496,7 @@ const CreateForm: FC<CreateFormProps> = ({
                 onChange={(e) => {
                   setTargetPath(e);
                 }}
-                validation={
-                  targetType === "external"
-                    ? (url: string) => {
-                        const isValid = validateUrl(url);
-                        setInvalidTarget(!isValid);
-                        return isValid;
-                      }
-                    : null
-                }
+                validation={targetType === "external" ? urlValidation : null}
               />
             )}
           </FieldWrapper>
