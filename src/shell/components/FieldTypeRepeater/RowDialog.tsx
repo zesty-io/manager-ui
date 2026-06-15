@@ -38,9 +38,9 @@ export const RowDialog = ({
   editRowData,
   isUpdate,
 }: RowDialogProps) => {
-  const [formData, setFormData] = useState<Record<string, any>>({
-    ...(isUpdate && editRowData ? editRowData : {}),
-  });
+  const [formData, setFormData] = useState<Record<string, any>>(() =>
+    isUpdate && editRowData ? { ...editRowData } : {}
+  );
   const [formErrors, setFormErrors] = useState<Record<string, Error>>({});
   const [resetKey, setResetKey] = useState(0);
   const [version, setVersion] = useState(0);
@@ -82,7 +82,7 @@ export const RowDialog = ({
     } else {
       setFormData(getInitialFormData());
     }
-  }, [getInitialFormData, isUpdate, editRowData]);
+  }, [getInitialFormData, isUpdate]);
 
   const handleChange = useCallback(
     (value, name) => {

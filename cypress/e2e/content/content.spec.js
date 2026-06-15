@@ -716,12 +716,12 @@ describe("Content Specs", () => {
       cy.getBySelector("subfield:date")
         .find('[data-cy="datePickerInputField"] input')
         .clear({ force: true })
-        .type("Jan 15 2025")
+        .type("Jan 15 2025{enter}")
         .should("have.value", "Jan 15, 2025");
       cy.getBySelector("subfield:datetime")
         .find('[data-cy="datePickerInputField"] input')
         .clear({ force: true })
-        .type("Jan 15 2025")
+        .type("Jan 15 2025{enter}")
         .should("have.value", "Jan 15, 2025");
 
       cy.getBySelector("SaveRepeaterRowItemBtn").scrollIntoView().click();
@@ -731,10 +731,30 @@ describe("Content Specs", () => {
     });
 
     it("should populate date pickers with saved values when editing an existing row", () => {
-      // Reopen the row saved in the previous test to verify round-trip
+      // Add a row with date values so this test is self-contained
+      cy.getBySelector("AddRepeaterRowItemBtn")
+        .scrollIntoView()
+        .should("exist")
+        .click();
+      cy.getBySelector("subfield:date")
+        .find('[data-cy="datePickerInputField"] input')
+        .clear({ force: true })
+        .type("Jan 15 2025{enter}")
+        .should("have.value", "Jan 15, 2025");
+      cy.getBySelector("subfield:datetime")
+        .find('[data-cy="datePickerInputField"] input')
+        .clear({ force: true })
+        .type("Jan 15 2025{enter}")
+        .should("have.value", "Jan 15, 2025");
+      cy.getBySelector("SaveRepeaterRowItemBtn")
+        .scrollIntoView()
+        .should("exist")
+        .click();
+
+      // Reopen the row just saved to verify date values round-trip correctly
       cy.getBySelector("field:repeater")
         .find(".MuiDataGrid-row")
-        .first()
+        .last()
         .click({ force: true });
 
       cy.getBySelector("subfield:date")
@@ -743,7 +763,7 @@ describe("Content Specs", () => {
 
       cy.getBySelector("subfield:datetime")
         .find('[data-cy="datePickerInputField"] input')
-        .should("not.have.value", "");
+        .should("have.value", "Jan 15, 2025");
 
       cy.getBySelector("CloseAddRepeaterRowDialogBtn").click();
     });
@@ -769,14 +789,14 @@ describe("Content Specs", () => {
       // Verify old value
       cy.getBySelector("field:repeater")
         .find(".MuiDataGrid-row")
-        .eq(1)
+        .last()
         .find("[data-field='single_line_text']")
         .should("contain.text", oldValue);
 
       // Update the value
       cy.getBySelector("field:repeater")
         .find(".MuiDataGrid-row")
-        .eq(1)
+        .last()
         .click({ force: true });
       cy.getBySelector("subfield:single_line_text")
         .find("input")

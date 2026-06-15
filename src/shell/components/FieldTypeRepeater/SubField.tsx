@@ -1,4 +1,4 @@
-import { ChangeEvent, memo, useMemo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 import { MemoryRouter, useParams } from "react-router";
 import { Link as RouterLink } from "react-router-dom";
 import {
@@ -35,7 +35,7 @@ import { FieldTypeCurrency } from "../FieldTypeCurrency";
 import { FieldTypeSort } from "../FieldTypeSort";
 import { FieldTypeDate } from "../FieldTypeDate";
 import { FieldTypeDateTime } from "../FieldTypeDateTime";
-import { format } from "date-fns";
+import { format, isValid } from "date-fns";
 
 type SubFieldProps = {
   value: any;
@@ -536,7 +536,11 @@ export const SubField = memo(
             <FieldTypeDate
               name={field.name}
               required={field.required}
-              value={value ? new Date(value + "T00:00:00") : null}
+              value={(() => {
+                if (!value) return null;
+                const d = new Date(value + "T00:00:00");
+                return isValid(d) ? d : null;
+              })()}
               onChange={(date) => {
                 onChange(date ? format(date, "yyyy-MM-dd") : null, field.name);
               }}
