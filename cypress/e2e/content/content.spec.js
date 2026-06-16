@@ -870,13 +870,3 @@ describe("Content Specs", () => {
   });
 });
 
-function awaitRedirectsData(path) {
-  cy.intercept("GET", "**/v1/content/models").as("getModels");
-  cy.intercept("GET", "**/v1/content/models/*/fields**").as("getFields");
-  cy.intercept("GET", "**/v1/content/items/publishings**").as("getPublishings");
-
-  cy.visit(path);
-  cy.wait(["@getModels", "@getPublishings", "@getFields"], {
-    requestTimeout: 10000,
-  });
-}
