@@ -24,14 +24,14 @@ interface SubDocItems {
 
 export const MAIN_DOC_ITEMS: MainDocItem[] = [
   {
-    textKey: "shell.docsGetStarted",
+    textKey: "common.getStarted",
     url: "https://zesty.org/quick-start-guide",
     icon: RocketLaunchRounded,
     iconType: "icon",
     iconColor: "primary",
   },
   {
-    textKey: "shell.docsPlatform",
+    textKey: "common.platformDocs",
     url: "https://zesty.org",
     icon: MenuBookRounded,
     iconType: "icon",
@@ -44,19 +44,19 @@ export const MAIN_DOC_ITEMS: MainDocItem[] = [
     iconType: "image",
   },
   {
-    textKey: "shell.docsInstanceApi",
+    textKey: "common.instanceApiDocs",
     url: "https://instances-api.zesty.org",
     icon: postmanIcon,
     iconType: "image",
   },
   {
-    textKey: "shell.docsGraphQL",
+    textKey: "common.graphqlDocs",
     url: "https://zesty.org/apis/graphql",
     icon: graphQLIcon,
     iconType: "image",
   },
   {
-    textKey: "shell.docsParsley",
+    textKey: "common.parsleyDocs",
     url: "https://parsley.zesty.io",
     icon: parsleyIcon,
     iconType: "image",

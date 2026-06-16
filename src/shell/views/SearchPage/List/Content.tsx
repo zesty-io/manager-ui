@@ -73,7 +73,7 @@ export const Content: FC<Content> = ({
     modelData?.metaTitle ||
     modelData?.label ||
     contentData?.meta.contentModelZUID;
-  const appChip = t("shell.navContent");
+  const appChip = t("common.content");
 
   const rel = (dt?: string) => {
     if (!dt) return "";

@@ -257,7 +257,16 @@ Each sub-app maps to one namespace. Namespaces are lazy-loaded on first navigati
 
 For each sub-app:
 
-- [ ] `dashboard`
+- [x] `dashboard` — `home` sub-app. Established the lazy-load pattern: `HomeApp`
+      wraps a local `<Suspense>` and the inner component calls
+      `useTranslation("dashboard")` to trigger the namespace load + suspend the
+      sub-app subtree only (not the whole shell). `en-US/dashboard.json`
+      populated; the 5 non-English `dashboard.json` files are empty placeholders
+      (translated manually). Also fixed a Phase 3 shell miss surfaced here:
+      `CreateContentItemDialog` (imported by the dashboard) was only partially
+      localized — its title/subtitle/label/placeholder/option/error strings are
+      now `shell.*` keys. The `InviteMembersModal` `roles` array was left as-is
+      (frontend mirror of backend-generated role names).
 - [ ] `content`
 - [ ] `schema`
 - [ ] `media`

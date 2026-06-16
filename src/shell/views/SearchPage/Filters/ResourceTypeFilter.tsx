@@ -26,15 +26,15 @@ interface ResourceTypeValue {
 type ResourceTypeOptions = Record<Exclude<ResourceType, "">, ResourceTypeValue>;
 const RESOURCE_TYPE_OPTIONS: ResourceTypeOptions = {
   content: {
-    textKey: "shell.contentItems",
+    textKey: "common.contentItems",
     icon: EditRounded,
   },
   schema: {
-    textKey: "shell.models",
+    textKey: "common.models",
     icon: Database as SvgIconComponent,
   },
   code: {
-    textKey: "shell.codeFiles",
+    textKey: "common.codeFiles",
     icon: CodeRounded,
   },
   media: {

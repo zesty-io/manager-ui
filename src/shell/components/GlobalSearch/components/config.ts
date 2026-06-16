@@ -69,9 +69,9 @@ export const CUSTOM_DATES: readonly CustomDate[] = [
 ] as const;
 
 export const RESOURCE_TYPES: Record<ResourceType, string> = {
-  content: "shell.contentItems",
-  schema: "shell.models",
-  code: "shell.codeFiles",
+  content: "common.contentItems",
+  schema: "common.models",
+  code: "common.codeFiles",
   media: "shell.navMedia",
   block: "shell.navBlocks",
 } as const;
@@ -83,7 +83,7 @@ interface SearchAccelerator {
 export const SEARCH_ACCELERATORS: Record<ResourceType, SearchAccelerator> = {
   content: {
     icon: EditRounded,
-    textKey: "shell.navContent",
+    textKey: "common.content",
   },
   schema: {
     icon: Database as SvgIconComponent,

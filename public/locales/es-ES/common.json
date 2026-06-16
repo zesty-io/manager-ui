@@ -39,5 +39,17 @@
   "view": "Ver",
   "webhooks": "Webhooks",
   "more": "Más",
-  "yesterday": "Ayer"
+  "yesterday": "Ayer",
+  "content": "Contenido",
+  "codeFile": "Archivo de código",
+  "getStarted": "Comenzar",
+  "platformDocs": "Documentación de la plataforma",
+  "instanceApiDocs": "Documentación de la API de instancia",
+  "graphqlDocs": "Documentación de GraphQL",
+  "parsleyDocs": "Documentación de Parsley",
+  "model": "Modelo",
+  "contentItems": "Elementos de contenido",
+  "models": "Modelos",
+  "codeFiles": "Archivos de código",
+  "mediaItems": "Elementos multimedia"
 }

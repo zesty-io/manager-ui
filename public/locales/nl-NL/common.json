@@ -39,5 +39,17 @@
   "view": "Bekijken",
   "webhooks": "Webhooks",
   "more": "Meer",
-  "yesterday": "Gisteren"
+  "yesterday": "Gisteren",
+  "content": "Inhoud",
+  "codeFile": "Codebestand",
+  "getStarted": "Aan de slag",
+  "platformDocs": "Platformdocumentatie",
+  "instanceApiDocs": "Instance API-documentatie",
+  "graphqlDocs": "GraphQL-documentatie",
+  "parsleyDocs": "Parsley-documentatie",
+  "model": "Model",
+  "contentItems": "Inhoudsitems",
+  "models": "Modellen",
+  "codeFiles": "Codebestanden",
+  "mediaItems": "Media-items"
 }

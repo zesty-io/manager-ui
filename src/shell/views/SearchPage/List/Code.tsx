@@ -38,12 +38,12 @@ export const Code: FC<Code> = ({
       const audit = fileAudit[0];
       const time = rel(audit?.happenedAt);
       const name = `${audit?.firstName} ${audit?.lastName}`;
-      return `${t("shell.codeFile")} • ${time}${t("shell.searchPageByUser", {
+      return `${t("common.codeFile")} • ${time}${t("shell.searchPageByUser", {
         user: name,
       })}`;
     }
 
-    return `${t("shell.codeFile")} • ${rel(data?.createdAt)}`;
+    return `${t("common.codeFile")} • ${rel(data?.createdAt)}`;
   }, [fileAudit, data?.createdAt, t]);
 
   const loading = loadingFileAudit || parentIsLoading;

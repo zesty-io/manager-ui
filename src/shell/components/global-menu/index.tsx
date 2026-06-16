@@ -41,7 +41,7 @@ export default memo(function GlobalMenu() {
 
   const productLabels: Partial<Record<Products, string>> = {
     launchpad: t("shell.navLaunchpad"),
-    content: t("shell.navContent"),
+    content: t("common.content"),
     blocks: t("shell.navBlocks"),
     studio: t("shell.navStudio"),
     media: t("shell.navMedia"),

@@ -1,11 +1,28 @@
 import { Box } from "@mui/material";
-import { useState } from "react";
+import { Suspense, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Header } from "./components/Header";
 import { MetricCards } from "./components/MetricCards";
 import { ResourcesCard } from "./components/ResourcesCard";
 import { ResourceTable } from "./components/ResourceTable";
 
 export const HomeApp = () => {
+  // Local Suspense boundary so lazy-loading the "dashboard" namespace shows a
+  // fallback in the sub-app area only, instead of blanking the whole shell.
+  return (
+    <Suspense
+      fallback={<Box sx={{ height: "100%", backgroundColor: "grey.50" }} />}
+    >
+      <Home />
+    </Suspense>
+  );
+};
+
+const Home = () => {
+  // Requesting the namespace here triggers its lazy load and suspends this
+  // subtree until ready; child components use bare useTranslation() with
+  // qualified keys (t("dashboard.key")) once it's in the store.
+  useTranslation("dashboard");
   const [dateRange, setDateRange] = useState(30);
 
   return (

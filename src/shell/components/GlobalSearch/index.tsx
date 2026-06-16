@@ -682,10 +682,10 @@ export const GlobalSearch = () => {
                 !Boolean(searchKeyword)
               ) {
                 const types: Record<ResourceType, string> = {
-                  code: t("shell.codeFiles"),
-                  content: t("shell.contentItems"),
+                  code: t("common.codeFiles"),
+                  content: t("common.contentItems"),
                   schema: t("shell.modelsInSchema"),
-                  media: t("shell.mediaItems"),
+                  media: t("common.mediaItems"),
                   block: t("shell.navBlocks"),
                 };
 

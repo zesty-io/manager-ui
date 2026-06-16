@@ -39,5 +39,17 @@
   "view": "查看",
   "webhooks": "Webhooks",
   "more": "更多",
-  "yesterday": "昨天"
+  "yesterday": "昨天",
+  "content": "内容",
+  "codeFile": "代码文件",
+  "getStarted": "快速开始",
+  "platformDocs": "平台文档",
+  "instanceApiDocs": "Instance API 文档",
+  "graphqlDocs": "GraphQL 文档",
+  "parsleyDocs": "Parsley 文档",
+  "model": "模型",
+  "contentItems": "内容项",
+  "models": "模型",
+  "codeFiles": "代码文件",
+  "mediaItems": "媒体项"
 }

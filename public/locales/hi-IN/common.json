@@ -39,5 +39,17 @@
   "view": "देखें",
   "webhooks": "वेबहुक",
   "more": "और",
-  "yesterday": "कल"
+  "yesterday": "कल",
+  "content": "सामग्री",
+  "codeFile": "कोड फ़ाइल",
+  "getStarted": "शुरू करें",
+  "platformDocs": "प्लेटफ़ॉर्म दस्तावेज़",
+  "instanceApiDocs": "Instance API दस्तावेज़",
+  "graphqlDocs": "GraphQL दस्तावेज़",
+  "parsleyDocs": "Parsley दस्तावेज़",
+  "model": "मॉडल",
+  "contentItems": "कंटेंट आइटम",
+  "models": "मॉडल",
+  "codeFiles": "कोड फ़ाइलें",
+  "mediaItems": "मीडिया आइटम"
 }

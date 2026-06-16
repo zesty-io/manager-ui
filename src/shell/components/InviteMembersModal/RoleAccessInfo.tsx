@@ -63,7 +63,7 @@ export const RoleAccessInfo = ({ role }: Props) => {
   // string (which is also the accessIcon lookup key — left untranslated so the
   // icon mapping keeps working). Reuses the shell nav labels for product areas.
   const accessLabels: Record<string, string> = {
-    content: t("shell.navContent"),
+    content: t("common.content"),
     schema: t("shell.navSchema"),
     code: t("shell.roleAccessCode"),
     media: t("shell.navMedia"),

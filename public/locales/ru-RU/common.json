@@ -39,5 +39,17 @@
   "view": "Просмотр",
   "webhooks": "Вебхуки",
   "more": "Ещё",
-  "yesterday": "Вчера"
+  "yesterday": "Вчера",
+  "content": "Контент",
+  "codeFile": "Файл кода",
+  "getStarted": "Начало работы",
+  "platformDocs": "Документация платформы",
+  "instanceApiDocs": "Документация Instance API",
+  "graphqlDocs": "Документация GraphQL",
+  "parsleyDocs": "Документация Parsley",
+  "model": "Модель",
+  "contentItems": "Элементы контента",
+  "models": "Модели",
+  "codeFiles": "Файлы кода",
+  "mediaItems": "Медиа-элементы"
 }

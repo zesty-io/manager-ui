@@ -12,6 +12,7 @@ import {
   ListItemIcon,
 } from "@mui/material";
 import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownRounded";
 import CheckIcon from "@mui/icons-material/Check";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
@@ -29,6 +30,7 @@ interface Props {
 const dateRanges = [7, 14, 30, 90];
 
 export const Header = ({ dateRange, onDateRangeChange }: Props) => {
+  const { t } = useTranslation();
   const userFirstName = useSelector((state: any) => state.user.firstName);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const openMenu = Boolean(anchorEl);
@@ -40,12 +42,12 @@ export const Header = ({ dateRange, onDateRangeChange }: Props) => {
   const actions = [
     {
       icon: <EditRoundedIcon />,
-      name: "Create Content",
+      name: t("dashboard.createContent"),
       onClick: () => setOpenCreateContentDialog(true),
     },
     {
       icon: <ImageRoundedIcon />,
-      name: "Upload Media",
+      name: t("dashboard.uploadMedia"),
       onClick: () =>
         history.push("/media?triggerUpload=true", {
           from: location.pathname,
@@ -53,12 +55,12 @@ export const Header = ({ dateRange, onDateRangeChange }: Props) => {
     },
     {
       icon: <Database />,
-      name: "Create Model",
+      name: t("dashboard.createModel"),
       onClick: () => history.push("/schema?triggerCreate=true"),
     },
     {
       icon: <CodeRoundedIcon />,
-      name: "Create Code File",
+      name: t("dashboard.createCodeFile"),
       onClick: () => history.push("/code?triggerCreate=true"),
     },
   ];
@@ -81,10 +83,10 @@ export const Header = ({ dateRange, onDateRangeChange }: Props) => {
         }}
       >
         <Typography variant="h4" fontWeight={600}>
-          Good Morning, {userFirstName}
+          {t("dashboard.greeting", { name: userFirstName })}
         </Typography>
         <Typography variant="subtitle1" marginTop={0.5}>
-          Here is your instance summary of the{" "}
+          {t("dashboard.instanceSummary")}{" "}
           <Box
             component="span"
             onClick={handleClick}
@@ -96,7 +98,8 @@ export const Header = ({ dateRange, onDateRangeChange }: Props) => {
               textDecoration: "underline",
             }}
           >
-            last {dateRange} days <KeyboardArrowDownRoundedIcon />
+            {t("dashboard.lastNDaysInline", { count: dateRange })}{" "}
+            <KeyboardArrowDownRoundedIcon />
           </Box>
         </Typography>
       </Box>
@@ -123,7 +126,7 @@ export const Header = ({ dateRange, onDateRangeChange }: Props) => {
             >
               <CheckIcon color="primary" />
             </ListItemIcon>
-            Last {dateRangeItem} days
+            {t("dashboard.lastNDays", { count: dateRangeItem })}
           </MenuItem>
         ))}
       </Menu>
@@ -133,7 +136,7 @@ export const Header = ({ dateRange, onDateRangeChange }: Props) => {
         sx={{ zIndex: (theme) => theme.zIndex.speedDial - 1 }}
       />
       <SpeedDial
-        ariaLabel="Instance speed dial"
+        ariaLabel={t("dashboard.speedDialAriaLabel")}
         sx={{ position: "absolute", top: 16, right: 24 }}
         icon={<SpeedDialIcon />}
         open={open}
