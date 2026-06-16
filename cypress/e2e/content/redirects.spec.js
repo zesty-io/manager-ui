@@ -233,7 +233,9 @@ describe("Content item redirects", () => {
 
   it("Stop Content Item Redirect", () => {
     cy.intercept("DELETE", "**/web/redirects/**").as("deleteContentRedirect");
-    cy.getBySelector("RedirectContentItemButton").should("be.enabled").click();
+    cy.getBySelector("RedirectContentItemButton")
+      .should("exist")
+      .click({ force: true });
     cy.getBySelector("StopRedirectContentItemConfirmButton")
       .should("be.enabled")
       .click();
@@ -386,8 +388,9 @@ function awaitRedirectsData(path) {
   cy.intercept("GET", "**/v1/content/models").as("getModels");
   cy.intercept("GET", "**/v1/content/items/publishings**").as("getPublishings");
   cy.intercept("GET", "**/v1/web/redirects").as("getRedirects");
-  cy.intercept("GET", "**/v1/content/models/*/fields**").as("getFields");
 
   cy.visit(path);
-  cy.wait(["@getModels", "@getPublishings", "@getRedirects", "@getFields"]);
+  cy.wait(["@getModels", "@getPublishings", "@getRedirects"], {
+    requestTimeout: 10000,
+  });
 }

@@ -143,13 +143,11 @@ describe("Content Meta", () => {
 
   it("Supports a dedicated Twitter title, description and image", () => {
     cy.intercept("GET", "**/v1/content/models").as("getModels");
-    cy.intercept("GET", "**/v1/content/models/*/fields**").as("getFields");
-    cy.intercept("GET", "**/v1/env/settings").as("getSettings");
     cy.intercept("GET", "**/v1/search/items**").as("getSearchItems");
     cy.visit(
       `/content/${Cypress.env("modelZUID")}/${Cypress.env("itemZUID")}/meta`
     );
-    cy.wait(["@getModels", "@getFields", "@getSettings", "@getSearchItems"]);
+    cy.wait(["@getModels", "@getSearchItems"]);
 
     const title = `Twitter title ${today}`;
     const description = `Twitter description ${today}`;

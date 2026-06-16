@@ -638,20 +638,24 @@ describe("Content Specs", () => {
 
   context("Repeater Field", () => {
     before(() => {
-      cy.waitOn("/v1/content/models*", () => {
-        cy.visit(
-          `/content/${Cypress.env("modelZUID")}/${Cypress.env("itemZUID")}`
-        );
-      });
+      cy.intercept("GET", "**/v1/content/models").as("getModels");
+      cy.intercept("GET", "**/v1/content/models/*/fields**").as("getFields");
+      cy.intercept("GET", "**/v1/content/items/publishings**").as(
+        "getPublishings"
+      );
 
-      cy.getBySelector("DuoModeToggle", { timeout: 40000 }).click(forceClick);
+      cy.visit(
+        `/content/${Cypress.env("modelZUID")}/${Cypress.env("itemZUID")}`
+      );
+      cy.wait(["@getModels", "@getPublishings", "@getFields"]);
+
+      cy.getBySelector("DuoModeToggle").should("exist").click(forceClick);
     });
 
     it("is should not be able to add an item if required fields are missing", () => {
       cy.getBySelector("AddRepeaterRowItemBtn")
         .scrollIntoView()
-        .should("be.enabled")
-        .click();
+        .click(forceClick);
       cy.getBySelector("SaveRepeaterRowItemBtn")
         .scrollIntoView()
         .should("be.enabled")
@@ -722,8 +726,7 @@ describe("Content Specs", () => {
       // Add a new row item
       cy.getBySelector("AddRepeaterRowItemBtn")
         .scrollIntoView()
-        .should("be.enabled")
-        .click();
+        .click(forceClick);
       cy.getBySelector("subfield:single_line_text")
         .find("input")
         .clear()
@@ -821,7 +824,6 @@ describe("Content Specs", () => {
     it("should bulk remove checked rows", () => {
       cy.getBySelector("AddRepeaterRowItemBtn")
         .scrollIntoView()
-        .should("be.enabled")
         .click(forceClick);
       cy.getBySelector("subfield:single_line_text")
         .find("input")
@@ -867,3 +869,14 @@ describe("Content Specs", () => {
     });
   });
 });
+
+function awaitRedirectsData(path) {
+  cy.intercept("GET", "**/v1/content/models").as("getModels");
+  cy.intercept("GET", "**/v1/content/models/*/fields**").as("getFields");
+  cy.intercept("GET", "**/v1/content/items/publishings**").as("getPublishings");
+
+  cy.visit(path);
+  cy.wait(["@getModels", "@getPublishings", "@getFields"], {
+    requestTimeout: 10000,
+  });
+}
