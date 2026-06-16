@@ -307,8 +307,15 @@ Per-namespace checklist (repeat for each):
 
 ## Phase 6 — Missing Key Handling
 
-- [ ] Configure i18next to throw / log an error in development when a translation key is missing
-- [ ] Add a `missingKeyHandler` in `src/shell/i18n/index.ts` that throws in `NODE_ENV === "development"` and silently reports to Sentry in production (fall back to the key string so the UI never breaks)
+Goal: **full translation coverage** — every key must exist in every locale, never silently papered over by the en-US fallback.
+
+- [x] Disable the en-US `fallbackLng` in dev (`development`/`local`) so a key missing from the **active** locale (e.g. `es-ES`) resolves to nothing and trips the handler. With the fallback on, a key present in en-US but missing elsewhere would render the English value and the gap would go undetected. Stage/production keep `fallbackLng: "en-US"` so real users never see a raw key.
+- [x] Pin an explicit initial `lng` in dev (`devInitialLng` = stored `app_locale`, else `en-US`). With the fallback off, i18next has nothing to fall back to when the language detector comes up empty (e.g. cleared localStorage) and would init with an **undefined** language → crash on the first lookup (`getResource(undefined, …)`). Pinning the language — which mirrors what the localStorage detector would have resolved — avoids that. Stage/production leave `lng` undefined (detector + fallback handle it).
+- [x] Add a `missingKeyHandler` in `src/shell/i18n/index.ts` (gated on `__CONFIG__.ENV`, matching Sentry's own init gate). Behavior:
+  - Requires `saveMissing: true`; providing the handler short-circuits the default backend save (no network POST for missing keys). `saveMissingTo: "current"` so reports name the locale actually being viewed.
+  - Skips keys whose namespace bundle hasn't loaded yet (`hasResourceBundle` guard, plus a falsy-`lng` guard) — lazy sub-app namespaces load on first navigation, and a still-in-flight load is a timing artifact, not a missing key. An empty placeholder file counts as loaded (keyless), so an untranslated namespace still throws for every key.
+  - **Dev (development/local): throw.** A missing key crashes the app (caught by the root `Sentry.ErrorBoundary` / webpack dev overlay) with the exact key and `public/locales/<lng>/<ns>.json` path — impossible to miss, no need to scan the console. An incomplete locale is meant to be unusable in dev until every key is filled in. The dev path never dedupes, so the error boundary keeps surfacing it on every render until fixed. (Escape hatch from a crash-looping incomplete locale: clear localStorage or reset `app_locale` to `en-US`.)
+  - **Stage/production:** `Sentry.captureMessage` once per key (deduped, `warning` level) with `{ key, namespace, languages, fallbackValue }` context; i18next still falls back to en-US so the UI never breaks for users.
 
 ---
 
