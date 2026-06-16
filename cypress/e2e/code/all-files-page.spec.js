@@ -62,7 +62,7 @@ describe("All Files Page", () => {
     });
   });
 
-  it("Files are listed in ascending order.", () => {
+  it("Files are listed newest-first (descending by last-saved)", () => {
     awaitCodeData("/code");
     cy.getBySelector("AllFilesTable")
       .find('[data-cy="AllFilesRowLastSaved"]')

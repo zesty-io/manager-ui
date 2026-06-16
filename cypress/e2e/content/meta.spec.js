@@ -159,7 +159,10 @@ describe("Content Meta", () => {
       .find("textarea")
       .first()
       .type(`{selectAll}{del}${description}`);
-    cy.getBySelector("SocialMediaPreviewTwitter").should("exist").click();
+    cy.getBySelector("SocialMediaPreviewTwitter")
+      .should("exist")
+      .should("be.enabled")
+      .click();
 
     cy.getBySelector("TwitterCardTitle").contains(title);
     cy.getBySelector("TwitterCardDescription").contains(description);
