@@ -127,10 +127,6 @@ export const PublishState = ({ reloadItem }: Props) => {
         },
       },
     ],
-    // modelZUID/itemZUID must be in deps: when the language is switched the
-    // route params change without remounting this component, so the memoized
-    // renderCell closures would otherwise keep deleting against the previous
-    // locale's itemZUID and get a 404 (issue #4140).
     [modelZUID, itemZUID]
   );
 
