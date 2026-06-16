@@ -8,7 +8,7 @@ import {
   Skeleton,
 } from "@mui/material";
 import { useHistory } from "react-router";
-import { formatLocalized } from "shell/i18n-dates";
+import { formatLocalized } from "shell/i18n/dates";
 import { isValid } from "date-fns";
 
 export const UserListItem = (props) => {

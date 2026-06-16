@@ -17,7 +17,7 @@ import { AdapterDateFns } from "@mui/x-date-pickers-pro/AdapterDateFns";
 import CloseIcon from "@mui/icons-material/Close";
 
 import { DateFilterModalType } from "./types";
-import { getDateFnsLocale } from "../../../i18n-dates";
+import { getDateFnsLocale } from "../../../i18n/dates";
 
 interface SelectedDate {
   type: DateFilterModalType;

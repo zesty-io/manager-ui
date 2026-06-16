@@ -15,6 +15,7 @@ import { useMemo } from "react";
 import { uniqBy } from "lodash";
 import AutoSizer, { Size } from "react-virtualized-auto-sizer";
 import { EmptyState } from "./EmptyState";
+import { getDataGridLocaleText } from "../../../../shell/i18n/datagrid";
 import { resolveUrlFromAudit } from "../../../../utility/resolveResourceUrlFromAudit";
 import { Audit } from "../../../../shell/services/types";
 import { format, subDays } from "date-fns";
@@ -128,7 +129,7 @@ const VersionCell = ({ affectedZUID, resourceType }: any) => {
 };
 
 export const ResourceTable = ({ dateRange }: Props) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { data: audit, isFetching: isAuditFetching } = useGetAuditsQuery({
     start_date: format(subDays(new Date(), dateRange), "MM/dd/yyyy"),
     end_date: format(new Date(), "MM/dd/yyyy"),
@@ -177,6 +178,7 @@ export const ResourceTable = ({ dateRange }: Props) => {
           <DataGridPro
             // @ts-expect-error - missing types for headerAlign and align on DataGridPro
             columns={columns}
+            localeText={getDataGridLocaleText(i18n.language)}
             rows={
               uniqBy(
                 audit?.filter((resource) =>

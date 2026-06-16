@@ -20,7 +20,7 @@ import {
   modelIconMap,
 } from "../../../../../../schema/src/app/utils";
 import { AppState } from "../../../../../../../shell/store/types";
-import { formatLocalized } from "shell/i18n-dates";
+import { formatLocalized } from "shell/i18n/dates";
 import { isValid } from "date-fns";
 
 type ResourceHeaderTitleProps = {

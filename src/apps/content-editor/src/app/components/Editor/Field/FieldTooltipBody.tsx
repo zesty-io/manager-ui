@@ -21,7 +21,7 @@ import {
   TYPE_TEXT,
   FieldType,
 } from "../../../../../../schema/src/app/components/configs";
-import { formatLocalized } from "shell/i18n-dates";
+import { formatLocalized } from "shell/i18n/dates";
 
 type FieldTooltipBodyProps = {
   data: Partial<ContentModelField>;

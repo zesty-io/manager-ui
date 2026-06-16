@@ -4,7 +4,7 @@ import { DataGridPro } from "@mui/x-data-grid-pro";
 import { Box, Button, Chip } from "@mui/material";
 import { WithLoader } from "shell/components/legacy/WithLoader";
 import { instanceApi } from "../../../../../../shell/services/instance";
-import { formatLocalized } from "shell/i18n-dates";
+import { formatLocalized } from "shell/i18n/dates";
 import { isValid } from "date-fns";
 
 type Params = {

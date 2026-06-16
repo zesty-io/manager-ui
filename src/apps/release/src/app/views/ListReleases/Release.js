@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { AppLink } from "shell/components/AppLink";
 
 import styles from "./ListReleases.less";
-import { formatLocalized } from "shell/i18n-dates";
+import { formatLocalized } from "shell/i18n/dates";
 
 export function Release(props) {
   const members = useSelector((state) => state.releaseMembers.data);

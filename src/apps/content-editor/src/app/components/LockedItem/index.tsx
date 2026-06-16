@@ -11,7 +11,7 @@ import {
 import { LockOpenRounded, LockRounded } from "@mui/icons-material";
 import { fromUnixTime, isValid } from "date-fns";
 
-import { formatLocalized } from "shell/i18n-dates";
+import { formatLocalized } from "shell/i18n/dates";
 
 type LockedItemProps = {
   itemName: string;

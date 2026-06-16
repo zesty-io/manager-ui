@@ -5,15 +5,15 @@ import {
 } from "date-fns";
 import { enUS, es, hi, zhCN, ru, nl } from "date-fns/locale";
 
-import i18n from "./i18n";
-import type { SupportedLocale } from "./i18n";
+import i18n from "./index";
+import type { SupportedLocale } from "./index";
 
 // Maps each supported app locale (BCP 47 tag) to its date-fns locale, used as
 // `adapterLocale` on MUI X date pickers so calendar internals (weekday/month
 // names) localize with the UI.
 //
 // Typed as Record<SupportedLocale, Locale>: adding a tag to SUPPORTED_LOCALES
-// in i18n.ts without a matching entry here is a compile error, so this can
+// in ./index without a matching entry here is a compile error, so this can
 // never silently drift behind the supported-locale list.
 //
 // date-fns locales are imported individually (per-locale) so only the ones we

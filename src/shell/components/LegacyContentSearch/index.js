@@ -35,7 +35,7 @@ import { Loader } from "shell/components/legacy/Loader";
 import {
   formatDistanceToNowLocalized,
   formatLocalized,
-} from "shell/i18n-dates";
+} from "shell/i18n/dates";
 
 import { searchItems } from "shell/store/content";
 import { notify } from "shell/store/notifications";

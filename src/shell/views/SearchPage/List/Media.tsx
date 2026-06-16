@@ -8,7 +8,7 @@ import { isValid } from "date-fns";
 import { useTranslation } from "react-i18next";
 
 import { File, Group } from "../../../services/types";
-import { formatDistanceToNowLocalized } from "../../../i18n-dates";
+import { formatDistanceToNowLocalized } from "../../../i18n/dates";
 import { SearchListItem } from "./SearchListItem";
 
 interface Media {

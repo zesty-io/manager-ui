@@ -25,7 +25,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useHistory, useLocation } from "react-router";
 import { format, parse } from "date-fns";
 
-import { formatLocalized } from "../../../i18n-dates";
+import { formatLocalized } from "../../../i18n/dates";
 import { useGetUsersQuery } from "../../../services/accounts";
 import {
   PresetType,

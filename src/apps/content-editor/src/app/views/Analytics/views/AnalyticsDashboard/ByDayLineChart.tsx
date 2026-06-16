@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import { ChartEvent } from "chart.js";
 import { addDays, differenceInCalendarDays, getYear } from "date-fns";
-import { formatLocalized } from "shell/i18n-dates";
+import { formatLocalized } from "shell/i18n/dates";
 
 import "chartjs-adapter-date-fns";
 

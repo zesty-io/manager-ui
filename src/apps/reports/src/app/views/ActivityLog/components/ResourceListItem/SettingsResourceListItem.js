@@ -3,7 +3,7 @@ import { faCog } from "@fortawesome/free-solid-svg-icons";
 import { useSelector } from "react-redux";
 import { ListItem } from "./ListItem";
 import { useGetWorkflowStatusLabelsQuery } from "../../../../../../../../shell/services/instance";
-import { formatLocalized } from "shell/i18n-dates";
+import { formatLocalized } from "shell/i18n/dates";
 import { isValid, isSameYear } from "date-fns";
 
 export const SettingsResourceListItem = (props) => {

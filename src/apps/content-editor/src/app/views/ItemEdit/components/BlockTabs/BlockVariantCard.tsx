@@ -13,7 +13,7 @@ import { AppState } from "../../../../../../../../shell/store/types";
 import { useGetUsersQuery } from "../../../../../../../../shell/services/accounts";
 import blockPlaceholder from "../../../../../../../../../public/images/blockPlaceholder.png";
 import { ContentItem } from "../../../../../../../../shell/services/types";
-import { formatLocalized } from "shell/i18n-dates";
+import { formatLocalized } from "shell/i18n/dates";
 import { isValid } from "date-fns";
 
 export const BlockVariantCard = ({ block }: { block: ContentItem }) => {

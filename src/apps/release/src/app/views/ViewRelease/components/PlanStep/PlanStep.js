@@ -5,7 +5,7 @@ import cx from "classnames";
 import {
   formatDistanceToNowLocalized,
   formatLocalized,
-} from "shell/i18n-dates";
+} from "shell/i18n/dates";
 
 import { updateMember, deleteMember } from "shell/store/releaseMembers";
 

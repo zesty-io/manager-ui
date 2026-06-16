@@ -17,7 +17,7 @@ import {
   useGetWebViewsQuery,
 } from "../../../../../shell/services/instance";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
-import { formatLocalized } from "shell/i18n-dates";
+import { formatLocalized } from "shell/i18n/dates";
 import { isValid } from "date-fns";
 import {
   InfoRounded,

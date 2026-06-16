@@ -4,7 +4,7 @@ import { Menu, MenuItem, ListItemText, Divider } from "@mui/material";
 import ChevronRightOutlinedIcon from "@mui/icons-material/ChevronRightOutlined";
 import { format, parse } from "date-fns";
 
-import { formatLocalized } from "../../../i18n-dates";
+import { formatLocalized } from "../../../i18n/dates";
 import { FilterButton } from "../FilterButton";
 import { DateFilterModal } from "./DateFilterModal";
 import {

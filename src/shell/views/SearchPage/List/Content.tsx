@@ -10,7 +10,7 @@ import {
   useGetContentModelQuery,
   useGetContentItemQuery,
 } from "../../../services/instance";
-import { formatDistanceToNowLocalized } from "../../../i18n-dates";
+import { formatDistanceToNowLocalized } from "../../../i18n/dates";
 import { SearchListItem } from "./SearchListItem";
 
 interface Content {

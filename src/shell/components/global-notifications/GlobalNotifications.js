@@ -12,7 +12,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import { AppLink } from "shell/components/AppLink";
-import { formatDistanceToNowLocalized } from "shell/i18n-dates";
+import { formatDistanceToNowLocalized } from "shell/i18n/dates";
 import {
   Typography,
   Stack,

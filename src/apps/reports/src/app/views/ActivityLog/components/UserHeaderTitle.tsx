@@ -7,7 +7,7 @@ import { useHistory } from "react-router";
 import { CustomBreadcrumbs } from "../../../../../../../shell/components/CustomBreadcrumbs";
 import { useGetUsersRolesQuery } from "../../../../../../../shell/services/accounts";
 import { MD5 } from "../../../../../../../utility/md5";
-import { formatLocalized } from "shell/i18n-dates";
+import { formatLocalized } from "shell/i18n/dates";
 
 const Crumbs = [
   {

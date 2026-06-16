@@ -18,7 +18,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { format, isValid, parse } from "date-fns";
 
 import { DateRangeFilterValue, DateFilterModalType } from "./types";
-import { getDateFnsLocale } from "../../../i18n-dates";
+import { getDateFnsLocale } from "../../../i18n/dates";
 
 interface DateRangeFilterModal {
   date: DateRangeFilterValue;

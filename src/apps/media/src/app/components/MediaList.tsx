@@ -50,7 +50,7 @@ import defaultImg from "../../../../../../public/images/defaultImg.png";
 import jsIcon from "../../../../../../public/images/jsIcon.svg";
 import htmlIcon from "../../../../../../public/images/htmlIcon.svg";
 import cssIcon from "../../../../../../public/images/cssIcon.svg";
-import { formatLocalized } from "shell/i18n-dates";
+import { formatLocalized } from "shell/i18n/dates";
 import { isValid } from "date-fns";
 import {
   selectFile,

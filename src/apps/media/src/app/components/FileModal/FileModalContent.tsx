@@ -43,7 +43,7 @@ import { MoveFileDialog } from "./MoveFileDialog";
 import { useDispatch } from "react-redux";
 import { notify } from "../../../../../../shell/store/notifications";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query";
-import { formatLocalized } from "shell/i18n-dates";
+import { formatLocalized } from "shell/i18n/dates";
 
 interface Props {
   id?: string;

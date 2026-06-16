@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { formatLocalized } from "shell/i18n-dates";
+import { formatLocalized } from "shell/i18n/dates";
 import { isValid, isSameYear } from "date-fns";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
 import { useSelector, useDispatch } from "react-redux";

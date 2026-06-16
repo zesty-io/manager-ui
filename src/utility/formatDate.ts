@@ -1,7 +1,7 @@
 import { isSameDay, subDays, getYear } from "date-fns";
 import { utcToZonedTime } from "date-fns-tz";
 
-import { formatLocalized } from "shell/i18n-dates";
+import { formatLocalized } from "shell/i18n/dates";
 import i18n from "shell/i18n";
 
 export const isTodayOrYesterday = (dateString?: string): boolean => {

@@ -26,7 +26,7 @@ import {
 } from "../../../../../../../shell/services/instance";
 import { NoSearchResults } from "../../../../../../../shell/components/NoSearchResults";
 import CompareArrowsRoundedIcon from "@mui/icons-material/CompareArrowsRounded";
-import { formatDistanceToNowLocalized } from "shell/i18n-dates";
+import { formatDistanceToNowLocalized } from "shell/i18n/dates";
 import { isValid } from "date-fns";
 import { useSelector } from "react-redux";
 import { User } from "../../../../../../../shell/services/types";

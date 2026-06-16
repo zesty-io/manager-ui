@@ -1,6 +1,6 @@
 import { faCode } from "@fortawesome/free-solid-svg-icons";
 import { useSelector } from "react-redux";
-import { formatLocalized } from "shell/i18n-dates";
+import { formatLocalized } from "shell/i18n/dates";
 import { isValid, isSameYear } from "date-fns";
 import { ListItem } from "./ListItem";
 

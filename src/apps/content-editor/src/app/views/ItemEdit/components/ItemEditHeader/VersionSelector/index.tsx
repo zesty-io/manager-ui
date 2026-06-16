@@ -16,7 +16,7 @@ import {
 } from "../../../../../../../../../shell/services/instance";
 import { Version } from "./VersionItem";
 import { WorkflowStatusLabel } from "../../../../../../../../../shell/services/types";
-import { formatLocalized } from "shell/i18n-dates";
+import { formatLocalized } from "shell/i18n/dates";
 import { isValid } from "date-fns";
 
 export let ROW_HEIGHTS: Record<number, number> = {};

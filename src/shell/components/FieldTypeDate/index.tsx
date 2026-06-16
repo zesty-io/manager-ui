@@ -5,7 +5,7 @@ import {
 } from "@mui/x-date-pickers-pro";
 import { AdapterDateFns } from "@mui/x-date-pickers-pro/AdapterDateFns";
 import { useTranslation } from "react-i18next";
-import { formatLocalized, getDateFnsLocale } from "../../i18n-dates";
+import { formatLocalized, getDateFnsLocale } from "../../i18n/dates";
 import {
   memo,
   useEffect,

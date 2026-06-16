@@ -12,7 +12,7 @@ import { DialogContent, DialogTitle, DialogProps } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { AppState } from "../../../../../shell/store/types";
-import { getDateFnsLocale } from "shell/i18n-dates";
+import { getDateFnsLocale } from "shell/i18n/dates";
 
 type DateFilterModal = {
   open: boolean;

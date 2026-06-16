@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 import { ContentModel } from "../../../services/types";
 import { SearchListItem } from "./SearchListItem";
 import { useGetAuditsQuery } from "../../../services/instance";
-import { formatDistanceToNowLocalized } from "../../../i18n-dates";
+import { formatDistanceToNowLocalized } from "../../../i18n/dates";
 
 interface Model {
   data: ContentModel;

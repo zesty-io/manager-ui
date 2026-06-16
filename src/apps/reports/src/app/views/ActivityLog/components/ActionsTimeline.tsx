@@ -2,7 +2,7 @@ import { useMemo, FC, CSSProperties } from "react";
 import { List, type RowComponentProps } from "react-window";
 import { Typography, Skeleton, Box } from "@mui/material";
 import AutoSizer, { Size } from "react-virtualized-auto-sizer";
-import { formatLocalized } from "shell/i18n-dates";
+import { formatLocalized } from "shell/i18n/dates";
 import { format, subDays } from "date-fns";
 import { useTranslation } from "react-i18next";
 

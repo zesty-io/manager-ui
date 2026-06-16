@@ -3,7 +3,7 @@ import { faDatabase } from "@fortawesome/free-solid-svg-icons";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchModel } from "shell/store/models";
 import { ListItem } from "./ListItem";
-import { formatLocalized } from "shell/i18n-dates";
+import { formatLocalized } from "shell/i18n/dates";
 import { isValid, isSameYear } from "date-fns";
 
 export const ModelResourceListItem = (props) => {

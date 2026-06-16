@@ -19,7 +19,7 @@ import {
 import { useGetUsersQuery } from "../../../../../../../../../shell/services/accounts";
 import { startCase } from "lodash";
 import { useSelector } from "react-redux";
-import { formatLocalized } from "shell/i18n-dates";
+import { formatLocalized } from "shell/i18n/dates";
 import { parseISO, isValid as isValidDate } from "date-fns";
 
 const SOURCE_DETAIL_MAP = {

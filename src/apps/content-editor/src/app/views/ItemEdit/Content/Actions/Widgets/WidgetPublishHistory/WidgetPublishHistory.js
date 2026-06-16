@@ -14,7 +14,7 @@ import { fetchAuditTrailPublish } from "shell/store/logs";
 import cx from "classnames";
 import SharedWidgetStyles from "../SharedWidget.less";
 import { AppLink } from "shell/components/AppLink";
-import { formatDistanceToNowLocalized } from "shell/i18n-dates";
+import { formatDistanceToNowLocalized } from "shell/i18n/dates";
 import styles from "./WidgetPublishHistory.less";
 import { isValid } from "date-fns";
 

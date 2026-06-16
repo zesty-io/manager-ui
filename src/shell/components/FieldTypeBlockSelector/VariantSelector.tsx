@@ -14,7 +14,7 @@ import { Search } from "@mui/icons-material";
 import { isValid } from "date-fns";
 
 import { ContentItem } from "../../services/types";
-import { formatLocalized } from "../../i18n-dates";
+import { formatLocalized } from "../../i18n/dates";
 import { useGetUsersQuery } from "../../services/accounts";
 import { NoSearchResults } from "../NoSearchResults";
 import { NoVariant } from "./NoVariant";

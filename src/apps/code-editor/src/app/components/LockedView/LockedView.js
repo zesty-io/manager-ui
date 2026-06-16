@@ -15,7 +15,7 @@ import {
   DialogTitle,
   Typography,
 } from "@mui/material";
-import { formatLocalized } from "shell/i18n-dates";
+import { formatLocalized } from "shell/i18n/dates";
 import { fromUnixTime, isValid } from "date-fns";
 
 /**

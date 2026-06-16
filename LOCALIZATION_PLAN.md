@@ -25,7 +25,7 @@ Spec: https://docs.google.com/document/d/1l5RdyDxQLTwXdz80Gk1_y8GdVv_KoQG5VfSmdv
   - `i18next-chained-backend`
   - `i18next-browser-languagedetector`
   - `i18next-parser` (dev dependency — key extraction CLI)
-- [x] Create `src/shell/i18n.ts` — configure i18next with:
+- [x] Create `src/shell/i18n/index.ts` — configure i18next with:
   - ChainedBackend (LocalStorage → HTTP)
   - LanguageDetector (order: `localStorage` only — `navigator` excluded, `caches: []` so detection never auto-writes)
   - Fallback language: `en-US`
@@ -35,7 +35,7 @@ Spec: https://docs.google.com/document/d/1l5RdyDxQLTwXdz80Gk1_y8GdVv_KoQG5VfSmdv
   - Cache busting via `defaultVersion` tied to the build's git hash (injected via webpack `DefinePlugin` as `__GIT_HASH__`)
   - LocalStorage cache TTL: `i18next-localstorage-backend` default (7 days)
   - HTTP load path: `/locales/{{lng}}/{{ns}}.json`
-- [x] Import `src/shell/i18n.ts` in `src/shell/index.js` (app entry point) — must be imported before the React root renders
+- [x] Import `src/shell/i18n/index.ts` in `src/shell/index.js` (app entry point) — must be imported before the React root renders
 - [x] Create `public/locales/` directory structure:
   ```
   public/locales/
@@ -85,7 +85,7 @@ Spec: https://docs.google.com/document/d/1l5RdyDxQLTwXdz80Gk1_y8GdVv_KoQG5VfSmdv
 
 **Always qualify keys with their namespace prefix** — `t("common.save")`, `t("shell.expandSidebar")`, `t("content.publishItem")`. Never use bare `t("save")` even when the default namespace would resolve it. This makes the source namespace unambiguous at a glance.
 
-All components use `useTranslation()` (no namespace argument). The namespace is expressed in the key string itself. `nsSeparator: "."` and `keySeparator: false` are set in both the runtime config (`src/shell/i18n.ts`) and the parser config (`i18next-parser.config.js`) to support this syntax.
+All components use `useTranslation()` (no namespace argument). The namespace is expressed in the key string itself. `nsSeparator: "."` and `keySeparator: false` are set in both the runtime config (`src/shell/i18n/index.ts`) and the parser config (`i18next-parser.config.js`) to support this syntax.
 
 ### `common`
 
@@ -188,10 +188,10 @@ i18next UI locale and must be wired up separately. This splits into two parts.
 their weekday/month names through `AdapterDateFns`, which defaulted to en-US
 regardless of the UI language.
 
-- [x] Add a centralized resolver `src/shell/i18n-dates.ts` — `getDateFnsLocale(tag)`
+- [x] Add a centralized resolver `src/shell/i18n/dates.ts` — `getDateFnsLocale(tag)`
       maps each supported locale to its date-fns locale, falling back to `en-US`
       for any unmapped tag (degrades to English dates, never crashes).
-- [x] Export `SUPPORTED_LOCALES` / `SupportedLocale` from `src/shell/i18n.ts`
+- [x] Export `SUPPORTED_LOCALES` / `SupportedLocale` from `src/shell/i18n/index.ts`
       (single source of truth) and type the map as `Record<SupportedLocale, Locale>`,
       so adding a supported locale without a date-fns entry is a `tsc` error
       (verified — no silent drift).
@@ -308,7 +308,7 @@ Per-namespace checklist (repeat for each):
 ## Phase 6 — Missing Key Handling
 
 - [ ] Configure i18next to throw / log an error in development when a translation key is missing
-- [ ] Add a `missingKeyHandler` in `src/shell/i18n.ts` that throws in `NODE_ENV === "development"` and silently reports to Sentry in production (fall back to the key string so the UI never breaks)
+- [ ] Add a `missingKeyHandler` in `src/shell/i18n/index.ts` that throws in `NODE_ENV === "development"` and silently reports to Sentry in production (fall back to the key string so the UI never breaks)
 
 ---
 

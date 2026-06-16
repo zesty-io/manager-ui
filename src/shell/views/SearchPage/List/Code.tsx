@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 import { File } from "../../../hooks/useSearchCodeFilesByKeyword";
 import { SearchListItem } from "./SearchListItem";
 import { useGetAuditsQuery } from "../../../services/instance";
-import { formatDistanceToNowLocalized } from "../../../i18n-dates";
+import { formatDistanceToNowLocalized } from "../../../i18n/dates";
 
 interface Code {
   data: File;

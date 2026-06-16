@@ -25,7 +25,7 @@ import { publish, unpublish } from "../../store/content";
 import {
   formatDistanceToNowLocalized,
   getDateFnsLocale,
-} from "../../i18n-dates";
+} from "../../i18n/dates";
 
 import { format as fmt, isBefore } from "date-fns";
 import { zonedTimeToUtc, formatInTimeZone } from "date-fns-tz";

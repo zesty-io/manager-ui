@@ -10,7 +10,7 @@ import {
   useGetContentModelsQuery,
 } from "../../../../../shell/services/instance";
 import { ContentModel, ModelType } from "../../../../../shell/services/types";
-import { formatDistanceToNowLocalized } from "shell/i18n-dates";
+import { formatDistanceToNowLocalized } from "shell/i18n/dates";
 import { isValid } from "date-fns";
 import { useMemo, useState, useReducer } from "react";
 import AutoSizer, { Size } from "react-virtualized-auto-sizer";

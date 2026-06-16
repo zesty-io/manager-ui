@@ -12,7 +12,7 @@ import { fetchAuditTrailDrafting } from "shell/store/logs";
 import cx from "classnames";
 import SharedWidgetStyles from "../SharedWidget.less";
 import { AppLink } from "shell/components/AppLink";
-import { formatDistanceToNowLocalized } from "shell/i18n-dates";
+import { formatDistanceToNowLocalized } from "shell/i18n/dates";
 import styles from "./WidgetDraftHistory.less";
 import { isValid } from "date-fns";
 

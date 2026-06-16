@@ -21,7 +21,7 @@ import {
   getYear,
   isValid,
 } from "date-fns";
-import { formatLocalized } from "shell/i18n-dates";
+import { formatLocalized } from "shell/i18n/dates";
 
 import lineChartSkeleton from "../../../../../../../../../public/images/lineChartSkeleton.svg";
 import {

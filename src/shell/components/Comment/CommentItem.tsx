@@ -22,7 +22,7 @@ import { isValid } from "date-fns";
 import { useLocation, useParams } from "react-router";
 import { useSelector } from "react-redux";
 
-import { formatDistanceToNowLocalized } from "../../i18n-dates";
+import { formatDistanceToNowLocalized } from "../../i18n/dates";
 import { useUpdateCommentStatusMutation } from "../../services/accounts";
 import { MD5 } from "../../../utility/md5";
 import { InputField } from "./InputField";

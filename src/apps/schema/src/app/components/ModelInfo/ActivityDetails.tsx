@@ -1,7 +1,7 @@
 import { Box, Typography, Button, Avatar } from "@mui/material";
 import { useGetContentModelsQuery } from "../../../../../../shell/services/instance";
 import { useHistory, useParams } from "react-router";
-import { formatLocalized } from "shell/i18n-dates";
+import { formatLocalized } from "shell/i18n/dates";
 import { isValid } from "date-fns";
 import { useGetUsersQuery } from "../../../../../../shell/services/accounts";
 import { useState } from "react";

@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { formatLocalized } from "shell/i18n-dates";
+import { formatLocalized } from "shell/i18n/dates";
 import { isValid, parse } from "date-fns";
 import { default as MuiTimelineItem } from "@mui/lab/TimelineItem";
 import TimelineSeparator from "@mui/lab/TimelineSeparator";

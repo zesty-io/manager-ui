@@ -6,7 +6,7 @@ import { Select, Button, MenuItem, Box, Typography } from "@mui/material";
 import HistoryIcon from "@mui/icons-material/History";
 import SaveIcon from "@mui/icons-material/Save";
 import EastIcon from "@mui/icons-material/East";
-import { formatLocalized } from "shell/i18n-dates";
+import { formatLocalized } from "shell/i18n/dates";
 import { isValid } from "date-fns";
 
 import {

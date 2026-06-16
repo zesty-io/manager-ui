@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import { formatDistanceToNowLocalized } from "shell/i18n-dates";
+import { formatDistanceToNowLocalized } from "shell/i18n/dates";
 import { isValid } from "date-fns";
 import InfoIcon from "@mui/icons-material/Info";
 import { CopyButton } from "@zesty-io/material";
