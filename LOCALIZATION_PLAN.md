@@ -359,6 +359,28 @@ Several third-party packages render their **own** user-facing chrome (toolbar
 tooltips, menus, dialogs, "No options" text, pagination labels, picker action
 buttons) that i18next/`t()` does not touch. Each package localizes differently.
 
+> **Execution order — interleave with Phase 4, don't fully sequence.** Phase 4
+> and Phase 5 are technically independent, but the recommended order is
+> **infra-first, bulk-second**, not "finish one then the other":
+>
+> 1. **Do Phase 5 step 1 _now_, before the Phase 4 bulk** — the reactive
+>    `LocalizedThemeProvider` + MUI core locale + grid/picker `localeText` as
+>    theme `defaultProps`. It's low-effort, one-time, and it's _infrastructure_:
+>    it auto-localizes every Autocomplete/grid/picker across all sub-apps at
+>    once, so locale-switch QA during Phase 4 reflects the real end state.
+> 2. **Then resume the Phase 4 bulk** in dependency order (`media` →
+>    `content`+`schema` → …).
+> 3. **The rest of Phase 5 belongs _inside_ Phase 4**: TinyMCE and ProseMirror
+>    live in content-editor, so localize them as part of the `content`
+>    namespace rather than as a separate pass.
+> 4. **Upstream to `@zesty-io/material`** once the MUI bundles stop changing —
+>    batch as one additive release.
+>
+> **Avoid** finishing 100% of Phase 4 before the Phase 5 theme infra — you'd
+> verify every sub-app with English grid/picker chrome and have to re-verify
+> once it flips. Equally, don't try to finish _all_ of Phase 5 up front —
+> TinyMCE is high-effort and is most efficient done alongside `content`.
+
 **The core distinction: do the translations ship in the package?**
 
 | Package                                       | Where / chrome                                                                                                                                       | Strings ship in package?                                                                                       | What we do                                                                                                                                                            | Effort            |
@@ -438,6 +460,21 @@ Split by concern:
   - **Preserve tree-shaking.** Ship ESM with `sideEffects: false` so consumers that never import `localizeTheme` shake the locale bundles out of their runtime bundle (install footprint grows slightly regardless).
   - **Release as a minor semver bump.** Additive features, no breaking changes; other apps are unaffected until they bump the dep and deliberately adopt `localizeTheme`.
   - **Smoke-test the packaged build** against manager-ui via `npm link @zesty-io/material` before cutting the release (the call site is import-line-identical to the local build, so no rework).
+- **MUI X version bumps — maintenance guardrail (hand-authored hi-IN only).**
+  The hi-IN Data Grid + Date Picker bundles are **shape-locked** to the
+  `@mui/x-data-grid-pro` / `@mui/x-date-pickers-pro` versions. **Do not bump
+  those MUI X versions without re-checking the Hindi bundles.** Why it's
+  sneaky: `Partial<GridLocaleText>`/`Partial<PickersLocaleText>` typing means
+  `tsc` catches a **removed/renamed** key (stale property → type error) but a
+  **newly added** key compiles clean and silently renders **English**. A
+  careless bump introduces an invisible Hindi regression no type check catches.
+  - **Enforce with a coverage test in `@zesty-io/material`** (where the bundles
+    and the MUI X dep live together): assert each hand-authored hi-IN bundle's
+    keys cover the **full** default `GridLocaleText` / `PickersLocaleText` key
+    set, failing on any gap. A MUI X bump that adds keys then **breaks CI**
+    until the Hindi is filled in — forcing the version bump and the translation
+    update to travel together. (es/zh/ru/nl need no such check — MUI ships and
+    maintains those.)
 
 ### Tasks
 
