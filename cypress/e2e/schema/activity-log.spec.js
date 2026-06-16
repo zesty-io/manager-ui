@@ -1,12 +1,12 @@
-import { format } from "date-fns";
+import { formatInTimeZone } from "date-fns-tz";
 
-const now = format(new Date(), "yyyy-MM-dd"); // local date
+const now = formatInTimeZone(new Date(), "UTC", "yyyy-MM-dd");
 
 describe("Schema: Activity Log Tab", () => {
   it("Sets default date url params", () => {
-    cy.visit("/schema/6-ce80dbfe90-ptjpm6/activity-log");
+    cy.visit("/schema/6-a1a600-k0b6f0/activity-log");
 
-    cy.location("search").should("equal", `?from=2023-02-15&to=${now}`);
+    cy.location("search").should("equal", `?from=2018-08-10&to=${now}`);
   });
 
   it("Displays filters as url params", () => {
@@ -22,14 +22,14 @@ describe("Schema: Activity Log Tab", () => {
 
     cy.location("search").should(
       "equal",
-      `?from=2023-02-15&to=${now}&action=1&actionByUserZUID=5-faeda8978e-j5xb6l`
+      `?from=2018-08-10&to=${now}&action=1&actionByUserZUID=5-faeda8978e-j5xb6l`
     );
   });
 
   it("Shows the no logs found message", () => {
     cy.waitOn("/v1/env/audits*", () => {
       cy.visit(
-        "/schema/6-ce80dbfe90-ptjpm6/activity-log?from=2099-02-15&to=2099-03-15"
+        "/schema/6-a1a600-k0b6f0/activity-log?from=2099-02-15&to=2099-03-15"
       );
     });
 
