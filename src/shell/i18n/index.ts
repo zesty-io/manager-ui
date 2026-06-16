@@ -48,7 +48,7 @@ const devInitialLng = isReportingEnv
 const reportedMissingKeys = new Set<string>();
 
 /**
- * Phase 6 — missing key handling. The goal is full translation coverage: every
+ * Phase 7 — missing key handling. The goal is full translation coverage: every
  * key must exist in every locale, never papered over by the en-US fallback.
  *
  * - Dev (development/local): throw. A key absent from the active locale's
