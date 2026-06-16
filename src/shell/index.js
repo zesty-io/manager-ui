@@ -3,7 +3,7 @@ import { StrictMode, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { Router } from "react-router-dom";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { createTheme } from "@mui/material/styles";
 import { theme } from "@zesty-io/material";
 import CssBaseline from "@mui/material/CssBaseline";
 
@@ -23,6 +23,7 @@ import { store, injectReducer } from "shell/store";
 import { navContent } from "../apps/content-editor/src/store/navContent";
 
 import AppError from "shell/components/AppError";
+import { LocalizedThemeProvider } from "./components/LocalizedThemeProvider";
 
 import PrivateRoute from "./components/private-route";
 import LoadInstance from "./components/load-instance";
@@ -58,7 +59,11 @@ window.zestyStore = store;
 const instanceZUID = store.getState().instance.ZUID;
 window.CONFIG.API_INSTANCE = `${window.CONFIG.API_INSTANCE_PROTOCOL}${instanceZUID}${window.CONFIG.API_INSTANCE}`;
 
-const appTheme = createTheme(theme, {
+// App-specific overrides layered onto the @zesty-io/material base theme.
+// Hoisted to a module constant so it's merged exactly once; locale-specific
+// merging happens per language change in LocalizedThemeProvider, which takes
+// this base theme and layers the MUI core/grid/picker locale bundles on top.
+const themeOverrides = {
   palette: {
     ...(isContentOne() && {
       primary: {
@@ -118,7 +123,9 @@ const appTheme = createTheme(theme, {
       }),
     },
   },
-});
+};
+
+const appTheme = createTheme(theme, themeOverrides);
 
 MonacoSetup(store);
 
@@ -152,7 +159,7 @@ const App = Sentry.withProfiler(({ initialLoadingMarkup }) => (
           scope.setTag("error_boundary", true);
         }}
       >
-        <ThemeProvider theme={appTheme}>
+        <LocalizedThemeProvider baseTheme={appTheme}>
           <CssBaseline>
             <Provider store={store}>
               <Router history={history}>
@@ -168,7 +175,7 @@ const App = Sentry.withProfiler(({ initialLoadingMarkup }) => (
               </Router>
             </Provider>
           </CssBaseline>
-        </ThemeProvider>
+        </LocalizedThemeProvider>
       </Sentry.ErrorBoundary>
     </Suspense>
   </StrictMode>

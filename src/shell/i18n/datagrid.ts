@@ -1,7 +1,6 @@
 import type { GridLocaleText } from "@mui/x-data-grid-pro";
 import { esES, zhCN, ruRU, nlNL } from "@mui/x-data-grid-pro/locales";
 
-import i18n from "./index";
 import type { SupportedLocale } from "./index";
 import { hiIN } from "./datagrid-locales/hi-IN";
 
@@ -36,10 +35,3 @@ export const getDataGridLocaleText = (
   tag: string | undefined
 ): Partial<GridLocaleText> | undefined =>
   DATA_GRID_LOCALES[tag as SupportedLocale];
-
-/**
- * Convenience reader for non-component call sites: resolves against the i18n
- * singleton's current language.
- */
-export const dataGridLocaleText = (): Partial<GridLocaleText> | undefined =>
-  getDataGridLocaleText(i18n.language);
