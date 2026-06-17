@@ -14,11 +14,12 @@ declare const __CONFIG__: { ENV?: string } | undefined;
 
 const gitHash = typeof __GIT_HASH__ !== "undefined" ? __GIT_HASH__ : "dev";
 
-// Match the gate Sentry itself uses (utility/sentry.js): Sentry is only
-// initialized for stage/production, so missing-key reporting is meaningful
-// only there. Everything else (development, local) is a dev surface where we
-// crash hard on a missing key (see handleMissingKey).
-const isReportingEnv = ["stage", "production"].includes(__CONFIG__?.ENV ?? "");
+// Stage/production get user-safe behavior: fallback copy, Sentry reporting, and
+// localStorage-backed translation caching. Development/local get strict,
+// fresh-from-HTTP behavior so locale JSON edits show up after a refresh.
+const isProductionLikeEnv = ["stage", "production"].includes(
+  __CONFIG__?.ENV ?? ""
+);
 
 // Disable the en-US fallback in dev so a key missing from the *active* locale
 // resolves to nothing and trips handleMissingKey (which throws). With the
@@ -26,7 +27,7 @@ const isReportingEnv = ["stage", "production"].includes(__CONFIG__?.ENV ?? "");
 // silently render the English value and the gap would go undetected — the
 // opposite of the goal. Stage/production keep the fallback so real users never
 // see a raw key; gaps there are reported to Sentry instead.
-const fallbackLng = isReportingEnv ? "en-US" : false;
+const fallbackLng = isProductionLikeEnv ? "en-US" : false;
 
 // With the fallback off, i18next has nothing to fall back to when the language
 // detector comes up empty (e.g. cleared localStorage), so it would init with
@@ -35,7 +36,7 @@ const fallbackLng = isReportingEnv ? "en-US" : false;
 // mirrors exactly what the localStorage detector would have resolved. In
 // stage/production the fallback already guarantees a language, so we let the
 // detector run as before.
-const devInitialLng = isReportingEnv
+const devInitialLng = isProductionLikeEnv
   ? undefined
   : (typeof localStorage !== "undefined" &&
       localStorage.getItem("app_locale")) ||
@@ -78,7 +79,7 @@ const handleMissingKey = (
     return;
   }
 
-  if (isReportingEnv) {
+  if (isProductionLikeEnv) {
     const dedupeKey = `${lngs.join(",")}:${qualifiedKey}`;
     if (reportedMissingKeys.has(dedupeKey)) {
       return;
@@ -116,8 +117,16 @@ export const SUPPORTED_LOCALES = [
 ] as const;
 export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
 
+// Stage/production use the chained backend for localStorage caching. Dev/local
+// use HTTP directly so locale JSON edits are not hidden by stale
+// `i18next_res_*` entries.
+if (isProductionLikeEnv) {
+  i18n.use(ChainedBackend);
+} else {
+  i18n.use(HttpBackend);
+}
+
 i18n
-  .use(ChainedBackend)
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
@@ -130,18 +139,22 @@ i18n
     ns: ["common", "shell"],
     defaultNS: "common",
 
-    backend: {
-      backends: [LocalStorageBackend, HttpBackend],
-      backendOptions: [
-        {
-          prefix: "i18next_res_",
-          defaultVersion: gitHash,
-        },
-        {
+    backend: isProductionLikeEnv
+      ? {
+          backends: [LocalStorageBackend, HttpBackend],
+          backendOptions: [
+            {
+              prefix: "i18next_res_",
+              defaultVersion: gitHash,
+            },
+            {
+              loadPath: "/locales/{{lng}}/{{ns}}.json",
+            },
+          ],
+        }
+      : {
           loadPath: "/locales/{{lng}}/{{ns}}.json",
         },
-      ],
-    },
 
     detection: {
       order: ["localStorage"],
