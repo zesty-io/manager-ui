@@ -127,9 +127,13 @@ export const useStudioLayersTree = ({
     let fallbackId: string | null = null;
     for (const node of nodeById.values()) {
       if (node.kind !== "field") continue;
+      // Match studioId AND fieldZuid: one element can bind several attributes
+      // (e.g. img src + alt) under a single studioId, so studioId alone is
+      // ambiguous — the fieldZuid disambiguates which binding is selected.
       if (
         selectedElement.studioId &&
-        node.studioId === selectedElement.studioId
+        node.studioId === selectedElement.studioId &&
+        node.fieldZuid === selectedElement.fieldZuid
       ) {
         return node.id;
       }
