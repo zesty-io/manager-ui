@@ -231,11 +231,16 @@ export const Header = ({
                 </IconButton>
               )}
               <Typography variant="h3" fontWeight={700}>
-                {!isReplace && selectedFiles?.length}{" "}
-                {!isReplace && isSelectDialog && limitSelected
-                  ? ` / ${limitSelected} `
-                  : null}
-                {isReplace && "Replacement File"} Selected
+                {isReplace
+                  ? t("media.headerReplacementFileSelected")
+                  : isSelectDialog && limitSelected
+                  ? t("media.headerFilesSelectedLimit", {
+                      count: selectedFiles?.length,
+                      limit: limitSelected,
+                    })
+                  : t("media.headerFilesSelected", {
+                      count: selectedFiles?.length,
+                    })}
               </Typography>
             </Stack>
             <Box>
@@ -249,7 +254,7 @@ export const Header = ({
                     onClick={() => dispatch(clearSelectedFiles())}
                     startIcon={<CloseIcon color="action" fontSize="small" />}
                   >
-                    Deselect All
+                    {t("media.headerDeselectAll")}
                   </Button>
                   <Button
                     variant="outlined"
@@ -262,7 +267,7 @@ export const Header = ({
                       <DoneAllRoundedIcon color="action" fontSize="small" />
                     }
                   >
-                    Select All
+                    {t("media.headerSelectAll")}
                   </Button>
                 </>
               )}
@@ -287,7 +292,7 @@ export const Header = ({
                       <DriveFolderUploadRoundedIcon fontSize="small" />
                     }
                   >
-                    Move
+                    {t("media.headerMove")}
                   </Button>
                 </>
               )}
@@ -313,7 +318,7 @@ export const Header = ({
           </Stack>
         ) : isReplace ? (
           <Typography variant="h3" fontWeight={700}>
-            Select Replacement File
+            {t("media.headerSelectReplacementFile")}
           </Typography>
         ) : (
           <Stack
@@ -362,7 +367,7 @@ export const Header = ({
                   size="small"
                   onClick={openMenu}
                   sx={{ height: "fit-content", mr: 1 }}
-                  aria-label="Open folder menu"
+                  aria-label={t("media.headerOpenFolderMenuAria")}
                 >
                   <MoreHorizRoundedIcon fontSize="small" />
                 </IconButton>
@@ -384,7 +389,7 @@ export const Header = ({
                   onClick={() => setOpenDialog("new")}
                   size="small"
                 >
-                  Add Sub Folder
+                  {t("media.headerAddSubFolder")}
                 </Button>
               )}
               {hideUpload ? null : (

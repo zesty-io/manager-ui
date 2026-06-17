@@ -30,7 +30,7 @@ export const apiTypeLabelMap: Partial<Record<ApiType, string>> = {
   "visual-layout": "Visual Layout",
 };
 
-export type ApiType = typeof apiTypes[number];
+export type ApiType = (typeof apiTypes)[number];
 
 export const ModelApi = () => {
   return (

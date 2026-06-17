@@ -59,13 +59,13 @@ export const DateFilter: FC<DateFilterProps> = ({
   const resolvedDefaultText = defaultButtonText ?? t("shell.dateUpdated");
 
   const PRESET_DATES: PresetDate[] = [
-    { text: t("shell.dateToday"), value: "today" },
-    { text: t("shell.dateYesterday"), value: "yesterday" },
-    { text: t("shell.dateLast7Days"), value: "last_7_days" },
+    { text: t("common.today"), value: "today" },
+    { text: t("common.yesterday"), value: "yesterday" },
+    { text: t("common.last7Days"), value: "last_7_days" },
     { text: t("shell.dateLast14Days"), value: "last_14_days" },
-    { text: t("shell.dateLast30Days"), value: "last_30_days" },
-    { text: t("shell.dateLast3Months"), value: "last_3_months" },
-    { text: t("shell.dateLast12Months"), value: "last_12_months" },
+    { text: t("common.last30Days"), value: "last_30_days" },
+    { text: t("common.last3Months"), value: "last_3_months" },
+    { text: t("common.last12Months"), value: "last_12_months" },
   ];
 
   const CUSTOM_DATES: CustomDate[] = [
@@ -86,13 +86,15 @@ export const DateFilter: FC<DateFilterProps> = ({
         return match?.text;
       }
       case "on":
-        return t("shell.dateOnValue", { date: fmt(value?.value as string) });
+        return t("common.dateOnValue", { date: fmt(value?.value as string) });
       case "before":
-        return t("shell.dateBeforeValue", {
+        return t("common.dateBeforeValue", {
           date: fmt(value?.value as string),
         });
       case "after":
-        return t("shell.dateAfterValue", { date: fmt(value?.value as string) });
+        return t("common.dateAfterValue", {
+          date: fmt(value?.value as string),
+        });
       case "daterange": {
         const dateRange = value?.value as DateRangeFilterValue;
         return t("shell.dateRangeValue", {

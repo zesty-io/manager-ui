@@ -211,7 +211,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
       <Chip
         label={
           <Typography variant="body3" color="text.secondary">
-            {isCopied ? t("common.copied") : "Copy URL"}
+            {isCopied ? t("common.copied") : t("media.thumbnailCopyUrl")}
           </Typography>
         }
         color="default"
@@ -1761,7 +1761,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 variant="body2"
                 sx={{ textAlign: "center", color: "grey.500" }}
               >
-                File type not recognized
+                {t("media.fileTypeNotRecognized")}
               </Typography>
             </Box>
             <Chip

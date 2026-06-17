@@ -51,5 +51,19 @@
   "contentItems": "कंटेंट आइटम",
   "models": "मॉडल",
   "codeFiles": "कोड फ़ाइलें",
-  "mediaItems": "मीडिया आइटम"
+  "mediaItems": "मीडिया आइटम",
+  "last7Days": "पिछले 7 दिन",
+  "last30Days": "पिछले 30 दिन",
+  "last3Months": "पिछले 3 महीने",
+  "last12Months": "पिछले 12 महीने",
+  "dateOnValue": "{{date}} को",
+  "dateBeforeValue": "{{date}} से पहले",
+  "dateAfterValue": "{{date}} के बाद",
+  "sortNameAToZ": "नाम (A से Z)",
+  "sortNameZToA": "नाम (Z से A)",
+  "searchAgain": "फिर से खोजें",
+  "media": "मीडिया",
+  "code": "कोड",
+  "name": "नाम",
+  "mediaRequests": "मीडिया अनुरोध"
 }

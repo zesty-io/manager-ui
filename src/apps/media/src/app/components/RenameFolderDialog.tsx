@@ -59,9 +59,11 @@ export const RenameFolderDialog = ({
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth={"xs"}>
-      <DialogTitle>Rename Folder</DialogTitle>
+      <DialogTitle>{t("media.renameFolderDialogTitle")}</DialogTitle>
       <DialogContent>
-        <InputLabel>New Folder Name</InputLabel>
+        <InputLabel>
+          {t("media.renameFolderDialogNewFolderNameLabel")}
+        </InputLabel>
         <TextField
           autoFocus
           onFocus={(evt) => evt.target.select()}

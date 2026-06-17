@@ -51,5 +51,19 @@
   "contentItems": "内容项",
   "models": "模型",
   "codeFiles": "代码文件",
-  "mediaItems": "媒体项"
+  "mediaItems": "媒体项",
+  "last7Days": "最近 7 天",
+  "last30Days": "最近 30 天",
+  "last3Months": "最近 3 个月",
+  "last12Months": "最近 12 个月",
+  "dateOnValue": "在 {{date}}",
+  "dateBeforeValue": "早于 {{date}}",
+  "dateAfterValue": "晚于 {{date}}",
+  "sortNameAToZ": "名称（A 到 Z）",
+  "sortNameZToA": "名称（Z 到 A）",
+  "searchAgain": "重新搜索",
+  "media": "媒体",
+  "code": "代码",
+  "name": "名称",
+  "mediaRequests": "媒体请求"
 }

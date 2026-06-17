@@ -1,4 +1,5 @@
 import { FC, useState, useMemo, useRef, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Box,
   Typography,
@@ -669,6 +670,7 @@ const ActionColumn = ({ params }: any) => {
 };
 
 export const MediaList: FC<Props> = ({ files, groups }) => {
+  const { t } = useTranslation();
   const imageEl = useRef<HTMLImageElement>();
   const [imageOrientation, setImageOrientation] = useState<string>("");
   const [lazyLoading, setLazyLoading] = useState(true);
@@ -706,7 +708,7 @@ export const MediaList: FC<Props> = ({ files, groups }) => {
   const columns = [
     {
       field: "name",
-      headerName: "Name",
+      headerName: t("common.name"),
       sortable: false,
       flex: 1,
       renderCell: (params: any) => {
@@ -732,7 +734,7 @@ export const MediaList: FC<Props> = ({ files, groups }) => {
     },
     {
       field: "created_at",
-      headerName: "Added On",
+      headerName: t("media.mediaListColAddedOn"),
       width: 200,
       sortable: false,
       renderCell: (params: any) => {
@@ -748,7 +750,7 @@ export const MediaList: FC<Props> = ({ files, groups }) => {
     },
     {
       field: "type",
-      headerName: "Type",
+      headerName: t("media.mediaListColType"),
       width: 104,
       sortable: false,
       renderCell: (params: any) => {

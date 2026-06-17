@@ -57,12 +57,11 @@ export const DeleteFolderDialog = ({ open, onClose, id, groupId }: Props) => {
             height: "40px",
           }}
         />
-        Delete Folder?
+        {t("media.deleteFolderDialogTitle")}
       </DialogTitle>
       <DialogContent>
         <DialogContentText>
-          Deleting your folder will NOT delete the files it. These files can
-          still be found in All Media.
+          {t("media.deleteFolderDialogMessage")}
         </DialogContentText>
       </DialogContent>
       <DialogActions>
@@ -77,7 +76,7 @@ export const DeleteFolderDialog = ({ open, onClose, id, groupId }: Props) => {
             deleteGroup({ id, groupId });
           }}
         >
-          Delete Folder
+          {t("media.deleteFolderDialogConfirmButton")}
         </Button>
       </DialogActions>
     </Dialog>

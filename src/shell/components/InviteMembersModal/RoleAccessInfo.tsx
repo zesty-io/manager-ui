@@ -66,7 +66,7 @@ export const RoleAccessInfo = ({ role }: Props) => {
     content: t("common.content"),
     schema: t("shell.navSchema"),
     code: t("shell.roleAccessCode"),
-    media: t("shell.navMedia"),
+    media: t("common.media"),
     leads: t("shell.navLeads"),
     "activity log": t("shell.roleAccessActivityLog"),
     redirects: t("shell.navRedirects"),

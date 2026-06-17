@@ -87,6 +87,29 @@ Spec: https://docs.google.com/document/d/1l5RdyDxQLTwXdz80Gk1_y8GdVv_KoQG5VfSmdv
 
 All components use `useTranslation()` (no namespace argument). The namespace is expressed in the key string itself. `nsSeparator: "."` and `keySeparator: false` are set in both the runtime config (`src/shell/i18n/index.ts`) and the parser config (`i18next-parser.config.js`) to support this syntax.
 
+> **Keys are flat camelCase — never dotted, never nested.** Because the config sets `nsSeparator: "."` **and** `keySeparator: false`, i18next splits a key on _every_ `.`, takes the first segment as the namespace, then rejoins the rest with `keySeparator` — which is `false`, coerced to the literal string `"false"`. So a multi-dot key like `t("media.dateFilter.today")` resolves to the lookup `dateFilterfalsetoday` → not found → the dev handler throws. Group by **camelCase prefix** instead (`dateFilterToday`, `fileModalContentTitleLabel`), exactly like the existing `navApps` / `accountLogOut` / `columnName` keys. Do **not** nest objects in the JSON.
+
+### Pluralization — every language's full CLDR plural-form set is mandatory
+
+Any key carrying a plural suffix (`_one`, `_other`, …) is a **plural key**. When it's used with `{ count }`, i18next selects the form by the **active language's CLDR plural categories** and fires the missing-key handler (→ **dev throw**) for _any_ category that has no key. The categories differ per language, so a plural key must define **all** of them for **each** locale:
+
+| Locale           | CLDR plural forms required        |
+| ---------------- | --------------------------------- |
+| `en-US`          | `_one`, `_other`                  |
+| `hi-IN`, `nl-NL` | `_one`, `_other`                  |
+| `es-ES`          | `_one`, `_many`, `_other`         |
+| `ru-RU`          | `_one`, `_few`, `_many`, `_other` |
+| `zh-CN`          | `_other`                          |
+
+Consequences and rules:
+
+- **Plural keys legitimately have different key-sets per locale** (Russian has 4 forms, Chinese has 1). This is the **one exception** to "all locale files mirror the same keys" — do not enforce strict key-parity on plural bases.
+- **The thrown error can name the wrong form.** When any form is missing, i18next batch-reports the whole plural family, and the dev handler throws on the first one it sees — so you may get `Missing … _one` when `_one` exists and the real gap is `_few`/`_many`. Check the whole family.
+- **Single (non-suffixed) keys used with `{ count }` are fine** — e.g. `"matchesFound": "{{count}} matches found"`. With no plural variants present, i18next falls back to the base key. Only add `_one`/`_other`… when the wording actually changes by count (so the noun/verb inflects).
+- **Authoritative source:** the [Unicode CLDR plural rules](https://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html); i18next computes the same via `Intl.PluralRules`. Get the exact suffixes for a locale with `i18n.services.pluralResolver.getSuffixes(tag)`.
+- **Spanish `_many`** is for compact/large numbers and uses the same wording as `_other` for these strings — set them equal rather than leaving `_many` absent.
+- A coverage test asserting every plural base has its locale's full CLDR set would catch gaps in CI (Phase 8 candidate).
+
 ### `common`
 
 Simple, universal words and short phrases reused across the entire app. If a string is a single generic word or short action label, it belongs here.
@@ -100,6 +123,14 @@ Examples: `Save`, `Cancel`, `Edit`, `Delete`, `Confirm`, `Close`, `Back`, `Next`
 - [x] Add `public/locales/{locale}/common.json` for all 5 non-English locales (translations added)
 - [x] Replace occurrences with `t("common.key")` using `useTranslation()` (no namespace arg — namespace is in the key)
 - [x] Remove temporary `defaultValue` props from all `t()` calls
+- [x] Cross-namespace consolidation pass (run during `media`, Phase 4): moved
+      strings that duplicated existing translations across namespaces into
+      `common` — date presets (`last7Days`…), date on/before/after values, sort
+      A–Z/Z–A, `searchAgain`, `name`, `mediaRequests`, `media`, `code` (+ reused
+      existing `today`/`yesterday`/`more`). Existing es/ru/zh/etc. values were
+      carried over from `shell`/`dashboard`; 53 call sites repointed; the dupes
+      removed from `shell`/`dashboard`/`media`. Left `shell.code` untouched — it
+      is the 2FA verification-code label (different meaning, must not merge).
 
 ### `shell`
 
@@ -111,6 +142,12 @@ Strings specific to the app shell — sidebar, topbar, global search, notificati
 - [x] Replace hardcoded strings with `t("shell.key")` / `t("common.key")` using `useTranslation()` (no namespace arg)
 - [ ] Run `i18next-parser` to validate no keys are missing
 - [ ] Translate `shell.json` into all 5 non-English locales
+- [x] CLDR plural-form backfill (per the Pluralization rule above): audited all
+      namespaces × locales for plural keys missing required forms. Backfilled
+      `shell` es-ES `_many` and ru-RU `_few`/`_many` for `tabsResults`,
+      `searchPageResults`, `searchPageResultsFor`, `invitesSentPartial`,
+      `invitesSentSuccess`, `unableToInviteUsers` (would have thrown in dev at
+      those counts). `common`/`dashboard`/`media` were clean.
 
 #### Tier 1 — Low effort, low risk (static strings, small components)
 
@@ -269,7 +306,18 @@ For each sub-app:
       (frontend mirror of backend-generated role names).
 - [ ] `content`
 - [ ] `schema`
-- [ ] `media`
+- [x] `media` — fully localized (en-US). Followed the dashboard lazy-load
+      pattern: `MediaApp` wraps a local `<Suspense>`; `MediaAppContent` calls
+      `useTranslation("media")`. ~166 flat-camelCase keys in `en-US/media.json`;
+      the 5 non-English files are scaffolds (blank, translated manually — es-ES
+      and ru-RU partially done). Scope beyond the visible components: - **Notifications** (upload / replace / delete) live in the redux thunk
+      `shell/store/media-revamp.ts`, not in components — localized via the
+      i18n singleton (`i18n.t(...)`, no hook), with i18next pluralization for
+      the upload-header noun (`uploadModalNounFile` / `uploadModalNounReplacedFile`). - **Active filter chips** rendered the raw stored value, not the menu's
+      localized label. `DateFilter` (preset) and `FiletypeFilter` (category)
+      now map the value → the same key the menu uses; specific image/video
+      format chips (PNG, MP4, …) render the raw identifier (not translated).
+      Removed the now-dead English `pluralize` helper.
 - [ ] `code`
 - [ ] `settings`
 - [ ] `seo`
@@ -349,7 +397,7 @@ Per-namespace checklist (repeat for each):
 3. Run `i18next-parser` to generate / update `public/locales/en-US/<namespace>.json`
 4. Remove `defaultValue` from `t()` calls once locale file is confirmed correct
 5. Translate into all 5 non-English locales
-6. Handle string interpolation (`{{variable}}`) and pluralization (`_one` / `_other` key suffixes) where needed
+6. Handle string interpolation (`{{variable}}`) and pluralization where needed. **Plural keys must define every CLDR form for every language** (es adds `_many`; ru adds `_few` + `_many`; zh only `_other`) — see "Pluralization" under Phase 3. Missing forms throw in dev. Keep keys flat camelCase (no dots/nesting).
 
 ---
 

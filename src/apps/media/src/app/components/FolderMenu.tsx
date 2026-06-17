@@ -54,7 +54,7 @@ export const FolderMenu: FC<Props> = ({
           <ListItemIcon>
             <CreateNewFolderIcon fontSize="small" />
           </ListItemIcon>
-          <ListItemText>Add Sub Folder</ListItemText>
+          <ListItemText>{t("media.folderMenuAddSubFolder")}</ListItemText>
         </MenuItem>
         <MenuItem
           onClick={() => {
@@ -65,7 +65,7 @@ export const FolderMenu: FC<Props> = ({
           <ListItemIcon>
             <DriveFileRenameOutlineIcon fontSize="small" />
           </ListItemIcon>
-          <ListItemText>Rename</ListItemText>
+          <ListItemText>{t("media.folderMenuRename")}</ListItemText>
         </MenuItem>
         {!!groupId && (
           <MenuItem
@@ -103,7 +103,9 @@ export const FolderMenu: FC<Props> = ({
               )}
             </ListItemIcon>
             <ListItemText>
-              {hiddenGroups?.includes(id) ? "Show" : "Hide"}
+              {hiddenGroups?.includes(id)
+                ? t("media.folderMenuShow")
+                : t("media.folderMenuHide")}
             </ListItemText>
           </MenuItem>
         )}

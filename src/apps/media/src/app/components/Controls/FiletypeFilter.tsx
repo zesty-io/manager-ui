@@ -1,4 +1,5 @@
 import { FC, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useParams } from "../../../../../../shell/hooks/useParams";
 
 import Button from "@mui/material/Button";
@@ -27,16 +28,25 @@ import { ImageFilterRow } from "./ImageFilterRow";
 import { VideoFilterRow } from "./VideoFilterRow";
 import { FilterButton } from "../../../../../../shell/components/Filters";
 
-const pluralize = (filetype: Filetype) => {
-  // audio & code filetypes can't be pluralized
-  if (filetype !== "Audio" && filetype !== "Code") {
-    // all other filetypes can be pluralized, just add an "s"
-    return `${filetype}s`;
-  }
-  return filetype;
+// Localized label key per filetype *category* (matches the menu items). Specific
+// format values (PNG, MP4, …) aren't here — they render as-is (raw value), since
+// format identifiers aren't translated.
+const FILETYPE_LABEL_KEYS: Partial<Record<Filetype, string>> = {
+  Image: "media.filetypeFilterImages",
+  Video: "media.filetypeFilterVideos",
+  Audio: "media.filetypeFilterAudio",
+  PDF: "media.filetypeFilterPdfs",
+  Document: "media.filetypeFilterDocuments",
+  Presentation: "media.filetypeFilterPresentations",
+  Spreadsheet: "media.filetypeFilterSpreadsheets",
+  Code: "common.code",
+  Font: "media.filetypeFilterFonts",
+  Folder: "media.filetypeFilterFolders",
+  Archive: "media.filetypeFilterArchives",
 };
 
 export const FiletypeFilter: FC = () => {
+  const { t } = useTranslation();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [params, setParams] = useParams();
   const open = Boolean(anchorEl);
@@ -57,7 +67,13 @@ export const FiletypeFilter: FC = () => {
       <FilterButton
         filterId="fileType"
         isFilterActive={!!activeFilter}
-        buttonText={activeFilter ? pluralize(activeFilter) : "File Type"}
+        buttonText={
+          activeFilter
+            ? FILETYPE_LABEL_KEYS[activeFilter]
+              ? t(FILETYPE_LABEL_KEYS[activeFilter])
+              : activeFilter
+            : t("media.filetypeFilterButtonLabel")
+        }
         onOpenMenu={handleClick}
         onRemoveFilter={() => handleChange(null)}
       />
@@ -68,55 +84,71 @@ export const FiletypeFilter: FC = () => {
           <ListItemIcon>
             <AudiotrackRounded fontSize="small" />
           </ListItemIcon>
-          <Typography variant="body1">Audio</Typography>
+          <Typography variant="body1">
+            {t("media.filetypeFilterAudio")}
+          </Typography>
         </MenuItem>
         <MenuItem onClick={() => handleChange("PDF")}>
           <ListItemIcon>
             <PicutreasPdfRounded fontSize="small" />
           </ListItemIcon>
-          <Typography variant="body1">PDFs</Typography>
+          <Typography variant="body1">
+            {t("media.filetypeFilterPdfs")}
+          </Typography>
         </MenuItem>
         <MenuItem onClick={() => handleChange("Document")}>
           <ListItemIcon>
             <DescriptionRounded fontSize="small" />
           </ListItemIcon>
-          <Typography variant="body1">Documents</Typography>
+          <Typography variant="body1">
+            {t("media.filetypeFilterDocuments")}
+          </Typography>
         </MenuItem>
         <MenuItem onClick={() => handleChange("Presentation")}>
           <ListItemIcon>
             <SlideshowRounded fontSize="small" />
           </ListItemIcon>
-          <Typography variant="body1">Presentations</Typography>
+          <Typography variant="body1">
+            {t("media.filetypeFilterPresentations")}
+          </Typography>
         </MenuItem>
         <MenuItem onClick={() => handleChange("Spreadsheet")}>
           <ListItemIcon>
             <BorderAllRounded fontSize="small" />
           </ListItemIcon>
-          <Typography variant="body1">Spreadsheets</Typography>
+          <Typography variant="body1">
+            {t("media.filetypeFilterSpreadsheets")}
+          </Typography>
         </MenuItem>
         <MenuItem onClick={() => handleChange("Code")}>
           <ListItemIcon>
             <CodeRounded fontSize="small" />
           </ListItemIcon>
-          <Typography variant="body1">Code</Typography>
+          <Typography variant="body1">{t("common.code")}</Typography>
         </MenuItem>
         <MenuItem onClick={() => handleChange("Font")}>
           <ListItemIcon>
             <FontDownloadRounded fontSize="small" />
           </ListItemIcon>
-          <Typography variant="body1">Fonts</Typography>
+          <Typography variant="body1">
+            {t("media.filetypeFilterFonts")}
+          </Typography>
         </MenuItem>
         <MenuItem onClick={() => handleChange("Folder")}>
           <ListItemIcon>
             <FolderRounded fontSize="small" />
           </ListItemIcon>
-          <Typography variant="body1">Folders</Typography>
+          <Typography variant="body1">
+            {t("media.filetypeFilterFolders")}
+          </Typography>
         </MenuItem>
         <MenuItem onClick={() => handleChange("Archive")}>
           <ListItemIcon>
             <FolderZipRounded fontSize="small" />
           </ListItemIcon>
-          <Typography variant="body1">Archives (zip)</Typography>
+          <Typography variant="body1">
+            {t("media.filetypeFilterArchives")}
+          </Typography>
         </MenuItem>
       </Menu>
     </>

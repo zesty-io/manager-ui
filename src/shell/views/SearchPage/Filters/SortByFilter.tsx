@@ -8,8 +8,8 @@ export type FilterValues = "modified" | "created" | "AtoZ" | "ZtoA";
 const OPTIONS: { [key in FilterValues]: string } = Object.freeze({
   modified: "shell.sortMostRecentlyModified",
   created: "shell.sortMostRecentlyCreated",
-  AtoZ: "shell.sortNameAToZ",
-  ZtoA: "shell.sortNameZToA",
+  AtoZ: "common.sortNameAToZ",
+  ZtoA: "common.sortNameZToA",
 });
 
 interface SortByFilter {

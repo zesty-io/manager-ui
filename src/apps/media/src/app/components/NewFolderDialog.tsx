@@ -29,7 +29,7 @@ interface Props {
 
 export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
   const { t } = useTranslation();
-  const [name, setName] = useState("Untitled");
+  const [name, setName] = useState(t("media.newFolderDialogDefaultFolderName"));
   const [selectedGroup, setSelectedGroup] = useState<Group | null>();
   const [params, setParams] = useParams();
 
@@ -96,7 +96,7 @@ export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
       if (binId) {
         return [
           {
-            name: currentBin?.name ?? "None",
+            name: currentBin?.name ?? t("media.newFolderDialogNone"),
             bin_id: binId,
             group_id: binId,
             id: binId,
@@ -125,9 +125,9 @@ export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth={"xs"}>
-      <DialogTitle>New Folder</DialogTitle>
+      <DialogTitle>{t("media.newFolderDialogTitle")}</DialogTitle>
       <DialogContent>
-        <InputLabel>Parent Folder</InputLabel>
+        <InputLabel>{t("media.newFolderDialogParentFolderLabel")}</InputLabel>
         <Autocomplete
           data-cy="newFolderParentSelector"
           size="small"
@@ -150,7 +150,7 @@ export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
           onChange={(event, newValue) => setSelectedGroup(newValue as Group)}
           sx={{ mb: 3 }}
         />
-        <InputLabel>Folder Name</InputLabel>
+        <InputLabel>{t("media.newFolderDialogFolderNameLabel")}</InputLabel>
         <TextField
           autoFocus
           value={name}

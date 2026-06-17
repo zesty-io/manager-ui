@@ -143,7 +143,7 @@ export const ResourceTable = ({ dateRange }: Props) => {
   const columns = [
     {
       field: "name",
-      headerName: t("dashboard.columnName"),
+      headerName: t("common.name"),
       flex: 1,
       sortable: false,
       renderCell: ({ row }: GridRenderCellParams) => <NameCell {...row} />,

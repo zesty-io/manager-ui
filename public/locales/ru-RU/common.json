@@ -51,5 +51,19 @@
   "contentItems": "Элементы контента",
   "models": "Модели",
   "codeFiles": "Файлы кода",
-  "mediaItems": "Медиа-элементы"
+  "mediaItems": "Медиа-элементы",
+  "last7Days": "Последние 7 дней",
+  "last30Days": "Последние 30 дней",
+  "last3Months": "Последние 3 месяца",
+  "last12Months": "Последние 12 месяцев",
+  "dateOnValue": "{{date}}",
+  "dateBeforeValue": "До {{date}}",
+  "dateAfterValue": "После {{date}}",
+  "sortNameAToZ": "Имя (А-Я)",
+  "sortNameZToA": "Имя (Я-А)",
+  "searchAgain": "Искать снова",
+  "media": "Медиа",
+  "code": "Код",
+  "name": "Имя",
+  "mediaRequests": "Медиа-запросы"
 }

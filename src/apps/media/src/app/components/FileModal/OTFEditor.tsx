@@ -130,7 +130,7 @@ export const OTFEditor = ({
             >
               <ArrowBackRoundedIcon fontSize="small" color="action" />
             </IconButton>
-            <Typography variant="body1">On The Fly Image Editor</Typography>
+            <Typography variant="body1">{t("media.otfEditorTitle")}</Typography>
           </Stack>
           <Button size="small" variant="contained" onClick={handleDone}>
             {t("common.done")}
@@ -139,7 +139,7 @@ export const OTFEditor = ({
       </Box>
       <Stack gap={2} sx={{ p: 2 }}>
         <Box>
-          <InputLabel>Fit</InputLabel>
+          <InputLabel>{t("media.otfEditorFitLabel")}</InputLabel>
           <Select
             fullWidth
             value={imageSettings?.fit || ""}
@@ -148,18 +148,18 @@ export const OTFEditor = ({
             }
             displayEmpty
           >
-            <MenuItem value="">None</MenuItem>
-            <MenuItem value="bounds">Bounds</MenuItem>
-            <MenuItem value="cover">Cover</MenuItem>
-            <MenuItem value="crop">Crop</MenuItem>
+            <MenuItem value="">{t("media.otfEditorFitNone")}</MenuItem>
+            <MenuItem value="bounds">{t("media.otfEditorFitBounds")}</MenuItem>
+            <MenuItem value="cover">{t("media.otfEditorFitCover")}</MenuItem>
+            <MenuItem value="crop">{t("media.otfEditorFitCrop")}</MenuItem>
           </Select>
         </Box>
         <Stack direction="row" gap={2}>
           <Box width="100%">
-            <InputLabel>Width</InputLabel>
+            <InputLabel>{t("media.otfEditorWidthLabel")}</InputLabel>
             <TextField
               fullWidth
-              placeholder="Auto"
+              placeholder={t("media.otfEditorAutoPlaceholder")}
               value={imageSettings?.width || ""}
               onChange={(evt) =>
                 setImageSettings({ ...imageSettings, width: evt.target.value })
@@ -167,10 +167,10 @@ export const OTFEditor = ({
             />
           </Box>
           <Box width="100%">
-            <InputLabel>Height</InputLabel>
+            <InputLabel>{t("media.otfEditorHeightLabel")}</InputLabel>
             <TextField
               fullWidth
-              placeholder="Auto"
+              placeholder={t("media.otfEditorAutoPlaceholder")}
               value={imageSettings?.height || ""}
               onChange={(evt) =>
                 setImageSettings({ ...imageSettings, height: evt.target.value })
@@ -180,7 +180,7 @@ export const OTFEditor = ({
         </Stack>
         <Stack direction="row" gap={2}>
           <Box sx={{ maxWidth: "186px" }}>
-            <InputLabel>Blur</InputLabel>
+            <InputLabel>{t("media.otfEditorBlurLabel")}</InputLabel>
             <TextField
               fullWidth
               placeholder="0"
@@ -312,9 +312,9 @@ export const OTFEditor = ({
           </Stack>
         </Stack>
         <Box>
-          <InputLabel>Saturation</InputLabel>
+          <InputLabel>{t("media.otfEditorSaturationLabel")}</InputLabel>
           <Slider
-            aria-label="Saturation"
+            aria-label={t("media.otfEditorSaturationAria")}
             valueLabelDisplay="auto"
             value={Number(imageSettings?.saturation) || 0}
             min={-100}
@@ -326,7 +326,7 @@ export const OTFEditor = ({
           />
         </Box>
         <Box>
-          <InputLabel>Optimize</InputLabel>
+          <InputLabel>{t("media.otfEditorOptimizeLabel")}</InputLabel>
           <Select
             fullWidth
             value={imageSettings?.optimize || ""}
@@ -338,10 +338,12 @@ export const OTFEditor = ({
             }
             displayEmpty
           >
-            <MenuItem value="">None</MenuItem>
-            <MenuItem value="high">High</MenuItem>
-            <MenuItem value="medium">Medium</MenuItem>
-            <MenuItem value="low">Low</MenuItem>
+            <MenuItem value="">{t("media.otfEditorFitNone")}</MenuItem>
+            <MenuItem value="high">{t("media.otfEditorOptimizeHigh")}</MenuItem>
+            <MenuItem value="medium">
+              {t("media.otfEditorOptimizeMedium")}
+            </MenuItem>
+            <MenuItem value="low">{t("media.otfEditorOptimizeLow")}</MenuItem>
           </Select>
         </Box>
       </Stack>
@@ -355,11 +357,11 @@ export const OTFEditor = ({
         }}
       >
         <InputLabel sx={{ textAlign: "center", color: "white" }}>
-          ✨ Copy New URL with Applied Editsl
+          {t("media.otfEditorCopyUrlLabel")}
         </InputLabel>
         <TextField
           fullWidth
-          placeholder="Auto"
+          placeholder={t("media.otfEditorAutoPlaceholder")}
           value={newUrl}
           disabled
           InputProps={{
@@ -384,7 +386,7 @@ export const OTFEditor = ({
           }}
         />
         <Alert severity="info" sx={{ mt: 2 }}>
-          These changes will not be saved to the original file or file URL
+          {t("media.otfEditorUnsavedWarning")}
         </Alert>
       </Box>
     </Box>

@@ -20,27 +20,27 @@ interface PresetDate {
 }
 export const PRESET_DATES: readonly PresetDate[] = [
   {
-    textKey: "shell.dateToday",
+    textKey: "common.today",
     value: "today",
   },
   {
-    textKey: "shell.dateYesterday",
+    textKey: "common.yesterday",
     value: "yesterday",
   },
   {
-    textKey: "shell.dateLast7Days",
+    textKey: "common.last7Days",
     value: "last_7_days",
   },
   {
-    textKey: "shell.dateLast30Days",
+    textKey: "common.last30Days",
     value: "last_30_days",
   },
   {
-    textKey: "shell.dateLast3Months",
+    textKey: "common.last3Months",
     value: "last_3_months",
   },
   {
-    textKey: "shell.dateLast12Months",
+    textKey: "common.last12Months",
     value: "last_12_months",
   },
 ] as const;
@@ -72,7 +72,7 @@ export const RESOURCE_TYPES: Record<ResourceType, string> = {
   content: "common.contentItems",
   schema: "common.models",
   code: "common.codeFiles",
-  media: "shell.navMedia",
+  media: "common.media",
   block: "shell.navBlocks",
 } as const;
 
@@ -91,11 +91,11 @@ export const SEARCH_ACCELERATORS: Record<ResourceType, SearchAccelerator> = {
   },
   media: {
     icon: ImageRounded,
-    textKey: "shell.navMedia",
+    textKey: "common.media",
   },
   code: {
     icon: CodeRounded,
-    textKey: "shell.navCode",
+    textKey: "common.code",
   },
   block: {
     icon: CodeRounded,

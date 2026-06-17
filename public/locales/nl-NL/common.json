@@ -51,5 +51,19 @@
   "contentItems": "Inhoudsitems",
   "models": "Modellen",
   "codeFiles": "Codebestanden",
-  "mediaItems": "Media-items"
+  "mediaItems": "Media-items",
+  "last7Days": "Laatste 7 dagen",
+  "last30Days": "Laatste 30 dagen",
+  "last3Months": "Laatste 3 maanden",
+  "last12Months": "Laatste 12 maanden",
+  "dateOnValue": "Op {{date}}",
+  "dateBeforeValue": "Vóór {{date}}",
+  "dateAfterValue": "Na {{date}}",
+  "sortNameAToZ": "Naam (A tot Z)",
+  "sortNameZToA": "Naam (Z tot A)",
+  "searchAgain": "Opnieuw zoeken",
+  "media": "Media",
+  "code": "Code",
+  "name": "Naam",
+  "mediaRequests": "Mediaverzoeken"
 }

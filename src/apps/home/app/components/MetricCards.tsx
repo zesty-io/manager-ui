@@ -106,7 +106,7 @@ export const MetricCards = ({ dateRange }: Props) => {
         loading={requestsFetching}
       />
       <MetricCard
-        title={t("dashboard.mediaRequests")}
+        title={t("common.mediaRequests")}
         value={usage?.MediaConsumption?.TotalRequests}
         icon={
           <Box

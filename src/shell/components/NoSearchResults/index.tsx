@@ -146,7 +146,7 @@ export const NoSearchResults: FC<Props> = ({
                   color="primary"
                   startIcon={<Search />}
                 >
-                  {t("shell.searchAgain")}
+                  {t("common.searchAgain")}
                 </Button>
               </>
             )}

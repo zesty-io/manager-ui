@@ -52,14 +52,16 @@ export const DeleteFileModal: FC<Props> = ({
           <DeleteRoundedIcon sx={{ color: "red.600" }} />
         </Box>
         <Typography variant="h5" fontWeight={700} sx={{ mt: 2 }}>
-          {fileCount > 1 ? `Delete ${fileCount} Files?` : "Delete File"}
+          {fileCount > 1
+            ? t("media.deleteFileModalTitleMultiple", { count: fileCount })
+            : t("media.deleteFileModalTitleSingle")}
         </Typography>
       </DialogTitle>
       <DialogContent>
         <Typography sx={{ wordBreak: "break-all" }}>
           {fileCount > 1
-            ? "You will not be able to recover these files."
-            : `${filename} will be deleted forever`}
+            ? t("media.deleteFileModalWarningMultiple")
+            : t("media.deleteFileModalWarningSingle", { filename })}
         </Typography>
       </DialogContent>
       <DialogActions>
@@ -73,14 +75,20 @@ export const DeleteFileModal: FC<Props> = ({
         <Button
           variant="contained"
           color="error"
-          aria-label="Delete Button"
+          aria-label={t("media.deleteFileModalDeleteButtonAria")}
           onClick={() => onDeleteFile()}
           disabled={isLoadingDelete}
         >
           {isLoadingDelete ? (
             <CircularProgress size="24px" color="inherit" />
           ) : (
-            <>{fileCount > 1 ? `Delete (${fileCount})` : t("common.delete")}</>
+            <>
+              {fileCount > 1
+                ? t("media.deleteFileModalDeleteButtonMultiple", {
+                    count: fileCount,
+                  })
+                : t("common.delete")}
+            </>
           )}
         </Button>
       </DialogActions>

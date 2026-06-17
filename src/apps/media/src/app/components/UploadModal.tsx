@@ -28,7 +28,6 @@ import { DnDProvider } from "./DnDProvider";
 import { UploadButton } from "./UploadButton";
 import CloseIcon from "@mui/icons-material/Close";
 import { mediaManagerApi } from "../../../../../shell/services/mediaManager";
-import pluralizeWord from "../../../../../utility/pluralizeWord";
 
 export const UploadModal: FC = () => {
   const { t } = useTranslation();
@@ -90,7 +89,11 @@ export const UploadModal: FC = () => {
         >
           <UploadHeaderText uploads={uploads} />
           <Stack direction="row" gap={1.5} alignItems="center">
-            <UploadButton {...ids} text="Upload More" variant="outlined" />
+            <UploadButton
+              {...ids}
+              text={t("media.uploadModalUploadMore")}
+              variant="outlined"
+            />
             <IconButton onClick={handleDismiss} size="small">
               <CloseIcon />
             </IconButton>
@@ -161,6 +164,7 @@ export const UploadModal: FC = () => {
 };
 
 const UploadErrors = () => {
+  const { t } = useTranslation();
   const uploads = useSelector((state: AppState) => state.mediaRevamp.uploads);
   const failedUploads = uploads.filter((upload) => upload.status === "failed");
   if (failedUploads.length === 0) return null;
@@ -173,8 +177,9 @@ const UploadErrors = () => {
       }}
     >
       <AlertTitle>
-        Unfortunately, we had trouble uploading the {failedUploads.length}{" "}
-        files:
+        {t("media.uploadModalUploadErrorTitle", {
+          count: failedUploads.length,
+        })}
       </AlertTitle>
       <>
         {failedUploads.map((file, idx) => {
@@ -184,7 +189,7 @@ const UploadErrors = () => {
             </Box>
           );
         })}
-        <Box sx={{ mt: 2 }}>Please check the file extensions and try again</Box>
+        <Box sx={{ mt: 2 }}>{t("media.uploadModalUploadErrorHint")}</Box>
       </>
     </Alert>
   );
@@ -192,14 +197,16 @@ const UploadErrors = () => {
 
 type UploadHeaderTextProps = {
   uploads: Upload[];
-  headerKeyword?: string;
+  // i18n discriminator selecting the pluralized noun bundle (not display text).
+  headerKeyword?: "file" | "replacedFile";
   showCount?: boolean;
 };
 export const UploadHeaderText = ({
   uploads,
-  headerKeyword = "File",
+  headerKeyword = "file",
   showCount = true,
 }: UploadHeaderTextProps) => {
+  const { t } = useTranslation();
   const filesUploading = uploads?.filter(
     (upload) => upload.status === "inProgress"
   );
@@ -237,19 +244,26 @@ export const UploadHeaderText = ({
         <CheckCircleRoundedIcon color="success" sx={{ p: 0.5 }} />
       )}
       <Typography variant="h5" color="text.primary" fontWeight={700}>
-        {showCount ? (
-          filesUploading?.length > 0 ? (
-            filesUploading.length
-          ) : (
-            filesUploaded.length
-          )
-        ) : (
-          <></>
-        )}{" "}
-        {filesUploading?.length > 0
-          ? pluralizeWord(headerKeyword, filesUploading.length)
-          : pluralizeWord(headerKeyword, filesUploaded.length)}{" "}
-        {filesUploading?.length > 0 ? "Uploading" : "Uploaded"}
+        {(() => {
+          const isUploading = filesUploading?.length > 0;
+          const count = isUploading
+            ? filesUploading.length
+            : filesUploaded.length;
+          const item = t(
+            `media.uploadModalNoun${
+              headerKeyword === "file" ? "File" : "ReplacedFile"
+            }`,
+            { count }
+          );
+          if (isUploading) {
+            return showCount
+              ? t("media.uploadModalUploadingWithCount", { count, item })
+              : t("media.uploadModalUploadingNoCount", { item });
+          }
+          return showCount
+            ? t("media.uploadModalUploadedWithCount", { count, item })
+            : t("media.uploadModalUploadedNoCount", { item });
+        })()}
       </Typography>
     </Stack>
   );

@@ -38,7 +38,7 @@ const RESOURCE_TYPE_OPTIONS: ResourceTypeOptions = {
     icon: CodeRounded,
   },
   media: {
-    textKey: "shell.navMedia",
+    textKey: "common.media",
     icon: ImageRounded,
   },
   block: {

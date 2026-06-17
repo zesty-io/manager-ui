@@ -73,11 +73,11 @@ export const RenameFileModal: FC<Props> = ({
           mb={1.5}
         />
         <Typography variant="h5" fontWeight="700">
-          Rename File
+          {t("media.renameFileModalTitle")}
         </Typography>
       </DialogTitle>
       <DialogContent>
-        <InputLabel>New File Name</InputLabel>
+        <InputLabel>{t("media.renameFileModalNewNameLabel")}</InputLabel>
         <TextFieldWithCursorPosition
           sx={{
             mt: 1,
@@ -117,8 +117,7 @@ export const RenameFileModal: FC<Props> = ({
             },
           }}
         >
-          This will change the URL path and could break existing links
-          referenced in production after a period of time.
+          {t("media.renameFileModalWarning")}
         </Alert>
       </DialogContent>
       <DialogActions>

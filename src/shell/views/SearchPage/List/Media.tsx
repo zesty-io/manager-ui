@@ -39,7 +39,7 @@ export const Media: FC<Media> = ({ data, style, loading = false, subType }) => {
         icon = ImageRounded;
         url = `/media?fileId=${itemData.id}`;
         title = itemData.filename;
-        chips = `${t("shell.navMedia")} • ${rel(itemData.created_at)}`;
+        chips = `${t("common.media")} • ${rel(itemData.created_at)}`;
         break;
       }
 
@@ -48,7 +48,7 @@ export const Media: FC<Media> = ({ data, style, loading = false, subType }) => {
         icon = FolderRounded;
         url = `/media/folder/${folderData.id}`;
         title = folderData.name;
-        chips = t("shell.navMedia");
+        chips = t("common.media");
         break;
       }
 

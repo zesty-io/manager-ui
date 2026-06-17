@@ -51,5 +51,19 @@
   "contentItems": "Content Items",
   "models": "Models",
   "codeFiles": "Code Files",
-  "mediaItems": "Media Items"
+  "mediaItems": "Media Items",
+  "last7Days": "Last 7 days",
+  "last30Days": "Last 30 days",
+  "last3Months": "Last 3 months",
+  "last12Months": "Last 12 months",
+  "dateOnValue": "On {{date}}",
+  "dateBeforeValue": "Before {{date}}",
+  "dateAfterValue": "After {{date}}",
+  "sortNameAToZ": "Name (A to Z)",
+  "sortNameZToA": "Name (Z to A)",
+  "searchAgain": "Search Again",
+  "media": "Media",
+  "code": "Code",
+  "name": "Name",
+  "mediaRequests": "Media Requests"
 }

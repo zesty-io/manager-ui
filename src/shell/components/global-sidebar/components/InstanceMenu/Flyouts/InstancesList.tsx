@@ -243,7 +243,7 @@ export const InstancesList = () => {
               onClick={handleResetFilter}
               startIcon={<SearchRoundedIcon />}
             >
-              {t("shell.searchAgain")}
+              {t("common.searchAgain")}
             </Button>
           </Stack>
         ) : (

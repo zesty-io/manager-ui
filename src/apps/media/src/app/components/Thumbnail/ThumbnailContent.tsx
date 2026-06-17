@@ -1,4 +1,5 @@
 import { FC } from "react";
+import { useTranslation } from "react-i18next";
 import {
   TextField,
   Typography,
@@ -32,6 +33,7 @@ export const ThumbnailContent: FC<Props> = ({
   isTitleEditable,
   title,
 }) => {
+  const { t } = useTranslation();
   const styledCardContent = {
     px: onFilenameChange ? 0 : 1,
     py: onFilenameChange ? 0 : 1.5,
@@ -53,7 +55,11 @@ export const ThumbnailContent: FC<Props> = ({
         {onFilenameChange ? (
           <Box>
             <Tooltip
-              title={isFilenameEditable ? "" : "You cannot edit the file name"}
+              title={
+                isFilenameEditable
+                  ? ""
+                  : t("media.thumbnailContentCannotEditTooltip")
+              }
               followCursor
             >
               <TextFieldWithCursorPosition
@@ -91,8 +97,8 @@ export const ThumbnailContent: FC<Props> = ({
               <TextField
                 placeholder={
                   isTitleEditable
-                    ? "Add File Title (for alt-text)"
-                    : "Please wait to add File Title"
+                    ? t("media.thumbnailContentTitlePlaceholderEditable")
+                    : t("media.thumbnailContentTitlePlaceholderDisabled")
                 }
                 disabled={!isTitleEditable}
                 defaultValue={title}

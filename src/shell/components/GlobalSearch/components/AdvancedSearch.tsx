@@ -265,9 +265,9 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
       "MMM d, yyyy"
     );
     const singleDateLabels: Record<string, string> = {
-      on: t("shell.dateOnValue", { date: formattedDate }),
-      before: t("shell.dateBeforeValue", { date: formattedDate }),
-      after: t("shell.dateAfterValue", { date: formattedDate }),
+      on: t("common.dateOnValue", { date: formattedDate }),
+      before: t("common.dateBeforeValue", { date: formattedDate }),
+      after: t("common.dateAfterValue", { date: formattedDate }),
     };
 
     return (
