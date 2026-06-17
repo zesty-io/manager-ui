@@ -67,7 +67,7 @@ jobs:
           SPLIT: 4
           SPLIT_INDEX: ${{ matrix.split_index }}
           SPLIT_FILE: timings.json
-          SKIP_SPEC: "cypress/e2e/content/actions.spec.js,cypress/e2e/content/list.spec.js,cypress/e2e/content/redirects.spec.js,cypress/e2e/content/workflows.spec.js,cypress/e2e/settings/workflows.spec.js"
+          SKIP_SPEC: "cypress/e2e/content/actions.spec.js,cypress/e2e/content/list.spec.js,cypress/e2e/content/redirects.spec.js,cypress/e2e/content/workflows.spec.js,cypress/e2e/settings/workflows.spec.js,cypress/e2e/seo/redirects/redirects.spec.js"
       # Runner 4: publish-related specs run together to avoid cross-runner interference.
       - name: Run Flaky Loop (publish specs, runner 4)
         if: matrix.split_index == 4
@@ -75,7 +75,7 @@ jobs:
         env:
           SPLIT: 1
           SPLIT_INDEX: 0
-          SPEC: "cypress/e2e/content/actions.spec.js,cypress/e2e/content/list.spec.js,cypress/e2e/content/redirects.spec.js,cypress/e2e/content/workflows.spec.js,cypress/e2e/settings/workflows.spec.js"
+          SPEC: "cypress/e2e/content/actions.spec.js,cypress/e2e/content/list.spec.js,cypress/e2e/content/redirects.spec.js,cypress/e2e/content/workflows.spec.js,cypress/e2e/settings/workflows.spec.js,cypress/e2e/seo/redirects/redirects.spec.js"
       - name: Upload Per-Iteration Results
         if: always()
         uses: actions/upload-artifact@v4

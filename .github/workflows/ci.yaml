@@ -69,7 +69,7 @@ jobs:
           SPLIT: 4
           SPLIT_INDEX: ${{ matrix.split_index }}
           SPLIT_FILE: timings.json
-          SKIP_SPEC: "cypress/e2e/content/actions.spec.js,cypress/e2e/content/list.spec.js,cypress/e2e/content/redirects.spec.js,cypress/e2e/content/workflows.spec.js,cypress/e2e/settings/workflows.spec.js"
+          SKIP_SPEC: "cypress/e2e/content/actions.spec.js,cypress/e2e/content/list.spec.js,cypress/e2e/content/redirects.spec.js,cypress/e2e/content/workflows.spec.js,cypress/e2e/settings/workflows.spec.js,cypress/e2e/seo/redirects/redirects.spec.js"
       # Runner 4 runs all publish-related specs together so that workflows.spec.js
       # (which creates a publish-blocking workflow label) and the publish action specs
       # run sequentially on the same runner, avoiding cross-runner interference.
@@ -81,7 +81,7 @@ jobs:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SPLIT: 1
           SPLIT_INDEX: 0
-          SPEC: "cypress/e2e/content/actions.spec.js,cypress/e2e/content/list.spec.js,cypress/e2e/content/redirects.spec.js,cypress/e2e/content/workflows.spec.js,cypress/e2e/settings/workflows.spec.js"
+          SPEC: "cypress/e2e/content/actions.spec.js,cypress/e2e/content/list.spec.js,cypress/e2e/content/redirects.spec.js,cypress/e2e/content/workflows.spec.js,cypress/e2e/settings/workflows.spec.js,cypress/e2e/seo/redirects/redirects.spec.js"
       # Rename so artifacts from each runner have unique filenames and don't overwrite each other.
       - name: Rename Coverage Output
         if: ${{ success() }}

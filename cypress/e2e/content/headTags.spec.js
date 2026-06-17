@@ -1,12 +1,36 @@
-// assumes no Head Tags as starting state
+import { API_ENDPOINTS } from "../../support/api";
+
+// This spec is the only Head Tags mutator (settings/headtags is skipped) and it
+// assumes a clean "no head tags" starting state — the .last()/count logic below
+// relies on it. A prior interrupted run can leave a tag behind, which then makes
+// this spec fail intermittently. Force a clean slate before and after so the
+// spec is hermetic regardless of execution order or earlier failures.
+function cleanAllHeadTags() {
+  cy.apiRequest({
+    url: `${API_ENDPOINTS.devInstance}/web/headtags`,
+  }).then(({ data }) => {
+    (data || []).forEach((tag) => {
+      cy.apiRequest({
+        url: `${API_ENDPOINTS.devInstance}/web/headtags/${tag.ZUID}`,
+        method: "DELETE",
+      });
+    });
+  });
+}
+
 describe("Head Tags", () => {
   before(() => {
+    cleanAllHeadTags();
     cy.task("seed:content", "fixtures/item.json").then(
       ({ model, fields, items }) => {
         Cypress.env("modelZUID", model?.ZUID);
         Cypress.env("itemZUID", items[0]?.meta?.ZUID);
       }
     );
+  });
+
+  after(() => {
+    cleanAllHeadTags();
   });
   it("creates and deletes new head tag", () => {
     cy.intercept("GET", "**/v1/content/models").as("getContentModel");
