@@ -201,7 +201,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
           evt.target instanceof Element &&
           evt.target.id === "tinyMceWrapper"
         ) {
-          tinymce.activeEditor.execCommand("mceFullScreen");
+          tinymce.activeEditor?.execCommand("mceFullScreen");
         }
       }}
     >
@@ -274,10 +274,10 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
             // We want the width to automatically be set to preserve the image proportions
             newImageNode.removeAttribute("height");
 
-            const currentValue = tinymce.activeEditor.getContent();
+            const currentValue = tinymce.activeEditor?.getContent() ?? "";
 
             // Update the content with the new image data
-            tinymce.activeEditor.setContent(
+            tinymce.activeEditor?.setContent(
               currentValue.replace(
                 clonedCurrentNode.outerHTML?.replaceAll("&", "&amp;"),
                 newImageNode.outerHTML
