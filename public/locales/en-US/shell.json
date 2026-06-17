@@ -277,5 +277,14 @@
   "selectModel": "Select Model",
   "internalExternalLink": "Internal/External Link",
   "selectPlaceholder": "Select",
-  "selectModelError": "Please select a Model to proceed."
+  "selectModelError": "Please select a Model to proceed.",
+  "uuidFieldReadOnly": "This field cannot be edited",
+  "currencyFlagAlt": "{{country}} flag",
+  "dateTimeStoredInUtc": "Stored in UTC as {{value}}",
+  "storedAs": "Stored as {{value}}",
+  "dateTimeInvalidTime": "Invalid Time",
+  "internalLinkSearchPlaceholder": "Do not see the item you are looking for? Enter a term to search your API.",
+  "internalLinkNone": "— None —",
+  "imageFieldLimit_one": "This field is limited to {{count}} image",
+  "imageFieldLimit_other": "This field is limited to {{count}} images"
 }

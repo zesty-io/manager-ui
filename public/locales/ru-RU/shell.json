@@ -289,5 +289,16 @@
   "selectModel": "Выбрать модель",
   "internalExternalLink": "Внутренняя/Внешняя ссылка",
   "selectPlaceholder": "Выбрать",
-  "selectModelError": "Пожалуйста, выберите модель, чтобы продолжить."
+  "selectModelError": "Пожалуйста, выберите модель, чтобы продолжить.",
+  "uuidFieldReadOnly": "Это поле нельзя редактировать",
+  "currencyFlagAlt": "Флаг {{country}}",
+  "dateTimeStoredInUtc": "Сохранено в UTC как {{value}}",
+  "storedAs": "Сохранено как {{value}}",
+  "dateTimeInvalidTime": "Недопустимое время",
+  "internalLinkSearchPlaceholder": "Не видите нужный элемент? Введите запрос для поиска в вашем API.",
+  "internalLinkNone": "— Нет —",
+  "imageFieldLimit_one": "Это поле ограничено {{count}} изображением",
+  "imageFieldLimit_few": "Это поле ограничено {{count}} изображениями",
+  "imageFieldLimit_many": "Это поле ограничено {{count}} изображениями",
+  "imageFieldLimit_other": "Это поле ограничено {{count}} изображениями"
 }

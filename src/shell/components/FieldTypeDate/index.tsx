@@ -103,7 +103,7 @@ export const FieldTypeDate = memo(
       }: FieldTypeDateProps,
       ref
     ) => {
-      const { i18n } = useTranslation();
+      const { t, i18n } = useTranslation();
       const textFieldRef = useRef<HTMLInputElement>(null);
       const [isOpen, setIsOpen] = useState(false);
 
@@ -272,7 +272,7 @@ export const FieldTypeDate = memo(
                 sx={{ minWidth: 45 }}
                 onClick={handleClear}
               >
-                Clear
+                {t("common.clear")}
               </Button>
             )}
           </Stack>
@@ -280,7 +280,9 @@ export const FieldTypeDate = memo(
             <Typography variant="body3" color="text.secondary" sx={{ mt: 0.5 }}>
               {valueFormatPreview ??
                 (props.value && isValid(props.value)
-                  ? `Stored as ${format(props.value, "yyyy-MM-dd")}`
+                  ? t("shell.storedAs", {
+                      value: format(props.value, "yyyy-MM-dd"),
+                    })
                   : "")}
             </Typography>
           )}

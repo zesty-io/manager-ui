@@ -283,5 +283,15 @@
   "selectModel": "Seleccionar modelo",
   "internalExternalLink": "Enlace interno/externo",
   "selectPlaceholder": "Seleccionar",
-  "selectModelError": "Por favor, selecciona un modelo для continuar."
+  "selectModelError": "Por favor, selecciona un modelo para continuar.",
+  "uuidFieldReadOnly": "Este campo no se puede editar",
+  "currencyFlagAlt": "Bandera de {{country}}",
+  "dateTimeStoredInUtc": "Almacenado en UTC como {{value}}",
+  "storedAs": "Almacenado como {{value}}",
+  "dateTimeInvalidTime": "Hora no válida",
+  "internalLinkSearchPlaceholder": "¿No ves el elemento que buscas? Introduce un término para buscar en tu API.",
+  "internalLinkNone": "— Ninguno —",
+  "imageFieldLimit_one": "Este campo está limitado a {{count}} imagen",
+  "imageFieldLimit_many": "Este campo está limitado a {{count}} imágenes",
+  "imageFieldLimit_other": "Este campo está limitado a {{count}} imágenes"
 }

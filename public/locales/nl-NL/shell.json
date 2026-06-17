@@ -277,5 +277,14 @@
   "selectModel": "Model selecteren",
   "internalExternalLink": "Interne/externe link",
   "selectPlaceholder": "Selecteren",
-  "selectModelError": "Selecteer een model om door te gaan."
+  "selectModelError": "Selecteer een model om door te gaan.",
+  "uuidFieldReadOnly": "Dit veld kan niet worden bewerkt",
+  "currencyFlagAlt": "Vlag van {{country}}",
+  "dateTimeStoredInUtc": "Opgeslagen in UTC als {{value}}",
+  "storedAs": "Opgeslagen als {{value}}",
+  "dateTimeInvalidTime": "Ongeldige tijd",
+  "internalLinkSearchPlaceholder": "Ziet u het gewenste item niet? Voer een term in om in uw API te zoeken.",
+  "internalLinkNone": "— Geen —",
+  "imageFieldLimit_one": "Dit veld is beperkt tot {{count}} afbeelding",
+  "imageFieldLimit_other": "Dit veld is beperkt tot {{count}} afbeeldingen"
 }

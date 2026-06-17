@@ -276,5 +276,13 @@
   "selectModel": "选择模型",
   "internalExternalLink": "内部/外部链接",
   "selectPlaceholder": "选择",
-  "selectModelError": "请选择一个模型以继续。"
+  "selectModelError": "请选择一个模型以继续。",
+  "uuidFieldReadOnly": "此字段无法编辑",
+  "currencyFlagAlt": "{{country}} 国旗",
+  "dateTimeStoredInUtc": "以 UTC 存储为 {{value}}",
+  "storedAs": "存储为 {{value}}",
+  "dateTimeInvalidTime": "无效时间",
+  "internalLinkSearchPlaceholder": "没有看到您要找的项目？输入关键词以搜索您的 API。",
+  "internalLinkNone": "— 无 —",
+  "imageFieldLimit_other": "此字段最多限制 {{count}} 张图片"
 }
