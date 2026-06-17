@@ -65,5 +65,7 @@
   "media": "媒体",
   "code": "代码",
   "name": "名称",
-  "mediaRequests": "媒体请求"
+  "mediaRequests": "媒体请求",
+  "yes": "是",
+  "no": "否"
 }

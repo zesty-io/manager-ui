@@ -65,5 +65,7 @@
   "media": "Medios",
   "code": "Código",
   "name": "Nombre",
-  "mediaRequests": "Solicitudes multimedia"
+  "mediaRequests": "Solicitudes multimedia",
+  "yes": "Sí",
+  "no": "No"
 }

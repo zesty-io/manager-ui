@@ -7,74 +7,19 @@ import {
 } from "react";
 import { Stack, Typography, Box } from "@mui/material";
 import DangerousRoundedIcon from "@mui/icons-material/DangerousRounded";
+import { useTranslation } from "react-i18next";
 import { Error } from "./Field/FieldShell";
 import { ContentModelField } from "../../../../../../shell/services/types";
-import pluralizeWord from "../../../../../../utility/pluralizeWord";
-
-const SEO_FIELD_LABELS = {
-  metaDescription: "Meta Description",
-  metaTitle: "Meta Title",
-  metaKeywords: "Meta Keywords",
-  metaLinkText: "Navigation Title",
-  parentZUID: "Page Parent",
-  pathPart: "URL Path Part",
-};
+import { getFieldErrorMessages } from "./Field/getFieldErrorMessages";
 
 type FieldErrorProps = {
   errors: Record<string, Error>;
   fields: ContentModelField[];
 };
 
-const getErrorMessage = (errors: Error) => {
-  const errorMessages = [];
-
-  if (errors?.MISSING_REQUIRED) {
-    errorMessages.push("Required Field. Please enter a value.");
-  }
-
-  if (errors?.EXCEEDING_MAXLENGTH > 0) {
-    errorMessages.push(
-      `Exceeding by ${errors.EXCEEDING_MAXLENGTH} ${pluralizeWord(
-        "character",
-        errors.EXCEEDING_MAXLENGTH
-      )}.`
-    );
-  }
-
-  if (errors?.LACKING_MINLENGTH > 0) {
-    errorMessages.push(
-      `Requires ${errors.LACKING_MINLENGTH} more ${pluralizeWord(
-        "character",
-        errors.LACKING_MINLENGTH
-      )}.`
-    );
-  }
-
-  if (errors?.REGEX_PATTERN_MISMATCH) {
-    errorMessages.push(errors.REGEX_PATTERN_MISMATCH);
-  }
-
-  if (errors?.REGEX_RESTRICT_PATTERN_MATCH) {
-    errorMessages.push(errors.REGEX_RESTRICT_PATTERN_MATCH);
-  }
-
-  if (errors?.INVALID_RANGE) {
-    errorMessages.push(errors.INVALID_RANGE);
-  }
-
-  if (errors?.CUSTOM_ERROR) {
-    errorMessages.push(errors.CUSTOM_ERROR);
-  }
-
-  if (errors?.INVALID_BLOCK_VARIANT) {
-    errorMessages.push("Please select a block variant.");
-  }
-
-  return errorMessages;
-};
-
 export const FieldError = forwardRef(
   ({ errors, fields }: FieldErrorProps, ref) => {
+    const { t } = useTranslation("content");
     const errorContainerEl = useRef(null);
 
     useImperativeHandle(
@@ -103,15 +48,24 @@ export const FieldError = forwardRef(
     }, []);
 
     const fieldErrors = useMemo(() => {
+      // SEO meta fields render through this dialog but aren't in the model's
+      // field list, so they have no DB label — fall back to a localized label.
+      const seoFieldLabels: Record<string, string> = {
+        metaDescription: t("content.seoFieldMetaDescription"),
+        metaTitle: t("content.seoFieldMetaTitle"),
+        metaKeywords: t("content.seoFieldMetaKeywords"),
+        metaLinkText: t("content.seoFieldNavigationTitle"),
+        parentZUID: t("content.seoFieldPageParent"),
+        pathPart: t("content.seoFieldUrlPathPart"),
+      };
+
       const errorMap = Object.entries(errors)?.map(([name, errorDetails]) => {
-        const errorMessages = getErrorMessage(errorDetails);
+        const errorMessages = getFieldErrorMessages(errorDetails, t);
 
         const fieldData = fields?.find((field) => field.name === name);
 
         return {
-          label:
-            fieldData?.label ||
-            SEO_FIELD_LABELS[name as keyof typeof SEO_FIELD_LABELS],
+          label: fieldData?.label || seoFieldLabels[name],
           errorMessages,
           sort: fieldData?.sort,
           ZUID: fieldData?.ZUID || name,
@@ -119,7 +73,7 @@ export const FieldError = forwardRef(
       });
 
       return errorMap.sort((a, b) => a.sort - b.sort);
-    }, [errors, fields]);
+    }, [errors, fields, t]);
 
     const fieldsWithErrors = fieldErrors?.filter(
       (error) => error.errorMessages.length > 0
@@ -141,11 +95,12 @@ export const FieldError = forwardRef(
       >
         <DangerousRoundedIcon color="inherit" fontSize="small" />
         <Typography variant="h6">
-          Item cannot be saved due to invalid field values.
+          {t("content.invalidFieldValuesTitle")}
         </Typography>
         <Typography variant="body2">
-          Please correct the following {fieldsWithErrors?.length} field
-          {fieldsWithErrors?.length > 1 && "s"} before saving:
+          {t("content.correctFieldsBeforeSaving", {
+            count: fieldsWithErrors?.length,
+          })}
         </Typography>
         <Box component="ol" ml={2}>
           {fieldErrors?.map((error, index) => {

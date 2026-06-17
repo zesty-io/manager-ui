@@ -65,5 +65,7 @@
   "media": "Медиа",
   "code": "Код",
   "name": "Имя",
-  "mediaRequests": "Медиа-запросы"
+  "mediaRequests": "Медиа-запросы",
+  "yes": "Да",
+  "no": "Нет"
 }

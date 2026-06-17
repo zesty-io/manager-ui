@@ -393,7 +393,7 @@ one-time namespace plumbing (`ContentApp` `<Suspense>` + `useTranslation("conten
 
 | #   | Sub-pass              | Scope                                                                                                                   | Effort | Status |
 | --- | --------------------- | ----------------------------------------------------------------------------------------------------------------------- | ------ | ------ |
-| 1   | Editor + Field shell  | `components/Editor/*`, `Editor/Field/*`, `NoFields` — field _wrapper_/validation (not the widgets) + namespace plumbing | M      | [ ]    |
+| 1   | Editor + Field shell  | `components/Editor/*`, `Editor/Field/*`, `NoFields` — field _wrapper_/validation (not the widgets) + namespace plumbing | M      | [x]    |
 | 2   | ItemList              | `views/ItemList` (22 files): columns, filters, bulk actions (`UpdateListActions` notifications), empty states           | M-L    | [ ]    |
 | 3   | ItemEdit chrome       | `ItemEditHeader`, `Content/Actions` widgets, breadcrumbs, `LockedItem`, `PendingEditsModal`, publish/save + `notify()`  | L      | [ ]    |
 | 4   | ItemEdit Meta panels  | `Meta/settings`, `SocialMediaPreview`, `ContentInsights`, `IncomingRedirects`                                           | M      | [ ]    |
@@ -441,6 +441,20 @@ character(s)`, `correct the following {{count}} field(s) before saving`. Each
 are strong `common` candidates (not yet in `common`). Keep data out of keys via
 interpolation: `NoFields` `({{label}})`, `InternalLink` `{{value}}`, currency
 `{{language}}`.
+
+**Done (sub-pass 1 implemented).** 43 `content` keys in `en-US/content.json`,
+fully translated into all 5 non-English locales (with full CLDR plural forms;
+machine-assisted — flag for native review). Added `yes`/`no` to all 6
+`common.json`. Extracted the shared `Editor/Field/getFieldErrorMessages.ts` and
+removed the duplicated `getErrorMessage` from `FieldError`/`FieldShell`;
+`pluralizeWord` left in place (still used by ItemList dialogs + schema). Kept the
+`EditorTypes` English map exported (schema's `DefaultValueInput` consumes it) and
+added a local `EDITOR_TYPE_LABEL_KEYS` for FieldShell's localized labels. Wired
+`ContentEditor` with a local `<Suspense>` + `useTranslation("content")`; shared
+field components call `useTranslation("content")` directly so they self-load the
+namespace under schema/blocks too. `tsc --noEmit` clean. Not yet localized in
+`ContentEditor.js` (app chrome): the empty-state "Please create a new content
+model" + "Schema" link — deferred (app-chrome, not Editor/Field shell).
 
 ### Audit — complexity / risk / effort ranking
 

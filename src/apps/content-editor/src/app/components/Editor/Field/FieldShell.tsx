@@ -12,10 +12,11 @@ import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownRounded";
 import { useLocation } from "react-router";
 
+import { useTranslation } from "react-i18next";
 import { InteractiveTooltip } from "../../../../../../../shell/components/InteractiveTooltip";
 import { FieldTooltipBody } from "./FieldTooltipBody";
 import { ContentModelField } from "../../../../../../../shell/services/types";
-import pluralizeWord from "../../../../../../../utility/pluralizeWord";
+import { getFieldErrorMessages } from "./getFieldErrorMessages";
 import { Comment } from "../../../../../../../shell/components/Comment";
 
 export type EditorType =
@@ -23,11 +24,19 @@ export type EditorType =
   | "wysiwyg_basic"
   | "article_writer"
   | "html";
+// English source map, still consumed by schema's DefaultValueInput. FieldShell
+// renders localized labels via EDITOR_TYPE_LABEL_KEYS below.
 export const EditorTypes: Record<EditorType, string> = {
   markdown: "Markdown",
   wysiwyg_basic: "WYSIWYG",
   article_writer: "Inline",
   html: "HTML",
+};
+const EDITOR_TYPE_LABEL_KEYS: Record<EditorType, string> = {
+  markdown: "content.editorTypeMarkdown",
+  wysiwyg_basic: "content.editorTypeWysiwyg",
+  article_writer: "content.editorTypeInline",
+  html: "content.editorTypeHtml",
 };
 export type Error = {
   MISSING_REQUIRED?: boolean;
@@ -71,70 +80,11 @@ export const FieldShell = ({
   withInteractiveTooltip = true,
   withComment = true,
 }: FieldShellProps) => {
+  const { t } = useTranslation("content");
   const location = useLocation();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null);
 
-  const getErrorMessage = (errors: Error) => {
-    const errorMessages = [];
-
-    if (errors?.MISSING_REQUIRED) {
-      errorMessages.push("Required Field. Please enter a value.");
-    }
-
-    if (errors?.EXCEEDING_MAXLENGTH > 0) {
-      errorMessages.push(
-        `Exceeding by ${errors.EXCEEDING_MAXLENGTH} ${pluralizeWord(
-          "character",
-          errors.EXCEEDING_MAXLENGTH
-        )}.`
-      );
-    }
-
-    if (errors?.LACKING_MINLENGTH > 0) {
-      errorMessages.push(
-        `Requires ${errors.LACKING_MINLENGTH} more ${pluralizeWord(
-          "character",
-          errors.LACKING_MINLENGTH
-        )}.`
-      );
-    }
-
-    if (errors?.REGEX_PATTERN_MISMATCH) {
-      errorMessages.push(errors.REGEX_PATTERN_MISMATCH);
-    }
-
-    if (errors?.REGEX_RESTRICT_PATTERN_MATCH) {
-      errorMessages.push(errors.REGEX_RESTRICT_PATTERN_MATCH);
-    }
-
-    if (errors?.INVALID_RANGE) {
-      errorMessages.push(errors.INVALID_RANGE);
-    }
-
-    if (errors?.CUSTOM_ERROR) {
-      errorMessages.push(errors.CUSTOM_ERROR);
-    }
-
-    if (errors?.INVALID_BLOCK_VARIANT) {
-      errorMessages.push("Please select a block variant.");
-    }
-
-    if (errorMessages.length === 0) {
-      return "";
-    }
-
-    if (errorMessages.length === 1) {
-      return errorMessages[0];
-    }
-
-    return (
-      <Box component="ul" ml={3}>
-        {errorMessages.map((msg) => (
-          <li>{msg}</li>
-        ))}
-      </Box>
-    );
-  };
+  const errorMessages = getFieldErrorMessages(errors, t);
 
   const isCreateNewItemPage = location?.pathname?.split("/")?.pop() === "new";
 
@@ -181,14 +131,14 @@ export const FieldShell = ({
                   setAnchorEl(evt.currentTarget);
                 }}
               >
-                {EditorTypes[editorType]}
+                {t(EDITOR_TYPE_LABEL_KEYS[editorType])}
               </Button>
               <Menu
                 open={!!anchorEl}
                 anchorEl={anchorEl}
                 onClose={() => setAnchorEl(null)}
               >
-                {Object.entries(EditorTypes).map(([key, value]) => (
+                {Object.keys(EDITOR_TYPE_LABEL_KEYS).map((key) => (
                   <MenuItem
                     key={key}
                     onClick={() => {
@@ -196,7 +146,7 @@ export const FieldShell = ({
                       onEditorChange?.(key);
                     }}
                   >
-                    {value}
+                    {t(EDITOR_TYPE_LABEL_KEYS[key as EditorType])}
                   </MenuItem>
                 ))}
               </Menu>
@@ -220,21 +170,33 @@ export const FieldShell = ({
       {children}
       <Stack direction="row" justifyContent="space-between">
         <Typography variant="body2" color="error.dark">
-          {getErrorMessage(errors)}
+          {errorMessages.length === 0 ? (
+            ""
+          ) : errorMessages.length === 1 ? (
+            errorMessages[0]
+          ) : (
+            <Box component="ul" ml={3}>
+              {errorMessages.map((msg, index) => (
+                <li key={index}>{msg}</li>
+              ))}
+            </Box>
+          )}
         </Typography>
         {withLengthCounter && (
           <Typography variant="body2" color="text.disabled">
             {valueLength}
             {!!minLength &&
-              ` (min. ${minLength} ${pluralizeWord("character", minLength)})`}
+              t("content.minCharacterCounter", { count: minLength })}
             {!!maxLength && `/${maxLength}`}
           </Typography>
         )}
         {settings?.settings?.minValue !== undefined &&
           settings?.settings?.maxValue !== undefined && (
             <Typography variant="body2" color="text.disabled">
-              Min: {settings?.settings?.minValue} | Max:{" "}
-              {settings?.settings?.maxValue}
+              {t("content.minMaxLabel", {
+                min: settings?.settings?.minValue,
+                max: settings?.settings?.maxValue,
+              })}
             </Typography>
           )}
       </Stack>

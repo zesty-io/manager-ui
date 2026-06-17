@@ -14,6 +14,7 @@ import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
 import CheckIcon from "@mui/icons-material/Check";
 import { Link as RouterLink, useHistory } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import { ContentModelField } from "../../../../../../../shell/services/types";
 import { FieldIcon } from "../../../../../../schema/src/app/components/Field/FieldIcon";
@@ -27,6 +28,7 @@ type FieldTooltipBodyProps = {
   data: Partial<ContentModelField>;
 };
 export const FieldTooltipBody = ({ data }: FieldTooltipBodyProps) => {
+  const { t } = useTranslation("content");
   const history = useHistory();
 
   return (
@@ -48,7 +50,9 @@ export const FieldTooltipBody = ({ data }: FieldTooltipBodyProps) => {
               {data?.label} {data?.required && "*"}
             </Typography>
             <Typography variant="body3" fontWeight={600} color="text.secondary">
-              {TYPE_TEXT[data?.datatype as FieldType]} Field
+              {t("content.fieldTypeLabel", {
+                type: TYPE_TEXT[data?.datatype as FieldType],
+              })}
             </Typography>
           </Stack>
         </Stack>
@@ -66,23 +70,23 @@ export const FieldTooltipBody = ({ data }: FieldTooltipBodyProps) => {
             flexShrink: 0,
           }}
         >
-          Edit Field
+          {t("content.editFieldButton")}
         </Button>
       </Stack>
       <Stack gap={2.5} p={1.5}>
         <CopyField
           value={data?.name}
-          title="API / Parsley Code ID"
-          tooltip="This will appear as the key in API responses."
+          title={t("content.apiCodeIdLabel")}
+          tooltip={t("content.apiCodeIdTooltip")}
         />
         <CopyField
           value={data?.ZUID}
-          title="Field ZUID"
-          tooltip="Unique Hash assigned to each field. It can be used to access a field's information through our API."
+          title={t("content.fieldZuidLabel")}
+          tooltip={t("content.fieldZuidTooltip")}
         />
         <Stack direction="row" justifyContent="space-between">
           <Typography variant="body3" fontWeight={600} color="text.secondary">
-            Field added on{" "}
+            {t("content.fieldAddedOnLabel")}{" "}
             {data?.createdAt
               ? formatLocalized(new Date(data.createdAt), "MMM d, yyyy")
               : ""}
@@ -102,7 +106,7 @@ export const FieldTooltipBody = ({ data }: FieldTooltipBodyProps) => {
               },
             }}
           >
-            View Model Activity Log
+            {t("content.viewModelActivityLog")}
           </Link>
         </Stack>
       </Stack>

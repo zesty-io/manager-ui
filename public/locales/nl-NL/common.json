@@ -65,5 +65,7 @@
   "media": "Media",
   "code": "Code",
   "name": "Naam",
-  "mediaRequests": "Mediaverzoeken"
+  "mediaRequests": "Mediaverzoeken",
+  "yes": "Ja",
+  "no": "Nee"
 }

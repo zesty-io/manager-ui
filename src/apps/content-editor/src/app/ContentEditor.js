@@ -1,10 +1,11 @@
-import { useState, useEffect, Fragment, use } from "react";
+import { useState, useEffect, Fragment, use, Suspense } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 import { Switch, Route } from "react-router-dom";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDatabase } from "@fortawesome/free-solid-svg-icons";
-import { Stack, Typography, Link } from "@mui/material";
+import { Box, Stack, Typography, Link } from "@mui/material";
 import { Database } from "@zesty-io/material";
 
 import { fetchModels } from "shell/store/models";
@@ -37,7 +38,23 @@ import { useParams } from "../../../../shell/hooks/useParams";
 
 // Makes sure that other apps using legacy theme does not get affected with the palette
 
+// Local Suspense boundary so lazy-loading the "content" namespace shows a
+// fallback in the sub-app area only, instead of blanking the whole shell.
 export default function ContentEditor() {
+  return (
+    <Suspense
+      fallback={<Box sx={{ height: "100%", backgroundColor: "grey.50" }} />}
+    >
+      <ContentEditorContent />
+    </Suspense>
+  );
+}
+
+function ContentEditorContent() {
+  // Requesting the namespace here triggers its lazy load and suspends this
+  // subtree until ready; child components use bare useTranslation() with
+  // qualified keys (t("content.key")) once it's in the store.
+  useTranslation("content");
   const navContent = useSelector((state) => state.navContent);
   const dispatch = useDispatch();
   const [params] = useParams();

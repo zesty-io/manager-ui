@@ -65,5 +65,7 @@
   "media": "Media",
   "code": "Code",
   "name": "Name",
-  "mediaRequests": "Media Requests"
+  "mediaRequests": "Media Requests",
+  "yes": "Yes",
+  "no": "No"
 }
