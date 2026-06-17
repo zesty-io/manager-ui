@@ -538,8 +538,8 @@ export const SubField = memo(
               required={field.required}
               value={(() => {
                 if (!value) return null;
-                const d = new Date(value + "T00:00:00");
-                return isValid(d) ? d : null;
+                const dateValue = new Date(value + "T00:00:00");
+                return isValid(dateValue) ? dateValue : null;
               })()}
               onChange={(date) => {
                 onChange(date ? format(date, "yyyy-MM-dd") : null, field.name);
