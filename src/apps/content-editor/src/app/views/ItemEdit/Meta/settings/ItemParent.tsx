@@ -143,8 +143,9 @@ export const ItemParent = ({ onChange }: ItemParentProps) => {
   }, 1000);
 
   useEffect(() => {
-    let { parentZUID } = item?.web;
-    const { ZUID: itemZUID } = item?.meta;
+    if (!item?.web || !item?.meta) return;
+    let { parentZUID } = item.web;
+    const { ZUID: itemZUID } = item.meta;
 
     // If it's a new item chase down the parentZUID within navigation
     // This way we avoid an API request
@@ -220,7 +221,13 @@ export const ItemParent = ({ onChange }: ItemParentProps) => {
           });
       }
     }
-  }, [rawNavData]);
+  }, [
+    rawNavData,
+    item?.web?.parentZUID,
+    item?.meta?.ZUID,
+    item?.web?.path,
+    item?.meta?.langID,
+  ]);
 
   useEffect(() => {
     const normalizedSearch = searchText.toLowerCase();

@@ -320,8 +320,7 @@ describe("Actions in content editor", () => {
         cy.getBySelector("UnschedulePublishButton").trigger("click");
       });
 
-    cy.wait(deletePublishedItem);
-    cy.wait(publishings);
+    cy.wait([deletePublishedItem, publishings], { requestTimeout });
 
     cy.getBySelector("ContentScheduledIndicator").should("not.exist");
   });

@@ -98,11 +98,12 @@ describe("Schema: Models", () => {
   });
   it("Can navigate via breadcrumbs", () => {
     cy.waitOn(
-      "/v1/content/models/6-ce80dbfe90-ptjpm6/fields?showDeleted=true",
+      "/v1/content/models/6-a1a600-k0b6f0/fields?showDeleted=true",
       () => {
         cy.waitOn("/bin/1-6c9618c-r26pt/groups", () => {
           cy.waitOn("/v1/content/models", () => {
-            cy.visit("/schema/6-ce80dbfe90-ptjpm6/fields");
+            // Homepage
+            cy.visit("/schema/6-a1a600-k0b6f0/fields");
           });
         });
       }
@@ -113,11 +114,12 @@ describe("Schema: Models", () => {
   });
   it("Cannot set its model parent to be itself", () => {
     cy.waitOn(
-      "/v1/content/models/6-ce80dbfe90-ptjpm6/fields?showDeleted=true",
+      "/v1/content/models/6-a1a600-k0b6f0/fields?showDeleted=true",
       () => {
         cy.waitOn("/bin/1-6c9618c-r26pt/groups", () => {
           cy.waitOn("/v1/content/models", () => {
-            cy.visit("/schema/6-ce80dbfe90-ptjpm6/fields");
+            // Homepage
+            cy.visit("/schema/6-a1a600-k0b6f0/fields");
           });
         });
       }

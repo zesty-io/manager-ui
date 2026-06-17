@@ -394,12 +394,11 @@ export const ItemEditHeaderActions = ({
         // Loop through all publish results and dispatch error notification if any failed
         publishPromises.forEach((promise: any) => {
           if ("error" in promise.value) {
-            dispatch(
-              notify({
-                message: promise.value.error.data?.error,
-                kind: "error",
-              })
-            );
+            const message =
+              promise.value.error.data?.error ||
+              promise.value.error.data?.message ||
+              "An error occurred while publishing. Please try again.";
+            dispatch(notify({ message, kind: "error" }));
           }
         });
 

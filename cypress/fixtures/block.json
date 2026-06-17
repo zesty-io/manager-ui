@@ -1,0 +1,42 @@
+{
+  "model": {
+    "label": "Content - Block",
+    "type": "pageset",
+    "listed": true
+  },
+  "fields": [
+    {
+      "label": "Text",
+      "name": "text",
+      "datatype": "text",
+      "sort": 0,
+      "settings": {
+        "list": true
+      }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "block_selector",
+      "name": "block_selector",
+      "label": "block selector",
+      "sort": 1,
+      "required": false,
+      "settings": {
+        "list": true,
+        "options": {}
+      }
+    }
+  ],
+  "items": [
+    {
+      "web": {
+        "metaTitle": "Content Item",
+        "metaLinkText": "Content Item"
+      },
+      "data": {
+        "text": "text",
+        "block_selector": "/-/block/nar_test_block.html?variant=7-92eca5aefe-dgr24h"
+      }
+    }
+  ]
+}

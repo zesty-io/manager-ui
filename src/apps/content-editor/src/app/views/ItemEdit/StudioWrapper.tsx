@@ -40,7 +40,7 @@ import { useStudioBridge } from "./hooks/useStudioBridge";
 import { InteractionMode, LayoutBreadcrumbItem } from "./hooks/studioTypes";
 import { useStudioSelection } from "./hooks/useStudioSelection";
 import { getRefRegistry } from "../../../../../../engine/refRegistry";
-import { usePermission } from "../../../../../../shell/hooks/use-permissions";
+import { useMultiPermission } from "../../../../../../shell/hooks/use-permissions";
 import { MediaApp } from "../../../../../media/src/app";
 
 const drawerWidth = 440;
@@ -527,7 +527,7 @@ export const StudioWrapper = () => {
   );
 
   const {
-    pendingLayoutSave,
+    pendingLayoutCodeIds,
     isSavingLayout,
     handleDiscardPendingLayoutSave,
     handleSavePendingLayout,
@@ -542,25 +542,24 @@ export const StudioWrapper = () => {
     updateWebView,
     publishWebView,
     dispatch,
-    selectedLayoutCodeId: selectedLayout?.codeId,
     clearLayoutSelection,
     refreshPreviewFrame,
     withCodeIdBreadcrumbRoot,
     onSelectedLayoutBreadcrumbChange: setSelectedLayout,
   });
-  const pendingLayoutCodeId = pendingLayoutSave?.codeId || null;
-  const canUpdatePendingLayout = usePermission(
+  const hasPendingLayoutChanges = pendingLayoutCodeIds.length > 0;
+  const canUpdatePendingLayout = useMultiPermission(
     "UPDATE",
-    pendingLayoutCodeId || undefined
+    pendingLayoutCodeIds
   );
-  const canPublishPendingLayout = usePermission(
+  const canPublishPendingLayout = useMultiPermission(
     "PUBLISH",
-    pendingLayoutCodeId || undefined
+    pendingLayoutCodeIds
   );
 
   const requestProceedWithPendingLayoutSave = useCallback(
     (onProceed: () => void) => {
-      if (!pendingLayoutSave?.mappedSource) {
+      if (!hasPendingLayoutChanges) {
         onProceed();
         return;
       }
@@ -568,7 +567,7 @@ export const StudioWrapper = () => {
       pendingLayoutContinuationRef.current = onProceed;
       setShowPendingLayoutModal(true);
     },
-    [pendingLayoutSave?.mappedSource]
+    [hasPendingLayoutChanges]
   );
 
   const syncBridgeInteractionMode = useCallback(
@@ -624,7 +623,7 @@ export const StudioWrapper = () => {
         }
       }
 
-      if (nextMode === "content" && pendingLayoutSave?.mappedSource) {
+      if (nextMode === "content" && hasPendingLayoutChanges) {
         requestProceedWithPendingLayoutSave(applyInteractionModeChange);
         return;
       }
@@ -635,7 +634,7 @@ export const StudioWrapper = () => {
       clearLayoutSelection,
       clearSelection,
       interactionMode,
-      pendingLayoutSave?.mappedSource,
+      hasPendingLayoutChanges,
       postCommandToBridge,
       requestProceedWithPendingLayoutSave,
       selectedItem?.dirty,
@@ -1000,7 +999,7 @@ export const StudioWrapper = () => {
     applySelection: applyBridgeSelection,
     fieldNameByZuid,
     currentHoverStudioIdRef,
-    pendingLayoutHasMappedSource: Boolean(pendingLayoutSave?.mappedSource),
+    pendingLayoutHasMappedSource: hasPendingLayoutChanges,
     selectedLayoutCodeId: selectedLayout?.codeId,
     selectedItemDirty: selectedItem?.dirty,
     selectedItemZUID,
@@ -1146,7 +1145,7 @@ export const StudioWrapper = () => {
               />
             ) : null}
           </Box>
-          {pendingLayoutSave?.mappedSource ? (
+          {hasPendingLayoutChanges ? (
             <Box
               data-cy="StudioLayoutSaveBar"
               position="absolute"
