@@ -40,9 +40,13 @@ describe("Actions in content editor", () => {
 
     cy.getBySelector("field:markdown")
       .find("textarea")
+      // Confirm the item has fully hydrated (seeded value present) before
+      // mutating. The old fixed .wait(500) could fire before the initial value
+      // populated, so clearing raced hydration and the save didn't see the field
+      // as empty — the main cause of this test's flakiness.
+      .should("have.value", "markdown")
       .click()
       .clear()
-      .wait(500)
       .should("have.value", "");
 
     cy.getBySelector("SaveItemButton")

@@ -55,6 +55,11 @@ describe("Content Item Workflows", () => {
   });
 
   it("Can add a workflow label", () => {
+    // Register the intercept BEFORE the action that triggers the PUT. Setting it
+    // up afterwards (the previous behavior) raced the request and made cy.wait
+    // hang until timeout.
+    cy.intercept("PUT", "**/labels/*").as("updateLabel");
+
     ContentItemPage.elements.versionSelector().should("exist").click();
     ContentItemPage.elements.addWorkflowStatusLabel().should("exist").click();
     ContentItemPage.elements
@@ -65,8 +70,11 @@ describe("Content Item Workflows", () => {
 
     cy.get("body").type("{esc}");
 
-    cy.intercept("PUT", "**/labels/*").as("updateLabel");
-    cy.wait("@updateLabel");
+    // Gate the reload on the save actually persisting, otherwise reloading can
+    // race the in-flight PUT and drop the label.
+    cy.wait("@updateLabel")
+      .its("response.statusCode")
+      .should("be.oneOf", [200, 201]);
 
     cy.reload();
 
@@ -126,6 +134,9 @@ describe("Content Item Workflows", () => {
   });
 
   it("Can publish a content item if label with allowPublish is applied", () => {
+    // Intercept registered before the label-select click that fires the PUT.
+    cy.intercept("PUT", "**/labels/*").as("updateLabel");
+
     cy.reload();
     ContentItemPage.elements.versionSelector().should("exist").click();
     ContentItemPage.elements.addWorkflowStatusLabel().should("exist").click();
@@ -137,17 +148,18 @@ describe("Content Item Workflows", () => {
 
     cy.get("body").type("{esc}");
 
-    cy.intercept("PUT", "**/labels/*").as("updateLabel");
-    cy.wait("@updateLabel");
+    cy.wait("@updateLabel")
+      .its("response.statusCode")
+      .should("be.oneOf", [200, 201]);
 
     cy.reload();
 
     ContentItemPage.elements.publishItemButton().should("exist").click();
     ContentItemPage.elements.confirmPublishItemButton().should("exist").click();
 
-    cy.intercept("GET", "**/publishings").as("publish");
-    cy.wait("@publish");
-
+    // Assert on the resulting UI state instead of racing a post-action network
+    // intercept. The indicator only appears once publishing has succeeded, and
+    // .should() retries up to defaultCommandTimeout.
     ContentItemPage.elements.contentPublishedIndicator().should("exist");
   });
 });

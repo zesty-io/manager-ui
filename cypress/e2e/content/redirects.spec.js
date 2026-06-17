@@ -118,6 +118,11 @@ describe("Content item redirects", () => {
     deleteTestContents();
     deleteTestRedirects();
     createTestContents();
+    // The redirects POSTed above aren't always immediately queryable from
+    // GET /web/redirects. Poll until both are indexed before any test loads the
+    // page, otherwise the grid renders with <2 rows and the DOM-only assertion
+    // (which never re-fetches) can't recover. Root cause of this spec's flakiness.
+    waitForRedirectsIndexed();
   });
   after(() => {
     deleteTestContents();
@@ -330,6 +335,24 @@ function createTestContents() {
         }),
       });
     });
+  });
+}
+
+// Poll GET /web/redirects until every seeded redirect path is returned, so the
+// page doesn't load before the backend has indexed them.
+function waitForRedirectsIndexed(attempts = 15) {
+  cy.apiRequest({
+    url: `${API_ENDPOINTS.devInstance}/web/redirects`,
+  }).then(({ data }) => {
+    const allPresent = REDIRECTS.every((redirect) =>
+      data?.some(
+        (item) => item?.path?.replace(/^\/|\/$/g, "") === redirect.path
+      )
+    );
+    if (!allPresent && attempts > 0) {
+      cy.wait(400);
+      waitForRedirectsIndexed(attempts - 1);
+    }
   });
 }
 
