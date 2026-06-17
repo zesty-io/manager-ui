@@ -171,7 +171,10 @@ export const RowDialog = ({
         ) {
           errors[name] = {
             ...(errors[name] ?? []),
-            INVALID_RANGE: `Value must be between ${field?.settings?.minValue} and ${field?.settings?.maxValue}`,
+            INVALID_RANGE: t("shell.repeaterValueBetween", {
+              min: field?.settings?.minValue,
+              max: field?.settings?.maxValue,
+            }),
           };
         } else {
           errors[name] = {
@@ -285,7 +288,9 @@ export const RowDialog = ({
         }}
       >
         <Typography variant="h5" fontWeight={700}>
-          {isUpdate ? `Edit ${name}` : `Add row to ${name}`}
+          {isUpdate
+            ? t("shell.repeaterEditRow", { name })
+            : t("shell.repeaterAddRowTo", { fieldName: name })}
         </Typography>
         <IconButton size="small" onClick={onClose}>
           <CloseIcon fontSize="small" />
@@ -337,7 +342,7 @@ export const RowDialog = ({
               color="error"
               startIcon={<DeleteRoundedIcon />}
             >
-              Remove Row
+              {t("shell.repeaterRemoveRow")}
             </Button>
             <Stack direction="row" spacing={2}>
               <Button
@@ -369,7 +374,7 @@ export const RowDialog = ({
                 onClick={() => handleSubmit(true)}
                 startIcon={<AddIcon />}
               >
-                Add another field
+                {t("shell.repeaterAddAnotherField")}
               </Button>
               <Button
                 data-cy="SaveRepeaterRowItemBtn"

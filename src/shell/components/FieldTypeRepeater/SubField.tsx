@@ -1,5 +1,5 @@
 import { ChangeEvent, memo, useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { MemoryRouter, useParams } from "react-router";
 import { Link as RouterLink } from "react-router-dom";
 import {
@@ -390,7 +390,7 @@ export const SubField = memo(
                       : "rgba(0, 0, 0, 0.12)",
                   }}
                 >
-                  {binaryFieldOpts[0] || "No"}{" "}
+                  {binaryFieldOpts[0] || t("common.no")}{" "}
                 </ToggleButton>
                 <ToggleButton
                   data-cy="yes_no:yes"
@@ -401,7 +401,7 @@ export const SubField = memo(
                       : "rgba(0, 0, 0, 0.12)",
                   }}
                 >
-                  {binaryFieldOpts[1] || "Yes"}{" "}
+                  {binaryFieldOpts[1] || t("common.yes")}{" "}
                 </ToggleButton>
               </ToggleButtonGroup>
             </FieldShell>
@@ -415,8 +415,11 @@ export const SubField = memo(
                 component={RouterLink}
                 to={`/schema/${modelZUID}/field/${repeaterFieldItemZUID}`}
               >
-                The <em>{field?.label}</em> field is missing option settings.
-                Edit the field to add yes/no values.
+                <Trans
+                  i18nKey="shell.repeaterMissingOptionsRich"
+                  values={{ label: field?.label }}
+                  components={{ em: <em /> }}
+                />
               </Link>
             </h1>
           );
@@ -498,7 +501,9 @@ export const SubField = memo(
         content = (
           <FieldShell
             settings={field}
-            customTooltip={`View this value in different currencies based upon your locale "${window.navigator.language}"`}
+            customTooltip={t("shell.repeaterCurrencyTooltip", {
+              locale: window.navigator.language,
+            })}
             errors={errors}
             withComment={false}
           >

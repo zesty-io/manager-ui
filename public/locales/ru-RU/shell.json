@@ -498,5 +498,12 @@
   "editorLinkNewWindow": "Открывать ссылку в новом окне браузера?",
   "editorInsertLink": "Вставить ссылку",
   "editorEmbedIdLabel": "Введите уникальный ID {{service}}",
-  "editorInsertEmbed": "Вставить встраивание"
+  "editorInsertEmbed": "Вставить встраивание",
+  "repeaterAddRowTo": "Добавить строку в {{fieldName}}",
+  "repeaterEditRow": "Изменить {{name}}",
+  "repeaterRemoveRow": "Удалить строку",
+  "repeaterAddAnotherField": "Добавить ещё поле",
+  "repeaterValueBetween": "Значение должно быть между {{min}} и {{max}}",
+  "repeaterCurrencyTooltip": "Просматривайте это значение в разных валютах в зависимости от вашей локали \"{{locale}}\"",
+  "repeaterMissingOptionsRich": "В поле <em>{{label}}</em> отсутствуют настройки вариантов. Измените поле, чтобы добавить значения да/нет."
 }

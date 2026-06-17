@@ -491,5 +491,12 @@
   "editorLinkNewWindow": "¿Abrir el enlace en una nueva ventana del navegador?",
   "editorInsertLink": "Insertar enlace",
   "editorEmbedIdLabel": "Introduce el ID único de {{service}}",
-  "editorInsertEmbed": "Insertar incrustación"
+  "editorInsertEmbed": "Insertar incrustación",
+  "repeaterAddRowTo": "Añadir fila a {{fieldName}}",
+  "repeaterEditRow": "Editar {{name}}",
+  "repeaterRemoveRow": "Eliminar fila",
+  "repeaterAddAnotherField": "Añadir otro campo",
+  "repeaterValueBetween": "El valor debe estar entre {{min}} y {{max}}",
+  "repeaterCurrencyTooltip": "Ver este valor en diferentes monedas según tu configuración regional \"{{locale}}\"",
+  "repeaterMissingOptionsRich": "Al campo <em>{{label}}</em> le faltan los ajustes de opciones. Edita el campo para añadir valores sí/no."
 }

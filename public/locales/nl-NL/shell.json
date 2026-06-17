@@ -484,5 +484,12 @@
   "editorLinkNewWindow": "Link openen in een nieuw browservenster?",
   "editorInsertLink": "Link invoegen",
   "editorEmbedIdLabel": "Voer de unieke {{service}}-ID in",
-  "editorInsertEmbed": "Insluiting invoegen"
+  "editorInsertEmbed": "Insluiting invoegen",
+  "repeaterAddRowTo": "Rij toevoegen aan {{fieldName}}",
+  "repeaterEditRow": "{{name}} bewerken",
+  "repeaterRemoveRow": "Rij verwijderen",
+  "repeaterAddAnotherField": "Nog een veld toevoegen",
+  "repeaterValueBetween": "Waarde moet tussen {{min}} en {{max}} liggen",
+  "repeaterCurrencyTooltip": "Bekijk deze waarde in verschillende valuta's op basis van je landinstelling \"{{locale}}\"",
+  "repeaterMissingOptionsRich": "Voor het veld <em>{{label}}</em> ontbreken de optie-instellingen. Bewerk het veld om ja/nee-waarden toe te voegen."
 }

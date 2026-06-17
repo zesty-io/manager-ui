@@ -484,5 +484,12 @@
   "editorLinkNewWindow": "क्या लिंक को नई ब्राउज़र विंडो में खोलें?",
   "editorInsertLink": "लिंक डालें",
   "editorEmbedIdLabel": "अद्वितीय {{service}} ID दर्ज करें",
-  "editorInsertEmbed": "एम्बेड डालें"
+  "editorInsertEmbed": "एम्बेड डालें",
+  "repeaterAddRowTo": "{{fieldName}} में पंक्ति जोड़ें",
+  "repeaterEditRow": "{{name}} संपादित करें",
+  "repeaterRemoveRow": "पंक्ति हटाएं",
+  "repeaterAddAnotherField": "एक और फ़ील्ड जोड़ें",
+  "repeaterValueBetween": "मान {{min}} और {{max}} के बीच होना चाहिए",
+  "repeaterCurrencyTooltip": "अपनी स्थानीय सेटिंग \"{{locale}}\" के आधार पर इस मान को विभिन्न मुद्राओं में देखें",
+  "repeaterMissingOptionsRich": "<em>{{label}}</em> फ़ील्ड में विकल्प सेटिंग्स मौजूद नहीं हैं। हाँ/नहीं मान जोड़ने के लिए फ़ील्ड संपादित करें।"
 }

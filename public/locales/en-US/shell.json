@@ -484,5 +484,12 @@
   "editorLinkNewWindow": "Open link in a new browser window?",
   "editorInsertLink": "Insert Link",
   "editorEmbedIdLabel": "Enter unique {{service}} ID",
-  "editorInsertEmbed": "Insert Embed"
+  "editorInsertEmbed": "Insert Embed",
+  "repeaterAddRowTo": "Add row to {{fieldName}}",
+  "repeaterEditRow": "Edit {{name}}",
+  "repeaterRemoveRow": "Remove Row",
+  "repeaterAddAnotherField": "Add another field",
+  "repeaterValueBetween": "Value must be between {{min}} and {{max}}",
+  "repeaterCurrencyTooltip": "View this value in different currencies based upon your locale \"{{locale}}\"",
+  "repeaterMissingOptionsRich": "The <em>{{label}}</em> field is missing option settings. Edit the field to add yes/no values."
 }
