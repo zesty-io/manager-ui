@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState, useMemo } from "react";
 import cx from "classnames";
+import { useTranslation } from "react-i18next";
 
 // import { HtmlEditor } from "@aeaton/react-prosemirror";
 import { HtmlEditor } from "./react-prosemirror/HtmlEditor";
@@ -19,6 +20,7 @@ import { VideoResizeView } from "./prosemirror-views/VideoResizeView";
 
 import styles from "./Basic.less";
 export function BasicEditor(props) {
+  const { t } = useTranslation();
   const ref = useRef();
 
   const [modals, setModals] = useState({
@@ -83,7 +85,7 @@ export function BasicEditor(props) {
               view={view}
             />
             <MenuBar
-              menu={menu({ mediaBrowser: props.mediaBrowser })}
+              menu={menu({ mediaBrowser: props.mediaBrowser, t })}
               view={view}
             />
             <div ref={ref}>{editor}</div>
