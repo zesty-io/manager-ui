@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Stack,
   Menu,
@@ -21,17 +22,19 @@ import { DateFilterValue, DateFilter } from "../../Filters/DateFilter";
 import { FieldFilters } from "./index";
 import { DateRangeFilterValue } from "../../Filters/DateFilter/types";
 
+// Maps stable filter keys to their i18n key strings. Labels are resolved via
+// t() at render so they localize; do not render these values directly.
 const SORT_ORDER = {
-  lastSaved: "Last Saved",
-  lastPublished: "Last Published",
-  createdOn: "Date Created",
-  version: "Status",
+  lastSaved: "shell.relationalSortLastSaved",
+  lastPublished: "shell.relationalSortLastPublished",
+  createdOn: "shell.relationalSortDateCreated",
+  version: "shell.relationalSortStatus",
 } as const;
 
 export const STATUS_FILTER = {
-  published: "Published",
-  scheduled: "Scheduled",
-  notPublished: "Not Published",
+  published: "shell.relationalStatusPublished",
+  scheduled: "shell.relationalStatusScheduled",
+  notPublished: "shell.relationalStatusNotPublished",
 } as const;
 
 const FILTERABLE_DATA_TYPES = [
@@ -76,6 +79,7 @@ export const FieldSelectorFilters = ({
   filters,
   onUpdateFilter,
 }: FieldSelectorFiltersProps) => {
+  const { t } = useTranslation();
   const [anchorEl, setAnchorEl] = useState({
     currentTarget: null,
     id: "",
@@ -109,11 +113,11 @@ export const FieldSelectorFilters = ({
 
   const getButtonText = (sortOrder: string) => {
     if (!sortOrder) {
-      return SORT_ORDER.lastSaved;
+      return t(SORT_ORDER.lastSaved);
     }
 
     if (sortOrder === "createdBy") {
-      return "Created By";
+      return t("shell.relationalSortCreatedBy");
     }
 
     if (sortOrder === "zuid") {
@@ -121,7 +125,7 @@ export const FieldSelectorFilters = ({
     }
 
     if (SORT_ORDER.hasOwnProperty(sortOrder)) {
-      return SORT_ORDER[sortOrder as keyof typeof SORT_ORDER];
+      return t(SORT_ORDER[sortOrder as keyof typeof SORT_ORDER]);
     }
 
     const fieldLabel = fields?.find((field) => field.name === sortOrder)?.label;
@@ -267,7 +271,9 @@ export const FieldSelectorFilters = ({
       <FilterButton
         filterId="sortByFilter"
         isFilterActive={false}
-        buttonText={`Sort: ${getButtonText(filters.sortOrder)}`}
+        buttonText={t("shell.relationalSortBy", {
+          value: getButtonText(filters.sortOrder),
+        })}
         onOpenMenu={(event: React.MouseEvent<HTMLButtonElement>) => {
           setAnchorEl({
             currentTarget: event.currentTarget,
@@ -303,13 +309,13 @@ export const FieldSelectorFilters = ({
                 : filters.sortOrder === key
             }
           >
-            {value}
+            {t(value)}
           </MenuItem>
         ))}
         <CascadingMenuItem
           MenuItemComponent={
             <>
-              <ListItemText>More</ListItemText>
+              <ListItemText>{t("common.more")}</ListItemText>
               <ChevronRightOutlined color="action" />
             </>
           }
@@ -324,7 +330,7 @@ export const FieldSelectorFilters = ({
               selected={filters.sortOrder === "createdBy"}
               onClick={() => handleUpdateSortOrder("createdBy")}
             >
-              Created By
+              {t("shell.relationalSortCreatedBy")}
             </MenuItem>
             <MenuItem
               selected={filters.sortOrder === "zuid"}
@@ -345,7 +351,7 @@ export const FieldSelectorFilters = ({
             borderTop: (theme) => `1px solid ${theme.palette.border}`,
           }}
         >
-          FIELDS
+          {t("shell.relationalFieldsHeading")}
         </Typography>
         {fields
           ?.filter((field) =>
@@ -366,7 +372,11 @@ export const FieldSelectorFilters = ({
       <FilterButton
         filterId="statusFilter"
         isFilterActive={!!filters.status}
-        buttonText={STATUS_FILTER[filters.status] || "Status"}
+        buttonText={
+          filters.status
+            ? t(STATUS_FILTER[filters.status])
+            : t("shell.relationalSortStatus")
+        }
         onOpenMenu={(event: React.MouseEvent<HTMLButtonElement>) => {
           setAnchorEl({
             currentTarget: event.currentTarget,
@@ -399,19 +409,19 @@ export const FieldSelectorFilters = ({
             }}
             selected={filters.status === key}
           >
-            {value}
+            {t(value)}
           </MenuItem>
         ))}
       </Menu>
       <UserFilter
         value={filters.user || ""}
         onChange={(user) => onUpdateFilter({ user })}
-        defaultButtonText="Created By"
+        defaultButtonText={t("shell.relationalSortCreatedBy")}
         options={userOptions}
       />
       <DateFilter
         withDateRange
-        defaultButtonText="Date Saved"
+        defaultButtonText={t("shell.relationalDateSaved")}
         onChange={(date) => handleUpdateDateFilter(date)}
         value={activeDateFilter}
       />
@@ -429,7 +439,9 @@ export const FieldSelectorFilters = ({
                   selectedLang.code
                 )?.toLowerCase()}.svg`}
                 loading="lazy"
-                alt={`${getCountryCode(selectedLang.code)?.toLowerCase()} flag`}
+                alt={t("shell.flagAlt", {
+                  country: getCountryCode(selectedLang.code)?.toLowerCase(),
+                })}
               />
               {selectedLang?.code.split("-")?.[0]?.toUpperCase()} (
               {getCountryCode(selectedLang.code)})
@@ -474,7 +486,9 @@ export const FieldSelectorFilters = ({
                 lang.code
               )?.toLowerCase()}.svg`}
               loading="lazy"
-              alt={`${getCountryCode(lang.code)?.toLowerCase()} flag`}
+              alt={t("shell.flagAlt", {
+                country: getCountryCode(lang.code)?.toLowerCase(),
+              })}
             />
             {lang.code?.split("-")?.[0]?.toUpperCase()} (
             {getCountryCode(lang.code)})
