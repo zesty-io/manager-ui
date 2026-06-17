@@ -124,16 +124,16 @@ describe("Content item redirects", () => {
     deleteTestRedirects();
   });
   it("should show redirects for a content item", () => {
-    cy.visit(
+    awaitRedirectsData(
       `/content/${Cypress.env("contentZUID")}/${Cypress.env(
         "itemZUID"
       )}/redirects`
     );
-    cy.getElement(".MuiDataGrid-row").should("have.length", 2);
+    cy.get(".MuiDataGrid-row").should("have.length", 2);
   });
 
   it("should be able to edit a redirect", () => {
-    cy.getElement(".MuiDataGrid-cell")
+    cy.get(".MuiDataGrid-cell")
       .contains(`/${REDIRECTS[0].path}`, { matchCase: false })
       .parents(".MuiDataGrid-row")
       .find(".MuiDataGrid-cell .MuiDataGrid-actionsCell .MuiIconButton-root")
@@ -149,7 +149,7 @@ describe("Content item redirects", () => {
   });
 
   it("should be able to delete a redirect", () => {
-    cy.getElement(".MuiDataGrid-cell")
+    cy.get(".MuiDataGrid-cell")
       .contains(`/${REDIRECTS[0].path}/updated`, { matchCase: false })
       .parents(".MuiDataGrid-row")
       .find(".MuiDataGrid-cell .MuiDataGrid-actionsCell .MuiIconButton-root")
@@ -157,43 +157,50 @@ describe("Content item redirects", () => {
     cy.getBySelector("DeleteRedirect").click();
     cy.getBySelector("ConfirmDeleteRedirect").click();
 
-    cy.getElement(".MuiDataGrid-cell")
+    cy.get(".MuiDataGrid-cell")
       .contains(`/${REDIRECTS[0].path}/updated`, { timeout: 10000 })
       .should("have.length", 0);
   });
 
   it("Add Incoming Redirect", () => {
-    cy.visit(
+    awaitRedirectsData(
       `/content/${Cypress.env("contentZUID")}/${Cypress.env(
         "itemZUID"
       )}/redirects`
     );
-    cy.getElement('[data-cy="AddIncomingRedirectButton"]').click();
+    cy.getBySelector("AddIncomingRedirectButton").should("be.enabled").click();
 
-    cy.getElement('[data-cy="RedirectsFieldPath"]:eq(0) input')
-      .clear()
-      .wait(500)
-      .type(ADD_REDIRECTS.path);
+    cy.getBySelector("RedirectsFieldPath").eq(0).find("input").clear();
 
-    cy.getElement('[data-cy="RedirectsCreateButton"]').click();
+    cy.getBySelector("RedirectsFieldPath")
+      .eq(0)
+      .find("input")
+      .type(`{selectall}{backspace}${ADD_REDIRECTS.path}`);
 
-    cy.getElement(".MuiDataGrid-row").should("have.length", 2);
+    cy.intercept("POST", "**/v1/web/redirects").as("createRedirect");
+    cy.intercept("GET", "**/v1/web/redirects").as("getRedirect");
+
+    cy.getBySelector("RedirectsCreateButton").should("be.enabled").click();
+
+    cy.wait(["@createRedirect", "@getRedirect"]);
+
+    cy.get(".MuiDataGrid-row").should("have.length", 2);
   });
 
   it("Redirect Content Item", () => {
-    cy.visit(
+    awaitRedirectsData(
       `/content/${Cypress.env("contentZUID")}/${Cypress.env(
         "itemZUID"
       )}/redirects`
     );
-    cy.getElement('[data-cy="RedirectContentItemButton"]').click();
+    cy.getBySelector("RedirectContentItemButton").should("be.enabled").click();
 
-    cy.getElement('[data-cy="RedirectsSearchFieldInputField"]')
+    cy.getBySelector("RedirectsSearchFieldInputField")
       .clear()
-      .wait(500)
-      .type(REDIRECT_ITEMS[0]?.web.metaTitle);
+      .type(`${REDIRECT_ITEMS[0]?.web.metaTitle}`);
 
-    cy.getElement('[data-cy="RedirectsTargetOptionsContainer"] ul li')
+    cy.getBySelector("RedirectsTargetOptionsContainer")
+      .find("ul li")
       .contains(REDIRECT_ITEMS[0]?.web.metaTitle, {
         timeout: 15000,
         matchCase: false,
@@ -201,20 +208,24 @@ describe("Content item redirects", () => {
       .click();
 
     cy.intercept("POST", "**/web/redirects").as("createContentRedirect");
-    cy.getElement('[data-cy="RedirectContentItemConfirmButton"]').click();
+
+    cy.getBySelector("RedirectContentItemConfirmButton")
+      .should("be.enabled")
+      .click();
+
     cy.wait("@createContentRedirect");
 
-    cy.getElement('[data-cy="ContentRedirectHeader"]').should(
+    cy.getBySelector("ContentRedirectHeader").should(
       "contain",
       "This Content Item is Currently Being Redirected"
     );
 
-    cy.getElement('[data-cy="RedirectContentItemButton"]').should(
+    cy.getBySelector("RedirectContentItemButton").should(
       "contain",
       "Stop Redirecting"
     );
 
-    cy.getElement('[data-cy="RedirectTargetUrl"]').should(
+    cy.getBySelector("RedirectTargetUrl").should(
       "contain",
       REDIRECT_ITEMS[0]?.web?.pathPart
     );
@@ -222,20 +233,25 @@ describe("Content item redirects", () => {
 
   it("Stop Content Item Redirect", () => {
     cy.intercept("DELETE", "**/web/redirects/**").as("deleteContentRedirect");
-    cy.getElement('[data-cy="RedirectContentItemButton"]').click();
-    cy.getElement('[data-cy="StopRedirectContentItemConfirmButton"]').click();
+    cy.getBySelector("RedirectContentItemButton")
+      .should("exist")
+      .click({ force: true });
+    cy.getBySelector("StopRedirectContentItemConfirmButton")
+      .should("be.enabled")
+      .click();
+
     cy.wait("@deleteContentRedirect");
 
-    cy.getElement('[data-cy="toast"]').should("contain", "1 Redirect Deleted", {
+    cy.get('[data-cy="toast"]').should("contain", "1 Redirect Deleted", {
       matchCase: false,
     });
 
-    cy.getElement('[data-cy="ContentRedirectHeader"]').should(
+    cy.getBySelector("ContentRedirectHeader").should(
       "contain",
       "Redirect this Content Item"
     );
 
-    cy.getElement('[data-cy="RedirectContentItemButton"]').should(
+    cy.getBySelector("RedirectContentItemButton").should(
       "contain",
       "Redirect this Content Item"
     );
@@ -368,6 +384,13 @@ function deleteTestContents() {
     });
   });
 }
-Cypress.Commands.add("getElement", (selector) => {
-  return cy.get(selector, { timeout: 20_000 });
-});
+function awaitRedirectsData(path) {
+  cy.intercept("GET", "**/v1/content/models").as("getModels");
+  cy.intercept("GET", "**/v1/content/items/publishings**").as("getPublishings");
+  cy.intercept("GET", "**/v1/web/redirects").as("getRedirects");
+
+  cy.visit(path);
+  cy.wait(["@getModels", "@getPublishings", "@getRedirects"], {
+    requestTimeout: 10000,
+  });
+}
