@@ -332,7 +332,7 @@ For each sub-app:
 - [ ] `content` — content-editor's **own** dir only
       (`src/apps/content-editor/src`); field-input widgets live in
       `shell/components/FieldType*` and are tracked separately under the Phase 3
-      shell backfill. Broken into 7 sub-passes (one commit/PR each; `content.json`
+      shell backfill. Broken into 8 sub-passes (one commit/PR each; `content.json`
       grows additively). **Full breakdown + per-slice audits in the dedicated
       "`content` namespace — sub-pass breakdown" section below the sub-app list.**
 - [ ] `schema`
@@ -362,7 +362,7 @@ For each sub-app:
 ### `content` namespace — sub-pass breakdown
 
 `content` is content-editor's **own** dir only (`src/apps/content-editor/src`,
-~186 files). It is split into 7 independent sub-passes so each is a reviewable
+~186 files). It is split into 8 independent sub-passes so each is a reviewable
 commit/PR; `content.json` grows additively, and only sub-pass 1 carries the
 one-time namespace plumbing (`ContentApp` `<Suspense>` + `useTranslation("content")`
 
@@ -391,18 +391,23 @@ one-time namespace plumbing (`ContentApp` `<Suspense>` + `useTranslation("conten
   drop `defaultValue` → translate 5 locales (flat camelCase keys; full CLDR plural
   forms per locale) → commit.
 
-| #   | Sub-pass              | Scope                                                                                                                   | Effort | Status |
-| --- | --------------------- | ----------------------------------------------------------------------------------------------------------------------- | ------ | ------ |
-| 1   | Editor + Field shell  | `components/Editor/*`, `Editor/Field/*`, `NoFields` — field _wrapper_/validation (not the widgets) + namespace plumbing | M      | [x]    |
-| 2   | ItemList              | `views/ItemList` (22 files): columns, filters, bulk actions (`UpdateListActions` notifications), empty states           | M-L    | [ ]    |
-| 3   | ItemEdit chrome       | `ItemEditHeader`, `Content/Actions` widgets, breadcrumbs, `LockedItem`, `PendingEditsModal`, publish/save + `notify()`  | L      | [ ]    |
-| 4   | ItemEdit Meta panels  | `Meta/settings`, `SocialMediaPreview`, `ContentInsights`, `IncomingRedirects`                                           | M      | [ ]    |
-| 5   | Create/link/misc      | `ItemCreate`, `LinkCreate`, `LinkEdit`, `NotFound` (+ their notifications)                                              | S      | [ ]    |
-| 6   | Analytics             | `views/Analytics` (24 files); dates mostly mitigated by `formatLocalized`, mainly labels/filters                        | M      | [ ]    |
-| 7   | CSVImport + Redirects | `views/CSVImport` (6 files), `views/Redirects` (4 files)                                                                | S      | [ ]    |
+| #   | Sub-pass                               | Scope                                                                                                                                                                                                                                                                            | Effort | Status |
+| --- | -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ------ |
+| 1   | Editor + Field shell                   | `components/Editor/*`, `Editor/Field/*`, `NoFields` — field _wrapper_/validation (not the widgets) + namespace plumbing                                                                                                                                                          | M      | [x]    |
+| 2   | ItemList                               | `views/ItemList` (22 files): columns, filters, bulk actions (`UpdateListActions` notifications), empty states                                                                                                                                                                    | M-L    | [ ]    |
+| 3   | ItemEdit chrome                        | `ItemEditHeader` (incl. the module-level **tab-bar label array** — Content/SEO/Redirects/Analytics/Head Tags/APIs/Publish Status/Freestyle — move lookup inside component), `Content/Actions` widgets, breadcrumbs, `LockedItem`, `PendingEditsModal`, publish/save + `notify()` | L      | [ ]    |
+| 4   | ItemEdit Meta panels (= the "SEO" tab) | `Meta/settings`, `SocialMediaPreview`, `ContentInsights`, `IncomingRedirects` — this tab is labeled "SEO" in the UI but is content-item meta, **not** the standalone `seo` app                                                                                                   | M      | [ ]    |
+| 5   | Create/link/misc                       | `ItemCreate`, `LinkCreate`, `LinkEdit`, `NotFound` (+ their notifications)                                                                                                                                                                                                       | S      | [ ]    |
+| 6   | Analytics                              | `views/Analytics` (24 files); dates mostly mitigated by `formatLocalized`, mainly labels/filters                                                                                                                                                                                 | M      | [ ]    |
+| 7   | CSVImport + Redirects                  | `views/CSVImport` (6 files), `views/Redirects` (4 files) — **content-side redirects only**; the wrapping `RedirectsDialogProvider` is imported from the `seo` app → stays `seo` namespace                                                                                        | S      | [ ]    |
+| 8   | ItemEdit secondary tabs                | `ItemHead` (Head Tags tab), `components/APIEndpoints.tsx` (APIs tab), `FreestyleWrapper` (Freestyle tab) — all `content`                                                                                                                                                         | S-M    | [ ]    |
 
 > Sub-pass 3 (ItemEdit chrome) is the publish/save critical path → highest QA
 > bar; do it after the pattern is settled on lower-risk slices.
+>
+> **Content-item editor tabs** (routes under `/content/:model/:item/*`, labels in
+> `ItemEditHeader`): Content → 1 · SEO/Meta → 4 · Redirects → 7 · Analytics → 6 ·
+> Head Tags/APIs/Freestyle → 8 · Publish Status → 3. The tab-bar labels live in 3.
 
 #### Sub-pass 1 — Editor + Field shell (pre-audit complete, ~34 strings)
 
