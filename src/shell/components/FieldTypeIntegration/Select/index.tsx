@@ -6,6 +6,7 @@ import {
   IntegrationKeyPaths,
 } from "../../../services/types";
 import AddIcon from "@mui/icons-material/Add";
+import { useTranslation } from "react-i18next";
 import ItemSelectionDialog from "./ItemSelectionDialog";
 import SelectedListItems from "./SelectedListItems";
 import { getKeyValue } from "../utils";
@@ -29,6 +30,7 @@ const IntegrationFieldSelect = ({
   config,
   onChange,
 }: IntegrationFieldSelectProps) => {
+  const { t } = useTranslation();
   const { data: apiData, status, fetchApiData } = useIntegrationField();
 
   const [open, setOpen] = useState(false);
@@ -106,7 +108,7 @@ const IntegrationFieldSelect = ({
         startIcon={<AddIcon />}
         onClick={launchSelector}
       >
-        Select Remote Items
+        {t("shell.integrationSelectRemoteItems")}
       </Button>
       {open && (
         <ItemSelectionDialog

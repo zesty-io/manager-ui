@@ -11,6 +11,7 @@ import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 import AddPhotoAlternateRoundedIcon from "@mui/icons-material/AddPhotoAlternateRounded";
 import VideoCallRoundedIcon from "@mui/icons-material/VideoCallRounded";
 import { IntegrationTypes } from "../../../services/types";
+import { useTranslation } from "react-i18next";
 
 export type DisplayCardProps = {
   type: IntegrationTypes;
@@ -36,6 +37,7 @@ const DisplayCard = ({
   showPlayIcon,
   loading,
 }: DisplayCardProps) => {
+  const { t } = useTranslation();
   const [noImage, setNoImage] = useState(false);
   const isVideoType = ["video", "youtube", "mux"].includes(type);
   const isSpecialType = ["shopify", "youtube", "mux", "classy"].includes(type);
@@ -64,14 +66,14 @@ const DisplayCard = ({
   ) : typeof heading === "boolean" ? (
     String(heading)
   ) : (
-    heading || "Add Heading"
+    heading || t("shell.integrationAddHeading")
   );
   const subHeadingValue = loading ? (
     <Skeleton width="90%" />
   ) : typeof subHeading === "boolean" ? (
     String(subHeading)
   ) : (
-    subHeading || "Add Subheading"
+    subHeading || t("shell.integrationAddSubheading")
   );
   const thumbnailValue = thumbnail || null;
   const detailValue = loading ? (
@@ -79,7 +81,7 @@ const DisplayCard = ({
   ) : typeof detail === "boolean" ? (
     String(detail)
   ) : (
-    detail || "Add Detail"
+    detail || t("shell.integrationAddDetail")
   );
 
   const renderCard = () => {
@@ -156,7 +158,7 @@ const DisplayCard = ({
                   {loading ? (
                     <Skeleton sx={{ width: "95%" }} />
                   ) : (
-                    item?.key || "+ Add Detail"
+                    item?.key || t("shell.integrationAddDetailWithPlus")
                   )}
                 </Typography>
                 <Typography

@@ -90,10 +90,10 @@ const SelectDisplayOptions = ({
         >
           <Box width={520}>
             <Typography variant="h5" fontWeight={700} sx={{ mb: 1 }}>
-              Select a Display Type
+              {t("shell.integrationSelectDisplayType")}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              This can be re-configured later
+              {t("shell.integrationCanReconfigureLater")}
             </Typography>
           </Box>
           <IconButton size="small" onClick={closeForm}>
@@ -147,7 +147,7 @@ const SelectDisplayOptions = ({
                 textTransform="uppercase"
                 py={1}
               >
-                RECOMMENDED
+                {t("shell.integrationRecommended")}
               </Typography>
               <Box
                 data-cy="integrationRecommendedOptionsContainer"
@@ -163,9 +163,9 @@ const SelectDisplayOptions = ({
                 {recommendedOption?.map((item) => (
                   <DisplayOption
                     data-cy={`integrationRecommendedOption-${item?.type}`}
-                    key={item?.title}
-                    title={item?.title}
-                    description={item?.description}
+                    key={item?.titleKey}
+                    titleKey={item?.titleKey}
+                    descriptionKey={item?.descriptionKey}
                     card={item?.card}
                     type={item?.type}
                     disableMenu={true}
@@ -196,7 +196,9 @@ const SelectDisplayOptions = ({
               textTransform="uppercase"
               py={1}
             >
-              {!!recommendedOption?.length ? "OTHER OPTIONS" : "OPTIONS"}
+              {!!recommendedOption?.length
+                ? t("shell.integrationOtherOptions")
+                : t("shell.integrationOptions")}
             </Typography>
             <Box
               data-cy="integrationOptionsContainer"
@@ -212,9 +214,9 @@ const SelectDisplayOptions = ({
               {GENERIC_DISPLAY_TYPES?.map((item) => (
                 <DisplayOption
                   data-cy={`integrationOption-${item?.type}`}
-                  key={item?.title}
-                  title={item?.title}
-                  description={item?.description}
+                  key={item?.titleKey}
+                  titleKey={item?.titleKey}
+                  descriptionKey={item?.descriptionKey}
                   card={item?.card}
                   type={item?.type}
                   disableMenu={true}
@@ -244,7 +246,9 @@ const SelectDisplayOptions = ({
               textTransform="uppercase"
               py={1}
             >
-              {!!recommendedOption?.length ? "NOT AVAILABLE" : "OTHER OPTIONS"}
+              {!!recommendedOption?.length
+                ? t("shell.integrationNotAvailable")
+                : t("shell.integrationOtherOptions")}
             </Typography>
             <Box
               data-cy="integrationOtherOptionsContainer"
@@ -260,9 +264,9 @@ const SelectDisplayOptions = ({
               {disabledOptions?.map((item, index) => (
                 <DisplayOption
                   data-cy={`integrationOtherOption-${item?.type}`}
-                  key={item?.title}
-                  title={item?.title}
-                  description={item?.description}
+                  key={item?.titleKey}
+                  titleKey={item?.titleKey}
+                  descriptionKey={item?.descriptionKey}
                   disabled={true}
                   card={item?.card}
                   type={item?.type}

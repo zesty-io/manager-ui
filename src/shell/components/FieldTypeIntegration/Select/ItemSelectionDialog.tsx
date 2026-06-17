@@ -30,9 +30,10 @@ import { ApiDataProps, ApiDataWithIdProps } from "../types";
 import { DISPLAY_OPTIONS_CONFIG, LOADING_DATA } from "../constants";
 import { getKeyValue, keyPathValuesToString } from "../utils";
 import DisplayCard from "../Shared/DisplayCard";
-import { NoResults } from "../../../../apps/schema/src/app/components/NoResults";
+import { NoSearchResults } from "../../NoSearchResults";
 import JsonViewer from "../Shared/JsonViewer";
 import { isEqual } from "lodash";
+import { useTranslation } from "react-i18next";
 
 interface ItemSelectionDialogProps {
   title: string;
@@ -82,6 +83,7 @@ type RenderRowProps = Omit<ListChildComponentProps, "data"> & {
 };
 
 const RenderRow = ({ data, index, style }: RenderRowProps) => {
+  const { t } = useTranslation();
   const {
     loading = false,
     type,
@@ -193,7 +195,7 @@ const RenderRow = ({ data, index, style }: RenderRowProps) => {
             !forSyncIds?.includes(item?._itemId) &&
             isSelected &&
             !!hasUpdates && (
-              <Tooltip title="Resync Values">
+              <Tooltip title={t("shell.integrationResyncValues")}>
                 <IconButton
                   color="primary"
                   size="small"
@@ -231,6 +233,7 @@ const ItemSelectionDialog = ({
   config,
   onSave,
 }: ItemSelectionDialogProps) => {
+  const { t } = useTranslation();
   const searchInputRef = useRef(null);
   const drawerContainerRef = useRef(null);
   const [selectedItems, setSelectedItems] =
@@ -358,8 +361,10 @@ const ItemSelectionDialog = ({
       >
         <Typography variant="h3" fontWeight={700}>
           {!loading && selectedItems.length
-            ? `${selectedItems.length} Selected`
-            : `Select ${title}`}
+            ? t("shell.integrationSelectedCount", {
+                count: selectedItems.length,
+              })
+            : t("shell.integrationSelectTitle", { title })}
         </Typography>
 
         <Box display="flex" alignItems="center" gap={1}>
@@ -372,7 +377,7 @@ const ItemSelectionDialog = ({
                 startIcon={<Close />}
                 onClick={() => setSelectedItems([])}
               >
-                Deselect All
+                {t("shell.relationalDeselectAll")}
               </Button>
               <Button
                 data-cy="selectIntegrationFormDoneButton"
@@ -383,7 +388,9 @@ const ItemSelectionDialog = ({
                 onClick={handleSave}
                 disabled={!hasChanges}
               >
-                {!value?.length ? "Done" : "Save Changes"}
+                {!value?.length
+                  ? t("common.done")
+                  : t("shell.integrationSaveChanges")}
               </Button>
             </>
           )}
@@ -416,7 +423,7 @@ const ItemSelectionDialog = ({
             data-cy="integrationSelectionFormSearchBox"
             inputRef={searchInputRef}
             fullWidth
-            placeholder="Filter Items"
+            placeholder={t("shell.relationalFilterItems")}
             value={searchTerm}
             onChange={(e: ChangeEvent<HTMLInputElement>) =>
               setSearchTerm(e.target.value)
@@ -452,13 +459,15 @@ const ItemSelectionDialog = ({
             }}
           >
             <Box width={387}>
-              <NoResults
-                type="search"
-                onButtonClick={() => {
+              <NoSearchResults
+                query={searchTerm}
+                hideBackButton
+                ignoreFilters
+                imageHeight={160}
+                onSearchAgain={() => {
                   setSearchTerm("");
                   searchInputRef.current?.focus();
                 }}
-                searchTerm={searchTerm}
               />
             </Box>
           </Paper>

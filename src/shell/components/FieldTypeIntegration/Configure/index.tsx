@@ -8,6 +8,7 @@ import {
   Dialog,
 } from "@mui/material";
 import { LinkRounded, Autorenew } from "@mui/icons-material";
+import { useTranslation } from "react-i18next";
 import useIntegrationField from "../useIntegrationField";
 import {
   IntegrationFieldConfig,
@@ -34,6 +35,7 @@ const IntegrationFieldConfigure = ({
   error = null,
   isUpdate = false,
 }: IntegrationFieldConfigProps) => {
+  const { t } = useTranslation();
   const { data, status, fetchApiData } = useIntegrationField();
   const hasFetchedInitialData = useRef(false);
 
@@ -160,7 +162,7 @@ const IntegrationFieldConfigure = ({
       {isConnected ? (
         <>
           <Typography variant="h6" mb={1}>
-            API Configuration Settings
+            {t("shell.integrationApiConfigurationSettings")}
           </Typography>
           <Paper
             elevation={0}
@@ -175,7 +177,7 @@ const IntegrationFieldConfigure = ({
               borderColor="border"
             >
               <Typography width={170} variant="body2" fontWeight={600}>
-                API URL
+                {t("shell.integrationApiUrl")}
               </Typography>
               <InputBase
                 data-cy="integrationApiUrl"
@@ -193,7 +195,7 @@ const IntegrationFieldConfigure = ({
             </Box>
             <Box display="flex" alignItems="center" p={2}>
               <Typography width={170} variant="body2" fontWeight={600}>
-                Display Items as
+                {t("shell.integrationDisplayItemsAs")}
               </Typography>
               <InputBase
                 data-cy="integrationDisplayType"
@@ -225,10 +227,10 @@ const IntegrationFieldConfigure = ({
         loadingPosition="start"
       >
         {isUpdate
-          ? "Reconfigure Display Options"
+          ? t("shell.integrationReconfigureDisplayOptions")
           : isConnected
-          ? "Reconfigure"
-          : "Connect to API"}
+          ? t("shell.integrationReconfigure")
+          : t("shell.integrationConnectToApi")}
       </Button>
       {!!error && (
         <Typography variant="body2" color="error.main" sx={{ mt: 0.5 }}>

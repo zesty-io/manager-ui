@@ -46,8 +46,8 @@ export type FieldTypeIntegrationProps = {
 };
 
 export type DisplayOptionCardProps = {
-  title: string;
-  description: string;
+  titleKey: string;
+  descriptionKey: string;
   type: IntegrationTypes;
   card: Omit<IntegrationKeyPaths, "details"> & {
     details?: {
@@ -70,9 +70,9 @@ type ConfigTypes = "option" | "text";
 
 export type ConfigProps = {
   name: string;
-  label: string;
+  labelKey: string;
   type: ConfigTypes;
   isRequired?: boolean;
-  description?: string;
-  placeholder?: string;
+  descriptionKey?: string;
+  placeholderKey: string;
 };

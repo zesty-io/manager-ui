@@ -215,11 +215,10 @@ const ConfigureDisplayOptions = ({
         >
           <Box width={520}>
             <Typography variant="h5" fontWeight={700} mb={1}>
-              Configure Display Options
+              {t("shell.integrationConfigureDisplayOptions")}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Select which fields to display to content editors when they are
-              editing items
+              {t("shell.integrationConfigureDisplayOptionsDescription")}
             </Typography>
           </Box>
         </Stack>
@@ -247,21 +246,21 @@ const ConfigureDisplayOptions = ({
           >
             <Box>
               <Typography variant="body1" fontWeight={700}>
-                Select Keys to Display in Item
+                {t("shell.integrationSelectKeysToDisplay")}
               </Typography>
               <Typography variant="body2">
-                These can be re-configured later
+                {t("shell.integrationCanReconfigureLater")}
               </Typography>
             </Box>
 
             {apiPathOptions.length > 0 && (
               <>
-                <FieldWrapper label="Data Path" isRequired>
+                <FieldWrapper label={t("shell.integrationDataPath")} isRequired>
                   <KeyPathSelector
                     name="rootPath"
                     value={rootPath}
                     options={apiPathOptions}
-                    placeholder="Select Data Path"
+                    placeholder={t("shell.integrationSelectDataPath")}
                     onChange={(value) => {
                       const rootDataRaw = getKeyValue(apiData, value)[0];
                       const rootPathOptionsRaw = getObjectKeyPaths(rootDataRaw);
@@ -287,7 +286,10 @@ const ConfigureDisplayOptions = ({
                 displayConfig.map((config: ConfigProps) => (
                   <FieldWrapper
                     key={config.name}
-                    label={config.label}
+                    label={t(config.labelKey)}
+                    description={
+                      config.descriptionKey && t(config.descriptionKey)
+                    }
                     isRequired={true}
                   >
                     {config.type === "option" ? (
@@ -315,8 +317,10 @@ const ConfigureDisplayOptions = ({
                                 value={item}
                                 data={rootData}
                                 options={rootPathOptions}
-                                placeholder={config.placeholder}
-                                optionsDescription="Values previewed for the keys below are from the first item in the API response."
+                                placeholder={t(config.placeholderKey)}
+                                optionsDescription={t(
+                                  "shell.integrationKeyPreviewDescription"
+                                )}
                                 onChange={(value) => {
                                   setDetailsPathData((prev) => [
                                     ...prev.slice(0, index),
@@ -350,7 +354,7 @@ const ConfigureDisplayOptions = ({
                           }
                           sx={{ width: "fit-content" }}
                         >
-                          Add Detail
+                          {t("shell.integrationAddDetail")}
                         </Button>
                       </Box>
                     ) : (
@@ -362,8 +366,10 @@ const ConfigureDisplayOptions = ({
                           ] as string
                         }
                         options={rootPathOptions}
-                        placeholder={config.placeholder}
-                        optionsDescription="Values previewed for the keys below are from the first item in the API response."
+                        placeholder={t(config.placeholderKey)}
+                        optionsDescription={t(
+                          "shell.integrationKeyPreviewDescription"
+                        )}
                         onChange={(value) =>
                           setRootPathData((prev) => ({
                             ...prev,
@@ -387,10 +393,10 @@ const ConfigureDisplayOptions = ({
           >
             <Box>
               <Typography variant="body1" fontWeight={700}>
-                Item Preview
+                {t("shell.integrationItemPreview")}
               </Typography>
               <Typography variant="body2">
-                How the items will appear to content editors
+                {t("shell.integrationItemPreviewDescription")}
               </Typography>
             </Box>
             <Paper

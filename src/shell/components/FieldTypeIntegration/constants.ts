@@ -12,8 +12,8 @@ export const COLOR_MAP = {
 
 export const GENERIC_DISPLAY_TYPES: DisplayOptionCardProps[] = [
   {
-    title: "Text Card",
-    description: "Display items with a heading and subheading",
+    titleKey: "shell.integrationTextCard",
+    descriptionKey: "shell.integrationTextCardDescription",
     type: "text",
     card: {
       heading: "Chugging through Sri Lanka's tea plantations",
@@ -21,8 +21,8 @@ export const GENERIC_DISPLAY_TYPES: DisplayOptionCardProps[] = [
     },
   },
   {
-    title: "Image Card",
-    description: "Display items with an image, heading, and subheading.",
+    titleKey: "shell.integrationImageCard",
+    descriptionKey: "shell.integrationImageCardDescription",
     type: "image",
     card: {
       heading: "Washington-state-mountain.jpg",
@@ -31,8 +31,8 @@ export const GENERIC_DISPLAY_TYPES: DisplayOptionCardProps[] = [
     },
   },
   {
-    title: "Video Card",
-    description: "Display Shopify product listings",
+    titleKey: "shell.integrationVideoCard",
+    descriptionKey: "shell.integrationVideoCardDescription",
     type: "video",
     card: {
       heading: "Chugging through Sri Lanka's tea plantations",
@@ -41,8 +41,8 @@ export const GENERIC_DISPLAY_TYPES: DisplayOptionCardProps[] = [
     },
   },
   {
-    title: "Details Card",
-    description: "Display items with multiple details",
+    titleKey: "shell.integrationDetailsCard",
+    descriptionKey: "shell.integrationDetailsCardDescription",
     type: "details",
     card: {
       heading: "John Simons",
@@ -60,8 +60,8 @@ export const GENERIC_DISPLAY_TYPES: DisplayOptionCardProps[] = [
     },
   },
   {
-    title: "Simple Card",
-    description: "Display items with a heading and subheading",
+    titleKey: "shell.integrationSimpleCard",
+    descriptionKey: "shell.integrationSimpleCardDescription",
     type: "simple",
     card: {
       heading: "Michael James",
@@ -71,8 +71,8 @@ export const GENERIC_DISPLAY_TYPES: DisplayOptionCardProps[] = [
 
 export const SPECIAL_DISPLAY_TYPES: DisplayOptionCardProps[] = [
   {
-    title: "MUX Card",
-    description: "Display videos from MUX",
+    titleKey: "shell.integrationMuxCard",
+    descriptionKey: "shell.integrationMuxCardDescription",
     type: "mux",
     card: {
       heading: "HK01Bq7FrEQmIu3QpRiZZ98HQOOZjm6BYyg17eEunlyo",
@@ -81,8 +81,8 @@ export const SPECIAL_DISPLAY_TYPES: DisplayOptionCardProps[] = [
     },
   },
   {
-    title: "Youtube Card",
-    description: "Display videos from Youtube",
+    titleKey: "shell.integrationYoutubeCard",
+    descriptionKey: "shell.integrationYoutubeCardDescription",
     type: "youtube",
     card: {
       heading: "Chugging through Sri Lanka's tea plantations",
@@ -91,8 +91,8 @@ export const SPECIAL_DISPLAY_TYPES: DisplayOptionCardProps[] = [
     },
   },
   {
-    title: "Shopify Card",
-    description: "Display Shopify product listings",
+    titleKey: "shell.integrationShopifyCard",
+    descriptionKey: "shell.integrationShopifyCardDescription",
     type: "shopify",
     card: {
       heading: "Basic Chair",
@@ -102,8 +102,8 @@ export const SPECIAL_DISPLAY_TYPES: DisplayOptionCardProps[] = [
     },
   },
   {
-    title: "Classy Card",
-    description: "Display campaigns from classy",
+    titleKey: "shell.integrationClassyCard",
+    descriptionKey: "shell.integrationClassyCardDescription",
     type: "classy",
     card: {
       heading: "Campaign Name",
@@ -114,35 +114,35 @@ export const SPECIAL_DISPLAY_TYPES: DisplayOptionCardProps[] = [
 
 const ITEM_ID: ConfigProps = {
   name: "itemId",
-  label: "Item ID",
+  labelKey: "shell.integrationItemId",
   type: "text",
   isRequired: true,
-  placeholder: "Select",
+  placeholderKey: "shell.selectPlaceholder",
 };
 
 const HEADING: ConfigProps = {
   name: "heading",
-  label: "Heading",
+  labelKey: "shell.integrationHeading",
   type: "text",
   isRequired: true,
-  placeholder: "Select",
+  placeholderKey: "shell.selectPlaceholder",
 };
 
 const SUB_HEADING: ConfigProps = {
   name: "subHeading",
-  label: "Sub Heading",
+  labelKey: "shell.integrationSubHeading",
   type: "text",
   isRequired: true,
-  placeholder: "Select",
+  placeholderKey: "shell.selectPlaceholder",
 };
 
 const IMAGE: ConfigProps = {
   name: "thumbnail",
-  label: "Thumbnail",
+  labelKey: "shell.integrationThumbnail",
   type: "text",
   isRequired: true,
-  placeholder: "Select",
-  description: "Image will only render if value selected is a URL",
+  placeholderKey: "shell.selectPlaceholder",
+  descriptionKey: "shell.integrationImageUrlDescription",
 };
 
 export const DISPLAY_OPTIONS_CONFIG: Record<string, ConfigProps[]> = {
@@ -153,10 +153,10 @@ export const DISPLAY_OPTIONS_CONFIG: Record<string, ConfigProps[]> = {
     HEADING,
     {
       name: "details",
-      label: "Details",
+      labelKey: "shell.integrationDetails",
       type: "option",
       isRequired: true,
-      placeholder: "Select",
+      placeholderKey: "shell.selectPlaceholder",
     },
   ],
   image: [ITEM_ID, HEADING, SUB_HEADING, IMAGE],
@@ -168,10 +168,10 @@ export const DISPLAY_OPTIONS_CONFIG: Record<string, ConfigProps[]> = {
     IMAGE,
     {
       name: "detail",
-      label: "Detail",
+      labelKey: "shell.integrationDetail",
       type: "text",
       isRequired: true,
-      placeholder: "Select",
+      placeholderKey: "shell.selectPlaceholder",
     },
   ],
   youtube: [ITEM_ID, HEADING, SUB_HEADING, IMAGE],

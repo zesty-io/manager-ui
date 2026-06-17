@@ -207,7 +207,7 @@ const MoreOptions: React.FC<MoreOptionsProps> = ({
         >
           <DataObjectIcon color="action" sx={{ mr: 1 }} />
           <Typography variant="body1" color="text.primary">
-            View Raw JSON
+            {t("shell.integrationViewRawJson")}
           </Typography>
         </MenuItem>
         <MenuItem
