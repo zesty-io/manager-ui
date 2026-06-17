@@ -140,8 +140,10 @@ Strings specific to the app shell — sidebar, topbar, global search, notificati
 - [x] Create `public/locales/{locale}/shell.json` for all 6 locales (empty placeholders)
 - [x] Populate `public/locales/en-US/shell.json`
 - [x] Replace hardcoded strings with `t("shell.key")` / `t("common.key")` using `useTranslation()` (no namespace arg)
-- [ ] Run `i18next-parser` to validate no keys are missing
-- [ ] Translate `shell.json` into all 5 non-English locales
+- [ ] Run `i18next-parser` to validate no keys are missing (key parity verified
+      manually across all 6 locales — only CLDR plural-form differences remain,
+      which are correct; parser run is a CI nicety, not outstanding work)
+- [x] Translate `shell.json` into all 5 non-English locales
 - [x] CLDR plural-form backfill (per the Pluralization rule above): audited all
       namespaces × locales for plural keys missing required forms. Backfilled
       `shell` es-ES `_many` and ru-RU `_few`/`_many` for `tabsResults`,
@@ -213,6 +215,29 @@ otherwise-localized components, or legacy shell-level components.
 | `components/login/Login.js`                              | 11      | Login form and auth-code UI are shell/auth entry surfaces and should use the `shell` namespace | [x]    |
 | `components/private-route/index.js` + `store/auth.js`    | 8       | Auth/session notifications shown through shell notification system; include as shell copy      | [x]    |
 | `components/Comment/CommentsList.tsx`                    | 1       | Draft/new-comment timestamp label (`right now`) missed in the comment popup                    | [x]    |
+
+#### Field-type widgets — `shell` namespace backfill (surfaced during `content` pre-audit)
+
+The field-input widgets a user types into live in `src/shell/components/FieldType*`
+(not in content-editor). They're imported by `content`, `schema`, and `blocks`, so
+per "translate once in home namespace" their strings are **`shell` keys**. The
+initial shell audit covered only `FieldTypeDate` / `FieldTypeIntegration` /
+`FieldTypeRepeater`; the rest were missed. ProseMirror (`FieldTypeEditor`) and
+TinyMCE chrome are tracked under Phase 5 — this row is for the widgets' own copy.
+
+| File                                  | Files | Notes                                                        | Status |
+| ------------------------------------- | ----- | ------------------------------------------------------------ | ------ |
+| `components/FieldTypeEditor/*`        | 42    | ProseMirror menus/modals → Phase 5; widget copy → shell      | [ ]    |
+| `components/RelationalFieldBase/*`    | 16    | Relational picker dialog, search/empty states                | [ ]    |
+| `components/FieldTypeTinyMCE/*`       | 4     | Custom media-button tooltips → Phase 5; wrapper copy → shell | [ ]    |
+| `components/FieldTypeBlockSelector/*` | 3     | Block picker labels/empty states                             | [ ]    |
+| `components/FieldTypeCurrency/*`      | 2     | Currency field labels                                        | [ ]    |
+| `components/FieldTypeDateTime/*`      | 2     | Time-only `h:mm a` — coupled w/ Phase 3.5 parsing follow-up  | [ ]    |
+| `components/FieldTypeImage/*`         | 2     | Image field labels/actions                                   | [ ]    |
+| `components/FieldTypeInternalLink/*`  | 2     | Internal-link picker labels                                  | [ ]    |
+| `components/FieldTypeColor/*`         | 1     | Color field labels                                           | [ ]    |
+| `components/FieldTypeSort/*`          | 1     | Sort control labels                                          | [ ]    |
+| `components/FieldTypeUUID/*`          | 2     | UUID field labels                                            | [ ]    |
 
 ---
 
@@ -304,7 +329,12 @@ For each sub-app:
       localized — its title/subtitle/label/placeholder/option/error strings are
       now `shell.*` keys. The `InviteMembersModal` `roles` array was left as-is
       (frontend mirror of backend-generated role names).
-- [ ] `content`
+- [ ] `content` — content-editor's **own** dir only
+      (`src/apps/content-editor/src`); field-input widgets live in
+      `shell/components/FieldType*` and are tracked separately under the Phase 3
+      shell backfill. Broken into 7 sub-passes (one commit/PR each; `content.json`
+      grows additively). **Full breakdown + per-slice audits in the dedicated
+      "`content` namespace — sub-pass breakdown" section below the sub-app list.**
 - [ ] `schema`
 - [x] `media` — fully localized (en-US). Followed the dashboard lazy-load
       pattern: `MediaApp` wraps a local `<Suspense>`; `MediaAppContent` calls
@@ -328,6 +358,89 @@ For each sub-app:
 - [ ] `blocks`
 - [ ] `studio`
 - [ ] `active-preview`
+
+### `content` namespace — sub-pass breakdown
+
+`content` is content-editor's **own** dir only (`src/apps/content-editor/src`,
+~186 files). It is split into 7 independent sub-passes so each is a reviewable
+commit/PR; `content.json` grows additively, and only sub-pass 1 carries the
+one-time namespace plumbing (`ContentApp` `<Suspense>` + `useTranslation("content")`
+
+- empty placeholder files for all 6 locales). Do sub-pass 1 first — the
+  Editor/Field shell is reused by `schema` and `blocks`.
+
+**Cross-cutting rules (every sub-pass):**
+
+- **Audit `notify(` / `dispatch(` for message strings, not just JSX.** A pre-audit
+  found **56 `notify()` redux messages** scattered across views, **hooks**
+  (`useStudioBridge.ts`), and the studio bridge — a render-only scan misses them
+  (the same lesson as `media`'s thunk notifications). Also check string-returning
+  helpers, module-level maps/arrays, and strings passed as props.
+- **Field-input widgets are out of scope for `content`.** The widgets a user types
+  into live in `src/shell/components/FieldType*` and belong to the **`shell`**
+  namespace (shared by content/schema/blocks → translate once in their home dir).
+  Tracked under the Phase 3 "Field-type widgets — shell backfill" table.
+- **Namespace boundary nuance:** components that physically live in content-editor's
+  dir are `content` keys **even when** schema/blocks import them. e.g. `FieldShell` /
+  `FieldError` are rendered by schema/blocks too, but their files are in
+  content-editor, so their strings are `content.*` (decided 2026-06-17).
+- **Skip DB-sourced data** (model/field labels, field-type identifiers like
+  `one_to_one`, user content) — data, not UI copy. See
+  `feedback_localization_backend_mirror_strings`.
+- Per-slice loop: audit → `t()` w/ `defaultValue` → grow `en-US/content.json` →
+  drop `defaultValue` → translate 5 locales (flat camelCase keys; full CLDR plural
+  forms per locale) → commit.
+
+| #   | Sub-pass              | Scope                                                                                                                   | Effort | Status |
+| --- | --------------------- | ----------------------------------------------------------------------------------------------------------------------- | ------ | ------ |
+| 1   | Editor + Field shell  | `components/Editor/*`, `Editor/Field/*`, `NoFields` — field _wrapper_/validation (not the widgets) + namespace plumbing | M      | [ ]    |
+| 2   | ItemList              | `views/ItemList` (22 files): columns, filters, bulk actions (`UpdateListActions` notifications), empty states           | M-L    | [ ]    |
+| 3   | ItemEdit chrome       | `ItemEditHeader`, `Content/Actions` widgets, breadcrumbs, `LockedItem`, `PendingEditsModal`, publish/save + `notify()`  | L      | [ ]    |
+| 4   | ItemEdit Meta panels  | `Meta/settings`, `SocialMediaPreview`, `ContentInsights`, `IncomingRedirects`                                           | M      | [ ]    |
+| 5   | Create/link/misc      | `ItemCreate`, `LinkCreate`, `LinkEdit`, `NotFound` (+ their notifications)                                              | S      | [ ]    |
+| 6   | Analytics             | `views/Analytics` (24 files); dates mostly mitigated by `formatLocalized`, mainly labels/filters                        | M      | [ ]    |
+| 7   | CSVImport + Redirects | `views/CSVImport` (6 files), `views/Redirects` (4 files)                                                                | S      | [ ]    |
+
+> Sub-pass 3 (ItemEdit chrome) is the publish/save critical path → highest QA
+> bar; do it after the pattern is settled on lower-risk slices.
+
+#### Sub-pass 1 — Editor + Field shell (pre-audit complete, ~34 strings)
+
+13 files; only 6 carry strings. The rest are re-exports (`Editor/index.js`,
+`Editor/Field/index.ts`, `PreviewMode/index.js`), skeleton loaders
+(`FieldsLoader.tsx`), the preview iframe (`PreviewMode.js` — data only), and
+`ResolvedOption.tsx` (none). None are currently localized.
+
+**Files with strings:**
+
+| File                                               | Strings | Notes                                                                                                                                                        |
+| -------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `Editor/FieldError.tsx`                            | ~9      | `SEO_FIELD_LABELS` module map (6) + `getErrorMessage` returns (Required/Exceeding/Requires/block-variant) + invalid-values heading + correct-N-fields plural |
+| `Editor/Field/FieldShell.tsx`                      | ~9      | `EditorTypes` module map (Markdown/WYSIWYG/Inline/HTML) + duplicate `getErrorMessage` + min/max display labels                                               |
+| `Editor/Field/Field.tsx`                           | ~6      | UUID placeholder, Yes/No fallbacks, missing-options error, Select placeholder, currency tooltip (`{{language}}`), load-failed error                          |
+| `Editor/Field/FieldTooltipBody.tsx`                | 7       | "Edit Field", "View Model Activity Log", `CopyField` title/tooltip props, "Field added on", "…Field" suffix                                                  |
+| `NoFields.tsx`                                     | 4       | heading, conditional body w/ `{{label}}` interpolation, "Add Fields in Schema" button, image alt                                                             |
+| `Editor/Field/InternalLink.tsx` + `LinkOption.tsx` | 2       | "Selected item not found: {{value}}"; "…is missing a meta title"                                                                                             |
+| `Editor/Editor.js`                                 | 1       | min/max value validation message (`{{min}}`/`{{max}}` interpolation)                                                                                         |
+
+**Structural changes (not just inline `t()`):**
+
+- **Refactor 2 module-level maps** (unreachable by `t()` at module scope → move
+  lookup inside component): `SEO_FIELD_LABELS` (`FieldError.tsx:14`) and
+  `EditorTypes` (`FieldShell.tsx:26`).
+- **Consolidate duplicate `getErrorMessage`** — identical in `FieldError.tsx:28`
+  and `FieldShell.tsx:77` (Required Field / Exceeding by N / Requires N more /
+  block-variant). Extract to one shared helper, localize once.
+- **4 plural keys** (replace the custom `pluralizeWord` helper → i18next CLDR
+  plurals; delete `pluralizeWord` once its sites are converted): `Exceeding by
+{{count}} character(s)`, `Requires {{count}} more character(s)`, `min. {{count}}
+character(s)`, `correct the following {{count}} field(s) before saving`. Each
+  needs `_one`/`_other` (+ es `_many`, ru `_few`+`_many`).
+
+**Reuse / interpolation notes:** `common.edit` ("Edit") already exists; `Yes`/`No`
+are strong `common` candidates (not yet in `common`). Keep data out of keys via
+interpolation: `NoFields` `({{label}})`, `InternalLink` `{{value}}`, currency
+`{{language}}`.
 
 ### Audit — complexity / risk / effort ranking
 
