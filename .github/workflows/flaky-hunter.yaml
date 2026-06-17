@@ -1,0 +1,114 @@
+name: flaky-hunter
+
+# DIAGNOSTIC-ONLY workflow (not for merge to dev).
+#
+# Reruns the full Cypress e2e suite multiple times under the SAME 5-runner
+# concurrency profile as ci.yaml (publish specs isolated on runner 4), but with
+# retries DISABLED, to measure each spec's true flake rate against the live dev
+# APIs. The `report` job aggregates per-spec / per-test pass-fail variance.
+#
+# Why this and not just ci.yaml: ci uses retries:1, which hides flaky tests that
+# pass on a second attempt. We turn retries off and repeat instead.
+on:
+  push:
+    branches:
+      - chore/flaky-test-assessment
+  workflow_dispatch:
+    inputs:
+      iterations:
+        description: "How many times each runner reruns its specs"
+        required: false
+        default: "5"
+
+# Keep two hunts on the same ref from doubling up on the live dev API.
+concurrency:
+  group: flaky-hunter-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  hunt:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        split_index: [0, 1, 2, 3, 4]
+    env:
+      # push events can't pass inputs, so default to 5 there; dispatch can override.
+      ITERATIONS: ${{ github.event.inputs.iterations || '5' }}
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4.1.0
+        with:
+          node-version: "22.19.0"
+          cache: "npm"
+          cache-dependency-path: package-lock.json
+      - name: Install Dependencies
+        run: npm install --legacy-peer-deps
+      # Reporter that emits one JSON per spec; kept out of package.json on purpose.
+      - name: Install mochawesome reporter
+        run: npm install --no-save --legacy-peer-deps mochawesome
+      - name: Auth with Gcloud
+        uses: google-github-actions/auth@v0
+        with:
+          credentials_json: ${{ secrets.GCP_DEV_SA_KEY }}
+      - name: Set up Gcloud SDK
+        uses: google-github-actions/setup-gcloud@v0
+        with:
+          project_id: zesty-dev
+      - name: Setup Testing Environment
+        run: npm run ci:test:setup
+      # Runners 0-3: the non-publish specs, split by runtime (mirrors ci.yaml).
+      - name: Run Flaky Loop (splits 0-3)
+        if: matrix.split_index != 4
+        run: npx start-server-and-test start http://localhost:8080 "bash ci/scripts/flaky_loop.sh"
+        env:
+          SPLIT: 4
+          SPLIT_INDEX: ${{ matrix.split_index }}
+          SPLIT_FILE: timings.json
+          SKIP_SPEC: "cypress/e2e/content/actions.spec.js,cypress/e2e/content/list.spec.js,cypress/e2e/content/redirects.spec.js,cypress/e2e/content/workflows.spec.js,cypress/e2e/settings/workflows.spec.js"
+      # Runner 4: publish-related specs run together to avoid cross-runner interference.
+      - name: Run Flaky Loop (publish specs, runner 4)
+        if: matrix.split_index == 4
+        run: npx start-server-and-test start http://localhost:8080 "bash ci/scripts/flaky_loop.sh"
+        env:
+          SPLIT: 1
+          SPLIT_INDEX: 0
+          SPEC: "cypress/e2e/content/actions.spec.js,cypress/e2e/content/list.spec.js,cypress/e2e/content/redirects.spec.js,cypress/e2e/content/workflows.spec.js,cypress/e2e/settings/workflows.spec.js"
+      - name: Upload Per-Iteration Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: flaky-results-${{ matrix.split_index }}
+          path: results/
+          if-no-files-found: warn
+      - name: Upload Failure Screenshots
+        if: always()
+        run: ./ci/scripts/upload_debug_screenshots_to_gcp.sh || true
+
+  report:
+    needs: hunt
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4.1.0
+        with:
+          node-version: "22.19.0"
+      - name: Download All Results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: flaky-results-*
+          path: flaky-artifacts
+      - name: Aggregate Flakiness
+        run: node ci/scripts/aggregate_flaky.js flaky-artifacts | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Upload Flakiness Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: flakiness-report
+          path: flaky-report.json
+          if-no-files-found: warn
