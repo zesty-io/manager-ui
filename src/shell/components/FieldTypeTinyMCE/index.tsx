@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import { Box, alpha } from "@mui/material";
 import { theme } from "@zesty-io/material";
+import { useTranslation } from "react-i18next";
 
 import openBynder from "../../../utility/openBynder";
 
@@ -98,6 +99,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
   mediaBrowser,
   onCharacterCountChange,
 }: FieldTypeTinyMCEProps) {
+  const { t } = useTranslation();
   // NOTE: controlled component
   const [initialValue, setInitialValue] = useState(value);
   const [isSkinLoaded, setIsSkinLoaded] = useState(false);
@@ -385,7 +387,11 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
                * Handle save key command
                */
               if (onSave) {
-                editor.shortcuts.add("meta+s", "Save item", onSave);
+                editor.shortcuts.add(
+                  "meta+s",
+                  t("shell.tinymceSaveItem"),
+                  onSave
+                );
               }
 
               /**
@@ -437,7 +443,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
               };
               editor.ui.registry.addButton("zestyMediaApp", {
                 icon: "image",
-                tooltip: "Select media from your uploaded assets",
+                tooltip: t("shell.tinymceSelectUploadedMedia"),
                 onAction: mediaBrowserDialog,
               });
               editor.addCommand("mceZestyMediaApp", mediaBrowserDialog);
@@ -489,7 +495,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
               if (isBynderSessionValid) {
                 editor.ui.registry.addButton("bynder", {
                   icon: "bynder",
-                  tooltip: "Select media from your Bynder assets",
+                  tooltip: t("shell.tinymceSelectBynderMedia"),
                   onAction: handleOpenBynder,
                 });
               }

@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import { Search } from "@mui/icons-material";
 import { isValid } from "date-fns";
+import { useTranslation } from "react-i18next";
 
 import { ContentItem } from "../../services/types";
 import { formatLocalized } from "../../i18n/dates";
@@ -36,6 +37,7 @@ export const VariantSelector = ({
   blockModelName,
   onVariantSelected,
 }: VariantSelectorProps) => {
+  const { t } = useTranslation();
   const { data: users } = useGetUsersQuery();
   const [filterKeyword, setFilterKeyword] = useState("");
   const filterTextField = useRef(null);
@@ -96,7 +98,7 @@ export const VariantSelector = ({
           <TextField
             autoFocus
             fullWidth
-            placeholder="Search variants"
+            placeholder={t("shell.blockSelectorSearchVariants")}
             ref={filterTextField}
             value={filterKeyword}
             onChange={(evt) => {
@@ -215,8 +217,10 @@ export const VariantSelector = ({
                       textWrap: "wrap",
                     }}
                   >
-                    Updated on {updatedOn} by{" "}
-                    {getUserName(variant?.web?.createdByUserZUID)}
+                    {t("shell.blockSelectorUpdatedOnBy", {
+                      date: updatedOn,
+                      user: getUserName(variant?.web?.createdByUserZUID),
+                    })}
                   </Typography>
                 </Stack>
               </MenuItem>
