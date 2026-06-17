@@ -2,7 +2,10 @@ import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { useLocation, useParams } from "react-router";
 
-import { useGetContentModelFieldsQuery } from "../../../../../../../../shell/services/instance";
+import {
+  useGetContentModelFieldsQuery,
+  useGetInstanceSettingsQuery,
+} from "../../../../../../../../shell/services/instance";
 import { useLazyGetFileQuery } from "../../../../../../../../shell/services/mediaManager";
 import { AppState } from "../../../../../../../../shell/store/types";
 import { fileExtension } from "../../../../../../../media/src/app/utils/fileUtils";
@@ -13,6 +16,10 @@ export const useImageURL: () => string = () => {
     itemZUID: string;
   }>();
   const { data: modelFields } = useGetContentModelFieldsQuery({ modelZUID });
+  const { data: instanceSettings } = useGetInstanceSettingsQuery();
+  const skipImageFallback =
+    instanceSettings?.find((setting) => setting.key === "disable_seo_preview")
+      ?.value === "1";
   const [getFile] = useLazyGetFileQuery();
   const location = useLocation();
   const isCreateItemPage = location?.pathname?.split("/")?.pop() === "new";
@@ -23,7 +30,13 @@ export const useImageURL: () => string = () => {
   const [imageURL, setImageURL] = useState<string>(null);
 
   const contentImages = useMemo(() => {
-    if (!modelFields?.length || !Object.keys(item?.data ?? {})?.length) return;
+    if (
+      skipImageFallback ||
+      !modelFields?.length ||
+      !Object.keys(item?.data ?? {})?.length
+    ) {
+      return;
+    }
 
     const mediaFieldsWithImageOnTheName: string[] = [];
     const otherMediaFields: string[] = [];
@@ -50,7 +63,7 @@ export const useImageURL: () => string = () => {
     });
 
     return [...mediaFieldsWithImageOnTheName, ...otherMediaFields];
-  }, [modelFields, item?.data]);
+  }, [skipImageFallback, modelFields, item?.data]);
 
   useEffect(() => {
     if (!!item?.data?.og_image) {
