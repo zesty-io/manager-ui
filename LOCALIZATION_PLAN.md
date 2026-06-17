@@ -544,15 +544,16 @@ buttons) that i18next/`t()` does not touch. Each package localizes differently.
 
 **The core distinction: do the translations ship in the package?**
 
-| Package                                       | Where / chrome                                                                                                                                       | Strings ship in package?                                                                                       | What we do                                                                                                                                                            | Effort            |
-| --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------- |
-| **MUI core** (`@mui/material`)                | `Autocomplete` (No options/Loading…, 31 files), `TablePagination`, `Dialog` close aria (89 files), `Alert`, `Breadcrumbs`, `Pagination`, `SpeedDial` | ✅ **All 6 incl. Hindi** (`@mui/material/locale`)                                                              | Select the locale bundle; make the theme reactive (below). `t()` the few manual overrides                                                                             | Low               |
-| **MUI X Data Grid**                           | Grid chrome (column menu, footer, no-rows)                                                                                                           | ⚠️ es/zh/ru/nl only — **Hindi missing**                                                                        | Resolver + hand-written hi-IN **already exist**; propagate to remaining grids                                                                                         | Med (propagation) |
-| **MUI X Date Pickers**                        | `localeText`: OK/Cancel/Clear/Today, toolbar, clock/field aria (separate from date-fns calendar adapter, already wired)                              | ⚠️ es/zh/ru/nl only — **Hindi missing**                                                                        | New resolver + **hand-write hi-IN bundle**; pass `localeText` per `LocalizationProvider`                                                                              | Med               |
-| **ProseMirror** (`@aeaton/react-prosemirror`) | `FieldTypeEditor` markdown/article_writer toolbar tooltips + link/embed modals                                                                       | ❌ No locale system — strings live in **our own** menu files                                                   | `t()` the in-repo `react-prosemirror-menu/*` + modal labels; add keys to all locales                                                                                  | Low-Med           |
-| **TinyMCE 6**                                 | `FieldTypeTinyMCE` (primary wysiwyg surface): toolbar tooltips, format dropdown, link/media/table/find-replace dialogs, wordcount                    | ⚠️ Supported via `language` opt but **not bundled in npm**; **no Hindi exists at all**                         | Self-host lang packs (`/vendors/tinymce/langs/`), map from `i18n.language`, **hand-author `hi.js`**, `t()` the 2 custom media-button tooltips + custom-plugin strings | High              |
-| **Monaco**                                    | Code app editor: context menu, command palette, find/replace widget                                                                                  | ⚠️ NLS exist for the **AMD** build only; app uses the **ESM** build (no runtime locale). No Dutch/Hindi anyway | **Leave English** (developer-facing tool; degrade gracefully like an unmapped grid tag)                                                                               | Very High → skip  |
-| **CodeMirror 5**                              | HTML source view of `FieldTypeEditor`                                                                                                                | n/a — **no chrome**; no search/dialog addons are loaded                                                        | **No action**                                                                                                                                                         | None              |
+| Package                                       | Where / chrome                                                                                                                                       | Strings ship in package?                                                                                                                                                 | What we do                                                                                                                                                            | Effort            |
+| --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------- |
+| **MUI core** (`@mui/material`)                | `Autocomplete` (No options/Loading…, 31 files), `TablePagination`, `Dialog` close aria (89 files), `Alert`, `Breadcrumbs`, `Pagination`, `SpeedDial` | ✅ **All 6 incl. Hindi** (`@mui/material/locale`)                                                                                                                        | Select the locale bundle; make the theme reactive (below). `t()` the few manual overrides                                                                             | Low               |
+| **MUI X Data Grid**                           | Grid chrome (column menu, footer, no-rows)                                                                                                           | ⚠️ es/zh/ru/nl only — **Hindi missing**                                                                                                                                  | Resolver + hand-written hi-IN **already exist**; propagate to remaining grids                                                                                         | Med (propagation) |
+| **MUI X Date Pickers**                        | `localeText`: OK/Cancel/Clear/Today, toolbar, clock/field aria (separate from date-fns calendar adapter, already wired)                              | ⚠️ es/zh/ru/nl only — **Hindi missing**                                                                                                                                  | New resolver + **hand-write hi-IN bundle**; pass `localeText` per `LocalizationProvider`                                                                              | Med               |
+| **ProseMirror** (`@aeaton/react-prosemirror`) | `FieldTypeEditor` markdown/article_writer toolbar tooltips + link/embed modals                                                                       | ❌ No locale system — strings live in **our own** menu files                                                                                                             | `t()` the in-repo `react-prosemirror-menu/*` + modal labels; add keys to all locales                                                                                  | Low-Med           |
+| **TinyMCE 6**                                 | `FieldTypeTinyMCE` (primary wysiwyg surface): toolbar tooltips, format dropdown, link/media/table/find-replace dialogs, wordcount                    | ⚠️ Supported via `language` opt but **not bundled in npm**; **no Hindi exists at all**                                                                                   | Self-host lang packs (`/vendors/tinymce/langs/`), map from `i18n.language`, **hand-author `hi.js`**, `t()` the 2 custom media-button tooltips + custom-plugin strings | High              |
+| **Bynder Compact View**                       | Bynder DAM integration modal opened by `src/utility/openBynder.ts`; SDK script loaded from `ucv.bynder.com` in both HTML entries                     | ⚠️ SDK ships partial locale support; `en`/`es`/`nl` CloudFront locale files are available, but `zh`/`ru`/`hi` return 403; no public custom-translation object is exposed | Pass the SDK's `language` option from `openBynder`; map only fully available app locales to Bynder IDs; fall back `zh-CN`/`ru-RU`/`hi-IN`/unknown tags to `en_US`     | Low               |
+| **Monaco**                                    | Code app editor: context menu, command palette, find/replace widget                                                                                  | ⚠️ NLS exist for the **AMD** build only; app uses the **ESM** build (no runtime locale). No Dutch/Hindi anyway                                                           | **Leave English** (developer-facing tool; degrade gracefully like an unmapped grid tag)                                                                               | Very High → skip  |
+| **CodeMirror 5**                              | HTML source view of `FieldTypeEditor`                                                                                                                | n/a — **no chrome**; no search/dialog addons are loaded                                                                                                                  | **No action**                                                                                                                                                         | None              |
 
 **No work needed (headless / dead):** `chart.js` (+datalabels/adapter),
 `notistack`, `react-dropzone`, `react-window` & other virtualization,
@@ -592,8 +593,9 @@ Split by concern:
   `t()` namespace work, the **reactive `LocalizedThemeProvider` trigger** (it
   depends on `useTranslation()`/i18next — the design system must not), and
   **app-specific third-party strings** (TinyMCE packs + custom buttons,
-  ProseMirror menu labels). Language _selection_ stays in the app; language
-  _data_ moves to the package.
+  ProseMirror menu labels, Bynder Compact View language mapping). Language
+  _selection_ stays in the app; reusable MUI language _data_ moves to the
+  package.
 - **Migration — only the MUI half moves.** `src/shell/i18n/datagrid.ts` +
   `datagrid-locales/hi-IN.ts` are mostly pure MUI artifacts, but `datagrid.ts`
   also has an i18next foot that must stay behind:
@@ -649,6 +651,29 @@ Split by concern:
 - [ ] **MUI manual overrides → `t()`** — a few spots bypass the theme default and must be `t()`'d to be reactive: `noOptionsText`/`loadingText` in `seo/.../CreateRedirects/SearchField.tsx` and `shell/.../GlobalSearch/AdvancedSearch.tsx`; and the hardcoded literals in `FieldTypeDate` (`"Clear"`, `"Stored as"`, `placeholder="Mon DD YYYY"`) that are separate from MUI's picker `localeText`.
 - [ ] **ProseMirror** — `t()` the English `title:`/`label:` literals in `src/shell/components/FieldTypeEditor/Editors/react-prosemirror-menu/{menu.js,inline-menu.js}` and the `LinkModal`/`EmbedModal` components; add keys to all 6 locales. No external packs needed.
 - [ ] **TinyMCE** — self-host language packs under `/vendors/tinymce/langs/` (matching the existing `skin_url`/`icon_url` self-hosting), add `language`/`language_url` to the `init` block in `src/shell/components/FieldTypeTinyMCE/index.tsx` derived from `i18n.language` via a tag map (`es-ES`→`es`, `zh-CN`→`zh_CN`, `ru-RU`→`ru`, `nl-NL`→`nl`; en-US→default). **Hand-author `langs/hi.js`** (`tinymce.addI18n("hi", {...})`). `t()` the 2 custom media-button tooltips and any custom-plugin strings.
+- [x] **Bynder Compact View** — `src/utility/openBynder.ts` opens the SDK-owned
+      DAM modal via `BynderCompactView.open({ portal, mode, language, onSuccess })`. The
+      current SDK script (`https://ucv.bynder.com/5.0.5/modules/compactview/bynder-compactview-3-latest.js`,
+      bundle banner `bynder-compactview v4.3.3`) validates an optional
+      `language?: string` option and passes it into the modal tree. Added a
+      small resolver in `openBynder.ts` that imports the i18n singleton and maps
+      the active app locale to the SDK's underscore IDs: - `en-US` → `en_US` - `es-ES` → `es_ES` - `zh-CN` → `en_US` (Bynder's external `zh.json` returns 403) - `ru-RU` → `en_US` (Bynder's external `ru.json` returns 403) - `nl-NL` → `nl_NL` - `hi-IN` → `en_US` (Bynder does **not** ship Hindi; degrade gracefully) - unknown tags → `en_US`
+      The SDK has two localization paths: bundled design-system locale files
+      keyed by underscore IDs (`ru_RU`, `zh_CN`, etc.) and an external
+      CloudFront fetch that slices the first two letters and requests
+      `/5.0.5/modules/compactview/i18n/{code}.json`. Direct checks showed
+      `en.json`, `es.json`, and `nl.json` return 200, while `zh.json`,
+      `ru.json`, and `hi.json` return 403; mapping those app locales to English
+      avoids SDK-owned failed requests.
+      Also updated `src/shell/byder.d.ts` to include `language?: string` in the
+      open options; the local type was behind the SDK. Decision: do **not**
+      patch/self-host Bynder for Hindi. The inspected SDK has an internal
+      translation merge path, but `BynderCompactView.open(...)` does not expose
+      a caller-provided localization/messages object, so `hi-IN` intentionally
+      falls back to English. Also replaced the Bynder settings login-flow close
+      helper's translated `button[title='Close']` dependency with a
+      language-independent CSS location selector inside the SDK shadow DOM:
+      `[data-testid='modal'] nav > button:last-of-type`.
 - [ ] **Monaco** — no action; leave English (ESM build can't switch locale at runtime; Dutch/Hindi unshipped). Document the decision.
 - [ ] **CodeMirror** — no action (no chrome-bearing addons loaded). Revisit only if a search addon is added.
 - [ ] _(optional cleanup)_ remove the unused `flatpickr`/`react-flatpickr` deps (CSS-only, no JS mounts).
@@ -663,8 +688,11 @@ upstream the stable bundles to `@zesty-io/material` (avoids two-repo iteration):
 3. ~~**MUI X Date Pickers**~~ ✅ — `getDatePickersLocaleText` resolver + hand-written `datepickers-locales/hi-IN.ts`; same `defaultProps` path as the grid.
 4. **Upstream to `@zesty-io/material`** ← _next_ — once the core/grid/picker resolvers + hi-IN bundles + `localizeTheme` are stable, move them into the package and import from there; other apps then inherit MUI localization for free.
 5. **ProseMirror** — purely in-repo `t()` (stays in manager-ui); no external dependency, predictable.
-6. **TinyMCE** — highest effort (self-host packs + author Hindi + custom buttons), stays in manager-ui; the primary content surface, so high value but save for when the pattern is proven on the smaller ones.
-7. **Monaco / CodeMirror** — decision/no-op; document and close out.
+6. **Bynder Compact View** — low-effort SDK option pass-through in `openBynder`;
+   do before or alongside settings QA because it affects the Bynder login/asset
+   picker modal directly.
+7. **TinyMCE** — highest effort (self-host packs + author Hindi + custom buttons), stays in manager-ui; the primary content surface, so high value but save for when the pattern is proven on the smaller ones.
+8. **Monaco / CodeMirror** — decision/no-op; document and close out.
 
 ---
 

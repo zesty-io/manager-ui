@@ -19,6 +19,22 @@ import {
 } from "../../../../../shell/services/instance";
 import openBynder from "../../../../../utility/openBynder";
 
+const closeBynderModal = () => {
+  const shadowRoot = document.querySelector(
+    "[data-test-id='CompactViewContainer'] div"
+  )?.shadowRoot;
+
+  if (!shadowRoot) {
+    return;
+  }
+
+  const closeButton = shadowRoot.querySelector(
+    "[data-testid='modal'] nav > button:last-of-type"
+  ) as HTMLButtonElement | null;
+
+  closeButton?.click();
+};
+
 // NOTE: cvrt is the bynder refresh token, determines if user is logged in or not
 export const Bynder = () => {
   const [isBynderSessionValid, setIsBynderSessionValid] = useState(false);
@@ -118,12 +134,7 @@ export const Bynder = () => {
 
       if (!!bynderToken) {
         // This makes sure the bynder modal is closed after the user logs in
-        const bynderCloseButton = document
-          ?.querySelector("[data-test-id='CompactViewContainer'] div")
-          ?.shadowRoot.querySelector(
-            "button[title='Close']"
-          ) as HTMLButtonElement;
-        bynderCloseButton?.click();
+        closeBynderModal();
       }
 
       setIsBynderSessionValid(!!bynderToken);
