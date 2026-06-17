@@ -1,4 +1,4 @@
-import { useRef, useState, ChangeEvent, useMemo, useEffect } from "react";
+import { useRef, useState, ChangeEvent, useMemo } from "react";
 import {
   alpha,
   Box,
@@ -41,14 +41,19 @@ const keyPathValuesToString = (
   const validValues = Object.values(keyPaths)
     ?.filter((value) => {
       if (Array.isArray(value)) return value?.length > 0;
-      return value !== "";
+      return value !== "" && value !== null && value !== undefined;
     })
     ?.flat();
   const idParts = validValues?.map((key) => {
-    const value = item?.[key] || "";
-    return typeof value === "string" ? value?.replace(/\s+/g, "") : value;
+    const value = item?.[key];
+    if (value !== null && typeof value === "object") {
+      return JSON.stringify(value);
+    } else {
+      const cleanValue =
+        typeof value === "string" ? value.replace(/\s+/g, "") : value;
+      return String(cleanValue);
+    }
   });
-
   return idParts?.join(";");
 };
 
@@ -110,7 +115,6 @@ const RenderRow = ({ data, index, style }: RenderRowProps) => {
     onSelect,
     maxItems,
     onView,
-
     onSync,
     forSyncIds,
   } = data;
@@ -251,17 +255,26 @@ const ItemSelectionDialog = ({
 }: ItemSelectionDialogProps) => {
   const searchInputRef = useRef(null);
   const drawerContainerRef = useRef(null);
-  const [selectedItems, setSelectedItems] =
-    useState<ApiDataWithIdProps[]>(value);
+  const [selectedItems, setSelectedItems] = useState(value);
   const [searchTerm, setSearchTerm] = useState("");
   const [jsonViewData, setJsonViewData] = useState<ApiDataWithIdProps>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [forSync, setForSync] = useState<SyncItem[]>([]);
+
   const itemHeight = getItemRowHeight(config?.type, config?.keyPaths?.details);
   const displayConfig = DISPLAY_OPTIONS_CONFIG?.[config?.type] || [];
   const keyPaths = config?.keyPaths;
-  const [forSync, setForSync] = useState<SyncItem[]>([]);
   const forSyncIds = forSync?.map((sync) => sync?.id);
   const hasChanges = !isEqual(value, selectedItems) || forSyncIds?.length > 0;
+
+  const itemsIdMap = useMemo(
+    () => new Set(items.map((sel) => sel._itemId)),
+    [items]
+  );
+
+  const selectedItemsLocal = selectedItems?.filter((item) =>
+    itemsIdMap.has(item._itemId)
+  );
 
   const handleSelect = (item: ApiDataWithIdProps) => {
     setSelectedItems((prev) => {
@@ -271,6 +284,7 @@ const ItemSelectionDialog = ({
         : [...prev, item];
     });
   };
+
   const handleSync = (id: string | number, data: ApiDataWithIdProps) => {
     setForSync((prev: SyncItem[]) => {
       const existingIndex = prev.findIndex((item: SyncItem) => item.id === id);
@@ -326,13 +340,13 @@ const ItemSelectionDialog = ({
     });
 
     return filtered;
-  }, [loading, LOADING_DATA, items, searchTerm, keyPaths, displayConfig]);
+  }, [loading, items, searchTerm, keyPaths, displayConfig]);
 
   const listData: RenderRowDataProps = {
     type: config?.type,
     value,
     items: filteredItems,
-    selectedItems,
+    selectedItems: selectedItemsLocal,
     keyPaths: config?.keyPaths,
     onSelect: handleSelect,
     maxItems,
@@ -375,20 +389,28 @@ const ItemSelectionDialog = ({
         }}
       >
         <Typography variant="h3" fontWeight={700}>
-          {!loading && selectedItems.length
-            ? `${selectedItems.length} Selected`
+          {!loading && selectedItemsLocal?.length > 0
+            ? `${selectedItemsLocal?.length} Selected`
             : `Select ${title}`}
         </Typography>
 
         <Box display="flex" alignItems="center" gap={1}>
-          {!loading && selectedItems.length > 0 && (
+          {!loading && selectedItemsLocal?.length > 0 && (
             <>
               <Button
                 size="small"
                 variant="outlined"
                 color="inherit"
                 startIcon={<Close />}
-                onClick={() => setSelectedItems([])}
+                onClick={() => {
+                  const selectedItemsLocalIdsMap = new Set(
+                    selectedItemsLocal.map((sel) => sel._itemId)
+                  );
+                  const remainingItems = selectedItems?.filter(
+                    (item) => !selectedItemsLocalIdsMap.has(item._itemId)
+                  );
+                  setSelectedItems(remainingItems);
+                }}
               >
                 Deselect All
               </Button>
