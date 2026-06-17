@@ -26,14 +26,18 @@ Spec: https://docs.google.com/document/d/1l5RdyDxQLTwXdz80Gk1_y8GdVv_KoQG5VfSmdv
   - `i18next-browser-languagedetector`
   - `i18next-parser` (dev dependency — key extraction CLI)
 - [x] Create `src/shell/i18n/index.ts` — configure i18next with:
-  - ChainedBackend (LocalStorage → HTTP)
+  - Environment-specific backend:
+    - `stage`/`production`: ChainedBackend (LocalStorage → HTTP)
+    - `development`/`local`: HttpBackend only, so locale JSON edits show after
+      refresh without manually clearing stale `i18next_res_*` localStorage
+      entries
   - LanguageDetector (order: `localStorage` only — `navigator` excluded, `caches: []` so detection never auto-writes)
   - Fallback language: `en-US`
   - Default / initial namespace: `common`; also loads `shell` at init
   - `useSuspense: true`
   - `nsSeparator: "."` and `keySeparator: false` — enables `t("namespace.key")` qualified-key syntax
-  - Cache busting via `defaultVersion` tied to the build's git hash (injected via webpack `DefinePlugin` as `__GIT_HASH__`)
-  - LocalStorage cache TTL: `i18next-localstorage-backend` default (7 days)
+  - Production-like cache busting via `defaultVersion` tied to the build's git hash (injected via webpack `DefinePlugin` as `__GIT_HASH__`)
+  - Production-like LocalStorage cache TTL: `i18next-localstorage-backend` default (7 days)
   - HTTP load path: `/locales/{{lng}}/{{ns}}.json`
 - [x] Import `src/shell/i18n/index.ts` in `src/shell/index.js` (app entry point) — must be imported before the React root renders
 - [x] Create `public/locales/` directory structure:
@@ -740,7 +744,10 @@ upstream the stable bundles to `@zesty-io/material` (avoids two-repo iteration):
 
 ## Phase 6 — Caching & Cache Busting
 
-- [ ] Confirm chained backend config (LocalStorage first, HTTP fallback) is working correctly — verify no redundant fetches on navigation
+- [x] Confirm production-like chained backend config (LocalStorage first, HTTP fallback) is working correctly — verify no redundant fetches on navigation
+- [x] Bypass LocalStorageBackend in `development`/`local` and use HttpBackend
+      directly so translation updates do not require manually clearing
+      localStorage
 - [x] Inject git hash at build time via webpack `DefinePlugin` (`__GIT_HASH__`)
 - [x] Pass `__GIT_HASH__` as `defaultVersion` in the LocalStorage backend options so deploying a new build invalidates the cache
 - [x] Verify first-load blocks render until translation data is ready (no UI flicker / raw key flash)
