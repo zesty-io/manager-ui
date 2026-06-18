@@ -19,7 +19,7 @@ on:
         required: false
 
 env:
-  TEST_ISSUE_NUMBER: "4160" # <-- throwaway test issue: "[TEST] Media uploads fail silently when uploading multiple files"
+  TEST_ISSUE_NUMBER: "4163" # <-- throwaway test issue: "[TEST] Warn before leaving the content editor with unsaved changes"
 
 jobs:
   triage-test:
