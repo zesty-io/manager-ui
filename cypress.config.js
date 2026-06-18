@@ -7,7 +7,18 @@ module.exports = defineConfig({
   viewportHeight: 1080,
   video: false,
   numTestsKeptInMemory: 0,
-  defaultCommandTimeout: 15000,
+  // Bumped 15s -> 30s: under a slow shared dev instance, data loads late and
+  // UI elements (e.g. the publish buttons) can render past 15s, causing
+  // "element not found" flakes. A fast load still resolves immediately.
+  defaultCommandTimeout: 30000,
+  // The shared dev instance is often slow under load — API calls that normally
+  // take <1s can take several seconds. Generous request/response timeouts let
+  // cy.wait('@route') tolerate that slowness instead of failing with
+  // "No request ever occurred". These only matter while waiting; a fast response
+  // resolves immediately, so healthy runs aren't slowed. A genuine hang (>30s)
+  // still fails — and surfaces as a "no response" timeout, attributed to the backend.
+  requestTimeout: 30000,
+  responseTimeout: 30000,
   env: {
     API_AUTH: "https://auth.api.dev.zesty.io",
     COOKIE_NAME: "DEV_APP_SID",

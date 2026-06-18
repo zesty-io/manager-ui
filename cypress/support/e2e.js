@@ -54,13 +54,16 @@ before(() => {
 // to the backend team instead of being mistaken for test/app flakiness.
 let backend5xx = [];
 
-// Failure error text that indicates backend instability (timeouts / no response /
-// 5xx / connection failures / seed-task timeouts). A degraded instance usually
-// HANGS rather than returning a 502, so the response-status middleware above
-// can't see it — we also match the failure message here so the marker captures
-// timeouts. This is what lets plain `ci` (no mochawesome) attribute failures.
+// Failure error text that indicates backend instability with HIGH confidence.
+// Deliberately does NOT match "No request ever occurred" — that means the app
+// never fired the request, which is ambiguous (could be backend-slow OR a real
+// test/app bug), and false-positive backend attribution would mask real bugs.
+// We match only definitive signals: 5xx, gateway errors, a request that fired
+// but got "No response" (backend hung), direct cy.request/seed timeouts, and
+// connection failures. Generous request/response timeouts (cypress.config.js)
+// handle backend-slow "no request" cases instead of mis-attributing them.
 const BACKEND_ERR_RE =
-  /\b(50[0-9])\b|bad gateway|service unavailable|gateway time-?out|timed out (retrying )?.*(request to the route|for a response|waiting)|cy\.request\(\) timed out|seed:content.*timed out|failed to create model|econnrefused|esockettimedout|etimedout|socket hang up|network error|ehostunreach/i;
+  /\b50[0-9]\b|bad gateway|service unavailable|gateway time-?out|no response ever occurred|response to the route|cy\.request\(\) timed out|seed:content.*timed out|failed to create model|econnrefused|esockettimedout|etimedout|socket hang up|ehostunreach/i;
 
 // Before each test in spec
 beforeEach(() => {

@@ -3,7 +3,8 @@ const TEST_DATA = {
   new: `New Item:${timestamp}`,
   ai: `AI Generated:${timestamp}`,
 };
-const requestTimeout = 15000;
+// Generous timeout: the publish/item data requests can be slow under load.
+const requestTimeout = 30000;
 
 describe("Actions in content editor", () => {
   let CONTENT_ITEMS = null;
@@ -305,7 +306,14 @@ describe("Actions in content editor", () => {
   });
 
   it("Unschedules a Publish for an item", () => {
-    const { deletePublishedItem, publishings } = awaitRequests();
+    const { items, deletePublishedItem, publishings } = awaitRequests();
+    // Re-visit so this test doesn't depend on the page/modal state the previous
+    // ("Schedules") test happened to leave open — re-read the scheduled item
+    // fresh. The previous coupling made this the flakiest test in the spec.
+    cy.visit(
+      `/content/${Cypress.env("modelZUID")}/${CONTENT_ITEMS?.[4]?.meta?.ZUID}`
+    );
+    cy.wait([items, publishings], { requestTimeout });
 
     cy.getBySelector("PublishMenuButton").should("exist").should("be.enabled");
     cy.getBySelector("PublishMenuButton").trigger("click");

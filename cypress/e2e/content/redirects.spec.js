@@ -413,7 +413,9 @@ function awaitRedirectsData(path) {
   cy.intercept("GET", "**/v1/web/redirects").as("getRedirects");
 
   cy.visit(path);
+  // Generous timeout: under load the page can fire these data requests late;
+  // 10s was too tight and flaked with "No request ever occurred".
   cy.wait(["@getModels", "@getPublishings", "@getRedirects"], {
-    requestTimeout: 10000,
+    requestTimeout: 30000,
   });
 }
