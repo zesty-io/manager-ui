@@ -160,10 +160,11 @@ jobs:
             exit 1
           fi
 
-  # When CI fails, attribute it. If failures coincided with backend 5xx/timeouts
-  # (markers recorded by cypress/support/e2e.js), post a banner telling the team
-  # to escalate to the backend team and re-run, instead of triaging these as test
-  # bugs. Stays silent if no backend errors were seen (then it's a real failure).
+  # When CI fails, attribute it — as a detail on THIS run (job summary), not a PR
+  # comment. If failures coincided with backend 5xx/timeouts (markers recorded by
+  # cypress/support/e2e.js), the run summary flags it as backend-caused so you can
+  # see at a glance it was the backend's fault and just re-run. If no backend
+  # errors were seen, it says so (then it's a real test/app failure to triage).
   backend_health:
     needs: run_tests
     runs-on: ubuntu-latest
@@ -181,48 +182,18 @@ jobs:
           pattern: backend-markers-*
           path: backend-markers
           merge-multiple: true
-      - name: Build Backend-Health Banner
+      # Surface the verdict as a detail on this run (the job summary), not a PR
+      # comment. Open the failed run → see at a glance whether it was the backend.
+      - name: Backend-Health Verdict (run summary)
         run: |
           node ci/scripts/backend_health.js backend-markers > backend-health.md || true
           if [ -s backend-health.md ]; then
             cat backend-health.md >> "$GITHUB_STEP_SUMMARY"
+            # Also echo to the step log so it's visible without opening the summary tab.
+            echo "::warning::Backend-caused failures detected this run — likely a backend issue, re-run. See run summary."
           else
             echo "✅ No backend-attributed failures — this CI failure looks like a real test/app issue, not backend instability." >> "$GITHUB_STEP_SUMMARY"
           fi
-      - name: Comment Backend-Health on PR
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const fs = require("fs");
-            if (!fs.existsSync("backend-health.md") || fs.statSync("backend-health.md").size === 0) {
-              core.info("No backend-attributed failures; skipping comment.");
-              return;
-            }
-            const body = fs.readFileSync("backend-health.md", "utf8");
-            const pr = context.payload.pull_request;
-            if (!pr) return;
-            const comments = await github.paginate(github.rest.issues.listComments, {
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: pr.number,
-              per_page: 100,
-            });
-            const existing = comments.find((c) => c.body?.includes("<!-- backend-health -->"));
-            if (existing) {
-              await github.rest.issues.updateComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                comment_id: existing.id,
-                body,
-              });
-            } else {
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: pr.number,
-                body,
-              });
-            }
 
   # Merges partial timings.json from each runner into a single file and uploads it as an artifact.
   # Download the artifact after CI runs and commit timings.json to the repo to enable
