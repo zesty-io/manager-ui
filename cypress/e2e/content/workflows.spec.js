@@ -1,10 +1,14 @@
 import ContentItemPage from "./pages/ContentItemPage";
 
 const NOW = Date.now();
+// Run token: COMMIT_ID is unique per PR/commit. Embedding it in every label name
+// lets cleanup delete only THIS run's labels, so concurrent CI runs on the shared
+// instance don't clobber each other.
+const COMMIT_ID = Cypress.env("COMMIT_ID");
 
 const TITLES = {
-  publishLabel: `Publish Approval - ${NOW}`,
-  testLabel: `Random Test Label - ${NOW}`,
+  publishLabel: `Publish Approval - ${COMMIT_ID} - ${NOW}`,
+  testLabel: `Random Test Label - ${COMMIT_ID} - ${NOW}`,
 };
 const LABEL_DATA = {
   publishLabel: {
@@ -25,7 +29,8 @@ const LABEL_DATA = {
   },
 };
 const cleanUp = () => {
-  cy.task("cleanup:labels", [TITLES.publishLabel, TITLES.testLabel]);
+  // Scope cleanup to this run's COMMIT_ID so we never delete a concurrent run's labels.
+  cy.task("cleanup:labels", COMMIT_ID);
 };
 
 describe("Content Item Workflows", () => {
@@ -142,7 +147,7 @@ describe("Content Item Workflows", () => {
     ContentItemPage.elements.addWorkflowStatusLabel().should("exist").click();
     ContentItemPage.elements
       .workflowStatusLabelOption()
-      .contains(`Publish Approval - ${NOW}`)
+      .contains(TITLES.publishLabel)
       .should("exist")
       .click({ force: true });
 

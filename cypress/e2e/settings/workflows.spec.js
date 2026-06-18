@@ -49,9 +49,15 @@ const LABELS = {
 
 const EMPTY_SEARCH_TEXT = "xx_yy_zz_00";
 
+// Run token: COMMIT_ID is unique per PR/commit. Suffixing the (otherwise fixed)
+// test-label names with it makes both creation and cleanTestData() run-scoped, so
+// concurrent CI runs on the shared instance can't create duplicate names or delete
+// each other's labels. Assertions reference these same names, so they stay scoped too.
+const COMMIT_ID = Cypress.env("COMMIT_ID");
+
 const TEST_DATA = {
   new: {
-    name: "Test__new",
+    name: `Test__new ${COMMIT_ID}`,
     description: "Test__new Description",
     color: "Grey",
     addPermissionRoles: "Admin",
@@ -59,7 +65,7 @@ const TEST_DATA = {
     allowPublish: true,
   },
   edited: {
-    name: "Test__edited",
+    name: `Test__edited ${COMMIT_ID}`,
     description: "Test__edited Description",
     color: "Pink",
     addPermissionRoles: [],
@@ -67,7 +73,7 @@ const TEST_DATA = {
     allowPublish: true,
   },
   temp1: {
-    name: "Test__temp1",
+    name: `Test__temp1 ${COMMIT_ID}`,
     description: "Test__temp1 Description",
     color: "Red",
     addPermissionRoles: [],
@@ -75,7 +81,7 @@ const TEST_DATA = {
     allowPublish: false,
   },
   temp2: {
-    name: "Test__temp2",
+    name: `Test__temp2 ${COMMIT_ID}`,
     description: "Test__temp2 Description",
     color: "Yellow",
     addPermissionRoles: [],
@@ -83,7 +89,7 @@ const TEST_DATA = {
     allowPublish: false,
   },
   temp3: {
-    name: "Test__temp3",
+    name: `Test__temp3 ${COMMIT_ID}`,
     description: "Test__temp3 Description",
     color: "Purple",
     addPermissionRoles: [],
@@ -462,7 +468,12 @@ Cypress.Commands.add("cleanTestData", function () {
     TEST_DATA?.temp3?.name,
   ];
 
-  cy.apiRequest({ url: `${INSTANCE_API}/env/labels?showDeleted=true` }).then(
+  // Query ACTIVE labels only (no showDeleted=true). The shared dev instance has
+  // accumulated a huge number of soft-deleted test labels, and showDeleted=true
+  // returns all of them — the query can exceed the 30s request timeout and fail
+  // this before() hook, taking the whole spec down. We only delete active labels
+  // here anyway, so the deleted history is irrelevant.
+  cy.apiRequest({ url: `${INSTANCE_API}/env/labels` }).then(
     (response) => {
       response?.data
         ?.filter(

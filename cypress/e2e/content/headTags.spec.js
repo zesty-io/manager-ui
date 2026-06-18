@@ -1,26 +1,31 @@
 import { API_ENDPOINTS } from "../../support/api";
 
-// This spec is the only Head Tags mutator (settings/headtags is skipped) and it
-// assumes a clean "no head tags" starting state — the .last()/count logic below
-// relies on it. A prior interrupted run can leave a tag behind, which then makes
-// this spec fail intermittently. Force a clean slate before and after so the
-// spec is hermetic regardless of execution order or earlier failures.
-function cleanAllHeadTags() {
+// Run token: tag this run's head tag with COMMIT_ID so cleanup removes only our
+// own tags and never a concurrent run's. (Deleting ALL head tags would clobber a
+// concurrent CI run on the shared instance.) The created tag's value embeds it.
+const COMMIT_ID = Cypress.env("COMMIT_ID");
+const TAG_VALUE = `Changing the value of content ${COMMIT_ID}`;
+
+// Remove only head tags belonging to this run (leftovers from an interrupted
+// prior run of the same commit), matched by COMMIT_ID anywhere in the record.
+function cleanRunHeadTags() {
   cy.apiRequest({
     url: `${API_ENDPOINTS.devInstance}/web/headtags`,
   }).then(({ data }) => {
-    (data || []).forEach((tag) => {
-      cy.apiRequest({
-        url: `${API_ENDPOINTS.devInstance}/web/headtags/${tag.ZUID}`,
-        method: "DELETE",
+    (data || [])
+      .filter((tag) => JSON.stringify(tag || {}).includes(COMMIT_ID))
+      .forEach((tag) => {
+        cy.apiRequest({
+          url: `${API_ENDPOINTS.devInstance}/web/headtags/${tag.ZUID}`,
+          method: "DELETE",
+        });
       });
-    });
   });
 }
 
 describe("Head Tags", () => {
   before(() => {
-    cleanAllHeadTags();
+    cleanRunHeadTags();
     cy.task("seed:content", "fixtures/item.json").then(
       ({ model, fields, items }) => {
         Cypress.env("modelZUID", model?.ZUID);
@@ -30,7 +35,7 @@ describe("Head Tags", () => {
   });
 
   after(() => {
-    cleanAllHeadTags();
+    cleanRunHeadTags();
   });
   it("creates and deletes new head tag", () => {
     cy.intercept("GET", "**/v1/content/models").as("getContentModel");
@@ -73,7 +78,7 @@ describe("Head Tags", () => {
       .parent()
       .find("input")
       .clear()
-      .type("Changing the value of content");
+      .type(TAG_VALUE);
 
     cy.getBySelector("newTagCard")
       .last()
