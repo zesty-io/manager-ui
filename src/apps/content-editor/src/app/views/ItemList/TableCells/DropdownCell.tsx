@@ -1,10 +1,15 @@
 import { Button, Menu, MenuItem } from "@mui/material";
 import { GridRenderCellParams } from "@mui/x-data-grid-pro";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { KeyboardArrowDownRounded } from "@mui/icons-material";
 import { useStagedChanges } from "../StagedChangesContext";
 
 export const DropDownCell = ({ params }: { params: GridRenderCellParams }) => {
+  const { t } = useTranslation();
+  // "Select" remains the internal sentinel (maps to a null value); only the
+  // displayed label is localized.
+  const selectLabel = t("content.selectPlaceholder");
   const { stagedChanges, updateStagedChanges } = useStagedChanges();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const field = params.row.fieldData[params.field];
@@ -49,7 +54,7 @@ export const DropDownCell = ({ params }: { params: GridRenderCellParams }) => {
           setAnchorEl(e.currentTarget);
         }}
       >
-        {currVal}
+        {currVal === "Select" ? selectLabel : currVal}
       </Button>
       <Menu
         onClose={() => setAnchorEl(null)}
@@ -74,7 +79,7 @@ export const DropDownCell = ({ params }: { params: GridRenderCellParams }) => {
             wordBreak: "break-word",
           }}
         >
-          Select
+          {selectLabel}
         </MenuItem>
         {field?.settings?.options &&
           Object.entries(field?.settings?.options)?.map(([key, value]) => (

@@ -1,4 +1,5 @@
 import { useParams as useRouterParams } from "react-router";
+import { Trans, useTranslation } from "react-i18next";
 import { ContentBreadcrumbs } from "../../components/ContentBreadcrumbs";
 import { Box, Button, Typography } from "@mui/material";
 import {
@@ -78,6 +79,7 @@ const formatDate = (source: string) => {
 };
 
 export const ItemList = () => {
+  const { t } = useTranslation();
   const { modelZUID } = useRouterParams<{ modelZUID: string }>();
   const [params, setParams] = useParams();
   const dispatch = useDispatch();
@@ -111,7 +113,7 @@ export const ItemList = () => {
   const { stagedChanges } = useStagedChanges();
   const [selectedItems] = useSelectedItems();
   const searchRef = useRef<HTMLInputElement>(null);
-  const search = params.get("common.search");
+  const search = params.get("search");
   // const sort = params.get("sort");
   const statusFilter = params.get("statusFilter");
   const dateFilter = useMemo(() => {
@@ -582,11 +584,11 @@ export const ItemList = () => {
 
     switch (modelError.status) {
       case 404:
-        message = `Model "${modelZUID}" not found`;
+        message = t("content.itemListModelNotFound", { modelZUID });
         break;
 
       case 400:
-        message = `Invalid model "${modelZUID}"`;
+        message = t("content.itemListModelInvalid", { modelZUID });
         break;
 
       default:
@@ -697,25 +699,30 @@ export const ItemList = () => {
                           mx: "auto",
                         }}
                       >
-                        <img src={noSearchResults} alt="No search results" />
+                        <img
+                          src={noSearchResults}
+                          alt={t("content.itemListNoSearchResultsAlt")}
+                        />
                         <Typography pt={4} pb={1} variant="h4" fontWeight={600}>
-                          Your filter <strong>"{search}"</strong> could not find
-                          any results
+                          <Trans
+                            i18nKey="content.itemListSearchNoResultsTitle"
+                            values={{ search }}
+                            components={{ strong: <strong /> }}
+                          />
                         </Typography>
                         <Typography
                           variant="body2"
                           pb={3}
                           color="text.secondary"
                         >
-                          Try adjusting your search. We suggest check all words
-                          are spelled correctly or try using different keywords.
+                          {t("content.itemListSearchNoResultsBody")}
                         </Typography>
                         <Button
                           onClick={() => searchRef.current?.focus()}
                           variant="contained"
                           startIcon={<SearchRounded />}
                         >
-                          Search Again
+                          {t("common.searchAgain")}
                         </Button>
                       </Box>
                     </Box>
@@ -747,17 +754,19 @@ export const ItemList = () => {
                           mx: "auto",
                         }}
                       >
-                        <img src={noSearchResults} alt="No search results" />
+                        <img
+                          src={noSearchResults}
+                          alt={t("content.itemListNoSearchResultsAlt")}
+                        />
                         <Typography pt={4} pb={1} variant="h4" fontWeight={600}>
-                          No results that matched your filters could be found
+                          {t("content.itemListFilterNoResultsTitle")}
                         </Typography>
                         <Typography
                           variant="body2"
                           pb={3}
                           color="text.secondary"
                         >
-                          Try adjusting your filters to find what you're looking
-                          for
+                          {t("content.itemListFilterNoResultsBody")}
                         </Typography>
                         <Button
                           onClick={() => {
@@ -766,7 +775,7 @@ export const ItemList = () => {
                           variant="contained"
                           startIcon={<RestartAltRounded />}
                         >
-                          Reset Filters
+                          {t("content.itemListResetFilters")}
                         </Button>
                       </Box>
                     </Box>

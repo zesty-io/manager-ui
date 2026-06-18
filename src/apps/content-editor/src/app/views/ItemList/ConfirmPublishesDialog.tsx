@@ -11,9 +11,9 @@ import {
 } from "@mui/material";
 import CloudUploadRoundedIcon from "@mui/icons-material/CloudUploadRounded";
 import { useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { ContentItem } from "../../../../../../shell/services/types";
 import { DialogContentItem } from "./DialogContentItem";
-import pluralizeWord from "../../../../../../utility/pluralizeWord";
 
 type ConfirmPublishesModalProps = {
   items: ContentItem[];
@@ -27,6 +27,7 @@ export const ConfirmPublishesModal = ({
   onCancel,
   loading,
 }: ConfirmPublishesModalProps) => {
+  const { t } = useTranslation();
   const actionRef = useRef<ButtonBaseActions | null>(null);
   const onEntered = () => actionRef?.current?.focusVisible();
 
@@ -49,16 +50,9 @@ export const ConfirmPublishesModal = ({
         >
           <CloudUploadRoundedIcon color="success" />
         </Stack>
-        <Box>
-          Publish Changes to {items.length}{" "}
-          {pluralizeWord("Item", items.length)}:
-        </Box>
+        <Box>{t("content.itemListPublishTitle", { count: items.length })}</Box>
         <Typography variant="body2" color="text.secondary" mt={1}>
-          This will make the the following {items.length} content{" "}
-          {pluralizeWord("item", items.length)} immediately available on all of
-          your platforms. You can always unpublish{" "}
-          {items.length > 1 ? "these" : "this"}{" "}
-          {pluralizeWord("item", items.length)} later if needed.
+          {t("content.itemListPublishDescription", { count: items.length })}
         </Typography>
       </DialogTitle>
       <DialogContent>
@@ -68,7 +62,7 @@ export const ConfirmPublishesModal = ({
       </DialogContent>
       <DialogActions>
         <Button variant="text" color="inherit" onClick={() => onCancel()}>
-          Cancel
+          {t("common.cancel")}
         </Button>
         <Button
           loading={loading}
@@ -81,7 +75,7 @@ export const ConfirmPublishesModal = ({
           }}
           data-cy="ConfirmPublishButton"
         >
-          Publish Items ({items.length})
+          {t("content.itemListPublishButton", { count: items.length })}
         </Button>
       </DialogActions>
     </Dialog>

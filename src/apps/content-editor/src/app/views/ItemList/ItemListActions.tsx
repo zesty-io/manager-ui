@@ -22,6 +22,7 @@ import {
   FileDownloadRounded,
 } from "@mui/icons-material";
 import { forwardRef, useState, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { useHistory, useParams as useRouterParams } from "react-router";
 import { useFilePath } from "../../../../../../shell/hooks/useFilePath";
 import { useParams } from "../../../../../../shell/hooks/useParams";
@@ -35,6 +36,7 @@ import { searchItems } from "../../../../../../shell/store/content";
 import SearchBox from "../../../../../../shell/components/SearchBox";
 
 export const ItemListActions = forwardRef((props, ref) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const { modelZUID } = useRouterParams<{ modelZUID: string }>();
   const { data: contentModels } = useGetContentModelsQuery();
@@ -43,9 +45,7 @@ export const ItemListActions = forwardRef((props, ref) => {
   const codePath = useFilePath(modelZUID);
   const [isCopied, setIsCopied] = useState(false);
   const [params, setParams] = useParams();
-  const [searchTerm, setSearchTerm] = useState(
-    params.get("common.search") || ""
-  );
+  const [searchTerm, setSearchTerm] = useState(params.get("search") || "");
   const isDataset =
     contentModels?.find((model) => model.ZUID === modelZUID)?.type ===
     "dataset";
@@ -114,7 +114,7 @@ export const ItemListActions = forwardRef((props, ref) => {
           <ListItemIcon>
             <TableViewRounded />
           </ListItemIcon>
-          Import CSV
+          {t("content.itemListImportCsv")}
         </MenuItem>
         <MenuItem
           data-cy="DownloadCSVNavButton"
@@ -127,7 +127,7 @@ export const ItemListActions = forwardRef((props, ref) => {
               <FileDownloadRounded />
             )}
           </ListItemIcon>
-          Export CSV
+          {t("content.itemListExportCsv")}
         </MenuItem>
         <MenuItem
           onClick={() => {
@@ -146,7 +146,7 @@ export const ItemListActions = forwardRef((props, ref) => {
               />
             )}
           </ListItemIcon>
-          Copy ZUID
+          {t("content.itemListCopyZuid")}
         </MenuItem>
         <CascadingMenuItem
           MenuItemComponent={
@@ -154,7 +154,7 @@ export const ItemListActions = forwardRef((props, ref) => {
               <ListItemIcon>
                 <BoltRounded />
               </ListItemIcon>
-              View Quick Access API
+              {t("content.itemListViewQuickAccessApi")}
               <KeyboardArrowRightRounded color="action" sx={{ ml: "auto" }} />
             </>
           }
@@ -168,7 +168,7 @@ export const ItemListActions = forwardRef((props, ref) => {
                 <ListItemIcon>
                   <DataObjectRounded />
                 </ListItemIcon>
-                View Site Generators API
+                {t("content.itemListViewSiteGeneratorsApi")}
                 <KeyboardArrowRightRounded color="action" sx={{ ml: "auto" }} />
               </>
             }
@@ -185,7 +185,7 @@ export const ItemListActions = forwardRef((props, ref) => {
           <ListItemIcon>
             <Database />
           </ListItemIcon>
-          Edit Model
+          {t("content.itemListEditModel")}
         </MenuItem>
         {!isDataset && (
           <MenuItem
@@ -197,7 +197,7 @@ export const ItemListActions = forwardRef((props, ref) => {
             <ListItemIcon>
               <CodeRounded />
             </ListItemIcon>
-            Edit Template
+            {t("content.itemListEditTemplate")}
           </MenuItem>
         )}
       </Menu>
@@ -205,7 +205,7 @@ export const ItemListActions = forwardRef((props, ref) => {
         data-cy="MultiPageTableSearchField"
         onChange={handleSearchChange}
         value={searchTerm}
-        placeholder="Filter Items"
+        placeholder={t("content.itemListFilterPlaceholder")}
         variant="outlined"
         size="small"
         inputRef={ref}
@@ -233,7 +233,7 @@ export const ItemListActions = forwardRef((props, ref) => {
           history.push(`/content/${modelZUID}/new`);
         }}
       >
-        Create
+        {t("common.create")}
       </Button>
     </Box>
   );
