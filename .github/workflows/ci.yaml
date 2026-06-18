@@ -4,6 +4,23 @@ on:
   pull_request:
     branches: [dev, beta, stable, master]
 
+# Serialize ALL e2e CI across PRs. Every PR's tests run against the SAME shared
+# dev instance, and concurrent runs overload it (intermittent 502s / slow
+# windows) — the dominant source of flakiness. A constant group (not per-ref)
+# means only one CI run touches the instance at a time; every run executes under
+# the same isolated, low-load conditions, which is what makes results consistent.
+#
+# cancel-in-progress: false — the active run finishes; newer runs wait rather
+# than killing it mid-flight (a half-run leaves partial data on the instance).
+#
+# Trade-off: GitHub keeps at most 1 in-progress + 1 pending run per group, so if
+# several PRs stack up, an older *pending* (not-yet-started) run can be superseded
+# and must be re-triggered. We accept slower throughput for consistency. The setup
+# "Clean" step still cancels stale same-ref runs so the lock frees faster.
+concurrency:
+  group: manager-ui-e2e-dev-instance
+  cancel-in-progress: false
+
 jobs:
   setup:
     runs-on: ubuntu-latest
