@@ -34,16 +34,16 @@ jobs:
       - name: Delete Old Screenshots
         run: gsutil rm gs://cypress_screenshots/* || true
 
-  # 5 parallel jobs: runners 0-3 split the non-global specs (SPLIT=4); runner 4
-  # runs the global-state specs (publish/labels/redirects) serially to avoid
-  # cross-runner interference. cypress-split distributes by SPLIT/SPLIT_INDEX.
+  # Single serial runner — whole suite on one runner, no intra-run parallelism.
+  # The shared dev instance 502s under concurrent runner load; serial removes that
+  # variable. (matrix kept at [0] so the coverage/timings/marker steps still work.)
   run_tests:
     needs: setup
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false # Don't cancel other runners if one fails
+      fail-fast: false
       matrix:
-        split_index: [0, 1, 2, 3, 4]
+        split_index: [0]
 
     steps:
       - name: Checkout Repo
@@ -66,26 +66,15 @@ jobs:
           project_id: zesty-dev
       - name: Setup Testing Environment
         run: npm run ci:test:setup
+      # Whole suite on one runner (SPLIT=1), serially — no SKIP_SPEC/SPEC needed.
       - name: Run Tests
-        if: matrix.split_index != 4
-        run: npm run ci
-        env:
-          CYPRESS_COVERAGE: "true"
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          SPLIT: 4
-          SPLIT_INDEX: ${{ matrix.split_index }}
-          SPLIT_FILE: timings.json
-          SKIP_SPEC: "cypress/e2e/content/actions.spec.js,cypress/e2e/content/list.spec.js,cypress/e2e/content/redirects.spec.js,cypress/e2e/content/workflows.spec.js,cypress/e2e/settings/workflows.spec.js,cypress/e2e/seo/redirects/redirects.spec.js"
-      # Runner 4: global-state specs run serially to avoid cross-runner interference.
-      - name: Run Tests
-        if: matrix.split_index == 4
         run: npm run ci
         env:
           CYPRESS_COVERAGE: "true"
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SPLIT: 1
           SPLIT_INDEX: 0
-          SPEC: "cypress/e2e/content/actions.spec.js,cypress/e2e/content/list.spec.js,cypress/e2e/content/redirects.spec.js,cypress/e2e/content/workflows.spec.js,cypress/e2e/settings/workflows.spec.js,cypress/e2e/seo/redirects/redirects.spec.js"
+          SPLIT_FILE: timings.json
       # Rename so artifacts from each runner have unique filenames and don't overwrite each other.
       - name: Rename Coverage Output
         if: ${{ success() }}
