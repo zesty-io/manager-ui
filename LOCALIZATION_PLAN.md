@@ -220,6 +220,39 @@ otherwise-localized components, or legacy shell-level components.
 | `components/private-route/index.js` + `store/auth.js`    | 8       | Auth/session notifications shown through shell notification system; include as shell copy      | [x]    |
 | `components/Comment/CommentsList.tsx`                    | 1       | Draft/new-comment timestamp label (`right now`) missed in the comment popup                    | [x]    |
 
+#### Phase 3 verification sweep (2026-06-18) — parallel re-audit of `shell`
+
+After `FieldTypeRepeater` was found mislabeled "covered," ran a full parallel
+read-only re-audit of `src/shell/components` + `src/shell/views` (6 Explore
+agents) to stop trusting the checkboxes. Field-type widgets came back clean;
+**~60 untranslated strings remained across 12 live shell files** that were never
+in the audit tables. All backfilled to `shell` (58 new keys + reused
+`common.yes`/`no`, `common.cancel`, `shell.unknownUser`); full key parity across
+6 locales, `tsc` clean. Agents under-counted several files — the interpolated
+subtitles, `notify()` messages, and captions below were caught by reading the
+files directly, not from the agent reports.
+
+| File                                               | Strings | Notes                                                                                                                                                                             | Status |
+| -------------------------------------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| `components/SchedulePublish/index.tsx`             | 9       | Publish/unpublish dialog: titles, **2 interpolated subtitles** (`{{version}}/{{date}}/{{timezone}}`, `{{distance}}/{{name}}`), alerts, buttons                                    | [x]    |
+| `components/Head/HeadTag/HeadTag.js`               | 16      | Tag editor: form labels, `- None -`, add/delete/save/create buttons + titles, **4 `notify()` messages**. HTML element names Script/Meta/Link kept literal (technical identifiers) | [x]    |
+| `components/LegacyContentSearch/index.js`          | 13      | Release-app content search: sort/filter UI, `notify()` error, no-results (`<Trans>`), item/created/version captions; reuses `shell.unknownUser`                                   | [x]    |
+| `components/Head/Head.js`                          | 4       | Create-tag button/title, two notices, empty state                                                                                                                                 | [x]    |
+| `components/InAppAnnouncement/index.tsx`           | 4       | Announcement dialog action buttons (Ignore / Read / Show Video / Schedule Training)                                                                                               | [x]    |
+| `components/legacy/Select/index.js`                | 3       | `withTranslation`: filter placeholder, searching, no-options (used by `FieldTypeInternalLink`). Static `defaultProps` misconfigured-text left (not rendered)                      | [x]    |
+| `components/global-sidebar/.../OnboardingCall.tsx` | 3       | Avatar alt, title, schedule-call button                                                                                                                                           | [x]    |
+| `components/load-instance/index.js`                | 3       | "Failed to load instance", "Go to Accounts", "Zesty Account" link title (via `i18n` singleton)                                                                                    | [x]    |
+| `components/Comment/InputField.tsx`                | 1       | Add-comment network error message                                                                                                                                                 | [x]    |
+| `components/GlobalSearch/utils.ts`                 | 1       | `getContentTitle` "Missing Meta Title" fallback (via `i18n` singleton)                                                                                                            | [x]    |
+| `components/LoadingQuote/index.tsx`                | 1       | Logo `alt` (a11y). **Loading quotes left English by decision** — data-driven via `window.randomQuote`/localStorage; attributed quotes not translated                              | [x]    |
+| `views/Shell/AIDrawer.tsx`                         | 1       | "Apply" suggestion button (the only remaining UI string; rest are AI prompt templates)                                                                                            | [x]    |
+
+**Decisions:** `withAi` "AI" button left English (per request); `LocaleSwitcher`
+language names left as-is (component slated for replacement); loading quotes not
+translated. Still trust-but-verify: the machine translations (esp. Hindi, no
+upstream fallback) and the `<Trans>` markup in `legacySearchNoResultsRich` want a
+native/QA pass.
+
 #### Field-type widgets — `shell` namespace backfill (surfaced during `content` pre-audit)
 
 The field-input widgets a user types into live in `src/shell/components/FieldType*`

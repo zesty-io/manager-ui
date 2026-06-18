@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import cx from "classnames";
+import { withTranslation } from "react-i18next";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCaretDown, faCaretLeft } from "@fortawesome/free-solid-svg-icons";
@@ -9,7 +10,7 @@ import { Search } from "./components/Search";
 import { Loader } from "../Loader";
 
 import styles from "./Select.less";
-export class Select extends Component {
+class SelectBase extends Component {
   static defaultProps = {
     options: [
       {
@@ -150,6 +151,7 @@ export class Select extends Component {
   };
 
   render() {
+    const { t } = this.props;
     const childrenArr = React.Children.toArray(this.props.children);
     // console.log('testing childrenArr', childrenArr);
     const childrenFiltered = childrenArr
@@ -228,7 +230,7 @@ export class Select extends Component {
               onChange={this.handleFilterKeyUp}
               placeholder={
                 this.props.searchPlaceholder ||
-                "Enter a term to filter this list"
+                t("shell.selectFilterPlaceholder")
               }
             />
           )}
@@ -236,7 +238,7 @@ export class Select extends Component {
           {this.props.loading && (
             <span className={styles.Loader}>
               <Loader />
-              &nbsp;Searching for matching items
+              &nbsp;{t("shell.selectSearching")}
             </span>
           )}
 
@@ -245,7 +247,7 @@ export class Select extends Component {
               ? childrenFiltered.length
                 ? childrenFiltered
                 : !this.props.loading && (
-                    <Option value="0" text="No options found" />
+                    <Option value="0" text={t("shell.selectNoOptions")} />
                   )
               : null}
           </div>
@@ -254,6 +256,8 @@ export class Select extends Component {
     );
   }
 }
+
+export const Select = withTranslation()(SelectBase);
 
 export function Option({ value, html, text, component, onClick, className }) {
   if (html) {

@@ -53,7 +53,9 @@ export const HeadTag = (props) => {
       .then((res) => {
         props.dispatch(
           notify({
-            message: res.data.error ? res.data.error : "New head tag created",
+            message: res.data.error
+              ? res.data.error
+              : t("shell.headTagNewCreated"),
             kind: res.data.error ? "warn" : "success",
           })
         );
@@ -81,8 +83,8 @@ export const HeadTag = (props) => {
         props.dispatch(
           notify({
             message: res.error
-              ? `Failed to update head tag. ${res.status}`
-              : "Successfully updated head tag",
+              ? t("shell.headTagUpdateFailed", { status: res.status })
+              : t("shell.headTagUpdateSuccess"),
             kind: res.error ? "warn" : "success",
           })
         );
@@ -95,7 +97,7 @@ export const HeadTag = (props) => {
     props.dispatch(deleteHeadTag(props.tag.ZUID)).then((res) => {
       props.dispatch(
         notify({
-          message: res.data.error ? res.data.error : "Head tag deleted",
+          message: res.data.error ? res.data.error : t("shell.headTagDeleted"),
           kind: res.data.error ? "warn" : "success",
         })
       );
@@ -126,7 +128,7 @@ export const HeadTag = (props) => {
             }}
           >
             <FormControl size="small" sx={{ width: "210px" }}>
-              <FormLabel>Tag</FormLabel>
+              <FormLabel>{t("shell.headTagLabel")}</FormLabel>
               <Select
                 name={tag.ZUID}
                 variant="outlined"
@@ -136,7 +138,7 @@ export const HeadTag = (props) => {
                   dispatch(updateTagType(tag.ZUID, e.target.value))
                 }
               >
-                <MenuItem value="">- None -</MenuItem>
+                <MenuItem value="">{t("shell.headTagTypeNone")}</MenuItem>
                 <MenuItem value="script">Script</MenuItem>
                 <MenuItem value="meta">Meta</MenuItem>
                 <MenuItem value="link">Link</MenuItem>
@@ -146,24 +148,24 @@ export const HeadTag = (props) => {
               <FieldTypeSort
                 value={tag.sort ? tag.sort.toString() : "0"}
                 name={tag.ZUID}
-                label="Sort"
+                label={t("shell.headTagSortLabel")}
                 onChange={(evt) =>
                   dispatch(updateTagSort(tag.ZUID, parseInt(evt.target.value)))
                 }
               />
             </Box>
             <Button
-              title="Add Tag Attribute"
+              title={t("shell.headTagAddAttributeTitle")}
               variant="contained"
               onClick={() => dispatch(addTagAttribute(tag.ZUID))}
               startIcon={<AddIcon />}
             >
-              Add attribute
+              {t("shell.headTagAddAttribute")}
             </Button>
             {tag.hasOwnProperty("createdAt") ? (
               <Button
                 variant="contained"
-                title="Delete Head Tag"
+                title={t("shell.headTagDeleteHeadTag")}
                 onClick={onDelete}
                 color="error"
                 startIcon={<DeleteIcon />}
@@ -172,7 +174,7 @@ export const HeadTag = (props) => {
                   marginLeft: "auto",
                 }}
               >
-                Delete Tag
+                {t("shell.headTagDeleteTag")}
               </Button>
             ) : (
               <Button
@@ -198,7 +200,7 @@ export const HeadTag = (props) => {
           return (
             <div className={styles.Pair} key={index}>
               <FieldTypeText
-                label="Attribute"
+                label={t("shell.headTagAttributeLabel")}
                 id="Attribute"
                 name={`tag-${tag.ZUID}-${index}-attr`}
                 value={attr.key}
@@ -214,7 +216,7 @@ export const HeadTag = (props) => {
               />
               <FieldTypeText
                 className={styles.Value}
-                label="Value"
+                label={t("shell.headTagValueLabel")}
                 name={`tag-${tag.ZUID}-${index}-val`}
                 value={attr.value}
                 disabled={attr.key === "custom"}
@@ -231,7 +233,7 @@ export const HeadTag = (props) => {
                 <Button
                   variant="contained"
                   color="error"
-                  title="Delete Tag Attribute"
+                  title={t("shell.headTagDeleteAttributeTitle")}
                   onClick={() => dispatch(deleteTagAttribute(tag.ZUID, index))}
                   sx={{
                     visibility: "hidden",
@@ -257,14 +259,14 @@ export const HeadTag = (props) => {
               saving ? <CircularProgress size="20px" /> : <DeleteIcon />
             }
           >
-            Delete Head Tag
+            {t("shell.headTagDeleteHeadTag")}
           </Button>
         )}
         <Button
           title={
             tag.hasOwnProperty("createdAt")
-              ? "Save head tag"
-              : "Create head tag"
+              ? t("shell.headTagSave")
+              : t("shell.headTagCreate")
           }
           color="success"
           variant="contained"
@@ -274,8 +276,8 @@ export const HeadTag = (props) => {
           startIcon={saving ? <CircularProgress size="20px" /> : <SaveIcon />}
         >
           {tag.hasOwnProperty("createdAt")
-            ? "Save head tag"
-            : "Create head tag"}
+            ? t("shell.headTagSave")
+            : t("shell.headTagCreate")}
         </Button>
       </CardActions>
     </Card>

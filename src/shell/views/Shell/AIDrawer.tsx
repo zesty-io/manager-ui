@@ -493,7 +493,7 @@ export const AIDrawer: FC<AIDrawerProps> = ({ onClose }) => {
                             }}
                             startIcon={<AutoFixHighRounded fontSize="small" />}
                           >
-                            Apply
+                            {t("shell.applyAiSuggestion")}
                           </Button>
                         </Box>
                       )}

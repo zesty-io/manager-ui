@@ -92,7 +92,7 @@ export default connect((state) => {
           }
         })
         .catch(() => {
-          setError("Failed to load instance");
+          setError(i18n.t("shell.failedToLoadInstance"));
         });
     }, [props.auth.valid]);
 
@@ -115,12 +115,12 @@ export default connect((state) => {
           <Link
             underline="none"
             color="secondary"
-            title="Zesty Account"
+            title={i18n.t("shell.zestyAccountTitle")}
             href={`${CONFIG.URL_ACCOUNTS}/instances`}
             sx={{ p: 2 }}
           >
             <FontAwesomeIcon icon={faUser} />
-            &nbsp; Go to Accounts
+            &nbsp; {i18n.t("shell.goToAccounts")}
           </Link>
         </Box>
       );

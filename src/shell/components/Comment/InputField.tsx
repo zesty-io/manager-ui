@@ -352,8 +352,7 @@ export const InputField = ({
       )}
       {hasError && (
         <Typography variant="body2" color="error.dark" mt={0.5}>
-          Unable to add comment. Please check your internet connection and try
-          again.
+          {t("shell.commentAddError")}
         </Typography>
       )}
       <Stack
