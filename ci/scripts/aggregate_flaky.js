@@ -63,10 +63,24 @@ function collectTests(suite, acc) {
   return acc;
 }
 
+// Failure error messages that indicate backend instability (not test/app bugs).
+// Covers BOTH 5xx responses AND timeouts/no-response — a degraded instance often
+// hangs rather than returning a 502, so error-message matching is the catch-all
+// that the response-status middleware can't see.
+const BACKEND_ERR_RE =
+  /\b(50[0-9])\b|bad gateway|service unavailable|gateway time-?out|timed out (retrying )?.*(request to the route|for a response|waiting)|cy\.request\(\) timed out|cy\.task\(['"]seed:content['"]\) timed out|failed to create model|econnrefused|esockettimedout|etimedout|socket hang up|network error|ehostunreach/i;
+
+function extractErr(t) {
+  return t?.err?.message || t?.err?.estack || t?.err?.name || "";
+}
+
 // spec path -> { runs, fails }
 const specStats = new Map();
 // "<spec> :: <test full title>" -> { runs, fails, spec, title }
 const testStats = new Map();
+// "<spec> :: <test>" -> { count, statuses:Set, urls:Set } — failures whose error
+// text matches backend instability. Merged with the middleware 5xx markers below.
+const backendByErr = new Map();
 
 let filesRead = 0;
 const files = findJson(root);
@@ -101,6 +115,17 @@ for (const file of files) {
       if (failed) {
         ts.fails++;
         specFailed = true;
+        // Attribute to backend instability if the error text says so (timeouts,
+        // 5xx, connection failures, seed-task timeouts).
+        const errText = extractErr(t);
+        if (BACKEND_ERR_RE.test(errText)) {
+          const rec = backendByErr.get(key) || { count: 0, statuses: new Set(), urls: new Set() };
+          rec.count += 1;
+          const status = (errText.match(/\b(50[0-9])\b/) || [])[1];
+          if (status) rec.statuses.add(Number(status));
+          else rec.statuses.add("timeout/no-response");
+          backendByErr.set(key, rec);
+        }
       }
       testStats.set(key, ts);
     }
@@ -143,6 +168,17 @@ for (const file of findByName(root, "backend-5xx.jsonl")) {
     backendByTest.set(key, rec);
     backendBySpec.set(spec, (backendBySpec.get(spec) || 0) + 1);
   }
+}
+
+// Merge in error-message-based backend attribution (timeouts / no-response that
+// the 5xx middleware can't see). This is what catches a full backend outage.
+for (const [key, rec] of backendByErr.entries()) {
+  const existing = backendByTest.get(key) || { count: 0, statuses: new Set(), urls: new Set() };
+  existing.count += rec.count;
+  for (const s of rec.statuses) existing.statuses.add(s);
+  backendByTest.set(key, existing);
+  const spec = key.split(" :: ")[0];
+  backendBySpec.set(spec, (backendBySpec.get(spec) || 0) + 1);
 }
 
 function classify(runs, fails) {
@@ -189,6 +225,24 @@ if (filesRead === 0) {
   );
   lines.push("");
 
+  // Run-level backend-health banner. If many specs hit EXPLICIT backend errors
+  // (5xx / timeouts), the instance was degraded during this run — the whole run
+  // is suspect (including downstream "element not found" failures whose error
+  // text looks like a test bug but was really data that never loaded). Tell the
+  // reader to rerun before triaging individual specs.
+  const backendSpecCount = backendBySpec.size;
+  const nonStableCount = specRows.filter((s) => s.status !== "stable").length;
+  if (backendSpecCount > 0 && (backendSpecCount >= 3 || backendSpecCount >= nonStableCount / 2)) {
+    lines.push(
+      `> 🚑 **Likely a backend-degraded run.** ${backendSpecCount} spec(s) hit explicit ` +
+        `backend errors (5xx / timeouts). The dev instance was unhealthy, so many of the ` +
+        `${nonStableCount} non-stable specs — including ones that just show "element not found" ` +
+        `(data never loaded) — are probably **not** real failures. **Escalate to the backend ` +
+        `team and re-run** before triaging individual specs.`
+    );
+    lines.push("");
+  }
+
   const specHadBackend = (spec) => backendBySpec.has(spec);
 
   lines.push("### Spec-level (sorted by fail rate)");
@@ -213,10 +267,12 @@ if (filesRead === 0) {
     lines.push("### 🔧 Backend-caused failures (escalate to backend team)");
     lines.push("");
     lines.push(
-      "These tests failed while the backend returned **5xx** responses — likely not test/app bugs."
+      "These tests failed while the backend was unhealthy — **5xx responses or " +
+        "timeouts / no response** (e.g. seed/`cy.request` timed out). Likely not " +
+        "test/app bugs: re-run once the backend is healthy, and flag the endpoints below to the backend team."
     );
     lines.push("");
-    lines.push("| Test | 5xx count | Statuses | Endpoint(s) |");
+    lines.push("| Test | Failures | Statuses | Endpoint(s) |");
     lines.push("| --- | --- | --- | --- |");
     for (const [key, rec] of [...backendByTest.entries()].sort(
       (a, b) => b[1].count - a[1].count
