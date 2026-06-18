@@ -38,6 +38,23 @@ function findJson(dir) {
   return out;
 }
 
+/** Recursively find every file with a given name under a directory. */
+function findByName(dir, name) {
+  const out = [];
+  let entries;
+  try {
+    entries = fs.readdirSync(dir, { withFileTypes: true });
+  } catch {
+    return out;
+  }
+  for (const e of entries) {
+    const full = path.join(dir, e.name);
+    if (e.isDirectory()) out.push(...findByName(full, name));
+    else if (e.isFile() && e.name === name) out.push(full);
+  }
+  return out;
+}
+
 /** Flatten mochawesome's nested suites into a flat list of tests. */
 function collectTests(suite, acc) {
   if (!suite) return acc;
@@ -95,6 +112,39 @@ for (const file of files) {
   }
 }
 
+// Backend 5xx markers (recorded by the afterEach hook in cypress/support/e2e.js)
+// let us attribute failures to backend instability rather than test flakiness.
+// "<spec> :: <test>" -> { count, statuses:Set, urls:Set }
+const backendByTest = new Map();
+const backendBySpec = new Map(); // spec -> total 5xx-coincident failures
+for (const file of findByName(root, "backend-5xx.jsonl")) {
+  let text;
+  try {
+    text = fs.readFileSync(file, "utf8");
+  } catch {
+    continue;
+  }
+  for (const line of text.split("\n")) {
+    if (!line.trim()) continue;
+    let entry;
+    try {
+      entry = JSON.parse(line);
+    } catch {
+      continue;
+    }
+    const spec = (entry.spec || "").replace(/^.*cypress\/e2e\//, "cypress/e2e/");
+    const key = `${spec} :: ${entry.test}`;
+    const rec = backendByTest.get(key) || { count: 0, statuses: new Set(), urls: new Set() };
+    rec.count += entry.count || 1;
+    for (const r of entry.responses || []) {
+      rec.statuses.add(r.status);
+      rec.urls.add((r.url || "").replace(/\?.*$/, ""));
+    }
+    backendByTest.set(key, rec);
+    backendBySpec.set(spec, (backendBySpec.get(spec) || 0) + 1);
+  }
+}
+
 function classify(runs, fails) {
   if (fails === 0) return "stable";
   if (fails === runs) return "broken";
@@ -139,39 +189,81 @@ if (filesRead === 0) {
   );
   lines.push("");
 
+  const specHadBackend = (spec) => backendBySpec.has(spec);
+
   lines.push("### Spec-level (sorted by fail rate)");
   lines.push("");
-  lines.push("| Spec | Status | Failed / Runs | Fail rate |");
-  lines.push("| --- | --- | --- | --- |");
+  lines.push("| Spec | Status | Failed / Runs | Fail rate | Backend 5xx? |");
+  lines.push("| --- | --- | --- | --- | --- |");
   for (const s of specRows.filter((s) => s.status !== "stable")) {
     const icon = s.status === "flaky" ? "🟡 flaky" : "🔴 broken";
-    lines.push(`| \`${s.spec}\` | ${icon} | ${s.fails} / ${s.runs} | ${pct(s.rate)} |`);
+    const backend = specHadBackend(s.spec) ? "🔧 yes — backend" : "";
+    lines.push(
+      `| \`${s.spec}\` | ${icon} | ${s.fails} / ${s.runs} | ${pct(s.rate)} | ${backend} |`
+    );
   }
   if (specRows.every((s) => s.status === "stable")) {
-    lines.push("| _All specs stable across all iterations_ | 🟢 | - | - |");
+    lines.push("| _All specs stable across all iterations_ | 🟢 | - | - | - |");
   }
   lines.push("");
+
+  // Backend-caused failures: failures that coincided with a backend 5xx. These
+  // are infrastructure issues to route to the backend team, NOT test flakiness.
+  if (backendByTest.size > 0) {
+    lines.push("### 🔧 Backend-caused failures (escalate to backend team)");
+    lines.push("");
+    lines.push(
+      "These tests failed while the backend returned **5xx** responses — likely not test/app bugs."
+    );
+    lines.push("");
+    lines.push("| Test | 5xx count | Statuses | Endpoint(s) |");
+    lines.push("| --- | --- | --- | --- |");
+    for (const [key, rec] of [...backendByTest.entries()].sort(
+      (a, b) => b[1].count - a[1].count
+    )) {
+      const urls = [...rec.urls].slice(0, 3).join("<br>");
+      lines.push(
+        `| ${key.replace(/\|/g, "\\|")} | ${rec.count} | ${[...rec.statuses].join(", ")} | ${urls} |`
+      );
+    }
+    lines.push("");
+  } else {
+    lines.push("_No failures were attributable to backend 5xx responses this run._");
+    lines.push("");
+  }
 
   lines.push("### Flaky / failing tests");
   lines.push("");
   if (flakyTests.length === 0) {
     lines.push("_No individual test variance detected._");
   } else {
-    lines.push("| Test | Status | Failed / Runs |");
-    lines.push("| --- | --- | --- |");
+    lines.push("| Test | Status | Failed / Runs | Backend 5xx? |");
+    lines.push("| --- | --- | --- | --- |");
     for (const t of flakyTests.slice(0, 60)) {
       const icon = t.status === "flaky" ? "🟡" : "🔴";
-      lines.push(`| ${t.title.replace(/\|/g, "\\|")} | ${icon} | ${t.fails} / ${t.runs} |`);
+      const backend = backendByTest.has(`${t.spec} :: ${t.title}`) ? "🔧 backend" : "";
+      lines.push(
+        `| ${t.title.replace(/\|/g, "\\|")} | ${icon} | ${t.fails} / ${t.runs} | ${backend} |`
+      );
     }
-    if (flakyTests.length > 60) lines.push(`| _…and ${flakyTests.length - 60} more_ | | |`);
+    if (flakyTests.length > 60) lines.push(`| _…and ${flakyTests.length - 60} more_ | | | |`);
   }
 }
 
 const report = {
   filesRead,
   generatedFromDir: root,
-  specs: specRows,
-  flakyTests,
+  specs: specRows.map((s) => ({ ...s, backend5xx: backendBySpec.has(s.spec) })),
+  flakyTests: flakyTests.map((t) => ({
+    ...t,
+    backend5xx: backendByTest.has(`${t.spec} :: ${t.title}`),
+  })),
+  backendFailures: [...backendByTest.entries()].map(([key, rec]) => ({
+    test: key,
+    count: rec.count,
+    statuses: [...rec.statuses],
+    endpoints: [...rec.urls],
+  })),
 };
 try {
   fs.writeFileSync("flaky-report.json", JSON.stringify(report, null, 2));

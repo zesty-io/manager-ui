@@ -48,8 +48,35 @@ before(() => {
   cy.blockAnnouncements();
 });
 
+// Backend 5xx responses (e.g. 502s) seen during the current test. We do NOT
+// retry or stub these — a backend failure should still fail the test — but we
+// record them so a failure can be attributed to backend instability and routed
+// to the backend team instead of being mistaken for test/app flakiness.
+let backend5xx = [];
+
 // Before each test in spec
 beforeEach(() => {
+  backend5xx = [];
+
+  // Observe-only middleware intercept: passes every dev-API request through
+  // untouched (no stubbing) and records any 5xx response. `middleware: true`
+  // runs ahead of spec intercepts and auto-continues, so it can't break their
+  // aliases or cy.wait() matching.
+  cy.intercept(
+    { url: "**/*.api.dev.zesty.io/**", middleware: true },
+    (req) => {
+      req.on("response", (res) => {
+        if (res.statusCode >= 500) {
+          backend5xx.push({
+            method: req.method,
+            url: req.url,
+            status: res.statusCode,
+          });
+        }
+      });
+    }
+  );
+
   /**
    * NOTE: Zesty is a multitennant app with a lock feature
    * that presents a modal when USER X is viewing the same
@@ -64,4 +91,23 @@ beforeEach(() => {
 
   // Blocks the api call to render the announcement popup
   cy.blockAnnouncements();
+});
+
+// Attribute failures to backend instability. If a test failed AND one or more
+// backend 5xx responses were seen during it, record a marker so the flaky
+// report can flag it as backend-caused (escalate to backend team), not a test bug.
+afterEach(function () {
+  if (this.currentTest?.state === "failed" && backend5xx.length) {
+    const info = {
+      spec: Cypress.spec?.relative,
+      test: this.currentTest.fullTitle(),
+      count: backend5xx.length,
+      responses: backend5xx.slice(0, 10),
+    };
+    Cypress.log({
+      name: "backend5xx",
+      message: `⚠️ ${backend5xx.length} backend 5xx during this test — likely backend-caused failure`,
+    });
+    cy.task("record:backend5xx", info, { log: false });
+  }
 });
