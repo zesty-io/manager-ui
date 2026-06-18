@@ -107,8 +107,7 @@ beforeEach(() => {
 // Attribute failures to backend instability. Records a marker when a test fails
 // AND either (a) a 5xx response was observed, or (b) the failure message matches
 // a backend-degradation pattern (timeout / no response / connection failure).
-// Routed to backend triage, not test triage. Consumed by both ci.yaml and the
-// flaky-hunter aggregator.
+// Routed to backend triage, not test triage. Consumed by the backend_health job.
 afterEach(function () {
   if (this.currentTest?.state !== "failed") return;
   const errText = this.currentTest.err?.message || "";
