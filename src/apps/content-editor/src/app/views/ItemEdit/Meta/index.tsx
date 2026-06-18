@@ -21,6 +21,7 @@ import { useParams, useLocation } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
 import { keyframes } from "@emotion/react";
 import { EditRounded } from "@mui/icons-material";
+import { useTranslation } from "react-i18next";
 
 import { cloneDeep } from "lodash";
 
@@ -80,16 +81,14 @@ const flowButtons = [
   {
     flowType: FlowType.AIGenerated,
     icon: <Brain sx={{ fontSize: 32 }} />,
-    primaryText: "Yes, improve with AI Meta Data Assistant",
-    secondaryText:
-      "Our AI will scan your content and generate your meta data for you",
+    primaryTextKey: "content.itemEditMetaAiAssistedPrimary",
+    secondaryTextKey: "content.itemEditMetaAiAssistedSecondary",
   },
   {
     flowType: FlowType.Manual,
     icon: <EditRounded sx={{ fontSize: 32 }} />,
-    primaryText: "No, I will improve and edit it myself",
-    secondaryText:
-      "Perfect if you already know what you want your Meta Data to be",
+    primaryTextKey: "content.itemEditMetaManualPrimary",
+    secondaryTextKey: "content.itemEditMetaManualSecondary",
   },
 ];
 export const MaxLengths: Record<string, number> = {
@@ -123,6 +122,7 @@ export const Meta = forwardRef(
     { isSaving, onUpdateSEOErrors, errors, errorComponent, item }: MetaProps,
     ref
   ) => {
+    const { t } = useTranslation();
     const dispatch = useDispatch();
     const location = useLocation();
     const isCreateItemPage = location?.pathname?.split("/")?.pop() === "new";
@@ -446,14 +446,13 @@ export const Meta = forwardRef(
                   mb={1}
                   color="text.primary"
                 >
-                  Have AI write your Meta Data?
+                  {t("content.itemEditMetaAiPromptTitle")}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  Our AI Assistant will scan your content and improve your meta
-                  title and description to help{" "}
+                  {t("content.itemEditMetaAiPromptDescriptionPrefix")}{" "}
                   {model?.type === "dataset"
-                    ? "with internal content search."
-                    : "improve search engine visibility."}
+                    ? t("content.itemEditMetaAiPromptDatasetSuffix")
+                    : t("content.itemEditMetaAiPromptSeoSuffix")}
                 </Typography>
               </Box>
               {flowButtons.map((data) => (
@@ -481,7 +480,7 @@ export const Meta = forwardRef(
                         fontWeight={600}
                         color="text.primary"
                       >
-                        {data.primaryText}
+                        {t(data.primaryTextKey)}
                       </Typography>
                     }
                     disableTypography
@@ -492,7 +491,7 @@ export const Meta = forwardRef(
                         sx={{ mt: 0.5 }}
                         color="text.primary"
                       >
-                        {data.secondaryText}
+                        {t(data.secondaryTextKey)}
                       </Typography>
                     }
                   />
@@ -520,7 +519,7 @@ export const Meta = forwardRef(
         >
           {!!errorComponent && errorComponent}
           <MetaTitle
-            label="Variant Title"
+            label={t("content.itemEditVariantTitle")}
             aiButtonRef={metaTitleButtonRef}
             value={web.metaTitle}
             onChange={handleOnChange}
@@ -564,12 +563,10 @@ export const Meta = forwardRef(
             {!!errorComponent && errorComponent}
             <Box>
               <Typography variant="h5" fontWeight={700} mb={0.5}>
-                SEO & Open Graph Settings
+                {t("content.itemEditMetaSeoOpenGraphSettings")}
               </Typography>
               <Typography color="text.secondary" variant="body2">
-                Specify this page's title and description. You can see how
-                they'll look in search engine results pages (SERPs) and social
-                media content in the preview on the right.
+                {t("content.itemEditMetaSeoOpenGraphDescription")}
               </Typography>
             </Box>
             <MetaTitle
@@ -658,10 +655,10 @@ export const Meta = forwardRef(
             <Stack gap={3}>
               <Box>
                 <Typography variant="h5" fontWeight={700} mb={0.5}>
-                  URL Settings
+                  {t("content.itemEditMetaUrlSettings")}
                 </Typography>
                 <Typography color="text.secondary">
-                  Define the URL of your web page
+                  {t("content.itemEditMetaUrlSettingsDescription")}
                 </Typography>
               </Box>
               <ItemParent onChange={handleOnChange} />
@@ -691,10 +688,10 @@ export const Meta = forwardRef(
           <Stack gap={3} pb={2.5}>
             <Box>
               <Typography variant="h5" fontWeight={700} mb={0.5}>
-                Advanced Settings
+                {t("content.itemEditMetaAdvancedSettings")}
               </Typography>
               <Typography color="text.secondary">
-                Optimize your content item's SEO further
+                {t("content.itemEditMetaAdvancedSettingsDescription")}
               </Typography>
             </Box>
             {model?.type !== "dataset" && (

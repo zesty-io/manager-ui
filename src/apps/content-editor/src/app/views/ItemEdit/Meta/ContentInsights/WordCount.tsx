@@ -1,4 +1,5 @@
 import { Stack, Box, Typography, Divider } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 type WordCountProps = {
   totalWords: number;
@@ -10,6 +11,8 @@ export const WordCount = ({
   totalUniqueWords,
   totalUniqueNonCommonWords,
 }: WordCountProps) => {
+  const { t } = useTranslation();
+
   return (
     <Stack
       direction="row"
@@ -23,7 +26,7 @@ export const WordCount = ({
     >
       <Box flex={1}>
         <Typography variant="body2" color="text.secondary">
-          Words
+          {t("content.itemEditMetaWords")}
         </Typography>
         <Typography variant="h4" color="text.primary" fontWeight={600}>
           {totalWords}
@@ -37,7 +40,7 @@ export const WordCount = ({
       />
       <Box flex={1}>
         <Typography variant="body2" color="text.secondary">
-          Unique Words
+          {t("content.itemEditMetaUniqueWords")}
         </Typography>
         <Typography variant="h4" color="text.primary" fontWeight={600}>
           {totalUniqueWords}
@@ -51,7 +54,7 @@ export const WordCount = ({
       />
       <Box flex={1}>
         <Typography variant="body2" color="text.secondary">
-          Non Filler Words
+          {t("content.itemEditMetaNonFillerWords")}
         </Typography>
         <Typography variant="h4" color="text.primary" fontWeight={600}>
           {totalUniqueNonCommonWords}

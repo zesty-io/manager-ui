@@ -1,4 +1,5 @@
 import { TextField, Box } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 import { FieldShell } from "../../../../components/Editor/Field/FieldShell";
 import { hasErrors } from "./util";
@@ -13,6 +14,8 @@ type TCTitleProps = {
   field: ContentModelField;
 };
 export const TCTitle = ({ value, onChange, error, field }: TCTitleProps) => {
+  const { t } = useTranslation();
+
   return (
     <Box data-cy="TCTitle" id={field.ZUID}>
       <FieldShell
@@ -20,7 +23,7 @@ export const TCTitle = ({ value, onChange, error, field }: TCTitleProps) => {
           label: field.label,
           required: field.required,
         }}
-        customTooltip="This title appears in twitter card social media previews."
+        customTooltip={t("content.itemEditMetaTcTitleTooltip")}
         withInteractiveTooltip={false}
         withLengthCounter
         maxLength={MaxLengths.tc_title}

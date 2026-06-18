@@ -1,4 +1,5 @@
 import { TextField, Box } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 import { FieldShell } from "../../../../components/Editor/Field/FieldShell";
 import { hasErrors } from "./util";
@@ -13,6 +14,8 @@ type OGTitleProps = {
   field: ContentModelField;
 };
 export const OGTitle = ({ value, onChange, error, field }: OGTitleProps) => {
+  const { t } = useTranslation();
+
   return (
     <Box data-cy="OGTitle" id={field.ZUID}>
       <FieldShell
@@ -20,7 +23,7 @@ export const OGTitle = ({ value, onChange, error, field }: OGTitleProps) => {
           label: field.label,
           required: field.required,
         }}
-        customTooltip="This title appears in open graph social media previews (e.g. Facebook)."
+        customTooltip={t("content.itemEditMetaOgTitleTooltip")}
         withInteractiveTooltip={false}
         withLengthCounter
         maxLength={MaxLengths.og_title}

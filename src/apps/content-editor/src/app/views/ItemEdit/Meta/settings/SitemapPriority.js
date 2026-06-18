@@ -1,6 +1,7 @@
-import { memo } from "react";
+import { memo, useMemo } from "react";
 
 import { Autocomplete, TextField } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 import { FieldShell } from "../../../../components/Editor/Field/FieldShell";
 import styles from "./SitemapPriority.less";
@@ -8,7 +9,7 @@ import styles from "./SitemapPriority.less";
 const OPTIONS = [
   {
     value: -1.0,
-    label: "Automatically Set Priority",
+    labelKey: "content.itemEditMetaSitemapAutomaticallySetPriority",
   },
   {
     value: 1.0,
@@ -52,29 +53,35 @@ const OPTIONS = [
   },
   {
     value: -2.0,
-    label: "Do Not Display in Sitemap",
+    labelKey: "content.itemEditMetaSitemapDoNotDisplay",
   },
 ];
 
 export const SitemapPriority = memo(function SitemapPriority(props) {
+  const { t } = useTranslation();
+  const options = useMemo(
+    () =>
+      OPTIONS.map((option) => ({
+        ...option,
+        label: option.label ?? t(option.labelKey),
+      })),
+    [t]
+  );
+
   return (
     <article className={styles.SitemapPriority} data-cy="sitemapPriority">
       <FieldShell
         settings={{
-          label: "Sitemap Priority",
+          label: t("content.itemEditMetaSitemapPriority"),
         }}
-        customTooltip="Sitemap priority helps search engines understand how often they should crawl the pages on your site."
+        customTooltip={t("content.itemEditMetaSitemapPriorityTooltip")}
         withInteractiveTooltip={false}
       >
         <Autocomplete
-          options={OPTIONS}
+          options={options}
           value={
-            OPTIONS.find(
-              (option) => option.value === props.sitemapPriority
-            ) || {
-              value: -1.0,
-              label: "Automatically Set Priority",
-            }
+            options.find((option) => option.value === props.sitemapPriority) ||
+            options[0]
           }
           fullWidth
           renderInput={(params) => <TextField {...params} />}
