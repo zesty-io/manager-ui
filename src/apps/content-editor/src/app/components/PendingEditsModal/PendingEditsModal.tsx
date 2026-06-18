@@ -9,6 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 import { WarningAmberRounded } from "@mui/icons-material";
+import { useTranslation } from "react-i18next";
 
 type PendingEditsModalProps = {
   show: boolean;
@@ -18,6 +19,7 @@ type PendingEditsModalProps = {
 };
 
 export default memo(function PendingEditsModal(props: PendingEditsModalProps) {
+  const { t } = useTranslation();
   // FIXME: non memoized onSave & onDiscard props are causing rerenders
 
   const [loading, setLoading] = useState(props.loading || false);
@@ -101,9 +103,9 @@ export default memo(function PendingEditsModal(props: PendingEditsModalProps) {
           >
             <WarningAmberRounded color="warning" />
           </Box>
-          Unsaved Changes
+          {t("common.unsavedChanges")}
           <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-            You have unsaved changes that will be lost if you leave this page.
+            {t("content.itemEditUnsavedChangesDescription")}
           </Typography>
         </DialogTitle>
         <DialogActions
@@ -116,7 +118,7 @@ export default memo(function PendingEditsModal(props: PendingEditsModalProps) {
             color="inherit"
             onClick={() => handler("cancel")}
           >
-            Continue Editing
+            {t("content.itemEditContinueEditing")}
           </Button>
           <Box display="flex" gap={1}>
             <Button
@@ -125,7 +127,7 @@ export default memo(function PendingEditsModal(props: PendingEditsModalProps) {
               loading={loading}
               onClick={() => handler("delete")}
             >
-              Don't Save
+              {t("content.itemEditDontSave")}
             </Button>
             <Button
               data-cy="PendingEditsModalSave"
@@ -134,7 +136,7 @@ export default memo(function PendingEditsModal(props: PendingEditsModalProps) {
               loading={loading}
               onClick={() => handler("save")}
             >
-              Save
+              {t("common.save")}
             </Button>
           </Box>
         </DialogActions>

@@ -12,8 +12,10 @@ import Box from "@mui/material/Box";
 
 import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
+import { useTranslation } from "react-i18next";
 
 export const WidgetPurgeItem = memo(function WidgetPurgeItem(props) {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
 
   return (
@@ -40,7 +42,7 @@ export const WidgetPurgeItem = memo(function WidgetPurgeItem(props) {
             color: "#101828",
           },
         }}
-        title="CDN"
+        title={t("content.itemEditCdnTitle")}
       ></CardHeader>
       <CardContent
         className="setting-field"
@@ -72,9 +74,7 @@ export const WidgetPurgeItem = memo(function WidgetPurgeItem(props) {
                 maxWidth: "595px",
               }}
             >
-              Force the CDN to refresh the cache for this item. CDN caching can
-              take from a few seconds to minutes to occur as this re-caches the
-              item across the entire global network.
+              {t("content.itemEditCdnDescription")}
             </Typography>
             <Button
               variant="contained"
@@ -89,7 +89,7 @@ export const WidgetPurgeItem = memo(function WidgetPurgeItem(props) {
                     setLoading(false);
                     props.dispatch(
                       notify({
-                        message: "The item has been purged from the CDN cache",
+                        message: t("content.itemEditCdnPurgeSuccess"),
                         kind: "save",
                       })
                     );
@@ -98,8 +98,7 @@ export const WidgetPurgeItem = memo(function WidgetPurgeItem(props) {
                     setLoading(false);
                     props.dispatch(
                       notify({
-                        message:
-                          "There was an issue trying to purge the CDN cache",
+                        message: t("content.itemEditCdnPurgeError"),
                         kind: "warn",
                       })
                     );
@@ -120,7 +119,9 @@ export const WidgetPurgeItem = memo(function WidgetPurgeItem(props) {
                 },
               }}
             >
-              {loading ? "Refreshing Cached Item" : "Refresh Cached Item"}
+              {loading
+                ? t("content.itemEditRefreshingCachedItem")
+                : t("content.itemEditRefreshCachedItem")}
             </Button>
           </>
         )}

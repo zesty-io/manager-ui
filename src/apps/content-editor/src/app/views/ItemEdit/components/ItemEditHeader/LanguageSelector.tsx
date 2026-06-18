@@ -23,6 +23,7 @@ import {
   Flag,
   getCountryCode,
 } from "../../../../../../../../shell/components/Flag";
+import { useTranslation } from "react-i18next";
 
 type LanguageSelectorProps = {
   modelZUIDOverride?: string;
@@ -37,6 +38,7 @@ export const LanguageSelector = ({
   onChange,
   disabled = false,
 }: LanguageSelectorProps) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const history = useHistory();
   const location = useLocation();
@@ -106,7 +108,7 @@ export const LanguageSelector = ({
   return (
     <>
       <Tooltip
-        title="View Languages"
+        title={t("content.itemEditViewLanguages")}
         enterDelay={1000}
         enterNextDelay={1000}
         placement="top-start"

@@ -12,6 +12,7 @@ import { LockOpenRounded, LockRounded } from "@mui/icons-material";
 import { fromUnixTime, isValid } from "date-fns";
 
 import { formatLocalized } from "shell/i18n/dates";
+import { useTranslation } from "react-i18next";
 
 type LockedItemProps = {
   itemName: string;
@@ -29,6 +30,7 @@ export const LockedItem = ({
   onCancel,
   onUnlock,
 }: LockedItemProps) => {
+  const { t } = useTranslation();
   const d = fromUnixTime(Number(viewTimestamp));
   const viewedAt = isValid(d) ? formatLocalized(d, "MMMM do, yyyy h:mm a") : "";
   return (
@@ -56,25 +58,25 @@ export const LockedItem = ({
           <Box>
             <Box mb={1}>
               <Typography variant="h5" display="inline" fontWeight={700}>
-                Item Locked:&nbsp;
+                {t("content.itemEditItemLockedTitle")}&nbsp;
               </Typography>
               <Typography variant="h5" display="inline">
                 {itemName}
               </Typography>
             </Box>
             <Typography variant="body2" color="text.secondary">
-              {currentViewerFirstName} {currentViewerLastName} is viewing this
-              item since&nbsp;
-              {viewedAt}. Unlock this item to ignore this warning and possibly
-              overwrite&nbsp;
-              {currentViewerFirstName}'s changes.
+              {t("content.itemEditItemLockedDescription", {
+                name: `${currentViewerFirstName} ${currentViewerLastName}`,
+                firstName: currentViewerFirstName,
+                viewedAt,
+              })}
             </Typography>
           </Box>
         </Stack>
       </DialogTitle>
       <DialogActions>
         <Button variant="text" color="inherit" onClick={onCancel}>
-          Go Back
+          {t("common.goBack")}
         </Button>
         <Button
           variant="contained"
@@ -82,7 +84,7 @@ export const LockedItem = ({
           startIcon={<LockOpenRounded />}
           onClick={onUnlock}
         >
-          Unlock
+          {t("content.itemEditUnlock")}
         </Button>
       </DialogActions>
     </Dialog>

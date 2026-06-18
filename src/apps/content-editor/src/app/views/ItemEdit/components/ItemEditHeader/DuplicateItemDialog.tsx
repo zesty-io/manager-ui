@@ -22,12 +22,14 @@ import {
 } from "../../../../../../../../shell/services/instance";
 import { notify } from "../../../../../../../../shell/store/notifications";
 import { fetchItems } from "../../../../../../../../shell/store/content";
+import { useTranslation } from "react-i18next";
 
 type DuplicateItemProps = {
   onClose: () => void;
 };
 
 export const DuplicateItemDialog = ({ onClose }: DuplicateItemProps) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const { modelZUID, itemZUID } = useParams<{
     modelZUID: string;
@@ -119,7 +121,7 @@ export const DuplicateItemDialog = ({ onClose }: DuplicateItemProps) => {
         console.error("Failed to duplicate item", error);
         dispatch(
           notify({
-            message: "Failed to duplicate item.",
+            message: t("content.itemEditDuplicateFailed"),
             kind: "error",
           })
         );
@@ -144,17 +146,17 @@ export const DuplicateItemDialog = ({ onClose }: DuplicateItemProps) => {
         </Box>
         <Typography variant="h5" sx={{ mt: 1.5 }}>
           <Typography variant="inherit" display="inline" fontWeight={600}>
-            Duplicate Content Item:
+            {t("content.itemEditDuplicateContentItemTitle")}
           </Typography>{" "}
           {item?.web?.metaTitle || item?.web?.metaLinkText}
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-          This will create and save a copy of this item immediately.
+          {t("content.itemEditDuplicateDescription")}
         </Typography>
       </DialogTitle>
       <DialogActions>
         <Button color="inherit" onClick={onClose}>
-          Cancel
+          {t("common.cancel")}
         </Button>
         <Button
           variant="contained"
@@ -162,7 +164,7 @@ export const DuplicateItemDialog = ({ onClose }: DuplicateItemProps) => {
           onClick={() => duplicateItem()}
           loading={isLoading}
         >
-          Duplicate Item
+          {t("content.itemEditDuplicateItem")}
         </Button>
       </DialogActions>
     </Dialog>

@@ -15,6 +15,7 @@ import { AppLink } from "shell/components/AppLink";
 import { formatDistanceToNowLocalized } from "shell/i18n/dates";
 import styles from "./WidgetDraftHistory.less";
 import { isValid } from "date-fns";
+import { useTranslation } from "react-i18next";
 
 export default connect((state, props) => {
   return {
@@ -25,6 +26,7 @@ export default connect((state, props) => {
         : [],
   };
 })(function WidgetDraftHistory(props) {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -60,7 +62,7 @@ export default connect((state, props) => {
             color: "#101828",
           },
         }}
-        title="DRAFT HISTORY"
+        title={t("content.itemEditDraftHistoryTitle")}
       ></CardHeader>
       <CardContent
         className={cx(
@@ -123,7 +125,7 @@ export default connect((state, props) => {
                 className={styles.AppLink}
                 to={`/reports/activity-log/resources/${props.itemZUID}`}
               >
-                View Activity Log
+                {t("content.itemEditViewActivityLog")}
               </AppLink>
             </Stack>
           </>
@@ -137,7 +139,7 @@ export default connect((state, props) => {
               color: "#101828",
             }}
           >
-            No Activity Log edit logs for this content.
+            {t("content.itemEditNoDraftActivityLogs")}
           </Typography>
         )}
       </CardContent>

@@ -11,8 +11,10 @@ import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 
 import { useHistory, useLocation } from "react-router";
+import { useTranslation } from "react-i18next";
 
 export const Unpublish = memo(function Unpublish(props) {
+  const { t } = useTranslation();
   const isPublished = props.publishing && props.publishing.isPublished;
 
   const [loading, setLoading] = useState(false);
@@ -50,7 +52,7 @@ export const Unpublish = memo(function Unpublish(props) {
             color: "#101828",
           },
         }}
-        title="UNPUBLISH"
+        title={t("content.itemEditUnpublishTitle")}
       ></CardHeader>
       <CardContent
         sx={{
@@ -82,8 +84,7 @@ export const Unpublish = memo(function Unpublish(props) {
                 maxWidth: "595px",
               }}
             >
-              By unpublishing this content it will no longer be served if the
-              URL is requested. The URL will return a 404 not found response.
+              {t("content.itemEditUnpublishWidgetDescription")}
             </Typography>
             <Button
               disableElevation
@@ -105,7 +106,7 @@ export const Unpublish = memo(function Unpublish(props) {
                 },
               }}
             >
-              Manage Publish State
+              {t("content.itemEditManagePublishState")}
             </Button>
           </>
         )}

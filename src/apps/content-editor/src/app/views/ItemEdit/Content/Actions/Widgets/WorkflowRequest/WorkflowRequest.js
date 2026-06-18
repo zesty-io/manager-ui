@@ -22,8 +22,10 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
+import { useTranslation } from "react-i18next";
 
 export default memo(function WorkflowRequest({ itemTitle, fields }) {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const isMounted = useIsMounted();
   const user = useSelector((state) => state.user);
@@ -99,18 +101,20 @@ ${
         if (res.status === 200) {
           dispatch(
             notify({
-              message: `Sent workflow request on ${itemTitle} to ${selectedMembers.join(
-                ", "
-              )}`,
+              message: t("content.itemEditWorkflowRequestSent", {
+                title: itemTitle,
+                members: selectedMembers.join(", "),
+              }),
               kind: "save",
             })
           );
         } else {
           dispatch(
             notify({
-              message: `Failed sending workflow request on ${itemTitle} to ${selectedMembers.join(
-                ", "
-              )}`,
+              message: t("content.itemEditWorkflowRequestFailed", {
+                title: itemTitle,
+                members: selectedMembers.join(", "),
+              }),
               kind: "warn",
             })
           );
@@ -161,7 +165,7 @@ ${
               }}
               textTransform="uppercase"
             >
-              Workflow Request
+              {t("content.itemEditWorkflowRequestTitle")}
             </Typography>
           </Box>
         </AccordionSummary>
@@ -170,7 +174,7 @@ ${
         >
           <Box component="div">
             <Typography component="h3" variant="h6">
-              Select team members
+              {t("content.itemEditSelectTeamMembers")}
             </Typography>
             <Box component="ul">
               {users.map((user) => (
@@ -193,7 +197,7 @@ ${
             </Box>
 
             <Typography component="h3" variant="h6" sx={{ my: 2 }}>
-              Select fields for review
+              {t("content.itemEditSelectFieldsForReview")}
             </Typography>
             <Box component="ul">
               {fields?.map((field) => (
@@ -219,7 +223,7 @@ ${
               multiline
               fullWidth
               name="message"
-              placeholder="Workflow request message"
+              placeholder={t("content.itemEditWorkflowRequestMessage")}
               value={message}
               onChange={(evt) => setMessage(evt.target.value)}
               rows={4}
@@ -236,7 +240,7 @@ ${
               sending ? <CircularProgress size="20px" /> : <SaveIcon />
             }
           >
-            Send Email
+            {t("content.itemEditSendEmail")}
           </Button>
         </AccordionActions>
       </Accordion>

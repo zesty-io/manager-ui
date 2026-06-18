@@ -14,8 +14,10 @@ import { AppState } from "../../../../../../../../shell/store/types";
 import { useDomain } from "../../../../../../../../shell/hooks/use-domain";
 import { ContentItemWithDirtyAndPublishing } from "../../../../../../../../shell/services/types";
 import { useGetItemPublishingsQuery } from "../../../../../../../../shell/services/instance";
+import { useTranslation } from "react-i18next";
 
 export const PreviewMenu = () => {
+  const { t } = useTranslation();
   const { modelZUID, itemZUID } = useParams<{
     modelZUID: string;
     itemZUID: string;
@@ -55,7 +57,7 @@ export const PreviewMenu = () => {
   return (
     <>
       <Tooltip
-        title="Preview Page"
+        title={t("content.itemEditPreviewPage")}
         enterDelay={1000}
         enterNextDelay={1000}
         placement="bottom-start"
@@ -93,7 +95,9 @@ export const PreviewMenu = () => {
           <ListItemIcon>
             <DesignServicesRounded />
           </ListItemIcon>
-          Draft Preview - v{item?.meta?.version}
+          {t("content.itemEditDraftPreviewVersion", {
+            version: item?.meta?.version,
+          })}
         </MenuItem>
         {activePublishing && (
           <MenuItem
@@ -105,7 +109,9 @@ export const PreviewMenu = () => {
             <ListItemIcon>
               <LanguageRounded />
             </ListItemIcon>
-            Production Preview -v{activePublishing?.version}
+            {t("content.itemEditProductionPreviewVersion", {
+              version: activePublishing?.version,
+            })}
           </MenuItem>
         )}
       </Menu>

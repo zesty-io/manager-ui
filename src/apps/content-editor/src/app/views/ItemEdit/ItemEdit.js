@@ -19,6 +19,7 @@ import useIsMounted from "ismounted";
 import { useDispatch, useSelector } from "react-redux";
 import { createSelector } from "@reduxjs/toolkit";
 import { cloneDeep } from "lodash";
+import { useTranslation } from "react-i18next";
 
 import { notify } from "shell/store/notifications";
 import { fetchAuditTrailDrafting } from "shell/store/logs";
@@ -80,6 +81,7 @@ const selectItemHeadTags = createSelector(
 export const ItemLockContext = createContext();
 
 export default function ItemEdit() {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const history = useHistory();
   const isMounted = useIsMounted();
@@ -176,7 +178,7 @@ export default function ItemEdit() {
     if (fieldsLoadingError && !!model) {
       dispatch(
         notify({
-          message: "Failed to load fields",
+          message: t("content.itemEditFailedLoadFields"),
           kind: "error",
         })
       );
@@ -256,7 +258,7 @@ export default function ItemEdit() {
       }
 
       if (itemResponse.data === null) {
-        setNotFound("Item has been deleted");
+        setNotFound(t("content.itemEditDeletedNotFound"));
       }
 
       if (itemResponse?.data?.meta?.langID) {
@@ -310,7 +312,11 @@ export default function ItemEdit() {
         hasSEOErrors ||
         metaRef.current?.validateMetaFields?.()
       ) {
-        throw new Error(`Cannot Save: ${item.web.metaTitle}`);
+        throw new Error(
+          t("content.itemEditCannotSaveTitle", {
+            title: item.web.metaTitle,
+          })
+        );
       }
 
       setSaving(true);
@@ -345,8 +351,10 @@ export default function ItemEdit() {
 
           dispatch(
             notify({
-              heading: `Cannot Save: ${item.web.metaTitle}`,
-              message: "Missing Data in Required Fields",
+              heading: t("content.itemEditCannotSaveTitle", {
+                title: item.web.metaTitle,
+              }),
+              message: t("content.itemEditMissingRequiredData"),
               kind: "error",
             })
           );
@@ -385,7 +393,10 @@ export default function ItemEdit() {
           res.invalidRange?.forEach((field) => {
             errors[field.name] = {
               ...(errors[field.name] ?? {}),
-              INVALID_RANGE: `Value must be between ${field.settings?.minValue} and ${field.settings?.maxValue}`,
+              INVALID_RANGE: t("content.valueMustBeBetween", {
+                min: field.settings?.minValue,
+                max: field.settings?.maxValue,
+              }),
             };
           });
         }
@@ -424,8 +435,8 @@ export default function ItemEdit() {
             errors[fieldName] = {
               ...(errors[fieldName] ?? {}),
               CUSTOM_ERROR: oneToManyFieldNames?.includes(fieldName)
-                ? "Cannot save field. Please reduce the total number of items selected."
-                : "Cannot save field. Value is too long.",
+                ? t("content.itemEditCannotSaveTooManySelected")
+                : t("content.itemEditCannotSaveValueTooLong"),
             };
 
             setFieldErrors(errors);
@@ -434,18 +445,26 @@ export default function ItemEdit() {
 
         dispatch(
           notify({
-            message: `Cannot Save: ${item.web.metaTitle} - ${res.error}`,
+            message: t("content.itemEditCannotSaveWithError", {
+              title: item.web.metaTitle,
+              error: res.error,
+            }),
             kind: "error",
           })
         );
-        throw new Error(`Cannot Save: ${item.web.metaTitle} - ${res.error}`);
+        throw new Error(
+          t("content.itemEditCannotSaveWithError", {
+            title: item.web.metaTitle,
+            error: res.error,
+          })
+        );
       }
 
       dispatch(
         notify({
-          message: `Item Saved: ${
-            item?.web?.metaTitle || item?.web?.metaLinkText
-          }`,
+          message: t("content.itemEditSavedNotification", {
+            title: item?.web?.metaTitle || item?.web?.metaLinkText,
+          }),
           kind: "save",
         })
       );
@@ -515,8 +534,6 @@ export default function ItemEdit() {
 
           <PendingEditsModal
             show={item?.dirty}
-            title="Unsaved Changes"
-            message="You have unsaved changes that will be lost if you leave this page."
             loading={saving}
             onSave={save}
             onDiscard={discard}

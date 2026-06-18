@@ -5,8 +5,10 @@ import { useDomain } from "shell/hooks/use-domain";
 import styles from "./LiveUrl.less";
 
 import Link from "@mui/material/Link";
+import { useTranslation } from "react-i18next";
 
 export function LiveUrl(props) {
+  const { t } = useTranslation();
   const domain = useDomain();
   const pathPart =
     props.item.web.pathPart !== "zesty_home" ? props.item.web.path : "";
@@ -17,7 +19,7 @@ export function LiveUrl(props) {
     <Link
       underline="none"
       target="_blank"
-      title="Live Published"
+      title={t("content.itemEditLivePublished")}
       href={url}
       sx={{
         color: "info.dark",
@@ -35,12 +37,12 @@ export function LiveUrl(props) {
         />
       )}
 
-      <span>Live</span>
+      <span>{t("content.itemEditLive")}</span>
     </Link>
   ) : (
     <span className={styles.Unpublished}>
       <FontAwesomeIcon icon={faUnlink} style={{ marginRight: "8px" }} />
-      <span>Offline</span>
+      <span>{t("content.itemEditOffline")}</span>
     </span>
   );
 }

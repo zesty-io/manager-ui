@@ -18,6 +18,7 @@ import { Version } from "./VersionItem";
 import { WorkflowStatusLabel } from "../../../../../../../../../shell/services/types";
 import { formatLocalized } from "shell/i18n/dates";
 import { isValid } from "date-fns";
+import { useTranslation } from "react-i18next";
 
 export let ROW_HEIGHTS: Record<number, number> = {};
 export const DEFAULT_ROW_HEIGHT = 66;
@@ -34,6 +35,7 @@ export const VersionSelector = memo(
     modelZUIDOverride,
     itemZUIDOverride,
   }: VersionSelectorProps) => {
+    const { t } = useTranslation();
     const dispatch = useDispatch();
     const listRef = useRef(null);
     const rowHeights = useRef(null);
@@ -145,7 +147,7 @@ export const VersionSelector = memo(
     return (
       <>
         <Tooltip
-          title="View Versions"
+          title={t("content.itemEditViewVersions")}
           enterDelay={1000}
           enterNextDelay={1000}
           placement="top-start"

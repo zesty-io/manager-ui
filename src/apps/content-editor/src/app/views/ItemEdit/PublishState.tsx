@@ -6,6 +6,7 @@ import { WithLoader } from "shell/components/legacy/WithLoader";
 import { instanceApi } from "../../../../../../shell/services/instance";
 import { formatLocalized } from "shell/i18n/dates";
 import { isValid } from "date-fns";
+import { useTranslation } from "react-i18next";
 
 type Params = {
   modelZUID: string;
@@ -17,6 +18,7 @@ type Props = {
 };
 
 export const PublishState = ({ reloadItem }: Props) => {
+  const { t } = useTranslation();
   const { modelZUID, itemZUID } = useParams<Params>();
   const { data, isLoading } = instanceApi.useGetItemPublishingsQuery({
     modelZUID,
@@ -28,13 +30,18 @@ export const PublishState = ({ reloadItem }: Props) => {
     () => [
       {
         field: "_active",
-        headerName: "Status",
+        headerName: t("content.itemListStatus"),
         width: 120,
         renderCell: (value: any) => {
           if (new Date(value.row.publishAt) > new Date()) {
-            return <Chip label="Scheduled" color="warning" />;
+            return (
+              <Chip
+                label={t("content.itemListStatusScheduled")}
+                color="warning"
+              />
+            );
           } else if (value.row._active) {
-            return <Chip label="Live" color="success" />;
+            return <Chip label={t("content.itemEditLive")} color="success" />;
           } else {
             return <></>;
           }
@@ -42,11 +49,11 @@ export const PublishState = ({ reloadItem }: Props) => {
       },
       {
         field: "version",
-        headerName: "Version",
+        headerName: t("content.itemEditVersion"),
       },
       {
         field: "publishAt",
-        headerName: "Go Online",
+        headerName: t("content.itemEditGoOnline"),
         flex: 1,
         valueGetter: (_: any, row: any) => {
           if (!row.publishAt) return null;
@@ -56,7 +63,7 @@ export const PublishState = ({ reloadItem }: Props) => {
       },
       {
         field: "unpublishAt",
-        headerName: "Go Offline",
+        headerName: t("content.itemEditGoOffline"),
         flex: 1,
         valueGetter: (_: any, row: any) => {
           if (!row.unpublishAt) return null;
@@ -67,11 +74,11 @@ export const PublishState = ({ reloadItem }: Props) => {
       {
         field: "ZUID",
         flex: 1,
-        headerName: "Publishing ZUID",
+        headerName: t("content.itemEditPublishingZuid"),
       },
       {
         field: "createdAt",
-        headerName: "Created At",
+        headerName: t("content.itemEditCreatedAt"),
         flex: 1,
         valueGetter: (_: any, row: any) => {
           if (!row.createdAt) return null;
@@ -81,7 +88,7 @@ export const PublishState = ({ reloadItem }: Props) => {
       },
       {
         field: "actions",
-        headerName: "Actions",
+        headerName: t("content.itemEditActions"),
         width: 128,
         renderCell: (value) => {
           if (value.row._active) {
@@ -100,7 +107,7 @@ export const PublishState = ({ reloadItem }: Props) => {
                   })
                 }
               >
-                Take Offline
+                {t("content.itemEditTakeOffline")}
               </Button>,
             ];
           } else if (new Date(value.row.publishAt) > new Date()) {
@@ -119,7 +126,7 @@ export const PublishState = ({ reloadItem }: Props) => {
                   })
                 }
               >
-                Cancel
+                {t("common.cancel")}
               </Button>,
             ];
           } else {
@@ -128,13 +135,13 @@ export const PublishState = ({ reloadItem }: Props) => {
         },
       },
     ],
-    []
+    [deletePublishing, itemZUID, modelZUID, reloadItem, t]
   );
 
   return (
     <WithLoader
       condition={!isLoading}
-      message="Fetching Publishings"
+      message={t("content.itemEditFetchingPublishings")}
       height="100%"
     >
       {Array.isArray(data) && (

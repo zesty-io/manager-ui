@@ -17,6 +17,7 @@ import { AppLink } from "shell/components/AppLink";
 import { formatDistanceToNowLocalized } from "shell/i18n/dates";
 import styles from "./WidgetPublishHistory.less";
 import { isValid } from "date-fns";
+import { useTranslation } from "react-i18next";
 
 export default connect((state) => {
   return {
@@ -25,6 +26,7 @@ export default connect((state) => {
   };
 })(
   memo(function WidgetPublishHistory(props) {
+    const { t } = useTranslation();
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
@@ -64,7 +66,7 @@ export default connect((state) => {
               color: "#101828",
             },
           }}
-          title="PUBLISH HISTORY"
+          title={t("content.itemEditPublishHistoryTitle")}
         ></CardHeader>
         <CardContent
           className={cx(
@@ -105,7 +107,7 @@ export default connect((state) => {
                       color: "#101828",
                     }}
                   >
-                    Not published
+                    {t("content.itemListStatusNotPublished")}
                   </Typography>
                 )}
 
@@ -150,7 +152,7 @@ export default connect((state) => {
                   className={styles.AppLink}
                   to={`/reports/activity-log/resources/${props.itemZUID}`}
                 >
-                  View Activity Log
+                  {t("content.itemEditViewActivityLog")}
                 </AppLink>
               </Stack>
             </>

@@ -2,8 +2,10 @@ import { useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye } from "@fortawesome/free-solid-svg-icons";
 import Link from "@mui/material/Link";
+import { useTranslation } from "react-i18next";
 
 export function PreviewUrl(props) {
+  const { t } = useTranslation();
   const instance = useSelector((state) => state.instance);
   const previewLock = useSelector((state) =>
     state.settings.instance.find(
@@ -32,7 +34,9 @@ export function PreviewUrl(props) {
         icon={faEye}
         style={{ color: "#0BA5EC", marginRight: "8px" }}
       />
-      Preview {props.item.meta.version}
+      {t("content.itemEditPreviewVersion", {
+        version: props.item.meta.version,
+      })}
     </Link>
   );
 }
