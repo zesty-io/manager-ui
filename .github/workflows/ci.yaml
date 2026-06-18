@@ -27,8 +27,10 @@ jobs:
       - name: Delete Old Screenshots
         run: gsutil rm gs://cypress_screenshots/* || true
 
-  # Runs 5 parallel jobs. Runners 0-3 split the non-publish specs evenly (SPLIT=4).
-  # Runner 4 is dedicated to publish-related specs to avoid cross-runner interference.
+  # Runs 3 parallel jobs (dialed down from 5 to reduce concurrent load on the
+  # shared dev instance, a major flakiness source). Runners 0-1 split the
+  # non-global specs evenly (SPLIT=2). Runner 2 is dedicated to global-state
+  # specs (publish/labels/redirects) to avoid cross-runner interference.
   # cypress-split distributes specs based on SPLIT and SPLIT_INDEX.
   # Repo: https://github.com/bahmutov/cypress-split
   run_tests:
@@ -37,7 +39,7 @@ jobs:
     strategy:
       fail-fast: false # Don't cancel other runners if one fails
       matrix:
-        split_index: [0, 1, 2, 3, 4]
+        split_index: [0, 1, 2]
 
     steps:
       - name: Checkout Repo
@@ -61,20 +63,20 @@ jobs:
       - name: Setup Testing Environment
         run: npm run ci:test:setup
       - name: Run Tests
-        if: matrix.split_index != 4
+        if: matrix.split_index != 2
         run: npm run ci
         env:
           CYPRESS_COVERAGE: "true"
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          SPLIT: 4
+          SPLIT: 2
           SPLIT_INDEX: ${{ matrix.split_index }}
           SPLIT_FILE: timings.json
           SKIP_SPEC: "cypress/e2e/content/actions.spec.js,cypress/e2e/content/list.spec.js,cypress/e2e/content/redirects.spec.js,cypress/e2e/content/workflows.spec.js,cypress/e2e/settings/workflows.spec.js,cypress/e2e/seo/redirects/redirects.spec.js"
-      # Runner 4 runs all publish-related specs together so that workflows.spec.js
-      # (which creates a publish-blocking workflow label) and the publish action specs
-      # run sequentially on the same runner, avoiding cross-runner interference.
+      # Runner 2 runs all global-state specs together so that workflows.spec.js
+      # (which creates a publish-blocking workflow label) and the publish/redirect
+      # specs run sequentially on the same runner, avoiding cross-runner interference.
       - name: Run Tests
-        if: matrix.split_index == 4
+        if: matrix.split_index == 2
         run: npm run ci
         env:
           CYPRESS_COVERAGE: "true"

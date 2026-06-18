@@ -31,7 +31,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        split_index: [0, 1, 2, 3, 4]
+        # Dialed down from 5 to 3 parallel runners to reduce concurrent load on
+        # the shared dev instance (a major flakiness source). Runners 0-1 split
+        # the non-global specs; runner 2 runs the global-state group serially.
+        split_index: [0, 1, 2]
     env:
       # push events can't pass inputs, so default to 5 there; dispatch can override.
       ITERATIONS: ${{ github.event.inputs.iterations || '5' }}
@@ -59,18 +62,19 @@ jobs:
           project_id: zesty-dev
       - name: Setup Testing Environment
         run: npm run ci:test:setup
-      # Runners 0-3: the non-publish specs, split by runtime (mirrors ci.yaml).
-      - name: Run Flaky Loop (splits 0-3)
-        if: matrix.split_index != 4
+      # Runners 0-1: the non-global specs, split by runtime (mirrors ci.yaml).
+      - name: Run Flaky Loop (splits 0-1)
+        if: matrix.split_index != 2
         run: npx start-server-and-test start http://localhost:8080 "bash ci/scripts/flaky_loop.sh"
         env:
-          SPLIT: 4
+          SPLIT: 2
           SPLIT_INDEX: ${{ matrix.split_index }}
           SPLIT_FILE: timings.json
           SKIP_SPEC: "cypress/e2e/content/actions.spec.js,cypress/e2e/content/list.spec.js,cypress/e2e/content/redirects.spec.js,cypress/e2e/content/workflows.spec.js,cypress/e2e/settings/workflows.spec.js,cypress/e2e/seo/redirects/redirects.spec.js"
-      # Runner 4: publish-related specs run together to avoid cross-runner interference.
-      - name: Run Flaky Loop (publish specs, runner 4)
-        if: matrix.split_index == 4
+      # Runner 2: global-state specs (publish/labels/redirects) run together,
+      # serially, to avoid cross-runner interference.
+      - name: Run Flaky Loop (global-state specs, runner 2)
+        if: matrix.split_index == 2
         run: npx start-server-and-test start http://localhost:8080 "bash ci/scripts/flaky_loop.sh"
         env:
           SPLIT: 1
