@@ -107,14 +107,15 @@ module.exports = function content(config) {
     };
   }
 
-  // Run-scoped label cleanup. Only deletes labels whose name contains `tag`
-  // (the run's COMMIT_ID), so concurrent CI runs on the shared instance can't
-  // delete each other's labels. Without a tag it deletes nothing — a global
-  // delete-all is what made the workflow specs clobber concurrent runs.
-  async function deleteLabelsByTag(tag?: string): Promise<string[]> {
+  // Global label cleanup (delete all non-default labels). Safe because the CI
+  // concurrency gate serializes e2e runs across PRs and the global-state specs
+  // run on a single serial runner — so no other run is mutating labels at the
+  // same time. A global delete-all also drains accumulated label bloat, which
+  // had grown large enough to slow the labels endpoint (a backend-timeout source).
+  async function deleteAllLabels(): Promise<string[]> {
     const sdk = await getSDK(config);
     const allLabels = await sdk.instance.fetchLabels();
-    if (!allLabels?.data?.length || !tag) {
+    if (!allLabels?.data?.length) {
       return [];
     }
 
@@ -122,7 +123,6 @@ module.exports = function content(config) {
       .filter(
         (label) => !["Needs Review", "Draft", "Approved"]?.includes(label?.name)
       )
-      .filter((label) => label?.name?.includes(tag))
       .map((label) => {
         return sdk.instance.deleteLabel(label?.ZUID).then((res) => {
           return res.data;
@@ -145,6 +145,6 @@ module.exports = function content(config) {
   return {
     "seed:content": (path: string) => seedContent(path),
     "api:createLabel": (data: CreateStatusLabel) => createLabel(data),
-    "cleanup:labels": (tag?: string) => deleteLabelsByTag(tag),
+    "cleanup:labels": () => deleteAllLabels(),
   };
 };

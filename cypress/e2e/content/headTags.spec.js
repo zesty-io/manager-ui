@@ -1,31 +1,25 @@
 import { API_ENDPOINTS } from "../../support/api";
 
-// Run token: tag this run's head tag with COMMIT_ID so cleanup removes only our
-// own tags and never a concurrent run's. (Deleting ALL head tags would clobber a
-// concurrent CI run on the shared instance.) The created tag's value embeds it.
-const COMMIT_ID = Cypress.env("COMMIT_ID");
-const TAG_VALUE = `Changing the value of content ${COMMIT_ID}`;
-
-// Remove only head tags belonging to this run (leftovers from an interrupted
-// prior run of the same commit), matched by COMMIT_ID anywhere in the record.
-function cleanRunHeadTags() {
+// This spec assumes a clean "no head tags" starting state and is the only head-tag
+// mutator (settings/headtags is skipped). The CI concurrency gate serializes e2e
+// runs, so deleting all head tags before and after is safe and guarantees that
+// precondition regardless of leftovers from an interrupted prior run.
+function cleanAllHeadTags() {
   cy.apiRequest({
     url: `${API_ENDPOINTS.devInstance}/web/headtags`,
   }).then(({ data }) => {
-    (data || [])
-      .filter((tag) => JSON.stringify(tag || {}).includes(COMMIT_ID))
-      .forEach((tag) => {
-        cy.apiRequest({
-          url: `${API_ENDPOINTS.devInstance}/web/headtags/${tag.ZUID}`,
-          method: "DELETE",
-        });
+    (data || []).forEach((tag) => {
+      cy.apiRequest({
+        url: `${API_ENDPOINTS.devInstance}/web/headtags/${tag.ZUID}`,
+        method: "DELETE",
       });
+    });
   });
 }
 
 describe("Head Tags", () => {
   before(() => {
-    cleanRunHeadTags();
+    cleanAllHeadTags();
     cy.task("seed:content", "fixtures/item.json").then(
       ({ model, fields, items }) => {
         Cypress.env("modelZUID", model?.ZUID);
@@ -35,7 +29,7 @@ describe("Head Tags", () => {
   });
 
   after(() => {
-    cleanRunHeadTags();
+    cleanAllHeadTags();
   });
   it("creates and deletes new head tag", () => {
     cy.intercept("GET", "**/v1/content/models").as("getContentModel");
@@ -78,7 +72,7 @@ describe("Head Tags", () => {
       .parent()
       .find("input")
       .clear()
-      .type(TAG_VALUE);
+      .type("Changing the value of content");
 
     cy.getBySelector("newTagCard")
       .last()

@@ -49,15 +49,9 @@ const LABELS = {
 
 const EMPTY_SEARCH_TEXT = "xx_yy_zz_00";
 
-// Run token: COMMIT_ID is unique per PR/commit. Suffixing the (otherwise fixed)
-// test-label names with it makes both creation and cleanTestData() run-scoped, so
-// concurrent CI runs on the shared instance can't create duplicate names or delete
-// each other's labels. Assertions reference these same names, so they stay scoped too.
-const COMMIT_ID = Cypress.env("COMMIT_ID");
-
 const TEST_DATA = {
   new: {
-    name: `Test__new ${COMMIT_ID}`,
+    name: "Test__new",
     description: "Test__new Description",
     color: "Grey",
     addPermissionRoles: "Admin",
@@ -65,7 +59,7 @@ const TEST_DATA = {
     allowPublish: true,
   },
   edited: {
-    name: `Test__edited ${COMMIT_ID}`,
+    name: "Test__edited",
     description: "Test__edited Description",
     color: "Pink",
     addPermissionRoles: [],
@@ -73,7 +67,7 @@ const TEST_DATA = {
     allowPublish: true,
   },
   temp1: {
-    name: `Test__temp1 ${COMMIT_ID}`,
+    name: "Test__temp1",
     description: "Test__temp1 Description",
     color: "Red",
     addPermissionRoles: [],
@@ -81,7 +75,7 @@ const TEST_DATA = {
     allowPublish: false,
   },
   temp2: {
-    name: `Test__temp2 ${COMMIT_ID}`,
+    name: "Test__temp2",
     description: "Test__temp2 Description",
     color: "Yellow",
     addPermissionRoles: [],
@@ -89,7 +83,7 @@ const TEST_DATA = {
     allowPublish: false,
   },
   temp3: {
-    name: `Test__temp3 ${COMMIT_ID}`,
+    name: "Test__temp3",
     description: "Test__temp3 Description",
     color: "Purple",
     addPermissionRoles: [],
