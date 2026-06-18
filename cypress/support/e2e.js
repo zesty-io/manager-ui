@@ -51,10 +51,11 @@ before(() => {
 // Backend 5xx responses seen during the current test (recorded, not stubbed/retried).
 let backend5xx = [];
 
-// High-confidence backend-failure signals only. Intentionally excludes "No request
-// ever occurred" (ambiguous — could be a real bug), so we never mask real failures.
+// High-confidence, HTTP-level backend signals only. Excludes "No request ever
+// occurred" and network-layer errors (econnrefused/etimedout/etc.) — those can be
+// a misconfigured or broken test, and false backend attribution would mask real bugs.
 const BACKEND_ERR_RE =
-  /\b50[0-9]\b|bad gateway|service unavailable|gateway time-?out|no response ever occurred|response to the route|cy\.request\(\) timed out|seed:content.*timed out|failed to create model|econnrefused|esockettimedout|etimedout|socket hang up|ehostunreach/i;
+  /\b50[0-9]\b|bad gateway|service unavailable|gateway time-?out|no response ever occurred|response to the route|cy\.request\(\) timed out|seed:content.*timed out|failed to create model/i;
 
 // Before each test in spec
 beforeEach(() => {

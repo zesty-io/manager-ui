@@ -337,7 +337,8 @@ function createTestContents() {
 }
 
 // Poll until every seeded redirect path is queryable (eventual consistency).
-function waitForRedirectsIndexed(attempts = 15) {
+// Request-paced recursion (no hard wait) — each retry fires after the prior GET resolves.
+function waitForRedirectsIndexed(attempts = 30) {
   cy.apiRequest({
     url: `${API_ENDPOINTS.devInstance}/web/redirects`,
   }).then(({ data }) => {
@@ -347,7 +348,6 @@ function waitForRedirectsIndexed(attempts = 15) {
       )
     );
     if (!allPresent && attempts > 0) {
-      cy.wait(400);
       waitForRedirectsIndexed(attempts - 1);
     }
   });
