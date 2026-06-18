@@ -470,17 +470,19 @@ one-time namespace plumbing (`ContentApp` `<Suspense>` + `useTranslation("conten
   drop `defaultValue` → translate 5 locales (flat camelCase keys; full CLDR plural
   forms per locale) → commit.
 
-| #   | Sub-pass                               | Scope                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Effort | Status |
-| --- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------ | ------ |
-| 1   | Editor + Field shell                   | `components/Editor/*`, `Editor/Field/*`, `NoFields` — field _wrapper_/validation (not the widgets) + namespace plumbing                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | M      | [x]    |
-| 2   | ItemList                               | `views/ItemList` (22 files): columns, filters, bulk actions (`UpdateListActions` notifications), empty states                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | M-L    | [x]    |
-| 3   | ItemEdit chrome                        | `ItemEditHeader` (incl. the module-level **tab-bar label array** — Content/SEO/Redirects/Analytics/Head Tags/APIs/Publish Status/Freestyle — move lookup inside component), `Content/Actions` widgets, breadcrumbs, `LockedItem`, `PendingEditsModal`, publish/save + `notify()`                                                                                                                                                                                                                                                                                                                                         | L      | [x]    |
-| 4   | ItemEdit Meta panels (= the "SEO" tab) | `Meta/settings`, `SocialMediaPreview`, `ContentInsights`, `IncomingRedirects` — this tab is labeled "SEO" in the UI but is content-item meta, **not** the standalone `seo` app                                                                                                                                                                                                                                                                                                                                                                                                                                           | M      | [x]    |
-| 5   | Create/link/misc                       | `ItemCreate`, `LinkCreate`, `LinkEdit`, `NotFound` (+ their notifications)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | S      | [x]    |
-| 6   | Analytics                              | `views/Analytics` (24 files); dates mostly mitigated by `formatLocalized`, mainly labels/filters                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | M      | [x]    |
-| 7   | CSVImport + Redirects                  | `views/CSVImport` (6 files), `views/Redirects` (4 files) — **content-side redirects only**; the wrapping `RedirectsDialogProvider` is imported from the `seo` app → stays `seo` namespace                                                                                                                                                                                                                                                                                                                                                                                                                                | S      | [x]    |
-| 8   | ItemEdit secondary tabs                | `ItemHead` (Head Tags tab), `components/APIEndpoints.tsx` (APIs tab), `FreestyleWrapper` (Freestyle tab) — all `content`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | S-M    | [ ]    |
-| 9   | Media field widget                     | `components/FieldTypeMedia.tsx` (~1000 lines) — renders the `files`/`images` datatypes. Lives in content-editor's dir so it's a **`content`** key (not the shell `FieldTypeImage`, which is settings-only). Swap/Edit/More-Options tooltips, asset-picker chrome, empty states + `notify()`. **Note:** also imported by shell components (`Favicon`, `FieldTypeRepeater/SubField`) and schema (`DefaultValueInput`) — kept `content` per the file-location rule (decided 2026-06-17, chosen over `shell` to avoid a refactor); consequence: those shell surfaces must load the `content` namespace to render these keys. | M      | [ ]    |
+| #   | Sub-pass                               | Scope                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | Effort | Status |
+| --- | -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ------ |
+| 1   | Editor + Field shell                   | `components/Editor/*`, `Editor/Field/*`, `NoFields` — field _wrapper_/validation (not the widgets) + namespace plumbing                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | M      | [x]    |
+| 2   | ItemList                               | `views/ItemList` (22 files): columns, filters, bulk actions (`UpdateListActions` notifications), empty states                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | M-L    | [x]    |
+| 3   | ItemEdit chrome                        | `ItemEditHeader` (incl. the module-level **tab-bar label array** — Content/SEO/Redirects/Analytics/Head Tags/APIs/Publish Status/Freestyle — move lookup inside component), `Content/Actions` widgets, breadcrumbs, `LockedItem`, `PendingEditsModal`, publish/save + `notify()`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | L      | [x]    |
+| 4   | ItemEdit Meta panels (= the "SEO" tab) | `Meta/settings`, `SocialMediaPreview`, `ContentInsights`, `IncomingRedirects` — this tab is labeled "SEO" in the UI but is content-item meta, **not** the standalone `seo` app                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | M      | [x]    |
+| 5   | Create/link/misc                       | `ItemCreate`, `LinkCreate`, `LinkEdit`, `NotFound` (+ their notifications)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | S      | [x]    |
+| 6   | Analytics                              | `views/Analytics` (24 files); dates mostly mitigated by `formatLocalized`, mainly labels/filters                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | M      | [x]    |
+| 7   | CSVImport + Redirects                  | `views/CSVImport` (6 files), `views/Redirects` (4 files) — **content-side redirects only**; the wrapping `RedirectsDialogProvider` is imported from the `seo` app → stays `seo` namespace                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | S      | [x]    |
+| 8   | ItemEdit secondary tabs                | `ItemHead` (Head Tags tab), `components/APIEndpoints.tsx` (APIs tab), `FreestyleWrapper` (Freestyle tab) — see note (Head Tags is `shell`, not `content`)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | S-M    | [x]    |
+| 9   | Media field widget                     | `components/FieldTypeMedia.tsx` (~1000 lines) — renders the `files`/`images` datatypes. Lives in content-editor's dir so it's a **`content`** key (not the shell `FieldTypeImage`, which is settings-only). Swap/Edit/More-Options tooltips, asset-picker chrome, empty states + `notify()`. **Note:** also imported by shell components (`Favicon`, `FieldTypeRepeater/SubField`) and schema (`DefaultValueInput`) — kept `content` per the file-location rule (decided 2026-06-17, chosen over `shell` to avoid a refactor); consequence: those shell surfaces must load the `content` namespace to render these keys.                                                                                                                                                                                                                                                                                                    | M      | [x]    |
+| 10  | Content navigation sidebar             | `components/ContentNav/index.tsx` + `ContentNav/NavError.tsx`, `components/ReorderNav/*` (`ReorderNav.js` — **class cmp → `withTranslation()`**, `DragComponents/*` carry no copy), `components/HideContentItemDialog.tsx`, **and the `ContentEditor.js` no-models empty state**. Call-site copy passed into the shell `AppSideBar`/`NavTree` (`headerTitle`, `searchPlaceholder`, `titleButtonTooltip`, the Pages/Datasets/Hidden-Items section headers + info tooltips), per-item action tooltips (Hide/Add/Reorder/Create), empty-search state, `NavError` body + the `navName` ("models"/"datasets") passed into it, the Hide/Unhide dialog (interpolated `{label}`), the Reorder dialog title/buttons, and 4 `notify()` messages (role/nav load-failure, reorder save success/error).                                                                                                                                  | S-M    | [x]    |
+| 11  | Studio / visual-layout + Blocks editor | **NEW — surfaced by the 2026-06-18 deep re-audit; previously unassigned.** `views/ItemEdit/StudioWrapper.tsx` (Preview-only header, "Invalid URL", Cannot-Save/Item-Saved `notify()` template literals, "Cannot save field…" ×2, canvas hints "Drag blocks…"/"Select items…", "Save and Publish", "Unsaved layout changes" dialog), `views/ItemEdit/components/StudioWrapper/StudioSidePanel.tsx` (`aria-label="Close Studio preview"`), `views/ItemEdit/components/BlockTabs/index.tsx` (Variants/Info/Code tabs + "Search variants"), `BlockTabs/CodeSample.tsx` (3 explanatory tooltips), and the **hooks** `hooks/useStudioBridge.ts` ("Preview error…") + `hooks/useLayoutReorderState.ts` ("Could not apply inline edit…", "Saved …"/"Saved and published …"). All **`content`** (files live in content-editor's dir). Kept literal: `alt="Content One"` (brand), `useStudioSelection.ts`/`studioTypes.ts` (no copy). | M      | [x]    |
 
 > Sub-pass 3 (ItemEdit chrome) is the publish/save critical path → highest QA
 > bar; do it after the pattern is settled on lower-risk slices.
@@ -597,6 +599,142 @@ the" : ""` + `.toLowerCase()` grammar hack in `AnalyticsDashboard/UsersDoughutCh
   (`alt="googleAnalyticsIcon"`), `keyFriendly: "Google Property ID"` (backend
   setting value), and the bare `vs` connector in the doughnut tooltip.
 
+**Done (sub-pass 8 — verified already covered, no new keys).** Audited the three
+ItemEdit secondary tabs; all are already localized or have no UI copy. No code
+changes were needed:
+
+- **Head Tags tab** — `ItemHead.js` is a thin wrapper that renders
+  `shell/components/Head`. The actual copy (`Head.js`, `HeadTag/HeadTag.js`,
+  including the create/save/delete `notify()` paths) was localized under the
+  **`shell`** namespace during the Phase 3 shell-audit backfill (`shell.head*`),
+  per the file-location rule (`src/shell/*` → `shell`, not `content`). The plan
+  table originally tagged this "all `content`"; corrected to `shell`.
+  `Preview/Preview.js` is intentionally left literal — it renders raw HTML
+  head-tag source as a code preview, not UI copy.
+- **APIs tab** — `components/APIEndpoints.tsx` (content-editor's own dropdown of
+  dev/live endpoint URLs) already uses `t("common.dev")` / `t("common.prod")`;
+  the endpoint paths/URLs are technical identifiers, kept literal. **Deferred to
+  the `schema` pass:** the bulk of the API-tab copy (the API Access Options card
+  grid + detail panel) is rendered by the `ModelApi` tree —
+  `ApiCardList`, `ApiCard`, `ApiDetails`, `ApiInfo`, `ApiDomainEndpoints`,
+  `HeadlessSwitcher` — which physically lives in `src/apps/schema/src/...` and is
+  **also** consumed by schema's `Model.tsx`. By the file-location rule those are
+  **`schema`-namespace** strings (no `schema.json` exists yet), so they're left
+  untouched here and tracked for the schema namespace pass. Consequence to handle
+  there: content-editor's ItemEdit API tab will need to load the `schema`
+  namespace for `ApiDetails`/`ApiCardList` to render translated.
+- **Freestyle tab** — `FreestyleWrapper.tsx` has no user-facing strings (the
+  exit button is icon/empty, the rest is an iframe).
+- Verified all `shell.head*` keys plus `common.dev`/`common.prod`/`common.cancel`
+  exist across all 6 locales.
+
+**Done (sub-pass 9 implemented).** Localized `components/FieldTypeMedia.tsx`
+(the `files`/`images` widget). Added `useTranslation` to the outer `FieldTypeMedia`
+(the inner `MediaItem` already had it). Localized: drag-and-drop empty state
+("Drop your files here to Upload"; the "Drag and drop … / or" line via `<Trans>`
+with a `<break/>` component for the embedded `<br/>`), the Upload / Add-from-Media /
+Add-More-from-Media / Add-from-Bynder buttons (Upload reuses `common.upload`),
+the per-item Swap/Edit/More-Options tooltips, and the Rename / Replace File /
+Copy ZUID / Copy File URL / Remove menu (Remove already used `common.remove`). The
+two `selectionError` strings became interpolated keys (`mediaCouldNotAdd`,
+`mediaCouldNotReplace`); the filename list now uses **`Intl.ListFormat(i18n.language)`**
+instead of a hardcoded English " and " conjunction, and `settings.fileExtensionsErrorMessage`
+(a backend value) is interpolated as-is. **14** new `content.media*` keys (no
+plurals) across all 6 locales (machine-assisted; "Bynder" and "ZUID" kept literal;
+"Media" kept as the app name). `tsc` clean, JSON valid, parity verified.
+
+**Cross-namespace consequence resolved:** because the widget also mounts in
+shell `Favicon` / `FieldTypeRepeater/SubField` and schema `DefaultValueInput`
+(where the lazy `content` ns isn't loaded), both `useTranslation()` calls were
+changed to `useTranslation("content", { useSuspense: false })` — this triggers the
+namespace load wherever the component mounts without suspending trees that lack a
+Suspense boundary (global config is `useSuspense: true`). No-op inside
+content-editor where `content` is already loaded.
+
+#### Sub-pass 10 + deep re-audit (2026-06-18) — what sub-passes 1–9 missed
+
+A full re-sweep of content-editor's own dir (`src/apps/content-editor/src`, ~190
+code files) for untranslated user-facing copy — JSX text, `title`/`label`/
+`placeholder`/`alt`/`aria-label` props, **and `notify()`/`dispatch()`/thunk +
+RTK-triggered messages** (template literals included). Method: list every code
+file with **no** `useTranslation`/`i18n` reference that still carries a UI string,
+then pattern-sweep the whole tree for notify/Error/JSX/prop literals not wrapped
+in `t()`. Findings:
+
+**Two uncovered clusters (both `content` ns — files live in content-editor):**
+
+1. **Content navigation sidebar → now sub-pass 10.** `ContentNav/index.tsx`
+   (section headers, info/action tooltips, empty-search, 2 `notify()`),
+   `ContentNav/NavError.tsx` (body + `navName` "models"/"datasets" passed in),
+   `ReorderNav/ReorderNav.js` (**class component** → `withTranslation()`; dialog
+   title, "Return to Root"/"Save Changes", 2 reorder `notify()`),
+   `HideContentItemDialog.tsx` (Hide/Unhide heading + body + buttons, interpolated
+   `{label}`), and `ContentEditor.js`'s no-models empty state ("Please create a
+   new content model" + Schema link). `ReorderNav/DragComponents/*` carry no copy.
+2. **Studio / visual-layout + Blocks editor → now sub-pass 11.** Was never
+   assigned a content sub-pass because the Phase 4 audit deemed `studio`
+   string-free (true for the _namespace_, but `StudioWrapper` lives in
+   content-editor → `content`). Covers `StudioWrapper.tsx`,
+   `components/StudioWrapper/StudioSidePanel.tsx`, `components/BlockTabs/{index,
+CodeSample}.tsx`, and the **hooks** `useStudioBridge.ts` +
+   `useLayoutReorderState.ts`. ~14 `content` keys incl. several template-literal
+   notifications (`Cannot Save: {{label}}`, `Item Saved: {{label}}`, `Saved
+{{files}}`, `Preview error: {{error}}`). Reuse sub-pass-3 keys where the
+   "Cannot save field — too many selected / value too long" copy matches.
+
+**Done (sub-pass 10 implemented).** Localized the content navigation sidebar:
+`ContentNav/index.tsx` (refactored the module-level `SUB_MENUS` "Dashboard" entry
+to a `nameKey` resolved via `useMemo`+`t()`; section headers, info/action
+tooltips, empty-search state, `AppSideBar` `headerTitle`/`searchPlaceholder`/
+`titleButtonTooltip` call-site props, 2 `notify()` load-failure messages, and the
+`navName` "models"/"datasets" passed into `NavError`), `ContentNav/NavError.tsx`
+(`useTranslation`, body via `{{navName}}`, alt reuses `content.notFoundImageAlt`),
+`HideContentItemDialog.tsx` (Hide/Unhide titles, bodies, buttons — all with
+`{{label}}` interpolation; Cancel reuses `common.cancel`), `ReorderNav/ReorderNav.js`
+(**class component** → `connect(...)(withTranslation()(ReorderNav))`, `this.props.t`
+in the 2 `notify()` callbacks + `const { t } = this.props` in `render()` for the
+dialog title and Return-to-Root/Save-Changes buttons), and the `ContentEditor.js`
+no-models empty state (heading + the Schema link reuses `shell.navSchema`). Added
+**34** flat `content.*` keys (no plurals) across all 6 locales (machine-assisted,
+flag for QA); `tsc` clean, JSON valid, key parity verified. Kept literal:
+`title="Zesty.io Schema"` (brand). `ReorderNav/DragComponents/*` confirmed
+copy-free.
+
+**Done (sub-pass 11 implemented — completes the `content` namespace).** Localized the
+Studio / visual-layout + Blocks editor across 6 files:
+`StudioWrapper.tsx` (`useTranslation`; "Preview only" header, invalid-URL warn, the
+3 Cannot-Save / 1 Item-Saved `notify()` variants with `{{label}}`/`{{error}}`,
+"Save and Publish"/layout-save-bar Cancel/Save reusing `common.*`, canvas-mode
+`Alert` hints, "View All Related Fields", and the `DirtyCodeModal` title/body; the
+range-validation message reuses `content.valueMustBeBetween` and the two
+field-length errors reuse the sub-pass-3 `itemEditCannotSave*` keys),
+`StudioWrapper/StudioSidePanel.tsx` (converted the implicit-return arrow to a body
+for `useTranslation`; close aria-label, no-CMS-item notice, Cancel, "Edit in Zesty
+Manager"), `BlockTabs/index.tsx` (`useTranslation`+`Trans`; Variants/Info/Code tabs,
+Create Variant, Search-variants placeholder, and the empty-search state — the
+`<strong>{search}</strong>` rendered via `<Trans components={{ term }}>`),
+`BlockTabs/CodeSample.tsx` (4 snippet labels + 4 explanatory tooltips; the
+`{{ block(...) }}` snippets and the `"block_selector_field"` token kept literal as
+code), and the two **hooks** `useStudioBridge.ts` (preview-error + static-edit-
+rejected `notify()`; added `t` to the affected `useCallback`/effect deps) and
+`useLayoutReorderState.ts` (Saved / Saved-and-published / 4 failure `notify()`
+messages; the saved-file list now uses **`Intl.ListFormat(i18n.language)`** instead
+of a hardcoded English ", " + " and " join; `t` added to handler deps). Added **41**
+`content.studio*`/`block*`/`codeSample*` keys (no plurals) across all 6 locales
+(machine-assisted; kept literal: brands "Content One"/"Zesty Manager"/"Bynder"/
+"ZUID"/"CMS", the "Agentic Studio by Content.One" tagline, and the Sentry
+`new Error("Bridge error")`). `StudioHeader.tsx` needed no changes (only a brand
+`alt`). `tsc` clean, JSON valid, key + interpolation-var + `<term>`-tag parity
+verified. **All content sub-passes (1–11) are now complete.**
+
+**Confirmed correctly kept literal (not gaps):** `throw new Error(...)` developer
+invariants (`DragScroll.js`, `Editor/Editor.js`, `Meta/index.tsx` — "Input is
+missing name attribute"); `console.error(...)` logs (`useImageURL.ts`); brand
+names (`alt="Content One"`, `title="Zesty.io Schema"`, the Google/Twitter (X)/
+Facebook/LinkedIn `SocialMediaPreview` labels); HTML element names
+(Script/Meta/Link in `HeadTag`). **No stragglers** found in files that already
+use `t()` — sub-passes 1–9 were thorough on their own `notify()` strings.
+
 #### Sub-pass 1 — Editor + Field shell (pre-audit complete, ~34 strings)
 
 13 files; only 6 carry strings. The rest are re-exports (`Editor/index.js`,
@@ -659,7 +797,11 @@ surface-only audit misses this; the table accounts for cross-namespace imports
 (verified by grepping each sub-app's imports against the other apps' dirs):
 
 - `studio` renders **nothing of its own** — it's a route alias to
-  content-editor's `StudioWrapper`. No strings live in `studio`.
+  content-editor's `StudioWrapper`. No strings live in the `studio` **namespace**,
+  but `StudioWrapper` + its hooks (`useStudioBridge`, `useLayoutReorderState`) and
+  `BlockTabs` DO carry real UI copy/notifications — those are **`content`** keys
+  and are tracked under **content sub-pass 11** (the original Phase 4 audit's
+  "verify-only / no work" for studio overlooked them; corrected 2026-06-18).
 - `blocks` imports content-editor's `ItemCreate`/`ItemEdit` and schema's
   `CreateModelDialogue`/`ModelList`. The block editing experience a
   user sees is mostly `content` + `schema` strings; `blocks` owns only ~30-40.
