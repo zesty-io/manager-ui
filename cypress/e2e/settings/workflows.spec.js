@@ -462,7 +462,9 @@ Cypress.Commands.add("cleanTestData", function () {
     TEST_DATA?.temp3?.name,
   ];
 
-  cy.apiRequest({ url: `${INSTANCE_API}/env/labels?showDeleted=true` }).then(
+  // Active labels only — showDeleted=true returns the bloated soft-deleted history
+  // and can time out; we only delete active labels here anyway.
+  cy.apiRequest({ url: `${INSTANCE_API}/env/labels` }).then(
     (response) => {
       response?.data
         ?.filter(

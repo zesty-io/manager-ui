@@ -4,6 +4,13 @@ on:
   pull_request:
     branches: [dev, beta, stable, master]
 
+# Serialize all e2e CI across PRs — they share one dev instance and concurrent
+# runs overload it (502s/timeouts). Constant group = one run at a time;
+# cancel-in-progress: false lets the active run finish (newer runs queue).
+concurrency:
+  group: manager-ui-e2e-dev-instance
+  cancel-in-progress: false
+
 jobs:
   setup:
     runs-on: ubuntu-latest
@@ -27,10 +34,9 @@ jobs:
       - name: Delete Old Screenshots
         run: gsutil rm gs://cypress_screenshots/* || true
 
-  # Runs 5 parallel jobs. Runners 0-3 split the non-publish specs evenly (SPLIT=4).
-  # Runner 4 is dedicated to publish-related specs to avoid cross-runner interference.
-  # cypress-split distributes specs based on SPLIT and SPLIT_INDEX.
-  # Repo: https://github.com/bahmutov/cypress-split
+  # 5 parallel jobs: runners 0-3 split the non-global specs (SPLIT=4); runner 4
+  # runs the global-state specs (publish/labels/redirects) serially to avoid
+  # cross-runner interference. cypress-split distributes by SPLIT/SPLIT_INDEX.
   run_tests:
     needs: setup
     runs-on: ubuntu-latest
@@ -69,10 +75,8 @@ jobs:
           SPLIT: 4
           SPLIT_INDEX: ${{ matrix.split_index }}
           SPLIT_FILE: timings.json
-          SKIP_SPEC: "cypress/e2e/content/actions.spec.js,cypress/e2e/content/list.spec.js,cypress/e2e/content/redirects.spec.js,cypress/e2e/content/workflows.spec.js,cypress/e2e/settings/workflows.spec.js"
-      # Runner 4 runs all publish-related specs together so that workflows.spec.js
-      # (which creates a publish-blocking workflow label) and the publish action specs
-      # run sequentially on the same runner, avoiding cross-runner interference.
+          SKIP_SPEC: "cypress/e2e/content/actions.spec.js,cypress/e2e/content/list.spec.js,cypress/e2e/content/redirects.spec.js,cypress/e2e/content/workflows.spec.js,cypress/e2e/settings/workflows.spec.js,cypress/e2e/seo/redirects/redirects.spec.js"
+      # Runner 4: global-state specs run serially to avoid cross-runner interference.
       - name: Run Tests
         if: matrix.split_index == 4
         run: npm run ci
@@ -81,7 +85,7 @@ jobs:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SPLIT: 1
           SPLIT_INDEX: 0
-          SPEC: "cypress/e2e/content/actions.spec.js,cypress/e2e/content/list.spec.js,cypress/e2e/content/redirects.spec.js,cypress/e2e/content/workflows.spec.js,cypress/e2e/settings/workflows.spec.js"
+          SPEC: "cypress/e2e/content/actions.spec.js,cypress/e2e/content/list.spec.js,cypress/e2e/content/redirects.spec.js,cypress/e2e/content/workflows.spec.js,cypress/e2e/settings/workflows.spec.js,cypress/e2e/seo/redirects/redirects.spec.js"
       # Rename so artifacts from each runner have unique filenames and don't overwrite each other.
       - name: Rename Coverage Output
         if: ${{ success() }}
@@ -107,6 +111,21 @@ jobs:
       - name: Upload Screenshots
         if: ${{ failure() }}
         run: ./ci/scripts/upload_debug_screenshots_to_gcp.sh
+      # Backend-attribution markers (from e2e.js), uploaded per runner for backend_health.
+      - name: Rename Backend Markers
+        if: always()
+        run: |
+          if [ -f results/backend-5xx.jsonl ]; then
+            mkdir -p backend-markers
+            cp results/backend-5xx.jsonl backend-markers/backend-5xx-${{ matrix.split_index }}.jsonl
+          fi
+      - name: Upload Backend Markers
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-markers-${{ matrix.split_index }}
+          path: backend-markers/
+          if-no-files-found: ignore
 
   # Aggregates all matrix runner results into a single status check.
   # Branch protection should require this job, not run_tests, because matrix jobs
@@ -121,6 +140,36 @@ jobs:
           if [ "${{ needs.run_tests.result }}" != "success" ]; then
             echo "One or more test runners failed or were cancelled"
             exit 1
+          fi
+
+  # On failure, flag (in this run's summary) whether it was backend-caused
+  # (5xx/timeouts) so you can tell at a glance whether to just re-run.
+  backend_health:
+    needs: run_tests
+    runs-on: ubuntu-latest
+    if: ${{ always() && needs.run_tests.result != 'success' }}
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4.1.0
+        with:
+          node-version: "22.19.0"
+      - name: Download Backend Markers
+        uses: actions/download-artifact@v4
+        with:
+          pattern: backend-markers-*
+          path: backend-markers
+          merge-multiple: true
+      - name: Backend-Health Verdict (run summary)
+        run: |
+          node ci/scripts/backend_health.js backend-markers > backend-health.md || true
+          if [ -s backend-health.md ]; then
+            cat backend-health.md >> "$GITHUB_STEP_SUMMARY"
+            # Also echo to the step log so it's visible without opening the summary tab.
+            echo "::warning::Backend-caused failures detected this run — likely a backend issue, re-run. See run summary."
+          else
+            echo "✅ No backend-attributed failures — this CI failure looks like a real test/app issue, not backend instability." >> "$GITHUB_STEP_SUMMARY"
           fi
 
   # Merges partial timings.json from each runner into a single file and uploads it as an artifact.

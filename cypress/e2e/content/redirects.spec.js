@@ -118,6 +118,9 @@ describe("Content item redirects", () => {
     deleteTestContents();
     deleteTestRedirects();
     createTestContents();
+    // Wait until the seeded redirects are queryable before any test loads the page
+    // (eventual consistency — otherwise the grid renders with too few rows).
+    waitForRedirectsIndexed();
   });
   after(() => {
     deleteTestContents();
@@ -333,6 +336,23 @@ function createTestContents() {
   });
 }
 
+// Poll until every seeded redirect path is queryable (eventual consistency).
+function waitForRedirectsIndexed(attempts = 15) {
+  cy.apiRequest({
+    url: `${API_ENDPOINTS.devInstance}/web/redirects`,
+  }).then(({ data }) => {
+    const allPresent = REDIRECTS.every((redirect) =>
+      data?.some(
+        (item) => item?.path?.replace(/^\/|\/$/g, "") === redirect.path
+      )
+    );
+    if (!allPresent && attempts > 0) {
+      cy.wait(400);
+      waitForRedirectsIndexed(attempts - 1);
+    }
+  });
+}
+
 function createTestRedirects(ZUID) {
   REDIRECTS.forEach((redirect) => {
     const data = {
@@ -391,6 +411,6 @@ function awaitRedirectsData(path) {
 
   cy.visit(path);
   cy.wait(["@getModels", "@getPublishings", "@getRedirects"], {
-    requestTimeout: 10000,
+    requestTimeout: 30000,
   });
 }

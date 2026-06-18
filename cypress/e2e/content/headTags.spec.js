@@ -1,6 +1,23 @@
-// assumes no Head Tags as starting state
+import { API_ENDPOINTS } from "../../support/api";
+
+// This spec is the only head-tag mutator and assumes a clean start; delete all
+// before/after to guarantee that regardless of leftovers from a prior run.
+function cleanAllHeadTags() {
+  cy.apiRequest({
+    url: `${API_ENDPOINTS.devInstance}/web/headtags`,
+  }).then(({ data }) => {
+    (data || []).forEach((tag) => {
+      cy.apiRequest({
+        url: `${API_ENDPOINTS.devInstance}/web/headtags/${tag.ZUID}`,
+        method: "DELETE",
+      });
+    });
+  });
+}
+
 describe("Head Tags", () => {
   before(() => {
+    cleanAllHeadTags();
     cy.task("seed:content", "fixtures/item.json").then(
       ({ model, fields, items }) => {
         Cypress.env("modelZUID", model?.ZUID);
@@ -8,28 +25,20 @@ describe("Head Tags", () => {
       }
     );
   });
+
+  after(() => {
+    cleanAllHeadTags();
+  });
   it("creates and deletes new head tag", () => {
-    cy.intercept("GET", "**/v1/content/models").as("getContentModel");
+    // Wait only on the head tags fetch; the other head-page requests don't
+    // reliably fire, and the Create button assertion below covers readiness.
     cy.intercept("GET", "**/v1/web/headtags").as("getHeadtags");
-    cy.intercept("GET", "**/v1/env/settings").as("getSettings");
-    cy.intercept("GET", "**/v1/web/headers").as("getHeaders");
-    cy.intercept("GET", "**/v1/web/views**").as("getViews");
-    cy.intercept("GET", "**/v1/web/scripts").as("getScripts");
-    cy.intercept("GET", "**/v1/web/stylesheets").as("getStylesheets");
 
     cy.visit(
       `/content/${Cypress.env("modelZUID")}/${Cypress.env("itemZUID")}/head`
     );
 
-    cy.wait([
-      "@getContentModel",
-      "@getHeadtags",
-      "@getSettings",
-      "@getHeaders",
-      "@getViews",
-      "@getScripts",
-      "@getStylesheets",
-    ]);
+    cy.wait("@getHeadtags");
 
     cy.contains("Create Head Tag").should("exist").should("be.enabled").click();
 

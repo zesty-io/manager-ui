@@ -3,7 +3,8 @@ const TEST_DATA = {
   new: `New Item:${timestamp}`,
   ai: `AI Generated:${timestamp}`,
 };
-const requestTimeout = 15000;
+// Generous timeout: the publish/item data requests can be slow under load.
+const requestTimeout = 30000;
 
 describe("Actions in content editor", () => {
   let CONTENT_ITEMS = null;
@@ -40,9 +41,10 @@ describe("Actions in content editor", () => {
 
     cy.getBySelector("field:markdown")
       .find("textarea")
+      // Wait for hydration (seeded value) before clearing, so the save sees it empty.
+      .should("have.value", "markdown")
       .click()
       .clear()
-      .wait(500)
       .should("have.value", "");
 
     cy.getBySelector("SaveItemButton")
@@ -301,7 +303,13 @@ describe("Actions in content editor", () => {
   });
 
   it("Unschedules a Publish for an item", () => {
-    const { deletePublishedItem, publishings } = awaitRequests();
+    const { items, deletePublishedItem, publishings } = awaitRequests();
+    // Re-visit so this test reads the scheduled item fresh, independent of the
+    // previous test's open modal.
+    cy.visit(
+      `/content/${Cypress.env("modelZUID")}/${CONTENT_ITEMS?.[4]?.meta?.ZUID}`
+    );
+    cy.wait([items, publishings], { requestTimeout });
 
     cy.getBySelector("PublishMenuButton").should("exist").should("be.enabled");
     cy.getBySelector("PublishMenuButton").trigger("click");

@@ -107,6 +107,8 @@ module.exports = function content(config) {
     };
   }
 
+  // Delete all non-default labels. Safe behind the CI concurrency gate, and
+  // drains accumulated label bloat that slows the labels endpoint.
   async function deleteAllLabels(): Promise<string[]> {
     const sdk = await getSDK(config);
     const allLabels = await sdk.instance.fetchLabels();
@@ -119,7 +121,7 @@ module.exports = function content(config) {
         (label) => !["Needs Review", "Draft", "Approved"]?.includes(label?.name)
       )
       .map((label) => {
-        sdk.instance.deleteLabel(label?.ZUID).then((res) => {
+        return sdk.instance.deleteLabel(label?.ZUID).then((res) => {
           return res.data;
         });
       });
