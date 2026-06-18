@@ -476,7 +476,7 @@ one-time namespace plumbing (`ContentApp` `<Suspense>` + `useTranslation("conten
 | 2   | ItemList                               | `views/ItemList` (22 files): columns, filters, bulk actions (`UpdateListActions` notifications), empty states                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | M-L    | [x]    |
 | 3   | ItemEdit chrome                        | `ItemEditHeader` (incl. the module-level **tab-bar label array** — Content/SEO/Redirects/Analytics/Head Tags/APIs/Publish Status/Freestyle — move lookup inside component), `Content/Actions` widgets, breadcrumbs, `LockedItem`, `PendingEditsModal`, publish/save + `notify()`                                                                                                                                                                                                                                                                                                                                         | L      | [x]    |
 | 4   | ItemEdit Meta panels (= the "SEO" tab) | `Meta/settings`, `SocialMediaPreview`, `ContentInsights`, `IncomingRedirects` — this tab is labeled "SEO" in the UI but is content-item meta, **not** the standalone `seo` app                                                                                                                                                                                                                                                                                                                                                                                                                                           | M      | [x]    |
-| 5   | Create/link/misc                       | `ItemCreate`, `LinkCreate`, `LinkEdit`, `NotFound` (+ their notifications)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | S      | [ ]    |
+| 5   | Create/link/misc                       | `ItemCreate`, `LinkCreate`, `LinkEdit`, `NotFound` (+ their notifications)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | S      | [x]    |
 | 6   | Analytics                              | `views/Analytics` (24 files); dates mostly mitigated by `formatLocalized`, mainly labels/filters                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | M      | [ ]    |
 | 7   | CSVImport + Redirects                  | `views/CSVImport` (6 files), `views/Redirects` (4 files) — **content-side redirects only**; the wrapping `RedirectsDialogProvider` is imported from the `seo` app → stays `seo` namespace                                                                                                                                                                                                                                                                                                                                                                                                                                | S      | [ ]    |
 | 8   | ItemEdit secondary tabs                | `ItemHead` (Head Tags tab), `components/APIEndpoints.tsx` (APIs tab), `FreestyleWrapper` (Freestyle tab) — all `content`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | S-M    | [ ]    |
@@ -509,6 +509,39 @@ metrics/empty states/toggles, and incoming redirects table/actions. Deep-checked
 Redux/RTK paths in scope: `ItemParent` and `ItemRoute` warning notifications,
 `MetaImage` RTK-created `og_image` field metadata and media extension errors,
 and meta-description validation messages via the i18n singleton.
+
+**Done (sub-pass 5 implemented).** Localized the Create/link/misc views:
+`ItemCreate` (`ItemCreate.tsx` + `Header.tsx`), `LinkCreate`, `LinkEdit`, and the
+content `NotFound` view. Added **38 new `content` keys** across all 6
+`content.json` files (en-US + 5 machine-assisted, flagged for native/QA review);
+non-plural key parity verified, `tsc --noEmit` clean. Highlights:
+
+- **`ItemCreate`** — all `save()` `notify()` messages (missing-required,
+  value-range, too-long/too-many-selected, cannot-save-with-error, 4×
+  cannot-publish-status, created-item, unknown-issue), the `<NotFound message>`
+  prop, `WithLoader` message, and the "Improve with AI" CTA. **Reused** existing
+  keys rather than duplicating: `itemEditMissingRequiredData`,
+  `valueMustBeBetween`, `itemEditCannotSaveTooManySelected`/`…ValueTooLong`,
+  `itemEditCannotPublishStatus`, `itemListModelNotFound`.
+- **`Header.tsx`** — refactored the module-level `DropdownMenu` map to hold i18n
+  keys (the `t()` lookup moved inside the component), plus the create title
+  (`Create Variant` / `Create {{label}} Item`), "Create & Add New", and the
+  primary "Create" button (`common.create`).
+- **`LinkCreate` / `LinkEdit`** — shared field labels (`linkEditor*`),
+  internal/external link labels, validation + `notify()` messages, buttons, and
+  the delete `ConfirmDialog` (reused `common.delete`/`cancel` and
+  `itemEditCannotSaveTitle`).
+- **`NotFound`** — heading, image alt, "Go Back" (`common.goBack`), and the
+  support-email body via `<Trans>` with a named `supportLink` component.
+- **Deep RTK/Redux:** the `searchItems` thunk in `shell/store/content.js`
+  (dispatched directly by `LinkCreate`/`LinkEdit`) had 2 un-localized `notify()`
+  strings — localized via the i18n singleton (`content.contentFetchResourceFailed`,
+  `content.contentSearchItemFailed`). `createItem`/`generateItem`/`fetchItem`
+  carry no copy of their own.
+- **Kept literal (decisions):** `target = _blank` / `rel = nofollow` (raw
+  HTML-attribute syntax, per the Script/Meta/Link precedent), `support@zesty.io`,
+  and the `AI` token. "Improve with AI" itself **was** translated (distinct from
+  the withAi toggle button left English earlier — flag if a revert is preferred).
 
 #### Sub-pass 1 — Editor + Field shell (pre-audit complete, ~34 strings)
 

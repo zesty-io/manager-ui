@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router";
 
 import {
@@ -30,6 +31,7 @@ import { request } from "utility/request";
 import { instanceApi } from "../../../../../../shell/services/instance";
 import styles from "./LinkCreate.less";
 export function LinkCreate() {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const history = useHistory();
   const content = useSelector((state) => state.content);
@@ -85,19 +87,19 @@ export function LinkCreate() {
         if (res.error) {
           let message = "";
           if (/metaTitle/.test(res.error)) {
-            message = "Please add a Link Title";
+            message = t("content.linkEditorErrorAddTitle");
           } else if (
             /internal links must target a content item/.test(res.error)
           ) {
-            message = "Please add a Link Target";
+            message = t("content.linkEditorErrorAddTarget");
           } else if (
             /external links must target an external site/.test(res.error)
           ) {
-            message = "Please add a Link Protocol";
+            message = t("content.linkEditorErrorAddProtocol");
           }
           dispatch(
             notify({
-              heading: "Unable to Create Link",
+              heading: t("content.linkCreateUnableToCreate"),
               message,
               kind: "error",
             })
@@ -108,7 +110,9 @@ export function LinkCreate() {
           dispatch(instanceApi.util.invalidateTags(["ContentNav"]));
           dispatch(
             notify({
-              message: `Link Created: ${state.metaTitle}`,
+              message: t("content.linkCreateCreated", {
+                title: state.metaTitle,
+              }),
               kind: "save",
             })
           );
@@ -149,13 +153,13 @@ export function LinkCreate() {
                 <MenuItem value="internal">
                   <Box sx={{ display: "flex", alignItems: "center" }}>
                     <LinkIcon fontSize="small" />
-                    &nbsp;Internal Link
+                    &nbsp;{t("content.linkEditorInternalLink")}
                   </Box>
                 </MenuItem>
                 <MenuItem value="external">
                   <Box sx={{ display: "flex", alignItems: "center" }}>
                     <IosShareIcon fontSize="small" />
-                    &nbsp;External Link
+                    &nbsp;{t("content.linkEditorExternalLink")}
                   </Box>
                 </MenuItem>
               </Select>
@@ -169,7 +173,7 @@ export function LinkCreate() {
           <FieldTypeInternalLink
             className={styles.Row}
             name="parentZUID"
-            label="Select a parent for your link"
+            label={t("content.linkEditorSelectParent")}
             value={state.parentZUID}
             options={internalLinkOptions}
             onChange={onChange}
@@ -180,7 +184,7 @@ export function LinkCreate() {
             <FieldTypeInternalLink
               className={styles.Row}
               name="target"
-              label="Select an item to link to"
+              label={t("content.linkEditorSelectTarget")}
               value={state.target}
               options={internalLinkOptions}
               onChange={onChange}
@@ -188,7 +192,7 @@ export function LinkCreate() {
             />
           ) : (
             <FieldTypeUrl
-              label="Provide an external URL to link to"
+              label={t("content.linkEditorExternalUrl")}
               name="target"
               value={state.target}
               onChange={(evt) => onChange(evt.target.value, "target")}
@@ -197,7 +201,7 @@ export function LinkCreate() {
           )}
 
           <FieldTypeText
-            label="Link title"
+            label={t("content.linkEditorLinkTitle")}
             name="metaTitle"
             value={state.metaTitle}
             onChange={(evt) => {
@@ -246,7 +250,7 @@ export function LinkCreate() {
             onClick={saveLink}
             startIcon={<AddIcon />}
           >
-            Create Link
+            {t("content.linkCreateButton")}
           </Button>
         </CardActions>
       </Card>

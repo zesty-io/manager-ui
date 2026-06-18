@@ -1,5 +1,6 @@
 import cloneDeep from "lodash/cloneDeep";
 
+import i18n from "shell/i18n";
 import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
 import { fetchNav, navContent } from "apps/content-editor/src/store/navContent";
@@ -334,7 +335,9 @@ export function searchItems(
           dispatch(
             notify({
               kind: "warn",
-              message: `Failed to fetch resource. ${res.status}`,
+              message: i18n.t("content.contentFetchResourceFailed", {
+                status: res.status,
+              }),
             })
           );
         }
@@ -344,7 +347,9 @@ export function searchItems(
         dispatch(
           notify({
             kind: "warn",
-            message: `Failed to search item: ${err?.message || err || ""}`,
+            message: i18n.t("content.contentSearchItemFailed", {
+              error: err?.message || err || "",
+            }),
           })
         );
       },

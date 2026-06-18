@@ -1,4 +1,5 @@
 import { Link, useHistory } from "react-router-dom";
+import { Trans, useTranslation } from "react-i18next";
 import {
   Container,
   Box,
@@ -10,6 +11,7 @@ import {
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 const NotFound = () => {
+  const { t } = useTranslation();
   const history = useHistory();
   return (
     <Container
@@ -35,21 +37,23 @@ const NotFound = () => {
         maxWidth={540}
       >
         <Typography variant="h3" fontWeight="700" color="text.primary">
-          This item has been deleted
+          {t("content.notFoundDeletedHeading")}
         </Typography>
         <Typography variant="body2" fontWeight="400" color="text.secondary">
-          If you believe you're missing a content item, please reach out to us
-          at{" "}
-          <Typography
-            component="a"
-            variant="body2"
-            fontWeight="400"
-            color="info.main"
-            href="mailto:support@zesty.io"
-          >
-            support@zesty.io
-          </Typography>{" "}
-          and provide the following URL in your message:
+          <Trans
+            i18nKey="content.notFoundContactBody"
+            components={{
+              supportLink: (
+                <Typography
+                  component="a"
+                  variant="body2"
+                  fontWeight="400"
+                  color="info.main"
+                  href="mailto:support@zesty.io"
+                />
+              ),
+            }}
+          />
         </Typography>
 
         <Typography
@@ -72,7 +76,7 @@ const NotFound = () => {
             history.goBack();
           }}
         >
-          Go Back
+          {t("common.goBack")}
         </Button>
       </Box>
 
@@ -90,7 +94,7 @@ const NotFound = () => {
           component="img"
           height="100%"
           image="/images/notFoundTransparent.png"
-          alt="Not Found"
+          alt={t("content.notFoundImageAlt")}
         />
       </Card>
     </Container>
