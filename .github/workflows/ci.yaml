@@ -127,6 +127,23 @@ jobs:
       - name: Upload Screenshots
         if: ${{ failure() }}
         run: ./ci/scripts/upload_debug_screenshots_to_gcp.sh
+      # Backend-attribution markers recorded by cypress/support/e2e.js (one per
+      # failed test that coincided with a 5xx or timeout). Uploaded per runner so
+      # the backend_health job can tell whether a red run was backend-caused.
+      - name: Rename Backend Markers
+        if: always()
+        run: |
+          if [ -f results/backend-5xx.jsonl ]; then
+            mkdir -p backend-markers
+            cp results/backend-5xx.jsonl backend-markers/backend-5xx-${{ matrix.split_index }}.jsonl
+          fi
+      - name: Upload Backend Markers
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-markers-${{ matrix.split_index }}
+          path: backend-markers/
+          if-no-files-found: ignore
 
   # Aggregates all matrix runner results into a single status check.
   # Branch protection should require this job, not run_tests, because matrix jobs
@@ -142,6 +159,70 @@ jobs:
             echo "One or more test runners failed or were cancelled"
             exit 1
           fi
+
+  # When CI fails, attribute it. If failures coincided with backend 5xx/timeouts
+  # (markers recorded by cypress/support/e2e.js), post a banner telling the team
+  # to escalate to the backend team and re-run, instead of triaging these as test
+  # bugs. Stays silent if no backend errors were seen (then it's a real failure).
+  backend_health:
+    needs: run_tests
+    runs-on: ubuntu-latest
+    if: ${{ always() && needs.run_tests.result != 'success' }}
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4.1.0
+        with:
+          node-version: "22.19.0"
+      - name: Download Backend Markers
+        uses: actions/download-artifact@v4
+        with:
+          pattern: backend-markers-*
+          path: backend-markers
+          merge-multiple: true
+      - name: Build Backend-Health Banner
+        run: |
+          node ci/scripts/backend_health.js backend-markers > backend-health.md || true
+          if [ -s backend-health.md ]; then
+            cat backend-health.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "✅ No backend-attributed failures — this CI failure looks like a real test/app issue, not backend instability." >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Comment Backend-Health on PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require("fs");
+            if (!fs.existsSync("backend-health.md") || fs.statSync("backend-health.md").size === 0) {
+              core.info("No backend-attributed failures; skipping comment.");
+              return;
+            }
+            const body = fs.readFileSync("backend-health.md", "utf8");
+            const pr = context.payload.pull_request;
+            if (!pr) return;
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number,
+              per_page: 100,
+            });
+            const existing = comments.find((c) => c.body?.includes("<!-- backend-health -->"));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                body,
+              });
+            }
 
   # Merges partial timings.json from each runner into a single file and uploads it as an artifact.
   # Download the artifact after CI runs and commit timings.json to the repo to enable

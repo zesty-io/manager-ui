@@ -54,6 +54,14 @@ before(() => {
 // to the backend team instead of being mistaken for test/app flakiness.
 let backend5xx = [];
 
+// Failure error text that indicates backend instability (timeouts / no response /
+// 5xx / connection failures / seed-task timeouts). A degraded instance usually
+// HANGS rather than returning a 502, so the response-status middleware above
+// can't see it — we also match the failure message here so the marker captures
+// timeouts. This is what lets plain `ci` (no mochawesome) attribute failures.
+const BACKEND_ERR_RE =
+  /\b(50[0-9])\b|bad gateway|service unavailable|gateway time-?out|timed out (retrying )?.*(request to the route|for a response|waiting)|cy\.request\(\) timed out|seed:content.*timed out|failed to create model|econnrefused|esockettimedout|etimedout|socket hang up|network error|ehostunreach/i;
+
 // Before each test in spec
 beforeEach(() => {
   backend5xx = [];
@@ -93,20 +101,28 @@ beforeEach(() => {
   cy.blockAnnouncements();
 });
 
-// Attribute failures to backend instability. If a test failed AND one or more
-// backend 5xx responses were seen during it, record a marker so the flaky
-// report can flag it as backend-caused (escalate to backend team), not a test bug.
+// Attribute failures to backend instability. Records a marker when a test fails
+// AND either (a) a 5xx response was observed, or (b) the failure message matches
+// a backend-degradation pattern (timeout / no response / connection failure).
+// Routed to backend triage, not test triage. Consumed by both ci.yaml and the
+// flaky-hunter aggregator.
 afterEach(function () {
-  if (this.currentTest?.state === "failed" && backend5xx.length) {
+  if (this.currentTest?.state !== "failed") return;
+  const errText = this.currentTest.err?.message || "";
+  const matchedErr = BACKEND_ERR_RE.test(errText);
+  if (backend5xx.length || matchedErr) {
+    const reason = backend5xx.length ? "5xx" : "timeout/no-response";
     const info = {
       spec: Cypress.spec?.relative,
       test: this.currentTest.fullTitle(),
-      count: backend5xx.length,
+      count: backend5xx.length || 1,
+      reason,
       responses: backend5xx.slice(0, 10),
+      errorSnippet: errText.slice(0, 200),
     };
     Cypress.log({
       name: "backend5xx",
-      message: `⚠️ ${backend5xx.length} backend 5xx during this test — likely backend-caused failure`,
+      message: `⚠️ likely backend-caused failure (${reason})`,
     });
     cy.task("record:backend5xx", info, { log: false });
   }
