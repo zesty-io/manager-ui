@@ -40,6 +40,7 @@ import {
 import { NoSearchResults } from "../../../../../../../shell/components/NoSearchResults";
 import googleAnalyticsIcon from "../../../../../../../../public/images/googleAnalyticsIcon.svg";
 import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 import { AppState } from "../../../../../../../shell/store/types";
 import { AnalyticsDialog } from "./AnalyticsDialog";
 import SearchBox from "../../../../../../../shell/components/SearchBox";
@@ -56,6 +57,7 @@ type Props = {
 let tabWindow: Window;
 
 export const PropertiesDialog = ({ onClose }: Props) => {
+  const { t } = useTranslation();
   const user = useSelector((state: AppState) => state.user);
   const instance = useSelector((state: AppState) => state.instance);
   const [showSettings, setShowSettings] = useState(false);
@@ -128,8 +130,10 @@ export const PropertiesDialog = ({ onClose }: Props) => {
     if (showResult) {
       return (
         <AnalyticsDialog
-          title={`Congratulations ${user.firstName}! You are successfully connected to Google Analytics`}
-          subTitle="Get ready to gain insights on how your content changes have impacted your page traffic and more!"
+          title={t("content.analyticsConnectedTitle", {
+            name: user.firstName,
+          })}
+          subTitle={t("content.analyticsConnectedSubtitle")}
           buttons={
             <Button
               variant="contained"
@@ -143,7 +147,7 @@ export const PropertiesDialog = ({ onClose }: Props) => {
                 refetch();
               }}
             >
-              Get Started
+              {t("common.getStarted")}
             </Button>
           }
         />
@@ -151,8 +155,8 @@ export const PropertiesDialog = ({ onClose }: Props) => {
     } else {
       return (
         <AnalyticsDialog
-          title={`Oops, we were unable to successfully connect to Google Analytics`}
-          subTitle="This can because you may have selected a Google account that does not have Google Analytics setup."
+          title={t("content.analyticsConnectErrorTitle")}
+          subTitle={t("content.analyticsConnectErrorSubtitle")}
           buttons={
             <>
               <Button
@@ -161,7 +165,7 @@ export const PropertiesDialog = ({ onClose }: Props) => {
                 size="large"
                 onClick={() => setShowResult(null)}
               >
-                Cancel
+                {t("common.cancel")}
               </Button>
               <Button
                 variant="contained"
@@ -172,7 +176,7 @@ export const PropertiesDialog = ({ onClose }: Props) => {
                   initiate();
                 }}
               >
-                Try Again
+                {t("content.analyticsTryAgain")}
               </Button>
             </>
           }
@@ -239,15 +243,14 @@ export const PropertiesDialog = ({ onClose }: Props) => {
                   <LanguageRoundedIcon color="info" />
                 </Box>
                 <Typography variant="h5" fontWeight={600} sx={{ mt: 1.5 }}>
-                  Select a Google Analytics Property
+                  {t("content.analyticsSelectProperty")}
                 </Typography>
                 <Typography
                   variant="body2"
                   sx={{ mt: 1 }}
                   color="text.secondary"
                 >
-                  Please select the Google Analytics property you want to see
-                  analytics and insights for
+                  {t("content.analyticsSelectPropertyBody")}
                 </Typography>
                 <SearchBox
                   value={search}
@@ -267,7 +270,7 @@ export const PropertiesDialog = ({ onClose }: Props) => {
                     ),
                   }}
                   inputRef={inputRef}
-                  placeholder="Search Google Analytics Properties"
+                  placeholder={t("content.analyticsSearchProperties")}
                   fullWidth
                 />
               </Box>
@@ -280,7 +283,7 @@ export const PropertiesDialog = ({ onClose }: Props) => {
                   sx={{ whiteSpace: "nowrap" }}
                   startIcon={<SettingsRoundedIcon color="action" />}
                 >
-                  GA Settings
+                  {t("content.analyticsGaSettings")}
                 </Button>
                 <IconButton size="small" onClick={() => onClose(true)}>
                   <CloseRoundedIcon fontSize="small" />
@@ -288,7 +291,9 @@ export const PropertiesDialog = ({ onClose }: Props) => {
               </Box>
             </Stack>
             <Typography variant="h6" fontWeight="600" mt={2}>
-              {filteredData?.length} Properties
+              {t("content.analyticsPropertiesCount", {
+                count: filteredData?.length,
+              })}
             </Typography>
           </DialogTitle>
           <DialogContent>
@@ -395,7 +400,7 @@ export const PropertiesDialog = ({ onClose }: Props) => {
                   <ArrowBackRoundedIcon fontSize="small" />
                 </IconButton>
                 <Typography variant="h5" fontWeight={600}>
-                  Page Analytics Settings
+                  {t("content.analyticsPageSettingsTitle")}
                 </Typography>
               </Box>
               <IconButton size="small" onClick={() => onClose(true)}>
@@ -406,11 +411,11 @@ export const PropertiesDialog = ({ onClose }: Props) => {
           <DialogContent sx={{ mt: 2.5 }}>
             <img
               src={googleAnalyticsIcon}
-              alt="Google Analytics Icon"
+              alt={t("content.analyticsGoogleIconAlt")}
               width="100px"
             />
             <Typography variant="body1" mb={3} mt={1.5}>
-              You are currently connected to the following Google Account.
+              {t("content.analyticsConnectedAccount")}
             </Typography>
             <ListItem disablePadding>
               <ListItemAvatar>
@@ -432,7 +437,7 @@ export const PropertiesDialog = ({ onClose }: Props) => {
                 color="inherit"
                 startIcon={<img src={googleIcon} width="20" height="20" />}
               >
-                Change Google Account
+                {t("content.analyticsChangeAccount")}
               </Button>
               <Button
                 onClick={() => {
@@ -442,7 +447,7 @@ export const PropertiesDialog = ({ onClose }: Props) => {
                 color="error"
                 startIcon={<PersonRemoveRoundedIcon />}
               >
-                Disconnect Account
+                {t("content.analyticsDisconnectAccount")}
               </Button>
             </Box>
           </DialogContent>
@@ -459,6 +464,7 @@ const DisconnectConfirmationDialog = ({
   onConfirm: () => void;
   onClose: () => void;
 }) => {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   return (
     <Dialog open onClose={onClose}>
@@ -477,17 +483,16 @@ const DisconnectConfirmationDialog = ({
           <PersonRemoveRoundedIcon color="error" />
         </Box>
         <Typography variant="h5" fontWeight={600} mb={1} mt={1.5}>
-          Disconnect Google Analytics Account?
+          {t("content.analyticsDisconnectTitle")}
         </Typography>
 
         <Typography variant="body2" color="text.secondary">
-          Disconnecting will mean that you will not be able to view analytics
-          for any content items in Zesty.
+          {t("content.analyticsDisconnectBody")}
         </Typography>
       </DialogTitle>
       <DialogActions>
         <Button variant="outlined" color="inherit" onClick={onClose}>
-          Cancel
+          {t("common.cancel")}
         </Button>
         <Button
           loading={loading}
@@ -498,7 +503,7 @@ const DisconnectConfirmationDialog = ({
             onConfirm();
           }}
         >
-          Disconnect Account
+          {t("content.analyticsDisconnectAccount")}
         </Button>
       </DialogActions>
     </Dialog>

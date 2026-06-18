@@ -477,8 +477,8 @@ one-time namespace plumbing (`ContentApp` `<Suspense>` + `useTranslation("conten
 | 3   | ItemEdit chrome                        | `ItemEditHeader` (incl. the module-level **tab-bar label array** — Content/SEO/Redirects/Analytics/Head Tags/APIs/Publish Status/Freestyle — move lookup inside component), `Content/Actions` widgets, breadcrumbs, `LockedItem`, `PendingEditsModal`, publish/save + `notify()`                                                                                                                                                                                                                                                                                                                                         | L      | [x]    |
 | 4   | ItemEdit Meta panels (= the "SEO" tab) | `Meta/settings`, `SocialMediaPreview`, `ContentInsights`, `IncomingRedirects` — this tab is labeled "SEO" in the UI but is content-item meta, **not** the standalone `seo` app                                                                                                                                                                                                                                                                                                                                                                                                                                           | M      | [x]    |
 | 5   | Create/link/misc                       | `ItemCreate`, `LinkCreate`, `LinkEdit`, `NotFound` (+ their notifications)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | S      | [x]    |
-| 6   | Analytics                              | `views/Analytics` (24 files); dates mostly mitigated by `formatLocalized`, mainly labels/filters                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | M      | [ ]    |
-| 7   | CSVImport + Redirects                  | `views/CSVImport` (6 files), `views/Redirects` (4 files) — **content-side redirects only**; the wrapping `RedirectsDialogProvider` is imported from the `seo` app → stays `seo` namespace                                                                                                                                                                                                                                                                                                                                                                                                                                | S      | [ ]    |
+| 6   | Analytics                              | `views/Analytics` (24 files); dates mostly mitigated by `formatLocalized`, mainly labels/filters                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | M      | [x]    |
+| 7   | CSVImport + Redirects                  | `views/CSVImport` (6 files), `views/Redirects` (4 files) — **content-side redirects only**; the wrapping `RedirectsDialogProvider` is imported from the `seo` app → stays `seo` namespace                                                                                                                                                                                                                                                                                                                                                                                                                                | S      | [x]    |
 | 8   | ItemEdit secondary tabs                | `ItemHead` (Head Tags tab), `components/APIEndpoints.tsx` (APIs tab), `FreestyleWrapper` (Freestyle tab) — all `content`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | S-M    | [ ]    |
 | 9   | Media field widget                     | `components/FieldTypeMedia.tsx` (~1000 lines) — renders the `files`/`images` datatypes. Lives in content-editor's dir so it's a **`content`** key (not the shell `FieldTypeImage`, which is settings-only). Swap/Edit/More-Options tooltips, asset-picker chrome, empty states + `notify()`. **Note:** also imported by shell components (`Favicon`, `FieldTypeRepeater/SubField`) and schema (`DefaultValueInput`) — kept `content` per the file-location rule (decided 2026-06-17, chosen over `shell` to avoid a refactor); consequence: those shell surfaces must load the `content` namespace to render these keys. | M      | [ ]    |
 
@@ -542,6 +542,60 @@ non-plural key parity verified, `tsc --noEmit` clean. Highlights:
   HTML-attribute syntax, per the Script/Meta/Link precedent), `support@zesty.io`,
   and the `AI` token. "Improve with AI" itself **was** translated (distinct from
   the withAi toggle button left English earlier — flag if a revert is preferred).
+
+**Done (sub-pass 7 implemented).** Localized **CSVImport** (6 files) and the
+content-side **Redirects** (4 files). 56 new `content` keys across all 6 locales
+(machine-assisted, flag for QA); `tsc` clean.
+
+- **Redirects** — `ContentRedirects` (the `REDIRECTED`/`NOT_REDIRECTED`
+  module maps refactored to hold i18n keys, looked up with `t()` inside the
+  component; icons kept in the map), `ContentRedirectModal` (OLD/NEW PATH,
+  `FieldWrapper`/`PathField` prop strings translated at the call site — the
+  `seo`-app components themselves stay `seo`), `DeleteRedirectModal` (the
+  `HTTP_CODE_OPTIONS` map → i18n keys, `RedirectType` Wildcard/Internal), and
+  the `index.tsx` grid headers/actions/title. **Reused** the sub-pass-4 Meta
+  keys (`itemEditMetaIncomingPath`/`HttpCode`/`EditRedirect`/`DeleteRedirect`/
+  `IncomingRedirects`/`…Description`) + `common.cancel/delete`.
+- **CSVImport** — `CSVImportBody` is a **class component** → wrapped with
+  `withTranslation` (`this.props.t` for both `notify()`/`warn` state strings and
+  render copy); `CsvSettings` (functional) + its `CanonicalTag` class (receives
+  `t` as a prop) — labels, the canonical-mode option map, and help text;
+  `Columns` "none" option. **Reused** sub-pass-4 Meta labels
+  (`itemEditMetaDescription`/`Keywords`/`Title`/`SitemapPriority`/`CanonicalTag`/
+  `…CanonicalEnableDocsLink`). `index.tsx` had no own copy.
+- **Kept literal:** the `"page,category"` / `"/page/example/…"` example
+  placeholders (demo data), `Path Part` where it names a backend field, and the
+  `"Source"`/`"Country"` strings that are toggle **state keys** (display
+  translated, logic literal).
+
+**Done (sub-pass 6 implemented).** Localized the **Analytics** sub-app (~24
+files). 88 new `analytics*`/range keys across all 6 locales (machine-assisted,
+flag for QA — esp. the long metric descriptions and Hindi); `tsc` clean.
+
+- **GA connect/auth** (`AuthView`, `PropertiesDialog`, `AnalyticsDialog` via
+  call-site props, `AnalyticsPropertySelector` had none) — connect prompts,
+  result dialogs, property picker, GA settings, disconnect flow. **Brand terms**
+  (`Google`, `Google Analytics`, `GA`, `Zesty`) kept literal inside the copy.
+- **Dashboards** (`AnalyticsDashboard/index`, `SinglePageAnalytics/index`) —
+  `Metric` `title`/`description` props translated at the call site (Metric itself
+  carries none), error/`NotFound` copy, "Dashboard"/"Total Sessions"; reused
+  `common.create/getStarted/cancel`.
+- **Charts** — doughnut/bar/line legends, tooltips, axis titles, and toggles.
+  Module-level label arrays refactored to i18n keys (`typeLabelMap`,
+  `ItemsTable` `tableTabs`; `columns` moved inside the component for `t()`).
+  `date-fns`/chart numeric formatting and `family: "Mulish"` left as-is.
+- **Date-range labels** — `getDateRangeAndLabelsFromParams` in `utils.ts` (a
+  plain module) localized via the **i18n singleton**; reused `common.today`/
+  `yesterday`. **Coupling fix:** the `dateRange0Label.startsWith("Last") ? "in
+the" : ""` + `.toLowerCase()` grammar hack in `AnalyticsDashboard/UsersDoughutChart`
+  depended on the English label text — replaced with a single interpolated key
+  (`analyticsSourceIncreased`, `… — {{range}}`) so it no longer breaks once the
+  label is translated. (Copy adaptation — flag if the exact "in the …" phrasing
+  is required.)
+- **`shell.unknownUser`** reused for "Unknown User" (CompareDialog, NameCell) —
+  shell ns is always loaded. **Kept literal:** the camelCase `alt` identifiers
+  (`alt="googleAnalyticsIcon"`), `keyFriendly: "Google Property ID"` (backend
+  setting value), and the bare `vs` connector in the doughnut tooltip.
 
 #### Sub-pass 1 — Editor + Field shell (pre-audit complete, ~34 strings)
 

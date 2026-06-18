@@ -1,4 +1,5 @@
 import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 import { AppState } from "../../../../../../../shell/store/types";
 import { useEffect, useState } from "react";
 import { Box, Button, Typography, Container } from "@mui/material";
@@ -22,6 +23,7 @@ type Props = {
 };
 
 export const AuthView = ({ validateAuth, isDashboard }: Props) => {
+  const { t } = useTranslation();
   const user = useSelector((state: AppState) => state.user);
   const instance = useSelector((state: AppState) => state.instance);
   const [showResult, setShowResult] = useState(null);
@@ -68,12 +70,10 @@ export const AuthView = ({ validateAuth, isDashboard }: Props) => {
         <Box flex={1}>
           <img src={googleAnalyticsIcon} alt="googleAnalyticsIcon" />
           <Typography variant="h4" fontWeight="600" mt={3}>
-            Connect to Google Analytics
+            {t("content.analyticsConnectTitle")}
           </Typography>
           <Typography variant="body2" color="text.secondary" mt={1} mb={2}>
-            Learn where your pages traffic comes from and how it changes based
-            on changes made to content. To start, please authenticate with the
-            Google account your Google Analytics is connected to.
+            {t("content.analyticsConnectBody")}
           </Typography>
           <Box display="flex" gap={1}>
             <Button
@@ -82,14 +82,14 @@ export const AuthView = ({ validateAuth, isDashboard }: Props) => {
               startIcon={<img src={googleIcon} width="20" height="20" />}
               onClick={initiate}
             >
-              Authenticate with Google
+              {t("content.analyticsAuthenticateGoogle")}
             </Button>
             <Button
               variant="outlined"
               color="inherit"
               onClick={() => window.open("https://www.google.com")}
             >
-              Learn More
+              {t("content.analyticsLearnMore")}
             </Button>
           </Box>
         </Box>
@@ -102,8 +102,10 @@ export const AuthView = ({ validateAuth, isDashboard }: Props) => {
       </Box>
       {showResult === true && (
         <AnalyticsDialog
-          title={`Congratulations ${user.firstName}! You are successfully connected to Google Analytics`}
-          subTitle="Get ready to gain insights on how your content changes have impacted your page traffic and more!"
+          title={t("content.analyticsConnectedTitle", {
+            name: user.firstName,
+          })}
+          subTitle={t("content.analyticsConnectedSubtitle")}
           buttons={
             <Button
               variant="contained"
@@ -113,15 +115,15 @@ export const AuthView = ({ validateAuth, isDashboard }: Props) => {
                 validateAuth();
               }}
             >
-              Get Started
+              {t("common.getStarted")}
             </Button>
           }
         />
       )}
       {showResult === false && (
         <AnalyticsDialog
-          title={`Oops, we were unable to successfully connect to Google Analytics`}
-          subTitle="This can because you may have selected a Google account that does not have Google Analytics setup."
+          title={t("content.analyticsConnectErrorTitle")}
+          subTitle={t("content.analyticsConnectErrorSubtitle")}
           buttons={
             <>
               <Button
@@ -130,7 +132,7 @@ export const AuthView = ({ validateAuth, isDashboard }: Props) => {
                 size="large"
                 onClick={() => setShowResult(null)}
               >
-                Cancel
+                {t("common.cancel")}
               </Button>
               <Button
                 variant="contained"
@@ -141,7 +143,7 @@ export const AuthView = ({ validateAuth, isDashboard }: Props) => {
                   initiate();
                 }}
               >
-                Try Again
+                {t("content.analyticsTryAgain")}
               </Button>
             </>
           }

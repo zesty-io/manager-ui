@@ -1,5 +1,6 @@
 import { theme } from "@zesty-io/material";
 import { useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Doughnut } from "react-chartjs-2";
 import { ChartEvent } from "chart.js";
 import { Box, Paper, Typography, Skeleton, Divider } from "@mui/material";
@@ -26,6 +27,7 @@ export const UsersDoughnutChart = ({
   dateRange0Label,
   loading,
 }: any) => {
+  const { t } = useTranslation();
   const chartRef = useRef(null);
   const [tooltipModel, setTooltipModel] = useState(null);
 
@@ -309,7 +311,7 @@ export const UsersDoughnutChart = ({
                           ) || 0))) *
                         100
                     )}
-                % New
+                % {t("content.analyticsLegendNew")}
               </Typography>
               <Divider
                 sx={{
@@ -331,7 +333,7 @@ export const UsersDoughnutChart = ({
                 lineHeight="12px"
                 color="text.secondary"
               >
-                Returning
+                {t("content.analyticsLegendReturning")}
               </Typography>
             </>
           )}
@@ -411,7 +413,7 @@ export const UsersDoughnutChart = ({
             )?.toLocaleString()}
             <Typography display="inline" fontWeight={600}>
               {" "}
-              users
+              {t("content.analyticsUsersLabel")}
             </Typography>
           </Typography>
         )}
@@ -425,10 +427,11 @@ export const UsersDoughnutChart = ({
             fontWeight={600}
             lineHeight="12px"
           >
-            {topSourceIncreased?.source} users increased by{" "}
-            {topSourceIncreased?.percentage}%{" "}
-            {dateRange0Label?.startsWith("Last") ? "in the" : ""}{" "}
-            {dateRange0Label?.toLowerCase()}
+            {t("content.analyticsSourceIncreased", {
+              source: topSourceIncreased?.source,
+              percentage: topSourceIncreased?.percentage,
+              range: dateRange0Label,
+            })}
           </Typography>
         ) : null}
         {loading ? (
@@ -475,7 +478,7 @@ export const UsersDoughnutChart = ({
                   color="text.secondary"
                   fontSize={10}
                 >
-                  Other
+                  {t("content.analyticsLegendOther")}
                 </Typography>
               </Box>
             ) : null}

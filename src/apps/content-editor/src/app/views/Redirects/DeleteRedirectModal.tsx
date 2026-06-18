@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Dialog,
   DialogContent,
@@ -18,9 +19,10 @@ import { useDeleteRedirectMutation } from "../../../../../../shell/services/inst
 import { notify } from "../../../../../../shell/store/notifications";
 import { RedirectsTargetType } from "../../../../../../shell/services/types";
 
+// Values are i18n keys; resolved with t() inside the component.
 const HTTP_CODE_OPTIONS = {
-  301: "301 - Permanent Redirect",
-  302: "302 - Temporary Redirect",
+  301: "content.redirectCode301",
+  302: "content.redirectCode302",
 } as const;
 
 type DeleteRedirectModalProps = {
@@ -39,6 +41,7 @@ export const DeleteRedirectModal = ({
   targetType,
   onClose,
 }: DeleteRedirectModalProps) => {
+  const { t } = useTranslation();
   const domain = useDomain();
   const dispatch = useDispatch();
   const [
@@ -51,7 +54,7 @@ export const DeleteRedirectModal = ({
       onClose();
       dispatch(
         notify({
-          message: `Redirect Deleted: ${incomingPath}`,
+          message: t("content.redirectDeletedPath", { path: incomingPath }),
           kind: "error",
         })
       );
@@ -92,22 +95,21 @@ export const DeleteRedirectModal = ({
           <Box>
             <Box mb={1}>
               <Typography variant="h5" display="inline" fontWeight={700}>
-                Delete Redirect:&nbsp;
+                {t("content.redirectDeleteTitle")}&nbsp;
               </Typography>
               <Typography variant="h5" display="inline">
                 {incomingPath}
               </Typography>
             </Box>
             <Typography variant="body2" color="text.secondary">
-              Deleting this redirect will remove it immediately from your site.
-              This action cannot be undone.
+              {t("content.redirectDeleteWarning")}
             </Typography>
           </Box>
         </Stack>
       </DialogTitle>
       <DialogContent>
         <Typography variant="body2" fontWeight={700} mb={2.5}>
-          More details
+          {t("content.redirectMoreDetails")}
         </Typography>
         <Stack width="100%" border={1} borderColor="border" borderRadius={2}>
           <Stack direction="row" height={54} alignItems="center" px={2}>
@@ -116,10 +118,10 @@ export const DeleteRedirectModal = ({
               fontWeight={700}
               sx={{ flexBasis: 160 }}
             >
-              HTTP Code
+              {t("content.itemEditMetaHttpCode")}
             </Typography>
             <Typography variant="body2" sx={{ flex: 1 }}>
-              {HTTP_CODE_OPTIONS[httpCode as keyof typeof HTTP_CODE_OPTIONS]}
+              {t(HTTP_CODE_OPTIONS[httpCode as keyof typeof HTTP_CODE_OPTIONS])}
             </Typography>
           </Stack>
           <Stack
@@ -136,7 +138,7 @@ export const DeleteRedirectModal = ({
               fontWeight={700}
               sx={{ flexBasis: 160 }}
             >
-              Redirect Type
+              {t("content.redirectTypeColumn")}
             </Typography>
             <RedirectType type={targetType} />
           </Stack>
@@ -146,7 +148,7 @@ export const DeleteRedirectModal = ({
               fontWeight={700}
               sx={{ flexBasis: 160 }}
             >
-              Redirect Target
+              {t("content.redirectTargetLabel")}
             </Typography>
             <Link
               variant="body2"
@@ -167,7 +169,7 @@ export const DeleteRedirectModal = ({
           onClick={onClose}
           disabled={isDeletingRedirect}
         >
-          Cancel
+          {t("common.cancel")}
         </Button>
         <Button
           data-cy="ConfirmDeleteRedirect"
@@ -176,7 +178,7 @@ export const DeleteRedirectModal = ({
           onClick={handleDelete}
           loading={isDeletingRedirect}
         >
-          Delete Forever
+          {t("content.redirectDeleteForever")}
         </Button>
       </DialogActions>
     </Dialog>
@@ -184,12 +186,14 @@ export const DeleteRedirectModal = ({
 };
 
 const RedirectType = ({ type }: { type: RedirectsTargetType }) => {
+  const { t } = useTranslation();
+
   if (type === "path") {
     return (
       <Stack direction="row" alignItems="center" gap={1.5}>
         <HiveRounded fontSize="small" color="action" />
         <Typography variant="body2" sx={{ flex: 1 }}>
-          Wildcard
+          {t("content.redirectTypeWildcard")}
         </Typography>
       </Stack>
     );
@@ -200,7 +204,7 @@ const RedirectType = ({ type }: { type: RedirectsTargetType }) => {
       <Stack direction="row" alignItems="center" gap={1.5}>
         <Description fontSize="small" color="action" />
         <Typography variant="body2" sx={{ flex: 1 }}>
-          Internal
+          {t("content.redirectTypeInternal")}
         </Typography>
       </Stack>
     );

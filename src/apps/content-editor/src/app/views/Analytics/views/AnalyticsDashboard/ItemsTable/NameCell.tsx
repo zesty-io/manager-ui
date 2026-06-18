@@ -1,4 +1,5 @@
 import { Box, SvgIcon, Typography, Skeleton } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router";
 import {
   InboxRounded,
@@ -52,6 +53,7 @@ export const NameCell = ({
   topSourceValue: number;
   externalLink?: string;
 }) => {
+  const { t } = useTranslation();
   const history = useHistory();
   const { data: item, isFetching: isItemFetching } = useSearchContentQuery({
     query: path,
@@ -202,7 +204,7 @@ export const NameCell = ({
             <Typography variant="body3" fontWeight={600} color="text.secondary">
               {foundUser
                 ? `${foundUser.firstName} ${foundUser.lastName}`
-                : "Unknown User"}
+                : t("shell.unknownUser")}
             </Typography>
             <Typography variant="body3" fontWeight={600} color="text.secondary">
               {model?.label}
@@ -274,7 +276,7 @@ export const NameCell = ({
           <Box display="flex" gap={0.5} alignItems="center">
             <WarningRounded sx={{ width: 12, height: 12 }} color="warning" />
             <Typography variant="body3" fontWeight={600} color="text.secondary">
-              This item does not exist in your instance
+              {t("content.analyticsItemNotExist")}
             </Typography>
           </Box>
         )}

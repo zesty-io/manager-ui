@@ -1,4 +1,5 @@
 import { FC, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Button,
   Dialog,
@@ -57,6 +58,7 @@ export const ContentRedirectModal: FC<ContentRedirectModalProps> = ({
   currentItem,
   options,
 }) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const [targetInternal, setTargetInternal] = useState<ContentItemProps>(null);
   const [targetPath, setTargetPath] = useState<string>("");
@@ -95,7 +97,7 @@ export const ContentRedirectModal: FC<ContentRedirectModalProps> = ({
       dispatch(
         notify({
           kind: "success",
-          message: `1 Redirect Created`,
+          message: t("content.redirectCreatedOne"),
         })
       );
     } else {
@@ -155,12 +157,10 @@ export const ContentRedirectModal: FC<ContentRedirectModalProps> = ({
           flexGrow={0}
           flexShrink={0}
         >
-          Redirect this Content Item
+          {t("content.redirectThisContentItem")}
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-          Once your redirect your content item, it will be unpublished and users
-          won't be able to access this content item at its current URL. They'll
-          be automatically sent to the destination URL you provide.
+          {t("content.redirectInactiveSubHeader")}
         </Typography>
       </DialogTitle>
       <DialogContent sx={{ p: 0 }} data-cy="RedirectsDeleteDialog">
@@ -187,7 +187,7 @@ export const ContentRedirectModal: FC<ContentRedirectModalProps> = ({
               fontWeight={600}
               noWrap
             >
-              OLD PATH
+              {t("content.redirectOldPath")}
             </Typography>
             <Typography variant="body2" color="info.dark">
               {currentItem?.path}
@@ -202,7 +202,7 @@ export const ContentRedirectModal: FC<ContentRedirectModalProps> = ({
               noWrap
               mb={2.5}
             >
-              NEW PATH
+              {t("content.redirectNewPath")}
             </Typography>
             <Box
               width="100%"
@@ -212,7 +212,10 @@ export const ContentRedirectModal: FC<ContentRedirectModalProps> = ({
               alignItems="flex-start"
               rowGap={2.5}
             >
-              <FieldWrapper label="Type" tooltip={TOOL_TIPS.targetType}>
+              <FieldWrapper
+                label={t("content.redirectTypeLabel")}
+                tooltip={TOOL_TIPS.targetType}
+              >
                 <TextField
                   data-cy="RedirectsTypeSelector"
                   select
@@ -232,9 +235,9 @@ export const ContentRedirectModal: FC<ContentRedirectModalProps> = ({
                 </TextField>
               </FieldWrapper>
               <FieldWrapper
-                label="Redirect Target"
-                tooltip="File Path Only"
-                disabledTooltip="This value cannot be modified"
+                label={t("content.redirectTargetLabel")}
+                tooltip={t("content.redirectFilePathOnlyTooltip")}
+                disabledTooltip={t("content.redirectValueCannotBeModified")}
               >
                 {targetType === "page" ? (
                   <SearchField
@@ -250,7 +253,7 @@ export const ContentRedirectModal: FC<ContentRedirectModalProps> = ({
                 ) : (
                   <PathField
                     testId="RedirectsExternalFieldPath"
-                    placeHolder="Enter URL (e.g. https://www.google.com/)"
+                    placeHolder={t("content.redirectEnterUrlPlaceholder")}
                     value={targetPath}
                     onChange={(value) => {
                       setTargetPath(value);
@@ -267,7 +270,7 @@ export const ContentRedirectModal: FC<ContentRedirectModalProps> = ({
       </DialogContent>
       <DialogActions sx={{ px: 2.5, pb: 2.5, pt: 3.75 }}>
         <Button variant="text" color="inherit" onClick={onClose}>
-          Don't Create
+          {t("content.redirectDontCreate")}
         </Button>
         <Button
           data-cy="RedirectContentItemConfirmButton"
@@ -277,7 +280,7 @@ export const ContentRedirectModal: FC<ContentRedirectModalProps> = ({
           loading={isRedirectsLoading}
           disabled={isRedirectsLoading || invalidTarget || !target}
         >
-          Create Redirect
+          {t("content.redirectCreateButton")}
         </Button>
       </DialogActions>
     </Dialog>

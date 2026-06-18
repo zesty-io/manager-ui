@@ -123,11 +123,10 @@ export const CompareDialog = ({ onClose }: Props) => {
               <CompareArrowsRoundedIcon color="info" />
             </Box>
             <Typography variant="h5" fontWeight={700} sx={{ mt: 1.5 }}>
-              Compare Page
+              {t("content.analyticsComparePage")}
             </Typography>
             <Typography variant="body2" sx={{ mt: 1 }} color="text.secondary">
-              Please select a page you&apos;d like to compare your current page
-              against
+              {t("content.analyticsComparePageBody")}
             </Typography>
             <SearchBox
               value={search}
@@ -160,8 +159,8 @@ export const CompareDialog = ({ onClose }: Props) => {
           {debouncedSearch &&
           !isFetching &&
           searchedContentItemPublishings?.length
-            ? "Search Results"
-            : "Recent Publishes"}
+            ? t("content.analyticsSearchResults")
+            : t("content.analyticsRecentPublishes")}
         </Typography>
       </DialogTitle>
       <DialogContent>
@@ -235,6 +234,7 @@ export const CompareDialog = ({ onClose }: Props) => {
 };
 
 const PublishingItem = ({ publishing, divider, onClick }: any) => {
+  const { t } = useTranslation();
   const { data: itemData, isFetching: isFetchingItemData } =
     useGetContentItemQuery(publishing.itemZUID);
   const { data: modelData, isFetching: isFetchingModelData } =
@@ -268,7 +268,7 @@ const PublishingItem = ({ publishing, divider, onClick }: any) => {
     isFetchingItemData || isFetchingModelData || isFetchingUsersData;
 
   const userInfo =
-    firstName || lastName ? `${firstName} ${lastName}` : "Unknown User";
+    firstName || lastName ? `${firstName} ${lastName}` : t("shell.unknownUser");
 
   if (!showSkeleton && !itemData?.web?.path) return null;
 
@@ -333,7 +333,11 @@ const PublishingItem = ({ publishing, divider, onClick }: any) => {
           showSkeleton ? (
             <Skeleton variant="rectangular" height={10} width={425} />
           ) : (
-            `${modelData?.label} • ${relativeTime} • by ${userInfo}`
+            t("content.analyticsItemMetaLine", {
+              label: modelData?.label,
+              time: relativeTime,
+              user: userInfo,
+            })
           )
         }
         secondaryTypographyProps={{

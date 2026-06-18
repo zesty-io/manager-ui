@@ -1,4 +1,5 @@
 import { FC, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import ShuffleRoundedIcon from "@mui/icons-material/ShuffleRounded";
 import {
   Button,
@@ -27,19 +28,19 @@ import DescriptionIcon from "@mui/icons-material/Description";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import { ListOptionSkeleton } from "../../../../../seo/src/app/components/RedirectsDialogProvider/CreateRedirects/SearchField";
 
+// Text fields hold i18n keys; t() can't run at module scope so the lookup
+// happens inside the component.
 const REDIRECTED = {
-  button: "Stop Redirecting",
+  button: "content.redirectStopRedirecting",
   icon: <StopRoundedIcon color="error" />,
-  header: "This Content Item is Currently Being Redirected",
-  subHeader:
-    "This content item is currently set to redirect users to the destination URL below. Stopping the redirect will allow users to access this content at its original URL again once it is published.",
+  header: "content.redirectActiveHeader",
+  subHeader: "content.redirectActiveSubHeader",
 };
 const NOT_REDIRECTED = {
-  button: "Redirect this Content Item",
+  button: "content.redirectThisContentItem",
   icon: <ShuffleRoundedIcon color="primary" />,
-  header: "Redirect this Content Item",
-  subHeader:
-    "Once your redirect your content item, it will be unpublished and users won't be able to access this content item at its current URL. They'll be automatically sent to the destination URL you provide.",
+  header: "content.redirectThisContentItem",
+  subHeader: "content.redirectInactiveSubHeader",
 };
 
 export type ChangeRedirectProps = {
@@ -161,6 +162,7 @@ const ContentRedirects: FC<ContentRedirectsProps> = ({
   options = [],
   redirects = [],
 }) => {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isRedirected, setIsRedirected] = useState(false);
@@ -197,10 +199,10 @@ const ContentRedirects: FC<ContentRedirectsProps> = ({
           color="text.primary"
           data-cy="ContentRedirectHeader"
         >
-          {!!isRedirected ? REDIRECTED.header : NOT_REDIRECTED.header}
+          {t(!!isRedirected ? REDIRECTED.header : NOT_REDIRECTED.header)}
         </Typography>
         <Typography variant="body2" color="text.secondary" pt={0.5} pb={1.5}>
-          {!!isRedirected ? REDIRECTED.subHeader : NOT_REDIRECTED.subHeader}
+          {t(!!isRedirected ? REDIRECTED.subHeader : NOT_REDIRECTED.subHeader)}
         </Typography>
         {!isLoading && (!isRedirected || !currentItem) ? null : (
           <Paper
@@ -254,7 +256,7 @@ const ContentRedirects: FC<ContentRedirectsProps> = ({
           }
           sx={{ mt: 1.5 }}
         >
-          {!!isRedirected ? REDIRECTED.button : NOT_REDIRECTED.button}
+          {t(!!isRedirected ? REDIRECTED.button : NOT_REDIRECTED.button)}
         </Button>
       </Box>
       {isOpen && (
@@ -285,6 +287,7 @@ type ConfirmDeleteModalProps = {
 
 export const ConfirmDeleteModal = (props: ConfirmDeleteModalProps) => {
   const { open, onClose, itemZUID } = props;
+  const { t } = useTranslation();
   const dispatch = useDispatch();
 
   const [deleteRedirect, { isLoading: isDeleting }] =
@@ -299,7 +302,7 @@ export const ConfirmDeleteModal = (props: ConfirmDeleteModalProps) => {
         dispatch(
           notify({
             kind: "error",
-            message: `Error deleting redirect`,
+            message: t("content.redirectErrorDeleting"),
           })
         );
       })
@@ -307,7 +310,7 @@ export const ConfirmDeleteModal = (props: ConfirmDeleteModalProps) => {
         dispatch(
           notify({
             kind: "error",
-            message: `1 Redirect Deleted`,
+            message: t("content.redirectDeletedOne"),
           })
         );
       });
@@ -345,17 +348,16 @@ export const ConfirmDeleteModal = (props: ConfirmDeleteModalProps) => {
             flexGrow={0}
             flexShrink={0}
           >
-            Stop Redirecting
+            {t("content.redirectStopRedirecting")}
           </Typography>
         </Stack>
         <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-          Stopping the redirect will allow users to access this content at its
-          original URL again once it is published.
+          {t("content.redirectStopBody")}
         </Typography>
       </DialogTitle>
       <DialogActions>
         <Button variant="text" color="inherit" onClick={onClose}>
-          Cancel
+          {t("common.cancel")}
         </Button>
         <Button
           data-cy="StopRedirectContentItemConfirmButton"
@@ -365,7 +367,7 @@ export const ConfirmDeleteModal = (props: ConfirmDeleteModalProps) => {
           loading={isDeleting}
           startIcon={<StopRoundedIcon />}
         >
-          Stop Redirecting
+          {t("content.redirectStopRedirecting")}
         </Button>
       </DialogActions>
     </Dialog>

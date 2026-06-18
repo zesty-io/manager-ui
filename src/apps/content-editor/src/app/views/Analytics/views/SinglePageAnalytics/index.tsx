@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Button,
   Box,
@@ -44,6 +45,7 @@ type Props = {
 };
 
 export const SinglePageAnalytics = ({ item, loading }: Props) => {
+  const { t } = useTranslation();
   const [showCompareDialog, setShowCompareDialog] = useState(false);
   const [params, setParams] = useQueryParams();
   const compareItemZUID = params.get("compare");
@@ -196,8 +198,8 @@ export const SinglePageAnalytics = ({ item, loading }: Props) => {
   if (isError) {
     return (
       <NotFound
-        title="Unable to Load Analytics Data"
-        message="This may be due to a bad internet connection so please try again. If you are still unable to resolve this issue, please contact support."
+        title={t("content.analyticsUnableToLoadTitle")}
+        message={t("content.analyticsUnableToLoadMessage")}
         button={
           <>
             <Button
@@ -211,14 +213,14 @@ export const SinglePageAnalytics = ({ item, loading }: Props) => {
                 )
               }
             >
-              Contact Support
+              {t("content.analyticsContactSupport")}
             </Button>
             <Button
               startIcon={<RefreshRoundedIcon />}
               variant="contained"
               onClick={() => refetch()}
             >
-              Try Again
+              {t("content.analyticsTryAgain")}
             </Button>
           </>
         }
@@ -267,7 +269,7 @@ export const SinglePageAnalytics = ({ item, loading }: Props) => {
                 sx={{ height: "28px", bgcolor: "background.paper" }}
                 onClick={() => setShowCompareDialog(true)}
               >
-                Compare Page
+                {t("content.analyticsComparePage")}
               </Button>
             )}
           </Box>
@@ -286,7 +288,7 @@ export const SinglePageAnalytics = ({ item, loading }: Props) => {
         >
           <Metric
             loading={isLoading}
-            title="Views"
+            title={t("content.analyticsMetricViews")}
             value={
               +(
                 findValuesForDimensions(
@@ -307,12 +309,12 @@ export const SinglePageAnalytics = ({ item, loading }: Props) => {
                     ) || 0
                   )
             }
-            description="A pageview is defined as a view of a page on your site that is being tracked by the Analytics tracking code. If a user clicks reload after reaching the page or navigates to a different page and then returns to the original page, then this is counted as an additional page view."
+            description={t("content.analyticsMetricViewsDesc")}
           />
           <Divider orientation="vertical" flexItem />
           <Metric
             loading={isLoading}
-            title="Average Engagement Time"
+            title={t("content.analyticsMetricAvgEngagement")}
             formatter={convertSecondsToMinutesAndSeconds}
             value={averageEngagementTime[0]}
             priorValue={
@@ -320,13 +322,13 @@ export const SinglePageAnalytics = ({ item, loading }: Props) => {
                 ? averageEngagementTime[2] ?? 0
                 : averageEngagementTime[1]
             }
-            description="Average engagement time is the average time that your website was in focus in a user's browser or a mobile app was in the foreground on a user's device."
+            description={t("content.analyticsMetricAvgEngagementDesc")}
           />
           <Divider orientation="vertical" flexItem />
           <Metric
             loading={isLoading}
             inverse
-            title="Bounce Rate"
+            title={t("content.analyticsMetricBounceRate")}
             formatter={(value: number) => `${Math.floor(value * 100)}%`}
             value={
               +(
@@ -348,12 +350,12 @@ export const SinglePageAnalytics = ({ item, loading }: Props) => {
                     ) || 0
                   )
             }
-            description="Bounce rate is the percentage of people who land on a page and leave without performing a specific action."
+            description={t("content.analyticsMetricBounceRateDesc")}
           />
           <Divider orientation="vertical" flexItem />
           <Metric
             loading={isLoading}
-            title="Conversions"
+            title={t("content.analyticsMetricConversions")}
             value={
               +(
                 findValuesForDimensions(
@@ -374,7 +376,7 @@ export const SinglePageAnalytics = ({ item, loading }: Props) => {
                     ) || 0
                   )
             }
-            description="A conversion is a user action that you count because you consider it important, such as a purchase, game level completion, or website or app scroll activity."
+            description={t("content.analyticsMetricConversionsDesc")}
           />
           <Box width="184px" height="100px" bgcolor="background.paper">
             <UsersDoughnutChart
