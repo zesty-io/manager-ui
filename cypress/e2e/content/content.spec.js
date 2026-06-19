@@ -512,6 +512,10 @@ describe("Content Specs", () => {
       cy.get('[data-cy="done-selecting-item-button"]', options).click(
         forceClick
       );
+      cy.get(
+        "[data-cy='field:one_to_one'] [data-cy='active-relational-item-more-button']",
+        options
+      ).should("exist");
     });
 
     it("can publish an item", () => {
