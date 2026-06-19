@@ -111,6 +111,10 @@ const REDIRECT_PATHS = [
   ...REDIRECTS.map((item) => item.path),
   ADD_REDIRECTS?.path,
   EDIT_REDIRECTS?.path,
+  // Content-item redirects ("Redirect Content Item") are created on the content
+  // item's own path. Include those so cleanup removes a lingering one from a
+  // prior run — otherwise the re-create POSTs a duplicate and 400s.
+  ...CONTENT_ITEMS.map((item) => item?.web?.pathPart),
 ];
 
 describe("Content item redirects", () => {
