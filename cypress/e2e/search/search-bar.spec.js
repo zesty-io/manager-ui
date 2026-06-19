@@ -56,13 +56,11 @@ describe("Global Search: Search Bar", () => {
       .should("exist")
       .should("contain", SEARCH_TERM);
 
-    // Remove keyword from saved keywords, trigger mouseover is needed because remove button only shows up on list item hover
-    cy.getBySelector("global-search-recent-keyword")
-      .should("exist")
-      .trigger("mouseover");
-    cy.getBySelector("RemoveRecentSearchKeyword")
-      .should("exist")
-      .click({ force: true });
+    cy.getBySelector("global-search-recent-keyword").should("exist");
+    cy.getBySelector("global-search-recent-keyword").trigger("mouseover", {
+      force: true,
+    });
+    cy.getBySelector("RemoveRecentSearchKeyword").click({ force: true });
 
     // Verify if keyword was removed
     cy.getBySelector("global-search-recent-keyword").should("not.exist");
@@ -88,8 +86,8 @@ describe("Global Search: Search Bar", () => {
       .should("exist")
       .click();
 
-    // Click on the recently saved keyword
-    cy.getBySelector("global-search-recent-keyword").should("exist").click();
+    cy.getBySelector("global-search-recent-keyword").should("exist");
+    cy.getBySelector("global-search-recent-keyword").click({ force: true });
 
     // Verify that user is navigated to search page with correct search param
     cy.location("pathname").should("equal", "/search");

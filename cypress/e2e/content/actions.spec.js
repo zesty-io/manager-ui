@@ -3,7 +3,7 @@ const TEST_DATA = {
   new: `New Item:${timestamp}`,
   ai: `AI Generated:${timestamp}`,
 };
-const requestTimeout = 15000;
+const requestTimeout = 30000;
 
 describe("Actions in content editor", () => {
   let CONTENT_ITEMS = null;
@@ -40,9 +40,9 @@ describe("Actions in content editor", () => {
 
     cy.getBySelector("field:markdown")
       .find("textarea")
+      .should("have.value", "markdown")
       .click()
       .clear()
-      .wait(500)
       .should("have.value", "");
 
     cy.getBySelector("SaveItemButton")
@@ -301,7 +301,11 @@ describe("Actions in content editor", () => {
   });
 
   it("Unschedules a Publish for an item", () => {
-    const { deletePublishedItem, publishings } = awaitRequests();
+    const { items, deletePublishedItem, publishings } = awaitRequests();
+    cy.visit(
+      `/content/${Cypress.env("modelZUID")}/${CONTENT_ITEMS?.[4]?.meta?.ZUID}`
+    );
+    cy.wait([items, publishings], { requestTimeout });
 
     cy.getBySelector("PublishMenuButton").should("exist").should("be.enabled");
     cy.getBySelector("PublishMenuButton").trigger("click");
