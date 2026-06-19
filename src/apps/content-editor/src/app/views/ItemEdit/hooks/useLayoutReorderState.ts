@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { notify } from "../../../../../../../shell/store/notifications";
 import { LayoutBreadcrumbItem } from "./studioTypes";
 
@@ -314,6 +315,7 @@ export const useLayoutReorderState = ({
   withCodeIdBreadcrumbRoot,
   onSelectedLayoutBreadcrumbChange,
 }: Args) => {
+  const { t, i18n } = useTranslation();
   const templateSourceByCodeIdRef = useRef<Record<string, string>>({});
   const [pendingLayoutSave, setPendingLayoutSave] =
     useState<LayoutReorderState | null>(null);
@@ -409,11 +411,11 @@ export const useLayoutReorderState = ({
           codeFileNameById[codeId] || webView?.fileName || codeId
       );
       if (names.length === 0) return "";
-      if (names.length === 1) return names[0];
-      if (names.length === 2) return `${names[0]} and ${names[1]}`;
-      return `${names.slice(0, -1).join(", ")}, and ${names[names.length - 1]}`;
+      return new Intl.ListFormat(i18n.language, { type: "conjunction" }).format(
+        names
+      );
     },
-    [codeFileNameById]
+    [codeFileNameById, i18n.language]
   );
 
   const handleSavePendingLayout = useCallback(
@@ -431,7 +433,9 @@ export const useLayoutReorderState = ({
         dispatch(
           notify({
             kind: "success",
-            message: `Saved ${formatSavedFileNames(results)}`,
+            message: t("content.studioLayoutSaved", {
+              files: formatSavedFileNames(results),
+            }),
           })
         );
       } catch (error: any) {
@@ -447,8 +451,8 @@ export const useLayoutReorderState = ({
               error?.error ||
               error?.message ||
               (failedName
-                ? `Failed to save ${failedName}.`
-                : "Failed to save layout."),
+                ? t("content.studioLayoutSaveFailedNamed", { name: failedName })
+                : t("content.studioLayoutSaveFailed")),
           })
         );
       } finally {
@@ -462,6 +466,7 @@ export const useLayoutReorderState = ({
       pendingLayoutSave,
       refreshPreviewFrame,
       savePendingLayoutSources,
+      t,
     ]
   );
 
@@ -491,7 +496,9 @@ export const useLayoutReorderState = ({
       dispatch(
         notify({
           kind: "success",
-          message: `Saved and published ${formatSavedFileNames(results)}`,
+          message: t("content.studioLayoutSavedPublished", {
+            files: formatSavedFileNames(results),
+          }),
         })
       );
     } catch (error: any) {
@@ -507,8 +514,10 @@ export const useLayoutReorderState = ({
             error?.error ||
             error?.message ||
             (failedName
-              ? `Failed to save and publish ${failedName}.`
-              : "Failed to save and publish layout."),
+              ? t("content.studioLayoutPublishFailedNamed", {
+                  name: failedName,
+                })
+              : t("content.studioLayoutPublishFailed")),
         })
       );
     } finally {
@@ -522,6 +531,7 @@ export const useLayoutReorderState = ({
     publishWebView,
     refreshPreviewFrame,
     savePendingLayoutSources,
+    t,
   ]);
 
   const handleTemplateSourceMap = useCallback((msg: any) => {
@@ -549,7 +559,7 @@ export const useLayoutReorderState = ({
         dispatch(
           notify({
             kind: "warn",
-            message: "Could not apply inline edit for this block.",
+            message: t("content.studioInlineEditFailed"),
           })
         );
         return;
@@ -596,7 +606,7 @@ export const useLayoutReorderState = ({
         };
       });
     },
-    [dispatch]
+    [dispatch, t]
   );
 
   const handleReorderOutput = useCallback(

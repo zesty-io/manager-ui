@@ -35,7 +35,7 @@ import {
 import { alpha } from "@mui/material/styles";
 import { Bynder, FileReplace } from "@zesty-io/material";
 import { useIntersection } from "react-use";
-import { useTranslation } from "react-i18next";
+import { useTranslation, Trans } from "react-i18next";
 
 import {
   useGetBinsQuery,
@@ -96,6 +96,11 @@ export const FieldTypeMedia = forwardRef(
     const [imageToReplace, setImageToReplace] = useState("");
     const { data: rawInstanceSettings } = useGetInstanceSettingsQuery();
     const [selectionError, setSelectionError] = useState("");
+    // This widget also renders outside content-editor (shell Favicon /
+    // FieldTypeRepeater, schema DefaultValueInput) where the lazy "content"
+    // namespace isn't loaded; request it here (non-suspense so we never throw in
+    // trees without a Suspense boundary — keys resolve once it loads).
+    const { t, i18n } = useTranslation("content", { useSuspense: false });
 
     const bynderPortalUrlSetting = rawInstanceSettings?.find(
       (setting) => setting.key === "bynder_portal_url"
@@ -159,13 +164,15 @@ export const FieldTypeMedia = forwardRef(
 
       if (removedImages.length) {
         const filenames = removedImages.map((image) => image.filename);
-        const formattedFilenames =
-          filenames.length > 1
-            ? filenames.slice(0, -1).join(", ") + " and " + filenames.slice(-1)
-            : filenames[0];
+        const formattedFilenames = new Intl.ListFormat(i18n.language, {
+          type: "conjunction",
+        }).format(filenames);
 
         setSelectionError(
-          `Could not add ${formattedFilenames}. ${settings?.fileExtensionsErrorMessage}`
+          t("content.mediaCouldNotAdd", {
+            filenames: formattedFilenames,
+            errorMessage: settings?.fileExtensionsErrorMessage ?? "",
+          })
         );
       } else {
         setSelectionError("");
@@ -204,13 +211,15 @@ export const FieldTypeMedia = forwardRef(
 
       if (removedAssets.length) {
         const filenames = removedAssets.map((asset) => asset.name);
-        const formattedFilenames =
-          filenames.length > 1
-            ? filenames.slice(0, -1).join(", ") + " and " + filenames.slice(-1)
-            : filenames[0];
+        const formattedFilenames = new Intl.ListFormat(i18n.language, {
+          type: "conjunction",
+        }).format(filenames);
 
         setSelectionError(
-          `Could not add ${formattedFilenames}. ${settings?.fileExtensionsErrorMessage}`
+          t("content.mediaCouldNotAdd", {
+            filenames: formattedFilenames,
+            errorMessage: settings?.fileExtensionsErrorMessage ?? "",
+          })
         );
       } else {
         setSelectionError("");
@@ -249,7 +258,9 @@ export const FieldTypeMedia = forwardRef(
           )
         ) {
           setSelectionError(
-            `Could not replace. ${settings?.fileExtensionsErrorMessage}`
+            t("content.mediaCouldNotReplace", {
+              errorMessage: settings?.fileExtensionsErrorMessage ?? "",
+            })
           );
           return;
         } else {
@@ -277,7 +288,9 @@ export const FieldTypeMedia = forwardRef(
         !settings?.fileExtensions?.includes(assetExtension)
       ) {
         setSelectionError(
-          `Could not replace. ${settings?.fileExtensionsErrorMessage}`
+          t("content.mediaCouldNotReplace", {
+            errorMessage: settings?.fileExtensionsErrorMessage ?? "",
+          })
         );
         return;
       } else {
@@ -413,11 +426,12 @@ export const FieldTypeMedia = forwardRef(
                 fontWeight={600}
               >
                 {isDragActive ? (
-                  "Drop your files here to Upload"
+                  t("content.mediaDropToUpload")
                 ) : (
-                  <>
-                    Drag and drop your files here <br /> or
-                  </>
+                  <Trans
+                    i18nKey="content.mediaDragAndDrop"
+                    components={{ break: <br /> }}
+                  />
                 )}
               </Typography>
               {!isDragActive && (
@@ -438,7 +452,7 @@ export const FieldTypeMedia = forwardRef(
                       flexShrink: 0,
                     }}
                   >
-                    Upload
+                    {t("common.upload")}
                   </Button>
                   <Button
                     data-cy="selectFromMediaButton"
@@ -457,7 +471,7 @@ export const FieldTypeMedia = forwardRef(
                       flexShrink: 0,
                     }}
                   >
-                    Add from Media
+                    {t("content.mediaAddFromMedia")}
                   </Button>
                   {isBynderSessionValid && (
                     <Button
@@ -472,7 +486,7 @@ export const FieldTypeMedia = forwardRef(
                         flexShrink: 0,
                       }}
                     >
-                      Add from Bynder
+                      {t("content.mediaAddFromBynder")}
                     </Button>
                   )}
                 </Box>
@@ -531,7 +545,7 @@ export const FieldTypeMedia = forwardRef(
                   startIcon={<UploadRounded />}
                   fullWidth
                 >
-                  Upload
+                  {t("common.upload")}
                 </Button>
               )}
               <Button
@@ -547,7 +561,7 @@ export const FieldTypeMedia = forwardRef(
                 fullWidth
                 startIcon={<AddRounded />}
               >
-                Add More from Media
+                {t("content.mediaAddMoreFromMedia")}
               </Button>
               {isBynderSessionValid && (
                 <Button
@@ -558,7 +572,7 @@ export const FieldTypeMedia = forwardRef(
                   startIcon={<Bynder />}
                   fullWidth
                 >
-                  Add from Bynder
+                  {t("content.mediaAddFromBynder")}
                 </Button>
               )}
             </Box>
@@ -616,7 +630,9 @@ export const MediaItem = ({
   isBynderSessionValid,
   hideActionButtons,
 }: MediaItemProps) => {
-  const { t } = useTranslation();
+  // See note in FieldTypeMedia: ensure the "content" namespace is loaded even
+  // when this renders outside content-editor.
+  const { t } = useTranslation("content", { useSuspense: false });
   const lastHoveredIndexRef = useRef(null);
   const mediaItemContainerRef = useRef(null);
   const [isDraggable, setIsDraggable] = useState(false);
@@ -854,7 +870,11 @@ export const MediaItem = ({
           {!hideActionButtons && (
             <Box display="flex" gap={1} justifyContent="flex-end">
               {!isBynderAsset || (isBynderAsset && isBynderSessionValid) ? (
-                <Tooltip title="Swap File" placement="bottom" enterDelay={800}>
+                <Tooltip
+                  title={t("content.mediaSwapFile")}
+                  placement="bottom"
+                  enterDelay={800}
+                >
                   <IconButton
                     size="small"
                     onClick={(event: any) => {
@@ -869,13 +889,21 @@ export const MediaItem = ({
                 <></>
               )}
               {!isURL && data && (
-                <Tooltip title="Edit File" placement="bottom" enterDelay={800}>
+                <Tooltip
+                  title={t("content.mediaEditFile")}
+                  placement="bottom"
+                  enterDelay={800}
+                >
                   <IconButton size="small">
                     <EditRounded fontSize="small" />
                   </IconButton>
                 </Tooltip>
               )}
-              <Tooltip title="More Options" placement="bottom" enterDelay={800}>
+              <Tooltip
+                title={t("content.mediaMoreOptions")}
+                placement="bottom"
+                enterDelay={800}
+              >
                 <IconButton
                   size="small"
                   onClick={(event: any) => {
@@ -919,7 +947,7 @@ export const MediaItem = ({
                       <ListItemIcon>
                         <DriveFileRenameOutlineRounded />
                       </ListItemIcon>
-                      <ListItemText>Rename</ListItemText>
+                      <ListItemText>{t("content.mediaRename")}</ListItemText>
                     </MenuItem>
                     <MenuItem
                       onClick={(event) => {
@@ -931,7 +959,9 @@ export const MediaItem = ({
                       <ListItemIcon>
                         <FileReplace />
                       </ListItemIcon>
-                      <ListItemText>Replace File</ListItemText>
+                      <ListItemText>
+                        {t("content.mediaReplaceFile")}
+                      </ListItemText>
                     </MenuItem>
                     <MenuItem
                       onClick={(event) => {
@@ -942,7 +972,7 @@ export const MediaItem = ({
                       <ListItemIcon>
                         {isCopiedZuid ? <CheckRounded /> : <WidgetsRounded />}
                       </ListItemIcon>
-                      <ListItemText>Copy ZUID</ListItemText>
+                      <ListItemText>{t("content.mediaCopyZuid")}</ListItemText>
                     </MenuItem>
                   </Box>
                 )}
@@ -956,7 +986,7 @@ export const MediaItem = ({
                     <ListItemIcon>
                       {isCopied ? <CheckRounded /> : <LinkRounded />}
                     </ListItemIcon>
-                    <ListItemText>Copy File Url</ListItemText>
+                    <ListItemText>{t("content.mediaCopyFileUrl")}</ListItemText>
                   </MenuItem>
                 )}
                 <MenuItem

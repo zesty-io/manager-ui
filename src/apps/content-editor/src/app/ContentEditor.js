@@ -54,7 +54,7 @@ function ContentEditorContent() {
   // Requesting the namespace here triggers its lazy load and suspends this
   // subtree until ready; child components use bare useTranslation() with
   // qualified keys (t("content.key")) once it's in the store.
-  useTranslation("content");
+  const { t } = useTranslation("content");
   const navContent = useSelector((state) => state.navContent);
   const dispatch = useDispatch();
   const [params] = useParams();
@@ -94,7 +94,7 @@ function ContentEditorContent() {
           sx={{ width: "100%", alignItems: "center", justifyContent: "center" }}
         >
           <Typography variant="h1" color="text.primary">
-            Please create a new content model
+            {t("content.emptyCreateModel")}
           </Typography>
           <Link
             underline="none"
@@ -109,7 +109,7 @@ function ContentEditorContent() {
             }}
           >
             <Database />
-            &nbsp; Schema
+            &nbsp; {t("shell.navSchema")}
           </Link>
         </Stack>
       ) : (
