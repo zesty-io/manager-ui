@@ -19,7 +19,10 @@ describe("Settings Actions", () => {
 
   it.only("Typography", () => {
     cy.get("[data-cy=SettingsNav]").contains("Typography").click();
-    cy.get("[data-cy=SubApp] .MuiSelect-select").first().click();
+    // Use the font-weight select (always has the static 100-900 options). The
+    // font-family selects are empty when the instance has no installed fonts, so
+    // they have no "aria-selected=false" option to pick.
+    cy.get("#mui-component-select-headings-font-weight").click();
     cy.get(".MuiList-root li[aria-selected=false]").last().click();
     cy.get("#SaveSettings").click();
     cy.get('[data-cy="ConfirmSaveSettings"]').should("exist");
