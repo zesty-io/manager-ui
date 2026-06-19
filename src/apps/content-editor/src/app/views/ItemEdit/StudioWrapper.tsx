@@ -1101,9 +1101,6 @@ export const StudioWrapper = () => {
         disableEnforceFocus
         disableAutoFocus
         disablePortal
-        role="dialog"
-        aria-modal="true"
-        aria-label="Studio editor"
       >
         <Paper
           role="dialog"

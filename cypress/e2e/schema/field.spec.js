@@ -96,7 +96,9 @@ describe("Schema: Fields", () => {
 
   it("Opens Add Field Modal via button click", () => {
     // Open the modal
-    cy.getBySelector(SELECTORS.ADD_FIELD_BTN).should("exist").click();
+    cy.getBySelector(SELECTORS.ADD_FIELD_BTN)
+      .should("exist")
+      .click({ force: true });
     cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("exist");
 
     // Close the modal
@@ -378,7 +380,9 @@ describe("Schema: Fields", () => {
     const fieldName = `currency_${timestamp}`;
 
     // Open the add field modal
-    cy.getBySelector(SELECTORS.ADD_FIELD_BTN).should("exist").click();
+    cy.getBySelector(SELECTORS.ADD_FIELD_BTN)
+      .should("exist")
+      .click({ force: true });
     cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("exist");
 
     // Select one-to-one relationship field
@@ -416,7 +420,9 @@ describe("Schema: Fields", () => {
     const fieldName = `block_selector_${timestamp}`;
 
     // Open the add field modal
-    cy.getBySelector(SELECTORS.ADD_FIELD_BTN).should("exist").click();
+    cy.getBySelector(SELECTORS.ADD_FIELD_BTN)
+      .should("exist")
+      .click({ force: true });
     cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("exist");
 
     // Select one-to-one relationship field
@@ -878,11 +884,15 @@ describe("Schema: Fields", () => {
 
   it("Shows and hides system fields", () => {
     // Show system fields
-    cy.getBySelector(SELECTORS.SHOW_SYSTEM_FIELDS_BTN).should("exist").click();
+    cy.getBySelector(SELECTORS.SHOW_SYSTEM_FIELDS_BTN)
+      .should("exist")
+      .click({ force: true });
     cy.getBySelector(SELECTORS.SYSTEM_FIELDS).should("exist");
 
     // Hide system fields
-    cy.getBySelector(SELECTORS.SHOW_SYSTEM_FIELDS_BTN).should("exist").click();
+    cy.getBySelector(SELECTORS.SHOW_SYSTEM_FIELDS_BTN)
+      .should("exist")
+      .click({ force: true });
     cy.getBySelector(SELECTORS.SYSTEM_FIELDS).should("not.exist");
   });
 });

@@ -9,14 +9,12 @@ import {
 } from "react";
 import { Box } from "@mui/material";
 import { useDispatch } from "react-redux";
-import { AppLink } from "shell/components/AppLink";
 import { unescape } from "lodash";
 import { Field } from "./Field";
 import { cloneDeep, isEqual } from "lodash";
 import { useGetContentModelFieldsQuery } from "../../../../../../shell/services/instance";
 import { DYNAMIC_META_FIELD_NAMES } from "../../views/ItemEdit/Meta";
 import { FieldsLoader } from "./FieldsLoader";
-import { UsedBlocks } from "../UsedBlocks";
 import { useResizeObserver } from "shell/hooks/useResizeObserver";
 
 const COMPACT_MAX_WIDTH = 390;
@@ -430,70 +428,71 @@ export default memo(function Editor({
   }, [isNewItem, setIsLoaded, applyDefaultValuesToItemData]);
 
   return (
-    <Box
-      data-cy="FieldsContainer"
-      ref={containerRef}
-      sx={{
-        pr: 1,
-        display: "block",
-        width: "100%",
-        position: "relative",
-        boxSizing: "border-box",
-        overflow: "auto",
-        scrollbarWidth: "none",
-        msOverflowStyle: "none",
-        "&::-webkit-scrollbar": {
-          display: "none",
-        },
-      }}
-    >
-      {!isLoaded || isFetchingFields || isLoadingItem ? (
-        <FieldsLoader />
-      ) : (
-        renderedFields?.map((field) => (
-          <Box
-            key={field.ZUID}
-            id={field.ZUID}
-            data-cy={`field:${field?.name}`}
-            sx={{
-              py: 1.5,
-              px: 0,
-              "&:first-of-type": {
-                px: 0,
-                pt: 0,
-                pb: 1,
-              },
-            }}
-          >
-            <Field
+    <>
+      <Box ref={containerRef} width="100%" />
+      <Box
+        data-cy="FieldsContainer"
+        sx={{
+          pr: 1,
+          display: "block",
+          width: "100%",
+          position: "relative",
+          boxSizing: "border-box",
+          overflow: "auto",
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
+          "&::-webkit-scrollbar": {
+            display: "none",
+          },
+        }}
+      >
+        {!isLoaded || isFetchingFields || isLoadingItem ? (
+          <FieldsLoader />
+        ) : (
+          renderedFields?.map((field) => (
+            <Box
               key={field.ZUID}
-              ZUID={field.ZUID}
-              contentModelZUID={field.contentModelZUID}
-              active={active === field.ZUID}
-              name={field.name}
-              label={field.label}
-              description={field.description}
-              required={field.required}
-              relatedFieldZUID={field.relatedFieldZUID}
-              relatedModelZUID={field.relatedModelZUID}
-              datatype={field.datatype}
-              options={field.options}
-              settings={field.settings}
-              onChange={onChange}
-              onSave={onSave}
-              value={item?.data?.[field.name]}
-              version={item?.meta?.version}
-              langID={item?.meta?.langID}
-              errors={fieldErrors[field.name]}
-              maxLength={
-                field.settings?.maxCharLimit ?? MaxLengths[field.datatype]
-              }
-              minLength={field.settings?.minCharLimit ?? 0}
-              compact={compact}
-            />
-          </Box>
-        ))
-      )}
-    </Box>
+              id={field.ZUID}
+              data-cy={`field:${field?.name}`}
+              sx={{
+                py: 1.5,
+                px: 0,
+                "&:first-of-type": {
+                  px: 0,
+                  pt: 0,
+                  pb: 1,
+                },
+              }}
+            >
+              <Field
+                ZUID={field.ZUID}
+                contentModelZUID={field.contentModelZUID}
+                active={active === field.ZUID}
+                name={field.name}
+                label={field.label}
+                description={field.description}
+                required={field.required}
+                relatedFieldZUID={field.relatedFieldZUID}
+                relatedModelZUID={field.relatedModelZUID}
+                datatype={field.datatype}
+                options={field.options}
+                settings={field.settings}
+                onChange={onChange}
+                onSave={onSave}
+                value={item?.data?.[field.name]}
+                version={item?.meta?.version}
+                langID={item?.meta?.langID}
+                errors={fieldErrors[field.name]}
+                maxLength={
+                  field.settings?.maxCharLimit ?? MaxLengths[field.datatype]
+                }
+                minLength={field.settings?.minCharLimit ?? 0}
+                compact={compact}
+              />
+            </Box>
+          ))
+        )}
+      </Box>
+    </>
   );
 });

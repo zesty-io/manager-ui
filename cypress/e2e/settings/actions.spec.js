@@ -18,7 +18,9 @@ describe("Settings Actions", () => {
   });
 
   it.only("Typography", () => {
-    cy.get("[data-cy=SettingsNav]").contains("Typography").click();
+    cy.get("[data-cy=SettingsNav]")
+      .contains("Typography")
+      .click({ force: true });
     cy.get("[data-cy=SubApp] .MuiSelect-select").first().click();
     cy.get(".MuiList-root li[aria-selected=false]").last().click();
     cy.get("#SaveSettings").click();

@@ -128,7 +128,6 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
   // Tracks live editor content; read on compact/fullscreen toggle to seed
   // initialValue for the remounted editor without triggering setContent mid-edit.
   const valueRef = useRef<string>(value || "");
-
   const EDITOR_HEIGHT = effectiveCompact
     ? COMPACT_EDITOR_HEIGHT
     : NORMAL_EDITOR_HEIGHT;
@@ -144,6 +143,11 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
     [rawInstanceSettings]
   );
 
+  const emitCharCount = (editor: any) =>
+    onCharacterCountChange?.(
+      editor.plugins?.wordcount?.body?.getCharacterCount() ?? 0
+    );
+
   // Intentionally omits `value` from deps — re-syncing on every keystroke
   // would reset the cursor. Only re-sync when the version stamp increments
   // (i.e. a save or external overwrite).
@@ -153,11 +157,9 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
     setInitialValue(value ?? "");
   }, [version]);
 
-  // When compact/fullscreen toggles the editor remounts (key={toolbar} changes).
-  // Seed the new mount with the latest content. This effect fires after the new
-  // Editor mounts, so the mount briefly renders with the previous initialValue,
-  // but tinymce-react calls setContent via componentDidUpdate immediately after,
-  // so no visible flash occurs. This two-step is intentional.
+  // When compact/fullscreen toggles the editor remounts (key changes); seed the
+  // new mount with the latest content. The remounted editor inits clean, so its
+  // initial setContent won't fire onChange (see the onEditorChange isDirty guard).
   useEffect(() => {
     setInitialValue(valueRef.current);
   }, [effectiveCompact]);
@@ -217,19 +219,22 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
           onFocusOut={onBlur}
           initialValue={initialValue}
           onEditorChange={(content, editor) => {
+            // TinyMCE only marks the editor dirty on genuine user edits. The
+            // change events emitted while normalizing the initial HTML — on mount
+            // and on every compact/fullscreen remount — leave it clean, so this
+            // deterministically filters them out (timing/content comparisons don't).
+            if (!editor.isDirty()) return;
+
             onChange(content, name, datatype);
-
             valueRef.current = content;
-            const charCount =
-              editor.plugins?.wordcount?.body?.getCharacterCount() ?? 0;
-
-            onCharacterCountChange && onCharacterCountChange(charCount);
+            emitCharCount(editor);
           }}
           onInit={(_, editor) => {
-            const charCount =
-              editor.plugins?.wordcount?.body?.getCharacterCount() ?? 0;
-
-            onCharacterCountChange && onCharacterCountChange(charCount);
+            // Seed the remount baseline and force a clean dirty state so the
+            // initial setContent can never be mistaken for a user edit.
+            valueRef.current = editor.getContent();
+            editor.setDirty(false);
+            emitCharCount(editor);
           }}
           onKeyDown={(evt) => {
             // Makes sure that when scrolling through a collection group, it
@@ -325,24 +330,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
             color_default_background: "none",
             help_tabs: ["shortcuts", "keyboardnav", "versions"],
 
-            // file_picker_callback: (callback, value, meta) => {
-            //   console.log(callback, value, meta);
-            // },
-
-            // imagetools_proxy: "path/to/proxy",
-            // imagetools_toolbar: "imageoptions",
-            // imagetools_fetch_image: function(img) {
-            //   console.log("IMAGE", img);
-            //   return new tinymce.util.Promise(function(resolve) {
-            //     // Fetch the image and return a blob containing the image content
-            //     fetch(img.src, {
-            //       mode: "no-cors",
-            //       cache: "no-cache"
-            //     })
-            //       .then(res => res.blob())
-            //       .then(blob => resolve(blob));
-            //   });
-            // },
+            image_advtab: true,
 
             // Plugin Settings
             quickbars_insert_toolbar: false,
@@ -353,12 +341,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
 
             help_accessibility: false,
 
-            // powerpaste_word_import: "prompt",
-            // media_live_embeds: true,
-            image_advtab: true,
-
             // Allows for embeds with script tags
-            // extended_valid_elements: "script[src|async|defer|type|charset]",
             valid_elements: "*[*]",
 
             // Autoresizer does not work with the resize handle.
@@ -366,7 +349,6 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
             resize: false,
             min_height: EDITOR_HEIGHT,
             ...(effectiveCompact && { max_height: EDITOR_HEIGHT }),
-            // skin: false,
             skin_url: "/vendors/tinymce/skins/ui/Zesty",
             icon_url: "/vendors/tinymce/icons/material-rounded/icons.js",
             icons: "material-rounded",
@@ -396,13 +378,6 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
             #tinymce { margin: 16px; }\
             ul, ol { line-height: 24px; }`,
 
-            // init_instance_callback: (editor) => {
-            //   tinymce.DOM.styleSheetLoader
-            //     .load("/vendors/tinymce/skins/ui/Zesty/skin.min.css")
-            //     .then(() => editor.render());
-            //   console.log(editor.dom.st);
-            // },
-
             // Customize editor buttons and actions
             setup: (editor: any) => {
               editor.on("init", function () {
@@ -429,17 +404,6 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
                 }
               });
 
-              // In compact mode, intercept the fullscreen command before TinyMCE
-              // executes it. Cancel, capture latest content, then remount with the
-              // normal toolbar. The init handler re-enters fullscreen on the new mount.
-              editor.on("BeforeExecCommand", (evt: any) => {
-                if (evt.command === "mceFullScreen" && effectiveCompact) {
-                  evt.preventDefault();
-                  valueRef.current = editor.getContent();
-                  setIsFullscreen(true);
-                }
-              });
-
               // Limits the content width to 640px when in fullscreen
               editor.on("FullscreenStateChanged", (evt: any) => {
                 setIsFullscreen(evt.state);
@@ -459,15 +423,6 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
               if (onSave) {
                 editor.shortcuts.add("meta+s", "Save item", onSave);
               }
-
-              /**
-               * This does not work as the resizing action provides an element with the data attributes striped
-               * so we lose context on this image ZUID, preventing modify calls to the media service
-               */
-              // Request resized image from media service
-              // editor.on("ObjectResized", function(evt) {
-              //   evt.target.src = `http://svc.zesty.localdev:3007/media-resolver-service/resolve/${evt.target.dataset.id}/getimage/?w=${evt.width}&h=${evt.height}`;
-              // });
 
               /**
                * Zesty Media App
