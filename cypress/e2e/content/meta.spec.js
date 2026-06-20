@@ -152,14 +152,19 @@ describe("Content Meta", () => {
     const title = `Twitter title ${today}`;
     const description = `Twitter description ${today}`;
 
-    cy.getBySelector("TCTitle").find("input").type(`{selectAll}{del}${title}`);
+    cy.getBySelector("TCTitle")
+      .find("input")
+      .type(`{selectAll}{del}${title}`)
+      .should("have.value", title);
     cy.getBySelector("TCDescription")
       .find("textarea")
       .first()
-      .type(`{selectAll}{del}${description}`);
+      .type(`{selectAll}{del}${description}`)
+      .should("have.value", description);
     cy.getBySelector("SocialMediaPreviewTwitter")
       .should("exist")
       .should("be.enabled")
+      .scrollIntoView()
       .click();
 
     cy.getBySelector("TwitterCardTitle").contains(title);

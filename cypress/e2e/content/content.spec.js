@@ -640,7 +640,9 @@ describe("Content Specs", () => {
     });
   });
 
-  context("Repeater Field", () => {
+  // retries disabled: these tests are an ordered, testIsolation:false chain that
+  // mutates rows — a retry re-adds a row that already persisted, drifting counts.
+  context("Repeater Field", { retries: 0 }, () => {
     before(() => {
       cy.intercept("GET", "**/v1/content/models").as("getModels");
       cy.intercept("GET", "**/v1/content/models/*/fields**").as("getFields");
@@ -740,6 +742,11 @@ describe("Content Specs", () => {
         .clear()
         .type("https://zesty.io");
       cy.getBySelector("SaveRepeaterRowItemBtn").scrollIntoView().click();
+
+      // Wait for the grid to settle at 2 rows before reading eq(1).
+      cy.getBySelector("field:repeater")
+        .find(".MuiDataGrid-row")
+        .should("have.length", 2);
 
       // Verify old value
       cy.getBySelector("field:repeater")
