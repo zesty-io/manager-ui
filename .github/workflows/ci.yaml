@@ -38,6 +38,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
+      # Cap concurrent runners: the shared dev instance flakes under full 5x load
+      # (load-induced timeouts that don't reproduce locally). 2 keeps parallelism
+      # while staying within what the instance reliably handles.
+      max-parallel: 2
       matrix:
         split_index: [0, 1, 2, 3, 4]
 
