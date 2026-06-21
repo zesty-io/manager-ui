@@ -28,7 +28,10 @@ const cleanUp = () => {
   cy.task("cleanup:labels");
 };
 
-describe("Content Item Workflows", () => {
+// retries disabled: these tests are an ordered, testIsolation:false chain that
+// adds/applies workflow labels — a retry re-adds a label that already persisted,
+// drifting the active-label count.
+describe("Content Item Workflows", { retries: 0 }, () => {
   let ITEM = null;
   before(() => {
     cleanUp();
