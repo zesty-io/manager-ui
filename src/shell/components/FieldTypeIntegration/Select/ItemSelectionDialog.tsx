@@ -27,7 +27,7 @@ import {
   IntegrationKeyPaths,
   IntegrationTypes,
 } from "../../../services/types";
-import { ApiDataProps, ApiDataWithIdProps } from "../types";
+import { ApiDataProps } from "../types";
 import { DISPLAY_OPTIONS_CONFIG, LOADING_DATA } from "../constants";
 import DisplayCard from "../Shared/DisplayCard";
 import { NoResults } from "../../../../apps/schema/src/app/components/NoResults";
@@ -63,15 +63,15 @@ interface ItemSelectionDialogProps {
   maxItems?: number;
   open: boolean;
   onClose: () => void;
-  items: ApiDataWithIdProps[];
-  value: ApiDataWithIdProps[];
+  items: ApiDataProps[];
+  value: ApiDataProps[];
   config: IntegrationFieldConfig;
-  onSave: (value: ApiDataWithIdProps[]) => void;
+  onSave: (value: ApiDataProps[]) => void;
 }
 
 interface SyncItem {
   id: string | number;
-  data: ApiDataWithIdProps;
+  data: ApiDataProps;
 }
 
 const getItemRowHeight = (
@@ -79,7 +79,7 @@ const getItemRowHeight = (
   details?: string[]
 ): number => {
   if (type === "simple") return 60;
-  if (type === "details" && details?.length > 2)
+  if (type === "details" && !!details?.length && details?.length > 2)
     return 96 + (details.length - 1) * 20;
   return 96;
 };
@@ -120,11 +120,11 @@ const RenderRow = ({ data, index, style }: RenderRowProps) => {
   } = data;
   const item = items[index];
   const selectedIds = selectedItems.map((item) => item?._itemId);
-  const limitReached = selectedIds.length >= maxItems;
+  const limitReached = !!maxItems && selectedIds.length >= maxItems;
   const isSelected = selectedIds.includes(item?._itemId);
 
   const localItem =
-    value?.find((val) => val?.[keyPaths?.itemId] === item?._itemId) || null;
+    value?.find((val) => val?.[keyPaths?.itemId] === item?._itemId) || [];
   const remoteItemData = keyPathValuesToString(item, keyPaths);
   const localItemData = keyPathValuesToString(localItem, keyPaths);
   const hasUpdates = !!localItem && remoteItemData !== localItemData;
@@ -255,9 +255,9 @@ const ItemSelectionDialog = ({
 }: ItemSelectionDialogProps) => {
   const searchInputRef = useRef(null);
   const drawerContainerRef = useRef(null);
-  const [selectedItems, setSelectedItems] = useState(value);
+  const [selectedItems, setSelectedItems] = useState<ApiDataProps[]>(value);
   const [searchTerm, setSearchTerm] = useState("");
-  const [jsonViewData, setJsonViewData] = useState<ApiDataWithIdProps>(null);
+  const [jsonViewData, setJsonViewData] = useState<ApiDataProps | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [forSync, setForSync] = useState<SyncItem[]>([]);
 
@@ -276,7 +276,7 @@ const ItemSelectionDialog = ({
     itemsIdMap.has(item._itemId)
   );
 
-  const handleSelect = (item: ApiDataWithIdProps) => {
+  const handleSelect = (item: ApiDataProps) => {
     setSelectedItems((prev) => {
       const ids = prev.map((i) => i._itemId);
       return ids.includes(item?._itemId)
@@ -285,7 +285,7 @@ const ItemSelectionDialog = ({
     });
   };
 
-  const handleSync = (id: string | number, data: ApiDataWithIdProps) => {
+  const handleSync = (id: string | number, data: ApiDataProps) => {
     setForSync((prev: SyncItem[]) => {
       const existingIndex = prev.findIndex((item: SyncItem) => item.id === id);
       if (existingIndex !== -1) {
@@ -304,7 +304,9 @@ const ItemSelectionDialog = ({
       ? selectedItems
       : selectedItems.map((item) => {
           const syncItem = forSync.find(
-            (sync) => sync.id === item?.[config?.keyPaths?.itemId]
+            (sync) =>
+              !!config?.keyPaths?.itemId &&
+              sync.id === item?.[config?.keyPaths?.itemId]
           );
           return syncItem?.data || item;
         });
@@ -313,7 +315,7 @@ const ItemSelectionDialog = ({
     onClose();
   };
 
-  const handleView = (data: ApiDataWithIdProps) => {
+  const handleView = (data: ApiDataProps) => {
     setJsonViewData(data);
     setIsDrawerOpen(true);
   };
@@ -330,7 +332,7 @@ const ItemSelectionDialog = ({
     const filtered = items.filter((item) => {
       const searchString = validKeys
         ?.map((itemKey) => {
-          const value = get(item, itemKey);
+          const value = !itemKey ? null : get(item, itemKey);
           return typeof value === "string" ? value.trim() : "";
         })
         .join("\n")

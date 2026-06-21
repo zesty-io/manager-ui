@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import { Box } from "@mui/material";
-import { ApiDataWithIdProps } from "../types";
+import { ApiDataProps } from "../types";
 import { IntegrationFieldConfig } from "../../../services/types";
 import Draggable from "./Draggable";
 import { get } from "lodash";
@@ -12,7 +12,7 @@ const SelectedListItems = ({
   config,
   onChange,
 }: {
-  items: ApiDataWithIdProps[];
+  items: ApiDataProps[];
   config: IntegrationFieldConfig;
   onChange: (items: any[]) => void;
 }) => {
@@ -61,10 +61,10 @@ const SelectedListItems = ({
             >
               <DisplayCard
                 type={config?.type}
-                heading={get(item, config?.keyPaths?.heading || null)}
-                subHeading={get(item, config?.keyPaths?.subHeading || null)}
-                thumbnail={get(item, config?.keyPaths?.thumbnail || null)}
-                detail={get(item, config?.keyPaths?.detail || null)}
+                heading={get(item, config?.keyPaths?.heading)}
+                subHeading={get(item, config?.keyPaths?.subHeading)}
+                thumbnail={get(item, config?.keyPaths?.thumbnail)}
+                detail={get(item, config?.keyPaths?.detail)}
                 details={
                   config?.type !== "details"
                     ? null

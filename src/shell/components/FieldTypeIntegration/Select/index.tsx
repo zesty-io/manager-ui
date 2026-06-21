@@ -1,10 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Box, Button } from "@mui/material";
-import { ApiDataProps, ApiDataWithIdProps } from "../types";
-import {
-  IntegrationFieldConfig,
-  IntegrationKeyPaths,
-} from "../../../services/types";
+import { ApiDataProps } from "../types";
+import { IntegrationFieldConfig } from "../../../services/types";
 import AddIcon from "@mui/icons-material/Add";
 import ItemSelectionDialog from "./ItemSelectionDialog";
 import SelectedListItems from "./SelectedListItems";
@@ -32,7 +29,7 @@ const IntegrationFieldSelect = ({
   const { data: apiData, status, fetchApiData } = useIntegrationField();
 
   const [open, setOpen] = useState(false);
-  const [selectedItems, setSelectedItems] = useState<ApiDataWithIdProps[]>(
+  const [selectedItems, setSelectedItems] = useState<ApiDataProps[]>(
     value?.map((item) => ({
       ...item,
       _itemId: item?.[config?.keyPaths?.itemId],
@@ -52,7 +49,7 @@ const IntegrationFieldSelect = ({
     setOpen(true);
   };
 
-  const handleSave = (items: ApiDataWithIdProps[]) => {
+  const handleSave = (items: ApiDataProps[]) => {
     onChange(
       items?.map((item) => {
         const { _itemId, ...restItems } = item;
@@ -61,7 +58,7 @@ const IntegrationFieldSelect = ({
     );
   };
 
-  const items: ApiDataWithIdProps[] = useMemo(() => {
+  const items: ApiDataProps[] = useMemo(() => {
     if (isLoading || !apiData || isError) return [];
     const data =
       (!config?.keyPaths?.rootPath

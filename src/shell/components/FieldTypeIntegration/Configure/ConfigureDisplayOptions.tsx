@@ -31,66 +31,50 @@ import { IntegrationKeyPaths, IntegrationTypes } from "../../../services/types";
 import KeyPathSelector from "./KeyPathSelector";
 import DisplayCard from "../Shared/DisplayCard";
 
-const getObjectKeyPaths = <T extends object>(obj: T, prefix = ""): string[] => {
-  const result: string[] = [];
+const isObj = (v: unknown): v is object => typeof v === "object" && v !== null;
 
-  for (const key in obj) {
-    if (Object.prototype.hasOwnProperty.call(obj, key)) {
-      const currentKey = prefix ? `${prefix}.${key}` : key;
-      const value = (obj as Record<string, unknown>)[key];
-
-      if (typeof value === "object" && value !== null) {
-        if (Array.isArray(value)) {
-          value.forEach((arrayElement, index) => {
-            const arrayKey = `${currentKey}[${index}]`;
-            if (typeof arrayElement === "object" && arrayElement !== null) {
-              result.push(...getObjectKeyPaths(arrayElement, arrayKey));
-            } else {
-              result.push(arrayKey);
-            }
-          });
-        } else {
-          result.push(...getObjectKeyPaths(value, currentKey));
-        }
-      } else {
-        result.push(currentKey);
-      }
+const getObjectKeyPaths = (obj: object): string[] => {
+  const acc: string[] = [];
+  const walk = (node: object, prefix: string): void => {
+    const arr = Array.isArray(node);
+    for (const key in node) {
+      if (!Object.prototype.hasOwnProperty.call(node, key)) continue;
+      const value = (node as Record<string, unknown>)[key];
+      const path = prefix
+        ? arr
+          ? `${prefix}[${key}]`
+          : `${prefix}.${key}`
+        : key;
+      if (isObj(value)) walk(value, path);
+      else acc.push(path);
     }
-  }
-
-  return result;
+  };
+  walk(obj, "");
+  return acc;
 };
 
-const getAllArrayKeyPaths = <T extends object>(
-  obj: T,
-  prefix = ""
-): string[] => {
-  const result: string[] = [];
-
-  for (const key in obj) {
-    if (Object.prototype.hasOwnProperty.call(obj, key)) {
-      const currentKey = prefix ? `${prefix}.${key}` : key;
-      const value = (obj as Record<string, unknown>)[key];
-
+const getAllArrayKeyPaths = (obj: object): string[] => {
+  const acc: string[] = [];
+  const walk = (node: object, prefix: string): void => {
+    const arr = Array.isArray(node);
+    for (const key in node) {
+      if (!Object.prototype.hasOwnProperty.call(node, key)) continue;
+      const value = (node as Record<string, unknown>)[key];
+      const path = prefix
+        ? arr
+          ? `${prefix}[${key}]`
+          : `${prefix}.${key}`
+        : key;
       if (Array.isArray(value)) {
-        if (value.length > 0 && typeof value[0] === "object") {
-          result.push(currentKey);
-        }
-
-        value.forEach((item, index) => {
-          if (typeof item === "object" && item !== null) {
-            result.push(
-              ...getAllArrayKeyPaths(item, `${currentKey}[${index}]`)
-            );
-          }
-        });
-      } else if (typeof value === "object" && value !== null) {
-        result.push(...getAllArrayKeyPaths(value, currentKey));
+        if (value.some(isObj)) acc.push(path);
+        walk(value, path);
+      } else if (isObj(value)) {
+        walk(value, path);
       }
     }
-  }
-
-  return result;
+  };
+  walk(obj, "");
+  return acc;
 };
 
 const ConfigureDisplayOptions = ({
@@ -146,7 +130,7 @@ const ConfigureDisplayOptions = ({
     if (!apiData || rootData) return;
 
     if (rootPath) {
-      const dataRoot = get(apiData, rootPath)[0];
+      const dataRoot = get(apiData, rootPath)?.[0];
       const optionsRaw = getObjectKeyPaths(dataRoot);
       setRootData(dataRoot);
       setRootPathOptions(optionsRaw);
@@ -261,7 +245,7 @@ const ConfigureDisplayOptions = ({
                     options={apiPathOptions}
                     placeholder="Select Data Path"
                     onChange={(value) => {
-                      const rootDataRaw = get(apiData, value)[0];
+                      const rootDataRaw = get(apiData, value)?.[0];
                       const rootPathOptionsRaw = getObjectKeyPaths(rootDataRaw);
                       setRootData(rootDataRaw);
                       setRootPathOptions(rootPathOptionsRaw);
@@ -420,6 +404,7 @@ const ConfigureDisplayOptions = ({
                   value: !keyPath ? "" : get(rootData, keyPath),
                 }))}
                 showPlayIcon={false}
+                showPlaceholders
               />
               <MoreHoriz color="action" sx={{ m: 1.75 }} />
             </Paper>

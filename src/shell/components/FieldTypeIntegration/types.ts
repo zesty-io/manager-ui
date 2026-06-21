@@ -17,14 +17,12 @@ export type ApiResponse<T> = {
 
 export type ApiDataProps = Record<string, any>;
 
-export type ApiDataWithIdProps = ApiDataProps & { _itemId: string };
-
 export type ListItemDataProps = {
   type: IntegrationTypes;
-  items: ApiDataWithIdProps[];
-  selectedItems: ApiDataWithIdProps[];
+  items: ApiDataProps[];
+  selectedItems: ApiDataProps[];
   keyPaths: IntegrationKeyPaths;
-  onSelect: (item: ApiDataWithIdProps) => void;
+  onSelect: (item: ApiDataProps) => void;
   maxItems?: number;
   onDelete?: (id: string) => void;
   onView?: (data: any) => void;
