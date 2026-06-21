@@ -25,7 +25,7 @@ const LABEL_DATA = {
   },
 };
 const cleanUp = () => {
-  cy.task("cleanup:labels", [TITLES.publishLabel, TITLES.testLabel]);
+  cy.task("cleanup:labels");
 };
 
 describe("Content Item Workflows", () => {
@@ -55,6 +55,9 @@ describe("Content Item Workflows", () => {
   });
 
   it("Can add a workflow label", () => {
+    // Intercept must be registered before the click that fires the PUT.
+    cy.intercept("PUT", "**/labels/*").as("updateLabel");
+
     ContentItemPage.elements.versionSelector().should("exist").click();
     ContentItemPage.elements.addWorkflowStatusLabel().should("exist").click();
     ContentItemPage.elements
@@ -65,8 +68,9 @@ describe("Content Item Workflows", () => {
 
     cy.get("body").type("{esc}");
 
-    cy.intercept("PUT", "**/labels/*").as("updateLabel");
-    cy.wait("@updateLabel");
+    cy.wait("@updateLabel")
+      .its("response.statusCode")
+      .should("be.oneOf", [200, 201]);
 
     cy.reload();
 
@@ -126,27 +130,28 @@ describe("Content Item Workflows", () => {
   });
 
   it("Can publish a content item if label with allowPublish is applied", () => {
+    // Intercept must be registered before the click that fires the PUT.
+    cy.intercept("PUT", "**/labels/*").as("updateLabel");
+
     cy.reload();
     ContentItemPage.elements.versionSelector().should("exist").click();
     ContentItemPage.elements.addWorkflowStatusLabel().should("exist").click();
     ContentItemPage.elements
       .workflowStatusLabelOption()
-      .contains(`Publish Approval - ${NOW}`)
+      .contains(TITLES.publishLabel)
       .should("exist")
       .click({ force: true });
 
     cy.get("body").type("{esc}");
 
-    cy.intercept("PUT", "**/labels/*").as("updateLabel");
-    cy.wait("@updateLabel");
+    cy.wait("@updateLabel")
+      .its("response.statusCode")
+      .should("be.oneOf", [200, 201]);
 
     cy.reload();
 
     ContentItemPage.elements.publishItemButton().should("exist").click();
     ContentItemPage.elements.confirmPublishItemButton().should("exist").click();
-
-    cy.intercept("GET", "**/publishings").as("publish");
-    cy.wait("@publish");
 
     ContentItemPage.elements.contentPublishedIndicator().should("exist");
   });

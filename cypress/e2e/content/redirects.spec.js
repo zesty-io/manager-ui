@@ -111,6 +111,8 @@ const REDIRECT_PATHS = [
   ...REDIRECTS.map((item) => item.path),
   ADD_REDIRECTS?.path,
   EDIT_REDIRECTS?.path,
+  // Content-item redirect paths, so a lingering one doesn't cause a duplicate 400.
+  ...CONTENT_ITEMS.map((item) => item?.web?.pathPart),
 ];
 
 describe("Content item redirects", () => {
@@ -118,6 +120,7 @@ describe("Content item redirects", () => {
     deleteTestContents();
     deleteTestRedirects();
     createTestContents();
+    waitForRedirectsIndexed();
   });
   after(() => {
     deleteTestContents();
@@ -333,6 +336,21 @@ function createTestContents() {
   });
 }
 
+function waitForRedirectsIndexed(attempts = 30) {
+  cy.apiRequest({
+    url: `${API_ENDPOINTS.devInstance}/web/redirects`,
+  }).then(({ data }) => {
+    const allPresent = REDIRECTS.every((redirect) =>
+      data?.some(
+        (item) => item?.path?.replace(/^\/|\/$/g, "") === redirect.path
+      )
+    );
+    if (!allPresent && attempts > 0) {
+      waitForRedirectsIndexed(attempts - 1);
+    }
+  });
+}
+
 function createTestRedirects(ZUID) {
   REDIRECTS.forEach((redirect) => {
     const data = {
@@ -391,6 +409,6 @@ function awaitRedirectsData(path) {
 
   cy.visit(path);
   cy.wait(["@getModels", "@getPublishings", "@getRedirects"], {
-    requestTimeout: 10000,
+    requestTimeout: 30000,
   });
 }

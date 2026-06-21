@@ -462,7 +462,7 @@ Cypress.Commands.add("cleanTestData", function () {
     TEST_DATA?.temp3?.name,
   ];
 
-  cy.apiRequest({ url: `${INSTANCE_API}/env/labels?showDeleted=true` }).then(
+  cy.apiRequest({ url: `${INSTANCE_API}/env/labels` }).then(
     (response) => {
       response?.data
         ?.filter(

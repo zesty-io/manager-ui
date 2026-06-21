@@ -152,22 +152,29 @@ describe("Content Meta", () => {
     const title = `Twitter title ${today}`;
     const description = `Twitter description ${today}`;
 
-    cy.getBySelector("TCTitle").find("input").type(`{selectAll}{del}${title}`);
+    cy.getBySelector("TCTitle")
+      .find("input")
+      .type(`{selectAll}{del}${title}`)
+      .should("have.value", title);
     cy.getBySelector("TCDescription")
       .find("textarea")
       .first()
-      .type(`{selectAll}{del}${description}`);
+      .type(`{selectAll}{del}${description}`)
+      .should("have.value", description);
     cy.getBySelector("SocialMediaPreviewTwitter")
       .should("exist")
       .should("be.enabled")
+      .scrollIntoView()
       .click();
 
     cy.getBySelector("TwitterCardTitle").contains(title);
     cy.getBySelector("TwitterCardDescription").contains(description);
-    cy.getBySelector("TwitterCardImage").should(
-      "have.attr",
-      "src",
-      "https://wave-trial.getbynder.com/m/45b0d3ba0b271504/original/kim-cruickshanks-176374.jpg"
-    );
+    cy.getBySelector("TwitterCardImage")
+      .scrollIntoView()
+      .should(
+        "have.attr",
+        "src",
+        "https://wave-trial.getbynder.com/m/45b0d3ba0b271504/original/kim-cruickshanks-176374.jpg"
+      );
   });
 });
