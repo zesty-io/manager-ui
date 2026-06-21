@@ -46,15 +46,35 @@ for (const file of findJsonl(root)) {
     const spec = (e.spec || "").replace(/^.*cypress\/e2e\//, "cypress/e2e/");
     const key = `${spec} :: ${e.test}`;
     const rec =
-      byTest.get(key) || { reasons: new Set(), statuses: new Set(), urls: new Set(), err: "" };
+      byTest.get(key) || {
+        reasons: new Set(),
+        statuses: new Set(),
+        urls: new Set(),
+        endpoints: new Set(),
+        err: "",
+      };
     if (e.reason) rec.reasons.add(e.reason);
     for (const r of e.responses || []) {
       if (r.status) rec.statuses.add(r.status);
       if (r.url) rec.urls.add(String(r.url).replace(/\?.*$/, ""));
     }
+    // Slow / hanging / errored endpoints — the actionable detail for the BE team.
+    for (const ep of e.pendingEndpoints || []) rec.endpoints.add(`${ep} (no response)`);
+    for (const ep of e.slowEndpoints || []) rec.endpoints.add(ep);
+    for (const u of e.urlInError || [])
+      rec.endpoints.add(String(u).replace(/\?.*$/, ""));
+    for (const u of rec.urls) rec.endpoints.add(u);
     if (e.errorSnippet && !rec.err) rec.err = e.errorSnippet;
     byTest.set(key, rec);
     specs.add(spec);
+  }
+}
+
+// Aggregate the worst endpoints across all failures for a quick BE summary.
+const endpointCounts = new Map();
+for (const rec of byTest.values()) {
+  for (const ep of rec.endpoints) {
+    endpointCounts.set(ep, (endpointCounts.get(ep) || 0) + 1);
   }
 }
 
@@ -73,14 +93,32 @@ lines.push(
     `not test or app bugs — **escalate to the backend team and re-run** before triaging these specs.`
 );
 lines.push("");
+
+// Endpoints to hand the backend team, ranked by how many failures they touched.
+if (endpointCounts.size) {
+  lines.push("### Endpoints to investigate (for the backend team)");
+  lines.push("");
+  lines.push("| Endpoint | Failures touched |");
+  lines.push("| --- | --- |");
+  for (const [ep, n] of [...endpointCounts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 15)) {
+    lines.push(`| ${ep.replace(/\|/g, "\\|")} | ${n} |`);
+  }
+  lines.push("");
+}
+
+lines.push("### Failing tests");
+lines.push("");
 lines.push("| Test | Reason | Status / detail |");
 lines.push("| --- | --- | --- |");
 for (const [key, rec] of [...byTest.entries()].slice(0, 50)) {
   const detail =
     [...rec.statuses].join(", ") ||
+    [...rec.endpoints].slice(0, 2).join("; ") ||
     (rec.err ? rec.err.replace(/\|/g, "\\|").slice(0, 90) : "");
   lines.push(
-    `| ${key.replace(/\|/g, "\\|")} | ${[...rec.reasons].join(", ")} | ${detail} |`
+    `| ${key.replace(/\|/g, "\\|")} | ${[...rec.reasons].join(", ")} | ${detail.replace(/\|/g, "\\|").slice(0, 120)} |`
   );
 }
 if (byTest.size > 50) lines.push(`| _…and ${byTest.size - 50} more_ | | |`);
