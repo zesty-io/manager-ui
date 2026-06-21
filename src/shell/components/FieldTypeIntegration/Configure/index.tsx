@@ -53,8 +53,7 @@ const IntegrationFieldConfigure = ({
   );
   const [apiData, setApiData] = useState<any | null>(null);
 
-  const isConnected =
-    !!integrationFieldConfig?.endpoint && !!integrationFieldConfig?.type;
+  const isConnected = !!endpoint && !!type;
   const isFetchingApiData = status === "connecting";
 
   const onSave = useCallback(() => {
@@ -69,8 +68,12 @@ const IntegrationFieldConfigure = ({
   }, [endpoint, headers, type, keyPaths, onChange]);
 
   const onClose = useCallback(() => {
+    setEndpoint(integrationFieldConfig?.endpoint || "");
+    setHeaders(integrationFieldConfig?.headers || null);
+    setType(integrationFieldConfig?.type || null);
+    setKeyPaths(integrationFieldConfig?.keyPaths || null);
     setIsFormOpen(false);
-  }, []);
+  }, [integrationFieldConfig]);
 
   const onOpen = useCallback(() => {
     setIsFormOpen(true);
