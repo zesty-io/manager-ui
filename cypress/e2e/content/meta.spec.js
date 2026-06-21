@@ -169,10 +169,12 @@ describe("Content Meta", () => {
 
     cy.getBySelector("TwitterCardTitle").contains(title);
     cy.getBySelector("TwitterCardDescription").contains(description);
-    cy.getBySelector("TwitterCardImage").should(
-      "have.attr",
-      "src",
-      "https://wave-trial.getbynder.com/m/45b0d3ba0b271504/original/kim-cruickshanks-176374.jpg"
-    );
+    cy.getBySelector("TwitterCardImage")
+      .scrollIntoView()
+      .should(
+        "have.attr",
+        "src",
+        "https://wave-trial.getbynder.com/m/45b0d3ba0b271504/original/kim-cruickshanks-176374.jpg"
+      );
   });
 });
