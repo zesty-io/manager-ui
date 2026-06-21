@@ -639,6 +639,7 @@ describe("Content Specs", () => {
   context("Repeater Field", () => {
     before(() => {
       cy.intercept("GET", "**/v1/content/models").as("getModels");
+      cy.intercept("GET", "**/v1/content/models/*/fields**").as("getFields");
       cy.intercept("GET", "**/v1/content/items/publishings**").as(
         "getPublishings"
       );
@@ -646,7 +647,7 @@ describe("Content Specs", () => {
       cy.visit(
         `/content/${Cypress.env("modelZUID")}/${Cypress.env("itemZUID")}`
       );
-      cy.wait(["@getModels", "@getPublishings"]);
+      cy.wait(["@getModels", "@getPublishings", "@getFields"]);
 
       cy.getBySelector("DuoModeToggle").should("exist").click(forceClick);
     });
