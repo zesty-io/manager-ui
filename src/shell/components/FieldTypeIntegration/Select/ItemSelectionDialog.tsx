@@ -217,6 +217,7 @@ const RenderRow = ({ data, index, style }: RenderRowProps) => {
             !!hasUpdates && (
               <Tooltip title="Resync Values">
                 <IconButton
+                  data-cy="integrationResyncButton"
                   color="primary"
                   size="small"
                   onClick={() => onSync(item?._itemId, item)}
