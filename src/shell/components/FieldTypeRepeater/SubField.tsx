@@ -111,6 +111,11 @@ export const SubField = memo(
       field.settings?.maxCharLimit || MaxLengths[field.datatype];
     const minLength = field.settings?.minCharLimit || 0;
     const hasError = errors && Object.values(errors)?.some((error) => !!error);
+    const parsedDate = (() => {
+      if (!value) return null;
+      const d = new Date((value as string) + "T00:00:00");
+      return isValid(d) ? d : null;
+    })();
     let content: JSX.Element;
 
     switch (field.datatype) {
@@ -536,11 +541,7 @@ export const SubField = memo(
             <FieldTypeDate
               name={field.name}
               required={field.required}
-              value={(() => {
-                if (!value) return null;
-                const dateValue = new Date(value + "T00:00:00");
-                return isValid(dateValue) ? dateValue : null;
-              })()}
+              value={parsedDate}
               onChange={(date) => {
                 onChange(date ? format(date, "yyyy-MM-dd") : null, field.name);
               }}

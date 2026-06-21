@@ -73,11 +73,7 @@ export const RowDialog = ({
   // Set default values for the fields
   useEffect(() => {
     if (isUpdate) {
-      // formData is already seeded synchronously in useState above.
-      // Only bump version here — it remounts FieldTypeTinyMCE on dialog open.
-      // Re-syncing editRowData is unnecessary: this dialog is conditionally
-      // mounted, so it unmounts and remounts on each open and editRowData
-      // cannot change while the dialog is alive.
+      // bump version to remount FieldTypeTinyMCE on dialog open
       setVersion((prev) => prev + 1);
     } else {
       setFormData(getInitialFormData());
