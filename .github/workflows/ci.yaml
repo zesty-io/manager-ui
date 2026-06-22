@@ -32,18 +32,17 @@ jobs:
       - name: Delete Old Screenshots
         run: gsutil rm gs://cypress_screenshots/* || true
 
-  # Runners 0-3 split the non-global specs (SPLIT=4); runner 4 = global-state specs.
+  # Non-global specs, split 4 ways and run concurrently. The heavy global-state
+  # specs run separately (run_global_tests) AFTER these, alone, so they never run
+  # alongside other state mutators — which was the remaining source of flakiness.
   run_tests:
     needs: setup
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      # Cap concurrent runners: the shared dev instance flakes under full 5x load
-      # (load-induced timeouts that don't reproduce locally). 2 keeps parallelism
-      # while staying within what the instance reliably handles.
-      max-parallel: 2
+      max-parallel: 4
       matrix:
-        split_index: [0, 1, 2, 3, 4]
+        split_index: [0, 1, 2, 3]
 
     steps:
       - name: Checkout Repo
@@ -67,7 +66,6 @@ jobs:
       - name: Setup Testing Environment
         run: npm run ci:test:setup
       - name: Run Tests
-        if: matrix.split_index != 4
         run: npm run ci
         env:
           CYPRESS_COVERAGE: "true"
@@ -76,15 +74,6 @@ jobs:
           SPLIT_INDEX: ${{ matrix.split_index }}
           SPLIT_FILE: timings.json
           SKIP_SPEC: "cypress/e2e/content/actions.spec.js,cypress/e2e/content/list.spec.js,cypress/e2e/content/redirects.spec.js,cypress/e2e/content/workflows.spec.js,cypress/e2e/settings/workflows.spec.js,cypress/e2e/seo/redirects/redirects.spec.js"
-      - name: Run Tests
-        if: matrix.split_index == 4
-        run: npm run ci
-        env:
-          CYPRESS_COVERAGE: "true"
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          SPLIT: 1
-          SPLIT_INDEX: 0
-          SPEC: "cypress/e2e/content/actions.spec.js,cypress/e2e/content/list.spec.js,cypress/e2e/content/redirects.spec.js,cypress/e2e/content/workflows.spec.js,cypress/e2e/settings/workflows.spec.js,cypress/e2e/seo/redirects/redirects.spec.js"
       # Rename so artifacts from each runner have unique filenames and don't overwrite each other.
       - name: Rename Coverage Output
         if: ${{ success() }}
@@ -125,26 +114,93 @@ jobs:
           path: backend-markers/
           if-no-files-found: ignore
 
-  # Aggregates all matrix runner results into a single status check.
+  # Global-state specs (publish, labels, redirects). These mutate shared instance
+  # state, so they run as a single job AFTER run_tests completes — alone, never
+  # concurrently with another state mutator. Artifacts use index 4 so the existing
+  # backend-markers-*/coverage-*/timings-partial-* globs pick them up.
+  run_global_tests:
+    needs: run_tests
+    runs-on: ubuntu-latest
+    if: ${{ !cancelled() }}
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4.1.0
+        with:
+          node-version: "22.19.0"
+          cache: "npm"
+          cache-dependency-path: package-lock.json
+      - name: Install Dependencies
+        run: npm install --legacy-peer-deps
+      - name: Auth with Gcloud
+        uses: google-github-actions/auth@v0
+        with:
+          credentials_json: ${{ secrets.GCP_DEV_SA_KEY }}
+      - name: Set up Gcloud SDK
+        uses: google-github-actions/setup-gcloud@v0
+        with:
+          project_id: zesty-dev
+      - name: Setup Testing Environment
+        run: npm run ci:test:setup
+      - name: Run Tests
+        run: npm run ci
+        env:
+          CYPRESS_COVERAGE: "true"
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SPLIT: 1
+          SPLIT_INDEX: 0
+          SPEC: "cypress/e2e/content/actions.spec.js,cypress/e2e/content/list.spec.js,cypress/e2e/content/redirects.spec.js,cypress/e2e/content/workflows.spec.js,cypress/e2e/settings/workflows.spec.js,cypress/e2e/seo/redirects/redirects.spec.js"
+      - name: Rename Coverage Output
+        if: ${{ success() }}
+        run: |
+          if [ -f .nyc_output/out.json ]; then
+            mv .nyc_output/out.json .nyc_output/out-4.json
+          fi
+      - name: Upload Coverage
+        uses: actions/upload-artifact@v4
+        if: ${{ success() }}
+        with:
+          name: coverage-4
+          path: .nyc_output/out-4.json
+      - name: Upload Screenshots
+        if: ${{ failure() }}
+        run: ./ci/scripts/upload_debug_screenshots_to_gcp.sh
+      - name: Rename Backend Markers
+        if: always()
+        run: |
+          if [ -f results/backend-5xx.jsonl ]; then
+            mkdir -p backend-markers
+            cp results/backend-5xx.jsonl backend-markers/backend-5xx-4.jsonl
+          fi
+      - name: Upload Backend Markers
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-markers-4
+          path: backend-markers/
+          if-no-files-found: ignore
+
+  # Aggregates all runner results into a single status check.
   # Branch protection should require this job, not run_tests, because matrix jobs
   # produce individual checks (run_tests (0), run_tests (1), …) — never a single run_tests check.
   all_tests_passed:
-    needs: run_tests
+    needs: [run_tests, run_global_tests]
     runs-on: ubuntu-latest
     if: always()
     steps:
-      - name: Check matrix results
+      - name: Check results
         run: |
-          if [ "${{ needs.run_tests.result }}" != "success" ]; then
+          if [ "${{ needs.run_tests.result }}" != "success" ] || [ "${{ needs.run_global_tests.result }}" != "success" ]; then
             echo "One or more test runners failed or were cancelled"
             exit 1
           fi
 
   # On failure, flag in the run summary whether it was backend-caused (5xx/timeouts).
   backend_health:
-    needs: run_tests
+    needs: [run_tests, run_global_tests]
     runs-on: ubuntu-latest
-    if: ${{ always() && needs.run_tests.result != 'success' }}
+    if: ${{ always() && (needs.run_tests.result != 'success' || needs.run_global_tests.result != 'success') }}
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
@@ -172,7 +228,7 @@ jobs:
   # Download the artifact after CI runs and commit timings.json to the repo to enable
   # runtime-based spec distribution on subsequent runs.
   merge_timings:
-    needs: run_tests
+    needs: [run_tests, run_global_tests]
     runs-on: ubuntu-latest
     if: always()
 
@@ -206,7 +262,7 @@ jobs:
   # Merges coverage output from all 4 runners and posts a single comment on the PR.
   # nyc report reads all out-N.json files in .nyc_output/ and merges them automatically.
   coverage:
-    needs: run_tests
+    needs: [run_tests, run_global_tests]
     runs-on: ubuntu-latest
     if: ${{ success() }}
 
