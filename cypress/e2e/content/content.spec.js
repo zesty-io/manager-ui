@@ -679,7 +679,8 @@ describe("Content Specs", () => {
       cy.getBySelector("subfield:single_line_text")
         .find("input")
         .clear()
-        .type("single line text value");
+        .type("single line text value")
+        .should("have.value", "single line text value");
       cy.iframe("#wysiwyg_ifr").click().type("wysiwyg text value");
       cy.getBySelector("subfield:markdown")
         .find("textarea")
@@ -717,9 +718,16 @@ describe("Content Specs", () => {
         .click();
       cy.get(".MuiAutocomplete-option").first().click();
 
-      cy.getBySelector("subfield:sort").find("input").clear().type("99");
+      cy.getBySelector("subfield:sort")
+        .find("input")
+        .clear()
+        .type("99")
+        .should("have.value", "99");
 
-      cy.getBySelector("SaveRepeaterRowItemBtn").scrollIntoView().click();
+      cy.getBySelector("SaveRepeaterRowItemBtn")
+        .scrollIntoView()
+        .should("be.enabled")
+        .click();
       cy.getBySelector("field:repeater")
         .find(".MuiDataGrid-row")
         .should("have.length", 1);
@@ -729,19 +737,26 @@ describe("Content Specs", () => {
       const oldValue = "update my value";
       const updatedValue = "I am now updated";
 
-      // Add a new row item
+      // Add a new row item. Assert the inputs actually committed before saving —
+      // under load the save could fire before the typed values registered, leaving
+      // a required field empty so the row was never added (grid stuck at 1 row).
       cy.getBySelector("AddRepeaterRowItemBtn")
         .scrollIntoView()
         .click(forceClick);
       cy.getBySelector("subfield:single_line_text")
         .find("input")
         .clear()
-        .type(oldValue);
+        .type(oldValue)
+        .should("have.value", oldValue);
       cy.getBySelector("subfield:url")
         .find("input")
         .clear()
-        .type("https://zesty.io");
-      cy.getBySelector("SaveRepeaterRowItemBtn").scrollIntoView().click();
+        .type("https://zesty.io")
+        .should("have.value", "https://zesty.io");
+      cy.getBySelector("SaveRepeaterRowItemBtn")
+        .scrollIntoView()
+        .should("be.enabled")
+        .click();
 
       // Wait for the grid to settle at 2 rows before reading eq(1).
       cy.getBySelector("field:repeater")
