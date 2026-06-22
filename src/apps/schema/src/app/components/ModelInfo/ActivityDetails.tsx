@@ -6,12 +6,14 @@ import { isValid } from "date-fns";
 import { useGetUsersQuery } from "../../../../../../shell/services/accounts";
 import { useState } from "react";
 import { MD5 } from "../../../../../../utility/md5";
+import { useTranslation } from "react-i18next";
 
 type Params = {
   id: string;
 };
 
 export const ActivityDetails = () => {
+  const { t } = useTranslation();
   const params = useParams<Params>();
   const { id } = params;
   const history = useHistory();
@@ -57,10 +59,10 @@ export const ActivityDetails = () => {
   return (
     <Box>
       <Typography variant="h5" fontWeight={600}>
-        Activity Details
+        {t("schema.activityDetails")}
       </Typography>
       <Typography color="text.secondary" sx={{ mt: 0.5, mb: 2 }}>
-        Learn when the model was created, updated, and by whom
+        {t("schema.activityDetailsSubtitle")}
       </Typography>
       <Box
         borderRadius="8px"
@@ -77,7 +79,9 @@ export const ActivityDetails = () => {
           }}
         >
           <Box minWidth={280}>
-            <Typography color="text.primary">Created On</Typography>
+            <Typography color="text.primary">
+              {t("schema.createdOn")}
+            </Typography>
           </Box>
           <Box flex={1}>
             <Typography>{createdOn}</Typography>
@@ -93,7 +97,9 @@ export const ActivityDetails = () => {
           }}
         >
           <Box minWidth={280}>
-            <Typography color="text.primary">Created By</Typography>
+            <Typography color="text.primary">
+              {t("common.createdBy")}
+            </Typography>
           </Box>
           <Box flex={1} display="flex" gap={1.5} alignItems="center">
             <Avatar
@@ -111,7 +117,7 @@ export const ActivityDetails = () => {
               onClick={() => handleCopy(createdByUser?.email)}
               size="small"
             >
-              {isCopied ? "Copied!" : "Copy Email"}
+              {isCopied ? t("common.copied") : t("schema.copyEmail")}
             </Button>
           </Box>
         </Box>
@@ -124,7 +130,9 @@ export const ActivityDetails = () => {
           }}
         >
           <Box minWidth={280}>
-            <Typography color="text.primary">Last Updated On</Typography>
+            <Typography color="text.primary">
+              {t("schema.lastUpdatedOn")}
+            </Typography>
           </Box>
           <Box flex={1}>
             <Typography>{updatedOn}</Typography>
@@ -132,7 +140,9 @@ export const ActivityDetails = () => {
         </Box>
         <Box display="flex" alignItems="center" px={2} py={1.5}>
           <Box minWidth={280}>
-            <Typography color="text.primary">Last Updated By</Typography>
+            <Typography color="text.primary">
+              {t("schema.lastUpdatedBy")}
+            </Typography>
           </Box>
           <Box flex={1} display="flex" gap={1.5} alignItems="center">
             <Avatar
@@ -150,7 +160,7 @@ export const ActivityDetails = () => {
               onClick={() => handleCopy(updatedByUser?.email)}
               size="small"
             >
-              {isCopied ? "Copied!" : "Copy Email"}
+              {isCopied ? t("common.copied") : t("schema.copyEmail")}
             </Button>
           </Box>
         </Box>
@@ -161,7 +171,7 @@ export const ActivityDetails = () => {
         variant="outlined"
         onClick={() => history.push(`/reports/activity-log/resources/${id}`)}
       >
-        View All Activity
+        {t("schema.viewAllActivity")}
       </Button>
     </Box>
   );

@@ -42,7 +42,8 @@ export const UpdateParentModelDialogue = ({ onClose, model }: Props) => {
       dispatch(
         notify({
           // @ts-ignore
-          message: error?.data?.error || "Failed to update description",
+          message:
+            error?.data?.error || t("schema.updateDescriptionFailedNotify"),
           kind: "warn",
         })
       );
@@ -66,11 +67,10 @@ export const UpdateParentModelDialogue = ({ onClose, model }: Props) => {
           <DriveFileRenameOutlineRounded color="info" />
         </Box>
         <Typography variant="h5" fontWeight={700} mt={1.5}>
-          Update Model Parent
+          {t("schema.updateParentDialogTitle")}
         </Typography>
         <Typography variant="body2" sx={{ mt: 1 }} color="text.secondary">
-          Selecting a parent affects default routing and content navigation in
-          the UI.
+          {t("schema.updateParentDialogBody")}
         </Typography>
       </DialogTitle>
       <DialogContent>
@@ -78,7 +78,7 @@ export const UpdateParentModelDialogue = ({ onClose, model }: Props) => {
           modelType={model.type}
           value={newParentZUID}
           onChange={(value) => setNewParentZUID(value)}
-          tooltip="Selecting a parent affects default routing and content navigation in the UI"
+          tooltip={t("schema.updateParentInputTooltip")}
         />
       </DialogContent>
       <DialogActions>

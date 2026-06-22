@@ -32,7 +32,11 @@ import {
   useFieldForm,
   FieldBody,
 } from "../../../contexts/FieldFormProvider";
-import { FIELD_COPY_CONFIG, FORM_CONFIG, TYPE_TEXT } from "../../../configs";
+import {
+  getFieldCopyConfig,
+  getFormConfig,
+  getTypeText,
+} from "../../../configs";
 import { Learn } from "../../Learn";
 import { Rules } from "../Rules";
 import { Details } from "../../Details";
@@ -67,6 +71,9 @@ const SubFieldFormContent = ({
   repeaterFieldName,
 }: SubFieldFormProps) => {
   const { t } = useTranslation();
+  const TYPE_TEXT = getTypeText(t);
+  const FIELD_COPY_CONFIG = getFieldCopyConfig(t);
+  const FORM_CONFIG = getFormConfig(t);
   const isUpdateField = !isEmpty(fieldData);
   const [activeTab, setActiveTab] = useState<ActiveTab>("details");
   const [isSubmitClicked, setIsSubmitClicked] = useState(false);
@@ -218,12 +225,16 @@ const SubFieldFormContent = ({
             <Box display="flex" flexDirection="column">
               <Typography variant="h5" fontWeight={700}>
                 {isUpdateField
-                  ? `Edit ${fieldData.label}`
-                  : `Add ${name} Field`}
+                  ? t("schema.subFieldFormEditTitle", {
+                      label: fieldData.label,
+                    })
+                  : t("schema.subFieldFormAddTitle", { name })}
               </Typography>
               <Typography variant="body3" color="text.secondary">
                 {isUpdateField
-                  ? `${TYPE_TEXT[type]} Field`
+                  ? t("schema.subFieldFormTypeFieldLabel", {
+                      type: TYPE_TEXT[type],
+                    })
                   : FIELD_COPY_CONFIG[getCategory(type)]?.find(
                       (item) => item.type === type
                     )?.subHeaderText}
@@ -249,21 +260,21 @@ const SubFieldFormContent = ({
           <Tab
             data-cy="DetailsTabBtn"
             value="details"
-            label="Details"
+            label={t("schema.tabDetails")}
             icon={<SettingsRoundedIcon fontSize="small" />}
             iconPosition="start"
           />
           <Tab
             data-cy="RulesTabBtn"
             value="rules"
-            label="Rules"
+            label={t("schema.tabRules")}
             icon={<RuleRoundedIcon fontSize="small" />}
             iconPosition="start"
           />
           <Tab
             data-cy="LearnTabBtn"
             value="learn"
-            label="Learn"
+            label={t("schema.tabLearn")}
             icon={<MenuBookRoundedIcon fontSize="small" />}
             iconPosition="start"
           />
@@ -351,14 +362,14 @@ const SubFieldFormContent = ({
               }}
               onClick={() => handleSubmit(true)}
             >
-              Add Another Field
+              {t("schema.addAnotherField")}
             </Button>
             <Button
               data-cy="SubFieldFormAddFieldBtn"
               onClick={() => handleSubmit()}
               variant="contained"
             >
-              Add Field
+              {t("schema.addField")}
             </Button>
           </Box>
         </DialogActions>

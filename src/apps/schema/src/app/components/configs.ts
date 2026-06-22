@@ -41,801 +41,787 @@ interface FormConfig {
   rules: InputField[];
 }
 type SystemField = Pick<ContentModelField, "label" | "datatype" | "name">;
-const FIELD_COPY_CONFIG: { [key: string]: FieldListData[] } = {
+type TranslateFn = (key: string) => string;
+
+const getFieldCopyConfig = (
+  t: TranslateFn
+): { [key: string]: FieldListData[] } => ({
   text: [
     {
       type: "text",
-      name: "Single Line Text",
-      shortDescription: "Titles, names, and headings",
-      description:
-        'The "Single Line Text" Field is best for short text content that doesn\'t need special formatting or have links or media.',
+      name: t("schema.fieldTypeSingleLineTextName"),
+      shortDescription: t("schema.fieldTypeSingleLineTextShortDesc"),
+      description: t("schema.fieldTypeSingleLineTextDescription"),
       commonUses: [
-        "Article Titles",
-        "Author Names",
-        "Event Names",
-        "Category Labels",
-        "Headings",
+        t("schema.fieldTypeSingleLineTextCommonUse1"),
+        t("schema.fieldTypeSingleLineTextCommonUse2"),
+        t("schema.fieldTypeSingleLineTextCommonUse3"),
+        t("schema.fieldTypeSingleLineTextCommonUse4"),
+        t("schema.fieldTypeSingleLineTextCommonUse5"),
       ],
-      proTip:
-        "This field works great when you want to ensure that contributors cannot apply any styling to text.",
-      subHeaderText: "Used for Titles, names, and headings",
+      proTip: t("schema.fieldTypeSingleLineTextProTip"),
+      subHeaderText: t("schema.fieldTypeSingleLineTextSubHeader"),
     },
     {
       type: "textarea",
-      name: "Multi Line Text",
-      shortDescription: "Descriptions, summaries, and blurbs",
-      description:
-        "The Multi Line Text field is best for long text content that doesn't need special formatting or have links or media.",
+      name: t("schema.fieldTypeMultiLineTextName"),
+      shortDescription: t("schema.fieldTypeMultiLineTextShortDesc"),
+      description: t("schema.fieldTypeMultiLineTextDescription"),
       commonUses: [
-        "Sub Headings",
-        "Article Summaries",
-        "Product Descriptions",
-        "Category Descriptions",
-        "Author Bios",
+        t("schema.fieldTypeMultiLineTextCommonUse1"),
+        t("schema.fieldTypeMultiLineTextCommonUse2"),
+        t("schema.fieldTypeMultiLineTextCommonUse3"),
+        t("schema.fieldTypeMultiLineTextCommonUse4"),
+        t("schema.fieldTypeMultiLineTextCommonUse5"),
       ],
-      proTip:
-        "This field works great when you want to ensure that contributors cannot apply any styling to text.",
-      subHeaderText: "Used for descriptions, summaries, and blurbs",
+      proTip: t("schema.fieldTypeMultiLineTextProTip"),
+      subHeaderText: t("schema.fieldTypeMultiLineTextSubHeader"),
     },
     {
       type: "wysiwyg_basic",
-      name: "WYSIWYG",
-      shortDescription: "Long text content with links & images such as blogs",
-      description:
-        "This field is best for long text content that has multiple headings, paragraphs, and in-line media such as videos, images, or links. You can also apply advanced text formatting such as bold, italics, and underline.",
+      name: t("schema.fieldTypeWysiwygName"),
+      shortDescription: t("schema.fieldTypeWysiwygShortDesc"),
+      description: t("schema.fieldTypeWysiwygDescription"),
       commonUses: [
-        "Blog Posts",
-        "Articles",
-        "Guides",
-        "Lists",
-        "Event Descriptions",
+        t("schema.fieldTypeWysiwygCommonUse1"),
+        t("schema.fieldTypeWysiwygCommonUse2"),
+        t("schema.fieldTypeWysiwygCommonUse3"),
+        t("schema.fieldTypeWysiwygCommonUse4"),
+        t("schema.fieldTypeWysiwygCommonUse5"),
       ],
-      proTip:
-        "This field works great when you want to contributors to apply any styling and structure to text.",
-      subHeaderText: "Long text content with links & images such as blogs",
+      proTip: t("schema.fieldTypeWysiwygProTip"),
+      subHeaderText: t("schema.fieldTypeWysiwygSubHeader"),
     },
     {
       type: "markdown",
-      name: "Markdown",
-      shortDescription: "Light weight markup to format text",
-      description:
-        "This field provides a contributor a Github Flavored Markdown editor syntax for styling and structuring content.",
+      name: t("schema.fieldTypeMarkdownName"),
+      shortDescription: t("schema.fieldTypeMarkdownShortDesc"),
+      description: t("schema.fieldTypeMarkdownDescription"),
       commonUses: [
-        "Blog Posts",
-        "Articles",
-        "Guides",
-        "Lists",
-        "Event Descriptions",
+        t("schema.fieldTypeMarkdownCommonUse1"),
+        t("schema.fieldTypeMarkdownCommonUse2"),
+        t("schema.fieldTypeMarkdownCommonUse3"),
+        t("schema.fieldTypeMarkdownCommonUse4"),
+        t("schema.fieldTypeMarkdownCommonUse5"),
       ],
-      proTip:
-        "This field works great when you want to contributors to apply any styling and structure to text.",
-      subHeaderText: "Light weight markup to format text",
+      proTip: t("schema.fieldTypeMarkdownProTip"),
+      subHeaderText: t("schema.fieldTypeMarkdownSubHeader"),
     },
   ],
   media: [
     {
       type: "images",
-      name: "Media",
-      shortDescription: "Images, videos, PDFs, and other files",
-      description:
-        "This field allows a user to add one or more media files such as an image, video, document, presentation, etc. You can set the maximum number of files a user can upload and the maximum file size for each upload.",
+      name: t("schema.fieldTypeMediaName"),
+      shortDescription: t("schema.fieldTypeMediaShortDesc"),
+      description: t("schema.fieldTypeMediaDescription"),
       commonUses: [
-        "Article Cover Images",
-        "Profile Pictures of Authors or Team Members",
-        "Product Galleries",
-        "Illustrations and Icons",
-        "Videos of demos, tutorials, company onboarding",
-        "Background Images",
-        "PDFs of whitepapers, ebooks, menus, maps, and more",
-        "Powerpoint Presentations",
+        t("schema.fieldTypeMediaCommonUse1"),
+        t("schema.fieldTypeMediaCommonUse2"),
+        t("schema.fieldTypeMediaCommonUse3"),
+        t("schema.fieldTypeMediaCommonUse4"),
+        t("schema.fieldTypeMediaCommonUse5"),
+        t("schema.fieldTypeMediaCommonUse6"),
+        t("schema.fieldTypeMediaCommonUse7"),
+        t("schema.fieldTypeMediaCommonUse8"),
       ],
-      proTip: "You can also add media in-line in rich text fields.",
-      subHeaderText: "Use for images, videos, PDFs, and other files",
+      proTip: t("schema.fieldTypeMediaProTip"),
+      subHeaderText: t("schema.fieldTypeMediaSubHeader"),
     },
   ],
   relationship: [
     {
       type: "one_to_one",
-      name: "One to One Relationship",
-      shortDescription: "Link to one content item of a model",
-      description:
-        "This field is perfect for connecting your model to another model. For example, linking a blog to a category or an author.",
+      name: t("schema.fieldTypeOneToOneName"),
+      shortDescription: t("schema.fieldTypeOneToOneShortDesc"),
+      description: t("schema.fieldTypeOneToOneDescription"),
       commonUses: [
-        "To link an Article to a single Author or Category",
-        "To link an Employee to a single service",
+        t("schema.fieldTypeOneToOneCommonUse1"),
+        t("schema.fieldTypeOneToOneCommonUse2"),
       ],
-      proTip:
-        "It's great to use this field when you find yourself or your team repeatedly typing in the same set of inputs such as author names. For example, it makes sense to create a model of Authors and connect to it since you will else have to else repeatedly type it in for each article.",
-      subHeaderText: "Use this field to link to one content item of a model",
+      proTip: t("schema.fieldTypeOneToOneProTip"),
+      subHeaderText: t("schema.fieldTypeOneToOneSubHeader"),
     },
     {
       type: "one_to_many",
-      name: "One to Many Relationship",
-      shortDescription: "Link to multiple content items of a model",
-      description:
-        "This field allows you to connect your model to another model and connect to multiple items instead of one.",
+      name: t("schema.fieldTypeOneToManyName"),
+      shortDescription: t("schema.fieldTypeOneToManyShortDesc"),
+      description: t("schema.fieldTypeOneToManyDescription"),
       commonUses: [
-        "To link an Article to Multiple Authors, Tags, or Categories",
-        "To link an Author to Multiple Services",
+        t("schema.fieldTypeOneToManyCommonUse1"),
+        t("schema.fieldTypeOneToManyCommonUse2"),
       ],
-      proTip:
-        "It's great to use this field when you find yourself or your team repeatedly typing in the same set of inputs such as author names. For example, it makes sense to create a model of Authors and connect to it since you will else have to else repeatedly type it in for each article.",
-      subHeaderText:
-        "Use this field to link to multiple content items of a model",
+      proTip: t("schema.fieldTypeOneToManyProTip"),
+      subHeaderText: t("schema.fieldTypeOneToManySubHeader"),
     },
     {
       type: "link",
-      name: "External URL",
-      shortDescription: "Link to an external website",
-      description:
-        "This field is great to store URLs to pages on external websites. These links can be displayed and clicked on by users.",
+      name: t("schema.fieldTypeExternalUrlName"),
+      shortDescription: t("schema.fieldTypeExternalUrlShortDesc"),
+      description: t("schema.fieldTypeExternalUrlDescription"),
       commonUses: [
-        "Link to affiliate sites (e.g. Amazon)",
-        "Link to Social Media Pages on Facebook, Instagram, etc.",
-        "Link to 3rd party services like Eventbrite for events or Doordash for Orders",
+        t("schema.fieldTypeExternalUrlCommonUse1"),
+        t("schema.fieldTypeExternalUrlCommonUse2"),
+        t("schema.fieldTypeExternalUrlCommonUse3"),
       ],
-      proTip: "You can also add links in rich text fields.",
-      subHeaderText: "Use this field to link to an external website",
+      proTip: t("schema.fieldTypeExternalUrlProTip"),
+      subHeaderText: t("schema.fieldTypeExternalUrlSubHeader"),
     },
     {
       type: "internal_link",
-      name: "Internal Link",
-      shortDescription: "Link to an internal content item",
-      description:
-        "Internal Link fields allow for the selection of an internal instance item from any schema. This can be useful for providing authors the ability to relate an item across an instance.",
-      commonUses: ["Link to Internal Products", "Link to Internal Articles"],
-      proTip:
-        "You can use External URL fields if you want to link to external websites.",
-      subHeaderText: "Use this field to link to an internal content item",
+      name: t("schema.fieldTypeInternalLinkName"),
+      shortDescription: t("schema.fieldTypeInternalLinkShortDesc"),
+      description: t("schema.fieldTypeInternalLinkDescription"),
+      commonUses: [
+        t("schema.fieldTypeInternalLinkCommonUse1"),
+        t("schema.fieldTypeInternalLinkCommonUse2"),
+      ],
+      proTip: t("schema.fieldTypeInternalLinkProTip"),
+      subHeaderText: t("schema.fieldTypeInternalLinkSubHeader"),
     },
     {
       type: "block_selector",
-      name: "Block Selector",
-      shortDescription: "Link to a variant of a block model",
-      description:
-        "The Block Selector field allows a user to select a unique variant of any block model they would like to see rendered on their page.",
-      commonUses: ["Footer Section", "Block at the end of article", "Forms"],
-      proTip:
-        "These are great to use when you want to use different end blocks at the end of different pages of the same model",
-      subHeaderText: "Link to a variant of a block model",
+      name: t("schema.fieldTypeBlockSelectorName"),
+      shortDescription: t("schema.fieldTypeBlockSelectorShortDesc"),
+      description: t("schema.fieldTypeBlockSelectorDescription"),
+      commonUses: [
+        t("schema.fieldTypeBlockSelectorCommonUse1"),
+        t("schema.fieldTypeBlockSelectorCommonUse2"),
+        t("schema.fieldTypeBlockSelectorCommonUse3"),
+      ],
+      proTip: t("schema.fieldTypeBlockSelectorProTip"),
+      subHeaderText: t("schema.fieldTypeBlockSelectorSubHeader"),
     },
   ],
   numeric: [
     {
       type: "number",
-      name: "Number",
-      shortDescription: "Whole numbers and floats",
-      description: "This field is for when you want the input to be a number.",
+      name: t("schema.fieldTypeNumberName"),
+      shortDescription: t("schema.fieldTypeNumberShortDesc"),
+      description: t("schema.fieldTypeNumberDescription"),
       commonUses: [
-        "Quantity of Products in Inventory",
-        "Rankings",
-        "Ratings",
-        "Weight",
-        "Height",
+        t("schema.fieldTypeNumberCommonUse1"),
+        t("schema.fieldTypeNumberCommonUse2"),
+        t("schema.fieldTypeNumberCommonUse3"),
+        t("schema.fieldTypeNumberCommonUse4"),
+        t("schema.fieldTypeNumberCommonUse5"),
       ],
-      proTip: "Number fields can hold both whole numbers and decimals.",
-      subHeaderText: "Used for quantity, age, ratings, etc.",
+      proTip: t("schema.fieldTypeNumberProTip"),
+      subHeaderText: t("schema.fieldTypeNumberSubHeader"),
     },
     {
       type: "currency",
-      name: "Currency",
-      shortDescription: "Perfect for product prices",
-      description:
-        "This field is for when you want to store a cost, price, or account balance.",
+      name: t("schema.fieldTypeCurrencyName"),
+      shortDescription: t("schema.fieldTypeCurrencyShortDesc"),
+      description: t("schema.fieldTypeCurrencyDescription"),
       commonUses: [
-        "Cost Price of a Product or Service",
-        "Selling Price of a Product or Service",
+        t("schema.fieldTypeCurrencyCommonUse1"),
+        t("schema.fieldTypeCurrencyCommonUse2"),
       ],
-      proTip:
-        "Use currency fields instead of number fields if you want to store prices.",
-      subHeaderText: "Used for storing costs, prices, and balances",
+      proTip: t("schema.fieldTypeCurrencyProTip"),
+      subHeaderText: t("schema.fieldTypeCurrencySubHeader"),
     },
   ],
   dateandtime: [
     {
       type: "date",
-      name: "Date",
-      shortDescription: "Perfect for Birthdays, release dates, events, etc.",
-      description: `This field is for when you want the input to be a past, present, or future date. You can customize whether a user can enter a day, month, or year or all 3.
-
-      Zesty automatically tracks dates and times for date created, date published, and date modified so no additional fields need to be created for these.`,
+      name: t("schema.fieldTypeDateName"),
+      shortDescription: t("schema.fieldTypeDateShortDesc"),
+      description: t("schema.fieldTypeDateDescription"),
       commonUses: [
-        "Birthdates",
-        "Anniversaries",
-        "Historical Dates",
-        "Release Dates",
+        t("schema.fieldTypeDateCommonUse1"),
+        t("schema.fieldTypeDateCommonUse2"),
+        t("schema.fieldTypeDateCommonUse3"),
+        t("schema.fieldTypeDateCommonUse4"),
       ],
-      proTip:
-        "If you want to add a time to your date then use the date time field.",
-      subHeaderText: "Use for birthdays, release dates, events, etc.",
+      proTip: t("schema.fieldTypeDateProTip"),
+      subHeaderText: t("schema.fieldTypeDateSubHeader"),
     },
     {
       type: "datetime",
-      name: "Date & Time",
-      shortDescription: "Track dates along with specific times",
-      description: `This field is for when you want the input to be a data and time. You can customize whether a user can enter a time, day, month, or year or all 4.
-
-      Zesty automatically tracks dates and times for date created, date published, and date modified so no additional fields need to be created for these.`,
+      name: t("schema.fieldTypeDateTimeName"),
+      shortDescription: t("schema.fieldTypeDateTimeShortDesc"),
+      description: t("schema.fieldTypeDateTimeDescription"),
       commonUses: [
-        "Event Start Times & End Times",
-        "Shipment Time",
-        "Deadlines",
+        t("schema.fieldTypeDateTimeCommonUse1"),
+        t("schema.fieldTypeDateTimeCommonUse2"),
+        t("schema.fieldTypeDateTimeCommonUse3"),
       ],
-      proTip: "If you want to only have a date then use the date field.",
-      subHeaderText: "Use to track dates along with specific times",
+      proTip: t("schema.fieldTypeDateTimeProTip"),
+      subHeaderText: t("schema.fieldTypeDateTimeSubHeader"),
     },
   ],
   options: [
     {
       type: "yes_no",
-      name: "Boolean",
-      shortDescription: "True or false",
-      description:
-        "This field is for when you want a field to only have two possible values. E.g. yes or no, true or false, featured or not featured, etc.",
+      name: t("schema.fieldTypeBooleanName"),
+      shortDescription: t("schema.fieldTypeBooleanShortDesc"),
+      description: t("schema.fieldTypeBooleanDescription"),
       commonUses: [
-        "To callout featured blog posts, products",
-        "Discounts in e-commerce products",
-        "To callout Badges such as “Pro Author”",
-        "To hide items",
+        t("schema.fieldTypeBooleanCommonUse1"),
+        t("schema.fieldTypeBooleanCommonUse2"),
+        t("schema.fieldTypeBooleanCommonUse3"),
+        t("schema.fieldTypeBooleanCommonUse4"),
       ],
-      proTip:
-        "Use boolean fields to filter out items you want to show in a collection of items.",
-      subHeaderText: "Used to set true or false values",
+      proTip: t("schema.fieldTypeBooleanProTip"),
+      subHeaderText: t("schema.fieldTypeBooleanSubHeader"),
     },
     {
       type: "dropdown",
-      name: "Dropdown",
-      shortDescription: "Select from a list of values",
-      description:
-        "This field is for when you want a user to choose a value from a dropdown menu of pre-defined options written by you. You can define these values in the field settings.",
+      name: t("schema.fieldTypeDropdownName"),
+      shortDescription: t("schema.fieldTypeDropdownShortDesc"),
+      description: t("schema.fieldTypeDropdownDescription"),
       commonUses: [
-        "Genders",
-        "Predefined Sizes",
-        "Languages",
-        "Company Departments",
+        t("schema.fieldTypeDropdownCommonUse1"),
+        t("schema.fieldTypeDropdownCommonUse2"),
+        t("schema.fieldTypeDropdownCommonUse3"),
+        t("schema.fieldTypeDropdownCommonUse4"),
       ],
-      proTip:
-        "The values you add to a dropdown field will only be available to the model the field is added into. If you need values that reusable and accessible in multiple models, create a separate model for it and then a single or multi item relationship field to it.",
-      subHeaderText: "Used to allow a user to select from a list of values",
+      proTip: t("schema.fieldTypeDropdownProTip"),
+      subHeaderText: t("schema.fieldTypeDropdownSubHeader"),
     },
     {
       type: "color",
-      name: "Color",
-      shortDescription: "Background colors, font colors, and more",
-      description:
-        "This field is perfect for when you want to style different elements on your page such as background colors, text colors, borders, etc. Contributors will be given a color picker to select a color of their choice.",
+      name: t("schema.fieldTypeColorName"),
+      shortDescription: t("schema.fieldTypeColorShortDesc"),
+      description: t("schema.fieldTypeColorDescription"),
       commonUses: [
-        "Background Colors",
-        "Border Colors",
-        "Font Colors",
-        "Change Colors of Category Tags",
+        t("schema.fieldTypeColorCommonUse1"),
+        t("schema.fieldTypeColorCommonUse2"),
+        t("schema.fieldTypeColorCommonUse3"),
+        t("schema.fieldTypeColorCommonUse4"),
       ],
-      proTip:
-        "Color pickers can be used to call out items in a unique way and allow a user to easily differentiate between items.",
-      subHeaderText: "Used for Background colors, font colors, and more",
+      proTip: t("schema.fieldTypeColorProTip"),
+      subHeaderText: t("schema.fieldTypeColorSubHeader"),
     },
     {
       type: "sort",
-      name: "Sort Order",
-      shortDescription: "Add order to content items",
-      description:
-        "There may be times when you want to sort data, not by name or date, but by a user-defined custom order. In such a scenario, you can add a sort order field which allows you to specify the order number of each content item.",
+      name: t("schema.fieldTypeSortOrderName"),
+      shortDescription: t("schema.fieldTypeSortOrderShortDesc"),
+      description: t("schema.fieldTypeSortOrderDescription"),
       commonUses: [
-        "Set the order of featured products",
-        "Set the order of categories",
-        "Set the order of videos of a course",
+        t("schema.fieldTypeSortOrderCommonUse1"),
+        t("schema.fieldTypeSortOrderCommonUse2"),
+        t("schema.fieldTypeSortOrderCommonUse3"),
       ],
-      proTip:
-        "You can change the default sort number with the plus and minus buttons in the content item view, as well as in the table view.",
-      subHeaderText: "Use to add order to content items",
+      proTip: t("schema.fieldTypeSortOrderProTip"),
+      subHeaderText: t("schema.fieldTypeSortOrderSubHeader"),
     },
     {
       type: "integration",
-      name: "Integration",
-      shortDescription: "Fetch and store data from APIs",
-      description:
-        "This field allows users to fetch data from a JSON API, select entries and then add them to a content item. The data remains static until reselected. Ensuring controlled updates.",
+      name: t("schema.fieldTypeIntegrationName"),
+      shortDescription: t("schema.fieldTypeIntegrationShortDesc"),
+      description: t("schema.fieldTypeIntegrationDescription"),
       commonUses: [
-        "Stats - Fetch external stats",
-        "3rd Party Integration - Pull details from an external app",
-        "Forms - Import external form submissions",
-        "Import Content from another Zesty instance",
-        "External CMS - Display content from an external CMS",
-        "Spreadsheets - Pull spreadsheet data",
+        t("schema.fieldTypeIntegrationCommonUse1"),
+        t("schema.fieldTypeIntegrationCommonUse2"),
+        t("schema.fieldTypeIntegrationCommonUse3"),
+        t("schema.fieldTypeIntegrationCommonUse4"),
+        t("schema.fieldTypeIntegrationCommonUse5"),
+        t("schema.fieldTypeIntegrationCommonUse6"),
       ],
-      proTip:
-        "The data is stored as a JSON object and can be accessed headlessly or with Parsley for dynamic rendering in templates. ",
-      subHeaderText: "Fetch and store data from APIs",
+      proTip: t("schema.fieldTypeIntegrationProTip"),
+      subHeaderText: t("schema.fieldTypeIntegrationSubHeader"),
     },
     {
       type: "uuid",
-      name: "UUID",
-      shortDescription: "Generates unique, uneditable alphanumeric identifiers",
-      description:
-        "The UUID field creates a unique alpha numeric string when an item is created. This is a helpful feature for analytics tracking, inventory management, user management, etc.",
-      commonUses: ["Product ID", "Inventory ID", "Employee ID"],
-      proTip: "UUID are always unique and are non editable.",
-      subHeaderText: "Use to set unique ids to each content item",
+      name: t("schema.fieldTypeUuidName"),
+      shortDescription: t("schema.fieldTypeUuidShortDesc"),
+      description: t("schema.fieldTypeUuidDescription"),
+      commonUses: [
+        t("schema.fieldTypeUuidCommonUse1"),
+        t("schema.fieldTypeUuidCommonUse2"),
+        t("schema.fieldTypeUuidCommonUse3"),
+      ],
+      proTip: t("schema.fieldTypeUuidProTip"),
+      subHeaderText: t("schema.fieldTypeUuidSubHeader"),
     },
     {
       type: "repeater",
-      name: "Repeater",
-      shortDescription: "A repeating list of grouped fields",
-      description:
-        "The Repeater Field allows you to create a group of fields for repeating content. Useful for multiple items, such as slides, team members, or FAQs.",
-      commonUses: ["Slides", "Testimonials", "Recipes", "Event Times"],
-      proTip:
-        "Use a Repeater Field to manage lists or sections with a shared structure but unique content like recipes or testimonials.",
-      subHeaderText: "Used for groups of static fields",
+      name: t("schema.fieldTypeRepeaterName"),
+      shortDescription: t("schema.fieldTypeRepeaterShortDesc"),
+      description: t("schema.fieldTypeRepeaterDescription"),
+      commonUses: [
+        t("schema.fieldTypeRepeaterCommonUse1"),
+        t("schema.fieldTypeRepeaterCommonUse2"),
+        t("schema.fieldTypeRepeaterCommonUse3"),
+        t("schema.fieldTypeRepeaterCommonUse4"),
+      ],
+      proTip: t("schema.fieldTypeRepeaterProTip"),
+      subHeaderText: t("schema.fieldTypeRepeaterSubHeader"),
     },
   ],
-};
+});
 
-const TYPE_TEXT: Record<FieldType, string> = {
-  article_writer: "Article Writer",
-  color: "Color",
-  currency: "Currency",
-  date: "Date",
-  datetime: "Date and Time",
-  dropdown: "Dropdown",
-  files: "Files",
-  fontawesome: "Font Awesome",
-  images: "Media",
-  internal_link: "Internal Link",
-  link: "External URL",
-  markdown: "Markdown",
-  number: "Number",
-  one_to_many: "One to Many",
-  one_to_one: "One to One",
-  sort: "Sort Order",
-  text: "Single Line Text",
-  textarea: "Multi Line Text",
-  uuid: "UUID",
-  wysiwyg_advanced: "WYSIWYG (Advanced)",
-  wysiwyg_basic: "WYSIWYG",
-  yes_no: "Boolean",
-  block_selector: "Block Selector",
-  integration: "Integration",
-  repeater: "Repeater",
-};
+const getTypeText = (t: TranslateFn): Record<FieldType, string> => ({
+  article_writer: t("schema.typeTextArticleWriter"),
+  color: t("schema.typeTextColor"),
+  currency: t("schema.typeTextCurrency"),
+  date: t("schema.typeTextDate"),
+  datetime: t("schema.typeTextDatetime"),
+  dropdown: t("schema.typeTextDropdown"),
+  files: t("schema.typeTextFiles"),
+  fontawesome: t("schema.typeTextFontawesome"),
+  images: t("schema.typeTextImages"),
+  internal_link: t("schema.typeTextInternalLink"),
+  link: t("schema.typeTextLink"),
+  markdown: t("schema.typeTextMarkdown"),
+  number: t("schema.typeTextNumber"),
+  one_to_many: t("schema.typeTextOneToMany"),
+  one_to_one: t("schema.typeTextOneToOne"),
+  sort: t("schema.typeTextSort"),
+  text: t("schema.typeTextText"),
+  textarea: t("schema.typeTextTextarea"),
+  uuid: t("schema.typeTextUuid"),
+  wysiwyg_advanced: t("schema.typeTextWysiwygAdvanced"),
+  wysiwyg_basic: t("schema.typeTextWysiwygBasic"),
+  yes_no: t("schema.typeTextBoolean"),
+  block_selector: t("schema.typeTextBlockSelector"),
+  integration: t("schema.typeTextIntegration"),
+  repeater: t("schema.typeTextRepeater"),
+});
 
-const COMMON_FIELDS: InputField[] = [
+const getCommonFields = (t: TranslateFn): InputField[] => [
   {
     name: "label",
     type: "input",
-    label: "Display Label",
+    label: t("schema.commonFieldLabelLabel"),
     required: true,
     fullWidth: true,
     maxLength: 200,
     gridSize: 12,
-    tooltip: "The display name of the field seen in Schema.",
+    tooltip: t("schema.commonFieldLabelTooltip"),
     validate: ["required", "length"],
     autoFocus: true,
   },
   {
     name: "name",
     type: "input",
-    label: "API / Parsley Code ID",
+    label: t("schema.commonFieldNameLabel"),
     required: true,
     fullWidth: true,
     maxLength: 50,
     gridSize: 12,
-    tooltip: "This will appear in the API Responses",
+    tooltip: t("schema.commonFieldNameTooltip"),
     validate: ["length", "required", "unique"],
   },
   {
     name: "tooltip",
     type: "input",
-    label: "Tooltip",
+    label: t("schema.commonFieldTooltipLabel"),
     required: false,
     fullWidth: true,
     maxLength: 250,
     gridSize: 12,
-    tooltip: "Tool tip displayed to content editors.",
+    tooltip: t("schema.commonFieldTooltipTooltip"),
     validate: ["length"],
   },
   {
     name: "description",
     type: "input",
-    label: "Description",
+    label: t("schema.commonFieldDescriptionLabel"),
     required: false,
     fullWidth: true,
     multiline: true,
     maxLength: 500,
     gridSize: 12,
-    tooltip:
-      "Appears below the display label. Use this to provide instructions to content writers and API users.",
+    tooltip: t("schema.commonFieldDescriptionTooltip"),
     validate: ["length"],
   },
   {
     name: "required",
     type: "checkbox",
-    label: "Required field",
-    subLabel: "Ensures an item cannot be created if field is empty",
+    label: t("schema.commonFieldRequiredLabel"),
+    subLabel: t("schema.commonFieldRequiredSubLabel"),
     required: false,
     gridSize: 12,
   },
   {
     name: "list",
     type: "checkbox",
-    label: "Add as column in table listing",
-    subLabel: "Shows field as a column in the table in the content view",
+    label: t("schema.commonFieldListLabel"),
+    subLabel: t("schema.commonFieldListSubLabel"),
     required: false,
     gridSize: 12,
   },
 ];
 
-const COMMON_RULES: InputField[] = [
+const getCommonRules = (t: TranslateFn): InputField[] => [
   {
     name: "defaultValue",
     type: "input",
-    label: "Default Value",
+    label: t("schema.defaultValueLabel"),
     required: false,
     gridSize: 12,
   },
 ];
 
-const CHARACTER_LIMIT_RULES: InputField[] = [
+const getCharacterLimitRules = (t: TranslateFn): InputField[] => [
   {
     name: "minCharLimit",
     type: "input",
-    label: "Minimum character count (with spaces)",
+    label: t("schema.characterLimitMinLabel"),
     required: false,
     gridSize: 6,
   },
   {
     name: "maxCharLimit",
     type: "input",
-    label: "Maximum character count (with spaces)",
+    label: t("schema.characterLimitMaxLabel"),
     required: false,
     gridSize: 6,
   },
 ];
 
-const REGEX_RULES: InputField[] = [
+const getRegexRules = (t: TranslateFn): InputField[] => [
   {
     name: "regexMatchPattern",
     type: "input",
-    label: "Regex Match Pattern",
+    label: t("schema.regexMatchPatternLabel"),
     required: false,
     gridSize: 6,
   },
   {
     name: "regexMatchErrorMessage",
     type: "input",
-    label: "Regex Match Error Message",
+    label: t("schema.regexMatchErrorMessageLabel"),
     required: false,
     gridSize: 6,
   },
   {
     name: "regexRestrictPattern",
     type: "input",
-    label: "Regex Restrict Pattern",
+    label: t("schema.regexRestrictPatternLabel"),
     required: false,
     gridSize: 6,
   },
   {
     name: "regexRestrictErrorMessage",
     type: "input",
-    label: "Regex Restrict Error Message",
+    label: t("schema.regexRestrictErrorMessageLabel"),
     required: false,
     gridSize: 6,
   },
 ];
 
-const INPUT_RANGE_RULES: InputField[] = [
+const getInputRangeRules = (t: TranslateFn): InputField[] => [
   {
     name: "minValue",
     type: "input",
-    label: "Minimum Value",
+    label: t("schema.minValueLabel"),
     required: false,
     gridSize: 6,
   },
   {
     name: "maxValue",
     type: "input",
-    label: "Maximum Value",
+    label: t("schema.maxValueLabel"),
     required: false,
     gridSize: 6,
   },
 ];
 
-const FORM_CONFIG: Record<FieldType, FormConfig> = {
-  article_writer: {
-    details: [...COMMON_FIELDS],
-    rules: [...COMMON_RULES],
-  },
-  color: {
-    details: [...COMMON_FIELDS],
-    rules: [...COMMON_RULES],
-  },
-  currency: {
-    details: [
-      {
-        name: "currency",
-        type: "autocomplete",
-        label: "Currency",
-        required: true,
-        gridSize: 12,
-        tooltip:
-          "The selected currency code, symbol, and flag will be displayed for this field in the content item and can be accessed through the field settings via the API.",
-        placeholder: "Select a Currency",
-        autoFocus: true,
-      },
-      {
-        ...COMMON_FIELDS[0],
-        autoFocus: false,
-      },
-      ...COMMON_FIELDS.slice(1),
-    ],
-    rules: [...COMMON_RULES, ...INPUT_RANGE_RULES],
-  },
-  date: {
-    details: [...COMMON_FIELDS],
-    rules: [...COMMON_RULES],
-  },
-  datetime: {
-    details: [...COMMON_FIELDS],
-    rules: [...COMMON_RULES],
-  },
-  dropdown: {
-    details: [
-      ...COMMON_FIELDS.slice(0, 4),
-      {
-        name: "options",
-        type: "options",
-        label: "Dropdown Options",
-        required: false,
-        gridSize: 12,
-        maxLength: 150,
-        validate: ["length", "unique"],
-      },
-      ...COMMON_FIELDS.slice(4),
-    ],
-    rules: [...COMMON_RULES],
-  },
-  files: {
-    details: [...COMMON_FIELDS],
-    rules: [...COMMON_FIELDS],
-  },
-  fontawesome: {
-    details: [...COMMON_FIELDS],
-    rules: [...COMMON_RULES],
-  },
-  images: {
-    details: [...COMMON_FIELDS],
-    rules: [
-      {
-        name: "limit",
-        type: "input",
-        label: "Media Item Limit",
-        required: false,
-        gridSize: 12,
-        inputType: "number",
-        tooltip: "Set the minimum media file limit to 1. It cannot go lower.",
-      },
-      {
-        name: "group_id",
-        type: "autocomplete",
-        label: "Select Folder",
-        required: false,
-        gridSize: 12,
-      },
-      {
-        name: "fileExtensions",
-        type: "input",
-        label: "File Extensions",
-        required: false,
-        gridSize: 12,
-      },
-      {
-        name: "fileExtensionsErrorMessage",
-        type: "input",
-        label: "File extensions error message",
-        required: false,
-        gridSize: 12,
-      },
-      ...COMMON_RULES,
-    ],
-  },
-  internal_link: {
-    details: [...COMMON_FIELDS],
-    rules: [...COMMON_RULES],
-  },
-  link: {
-    details: [...COMMON_FIELDS],
-    rules: [...COMMON_RULES],
-  },
-  markdown: {
-    details: [...COMMON_FIELDS],
-    rules: [...COMMON_RULES],
-  },
-  number: {
-    details: [...COMMON_FIELDS],
-    rules: [...COMMON_RULES, ...INPUT_RANGE_RULES],
-  },
-  one_to_many: {
-    details: [
-      {
-        name: "relatedModelZUID",
-        type: "autocomplete",
-        label: "Reference Model",
-        required: false,
-        gridSize: 6,
-        placeholder: "Select a model",
-        autoFocus: true,
-      },
-      {
-        name: "relatedFieldZUID",
-        type: "autocomplete",
-        label: "Field to Display",
-        required: false,
-        gridSize: 6,
-        placeholder: "Select a field",
-      },
-      {
-        ...COMMON_FIELDS[0],
-        autoFocus: false,
-      },
-      ...COMMON_FIELDS.slice(1),
-    ],
-    rules: [...COMMON_RULES],
-  },
-  one_to_one: {
-    details: [
-      {
-        name: "relatedModelZUID",
-        type: "autocomplete",
-        label: "Reference Model",
-        required: false,
-        gridSize: 6,
-        placeholder: "Select a model",
-        autoFocus: true,
-      },
-      {
-        name: "relatedFieldZUID",
-        type: "autocomplete",
-        label: "Field to Display",
-        required: false,
-        gridSize: 6,
-        placeholder: "Select a field",
-      },
-      {
-        ...COMMON_FIELDS[0],
-        autoFocus: false,
-      },
-      ...COMMON_FIELDS.slice(1),
-    ],
-    rules: [...COMMON_RULES],
-  },
-  sort: {
-    details: [...COMMON_FIELDS],
-    rules: [...COMMON_RULES],
-  },
-  text: {
-    details: [...COMMON_FIELDS],
-    rules: [...COMMON_RULES, ...CHARACTER_LIMIT_RULES, ...REGEX_RULES],
-  },
-  textarea: {
-    details: [...COMMON_FIELDS],
-    rules: [...COMMON_RULES, ...CHARACTER_LIMIT_RULES, ...REGEX_RULES],
-  },
-  uuid: {
-    details: [...COMMON_FIELDS],
-    rules: [],
-  },
-  wysiwyg_advanced: {
-    details: [...COMMON_FIELDS],
-    rules: [...COMMON_RULES],
-  },
-  wysiwyg_basic: {
-    details: [...COMMON_FIELDS],
-    rules: [...COMMON_RULES],
-  },
-  yes_no: {
-    details: [
-      ...COMMON_FIELDS.slice(0, 3),
-      {
-        name: "options",
-        type: "toggle_options",
-        label: "Boolean Options",
-        required: false,
-        gridSize: 12,
-        maxLength: 150,
-        validate: ["length"],
-      },
-      ...COMMON_FIELDS.slice(3),
-    ],
-    rules: [...COMMON_RULES],
-  },
-  block_selector: {
-    details: [...COMMON_FIELDS],
-    rules: [],
-  },
-  integration: {
-    details: [
-      ...COMMON_FIELDS.slice(0, 4),
-      {
-        name: "integrationFieldConfig",
-        type: "config",
-        label: "API URL",
-        required: true,
-        gridSize: 12,
-        maxLength: 150,
-      },
+const getFormConfig = (t: TranslateFn): Record<FieldType, FormConfig> => {
+  const COMMON_FIELDS = getCommonFields(t);
+  const COMMON_RULES = getCommonRules(t);
+  const CHARACTER_LIMIT_RULES = getCharacterLimitRules(t);
+  const REGEX_RULES = getRegexRules(t);
+  const INPUT_RANGE_RULES = getInputRangeRules(t);
+  return {
+    article_writer: {
+      details: [...COMMON_FIELDS],
+      rules: [...COMMON_RULES],
+    },
+    color: {
+      details: [...COMMON_FIELDS],
+      rules: [...COMMON_RULES],
+    },
+    currency: {
+      details: [
+        {
+          name: "currency",
+          type: "autocomplete",
+          label: t("schema.currencyFieldLabel"),
+          required: true,
+          gridSize: 12,
+          tooltip: t("schema.currencyFieldTooltip"),
+          placeholder: t("schema.currencyFieldPlaceholder"),
+          autoFocus: true,
+        },
+        {
+          ...COMMON_FIELDS[0],
+          autoFocus: false,
+        },
+        ...COMMON_FIELDS.slice(1),
+      ],
+      rules: [...COMMON_RULES, ...INPUT_RANGE_RULES],
+    },
+    date: {
+      details: [...COMMON_FIELDS],
+      rules: [...COMMON_RULES],
+    },
+    datetime: {
+      details: [...COMMON_FIELDS],
+      rules: [...COMMON_RULES],
+    },
+    dropdown: {
+      details: [
+        ...COMMON_FIELDS.slice(0, 4),
+        {
+          name: "options",
+          type: "options",
+          label: t("schema.dropdownOptionsLabel"),
+          required: false,
+          gridSize: 12,
+          maxLength: 150,
+          validate: ["length", "unique"],
+        },
+        ...COMMON_FIELDS.slice(4),
+      ],
+      rules: [...COMMON_RULES],
+    },
+    files: {
+      details: [...COMMON_FIELDS],
+      rules: [...COMMON_FIELDS],
+    },
+    fontawesome: {
+      details: [...COMMON_FIELDS],
+      rules: [...COMMON_RULES],
+    },
+    images: {
+      details: [...COMMON_FIELDS],
+      rules: [
+        {
+          name: "limit",
+          type: "input",
+          label: t("schema.mediaItemLimitLabel"),
+          required: false,
+          gridSize: 12,
+          inputType: "number",
+          tooltip: t("schema.mediaItemLimitTooltip"),
+        },
+        {
+          name: "group_id",
+          type: "autocomplete",
+          label: t("schema.selectFolderLabel"),
+          required: false,
+          gridSize: 12,
+        },
+        {
+          name: "fileExtensions",
+          type: "input",
+          label: t("schema.fileExtensionsLabel"),
+          required: false,
+          gridSize: 12,
+        },
+        {
+          name: "fileExtensionsErrorMessage",
+          type: "input",
+          label: t("schema.fileExtensionsErrorMessageLabel"),
+          required: false,
+          gridSize: 12,
+        },
+        ...COMMON_RULES,
+      ],
+    },
+    internal_link: {
+      details: [...COMMON_FIELDS],
+      rules: [...COMMON_RULES],
+    },
+    link: {
+      details: [...COMMON_FIELDS],
+      rules: [...COMMON_RULES],
+    },
+    markdown: {
+      details: [...COMMON_FIELDS],
+      rules: [...COMMON_RULES],
+    },
+    number: {
+      details: [...COMMON_FIELDS],
+      rules: [...COMMON_RULES, ...INPUT_RANGE_RULES],
+    },
+    one_to_many: {
+      details: [
+        {
+          name: "relatedModelZUID",
+          type: "autocomplete",
+          label: t("schema.referenceModelLabel"),
+          required: false,
+          gridSize: 6,
+          placeholder: t("schema.referenceModelPlaceholder"),
+          autoFocus: true,
+        },
+        {
+          name: "relatedFieldZUID",
+          type: "autocomplete",
+          label: t("schema.fieldToDisplayLabel"),
+          required: false,
+          gridSize: 6,
+          placeholder: t("schema.fieldToDisplayPlaceholder"),
+        },
+        {
+          ...COMMON_FIELDS[0],
+          autoFocus: false,
+        },
+        ...COMMON_FIELDS.slice(1),
+      ],
+      rules: [...COMMON_RULES],
+    },
+    one_to_one: {
+      details: [
+        {
+          name: "relatedModelZUID",
+          type: "autocomplete",
+          label: t("schema.referenceModelLabel"),
+          required: false,
+          gridSize: 6,
+          placeholder: t("schema.referenceModelPlaceholder"),
+          autoFocus: true,
+        },
+        {
+          name: "relatedFieldZUID",
+          type: "autocomplete",
+          label: t("schema.fieldToDisplayLabel"),
+          required: false,
+          gridSize: 6,
+          placeholder: t("schema.fieldToDisplayPlaceholder"),
+        },
+        {
+          ...COMMON_FIELDS[0],
+          autoFocus: false,
+        },
+        ...COMMON_FIELDS.slice(1),
+      ],
+      rules: [...COMMON_RULES],
+    },
+    sort: {
+      details: [...COMMON_FIELDS],
+      rules: [...COMMON_RULES],
+    },
+    text: {
+      details: [...COMMON_FIELDS],
+      rules: [...COMMON_RULES, ...CHARACTER_LIMIT_RULES, ...REGEX_RULES],
+    },
+    textarea: {
+      details: [...COMMON_FIELDS],
+      rules: [...COMMON_RULES, ...CHARACTER_LIMIT_RULES, ...REGEX_RULES],
+    },
+    uuid: {
+      details: [...COMMON_FIELDS],
+      rules: [],
+    },
+    wysiwyg_advanced: {
+      details: [...COMMON_FIELDS],
+      rules: [...COMMON_RULES],
+    },
+    wysiwyg_basic: {
+      details: [...COMMON_FIELDS],
+      rules: [...COMMON_RULES],
+    },
+    yes_no: {
+      details: [
+        ...COMMON_FIELDS.slice(0, 3),
+        {
+          name: "options",
+          type: "toggle_options",
+          label: t("schema.booleanOptionsLabel"),
+          required: false,
+          gridSize: 12,
+          maxLength: 150,
+          validate: ["length"],
+        },
+        ...COMMON_FIELDS.slice(3),
+      ],
+      rules: [...COMMON_RULES],
+    },
+    block_selector: {
+      details: [...COMMON_FIELDS],
+      rules: [],
+    },
+    integration: {
+      details: [
+        ...COMMON_FIELDS.slice(0, 4),
+        {
+          name: "integrationFieldConfig",
+          type: "config",
+          label: t("schema.apiUrlLabel"),
+          required: true,
+          gridSize: 12,
+          maxLength: 150,
+        },
 
-      ...COMMON_FIELDS.slice(4),
-    ],
-    rules: [...INPUT_RANGE_RULES],
-  },
-  repeater: {
-    details: [...COMMON_FIELDS.slice(0, 4)],
-    rules: [],
-  },
+        ...COMMON_FIELDS.slice(4),
+      ],
+      rules: [...INPUT_RANGE_RULES],
+    },
+    repeater: {
+      details: [...COMMON_FIELDS.slice(0, 4)],
+      rules: [],
+    },
+  };
 };
 
-const SYSTEM_FIELDS: readonly SystemField[] = [
+const getSystemFields = (t: TranslateFn): SystemField[] => [
   {
-    label: "Item ZUID",
+    label: t("schema.systemFieldItemZuid"),
     datatype: "uuid",
     name: "ZUID",
   },
   {
-    label: "Created At",
+    label: t("schema.systemFieldCreatedAt"),
     datatype: "datetime",
     name: "createdAt",
   },
   {
-    label: "Updated At",
+    label: t("schema.systemFieldUpdatedAt"),
     datatype: "datetime",
     name: "updatedAt",
   },
   {
-    label: "Version",
+    label: t("schema.systemFieldVersion"),
     datatype: "number",
     name: "version",
   },
   {
-    label: "Master ZUID",
+    label: t("schema.systemFieldMasterZuid"),
     datatype: "uuid",
     name: "masterZUID",
   },
   {
-    label: "Model ZUID",
+    label: t("schema.systemFieldModelZuid"),
     datatype: "uuid",
     name: "contentModelZUID",
   },
-] as const;
+];
 
-const SEO_FIELDS: readonly SystemField[] = [
+const getSeoFields = (t: TranslateFn): SystemField[] => [
   {
-    label: "SEO Meta Title",
+    label: t("schema.seoFieldMetaTitle"),
     datatype: "text",
     name: "seo_meta_title",
   },
   {
-    label: "SEO Meta Description",
+    label: t("schema.seoFieldMetaDescription"),
     datatype: "textarea",
     name: "seo_meta_description",
   },
   {
-    label: "SEO Meta Keywords",
+    label: t("schema.seoFieldMetaKeywords"),
     datatype: "textarea",
     name: "seo_meta_keywords",
   },
   {
-    label: "SEO Link Title",
+    label: t("schema.seoFieldLinkTitle"),
     datatype: "text",
     name: "seo_link_title",
   },
-] as const;
+];
 
 export {
   FieldListData,
-  FIELD_COPY_CONFIG,
-  TYPE_TEXT,
-  FORM_CONFIG,
-  SYSTEM_FIELDS,
+  getFieldCopyConfig,
+  getTypeText,
+  getFormConfig,
+  getSystemFields,
+  getSeoFields,
   SystemField,
-  SEO_FIELDS,
 };

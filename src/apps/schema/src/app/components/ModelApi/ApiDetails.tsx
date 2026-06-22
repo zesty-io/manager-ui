@@ -18,7 +18,7 @@ import ViewInArRoundedIcon from "@mui/icons-material/ViewInArRounded";
 import DashboardCustomizeRoundedIcon from "@mui/icons-material/DashboardCustomizeRounded";
 import NewspaperRoundedIcon from "@mui/icons-material/NewspaperRounded";
 import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
-import { ApiType, apiTypeDocsMap, apiTypeLabelMap, apiTypes } from ".";
+import { ApiType, apiTypeDocsMap, getApiTypeLabelMap, apiTypes } from ".";
 import { ApiInfo } from "./ApiInfo";
 import { useSelector } from "react-redux";
 import { AppState } from "../../../../../../shell/store/types";
@@ -50,6 +50,7 @@ const apiTypesWithEndpoints = [
 
 export const ApiDetails = () => {
   const { t } = useTranslation();
+  const apiTypeLabelMap = getApiTypeLabelMap(t);
   const history = useHistory();
   const location = useLocation();
   const { contentModelZUID } = useParams<{ contentModelZUID: string }>();
@@ -193,7 +194,7 @@ export const ApiDetails = () => {
                   }}
                   onClick={() => window.open(apiTypeDocsMap[selectedType])}
                 >
-                  Read Docs
+                  {t("schema.readDocs")}
                 </Button>
               )}
               {selectedType === "custom-endpoints" && (
@@ -209,7 +210,7 @@ export const ApiDetails = () => {
                     startIcon={<CodeRoundedIcon />}
                     onClick={() => history.push("/code")}
                   >
-                    Open Code App
+                    {t("schema.openCodeApp")}
                   </Button>
                   <Button
                     variant="outlined"
@@ -217,7 +218,7 @@ export const ApiDetails = () => {
                     onClick={() => window.open(apiTypeDocsMap[selectedType])}
                     color="inherit"
                   >
-                    Read Docs
+                    {t("schema.readDocs")}
                   </Button>
                 </Stack>
               )}
@@ -234,7 +235,7 @@ export const ApiDetails = () => {
                     startIcon={<NewspaperRoundedIcon />}
                     onClick={handleVisualLayoutClick}
                   >
-                    Open Visual Layout
+                    {t("schema.openVisualLayout")}
                   </Button>
                   <Button
                     variant="outlined"
@@ -242,7 +243,7 @@ export const ApiDetails = () => {
                     onClick={() => window.open(apiTypeDocsMap[selectedType])}
                     color="inherit"
                   >
-                    Read Docs
+                    {t("schema.readDocs")}
                   </Button>
                 </Stack>
               )}

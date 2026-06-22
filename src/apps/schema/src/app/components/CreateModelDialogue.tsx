@@ -47,34 +47,30 @@ interface Props {
   typeIsSet?: boolean;
 }
 
-const modelTypes = [
+const MODEL_TYPE_KEYS = [
   {
-    name: "Single Page Model",
-    description:
-      "Creates individual pages with unique URLs and a code template",
-    examples: "e.g. Home Page, About Page, etc.",
     key: "templateset",
+    nameKey: "schema.modelTypeSinglePageName",
+    descriptionKey: "schema.modelTypeSinglePageDescription",
+    examplesKey: "schema.modelTypeSinglePageExamples",
   },
   {
-    name: "Multi Page Model",
-    description:
-      "Creates a collection of pages with unique URLs and a code template",
-    examples: "e.g. Articles, Authors, Products, etc. ",
     key: "pageset",
+    nameKey: "schema.modelTypeMultiPageName",
+    descriptionKey: "schema.modelTypeMultiPageDescription",
+    examplesKey: "schema.modelTypeMultiPageExamples",
   },
   {
-    name: "Dataset Model",
-    description:
-      "Creates a collection of entries with no URLs and no code templates",
-    examples: "e.g. Slides, FAQS, Brands, etc.",
     key: "dataset",
+    nameKey: "schema.modelTypeDatasetName",
+    descriptionKey: "schema.modelTypeDatasetDescription",
+    examplesKey: "schema.modelTypeDatasetExamples",
   },
   {
-    name: "Block Model",
-    description:
-      "Creates a collection of entries with no URLs and a code template",
-    examples: "e.g. Heros, Features, Testimonials, etc.",
     key: "block",
+    nameKey: "schema.modelTypeBlockName",
+    descriptionKey: "schema.modelTypeBlockDescription",
+    examplesKey: "schema.modelTypeBlockExamples",
   },
 ];
 
@@ -88,6 +84,12 @@ export const CreateModelDialogue = ({
   typeIsSet = false,
 }: Props) => {
   const { t } = useTranslation();
+  const modelTypes = MODEL_TYPE_KEYS.map((mt) => ({
+    ...mt,
+    name: t(mt.nameKey),
+    description: t(mt.descriptionKey),
+    examples: t(mt.examplesKey),
+  }));
   const [referenceIDError, setReferenceIDError] = useState<string | null>(null);
   const [type, setType] = useState(modelType);
   const [isTypeSet, setIsTypeSet] = useState(typeIsSet);
@@ -225,17 +227,15 @@ export const CreateModelDialogue = ({
   useEffect(() => {
     if (error) {
       // @ts-ignore
-      const errorMessage = error?.data?.error || "Failed to create model";
+      const errorMessage = error?.data?.error || t("schema.failedCreateModel");
 
       if (errorMessage.includes("name is already in use")) {
-        setReferenceIDError(
-          "This Reference ID is already in use. Please enter a different one."
-        );
+        setReferenceIDError(t("schema.referenceIdAlreadyInUse"));
       } else if (errorMessage.includes("label cannot be blank")) {
         dispatch(
           notify({
-            message: "Please Add Display Name",
-            heading: "Cannot Create Model",
+            message: t("schema.pleaseAddDisplayName"),
+            heading: t("schema.cannotCreateModelTitle"),
             kind: "error",
           })
         );
@@ -262,17 +262,15 @@ export const CreateModelDialogue = ({
             >
               <Box width={520}>
                 <Typography variant="h5" fontWeight={700} sx={{ mb: 1 }}>
-                  Select Model Type
+                  {t("schema.selectModelType")}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  The model type you select affects how content items render in
-                  the interface and whether URLs and templates are created.
-                  Note: All Models can be used headless
+                  {t("schema.selectModelTypeSubtitle")}
                 </Typography>
                 <Box display="flex" alignItems="center" gap={1} mt={1}>
                   <MenuBookRoundedIcon color="info" />{" "}
                   <Link variant="body2" href="#" underline="always">
-                    Read our docs about different model types and their uses
+                    {t("schema.readDocsModelTypes")}
                   </Link>
                 </Box>
               </Box>
@@ -400,9 +398,11 @@ export const CreateModelDialogue = ({
                     />
                     <Stack>
                       <Typography variant="h5" fontWeight={700}>
-                        {`Create ${
-                          modelTypes.find((x) => x.key === model.type).name
-                        }`}
+                        {t("schema.createModelTitle", {
+                          modelName: modelTypes.find(
+                            (x) => x.key === model.type
+                          ).name,
+                        })}
                       </Typography>
                       <Typography variant="body3" color="text.secondary">
                         {
@@ -424,10 +424,10 @@ export const CreateModelDialogue = ({
                 <Box display="flex" flexDirection="column" gap={2.5}>
                   <Box>
                     <InputLabel>
-                      Display Name
+                      {t("schema.displayNameLabel")}
                       <Tooltip
                         placement="top"
-                        title="Name that is shown to content editors"
+                        title={t("schema.displayNameTooltip")}
                       >
                         <InfoRoundedIcon
                           sx={{ ml: 1, width: "10px", height: "10px" }}
@@ -439,7 +439,7 @@ export const CreateModelDialogue = ({
                       inputProps={{
                         maxLength: 100,
                       }}
-                      placeholder="e.g. Home Page, About Page, Contact Page, etc."
+                      placeholder={t("schema.displayNamePlaceholder")}
                       value={model.label}
                       onChange={(event) =>
                         updateModel({ label: event.target.value })
@@ -451,10 +451,10 @@ export const CreateModelDialogue = ({
                   </Box>
                   <Box>
                     <InputLabel>
-                      Reference ID
+                      {t("schema.referenceIdLabel")}
                       <Tooltip
                         placement="top"
-                        title="ID used for accessing this model through our API or Parsley"
+                        title={t("schema.referenceIdTooltip")}
                       >
                         <InfoRoundedIcon
                           sx={{ ml: 1, width: "10px", height: "10px" }}
@@ -466,7 +466,7 @@ export const CreateModelDialogue = ({
                       inputProps={{
                         maxLength: 100,
                       }}
-                      placeholder="Auto-Generated from Display Name"
+                      placeholder={t("schema.referenceIdPlaceholder")}
                       value={model.name}
                       onChange={(event: any) => {
                         updateModel({ name: event.target.value });
@@ -488,7 +488,7 @@ export const CreateModelDialogue = ({
                         parentZUID: value,
                       })
                     }
-                    tooltip="Selecting a parent affects default routing and content navigation in the UI"
+                    tooltip={t("schema.selectParentTooltip")}
                   />
                   {/* Block grouping will be implemented at a different point  */}
                   {/* {model.type === "block" && (
@@ -503,10 +503,10 @@ export const CreateModelDialogue = ({
               )} */}
                   <Box>
                     <InputLabel>
-                      Description
+                      {t("schema.descriptionLabel")}
                       <Tooltip
                         placement="top"
-                        title="Displays the purpose of the model to help content writers"
+                        title={t("schema.descriptionTooltip")}
                       >
                         <InfoRoundedIcon
                           sx={{ ml: 1, width: "10px", height: "10px" }}
@@ -519,7 +519,7 @@ export const CreateModelDialogue = ({
                         maxLength: 500,
                       }}
                       value={model.description}
-                      placeholder="What is this model going to be used for"
+                      placeholder={t("schema.descriptionPlaceholder")}
                       onChange={(event) =>
                         updateModel({ description: event.target.value })
                       }
@@ -537,15 +537,16 @@ export const CreateModelDialogue = ({
                       }
                     />
                     <Box>
-                      <Typography variant="body2">List this model</Typography>
+                      <Typography variant="body2">
+                        {t("schema.listThisModel")}
+                      </Typography>
                       <Typography
                         component="p"
                         variant="body3"
                         color="text.secondary"
                         fontWeight={600}
                       >
-                        Listed models have their content items available to
-                        programmatic navigation calls.
+                        {t("schema.listThisModelDescription")}
                       </Typography>
                     </Box>
                   </Box>
@@ -571,7 +572,7 @@ export const CreateModelDialogue = ({
                     })
                   }
                 >
-                  Create Model
+                  {t("schema.createModelButton")}
                 </Button>
               </DialogActions>
             </Box>

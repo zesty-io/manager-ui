@@ -19,7 +19,7 @@ import { useTranslation } from "react-i18next";
 import { ContentModelField } from "../../../../../../../shell/services/types";
 import { FieldIcon } from "../../../../../../schema/src/app/components/Field/FieldIcon";
 import {
-  TYPE_TEXT,
+  getTypeText,
   FieldType,
 } from "../../../../../../schema/src/app/components/configs";
 import { formatLocalized } from "shell/i18n/dates";
@@ -28,7 +28,8 @@ type FieldTooltipBodyProps = {
   data: Partial<ContentModelField>;
 };
 export const FieldTooltipBody = ({ data }: FieldTooltipBodyProps) => {
-  const { t } = useTranslation("content");
+  const { t } = useTranslation(["content", "schema"]);
+  const TYPE_TEXT = getTypeText(t);
   const history = useHistory();
 
   return (

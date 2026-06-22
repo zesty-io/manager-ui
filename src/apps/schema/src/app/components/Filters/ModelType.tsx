@@ -6,6 +6,7 @@ import {
   ListItemText,
   SvgIcon,
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 import { modelIconMap, modelNameMap } from "../../utils";
 import { ModelType as ModelSet } from "../../../../../../shell/services/types";
@@ -18,6 +19,7 @@ interface ModelTypeProps {
   onChange: (filter: ModelSet | "") => void;
 }
 export const ModelType: FC<ModelTypeProps> = ({ value, onChange }) => {
+  const { t } = useTranslation();
   const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLButtonElement | null>(
     null
   );
@@ -38,7 +40,9 @@ export const ModelType: FC<ModelTypeProps> = ({ value, onChange }) => {
       <FilterButton
         isFilterActive={Boolean(activeModelTypeFilter)}
         buttonText={
-          modelNameMap[activeModelTypeFilter as ModelSet] || "Model Type"
+          (modelNameMap[activeModelTypeFilter as ModelSet]
+            ? t(modelNameMap[activeModelTypeFilter as ModelSet])
+            : null) || t("schema.modelType")
         }
         onOpenMenu={handleOpenMenuClick}
         onRemoveFilter={() => onChange("")}
@@ -66,7 +70,7 @@ export const ModelType: FC<ModelTypeProps> = ({ value, onChange }) => {
               <ListItemIcon>
                 <SvgIcon component={modelIconMap[filter]} />
               </ListItemIcon>
-              <ListItemText>{modelNameMap[filter]}</ListItemText>
+              <ListItemText>{t(modelNameMap[filter])}</ListItemText>
             </MenuItem>
           ))}
         </Menu>

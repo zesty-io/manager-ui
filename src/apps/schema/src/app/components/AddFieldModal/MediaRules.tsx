@@ -9,6 +9,7 @@ import {
   TextField,
   Chip,
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { Errors, FormValue } from "./views/FieldForm";
 import { CustomGroup } from "../hooks/useMediaRules";
 import { InputField } from "./FieldFormInput";
@@ -20,92 +21,103 @@ type MediaFieldName = Extract<
   "limit" | "group_id" | "fileExtensions"
 >;
 
-const MediaLabelsConfig: {
+const getMediaLabelsConfig = (
+  t: (key: string) => string
+): {
   [key in MediaFieldName]: { label: string; subLabel: string };
-} = {
+} => ({
   limit: {
-    label: "Allow multiple files to be selected",
-    subLabel:
-      "Ensures multiple files can be uploaded instead of default of just 1 file",
+    label: t("schema.mediaRulesAllowMultipleLabel"),
+    subLabel: t("schema.mediaRulesAllowMultipleSubLabel"),
   },
   group_id: {
-    label: "Lock to a folder",
-    subLabel: "Ensures files can only be selected from a specific folder",
+    label: t("schema.mediaRulesLockFolderLabel"),
+    subLabel: t("schema.mediaRulesLockFolderSubLabel"),
   },
   fileExtensions: {
-    label: "Limit File Types",
-    subLabel: "Ensures only certain file types can be accepted",
+    label: t("schema.mediaRulesLimitFileTypesLabel"),
+    subLabel: t("schema.mediaRulesLimitFileTypesSubLabel"),
   },
-};
+});
 
-const ExtensionPresets = [
-  {
-    label: "Images",
-    value: [".png", ".jpg", ".jpeg", ".svg", ".gif", ".tif", ".webp", ".avif"],
-  },
-  {
-    label: "Videos",
-    value: [
-      ".mob",
-      ".avi",
-      ".wmv",
-      ".mp4",
-      ".mpeg",
-      ".mkv",
-      ".m4v",
-      ".mpg",
-      ".webm",
-    ],
-  },
-  {
-    label: "Audios",
-    value: [
-      ".mp3",
-      ".flac",
-      ".wav",
-      ".m4a",
-      ".aac",
-      ".ape",
-      ".opus",
-      ".aiff",
-      ".aif",
-    ],
-  },
-  {
-    label: "Documents",
-    value: [".doc", ".pdf", ".docx", ".txt", ".rtf", ".odt", ".pages"],
-  },
-  {
-    label: "Presentations",
-    value: [
-      ".ppt",
-      ".pptx",
-      ".key",
-      ".odp",
-      ".pps",
-      ".ppsx",
-      ".sldx",
-      ".potx",
-      ".otp",
-      ".sxi",
-    ],
-  },
-  {
-    label: "Spreadsheets",
-    value: [
-      ".xls",
-      ".xlsx",
-      ".csv",
-      ".tsv",
-      ".numbers",
-      ".ods",
-      ".xlsm",
-      ".xlsb",
-      ".xlt",
-      ".xltx",
-    ],
-  },
-] as const;
+const getExtensionPresets = (t: (key: string) => string) =>
+  [
+    {
+      label: t("schema.extensionPresetImages"),
+      value: [
+        ".png",
+        ".jpg",
+        ".jpeg",
+        ".svg",
+        ".gif",
+        ".tif",
+        ".webp",
+        ".avif",
+      ],
+    },
+    {
+      label: t("schema.extensionPresetVideos"),
+      value: [
+        ".mob",
+        ".avi",
+        ".wmv",
+        ".mp4",
+        ".mpeg",
+        ".mkv",
+        ".m4v",
+        ".mpg",
+        ".webm",
+      ],
+    },
+    {
+      label: t("schema.extensionPresetAudios"),
+      value: [
+        ".mp3",
+        ".flac",
+        ".wav",
+        ".m4a",
+        ".aac",
+        ".ape",
+        ".opus",
+        ".aiff",
+        ".aif",
+      ],
+    },
+    {
+      label: t("schema.extensionPresetDocuments"),
+      value: [".doc", ".pdf", ".docx", ".txt", ".rtf", ".odt", ".pages"],
+    },
+    {
+      label: t("schema.extensionPresetPresentations"),
+      value: [
+        ".ppt",
+        ".pptx",
+        ".key",
+        ".odp",
+        ".pps",
+        ".ppsx",
+        ".sldx",
+        ".potx",
+        ".otp",
+        ".sxi",
+      ],
+    },
+    {
+      label: t("schema.extensionPresetSpreadsheets"),
+      value: [
+        ".xls",
+        ".xlsx",
+        ".csv",
+        ".tsv",
+        ".numbers",
+        ".ods",
+        ".xlsm",
+        ".xlsb",
+        ".xlt",
+        ".xltx",
+      ],
+    },
+  ] as const;
 
 const RestrictedExtensions = [".exe", ".dmg"];
 
@@ -130,6 +142,9 @@ export const MediaRules = ({
   fieldData,
   errors,
 }: Props) => {
+  const { t } = useTranslation();
+  const MediaLabelsConfig = getMediaLabelsConfig(t);
+  const ExtensionPresets = getExtensionPresets(t);
   const [inputValue, setInputValue] = useState("");
   const [autoFill, setAutoFill] = useState(
     !fieldData.fileExtensionsErrorMessage
@@ -140,9 +155,9 @@ export const MediaRules = ({
     if (autoFill) {
       onDataChange({
         inputName: "fileExtensionsErrorMessage",
-        value:
-          "Only files with the following extensions are allowed: " +
-          (fieldData["fileExtensions"] as string[])?.join(", "),
+        value: t("schema.mediaRulesFileExtensionsAllowedError", {
+          extensions: (fieldData["fileExtensions"] as string[])?.join(", "),
+        }),
       });
     }
   }, [autoFill, fieldData["fileExtensions"]]);
@@ -291,7 +306,9 @@ export const MediaRules = ({
               {Boolean(fieldData[rule.name]) &&
                 rule.name === "fileExtensions" && (
                   <Box ml={3.5} mt={2.5}>
-                    <InputLabel>Extensions *</InputLabel>
+                    <InputLabel>
+                      {t("schema.mediaRulesExtensionsInputLabel")}
+                    </InputLabel>
                     <Autocomplete
                       multiple
                       value={fieldData[rule.name] as string[]}
@@ -344,7 +361,9 @@ export const MediaRules = ({
                       </Typography>
                     )}
                     <Box display="flex" mt={0.5} gap={0.5} alignItems="center">
-                      <Typography variant="body2">Add:</Typography>
+                      <Typography variant="body2">
+                        {t("schema.mediaRulesAddPresetLabel")}
+                      </Typography>
                       {ExtensionPresets.map((preset) => (
                         <Chip
                           key={preset.label}
@@ -373,7 +392,7 @@ export const MediaRules = ({
                         mt: 2.5,
                       }}
                     >
-                      Custom Error Message *
+                      {t("schema.mediaRulesCustomErrorMessageLabel")}
                     </InputLabel>
                     <TextField
                       error={!!errors["fileExtensionsErrorMessage"]}

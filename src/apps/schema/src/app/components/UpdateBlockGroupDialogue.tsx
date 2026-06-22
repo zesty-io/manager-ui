@@ -61,7 +61,7 @@ export const UpdateBlockGroupDialogue = ({
       dispatch(
         notify({
           // @ts-ignore
-          message: "Failed to update block group",
+          message: t("schema.updateBlockGroupFailedNotify"),
           kind: "error",
         })
       );
@@ -99,11 +99,10 @@ export const UpdateBlockGroupDialogue = ({
           <DriveFileRenameOutlineRounded color="info" />
         </Box>
         <Typography variant="h5" fontWeight={700} mt={1.5}>
-          Update Block Group
+          {t("schema.updateBlockGroupTitle")}
         </Typography>
         <Typography variant="body2" sx={{ mt: 1 }} color="text.secondary">
-          This affects what group the block is presented on in the All Blocks
-          page in the Blocks App.
+          {t("schema.updateBlockGroupDescription")}
         </Typography>
       </DialogTitle>
       <DialogContent>

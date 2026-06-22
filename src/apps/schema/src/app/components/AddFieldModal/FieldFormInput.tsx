@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Box,
   Typography,
@@ -137,6 +138,7 @@ export const FieldFormInput = ({
   isUpdateField,
   startAdornment,
 }: FieldFormInputProps) => {
+  const { t } = useTranslation();
   const options =
     fieldConfig.type === "options" ||
     (fieldConfig.type === "toggle_options" && prefillData)
@@ -321,9 +323,9 @@ export const FieldFormInput = ({
             !dropdownOptions.find((option) => option.value === prefillData) && (
               <Typography noWrap color="error.dark" variant="body2" mt={0.5}>
                 {fieldConfig.name === "group_id" &&
-                  "The folder this was locked to has been deleted"}
+                  t("schema.folderDeletedError")}
                 {fieldConfig.name === "relatedModelZUID" &&
-                  "The model that this was related to has been deleted"}
+                  t("schema.relatedModelDeletedError")}
               </Typography>
             )}
         </>
@@ -348,7 +350,7 @@ export const FieldFormInput = ({
                 sx={{ whiteSpace: "pre" }}
               >
                 {" "}
-                (optional)
+                {t("schema.optionalLabel")}
               </Typography>
             )}
             {fieldConfig.tooltip && (
@@ -455,7 +457,7 @@ export const FieldFormInput = ({
               onClick={handleAddNewOption}
               size="small"
             >
-              Add Option
+              {t("schema.addOption")}
             </Button>
           )}
         </>
@@ -494,6 +496,7 @@ const KeyValueInput = ({
   isDeletable,
   disabledFields,
 }: KeyValueInputProps) => {
+  const { t } = useTranslation();
   const handleDataChanged = (type: string, value: string) => {
     if (type === "key") {
       onOptionChange({ [convertDropdownValue(value) || ""]: optionValue });
@@ -524,7 +527,7 @@ const KeyValueInput = ({
           name="value"
           required
           fullWidth
-          placeholder="Enter Label"
+          placeholder={t("schema.enterLabel")}
           value={optionValue || ""}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
             handleDataChanged("value", e.target?.value);
@@ -542,7 +545,7 @@ const KeyValueInput = ({
           name="key"
           required
           fullWidth
-          placeholder="Enter Value"
+          placeholder={t("schema.enterValue")}
           value={optionKey || ""}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
             handleDataChanged("key", e.target?.value);

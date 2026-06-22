@@ -11,6 +11,7 @@ import {
 } from "../../../../../shell/services/instance";
 import { ContentModel, ModelType } from "../../../../../shell/services/types";
 import { formatDistanceToNowLocalized } from "shell/i18n/dates";
+import { useTranslation } from "react-i18next";
 import { isValid } from "date-fns";
 import { useMemo, useState, useReducer } from "react";
 import AutoSizer, { Size } from "react-virtualized-auto-sizer";
@@ -83,6 +84,7 @@ interface Props {
 }
 
 export const ModelsTable = ({ search, onEmptySearch }: Props) => {
+  const { t } = useTranslation();
   const history = useHistory();
   // Used to initialize the table sorted by name
   const [sortModel, setSortModel] = useState<GridSortModel>([
@@ -136,7 +138,7 @@ export const ModelsTable = ({ search, onEmptySearch }: Props) => {
       return (
         model.label?.toLowerCase()?.includes(search.toLowerCase()) ||
         model.name?.toLowerCase()?.includes(search.toLowerCase()) ||
-        modelNameMap[model.type as keyof typeof modelNameMap]
+        t(modelNameMap[model.type as keyof typeof modelNameMap])
           ?.toLowerCase()
           ?.includes(search.toLowerCase()) ||
         model.ZUID?.toLowerCase() === search.toLowerCase()
@@ -151,7 +153,7 @@ export const ModelsTable = ({ search, onEmptySearch }: Props) => {
   const columns = [
     {
       field: "label",
-      headerName: "Name",
+      headerName: t("schema.modelsTableColumnName"),
       flex: 1,
       renderCell: ({ row }: GridRenderCellParams) => (
         <Box
@@ -174,14 +176,14 @@ export const ModelsTable = ({ search, onEmptySearch }: Props) => {
     },
     {
       field: "type",
-      headerName: "Model Type",
+      headerName: t("schema.modelsTableColumnType"),
       width: 152,
       valueFormatter: (value: any) =>
-        modelNameMap[value as keyof typeof modelNameMap],
+        t(modelNameMap[value as keyof typeof modelNameMap]),
     },
     {
       field: "updatedAt",
-      headerName: "Updated",
+      headerName: t("schema.modelsTableColumnUpdated"),
       width: 120,
       valueFormatter: (value: any) => {
         const d = new Date(value);
@@ -192,7 +194,7 @@ export const ModelsTable = ({ search, onEmptySearch }: Props) => {
     },
     {
       field: "fields",
-      headerName: "Fields",
+      headerName: t("schema.modelsTableColumnFields"),
       width: 104,
       headerAlign: "right",
       align: "right",
@@ -201,7 +203,7 @@ export const ModelsTable = ({ search, onEmptySearch }: Props) => {
     },
     {
       field: "contentItems",
-      headerName: "Content Items",
+      headerName: t("schema.modelsTableColumnContentItems"),
       width: 126,
       headerAlign: "right",
       align: "right",

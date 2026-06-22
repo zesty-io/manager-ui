@@ -6,6 +6,7 @@ import {
   useEffect,
 } from "react";
 import isEmpty from "lodash/isEmpty";
+import { useTranslation } from "react-i18next";
 
 import {
   ContentModelField,
@@ -16,7 +17,7 @@ import {
   IntegrationFieldConfig,
   RepeaterSubField,
 } from "../../../../../../shell/services/types";
-import { FORM_CONFIG } from "../configs";
+import { getFormConfig } from "../configs";
 import { convertLabelValue, getErrorMessage } from "../../utils";
 import { MaxLengths } from "../../../../../content-editor/src/app/components/Editor/Editor";
 import { useGetContentModelsQuery } from "../../../../../../shell/services/instance";
@@ -67,6 +68,8 @@ export const FieldFormProvider = ({
   fields: ContentModelField[] | RepeaterSubField[];
   fieldData?: ContentModelField;
 }) => {
+  const { t } = useTranslation();
+  const FORM_CONFIG = getFormConfig(t);
   const isUpdateField = !isEmpty(fieldData);
   const [formData, setFormData] = useState<FormData>({});
   const [errors, setErrors] = useState<Errors>({});
@@ -204,17 +207,20 @@ export const FieldFormProvider = ({
         isDefaultValueEnabled &&
         (formData.defaultValue === "" || formData.defaultValue === null)
       ) {
-        newErrorsObj[inputName] = "Required Field. Please enter a value.";
+        newErrorsObj[inputName] = t("schema.validationRequiredField");
       }
 
       if (type === "text" || type === "textarea") {
         if (inputName === "minCharLimit" && !isNaN(+formData.minCharLimit)) {
           if ((formData.minCharLimit as number) > MaxLengths[type]) {
-            newErrorsObj[
-              inputName
-            ] = `Cannot exceed ${MaxLengths[type]} characters`;
+            newErrorsObj[inputName] = t(
+              "schema.validationCannotExceedMaxChars",
+              { maxLength: MaxLengths[type] }
+            );
           } else if (formData.minCharLimit > formData.maxCharLimit) {
-            newErrorsObj[inputName] = "Cannot exceed maximum character count";
+            newErrorsObj[inputName] = t(
+              "schema.validationCannotExceedMaxCharCount"
+            );
           }
         }
 
@@ -223,16 +229,16 @@ export const FieldFormProvider = ({
           !isNaN(+formData.maxCharLimit) &&
           (formData.maxCharLimit as number) > MaxLengths[type]
         ) {
-          newErrorsObj[
-            inputName
-          ] = `Cannot exceed ${MaxLengths[type]} characters`;
+          newErrorsObj[inputName] = t("schema.validationCannotExceedMaxChars", {
+            maxLength: MaxLengths[type],
+          });
         }
 
         if (inputName === "regexMatchPattern" && formData.regexMatchPattern) {
           try {
             new RegExp(formData.regexMatchPattern as string);
           } catch (e) {
-            newErrorsObj[inputName] = "Invalid regex pattern";
+            newErrorsObj[inputName] = t("schema.validationInvalidRegexPattern");
           }
         }
 
@@ -241,7 +247,7 @@ export const FieldFormProvider = ({
           formData.regexMatchPattern !== null &&
           formData.regexMatchErrorMessage === ""
         ) {
-          newErrorsObj[inputName] = "Required Field. Please enter a value.";
+          newErrorsObj[inputName] = t("schema.validationRequiredField");
         }
 
         if (
@@ -251,7 +257,7 @@ export const FieldFormProvider = ({
           try {
             new RegExp(formData.regexRestrictPattern as string);
           } catch (e) {
-            newErrorsObj[inputName] = "Invalid regex pattern";
+            newErrorsObj[inputName] = t("schema.validationInvalidRegexPattern");
           }
         }
 
@@ -260,28 +266,30 @@ export const FieldFormProvider = ({
           formData.regexRestrictPattern !== null &&
           formData.regexRestrictErrorMessage === ""
         ) {
-          newErrorsObj[inputName] = "Required Field. Please enter a value.";
+          newErrorsObj[inputName] = t("schema.validationRequiredField");
         }
       }
 
       if (inputName === "minValue" && formData.minValue) {
         if (isNaN(+formData.minValue)) {
-          newErrorsObj[inputName] = "Invalid number";
+          newErrorsObj[inputName] = t("schema.validationInvalidNumber");
         } else if (formData.minValue > formData.maxValue) {
-          newErrorsObj[inputName] = "Cannot exceed maximum value";
+          newErrorsObj[inputName] = t("schema.validationCannotExceedMaxValue");
         }
       }
 
       if (inputName === "maxValue" && formData.maxValue) {
         if (isNaN(+formData.maxValue)) {
-          newErrorsObj[inputName] = "Invalid number";
+          newErrorsObj[inputName] = t("schema.validationInvalidNumber");
         } else if (formData.maxValue < formData.minValue) {
-          newErrorsObj[inputName] = "Cannot be less than minimum value";
+          newErrorsObj[inputName] = t(
+            "schema.validationCannotBeLessThanMinValue"
+          );
         }
       }
 
       if (inputName === "currency" && !formData.currency) {
-        newErrorsObj[inputName] = "Please select a currency";
+        newErrorsObj[inputName] = t("schema.validationSelectCurrency");
       }
 
       if (
@@ -289,7 +297,7 @@ export const FieldFormProvider = ({
         formData.fileExtensions !== null &&
         !(formData.fileExtensions as string[])?.length
       ) {
-        newErrorsObj[inputName] = "This field is required";
+        newErrorsObj[inputName] = t("schema.validationFieldRequired");
       }
 
       if (
@@ -297,7 +305,7 @@ export const FieldFormProvider = ({
         formData.fileExtensions !== null &&
         formData.fileExtensionsErrorMessage === ""
       ) {
-        newErrorsObj[inputName] = "This field is required";
+        newErrorsObj[inputName] = t("schema.validationFieldRequired");
       }
 
       if (inputName === "integrationFieldConfig") {
@@ -308,7 +316,7 @@ export const FieldFormProvider = ({
         ) as IntegrationFieldConfig;
 
         if (!intField?.endpoint || !intField?.type || !intField?.keyPaths) {
-          newErrorsObj[inputName] = "Incomplete API Configuration";
+          newErrorsObj[inputName] = t("schema.validationIncompleteApiConfig");
         }
       }
 

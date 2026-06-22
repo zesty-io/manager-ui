@@ -6,14 +6,15 @@
 
 ## Board snapshot
 
-| ✓ Done                                                   | ▶ In Progress | → Up Next    | ≡ Backlog (in order)                                              |
-| -------------------------------------------------------- | ------------- | ------------ | ----------------------------------------------------------------- |
-| Phase 1 — Infrastructure                                 | —             | **`schema`** | `seo` · `reports` · `settings` · `code`                           |
-| Phase 2 — Locale switcher                                |               |              | `release` · `active-preview` · `blocks` · `leads` · `marketplace` |
-| Phase 3 — `common` + `shell` (incl. FieldType\* widgets) |               |              | `studio` (verify-only)                                            |
-| Phase 4 — `dashboard` · `media` · `content`              |               |              | Phase 5: TinyMCE · MUI overrides · `@zesty-io/material` upstream  |
-| Phase 5 — MUI · ProseMirror · Bynder                     |               |              | Phase 8 — Cypress tests                                           |
-| Phase 6 — Caching · Phase 7 — Missing-key handling       |               |              |                                                                   |
+| ✓ Done                                                   | ▶ In Progress | → Up Next | ≡ Backlog (in order)                                              |
+| -------------------------------------------------------- | ------------- | --------- | ----------------------------------------------------------------- |
+| Phase 1 — Infrastructure                                 | —             | **`seo`** | `reports` · `settings` · `code`                                   |
+| Phase 2 — Locale switcher                                |               |           | `release` · `active-preview` · `blocks` · `leads` · `marketplace` |
+| Phase 3 — `common` + `shell` (incl. FieldType\* widgets) |               |           | `studio` (verify-only)                                            |
+| Phase 4 — `dashboard` · `media` · `content`              |               |           | Phase 5: TinyMCE · MUI overrides · `@zesty-io/material` upstream  |
+| Phase 5 — MUI · ProseMirror · Bynder                     |               |           | Phase 8 — Cypress tests                                           |
+| Phase 6 — Caching · Phase 7 — Missing-key handling       |               |           |                                                                   |
+| **`schema`**                                             |               |           |                                                                   |
 
 ---
 
@@ -21,7 +22,7 @@
 
 # ▶ In Progress
 
-_Nothing in progress right now — pick up `schema` next._
+_Nothing in progress right now — pick up `seo` next._
 
 ---
 
@@ -31,20 +32,7 @@ _Nothing in progress right now — pick up `schema` next._
 
 ---
 
-### `schema` — Effort: L-XL
-
-_Unblocks `blocks`. Closes the content "APIs" tab carry-over._
-
-- [ ] Add lazy-load plumbing to `SchemaApp` (`src/apps/schema/src/index.js`)
-- [ ] Create empty `public/locales/<locale>/schema.json` for all 6 locales
-- [ ] Audit + localize `src/apps/schema/src/`:
-  - [ ] Two massive field-type metadata maps: `configs.ts` (~840 L) + `StarterBlocks/configs.ts` (~920 L)
-  - [ ] `ModelApi/` tree: `ApiCardList`, `ApiCard`, `ApiDetails`, `ApiInfo`, `ApiDomainEndpoints`, `HeadlessSwitcher`
-  - [ ] `notify()` strings in schema thunks/hooks (`grep -r "notify(" src/apps/schema/src/`)
-  - [ ] Module-level maps/arrays — refactor to resolve `t()` inside the component
-  - [ ] Vowel-grammar interpolation ("a field" vs "an image field") — `{{article}}` key or conditional keys
-- [ ] After schema: update content-editor's ItemEdit API tab to load `schema` namespace so `ApiCardList`/`ApiDetails` render translated
-- [ ] Verify: `npx tsc --noEmit`, JSON valid, key parity across all 6 locales
+_`schema` complete — pick up `seo` next._
 
 ---
 
@@ -162,6 +150,12 @@ _Depends on `content` (done) + `schema` (pending) — most of the blocks editing
 
 ---
 
+### Phase 4.5 — Suspense fallback skeleton loaders
+
+- [ ] Replace the empty `Box` fallback in each sub-app's `<Suspense>` with a full-page skeleton loader that matches the app's layout chrome (sidebar shape, content area grid, etc.) so the UI doesn't flash blank grey during namespace lazy-load
+
+---
+
 ### Phase 5 — Remaining
 
 - [ ] **MUI manual overrides → `t()`** — `noOptionsText`/`loadingText` bypassing the theme:
@@ -245,3 +239,29 @@ All infrastructure, locale switcher, `common` + `shell` namespaces (incl. all `F
 - [x] MUI X Date Pickers — `getDatePickersLocaleText` + `datepickers-locales/hi-IN.ts`
 - [x] ProseMirror — 46 `shell.editor*` keys all 6 locales; `t` threaded into menu builders; `LinkModal`/`EmbedModal` wrapped with `withTranslation`
 - [x] Bynder Compact View — locale mapping in `src/utility/openBynder.ts`; zh/ru/hi fall back to `en_US`; replaced language-dependent SDK close selector
+
+---
+
+### Phase 4 — `schema`
+
+- [x] Lazy-load plumbing: `src/apps/schema/src/index.js`
+- [x] `en-US/schema.json` populated — 710 new keys, 32 reused from common/shell
+- [x] All 6 locales written
+- [x] tsc: FAIL — see issues below
+
+**Manual action items — fix before closing:**
+
+- TypeScript: `src/apps/schema/src/app/components/DeleteModelDialogue.tsx(82,5)`: error TS2657: JSX expressions must have one parent element.
+- TypeScript: `src/apps/schema/src/app/components/DeleteModelDialogue.tsx(98,12)`: error TS1127: Invalid character.
+- TypeScript: `src/apps/schema/src/app/components/DeleteModelDialogue.tsx(98,38)`: error TS1381: Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+- TypeScript: `src/apps/schema/src/app/components/DeleteModelDialogue.tsx(99,29)`: error TS1127: Invalid character.
+- TypeScript: `src/apps/schema/src/app/components/DeleteModelDialogue.tsx(99,74)`: error TS1382: Unexpected token. Did you mean `{'>'}` or `&gt;`?
+- TypeScript: `src/apps/schema/src/app/components/DeleteModelDialogue.tsx(100,14)`: error TS1127: Invalid character.
+- TypeScript: `src/apps/schema/src/app/components/DeleteModelDialogue.tsx(100,55)`: error TS1005: `}` expected.
+- TypeScript: `src/apps/schema/src/app/components/DeleteModelDialogue.tsx(100,69)`: error TS1381: Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+- TypeScript: `src/apps/schema/src/app/components/DeleteModelDialogue.tsx(100,71)`: error TS1381: Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+- TypeScript: `src/apps/schema/src/app/components/DeleteModelDialogue.tsx(101,11)`: error TS17002: Expected corresponding JSX closing tag for `DialogTitle`.
+- TypeScript: `src/apps/schema/src/app/components/DeleteModelDialogue.tsx(102,9)`: error TS17002: Expected corresponding JSX closing tag for `Dialog`.
+- TypeScript: `src/apps/schema/src/app/components/DeleteModelDialogue.tsx(130,5)`: error TS1005: `)` expected.
+- TypeScript: `src/apps/schema/src/app/components/DeleteModelDialogue.tsx(131,3)`: error TS1109: Expression expected.
+- TypeScript: `src/apps/schema/src/app/components/DeleteModelDialogue.tsx(132,1)`: error TS1128: Declaration or statement expected.

@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
-import { ApiType, apiTypeLabelMap } from ".";
+import { useTranslation } from "react-i18next";
+import { ApiType, getApiTypeLabelMap } from ".";
 import BoltRoundedIcon from "@mui/icons-material/BoltRounded";
 import DataObjectRoundedIcon from "@mui/icons-material/DataObjectRounded";
 import DataSaverOnRoundedIcon from "@mui/icons-material/DataSaverOnRounded";
@@ -61,10 +62,12 @@ type Props = {
 };
 
 export const ApiInfo = ({ type, large }: Props) => {
+  const { t } = useTranslation();
+  const apiTypeLabelMap = getApiTypeLabelMap(t);
   const apiTypeInfoMap: Record<ApiType, ApiTypeInfo> = {
     "quick-access": {
       title: apiTypeLabelMap["quick-access"],
-      tag: "Read Only",
+      tag: t("schema.apiTagReadOnly"),
       description: (
         <span>
           <Link
@@ -73,60 +76,71 @@ export const ApiInfo = ({ type, large }: Props) => {
           >
             Zesty's Instant API
           </Link>{" "}
-          gives access to full models Items or single items JSON endpoints with
-          all kinds of information. Data requires manually hydration.
+          {t("schema.apiQuickAccessDescription")}
         </span>
       ),
-      uses: ["Mobile Applications", "Headless Applets"],
+      uses: [
+        t("schema.apiUseMobileApplications"),
+        t("schema.apiUseHeadlessApplets"),
+      ],
       icon: BoltRoundedIcon,
       iconBgColor: "yellow.400",
     },
     "backend-coding": {
       title: apiTypeLabelMap["backend-coding"],
-      tag: "Read and Write",
-      description:
-        "Zesty's REST API grants full access to Create, Read, Update, Delete, and Publish Commands. API can be accessed through direct API calls or from our Node SDK.",
-      uses: ["Automation", "User Generated Content", "Custom Apps"],
+      tag: t("schema.apiTagReadAndWrite"),
+      description: t("schema.apiBackendCodingDescription"),
+      uses: [
+        t("schema.apiUseAutomation"),
+        t("schema.apiUseUserGeneratedContent"),
+        t("schema.apiUseCustomApps"),
+      ],
       icon: DataObjectRoundedIcon,
       iconBgColor: "blue.500",
     },
     graphql: {
       title: apiTypeLabelMap["graphql"],
-      tag: "Read Only",
-      description:
-        "Flat object endpoints ideal for feeding GraphQL servers. Only accessible by traversing through the data on the model's GQL endpoint.",
+      tag: t("schema.apiTagReadOnly"),
+      description: t("schema.apiGraphqlDescription"),
       uses: [
-        "GraphQL Implementations",
-        "Middleware",
-        "Apps or headless layouts",
+        t("schema.apiUseGraphQlImplementations"),
+        t("schema.apiUseMiddleware"),
+        t("schema.apiUseAppsOrHeadlessLayouts"),
       ],
       icon: GraphQlIcon,
       iconBgColor: "pink.500",
     },
     "site-generators": {
       title: apiTypeLabelMap["site-generators"],
-      tag: "Read Only",
-      description:
-        "Zesty converts each URL to JSON with hydrated relationships and navigation information. Every content item added to this model has access to hydrated JSON URLs.",
-      uses: ["Headless Web Development", "Applications with routing"],
+      tag: t("schema.apiTagReadOnly"),
+      description: t("schema.apiSiteGeneratorsDescription"),
+      uses: [
+        t("schema.apiUseHeadlessWebDevelopment"),
+        t("schema.apiUseApplicationsWithRouting"),
+      ],
       icon: DataObjectRoundedIcon,
       iconBgColor: "purple.500",
     },
     "custom-endpoints": {
       title: apiTypeLabelMap["custom-endpoints"],
-      tag: "Read Only",
-      description:
-        "Build any data type (JSON, XML, HTML, etc) and any hydration level with Zestyi.io Parsley and Webengine.",
-      uses: ["Search", "Custom Content Hydration", "Fully painted HTML views"],
+      tag: t("schema.apiTagReadOnly"),
+      description: t("schema.apiCustomEndpointsDescription"),
+      uses: [
+        t("schema.apiUseSearch"),
+        t("schema.apiUseCustomContentHydration"),
+        t("schema.apiUseFullyPaintedHtmlViews"),
+      ],
       icon: DataSaverOnRoundedIcon,
       iconBgColor: "green.500",
     },
     "visual-layout": {
       title: apiTypeLabelMap["visual-layout"],
-      tag: "Read Only",
-      description:
-        "Visual layout is accessible from rendered HTML or structured JSON from the toJSON endpoint.",
-      uses: ["Automation Design", "Content Experiences"],
+      tag: t("schema.apiTagReadOnly"),
+      description: t("schema.apiVisualLayoutDescription"),
+      uses: [
+        t("schema.apiUseAutomationDesign"),
+        t("schema.apiUseContentExperiences"),
+      ],
       icon: NewspaperRoundedIcon,
       iconBgColor: "deepPurple.500",
     },
@@ -166,7 +180,7 @@ export const ApiInfo = ({ type, large }: Props) => {
       </Typography>
       <br />
       <Typography variant={large ? "body1" : "body2"} fontWeight={700}>
-        Best used for:
+        {t("schema.apiBestUsedFor")}
       </Typography>
       <Box
         component="ul"

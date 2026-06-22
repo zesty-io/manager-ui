@@ -1,12 +1,16 @@
 import { Box, Typography, Stack } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
-import { TYPE_TEXT, FIELD_COPY_CONFIG, FieldType } from "../configs";
+import { getTypeText, getFieldCopyConfig, FieldType } from "../configs";
 import { stringStartsWithVowel, getCategory } from "../../utils";
 
 interface Props {
   type: FieldType;
 }
 export const Learn = ({ type }: Props) => {
+  const { t } = useTranslation();
+  const TYPE_TEXT = getTypeText(t);
+  const FIELD_COPY_CONFIG = getFieldCopyConfig(t);
   const category = getCategory(type);
   const data = FIELD_COPY_CONFIG[category]?.find((item) => item.type === type);
 
@@ -15,8 +19,8 @@ export const Learn = ({ type }: Props) => {
       <Box>
         <Typography variant="h5" fontWeight={600} mb={0.5}>
           {stringStartsWithVowel(TYPE_TEXT[type])
-            ? `What is an ${TYPE_TEXT[type]} Field?`
-            : `What is a ${TYPE_TEXT[type]} Field?`}
+            ? t("schema.whatIsAnFieldType", { fieldType: TYPE_TEXT[type] })
+            : t("schema.whatIsAFieldType", { fieldType: TYPE_TEXT[type] })}
         </Typography>
         <Typography
           variant="body1"
@@ -28,7 +32,7 @@ export const Learn = ({ type }: Props) => {
       </Box>
       <Box>
         <Typography variant="h6" fontWeight={600} mb={0.5}>
-          Common Uses
+          {t("schema.commonUses")}
         </Typography>
         <Box component="ul" pl={3}>
           {data?.commonUses.map((string, index) => (
@@ -46,11 +50,10 @@ export const Learn = ({ type }: Props) => {
       {type === "repeater" && (
         <Box>
           <Typography variant="h6" fontWeight={600} mb={0.5}>
-            How is the Data Stored?
+            {t("schema.howIsDataStored")}
           </Typography>
           <Typography variant="body1" color="text.secondary" mb={0.5}>
-            Data is stored as a JSON array of objects, which can be accessed
-            easily, both directly and through Parsley with each statement.
+            {t("schema.repeaterDataStorageDescription")}
           </Typography>
           <Typography variant="body1" color="text.secondary">
             {
@@ -61,7 +64,7 @@ export const Learn = ({ type }: Props) => {
       )}
       <Box>
         <Typography variant="h6" fontWeight={600} mb={0.5}>
-          Pro Tip
+          {t("schema.proTip")}
         </Typography>
         <Typography variant="body1" color="text.secondary">
           {data?.proTip}

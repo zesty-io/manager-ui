@@ -5,6 +5,7 @@ import ApiRoundedIcon from "@mui/icons-material/ApiRounded";
 import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
 import InfoIcon from "@mui/icons-material/Info";
 import { useHistory, useLocation } from "react-router";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   type: ApiType;
@@ -22,6 +23,7 @@ const learnMoreEndpointApiTypes: ApiType[] = [
 ];
 
 export const ApiCard = ({ type }: Props) => {
+  const { t } = useTranslation();
   const location = useLocation();
   const history = useHistory();
   return (
@@ -47,7 +49,7 @@ export const ApiCard = ({ type }: Props) => {
             startIcon={<ApiRoundedIcon />}
             onClick={() => history.push(`${location.pathname}/${type}`)}
           >
-            View Endpoints
+            {t("schema.viewEndpoints")}
           </Button>
         )}
         {learnMoreEndpointApiTypes.includes(type) && (
@@ -57,7 +59,7 @@ export const ApiCard = ({ type }: Props) => {
             startIcon={<InfoIcon />}
             onClick={() => history.push(`${location.pathname}/${type}`)}
           >
-            Learn More
+            {t("schema.learnMore")}
           </Button>
         )}
         <Button
@@ -67,7 +69,7 @@ export const ApiCard = ({ type }: Props) => {
           startIcon={<MenuBookRoundedIcon color="action" />}
           onClick={() => window.open(apiTypeDocsMap[type])}
         >
-          Docs
+          {t("shell.docs")}
         </Button>
       </Box>
     </Box>

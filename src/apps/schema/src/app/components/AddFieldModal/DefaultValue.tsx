@@ -6,6 +6,7 @@ import {
   Typography,
   FormControlLabel,
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { FormValue } from "./views/FieldForm";
 import { MaxLengths } from "../../../../../content-editor/src/app/components/Editor/Editor";
 import { FieldSettingsOptions } from "../../../../../../shell/services/types";
@@ -44,6 +45,7 @@ export const DefaultValue = ({
   currency,
   fieldLabel,
 }: DefaultValueProps) => {
+  const { t } = useTranslation();
   return (
     <Box>
       <FormControlLabel
@@ -67,7 +69,7 @@ export const DefaultValue = ({
         label={
           <>
             <Typography variant="body2" fontWeight="600">
-              Default Value
+              {t("schema.defaultValueLabel")}
             </Typography>
             <Typography
               variant="body3"
@@ -75,7 +77,7 @@ export const DefaultValue = ({
               fontWeight="600"
               sx={{ display: "block" }}
             >
-              Set a predefined value for this field
+              {t("schema.defaultValueHelperText")}
             </Typography>
           </>
         }

@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useLocation, useHistory, useParams } from "react-router";
 import { useDispatch } from "react-redux";
 import {
@@ -27,9 +28,8 @@ import {
   useDeleteContentModelFieldMutation,
   useUndeleteContentModelFieldMutation,
 } from "../../../../../../shell/services/instance";
-import { TYPE_TEXT, SystemField, FieldType } from "../configs";
+import { getTypeText, SystemField, FieldType } from "../configs";
 import { notify } from "../../../../../../shell/store/notifications";
-import pluralizeWord from "../../../../../../utility/pluralizeWord";
 
 type Params = {
   id: string;
@@ -71,6 +71,8 @@ export const Field = ({
   const params = useParams<Params>();
   const { id: modelZUID } = params;
   const dispatch = useDispatch();
+  const { t } = useTranslation();
+  const TYPE_TEXT = getTypeText(t);
 
   const [
     deleteContentModelField,
@@ -104,11 +106,11 @@ export const Field = ({
       let message = "";
 
       if (isFieldDeleted) {
-        message = `Field Deactivated: ${field?.label}`;
+        message = t("schema.fieldDeactivated", { label: field?.label });
       }
 
       if (isFieldUndeleted) {
-        message = `Field Reactivated: ${field?.label}`;
+        message = t("schema.fieldReactivated", { label: field?.label });
       }
 
       dispatch(
@@ -289,12 +291,10 @@ export const Field = ({
         <Typography variant="body3" color="text.secondary">
           {TYPE_TEXT[field.datatype as FieldType]}
           {field.datatype === "repeater" &&
-            ` (${
-              (field as ContentModelField).settings?.subFields?.length ?? 0
-            } ${pluralizeWord(
-              "field",
-              (field as ContentModelField).settings?.subFields?.length ?? 0
-            )})`}
+            ` ${t("schema.repeaterSubFieldCount", {
+              count:
+                (field as ContentModelField).settings?.subFields?.length ?? 0,
+            })}`}
         </Typography>
       </Box>
       <Box display="flex" alignItems="center" maxWidth="180px">
@@ -316,7 +316,7 @@ export const Field = ({
             noWrap
             fontFamily="Roboto Mono"
           >
-            {isFieldNameCopied ? "Copied" : field.name}
+            {isFieldNameCopied ? t("common.copied") : field.name}
           </Typography>
         </Button>
         {withMenu && (
@@ -354,14 +354,16 @@ export const Field = ({
                 <ListItemIcon>
                   <DriveFileRenameOutlineRoundedIcon />
                 </ListItemIcon>
-                <ListItemText>Edit Field</ListItemText>
+                <ListItemText>{t("schema.editField")}</ListItemText>
               </MenuItem>
               <MenuItem onClick={handleCopyZuid}>
                 <ListItemIcon>
                   {isZuidCopied ? <CheckIcon /> : <WidgetsRoundedIcon />}
                 </ListItemIcon>
                 <ListItemText>
-                  {isZuidCopied ? "Copied" : "Copy Field ZUID"}
+                  {isZuidCopied
+                    ? t("common.copied")
+                    : t("schema.copyFieldZuid")}
                 </ListItemText>
               </MenuItem>
               {isDeletingField || isUndeletingField ? (
@@ -370,10 +372,10 @@ export const Field = ({
                     <CircularProgress size={24} color="inherit" />
                   </ListItemIcon>
                   {isDeletingField && (
-                    <ListItemText>Deactivating Field</ListItemText>
+                    <ListItemText>{t("schema.deactivatingField")}</ListItemText>
                   )}
                   {isUndeletingField && (
-                    <ListItemText>Reactivating Field</ListItemText>
+                    <ListItemText>{t("schema.reactivatingField")}</ListItemText>
                   )}
                 </MenuItem>
               ) : (
@@ -405,7 +407,9 @@ export const Field = ({
                     )}
                   </ListItemIcon>
                   <ListItemText>
-                    {isDeactivated ? "Reactivate Field" : "Deactivate Field"}
+                    {isDeactivated
+                      ? t("schema.reactivateField")
+                      : t("schema.deactivateField")}
                   </ListItemText>
                 </MenuItem>
               )}

@@ -43,7 +43,8 @@ export const UpdateDescriptionModelDialogue = ({ onClose, model }: Props) => {
       dispatch(
         notify({
           // @ts-ignore
-          message: error?.data?.error || "Failed to update description",
+          message:
+            error?.data?.error || t("schema.updateDescriptionFailedNotify"),
           kind: "warn",
         })
       );
@@ -67,20 +68,19 @@ export const UpdateDescriptionModelDialogue = ({ onClose, model }: Props) => {
           <DriveFileRenameOutlineRounded color="info" />
         </Box>
         <Typography variant="h5" fontWeight={700} mt={1.5}>
-          Update Description
+          {t("schema.updateDescriptionDialogTitle")}
         </Typography>
         <Typography variant="body2" sx={{ mt: 1 }} color="text.secondary">
-          This will update the description of th model that is shown to content
-          editors
+          {t("schema.updateDescriptionDialogBody")}
         </Typography>
       </DialogTitle>
       <DialogContent>
         <Box>
           <InputLabel>
-            Description
+            {t("schema.updateDescriptionInputLabel")}
             <Tooltip
               placement="top"
-              title="Displays the purpose of the model to help content writers"
+              title={t("schema.updateDescriptionInputTooltip")}
             >
               <InfoRoundedIcon
                 sx={{ ml: 1, width: "10px", height: "10px" }}
@@ -93,7 +93,7 @@ export const UpdateDescriptionModelDialogue = ({ onClose, model }: Props) => {
               maxLength: 500,
             }}
             value={newDescription}
-            placeholder="What is this model going to be used for"
+            placeholder={t("schema.updateDescriptionInputPlaceholder")}
             onChange={(event) => setNewDescription(event.target.value)}
             fullWidth
             multiline

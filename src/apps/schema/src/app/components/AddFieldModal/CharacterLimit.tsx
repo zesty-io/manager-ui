@@ -10,6 +10,7 @@ import {
 import { FieldTypeNumber } from "../../../../../../shell/components/FieldTypeNumber";
 import { MaxLengths } from "../../../../../content-editor/src/app/components/Editor/Editor";
 import { Errors } from "./views/FieldForm";
+import { useTranslation } from "react-i18next";
 
 type CharacterLimitProps = {
   type: "text" | "textarea";
@@ -36,6 +37,7 @@ export const CharacterLimit = ({
   maxValue = 150,
   errors,
 }: CharacterLimitProps) => {
+  const { t } = useTranslation();
   return (
     <Box>
       <FormControlLabel
@@ -65,7 +67,7 @@ export const CharacterLimit = ({
         label={
           <Box>
             <Typography variant="body2" fontWeight="600">
-              Limit Character Count
+              {t("schema.characterLimitLabel")}
             </Typography>
             <Typography
               variant="body3"
@@ -73,7 +75,7 @@ export const CharacterLimit = ({
               fontWeight="600"
               sx={{ mb: 1, display: "block" }}
             >
-              Set a minimum and/or maximum allowed number of characters
+              {t("schema.characterLimitDescription")}
             </Typography>
           </Box>
         }
@@ -105,7 +107,7 @@ export const CharacterLimit = ({
               }
               label={
                 <Typography variant="body2" fontWeight="600" pb={0.5}>
-                  Minimum character count (with spaces)
+                  {t("schema.characterLimitMinLabel")}
                 </Typography>
               }
             />
@@ -140,7 +142,7 @@ export const CharacterLimit = ({
               }
               label={
                 <Typography variant="body2" fontWeight="600" pb={0.5}>
-                  Maximum character count (with spaces)
+                  {t("schema.characterLimitMaxLabel")}
                 </Typography>
               }
             />

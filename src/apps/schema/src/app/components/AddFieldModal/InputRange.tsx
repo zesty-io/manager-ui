@@ -7,6 +7,7 @@ import {
   FormHelperText,
   Stack,
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { Errors } from "./views/FieldForm";
 import { FieldTypeNumber } from "../../../../../../shell/components/FieldTypeNumber";
 import { FieldType } from "../configs";
@@ -36,6 +37,7 @@ export const InputRange = ({
   primaryText = null,
   secondaryText = null,
 }: InputRangeProps) => {
+  const { t } = useTranslation();
   return (
     <Box>
       <FormControlLabel
@@ -61,7 +63,7 @@ export const InputRange = ({
         label={
           <Box>
             <Typography variant="body2" fontWeight="600">
-              {primaryText || "Limit Input Range"}
+              {primaryText || t("schema.inputRangeLabel")}
             </Typography>
             <Typography
               variant="body3"
@@ -69,7 +71,7 @@ export const InputRange = ({
               fontWeight="600"
               display="block"
             >
-              {secondaryText || "Set a minimum and/or maximum allowed value"}
+              {secondaryText || t("schema.inputRangeHelperText")}
             </Typography>
           </Box>
         }
@@ -99,7 +101,7 @@ export const InputRange = ({
               }
               label={
                 <Typography variant="body2" fontWeight="600" pb={0.5}>
-                  Minimum
+                  {t("schema.inputRangeMinimum")}
                 </Typography>
               }
             />
@@ -130,7 +132,7 @@ export const InputRange = ({
               }
               label={
                 <Typography variant="body2" fontWeight="600" pb={0.5}>
-                  Maximum
+                  {t("schema.inputRangeMaximum")}
                 </Typography>
               }
             />

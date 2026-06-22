@@ -4,8 +4,10 @@ import { Box, Stack, Typography } from "@mui/material";
 import { ApiCard } from "./ApiCard";
 import { apiTypes } from ".";
 import { useGetContentModelQuery } from "../../../../../../shell/services/instance";
+import { useTranslation } from "react-i18next";
 
 export const ApiCardList = () => {
+  const { t } = useTranslation();
   const { contentModelZUID } = useParams<{ contentModelZUID: string }>();
   const { data: modelData } = useGetContentModelQuery(contentModelZUID, {
     skip: !contentModelZUID,
@@ -29,13 +31,10 @@ export const ApiCardList = () => {
         }}
       >
         <Typography variant="h5" fontWeight={600}>
-          API Access Options
+          {t("schema.apiAccessOptions")}
         </Typography>
         <Typography variant="body2">
-          Zesty offers multiple APIs for accessing this content, each with
-          unique benefits. Select one that best
-          <br />
-          meets your needs.
+          {t("schema.apiAccessDescription")}
         </Typography>
       </Stack>
 

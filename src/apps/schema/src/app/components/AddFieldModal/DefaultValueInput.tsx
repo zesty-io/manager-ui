@@ -24,6 +24,7 @@ import {
 import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownRounded";
 import { FieldTypeMedia } from "../../../../../content-editor/src/app/components/FieldTypeMedia";
 
+import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { searchItems } from "../../../../../../shell/store/content";
 
@@ -71,6 +72,7 @@ export const DefaultValueInput = ({
   currency,
   fieldLabel,
 }: DefaultValueInputProps) => {
+  const { t } = useTranslation();
   const [imageModal, setImageModal] = useState(null);
   const dispatch = useDispatch();
   const allItems = useSelector((state: AppState) => state.content);
@@ -390,7 +392,7 @@ export const DefaultValueInput = ({
         // insert placeholder
         internalLinkOptions.unshift({
           value: value as string,
-          html: `Selected item not found: ${value}`,
+          html: t("schema.selectedItemNotFound", { value }),
         });
       }
 
@@ -483,7 +485,7 @@ export const DefaultValueInput = ({
               borderColor: error ? "error.main" : "rgba(0, 0, 0, 0.12)",
             }}
           >
-            {options?.[0]?.[0] || "No"}
+            {options?.[0]?.[0] || t("common.no")}
           </ToggleButton>
           <ToggleButton
             value={1}
@@ -491,7 +493,7 @@ export const DefaultValueInput = ({
               borderColor: error ? "error.main" : "rgba(0, 0, 0, 0.12)",
             }}
           >
-            {options?.[1]?.[1] || "Yes"}
+            {options?.[1]?.[1] || t("common.yes")}
           </ToggleButton>
         </ToggleButtonGroup>
       );
@@ -507,7 +509,7 @@ export const DefaultValueInput = ({
           onChange={(e) => onChange(e.target.value)}
           error={error}
         >
-          <MenuItem value="">Select</MenuItem>
+          <MenuItem value="">{t("schema.selectPlaceholder")}</MenuItem>
           {options.map((option, i) => {
             const key = Object.keys(option)[0];
             const value = Object.values(option)[0];

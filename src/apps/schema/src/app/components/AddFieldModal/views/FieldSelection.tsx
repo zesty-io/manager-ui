@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   DialogContent,
   DialogTitle,
@@ -14,7 +15,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useSelector } from "react-redux";
 
 import { FieldItem } from "../FieldItem";
-import { FieldListData, FIELD_COPY_CONFIG } from "../../configs";
+import { FieldListData, getFieldCopyConfig } from "../../configs";
 import { AppState } from "../../../../../../../shell/store/types";
 import { User } from "../../../../../../../shell/services/types";
 
@@ -23,14 +24,23 @@ interface Props {
   onModalClose: () => void;
 }
 
-const FIELD_CATEGORIES: Record<string, string> = {
-  dateandtime: "Date & Time",
-  options: "Advanced",
-};
+const getFieldCategories = (
+  t: (key: string) => string
+): Record<string, string> => ({
+  text: t("schema.fieldCategoryText"),
+  media: t("schema.fieldCategoryMedia"),
+  numeric: t("schema.fieldCategoryNumeric"),
+  relationship: t("schema.fieldCategoryRelationship"),
+  dateandtime: t("schema.fieldCategoryDateAndTime"),
+  options: t("schema.fieldCategoryAdvanced"),
+});
 
 export const FieldSelection = ({ onFieldClick, onModalClose }: Props) => {
+  const { t } = useTranslation();
+  const FIELD_COPY_CONFIG = getFieldCopyConfig(t);
   const user: User = useSelector((state: AppState) => state.user);
   const [fieldTypes, setFieldTypes] = useState(FIELD_COPY_CONFIG);
+  const FIELD_CATEGORIES = getFieldCategories(t);
 
   const handleFilterFields = (e: React.ChangeEvent<HTMLInputElement>) => {
     const userInput = e.target.value.toLowerCase();
@@ -86,7 +96,7 @@ export const FieldSelection = ({ onFieldClick, onModalClose }: Props) => {
         >
           <Stack gap={2}>
             <Typography variant="h5" fontWeight={700}>
-              Select a Field Type
+              {t("schema.selectFieldTypeTitle")}
             </Typography>
             <Box width="349px">
               <TextField
@@ -100,7 +110,7 @@ export const FieldSelection = ({ onFieldClick, onModalClose }: Props) => {
                   ),
                 }}
                 onChange={handleFilterFields}
-                placeholder="Search field types"
+                placeholder={t("schema.searchFieldTypesPlaceholder")}
                 autoFocus
                 size="small"
               />
@@ -131,7 +141,7 @@ export const FieldSelection = ({ onFieldClick, onModalClose }: Props) => {
       >
         {!Object.keys(fieldTypes).length && (
           <Typography data-cy="FieldSelectionEmpty">
-            No matches found.
+            {t("schema.noMatchesFound")}
           </Typography>
         )}
         {Object.keys(fieldTypes).map((fieldKey) => (

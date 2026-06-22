@@ -1,4 +1,5 @@
 import { Stack, IconButton, Typography, Menu, MenuItem } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
@@ -22,6 +23,7 @@ interface Props {
 }
 
 export const ModelList = ({ title, models, type, app = "schema" }: Props) => {
+  const { t } = useTranslation();
   const location = useLocation();
 
   const [sort, setSort] = useLocalStorage(
@@ -135,7 +137,7 @@ export const ModelList = ({ title, models, type, app = "schema" }: Props) => {
             setSort("asc");
           }}
         >
-          Name (A to Z)
+          {t("common.sortNameAToZ")}
         </MenuItem>
         <MenuItem
           selected={sort === "desc"}
@@ -144,7 +146,7 @@ export const ModelList = ({ title, models, type, app = "schema" }: Props) => {
             setSort("desc");
           }}
         >
-          Name (Z to A)
+          {t("common.sortNameZToA")}
         </MenuItem>
         <MenuItem
           selected={!sort}
@@ -153,7 +155,7 @@ export const ModelList = ({ title, models, type, app = "schema" }: Props) => {
             setSort("");
           }}
         >
-          Last Created
+          {t("schema.sortLastCreated")}
         </MenuItem>
         <MenuItem
           selected={sort === "modified"}
@@ -162,7 +164,7 @@ export const ModelList = ({ title, models, type, app = "schema" }: Props) => {
             setSort("modified");
           }}
         >
-          Last Modified
+          {t("schema.sortLastModified")}
         </MenuItem>
       </Menu>
 
