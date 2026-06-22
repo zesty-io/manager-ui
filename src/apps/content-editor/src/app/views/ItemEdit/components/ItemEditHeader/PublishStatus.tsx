@@ -32,7 +32,7 @@ export const PublishStatus = ({ currentVersion }: PublishStatusProps) => {
 
   const scheduledUnpublishing = itemPublishings?.find(
     (item) =>
-      item._active &&
+      item?._active &&
       item?.unpublishAt &&
       new Date(item?.unpublishAt).getTime() > Date.now()
   );
@@ -134,7 +134,7 @@ export const PublishStatus = ({ currentVersion }: PublishStatusProps) => {
                 lineHeight="24px"
                 letterSpacing="0.46px"
               >
-                {`v${scheduledUnpublishing?.version} Scheduled Unpublish`}
+                {`v${scheduledUnpublishing.version} Scheduled Unpublish`}
               </Typography>
             </Stack>
           </Tooltip>

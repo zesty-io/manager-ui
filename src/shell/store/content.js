@@ -910,7 +910,6 @@ export function publish(modelZUID, itemZUID, data, meta = {}) {
           message = `Error publishing ${title}`;
         }
         dispatch(notify({ message, kind: "error" }));
-        throw err;
       });
   };
 }

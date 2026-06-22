@@ -169,7 +169,7 @@ export const ItemEditHeaderActions = ({
 
   const hasScheduledUnpublish = !!(
     item?.publishing?.version === item?.meta?.version &&
-    !!item?.publishing?.unpublishAt &&
+    item?.publishing?.unpublishAt &&
     new Date(item?.publishing?.unpublishAt).getTime() > Date.now()
   );
 
