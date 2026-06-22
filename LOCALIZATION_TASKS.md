@@ -6,16 +6,17 @@
 
 ## Board snapshot
 
-| ✓ Done                                                   | ▶ In Progress | → Up Next     | ≡ Backlog (in order)                                              |
-| -------------------------------------------------------- | ------------- | ------------- | ----------------------------------------------------------------- |
-| Phase 1 — Infrastructure                                 | —             | **`reports`** | `settings` · `code`                                               |
-| Phase 2 — Locale switcher                                |               |               | `release` · `active-preview` · `blocks` · `leads` · `marketplace` |
-| Phase 3 — `common` + `shell` (incl. FieldType\* widgets) |               |               | `studio` (verify-only)                                            |
-| Phase 4 — `dashboard` · `media` · `content`              |               |               | Phase 5: TinyMCE · MUI overrides · `@zesty-io/material` upstream  |
-| Phase 5 — MUI · ProseMirror · Bynder                     |               |               | Phase 8 — Cypress tests                                           |
-| Phase 6 — Caching · Phase 7 — Missing-key handling       |               |               |                                                                   |
-| **`schema`**                                             |               |               |                                                                   |
-| **`seo`**                                                |               |               |                                                                   |
+| ✓ Done                                                   | ▶ In Progress | → Up Next     | ≡ Backlog (in order)                                             |
+| -------------------------------------------------------- | ------------- | ------------- | ---------------------------------------------------------------- |
+| Phase 1 — Infrastructure                                 | —             | **`reports`** | `settings` · `code`                                              |
+| Phase 2 — Locale switcher                                |               |               | `release` · `active-preview` · `blocks` · `marketplace`          |
+| Phase 3 — `common` + `shell` (incl. FieldType\* widgets) |               |               | `studio` (verify-only)                                           |
+| Phase 4 — `dashboard` · `media` · `content`              |               |               | Phase 5: TinyMCE · MUI overrides · `@zesty-io/material` upstream |
+| Phase 5 — MUI · ProseMirror · Bynder                     |               |               | Phase 8 — Cypress tests                                          |
+| Phase 6 — Caching · Phase 7 — Missing-key handling       |               |               |                                                                  |
+| **`schema`**                                             |               |               |                                                                  |
+| **`seo`**                                                |               |               |                                                                  |
+| **`leads`**                                              |               |               |                                                                  |
 
 ---
 
@@ -109,15 +110,6 @@ _Depends on `content` (done) + `schema` (pending) — most of the blocks editing
 - [ ] Add lazy-load plumbing to `BlocksApp`
 - [ ] Create empty `public/locales/<locale>/blocks.json` for all 6 locales
 - [ ] Audit + localize `src/apps/blocks/src/` — ~30-40 own strings; OnboardingDialog multi-slide is the bulk
-- [ ] Verify: `npx tsc --noEmit`, JSON valid, key parity across all 6 locales
-
----
-
-### `leads` — Effort: XS
-
-- [ ] Add lazy-load plumbing to `LeadsApp`
-- [ ] Create empty `public/locales/<locale>/leads.json` for all 6 locales
-- [ ] Audit + localize `src/apps/leads/src/` — table headers + filter labels only
 - [ ] Verify: `npx tsc --noEmit`, JSON valid, key parity across all 6 locales
 
 ---
@@ -275,3 +267,12 @@ All infrastructure, locale switcher, `common` + `shell` namespaces (incl. all `F
 - TypeScript: `src/apps/seo/src/views/RedirectsManager/RedirectActions/RedirectsImport.tsx(183,5)`: error TS1005: `)` expected.
 - TypeScript: `src/apps/seo/src/views/RedirectsManager/RedirectActions/RedirectsImport.tsx(184,3)`: error TS1109: Expression expected.
 - TypeScript: `src/apps/seo/src/views/RedirectsManager/RedirectActions/RedirectsImport.tsx(185,1)`: error TS1128: Declaration or statement expected.
+
+---
+
+### Phase 4 — `leads`
+
+- [x] Lazy-load plumbing: `src/apps/leads/src/index.js`
+- [x] `en-US/leads.json` populated — 24 new keys, 4 reused from common/shell
+- [x] All 6 locales written
+- [x] tsc: PASS
