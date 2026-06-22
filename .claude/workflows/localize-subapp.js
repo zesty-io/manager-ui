@@ -1,7 +1,7 @@
 export const meta = {
   name: "localize-subapp",
   description:
-    "Full localization pipeline: Scout → Extractors → Composer → Translators → Wirers → Plumber → Verifier → Scribe",
+    "Full localization pipeline: Scout → Extract+Wire → Composer → Plumber → Verifier → Scribe",
   phases: [
     {
       title: "Discovery",
@@ -9,17 +9,13 @@ export const meta = {
         "Transitive import scan, dedup map, 3rd-party audit, batch assignment",
     },
     {
-      title: "Extraction",
+      title: "Extract & Wire",
       detail:
-        "Extract strings from batched files, reuse existing keys where possible",
+        "Extract strings and replace hardcoded strings with t() calls in one pass per batch",
     },
     {
       title: "Locale Files",
-      detail: "Write en-US JSON + translate to 5 locales in parallel",
-    },
-    {
-      title: "Wiring",
-      detail: "Replace hardcoded strings with t() calls in source files",
+      detail: "Write en-US JSON + copy to 5 locales for manual translation",
     },
     {
       title: "Verify",
@@ -53,12 +49,14 @@ const lazyLoadRoot = resolvedArgs.lazyLoadRoot || null;
 const NON_EN_LOCALES = ["es-ES", "hi-IN", "zh-CN", "ru-RU", "nl-NL"];
 const ALL_LOCALES = ["en-US", "es-ES", "hi-IN", "zh-CN", "ru-RU", "nl-NL"];
 
-const PLURAL_RULES = {
-  "es-ES": "_one, _many (usually same as _other), _other",
-  "hi-IN": "_one, _other",
-  "zh-CN": "_other only (no other forms)",
-  "ru-RU": "_one, _few, _many, _other",
-  "nl-NL": "_one, _other",
+// Maps each non-EN locale to its required CLDR plural forms.
+// Value is the en-US form to use as the English placeholder for that form.
+const PLURAL_SCAFFOLD = {
+  "es-ES": { _one: "_one", _many: "_other", _other: "_other" },
+  "hi-IN": { _one: "_one", _other: "_other" },
+  "zh-CN": { _other: "_other" },
+  "ru-RU": { _one: "_one", _few: "_other", _many: "_other", _other: "_other" },
+  "nl-NL": { _one: "_one", _other: "_other" },
 };
 
 // ─── Schemas ──────────────────────────────────────────────────────────────────
@@ -344,9 +342,9 @@ log(
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
-// PHASE 2 — EXTRACTORS (1 per batch, parallel)
+// PHASE 2 — EXTRACT & WIRE (1 per batch, parallel)
 // ─────────────────────────────────────────────────────────────────────────────
-phase("Extraction");
+phase("Extract & Wire");
 
 const dedupMapJSON = JSON.stringify(scout.existingKeyMap);
 
@@ -355,7 +353,8 @@ const extractionResults = await parallel(
     (batch) => () =>
       agent(
         `
-You are an Extractor for a localization pass on namespace "${ns}".
+You are an Extract-and-Wire agent for a localization pass on namespace "${ns}".
+In a single pass per file: identify all user-facing strings, assign keys, then replace hardcoded strings with t() calls.
 
 ## Your batch
 ${batch.files
@@ -375,7 +374,7 @@ ${dedupMapJSON}
 
 ---
 
-## Instructions
+## PASS 1 — EXTRACTION (all files)
 
 Read EVERY file in your batch. For each user-facing string found:
 
@@ -409,217 +408,10 @@ For files where crossNamespace is true, still extract all strings — just use t
 
 ---
 
-Return a results array with one entry per file in your batch (even if a file has 0 strings, include it with an empty strings array).
-`,
-        {
-          label: `extract:${batch.id}`,
-          phase: "Extraction",
-          schema: EXTRACTION_SCHEMA,
-        }
-      )
-  )
-);
+## PASS 2 — WIRING (crossNamespace: false files only)
 
-const validExtractions = extractionResults.filter(Boolean);
-const allFileResults = validExtractions.flatMap((e) => e.results);
-
-// Count new vs reused
-let newCount = 0;
-let reusedCount = 0;
-for (const fr of allFileResults) {
-  for (const s of fr.strings) {
-    if (s.isNew) {
-      newCount++;
-    } else {
-      reusedCount++;
-    }
-  }
-}
-log(
-  `Extraction: ${newCount} new strings · ${reusedCount} reused from other namespaces`
-);
-
-// ─────────────────────────────────────────────────────────────────────────────
-// PHASE 3 — LOCALE FILES (Composer + 5× Translators)
-// ─────────────────────────────────────────────────────────────────────────────
-phase("Locale Files");
-
-// Build per-namespace key maps (bareKey → englishValue) from new strings only
-// qualifiedKey format is "namespace.bareKey" so split on first dot
-const keysByNs = {};
-const dupCheck = {};
-
-for (const fr of allFileResults) {
-  for (const s of fr.strings) {
-    if (!s.isNew) {
-      continue;
-    }
-    const dotIdx = s.qualifiedKey.indexOf(".");
-    if (dotIdx === -1) {
-      continue;
-    } // malformed key, skip
-    const keyNs = s.qualifiedKey.slice(0, dotIdx);
-    const bareKey = s.qualifiedKey.slice(dotIdx + 1);
-    if (!keysByNs[keyNs]) {
-      keysByNs[keyNs] = {};
-    }
-    // First-seen wins for duplicate bare keys within same namespace
-    if (dupCheck[s.qualifiedKey] === undefined) {
-      dupCheck[s.qualifiedKey] = s.englishValue;
-      if (s.isPluralizable) {
-        // Provide singular/plural scaffold; Composer/Translators refine
-        keysByNs[keyNs][bareKey + "_one"] = s.englishValue;
-        keysByNs[keyNs][bareKey + "_other"] = s.englishValue;
-      } else {
-        keysByNs[keyNs][bareKey] = s.englishValue;
-      }
-    }
-  }
-}
-
-const affectedNamespaces = Object.keys(keysByNs);
-const nsKeysJSON = JSON.stringify(keysByNs, null, 2);
-
-// Composer: write en-US files + seed empty locale files
-await agent(
-  `
-You are the Composer. Write or update en-US locale JSON files with newly extracted strings.
-
-## New keys by namespace (bareKey → English value)
-${nsKeysJSON}
-
-## Instructions per namespace
-
-${affectedNamespaces
-  .map(
-    (keyNs) => `
-### ${keyNs} ${
-      keyNs === ns
-        ? "(TARGET namespace — this is the primary pass)"
-        : "(FOREIGN namespace — merge only)"
-    }
-File: public/locales/en-US/${keyNs}.json
-Action: ${
-      keyNs === ns
-        ? "CREATE or OVERWRITE this file with the keys above. If the file already has content, merge — add new keys, keep existing ones, do not remove anything."
-        : "READ the existing file first (it has prior content). MERGE these new keys in — add missing ones, do not overwrite or remove existing keys."
-    }
-`
-  )
-  .join("\n")}
-
-## After writing en-US files — seed empty locale files
-For each locale in [${NON_EN_LOCALES.map((l) => '"' + l + '"').join(
-    ", "
-  )}], ensure these files exist.
-If a file does NOT exist yet, create it with content: {}
-If it already exists (even as {}), leave it as-is.
-
-Files to seed:
-${affectedNamespaces
-  .flatMap((keyNs) =>
-    NON_EN_LOCALES.map((l) => `- public/locales/${l}/${keyNs}.json`)
-  )
-  .join("\n")}
-
-After all writes, read back each en-US file you touched and confirm it parses as valid JSON.
-`,
-  { phase: "Locale Files", label: "compose:en-US" }
-);
-
-// Translators: one per locale, parallel, read from written en-US files
-await parallel(
-  NON_EN_LOCALES.map(
-    (locale) => () =>
-      agent(
-        `
-You are the Translator for locale "${locale}".
-
-## Namespaces to translate
-${affectedNamespaces.join(", ")}
-
-## For each namespace
-
-${affectedNamespaces
-  .map(
-    (keyNs) => `
-### ${keyNs}
-1. Read public/locales/en-US/${keyNs}.json — this is the source of truth
-2. Read public/locales/${locale}/${keyNs}.json — this is the target (may be {} or have prior keys)
-3. Find keys in en-US that are MISSING from ${locale}
-4. Translate the missing keys into ${locale}
-5. Merge translated keys into the ${locale} file (keep all existing keys)
-6. Write the merged result to public/locales/${locale}/${keyNs}.json
-`
-  )
-  .join("\n")}
-
-## Translation rules for ${locale}
-1. Key names must be IDENTICAL to en-US keys — same flat camelCase, same spelling
-2. PLURAL forms — for any key ending in _one or _other, provide ALL required CLDR forms for ${locale}:
-   ${PLURAL_RULES[locale]}
-   Use the same bare base as en-US but with the ${locale}-specific suffix.
-3. Preserve {{varName}} interpolation markers EXACTLY — do not translate the variable names
-4. Do NOT translate: Zesty, Bynder, Google Analytics, ZUIDs, HTML tag names, code snippets
-5. Keep the JSON flat — no nested objects
-6. For hi-IN: hand-author Hindi carefully — no upstream translation library covers it reliably
-
-After writing, read back each file you wrote and confirm it's valid JSON.
-`,
-        { label: `translate:${locale}`, phase: "Locale Files" }
-      )
-  )
-);
-
-// ─────────────────────────────────────────────────────────────────────────────
-// PHASE 4 — WIRERS (1 per batch, parallel)
-// ─────────────────────────────────────────────────────────────────────────────
-phase("Wiring");
-
-// Build per-file string lookup (all strings — new AND reused — for wiring)
-const stringsForFile = {};
-for (const fr of allFileResults) {
-  if (fr.strings.length > 0) {
-    stringsForFile[fr.filePath] = fr.strings;
-  }
-}
-
-// Only wire files in the TARGET namespace (cross-namespace files go to Scribe)
-const crossNsGaps = allFileResults.filter(
-  (fr) => fr.homeNamespace !== ns && fr.strings.length > 0
-);
-
-const wiringBatches = scout.batches
-  .map((batch) => ({
-    ...batch,
-    files: batch.files.filter(
-      (f) =>
-        !f.crossNamespace &&
-        stringsForFile[f.path] &&
-        stringsForFile[f.path].length > 0
-    ),
-  }))
-  .filter((batch) => batch.files.length > 0);
-
-await parallel(
-  wiringBatches.map((batch) => () => {
-    const batchFileData = batch.files.map((f) => ({
-      path: f.path,
-      concerns: f.concerns,
-      strings: stringsForFile[f.path] || [],
-    }));
-
-    return agent(
-      `
-You are a Wirer for a localization pass on namespace "${ns}".
-Your job: edit source files to replace hardcoded UI strings with t() calls.
-
-## Files to wire
-${JSON.stringify(batchFileData, null, 2)}
-
-## Instructions
-
-For EACH file, READ it first, then apply changes and WRITE it back.
+For each file where crossNamespace is false AND it has at least one string to wire:
+READ the file first, apply the changes below, then WRITE it back.
 
 ### A. Imports
 Add at the top if not already present:
@@ -701,14 +493,51 @@ If the file imports a constant that stores translation keys (e.g. \`TARGET_ERROR
 - Do not declare the useTranslation hook twice in the same function
 - Do not break any existing imports or variable declarations
 - Verify JSX is still syntactically valid after replacements
+
+---
+
+Return a results array with one entry per file in your batch (even if a file has 0 strings, include it with an empty strings array).
 `,
-      { label: `wire:${batch.id}`, phase: "Wiring" }
-    );
-  })
+        {
+          label: `extract-wire:${batch.id}`,
+          phase: "Extract & Wire",
+          schema: EXTRACTION_SCHEMA,
+        }
+      )
+  )
+);
+
+const validExtractions = extractionResults.filter(Boolean);
+const allFileResults = validExtractions.flatMap((e) => e.results);
+
+// Count new vs reused
+let newCount = 0;
+let reusedCount = 0;
+for (const fr of allFileResults) {
+  for (const s of fr.strings) {
+    if (s.isNew) {
+      newCount++;
+    } else {
+      reusedCount++;
+    }
+  }
+}
+
+// Cross-namespace files: extracted but not wired — carried over to Scribe
+const crossNsGaps = allFileResults.filter(
+  (fr) => fr.homeNamespace !== ns && fr.strings.length > 0
+);
+
+const filesWiredCount = allFileResults.filter(
+  (fr) => fr.homeNamespace === ns && fr.strings.length > 0
+).length;
+
+log(
+  `Extract & Wire: ${newCount} new strings · ${reusedCount} reused · ${filesWiredCount} files wired · ${crossNsGaps.length} cross-namespace gaps`
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
-// PHASE 5 — PLUMBER (optional)
+// PLUMBER (optional) — lazy-load plumbing for the sub-app root
 // ─────────────────────────────────────────────────────────────────────────────
 if (lazyLoadRoot && scout.needsLazyLoadPlumbing) {
   await agent(
@@ -743,12 +572,115 @@ const MyAppInner = () => {
 3. Do NOT add useTranslation("${ns}") to every child — only this one trigger point
 4. Write the updated file
 `,
-    { phase: "Wiring", label: "wire:lazy-load-plumbing" }
+    { phase: "Extract & Wire", label: "wire:lazy-load-plumbing" }
   );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// PHASE 6 — VERIFIER
+// PHASE 3 — LOCALE FILES (Composer writes en-US + copies to non-EN)
+// ─────────────────────────────────────────────────────────────────────────────
+phase("Locale Files");
+
+// Build per-namespace key maps (bareKey → englishValue) from new strings only
+// qualifiedKey format is "namespace.bareKey" so split on first dot
+const keysByNs = {};
+const dupCheck = {};
+
+for (const fr of allFileResults) {
+  for (const s of fr.strings) {
+    if (!s.isNew) {
+      continue;
+    }
+    const dotIdx = s.qualifiedKey.indexOf(".");
+    if (dotIdx === -1) {
+      continue;
+    } // malformed key, skip
+    const keyNs = s.qualifiedKey.slice(0, dotIdx);
+    const bareKey = s.qualifiedKey.slice(dotIdx + 1);
+    if (!keysByNs[keyNs]) {
+      keysByNs[keyNs] = {};
+    }
+    // First-seen wins for duplicate bare keys within same namespace
+    if (dupCheck[s.qualifiedKey] === undefined) {
+      dupCheck[s.qualifiedKey] = s.englishValue;
+      if (s.isPluralizable) {
+        keysByNs[keyNs][bareKey + "_one"] = s.englishValue;
+        keysByNs[keyNs][bareKey + "_other"] = s.englishValue;
+      } else {
+        keysByNs[keyNs][bareKey] = s.englishValue;
+      }
+    }
+  }
+}
+
+const affectedNamespaces = Object.keys(keysByNs);
+const nsKeysJSON = JSON.stringify(keysByNs, null, 2);
+
+// Composer: write en-US files + copy new keys to non-EN locale files
+await agent(
+  `
+You are the Composer. Write or update locale JSON files with newly extracted strings.
+
+## New keys by namespace (bareKey → English value)
+${nsKeysJSON}
+
+## Part 1 — Write en-US files
+
+${affectedNamespaces
+  .map(
+    (keyNs) => `
+### ${keyNs} ${
+      keyNs === ns
+        ? "(TARGET namespace — this is the primary pass)"
+        : "(FOREIGN namespace — merge only)"
+    }
+File: public/locales/en-US/${keyNs}.json
+Action: ${
+      keyNs === ns
+        ? "CREATE or OVERWRITE this file with the keys above. If the file already has content, merge — add new keys, keep existing ones, do not remove anything."
+        : "READ the existing file first (it has prior content). MERGE these new keys in — add missing ones, do not overwrite or remove existing keys."
+    }
+`
+  )
+  .join("\n")}
+
+## Part 2 — Copy new keys to non-EN locale files
+
+For each of the following files, copy any key that exists in the corresponding en-US file but is missing from the locale file, using the en-US value as a placeholder (the user will translate manually).
+Do NOT overwrite or remove keys that already exist in the locale file.
+If a locale file does not exist yet, create it with the same content as the en-US file.
+
+Files to update:
+${affectedNamespaces
+  .flatMap((keyNs) =>
+    NON_EN_LOCALES.map((l) => `- public/locales/${l}/${keyNs}.json`)
+  )
+  .join("\n")}
+
+## Plural scaffolding rules per locale
+${JSON.stringify(PLURAL_SCAFFOLD, null, 2)}
+
+Each entry maps a target CLDR form → which en-US form to use as the English placeholder value.
+A plural key is any key whose bare name ends in _one or _other in en-US.
+
+For each file above:
+1. Read public/locales/en-US/<namespace>.json (source of truth for keys)
+2. Read the target locale file (may not exist, or may be {} or have prior keys)
+3. For non-plural keys missing from the locale file: copy the en-US value as placeholder
+4. For plural keys (base ends in _one/_other in en-US): scaffold ALL required CLDR forms for
+   this locale using the rules above. For each required form, use the mapped en-US form's value
+   as the placeholder. Do NOT copy forms that are not listed for this locale (e.g. zh-CN gets
+   _other only — do not copy _one).
+5. Write the merged result
+6. Confirm the written file parses as valid JSON
+
+After all writes, read back each en-US file you touched and confirm it parses as valid JSON.
+`,
+  { phase: "Locale Files", label: "compose:all-locales", model: "haiku" }
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PHASE 4 — VERIFIER
 // ─────────────────────────────────────────────────────────────────────────────
 phase("Verify");
 
@@ -816,7 +748,7 @@ log(
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
-// PHASE 7 — SCRIBE
+// PHASE 5 — SCRIBE
 // ─────────────────────────────────────────────────────────────────────────────
 phase("Scribe");
 
@@ -829,8 +761,8 @@ const scribeData = {
   target: targetDisplay,
   lazyLoadRoot: lazyLoadRoot,
   stats: {
-    batchesRun: wiringBatches.length,
-    filesWired: wiringBatches.reduce((n, b) => n + b.files.length, 0),
+    batchesRun: scout.batches.length,
+    filesWired: filesWiredCount,
     newKeys: newCount,
     reusedKeys: reusedCount,
   },
@@ -889,7 +821,7 @@ Format it like the existing done entries. Include:
 - [x] en-US/${ns}.json populated — ${newCount} new keys${
     reusedCount > 0 ? ", " + reusedCount + " reused from common/shell" : ""
   }
-- [x] All 6 locales written
+- [x] All 6 locales seeded with en-US values (manual translation pending)
 - [x] tsc: ${verify.tscPassed ? "PASS" : "FAIL — see issues below"}
 
 ### 4. Cross-namespace gaps (if any)
@@ -938,7 +870,7 @@ ${scribeData.inaccessibleThirdParty
 
 Write the updated LOCALIZATION_TASKS.md. Preserve all existing formatting, sections, and content not mentioned above.
 `,
-  { phase: "Scribe", label: "scribe:task-board" }
+  { phase: "Scribe", label: "scribe:task-board", model: "haiku" }
 );
 
 log("Scribe done. LOCALIZATION_TASKS.md updated.");
@@ -948,7 +880,7 @@ log("Scribe done. LOCALIZATION_TASKS.md updated.");
 // ─────────────────────────────────────────────────────────────────────────────
 return {
   namespace: ns,
-  filesWired: wiringBatches.reduce((n, b) => n + b.files.length, 0),
+  filesWired: filesWiredCount,
   newKeys: newCount,
   reusedKeys: reusedCount,
   crossNamespaceGaps: crossNsGaps.length,
