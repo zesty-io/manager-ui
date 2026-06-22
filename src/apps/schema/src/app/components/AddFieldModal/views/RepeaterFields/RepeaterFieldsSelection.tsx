@@ -8,7 +8,12 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { FIELD_COPY_CONFIG, FieldListData, FieldType } from "../../../configs";
+import {
+  FIELD_COPY_CONFIG,
+  FIELD_CATEGORY_LABELS,
+  FieldListData,
+  FieldType,
+} from "../../../configs";
 import { FieldItem } from "../../FieldItem";
 
 const ALLOWED_REPEATER_FIELD_TYPES = new Set<FieldType>([
@@ -48,11 +53,6 @@ const repeaterFields = {
   options: FIELD_COPY_CONFIG.options.filter((field) =>
     ALLOWED_REPEATER_FIELD_TYPES.has(field.type)
   ),
-};
-
-const GROUP_LABELS: Partial<Record<keyof typeof repeaterFields, string>> = {
-  options: "Advanced",
-  dateandtime: "Date & Time",
 };
 
 type RepeaterFieldsSelectionProps = {
@@ -124,7 +124,7 @@ export const RepeaterFieldsSelection = ({
                 mb={1.5}
                 color="text.secondary"
               >
-                {GROUP_LABELS[fieldKey] ?? fieldKey}
+                {FIELD_CATEGORY_LABELS[fieldKey] ?? fieldKey}
               </Typography>
               <Box
                 display="grid"

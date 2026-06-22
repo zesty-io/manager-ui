@@ -765,7 +765,8 @@ describe("Content Specs", () => {
         .find('[data-cy="datePickerInputField"] input')
         .should("have.value", "Jan 15, 2025");
 
-      cy.getBySelector("CloseAddRepeaterRowDialogBtn").click();
+      // Delete the row to keep downstream tests isolated (they expect exactly 1 row from the "add" test)
+      cy.getBySelector("RemoveRepeaterRowItemBtn").click();
     });
 
     it("should be able to update a row item", () => {
@@ -918,4 +919,3 @@ describe("Content Specs", () => {
     });
   });
 });
-
