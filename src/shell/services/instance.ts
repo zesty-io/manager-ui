@@ -142,7 +142,7 @@ export const instanceApi = createApi({
     getAudits: builder.query<Audit[], any>({
       query: (options) => {
         const params = new URLSearchParams(options as any).toString();
-        return `env/audits?${params}&limit=100000`;
+        return `env/audits?${params}&limit=10000`;
       },
       transformResponse: (response: { data: any[] }) => {
         return response.data.map((action) => {

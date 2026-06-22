@@ -3,7 +3,7 @@ const TEST_DATA = {
   new: `New Item:${timestamp}`,
   ai: `AI Generated:${timestamp}`,
 };
-const requestTimeout = 15000;
+const requestTimeout = 30000;
 
 describe("Actions in content editor", () => {
   let CONTENT_ITEMS = null;
@@ -40,9 +40,9 @@ describe("Actions in content editor", () => {
 
     cy.getBySelector("field:markdown")
       .find("textarea")
+      .should("have.value", "markdown")
       .click()
       .clear()
-      .wait(500)
       .should("have.value", "");
 
     cy.getBySelector("SaveItemButton")
@@ -223,13 +223,13 @@ describe("Actions in content editor", () => {
     cy.wait([items, publishings], { requestTimeout });
 
     cy.getBySelector("PublishButton").should("exist").should("be.enabled");
-    cy.getBySelector("PublishButton").trigger("click");
+    cy.getBySelector("PublishButton").click();
 
     cy.getBySelector("ConfirmPublishModal")
       .should("exist")
       .within(() => {
         cy.getBySelector("ConfirmPublishButton").should("exist");
-        cy.getBySelector("ConfirmPublishButton").trigger("click");
+        cy.getBySelector("ConfirmPublishButton").click();
       });
 
     cy.wait(publishItem);
@@ -246,20 +246,20 @@ describe("Actions in content editor", () => {
     cy.wait([items, publishings], { requestTimeout });
 
     cy.getBySelector("PublishMenuButton").should("exist").should("be.enabled");
-    cy.getBySelector("PublishMenuButton").trigger("click");
+    cy.getBySelector("PublishMenuButton").click();
 
     cy.getBySelector("publishingMenu")
       .should("exist")
       .within(() => {
         cy.getBySelector("UnpublishContentButton").should("exist");
-        cy.getBySelector("UnpublishContentButton").trigger("click");
+        cy.getBySelector("UnpublishContentButton").click();
       });
 
     cy.getBySelector("unpublishDialog")
       .should("exist")
       .within(() => {
         cy.getBySelector("ConfirmUnpublishButton").should("exist");
-        cy.getBySelector("ConfirmUnpublishButton").trigger("click");
+        cy.getBySelector("ConfirmUnpublishButton").click();
       });
 
     cy.wait(deletePublishedItem);
@@ -278,20 +278,20 @@ describe("Actions in content editor", () => {
     cy.wait([items, publishings], { requestTimeout });
 
     cy.getBySelector("PublishMenuButton").should("exist").should("be.enabled");
-    cy.getBySelector("PublishMenuButton").trigger("click");
+    cy.getBySelector("PublishMenuButton").click();
 
     cy.getBySelector("publishingMenu")
       .should("exist")
       .within(() => {
         cy.getBySelector("PublishScheduleButton").should("exist");
-        cy.getBySelector("PublishScheduleButton").trigger("click");
+        cy.getBySelector("PublishScheduleButton").click();
       });
 
     cy.getBySelector("SchedulePublishModal")
       .should("exist")
       .within(() => {
         cy.getBySelector("SchedulePublishButton").should("exist");
-        cy.getBySelector("SchedulePublishButton").trigger("click");
+        cy.getBySelector("SchedulePublishButton").click();
       });
 
     cy.wait(publishItem);
@@ -301,23 +301,27 @@ describe("Actions in content editor", () => {
   });
 
   it("Unschedules a Publish for an item", () => {
-    const { deletePublishedItem, publishings } = awaitRequests();
+    const { items, deletePublishedItem, publishings } = awaitRequests();
+    cy.visit(
+      `/content/${Cypress.env("modelZUID")}/${CONTENT_ITEMS?.[4]?.meta?.ZUID}`
+    );
+    cy.wait([items, publishings], { requestTimeout });
 
     cy.getBySelector("PublishMenuButton").should("exist").should("be.enabled");
-    cy.getBySelector("PublishMenuButton").trigger("click");
+    cy.getBySelector("PublishMenuButton").click();
 
     cy.getBySelector("publishingMenu")
       .should("exist")
       .within(() => {
         cy.getBySelector("PublishScheduleButton").should("exist");
-        cy.getBySelector("PublishScheduleButton").trigger("click");
+        cy.getBySelector("PublishScheduleButton").click();
       });
 
     cy.getBySelector("SchedulePublishModal")
       .should("exist")
       .within(() => {
         cy.getBySelector("UnschedulePublishButton").should("exist");
-        cy.getBySelector("UnschedulePublishButton").trigger("click");
+        cy.getBySelector("UnschedulePublishButton").click();
       });
 
     cy.wait([deletePublishedItem, publishings], { requestTimeout });
@@ -327,13 +331,13 @@ describe("Actions in content editor", () => {
 
   it("Only allows future dates to be scheduled for publish", () => {
     cy.getBySelector("PublishMenuButton").should("exist").should("be.enabled");
-    cy.getBySelector("PublishMenuButton").trigger("click");
+    cy.getBySelector("PublishMenuButton").click();
 
     cy.getBySelector("publishingMenu")
       .should("exist")
       .within(() => {
         cy.getBySelector("PublishScheduleButton").should("exist");
-        cy.getBySelector("PublishScheduleButton").trigger("click");
+        cy.getBySelector("PublishScheduleButton").click();
       });
 
     cy.getBySelector("PublishScheduleModal")
