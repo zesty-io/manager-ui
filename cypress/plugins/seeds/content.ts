@@ -119,7 +119,7 @@ module.exports = function content(config) {
         (label) => !["Needs Review", "Draft", "Approved"]?.includes(label?.name)
       )
       .map((label) => {
-        sdk.instance.deleteLabel(label?.ZUID).then((res) => {
+        return sdk.instance.deleteLabel(label?.ZUID).then((res) => {
           return res.data;
         });
       });
