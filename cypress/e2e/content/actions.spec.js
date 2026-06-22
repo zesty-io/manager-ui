@@ -9,6 +9,13 @@ describe("Actions in content editor", () => {
   let CONTENT_ITEMS = null;
   let FIELDS = null;
   before(() => {
+    // Remove any leftover workflow labels first. Publishing is gated instance-wide
+    // once any allowPublish label exists, and a cancelled/failed run of
+    // content/workflows can orphan its publishLabel — which would block the publish
+    // tests below. content/actions runs first in the global chunk, so this also
+    // clears orphans for the rest of the chunk.
+    cy.task("cleanup:labels");
+
     cy.task("seed:content", "fixtures/actions.json").then(
       ({ model, fields, items }) => {
         //Set modelZUID as Cypress env variable for global test access
