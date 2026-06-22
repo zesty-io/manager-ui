@@ -1,6 +1,13 @@
 const SEARCH_TERM = `cypress ${Date.now()}`;
 
 describe("Global Search: Search Bar", () => {
+  beforeEach(() => {
+    // Recent searches persist in localStorage (testIsolation is off), so they
+    // accumulate across tests/runs — leaving multiple recent-keyword elements
+    // that break single-element selectors. Start each test with none.
+    cy.clearLocalStorage("zesty:globalSearch:recentSearches");
+  });
+
   it("Saves user input search keywords", () => {
     cy.waitOn(
       "https://8-f48cf3a682-7fthvk.api.dev.zesty.io/v1/search/items*",
@@ -13,6 +20,9 @@ describe("Global Search: Search Bar", () => {
     cy.getBySelector("global-search-textfield")
       .find("input")
       .should("exist")
+      // the field pre-fills with the ?q= param, so clear before typing to avoid
+      // appending (e.g. "cypresscypress ...").
+      .clear()
       .type(SEARCH_TERM)
       .type("{enter}");
 
@@ -41,6 +51,9 @@ describe("Global Search: Search Bar", () => {
     cy.getBySelector("global-search-textfield")
       .find("input")
       .should("exist")
+      // the field pre-fills with the ?q= param, so clear before typing to avoid
+      // appending (e.g. "cypresscypress ...").
+      .clear()
       .type(SEARCH_TERM)
       .type("{enter}");
 
@@ -78,6 +91,9 @@ describe("Global Search: Search Bar", () => {
     cy.getBySelector("global-search-textfield")
       .find("input")
       .should("exist")
+      // the field pre-fills with the ?q= param, so clear before typing to avoid
+      // appending (e.g. "cypresscypress ...").
+      .clear()
       .type(SEARCH_TERM)
       .type("{enter}");
     cy.get("button.MuiAutocomplete-clearIndicator").should("exist").click();
