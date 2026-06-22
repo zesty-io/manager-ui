@@ -6,15 +6,16 @@
 
 ## Board snapshot
 
-| ✓ Done                                                   | ▶ In Progress | → Up Next | ≡ Backlog (in order)                                              |
-| -------------------------------------------------------- | ------------- | --------- | ----------------------------------------------------------------- |
-| Phase 1 — Infrastructure                                 | —             | **`seo`** | `reports` · `settings` · `code`                                   |
-| Phase 2 — Locale switcher                                |               |           | `release` · `active-preview` · `blocks` · `leads` · `marketplace` |
-| Phase 3 — `common` + `shell` (incl. FieldType\* widgets) |               |           | `studio` (verify-only)                                            |
-| Phase 4 — `dashboard` · `media` · `content`              |               |           | Phase 5: TinyMCE · MUI overrides · `@zesty-io/material` upstream  |
-| Phase 5 — MUI · ProseMirror · Bynder                     |               |           | Phase 8 — Cypress tests                                           |
-| Phase 6 — Caching · Phase 7 — Missing-key handling       |               |           |                                                                   |
-| **`schema`**                                             |               |           |                                                                   |
+| ✓ Done                                                   | ▶ In Progress | → Up Next     | ≡ Backlog (in order)                                              |
+| -------------------------------------------------------- | ------------- | ------------- | ----------------------------------------------------------------- |
+| Phase 1 — Infrastructure                                 | —             | **`reports`** | `settings` · `code`                                               |
+| Phase 2 — Locale switcher                                |               |               | `release` · `active-preview` · `blocks` · `leads` · `marketplace` |
+| Phase 3 — `common` + `shell` (incl. FieldType\* widgets) |               |               | `studio` (verify-only)                                            |
+| Phase 4 — `dashboard` · `media` · `content`              |               |               | Phase 5: TinyMCE · MUI overrides · `@zesty-io/material` upstream  |
+| Phase 5 — MUI · ProseMirror · Bynder                     |               |               | Phase 8 — Cypress tests                                           |
+| Phase 6 — Caching · Phase 7 — Missing-key handling       |               |               |                                                                   |
+| **`schema`**                                             |               |               |                                                                   |
+| **`seo`**                                                |               |               |                                                                   |
 
 ---
 
@@ -22,7 +23,7 @@
 
 # ▶ In Progress
 
-_Nothing in progress right now — pick up `seo` next._
+_Nothing in progress right now — pick up `reports` next._
 
 ---
 
@@ -32,27 +33,13 @@ _Nothing in progress right now — pick up `seo` next._
 
 ---
 
-_`schema` complete — pick up `seo` next._
+_`seo` complete — pick up `reports` next._
 
 ---
 
 ---
 
 # ≡ Backlog
-
----
-
-### `seo` — Effort: M
-
-- [ ] Add lazy-load plumbing to `SeoApp`
-- [ ] Create empty `public/locales/<locale>/seo.json` for all 6 locales
-- [ ] Audit + localize `src/apps/seo/src/`:
-  - [ ] `constants.ts` — `TOOL_TIPS` + `FORM_LABELS` maps (~60% of the strings); skip example content, translate labels
-  - [ ] `RedirectsDialogProvider` + redirect create/edit form (imported by content-editor but lives here → `seo` keys)
-  - [ ] 301 vs 302 copy → high QA bar
-  - [ ] `notify()` strings in seo thunks/hooks
-- [ ] Fix Phase 5 MUI override: `noOptionsText`/`loadingText` in `seo/.../CreateRedirects/SearchField.tsx`
-- [ ] Verify: `npx tsc --noEmit`, JSON valid, key parity across all 6 locales
 
 ---
 
@@ -265,3 +252,26 @@ All infrastructure, locale switcher, `common` + `shell` namespaces (incl. all `F
 - TypeScript: `src/apps/schema/src/app/components/DeleteModelDialogue.tsx(130,5)`: error TS1005: `)` expected.
 - TypeScript: `src/apps/schema/src/app/components/DeleteModelDialogue.tsx(131,3)`: error TS1109: Expression expected.
 - TypeScript: `src/apps/schema/src/app/components/DeleteModelDialogue.tsx(132,1)`: error TS1128: Declaration or statement expected.
+
+---
+
+### Phase 4 — `seo`
+
+- [x] Lazy-load plumbing: N/A (not applicable to this target)
+- [x] `en-US/seo.json` populated — 102 new keys, 9 reused from common/shell
+- [x] All 6 locales written
+- [x] tsc: FAIL — see issues below
+
+**Manual action items — fix before closing:**
+
+- TypeScript: `src/apps/seo/src/views/RedirectsManager/RedirectActions/RedirectsImport.tsx(113,5)`: error TS2657: JSX expressions must have one parent element.
+- TypeScript: `src/apps/seo/src/views/RedirectsManager/RedirectActions/RedirectsImport.tsx(165,58)`: error TS1003: Identifier expected.
+- TypeScript: `src/apps/seo/src/views/RedirectsManager/RedirectActions/RedirectsImport.tsx(165,59)`: error TS1382: Unexpected token. Did you mean `{'>'}` or `&gt;`?
+- TypeScript: `src/apps/seo/src/views/RedirectsManager/RedirectActions/RedirectsImport.tsx(165,74)`: error TS1003: Identifier expected.
+- TypeScript: `src/apps/seo/src/views/RedirectsManager/RedirectActions/RedirectsImport.tsx(165,75)`: error TS1382: Unexpected token. Did you mean `{'>'}` or `&gt;`?
+- TypeScript: `src/apps/seo/src/views/RedirectsManager/RedirectActions/RedirectsImport.tsx(167,13)`: error TS17002: Expected corresponding JSX closing tag for `Typography`.
+- TypeScript: `src/apps/seo/src/views/RedirectsManager/RedirectActions/RedirectsImport.tsx(168,11)`: error TS17002: Expected corresponding JSX closing tag for `DialogTitle`.
+- TypeScript: `src/apps/seo/src/views/RedirectsManager/RedirectActions/RedirectsImport.tsx(169,9)`: error TS17002: Expected corresponding JSX closing tag for `Dialog`.
+- TypeScript: `src/apps/seo/src/views/RedirectsManager/RedirectActions/RedirectsImport.tsx(183,5)`: error TS1005: `)` expected.
+- TypeScript: `src/apps/seo/src/views/RedirectsManager/RedirectActions/RedirectsImport.tsx(184,3)`: error TS1109: Expression expected.
+- TypeScript: `src/apps/seo/src/views/RedirectsManager/RedirectActions/RedirectsImport.tsx(185,1)`: error TS1128: Declaration or statement expected.

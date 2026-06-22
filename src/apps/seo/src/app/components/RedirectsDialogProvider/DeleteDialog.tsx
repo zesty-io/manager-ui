@@ -40,8 +40,8 @@ export const DeleteDialog: FC<DeleteDialogProps> = ({
 
   const descriptionPart =
     redirects?.length < 2
-      ? `Deleting this redirect for these incoming path`
-      : `Deleting these ${redirects?.length} redirects for these incoming paths`;
+      ? t("seo.deleteRedirectDescriptionSingular")
+      : t("seo.deleteRedirectDescriptionPlural", { count: redirects?.length });
 
   const handleDeleteRedirects = async () => {
     const requests = [...(redirects || [])]?.map((redirect) =>
@@ -55,7 +55,7 @@ export const DeleteDialog: FC<DeleteDialogProps> = ({
         dispatch(
           notify({
             kind: "error",
-            message: `Error deleting redirects`,
+            message: t("seo.errorDeletingRedirects"),
           })
         );
       })
@@ -63,9 +63,7 @@ export const DeleteDialog: FC<DeleteDialogProps> = ({
         dispatch(
           notify({
             kind: "error",
-            message: `${redirects?.length} Redirect${
-              redirects?.length > 1 ? "s" : ""
-            } Deleted`,
+            message: t("seo.redirectDeleted", { count: redirects?.length }),
           })
         );
       });
@@ -103,13 +101,11 @@ export const DeleteDialog: FC<DeleteDialogProps> = ({
             flexGrow={0}
             flexShrink={0}
           >
-            {`Delete ${redirects?.length} Redirect${
-              redirects?.length > 1 ? "s" : ""
-            }`}
+            {t("seo.deleteRedirectTitle", { count: redirects?.length })}
           </Typography>
         </Stack>
         <Typography variant="body2" color="text.secondary" sx={{ mt: "8px" }}>
-          {`${descriptionPart} will remove it immediately from your site. This action cannot be undone.`}
+          {`${descriptionPart} ${t("seo.deleteRedirectDescriptionSuffix")}`}
         </Typography>
       </DialogTitle>
       <DialogContent sx={{ p: 0 }} data-cy="RedirectsDeleteDialog">
@@ -163,7 +159,7 @@ export const DeleteDialog: FC<DeleteDialogProps> = ({
           onClick={handleDeleteRedirects}
           loading={isDeleting}
         >
-          Delete Redirects ({redirects?.length})
+          {t("seo.deleteRedirectsButton", { count: redirects?.length })}
         </Button>
       </DialogActions>
     </Dialog>

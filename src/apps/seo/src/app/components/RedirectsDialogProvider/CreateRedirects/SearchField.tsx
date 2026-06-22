@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import { List, RowComponentProps } from "react-window";
@@ -135,6 +136,7 @@ const SearchField: React.FC<SearchFieldProps> = ({
   readOnly = false,
   onSearch,
 }) => {
+  const { t } = useTranslation();
   const textInputRef = React.useRef(null);
   const [open, setOpen] = React.useState(false);
 
@@ -213,7 +215,7 @@ const SearchField: React.FC<SearchFieldProps> = ({
               setOpen(true);
             }
           }}
-          noOptionsText="No results found"
+          noOptionsText={t("shell.noResultsFound")}
           renderInput={(params) => {
             return (
               <TextField
@@ -223,7 +225,7 @@ const SearchField: React.FC<SearchFieldProps> = ({
                 slotProps={{
                   input: {
                     ...params.InputProps,
-                    placeholder: "Search for item",
+                    placeholder: t("seo.searchForItem"),
                     readOnly: !!value,
                     ...(!!value
                       ? {}
@@ -297,7 +299,7 @@ const SearchField: React.FC<SearchFieldProps> = ({
           mt="4px"
           data-cy="RedirectsSearchFieldError"
         >
-          {TARGET_ERRORS.unpublished}
+          {t(TARGET_ERRORS.unpublished)}
         </Typography>
       )}
     </>

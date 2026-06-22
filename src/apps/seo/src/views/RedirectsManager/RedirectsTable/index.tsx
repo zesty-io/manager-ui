@@ -5,6 +5,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import { useTranslation } from "react-i18next";
 import {
   DataGridPro,
   GRID_CHECKBOX_SELECTION_COL_DEF,
@@ -36,6 +37,7 @@ const TARGET_TYPES_MAP = {
 } as const;
 
 const RedirectsTable = () => {
+  const { t } = useTranslation();
   const { openDeleteDialog, openCreateForm } = useRedirectsDialog();
   const {
     redirects,
@@ -59,7 +61,7 @@ const RedirectsTable = () => {
         field: "path",
         minWidth: 206,
         flex: 1,
-        headerName: "Incoming Path",
+        headerName: t("seo.columnIncomingPath"),
         renderCell: ({ value }: GridRenderCellParams<GridValidRowModel>) => (
           <Typography variant="body2" color="text.primary">
             {value}
@@ -70,7 +72,7 @@ const RedirectsTable = () => {
         field: "code",
         width: 120,
         minWidth: 120,
-        headerName: "HTTP Code",
+        headerName: t("seo.columnHttpCode"),
         renderCell: ({ value }: GridRenderCellParams<GridValidRowModel>) => {
           return (
             <Typography
@@ -95,7 +97,7 @@ const RedirectsTable = () => {
         field: "targetType",
         width: 120,
         minWidth: 120,
-        headerName: "Type",
+        headerName: t("seo.columnType"),
         renderCell: ({ value }: GridRenderCellParams<GridValidRowModel>) => {
           return (
             <Typography
@@ -113,17 +115,17 @@ const RedirectsTable = () => {
               {value === "external" ? (
                 <>
                   <OpenInNewRoundedIcon fontSize="small" color="action" />
-                  External&nbsp;
+                  {t("seo.typeExternal")}&nbsp;
                 </>
               ) : value === "path" ? (
                 <>
                   <HiveIcon fontSize="small" color="action" />
-                  Wildcard&nbsp;
+                  {t("seo.typeWildcard")}&nbsp;
                 </>
               ) : (
                 <>
                   <DescriptionRoundedIcon fontSize="small" color="action" />
-                  Internal&nbsp;
+                  {t("seo.typeInternal")}&nbsp;
                 </>
               )}
             </Typography>
@@ -134,7 +136,7 @@ const RedirectsTable = () => {
         field: "target",
         minWidth: 190,
         flex: 1,
-        headerName: "Target",
+        headerName: t("seo.columnTarget"),
         renderCell: ({
           value,
           row,
@@ -155,7 +157,7 @@ const RedirectsTable = () => {
             showInMenu
             icon={<ModeEditIcon fontSize="small" />}
             color="action.secondary"
-            label="Edit Redirect"
+            label={t("seo.editRedirect")}
             onClick={() => {
               openCreateForm({
                 ZUID: row?.ZUID,
@@ -170,7 +172,7 @@ const RedirectsTable = () => {
             showInMenu
             icon={<DeleteIcon fontSize="small" />}
             color="action.secondary"
-            label="Delete Redirect"
+            label={t("seo.deleteRedirect")}
             onClick={() =>
               openDeleteDialog([{ ZUID: row.ZUID, path: row.path }])
             }
@@ -178,7 +180,7 @@ const RedirectsTable = () => {
         ],
       },
     ],
-    []
+    [t]
   );
 
   const rows = useMemo(() => {

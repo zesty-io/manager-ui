@@ -22,7 +22,7 @@ import {
   FORM_LABELS,
   HTTP_CODE_OPTIONS,
   TARGET_OPTIONS,
-  TOOL_TIPS,
+  getToolTips,
 } from "../constants";
 import { CreateFormDefaultValues, useRedirectsDialog } from "..";
 
@@ -194,10 +194,12 @@ const CreateForm: FC<CreateFormProps> = ({
         notify({
           kind: "success",
           message: !isEdit
-            ? `${redirectsPaths?.length} Redirect${
-                redirectsPaths?.length > 1 ? "s" : ""
-              } Created`
-            : `Redirect Saved: ${redirectsPaths[0]}`,
+            ? t("seo.createFormNotifyCreated", {
+                count: redirectsPaths?.length,
+              })
+            : t("seo.createFormNotifySaved", {
+                path: redirectsPaths[0],
+              }),
         })
       );
     } else {
@@ -295,7 +297,7 @@ const CreateForm: FC<CreateFormProps> = ({
               flexGrow={0}
               flexShrink={0}
             >
-              {FORM_LABELS[actionType]?.header}
+              {t(FORM_LABELS[actionType]?.header)}
             </Typography>
             <Typography
               variant="body3"
@@ -304,7 +306,7 @@ const CreateForm: FC<CreateFormProps> = ({
               noWrap
               flexGrow={0}
             >
-              {FORM_LABELS[actionType]?.subHeader}
+              {t(FORM_LABELS[actionType]?.subHeader)}
             </Typography>
           </Box>
         </Stack>
@@ -342,9 +344,12 @@ const CreateForm: FC<CreateFormProps> = ({
               rowGap: "16px",
             }}
           >
-            <FieldWrapper label="Incoming Path" tooltip="File Path Only">
+            <FieldWrapper
+              label={t("seo.createFormIncomingPathLabel")}
+              tooltip={t("seo.createFormFilePathOnlyTooltip")}
+            >
               <Typography variant="body2" color="text.secondary">
-                {FORM_LABELS[actionType]?.incomingPath}
+                {t(FORM_LABELS[actionType]?.incomingPath)}
               </Typography>
 
               <Box
@@ -371,7 +376,7 @@ const CreateForm: FC<CreateFormProps> = ({
                       key={path.id}
                       id={path.id}
                       value={path.path}
-                      placeHolder="/Enter URL path to redirect from"
+                      placeHolder={t("seo.createFormPathPlaceholder")}
                       inputRef={paths?.length < 2 ? lastPathRef : null}
                       autoFocus
                       prefix="/"
@@ -430,13 +435,16 @@ const CreateForm: FC<CreateFormProps> = ({
                     ]);
                   }}
                 >
-                  Add Path
+                  {t("seo.createFormAddPath")}
                 </Button>
               </Box>
             )}
           </Box>
 
-          <FieldWrapper label="HTTP Code" tooltip={TOOL_TIPS.code}>
+          <FieldWrapper
+            label={t("seo.createFormHttpCodeLabel")}
+            tooltip={getToolTips(t).code}
+          >
             <TextField
               data-cy="RedirectsCodeSelector"
               select
@@ -448,16 +456,16 @@ const CreateForm: FC<CreateFormProps> = ({
             >
               {HTTP_CODE_OPTIONS.map((option) => (
                 <MenuItem key={option.value} value={option.value}>
-                  {option.label}
+                  {t(option.label)}
                 </MenuItem>
               ))}
             </TextField>
           </FieldWrapper>
 
           <FieldWrapper
-            label="Type"
-            tooltip={TOOL_TIPS.targetType}
-            disabledTooltip="This value cannot be modified"
+            label={t("seo.createFormTypeLabel")}
+            tooltip={getToolTips(t).targetType}
+            disabledTooltip={t("seo.createFormValueCannotBeModified")}
             readOnly={isInternal}
           >
             <TextField
@@ -481,15 +489,15 @@ const CreateForm: FC<CreateFormProps> = ({
             >
               {TARGET_OPTIONS.map((option) => (
                 <MenuItem key={option.value} value={option.value}>
-                  {option.label}
+                  {t(option.label)}
                 </MenuItem>
               ))}
             </TextField>
           </FieldWrapper>
           <FieldWrapper
-            label="Redirect Target"
-            tooltip="File Path Only"
-            disabledTooltip="This value cannot be modified"
+            label={t("seo.createFormRedirectTargetLabel")}
+            tooltip={t("seo.createFormFilePathOnlyTooltip")}
+            disabledTooltip={t("seo.createFormValueCannotBeModified")}
             readOnly={isInternal}
           >
             {targetType === "page" ? (
@@ -504,7 +512,7 @@ const CreateForm: FC<CreateFormProps> = ({
             ) : (
               <PathField
                 testId="RedirectsExternalFieldPath"
-                placeHolder="Enter URL (e.g. https://www.google.com/)"
+                placeHolder={t("seo.createFormExternalUrlPlaceholder")}
                 value={targetPath}
                 onChange={(e) => {
                   setTargetPath(e);
@@ -532,7 +540,7 @@ const CreateForm: FC<CreateFormProps> = ({
           color="inherit"
           onClick={onClose}
         >
-          Cancel
+          {t("common.cancel")}
         </Button>
         <Stack direction="row" justifyContent="space-between" gap="16px">
           {!isEdit && (
@@ -546,7 +554,7 @@ const CreateForm: FC<CreateFormProps> = ({
               loading={submitType === "multiple" && isRedirectsLoading}
               onClick={() => handleSubmit("multiple")}
             >
-              Create Another Redirect
+              {t("seo.createFormCreateAnotherRedirect")}
             </Button>
           )}
           <Button
@@ -558,7 +566,7 @@ const CreateForm: FC<CreateFormProps> = ({
             loading={submitType === "single" && isRedirectsLoading}
             onClick={() => handleSubmit("single")}
           >
-            {isEdit ? t("common.save") : "Create Redirect"}
+            {isEdit ? t("common.save") : t("seo.createFormCreateRedirect")}
           </Button>
         </Stack>
       </DialogActions>

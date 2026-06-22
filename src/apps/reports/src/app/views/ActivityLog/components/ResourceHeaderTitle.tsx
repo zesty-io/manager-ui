@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { Stack, Typography, SvgIcon, Skeleton } from "@mui/material";
 import {
   SettingsRounded,
@@ -52,6 +53,7 @@ export const ResourceHeaderTitle = ({
     data: workflowStatusLabels,
     isLoading: isLoadingWorkflowStatusLabels,
   } = useGetWorkflowStatusLabelsQuery({ showDeleted: true });
+  const { t } = useTranslation();
   const fileData = useSelector((state: AppState) =>
     Object.values(state.files).find((item) => item.ZUID === affectedZUID)
   );
@@ -101,7 +103,7 @@ export const ResourceHeaderTitle = ({
 
           if (contentModel) {
             data.subTitle.unshift(
-              `${modelNameMap[contentModel?.type]} Content Item`
+              `${t(modelNameMap[contentModel?.type])} Content Item`
             );
           }
 
@@ -124,7 +126,11 @@ export const ResourceHeaderTitle = ({
 
       case "code":
         data.title = fileData?.fileName;
-        data.subTitle.unshift(modelNameMap[fileData?.type] ?? fileData?.type);
+        data.subTitle.unshift(
+          modelNameMap[fileData?.type]
+            ? t(modelNameMap[fileData?.type])
+            : fileData?.type
+        );
         data.icon = CodeRounded;
         break;
 

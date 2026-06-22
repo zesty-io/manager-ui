@@ -6,6 +6,7 @@ import {
   useEffect,
   MutableRefObject,
 } from "react";
+import { useTranslation } from "react-i18next";
 
 import { GridApi, useGridApiRef } from "@mui/x-data-grid-pro";
 import { useDispatch } from "react-redux";
@@ -47,6 +48,7 @@ const RedirectsTableContextProvider = ({
   const apiRef = useGridApiRef<GridApi>();
   const [isTableLoaded, setIsTableLoaded] = useState(false);
 
+  const { t } = useTranslation();
   const dispatch = useDispatch();
 
   const { data: redirects, isLoading, isError } = useGetRedirectsQuery();
@@ -56,7 +58,7 @@ const RedirectsTableContextProvider = ({
       dispatch(
         notify({
           kind: "warn",
-          message: "Failed to load redirects data",
+          message: t("seo.redirectsLoadFailed"),
         })
       );
     }

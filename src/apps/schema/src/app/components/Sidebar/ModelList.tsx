@@ -27,7 +27,7 @@ export const ModelList = ({ title, models, type, app = "schema" }: Props) => {
   const location = useLocation();
 
   const [sort, setSort] = useLocalStorage(
-    `zesty:nav${capitalize(app)}-${title}:sort`,
+    `zesty:nav${capitalize(app)}-${type}:sort`,
     "asc"
   );
   const [modelZUID, setModelZUID] = useState("");

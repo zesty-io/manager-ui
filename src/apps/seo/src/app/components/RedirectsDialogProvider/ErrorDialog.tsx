@@ -63,8 +63,8 @@ export const ErrorDialog: FC<ErrorDialogProps> = ({ open, onClose, data }) => {
         notify({
           kind: "success",
           message: !isEdit
-            ? `${paths?.length} Redirect${paths?.length > 1 ? "s" : ""} Created`
-            : `Redirect Saved: ${paths[0]}`,
+            ? t("seo.errorDialogNotifyCreated", { count: paths?.length })
+            : t("seo.errorDialogNotifySaved", { path: paths[0] }),
         })
       );
       closeErrorDialog();
@@ -127,13 +127,11 @@ export const ErrorDialog: FC<ErrorDialogProps> = ({ open, onClose, data }) => {
             flexShrink={0}
             data-cy="RedirectsErrorDialogHeader"
           >
-            {`${errorPaths?.length} Redirect${
-              errorPaths?.length > 1 ? "s" : ""
-            } couldn't be created`}
+            {t("seo.errorDialogTitle", { count: errorPaths?.length })}
           </Typography>
 
           <Typography variant="body2" color="text.secondary" sx={{ mt: "8px" }}>
-            The following paths couldn't be saved as redirects.
+            {t("seo.errorDialogBody")}
           </Typography>
         </DialogTitle>
         <DialogContent>
@@ -180,7 +178,7 @@ export const ErrorDialog: FC<ErrorDialogProps> = ({ open, onClose, data }) => {
             loading={isLoading}
             onClick={handleResubmit}
           >
-            Try Again
+            {t("shell.integrationTryAgain")}
           </Button>
           <Button
             data-cy="RedirectsErrorDialogDoneButton"

@@ -22,7 +22,7 @@ import { useRedirectsDialog } from "../../../../../seo/src/app/components/Redire
 import {
   ContentItemProps,
   TARGET_OPTIONS,
-  TOOL_TIPS,
+  getToolTips,
 } from "../../../../../seo/src/app/components/RedirectsDialogProvider/constants";
 import { FieldWrapper } from "../../../../../seo/src/app/components/RedirectsDialogProvider/CreateRedirects/CreateForm";
 import SearchField from "../../../../../seo/src/app/components/RedirectsDialogProvider/CreateRedirects/SearchField";
@@ -59,6 +59,7 @@ export const ContentRedirectModal: FC<ContentRedirectModalProps> = ({
   options,
 }) => {
   const { t } = useTranslation();
+  const toolTips = getToolTips(t);
   const dispatch = useDispatch();
   const [targetInternal, setTargetInternal] = useState<ContentItemProps>(null);
   const [targetPath, setTargetPath] = useState<string>("");
@@ -214,7 +215,7 @@ export const ContentRedirectModal: FC<ContentRedirectModalProps> = ({
             >
               <FieldWrapper
                 label={t("content.redirectTypeLabel")}
-                tooltip={TOOL_TIPS.targetType}
+                tooltip={toolTips.targetType}
               >
                 <TextField
                   data-cy="RedirectsTypeSelector"
@@ -229,7 +230,7 @@ export const ContentRedirectModal: FC<ContentRedirectModalProps> = ({
                 >
                   {TARGET_OPTIONS.map((option) => (
                     <MenuItem key={option.value} value={option.value}>
-                      {option.label}
+                      {t(option.label)}
                     </MenuItem>
                   ))}
                 </TextField>

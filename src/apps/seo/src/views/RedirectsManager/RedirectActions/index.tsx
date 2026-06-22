@@ -57,7 +57,7 @@ export default function RedirectActions() {
           }}
         >
           <Typography variant="h3" fontWeight="700">
-            {redirects?.length} Total Redirects
+            {t("seo.totalRedirects", { count: redirects?.length })}
           </Typography>
           <Box
             display="flex"
@@ -66,7 +66,7 @@ export default function RedirectActions() {
             columnGap={1}
           >
             <SearchBox
-              placeholder="Filter Redirects"
+              placeholder={t("seo.filterRedirects")}
               variant="outlined"
               size="small"
               value={searchFilter}

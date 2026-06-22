@@ -38,7 +38,7 @@ const RedirectsDelete: FC<RedirectsDeleteProps> = ({ selectedRedirects }) => {
       }}
     >
       <Typography variant="h3" fontWeight="700">
-        {selectedRedirects.length} Selected
+        {t("seo.selectedCount", { count: selectedRedirects.length })}
       </Typography>
       <Box
         display="flex"
@@ -55,7 +55,7 @@ const RedirectsDelete: FC<RedirectsDeleteProps> = ({ selectedRedirects }) => {
           onClick={() => apiRef.current?.setRowSelectionModel([])}
           startIcon={<ClearIcon />}
         >
-          Deselect All
+          {t("shell.relationalDeselectAll")}
         </Button>
         <Button
           data-cy="RedirectActionSelectAll"
@@ -70,7 +70,7 @@ const RedirectsDelete: FC<RedirectsDeleteProps> = ({ selectedRedirects }) => {
           }
           startIcon={<DoneAllIcon />}
         >
-          Select All
+          {t("seo.selectAll")}
         </Button>
         <Button
           data-cy="RedirectActionDeleteButton"

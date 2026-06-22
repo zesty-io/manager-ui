@@ -1,5 +1,6 @@
 import parse from "csv-parse/lib/es5/sync";
 import { notify } from "../../../../shell/store/notifications";
+import i18n from "shell/i18n";
 
 export const IMPORT_LOADING = "IMPORT_LOADING";
 export const IMPORT_REDIRECTS = "IMPORT_REDIRECTS";
@@ -151,7 +152,7 @@ export function CSVImporter(evt) {
               dispatch(
                 notify({
                   kind: "error",
-                  message: `Failed reading file: ${err}`,
+                  message: i18n.t("seo.importFileReadError", { err }),
                 })
               );
             }
@@ -172,7 +173,7 @@ export function CSVImporter(evt) {
           dispatch(
             notify({
               kind: "warn",
-              message: "Import must be a CSV file",
+              message: i18n.t("seo.importMustBeCsv"),
             })
           );
         }
@@ -191,7 +192,7 @@ export async function importCSVFile(file, redirects, dispatch) {
     )
       return {
         status: "error",
-        data: "Invalid file selected",
+        data: i18n.t("seo.importInvalidFileSelected"),
       };
 
     const content = await readFileAsText(file);
@@ -310,8 +311,7 @@ function parseXML(xml, dispatch) {
     dispatch(
       notify({
         kind: "warn",
-        message:
-          "XML sitemap imports must follow the https://www.sitemaps.org/protocol.html spec.",
+        message: i18n.t("seo.importXmlSitemapSpec"),
       })
     );
     throw new Error("Invalid XML root node.");

@@ -1,28 +1,30 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Box, Menu, MenuItem } from "@mui/material";
 import { FilterButton } from "../../../../../../shell/components/Filters";
 import { useRedirectsTable } from "./RedirectsTableContextProvider";
 
-const SORT_OPTIONS = {
-  createdAt: "Date Created",
-  path: "Incoming Path",
-  code: "HTTP Code",
-  targetType: "Type",
-  target: "Target",
-} as const;
+const getSortOptions = (t: (key: string) => string) => ({
+  createdAt: t("shell.relationalSortDateCreated"),
+  path: t("seo.sortIncomingPath"),
+  code: t("seo.sortHttpCode"),
+  targetType: t("seo.sortType"),
+  target: t("seo.sortTarget"),
+});
 
-const HTTP_CODE_FILTERS = {
-  "301": "301 - Permanent",
-  "302": "302 - Temporary",
-} as const;
+const getHttpCodeFilters = (t: (key: string) => string) => ({
+  "301": t("seo.httpCode301Permanent"),
+  "302": t("seo.httpCode302Temporary"),
+});
 
-const TYPE_FILTERS = {
-  external: "External - link to an external webpage",
-  path: "Wildcard - rule based redirects",
-  internal: "Internal - linked to an item in this instance",
-} as const;
+const getTypeFilters = (t: (key: string) => string) => ({
+  external: t("seo.typeFilterExternal"),
+  path: t("seo.typeFilterWildcard"),
+  internal: t("seo.typeFilterInternal"),
+});
 
 export const TableSortFilters = () => {
+  const { t } = useTranslation();
   const [anchorEl, setAnchorEl] = useState({
     currentTarget: null,
     id: "",
@@ -36,6 +38,10 @@ export const TableSortFilters = () => {
     setHttpCodeFilter,
     setTypeFilter,
   } = useRedirectsTable();
+
+  const SORT_OPTIONS = getSortOptions(t);
+  const HTTP_CODE_FILTERS = getHttpCodeFilters(t);
+  const TYPE_FILTERS = getTypeFilters(t);
 
   const handleOpenMenu = (
     event: React.MouseEvent<HTMLButtonElement>,
@@ -57,14 +63,16 @@ export const TableSortFilters = () => {
   const getButtonText = (id: string) => {
     switch (id) {
       case "sort":
-        return `Sort: ${SORT_OPTIONS[sortBy as keyof typeof SORT_OPTIONS]}`;
+        return t("shell.relationalSortBy", {
+          value: SORT_OPTIONS[sortBy as keyof typeof SORT_OPTIONS],
+        });
       case "code":
         return httpCodeFilter === null
-          ? "HTTP Code"
+          ? t("seo.sortHttpCode")
           : HTTP_CODE_FILTERS[httpCodeFilter as keyof typeof HTTP_CODE_FILTERS];
       case "type":
         return typeFilter === null
-          ? "Type"
+          ? t("seo.sortType")
           : TYPE_FILTERS[typeFilter as keyof typeof TYPE_FILTERS];
       default:
         return "";
