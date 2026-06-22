@@ -145,13 +145,7 @@ describe("Content Item Workflows", { retries: 0 }, () => {
       );
   });
 
-  // Skipped: recurring flake on the shared dev instance — the label-gated publish
-  // has several eventual-consistency points (label apply -> reload -> publish ->
-  // ContentPublishedIndicator) that don't reliably settle on a single attempt
-  // under load, so the indicator intermittently never renders. The general publish
-  // flow is covered by content/actions.spec.js. Re-enable when the instance is
-  // stable.
-  it.skip("Can publish a content item if label with allowPublish is applied", () => {
+  it("Can publish a content item if label with allowPublish is applied", () => {
     // Intercept must be registered before the click that fires the PUT.
     cy.intercept("PUT", "**/labels/*").as("updateLabel");
 
