@@ -191,6 +191,24 @@ describe("Content item redirects", () => {
   });
 
   it("Redirect Content Item", () => {
+    // Remove any redirect already on this content item's path so a retry (or a
+    // leftover the exact-match cleanup missed) doesn't make the create POST a
+    // duplicate (400 "Redirect couldn't be created").
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/redirects`,
+    }).then(({ data }) => {
+      (data || [])
+        .filter((r) =>
+          (r?.path || "").includes(CONTENT_ITEMS[0]?.web?.pathPart)
+        )
+        .forEach((r) => {
+          cy.apiRequest({
+            url: `${API_ENDPOINTS.devInstance}/web/redirects/${r?.ZUID}`,
+            method: "DELETE",
+          });
+        });
+    });
+
     awaitRedirectsData(
       `/content/${Cypress.env("contentZUID")}/${Cypress.env(
         "itemZUID"
