@@ -39,11 +39,10 @@ export const UpdateParentModelDialogue = ({ onClose, model }: Props) => {
 
   useEffect(() => {
     if (error) {
+      const message = "data" in error ? (error.data as any)?.error : undefined;
       dispatch(
         notify({
-          // @ts-ignore
-          message:
-            error?.data?.error || t("schema.updateDescriptionFailedNotify"),
+          message: message || t("schema.updateDescriptionFailedNotify"),
           kind: "warn",
         })
       );
