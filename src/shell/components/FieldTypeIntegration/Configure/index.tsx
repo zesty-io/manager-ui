@@ -72,6 +72,7 @@ const IntegrationFieldConfigure = ({
     setHeaders(integrationFieldConfig?.headers || null);
     setType(integrationFieldConfig?.type || null);
     setKeyPaths(integrationFieldConfig?.keyPaths || null);
+    hasFetchedInitialData.current = false;
     setIsFormOpen(false);
   }, [integrationFieldConfig]);
 
