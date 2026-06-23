@@ -177,12 +177,12 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
               transform: "scale(0.85)",
             },
           },
-          // When in compact mode, move the fullscreen button to the end of the toolbar
-          "& .tox-toolbar__primary .tox-toolbar__group:has(button[aria-label='Fullscreen'])":
-            {
-              flexGrow: 1,
-              justifyContent: "end",
-            },
+          // Push the fullscreen button group (always last in compact toolbar) to the far right.
+          // Uses :last-child instead of aria-label so it doesn't break when TinyMCE updates.
+          "& .tox-toolbar__primary .tox-toolbar__group:last-child": {
+            flexGrow: 1,
+            justifyContent: "end",
+          },
         },
 
         "& .tox.tox-tinymce": {

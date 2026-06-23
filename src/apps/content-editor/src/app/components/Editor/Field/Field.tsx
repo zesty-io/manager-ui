@@ -54,9 +54,6 @@ import { IntegrationFieldSelect } from "shell/components/FieldTypeIntegration";
 import { useDebouncedInput } from "../../../../../../../shell/hooks/useDebouncedInput";
 import { format as fmt } from "date-fns";
 import { FieldTypeRepeater } from "shell/components/FieldTypeRepeater";
-import { useResizeObserver } from "shell/hooks/useResizeObserver";
-
-const COMPACT_MAX_WIDTH = 390;
 
 const AIFieldShell = withAI(FieldShell);
 
