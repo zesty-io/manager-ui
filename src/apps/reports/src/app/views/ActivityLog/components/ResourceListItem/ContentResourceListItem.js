@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { formatLocalized } from "shell/i18n/dates";
 import { isValid, isSameYear } from "date-fns";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
@@ -8,14 +9,15 @@ import { fetchModel } from "shell/store/models";
 import { ListItem } from "./ListItem";
 import { useGetLangsQuery } from "../../../../../../../../shell/services/instance";
 
-const modelTypeName = {
-  templateset: "Single Page Item",
-  pageset: "Multi Page Item",
-  dataset: "Headless Data Item",
-  block: "Block Variant",
+const modelTypeNameKeys = {
+  templateset: "reports.modelTypeSinglePageItem",
+  pageset: "reports.modelTypeMultiPageItem",
+  dataset: "reports.modelTypeHeadlessDataItem",
+  block: "reports.modelTypeBlockVariant",
 };
 
 export const ContentResourceListItem = (props) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const { data: langs } = useGetLangsQuery({ type: "all" });
   const [contentError, setContentError] = useState(false);
@@ -54,7 +56,7 @@ export const ContentResourceListItem = (props) => {
 
   const primaryText = useMemo(() => {
     if (contentError) {
-      return `${props.affectedZUID} (Deleted)`;
+      return t("reports.deletedZUID", { zuid: props.affectedZUID });
     } else if (contentData?.web?.metaTitle) {
       // There's no need to delineate the language when there's only one language
       if (langs?.length === 1) {
@@ -67,9 +69,9 @@ export const ContentResourceListItem = (props) => {
         ? `(${lang.code}) ${contentData?.web?.metaTitle}`
         : contentData?.web?.metaTitle;
     } else {
-      return `${props.affectedZUID} (Missing Meta Title)`;
+      return t("reports.missingMetaTitleZUID", { zuid: props.affectedZUID });
     }
-  }, [contentData, langs, contentError, props.affectedZUID]);
+  }, [contentData, langs, contentError, props.affectedZUID, t]);
 
   const secondaryText = useMemo(() => {
     const d = new Date(props.updatedAt);
@@ -78,15 +80,15 @@ export const ContentResourceListItem = (props) => {
         ? formatLocalized(d, "MMM d, h:mm a")
         : formatLocalized(d, "MMM d, yyyy, h:mm a")
       : "—";
-    const chips = [`Last action @ ${lastAction}`];
+    const chips = [t("reports.lastActionAt", { time: lastAction })];
     if (modelData) {
-      chips.push(modelTypeName[modelData?.type]);
+      chips.push(t(modelTypeNameKeys[modelData?.type]));
     }
     if (contentData?.web?.metaTitle !== modelData?.label) {
       chips.push(modelData?.label);
     }
     return chips.join(" • ");
-  }, [contentData, modelData]);
+  }, [contentData, modelData, t]);
 
   return (
     <ListItem

@@ -6,17 +6,18 @@
 
 ## Board snapshot
 
-| ✓ Done                                                   | ▶ In Progress | → Up Next     | ≡ Backlog (in order)                                             |
-| -------------------------------------------------------- | ------------- | ------------- | ---------------------------------------------------------------- |
-| Phase 1 — Infrastructure                                 | —             | **`reports`** | `settings` · `code`                                              |
-| Phase 2 — Locale switcher                                |               |               | `release` · `active-preview` · `blocks` · `marketplace`          |
-| Phase 3 — `common` + `shell` (incl. FieldType\* widgets) |               |               | `studio` (verify-only)                                           |
-| Phase 4 — `dashboard` · `media` · `content`              |               |               | Phase 5: TinyMCE · MUI overrides · `@zesty-io/material` upstream |
-| Phase 5 — MUI · ProseMirror · Bynder                     |               |               | Phase 8 — Cypress tests                                          |
-| Phase 6 — Caching · Phase 7 — Missing-key handling       |               |               |                                                                  |
-| **`schema`**                                             |               |               |                                                                  |
-| **`seo`**                                                |               |               |                                                                  |
-| **`leads`**                                              |               |               |                                                                  |
+| ✓ Done                                                   | ▶ In Progress | → Up Next  | ≡ Backlog (in order)                                             |
+| -------------------------------------------------------- | ------------- | ---------- | ---------------------------------------------------------------- |
+| Phase 1 — Infrastructure                                 | —             | `settings` | `code`                                                           |
+| Phase 2 — Locale switcher                                |               |            | `release` · `active-preview` · `blocks` · `marketplace`          |
+| Phase 3 — `common` + `shell` (incl. FieldType\* widgets) |               |            | `studio` (verify-only)                                           |
+| Phase 4 — `dashboard` · `media` · `content`              |               |            | Phase 5: TinyMCE · MUI overrides · `@zesty-io/material` upstream |
+| Phase 5 — MUI · ProseMirror · Bynder                     |               |            | Phase 8 — Cypress tests                                          |
+| Phase 6 — Caching · Phase 7 — Missing-key handling       |               |            |                                                                  |
+| **`schema`**                                             |               |            |                                                                  |
+| **`seo`**                                                |               |            |                                                                  |
+| **`leads`**                                              |               |            |                                                                  |
+| **`reports`**                                            |               |            |                                                                  |
 
 ---
 
@@ -24,7 +25,7 @@
 
 # ▶ In Progress
 
-_Nothing in progress right now — pick up `reports` next._
+_Nothing in progress right now._
 
 ---
 
@@ -34,26 +35,13 @@ _Nothing in progress right now — pick up `reports` next._
 
 ---
 
-_`seo` complete — pick up `reports` next._
+_`reports` complete — pick up `settings` next._
 
 ---
 
 ---
 
 # ≡ Backlog
-
----
-
-### `reports` — Effort: M
-
-_Do before `schema` if needed — `schema` renders `reports`' ActivityLog components._
-
-- [ ] Add lazy-load plumbing to `ReportingApp`
-- [ ] Create empty `public/locales/<locale>/reports.json` for all 6 locales
-- [ ] Audit + localize `src/apps/reports/src/`:
-  - [ ] Filter-option arrays + Metrics labels (still hardcoded)
-  - [ ] Date formatting — mostly handled by `formatLocalized`; verify all call sites
-- [ ] Verify: `npx tsc --noEmit`, JSON valid, key parity across all 6 locales
 
 ---
 
@@ -276,3 +264,22 @@ All infrastructure, locale switcher, `common` + `shell` namespaces (incl. all `F
 - [x] `en-US/leads.json` populated — 24 new keys, 4 reused from common/shell
 - [x] All 6 locales written
 - [x] tsc: PASS
+
+---
+
+### Phase 4 — `reports`
+
+- [x] Lazy-load plumbing: N/A (not applicable to this target)
+- [x] en-US/reports.json populated — 122 new keys, 21 reused from common/shell
+- [x] All 6 locales seeded with en-US values (manual translation pending)
+- [x] tsc: FAIL — see issues below
+
+**Manual action items — fix before closing:**
+
+- TypeScript: src/apps/reports/src/app/views/ActivityLog/components/TopUsers.js(62,12): error TS8017: Signature declarations can only be used in TypeScript files.
+- TypeScript: src/apps/reports/src/app/views/ActivityLog/components/TopUsers.js(62,14): error TS1003: Identifier expected.
+- TypeScript: src/apps/reports/src/app/views/ActivityLog/components/TopUsers.js(81,12): error TS8017: Signature declarations can only be used in TypeScript files.
+- TypeScript: src/apps/reports/src/app/views/ActivityLog/components/TopUsers.js(81,14): error TS1003: Identifier expected.
+- Key parity: es-ES missing plural form: actionCount_many
+- Key parity: ru-RU missing plural form: actionCount_few
+- Key parity: ru-RU missing plural form: actionCount_many

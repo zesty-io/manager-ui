@@ -1,16 +1,18 @@
+import { useTranslation } from "react-i18next";
 import { faCode } from "@fortawesome/free-solid-svg-icons";
 import { useSelector } from "react-redux";
 import { formatLocalized } from "shell/i18n/dates";
 import { isValid, isSameYear } from "date-fns";
 import { ListItem } from "./ListItem";
 
-const fileTypeName = {
-  templateset: "Single Page Model",
-  pageset: "Multi Page Model",
-  dataset: "Headless Data Model",
-};
+const getFileTypeName = (t) => ({
+  templateset: t("reports.fileTypeTemplateset"),
+  pageset: t("reports.fileTypePageset"),
+  dataset: t("reports.fileTypeDataset"),
+});
 
 export const FileResourceListItem = (props) => {
+  const { t } = useTranslation();
   const fileData = useSelector((state) =>
     Object.values(state.files).find((item) => item.ZUID === props.affectedZUID)
   );
@@ -22,9 +24,11 @@ export const FileResourceListItem = (props) => {
       : formatLocalized(d, "MMM d, yyyy, h:mm a")
     : "";
 
-  const secondary = `Last action @ ${lastAction}${
-    fileData ? ` • ${fileTypeName?.[fileData?.type] || fileData?.type}` : ""
-  }`;
+  const fileTypeName = getFileTypeName(t);
+
+  const secondary =
+    t("reports.lastActionAt", { time: lastAction }) +
+    (fileData ? ` • ${fileTypeName?.[fileData?.type] || fileData?.type}` : "");
 
   return (
     <ListItem
@@ -34,7 +38,9 @@ export const FileResourceListItem = (props) => {
       affectedZUID={props.affectedZUID}
       icon={faCode}
       primary={
-        !fileData ? `${props.affectedZUID} (Deleted)` : fileData?.fileName
+        !fileData
+          ? t("reports.deletedZuid", { zuid: props.affectedZUID })
+          : fileData?.fileName
       }
       secondary={secondary}
     />

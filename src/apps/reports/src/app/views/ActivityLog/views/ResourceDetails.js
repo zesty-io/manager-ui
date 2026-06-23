@@ -23,14 +23,14 @@ import { ResourceHeaderTitle } from "../components/ResourceHeaderTitle";
 import { useGetInstanceSettingsQuery } from "../../../../../../../shell/services/instance";
 import { toUTC } from "../utils";
 
-const Crumbs = [
+const getCrumbs = (t) => [
   {
-    name: "Activity Log",
+    name: t("reports.activityLog"),
     path: "/reports/activity-log/resources",
     icon: ScheduleRounded,
   },
   {
-    name: "Resources",
+    name: t("reports.resources"),
     path: "/reports/activity-log/resources",
     icon: CategoryRounded,
   },
@@ -131,7 +131,7 @@ export const ResourceDetails = () => {
       >
         <Stack gap={0.25}>
           <CustomBreadcrumbs
-            items={Crumbs.map((crumb) => ({
+            items={getCrumbs(t).map((crumb) => ({
               node: (
                 <Stack direction="row" gap={0.5}>
                   <SvgIcon
@@ -194,7 +194,7 @@ export const ResourceDetails = () => {
               );
             }}
           >
-            View Audit Trail Report
+            {t("reports.viewAuditTrailReport")}
           </Button>
         </Stack>
       </Stack>
@@ -217,7 +217,7 @@ export const ResourceDetails = () => {
             }}
           >
             <EmptyState
-              title="No Logs Found"
+              title={t("reports.noLogsFound")}
               onReset={() => {
                 setParams("", "action");
                 setParams("", "actionByUserZUID");

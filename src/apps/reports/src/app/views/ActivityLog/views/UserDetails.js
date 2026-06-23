@@ -13,9 +13,11 @@ import EmailIcon from "@mui/icons-material/Email";
 import { UserHeaderTitle } from "../components/UserHeaderTitle";
 import { toUTC } from "../utils";
 import { useGetAuditsWithBlocks } from "../../../../../../../shell/hooks/useGetAuditsWithBlocks";
+import { useTranslation } from "react-i18next";
 
 export const UserDetails = () => {
   const dispatch = useDispatch();
+  const { t } = useTranslation();
   const [params, setParams] = useParams();
   const [initialized, setInitialized] = useState(false);
   const { data: usersRoles, isLoading: usersLoading } =
@@ -40,7 +42,7 @@ export const UserDetails = () => {
       setParams(format(new Date(), "yyyy-MM-dd"), "to");
     }
     /*
-      Initialized get sets to true after setting date params to then be utilized to determine 
+      Initialized get sets to true after setting date params to then be utilized to determine
       if API call is ready to be executed
     */
     setInitialized(true);
@@ -108,13 +110,13 @@ export const UserDetails = () => {
                   dispatch(
                     notify({
                       kind: "success",
-                      message: `User email copied to the clipboard`,
+                      message: t("reports.userEmailCopied"),
                     })
                   )
                 )
             }
           >
-            Message
+            {t("reports.messageButton")}
           </Button>
         </Stack>
       </Stack>

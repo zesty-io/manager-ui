@@ -1,7 +1,9 @@
+import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { TimelineItem } from "./TimelineItem";
 
 export const FileActionTimelineItem = (props) => {
+  const { t } = useTranslation();
   const fileData = useSelector((state) =>
     Object.values(state.files).find(
       (item) => item.ZUID === props.action.affectedZUID
@@ -13,10 +15,10 @@ export const FileActionTimelineItem = (props) => {
       action={props.action}
       itemName={
         !fileData
-          ? `${props.action.affectedZUID} (Deleted)`
+          ? t("reports.deletedZuid", { zuid: props.action.affectedZUID })
           : fileData?.fileName
       }
-      itemSubtext="Code"
+      itemSubtext={t("common.code")}
       renderConnector={props.renderConnector}
     />
   );

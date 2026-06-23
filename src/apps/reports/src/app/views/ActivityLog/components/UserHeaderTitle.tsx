@@ -3,6 +3,7 @@ import { useParams } from "react-router";
 import { Stack, Typography, SvgIcon, Skeleton, Avatar } from "@mui/material";
 import { ScheduleRounded, GroupRounded } from "@mui/icons-material";
 import { useHistory } from "react-router";
+import { useTranslation } from "react-i18next";
 
 import { CustomBreadcrumbs } from "../../../../../../../shell/components/CustomBreadcrumbs";
 import { useGetUsersRolesQuery } from "../../../../../../../shell/services/accounts";
@@ -11,12 +12,12 @@ import { formatLocalized } from "shell/i18n/dates";
 
 const Crumbs = [
   {
-    name: "Activity Log",
+    name: "reports.activityLog",
     path: "/reports/activity-log/resources",
     icon: ScheduleRounded,
   },
   {
-    name: "Users",
+    name: "common.users",
     path: "/reports/activity-log/users",
     icon: GroupRounded,
   },
@@ -32,6 +33,7 @@ export const UserHeaderTitle = ({
   latestActionDateTime,
   isLoadingActions,
 }: UserHeaderTitleProps) => {
+  const { t } = useTranslation();
   const history = useHistory();
   const { id } = useParams<{ id: string }>();
   const { data: usersRoles, isLoading: isLoadingUsersRoles } =
@@ -47,16 +49,16 @@ export const UserHeaderTitle = ({
         )}.jpg?s=40`,
         subTitle: [
           user?.role?.name,
-          `${actionCount} Action${actionCount === 1 ? "" : "s"}`,
-          `Last action @ ${
-            latestActionDateTime
+          t("reports.actionCount", { count: actionCount }),
+          t("reports.lastActionAt", {
+            time: latestActionDateTime
               ? formatLocalized(new Date(latestActionDateTime), "hh:mm a")
-              : "N/A"
-          }`,
+              : "N/A",
+          }),
         ],
       };
     }
-  }, [usersRoles, actionCount]);
+  }, [usersRoles, actionCount, t]);
 
   const isLoading = isLoadingUsersRoles || isLoadingActions;
 
@@ -73,7 +75,7 @@ export const UserHeaderTitle = ({
                 noWrap
                 maxWidth={100}
               >
-                {crumb.name}
+                {t(crumb.name)}
               </Typography>
             </Stack>
           ),
@@ -92,7 +94,7 @@ export const UserHeaderTitle = ({
           />
         ) : (
           <Avatar
-            alt={`${headerData?.name} Avatar`}
+            alt={t("reports.userAvatar", { name: headerData?.name })}
             src={headerData?.imageUrl}
           />
         )}

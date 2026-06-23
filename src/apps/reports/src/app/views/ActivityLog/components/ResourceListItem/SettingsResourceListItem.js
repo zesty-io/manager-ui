@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { faCog } from "@fortawesome/free-solid-svg-icons";
 import { useSelector } from "react-redux";
 import { ListItem } from "./ListItem";
@@ -7,6 +8,7 @@ import { formatLocalized } from "shell/i18n/dates";
 import { isValid, isSameYear } from "date-fns";
 
 export const SettingsResourceListItem = (props) => {
+  const { t } = useTranslation();
   const { data: workflowStatusLabels } = useGetWorkflowStatusLabelsQuery({
     showDeleted: true,
   });
@@ -30,7 +32,7 @@ export const SettingsResourceListItem = (props) => {
       case "29":
         return settingsData?.keyFriendly || props.message;
       case "21":
-        return "Head Tag";
+        return t("reports.headTag");
       case "36":
         if (workflowStatusData?.name) {
           return props.message?.replace(
@@ -42,7 +44,7 @@ export const SettingsResourceListItem = (props) => {
       default:
         return props.message;
     }
-  }, [props.affectedZUID, settingsData, props.message]);
+  }, [props.affectedZUID, settingsData, props.message, t]);
 
   const d = new Date(props.updatedAt);
   const lastAction =
@@ -52,7 +54,7 @@ export const SettingsResourceListItem = (props) => {
       ? formatLocalized(d, "MMM d, yyyy, h:mm a")
       : "";
 
-  const secondary = `Last action @ ${lastAction} • Settings`;
+  const secondary = t("reports.lastActionAtSettings", { lastAction });
 
   return (
     <ListItem

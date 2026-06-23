@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { faDatabase } from "@fortawesome/free-solid-svg-icons";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchModel } from "shell/store/models";
@@ -7,6 +8,7 @@ import { formatLocalized } from "shell/i18n/dates";
 import { isValid, isSameYear } from "date-fns";
 
 export const ModelResourceListItem = (props) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
   const [modelError, setModelError] = useState(false);
@@ -32,7 +34,7 @@ export const ModelResourceListItem = (props) => {
       ? formatLocalized(d, "MMM d, yyyy, h:mm a")
       : "";
 
-  const secondary = `Last action @ ${lastAction} • Content Model`;
+  const secondary = t("reports.lastActionAtContentModel", { lastAction });
 
   return (
     <ListItem
@@ -42,7 +44,9 @@ export const ModelResourceListItem = (props) => {
       affectedZUID={props.affectedZUID}
       icon={faDatabase}
       primary={
-        modelError ? `${props.affectedZUID} (Deleted)` : modelData?.label
+        modelError
+          ? t("reports.deletedZUID", { zuid: props.affectedZUID })
+          : modelData?.label
       }
       secondary={secondary}
       showSkeletons={isLoading}
