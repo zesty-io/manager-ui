@@ -531,8 +531,10 @@ export const SubField = memo(
         break;
 
       case "date": {
-        const d = value ? new Date((value as string) + "T00:00:00") : null;
-        const parsedDate = d && isValid(d) ? d : null;
+        const rawDate = value
+          ? new Date((value as string) + "T00:00:00")
+          : null;
+        const parsedDate = rawDate && isValid(rawDate) ? rawDate : null;
         content = (
           <FieldShell settings={field} errors={errors} withComment={false}>
             <FieldTypeDate

@@ -788,6 +788,9 @@ describe("Content Specs", () => {
 
       // Delete the row to keep downstream tests isolated (they expect exactly 1 row from the "add" test)
       cy.getBySelector("RemoveRepeaterRowItemBtn").click();
+      cy.getBySelector("field:repeater")
+        .find(".MuiDataGrid-row")
+        .should("have.length", 1);
     });
 
     it("should be able to update a row item", () => {
