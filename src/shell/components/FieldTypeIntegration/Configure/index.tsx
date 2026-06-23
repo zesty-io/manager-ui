@@ -100,7 +100,7 @@ const IntegrationFieldConfigure = ({
       fetchApiData(integrationFieldConfig?.endpoint, options);
       hasFetchedInitialData.current = true;
     }
-  }, [isUpdate, integrationFieldConfig, isFetchingApiData]);
+  }, [isUpdate, integrationFieldConfig, isFetchingApiData, fetchApiData]);
 
   useEffect(() => {
     setApiData(data);
