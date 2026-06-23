@@ -330,7 +330,24 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
             color_default_background: "none",
             help_tabs: ["shortcuts", "keyboardnav", "versions"],
 
-            image_advtab: true,
+            // file_picker_callback: (callback, value, meta) => {
+            //   console.log(callback, value, meta);
+            // },
+
+            // imagetools_proxy: "path/to/proxy",
+            // imagetools_toolbar: "imageoptions",
+            // imagetools_fetch_image: function(img) {
+            //   console.log("IMAGE", img);
+            //   return new tinymce.util.Promise(function(resolve) {
+            //     // Fetch the image and return a blob containing the image content
+            //     fetch(img.src, {
+            //       mode: "no-cors",
+            //       cache: "no-cache"
+            //     })
+            //       .then(res => res.blob())
+            //       .then(blob => resolve(blob));
+            //   });
+            // },
 
             // Plugin Settings
             quickbars_insert_toolbar: false,
@@ -341,7 +358,12 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
 
             help_accessibility: false,
 
+            // powerpaste_word_import: "prompt",
+            // media_live_embeds: true,
+            image_advtab: true,
+
             // Allows for embeds with script tags
+            // extended_valid_elements: "script[src|async|defer|type|charset]",
             valid_elements: "*[*]",
 
             // Autoresizer does not work with the resize handle.
@@ -349,6 +371,8 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
             resize: false,
             min_height: EDITOR_HEIGHT,
             ...(effectiveCompact && { max_height: EDITOR_HEIGHT }),
+
+            // skin: false,
             skin_url: "/vendors/tinymce/skins/ui/Zesty",
             icon_url: "/vendors/tinymce/icons/material-rounded/icons.js",
             icons: "material-rounded",
@@ -377,6 +401,13 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
             video { width: 100%; height: 100%; object-fill: fill; aspect-ratio: auto;}\
             #tinymce { margin: 16px; }\
             ul, ol { line-height: 24px; }`,
+
+            // init_instance_callback: (editor) => {
+            //   tinymce.DOM.styleSheetLoader
+            //     .load("/vendors/tinymce/skins/ui/Zesty/skin.min.css")
+            //     .then(() => editor.render());
+            //   console.log(editor.dom.st);
+            // },
 
             // Customize editor buttons and actions
             setup: (editor: any) => {
@@ -423,6 +454,15 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
               if (onSave) {
                 editor.shortcuts.add("meta+s", "Save item", onSave);
               }
+
+              /**
+               * This does not work as the resizing action provides an element with the data attributes striped
+               * so we lose context on this image ZUID, preventing modify calls to the media service
+               */
+              // Request resized image from media service
+              // editor.on("ObjectResized", function(evt) {
+              //   evt.target.src = `http://svc.zesty.localdev:3007/media-resolver-service/resolve/${evt.target.dataset.id}/getimage/?w=${evt.width}&h=${evt.height}`;
+              // });
 
               /**
                * Zesty Media App
