@@ -361,9 +361,7 @@ describe("Redirects", () => {
       // Filter to the delete-test redirects so the target row is rendered. The
       // grid virtualizes (~20 rows); with many redirects the target is otherwise
       // off-screen and .contains() can't find it.
-      cy.getElement('input[placeholder="Filter Redirects"]')
-        .clear()
-        .type("delete/");
+      cy.getElement('input[placeholder="Filter Redirects"]').clear().type("delete/");
       cy.getElement(".MuiDataGrid-cell")
         .contains(`/${TEST_DELETE_DATA[0]?.path}`, { matchCase: false })
         .parents(".MuiDataGrid-row")
@@ -388,9 +386,7 @@ describe("Redirects", () => {
     it("Single Selection", () => {
       // grid is already loaded and refreshed from the previous test
       cy.getElement(".MuiDataGrid-row").should("have.length.greaterThan", 0);
-      cy.getElement('input[placeholder="Filter Redirects"]')
-        .clear()
-        .type("delete/");
+      cy.getElement('input[placeholder="Filter Redirects"]').clear().type("delete/");
       cy.getElement(".MuiDataGrid-cell")
         .contains(`/${TEST_DELETE_DATA[1]?.path}`, { matchCase: false })
         .parents(".MuiDataGrid-row")
@@ -421,9 +417,7 @@ describe("Redirects", () => {
 
     it("Multiple", () => {
       cy.getElement(".MuiDataGrid-row").should("have.length.greaterThan", 0);
-      cy.getElement('input[placeholder="Filter Redirects"]')
-        .clear()
-        .type("delete/");
+      cy.getElement('input[placeholder="Filter Redirects"]').clear().type("delete/");
       cy.getElement(".MuiDataGrid-cell")
         .contains(`/${TEST_DELETE_DATA[2]?.path}`, { matchCase: false })
         .parents(".MuiDataGrid-row")

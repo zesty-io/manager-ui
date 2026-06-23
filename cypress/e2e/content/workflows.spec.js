@@ -174,12 +174,14 @@ describe("Content Item Workflows", { retries: 0 }, () => {
     // Wait for the publish to persist, then reload so the indicator reads the
     // fresh published state — it intermittently failed to render off the live
     // post-publish refetch under load.
-    cy.wait("@publishItem")
-      .its("response.statusCode")
-      .should("be.oneOf", [200, 201]);
+    cy.wait("@publishItem").its("response.statusCode").should("be.oneOf", [
+      200, 201,
+    ]);
 
     cy.reload();
 
-    ContentItemPage.elements.contentPublishedIndicator().should("exist");
+    ContentItemPage.elements
+      .contentPublishedIndicator()
+      .should("exist");
   });
 });

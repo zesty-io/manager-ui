@@ -110,9 +110,7 @@ describe("Integration Field", () => {
       // close any JSON viewer left open by a prior test
       cy.get("body").then(($b) => {
         if ($b.find('[data-cy="jsonCodeViewerCloseButton"]').length) {
-          cy.get('[data-cy="jsonCodeViewerCloseButton"]').click({
-            force: true,
-          });
+          cy.get('[data-cy="jsonCodeViewerCloseButton"]').click({ force: true });
         }
       });
     });

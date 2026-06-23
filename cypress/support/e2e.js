@@ -64,27 +64,30 @@ beforeEach(() => {
   backend5xx = [];
   apiTimings = [];
 
-  cy.intercept({ url: "**/*.api.dev.zesty.io/**", middleware: true }, (req) => {
-    const startedAt = Date.now();
-    const entry = {
-      method: req.method,
-      url: req.url.split("?")[0],
-      status: null,
-      ms: null,
-    };
-    apiTimings.push(entry);
-    req.on("response", (res) => {
-      entry.status = res.statusCode;
-      entry.ms = Date.now() - startedAt;
-      if (res.statusCode >= 500) {
-        backend5xx.push({
-          method: req.method,
-          url: req.url,
-          status: res.statusCode,
-        });
-      }
-    });
-  });
+  cy.intercept(
+    { url: "**/*.api.dev.zesty.io/**", middleware: true },
+    (req) => {
+      const startedAt = Date.now();
+      const entry = {
+        method: req.method,
+        url: req.url.split("?")[0],
+        status: null,
+        ms: null,
+      };
+      apiTimings.push(entry);
+      req.on("response", (res) => {
+        entry.status = res.statusCode;
+        entry.ms = Date.now() - startedAt;
+        if (res.statusCode >= 500) {
+          backend5xx.push({
+            method: req.method,
+            url: req.url,
+            status: res.statusCode,
+          });
+        }
+      });
+    }
+  );
 
   /**
    * NOTE: Zesty is a multitennant app with a lock feature

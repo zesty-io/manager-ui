@@ -47,7 +47,9 @@ export const ModelActivityLog = () => {
     // the default dates are applied) sends an unscoped audits request.
     {
       skip:
-        !initialized || !searchParams.get("from") || !searchParams.get("to"),
+        !initialized ||
+        !searchParams.get("from") ||
+        !searchParams.get("to"),
     }
   );
 
