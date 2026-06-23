@@ -110,7 +110,9 @@ describe("Integration Field", () => {
       // close any JSON viewer left open by a prior test
       cy.get("body").then(($b) => {
         if ($b.find('[data-cy="jsonCodeViewerCloseButton"]').length) {
-          cy.get('[data-cy="jsonCodeViewerCloseButton"]').click({ force: true });
+          cy.get('[data-cy="jsonCodeViewerCloseButton"]').click({
+            force: true,
+          });
         }
       });
     });
@@ -290,6 +292,78 @@ describe("Integration Field", () => {
         expect(
           request.body.settings.integrationFieldConfig.keyPaths.subHeading
         ).to.equal("position");
+      });
+    });
+
+    it("Cancelling mid-reconfigure leaves the displayed type unchanged", () => {
+      cy.intercept("**/get-url?url=*", {
+        statusCode: 200,
+        body: genericApi,
+      }).as("reconfigureGetUrl");
+
+      cy.visit(`/schema/${Cypress.env("modelZUID")}/fields`);
+      cy.get('[data-cy="Field_text"]').click();
+      cy.wait("@reconfigureGetUrl");
+
+      cy.get('[data-cy="integrationDisplayType"] input')
+        .invoke("val")
+        .as("originalType");
+
+      cy.get('[data-cy="integrationConfigureButton"]').click();
+      cy.get('[data-cy="integrationFormDialog"]').should("exist");
+
+      cy.get('[data-cy="integrationDisplayOption-simple"]').click(forceClick);
+      cy.contains("button", "Cancel").click();
+      cy.get('[data-cy="integrationFormDialog"]').should("not.exist");
+
+      cy.get("@originalType").then((originalType) => {
+        cy.get('[data-cy="integrationDisplayType"] input').should(
+          "have.value",
+          originalType
+        );
+      });
+    });
+
+    it("Updates the displayed type after a successful reconfigure", () => {
+      cy.intercept("**/get-url?url=*", {
+        statusCode: 200,
+        body: genericApi,
+      }).as("reconfigureGetUrl");
+
+      cy.visit(`/schema/${Cypress.env("modelZUID")}/fields`);
+      cy.get('[data-cy="Field_text"]').click();
+      cy.wait("@reconfigureGetUrl");
+
+      cy.intercept("PUT", "**/content/models/*/fields/*").as("updateField");
+
+      cy.get('[data-cy="integrationConfigureButton"]').click();
+      cy.get('[data-cy="integrationFormDialog"]').should("exist");
+
+      cy.get('[data-cy="integrationDisplayOption-simple"]').click(forceClick);
+      cy.get('[data-cy="integrationConfigureOptionNextButton"]').click();
+
+      cy.get('[data-cy="integrationKeyPathSelector-itemId"]').click();
+      cy.get(`.MuiAutocomplete-listbox li:contains("playerId")`).click(
+        forceClick
+      );
+
+      cy.get('[data-cy="integrationKeyPathSelector-heading"]').click();
+      cy.get(`.MuiAutocomplete-listbox li:contains("name")`).click(forceClick);
+
+      cy.get(
+        '[data-cy="integrationConfigureDisplayOptionsDoneButton"]'
+      ).click();
+
+      cy.get('[data-cy="integrationDisplayType"] input').should(
+        "have.value",
+        "simple"
+      );
+
+      cy.get('[data-cy="FieldFormAddFieldBtn"]').click();
+      cy.wait("@updateField").then(({ request }) => {
+        expect(request.body.settings.integrationFieldConfig.type).to.equal(
+          "simple"
+        );
       });
     });
   });

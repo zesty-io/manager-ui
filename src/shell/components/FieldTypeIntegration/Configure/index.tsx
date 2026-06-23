@@ -82,23 +82,25 @@ const IntegrationFieldConfigure = ({
 
   useEffect(() => {
     if (
-      !isUpdate ||
-      !endpoint ||
-      isFetchingApiData ||
-      !!apiData ||
-      hasFetchedInitialData.current
-    )
-      return;
+      !!isUpdate &&
+      !!integrationFieldConfig?.endpoint &&
+      !isFetchingApiData &&
+      !hasFetchedInitialData.current
+    ) {
+      setEndpoint(integrationFieldConfig?.endpoint || "");
+      setHeaders(integrationFieldConfig?.headers || null);
+      setType(integrationFieldConfig?.type || null);
+      setKeyPaths(integrationFieldConfig?.keyPaths || null);
 
-    hasFetchedInitialData.current = true;
-    const options = !headers
-      ? {}
-      : {
-          headers,
-        };
-
-    fetchApiData(endpoint, options);
-  }, [isUpdate, endpoint, headers, isFetchingApiData, apiData, fetchApiData]);
+      const options = !integrationFieldConfig?.headers
+        ? {}
+        : {
+            headers: integrationFieldConfig?.headers,
+          };
+      fetchApiData(integrationFieldConfig?.endpoint, options);
+      hasFetchedInitialData.current = true;
+    }
+  }, [isUpdate, integrationFieldConfig, isFetchingApiData]);
 
   useEffect(() => {
     setApiData(data);
@@ -160,7 +162,7 @@ const IntegrationFieldConfigure = ({
 
   return (
     <Box>
-      {isConnected ? (
+      {isUpdate || isConnected ? (
         <>
           <Typography variant="h6" mb={1}>
             API Configuration Settings
