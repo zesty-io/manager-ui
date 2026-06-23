@@ -97,9 +97,10 @@ const FontFamilyCard = ({
         dispatch(
           notify({
             kind: "success",
-            message: `Font "${family} (${selectedVariants.join(
-              ", "
-            )})" has been installed`,
+            message: t("settings.fontInstallSuccess", {
+              family,
+              variants: selectedVariants.join(", "),
+            }),
           })
         );
       } else {
@@ -109,9 +110,11 @@ const FontFamilyCard = ({
       dispatch(
         notify({
           kind: "error",
-          message: `Failed to add ${family} (${selectedVariants.join(
-            ", "
-          )}): ${error}`,
+          message: t("settings.fontInstallError", {
+            family,
+            variants: selectedVariants.join(", "),
+            error,
+          }),
         })
       );
     } finally {
@@ -230,9 +233,7 @@ const FontFamilyCard = ({
           color="text.primary"
           sx={{ fontFamily: `"${family}"`, mt: 1 }}
         >
-          {previewText
-            ? previewText
-            : "All their equipment and instruments are alive."}
+          {previewText ? previewText : t("settings.fontPreviewText")}
         </Typography>
       </Box>
     </>

@@ -119,8 +119,9 @@ const ColorSelectInput = ({
   defaultValue?: string | "";
   usedColors: string[];
 }) => {
+  const { t } = useTranslation();
   const availableColors = colorMenu
-    .sort((a, b) => a.label.localeCompare(b.label))
+    .sort((a, b) => t(a.label).localeCompare(t(b.label)))
     .filter((item) => !usedColors.includes(item.value));
 
   const defaultColor =
@@ -144,6 +145,7 @@ const ColorSelectInput = ({
         size="small"
         onChange={(event, newValue) => setSelectedColor(newValue)}
         value={selectedColor}
+        getOptionLabel={(option) => t(option.label)}
         renderOption={(props, option) => (
           <li {...props}>
             <Box display="flex" alignItems="center" gap={1}>
@@ -155,7 +157,7 @@ const ColorSelectInput = ({
                 }}
               />
               <Typography variant="body2" color="text.primary">
-                {option.label}
+                {t(option.label)}
               </Typography>
             </Box>
           </li>
@@ -203,6 +205,7 @@ const RolesSelectInput = ({
   listData: RoleMenu[];
   defaultValue?: string;
 }) => {
+  const { t } = useTranslation();
   const [value, setSelectedColor] = useState(defaultValue || "");
   const sortedListData = [...listData].sort((a, b) =>
     a.label.localeCompare(b.label)
@@ -255,7 +258,7 @@ const RolesSelectInput = ({
               "data-amp-track-id": id,
             }}
             variant="outlined"
-            placeholder={value ? "" : "None"}
+            placeholder={value ? "" : t("settings.none")}
           />
         )}
         ChipProps={{
@@ -272,11 +275,14 @@ const RolesSelectInput = ({
   );
 };
 
-const validateFormData = (formData: CreateStatusLabel) => {
+const validateFormData = (
+  formData: CreateStatusLabel,
+  t: (key: string) => string
+) => {
   const errors: Record<string, string> = {};
-  if (!formData.name) errors.name = "Name is required";
+  if (!formData.name) errors.name = t("settings.nameRequired");
   // if (!formData.description) errors.description = "Description is required";
-  if (!formData.color) errors.color = "Color is required";
+  if (!formData.color) errors.color = t("settings.colorRequired");
   return errors;
 };
 
@@ -326,7 +332,7 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
       ),
     };
 
-    const errors = validateFormData(newStatusLabel);
+    const errors = validateFormData(newStatusLabel, t);
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
       return;
@@ -340,7 +346,9 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
         : await createWorkflowStatusLabel(newStatusLabel);
 
       if (response?.error) {
-        throw new Error(response.error.data?.error || "An error occurred.");
+        throw new Error(
+          response.error.data?.error || t("settings.errorOccurred")
+        );
       }
 
       setFocusedLabel(response?.data?.ZUID);
@@ -348,11 +356,12 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
       dispatch(
         notify({
           kind: "error",
-          message: `Error: ${
-            error instanceof Error
-              ? error.message
-              : "An unexpected error occurred."
-          }`,
+          message: t("settings.errorWithMessage", {
+            message:
+              error instanceof Error
+                ? error.message
+                : t("settings.unexpectedError"),
+          }),
         })
       );
     } finally {
@@ -403,7 +412,9 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
             />
           )}
           <Typography variant="h5" fontWeight={700} flexGrow={1}>
-            {values?.name ? `Edit ${values.name}` : "Create Status"}
+            {values?.name
+              ? t("settings.editStatusTitle", { name: values.name })
+              : t("settings.createStatus")}
           </Typography>
           <IconButton size="small" onClick={onClose}>
             <CloseRoundedIcon fontSize="small" />
@@ -415,11 +426,14 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
         data-cy="status-label-form"
       >
         <Box display="flex" flexDirection="column" gap={3} p={2.5}>
-          <FormInputFieldWrapper label="Name" error={formErrors?.name}>
+          <FormInputFieldWrapper
+            label={t("common.name")}
+            error={formErrors?.name}
+          >
             <OutlinedInput
               name="name"
               defaultValue={values?.name || ""}
-              placeholder="e.g. Needs Content Review"
+              placeholder={t("settings.statusNamePlaceholder")}
               size="small"
               inputProps={{
                 "data-amp-track-id": "workflows-create-status-label-name-input",
@@ -427,8 +441,8 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
             />
           </FormInputFieldWrapper>
           <FormInputFieldWrapper
-            label="Description (optional)"
-            description="Describe what this status means in the context of your workflows"
+            label={t("settings.descriptionOptional")}
+            description={t("settings.describeStatusDescription")}
           >
             <OutlinedInput
               name="description"
@@ -436,7 +450,7 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
               multiline
               minRows={2}
               maxRows={2}
-              placeholder="Ready for legal team to review for publishing"
+              placeholder={t("settings.statusDescriptionPlaceholder")}
               size="small"
               inputProps={{
                 "data-amp-track-id":
@@ -444,7 +458,10 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
               }}
             />
           </FormInputFieldWrapper>
-          <FormInputFieldWrapper label="Color" error={formErrors?.color}>
+          <FormInputFieldWrapper
+            label={t("settings.color")}
+            error={formErrors?.color}
+          >
             <ColorSelectInput
               id="workflows-create-status-label-color-select"
               name="color"
@@ -453,8 +470,8 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
             />
           </FormInputFieldWrapper>
           <FormInputFieldWrapper
-            label="Which roles can add this status?"
-            description="Users who can add this status will be notified."
+            label={t("settings.whichRolesCanAdd")}
+            description={t("settings.addStatusNotification")}
           >
             <RolesSelectInput
               id="workflows-create-status-label-addPermissionRoles-select"
@@ -464,8 +481,8 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
             />
           </FormInputFieldWrapper>
           <FormInputFieldWrapper
-            label="Which roles can remove this status?"
-            description="Users who can remove this status will be notified."
+            label={t("settings.whichRolesCanRemove")}
+            description={t("settings.removeStatusNotification")}
           >
             <RolesSelectInput
               id="workflows-create-status-label-removePermissionRoles-select"
@@ -516,15 +533,14 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
                   color="text.primary"
                   fontWeight={600}
                 >
-                  Publishing content items requires this status to be applied.
+                  {t("settings.publishRequiresStatus")}
                 </Typography>
                 <Typography
                   variant="body2"
                   color="text.secondary"
                   fontWeight={400}
                 >
-                  This is a global setting and means content items cannot be
-                  published unless this status has been applied.
+                  {t("settings.publishRequiresStatusDescription")}
                 </Typography>
               </Box>
             }
@@ -539,7 +555,7 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
                 startIcon={<PauseCircleOutlineRoundedIcon />}
                 data-cy="form-deactivate-status-button"
               >
-                Deactivate Status
+                {t("settings.deactivateStatus")}
               </Button>
             </Box>
           )}
@@ -563,7 +579,7 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
           loading={createLabelIsLoading || editLabelIsLoading}
           startIcon={<SaveIcon />}
         >
-          {ZUID ? t("common.save") : "Create Status"}
+          {ZUID ? t("common.save") : t("settings.createStatus")}
         </Button>
       </DialogActions>
     </Dialog>

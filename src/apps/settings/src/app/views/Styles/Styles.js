@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { connect } from "react-redux";
 import { FieldTypeColor, FieldTypeText } from "@zesty-io/material";
 import { FieldTypeImage } from "shell/components/FieldTypeImage";
@@ -32,6 +33,7 @@ export default connect((state, props) => {
     category,
   };
 })(function Styles(props) {
+  const { t } = useTranslation();
   const [saving, setSaving] = useState(false);
   const [fields, setFields] = useState([]);
   const [fieldValues, setFieldValues] = useState({});
@@ -121,7 +123,9 @@ export default connect((state, props) => {
         props.dispatch(
           notify({
             kind: "success",
-            message: `${props?.category?.label} Settings Saved`,
+            message: t("settings.categorySettingsSaved", {
+              categoryLabel: props?.category?.label,
+            }),
           })
         );
       })
@@ -194,7 +198,7 @@ export default connect((state, props) => {
             size="small"
             fullWidth
           >
-            <MenuItem value="">- None -</MenuItem>
+            <MenuItem value="">{t("settings.noneOption")}</MenuItem>
             {Object.keys(field?.options).map((option, idx) => (
               <MenuItem key={idx} value={option}>
                 {field.options[option]}
@@ -224,7 +228,9 @@ export default connect((state, props) => {
               }
               size="small"
             >
-              <MenuItem value="inherit">Select</MenuItem>
+              <MenuItem value="inherit">
+                {t("shell.selectPlaceholder")}
+              </MenuItem>
               {fontsInstalled?.map((option, index) => (
                 <MenuItem
                   key={index}
@@ -249,7 +255,7 @@ export default connect((state, props) => {
                   fontWeight: parseWeight(fieldValues[field.referenceName]),
                 }}
               >
-                This is a text example
+                {t("settings.fontPreviewText")}
               </Typography>
             </Box>
           </Box>

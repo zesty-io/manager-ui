@@ -538,7 +538,7 @@
   "modelType": "模型类型",
   "updated": "已更新",
   "fields": "字段",
-  "noSearchResultsHeader": "您搜索的 \"{searchTerm}\" 未找到任何结果",
+  "noSearchResultsHeader": "您搜索的 \"{{searchTerm}}\" 未找到任何结果",
   "noSearchResultsSubHeader": "请尝试调整搜索条件。建议检查所有单词拼写是否正确，或尝试使用不同的关键词。",
   "noFilterResultsHeader": "未找到任何模型",
   "noFilterResultsSubHeader": "请尝试调整筛选条件以查找所需内容。",

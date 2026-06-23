@@ -538,7 +538,7 @@
   "modelType": "Modeltype",
   "updated": "Bijgewerkt",
   "fields": "Velden",
-  "noSearchResultsHeader": "Uw zoekopdracht \"{searchTerm}\" heeft geen resultaten opgeleverd",
+  "noSearchResultsHeader": "Uw zoekopdracht \"{{searchTerm}}\" heeft geen resultaten opgeleverd",
   "noSearchResultsSubHeader": "Pas uw zoekopdracht aan. Controleer of alle woorden correct zijn gespeld of probeer andere zoekwoorden.",
   "noFilterResultsHeader": "Geen modellen gevonden",
   "noFilterResultsSubHeader": "Pas de filters aan om te vinden wat u zocht.",

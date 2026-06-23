@@ -125,7 +125,7 @@ const Browse = () => {
         </Portal>
       )}
       <TopBar
-        title="Browse Fonts"
+        title={t("settings.browseFontsTitle")}
         isNotSaved={false}
         isLoading={false}
         saveHidden
@@ -139,7 +139,7 @@ const Browse = () => {
         >
           <SearchBox
             data-cy="BrowseFontSearchInput"
-            placeholder="Search Fonts"
+            placeholder={t("settings.searchFontsPlaceholder")}
             type="text"
             variant="outlined"
             size="small"
@@ -219,7 +219,7 @@ const Browse = () => {
           >
             <TextField
               id="previewText"
-              placeholder="Type something to preview"
+              placeholder={t("settings.typeSomethingToPreview")}
               type="text"
               variant="outlined"
               size="small"
@@ -287,7 +287,7 @@ const Browse = () => {
                     width: 64,
                   }}
                 >
-                  Prev
+                  {t("settings.prev")}
                 </Button>
                 <Typography
                   variant="h5"

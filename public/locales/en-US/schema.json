@@ -538,7 +538,7 @@
   "modelType": "Model Type",
   "updated": "Updated",
   "fields": "Fields",
-  "noSearchResultsHeader": "Your search \"{searchTerm}\" could not find any results",
+  "noSearchResultsHeader": "Your search \"{{searchTerm}}\" could not find any results",
   "noSearchResultsSubHeader": "Try adjusting your search. We suggest check all words are spelled correctly or try using different keywords.",
   "noFilterResultsHeader": "No models were found",
   "noFilterResultsSubHeader": "Try adjusting the filters to find what you were looking for.",

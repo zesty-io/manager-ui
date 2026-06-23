@@ -538,7 +538,7 @@
   "modelType": "Tipo de modelo",
   "updated": "Actualizado",
   "fields": "Campos",
-  "noSearchResultsHeader": "Tu búsqueda «{searchTerm}» no encontró ningún resultado",
+  "noSearchResultsHeader": "Tu búsqueda «{{searchTerm}}» no encontró ningún resultado",
   "noSearchResultsSubHeader": "Intenta ajustar tu búsqueda. Te sugerimos comprobar que todas las palabras estén escritas correctamente o intentar usar palabras clave diferentes.",
   "noFilterResultsHeader": "No se encontraron modelos",
   "noFilterResultsSubHeader": "Intenta ajustar los filtros para encontrar lo que buscabas.",

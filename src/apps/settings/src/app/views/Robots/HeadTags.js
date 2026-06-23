@@ -1,12 +1,14 @@
+import { useTranslation } from "react-i18next";
 import { TopBar } from "../../components/TopBar";
 import { Box } from "@mui/material";
 import { MainWrapper } from "../../components/Containers";
 import { Head } from "../../../../../../shell/components/Head";
 
 export const HeadTags = (props) => {
+  const { t } = useTranslation();
   return (
     <>
-      <TopBar title="Head Tags" isLoading={false} />
+      <TopBar title={t("settings.headTagsTitle")} isLoading={false} />
       <Box
         px="32px"
         py="16px"

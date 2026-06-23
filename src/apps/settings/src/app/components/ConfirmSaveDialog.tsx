@@ -44,11 +44,10 @@ const ConfirmSaveDialog: FC<ConfirmSaveDialogProps> = ({
           flexGrow={0}
           flexShrink={0}
         >
-          {`Save ${title} Settings?`}
+          {t("settings.confirmSaveDialogTitle", { title })}
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-          Your changes will take effect in production on the next re-render,
-          cache expiration, or manual cache clear.
+          {t("settings.confirmSaveDialogBody")}
         </Typography>
       </DialogTitle>
       <DialogActions>

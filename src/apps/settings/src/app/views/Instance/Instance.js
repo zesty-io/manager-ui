@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import { FieldTypeText } from "@zesty-io/material";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
+import { useTranslation } from "react-i18next";
 
 import { TopBar } from "../../components/TopBar";
 import { FieldWrapper, MainWrapper } from "../../components/Containers";
@@ -25,6 +26,7 @@ const DOCLINKS_MAP = {
 };
 
 const DocLink = ({ href }) => {
+  const { t } = useTranslation();
   return (
     <ButtonBase
       LinkComponent={Link}
@@ -58,7 +60,7 @@ const DocLink = ({ href }) => {
         fontWeight={500}
         sx={{ textDecoration: "none!important" }}
       >
-        Read Docs
+        {t("shell.accountReadDocs")}
       </Typography>
     </ButtonBase>
   );
@@ -70,6 +72,7 @@ export default connect((state) => {
     instance: state.settings.instance,
   };
 })(function Instance(props) {
+  const { t } = useTranslation();
   const [saving, setSaving] = useState(false);
   const [fields, setFields] = useState([]);
   const [fieldValues, setFieldValues] = useState({});
@@ -131,9 +134,9 @@ export default connect((state) => {
         props.dispatch(
           notify({
             kind: "success",
-            message: `${capitalizeFirstLetter(
-              props.match.params.category
-            )} Settings Saved`,
+            message: t("settings.categorySettingsSaved", {
+              category: capitalizeFirstLetter(props.match.params.category),
+            }),
           })
         );
       })
@@ -212,7 +215,9 @@ export default connect((state) => {
                         size="small"
                         fullWidth
                       >
-                        <MenuItem value="Select">Select</MenuItem>
+                        <MenuItem value="Select">
+                          {t("shell.selectPlaceholder")}
+                        </MenuItem>
                         {field.options.split(",").map((option, index) => (
                           <MenuItem key={index} value={option}>
                             {option}
@@ -227,7 +232,7 @@ export default connect((state) => {
                     <FieldWrapper
                       key={field.ZUID}
                       label={field.keyFriendly}
-                      tooltip={`Activating the WWW setting requires DNS setup of both the apex domain and www sub-domain.`}
+                      tooltip={t("settings.instanceWwwDnsTooltip")}
                     >
                       <ToggleButtonGroup
                         color="primary"
@@ -236,8 +241,12 @@ export default connect((state) => {
                         exclusive
                         onChange={(evt, val) => setValue(val, field.key)}
                       >
-                        <ToggleButton value={"0"}>Off </ToggleButton>
-                        <ToggleButton value={"1"}>On </ToggleButton>
+                        <ToggleButton value={"0"}>
+                          {t("settings.off")}{" "}
+                        </ToggleButton>
+                        <ToggleButton value={"1"}>
+                          {t("settings.on")}{" "}
+                        </ToggleButton>
                       </ToggleButtonGroup>
                     </FieldWrapper>
                   );
@@ -255,8 +264,12 @@ export default connect((state) => {
                         exclusive
                         onChange={(evt, val) => setValue(val, field.key)}
                       >
-                        <ToggleButton value={"0"}>Off</ToggleButton>
-                        <ToggleButton value={"1"}>On </ToggleButton>
+                        <ToggleButton value={"0"}>
+                          {t("settings.off")}
+                        </ToggleButton>
+                        <ToggleButton value={"1"}>
+                          {t("settings.on")}{" "}
+                        </ToggleButton>
                       </ToggleButtonGroup>
                     </FieldWrapper>
                   );

@@ -73,7 +73,7 @@ const DeleteFontDialog = ({
         dispatch(
           notify({
             kind: "success",
-            message: `Font "${fontLabel}" has been uninstalled`,
+            message: t("settings.fontUninstalled", { fontLabel }),
           })
         );
       } else {
@@ -83,7 +83,7 @@ const DeleteFontDialog = ({
       dispatch(
         notify({
           kind: "error",
-          message: `Failed to uninstall ${fontLabel}: ${error}`,
+          message: t("settings.fontUninstallFailed", { fontLabel, error }),
         })
       );
     } finally {
@@ -129,7 +129,7 @@ const DeleteFontDialog = ({
               fontWeight={700}
               mb={1}
             >
-              Remove Font:
+              {t("settings.removeFontLabel")}
             </Typography>
 
             <Typography
@@ -144,7 +144,7 @@ const DeleteFontDialog = ({
             </Typography>
           </Stack>
           <Typography variant="body2" color="text.secondary">
-            Do you really want to uninstall this font?
+            {t("settings.deleteFontConfirm")}
           </Typography>
         </DialogTitle>
         <DialogContent></DialogContent>

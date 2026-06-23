@@ -6,6 +6,7 @@ import LanguageRoundedIcon from "@mui/icons-material/LanguageRounded";
 import PaletteRoundedIcon from "@mui/icons-material/PaletteRounded";
 import { Typography, Box, Stack } from "@mui/material";
 import { startCase } from "lodash";
+import { useTranslation } from "react-i18next";
 
 import { AppSideBar } from "../../../../../../shell/components/AppSidebar";
 import { NavTree, TreeItem } from "../../../../../../shell/components/NavTree";
@@ -15,37 +16,39 @@ import {
 } from "../../../../../../shell/services/instance";
 import noSearchResults from "../../../../../../../public/images/noSearchResults.svg";
 
-const FONTS_CAT: TreeItem[] = [
+const getFontsCat = (t: (key: string) => string): TreeItem[] => [
   {
-    label: "Installed fonts",
+    label: t("settings.navFontsInstalled"),
     path: "/settings/fonts/installed",
     icon: FormatSizeRoundedIcon,
     children: [],
   },
   {
-    label: "Browse fonts",
+    label: t("settings.navFontsBrowse"),
     path: "/settings/fonts/browse",
     icon: FormatSizeRoundedIcon,
     children: [],
   },
 ];
-const GLOBAL_META_CAT: TreeItem[] = [
+
+const getGlobalMetaCat = (t: (key: string) => string): TreeItem[] => [
   {
-    label: "Head Tags",
+    label: t("settings.navHeadTags"),
     path: "/settings/head",
     icon: LanguageRoundedIcon,
     children: [],
   },
   {
-    label: "Robots.txt",
+    label: t("settings.navRobotsTxt"),
     path: "/settings/robots",
     icon: LanguageRoundedIcon,
     children: [],
   },
 ];
-const USER_SETTINGS_CAT: TreeItem[] = [
+
+const getUserSettingsCat = (t: (key: string) => string): TreeItem[] => [
   {
-    label: "Workflows",
+    label: t("settings.navWorkflows"),
     path: "/settings/user/workflows",
     icon: LanguageRoundedIcon,
     children: [],
@@ -55,6 +58,11 @@ const USER_SETTINGS_CAT: TreeItem[] = [
 export const SettingsNav = memo(() => {
   const location = useLocation();
   const [keyword, setKeyword] = useState("");
+  const { t } = useTranslation();
+
+  const FONTS_CAT = getFontsCat(t);
+  const GLOBAL_META_CAT = getGlobalMetaCat(t);
+  const USER_SETTINGS_CAT = getUserSettingsCat(t);
 
   const { data: rawInstanceSettings, isLoading: isLoadingInstanceSettings } =
     useGetInstanceSettingsQuery();
@@ -143,14 +151,21 @@ export const SettingsNav = memo(() => {
       styles: styleSettings,
       fonts: FONTS_CAT,
     };
-  }, [keyword, instanceSettings, styleSettings]);
+  }, [
+    keyword,
+    instanceSettings,
+    styleSettings,
+    FONTS_CAT,
+    GLOBAL_META_CAT,
+    USER_SETTINGS_CAT,
+  ]);
 
   return (
     <AppSideBar
       data-cy="SettingsNav"
-      headerTitle="Settings"
+      headerTitle={t("shell.navSettings")}
       mode="dark"
-      searchPlaceholder="Filter Settings"
+      searchPlaceholder={t("settings.filterSettings")}
       withTitleButton={false}
       onFilterChange={(keyword) => setKeyword(keyword.toLowerCase())}
     >
@@ -166,17 +181,19 @@ export const SettingsNav = memo(() => {
             src={noSearchResults}
             height={64}
             width={70}
-            alt="No Search Results"
+            alt={t("settings.noSearchResultsAlt")}
           />
           <Typography variant="body2" color="grey.400">
-            No results for "{keyword}"
+            {t("settings.noResultsFor", { keyword })}
           </Typography>
         </Stack>
       ) : (
         <>
           <NavTree
             id="InstanceSettingsTree"
-            HeaderComponent={<HeaderComponent title="Instance Settings" />}
+            HeaderComponent={
+              <HeaderComponent title={t("settings.sectionInstanceSettings")} />
+            }
             tree={navItems.instance}
             selected={location.pathname}
             isLoading={
@@ -186,7 +203,9 @@ export const SettingsNav = memo(() => {
           <Box pt={1.5}>
             <NavTree
               id="UserTree"
-              HeaderComponent={<HeaderComponent title="User Settings" />}
+              HeaderComponent={
+                <HeaderComponent title={t("settings.sectionUserSettings")} />
+              }
               tree={navItems.user}
               selected={location.pathname}
             />
@@ -194,7 +213,9 @@ export const SettingsNav = memo(() => {
           <Box pt={1.5}>
             <NavTree
               id="MetaTree"
-              HeaderComponent={<HeaderComponent title="Global Meta & SEO" />}
+              HeaderComponent={
+                <HeaderComponent title={t("settings.sectionGlobalMetaSeo")} />
+              }
               tree={navItems.meta}
               selected={location.pathname}
               isLoading={
@@ -205,7 +226,9 @@ export const SettingsNav = memo(() => {
           <Box pt={1.5}>
             <NavTree
               id="StylesTree"
-              HeaderComponent={<HeaderComponent title="Styles" />}
+              HeaderComponent={
+                <HeaderComponent title={t("settings.sectionStyles")} />
+              }
               tree={navItems.styles}
               selected={location.pathname}
               isLoading={
@@ -216,7 +239,9 @@ export const SettingsNav = memo(() => {
           <Box pt={1.5}>
             <NavTree
               id="FontsTree"
-              HeaderComponent={<HeaderComponent title="Fonts" />}
+              HeaderComponent={
+                <HeaderComponent title={t("settings.sectionFonts")} />
+              }
               tree={navItems.fonts}
               selected={location.pathname}
               isLoading={

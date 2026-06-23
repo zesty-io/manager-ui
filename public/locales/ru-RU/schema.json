@@ -538,7 +538,7 @@
   "modelType": "Тип модели",
   "updated": "Обновлено",
   "fields": "Поля",
-  "noSearchResultsHeader": "По вашему запросу «{searchTerm}» ничего не найдено",
+  "noSearchResultsHeader": "По вашему запросу «{{searchTerm}}» ничего не найдено",
   "noSearchResultsSubHeader": "Попробуйте скорректировать поиск. Мы рекомендуем проверить правильность написания слов или попробовать другие ключевые слова.",
   "noFilterResultsHeader": "Модели не найдены",
   "noFilterResultsSubHeader": "Попробуйте скорректировать фильтры для поиска нужного.",

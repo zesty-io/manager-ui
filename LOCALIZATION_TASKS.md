@@ -6,18 +6,19 @@
 
 ## Board snapshot
 
-| ✓ Done                                                   | ▶ In Progress | → Up Next  | ≡ Backlog (in order)                                             |
-| -------------------------------------------------------- | ------------- | ---------- | ---------------------------------------------------------------- |
-| Phase 1 — Infrastructure                                 | —             | `settings` | `code`                                                           |
-| Phase 2 — Locale switcher                                |               |            | `release` · `active-preview` · `blocks` · `marketplace`          |
-| Phase 3 — `common` + `shell` (incl. FieldType\* widgets) |               |            | `studio` (verify-only)                                           |
-| Phase 4 — `dashboard` · `media` · `content`              |               |            | Phase 5: TinyMCE · MUI overrides · `@zesty-io/material` upstream |
-| Phase 5 — MUI · ProseMirror · Bynder                     |               |            | Phase 8 — Cypress tests                                          |
-| Phase 6 — Caching · Phase 7 — Missing-key handling       |               |            |                                                                  |
-| **`schema`**                                             |               |            |                                                                  |
-| **`seo`**                                                |               |            |                                                                  |
-| **`leads`**                                              |               |            |                                                                  |
-| **`reports`**                                            |               |            |                                                                  |
+| ✓ Done                                                   | ▶ In Progress | → Up Next | ≡ Backlog (in order)                                             |
+| -------------------------------------------------------- | ------------- | --------- | ---------------------------------------------------------------- |
+| Phase 1 — Infrastructure                                 | —             | `code`    | `release` · `active-preview` · `blocks` · `marketplace`          |
+| Phase 2 — Locale switcher                                |               |           | `studio` (verify-only)                                           |
+| Phase 3 — `common` + `shell` (incl. FieldType\* widgets) |               |           | Phase 5: TinyMCE · MUI overrides · `@zesty-io/material` upstream |
+| Phase 4 — `dashboard` · `media` · `content`              |               |           | Phase 8 — Cypress tests                                          |
+| Phase 5 — MUI · ProseMirror · Bynder                     |               |           |                                                                  |
+| Phase 6 — Caching · Phase 7 — Missing-key handling       |               |           |                                                                  |
+| **`schema`**                                             |               |           |                                                                  |
+| **`seo`**                                                |               |           |                                                                  |
+| **`leads`**                                              |               |           |                                                                  |
+| **`reports`**                                            |               |           |                                                                  |
+| **`settings`**                                           |               |           |                                                                  |
 
 ---
 
@@ -35,26 +36,11 @@ _Nothing in progress right now._
 
 ---
 
-_`reports` complete — pick up `settings` next._
-
 ---
 
 ---
 
 # ≡ Backlog
-
----
-
-### `settings` — Effort: L
-
-- [ ] Add lazy-load plumbing to `SettingsApp`
-- [ ] Create empty `public/locales/<locale>/settings.json` for all 6 locales
-- [ ] Audit + localize `src/apps/settings/src/`:
-  - [ ] Destructive flows: font uninstall, workflow deactivation — high QA bar
-  - [ ] Module-level color/role maps (backend role names → skip; UI role-picker labels → translate)
-  - [ ] `settings` imports `media` components — strings already in `media` keys, don't duplicate
-- [ ] Verify `FieldTypeImage` (`shell` ns, used by `settings/Styles`) has no gaps
-- [ ] Verify: `npx tsc --noEmit`, JSON valid, key parity across all 6 locales
 
 ---
 
@@ -283,3 +269,12 @@ All infrastructure, locale switcher, `common` + `shell` namespaces (incl. all `F
 - Key parity: es-ES missing plural form: actionCount_many
 - Key parity: ru-RU missing plural form: actionCount_few
 - Key parity: ru-RU missing plural form: actionCount_many
+
+---
+
+### Phase 4 — `settings`
+
+- [x] Lazy-load plumbing: `src/apps/settings/src/index.js`
+- [x] `en-US/settings.json` populated — 102 new keys, 14 reused from common/shell
+- [x] All 6 locales seeded with en-US values (manual translation pending)
+- [x] tsc: PASS

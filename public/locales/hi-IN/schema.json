@@ -538,7 +538,7 @@
   "modelType": "मॉडल प्रकार",
   "updated": "अपडेट किया गया",
   "fields": "फ़ील्ड",
-  "noSearchResultsHeader": "आपकी खोज \"{searchTerm}\" के लिए कोई परिणाम नहीं मिला",
+  "noSearchResultsHeader": "आपकी खोज \"{{searchTerm}}\" के लिए कोई परिणाम नहीं मिला",
   "noSearchResultsSubHeader": "अपनी खोज को समायोजित करने का प्रयास करें। हम सुझाव देते हैं कि सभी शब्द सही ढंग से लिखे गए हैं या अलग-अलग कीवर्ड का उपयोग करने का प्रयास करें।",
   "noFilterResultsHeader": "कोई मॉडल नहीं मिला",
   "noFilterResultsSubHeader": "आप जो खोज रहे थे उसे ढूंढने के लिए फ़िल्टर समायोजित करने का प्रयास करें।",
