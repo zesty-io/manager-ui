@@ -7,7 +7,11 @@ module.exports = defineConfig({
   viewportHeight: 1080,
   video: false,
   numTestsKeptInMemory: 0,
-  defaultCommandTimeout: 15000,
+  // Generous timeouts to tolerate the slow shared dev instance (data/UI can
+  // render several seconds late under load) without flaking.
+  defaultCommandTimeout: 30000,
+  requestTimeout: 30000,
+  responseTimeout: 30000,
   env: {
     API_AUTH: "https://auth.api.dev.zesty.io",
     COOKIE_NAME: "DEV_APP_SID",
