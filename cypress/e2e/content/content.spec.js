@@ -735,7 +735,6 @@ describe("Content Specs", () => {
         .type("Jan 15 2025{enter}")
         .should("have.value", "Jan 15, 2025");
 
-      cy.getBySelector("SaveRepeaterRowItemBtn").scrollIntoView().click();
       cy.getBySelector("SaveRepeaterRowItemBtn")
         .scrollIntoView()
         .should("be.enabled")
@@ -751,6 +750,10 @@ describe("Content Specs", () => {
         .scrollIntoView()
         .should("exist")
         .click();
+      cy.getBySelector("subfield:single_line_text")
+        .find("input")
+        .clear()
+        .type("date test row");
       cy.getBySelector("subfield:date")
         .find('[data-cy="datePickerInputField"] input')
         .clear({ force: true })
@@ -765,6 +768,9 @@ describe("Content Specs", () => {
         .scrollIntoView()
         .should("exist")
         .click();
+      cy.getBySelector("field:repeater")
+        .find(".MuiDataGrid-row")
+        .should("have.length", 2);
 
       // Reopen the row just saved to verify date values round-trip correctly
       cy.getBySelector("field:repeater")
