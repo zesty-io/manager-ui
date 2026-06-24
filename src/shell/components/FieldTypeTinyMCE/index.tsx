@@ -156,7 +156,13 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
           onFocusOut={onBlur}
           initialValue={initialValue}
           onEditorChange={(content, editor) => {
-            onChange(content, name, datatype);
+            // Only propagate genuine user edits. TinyMCE fires onEditorChange
+            // while parsing/normalizing the initial HTML on init; isDirty() is
+            // false for those programmatic changes and true once the user edits,
+            // so this prevents marking the item dirty on load.
+            if (editor.isDirty()) {
+              onChange(content, name, datatype);
+            }
 
             const charCount =
               editor.plugins?.wordcount?.body?.getCharacterCount() ?? 0;
@@ -164,6 +170,10 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
             onCharacterCountChange && onCharacterCountChange(charCount);
           }}
           onInit={(_, editor) => {
+            // Establish a clean baseline after the initial content loads so the
+            // normalization pass above isn't treated as a user edit.
+            editor.setDirty(false);
+
             const charCount =
               editor.plugins?.wordcount?.body?.getCharacterCount() ?? 0;
 

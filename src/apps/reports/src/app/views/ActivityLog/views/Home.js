@@ -105,7 +105,9 @@ export const Home = () => {
         end_date: toUTC(params.get("to")),
       }),
     },
-    skip: !initialized,
+    // Don't fire until a date range is set — otherwise the initial render (before
+    // the default dates are applied) sends an unscoped audits request.
+    skip: !initialized || !params.get("from") || !params.get("to"),
   });
 
   // Sets date parameters to 3 months

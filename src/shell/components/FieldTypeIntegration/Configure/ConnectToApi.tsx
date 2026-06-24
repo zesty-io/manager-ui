@@ -1,5 +1,5 @@
-import { useCallback, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useCallback, useRef, useState, ChangeEvent } from "react";
 import {
   Button,
   Box,
@@ -110,7 +110,6 @@ const ConnectToApi = ({
       const id = uuidv4();
       return { [id]: { key: "", value: "" } };
     }
-
     return Object.entries(headers).reduce((acc, [key, value]) => {
       const id = uuidv4();
       acc[id] = { key, value: String(value) };
@@ -119,14 +118,16 @@ const ConnectToApi = ({
   });
 
   const handleNext = () => {
-    const headersLocalValues = Object.values(headersLocal);
-    const headersWithKeys = headersLocalValues.filter((i) => !!i?.key);
-    const reqHeaders = !headersWithKeys?.length
+    const headersWithKeys = Object.values(headersLocal).filter((h) => !!h.key);
+    const reqHeaders = !headersWithKeys.length
       ? null
-      : headersWithKeys?.reduce((acc: any, obj: any) => {
-          acc[obj.key] = obj.value;
-          return acc;
-        }, {});
+      : headersWithKeys.reduce<Record<string, string>>(
+          (acc, { key, value }) => {
+            acc[key] = value;
+            return acc;
+          },
+          {}
+        );
 
     setApiData(data);
     setHeaders(reqHeaders);
@@ -142,15 +143,17 @@ const ConnectToApi = ({
   const handleApiConnect = useCallback(() => {
     setReqAborted(false);
     setApiData(null);
-    const headersLocalValues = Object.values(headersLocal);
-    const headersWithKeys = headersLocalValues.filter((i) => !!i?.key);
-    const options = !headersWithKeys?.length
+    const headersWithKeys = Object.values(headersLocal).filter((h) => !!h.key);
+    const options = !headersWithKeys.length
       ? {}
       : {
-          headers: headersWithKeys?.reduce((acc: any, obj: any) => {
-            acc[obj.key] = obj.value;
-            return acc;
-          }, {}),
+          headers: headersWithKeys.reduce<Record<string, string>>(
+            (acc, { key, value }) => {
+              acc[key] = value;
+              return acc;
+            },
+            {}
+          ),
         };
     fetchApiData(endpointLocal, options);
   }, [endpointLocal, headersLocal]);
@@ -206,7 +209,7 @@ const ConnectToApi = ({
             autoFocus={focusRef?.current === "url"}
             placeholder="https://api.example.com/endpoint"
             value={endpointLocal}
-            onInput={(e: any) => {
+            onChange={(e: ChangeEvent<HTMLInputElement>) => {
               const validUrl = !!e.target.value && validateUrl(e.target.value);
               setIsValidUrl(validUrl);
               setEndpointLocal(e.target.value);
@@ -243,90 +246,79 @@ const ConnectToApi = ({
             width="100%"
             data-cy="integrationHeadersContainer"
           >
-            {Object.entries(headersLocal)?.map((entry, i) => {
-              const entryId: string = entry[0];
-              const headerKey = entry[1]?.key || "";
-              const headerValue = entry[1]?.value || "";
-              return (
+            {Object.entries(headersLocal).map(([entryId, header], i) => (
+              <Grid
+                data-cy={`integrationHeadersContainerRow-${i}`}
+                key={`header-${entryId}`}
+                container
+                size={16}
+                spacing={1}
+                columns={16}
+                width="100%"
+              >
+                <Grid size={8}>
+                  <TextField
+                    autoFocus={entryId === focusRef.current}
+                    className="keyInput"
+                    fullWidth
+                    size="small"
+                    placeholder={t("shell.integrationKey")}
+                    value={header.key}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                      setHeadersLocal((prev) => ({
+                        ...prev,
+                        [entryId]: { ...prev[entryId], key: e.target.value },
+                      }));
+                    }}
+                  />
+                </Grid>
                 <Grid
-                  data-cy={`integrationHeadersContainerRow-${i}`}
-                  key={`header-${entryId}`}
-                  container
-                  size={16}
-                  spacing={1}
-                  columns={16}
-                  width="100%"
+                  size={i > 0 ? 7 : 8}
+                  display="flex"
+                  flexDirection="row"
+                  justifyContent="space-between"
+                  alignItems="center"
                 >
-                  <Grid size={8}>
-                    <TextField
-                      autoFocus={entryId === focusRef?.current}
-                      className="keyInput"
-                      fullWidth
-                      size="small"
-                      placeholder={t("shell.integrationKey")}
-                      value={headerKey}
-                      onChange={(e: any) => {
-                        setHeadersLocal({
-                          ...headersLocal,
-                          [entryId]: {
-                            ...headersLocal?.[entryId],
-                            key: e.target.value,
-                          },
-                        });
-                      }}
-                    />
-                  </Grid>
+                  <TextField
+                    className="valueInput"
+                    size="small"
+                    placeholder={t("shell.integrationValue")}
+                    value={header.value}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                      setHeadersLocal((prev) => ({
+                        ...prev,
+                        [entryId]: { ...prev[entryId], value: e.target.value },
+                      }));
+                    }}
+                    sx={{ flexGrow: 1 }}
+                  />
+                </Grid>
+                {i > 0 && (
                   <Grid
-                    size={i > 0 ? 7 : 8}
+                    size={1}
                     display="flex"
                     flexDirection="row"
-                    justifyContent="space-between"
+                    justifyContent="center"
                     alignItems="center"
                   >
-                    <TextField
-                      className="valueInput"
-                      size="small"
-                      placeholder={t("shell.integrationValue")}
-                      value={headerValue}
-                      onChange={(e: any) => {
-                        setHeadersLocal({
-                          ...headersLocal,
-                          [entryId]: {
-                            ...headersLocal?.[entryId],
-                            value: e.target.value,
-                          },
+                    <IconButton
+                      data-cy="removeHeaderButton"
+                      sx={{ flexGrow: 0 }}
+                      onClick={() => {
+                        setHeadersLocal((prev) => {
+                          if (!prev[entryId]) return prev;
+                          const updated = { ...prev };
+                          delete updated[entryId];
+                          return updated;
                         });
                       }}
-                      sx={{ flexGrow: 1 }}
-                    />
-                  </Grid>
-                  {i > 0 && (
-                    <Grid
-                      size={1}
-                      display="flex"
-                      flexDirection="row"
-                      justifyContent="center"
-                      alignItems="center"
                     >
-                      <IconButton
-                        data-cy="removeHeaderButton"
-                        sx={{ flexGrow: 0 }}
-                        onClick={() => {
-                          setHeadersLocal((prev) => {
-                            if (!prev[entryId]) return prev;
-                            const updated = { ...prev };
-                            delete updated[entryId];
-                            return updated;
-                          });
-                        }}
-                      >
-                        <CloseOutlinedIcon />
-                      </IconButton>
-                    </Grid>
-                  )}
-                </Grid>
-              );
-            })}
+                      <CloseOutlinedIcon />
+                    </IconButton>
+                  </Grid>
+                )}
+              </Grid>
+            ))}
           </Grid>
           <Button
             data-cy="addHeaderButton"
@@ -334,15 +326,12 @@ const ConnectToApi = ({
             variant="outlined"
             startIcon={<AddCircleIcon />}
             onClick={() => {
-              const keyId: string = Date.now().toString();
+              const keyId: string = uuidv4();
               focusRef.current = keyId;
-              setHeadersLocal({
-                ...headersLocal,
-                [keyId]: {
-                  key: "",
-                  value: "",
-                },
-              });
+              setHeadersLocal((prev) => ({
+                ...prev,
+                [keyId]: { key: "", value: "" },
+              }));
             }}
           >
             {t("shell.integrationAddHttpHeader")}

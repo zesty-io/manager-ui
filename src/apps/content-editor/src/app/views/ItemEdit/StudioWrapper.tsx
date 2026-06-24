@@ -1,4 +1,3 @@
-import CloudUploadRoundedIcon from "@mui/icons-material/CloudUploadRounded";
 import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
 import { Alert, Box, Button, CircularProgress, Dialog } from "@mui/material";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -36,7 +35,15 @@ import {
 import { StudioHeader } from "./components/StudioWrapper/StudioHeader";
 import { StudioPreview } from "./components/StudioWrapper/StudioPreview";
 import { StudioSidePanel } from "./components/StudioWrapper/StudioSidePanel";
+import {
+  StudioSaveChange,
+  StudioSaveChangesModal,
+} from "./components/StudioWrapper/StudioSaveChangesModal";
 import { useLayoutReorderState } from "./hooks/useLayoutReorderState";
+import {
+  collectDirtyContentItems,
+  useStudioContentSave,
+} from "./hooks/useStudioContentSave";
 import { useStudioBridge } from "./hooks/useStudioBridge";
 import { InteractionMode, LayoutBreadcrumbItem } from "./hooks/studioTypes";
 import { useStudioSelection } from "./hooks/useStudioSelection";
@@ -71,6 +78,7 @@ export const StudioWrapper = () => {
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const currentHoverStudioIdRef = useRef<string | null>(null);
   const [showPendingLayoutModal, setShowPendingLayoutModal] = useState(false);
+  const [showSaveChangesModal, setShowSaveChangesModal] = useState(false);
   const [interactionMode, setInteractionMode] =
     useState<InteractionMode>("content");
   const [studioSaving, setStudioSaving] = useState(false);
@@ -267,25 +275,9 @@ export const StudioWrapper = () => {
         }
       };
 
-      if (
-        selectedItem?.dirty &&
-        resolved?.meta?.ZUID &&
-        resolved.meta.ZUID !== selectedItemZUID
-      ) {
-        const openModal = (window as any).openContentNavigationModal;
-        if (typeof openModal === "function") {
-          openModal((shouldProceed: boolean) => {
-            if (shouldProceed) {
-              applyResolved();
-            }
-          });
-          return;
-        }
-      }
-
       applyResolved();
     },
-    [contentItems, dispatch, selectedItem?.dirty, selectedItemZUID]
+    [contentItems, dispatch]
   );
 
   useEffect(() => {
@@ -530,6 +522,162 @@ export const StudioWrapper = () => {
     [iframeSrc]
   );
 
+  // Maps a saveItem() response's validation / server errors into the shared
+  // fieldErrors UI state and surfaces a notification. Shared by the single-item
+  // save (handleSave) and the staged batch save (useStudioContentSave).
+  const applyItemSaveErrors = useCallback(
+    (res: any, itemLabel: string, options?: { applyFieldErrors?: boolean }) => {
+      // `setFieldErrors` / `activeFields` are scoped to the selected item, so
+      // callers batch-saving non-selected items pass applyFieldErrors: false to
+      // get the toast without polluting the active item's field panel.
+      const applyFieldErrors = options?.applyFieldErrors ?? true;
+      if (res?.err === "VALIDATION_ERROR") {
+        if (applyFieldErrors) {
+          setFieldErrors((prev) => {
+            const errors = cloneDeep(prev);
+
+            res?.missingRequired?.forEach((field: any) => {
+              errors[field.name] = {
+                ...(errors[field.name] ?? {}),
+                MISSING_REQUIRED: true,
+              };
+            });
+
+            res?.lackingCharLength?.forEach((field: any) => {
+              errors[field.name] = {
+                ...(errors[field.name] ?? {}),
+                LACKING_MINLENGTH: field.settings?.minCharLimit,
+              };
+            });
+
+            res?.regexPatternMismatch?.forEach((field: any) => {
+              errors[field.name] = {
+                ...(errors[field.name] ?? {}),
+                REGEX_PATTERN_MISMATCH: field.settings?.regexMatchErrorMessage,
+              };
+            });
+
+            res?.regexRestrictPatternMatch?.forEach((field: any) => {
+              errors[field.name] = {
+                ...(errors[field.name] ?? {}),
+                REGEX_RESTRICT_PATTERN_MATCH:
+                  field.settings?.regexRestrictErrorMessage,
+              };
+            });
+
+            res?.invalidRange?.forEach((field: any) => {
+              errors[field.name] = {
+                ...(errors[field.name] ?? {}),
+                INVALID_RANGE: t("content.valueMustBeBetween", {
+                  min: field.settings?.minValue,
+                  max: field.settings?.maxValue,
+                }),
+              };
+            });
+
+            res?.invalidBlockVariantValue?.forEach((field: any) => {
+              errors[field.name] = {
+                ...(errors[field.name] ?? {}),
+                INVALID_BLOCK_VARIANT: true,
+              };
+            });
+
+            return errors;
+          });
+        }
+
+        dispatch(
+          notify({
+            kind: "error",
+            message: t("content.studioCannotSaveInvalid", { label: itemLabel }),
+          })
+        );
+        return;
+      }
+
+      if (res?.status === 400) {
+        if (
+          applyFieldErrors &&
+          res.error?.toLowerCase()?.includes("data too long")
+        ) {
+          const dataLongErrorMatch = res.error?.match(/'([^']*)'/);
+
+          if (dataLongErrorMatch?.[1]) {
+            const fieldName = dataLongErrorMatch[1];
+            const oneToManyFieldNames = activeFields?.reduce(
+              (names: string[], currItem: any) => {
+                if (currItem?.datatype === "one_to_many") {
+                  return [...names, currItem?.name];
+                }
+
+                return names;
+              },
+              []
+            );
+
+            setFieldErrors((prev) => {
+              const errors = cloneDeep(prev);
+              errors[fieldName] = {
+                ...(errors[fieldName] ?? {}),
+                CUSTOM_ERROR: oneToManyFieldNames?.includes(fieldName)
+                  ? t("content.itemEditCannotSaveTooManySelected")
+                  : t("content.itemEditCannotSaveValueTooLong"),
+              };
+              return errors;
+            });
+          }
+        }
+
+        dispatch(
+          notify({
+            kind: "error",
+            message: res.error
+              ? t("content.studioCannotSaveError", {
+                  label: itemLabel,
+                  error: res.error,
+                })
+              : t("content.studioCannotSave", { label: itemLabel }),
+          })
+        );
+        return;
+      }
+
+      dispatch(
+        notify({
+          kind: "error",
+          message: t("content.studioCannotSave", { label: itemLabel }),
+        })
+      );
+    },
+    [activeFields, dispatch]
+  );
+
+  const { saveAllContent, saveAndPublishAllContent, discardAllContent } =
+    useStudioContentSave({
+      dispatch,
+      refreshPreviewFrame,
+      applyItemSaveErrors,
+      setStudioSaving,
+    });
+
+  const dirtyContentItems = useMemo(
+    () => collectDirtyContentItems(contentItems),
+    [contentItems]
+  );
+  const hasPendingContentChanges = dirtyContentItems.length > 0;
+  const dirtyContentItemZUIDs = useMemo(
+    () => dirtyContentItems.map((item) => item.itemZUID),
+    [dirtyContentItems]
+  );
+  const canUpdatePendingContent = useMultiPermission(
+    "UPDATE",
+    dirtyContentItemZUIDs
+  );
+  const canPublishPendingContent = useMultiPermission(
+    "PUBLISH",
+    dirtyContentItemZUIDs
+  );
+
   const {
     pendingLayoutCodeIds,
     isSavingLayout,
@@ -560,6 +708,99 @@ export const StudioWrapper = () => {
     "PUBLISH",
     pendingLayoutCodeIds
   );
+
+  // The floating save bar is shared between modes ("gated by mode"): in layout
+  // mode it commits staged layout changes, in content mode it commits the
+  // staged multi-item content edits. Only the active mode's pending changes are
+  // ever surfaced because switching modes prompts to save/discard first.
+  const isLayoutMode = interactionMode === "layout";
+  const showSaveBar = isLayoutMode
+    ? hasPendingLayoutChanges
+    : hasPendingContentChanges;
+  const saveBarIsSaving = isLayoutMode ? isSavingLayout : studioSaving;
+  const saveBarCanSave = isLayoutMode
+    ? canUpdatePendingLayout
+    : canUpdatePendingContent;
+  const saveBarCanPublish = isLayoutMode
+    ? canPublishPendingLayout
+    : canPublishPendingContent;
+  const handleSaveBarCancel = isLayoutMode
+    ? () => handleDiscardPendingLayoutSave()
+    : () => {
+        void discardAllContent();
+      };
+  // The "Save Changes" bar button opens the modal; the modal's Save All /
+  // Save & Publish All buttons run the active mode's batch handlers and close.
+  // Close the modal on full success; keep it open on partial failure so the
+  // user sees which items remain (still listed + toasted) and can retry.
+  const closeModalUnlessFailed = (result: { failedCount?: number } | void) => {
+    if (!result || !result.failedCount) setShowSaveChangesModal(false);
+  };
+  const handleModalSaveAll = () => {
+    if (!saveBarCanSave) return;
+    Promise.resolve(
+      isLayoutMode ? handleSavePendingLayout() : saveAllContent()
+    ).then(closeModalUnlessFailed, () => {});
+  };
+  const handleModalSaveAndPublishAll = () => {
+    if (!saveBarCanPublish) return;
+    Promise.resolve(
+      isLayoutMode
+        ? handleSaveAndPublishPendingLayout()
+        : saveAndPublishAllContent()
+    ).then(closeModalUnlessFailed, () => {});
+  };
+
+  // Rows shown in the Save Changes modal — scoped to the active mode: content
+  // mode lists the staged content/block items, layout mode lists changed code
+  // files. (Per product: staging is gated by mode, never mixed.)
+  const saveChanges = useMemo<StudioSaveChange[]>(() => {
+    if (isLayoutMode) {
+      return pendingLayoutCodeIds.map((codeId) => {
+        const webView = webViews.find((view) => view.ZUID === codeId);
+        return {
+          id: codeId,
+          title: codeFileNameById[codeId] || webView?.fileName || codeId,
+          type: "Code",
+          versions:
+            typeof webView?.version === "number"
+              ? [{ version: webView.version, state: "published" }]
+              : [],
+        };
+      });
+    }
+
+    return dirtyContentItems.map((item) => {
+      const storeItem = contentItems[item.itemZUID];
+      const model = modelsState[item.modelZUID];
+      const draftVersion = storeItem?.meta?.version;
+      const publishedVersion = storeItem?.publishing?.version;
+      const versions: StudioSaveChange["versions"] = [];
+      if (typeof draftVersion === "number") {
+        versions.push({ version: draftVersion, state: "draft" });
+      }
+      if (
+        typeof publishedVersion === "number" &&
+        publishedVersion !== draftVersion
+      ) {
+        versions.push({ version: publishedVersion, state: "published" });
+      }
+      return {
+        id: item.itemZUID,
+        title: item.label,
+        type: model?.type === "block" ? "Block" : "Content",
+        versions,
+      };
+    });
+  }, [
+    codeFileNameById,
+    contentItems,
+    dirtyContentItems,
+    isLayoutMode,
+    modelsState,
+    pendingLayoutCodeIds,
+    webViews,
+  ]);
 
   const requestProceedWithPendingLayoutSave = useCallback(
     (onProceed: () => void) => {
@@ -615,7 +856,7 @@ export const StudioWrapper = () => {
         syncBridgeInteractionMode(nextMode);
       };
 
-      if (nextMode === "layout" && selectedItem?.dirty) {
+      if (nextMode === "layout" && hasPendingContentChanges) {
         const openModal = (window as any).openContentNavigationModal;
         if (typeof openModal === "function") {
           openModal((shouldProceed: boolean) => {
@@ -639,9 +880,9 @@ export const StudioWrapper = () => {
       clearSelection,
       interactionMode,
       hasPendingLayoutChanges,
+      hasPendingContentChanges,
       postCommandToBridge,
       requestProceedWithPendingLayoutSave,
-      selectedItem?.dirty,
       syncBridgeInteractionMode,
     ]
   );
@@ -701,33 +942,9 @@ export const StudioWrapper = () => {
     updateItemByPath(normalized, { onApplied: clearSelection });
   }, [normalizedPathParam, updateItemByPath, clearSelection]);
 
-  const discardPendingEdits = useCallback(() => {
-    if (!selectedItemZUID || !selectedModelZUID) return Promise.resolve();
-    dispatch({
-      type: "UNMARK_ITEMS_DIRTY",
-      items: [selectedItemZUID],
-    });
-    return dispatch(fetchItem(selectedModelZUID, selectedItemZUID));
-  }, [dispatch, selectedItemZUID, selectedModelZUID]);
-
   const requestClearSelection = useCallback(() => {
-    if (!selectedItem?.dirty) {
-      clearSelection();
-      return;
-    }
-
-    const openModal = (window as any).openContentNavigationModal;
-    if (typeof openModal === "function") {
-      openModal((shouldProceed: boolean) => {
-        if (shouldProceed) {
-          clearSelection();
-        }
-      });
-      return;
-    }
-
     clearSelection();
-  }, [clearSelection, selectedItem?.dirty]);
+  }, [clearSelection]);
 
   useEffect(() => {
     if (interactionMode !== "content") return;
@@ -803,113 +1020,8 @@ export const StudioWrapper = () => {
         })
       )) as any;
 
-      if (res?.err === "VALIDATION_ERROR") {
-        const errors = cloneDeep(fieldErrors);
-
-        res?.missingRequired?.forEach((field: any) => {
-          errors[field.name] = {
-            ...(errors[field.name] ?? {}),
-            MISSING_REQUIRED: true,
-          };
-        });
-
-        res?.lackingCharLength?.forEach((field: any) => {
-          errors[field.name] = {
-            ...(errors[field.name] ?? {}),
-            LACKING_MINLENGTH: field.settings?.minCharLimit,
-          };
-        });
-
-        res?.regexPatternMismatch?.forEach((field: any) => {
-          errors[field.name] = {
-            ...(errors[field.name] ?? {}),
-            REGEX_PATTERN_MISMATCH: field.settings?.regexMatchErrorMessage,
-          };
-        });
-
-        res?.regexRestrictPatternMatch?.forEach((field: any) => {
-          errors[field.name] = {
-            ...(errors[field.name] ?? {}),
-            REGEX_RESTRICT_PATTERN_MATCH:
-              field.settings?.regexRestrictErrorMessage,
-          };
-        });
-
-        res?.invalidRange?.forEach((field: any) => {
-          errors[field.name] = {
-            ...(errors[field.name] ?? {}),
-            INVALID_RANGE: t("content.valueMustBeBetween", {
-              min: field.settings?.minValue,
-              max: field.settings?.maxValue,
-            }),
-          };
-        });
-
-        res?.invalidBlockVariantValue?.forEach((field: any) => {
-          errors[field.name] = {
-            ...(errors[field.name] ?? {}),
-            INVALID_BLOCK_VARIANT: true,
-          };
-        });
-
-        setFieldErrors(errors);
-
-        dispatch(
-          notify({
-            kind: "error",
-            message: t("content.studioCannotSaveInvalid", {
-              label: selectedItemLabel,
-            }),
-          })
-        );
-        return res;
-      }
-
-      if (res?.status === 400) {
-        if (res.error?.toLowerCase()?.includes("data too long")) {
-          const dataLongErrorMatch = res.error?.match(/'([^']*)'/);
-
-          if (dataLongErrorMatch?.[1]) {
-            const fieldName = dataLongErrorMatch[1];
-            const errors = cloneDeep(fieldErrors);
-            const oneToManyFieldNames = activeFields?.reduce(
-              (names: string[], currItem: any) => {
-                if (currItem?.datatype === "one_to_many") {
-                  return [...names, currItem?.name];
-                }
-
-                return names;
-              },
-              []
-            );
-
-            errors[fieldName] = {
-              ...(errors[fieldName] ?? {}),
-              CUSTOM_ERROR: oneToManyFieldNames?.includes(fieldName)
-                ? t("content.itemEditCannotSaveTooManySelected")
-                : t("content.itemEditCannotSaveValueTooLong"),
-            };
-
-            setFieldErrors(errors);
-          }
-        }
-
-        dispatch(
-          notify({
-            kind: "error",
-            message: res.error
-              ? t("content.studioCannotSaveError", {
-                  label: selectedItemLabel,
-                  error: res.error,
-                })
-              : t("content.studioCannotSave", { label: selectedItemLabel }),
-          })
-        );
-        return res;
-      }
-
-      // @ts-ignore
-      if (res?.status === 200) {
+      // Any 2xx is a successful save (saveItem resolves 201 on version create).
+      if (res?.status >= 200 && res?.status < 300) {
         dispatch(
           notify({
             kind: "success",
@@ -922,6 +1034,8 @@ export const StudioWrapper = () => {
           dispatch(fetchAllModelPublishings({ modelZUID: selectedModelZUID })),
         ]);
         refreshPreviewFrame();
+      } else {
+        applyItemSaveErrors(res, selectedItemLabel);
       }
 
       return res;
@@ -937,9 +1051,8 @@ export const StudioWrapper = () => {
       setStudioSaving(false);
     }
   }, [
-    activeFields,
+    applyItemSaveErrors,
     dispatch,
-    fieldErrors,
     selectedItemLabel,
     selectedItemZUID,
     selectedModelZUID,
@@ -1006,15 +1119,10 @@ export const StudioWrapper = () => {
     handleReorderOutput,
     handleLayoutContentUpdate,
     applyLayoutSelection,
-    requestProceedWithPendingLayoutSave,
     clearLayoutSelection,
     applySelection: applyBridgeSelection,
     fieldNameByZuid,
     currentHoverStudioIdRef,
-    pendingLayoutHasMappedSource: hasPendingLayoutChanges,
-    selectedLayoutCodeId: selectedLayout?.codeId,
-    selectedItemDirty: selectedItem?.dirty,
-    selectedItemZUID,
     clearSelection,
     previewReloadContinuationRef,
     setIsNavigating,
@@ -1157,9 +1265,11 @@ export const StudioWrapper = () => {
               />
             ) : null}
           </Box>
-          {hasPendingLayoutChanges ? (
+          {showSaveBar && !showSaveChangesModal ? (
             <Box
-              data-cy="StudioLayoutSaveBar"
+              data-cy={
+                isLayoutMode ? "StudioLayoutSaveBar" : "StudioContentSaveBar"
+              }
               position="absolute"
               left="50%"
               bottom={24}
@@ -1178,67 +1288,57 @@ export const StudioWrapper = () => {
                 boxShadow={6}
               >
                 <Button
-                  data-cy="StudioLayoutCancelButton"
+                  data-cy={
+                    isLayoutMode
+                      ? "StudioLayoutCancelButton"
+                      : "StudioContentCancelButton"
+                  }
                   color="inherit"
-                  onClick={() => {
-                    handleDiscardPendingLayoutSave();
-                  }}
+                  onClick={handleSaveBarCancel}
+                  disabled={saveBarIsSaving}
                 >
                   {t("common.cancel")}
                 </Button>
                 <Button
-                  data-cy="StudioLayoutSaveButton"
+                  data-cy={
+                    isLayoutMode
+                      ? "StudioLayoutSaveChangesButton"
+                      : "StudioContentSaveChangesButton"
+                  }
                   variant="contained"
                   color="primary"
-                  startIcon={
-                    isSavingLayout ? undefined : (
-                      <SaveRoundedIcon fontSize="small" />
-                    )
-                  }
+                  startIcon={<SaveRoundedIcon fontSize="small" />}
                   sx={{ whiteSpace: "nowrap" }}
-                  onClick={() => {
-                    if (!canUpdatePendingLayout) return;
-                    void handleSavePendingLayout();
-                  }}
-                  disabled={isSavingLayout || !canUpdatePendingLayout}
+                  onClick={() => setShowSaveChangesModal(true)}
                 >
-                  {isSavingLayout ? (
-                    <CircularProgress size={16} color="inherit" />
-                  ) : (
-                    t("common.save")
-                  )}
-                </Button>
-                <Button
-                  data-cy="StudioLayoutSavePublishButton"
-                  variant="contained"
-                  color="success"
-                  startIcon={
-                    isSavingLayout ? undefined : (
-                      <CloudUploadRoundedIcon fontSize="small" />
-                    )
-                  }
-                  sx={{ whiteSpace: "nowrap" }}
-                  onClick={() => {
-                    if (!canPublishPendingLayout) return;
-                    void handleSaveAndPublishPendingLayout();
-                  }}
-                  disabled={isSavingLayout || !canPublishPendingLayout}
-                >
-                  {isSavingLayout ? (
-                    <CircularProgress size={16} color="inherit" />
-                  ) : (
-                    t("content.studioSaveAndPublish")
-                  )}
+                  {t("content.studioSaveChanges")}
                 </Button>
               </Box>
             </Box>
           ) : null}
+          <StudioSaveChangesModal
+            open={showSaveChangesModal && showSaveBar}
+            changes={saveChanges}
+            isSaving={saveBarIsSaving}
+            canSave={saveBarCanSave}
+            canPublish={saveBarCanPublish}
+            onCancel={() => setShowSaveChangesModal(false)}
+            onSaveAll={handleModalSaveAll}
+            onSaveAndPublishAll={handleModalSaveAndPublishAll}
+          />
           <PendingEditsModal
-            show={Boolean(selectedItem?.dirty)}
-            loading={isSaving}
-            onSave={handleSave}
-            // @ts-ignore
-            onDiscard={discardPendingEdits}
+            show={hasPendingContentChanges}
+            loading={studioSaving}
+            onSave={async () => {
+              // Throw on partial failure so PendingEditsModal runs answer(false)
+              // and keeps the user in content mode to fix the failed items
+              // instead of navigating away and abandoning the dirty edits.
+              const result = await saveAllContent();
+              if (result.failedCount > 0) {
+                throw new Error(`${result.failedCount} item(s) failed to save`);
+              }
+            }}
+            onDiscard={discardAllContent}
           />
           <DirtyCodeModal
             title={t("content.studioUnsavedLayoutTitle")}

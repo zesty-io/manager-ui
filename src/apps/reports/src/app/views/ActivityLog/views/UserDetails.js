@@ -63,7 +63,9 @@ export const UserDetails = () => {
         end_date: toUTC(params.get("to")),
       }),
     },
-    skip: !initialized,
+    // Don't fire until a date range is set — keeps the (user-scoped) query bounded
+    // and avoids an unscoped fire on the initial render before defaults apply.
+    skip: !initialized || !params.get("from") || !params.get("to"),
   });
 
   const filteredActions = useMemo(
