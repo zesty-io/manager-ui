@@ -436,7 +436,41 @@ Use each string's qualifiedKey (e.g. "common.save" or "${ns}.createField") for t
 | notify() inside a component | \`notify({ message: "Saved!" })\` | \`notify({ message: t("${ns}.savedSuccessfully") })\` |
 | notify() outside a component | \`notify({ message: "Saved!" })\` | \`notify({ message: i18n.t("${ns}.savedSuccessfully") })\` |
 | With interpolation | \`"Hello {{name}}"\` | \`t("${ns}.key", { name: nameExpr })\` |
-| Embedded markup | (text with <em>, <strong>, etc.) | \`<Trans i18nKey="${ns}.key" components={{ em: <em /> }}>English</Trans>\` |
+| Embedded markup | (text with <em>, <strong>, links, code inline) | \`<Trans i18nKey="${ns}.key" components={{ em: <em />, link: <a href="..." /> }} />\` |
+
+**Trans rules — IMPORTANT:**
+
+1. **Never split a sentence into fragment keys.** If a sentence contains inline JSX elements (links, \`<code>\`, \`<em>\`, \`<strong>\`, etc.) mid-sentence, use a SINGLE \`Trans\` key for the whole sentence with the elements passed as named \`components\`. Do NOT create separate keys like \`bodyPre\`, \`linkText\`, \`bodyMid\`, \`bodyPost\` — translators lose context and word order breaks in other languages.
+
+   Bad (fragment keys):
+   \`\`\`tsx
+   {t("${ns}.bodyPre")} <Link>{t("${ns}.linkText")}</Link> {t("${ns}.bodyPost")}
+   \`\`\`
+
+   Good (single Trans key):
+   \`\`\`tsx
+   <Trans
+     i18nKey="${ns}.body"
+     components={{ link: <Link href="..." /> }}
+   />
+   \`\`\`
+   with en-US value: \`"Visit <link>our docs</link> for more info."\`
+
+2. **Always make Trans self-closing.** Do NOT put JSX children inside \`<Trans>…</Trans>\` with custom element names (e.g. \`<myLink />\`). TypeScript treats lowercase JSX tags as HTML intrinsics and raises TS2339. Use the self-closing form \`<Trans … />\` and rely on the translation string for fallback content.
+
+   Bad (causes TS2339):
+   \`\`\`tsx
+   <Trans i18nKey="${ns}.body" components={{ myLink: <a /> }}>
+     Visit <myLink /> for more info.
+   </Trans>
+   \`\`\`
+
+   Good (self-closing):
+   \`\`\`tsx
+   <Trans i18nKey="${ns}.body" components={{ myLink: <a href="..." /> }} />
+   \`\`\`
+
+3. **Dynamic values inside Trans:** Pass them as \`values={{ varName: expr }}\`, then use \`{{varName}}\` in the translation string. Do not interpolate them into the component JSX.
 
 **Key rule — hook vs singleton:**
 - Inside a React component (functional or class), use the hook's \`t()\` for ALL string calls — JSX, string props, event handlers, useEffect callbacks, useCallback, and notify() calls. The hook's \`t\` is a closure variable in scope throughout the entire component body, including every nested function and effect callback. NEVER import or use \`i18n\` (the singleton) inside a React component.
@@ -548,6 +582,10 @@ Add lazy-load plumbing to ${lazyLoadRoot} for the "${ns}" namespace.
 Create a two-layer structure so the namespace loads lazily and suspends only the sub-app subtree:
 
 \`\`\`tsx
+import { Suspense } from "react";   // ← ALWAYS from "react", never from "@mui/material"
+import { Box } from "@mui/material";
+import { useTranslation } from "react-i18next";
+
 // Outer (exported) — owns the Suspense boundary
 export const MyApp = () => (
   <Suspense fallback={<Box sx={{ height: "100%", backgroundColor: "grey.50" }} />}>
@@ -561,6 +599,11 @@ const MyAppInner = () => {
   // ... rest of the component
 };
 \`\`\`
+
+## CRITICAL import rule
+\`Suspense\` is a React built-in. It is exported from \`"react"\`, NOT from \`"@mui/material"\`.
+Always write: \`import { Suspense } from "react";\`
+Never write: \`import { Suspense } from "@mui/material";\`
 
 ## Real examples from this codebase
 - MediaApp in src/apps/media/src/app/index.tsx
