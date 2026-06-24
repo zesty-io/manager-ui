@@ -1,4 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
+import i18n from "./i18n";
+import { useTranslation } from "react-i18next";
 import {
   Button,
   Link,
@@ -28,7 +30,7 @@ import { useLocalStorage } from "react-use";
 
 // import { Meta } from "./components/Meta";
 import { JSONPreview } from "./components/JSONPreview";
-import { Frame, templates } from "./components/Frame";
+import { Frame, getTemplates } from "./components/Frame";
 
 import api from "./api";
 
@@ -66,6 +68,39 @@ function isInIframe() {
 }
 
 export function Preview(props) {
+  // Locale is controlled entirely by the parent (PreviewMode). This effect lives
+  // on the outer component — outside the Suspense boundary — so the listener is
+  // registered before PreviewInner suspends on its namespace fetch. After
+  // registering, we signal "ready" to the parent so it knows it's safe to send
+  // the current locale. Subsequent locale switches arrive via the same channel
+  // through PreviewMode's i18n.on("languageChanged", ...) subscription.
+  useEffect(() => {
+    function handleLocale(msg) {
+      if (msg.origin !== window.location.origin) return;
+      if (msg.data?.source === "zesty" && msg.data?.locale) {
+        i18n.changeLanguage(msg.data.locale);
+      }
+    }
+    window.addEventListener("message", handleLocale);
+    window.parent.postMessage(
+      { source: "zesty", action: "ready" },
+      window.location.origin
+    );
+    return () => window.removeEventListener("message", handleLocale);
+  }, []);
+
+  return (
+    <Suspense
+      fallback={<Box sx={{ height: "100%", backgroundColor: "grey.50" }} />}
+    >
+      <PreviewInner {...props} />
+    </Suspense>
+  );
+}
+
+function PreviewInner(props) {
+  const { t } = useTranslation("activePreview");
+  const templates = getTemplates(t);
   const ZUID = window.location.host.split(".")[0];
   if (!ZUID) {
     throw new Error("Invalid host for active preview");
@@ -229,7 +264,7 @@ export function Preview(props) {
       >
         <CircularProgress />
         <Typography variant="h5" fontWeight={600} mt={1.5}>
-          Saving
+          {t("activePreview.saving")}
         </Typography>
       </Box>
     );
@@ -240,8 +275,8 @@ export function Preview(props) {
       <div className={styles.NoDomain}>
         <h1 className={styles.headline}>
           {!authenticated
-            ? "Your session is not active. Please login to Zesty.io"
-            : "Disconnected from preview domain"}
+            ? t("activePreview.sessionNotActive")
+            : t("activePreview.disconnectedFromPreviewDomain")}
         </h1>
       </div>
     );
@@ -276,7 +311,7 @@ export function Preview(props) {
         ) : (
           <Box flex={1}>
             <Typography variant="body2" fontWeight={600}>
-              Preview
+              {t("common.preview")}
             </Typography>
           </Box>
         )}
@@ -354,7 +389,7 @@ export function Preview(props) {
             selected={device === "fullscreen"}
             onClick={() => selectTemplate("fullscreen")}
           >
-            No Device
+            {t("activePreview.noDevice")}
           </MenuItem>
           {Object.keys(templates)
             .slice(1)
@@ -376,7 +411,7 @@ export function Preview(props) {
                 onChange={(event) => setRotate(event.target.checked)}
               />
             }
-            label="Landscape Mode"
+            label={t("activePreview.landscapeMode")}
             labelPlacement="start"
             sx={{
               mt: 2,
@@ -449,8 +484,8 @@ export function Preview(props) {
             </Box>
             <Typography variant="h6" fontWeight={700} align="center">
               {hasErrors
-                ? "Resolve invalid field values to save and update preview"
-                : "Save to Update Preview"}
+                ? t("activePreview.resolveInvalidFields")
+                : t("activePreview.saveToUpdatePreview")}
             </Typography>
             {!hasErrors && (
               <Button
@@ -464,7 +499,7 @@ export function Preview(props) {
                   maxWidth: "54px",
                 }}
               >
-                Save
+                {t("common.save")}
               </Button>
             )}
           </Dialog>

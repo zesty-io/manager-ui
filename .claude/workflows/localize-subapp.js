@@ -30,6 +30,9 @@ export const meta = {
 
 // ─── Args ─────────────────────────────────────────────────────────────────────
 // args: { namespace: string, target: string | string[], lazyLoadRoot?: string }
+// namespace MUST be flat camelCase — e.g. "activePreview", NOT "active-preview".
+// Hyphens are inconsistent with the camelCase key convention; always camelCase.
+// e.g. { namespace: "activePreview", target: "src/apps/active-preview", lazyLoadRoot: "src/apps/active-preview/Preview.js" }
 // e.g. { namespace: "schema", target: "src/apps/schema/src", lazyLoadRoot: "src/apps/schema/src/app/index.tsx" }
 
 const resolvedArgs = typeof args === "string" ? JSON.parse(args) : args;
@@ -37,6 +40,12 @@ const resolvedArgs = typeof args === "string" ? JSON.parse(args) : args;
 if (!resolvedArgs || !resolvedArgs.namespace || !resolvedArgs.target) {
   throw new Error(
     "args must include { namespace: string, target: string | string[], lazyLoadRoot?: string }"
+  );
+}
+
+if (/[^a-zA-Z0-9]/.test(resolvedArgs.namespace)) {
+  throw new Error(
+    `namespace must be flat camelCase (no hyphens, dots, or underscores). Got: "${resolvedArgs.namespace}"`
   );
 }
 

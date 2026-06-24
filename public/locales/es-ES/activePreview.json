@@ -1,0 +1,16 @@
+{
+  "saving": "Guardando",
+  "sessionNotActive": "Tu sesión no está activa. Por favor, inicia sesión en Zesty.io",
+  "disconnectedFromPreviewDomain": "Desconectado del dominio de vista previa",
+  "noDevice": "Sin dispositivo",
+  "landscapeMode": "Modo horizontal",
+  "resolveInvalidFields": "Resuelve los valores de los campos no válidos para guardar y actualizar la vista previa",
+  "saveToUpdatePreview": "Guarda para actualizar la vista previa",
+  "findingDomain": "Buscando dominio",
+  "noTemplate": "Sin plantilla",
+  "noTemplateSelected": "Ninguna plantilla seleccionada",
+  "viewingMetaData": "Viendo los metadatos del elemento en esta ruta",
+  "loadingRelatedItem": "Cargando elemento relacionado",
+  "meta": "Meta",
+  "web": "Web"
+}

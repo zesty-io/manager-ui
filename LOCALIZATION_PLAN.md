@@ -109,6 +109,8 @@ _even when_ another app imports it. So `src/shell/components/FieldType*` → `sh
 (shared); a component under `src/apps/content-editor/src` → `content` even though
 schema/blocks import it.
 
+**Namespace names must be flat camelCase** — e.g. `activePreview`, not `active-preview`. Hyphens break the i18next key lookup because the config uses `nsSeparator: "."` and `keySeparator: false`; a hyphenated namespace name is technically safe but inconsistent with the camelCase key convention and easy to confuse with a key separator. Always use camelCase when the app dir contains a hyphen (e.g. `src/apps/active-preview` → namespace `activePreview`).
+
 - **Consequence:** a shared component renders keys from its _home_ namespace. If it
   can mount inside an app that doesn't load that namespace, it must **self-load** it:
   `useTranslation("<homeNs>", { useSuspense: false })` (non-suspense so it never

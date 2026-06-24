@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { useSelector } from "react-redux";
 import { Box } from "@mui/material";
+import i18n from "shell/i18n";
 
 export default function PreviewMode(props) {
   const origin = window.location.origin;
@@ -139,6 +140,13 @@ export default function PreviewMode(props) {
     const handleMessage = (event) => {
       if (event.data.source === "zesty") {
         switch (event.data.action) {
+          case "ready":
+            preview.current?.contentWindow.postMessage(
+              { source: "zesty", locale: i18n.language },
+              origin
+            );
+            break;
+
           case "close":
             if (onCloseRef.current) {
               onCloseRef.current();
@@ -162,7 +170,20 @@ export default function PreviewMode(props) {
     return () => {
       window.removeEventListener("message", handleMessage);
     };
-  }, []);
+  }, [origin]);
+
+  // Push locale changes to the iframe while it is open
+  useEffect(() => {
+    function onLanguageChanged(lang) {
+      preview.current?.contentWindow.postMessage(
+        { source: "zesty", locale: lang },
+        origin
+      );
+    }
+
+    i18n.on("languageChanged", onLanguageChanged);
+    return () => i18n.off("languageChanged", onLanguageChanged);
+  }, [origin]);
 
   return (
     <Box
