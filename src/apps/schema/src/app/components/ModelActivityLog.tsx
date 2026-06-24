@@ -43,7 +43,14 @@ export const ModelActivityLog = () => {
         end_date: toUTC(searchParams.get("to")),
       }),
     },
-    { skip: !initialized }
+    // Don't fire until a date range is set — otherwise the initial render (before
+    // the default dates are applied) sends an unscoped audits request.
+    {
+      skip:
+        !initialized ||
+        !searchParams.get("from") ||
+        !searchParams.get("to"),
+    }
   );
 
   useEffect(() => {
