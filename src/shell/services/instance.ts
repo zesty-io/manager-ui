@@ -371,7 +371,7 @@ export const instanceApi = createApi({
         };
       },
       transformResponse: (res: { data: ContentModelField[] }) =>
-        res.data.sort((a, b) => a.sort - b.sort),
+        res.data?.sort((a, b) => a.sort - b.sort),
       providesTags: (result, error, { modelZUID }) => [
         { type: "ContentModelFields", id: modelZUID },
       ],

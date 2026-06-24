@@ -195,7 +195,7 @@ export const FieldFormProvider = ({
       return;
     }
 
-    const currFieldNames = fields.map((field) => field.name);
+    const currFieldNames = fields?.map((field) => field.name);
     let newErrorsObj: Errors = {};
 
     Object.keys(formData).map((inputName) => {
@@ -367,7 +367,7 @@ export const FieldFormProvider = ({
     });
 
     setErrors(newErrorsObj);
-  }, [formData, isDefaultValueEnabled]);
+  }, [formData, isDefaultValueEnabled, fields]);
 
   const handleFieldDataChange = useCallback(
     ({ inputName, value }: { inputName: string; value: FormValue }) => {
