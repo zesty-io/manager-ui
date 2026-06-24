@@ -543,6 +543,7 @@
   "studioLayoutHint": "在画布上拖动块以重新排列布局",
   "studioContentHint": "在画布上选择项目以进行编辑",
   "studioViewAllRelatedFields": "查看所有相关字段",
+  "studioSaveChanges": "保存更改",
   "studioSaveAndPublish": "保存并发布",
   "studioUnsavedLayoutTitle": "未保存的布局更改",
   "studioUnsavedLayoutBody": "您有未保存的布局更改。是否在继续前保存？",

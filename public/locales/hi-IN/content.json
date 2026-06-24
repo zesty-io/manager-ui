@@ -555,6 +555,7 @@
   "studioLayoutHint": "लेआउट को पुनः क्रमित करने के लिए कैनवास पर ब्लॉक खींचें",
   "studioContentHint": "संपादन करने के लिए कैनवास पर आइटम चुनें",
   "studioViewAllRelatedFields": "सभी संबंधित फ़ील्ड देखें",
+  "studioSaveChanges": "परिवर्तन सहेजें",
   "studioSaveAndPublish": "सहेजें और प्रकाशित करें",
   "studioUnsavedLayoutTitle": "बिना सहेजे लेआउट परिवर्तन",
   "studioUnsavedLayoutBody": "आपके पास बिना सहेजे लेआउट परिवर्तन हैं। जारी रखने से पहले उन्हें सहेजें?",

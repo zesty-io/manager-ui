@@ -559,6 +559,7 @@
   "studioLayoutHint": "Arrastra los bloques en el lienzo para reordenar el diseño",
   "studioContentHint": "Selecciona elementos en el lienzo para realizar ediciones",
   "studioViewAllRelatedFields": "Ver todos los campos relacionados",
+  "studioSaveChanges": "Guardar cambios",
   "studioSaveAndPublish": "Guardar y publicar",
   "studioUnsavedLayoutTitle": "Cambios de diseño sin guardar",
   "studioUnsavedLayoutBody": "Tienes cambios de diseño sin guardar. ¿Guardarlos antes de continuar?",

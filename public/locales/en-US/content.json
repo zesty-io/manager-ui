@@ -555,6 +555,7 @@
   "studioLayoutHint": "Drag blocks on the canvas to reorder the layout",
   "studioContentHint": "Select items on the canvas to make edits",
   "studioViewAllRelatedFields": "View All Related Fields",
+  "studioSaveChanges": "Save Changes",
   "studioSaveAndPublish": "Save and Publish",
   "studioUnsavedLayoutTitle": "Unsaved layout changes",
   "studioUnsavedLayoutBody": "You have unsaved layout changes. Save them before continuing?",
