@@ -23,6 +23,7 @@ import { fetchFiles, publishFile } from "../../../store/files";
 import { fetchAuditTrail } from "../../../store/auditTrail";
 import CloudUploadRoundedIcon from "@mui/icons-material/CloudUploadRounded";
 import { usePermission } from "../../../../../../shell/hooks/use-permissions";
+import { useTranslation } from "react-i18next";
 
 type NavType = "view" | "script" | "stylesheet" | "file";
 
@@ -36,9 +37,9 @@ export type TreeDataProps = {
   dir: string[];
 };
 
-const SUB_MENUS: SubMenu[] = [
+const getSUB_MENUS = (t: (key: string) => string): SubMenu[] => [
   {
-    name: "All Files",
+    name: t("code.allFiles"),
     icon: FileCopyIcon,
     path: "/code",
     dataCy: "codeNavAllFiles",
@@ -159,6 +160,7 @@ export const SideBar: FC<SideBarProps> = ({
   isLoading,
   openCreateFileDialog,
 }) => {
+  const { t } = useTranslation();
   const canPublish = usePermission("PUBLISH");
   const [keyword, setKeyword] = useState("");
   const [fileType, setFileType] = useState("");
@@ -199,12 +201,12 @@ export const SideBar: FC<SideBarProps> = ({
         <AppSideBar
           data-cy="codeNav"
           mode="dark"
-          headerTitle="Code"
-          searchPlaceholder="Filter Files"
-          subMenus={SUB_MENUS}
+          headerTitle={t("code.headerTitle")}
+          searchPlaceholder={t("code.filterFiles")}
+          subMenus={getSUB_MENUS(t)}
           onAddClick={() => openCreateFileDialog?.("snippet", "file")}
           onFilterChange={setKeyword}
-          titleButtonTooltip="Create File"
+          titleButtonTooltip={t("code.createFile")}
           hideSubMenuOnSearch={false}
         >
           <Box
@@ -232,8 +234,8 @@ export const SideBar: FC<SideBarProps> = ({
             <FileNav
               id="html"
               group="views"
-              header="VIEWS"
-              toolTip="Views are template files that can render HTML or various other MIME types."
+              header={t("code.fileNavHeaderViews")}
+              toolTip={t("code.fileNavTooltipViews")}
               tree={views?.tree}
               dirList={views?.dir}
               createFile={() => openCreateFileDialog?.("snippet", "view")}
@@ -244,8 +246,8 @@ export const SideBar: FC<SideBarProps> = ({
             <FileNav
               id="css"
               group="stylesheets"
-              header="SITE.CSS"
-              toolTip="Site.css is a dynamically created file from the instance stylesheet files"
+              header={t("code.fileNavHeaderSiteCss")}
+              toolTip={t("code.fileNavTooltipSiteCss")}
               tree={styleSheets?.tree}
               dirList={styleSheets?.dir}
               createFile={() =>
@@ -258,8 +260,8 @@ export const SideBar: FC<SideBarProps> = ({
             <FileNav
               id="js"
               group="scripts"
-              header="SITE.JS"
-              toolTip="Site.js is a dynamically created file from the instance JavaScript files"
+              header={t("code.fileNavHeaderSiteJs")}
+              toolTip={t("code.fileNavTooltipSiteJs")}
               tree={scripts?.tree}
               dirList={scripts?.dir}
               createFile={() =>
@@ -284,19 +286,22 @@ export const SideBar: FC<SideBarProps> = ({
   );
 };
 
-const NoResults = ({ keyword }: { keyword: string }) => (
-  <Stack gap={1.5} alignItems="center" justifyContent="center" p={1.5}>
-    <img
-      src="/images/noSearchResults.svg"
-      alt="No search results"
-      width="70"
-      height="64"
-      loading="lazy"
-    />
-    <Typography color="text.secondary" variant="body2" align="center">
-      {keyword ? `No results for "${keyword}"` : "No files found"}
-    </Typography>
-  </Stack>
-);
+const NoResults = ({ keyword }: { keyword: string }) => {
+  const { t } = useTranslation();
+  return (
+    <Stack gap={1.5} alignItems="center" justifyContent="center" p={1.5}>
+      <img
+        src="/images/noSearchResults.svg"
+        alt={t("shell.noSearchResultsAlt")}
+        width="70"
+        height="64"
+        loading="lazy"
+      />
+      <Typography color="text.secondary" variant="body2" align="center">
+        {keyword ? t("code.noResultsFor", { keyword }) : t("code.noFilesFound")}
+      </Typography>
+    </Stack>
+  );
+};
 
 export default SideBar;

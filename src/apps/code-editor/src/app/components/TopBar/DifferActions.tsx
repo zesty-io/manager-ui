@@ -150,13 +150,13 @@ export const DifferActions = memo(function DifferActions(
       <Box display="flex" alignItems="center" columnGap={0.5}>
         {version.version === props.publishedVersion ? (
           <Typography variant="body2" component="span" fontWeight={700}>
-            (Live)
+            {t("code.live")}
           </Typography>
         ) : (
           ""
         )}
         <Typography variant="body2" component="span">
-          {`Version ${version.version}`}
+          {t("code.versionLabel", { n: version.version })}
         </Typography>
         <Typography variant="caption" component="span">
           [{pretty}]
@@ -261,7 +261,7 @@ export const DifferActions = memo(function DifferActions(
                 startIcon={<HistoryIcon />}
                 sx={{ ml: 1, minWidth: "fit-content" }}
               >
-                Load Version
+                {t("code.loadVersion")}
               </Button>
               <Button
                 variant="text"
@@ -285,7 +285,7 @@ export const DifferActions = memo(function DifferActions(
               sx={{ ml: 1 }}
               startIcon={<SaveIcon />}
             >
-              Save Version
+              {t("code.saveVersion")}
             </Button>
           )}
         </Box>

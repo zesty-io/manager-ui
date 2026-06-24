@@ -8,7 +8,7 @@
 
 | ✓ Done                                                   | ▶ In Progress | → Up Next | ≡ Backlog (in order)                                             |
 | -------------------------------------------------------- | ------------- | --------- | ---------------------------------------------------------------- |
-| Phase 1 — Infrastructure                                 | —             | `code`    | `release` · `active-preview` · `blocks` · `marketplace`          |
+| Phase 1 — Infrastructure                                 | —             | `release` | `active-preview` · `blocks` · `marketplace`                      |
 | Phase 2 — Locale switcher                                |               |           | `studio` (verify-only)                                           |
 | Phase 3 — `common` + `shell` (incl. FieldType\* widgets) |               |           | Phase 5: TinyMCE · MUI overrides · `@zesty-io/material` upstream |
 | Phase 4 — `dashboard` · `media` · `content`              |               |           | Phase 8 — Cypress tests                                          |
@@ -19,6 +19,7 @@
 | **`leads`**                                              |               |           |                                                                  |
 | **`reports`**                                            |               |           |                                                                  |
 | **`settings`**                                           |               |           |                                                                  |
+| **`code`**                                               |               |           |                                                                  |
 
 ---
 
@@ -41,18 +42,6 @@ _Nothing in progress right now._
 ---
 
 # ≡ Backlog
-
----
-
-### `code` — Effort: M
-
-- [ ] Add lazy-load plumbing to `CodeApp`
-- [ ] Create empty `public/locales/<locale>/code.json` for all 6 locales
-- [ ] Audit + localize `src/apps/code-editor/src/`:
-  - [ ] Multi-paragraph file-type help text in `CreateFile` — largest single block
-  - [ ] Strings scattered across the editor views
-  - [ ] Monaco editor has no chrome to translate (ESM build, developer-facing — skip)
-- [ ] Verify: `npx tsc --noEmit`, JSON valid, key parity across all 6 locales
 
 ---
 
@@ -278,3 +267,12 @@ All infrastructure, locale switcher, `common` + `shell` namespaces (incl. all `F
 - [x] `en-US/settings.json` populated — 102 new keys, 14 reused from common/shell
 - [x] All 6 locales seeded with en-US values (manual translation pending)
 - [x] tsc: PASS
+
+---
+
+### Phase 4 — `code`
+
+- [x] Lazy-load plumbing: `src/apps/code-editor/src/index.js`
+- [x] `en-US/code.json` populated — 130 new keys, 20 reused from common/shell
+- [x] All 6 locales seeded with en-US values (manual translation pending)
+- [x] tsc: PASS — fixed `Trans` self-closing in `DevResources.tsx` to drop JSX-literal child content that caused TS2339 on custom element names

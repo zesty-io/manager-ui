@@ -29,7 +29,7 @@ interface Props {
   sx?: SxProps;
 }
 export const NoResults = ({ type, searchTerm, onButtonClick, sx }: Props) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation("schema", { useSuspense: false });
   const TEXT_CONFIG = getTextConfig(t);
 
   return (
