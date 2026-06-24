@@ -18,7 +18,7 @@ export default function PreviewMode(props) {
   );
   // Sends message to preview window to update route
   const route = useCallback(
-    (itemZUID, version, dirty, hasErrors, model) => {
+    (itemZUID, version, dirty, hasErrors, model, extraPayload = {}) => {
       if (!preview.current) return;
       // if not a string or a string that is not a content item zuid
       // then see if location contains a routable content item
@@ -57,6 +57,7 @@ export default function PreviewMode(props) {
           version,
           dirty,
           hasErrors,
+          ...extraPayload,
         },
         origin
       );
@@ -64,19 +65,14 @@ export default function PreviewMode(props) {
     [content, instance, instanceSettings, previewLock, origin]
   );
 
-  // On iframe load, set isLoaded and send initial route message
+  // On iframe load, mark as loaded. The initial route + locale is deferred to
+  // the "ready" handshake so we never send state before PreviewInner's listener
+  // is registered.
   useEffect(() => {
     const iframe = preview?.current;
     if (!iframe) return;
 
     const onLoad = () => {
-      route(
-        props.itemZUID,
-        props.version,
-        props.dirty,
-        props.hasErrors,
-        props.model
-      );
       setIsLoaded(true);
     };
 
@@ -91,17 +87,9 @@ export default function PreviewMode(props) {
     return () => {
       iframe.removeEventListener("load", onLoad);
     };
-  }, [
-    props.itemZUID,
-    props.version,
-    props.dirty,
-    props.hasErrors,
-    props.model,
-    preview?.current,
-    route,
-  ]);
+  }, [preview?.current]);
 
-  // On prop changes or isLoaded, update route
+  // On prop changes after initial load, push updated route to the iframe
   useEffect(() => {
     if (isLoaded) {
       route(
@@ -135,16 +123,30 @@ export default function PreviewMode(props) {
     onCloseRef.current = props.onClose;
   }, [props.onClose]);
 
+  // Always-fresh snapshot of route() + current props so the "ready" handler
+  // can send the full initial state without a stale closure.
+  const callRouteRef = useRef(null);
+  useEffect(() => {
+    callRouteRef.current = (extraPayload = {}) =>
+      route(
+        props.itemZUID,
+        props.version,
+        props.dirty,
+        props.hasErrors,
+        props.model,
+        extraPayload
+      );
+  });
+
   // Listen for postMessages from iframe
   useEffect(() => {
     const handleMessage = (event) => {
       if (event.data.source === "zesty") {
         switch (event.data.action) {
           case "ready":
-            preview.current?.contentWindow.postMessage(
-              { source: "zesty", locale: i18n.language },
-              origin
-            );
+            // Send the initial route and locale together in one message, now
+            // that PreviewInner's listener is registered and ready to receive.
+            callRouteRef.current?.({ locale: i18n.language });
             break;
 
           case "close":

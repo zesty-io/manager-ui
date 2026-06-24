@@ -59,7 +59,7 @@ i18n.use(initReactI18next).init({
   fallbackLng,
   supportedLngs: ["en-US", "es-ES", "hi-IN", "zh-CN", "ru-RU", "nl-NL"],
 
-  ns: ["activePreview"],
+  ns: ["activePreview", "common"],
   defaultNS: "activePreview",
 
   backend: isProductionLikeEnv

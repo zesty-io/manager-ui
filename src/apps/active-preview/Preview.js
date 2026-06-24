@@ -68,27 +68,6 @@ function isInIframe() {
 }
 
 export function Preview(props) {
-  // Locale is controlled entirely by the parent (PreviewMode). This effect lives
-  // on the outer component — outside the Suspense boundary — so the listener is
-  // registered before PreviewInner suspends on its namespace fetch. After
-  // registering, we signal "ready" to the parent so it knows it's safe to send
-  // the current locale. Subsequent locale switches arrive via the same channel
-  // through PreviewMode's i18n.on("languageChanged", ...) subscription.
-  useEffect(() => {
-    function handleLocale(msg) {
-      if (msg.origin !== window.location.origin) return;
-      if (msg.data?.source === "zesty" && msg.data?.locale) {
-        i18n.changeLanguage(msg.data.locale);
-      }
-    }
-    window.addEventListener("message", handleLocale);
-    window.parent.postMessage(
-      { source: "zesty", action: "ready" },
-      window.location.origin
-    );
-    return () => window.removeEventListener("message", handleLocale);
-  }, []);
-
   return (
     <Suspense
       fallback={<Box sx={{ height: "100%", backgroundColor: "grey.50" }} />}
@@ -162,6 +141,13 @@ function PreviewInner(props) {
       }
 
       if (msg.data.source === "zesty") {
+        if (msg.data.locale) {
+          // Preload before switching so changeLanguage is always a cache-hit
+          // and never triggers a re-suspend that would reset component state.
+          i18n
+            .loadLanguages(msg.data.locale)
+            .then(() => i18n.changeLanguage(msg.data.locale));
+        }
         if (msg.data.previewUrl) {
           setPreviewUrl(msg.data.previewUrl);
         }
@@ -190,6 +176,10 @@ function PreviewInner(props) {
     }
 
     window.addEventListener("message", receiveMessage);
+    window.parent.postMessage(
+      { source: "zesty", action: "ready" },
+      window.location.origin
+    );
     return () => window.removeEventListener("message", receiveMessage);
   }, []);
 
@@ -310,7 +300,11 @@ function PreviewInner(props) {
           </>
         ) : (
           <Box flex={1}>
-            <Typography variant="body2" fontWeight={600}>
+            <Typography
+              variant="body2"
+              fontWeight={600}
+              sx={{ textTransform: "capitalize" }}
+            >
               {t("common.preview")}
             </Typography>
           </Box>

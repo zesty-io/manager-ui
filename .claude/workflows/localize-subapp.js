@@ -762,12 +762,17 @@ Record any parse errors. Set jsonValid: false if any file fails.
 
 ## Check 3: Key parity for the "${ns}" namespace
 Compare keys across all 6 locale files for public/locales/*/${ns}.json.
-- Non-plural keys (no _one/_other/etc. suffix): must be identical in all 6 files
-- Plural keys: each locale must have ALL its required CLDR forms:
+
+First, build the set of "plural family base names": for every key in any locale file, strip any trailing _one/_other/_few/_many/_zero/_two suffix to get the bare base name. A key belongs to a plural family if any locale file has a variant of that base with one of those suffixes.
+
+Rules:
+- Non-plural keys (bare base name has no _one/_other/_few/_many/_zero/_two variant in ANY locale): must be identical in all 6 files. A key present in one locale but absent from another is a parity error.
+- Plural families: each locale must have ALL of its required CLDR forms for every family that exists in en-US:
   en-US / hi-IN / nl-NL: must have _one AND _other
   es-ES: must have _one AND _many AND _other
   ru-RU: must have _one AND _few AND _many AND _other
   zh-CN: must have _other ONLY
+- Locale-specific plural variants (e.g. ru-RU having _few/_many for a key whose en-US form is _one/_other) are EXPECTED and are NOT a parity error. Do NOT flag a locale for having more plural forms than en-US.
 Record any parity issues. Set keyParityPassed: false if there are issues.
 
 ## Check 4: Broken t() references

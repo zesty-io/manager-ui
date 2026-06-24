@@ -14,7 +14,7 @@
 | Phase 4 — `dashboard` · `media` · `content`              |               |               |                                                                  |
 | Phase 5 — MUI · ProseMirror · Bynder                     |               |               |                                                                  |
 | Phase 6 — Caching · Phase 7 — Missing-key handling       |               |               |                                                                  |
-| **`schema`**                                             |               |               |                                                                  |
+| **`schema`** ✓                                           |               |               |                                                                  |
 | **`seo`**                                                |               |               |                                                                  |
 | **`leads`**                                              |               |               |                                                                  |
 | **`reports`**                                            |               |               |                                                                  |
@@ -178,6 +178,19 @@ All infrastructure, locale switcher, `common` + `shell` namespaces (incl. all `F
 - TypeScript: `src/apps/schema/src/app/components/DeleteModelDialogue.tsx(130,5)`: error TS1005: `)` expected.
 - TypeScript: `src/apps/schema/src/app/components/DeleteModelDialogue.tsx(131,3)`: error TS1109: Expression expected.
 - TypeScript: `src/apps/schema/src/app/components/DeleteModelDialogue.tsx(132,1)`: error TS1128: Declaration or statement expected.
+
+---
+
+### Phase 4 — `schema` (sub-pass: StarterBlocks)
+
+- [x] Lazy-load plumbing: `src/apps/schema/src/app/components/StarterBlocks/index.tsx`
+- [x] `en-US/schema.json` updated — 21 new keys, 2 reused from common/shell
+- [x] All 6 locales seeded with en-US values (manual translation pending)
+- [x] tsc: PASS
+
+**Manual action items — fix before closing:**
+
+- Key parity: es-ES is missing plural form `repeaterSubFieldCount_many` (Spanish requires `_one`, `_many`, `_other`; only `_one` and `_other` are present)
 
 ---
 

@@ -211,12 +211,12 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
           );
           setError({
             name: errorMessage.includes("name")
-              ? "Reference ID is already in use. Please use another Reference ID."
+              ? t("schema.starterBlockFormReferenceIdInUse")
               : errorMessage,
             label:
               errorMessage.includes("label") ||
               (errorMessage.includes("name") && cleanString(label) === name)
-                ? "Display name is already in use. Please use another display name."
+                ? t("schema.starterBlockFormDisplayNameInUse")
                 : "",
           });
           throw new Error(errorMessage);
@@ -323,7 +323,7 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
           >
             <Box flexGrow={1}>
               <Typography variant="h6" fontWeight={700}>
-                Details
+                {t("schema.starterBlockFormDetails")}
               </Typography>
               <Box
                 display="flex"
@@ -335,23 +335,27 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
                 pb="20px"
               >
                 <TextInputField
-                  label="Display Name"
+                  label={t("schema.starterBlockFormDisplayName")}
                   name="label"
-                  placeholder="e.g. Home Page, About Page, Contact Page, etc."
+                  placeholder={t(
+                    "schema.starterBlockFormDisplayNamePlaceholder"
+                  )}
                   required
                   value={blockModelData?.label}
                   onChange={handleBlockLabelChange}
-                  toolTip="Name that is shown to content editors"
+                  toolTip={t("schema.starterBlockFormDisplayNameTooltip")}
                   error={error["label"] || ""}
                   data-cy="starter-block-form-label"
                 />
                 <TextInputField
-                  label="Reference ID"
+                  label={t("schema.starterBlockFormReferenceId")}
                   name="name"
-                  placeholder="Auto-Generated from Display Name"
+                  placeholder={t(
+                    "schema.starterBlockFormReferenceIdPlaceholder"
+                  )}
                   required
                   value={blockModelData?.name}
-                  toolTip="ID used for accessing this model through our API or Parsley"
+                  toolTip={t("schema.starterBlockFormReferenceIdTooltip")}
                   onChange={handleBlockNameChange}
                   error={error["name"] || ""}
                   data-cy="starter-block-form-name"
@@ -360,7 +364,7 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
               {!!blockModelData?.fields?.length && (
                 <>
                   <Typography variant="h6" fontWeight={700}>
-                    Fields
+                    {t("schema.starterBlockFormFields")}
                   </Typography>
                   <Box
                     display="flex"
@@ -390,7 +394,7 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
             </Box>
             <Box width="320px" flexGrow={0}>
               <Typography variant="h6" fontWeight={700}>
-                Resources
+                {t("schema.starterBlockFormResources")}
               </Typography>
               <Box
                 display="flex"
@@ -440,12 +444,12 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
                     },
                   }}
                 >
-                  Code Template
+                  {t("schema.starterBlockFormCodeTemplate")}
                   <OpenInNewRoundedIcon fontSize="small" />
                 </Link>
               </Box>
               <Typography variant="h6" fontWeight={700}>
-                Description
+                {t("schema.starterBlockFormDescription")}
               </Typography>
               <Box
                 display="flex"
@@ -472,7 +476,7 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
                   mt={2}
                   data-cy="starter-block-form-code-reference-link"
                 >
-                  See Bootstrap Template
+                  {t("schema.starterBlockFormSeeBootstrapTemplate")}
                 </Link>
               </Box>
             </Box>
@@ -495,7 +499,7 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
             !blockModelData?.label || !blockModelData?.name || !!isLoading
           }
         >
-          Create Block Model
+          {t("schema.starterBlockFormCreateBlockModel")}
         </Button>
       </DialogActions>
 
@@ -518,10 +522,10 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
         >
           <CircularProgress color="primary" size={60} sx={{ p: 1 }} />
           <Typography variant="h5" color="text.primary" fontWeight={700}>
-            Creating Model
+            {t("schema.starterBlockFormCreatingModel")}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            This may take a couple of minutes.
+            {t("schema.starterBlockFormCreatingModelDescription")}
           </Typography>
         </Box>
       </Backdrop>
