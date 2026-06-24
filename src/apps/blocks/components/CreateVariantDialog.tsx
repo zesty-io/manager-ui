@@ -87,10 +87,10 @@ export const CreateVariantDialog = ({
         >
           <ModeEditRounded color="primary" />
         </Box>
-        Create Variant of {model?.label}
+        {t("blocks.createVariantOf", { label: model?.label })}
       </DialogTitle>
       <DialogContent>
-        <InputLabel sx={{ mb: 0.5 }}>Variant Name</InputLabel>
+        <InputLabel sx={{ mb: 0.5 }}>{t("blocks.variantName")}</InputLabel>
         <TextField
           autoFocus
           value={variantName}

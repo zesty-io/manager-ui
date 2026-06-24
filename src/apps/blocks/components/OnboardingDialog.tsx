@@ -6,29 +6,27 @@ import blocksOnboarding1 from "../../../../public/images/blocksOnboarding1.png";
 import blocksOnboarding2 from "../../../../public/images/blocksOnboarding2.png";
 import blocksOnboarding3 from "../../../../public/images/blocksOnboarding3.png";
 
-const stepMapping = [
+const getStepMapping = (t: (key: string) => string) => [
   {
     image: blocksOnboarding1,
-    title: "Introducing Blocks",
-    description:
-      "Create and add editable blocks (e.g. Hero, Testimonial, Forms, etc.) to any existing page of your website with a few clicks",
+    title: t("blocks.onboardingStep1Title"),
+    description: t("blocks.onboardingStep1Description"),
   },
   {
     image: blocksOnboarding2,
-    title: "How to Create a Block",
-    description:
-      "Create a block model in Schema and define the editable fields. And then connect these fields in the code template for your block.",
+    title: t("blocks.onboardingStep2Title"),
+    description: t("blocks.onboardingStep2Description"),
   },
   {
     image: blocksOnboarding3,
-    title: "Create & Add Block Variants to Any Web Page",
-    description:
-      "Variants of these blocks can be created in the Blocks app and added to webpages using a Block Content field or with Freestyle.",
+    title: t("blocks.onboardingStep3Title"),
+    description: t("blocks.onboardingStep3Description"),
   },
 ];
 
 export const OnboardingDialog = ({ onClose }: { onClose: () => void }) => {
   const { t } = useTranslation();
+  const stepMapping = getStepMapping(t);
   const [step, setStep] = useState(0);
   return (
     <Dialog

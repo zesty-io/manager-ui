@@ -1,4 +1,6 @@
+import { Suspense } from "react";
 import { Box } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { ResizableContainer } from "../../shell/components/ResizeableContainer";
 import { Sidebar } from "./components/Sidebar";
 import { Route, Switch } from "react-router";
@@ -7,6 +9,18 @@ import { BlockModel } from "./views/BlockModel";
 import { BlockItem } from "./views/BlockItem";
 
 export const BlocksApp = () => {
+  return (
+    <Suspense
+      fallback={<Box sx={{ height: "100%", backgroundColor: "grey.50" }} />}
+    >
+      <BlocksAppInner />
+    </Suspense>
+  );
+};
+
+const BlocksAppInner = () => {
+  useTranslation("blocks");
+
   return (
     <Box
       sx={{

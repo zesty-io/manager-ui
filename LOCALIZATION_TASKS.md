@@ -6,21 +6,22 @@
 
 ## Board snapshot
 
-| ✓ Done                                                   | ▶ In Progress | → Up Next | ≡ Backlog (in order)                                             |
-| -------------------------------------------------------- | ------------- | --------- | ---------------------------------------------------------------- |
-| Phase 1 — Infrastructure                                 | —             | `blocks`  | `marketplace`                                                    |
-| Phase 2 — Locale switcher                                |               |           | `studio` (verify-only)                                           |
-| Phase 3 — `common` + `shell` (incl. FieldType\* widgets) |               |           | Phase 5: TinyMCE · MUI overrides · `@zesty-io/material` upstream |
-| Phase 4 — `dashboard` · `media` · `content`              |               |           | Phase 8 — Cypress tests                                          |
-| Phase 5 — MUI · ProseMirror · Bynder                     |               |           |                                                                  |
-| Phase 6 — Caching · Phase 7 — Missing-key handling       |               |           |                                                                  |
-| **`schema`**                                             |               |           |                                                                  |
-| **`seo`**                                                |               |           |                                                                  |
-| **`leads`**                                              |               |           |                                                                  |
-| **`reports`**                                            |               |           |                                                                  |
-| **`settings`**                                           |               |           |                                                                  |
-| **`code`**                                               |               |           |                                                                  |
-| **`activePreview`**                                      |               |           |                                                                  |
+| ✓ Done                                                   | ▶ In Progress | → Up Next     | ≡ Backlog (in order)                                             |
+| -------------------------------------------------------- | ------------- | ------------- | ---------------------------------------------------------------- |
+| Phase 1 — Infrastructure                                 | —             | `marketplace` | `studio` (verify-only)                                           |
+| Phase 2 — Locale switcher                                |               |               | Phase 5: TinyMCE · MUI overrides · `@zesty-io/material` upstream |
+| Phase 3 — `common` + `shell` (incl. FieldType\* widgets) |               |               | Phase 8 — Cypress tests                                          |
+| Phase 4 — `dashboard` · `media` · `content`              |               |               |                                                                  |
+| Phase 5 — MUI · ProseMirror · Bynder                     |               |               |                                                                  |
+| Phase 6 — Caching · Phase 7 — Missing-key handling       |               |               |                                                                  |
+| **`schema`**                                             |               |               |                                                                  |
+| **`seo`**                                                |               |               |                                                                  |
+| **`leads`**                                              |               |               |                                                                  |
+| **`reports`**                                            |               |               |                                                                  |
+| **`settings`**                                           |               |               |                                                                  |
+| **`code`**                                               |               |               |                                                                  |
+| **`blocks`**                                             |               |               |                                                                  |
+| **`activePreview`**                                      |               |               |                                                                  |
 
 ---
 
@@ -43,17 +44,6 @@ _Nothing in progress right now._
 ---
 
 # ≡ Backlog
-
----
-
-### `blocks` — Effort: S
-
-_Depends on `content` (done) + `schema` (pending) — most of the blocks editing surface is those namespaces._
-
-- [ ] Add lazy-load plumbing to `BlocksApp`
-- [ ] Create empty `public/locales/<locale>/blocks.json` for all 6 locales
-- [ ] Audit + localize `src/apps/blocks/src/` — ~30-40 own strings; OnboardingDialog multi-slide is the bulk
-- [ ] Verify: `npx tsc --noEmit`, JSON valid, key parity across all 6 locales
 
 ---
 
@@ -272,6 +262,15 @@ All infrastructure, locale switcher, `common` + `shell` namespaces (incl. all `F
 - Key parity: es-ES/release.json is missing 'publishedItems_many' (es-ES requires \_one, \_many, \_other)
 - Key parity: ru-RU/release.json is missing 'publishedItems_few' (ru-RU requires \_one, \_few, \_many, \_other)
 - Key parity: ru-RU/release.json is missing 'publishedItems_many' (ru-RU requires \_one, \_few, \_many, \_other)
+
+---
+
+### Phase 4 — `blocks`
+
+- [x] Lazy-load plumbing: `src/apps/blocks/index.tsx`
+- [x] `en-US/blocks.json` populated — 27 new keys, 4 reused from common/shell
+- [x] All 6 locales seeded with en-US values (manual translation pending)
+- [x] tsc: PASS
 
 ---
 

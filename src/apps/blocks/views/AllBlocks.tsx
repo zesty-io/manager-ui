@@ -11,6 +11,7 @@ import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import StreetViewRoundedIcon from "@mui/icons-material/StreetviewRounded";
 import { useState, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { CreateModelDialogue } from "../../schema/src/app/components/CreateModelDialogue";
 import { BlockCard } from "../components/BlockCard";
 import { useGetContentModelsQuery } from "../../../shell/services/instance";
@@ -21,6 +22,7 @@ import { useLocalStorage } from "react-use";
 import SearchBox from "../../../shell/components/SearchBox";
 
 export const AllBlocks = () => {
+  const { t } = useTranslation();
   const [search, setSearch] = useState("");
   const { data: models, isLoading } = useGetContentModelsQuery();
   const [showCreateModelDialogue, setShowCreateModelDialogue] = useState(false);
@@ -70,7 +72,7 @@ export const AllBlocks = () => {
           }}
         >
           <Typography variant="h3" fontWeight="700">
-            All Blocks
+            {t("blocks.allBlocksTitle")}
           </Typography>
           <Stack direction="row" alignItems="center" gap={1}>
             <SearchBox
@@ -95,7 +97,7 @@ export const AllBlocks = () => {
                   </InputAdornment>
                 ),
               }}
-              placeholder="Search Blocks"
+              placeholder={t("blocks.searchBlocksPlaceholder")}
             />
             <Button
               variant="contained"
@@ -104,7 +106,7 @@ export const AllBlocks = () => {
               onClick={() => setShowCreateModelDialogue(true)}
               data-cy="create-block-button"
             >
-              Create Block
+              {t("blocks.createBlock")}
             </Button>
           </Stack>
         </Box>
@@ -126,7 +128,7 @@ export const AllBlocks = () => {
               >
                 <Box>
                   <Typography variant="h4" fontWeight={700}>
-                    Start By Creating Blocks
+                    {t("blocks.startByCreatingBlocks")}
                   </Typography>
                   <Typography
                     variant="body2"
@@ -134,8 +136,7 @@ export const AllBlocks = () => {
                     mt={1}
                     mb={2}
                   >
-                    Block models define the structure of a block such as a hero,
-                    feature, testimonial, etc.
+                    {t("blocks.emptyStateBody")}
                   </Typography>
                   <Box display="flex" gap={1}>
                     <Button
@@ -143,14 +144,14 @@ export const AllBlocks = () => {
                       startIcon={<AddRoundedIcon />}
                       onClick={() => setShowCreateModelDialogue(true)}
                     >
-                      Create Block
+                      {t("blocks.createBlock")}
                     </Button>
                     <Button
                       variant="outlined"
                       startIcon={<StreetViewRoundedIcon />}
                       onClick={() => setShowOnboardingDialog(true)}
                     >
-                      Take Product Tour
+                      {t("blocks.takeProductTour")}
                     </Button>
                   </Box>
                   <Typography
@@ -163,7 +164,7 @@ export const AllBlocks = () => {
                         `1px solid ${theme.palette.grey[200]}`,
                     }}
                   >
-                    Documentation
+                    {t("blocks.documentation")}
                   </Typography>
                   <Box
                     component="ul"
@@ -174,14 +175,18 @@ export const AllBlocks = () => {
                     }}
                   >
                     <li>
-                      <Link color="secondary">How to Create a Block</Link>
-                    </li>
-                    <li>
-                      <Link color="secondary">How to use Blocks</Link>
+                      <Link color="secondary">
+                        {t("blocks.howToCreateBlock")}
+                      </Link>
                     </li>
                     <li>
                       <Link color="secondary">
-                        Introduction to Web Components
+                        {t("blocks.howToUseBlocks")}
+                      </Link>
+                    </li>
+                    <li>
+                      <Link color="secondary">
+                        {t("blocks.introToWebComponents")}
                       </Link>
                     </li>
                   </Box>
