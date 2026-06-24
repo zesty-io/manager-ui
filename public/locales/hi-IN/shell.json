@@ -309,6 +309,7 @@
   "relationalReplace": "बदलें",
   "relationalSortLastSaved": "अंतिम सहेजा गया",
   "relationalSortBy": "क्रमबद्ध करें: {{value}}",
+  "relationalSortDescription": "विवरण",
   "relationalDeletedItem": "{{zuid}} (हटाया गया)",
   "relationalSortLastPublished": "अंतिम प्रकाशित",
   "relationalSortDateCreated": "बनाने की तारीख",

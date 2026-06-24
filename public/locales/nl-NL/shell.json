@@ -309,6 +309,7 @@
   "relationalReplace": "Vervangen",
   "relationalSortLastSaved": "Laatst opgeslagen",
   "relationalSortBy": "Sorteren: {{value}}",
+  "relationalSortDescription": "Beschrijving",
   "relationalDeletedItem": "{{zuid}} (Verwijderd)",
   "relationalSortLastPublished": "Laatst gepubliceerd",
   "relationalSortDateCreated": "Aanmaakdatum",

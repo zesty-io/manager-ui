@@ -309,6 +309,7 @@
   "relationalReplace": "Replace",
   "relationalSortLastSaved": "Last Saved",
   "relationalSortBy": "Sort: {{value}}",
+  "relationalSortDescription": "Description",
   "relationalDeletedItem": "{{zuid}} (Deleted)",
   "relationalSortLastPublished": "Last Published",
   "relationalSortDateCreated": "Date Created",

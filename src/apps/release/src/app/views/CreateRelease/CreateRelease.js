@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router";
 import cx from "classnames";
+import { useTranslation } from "react-i18next";
 
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -13,6 +14,7 @@ import { createRelease, fetchReleases } from "shell/store/releases";
 
 import styles from "./CreateRelease.less";
 export function CreateRelease({ isContentSubpage }) {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -23,7 +25,7 @@ export function CreateRelease({ isContentSubpage }) {
 
   const handleCreate = () => {
     if (!name.trim()) {
-      setError("Missing required release name");
+      setError(t("release.errorMissingReleaseName"));
       return;
     }
 
@@ -60,7 +62,7 @@ export function CreateRelease({ isContentSubpage }) {
       <div>
         <FieldTypeText
           data-cy="release-name"
-          label="Release Name"
+          label={t("release.fieldReleaseName")}
           name="name"
           maxLength={50}
           value={name}
@@ -70,7 +72,7 @@ export function CreateRelease({ isContentSubpage }) {
         />
         <FieldTypeText
           data-cy="release-desc"
-          label="Release Description"
+          label={t("release.fieldReleaseDescription")}
           name="description"
           // TODO should this even really be a text area if the maxlen is 150?
           maxLength={150}
@@ -90,7 +92,7 @@ export function CreateRelease({ isContentSubpage }) {
           onClick={handleCreate}
           startIcon={loading ? <CircularProgress size="20px" /> : <AddIcon />}
         >
-          Create Release
+          {t("release.createReleaseButton")}
         </Button>
       </div>
     </div>

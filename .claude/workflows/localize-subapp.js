@@ -139,6 +139,7 @@ const SCOUT_SCHEMA = {
       },
     },
     needsLazyLoadPlumbing: { type: "boolean" },
+    discoveredLazyLoadRoot: { type: ["string", "null"] },
   },
 };
 
@@ -314,8 +315,12 @@ Give each batch a short id string: "solo-0", "solo-1", "small-0", "large-0", etc
 ## STEP 6 — Lazy-load plumbing check
 ${
   lazyLoadRoot
-    ? `Read ${lazyLoadRoot}. Check if it already has a local <Suspense> boundary AND a useTranslation("${ns}") call. If EITHER is missing, set needsLazyLoadPlumbing: true. Otherwise false.`
-    : "Set needsLazyLoadPlumbing: false (no lazyLoadRoot provided)."
+    ? `Read ${lazyLoadRoot}. Check if it already has a local <Suspense> boundary AND a useTranslation("${ns}") call. If EITHER is missing, set needsLazyLoadPlumbing: true. Otherwise false. Set discoveredLazyLoadRoot: "${lazyLoadRoot}".`
+    : `Auto-discover the sub-app entry point. Check these candidates in order and stop at the first file that exists:
+${targetPaths.map((p) => `- ${p}/index.tsx\n- ${p}/index.js`).join("\n")}
+Read the first file found. Check if it has BOTH a <Suspense> boundary AND a useTranslation("${ns}") call.
+If EITHER is missing, set needsLazyLoadPlumbing: true; otherwise false.
+Set discoveredLazyLoadRoot to the path of the file you found, or null if none of the candidates exist.`
 }
 
 ---
@@ -573,10 +578,11 @@ log(
 // ─────────────────────────────────────────────────────────────────────────────
 // PLUMBER (optional) — lazy-load plumbing for the sub-app root
 // ─────────────────────────────────────────────────────────────────────────────
-if (lazyLoadRoot && scout.needsLazyLoadPlumbing) {
+const effectiveLazyLoadRoot = lazyLoadRoot || scout.discoveredLazyLoadRoot;
+if (effectiveLazyLoadRoot && scout.needsLazyLoadPlumbing) {
   await agent(
     `
-Add lazy-load plumbing to ${lazyLoadRoot} for the "${ns}" namespace.
+Add lazy-load plumbing to ${effectiveLazyLoadRoot} for the "${ns}" namespace.
 
 ## The pattern
 Create a two-layer structure so the namespace loads lazily and suspends only the sub-app subtree:
@@ -610,7 +616,7 @@ Never write: \`import { Suspense } from "@mui/material";\`
 - HomeApp in src/apps/home/app/index.tsx
 
 ## Action
-1. Read ${lazyLoadRoot}
+1. Read ${effectiveLazyLoadRoot}
 2. Apply the minimal change to introduce this pattern
 3. Do NOT add useTranslation("${ns}") to every child — only this one trigger point
 4. Write the updated file
@@ -767,9 +773,9 @@ List any broken references (key used in code but not in JSON). Add to brokenKeys
 
 ## Check 5: Lazy-load plumbing
 ${
-  lazyLoadRoot
-    ? `Read ${lazyLoadRoot} and confirm it has both a <Suspense> boundary AND a useTranslation("${ns}") call. Set lazyLoadConfirmed accordingly.`
-    : "Set lazyLoadConfirmed: true (no lazyLoadRoot required for this run)."
+  effectiveLazyLoadRoot
+    ? `Read ${effectiveLazyLoadRoot} and confirm it has both a <Suspense> boundary AND a useTranslation("${ns}") call. Set lazyLoadConfirmed accordingly.`
+    : "Set lazyLoadConfirmed: true (no lazy-load root found or required for this run)."
 }
 
 Return all results. For the issues array, include a one-line summary of each problem found.

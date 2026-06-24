@@ -55,7 +55,7 @@ export const DeleteRelease = memo(function DeleteRelease({ isContentSubpage }) {
         onClose={() => setOpen(false)}
       >
         <ModalContent>
-          <Notice>Deleting a release is a permenant action.</Notice>
+          <Notice>{t("release.deleteWarning")}</Notice>
         </ModalContent>
         <ModalFooter className={styles.ModalFooter}>
           <Button
@@ -63,7 +63,7 @@ export const DeleteRelease = memo(function DeleteRelease({ isContentSubpage }) {
             onClick={() => setOpen(false)}
             startIcon={<DoDisturbAltIcon />}
           >
-            Cancel (ESC)
+            {t("shell.cancelEsc")}
           </Button>
           <Button
             variant="contained"
@@ -72,7 +72,7 @@ export const DeleteRelease = memo(function DeleteRelease({ isContentSubpage }) {
             onClick={onDeleteRelease}
             startIcon={<DeleteIcon />}
           >
-            Delete Release
+            {t("release.deleteRelease")}
           </Button>
         </ModalFooter>
       </Modal>

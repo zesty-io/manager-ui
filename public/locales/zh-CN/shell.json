@@ -307,6 +307,7 @@
   "relationalReplace": "替换",
   "relationalSortLastSaved": "最近保存",
   "relationalSortBy": "排序：{{value}}",
+  "relationalSortDescription": "描述",
   "relationalDeletedItem": "{{zuid}}（已删除）",
   "relationalSortLastPublished": "最近发布",
   "relationalSortDateCreated": "创建日期",

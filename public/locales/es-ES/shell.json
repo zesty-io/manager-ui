@@ -316,6 +316,7 @@
   "relationalReplace": "Reemplazar",
   "relationalSortLastSaved": "Último guardado",
   "relationalSortBy": "Ordenar: {{value}}",
+  "relationalSortDescription": "Descripción",
   "relationalDeletedItem": "{{zuid}} (Eliminado)",
   "relationalSortLastPublished": "Última publicación",
   "relationalSortDateCreated": "Fecha de creación",

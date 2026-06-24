@@ -323,6 +323,7 @@
   "relationalReplace": "Заменить",
   "relationalSortLastSaved": "Последнее сохранение",
   "relationalSortBy": "Сортировка: {{value}}",
+  "relationalSortDescription": "Описание",
   "relationalDeletedItem": "{{zuid}} (Удалено)",
   "relationalSortLastPublished": "Последняя публикация",
   "relationalSortDateCreated": "Дата создания",
