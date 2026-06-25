@@ -24,6 +24,7 @@
 | **`activePreview`** ✓                                            |               |           |                         |
 | **`marketplace`** ✓                                              |               |           |                         |
 | **`studio`** ✓ (verify-only)                                     |               |           |                         |
+| Phase 4.5 — Suspense fallback skeleton loaders ✓                 |               |           |                         |
 
 ---
 
@@ -46,12 +47,6 @@ _Nothing in progress right now._
 ---
 
 # ≡ Backlog
-
----
-
-### Phase 4.5 — Suspense fallback skeleton loaders
-
-- [ ] Replace the empty `Box` fallback in each sub-app's `<Suspense>` with a full-page skeleton loader that matches the app's layout chrome (sidebar shape, content area grid, etc.) so the UI doesn't flash blank grey during namespace lazy-load
 
 ---
 
