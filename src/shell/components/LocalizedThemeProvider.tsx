@@ -2,29 +2,29 @@ import { ReactNode, useMemo } from "react";
 import { ThemeProvider } from "@mui/material/styles";
 import type { Theme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
+import { localizeTheme } from "@zesty-io/material";
+import type { MuiLocaleString } from "@zesty-io/material";
 
-import { localizeTheme } from "../i18n/mui-locale";
+import type { SupportedLocale } from "../i18n";
+
+// Maps app locale tags to MUI locale strings passed to localizeTheme.
+// When adding a new locale, verify the MUI string exists as a named export in
+// @mui/material/locale (e.g. import { frFR } from "@mui/material/locale") before
+// adding it here. An invalid string silently falls back to English in @zesty-io/material.
+const MUI_LOCALE: Record<SupportedLocale, MuiLocaleString> = {
+  "en-US": "enUS",
+  "es-ES": "esES",
+  "hi-IN": "hiIN",
+  "zh-CN": "zhCN",
+  "ru-RU": "ruRU",
+  "nl-NL": "nlNL",
+};
 
 type LocalizedThemeProviderProps = {
   baseTheme: Theme;
   children: ReactNode;
 };
 
-/**
- * The reactive trigger for MUI component-chrome localization. The app theme is
- * built once at boot (src/shell/index.js) and is otherwise inert to language
- * changes; this provider rebuilds it whenever the active locale changes.
- *
- * `useTranslation()` re-renders on i18next's `languageChanged` event, so a
- * `LocaleSwitcher` change flows straight through here: the memo re-runs keyed
- * on `i18n.language`, `localizeTheme` re-merges the MUI core/grid/picker locale
- * bundles, and every Autocomplete / DataGrid / picker beneath re-renders
- * localized — without any per-component wiring.
- *
- * The i18next dependency is deliberately kept in the app (not in
- * `@zesty-io/material`): the design system stays i18next-free and exposes only
- * the pure `localizeTheme(theme, tag)` resolver this component calls.
- */
 export const LocalizedThemeProvider = ({
   baseTheme,
   children,
@@ -32,7 +32,8 @@ export const LocalizedThemeProvider = ({
   const { i18n } = useTranslation();
 
   const localizedTheme = useMemo(
-    () => localizeTheme(baseTheme, i18n.language),
+    () =>
+      localizeTheme(baseTheme, MUI_LOCALE[i18n.language as SupportedLocale]),
     [baseTheme, i18n.language]
   );
 

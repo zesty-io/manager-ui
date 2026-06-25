@@ -65,6 +65,24 @@ that subtree (not the whole shell). Children then use bare `useTranslation()`.
 Canonical examples: `HomeApp` → `dashboard`, `ContentApp` (`ContentEditor.js`) →
 `content`, `MediaApp` → `media`.
 
+### MUI component labels (separate from i18next)
+
+MUI components have their own built-in label system (DataGrid column menus, DatePicker buttons, Autocomplete labels, etc.) that is entirely separate from i18next. These are localized through the theme, not through `t()`.
+
+**How it works:**
+
+- `@zesty-io/material` exports `localizeTheme(theme, muiLocaleString)`, which applies the correct MUI locale bundles for all three MUI systems (core, Data Grid, Date Pickers) onto the base theme.
+- `LocalizedThemeProvider` (`src/shell/components/LocalizedThemeProvider.tsx`) wraps the app in a `<ThemeProvider>` that re-runs `localizeTheme` whenever the active language changes.
+- The `MUI_LOCALE` map in `LocalizedThemeProvider` converts the app's BCP 47 tag (e.g. `"es-ES"`) to the MUI locale string (e.g. `"esES"`) that `localizeTheme` expects. This is the only MUI-related thing manager-ui owns.
+
+**Adding a new locale:**
+
+1. Add an entry to `MUI_LOCALE` in `LocalizedThemeProvider.tsx`: `"fr-FR": "frFR"`.
+2. Verify `frFR` is a named export in `@mui/material/locale` — an invalid string silently falls back to English.
+3. If MUI X doesn't ship the locale (Data Grid / Date Pickers), a hand-authored bundle is needed in `@zesty-io/material`. See `LOCALIZATION.md` in that repo for the full process.
+
+**Type safety:** `MUI_LOCALE` is typed as `Record<SupportedLocale, MuiLocaleString>` where `MuiLocaleString` is exported from `@zesty-io/material` and derived from `@mui/material/locale`'s named exports — invalid MUI locale strings are caught at compile time.
+
 ### Dates (date-fns is separate from i18next)
 
 - Display strings: `formatLocalized(date, fmt)` / `formatDistanceToNowLocalized(...)`
@@ -152,8 +170,11 @@ get exact suffixes via `i18n.services.pluralResolver.getSuffixes(tag)`.
 
 - **i18next config / helpers:** `src/shell/i18n/` — `index.ts` (config, `SUPPORTED_LOCALES`,
   missing-key handler), `dates.ts` (`getDateFnsLocale`, `formatLocalized`,
-  `formatDistanceToNowLocalized`), `mui-locale.ts` (`getMuiCoreLocale`, `localizeTheme`),
-  `datagrid.ts` + `datepickers.ts` + `*-locales/hi-IN.ts` (MUI X resolvers + Hindi bundles).
+  `formatDistanceToNowLocalized`).
+- **MUI localization:** `src/shell/components/LocalizedThemeProvider.tsx` — owns the
+  BCP 47 → MUI locale string mapping (`MUI_LOCALE`) and calls `localizeTheme` from
+  `@zesty-io/material` on language change. For the MUI locale bundle side, see
+  `LOCALIZATION.md` in the `@zesty-io/material` repo.
 - **Switcher / boot:** `components/GlobalTopbar/LocaleSwitcher.tsx`; boot apply in
   `components/load-instance/index.js`; `accounts.updateUser` mutation.
 - **Reactive theme:** `components/LocalizedThemeProvider.tsx`.

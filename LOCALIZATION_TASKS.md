@@ -6,24 +6,24 @@
 
 ## Board snapshot
 
-| ✓ Done                                                   | ▶ In Progress | → Up Next | ≡ Backlog (in order)                                             |
-| -------------------------------------------------------- | ------------- | --------- | ---------------------------------------------------------------- |
-| Phase 1 — Infrastructure                                 | —             | —         | Phase 5: TinyMCE · MUI overrides · `@zesty-io/material` upstream |
-| Phase 2 — Locale switcher                                |               |           | Phase 8 — Cypress tests                                          |
-| Phase 3 — `common` + `shell` (incl. FieldType\* widgets) |               |           |                                                                  |
-| Phase 4 — `dashboard` · `media` · `content`              |               |           |                                                                  |
-| Phase 5 — MUI · ProseMirror · Bynder                     |               |           |                                                                  |
-| Phase 6 — Caching · Phase 7 — Missing-key handling       |               |           |                                                                  |
-| **`schema`** ✓                                           |               |           |                                                                  |
-| **`seo`** ✓                                              |               |           |                                                                  |
-| **`leads`** ✓                                            |               |           |                                                                  |
-| **`reports`** ✓                                          |               |           |                                                                  |
-| **`settings`** ✓                                         |               |           |                                                                  |
-| **`code`** ✓                                             |               |           |                                                                  |
-| **`blocks`** ✓                                           |               |           |                                                                  |
-| **`activePreview`** ✓                                    |               |           |                                                                  |
-| **`marketplace`** ✓                                      |               |           |                                                                  |
-| **`studio`** ✓ (verify-only)                             |               |           |                                                                  |
+| ✓ Done                                                           | ▶ In Progress | → Up Next | ≡ Backlog (in order)    |
+| ---------------------------------------------------------------- | ------------- | --------- | ----------------------- |
+| Phase 1 — Infrastructure                                         | —             | —         | Phase 8 — Cypress tests |
+| Phase 2 — Locale switcher                                        |               |           |                         |
+| Phase 3 — `common` + `shell` (incl. FieldType\* widgets)         |               |           |                         |
+| Phase 4 — `dashboard` · `media` · `content`                      |               |           |                         |
+| Phase 5 — MUI · ProseMirror · Bynder · TinyMCE · MUI overrides ✓ |               |           |                         |
+| Phase 6 — Caching · Phase 7 — Missing-key handling               |               |           |                         |
+| **`schema`** ✓                                                   |               |           |                         |
+| **`seo`** ✓                                                      |               |           |                         |
+| **`leads`** ✓                                                    |               |           |                         |
+| **`reports`** ✓                                                  |               |           |                         |
+| **`settings`** ✓                                                 |               |           |                         |
+| **`code`** ✓                                                     |               |           |                         |
+| **`blocks`** ✓                                                   |               |           |                         |
+| **`activePreview`** ✓                                            |               |           |                         |
+| **`marketplace`** ✓                                              |               |           |                         |
+| **`studio`** ✓ (verify-only)                                     |               |           |                         |
 
 ---
 
@@ -52,19 +52,6 @@ _Nothing in progress right now._
 ### Phase 4.5 — Suspense fallback skeleton loaders
 
 - [ ] Replace the empty `Box` fallback in each sub-app's `<Suspense>` with a full-page skeleton loader that matches the app's layout chrome (sidebar shape, content area grid, etc.) so the UI doesn't flash blank grey during namespace lazy-load
-
----
-
-### Phase 5 — Remaining
-
-- [ ] **MUI manual overrides → `t()`** — `noOptionsText`/`loadingText` bypassing the theme:
-  - [ ] `seo/.../CreateRedirects/SearchField.tsx`
-  - [ ] `shell/.../GlobalSearch/AdvancedSearch.tsx`
-- [ ] **TinyMCE lang packs** — self-host under `/vendors/tinymce/langs/`; map `i18n.language` → lang code in `src/shell/components/FieldTypeTinyMCE/index.tsx`; hand-author `langs/hi.js`
-- [ ] **Upstream to `@zesty-io/material`** — move `getMuiCoreLocale` / `getDataGridLocaleText` / `getDatePickersLocaleText` / `localizeTheme` + both hi-IN bundles. Constraints: additive-only, opt-in (`localizeTheme(theme, tag)`), no new peer deps, `sideEffects:false`, minor semver, add hi-IN coverage test to the package
-- [ ] **Monaco** — document no-action decision (ESM build, developer-facing) and close out
-- [ ] _(optional)_ Remove dead `flatpickr`/`react-flatpickr` deps
-- [ ] **ReactJson in `src/apps/activePreview/components/JSONPreview/JSONPreview.js`** (`react-json-view`) — react-json-view renders its own internal UI (keys, values, collapse controls) with no locale/i18n API exposed for translation — decide: wrap, file Phase 5 item, or skip
 
 ---
 
@@ -132,13 +119,23 @@ All infrastructure, locale switcher, `common` + `shell` namespaces (incl. all `F
 
 ---
 
-### Phase 5 — MUI · ProseMirror · Bynder
+### `@zesty-io/material` upstream (deferred from Phase 5)
 
-- [x] MUI core locale + reactive theme — `LocalizedThemeProvider` + `localizeTheme` in `src/shell/i18n/mui-locale.ts`; auto-applies to every grid/picker via `defaultProps`
-- [x] MUI X Data Grid — `getDataGridLocaleText` + hand-authored hi-IN (`src/shell/i18n/datagrid.ts` + `datagrid-locales/hi-IN.ts`)
-- [x] MUI X Date Pickers — `getDatePickersLocaleText` + `datepickers-locales/hi-IN.ts`
+- [x] `localizeTheme`, `getDataGridLocaleText`, `getDatePickersLocaleText`, and both hi-IN bundles moved to `@zesty-io/material`; `MuiLocaleString` type exported from the package. manager-ui now owns only the BCP 47 → MUI locale string mapping in `LocalizedThemeProvider`. See `LOCALIZATION.md` in the `@zesty-io/material` repo.
+
+---
+
+### Phase 5 — MUI · ProseMirror · Bynder · TinyMCE · MUI overrides
+
+- [x] MUI core locale + reactive theme — `LocalizedThemeProvider` + `localizeTheme` (now in `@zesty-io/material`); auto-applies to every grid/picker via `defaultProps`
+- [x] MUI X Data Grid — `getDataGridLocaleText` + hand-authored hi-IN (now in `@zesty-io/material`)
+- [x] MUI X Date Pickers — `getDatePickersLocaleText` + hi-IN bundle (now in `@zesty-io/material`)
 - [x] ProseMirror — 46 `shell.editor*` keys all 6 locales; `t` threaded into menu builders; `LinkModal`/`EmbedModal` wrapped with `withTranslation`
 - [x] Bynder Compact View — locale mapping in `src/utility/openBynder.ts`; zh/ru/hi fall back to `en_US`; replaced language-dependent SDK close selector
+- [x] **TinyMCE lang packs — no action.** The official TinyMCE CDN requires an API key we do not have; all other sources (e.g. community npm packages, third-party CDNs) are unofficial and not reliable. TinyMCE UI chrome remains in English for all locales.
+- [x] MUI manual overrides — `seo/SearchField.tsx` `noOptionsText` → `t("shell.noResultsFound")`; `shell/AdvancedSearch.tsx` `noOptionsText` → `t("common.noUsersFound")`
+- [x] Monaco — no action; ESM build, developer-facing code editor, no translatable i18n API surface
+- [x] ReactJson in `activePreview/JSONPreview` — skipped; `react-json-view` exposes no locale API, developer-facing debug panel
 
 ---
 
