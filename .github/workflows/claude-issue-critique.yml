@@ -72,12 +72,11 @@ jobs:
             1. **Classification** — ticket type (bug / feature / tech-debt /
                question; note if it's more than one) and suggested labels
                (area + type, e.g. `area:media`, `bug`).
-            2. **Preliminary severity** — an engineering signal of how bad this
-               is (Low / Medium / High) with a one-line basis. Say plainly this
-               is a preliminary signal, not a committed priority — it can change
-               once a human weighs in. Never invent metrics; if impact is
-               unknown, say so and note where data could come from (Amplitude,
-               Sentry).
+            2. **Preliminary severity** — Low / Medium / High plus a one-line
+               basis. The "Preliminary" heading already conveys this is a triage
+               signal rather than a final priority, so do not add disclaimer
+               sentences. Never invent metrics; if impact is unknown, say so and
+               point to where data could come from (Amplitude, Sentry).
             3. **Understanding** — restate the problem as you read it.
             4. **Bug essentials** (bugs only) — Steps to reproduce, Expected,
                Actual, Environment. Mark any that are absent as
