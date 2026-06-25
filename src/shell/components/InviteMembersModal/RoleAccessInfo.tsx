@@ -85,6 +85,7 @@ export const RoleAccessInfo = ({ role }: Props) => {
     >
       <Typography component="li" variant="body2" sx={{ marginBottom: 2 }}>
         {t("shell.hasAccessTo")}
+        {":"}
       </Typography>
       <Box display="flex" flexWrap="wrap" gap={2}>
         {roleAccess[role].map((access) => (

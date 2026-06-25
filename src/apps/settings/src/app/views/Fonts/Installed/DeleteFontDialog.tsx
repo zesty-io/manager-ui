@@ -130,6 +130,7 @@ const DeleteFontDialog = ({
               mb={1}
             >
               {t("settings.removeFontLabel")}
+              {":"}
             </Typography>
 
             <Typography

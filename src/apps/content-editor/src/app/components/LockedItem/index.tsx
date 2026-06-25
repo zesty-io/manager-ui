@@ -58,7 +58,8 @@ export const LockedItem = ({
           <Box>
             <Box mb={1}>
               <Typography variant="h5" display="inline" fontWeight={700}>
-                {t("content.itemEditItemLockedTitle")}&nbsp;
+                {t("content.itemEditItemLockedTitle")}
+                {":"}&nbsp;
               </Typography>
               <Typography variant="h5" display="inline">
                 {itemName}

@@ -50,7 +50,10 @@ export const ConfirmPublishesModal = ({
         >
           <CloudUploadRoundedIcon color="success" />
         </Stack>
-        <Box>{t("content.itemListPublishTitle", { count: items.length })}</Box>
+        <Box>
+          {t("content.itemListPublishTitle", { count: items.length })}
+          {":"}
+        </Box>
         <Typography variant="body2" color="text.secondary" mt={1}>
           {t("content.itemListPublishDescription", { count: items.length })}
         </Typography>

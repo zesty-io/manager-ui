@@ -48,6 +48,7 @@ export const UnpublishDialog = ({
         <Typography variant="h5" sx={{ mt: 1.5 }}>
           <Typography variant="inherit" display="inline" fontWeight={600}>
             {t("content.itemEditUnpublishContentItemTitle")}
+            {":"}
           </Typography>{" "}
           {itemName}
         </Typography>

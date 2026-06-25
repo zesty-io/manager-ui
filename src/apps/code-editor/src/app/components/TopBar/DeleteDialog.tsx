@@ -81,6 +81,7 @@ export const DeleteDialog = memo(function DeleteDialog(
             flexShrink={0}
           >
             {t("code.deleteFileLabel")}
+            {":"}
           </Typography>
           <Typography variant="inherit" fontWeight={600} noWrap flexGrow={0}>
             {`${fileName}`}

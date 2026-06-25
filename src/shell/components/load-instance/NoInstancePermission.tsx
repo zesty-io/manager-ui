@@ -30,7 +30,8 @@ export const NoInstancePermission = () => {
           {t("shell.noInstancePermissionBody2")}{" "}
           <strong>
             {t("shell.currentlyLoggedInAs", { email: user?.email })}
-          </strong>{" "}
+          </strong>
+          {" — "}
           {t("shell.trySwitchingAccount")}
         </Typography>
         <Stack direction="row" gap={1.5}>

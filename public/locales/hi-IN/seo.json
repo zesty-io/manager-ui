@@ -52,7 +52,7 @@
   "importFileReadError": "फ़ाइल पढ़ने में विफल: {{err}}",
   "importMustBeCsv": "आयात एक CSV फ़ाइल होनी चाहिए",
   "importInvalidFileSelected": "अमान्य फ़ाइल चुनी गई",
-  "importXmlSitemapSpec": "XML साइटमैप आयात https://www.sitemaps.org/protocol.html विनिर्देश का पालन करना चाहिए।",
+  "importXmlSitemapSpec": "XML साइटमैप आयात {{specUrl}} विनिर्देश का पालन करना चाहिए।",
   "changeDialogTitle": "URL पथ परिवर्तन का पता चला। पुराने पथ से नए पथ पर पुनर्निर्देशन बनाएं?",
   "changeDialogBody": "यह एक 301 स्थायी पुनर्निर्देशन होगा और सुनिश्चित करेगा कि पुराने पथ का उपयोग करने वाले विज़िटर नए पथ पर निर्बाध रूप से निर्देशित हों।",
   "changeDialogOldPath": "पुराना पथ",

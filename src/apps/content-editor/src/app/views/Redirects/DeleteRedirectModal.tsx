@@ -95,7 +95,8 @@ export const DeleteRedirectModal = ({
           <Box>
             <Box mb={1}>
               <Typography variant="h5" display="inline" fontWeight={700}>
-                {t("content.redirectDeleteTitle")}&nbsp;
+                {t("content.redirectDeleteTitle")}
+                {":"}&nbsp;
               </Typography>
               <Typography variant="h5" display="inline">
                 {incomingPath}

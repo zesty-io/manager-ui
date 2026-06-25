@@ -101,6 +101,7 @@ export const FieldError = forwardRef(
           {t("content.correctFieldsBeforeSaving", {
             count: fieldsWithErrors?.length,
           })}
+          {":"}
         </Typography>
         <Box component="ol" ml={2}>
           {fieldErrors?.map((error, index) => {

@@ -53,7 +53,7 @@
   "importFileReadError": "Error al leer el archivo: {{err}}",
   "importMustBeCsv": "La importación debe ser un archivo CSV",
   "importInvalidFileSelected": "Archivo seleccionado no válido",
-  "importXmlSitemapSpec": "Las importaciones de mapas de sitio XML deben seguir la especificación https://www.sitemaps.org/protocol.html.",
+  "importXmlSitemapSpec": "Las importaciones de mapas de sitio XML deben seguir la especificación {{specUrl}}",
   "changeDialogTitle": "Cambio de ruta URL detectado. ¿Crear una redirección de la ruta antigua a la nueva?",
   "changeDialogBody": "Será una redirección permanente 301 y garantizará que los visitantes que usen la ruta antigua sean dirigidos sin problemas a la nueva.",
   "changeDialogOldPath": "RUTA ANTIGUA",

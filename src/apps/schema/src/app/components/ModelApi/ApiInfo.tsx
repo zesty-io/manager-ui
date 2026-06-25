@@ -181,6 +181,7 @@ export const ApiInfo = ({ type, large }: Props) => {
       <br />
       <Typography variant={large ? "body1" : "body2"} fontWeight={700}>
         {t("schema.apiBestUsedFor")}
+        {":"}
       </Typography>
       <Box
         component="ul"

@@ -180,6 +180,7 @@ export const ReplaceFileModal = ({
           <Typography variant="h5" sx={{ wordBreak: "break-all" }}>
             <Box component="span" fontWeight={700}>
               {t("media.replaceFileModalTitle")}
+              {":"}
             </Box>
             &nbsp;
             {originalFile?.filename}

@@ -87,6 +87,7 @@ const DeactivationDialog: FC<DeactivationDialogProps> = ({
             mr={1}
           >
             {t("settings.deactivateStatusLabel")}
+            {":"}
           </Typography>
           <Typography variant="h5" fontWeight="normal" color="text.secondary">
             {name}

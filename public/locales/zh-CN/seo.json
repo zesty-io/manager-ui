@@ -51,7 +51,7 @@
   "importFileReadError": "读取文件失败：{{err}}",
   "importMustBeCsv": "导入文件必须为 CSV 格式",
   "importInvalidFileSelected": "所选文件无效",
-  "importXmlSitemapSpec": "XML 站点地图导入必须遵循 https://www.sitemaps.org/protocol.html 规范。",
+  "importXmlSitemapSpec": "XML 站点地图导入必须遵循 {{specUrl}} 规范。",
   "changeDialogTitle": "检测到 URL 路径更改。是否从旧路径创建重定向到新路径？",
   "changeDialogBody": "这将是一个 301 永久重定向，确保使用旧路径的访客被无缝引导至新路径。",
   "changeDialogOldPath": "旧路径",

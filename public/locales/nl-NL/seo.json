@@ -52,7 +52,7 @@
   "importFileReadError": "Bestand lezen mislukt: {{err}}",
   "importMustBeCsv": "Import moet een CSV-bestand zijn",
   "importInvalidFileSelected": "Ongeldig bestand geselecteerd",
-  "importXmlSitemapSpec": "XML-sitemap-imports moeten de https://www.sitemaps.org/protocol.html specificatie volgen.",
+  "importXmlSitemapSpec": "XML-sitemap-imports moeten de {{specUrl}} specificatie volgen.",
   "changeDialogTitle": "Wijziging URL-pad gedetecteerd. Omleiding aanmaken van het oude pad naar het nieuwe pad?",
   "changeDialogBody": "Dit wordt een permanente 301-omleiding en zorgt ervoor dat bezoekers die het oude pad gebruiken naadloos naar het nieuwe pad worden doorgestuurd.",
   "changeDialogOldPath": "OUD PAD",

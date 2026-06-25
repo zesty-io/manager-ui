@@ -179,6 +179,7 @@ export const SchedulePublish = ({
                 {item?.scheduling?.isScheduled
                   ? t("shell.schedulePublishTitleUnschedule")
                   : t("shell.schedulePublishTitleSchedule")}
+                {":"}
                 &nbsp;
               </Typography>
               <Typography variant="h5" display="inline">

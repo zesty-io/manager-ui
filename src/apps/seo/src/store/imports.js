@@ -311,7 +311,9 @@ function parseXML(xml, dispatch) {
     dispatch(
       notify({
         kind: "warn",
-        message: i18n.t("seo.importXmlSitemapSpec"),
+        message: i18n.t("seo.importXmlSitemapSpec", {
+          specUrl: "https://www.sitemaps.org/protocol.html",
+        }),
       })
     );
     throw new Error("Invalid XML root node.");

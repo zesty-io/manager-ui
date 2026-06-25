@@ -67,6 +67,7 @@ export const DeleteItemDialog = ({ onClose }: DuplicateItemProps) => {
         </Box>
         <Stack>
           {t("content.itemEditDeleteContentItemTitle")}
+          {":"}
           <Typography variant="inherit" fontWeight={600}>
             {item?.web?.metaTitle || item?.web?.metaLinkText}
           </Typography>

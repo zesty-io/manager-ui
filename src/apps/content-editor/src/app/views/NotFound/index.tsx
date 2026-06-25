@@ -54,6 +54,7 @@ const NotFound = () => {
               ),
             }}
           />
+          {":"}
         </Typography>
 
         <Typography

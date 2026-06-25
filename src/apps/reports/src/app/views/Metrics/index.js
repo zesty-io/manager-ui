@@ -296,6 +296,7 @@ const Content = ({
             <aside>
               <p>
                 {t("reports.instanceZuid")}
+                {":"}
                 <CopyButton
                   size="small"
                   value={usageData.Account.Zuid}
@@ -305,6 +306,7 @@ const Content = ({
 
               <p>
                 {t("reports.cdnUrl")}
+                {":"}
                 <CopyButton
                   size="small"
                   value={usageData.Account.CdnURL}

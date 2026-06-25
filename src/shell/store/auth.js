@@ -163,7 +163,13 @@ export function pollTwoFactor() {
             })
             .catch((err) => {
               console.log("recursive request catch", err);
-              reject(new Error(i18n.t("shell.loginFailedContactSupport")));
+              reject(
+                new Error(
+                  i18n.t("shell.loginFailedContactSupport", {
+                    email: "support@zesty.io",
+                  })
+                )
+              );
             });
         }, Math.min(count * 0.5, 15) * 1000);
       });
@@ -183,8 +189,6 @@ export function pollTwoFactor() {
             message: err.message,
           })
         );
-
-        // Kick user out
         dispatch(logout());
       });
   };

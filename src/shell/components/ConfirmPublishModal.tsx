@@ -59,6 +59,7 @@ export const ConfirmPublishModal = ({
           {t("shell.confirmPublishTitle", {
             item: altText || t("shell.contentItem"),
           })}
+          {":"}
           <Typography fontWeight={400} variant="h5" display="inline">
             {" "}
             {contentTitle}?

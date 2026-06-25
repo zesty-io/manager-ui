@@ -202,7 +202,9 @@ export const TimelineItem = (props) => {
               {/*Hide item subtext on resource detail page*/}
               {location.pathname.includes("resources")
                 ? t("reports.actionBy")
-                : t("reports.actionInBy", { itemSubtext: props.itemSubtext })}
+                : t("reports.actionInBy", {
+                    itemSubtext: props.itemSubtext,
+                  })}{" "}
               <Link
                 underline="hover"
                 href="#"

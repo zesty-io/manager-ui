@@ -89,7 +89,7 @@ export default function FileStatus({ file, items }: FileStatusProps) {
     if (isSiteJs) {
       return {
         path: `${urlPreview}/site.js`,
-        label: t("code.compilesToSiteJs"),
+        label: t("code.compilesToSiteJs", { file: "/site.js" }),
         tooltip: t("code.previewJavascriptWebpage"),
       };
     }
@@ -97,7 +97,7 @@ export default function FileStatus({ file, items }: FileStatusProps) {
     if (isSiteCss) {
       return {
         path: `${urlPreview}/site.css`,
-        label: t("code.compilesToSiteCss"),
+        label: t("code.compilesToSiteCss", { file: "/site.css" }),
         tooltip: t("code.previewCssWebpage"),
       };
     }
@@ -131,6 +131,7 @@ export default function FileStatus({ file, items }: FileStatusProps) {
         {file?.contentModelZUID && (
           <FileCardListItem>
             {t("code.modelZuid")}
+            {": "}
             <RouterLink
               to={`/schema/${file?.contentModelZUID}`}
               title={t("code.editRelatedModel")}
@@ -143,6 +144,7 @@ export default function FileStatus({ file, items }: FileStatusProps) {
         {!!webLinkData && (
           <FileCardListItem>
             {t("code.webEngineLink")}
+            {": "}
             <Link
               href={webLinkData?.path}
               target="_blank"
@@ -155,6 +157,7 @@ export default function FileStatus({ file, items }: FileStatusProps) {
 
         <FileCardListItem>
           {t("code.fileZuid")}
+          {": "}
           <CopyButton
             variant="text"
             size="small"
@@ -186,7 +189,9 @@ export default function FileStatus({ file, items }: FileStatusProps) {
           {FileType({ fileType: file.type, fileName: file.fileName }, t)}
         </FileCardListItem>
         <FileCardListItem>
-          {t("code.branch")} {file.status}
+          {t("code.branch")}
+          {": "}
+          {file.status}
         </FileCardListItem>
         {file.publishedVersion ? (
           <FileCardListItem>
@@ -201,7 +206,8 @@ export default function FileStatus({ file, items }: FileStatusProps) {
           {t("code.viewingVersion", { n: file.version })}
         </FileCardListItem>
         <FileCardListItem>
-          {t("code.lastEdited")}&nbsp;{editedText}
+          {t("code.lastEdited")}
+          {":"}&nbsp;{editedText}
         </FileCardListItem>
 
         <Divider sx={{ my: 1, border: "none" }} />

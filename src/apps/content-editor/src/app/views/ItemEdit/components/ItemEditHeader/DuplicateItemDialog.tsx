@@ -147,6 +147,7 @@ export const DuplicateItemDialog = ({ onClose }: DuplicateItemProps) => {
         <Typography variant="h5" sx={{ mt: 1.5 }}>
           <Typography variant="inherit" display="inline" fontWeight={600}>
             {t("content.itemEditDuplicateContentItemTitle")}
+            {":"}
           </Typography>{" "}
           {item?.web?.metaTitle || item?.web?.metaLinkText}
         </Typography>

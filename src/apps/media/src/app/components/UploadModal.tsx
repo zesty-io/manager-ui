@@ -180,6 +180,7 @@ const UploadErrors = () => {
         {t("media.uploadModalUploadErrorTitle", {
           count: failedUploads.length,
         })}
+        {":"}
       </AlertTitle>
       <>
         {failedUploads.map((file, idx) => {

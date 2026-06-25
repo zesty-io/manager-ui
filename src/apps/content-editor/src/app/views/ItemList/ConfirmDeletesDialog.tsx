@@ -49,7 +49,10 @@ export const ConfirmDeletesDialog = ({
         >
           <DeleteRounded color="error" />
         </Stack>
-        <Box>{t("content.itemListDeleteTitle", { count: items.length })}</Box>
+        <Box>
+          {t("content.itemListDeleteTitle", { count: items.length })}
+          {":"}
+        </Box>
         <Typography variant="body2" color="text.secondary" mt={1}>
           {t("content.itemListDeleteDescription", { count: items.length })}
         </Typography>

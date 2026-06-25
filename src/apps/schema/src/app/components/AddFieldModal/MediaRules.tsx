@@ -363,6 +363,7 @@ export const MediaRules = ({
                     <Box display="flex" mt={0.5} gap={0.5} alignItems="center">
                       <Typography variant="body2">
                         {t("schema.mediaRulesAddPresetLabel")}
+                        {":"}
                       </Typography>
                       {ExtensionPresets.map((preset) => (
                         <Chip

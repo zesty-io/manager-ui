@@ -54,7 +54,7 @@
   "importFileReadError": "Ошибка чтения файла: {{err}}",
   "importMustBeCsv": "Импорт должен быть CSV-файлом",
   "importInvalidFileSelected": "Выбран недопустимый файл",
-  "importXmlSitemapSpec": "Импорт XML-карты сайта должен соответствовать спецификации https://www.sitemaps.org/protocol.html.",
+  "importXmlSitemapSpec": "Импорт XML-карты сайта должен соответствовать спецификации {{specUrl}}",
   "changeDialogTitle": "Обнаружено изменение пути URL. Создать перенаправление со старого пути на новый?",
   "changeDialogBody": "Это будет постоянное перенаправление 301, обеспечивающее бесшовный переход посетителей со старого пути на новый.",
   "changeDialogOldPath": "СТАРЫЙ ПУТЬ",
