@@ -1,0 +1,15 @@
+{
+  "microsoftLogoAlt": "Логотип Microsoft",
+  "googleAnalyticsLogoAlt": "Логотип Google Analytics",
+  "npmLogoAlt": "Логотип NPM",
+  "nodejsLogoAlt": "Логотип NodeJS",
+  "googleChromeLogoAlt": "Логотип Google Chrome",
+  "zestyRocketLogoAlt": "Логотип Zesty Rocket",
+  "exploreMarketplace": "Обзор Marketplace",
+  "installAppBody": "Устанавливайте расширения, приложения и модули быстрого старта, чтобы ускорить работу над вашим проектом Zesty",
+  "goToMarketplace": "Перейти в Marketplace",
+  "headerTitleApps": "Приложения",
+  "sidebarMarketplace": "Marketplace",
+  "visitMarketplace": "Посетить Marketplace",
+  "appNotInstalled": "Приложение «{{zuid}}» не установлено."
+}

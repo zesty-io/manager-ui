@@ -1,0 +1,15 @@
+{
+  "microsoftLogoAlt": "微软 (Microsoft) 图标",
+  "googleAnalyticsLogoAlt": "谷歌分析 (Google Analytics) 图标",
+  "npmLogoAlt": "NPM 图标",
+  "nodejsLogoAlt": "NodeJS 图标",
+  "googleChromeLogoAlt": "谷歌浏览器 (Google Chrome) 图标",
+  "zestyRocketLogoAlt": "Zesty Rocket 图标",
+  "exploreMarketplace": "探索 Marketplace",
+  "installAppBody": "安装扩展、应用程序和快速启动模块，以加速您的 Zesty 项目",
+  "goToMarketplace": "前往 Marketplace",
+  "headerTitleApps": "应用中心",
+  "sidebarMarketplace": "Marketplace",
+  "visitMarketplace": "访问 Marketplace",
+  "appNotInstalled": "未安装应用 \"{{zuid}}\"。"
+}

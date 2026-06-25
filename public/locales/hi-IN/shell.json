@@ -551,5 +551,6 @@
   "headTagDeleteAttributeTitle": "टैग विशेषता हटाएं",
   "headTagSave": "हेड टैग सहेजें",
   "headTagCreate": "हेड टैग बनाएं",
-  "zestyAccountTitle": "Zesty खाता"
+  "zestyAccountTitle": "Zesty खाता",
+  "appLoadingFailure": "App loading failure: {{message}}"
 }

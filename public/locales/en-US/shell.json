@@ -551,5 +551,6 @@
   "headTagDeleteAttributeTitle": "Delete Tag Attribute",
   "headTagSave": "Save head tag",
   "headTagCreate": "Create head tag",
-  "zestyAccountTitle": "Zesty Account"
+  "zestyAccountTitle": "Zesty Account",
+  "appLoadingFailure": "App loading failure: {{message}}"
 }

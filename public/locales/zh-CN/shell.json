@@ -549,5 +549,6 @@
   "headTagDeleteAttributeTitle": "删除标签属性",
   "headTagSave": "保存头部标签",
   "headTagCreate": "创建头部标签",
-  "zestyAccountTitle": "Zesty 账户"
+  "zestyAccountTitle": "Zesty 账户",
+  "appLoadingFailure": "App loading failure: {{message}}"
 }

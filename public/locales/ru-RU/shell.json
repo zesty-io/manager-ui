@@ -565,5 +565,6 @@
   "headTagDeleteAttributeTitle": "Удалить атрибут тега",
   "headTagSave": "Сохранить head-тег",
   "headTagCreate": "Создать head-тег",
-  "zestyAccountTitle": "Аккаунт Zesty"
+  "zestyAccountTitle": "Аккаунт Zesty",
+  "appLoadingFailure": "App loading failure: {{message}}"
 }

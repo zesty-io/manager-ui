@@ -558,5 +558,6 @@
   "headTagDeleteAttributeTitle": "Eliminar atributo de etiqueta",
   "headTagSave": "Guardar etiqueta de cabecera",
   "headTagCreate": "Crear etiqueta de cabecera",
-  "zestyAccountTitle": "Cuenta de Zesty"
+  "zestyAccountTitle": "Cuenta de Zesty",
+  "appLoadingFailure": "App loading failure: {{message}}"
 }

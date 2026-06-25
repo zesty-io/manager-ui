@@ -1,0 +1,15 @@
+{
+  "microsoftLogoAlt": "Microsoft का लोगो",
+  "googleAnalyticsLogoAlt": "Google Analytics का लोगो",
+  "npmLogoAlt": "NPM का लोगो",
+  "nodejsLogoAlt": "NodeJS का लोगो",
+  "googleChromeLogoAlt": "Google Chrome का लोगो",
+  "zestyRocketLogoAlt": "Zesty Rocket का लोगो",
+  "exploreMarketplace": "Marketplace एक्सप्लोर करें",
+  "installAppBody": "अपने Zesty प्रोजेक्ट को तेज़ बनाने के लिए एक्सटेंशन, एप्लिकेशन और क्विक स्टार्ट मॉड्यूल इंस्टॉल करें",
+  "goToMarketplace": "Marketplace पर जाएं",
+  "headerTitleApps": "ऐप्स",
+  "sidebarMarketplace": "Marketplace",
+  "visitMarketplace": "Marketplace पर जाएं",
+  "appNotInstalled": "ऐप \"{{zuid}}\" इंस्टॉल नहीं है।"
+}

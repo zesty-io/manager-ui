@@ -6,22 +6,23 @@
 
 ## Board snapshot
 
-| ✓ Done                                                   | ▶ In Progress | → Up Next     | ≡ Backlog (in order)                                             |
-| -------------------------------------------------------- | ------------- | ------------- | ---------------------------------------------------------------- |
-| Phase 1 — Infrastructure                                 | —             | `marketplace` | `studio` (verify-only)                                           |
-| Phase 2 — Locale switcher                                |               |               | Phase 5: TinyMCE · MUI overrides · `@zesty-io/material` upstream |
-| Phase 3 — `common` + `shell` (incl. FieldType\* widgets) |               |               | Phase 8 — Cypress tests                                          |
-| Phase 4 — `dashboard` · `media` · `content`              |               |               |                                                                  |
-| Phase 5 — MUI · ProseMirror · Bynder                     |               |               |                                                                  |
-| Phase 6 — Caching · Phase 7 — Missing-key handling       |               |               |                                                                  |
-| **`schema`** ✓                                           |               |               |                                                                  |
-| **`seo`**                                                |               |               |                                                                  |
-| **`leads`**                                              |               |               |                                                                  |
-| **`reports`**                                            |               |               |                                                                  |
-| **`settings`**                                           |               |               |                                                                  |
-| **`code`**                                               |               |               |                                                                  |
-| **`blocks`**                                             |               |               |                                                                  |
-| **`activePreview`**                                      |               |               |                                                                  |
+| ✓ Done                                                   | ▶ In Progress | → Up Next              | ≡ Backlog (in order)                                             |
+| -------------------------------------------------------- | ------------- | ---------------------- | ---------------------------------------------------------------- |
+| Phase 1 — Infrastructure                                 | —             | `studio` (verify-only) | Phase 5: TinyMCE · MUI overrides · `@zesty-io/material` upstream |
+| Phase 2 — Locale switcher                                |               |                        | Phase 8 — Cypress tests                                          |
+| Phase 3 — `common` + `shell` (incl. FieldType\* widgets) |               |                        |                                                                  |
+| Phase 4 — `dashboard` · `media` · `content`              |               |                        |                                                                  |
+| Phase 5 — MUI · ProseMirror · Bynder                     |               |                        |                                                                  |
+| Phase 6 — Caching · Phase 7 — Missing-key handling       |               |                        |                                                                  |
+| **`schema`** ✓                                           |               |                        |                                                                  |
+| **`seo`** ✓                                              |               |                        |                                                                  |
+| **`leads`** ✓                                            |               |                        |                                                                  |
+| **`reports`** ✓                                          |               |                        |                                                                  |
+| **`settings`** ✓                                         |               |                        |                                                                  |
+| **`code`** ✓                                             |               |                        |                                                                  |
+| **`blocks`** ✓                                           |               |                        |                                                                  |
+| **`activePreview`** ✓                                    |               |                        |                                                                  |
+| **`marketplace`** ✓                                      |               |                        |                                                                  |
 
 ---
 
@@ -293,3 +294,16 @@ All infrastructure, locale switcher, `common` + `shell` namespaces (incl. all `F
 - [x] `en-US/activePreview.json` populated — 24 new keys, 2 reused from common/shell
 - [x] All 6 locales seeded with en-US values (manual translation pending)
 - [x] tsc: PASS
+
+---
+
+### Phase 4 — `marketplace`
+
+- [x] Lazy-load plumbing: N/A (not applicable to this target)
+- [x] en-US/marketplace.json populated — 14 new keys
+- [x] All 6 locales seeded with en-US values (manual translation pending)
+- [x] tsc: PASS
+
+**Carry-overs from marketplace pass:**
+
+- `shell` — `/home/nar/Developer/zesty/manager-ui/src/shell/store/apps.js` (1 string found but not wired; run: `Workflow({ name: 'localize-subapp', args: { namespace: 'shell', target: '/home/nar/Developer/zesty/manager-ui/src/shell/store/apps.js' } })`)
