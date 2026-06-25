@@ -19,7 +19,7 @@ on:
         required: false
 
 env:
-  TEST_ISSUE_NUMBER: "4163" # <-- throwaway test issue: "[TEST] Warn before leaving the content editor with unsaved changes"
+  TEST_ISSUE_NUMBER: "4160" # <-- throwaway test issue: "[TEST] Media uploads fail silently when uploading multiple files"
 
 jobs:
   triage-test:
@@ -63,19 +63,36 @@ jobs:
             4. Post or update your single sticky comment (see "Sticky comment"
                below).
 
-            ## The triage comment must contain
+            ## The triage comment must contain, in this order
+            - **Classification** — the ticket type (bug / feature / tech-debt /
+              question; say so if it's more than one, e.g. a bug *and* an
+              enhancement) and suggested labels (area + type, e.g. `area:media`,
+              `bug`).
+            - **Preliminary severity** — a quick engineering signal of how bad
+              this is (Low / Medium / High) with a one-line basis. State plainly
+              that this is a *preliminary signal for the team, not a committed
+              priority or final call* — it can change once a human weighs in.
+              Never invent metrics; if real impact is unknown, say so and note
+              where data could come from (e.g. Amplitude events, Sentry).
             - **Understanding** — restate the problem/request as you read it.
+            - **Bug essentials** (only when this is a bug) — **Steps to
+              reproduce**, **Expected**, **Actual**, and **Environment**. If any
+              are absent from the issue, show the heading and mark it
+              **MISSING — needed** rather than burying it in Open questions.
             - **Relevant code** — concrete `path/to/file.ext:line` references
               you actually opened, so the discussion is grounded.
-            - **Open questions** — the specific information still missing
-              (repro steps, expected vs actual, environment, screenshots,
-              scope). Ask only what you genuinely cannot determine from the
-              code yourself.
+            - **Open questions** — any other information still missing. Ask only
+              what you genuinely cannot determine from the code yourself.
             - **Acceptance criteria** — a markdown checklist where each item is
               concrete and verifiable (a reviewer can objectively confirm it's
               met). This is the most important part.
             - **Scope** — flag if the issue should be split, is a likely
               duplicate, or is missing a clear definition of done.
+            - **Readiness** — finish with a blunt verdict: **✅ Ready to pick
+              up** or **🚧 Not ready**, followed by the short list of what's
+              blocking readiness (unanswered must-have questions, missing repro,
+              undecided scope). An engineer should be able to start a "Ready"
+              ticket without coming back for basics.
 
             Keep it concise, skimmable, and collaborative in tone.
 
