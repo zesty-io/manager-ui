@@ -202,7 +202,11 @@ export default connect((state) => {
                 gap={4}
               >
                 <Divider sx={{ flex: "1", borderColor: "border" }} />
-                <Typography variant="body2" color="text.secondary">
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ textTransform: "uppercase" }}
+                >
                   {t("shell.or")}
                 </Typography>
                 <Divider sx={{ flex: "1", borderColor: "border" }} />

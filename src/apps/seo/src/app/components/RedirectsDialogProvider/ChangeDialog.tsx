@@ -138,6 +138,7 @@ export const ChangeDialog: FC<ChangeDialogProps> = ({
               color="text.primary"
               fontWeight={600}
               noWrap
+              sx={{ textTransform: "uppercase" }}
             >
               {t("seo.changeDialogOldPath")}
             </Typography>
@@ -152,6 +153,7 @@ export const ChangeDialog: FC<ChangeDialogProps> = ({
               color="text.primary"
               fontWeight={600}
               noWrap
+              sx={{ textTransform: "uppercase" }}
             >
               {t("seo.changeDialogNewPath")}
             </Typography>

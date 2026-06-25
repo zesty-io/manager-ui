@@ -217,6 +217,7 @@ export const ItemListFilters = () => {
             pt: 1,
             pl: 2,
             borderTop: (theme) => `1px solid ${theme.palette.border}`,
+            textTransform: "uppercase",
           }}
         >
           {t("content.itemListFieldsLabel")}

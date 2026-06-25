@@ -47,6 +47,7 @@ export const WidgetListed = memo(function WidgetListed(props) {
             fontSize: "12px",
             lineHeight: "32px",
             color: "#101828",
+            textTransform: "uppercase",
           },
         }}
         title={t("content.itemEditParsleyBehaviorsTitle")}

@@ -40,6 +40,7 @@ export const ContentLinks = memo(function ContentLinks(props) {
               fontSize: "12px",
               lineHeight: "32px",
               color: "#101828",
+              textTransform: "uppercase",
             },
           }}
           title={t("content.itemEditLinksTitle")}

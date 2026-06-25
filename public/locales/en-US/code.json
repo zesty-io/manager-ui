@@ -35,7 +35,7 @@
   "headerTitle": "Code",
   "filterFiles": "Filter Files",
   "createFile": "Create File",
-  "fileNavHeaderViews": "VIEWS",
+  "fileNavHeaderViews": "Views",
   "fileNavTooltipViews": "Views are template files that can render HTML or various other MIME types.",
   "fileNavHeaderSiteCss": "SITE.CSS",
   "fileNavTooltipSiteCss": "Site.css is a dynamically created file from the instance stylesheet files",

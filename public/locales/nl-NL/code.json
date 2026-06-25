@@ -35,7 +35,7 @@
   "headerTitle": "Code",
   "filterFiles": "Bestanden filteren",
   "createFile": "Bestand aanmaken",
-  "fileNavHeaderViews": "VIEWS",
+  "fileNavHeaderViews": "Weergaven",
   "fileNavTooltipViews": "Views zijn sjabloonbestanden die HTML of verschillende andere MIME-typen kunnen herleiden.",
   "fileNavHeaderSiteCss": "SITE.CSS",
   "fileNavTooltipSiteCss": "Site.css is een dynamisch gegenereerd bestand op basis van de stylesheet-bestanden van de instantie",

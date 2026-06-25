@@ -120,6 +120,21 @@ MUI components have their own built-in label system (DataGrid column menus, Date
   snippets, raw HTML attributes (`target=_blank`).
 - **Developer-facing:** `throw new Error(...)` invariants, `console.*` logs.
 
+### Value formatting rules
+
+**No ALL CAPS values.** JSON values must be proper case. If the design requires uppercase text, apply `textTransform: "uppercase"` in the component:
+
+- `<Typography sx={{ textTransform: "uppercase" }}>` or `<CardHeader titleTypographyProps={{ sx: { textTransform: "uppercase" } }}>`
+- `Typography variant="overline"` and MUI `Button` apply uppercase automatically — no extra sx needed.
+- Rationale: two keys (`"Fields"` vs `"FIELDS"`) for the same concept become a deduplication problem across locales.
+
+**No HTML in translation values.** Do not write `<a>`, `<b>`, or any markup inside JSON strings.
+
+- In React components: `<Trans components={{ a: <a /> }}>` for inline markup.
+- In thunks / `notify()` / `i18n.t()`: `{{var}}` interpolation only — the notification system (`parseStrToBold`) renders plain text; `<Trans>` cannot be used outside React render context.
+
+**No hardcoded URLs or asset paths.** Use `{{var}}` and pass the value at the call site.
+
 ### Which namespace a string belongs to
 
 **The namespace is the app dir the file physically lives in** (decided 2026-06-17),

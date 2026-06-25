@@ -35,7 +35,7 @@
   "headerTitle": "कोड",
   "filterFiles": "फ़ाइलें फ़िल्टर करें",
   "createFile": "फ़ाइल बनाएं",
-  "fileNavHeaderViews": "VIEWS",
+  "fileNavHeaderViews": "दृश्य",
   "fileNavTooltipViews": "Views ऐसी टेम्प्लेट फ़ाइलें हैं जो HTML या विभिन्न अन्य MIME प्रकारों को रेंडर कर सकती हैं।",
   "fileNavHeaderSiteCss": "SITE.CSS",
   "fileNavTooltipSiteCss": "Site.css इन्स्टेंस की स्टाइलशीट फ़ाइलों से डायनेमिक रूप से बनाई गई एक फ़ाइल है",

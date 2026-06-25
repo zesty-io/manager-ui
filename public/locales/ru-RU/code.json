@@ -35,7 +35,7 @@
   "headerTitle": "Код",
   "filterFiles": "Фильтровать файлы",
   "createFile": "Создать файл",
-  "fileNavHeaderViews": "ПРЕДСТАВЛЕНИЯ (VIEWS)",
+  "fileNavHeaderViews": "Представления",
   "fileNavTooltipViews": "Представления (Views) — это файлы шаблонов, которые могут отображать HTML или другие типы MIME.",
   "fileNavHeaderSiteCss": "SITE.CSS",
   "fileNavTooltipSiteCss": "Site.css — это динамически создаваемый файл из файлов стилей инстанса",

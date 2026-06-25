@@ -168,7 +168,11 @@ export const ResourcesCard = ({ hideHeader, hideFooter }: Props) => {
       {matureItems(false, false)}
       {!hideFooter && (
         <Box display="flex" justifyContent="space-between" padding={2}>
-          <Typography variant="body3" color="text.secondary">
+          <Typography
+            variant="body3"
+            color="text.secondary"
+            sx={{ textTransform: "uppercase" }}
+          >
             {t("dashboard.joinCommunity")}
           </Typography>
           <Box

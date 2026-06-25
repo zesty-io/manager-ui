@@ -35,7 +35,7 @@
   "headerTitle": "代码",
   "filterFiles": "过滤文件",
   "createFile": "创建文件",
-  "fileNavHeaderViews": "视图 (VIEWS)",
+  "fileNavHeaderViews": "视图",
   "fileNavTooltipViews": "视图是可渲染 HTML 或各种其他 MIME 类型的模板文件。",
   "fileNavHeaderSiteCss": "SITE.CSS",
   "fileNavTooltipSiteCss": "Site.css 是根据实例样式表文件动态创建的文件",

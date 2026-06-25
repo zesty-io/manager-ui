@@ -60,6 +60,7 @@ export const ContentInfo = (props) => {
             fontSize: "12px",
             lineHeight: "32px",
             color: "#101828",
+            textTransform: "uppercase",
           },
         }}
         title={t("content.itemEditInfoTitle")}

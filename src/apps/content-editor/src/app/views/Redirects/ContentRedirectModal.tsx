@@ -187,6 +187,7 @@ export const ContentRedirectModal: FC<ContentRedirectModalProps> = ({
               color="text.primary"
               fontWeight={600}
               noWrap
+              sx={{ textTransform: "uppercase" }}
             >
               {t("content.redirectOldPath")}
             </Typography>
@@ -202,6 +203,7 @@ export const ContentRedirectModal: FC<ContentRedirectModalProps> = ({
               fontWeight={600}
               noWrap
               mb={2.5}
+              sx={{ textTransform: "uppercase" }}
             >
               {t("content.redirectNewPath")}
             </Typography>
