@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { Box } from "@mui/material";
+import { SubAppSkeleton } from "shell/components/SubAppSkeleton";
 import { useTranslation } from "react-i18next";
 import { MarketplaceWrapper } from "./app";
 
@@ -12,9 +12,7 @@ const MarketplaceAppInner = () => {
 
 // Outer (exported) — owns the Suspense boundary for the sub-app subtree
 const MarketplaceApp = () => (
-  <Suspense
-    fallback={<Box sx={{ height: "100%", backgroundColor: "grey.50" }} />}
-  >
+  <Suspense fallback={<SubAppSkeleton />}>
     <MarketplaceAppInner />
   </Suspense>
 );

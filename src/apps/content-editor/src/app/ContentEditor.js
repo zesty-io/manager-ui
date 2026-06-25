@@ -6,6 +6,7 @@ import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDatabase } from "@fortawesome/free-solid-svg-icons";
 import { Box, Stack, Typography, Link } from "@mui/material";
+import { SubAppSkeleton } from "shell/components/SubAppSkeleton";
 import { Database } from "@zesty-io/material";
 
 import { fetchModels } from "shell/store/models";
@@ -42,9 +43,7 @@ import { useParams } from "../../../../shell/hooks/useParams";
 // fallback in the sub-app area only, instead of blanking the whole shell.
 export default function ContentEditor() {
   return (
-    <Suspense
-      fallback={<Box sx={{ height: "100%", backgroundColor: "grey.50" }} />}
-    >
+    <Suspense fallback={<SubAppSkeleton />}>
       <ContentEditorContent />
     </Suspense>
   );

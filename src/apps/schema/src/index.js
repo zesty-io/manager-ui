@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { Box } from "@mui/material";
+import { SubAppSkeleton } from "shell/components/SubAppSkeleton";
 import { useTranslation } from "react-i18next";
 
 import { store, injectReducer } from "shell/store";
@@ -23,9 +23,7 @@ const SchemaAppInner = () => {
 // Outer (exported) — owns the Suspense boundary so only the schema sub-app
 // area shows a fallback instead of blanking the whole shell.
 const SchemaAppWithI18n = () => (
-  <Suspense
-    fallback={<Box sx={{ height: "100%", backgroundColor: "grey.50" }} />}
-  >
+  <Suspense fallback={<SubAppSkeleton />}>
     <SchemaAppInner />
   </Suspense>
 );

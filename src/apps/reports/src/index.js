@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { Box } from "@mui/material";
+import { SubAppSkeleton } from "shell/components/SubAppSkeleton";
 import { useTranslation } from "react-i18next";
 import { injectReducer, store } from "shell/store";
 import { logsInView } from "./store/logsInView";
@@ -13,9 +13,7 @@ const ReportingAppInner = () => {
 };
 
 const ReportsApp = () => (
-  <Suspense
-    fallback={<Box sx={{ height: "100%", backgroundColor: "grey.50" }} />}
-  >
+  <Suspense fallback={<SubAppSkeleton />}>
     <ReportingAppInner />
   </Suspense>
 );

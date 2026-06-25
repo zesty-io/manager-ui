@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { Box } from "@mui/material";
+import { SubAppSkeleton } from "shell/components/SubAppSkeleton";
 import { useTranslation } from "react-i18next";
 import { store, injectReducer } from "shell/store";
 import { files } from "./store/files";
@@ -18,9 +18,7 @@ injectReducer(store, "navCode", navCode);
 // Local Suspense boundary so lazy-loading the "code-editor" namespace shows a
 // fallback in the sub-app area only, instead of blanking the whole shell.
 const CodeApp = () => (
-  <Suspense
-    fallback={<Box sx={{ height: "100%", backgroundColor: "grey.50" }} />}
-  >
+  <Suspense fallback={<SubAppSkeleton />}>
     <CodeAppInner />
   </Suspense>
 );

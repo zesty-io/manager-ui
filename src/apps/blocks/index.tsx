@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { Box } from "@mui/material";
+import { SubAppSkeleton } from "shell/components/SubAppSkeleton";
 import { useTranslation } from "react-i18next";
 import { ResizableContainer } from "../../shell/components/ResizeableContainer";
 import { Sidebar } from "./components/Sidebar";
@@ -10,9 +11,7 @@ import { BlockItem } from "./views/BlockItem";
 
 export const BlocksApp = () => {
   return (
-    <Suspense
-      fallback={<Box sx={{ height: "100%", backgroundColor: "grey.50" }} />}
-    >
+    <Suspense fallback={<SubAppSkeleton />}>
       <BlocksAppInner />
     </Suspense>
   );

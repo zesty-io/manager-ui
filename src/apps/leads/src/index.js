@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { Box } from "@mui/material";
+import { SubAppSkeleton } from "shell/components/SubAppSkeleton";
 import { useTranslation } from "react-i18next";
 import { store, injectReducer } from "shell/store";
 import { leads } from "./store/leads";
@@ -20,9 +20,7 @@ const LeadsAppInner = () => {
 // Outer component — owns the Suspense boundary so only the sub-app subtree
 // is blocked while the namespace loads, not the whole shell.
 const LeadsApp = () => (
-  <Suspense
-    fallback={<Box sx={{ height: "100%", backgroundColor: "grey.50" }} />}
-  >
+  <Suspense fallback={<SubAppSkeleton />}>
     <LeadsAppInner />
   </Suspense>
 );

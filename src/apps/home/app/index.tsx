@@ -1,5 +1,6 @@
 import { Box } from "@mui/material";
 import { Suspense, useState } from "react";
+import { SubAppSkeleton } from "shell/components/SubAppSkeleton";
 import { useTranslation } from "react-i18next";
 import { Header } from "./components/Header";
 import { MetricCards } from "./components/MetricCards";
@@ -10,9 +11,7 @@ export const HomeApp = () => {
   // Local Suspense boundary so lazy-loading the "dashboard" namespace shows a
   // fallback in the sub-app area only, instead of blanking the whole shell.
   return (
-    <Suspense
-      fallback={<Box sx={{ height: "100%", backgroundColor: "grey.50" }} />}
-    >
+    <Suspense fallback={<SubAppSkeleton />}>
       <Home />
     </Suspense>
   );

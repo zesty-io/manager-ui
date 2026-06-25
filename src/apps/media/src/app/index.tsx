@@ -1,4 +1,5 @@
 import { Box } from "@mui/material";
+import { SubAppSkeleton } from "shell/components/SubAppSkeleton";
 import { Suspense, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
@@ -36,9 +37,7 @@ interface Props {
 // fallback in the sub-app area only, instead of blanking the whole shell.
 export const MediaApp = (props: Props) => {
   return (
-    <Suspense
-      fallback={<Box sx={{ height: "100%", backgroundColor: "grey.50" }} />}
-    >
+    <Suspense fallback={<SubAppSkeleton />}>
       <MediaAppContent {...props} />
     </Suspense>
   );

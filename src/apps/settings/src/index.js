@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { Box } from "@mui/material";
+import { SubAppSkeleton } from "shell/components/SubAppSkeleton";
 import { useTranslation } from "react-i18next";
 
 import Settings from "./app/App";
@@ -22,9 +22,7 @@ const SettingsAppInner = () => {
 // Outer (exported) — owns the Suspense boundary so the namespace loads
 // lazily without blanking the whole shell.
 const SettingsApp = () => (
-  <Suspense
-    fallback={<Box sx={{ height: "100%", backgroundColor: "grey.50" }} />}
-  >
+  <Suspense fallback={<SubAppSkeleton />}>
     <SettingsAppInner />
   </Suspense>
 );
