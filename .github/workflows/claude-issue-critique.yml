@@ -69,14 +69,14 @@ jobs:
                revise your understanding. Never open a second comment.
 
             # Triage comment — required sections, in order
-            1. **Classification** — ticket type (bug / feature / tech-debt /
-               question; note if it's more than one) and suggested labels
-               (area + type, e.g. `area:media`, `bug`).
+            1. **Classification** — ticket type (bug / feature / enhancement /
+               tech-debt / question; note if it's more than one, e.g. a bug
+               *and* an enhancement).
             2. **Preliminary severity** — Low / Medium / High plus a one-line
                basis. The "Preliminary" heading already conveys this is a triage
                signal rather than a final priority, so do not add disclaimer
-               sentences. Never invent metrics; if impact is unknown, say so and
-               point to where data could come from (Amplitude, Sentry).
+               sentences. Never invent metrics; if impact is unknown, say so
+               rather than guessing.
             3. **Understanding** — restate the problem as you read it.
             4. **Bug essentials** (bugs only) — Steps to reproduce, Expected,
                Actual, Environment. Mark any that are absent as

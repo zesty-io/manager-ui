@@ -64,15 +64,14 @@ jobs:
                below).
 
             ## The triage comment must contain, in this order
-            - **Classification** — the ticket type (bug / feature / tech-debt /
-              question; say so if it's more than one, e.g. a bug *and* an
-              enhancement) and suggested labels (area + type, e.g. `area:media`,
-              `bug`).
+            - **Classification** — the ticket type (bug / feature / enhancement
+              / tech-debt / question; say so if it's more than one, e.g. a bug
+              *and* an enhancement).
             - **Preliminary severity** — Low / Medium / High plus a one-line
               basis. The "Preliminary" heading already conveys this is a triage
               signal rather than a final priority, so do not add disclaimer
-              sentences. Never invent metrics; if impact is unknown, say so and
-              point to where data could come from (Amplitude, Sentry).
+              sentences. Never invent metrics; if impact is unknown, say so
+              rather than guessing.
             - **Understanding** — restate the problem/request as you read it.
             - **Bug essentials** (only when this is a bug) — **Steps to
               reproduce**, **Expected**, **Actual**, and **Environment**. If any
