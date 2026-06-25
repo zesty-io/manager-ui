@@ -6,23 +6,24 @@
 
 ## Board snapshot
 
-| ✓ Done                                                   | ▶ In Progress | → Up Next              | ≡ Backlog (in order)                                             |
-| -------------------------------------------------------- | ------------- | ---------------------- | ---------------------------------------------------------------- |
-| Phase 1 — Infrastructure                                 | —             | `studio` (verify-only) | Phase 5: TinyMCE · MUI overrides · `@zesty-io/material` upstream |
-| Phase 2 — Locale switcher                                |               |                        | Phase 8 — Cypress tests                                          |
-| Phase 3 — `common` + `shell` (incl. FieldType\* widgets) |               |                        |                                                                  |
-| Phase 4 — `dashboard` · `media` · `content`              |               |                        |                                                                  |
-| Phase 5 — MUI · ProseMirror · Bynder                     |               |                        |                                                                  |
-| Phase 6 — Caching · Phase 7 — Missing-key handling       |               |                        |                                                                  |
-| **`schema`** ✓                                           |               |                        |                                                                  |
-| **`seo`** ✓                                              |               |                        |                                                                  |
-| **`leads`** ✓                                            |               |                        |                                                                  |
-| **`reports`** ✓                                          |               |                        |                                                                  |
-| **`settings`** ✓                                         |               |                        |                                                                  |
-| **`code`** ✓                                             |               |                        |                                                                  |
-| **`blocks`** ✓                                           |               |                        |                                                                  |
-| **`activePreview`** ✓                                    |               |                        |                                                                  |
-| **`marketplace`** ✓                                      |               |                        |                                                                  |
+| ✓ Done                                                   | ▶ In Progress | → Up Next | ≡ Backlog (in order)                                             |
+| -------------------------------------------------------- | ------------- | --------- | ---------------------------------------------------------------- |
+| Phase 1 — Infrastructure                                 | —             | —         | Phase 5: TinyMCE · MUI overrides · `@zesty-io/material` upstream |
+| Phase 2 — Locale switcher                                |               |           | Phase 8 — Cypress tests                                          |
+| Phase 3 — `common` + `shell` (incl. FieldType\* widgets) |               |           |                                                                  |
+| Phase 4 — `dashboard` · `media` · `content`              |               |           |                                                                  |
+| Phase 5 — MUI · ProseMirror · Bynder                     |               |           |                                                                  |
+| Phase 6 — Caching · Phase 7 — Missing-key handling       |               |           |                                                                  |
+| **`schema`** ✓                                           |               |           |                                                                  |
+| **`seo`** ✓                                              |               |           |                                                                  |
+| **`leads`** ✓                                            |               |           |                                                                  |
+| **`reports`** ✓                                          |               |           |                                                                  |
+| **`settings`** ✓                                         |               |           |                                                                  |
+| **`code`** ✓                                             |               |           |                                                                  |
+| **`blocks`** ✓                                           |               |           |                                                                  |
+| **`activePreview`** ✓                                    |               |           |                                                                  |
+| **`marketplace`** ✓                                      |               |           |                                                                  |
+| **`studio`** ✓ (verify-only)                             |               |           |                                                                  |
 
 ---
 
@@ -45,21 +46,6 @@ _Nothing in progress right now._
 ---
 
 # ≡ Backlog
-
----
-
-### `marketplace` — Effort: XS
-
-- [ ] Add lazy-load plumbing to `MarketplaceApp`
-- [ ] Create empty `public/locales/<locale>/marketplace.json` for all 6 locales
-- [ ] Audit + localize `src/apps/marketplace/src/` — empty state + CTA only
-- [ ] Verify: `npx tsc --noEmit`, JSON valid, key parity across all 6 locales
-
----
-
-### `studio` — verify-only
-
-- [ ] Confirm `src/apps/studio/src/` has no own user-facing strings (route alias to content-editor's `StudioWrapper`; all strings are `content` keys, done in sub-pass 11)
 
 ---
 
@@ -304,6 +290,14 @@ All infrastructure, locale switcher, `common` + `shell` namespaces (incl. all `F
 - [x] All 6 locales seeded with en-US values (manual translation pending)
 - [x] tsc: PASS
 
-**Carry-overs from marketplace pass:**
+---
 
-- `shell` — `/home/nar/Developer/zesty/manager-ui/src/shell/store/apps.js` (1 string found but not wired; run: `Workflow({ name: 'localize-subapp', args: { namespace: 'shell', target: '/home/nar/Developer/zesty/manager-ui/src/shell/store/apps.js' } })`)
+### `studio` — verify-only
+
+- [x] Confirmed no own user-facing strings — thin route wrapper re-exporting `StudioWrapper` from content-editor; all strings covered by `content` namespace (sub-pass 11)
+
+---
+
+### `shell` — `apps.js` carry-over
+
+- [x] Wired 3 `notify()` calls in `src/shell/store/apps.js` to `i18n.t("shell.appLoadingFailure", { message })` (key already existed in all 6 locales)
