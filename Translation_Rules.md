@@ -2,12 +2,30 @@
 
 #### Do not include special characters that prefix/suffix strings
 
-Example:
+Examples of violations:
 
-- "Last edited:"
-- "(Code)"
+- `"Last edited:"` — trailing colon
+- `"(Code)"` — entire value wrapped in parentheses
+- `"— None —"` — em-dashes surrounding the word
+- `"-- choose a file type --"` — double-dashes surrounding the phrase
+- `"(optional)"` — parentheses wrapping the entire word
+- `"({{count}} fields)"` — parentheses wrapping a plural interpolation
 
-Move trailing colons, em-dashes, parentheses, etc. into the component JSX as literal characters (e.g. `{":"}`, `{" — "}`).
+**Not violations** — parentheses that are semantically part of the label, not decoration:
+
+- `"Archives (zip)"` — the file-type qualifier is content
+- `"Successful Page Loads (200)"` — the HTTP code is content
+- `"Description (optional)"` — the qualifier is part of the label prose
+
+**Fix:** strip the decorative characters from the JSON value and add them back in the component at every render site. Fixing the JSON alone is not enough — every file that uses the key must be updated too.
+
+How to add them back depends on the render context:
+
+- **JSX children:** `{"("}` `{t("ns.key")}` `{")"}`
+- **String prop / template literal:** `` `— ${t("ns.key")} —` ``
+- **`getOptionLabel` / similar string-returning function:** same template-literal pattern
+
+After fixing the JSON, `grep -rn` the key across `src/` to find every usage site. The number of component files updated will be fewer than the number of JSON changes (which are multiplied by 6 locales) — that is expected and correct.
 
 #### Do not include generated assets in the translation
 

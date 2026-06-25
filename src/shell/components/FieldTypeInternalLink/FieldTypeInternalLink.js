@@ -43,7 +43,7 @@ export const FieldTypeInternalLink = React.memo(function FieldTypeInternalLink(
         {/* You should always be able to unlink an internal link */}
         <Option
           value={props.defaultOptValue || null}
-          text={props.defaultOptText || t("shell.internalLinkNone")}
+          text={props.defaultOptText || `— ${t("shell.internalLinkNone")} —`}
         />
 
         {props.options.map((option, i) => {

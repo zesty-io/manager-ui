@@ -198,7 +198,11 @@ export default connect((state, props) => {
             size="small"
             fullWidth
           >
-            <MenuItem value="">{t("settings.noneOption")}</MenuItem>
+            <MenuItem value="">
+              {"- "}
+              {t("settings.noneOption")}
+              {" -"}
+            </MenuItem>
             {Object.keys(field?.options).map((option, idx) => (
               <MenuItem key={idx} value={option}>
                 {field.options[option]}

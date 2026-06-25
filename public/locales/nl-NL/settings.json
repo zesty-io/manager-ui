@@ -43,7 +43,7 @@
   "robotsTopBarTitle": "Robots.txt",
   "robotsPublishEventWarning": "Wijzigingen worden pas doorgevoerd zodra er een publicatie plaatsvindt.",
   "robotsNonLiveDomainWarning": "Niet-live domeinen hebben robots.txt ALTIJD uitgeschakeld om te voorkomen dat ze door zoekmachines worden gecrawld. Dit geldt ook voor [hash]-dev.webengine.zesty.io, [hash]-dev.preview.zesty.io en elk geregistreerd domein dat is ingesteld op de \"dev\"-branch",
-  "noneOption": "- Geen -",
+  "noneOption": "Geen",
   "fontPreviewText": "Dit is een voorbeeldtekst",
   "browseFontsTitle": "Bladeren door lettertypen",
   "searchFontsPlaceholder": "Lettertypen zoeken",

@@ -43,7 +43,7 @@
   "robotsTopBarTitle": "Robot.txt",
   "robotsPublishEventWarning": "Изменения не вступят в силу до тех пор, пока не произойдет событие публикации.",
   "robotsNonLiveDomainWarning": "Для неопубликованных (non-live) доменов robots.txt ВСЕГДА отключен, чтобы избежать индексации поисковыми роботами. Это относится к [hash]-dev.webengine.zesty.io, [hash]-dev.preview.zesty.io и любым зарегистрированным доменам, привязанным к ветке «dev»",
-  "noneOption": "- Не выбрано -",
+  "noneOption": "Не выбрано",
   "fontPreviewText": "Это пример текста для предпросмотра",
   "browseFontsTitle": "Обзор шрифтов",
   "searchFontsPlaceholder": "Поиск шрифтов",

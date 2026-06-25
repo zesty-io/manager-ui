@@ -43,7 +43,7 @@
   "robotsTopBarTitle": "Robot.txt",
   "robotsPublishEventWarning": "जब तक कोई पब्लिश इवेंट (प्रकाशन) नहीं होता, तब तक बदलाव दिखाई नहीं देंगे।",
   "robotsNonLiveDomainWarning": "सर्च इंजनों द्वारा क्रॉल किए जाने से बचने के लिए नॉन-लाइव (Non-Live) डोमेन पर robots.txt हमेशा बंद रहता है। इसमें [hash]-dev.webengine.zesty.io, [hash]-dev.preview.zesty.io, और \"dev\" ब्रांच पर सेट कोई भी रजिस्टर्ड डोमेन शामिल है।",
-  "noneOption": "- कोई नहीं -",
+  "noneOption": "कोई नहीं",
   "fontPreviewText": "यह टेक्स्ट का एक उदाहरण है",
   "browseFontsTitle": "फ़ॉन्ट्स ब्राउज़ करें",
   "searchFontsPlaceholder": "फ़ॉन्ट्स खोजें",

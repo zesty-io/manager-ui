@@ -43,7 +43,7 @@
   "robotsTopBarTitle": "Robots.txt",
   "robotsPublishEventWarning": "Los cambios no se reflejarán hasta que se produzca un evento de publicación.",
   "robotsNonLiveDomainWarning": "Los dominios que no están en producción SIEMPRE tienen desactivado el archivo robots.txt para evitar que los motores de búsqueda los rastreen. Esto incluye [hash]-dev.webengine.zesty.io, [hash]-dev.preview.zesty.io y cualquier dominio registrado configurado en la rama \"dev\"",
-  "noneOption": "- Ninguno -",
+  "noneOption": "Ninguno",
   "fontPreviewText": "Esto es un ejemplo de texto",
   "browseFontsTitle": "Explorar fuentes",
   "searchFontsPlaceholder": "Buscar fuentes",

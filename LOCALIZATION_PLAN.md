@@ -122,6 +122,13 @@ MUI components have their own built-in label system (DataGrid column menus, Date
 
 ### Value formatting rules
 
+**No decorative special characters prefixing/suffixing the value.** Strip trailing colons, surrounding em-dashes, wrapping parentheses, and `-- --` select-prompt decorations from JSON values. Add them back in the component at every render site.
+
+Violations: `"— None —"`, `"(optional)"`, `"-- choose a file type --"`, `"({{count}} fields)"`.
+Not violations: `"Archives (zip)"`, `"Successful Page Loads (200)"` — the parenthetical is semantic content.
+
+When fixing: edit the JSON _and_ run `grep -rn "ns.key" src/` to find every component that renders the key. Each site gets the characters back as JSX literals (`{"("}`) or template literals (`` `— ${t(...)} —` ``). Updating the JSON across 6 locales produces many more changes than the number of component edits — that ratio is expected.
+
 **No ALL CAPS values.** JSON values must be proper case. If the design requires uppercase text, apply `textTransform: "uppercase"` in the component:
 
 - `<Typography sx={{ textTransform: "uppercase" }}>` or `<CardHeader titleTypographyProps={{ sx: { textTransform: "uppercase" } }}>`

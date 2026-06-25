@@ -43,7 +43,7 @@
   "robotsTopBarTitle": "Robot.txt",
   "robotsPublishEventWarning": "Changes will not be reflected until a publish event occurs.",
   "robotsNonLiveDomainWarning": "Non-Live domains ALWAYS have robots.txt off to avoid being crawled by search engines. This include [hash]-dev.webengine.zesty.io, [hash]-dev.preview.zesty.io, and any registered domain set to the \"dev\" branch",
-  "noneOption": "- None -",
+  "noneOption": "None",
   "fontPreviewText": "This is a text example",
   "browseFontsTitle": "Browse Fonts",
   "searchFontsPlaceholder": "Search Fonts",

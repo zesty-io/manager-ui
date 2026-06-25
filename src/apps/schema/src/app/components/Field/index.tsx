@@ -291,10 +291,10 @@ export const Field = ({
         <Typography variant="body3" color="text.secondary">
           {TYPE_TEXT[field.datatype as FieldType]}
           {field.datatype === "repeater" &&
-            ` ${t("schema.repeaterSubFieldCount", {
+            ` (${t("schema.repeaterSubFieldCount", {
               count:
                 (field as ContentModelField).settings?.subFields?.length ?? 0,
-            })}`}
+            })})`}
         </Typography>
       </Box>
       <Box display="flex" alignItems="center" maxWidth="180px">

@@ -150,7 +150,9 @@ export const DifferActions = memo(function DifferActions(
       <Box display="flex" alignItems="center" columnGap={0.5}>
         {version.version === props.publishedVersion ? (
           <Typography variant="body2" component="span" fontWeight={700}>
+            {"("}
             {t("code.live")}
+            {")"}
           </Typography>
         ) : (
           ""

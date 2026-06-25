@@ -349,8 +349,9 @@ export const FieldFormInput = ({
                 color="text.secondary"
                 sx={{ whiteSpace: "pre" }}
               >
-                {" "}
+                {" ("}
                 {t("schema.optionalLabel")}
+                {")"}
               </Typography>
             )}
             {fieldConfig.tooltip && (

@@ -138,7 +138,11 @@ export const HeadTag = (props) => {
                   dispatch(updateTagType(tag.ZUID, e.target.value))
                 }
               >
-                <MenuItem value="">{t("shell.headTagTypeNone")}</MenuItem>
+                <MenuItem value="">
+                  {"- "}
+                  {t("shell.headTagTypeNone")}
+                  {" -"}
+                </MenuItem>
                 <MenuItem value="script">Script</MenuItem>
                 <MenuItem value="meta">Meta</MenuItem>
                 <MenuItem value="link">Link</MenuItem>
