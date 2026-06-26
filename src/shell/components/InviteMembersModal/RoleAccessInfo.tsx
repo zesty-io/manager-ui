@@ -91,7 +91,7 @@ export const RoleAccessInfo = ({ role }: Props) => {
         {roleAccess[role].map((access) => (
           <Box key={access} display="flex" width={120} alignItems="center">
             {accessIcon[access as keyof typeof accessIcon]}
-            <Typography sx={{ ml: 1 }} variant="body3">
+            <Typography sx={{ ml: 1, wordBreak: "break-word" }} variant="body3">
               {accessLabels[access] ?? access}
             </Typography>
           </Box>

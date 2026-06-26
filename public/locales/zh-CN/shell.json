@@ -120,7 +120,7 @@
   "dateRangeValue": "{{from}} 至 {{to}}",
   "customDateRange": "自定义日期范围",
   "tabsResults_other": "{{count}} 个结果",
-  "hasAccessTo": "可访问：",
+  "hasAccessTo": "可访问",
   "roleAccessCode": "代码 (Zesty IDE)",
   "roleAccessActivityLog": "活动日志",
   "roleCanOnlyCreateEdit": "只能创建和编辑内容",

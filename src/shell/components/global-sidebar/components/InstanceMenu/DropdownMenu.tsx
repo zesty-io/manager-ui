@@ -267,7 +267,7 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({ anchorEl, onClose }) => {
             PaperProps={{
               sx: {
                 borderRadius: "8px",
-                width: 340,
+                // width: 340,
                 mb: 2,
               },
             }}

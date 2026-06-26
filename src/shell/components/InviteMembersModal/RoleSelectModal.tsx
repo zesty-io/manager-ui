@@ -43,6 +43,7 @@ const iconStyles = {
   padding: 1,
   borderRadius: "20px",
   display: "block",
+  fontSize: 32,
 };
 
 const roleIcons = [
@@ -106,7 +107,7 @@ export const RoleSelectModal = ({ role, onSelect, onClose }: Props) => {
 
   return (
     <Dialog open={true} onClose={onClose} fullWidth maxWidth={"xs"}>
-      <Box display="flex" sx={{ height: "400px" }}>
+      <Box display="flex" sx={{ height: "400px", overflow: "hidden" }}>
         <Box sx={{ mt: 1 }}>
           {roles.map((roleItem, index) => {
             if (roleItem.name === "Owner" && !isOwner) {
@@ -148,8 +149,14 @@ export const RoleSelectModal = ({ role, onSelect, onClose }: Props) => {
             );
           })}
         </Box>
-        <Box sx={{ mt: 2, px: 2 }}>
-          <Box display="flex" gap={1.5} alignItems="center">
+        <Box sx={{ mt: 2, px: 2, overflowY: "auto" }}>
+          <Box
+            display="flex"
+            gap={1.5}
+            alignItems="center"
+            position="sticky"
+            top={0}
+          >
             {roleIcons[hoveredRoleIndex]}
             <Typography variant="h5">
               {roles?.[hoveredRoleIndex]?.name}

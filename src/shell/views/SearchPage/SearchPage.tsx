@@ -349,7 +349,7 @@ export const SearchPage: FC = () => {
             gap: 2,
             backgroundColor: "grey.50",
             flex: 1,
-            overflowY: "scroll",
+            overflowY: "hidden",
           }}
           data-cy="SearchPageList"
         >

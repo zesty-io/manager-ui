@@ -181,6 +181,8 @@ export const ResourcesCard = ({ hideHeader, hideFooter }: Props) => {
             sx={{
               img: {
                 cursor: "pointer",
+                width: 20,
+                height: 20,
               },
             }}
           >

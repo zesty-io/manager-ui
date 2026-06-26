@@ -128,7 +128,7 @@ export const Dropdown: FC<Dropdown> = ({
             sx: {
               backgroundColor: "common.white",
               padding: "0px",
-              width: "274px",
+              // width: "274px",
             },
           }}
           sx={{
@@ -211,6 +211,7 @@ export const Dropdown: FC<Dropdown> = ({
               justifyContent="space-between"
               alignItems="center"
               flex="1"
+              gap={1}
             >
               <Box component="span">
                 <Typography

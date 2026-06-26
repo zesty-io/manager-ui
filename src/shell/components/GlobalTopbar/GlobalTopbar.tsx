@@ -52,6 +52,7 @@ export const GlobalTopbar = memo(({ onShowAiDrawerToggle }: Props) => {
         <GlobalTabs />
       </Box>
       <Stack
+        height="100%"
         direction="row"
         alignItems="center"
         gap={1}
