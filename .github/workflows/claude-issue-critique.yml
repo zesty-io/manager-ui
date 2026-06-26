@@ -74,15 +74,15 @@ jobs:
             Keep it concise, skimmable, and collaborative.
 
             # Posting
-            Write the full markdown body to a file first, then post it from that
-            file — never pass the body inline, since issue text can contain
-            shell metacharacters:
+            Write the full markdown body to the file `triage-comment.md`, then
+            post it from that file — never pass the body inline, since issue
+            text can contain shell metacharacters:
             `gh issue comment ${{ github.event.issue.number }} --edit-last --create-if-none --body-file triage-comment.md`
             Begin the body with the hidden marker `<!-- claude-triage -->` so it
             stays identifiable. Only post the comment — never return triage text
             as a chat message.
 
           claude_args: |
-            --allowedTools "Bash(gh issue comment:*),Bash(gh issue view:*),Write,Read,Grep,Glob"
-            --model claude-opus-4-8
+            --allowedTools "Bash(gh issue comment:*),Bash(gh issue view:*),Write(triage-comment.md),Read,Grep,Glob"
+            --model claude-opus-4-8 # current Opus model — valid; do not "fix" to claude-opus-4-7
             --max-turns 30
