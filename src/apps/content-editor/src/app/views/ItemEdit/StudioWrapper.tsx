@@ -649,7 +649,7 @@ export const StudioWrapper = () => {
         })
       );
     },
-    [activeFields, dispatch]
+    [activeFields, dispatch, t]
   );
 
   const { saveAllContent, saveAndPublishAllContent, discardAllContent } =
@@ -928,6 +928,7 @@ export const StudioWrapper = () => {
       previewPath,
       updateItemByPath,
       updateStudioUrl,
+      t,
     ]
   );
 
@@ -1057,6 +1058,7 @@ export const StudioWrapper = () => {
     selectedItemZUID,
     selectedModelZUID,
     refreshPreviewFrame,
+    t,
   ]);
 
   useEffect(() => {

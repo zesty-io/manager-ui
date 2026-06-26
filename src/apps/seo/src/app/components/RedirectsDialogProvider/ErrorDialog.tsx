@@ -76,7 +76,7 @@ export const ErrorDialog: FC<ErrorDialogProps> = ({ open, onClose, data }) => {
     );
 
     setErrorPaths(updatedErrorPaths);
-  }, [data, errorPaths]);
+  }, [data, errorPaths, t]);
 
   useEffect(() => {
     const pathErrors = data?.errors?.map((error) => {

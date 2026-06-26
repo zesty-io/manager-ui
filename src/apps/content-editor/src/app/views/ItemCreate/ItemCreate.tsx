@@ -500,7 +500,7 @@ export const ItemCreate = () => {
         }
       }
     },
-    [itemZUID, fieldErrors, hasErrors, hasSEOErrors, location.pathname]
+    [itemZUID, fieldErrors, hasErrors, hasSEOErrors, location.pathname, t]
   );
 
   const handlePublish = async (newItemZUID: string) => {

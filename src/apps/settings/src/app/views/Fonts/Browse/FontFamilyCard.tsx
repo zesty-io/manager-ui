@@ -120,7 +120,7 @@ const FontFamilyCard = ({
     } finally {
       dispatch(fetchFontsInstalled());
     }
-  }, [ZUID, selectedVariants, installedVariants]);
+  }, [ZUID, selectedVariants, installedVariants, t]);
 
   useEffect(() => {
     setSelectedVariants([]);

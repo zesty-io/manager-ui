@@ -144,7 +144,7 @@ export const ModelsTable = ({ search, onEmptySearch }: Props) => {
         model.ZUID?.toLowerCase() === search.toLowerCase()
       );
     });
-  }, [search, models, activeFilters]);
+  }, [search, models, activeFilters, t]);
 
   const handleRowClick = (row: ContentModel) => {
     history.push(`/schema/${row.ZUID}`);

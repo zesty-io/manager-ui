@@ -189,6 +189,7 @@ export const ResourceHeaderTitle = ({
     updatedAt,
     fileData,
     instanceSettings,
+    t,
   ]);
 
   return (

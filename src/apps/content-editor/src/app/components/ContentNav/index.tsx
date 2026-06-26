@@ -388,7 +388,7 @@ export const ContentNav = () => {
       hidden: [],
       parents: {},
     };
-  }, [filteredMapTree, hiddenZUIDs]);
+  }, [filteredMapTree, hiddenZUIDs, t]);
 
   const pathExists = (tree: TreeItem[], path: string) => {
     return !!tree?.find((item) => item.path === path);
@@ -740,6 +740,7 @@ export const ContentNav = () => {
     setIsCreateContentDialogOpen,
     setClosedNavItems,
     sideBarChildrenContainerRef,
+    t,
   ]);
 
   return (

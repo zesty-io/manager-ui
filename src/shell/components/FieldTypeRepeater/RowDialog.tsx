@@ -213,7 +213,7 @@ export const RowDialog = ({
         [name]: value === "" ? null : value,
       }));
     },
-    [formErrors, fields]
+    [formErrors, fields, t]
   );
 
   const validateRequiredFields = (): Record<string, Error> => {

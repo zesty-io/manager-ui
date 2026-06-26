@@ -232,7 +232,7 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
         console.error("Error during form submission:", err);
       }
     },
-    [blockModelData, createStarterBlock, onClose, history]
+    [blockModelData, createStarterBlock, onClose, history, t]
   );
 
   return (

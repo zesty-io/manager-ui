@@ -298,6 +298,7 @@ export const GlobalSearch = () => {
     chipSearchAccelerator,
     allMediaFiles,
     allModels,
+    t,
   ]);
 
   const options = useMemo(() => {

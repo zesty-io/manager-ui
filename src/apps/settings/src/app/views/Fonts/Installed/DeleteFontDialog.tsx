@@ -90,7 +90,7 @@ const DeleteFontDialog = ({
       dispatch(fetchFontsInstalled());
       onClose();
     }
-  }, [ZUID, variant]);
+  }, [ZUID, variant, t]);
 
   return (
     <>

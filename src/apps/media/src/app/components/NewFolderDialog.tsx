@@ -119,7 +119,7 @@ export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
     }
 
     return [];
-  }, [allBinGroups, binId, bins]);
+  }, [allBinGroups, binId, bins, t]);
 
   const loading = isLoadingBins || isLoadingAllBinGroups;
 
