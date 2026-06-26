@@ -85,7 +85,7 @@ export default memo(function PendingEditsModal(props: PendingEditsModalProps) {
         data-cy="PendingEditsModal"
         open={open}
         fullWidth
-        maxWidth={"xs"}
+        maxWidth="sm"
         onClose={() => handler("cancel")}
       >
         <DialogTitle>

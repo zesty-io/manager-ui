@@ -32,7 +32,7 @@ export const DeleteDialog: FC<DeleteDialogProps> = ({
   onClose,
   redirects,
 }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation("seo");
   const [deleteRedirect, { isLoading: isDeleting }] =
     useDeleteRedirectMutation();
 

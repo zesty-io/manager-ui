@@ -145,6 +145,7 @@ export const ContentInfo = (props) => {
                 to={`/schema/${props.modelZUID}`}
                 color="inherit"
                 startIcon={<Database sx={{ color: "#10182866" }} />}
+                sx={{ width: "fit-content" }}
               >
                 {t("content.itemListEditModel")}
               </Button>
@@ -153,6 +154,7 @@ export const ContentInfo = (props) => {
                 to={codePath}
                 color="inherit"
                 startIcon={<CodeRoundedIcon sx={{ fill: "#10182866" }} />}
+                sx={{ width: "fit-content" }}
               >
                 {t("content.itemEditEditCode")}
               </Button>
