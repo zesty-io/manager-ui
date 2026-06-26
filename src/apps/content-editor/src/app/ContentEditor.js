@@ -50,10 +50,13 @@ export default function ContentEditor() {
 }
 
 function ContentEditorContent() {
-  // Requesting the namespace here triggers its lazy load and suspends this
+  // Requesting the namespaces here triggers their lazy load and suspends this
   // subtree until ready; child components use bare useTranslation() with
-  // qualified keys (t("content.key")) once it's in the store.
-  const { t } = useTranslation("content");
+  // qualified keys once they're in the store.
+  // "schema" is hoisted here so FieldTooltipBody (deep in the field editor)
+  // always finds it loaded — preventing a Suspense throw inside the MUI Tooltip
+  // portal that would cascade into an infinite setState loop.
+  const { t } = useTranslation(["content", "schema"]);
   const navContent = useSelector((state) => state.navContent);
   const dispatch = useDispatch();
   const [params] = useParams();

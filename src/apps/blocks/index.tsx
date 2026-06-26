@@ -18,7 +18,10 @@ export const BlocksApp = () => {
 };
 
 const BlocksAppInner = () => {
-  useTranslation("blocks");
+  // "schema" is hoisted here because Sidebar and AllBlocks import ModelList,
+  // CreateModelDialogue, and NoResults from the schema app — all of which
+  // resolve t("schema.*") keys and need the namespace pre-loaded.
+  useTranslation(["blocks", "schema"]);
 
   return (
     <Box
