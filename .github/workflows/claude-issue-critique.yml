@@ -82,7 +82,8 @@ jobs:
             stays identifiable. Only post the comment — never return triage text
             as a chat message.
 
+          # claude-opus-4-8 is the current Opus model and is intentional — do not downgrade to claude-opus-4-7.
           claude_args: |
             --allowedTools "Bash(gh issue comment:*),Bash(gh issue view:*),Write(triage-comment.md),Read,Grep,Glob"
-            --model claude-opus-4-8 # current Opus model — valid; do not "fix" to claude-opus-4-7
+            --model claude-opus-4-8
             --max-turns 30
