@@ -435,44 +435,31 @@ export const FieldTypeMedia = forwardRef(
                 )}
               </Typography>
               {!isDragActive && (
-                <Box
-                  display="flex"
-                  gap={1}
-                  justifyContent="center"
-                  flexWrap="wrap"
-                >
-                  <Button
-                    size="large"
-                    variant="outlined"
-                    onClick={open}
-                    startIcon={<UploadRounded />}
-                    fullWidth
-                    sx={{
-                      maxWidth: "196px",
-                      flexShrink: 0,
-                    }}
-                  >
-                    {t("common.upload")}
-                  </Button>
-                  <Button
-                    data-cy="selectFromMediaButton"
-                    fullWidth
-                    size="large"
-                    startIcon={<AddRounded />}
-                    variant="outlined"
-                    onClick={() => {
-                      openMediaBrowser({
-                        limit,
-                        callback: addZestyImage,
-                      });
-                    }}
-                    sx={{
-                      maxWidth: "196px",
-                      flexShrink: 0,
-                    }}
-                  >
-                    {t("content.mediaAddFromMedia")}
-                  </Button>
+                <Stack gap={1} alignItems="center">
+                  <Box display="flex" gap={1}>
+                    <Button
+                      size="large"
+                      variant="outlined"
+                      onClick={open}
+                      startIcon={<UploadRounded />}
+                    >
+                      {t("common.upload")}
+                    </Button>
+                    <Button
+                      data-cy="selectFromMediaButton"
+                      size="large"
+                      startIcon={<AddRounded />}
+                      variant="outlined"
+                      onClick={() => {
+                        openMediaBrowser({
+                          limit,
+                          callback: addZestyImage,
+                        });
+                      }}
+                    >
+                      {t("content.mediaAddFromMedia")}
+                    </Button>
+                  </Box>
                   {isBynderSessionValid && (
                     <Button
                       data-cy="addFromBynderBtn"
@@ -480,16 +467,11 @@ export const FieldTypeMedia = forwardRef(
                       variant="outlined"
                       onClick={handleOpenBynder}
                       startIcon={<Bynder />}
-                      fullWidth
-                      sx={{
-                        maxWidth: "240px",
-                        flexShrink: 0,
-                      }}
                     >
                       {t("content.mediaAddFromBynder")}
                     </Button>
                   )}
-                </Box>
+                </Stack>
               )}
             </Stack>
           </Box>

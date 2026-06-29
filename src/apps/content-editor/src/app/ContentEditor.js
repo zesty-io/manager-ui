@@ -56,7 +56,7 @@ function ContentEditorContent() {
   // "schema" is hoisted here so FieldTooltipBody (deep in the field editor)
   // always finds it loaded — preventing a Suspense throw inside the MUI Tooltip
   // portal that would cascade into an infinite setState loop.
-  const { t } = useTranslation(["content", "schema"]);
+  const { t } = useTranslation(["content", "schema", "seo"]);
   const navContent = useSelector((state) => state.navContent);
   const dispatch = useDispatch();
   const [params] = useParams();

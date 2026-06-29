@@ -236,7 +236,6 @@ const CreateForm: FC<CreateFormProps> = ({
     <Dialog
       data-cy="RedirectsCreateDialog"
       open={open}
-      fullWidth
       maxWidth={false}
       onClose={onClose}
       slotProps={{
@@ -250,7 +249,7 @@ const CreateForm: FC<CreateFormProps> = ({
         },
         paper: {
           sx: {
-            width: "640px",
+            minWidth: "640px",
             minHeight: "680px",
             height: "calc(100vh - 40px)",
             maxHeight: "1240px",

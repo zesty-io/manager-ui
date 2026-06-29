@@ -31,7 +31,7 @@ export const PublishState = ({ reloadItem }: Props) => {
       {
         field: "_active",
         headerName: t("content.itemListStatus"),
-        width: 120,
+        width: 200,
         renderCell: (value: any) => {
           if (new Date(value.row.publishAt) > new Date()) {
             return (
@@ -89,8 +89,8 @@ export const PublishState = ({ reloadItem }: Props) => {
       {
         field: "actions",
         headerName: t("content.itemEditActions"),
-        width: 128,
-        renderCell: (value) => {
+        width: 200,
+        renderCell: (value: any) => {
           if (value.row._active) {
             return [
               <Button
