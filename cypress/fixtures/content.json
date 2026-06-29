@@ -526,6 +526,30 @@
               "list": true
             },
             "sort": 13
+          },
+          {
+            "datatype": "date",
+            "description": "",
+            "label": "date",
+            "name": "date",
+            "required": false,
+            "settings": {
+              "defaultValue": null,
+              "list": true
+            },
+            "sort": 14
+          },
+          {
+            "datatype": "datetime",
+            "description": "",
+            "label": "datetime",
+            "name": "datetime",
+            "required": false,
+            "settings": {
+              "defaultValue": null,
+              "list": true
+            },
+            "sort": 15
           }
         ]
       }

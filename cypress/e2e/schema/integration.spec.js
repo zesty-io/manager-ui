@@ -101,6 +101,21 @@ describe("Integration Field", () => {
   });
 
   describe("Item Selection", () => {
+    // Serve the integration field's external data from the fixture: the live
+    // endpoint has drifted from genericApi, which the assertions reference, so
+    // exact-match checks (JSON viewer, reorder) flaked. Mocking makes it
+    // deterministic and removes the external dependency.
+    beforeEach(() => {
+      cy.intercept("POST", "**/get-url*", { body: genericApi });
+      // close any JSON viewer left open by a prior test
+      cy.get("body").then(($b) => {
+        if ($b.find('[data-cy="jsonCodeViewerCloseButton"]').length) {
+          cy.get('[data-cy="jsonCodeViewerCloseButton"]').click({
+            force: true,
+          });
+        }
+      });
+    });
     it("Create Content Item", () => {
       const modelZUID = Cypress.env("modelZUID");
 
@@ -219,6 +234,9 @@ describe("Integration Field", () => {
   describe("Search Filter with Non-string KeyPath", () => {
     it("Does not crash when a configured keyPath resolves to a number", () => {
       const modelZUID = Cypress.env("modelZUID");
+
+      // Deterministic external data (live endpoint drifts from genericApi).
+      cy.intercept("POST", "**/get-url*", { body: genericApi });
 
       cy.visit(`/content/${modelZUID}/new`);
       cy.get('[data-cy="field:title"]').find("input").type(MODEL?.label);

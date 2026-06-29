@@ -830,6 +830,11 @@ const SEO_FIELDS: readonly SystemField[] = [
   },
 ] as const;
 
+export const FIELD_CATEGORY_LABELS: Record<string, string> = {
+  dateandtime: "Date & Time",
+  options: "Advanced",
+};
+
 export {
   FieldListData,
   FIELD_COPY_CONFIG,

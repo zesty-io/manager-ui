@@ -127,7 +127,7 @@ export const PublishState = ({ reloadItem }: Props) => {
         },
       },
     ],
-    []
+    [modelZUID, itemZUID]
   );
 
   return (
