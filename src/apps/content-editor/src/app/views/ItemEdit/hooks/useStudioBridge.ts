@@ -75,7 +75,6 @@ type Args = {
     layoutId?: string;
     breadcrumb?: { layoutId?: string; label: string }[];
   }) => void;
-  requestProceedWithPendingLayoutSave: (onProceed: () => void) => void;
   clearLayoutSelection: () => void;
   applySelection: (next: {
     studioId?: string;
@@ -86,10 +85,6 @@ type Args = {
   }) => void;
   fieldNameByZuid: Map<string, string>;
   currentHoverStudioIdRef: React.MutableRefObject<string | null>;
-  pendingLayoutHasMappedSource: boolean;
-  selectedLayoutCodeId?: string;
-  selectedItemDirty?: boolean;
-  selectedItemZUID?: string;
   clearSelection: () => void;
   previewReloadContinuationRef: MutableRefObject<null | (() => void)>;
   setIsNavigating: (value: boolean) => void;
@@ -112,15 +107,10 @@ export const useStudioBridge = ({
   handleReorderOutput,
   handleLayoutContentUpdate,
   applyLayoutSelection,
-  requestProceedWithPendingLayoutSave,
   clearLayoutSelection,
   applySelection,
   fieldNameByZuid,
   currentHoverStudioIdRef,
-  pendingLayoutHasMappedSource,
-  selectedLayoutCodeId,
-  selectedItemDirty,
-  selectedItemZUID,
   clearSelection,
   previewReloadContinuationRef,
   setIsNavigating,
@@ -185,17 +175,6 @@ export const useStudioBridge = ({
         case "mousedown":
         case "dblclick": {
           if (interactionMode !== "layout") return;
-          if (
-            pendingLayoutHasMappedSource &&
-            selectedLayoutCodeId &&
-            codeId &&
-            codeId !== selectedLayoutCodeId
-          ) {
-            requestProceedWithPendingLayoutSave(() =>
-              applyLayoutSelection({ codeId, layoutId, breadcrumb })
-            );
-            return;
-          }
           applyLayoutSelection({ codeId, layoutId, breadcrumb });
           return;
         }
@@ -212,28 +191,6 @@ export const useStudioBridge = ({
         case "click": {
           if (interactionMode === "layout") return;
           if (!fieldZuid) return;
-
-          const isChangingItem =
-            Boolean(itemZuid) &&
-            Boolean(selectedItemZUID) &&
-            itemZuid !== selectedItemZUID;
-          if (isChangingItem && selectedItemDirty) {
-            const openModal = (window as any).openContentNavigationModal;
-            if (typeof openModal === "function") {
-              openModal((shouldProceed: boolean) => {
-                if (shouldProceed) {
-                  applySelection({
-                    studioId,
-                    fieldZuid,
-                    fieldType,
-                    itemZuid,
-                    modelZuid,
-                  });
-                }
-              });
-              return;
-            }
-          }
 
           applySelection({
             studioId,
@@ -296,12 +253,7 @@ export const useStudioBridge = ({
       dispatch,
       fieldNameByZuid,
       interactionMode,
-      pendingLayoutHasMappedSource,
       postCommandToBridge,
-      requestProceedWithPendingLayoutSave,
-      selectedItemDirty,
-      selectedItemZUID,
-      selectedLayoutCodeId,
       onBridgeFieldInput,
     ]
   );
