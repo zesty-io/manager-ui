@@ -21,47 +21,21 @@ const isProductionLikeEnv = ["stage", "production"].includes(
   __CONFIG__?.ENV ?? ""
 );
 
-// Disable the en-US fallback in dev so a key missing from the *active* locale
-// resolves to nothing and trips handleMissingKey (which throws). With the
-// fallback on, a key present in en-US but missing in another locale would
-// silently render the English value and the gap would go undetected — the
-// opposite of the goal. Stage/production keep the fallback so real users never
-// see a raw key; gaps there are reported to Sentry instead.
+// Fallback off in dev so missing keys always trip handleMissingKey instead of
+// silently resolving to English. Prod keeps it so users never see raw keys.
 const fallbackLng = isProductionLikeEnv ? "en-US" : false;
 
-// With the fallback off, i18next has nothing to fall back to when the language
-// detector comes up empty (e.g. cleared localStorage), so it would init with
-// an *undefined* language and crash on the first lookup. Pin an explicit
-// initial language in dev — the stored locale if present, else en-US — which
-// mirrors exactly what the localStorage detector would have resolved. In
-// stage/production the fallback already guarantees a language, so we let the
-// detector run as before.
+// Without a fallback, an empty detector result leaves i18next with no language
+// and crashes on the first lookup. Pin the stored locale (or en-US) in dev.
 const devInitialLng = isProductionLikeEnv
   ? undefined
   : (typeof localStorage !== "undefined" &&
       localStorage.getItem("app_locale")) ||
     "en-US";
 
-// Dedupe Sentry reports so a missing key in a frequently-rerendered component
-// doesn't blow through the Sentry quota. Only used on the reporting path —
-// the dev path always throws (never dedupes) so the error boundary keeps
-// surfacing it on every render until the key is added.
+// Dedupe Sentry reports — the dev path always throws instead.
 const reportedMissingKeys = new Set<string>();
 
-/**
- * Phase 7 — missing key handling. The goal is full translation coverage: every
- * key must exist in every locale, never papered over by the en-US fallback.
- *
- * - Dev (development/local): throw. A key absent from the active locale's
- *   `public/locales/<lng>/<ns>.json` (fallback is off in dev) crashes the app
- *   with the exact key and file path, so the gap is impossible to miss — no
- *   need to scan the console. The non-English locales are translated
- *   incrementally, so an incomplete locale is *meant* to be unusable in dev
- *   until every key is filled in.
- * - Stage/production: the fallback is on, so this fires only for keys missing
- *   from the whole chain (including en-US). Report to Sentry once per key
- *   (deduped) and let i18next fall back so the UI never breaks for users.
- */
 const handleMissingKey = (
   lngs: readonly string[],
   ns: string,
@@ -69,39 +43,44 @@ const handleMissingKey = (
   fallbackValue: string
 ): void => {
   const qualifiedKey = `${ns}.${key}`;
-
-  // A namespace that hasn't finished loading (lazy sub-app namespaces load on
-  // first navigation) is a timing artifact, not a missing key — skip it so we
-  // don't crash on a load that's still in flight. An empty placeholder file is
-  // still "loaded" (just keyless), so this correctly throws for every key in,
-  // e.g., an untranslated es-ES namespace.
-  if (lngs.some((lng) => !lng || !i18n.hasResourceBundle(lng, ns))) {
-    return;
-  }
-
-  if (isProductionLikeEnv) {
-    const dedupeKey = `${lngs.join(",")}:${qualifiedKey}`;
-    if (reportedMissingKeys.has(dedupeKey)) {
-      return;
-    }
-    reportedMissingKeys.add(dedupeKey);
-
-    Sentry.captureMessage(`Missing translation key: ${qualifiedKey}`, {
-      level: "warning",
-      tags: { i18n_namespace: ns },
-      extra: { key, namespace: ns, languages: lngs, fallbackValue },
-    });
-    return;
-  }
-
-  const paths = lngs
-    .map((lng) => `public/locales/${lng}/${ns}.json`)
-    .join(", ");
-  throw new Error(
-    `[i18n] Missing translation key "${qualifiedKey}" for [${lngs.join(
-      ", "
-    )}]. Add it to ${paths}.`
+  // With useSuspense: true a correctly-declared namespace suspends before t()
+  // is called, so reaching here with an unloaded namespace means the component
+  // never called useTranslation("ns").
+  const nsUnloaded = lngs.some(
+    (lng) => !lng || !i18n.hasResourceBundle(lng, ns)
   );
+
+  if (!isProductionLikeEnv) {
+    if (nsUnloaded) {
+      throw new Error(
+        `[i18n] Namespace "${ns}" is not loaded. ` +
+          `Declare it in your component: useTranslation("${ns}").`
+      );
+    }
+    const paths = lngs
+      .map((lng) => `public/locales/${lng}/${ns}.json`)
+      .join(", ");
+    throw new Error(
+      `[i18n] Missing translation key "${qualifiedKey}" for [${lngs.join(
+        ", "
+      )}]. Add it to ${paths}.`
+    );
+  }
+
+  if (nsUnloaded) {
+    return;
+  }
+
+  const dedupeKey = `${lngs.join(",")}:${qualifiedKey}`;
+  if (reportedMissingKeys.has(dedupeKey)) {
+    return;
+  }
+  reportedMissingKeys.add(dedupeKey);
+  Sentry.captureMessage(`Missing translation key: ${qualifiedKey}`, {
+    level: "warning",
+    tags: { i18n_namespace: ns },
+    extra: { key, namespace: ns, languages: lngs, fallbackValue },
+  });
 };
 
 // Single source of truth for the supported locale tags. `SupportedLocale` is
