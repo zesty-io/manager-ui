@@ -378,12 +378,36 @@ describe("Schema: Repeater Field", () => {
     cy.getBySelector(`SubField_${SubFieldName}`).should("exist");
   });
 
+  it("Adds a date sub field", () => {
+    const SubFieldLabel = `Date`;
+    const SubFieldName = `date`;
+
+    cy.getBySelector("AddRepeaterSubFieldBtn").click();
+    cy.getBySelector("FieldItem_date").click();
+
+    cy.getBySelector("FieldFormInput_label").type(SubFieldLabel);
+    cy.getBySelector("SubFieldFormAddFieldBtn").click();
+    cy.getBySelector(`SubField_${SubFieldName}`).should("exist");
+  });
+
+  it("Adds a date and time sub field", () => {
+    const SubFieldLabel = `Date and Time`;
+    const SubFieldName = `date_and_time`;
+
+    cy.getBySelector("AddRepeaterSubFieldBtn").click();
+    cy.getBySelector("FieldItem_datetime").click();
+
+    cy.getBySelector("FieldFormInput_label").type(SubFieldLabel);
+    cy.getBySelector("SubFieldFormAddFieldBtn").click();
+    cy.getBySelector(`SubField_${SubFieldName}`).should("exist");
+  });
+
   it("Should save the added sub fields in the repeater field", () => {
     cy.getBySelector("FieldFormAddFieldBtn").click();
     cy.getBySelector(`Field_${fieldName}`).click();
     cy.getBySelector("SubFieldList")
       .find('[data-cy^="SubField_"]')
-      .should("have.length", 13);
+      .should("have.length", 15);
   });
 
   it("Should be able to add another field", () => {

@@ -816,6 +816,11 @@ const getSeoFields = (t: TranslateFn): SystemField[] => [
   },
 ];
 
+export const FIELD_CATEGORY_LABELS: Record<string, string> = {
+  dateandtime: "Date & Time",
+  options: "Advanced",
+};
+
 export {
   FieldListData,
   getFieldCopyConfig,

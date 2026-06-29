@@ -15,7 +15,11 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useSelector } from "react-redux";
 
 import { FieldItem } from "../FieldItem";
-import { FieldListData, getFieldCopyConfig } from "../../configs";
+import {
+  FieldListData,
+  getFieldCopyConfig,
+  getFieldCategoryLabels,
+} from "../../configs";
 import { AppState } from "../../../../../../../shell/store/types";
 import { User } from "../../../../../../../shell/services/types";
 
@@ -24,23 +28,12 @@ interface Props {
   onModalClose: () => void;
 }
 
-const getFieldCategories = (
-  t: (key: string) => string
-): Record<string, string> => ({
-  text: t("schema.fieldCategoryText"),
-  media: t("schema.fieldCategoryMedia"),
-  numeric: t("schema.fieldCategoryNumeric"),
-  relationship: t("schema.fieldCategoryRelationship"),
-  dateandtime: t("schema.fieldCategoryDateAndTime"),
-  options: t("schema.fieldCategoryAdvanced"),
-});
-
 export const FieldSelection = ({ onFieldClick, onModalClose }: Props) => {
   const { t } = useTranslation();
   const FIELD_COPY_CONFIG = getFieldCopyConfig(t);
+  const FIELD_CATEGORY_LABELS = getFieldCategoryLabels(t);
   const user: User = useSelector((state: AppState) => state.user);
   const [fieldTypes, setFieldTypes] = useState(FIELD_COPY_CONFIG);
-  const FIELD_CATEGORIES = getFieldCategories(t);
 
   const handleFilterFields = (e: React.ChangeEvent<HTMLInputElement>) => {
     const userInput = e.target.value.toLowerCase();
@@ -152,7 +145,7 @@ export const FieldSelection = ({ onFieldClick, onModalClose }: Props) => {
               mb={1.5}
               color="text.secondary"
             >
-              {FIELD_CATEGORIES?.[fieldKey] || fieldKey}
+              {FIELD_CATEGORY_LABELS?.[fieldKey] || fieldKey}
             </Typography>
             <Box
               display="grid"

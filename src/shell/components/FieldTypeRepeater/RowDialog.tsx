@@ -40,7 +40,9 @@ export const RowDialog = ({
   isUpdate,
 }: RowDialogProps) => {
   const { t } = useTranslation();
-  const [formData, setFormData] = useState<Record<string, any>>({});
+  const [formData, setFormData] = useState<Record<string, any>>(() =>
+    isUpdate && editRowData ? cloneDeep(editRowData) : {}
+  );
   const [formErrors, setFormErrors] = useState<Record<string, Error>>({});
   const [resetKey, setResetKey] = useState(0);
   const [version, setVersion] = useState(0);
@@ -73,12 +75,12 @@ export const RowDialog = ({
   // Set default values for the fields
   useEffect(() => {
     if (isUpdate) {
-      setFormData(editRowData);
+      // bump version to remount FieldTypeTinyMCE on dialog open
       setVersion((prev) => prev + 1);
     } else {
       setFormData(getInitialFormData());
     }
-  }, [getInitialFormData, isUpdate, editRowData]);
+  }, [getInitialFormData, isUpdate]);
 
   const handleChange = useCallback(
     (value, name) => {

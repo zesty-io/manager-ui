@@ -1,8 +1,6 @@
 import {
-  Dialog,
   DialogContent,
   DialogTitle,
-  Button,
   Typography,
   IconButton,
   Stack,
@@ -11,7 +9,12 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useTranslation } from "react-i18next";
-import { getFieldCopyConfig, FieldListData, FieldType } from "../../../configs";
+import {
+  getFieldCopyConfig,
+  getFieldCategoryLabels,
+  FieldListData,
+  FieldType,
+} from "../../../configs";
 import { FieldItem } from "../../FieldItem";
 
 const ALLOWED_REPEATER_FIELD_TYPES = new Set<FieldType>([
@@ -28,6 +31,8 @@ const ALLOWED_REPEATER_FIELD_TYPES = new Set<FieldType>([
   "color",
   "sort",
   "uuid",
+  "date",
+  "datetime",
 ]);
 
 type RepeaterFieldsSelectionProps = {
@@ -48,6 +53,7 @@ export const RepeaterFieldsSelection = ({
 }: RepeaterFieldsSelectionProps) => {
   const { t } = useTranslation();
   const FIELD_COPY_CONFIG = getFieldCopyConfig(t);
+  const FIELD_CATEGORY_LABELS = getFieldCategoryLabels(t);
   const repeaterFields = {
     text: FIELD_COPY_CONFIG.text.filter((field) =>
       ALLOWED_REPEATER_FIELD_TYPES.has(field.type)
@@ -59,6 +65,9 @@ export const RepeaterFieldsSelection = ({
       ALLOWED_REPEATER_FIELD_TYPES.has(field.type)
     ),
     numeric: FIELD_COPY_CONFIG.numeric.filter((field) =>
+      ALLOWED_REPEATER_FIELD_TYPES.has(field.type)
+    ),
+    dateandtime: FIELD_COPY_CONFIG.dateandtime.filter((field) =>
       ALLOWED_REPEATER_FIELD_TYPES.has(field.type)
     ),
     options: FIELD_COPY_CONFIG.options.filter((field) =>
@@ -109,8 +118,8 @@ export const RepeaterFieldsSelection = ({
           },
         }}
       >
-        {Object.keys(repeaterFields).map(
-          (fieldKey: keyof typeof repeaterFields) => (
+        {(Object.keys(repeaterFields) as (keyof typeof repeaterFields)[]).map(
+          (fieldKey) => (
             <Box className="field-type-group" key={fieldKey}>
               <Typography
                 component="p"
@@ -118,7 +127,7 @@ export const RepeaterFieldsSelection = ({
                 mb={1.5}
                 color="text.secondary"
               >
-                {fieldKey === "options" ? t("schema.advanced") : fieldKey}
+                {FIELD_CATEGORY_LABELS[fieldKey] ?? fieldKey}
               </Typography>
               <Box
                 display="grid"

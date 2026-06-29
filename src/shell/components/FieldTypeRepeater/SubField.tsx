@@ -34,6 +34,9 @@ import { FieldTypeColor } from "../FieldTypeColor";
 import { FieldTypeNumber } from "../FieldTypeNumber";
 import { FieldTypeCurrency } from "../FieldTypeCurrency";
 import { FieldTypeSort } from "../FieldTypeSort";
+import { FieldTypeDate } from "../FieldTypeDate";
+import { FieldTypeDateTime } from "../FieldTypeDateTime";
+import { format, isValid } from "date-fns";
 
 type SubFieldProps = {
   value: any;
@@ -530,6 +533,45 @@ export const SubField = memo(
               }}
               error={hasError}
             />
+          </FieldShell>
+        );
+        break;
+
+      case "date": {
+        const rawDate = value
+          ? new Date((value as string) + "T00:00:00")
+          : null;
+        const parsedDate = rawDate && isValid(rawDate) ? rawDate : null;
+        content = (
+          <FieldShell settings={field} errors={errors} withComment={false}>
+            <FieldTypeDate
+              name={field.name}
+              required={field.required}
+              value={parsedDate}
+              onChange={(date) => {
+                onChange(date ? format(date, "yyyy-MM-dd") : null, field.name);
+              }}
+              error={hasError}
+            />
+          </FieldShell>
+        );
+        break;
+      }
+
+      case "datetime":
+        content = (
+          <FieldShell settings={field} errors={errors} withComment={false}>
+            <Box maxWidth={360}>
+              <FieldTypeDateTime
+                name={field.name}
+                required={field.required}
+                value={(value as string) ?? ""}
+                onChange={(datetime) => {
+                  onChange(datetime, field.name);
+                }}
+                error={hasError}
+              />
+            </Box>
           </FieldShell>
         );
         break;
