@@ -821,9 +821,19 @@ export const FIELD_CATEGORY_LABELS: Record<string, string> = {
   options: "Advanced",
 };
 
+const getFieldCategoryLabels = (t: TranslateFn): Record<string, string> => ({
+  text: t("schema.fieldCategoryText"),
+  media: t("schema.fieldCategoryMedia"),
+  numeric: t("schema.fieldCategoryNumeric"),
+  relationship: t("schema.fieldCategoryRelationship"),
+  dateandtime: t("schema.fieldCategoryDateAndTime"),
+  options: t("schema.fieldCategoryAdvanced"),
+});
+
 export {
   FieldListData,
   getFieldCopyConfig,
+  getFieldCategoryLabels,
   getTypeText,
   getFormConfig,
   getSystemFields,
