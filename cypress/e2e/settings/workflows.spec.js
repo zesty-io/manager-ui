@@ -414,6 +414,16 @@ describe("Deactivate Status Label", { retries: 1 }, () => {
 });
 
 describe("Filter Active and Deactivated Status Labels", { retries: 1 }, () => {
+  before(() => {
+    // Load the page fresh so the active/deactivated label state (persisted by the
+    // prior describe) is fully fetched before toggling. Relying on leftover page
+    // state left the deactivated section empty under CI load.
+    cy.goToWorkflowsPage();
+    cy.getBySelector("active-labels-container", { timeout: 30_000 }).should(
+      "exist"
+    );
+  });
+
   it("Displays active/deactivated status labels", () => {
     cy.get('input[value="deactivated"]').click(TIMEOUT);
     // Asserting on specific test labels rather than total count — the instance
@@ -462,20 +472,16 @@ Cypress.Commands.add("cleanTestData", function () {
     TEST_DATA?.temp3?.name,
   ];
 
-  cy.apiRequest({ url: `${INSTANCE_API}/env/labels?showDeleted=true` }).then(
-    (response) => {
-      response?.data
-        ?.filter(
-          (label) => !label?.deletedAt && testLabels.includes(label?.name)
-        )
-        .forEach((label) => {
-          cy.apiRequest({
-            url: `${INSTANCE_API}/env/labels/${label.ZUID}`,
-            method: "DELETE",
-          });
+  cy.apiRequest({ url: `${INSTANCE_API}/env/labels` }).then((response) => {
+    response?.data
+      ?.filter((label) => !label?.deletedAt && testLabels.includes(label?.name))
+      .forEach((label) => {
+        cy.apiRequest({
+          url: `${INSTANCE_API}/env/labels/${label.ZUID}`,
+          method: "DELETE",
         });
-    }
-  );
+      });
+  });
 });
 
 Cypress.Commands.add("createTestData", () => {
