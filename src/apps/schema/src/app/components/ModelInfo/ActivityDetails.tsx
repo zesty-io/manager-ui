@@ -76,6 +76,7 @@ export const ActivityDetails = () => {
           p={2}
           sx={{
             borderBottom: (theme) => `1px solid ${theme.palette.border}`,
+            gap: 1,
           }}
         >
           <Box minWidth={280}>
@@ -94,6 +95,7 @@ export const ActivityDetails = () => {
           py={1.5}
           sx={{
             borderBottom: (theme) => `1px solid ${theme.palette.border}`,
+            gap: 1,
           }}
         >
           <Box minWidth={280}>
@@ -127,6 +129,7 @@ export const ActivityDetails = () => {
           p={2}
           sx={{
             borderBottom: (theme) => `1px solid ${theme.palette.border}`,
+            gap: 1,
           }}
         >
           <Box minWidth={280}>
@@ -138,7 +141,7 @@ export const ActivityDetails = () => {
             <Typography>{updatedOn}</Typography>
           </Box>
         </Box>
-        <Box display="flex" alignItems="center" px={2} py={1.5}>
+        <Box display="flex" alignItems="center" px={2} py={1.5} gap={1}>
           <Box minWidth={280}>
             <Typography color="text.primary">
               {t("schema.lastUpdatedBy")}

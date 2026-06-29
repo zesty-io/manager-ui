@@ -33,6 +33,7 @@ export const ApiCard = ({ type }: Props) => {
       p={2}
       borderRadius="8px"
       display="flex"
+      gap={1.5}
       flexDirection="column"
       justifyContent="space-between"
       sx={{
@@ -48,6 +49,7 @@ export const ApiCard = ({ type }: Props) => {
             variant="outlined"
             startIcon={<ApiRoundedIcon />}
             onClick={() => history.push(`${location.pathname}/${type}`)}
+            sx={{ flex: 1 }}
           >
             {t("schema.viewEndpoints")}
           </Button>
@@ -58,6 +60,7 @@ export const ApiCard = ({ type }: Props) => {
             variant="outlined"
             startIcon={<InfoIcon />}
             onClick={() => history.push(`${location.pathname}/${type}`)}
+            sx={{ flex: 1 }}
           >
             {t("schema.learnMore")}
           </Button>
@@ -68,6 +71,7 @@ export const ApiCard = ({ type }: Props) => {
           variant="outlined"
           startIcon={<MenuBookRoundedIcon color="action" />}
           onClick={() => window.open(apiTypeDocsMap[type])}
+          sx={{ flex: 1 }}
         >
           {t("shell.docs")}
         </Button>

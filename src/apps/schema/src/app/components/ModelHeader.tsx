@@ -132,7 +132,7 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
               </Typography>
             </Stack>
           </Stack>
-          <Stack direction="row" gap={1}>
+          <Stack direction="row" gap={1} alignItems="center">
             <IconButton
               size="small"
               onClick={(event) => setAnchorEl(event.currentTarget)}

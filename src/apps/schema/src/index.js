@@ -16,7 +16,7 @@ injectReducer(store, "parents", parents);
 // this subtree until the translations are ready. Child components use bare
 // useTranslation() with qualified keys once the namespace is in the store.
 const SchemaAppInner = () => {
-  useTranslation("schema");
+  useTranslation(["schema", "content", "reports"]);
   return <SchemaApp />;
 };
 

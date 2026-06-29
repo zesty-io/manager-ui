@@ -45,7 +45,7 @@ export const ApiCardList = () => {
         sx={{
           display: "grid",
           gridTemplateColumns: "repeat(3, minmax(auto, 510px))",
-          gridTemplateRows: "repeat(2, 378px)",
+          gridTemplateRows: "repeat(2, auto)",
           gridColumnGap: "24px",
           gridRowGap: "24px",
           overflow: "auto",

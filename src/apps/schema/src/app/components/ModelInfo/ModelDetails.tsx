@@ -80,6 +80,7 @@ export const ModelDetails = () => {
             px={2}
             sx={{
               borderBottom: (theme) => `1px solid ${theme.palette.border}`,
+              gap: 1,
             }}
           >
             <Box
@@ -112,6 +113,7 @@ export const ModelDetails = () => {
             px={2}
             sx={{
               borderBottom: (theme) => `1px solid ${theme.palette.border}`,
+              gap: 1,
             }}
           >
             <Box
@@ -158,6 +160,7 @@ export const ModelDetails = () => {
             px={2}
             sx={{
               borderBottom: (theme) => `1px solid ${theme.palette.border}`,
+              gap: 1,
             }}
           >
             <Box
@@ -207,6 +210,7 @@ export const ModelDetails = () => {
             px={2}
             sx={{
               borderBottom: (theme) => `1px solid ${theme.palette.border}`,
+              gap: 1,
             }}
           >
             <Box
@@ -331,7 +335,7 @@ export const ModelDetails = () => {
               </Box>
             </Box>
           )} */}
-          <Box display="flex" alignItems="center" px={2}>
+          <Box display="flex" alignItems="center" px={2} gap={1}>
             <Box
               minWidth={280}
               display="flex"

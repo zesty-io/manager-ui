@@ -211,9 +211,9 @@ export const Field = ({
 
   const getGridTemplate = () => {
     if (withDragIcon) {
-      return "28px 24px minmax(auto, min-content) 130px";
+      return "28px 24px minmax(auto, min-content) minmax(auto, max-content)";
     } else {
-      return "24px minmax(auto, min-content) 130px";
+      return "24px minmax(auto, min-content) minmax(auto, max-content)";
     }
   };
 
