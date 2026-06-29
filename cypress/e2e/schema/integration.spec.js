@@ -441,30 +441,21 @@ describe("Integration Field", () => {
           .find('[data-cy="integrationSelectItemsButton"]')
           .click();
 
-        cy.getBySelector("integrationSelectCard")
-          .eq(0)
-          .find(".MuiCheckbox-root")
-          .click();
-        cy.getBySelector("selectIntegrationFormDoneButton").click();
-
-        cy.getBySelector("field:players")
-          .find('[data-cy="integrationSelectItemsButton"]')
-          .click();
-
         cy.getBySelector("integrationSelectionFormDialog").should("exist");
 
         cy.getBySelector("integrationSelectCard")
           .eq(0)
           .find('[data-cy="integrationResyncButton"]')
           .should("not.exist");
+
+        cy.get("body").click(forceClick);
       });
 
       it("clicking resync updates the displayed item in the selected list", () => {
         cy.intercept("**/get-url?url=*", {
           statusCode: 200,
-          body: modifiedApi,
-        }).as("getModifiedUrl");
-
+          body: genericApi,
+        }).as("getUrl");
         cy.visit(
           `/content/${SHARED_MODEL?.ZUID}/${SHARED_CONTENT?.meta?.ZUID}`
         );
@@ -478,6 +469,16 @@ describe("Integration Field", () => {
         cy.getBySelector("integrationSelectCard")
           .eq(0)
           .find(".MuiCheckbox-root")
+          .click();
+        cy.getBySelector("selectIntegrationFormDoneButton").click();
+
+        cy.intercept("**/get-url?url=*", {
+          statusCode: 200,
+          body: modifiedApi,
+        }).as("getModifiedUrl");
+
+        cy.getBySelector("field:players")
+          .find('[data-cy="integrationSelectItemsButton"]')
           .click();
 
         cy.getBySelector("integrationSelectCard")

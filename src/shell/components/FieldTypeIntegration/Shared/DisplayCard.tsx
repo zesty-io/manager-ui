@@ -27,15 +27,12 @@ export type DisplayCardProps = {
   loading?: boolean;
 };
 
-const hasValue = (value: unknown): boolean =>
-  value !== null && value !== undefined && value !== "";
-
 function renderValue(value: unknown): string {
-  if (value === undefined || value === null) return "";
+  if (value === undefined) return "";
   if (Array.isArray(value)) {
     return `[${value.map((v) => renderValue(v)).join(", ")}]`;
   }
-  if (typeof value === "object") {
+  if (typeof value === "object" && value !== null) {
     try {
       return JSON.stringify(value, null, 2);
     } catch {
@@ -44,6 +41,18 @@ function renderValue(value: unknown): string {
   }
   return String(value);
 }
+
+const MEDIA_ICONS: Record<string, JSX.Element> = {
+  play: <PlayCircleIcon fontSize="large" sx={{ color: "common.white" }} />,
+  video: <VideoCallRoundedIcon sx={{ color: "action.active" }} />,
+  image: (
+    <AddPhotoAlternateRoundedIcon
+      fontSize="small"
+      sx={{ color: "action.active" }}
+    />
+  ),
+} as const;
+
 const DisplayCard = ({
   type,
   heading,
@@ -52,7 +61,7 @@ const DisplayCard = ({
   detail,
   details = [],
   mediaVariant = "square",
-  showPlayIcon,
+  showPlayIcon = false,
   showPlaceholders = false,
   loading,
 }: DisplayCardProps) => {
@@ -61,59 +70,23 @@ const DisplayCard = ({
   const isSpecialType = ["shopify", "youtube", "mux", "classy"].includes(type);
   const withCardMedia = !["classy", "text", "simple", "details"].includes(type);
 
-  const renderMediaIcon = () => {
-    if (!withCardMedia) return null;
-
-    if (showPlayIcon) {
-      return <PlayCircleIcon fontSize="large" sx={{ color: "common.white" }} />;
-    }
-
-    if (isVideoType) {
-      return <VideoCallRoundedIcon sx={{ color: "action.active" }} />;
-    }
-
-    return (
-      <AddPhotoAlternateRoundedIcon
-        fontSize="small"
-        sx={{ color: "action.active" }}
-      />
-    );
-  };
+  const mediaType: "video" | "image" = isVideoType ? "video" : "image";
 
   const headingValue = loading ? (
     <Skeleton width={type === "simple" ? "90%" : "55%"} height="26px" />
-  ) : !heading ? (
-    showPlaceholders ? (
-      "Add Heading"
-    ) : (
-      ""
-    )
   ) : (
     renderValue(heading)
   );
   const subHeadingValue = loading ? (
     <Skeleton width="90%" />
-  ) : !subHeading ? (
-    showPlaceholders ? (
-      "Add Subheading"
-    ) : (
-      ""
-    )
   ) : (
     renderValue(subHeading)
   );
-  const thumbnailValue = validateUrl(thumbnail) ? thumbnail : null;
-  const detailValue = loading ? (
-    <Skeleton width="70px" />
-  ) : !detail ? (
-    showPlaceholders ? (
-      "Add Detail"
-    ) : (
-      ""
-    )
-  ) : (
-    renderValue(detail)
-  );
+  const thumbnailValue = thumbnail && validateUrl(thumbnail) ? thumbnail : null;
+  const detailValue = loading ? <Skeleton width="70px" /> : renderValue(detail);
+
+  const displayPlayIcon = showPlayIcon && isVideoType;
+  const displayMediaIcon = showPlaceholders && (noImage || !thumbnailValue);
 
   const renderCard = () => {
     if (type === "simple") {
@@ -172,6 +145,10 @@ const DisplayCard = ({
             sx={{ width: "100%" }}
           >
             {details?.map((item: Record<string, unknown>, index: number) => {
+              const itemKey =
+                showPlaceholders && !item?.key ? "+ Add Detail" : item?.key;
+              const itemValue =
+                showPlaceholders && !item?.key ? "" : renderValue(item?.value);
               return (
                 <Box
                   width="100%"
@@ -187,13 +164,7 @@ const DisplayCard = ({
                     fontWeight={400}
                     flexGrow={1}
                   >
-                    {loading ? (
-                      <Skeleton sx={{ width: "95%" }} />
-                    ) : !item?.key ? (
-                      "+ Add Detail"
-                    ) : (
-                      item?.key
-                    )}
+                    {loading ? <Skeleton sx={{ width: "95%" }} /> : itemKey}
                   </Typography>
                   <Typography
                     variant="body2"
@@ -208,7 +179,7 @@ const DisplayCard = ({
                         }}
                       />
                     ) : (
-                      renderValue(item?.value)
+                      itemValue
                     )}
                   </Typography>
                 </Box>
@@ -246,6 +217,7 @@ const DisplayCard = ({
               <>
                 {!!thumbnailValue && (
                   <CardMedia
+                    loading="lazy"
                     component="img"
                     sx={{
                       width: "auto",
@@ -257,7 +229,8 @@ const DisplayCard = ({
                     onLoad={() => setNoImage(false)}
                   />
                 )}
-                {(showPlayIcon || noImage) && renderMediaIcon()}
+                {(displayPlayIcon || displayMediaIcon) &&
+                  MEDIA_ICONS[displayPlayIcon ? "play" : mediaType]}
               </>
             )}
           </Box>
@@ -294,7 +267,7 @@ const DisplayCard = ({
             >
               {headingValue}
             </Typography>
-            {type === "shopify" && hasValue(detail) && (
+            {type === "shopify" && (
               <Typography
                 variant="body2"
                 noWrap

@@ -395,14 +395,30 @@ const ConfigureDisplayOptions = ({
               />
               <DisplayCard
                 type={type}
-                heading={get(rootData, rootPathData.heading)}
-                subHeading={get(rootData, rootPathData.subHeading)}
-                thumbnail={get(rootData, rootPathData.thumbnail)}
-                detail={get(rootData, rootPathData.detail)}
+                heading={
+                  !rootPathData.heading
+                    ? "Add Heading"
+                    : get(rootData, rootPathData.heading)
+                }
+                subHeading={
+                  !rootPathData.subHeading
+                    ? "Add Subheading"
+                    : get(rootData, rootPathData.subHeading)
+                }
+                detail={
+                  !rootPathData.detail
+                    ? "Add Detail"
+                    : get(rootData, rootPathData.detail)
+                }
                 details={detailsPathData?.map((keyPath) => ({
-                  key: keyPath || "",
+                  key: !keyPath ? "+ Add Detail" : keyPath,
                   value: !keyPath ? "" : get(rootData, keyPath),
                 }))}
+                thumbnail={
+                  !rootPathData.thumbnail
+                    ? ""
+                    : get(rootData, rootPathData.thumbnail)
+                }
                 showPlayIcon={false}
                 showPlaceholders
               />

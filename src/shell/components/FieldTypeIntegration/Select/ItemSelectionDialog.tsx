@@ -28,12 +28,13 @@ import {
   IntegrationTypes,
 } from "../../../services/types";
 import { ApiDataProps } from "../types";
-import { DISPLAY_OPTIONS_CONFIG, LOADING_DATA } from "../constants";
+import { LOADING_DATA } from "../constants";
 import DisplayCard from "../Shared/DisplayCard";
 import { NoResults } from "../../../../apps/schema/src/app/components/NoResults";
 import JsonViewer from "../Shared/JsonViewer";
 import { isEqual, get } from "lodash";
 
+// Extracts and concatenates all defined values from specified keys into a single searchable string
 const keyPathValuesToString = (
   item: ApiDataProps,
   keyPaths: IntegrationKeyPaths
@@ -45,13 +46,11 @@ const keyPathValuesToString = (
     })
     ?.flat();
   const idParts = validValues?.map((key) => {
-    const value = item?.[key];
+    const value = get(item, key);
     if (value !== null && typeof value === "object") {
       return JSON.stringify(value);
     } else {
-      const cleanValue =
-        typeof value === "string" ? value.replace(/\s+/g, "") : value;
-      return String(cleanValue);
+      return String(value);
     }
   });
   return idParts?.join(";");
@@ -124,9 +123,15 @@ const RenderRow = ({ data, index, style }: RenderRowProps) => {
   const isSelected = selectedIds.includes(item?._itemId);
 
   const localItem =
-    value?.find((val) => val?.[keyPaths?.itemId] === item?._itemId) || [];
-  const remoteItemData = keyPathValuesToString(item, keyPaths);
-  const localItemData = keyPathValuesToString(localItem, keyPaths);
+    value?.find((val) => val?.[keyPaths?.itemId] === item?._itemId) || null;
+  const remoteItemData = keyPathValuesToString(item, keyPaths).replace(
+    /\s+/g,
+    ""
+  );
+  const localItemData = keyPathValuesToString(localItem, keyPaths).replace(
+    /\s+/g,
+    ""
+  );
   const hasUpdates = !!localItem && remoteItemData !== localItemData;
   const pathData = {
     heading: get(item, keyPaths?.heading),
@@ -263,7 +268,6 @@ const ItemSelectionDialog = ({
   const [forSync, setForSync] = useState<SyncItem[]>([]);
 
   const itemHeight = getItemRowHeight(config?.type, config?.keyPaths?.details);
-  const displayConfig = DISPLAY_OPTIONS_CONFIG?.[config?.type] || [];
   const keyPaths = config?.keyPaths;
   const forSyncIds = forSync?.map((sync) => sync?.id);
   const hasChanges = !isEqual(value, selectedItems) || forSyncIds?.length > 0;
@@ -325,25 +329,16 @@ const ItemSelectionDialog = ({
     if (loading) return LOADING_DATA;
     if (!searchTerm) return items;
 
-    const validKeys = displayConfig
-      .filter((item) => item?.name !== "thumbnail")
-      .map((item) => keyPaths?.[item?.name as keyof typeof keyPaths])
-      .flat();
+    const normalizedTerm = searchTerm.toLowerCase();
 
     const filtered = items.filter((item) => {
-      const searchString = validKeys
-        ?.map((itemKey) => {
-          const value = !itemKey ? null : get(item, itemKey);
-          return typeof value === "string" ? value.trim() : "";
-        })
-        .join("\n")
-        .toLowerCase();
+      const searchString = keyPathValuesToString(item, keyPaths).toLowerCase();
 
-      return searchString.includes(searchTerm.toLowerCase());
+      return searchString.includes(normalizedTerm);
     });
 
     return filtered;
-  }, [loading, items, searchTerm, keyPaths, displayConfig]);
+  }, [loading, items, searchTerm, keyPaths]);
 
   const listData: RenderRowDataProps = {
     type: config?.type,

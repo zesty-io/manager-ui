@@ -49,34 +49,32 @@ const SelectedListItems = ({
         display="block"
         data-cy="integrationListValueContainer"
       >
-        {items?.map((item, index) => {
-          return (
-            <Draggable
-              key={item?._itemId}
-              id={item?._itemId}
-              index={index}
-              moveItem={moveItem}
-              onDelete={() => handleDelete(item?._itemId)}
-              onView={() => viewJson(item)}
-            >
-              <DisplayCard
-                type={config?.type}
-                heading={get(item, config?.keyPaths?.heading)}
-                subHeading={get(item, config?.keyPaths?.subHeading)}
-                thumbnail={get(item, config?.keyPaths?.thumbnail)}
-                detail={get(item, config?.keyPaths?.detail)}
-                details={
-                  config?.type !== "details"
-                    ? null
-                    : config?.keyPaths?.details.map((detailKey: string) => ({
-                        key: detailKey,
-                        value: get(item, detailKey),
-                      }))
-                }
-              />
-            </Draggable>
-          );
-        })}
+        {items?.map((item, index) => (
+          <Draggable
+            key={item?._itemId}
+            id={item?._itemId}
+            index={index}
+            moveItem={moveItem}
+            onDelete={() => handleDelete(item?._itemId)}
+            onView={() => viewJson(item)}
+          >
+            <DisplayCard
+              type={config?.type}
+              heading={get(item, config?.keyPaths?.heading)}
+              subHeading={get(item, config?.keyPaths?.subHeading)}
+              thumbnail={get(item, config?.keyPaths?.thumbnail)}
+              detail={get(item, config?.keyPaths?.detail)}
+              details={
+                config?.type !== "details"
+                  ? null
+                  : config?.keyPaths?.details.map((detailKey: string) => ({
+                      key: detailKey,
+                      value: get(item, detailKey),
+                    }))
+              }
+            />
+          </Draggable>
+        ))}
       </Box>
       <JsonViewer
         open={jsonViewerIsOpen}
