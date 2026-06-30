@@ -118,8 +118,10 @@ export const StudioLayersTreeItem = memo(
         alignItems="center"
         gap={1}
         sx={(theme) => ({
-          p: "4px 8px 4px 4px",
-          pl: `${4 + depth * 12}px`,
+          py: 0.5,
+          pr: 1,
+          // Base inset (0.5) plus 1.5 spacing units (12px) per nesting level.
+          pl: 0.5 + depth * 1.5,
           borderRadius: 0.5,
           cursor: row.selectable || hasChildren ? "pointer" : "default",
           bgcolor: selected
