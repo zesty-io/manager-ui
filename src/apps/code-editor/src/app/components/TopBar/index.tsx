@@ -130,11 +130,11 @@ const TopBar = memo(function TopBar(props: TopBarProps) {
           >
             {`/${props.fileName?.trim()?.replace(/^\/+/, "")}`}
           </Typography>
-          <Typography
-            variant="h6"
-            color="grey.400"
-            fontWeight={600}
-          >{`(v${props?.version})`}</Typography>
+          {props?.version && (
+            <Typography variant="h6" color="grey.400" fontWeight={600}>
+              {`(v${props?.version})`}
+            </Typography>
+          )}
         </Box>
 
         {!props.synced && <Notice>{t("code.newRemoteVersionNotice")}</Notice>}
@@ -344,7 +344,7 @@ const MoreOptions = (props: MoreOptionsProps) => {
         slotProps={{
           paper: {
             sx: {
-              width: 200,
+              // minWidth: 200,
               borderRadius: 1,
             },
           },
