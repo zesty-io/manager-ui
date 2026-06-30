@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState, useRef } from "react";
+import React, { useMemo, useState } from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import { Box, alpha } from "@mui/material";
 import { theme } from "@zesty-io/material";
@@ -115,22 +115,18 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
   compact = false,
 }: FieldTypeTinyMCEProps) {
   // NOTE: controlled component
-  // initialValue state is the only thing that drives tinymce-react's setContent
-  // reset path (componentDidUpdate). It must NOT change on normal edits — only
-  // on version bumps (external content change) or compact toggling (remount).
-  const [initialValue, setInitialValue] = useState<string>(value ?? "");
+  const [initialValue, setInitialValue] = useState(value);
   const [isSkinLoaded, setIsSkinLoaded] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
   const { data: rawInstanceSettings } = useGetInstanceSettingsQuery();
+
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const effectiveCompact = compact && !isFullscreen;
   const toolbar = effectiveCompact ? compactToolbar : normalToolbar;
 
-  // Tracks live editor content; read on compact/fullscreen toggle to seed
-  // initialValue for the remounted editor without triggering setContent mid-edit.
-  const valueRef = useRef<string>(value || "");
   const EDITOR_HEIGHT = effectiveCompact
     ? COMPACT_EDITOR_HEIGHT
     : NORMAL_EDITOR_HEIGHT;
+
   // Checks if the bynder portal and token are set
   const isBynderSessionValid =
     localStorage.getItem("cvrt") && localStorage.getItem("cvad");
@@ -143,34 +139,12 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
     [rawInstanceSettings]
   );
 
-  const emitCharCount = (editor: any) =>
-    onCharacterCountChange?.(
-      editor.plugins?.wordcount?.body?.getCharacterCount() ?? 0
-    );
-
-  // Intentionally omits `value` from deps — re-syncing on every keystroke
-  // would reset the cursor. Only re-sync when the version stamp increments
-  // (i.e. a save or external overwrite).
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => {
-    valueRef.current = value;
-    setInitialValue(value ?? "");
-  }, [version]);
-
-  // When compact/fullscreen toggles the editor remounts (key changes); seed the
-  // new mount with the latest content. The remounted editor inits clean, so its
-  // initial setContent won't fire onChange (see the onEditorChange isDirty guard).
-  useEffect(() => {
-    setInitialValue(valueRef.current);
-  }, [effectiveCompact]);
-
   return (
     <Box
       id="tinyMceWrapper"
       data-compact={effectiveCompact}
       sx={{
         minHeight: EDITOR_HEIGHT,
-
         "&[data-compact='true']": {
           "& .tox-toolbar__group": {
             "& .tox-tbtn": {
@@ -180,11 +154,10 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
           // Push the fullscreen button group (always last in compact toolbar) to the far right.
           // Uses :last-child instead of aria-label so it doesn't break when TinyMCE updates.
           "& .tox-toolbar__primary .tox-toolbar__group:last-child": {
-            flexGrow: 1,
-            justifyContent: "end",
+            position: "absolute",
+            right: 0,
           },
         },
-
         "& .tox.tox-tinymce": {
           borderColor: error ? "error.main" : undefined,
         },
@@ -209,32 +182,43 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
     >
       <Box sx={{ visibility: isSkinLoaded ? "visible" : "hidden" }}>
         <Editor
-          // key must change whenever effectiveCompact changes: the BeforeExecCommand
-          // handler closes over effectiveCompact at init time and must be re-registered
-          // on each toggle. Keyed on effectiveCompact directly so toolbar string refactors
-          // can't silently break compact↔fullscreen.
-          key={String(effectiveCompact)}
+          // key must change whenever effectiveCompact or version changes
+          // to update toolbar and value
+          key={`${effectiveCompact}-${version}`}
           id={name}
           onFocusIn={onFocus}
           onFocusOut={onBlur}
           initialValue={initialValue}
           onEditorChange={(content, editor) => {
-            // TinyMCE only marks the editor dirty on genuine user edits. The
-            // change events emitted while normalizing the initial HTML — on mount
-            // and on every compact/fullscreen remount — leave it clean, so this
-            // deterministically filters them out (timing/content comparisons don't).
-            if (!editor.isDirty()) return;
+            // Only propagate genuine user edits. TinyMCE fires onEditorChange
+            // while parsing/normalizing the initial HTML on init; isDirty() is
+            // false for those programmatic changes and true once the user edits,
+            // so this prevents marking the item dirty on load.
+            if (editor.isDirty()) {
+              onChange(content, name, datatype);
+            }
 
-            onChange(content, name, datatype);
-            valueRef.current = content;
-            emitCharCount(editor);
+            const charCount =
+              editor.plugins?.wordcount?.body?.getCharacterCount() ?? 0;
+
+            onCharacterCountChange && onCharacterCountChange(charCount);
           }}
           onInit={(_, editor) => {
-            // Seed the remount baseline and force a clean dirty state so the
-            // initial setContent can never be mistaken for a user edit.
-            valueRef.current = editor.getContent();
+            // Establish a clean baseline after the initial content loads so the
+            // normalization pass above isn't treated as a user edit.
+
+            setInitialValue(value ?? "");
+
             editor.setDirty(false);
-            emitCharCount(editor);
+
+            const charCount =
+              editor.plugins?.wordcount?.body?.getCharacterCount() ?? 0;
+
+            onCharacterCountChange && onCharacterCountChange(charCount);
+            // component re-render due to fullscreen toggle.
+            if (isFullscreen) {
+              editor.execCommand("mceFullScreen");
+            }
           }}
           onKeyDown={(evt) => {
             // Makes sure that when scrolling through a collection group, it
@@ -317,6 +301,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
             // specific to our application. Making this component not usable outside of our context.
             external_plugins: externalPlugins ?? {},
 
+            // Editor Settings
             toolbar: toolbar,
             contextmenu: "bold italic link | copy paste",
             toolbar_mode: effectiveCompact ? "sliding" : "wrap",
@@ -355,7 +340,6 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
             quickbars_selection_toolbar: effectiveCompact
               ? false
               : "blocks | bold italic underline backcolor link superscript subscript strikethrough | align bullist numlist outdent indent | removeformat",
-
             help_accessibility: false,
 
             // powerpaste_word_import: "prompt",
@@ -417,11 +401,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
                     new KeyboardEvent("keydown", { key: "p", metaKey: true })
                   );
                 });
-                if (isFullscreen) {
-                  editor.execCommand("mceFullScreen");
-                }
               });
-
               editor.on("SkinLoaded", () => {
                 setIsSkinLoaded(true);
               });
@@ -512,7 +492,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
               // Bynder App
               const handleOpenBynder = () => {
                 openBynder({
-                  url: bynderPortalUrlSetting?.value || "",
+                  url: bynderPortalUrlSetting?.value,
                   onSuccess: (assets) => {
                     if (assets?.length) {
                       tinymce.activeEditor?.insertContent(

@@ -367,6 +367,7 @@ export const Field = memo(
               fullWidth
               multiline
               minRows={6}
+              maxRows={compact ? 30 : 0}
               slotProps={{
                 htmlInput: {
                   "data-cy": `EditorField-${fieldData?.name || name}`,

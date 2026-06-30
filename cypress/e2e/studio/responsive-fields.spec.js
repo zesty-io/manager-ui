@@ -16,10 +16,8 @@ describe("Studio - Responsive field components", () => {
       (win) =>
         new Cypress.Promise((resolve) => {
           win.requestAnimationFrame(() => {
-            win.requestAnimationFrame(() => {
-              win.postMessage({ source: "studio-bridge", message }, "*");
-              resolve();
-            });
+            win.postMessage({ source: "studio-bridge", message }, "*");
+            resolve();
           });
         })
     );

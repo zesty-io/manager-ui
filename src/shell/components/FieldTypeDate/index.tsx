@@ -96,6 +96,11 @@ const parseDateInput = (input: string): Date | null => {
   return new Date(year, isValidMonth ? month : currentMonth, day);
 };
 
+const getStoredDateText = (value: unknown): string => {
+  if (!value || !isValid(value)) return "";
+  return `Stored as ${format(value as Date, "yyyy-MM-dd")}`;
+};
+
 export const FieldTypeDate = memo(
   forwardRef(
     (
@@ -284,12 +289,10 @@ export const FieldTypeDate = memo(
                 </Button>
               ))}
           </Stack>
-          {(valueFormatPreview || props.value) && (
+
+          {(valueFormatPreview || props?.value) && (
             <Typography variant="body3" color="text.secondary" sx={{ mt: 0.5 }}>
-              {valueFormatPreview ??
-                (props.value && isValid(props.value)
-                  ? `Stored as ${format(props.value, "yyyy-MM-dd")}`
-                  : "")}
+              {valueFormatPreview || getStoredDateText(props?.value)}
             </Typography>
           )}
         </LocalizationProvider>
