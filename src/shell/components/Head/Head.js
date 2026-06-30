@@ -96,7 +96,7 @@ export default connect((state, props) => {
         </div>
         <div className={styles.Notice}>
           {legacyHeadTags?.length && (
-            <Box sx={{ mx: 2 }} component="h3">
+            <Box component="h3">
               <Notice>{t("shell.headLegacyNotice")}</Notice>
             </Box>
           )}

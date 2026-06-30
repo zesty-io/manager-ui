@@ -116,7 +116,7 @@ export const HeadTag = (props) => {
     <Card
       data-cy={tag.hasOwnProperty("createdAt") ? "tagCard" : "newTagCard"}
       className={styles.HeadTag}
-      sx={{ m: 2 }}
+      sx={{ mr: 2, my: 2 }}
     >
       <CardHeader
         title={
