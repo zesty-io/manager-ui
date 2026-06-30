@@ -95,9 +95,16 @@ export const StudioLayersPanel = ({
     [canDrop]
   );
 
-  const handleRowDragLeave = useCallback((nodeId: string) => {
-    setDropIntent((prev) => (prev?.targetId === nodeId ? null : prev));
-  }, []);
+  const handleRowDragLeave = useCallback(
+    (nodeId: string, evt: DragEvent<HTMLElement>) => {
+      // dragleave also fires when the pointer crosses onto a child element of
+      // the row; ignore those so the drop indicator doesn't flicker — only
+      // clear when actually leaving the row.
+      if (evt.currentTarget.contains(evt.relatedTarget as Node)) return;
+      setDropIntent((prev) => (prev?.targetId === nodeId ? null : prev));
+    },
+    []
+  );
 
   const handleRowDrop = useCallback(
     (nodeId: string, evt: DragEvent<HTMLElement>) => {

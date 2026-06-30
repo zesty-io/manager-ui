@@ -76,7 +76,7 @@ type StudioLayersTreeItemProps = {
   onSelect: (node: LayersTreeNode) => void;
   onRowDragStart: (nodeId: string, evt: DragEvent<HTMLElement>) => void;
   onRowDragOver: (nodeId: string, evt: DragEvent<HTMLElement>) => void;
-  onRowDragLeave: (nodeId: string) => void;
+  onRowDragLeave: (nodeId: string, evt: DragEvent<HTMLElement>) => void;
   onRowDrop: (nodeId: string, evt: DragEvent<HTMLElement>) => void;
   onRowDragEnd: () => void;
 };
@@ -111,7 +111,7 @@ export const StudioLayersTreeItem = memo(
         onClick={() => onSelect(node)}
         onDragStart={(evt) => onRowDragStart(node.id, evt)}
         onDragOver={(evt) => onRowDragOver(node.id, evt)}
-        onDragLeave={() => onRowDragLeave(node.id)}
+        onDragLeave={(evt) => onRowDragLeave(node.id, evt)}
         onDrop={(evt) => onRowDrop(node.id, evt)}
         onDragEnd={onRowDragEnd}
         display="flex"
