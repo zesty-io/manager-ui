@@ -115,7 +115,23 @@ i18n
     lng: devInitialLng,
     supportedLngs: [...SUPPORTED_LOCALES],
 
-    ns: ["common", "shell"],
+    ns: [
+      "common",
+      "shell",
+      "content",
+      "media",
+      "release",
+      "code",
+      "schema",
+      "seo",
+      "settings",
+      "reports",
+      "dashboard",
+      "leads",
+      "marketplace",
+      "blocks",
+      "activePreview",
+    ],
     defaultNS: "common",
 
     backend: isProductionLikeEnv
