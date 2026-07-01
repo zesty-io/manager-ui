@@ -14,6 +14,7 @@ import { VersionSelector } from "../ItemEditHeader/VersionSelector";
 
 type StudioSidePanelProps = {
   headerTitle: string;
+  selectedItemLabel: string;
   pageItemVersion: number | null;
   unresolvedPath: boolean;
   panelMode: "info" | "edit";
@@ -34,6 +35,7 @@ type StudioSidePanelProps = {
 
 export const StudioSidePanel = ({
   headerTitle,
+  selectedItemLabel,
   pageItemVersion,
   unresolvedPath,
   panelMode,
@@ -76,9 +78,13 @@ export const StudioSidePanel = ({
         <Stack>
           <Stack direction="row" alignItems="center" gap={1}>
             <Typography variant="subtitle1" fontWeight="600">
-              {headerTitle}
+              {panelMode === "edit" ? selectedItemLabel : headerTitle}
             </Typography>
-            {pageItemVersion !== null && !unresolvedPath ? (
+            {/* In edit mode the VersionSelector below already shows the
+                selected item's version, so the static label is info-mode only. */}
+            {panelMode !== "edit" &&
+            pageItemVersion !== null &&
+            !unresolvedPath ? (
               <Typography variant="body2" color="text.secondary">
                 v{pageItemVersion}
               </Typography>

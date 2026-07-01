@@ -297,9 +297,9 @@ describe("Content Specs", () => {
     });
 
     it("Saves Content updates", () => {
-      // cy.intercept('POST','').as('saveItem')
-      cy.get("#SaveItemButton").click();
-      // cy.wait('@saveItem')
+      cy.waitOn("/v1/content/models/*/items/*", () => {
+        cy.get("#SaveItemButton").should("be.enabled").click();
+      });
 
       cy.get("[data-cy=toast]").contains("Item Saved").should("exist");
     });
@@ -512,6 +512,10 @@ describe("Content Specs", () => {
       cy.get('[data-cy="done-selecting-item-button"]', options).click(
         forceClick
       );
+      cy.get(
+        "[data-cy='field:one_to_one'] [data-cy='active-relational-item-more-button']",
+        options
+      ).should("exist");
     });
 
     it("can publish an item", () => {
@@ -519,7 +523,8 @@ describe("Content Specs", () => {
         "[data-cy='field:one_to_one'] [data-cy='active-relational-item-more-button']"
       )
         .scrollIntoView()
-        .click();
+        .should("be.enabled")
+        .click(forceClick);
       cy.getBySelector("active-relational-item-publish-now-button").click();
       cy.getBySelector("ConfirmPublishModal").should("exist");
       cy.getBySelector("CancelPublishButton").click();
@@ -530,7 +535,8 @@ describe("Content Specs", () => {
         "[data-cy='field:one_to_one'] [data-cy='active-relational-item-more-button']"
       )
         .scrollIntoView()
-        .click();
+        .should("be.enabled")
+        .click(forceClick);
       cy.getBySelector(
         "active-relational-item-schedule-publish-button"
       ).click();
@@ -543,7 +549,8 @@ describe("Content Specs", () => {
         "[data-cy='field:one_to_one'] [data-cy='active-relational-item-more-button']"
       )
         .scrollIntoView()
-        .click();
+        .should("be.enabled")
+        .click(forceClick);
       cy.getBySelector("active-relational-item-remove-item-button").click();
       cy.get(
         "[data-cy='field:one_to_one'] [data-cy='active-relational-item']"
@@ -633,20 +640,32 @@ describe("Content Specs", () => {
     });
   });
 
-  context("Repeater Field", () => {
+  // retries disabled: these tests are an ordered, testIsolation:false chain that
+  // mutates rows — a retry re-adds a row that already persisted, drifting counts.
+  context("Repeater Field", { retries: 0 }, () => {
     before(() => {
-      cy.waitOn("/v1/content/models*", () => {
-        cy.visit(
-          `/content/${Cypress.env("modelZUID")}/${Cypress.env("itemZUID")}`
-        );
-      });
+      cy.intercept("GET", "**/v1/content/models").as("getModels");
+      cy.intercept("GET", "**/v1/content/models/*/fields**").as("getFields");
+      cy.intercept("GET", "**/v1/content/items/publishings**").as(
+        "getPublishings"
+      );
 
-      cy.getBySelector("DuoModeToggle", { timeout: 40000 }).click(forceClick);
+      cy.visit(
+        `/content/${Cypress.env("modelZUID")}/${Cypress.env("itemZUID")}`
+      );
+      cy.wait(["@getModels", "@getPublishings", "@getFields"]);
+
+      cy.getBySelector("DuoModeToggle").should("exist").click(forceClick);
     });
 
     it("is should not be able to add an item if required fields are missing", () => {
-      cy.getBySelector("AddRepeaterRowItemBtn").scrollIntoView().click();
-      cy.getBySelector("SaveRepeaterRowItemBtn").scrollIntoView().click();
+      cy.getBySelector("AddRepeaterRowItemBtn")
+        .scrollIntoView()
+        .click(forceClick);
+      cy.getBySelector("SaveRepeaterRowItemBtn")
+        .scrollIntoView()
+        .should("be.enabled")
+        .click();
       cy.contains("Required Field. Please enter a value.").should("exist");
     });
 
@@ -660,7 +679,8 @@ describe("Content Specs", () => {
       cy.getBySelector("subfield:single_line_text")
         .find("input")
         .clear()
-        .type("single line text value");
+        .type("single line text value")
+        .should("have.value", "single line text value");
       cy.iframe("#wysiwyg_ifr").click().type("wysiwyg text value");
       cy.getBySelector("subfield:markdown")
         .find("textarea")
@@ -698,9 +718,76 @@ describe("Content Specs", () => {
         .click();
       cy.get(".MuiAutocomplete-option").first().click();
 
-      cy.getBySelector("subfield:sort").find("input").clear().type("99");
+      cy.getBySelector("subfield:sort")
+        .find("input")
+        .clear()
+        .type("99")
+        .should("have.value", "99");
 
-      cy.getBySelector("SaveRepeaterRowItemBtn").scrollIntoView().click();
+      cy.getBySelector("subfield:date")
+        .find('[data-cy="datePickerInputField"] input')
+        .clear({ force: true })
+        .type("Jan 15 2025{enter}")
+        .should("have.value", "Jan 15, 2025");
+      cy.getBySelector("subfield:datetime")
+        .find('[data-cy="datePickerInputField"] input')
+        .clear({ force: true })
+        .type("Jan 15 2025{enter}")
+        .should("have.value", "Jan 15, 2025");
+
+      cy.getBySelector("SaveRepeaterRowItemBtn")
+        .scrollIntoView()
+        .should("be.enabled")
+        .click();
+      cy.getBySelector("field:repeater")
+        .find(".MuiDataGrid-row")
+        .should("have.length", 1);
+    });
+
+    it("should populate date pickers with saved values when editing an existing row", () => {
+      // Add a row with date values so this test is self-contained
+      cy.getBySelector("AddRepeaterRowItemBtn")
+        .scrollIntoView()
+        .should("exist")
+        .click();
+      cy.getBySelector("subfield:single_line_text")
+        .find("input")
+        .clear()
+        .type("date test row");
+      cy.getBySelector("subfield:date")
+        .find('[data-cy="datePickerInputField"] input')
+        .clear({ force: true })
+        .type("Jan 15 2025{enter}")
+        .should("have.value", "Jan 15, 2025");
+      cy.getBySelector("subfield:datetime")
+        .find('[data-cy="datePickerInputField"] input')
+        .clear({ force: true })
+        .type("Jan 15 2025{enter}")
+        .should("have.value", "Jan 15, 2025");
+      cy.getBySelector("SaveRepeaterRowItemBtn")
+        .scrollIntoView()
+        .should("exist")
+        .click();
+      cy.getBySelector("field:repeater")
+        .find(".MuiDataGrid-row")
+        .should("have.length", 2);
+
+      // Reopen the row just saved to verify date values round-trip correctly
+      cy.getBySelector("field:repeater")
+        .find(".MuiDataGrid-row")
+        .last()
+        .click({ force: true });
+
+      cy.getBySelector("subfield:date")
+        .find('[data-cy="datePickerInputField"] input')
+        .should("have.value", "Jan 15, 2025");
+
+      cy.getBySelector("subfield:datetime")
+        .find('[data-cy="datePickerInputField"] input')
+        .should("have.value", "Jan 15, 2025");
+
+      // Delete the row to keep downstream tests isolated (they expect exactly 1 row from the "add" test)
+      cy.getBySelector("RemoveRepeaterRowItemBtn").click();
       cy.getBySelector("field:repeater")
         .find(".MuiDataGrid-row")
         .should("have.length", 1);
@@ -710,29 +797,43 @@ describe("Content Specs", () => {
       const oldValue = "update my value";
       const updatedValue = "I am now updated";
 
-      // Add a new row item
-      cy.getBySelector("AddRepeaterRowItemBtn").scrollIntoView().click();
+      // Add a new row item. Assert the inputs actually committed before saving —
+      // under load the save could fire before the typed values registered, leaving
+      // a required field empty so the row was never added (grid stuck at 1 row).
+      cy.getBySelector("AddRepeaterRowItemBtn")
+        .scrollIntoView()
+        .click(forceClick);
       cy.getBySelector("subfield:single_line_text")
         .find("input")
         .clear()
-        .type(oldValue);
+        .type(oldValue)
+        .should("have.value", oldValue);
       cy.getBySelector("subfield:url")
         .find("input")
         .clear()
-        .type("https://zesty.io");
-      cy.getBySelector("SaveRepeaterRowItemBtn").scrollIntoView().click();
+        .type("https://zesty.io")
+        .should("have.value", "https://zesty.io");
+      cy.getBySelector("SaveRepeaterRowItemBtn")
+        .scrollIntoView()
+        .should("be.enabled")
+        .click();
+
+      // Wait for the grid to settle at 2 rows before reading eq(1).
+      cy.getBySelector("field:repeater")
+        .find(".MuiDataGrid-row")
+        .should("have.length", 2);
 
       // Verify old value
       cy.getBySelector("field:repeater")
         .find(".MuiDataGrid-row")
-        .eq(1)
+        .last()
         .find("[data-field='single_line_text']")
         .should("contain.text", oldValue);
 
       // Update the value
       cy.getBySelector("field:repeater")
         .find(".MuiDataGrid-row")
-        .eq(1)
+        .last()
         .click({ force: true });
       cy.getBySelector("subfield:single_line_text")
         .find("input")
@@ -750,7 +851,7 @@ describe("Content Specs", () => {
     });
 
     it("should persist repeater rows after saving and reload", () => {
-      cy.get("#SaveItemButton").click();
+      cy.get("#SaveItemButton").should("be.enabled").click();
       cy.get("[data-cy=toast]").contains("Item Saved").should("exist");
 
       cy.reload();
@@ -807,7 +908,9 @@ describe("Content Specs", () => {
     });
 
     it("should bulk remove checked rows", () => {
-      cy.getBySelector("AddRepeaterRowItemBtn").scrollIntoView().click();
+      cy.getBySelector("AddRepeaterRowItemBtn")
+        .scrollIntoView()
+        .click(forceClick);
       cy.getBySelector("subfield:single_line_text")
         .find("input")
         .clear()
