@@ -489,9 +489,6 @@ function PreviewInner(props) {
                   setSaving(true);
                   sendMessage("save");
                 }}
-                sx={{
-                  maxWidth: "54px",
-                }}
               >
                 {t("common.save")}
               </Button>
