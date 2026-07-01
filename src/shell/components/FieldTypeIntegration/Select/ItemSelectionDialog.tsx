@@ -39,6 +39,7 @@ const keyPathValuesToString = (
   item: ApiDataProps,
   keyPaths: IntegrationKeyPaths
 ) => {
+  if (!keyPaths) return "";
   const { rootPath = "", ...filteredKeyPaths } = keyPaths;
   const validValues = Object.values(filteredKeyPaths)
     ?.filter((value) => {
