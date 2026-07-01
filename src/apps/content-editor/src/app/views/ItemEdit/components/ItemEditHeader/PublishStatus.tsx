@@ -37,9 +37,12 @@ export const PublishStatus = ({ currentVersion }: PublishStatusProps) => {
       new Date(item?.unpublishAt).getTime() > Date.now()
   );
 
-  const getUsername = (userZUID: string) => {
-    const user = users?.find((user) => user.ZUID === userZUID);
-    return user ? `${user.firstName} ${user.lastName}` : "";
+  const getUserNameByZUID = (userZUID?: string) => {
+    const user = users?.find((u) => u.ZUID === userZUID);
+    const completeUserName = !user
+      ? ""
+      : `${user.firstName || ""} ${user.lastName || ""}`.trim();
+    return completeUserName;
   };
 
   if (isFetchingPublishStatus) {
@@ -53,11 +56,13 @@ export const PublishStatus = ({ currentVersion }: PublishStatusProps) => {
           enterDelay={1000}
           enterNextDelay={1000}
           title={
-            <>
-              v{activePublishing.version} published on <br />
-              {formatDate(activePublishing.publishAt)} <br />
-              by {getUsername(activePublishing.publishedByUserZUID)}
-            </>
+            <TooltipTitle
+              text={`v${activePublishing.version} published`}
+              dateTime={activePublishing.publishAt || ""}
+              userName={getUserNameByZUID(
+                activePublishing?.publishedByUserZUID
+              )}
+            />
           }
           placement="bottom-start"
         >
@@ -81,11 +86,13 @@ export const PublishStatus = ({ currentVersion }: PublishStatusProps) => {
             enterDelay={1000}
             enterNextDelay={1000}
             title={
-              <>
-                v{scheduledPublishing.version} scheduled to publish on <br />
-                {formatDate(scheduledPublishing.publishAt)} <br />
-                by {getUsername(scheduledPublishing.publishedByUserZUID)}
-              </>
+              <TooltipTitle
+                text={`v${scheduledPublishing.version} scheduled to publish`}
+                dateTime={scheduledPublishing.publishAt || ""}
+                userName={getUserNameByZUID(
+                  scheduledPublishing?.publishedByUserZUID
+                )}
+              />
             }
             placement="bottom-start"
           >
@@ -111,12 +118,13 @@ export const PublishStatus = ({ currentVersion }: PublishStatusProps) => {
             enterDelay={1000}
             enterNextDelay={1000}
             title={
-              <>
-                v{scheduledUnpublishing?.version} scheduled to unpublish on{" "}
-                <br />
-                {formatDate(scheduledUnpublishing?.unpublishAt)} <br />
-                by {getUsername(scheduledUnpublishing?.publishedByUserZUID)}
-              </>
+              <TooltipTitle
+                text={`v${scheduledUnpublishing.version} scheduled to unpublish`}
+                dateTime={scheduledUnpublishing.unpublishAt || ""}
+                userName={getUserNameByZUID(
+                  activePublishing?.publishedByUserZUID
+                )}
+              />
             }
             placement="bottom-start"
           >

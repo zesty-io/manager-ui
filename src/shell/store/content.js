@@ -890,7 +890,7 @@ export function publish(modelZUID, itemZUID, data, meta = {}) {
           message = `Cancelled scheduled unpublish for ${title}`;
         }
 
-        return dispatch(notify({ message, kind: "save" }));
+        return dispatch(notify({ message, kind: "success" }));
       })
       .then(() => {
         dispatch(
@@ -944,7 +944,7 @@ export function unpublish(modelZUID, itemZUID, publishZUID, options = {}) {
         return dispatch(
           notify({
             message,
-            kind: "save",
+            kind: "success",
           })
         );
       })

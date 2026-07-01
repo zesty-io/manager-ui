@@ -173,6 +173,14 @@ export const ItemEditHeaderActions = ({
     new Date(item?.publishing?.unpublishAt).getTime() > Date.now()
   );
 
+  const gerUserNameByZUID = (userZUID?: string) => {
+    const user = users?.find((u) => u.ZUID === userZUID);
+    const completeUserName = !user
+      ? ""
+      : `${user.firstName || ""} ${user.lastName || ""}`.trim();
+    return completeUserName;
+  };
+
   const { data: statusLabels } = useGetWorkflowStatusLabelsQuery();
   const { data: itemWorkflowStatus, isLoading: isLoadingItemWorkflowStatus } =
     useGetItemWorkflowStatusQuery(
@@ -538,16 +546,14 @@ export const ItemEditHeaderActions = ({
               {saveShortcut}
             </div>
           ) : (
-            <div>
-              v{item?.meta?.version} saved on <br />
-              {formatDate(item?.meta?.updatedAt)} <br />
-              by{" "}
-              {lastItemUpdateAudit
-                ? `${lastItemUpdateAudit.firstName ?? ""} ${
-                    lastItemUpdateAudit.lastName ?? ""
-                  }`.trim()
-                : getUserFullName(item?.meta?.createdByUserZUID || "")}
-            </div>
+            <TooltipTitle
+              text={`v${item?.meta?.version} saved`}
+              dateTime={item?.meta?.updatedAt || ""}
+              userName={gerUserNameByZUID(
+                lastItemUpdateAudit?.actionByUserZUID ||
+                  item?.web?.createdByUserZUID
+              )}
+            />
           )
         }
         placement="bottom-start"
@@ -588,15 +594,14 @@ export const ItemEditHeaderActions = ({
                 {publishShortcut}
               </div>
             ) : (
-              <div>
-                v{activePublishing?.version} published{" "}
-                {datePreposition(activePublishing?.publishAt)}
-                <br />
-                {!!activePublishing && formatDate(activePublishing?.publishAt)}
-                <br />
-                by{" "}
-                {getUserFullName(activePublishing?.publishedByUserZUID || "")}
-              </div>
+              <TooltipTitle
+                text={`v${activePublishing?.version} published`}
+                dateTime={activePublishing?.publishAt || ""}
+                userName={gerUserNameByZUID(
+                  activePublishing?.publishedByUserZUID ||
+                    item?.web?.createdByUserZUID
+                )}
+              />
             )
           }
           placement="bottom-start"
@@ -696,11 +701,14 @@ export const ItemEditHeaderActions = ({
           enterDelay={1000}
           enterNextDelay={1000}
           title={
-            <div>
-              v{item?.scheduling?.version} published on <br />
-              {formatDate(item?.scheduling?.publishAt)} <br />
-              by {getUserFullName(item?.scheduling?.publishedByUserZUID || "")}
-            </div>
+            <TooltipTitle
+              text={`v${item?.scheduling?.version} scheduled to publish`}
+              dateTime={item?.scheduling?.publishAt || ""}
+              userName={gerUserNameByZUID(
+                item?.scheduling?.publishedByUserZUID ||
+                  item?.meta?.createdByUserZUID
+              )}
+            />
           }
           placement="bottom-start"
         >
