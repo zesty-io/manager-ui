@@ -552,5 +552,19 @@
   "headTagSave": "Save head tag",
   "headTagCreate": "Create head tag",
   "zestyAccountTitle": "Zesty Account",
-  "appLoadingFailure": "App loading failure: {{message}}"
+  "appLoadingFailure": "App loading failure: {{message}}",
+  "failedFetchModels": "Failed to fetch models",
+  "failedFetchModel": "Failed to fetch model: {{error}}",
+  "missingModel": "Missing model: {{ZUID}}",
+  "failedFetchField": "Failed to fetch field: {{error}}",
+  "failedCreateField": "Failed to create field. {{error}}",
+  "failedFetchHeadTags": "Failed to fetch head tags",
+  "failedLoadHeadTagFile": "Failed to load file. {{status}} | {{error}}",
+  "failedFetchHeadTagsError": "Failed to fetch head tags: {{error}}",
+  "failedLoadDomains": "Failed to load domains",
+  "failedLoadInstancesList": "There was an issue loading your instances list",
+  "forbiddenLoadInstancesList": "You are forbidden from loading an instances list",
+  "failedLoadUserRole": "Failed to load your user role for this instance.",
+  "failedFetchRecentItems": "There was an issue fetching recent items: {{error}}",
+  "failedFetchUsers": "Failed to fetch users"
 }

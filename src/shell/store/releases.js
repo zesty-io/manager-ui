@@ -5,6 +5,7 @@ import { request } from "utility/request";
 
 import { publish } from "shell/store/content";
 import { notify } from "shell/store/notifications";
+import i18n from "shell/i18n";
 
 export const releases = createSlice({
   name: "releases",
@@ -214,7 +215,7 @@ export function activate() {
         dispatch(
           notify({
             kind: "warn",
-            message: "Failed to activate releases",
+            message: i18n.t("release.failedActivateReleases"),
           })
         );
       });
@@ -277,7 +278,9 @@ export function createRelease(payload) {
           dispatch(
             notify({
               kind: "success",
-              message: `Created Release: ${res.data.name}`,
+              message: i18n.t("release.createdRelease", {
+                name: res.data.name,
+              }),
             })
           );
         } else {
@@ -295,7 +298,7 @@ export function createRelease(payload) {
         dispatch(
           notify({
             kind: "warn",
-            message: "Failed creating a release",
+            message: i18n.t("release.failedCreatingRelease"),
           })
         );
       });
@@ -318,14 +321,18 @@ export function deleteRelease(zuid) {
           if (res.status !== 200) {
             dispatch(
               notify({
-                message: `Failed deleting release ${release?.name}`,
+                message: i18n.t("release.failedDeletingRelease", {
+                  name: release?.name,
+                }),
                 type: "warn",
               })
             );
           } else {
             dispatch(
               notify({
-                message: `Deleted release ${release?.name}`,
+                message: i18n.t("release.deletedRelease", {
+                  name: release?.name,
+                }),
                 type: "success",
               })
             );

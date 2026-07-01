@@ -575,5 +575,19 @@
   "codeSampleBaseTemplateVersion": "带版本的基础模板",
   "codeSampleBaseTemplateVersionTip": "使用基础模板以特定版本号渲染该块。添加版本参数可让您定位模板的特定版本。",
   "codeSampleSpecificVariant": "特定块变体",
-  "codeSampleSpecificVariantTip": "使用该块的特定变体。变体参数通过 ZUID 定位块的特定变体。"
+  "codeSampleSpecificVariantTip": "使用该块的特定变体。变体参数通过 ZUID 定位块的特定变体。",
+  "deleteItemFailure": "Failure deleting item: {{statusText}}",
+  "deleteItemSuccess": "Successfully deleted item",
+  "scheduledPublish": "Scheduled {{title}} to publish on {{time}} in the {{timezone}} timezone",
+  "publishedNow": "Published {{title}} now",
+  "errorScheduling": "Error scheduling {{title}}",
+  "errorPublishing": "Error publishing {{title}}",
+  "unscheduledVersion": "Unscheduled version {{version}}",
+  "unpublished": "Unpublished {{title}}",
+  "errorUnschedulingVersion": "Error unscheduling version {{version}}",
+  "errorUnpublishing": "Error unpublishing {{title}}",
+  "failedFetchItemPublishing": "Failed to fetch item publishing: {{error}}",
+  "failedFetchItemPublishings": "{{status}}: Failed to fetch item publishings: {{error}}",
+  "failedFetchItemPublishingsError": "Failed to fetch item publishings: {{error}}",
+  "failedFetchModelPublishings": "Failed to fetch model items publishings: {{error}}"
 }

@@ -1,6 +1,7 @@
 import { formatName } from "utility/formatName";
 import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
+import i18n from "shell/i18n";
 
 export function fields(state = {}, action) {
   switch (action.type) {
@@ -118,7 +119,9 @@ export function fetchField(modelZUID, fieldZUID) {
         dispatch(
           notify({
             kind: "warn",
-            message: `Failed to fetch field: ${err?.message || err || ""}`,
+            message: i18n.t("shell.failedFetchField", {
+              error: err?.message || err || "",
+            }),
           })
         );
       },
@@ -187,7 +190,9 @@ export function createField(modelZUID, payload) {
         dispatch(
           notify({
             kind: "warn",
-            message: `Failed to create field. ${err.message}`,
+            message: i18n.t("shell.failedCreateField", {
+              error: err.message,
+            }),
           })
         );
       });

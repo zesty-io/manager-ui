@@ -28,5 +28,11 @@
   "publishedItems_other": "已发布 {{count}} 个项目",
   "startNewPublishPlan": "启动新发布计划",
   "lang": "语言",
-  "lastPublish": "上次发布时间"
+  "lastPublish": "上次发布时间",
+  "failedActivateReleases": "Failed to activate releases",
+  "createdRelease": "Created Release: {{name}}",
+  "failedCreatingRelease": "Failed creating a release",
+  "failedDeletingRelease": "Failed deleting release {{name}}",
+  "deletedRelease": "Deleted release {{name}}",
+  "updatedReleaseMember": "Updated release ({{releaseName}}) member ({{itemTitle}}) to version {{version}}"
 }

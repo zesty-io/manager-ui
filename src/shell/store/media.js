@@ -1,6 +1,7 @@
 import { createSlice, current } from "@reduxjs/toolkit";
 import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
+import i18n from "shell/i18n";
 import uniqBy from "lodash/uniqBy";
 import omit from "lodash/omit";
 import pick from "lodash/pick";
@@ -336,7 +337,7 @@ function fetchBins(instanceID) {
       error: (err) => {
         dispatch(
           notify({
-            message: "Failed loading instance media bins",
+            message: i18n.t("media.failedLoadingInstanceBins"),
             kind: "error",
           })
         );
@@ -366,7 +367,7 @@ function fetchEcoBins(ecoID) {
       error: (err) => {
         dispatch(
           notify({
-            message: "Failed loading ecosystem media bins",
+            message: i18n.t("media.failedLoadingEcoBins"),
             kind: "error",
           })
         );
@@ -400,7 +401,9 @@ export function editBin(binName, bin) {
       if (res.status === 200) {
         dispatch(editBinSuccess(res.data[0]));
       } else {
-        dispatch(notify({ message: "Failed editing bin", kind: "error" }));
+        dispatch(
+          notify({ message: i18n.t("media.failedEditingBin"), kind: "error" })
+        );
         throw res;
       }
     });
@@ -417,7 +420,10 @@ function fetchGroups(binZUID) {
           return res.data;
         } else {
           dispatch(
-            notify({ message: "Failed loading bin groups", kind: "error" })
+            notify({
+              message: i18n.t("media.failedLoadingBinGroups"),
+              kind: "error",
+            })
           );
           throw res;
         }
@@ -426,7 +432,9 @@ function fetchGroups(binZUID) {
         dispatch(
           notify({
             kind: "warn",
-            message: `Failed to fetch groups: ${err?.message || err || ""}`,
+            message: i18n.t("media.failedFetchGroups", {
+              error: err?.message || err || "",
+            }),
           })
         );
       },
@@ -465,7 +473,12 @@ export function createGroup(groupName, bin, group) {
         dispatch(createGroupSuccess(res.data[0]));
         return res;
       } else {
-        dispatch(notify({ message: "Failed creating group", kind: "error" }));
+        dispatch(
+          notify({
+            message: i18n.t("media.failedCreatingGroup"),
+            kind: "error",
+          })
+        );
         throw res;
       }
     });
@@ -487,7 +500,12 @@ export function editGroup(groupID, newGroupProperties) {
         if (res.status === 200) {
           dispatch(editGroupSuccess(res.data[0]));
         } else {
-          dispatch(notify({ message: "Failed editing group", kind: "error" }));
+          dispatch(
+            notify({
+              message: i18n.t("media.failedEditingGroup"),
+              kind: "error",
+            })
+          );
           throw res;
         }
       });
@@ -503,10 +521,18 @@ export function deleteGroup(group) {
       if (res.status === 200) {
         dispatch(deleteGroupSuccess(group));
         dispatch(
-          notify({ message: `Deleted group ${group.name}`, kind: "default" })
+          notify({
+            message: i18n.t("media.deletedGroup", { name: group.name }),
+            kind: "default",
+          })
         );
       } else {
-        dispatch(notify({ message: "Failed deleting group", kind: "error" }));
+        dispatch(
+          notify({
+            message: i18n.t("media.failedDeletingGroup"),
+            kind: "error",
+          })
+        );
         throw res;
       }
     });
@@ -524,7 +550,10 @@ export function fetchBinFiles(binZUID) {
           dispatch(fetchFilesSuccess({ group: binZUID, files: res.data }));
         } else {
           dispatch(
-            notify({ message: "Failed loading bin files", kind: "error" })
+            notify({
+              message: i18n.t("media.failedLoadingBinFiles"),
+              kind: "error",
+            })
           );
           throw res;
         }
@@ -533,7 +562,9 @@ export function fetchBinFiles(binZUID) {
         dispatch(
           notify({
             kind: "warn",
-            message: `Failed to fetch bin files: ${err?.message || err || ""}`,
+            message: i18n.t("media.failedFetchBinFiles", {
+              error: err?.message || err || "",
+            }),
           })
         );
       },
@@ -554,7 +585,10 @@ export function fetchGroupFiles(groupZUID) {
           );
         } else {
           dispatch(
-            notify({ message: "Failed loading group files", kind: "error" })
+            notify({
+              message: i18n.t("media.failedLoadingGroupFiles"),
+              kind: "error",
+            })
           );
           throw res;
         }
@@ -563,9 +597,9 @@ export function fetchGroupFiles(groupZUID) {
         dispatch(
           notify({
             kind: "warn",
-            message: `Failed to fetch group files: ${
-              err?.message || err || ""
-            }`,
+            message: i18n.t("media.failedFetchGroupFiles", {
+              error: err?.message || err || "",
+            }),
           })
         );
       },
@@ -582,7 +616,7 @@ async function getSignedUrl(file, bin) {
     console.error(err);
     notify({
       kind: "warn",
-      message: "Failed getting signed url for large file upload",
+      message: i18n.t("media.notifyFailedSignedUrl"),
     });
   }
 }
@@ -613,7 +647,7 @@ export function uploadFile(file, bin) {
       dispatch(fileUploadError(file));
       dispatch(
         notify({
-          message: "Failed uploading file",
+          message: i18n.t("media.notifyUploadFailed"),
           kind: "error",
         })
       );
@@ -665,8 +699,7 @@ export function uploadFile(file, bin) {
               dispatch(fileUploadError(file));
               dispatch(
                 notify({
-                  message:
-                    "Failed creating file record after signed url upload",
+                  message: i18n.t("media.notifyFailedCreateRecord"),
                   kind: "error",
                 })
               );
@@ -675,7 +708,7 @@ export function uploadFile(file, bin) {
           dispatch(fileUploadError(file));
           dispatch(
             notify({
-              message: "Failed uploading file to signed url",
+              message: i18n.t("media.notifyFailedUploadSignedUrl"),
               kind: "error",
             })
           );
@@ -704,7 +737,7 @@ export function uploadFile(file, bin) {
         } else {
           dispatch(
             notify({
-              message: "Failed uploading file",
+              message: i18n.t("media.notifyUploadFailed"),
               kind: "error",
             })
           );
@@ -727,10 +760,15 @@ export function deleteFile(file) {
       if (res.status === 200) {
         dispatch(deleteFileSuccess(file));
         dispatch(
-          notify({ message: `Deleted file ${file.filename}`, kind: "default" })
+          notify({
+            message: i18n.t("media.deletedFile", { filename: file.filename }),
+            kind: "default",
+          })
         );
       } else {
-        dispatch(notify({ message: "Failed deleting file", kind: "error" }));
+        dispatch(
+          notify({ message: i18n.t("media.failedDeletingFile"), kind: "error" })
+        );
         throw res;
       }
     });
@@ -754,13 +792,17 @@ export function editFile(fileID, fileProperties) {
         if (fileProperties.title || fileProperties.filename) {
           dispatch(
             notify({
-              message: `Edited file ${fileProperties.filename}`,
+              message: i18n.t("media.editedFile", {
+                filename: fileProperties.filename,
+              }),
               kind: "success",
             })
           );
         }
       } else {
-        dispatch(notify({ message: "Failed editing file", kind: "error" }));
+        dispatch(
+          notify({ message: i18n.t("media.failedEditingFile"), kind: "error" })
+        );
         throw res;
       }
     });
@@ -790,7 +832,9 @@ export function searchFiles(term) {
         if (res.status === 200) {
           dispatch(searchFilesSuccess({ term, files: res.data }));
         } else {
-          dispatch(notify({ message: "Failed file search", kind: "error" }));
+          dispatch(
+            notify({ message: i18n.t("media.failedFileSearch"), kind: "error" })
+          );
           dispatch(searchFilesError());
           throw res;
         }
@@ -799,7 +843,9 @@ export function searchFiles(term) {
         dispatch(
           notify({
             kind: "warn",
-            message: `Failed to search for file: ${err?.message || err || ""}`,
+            message: i18n.t("media.failedSearchFile", {
+              error: err?.message || err || "",
+            }),
           })
         );
       },

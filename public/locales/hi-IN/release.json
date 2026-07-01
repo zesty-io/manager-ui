@@ -29,5 +29,11 @@
   "publishedItems_other": "{{count}} आइटम पब्लिश किए गए",
   "startNewPublishPlan": "नई पब्लिश योजना शुरू करें",
   "lang": "भाषा",
-  "lastPublish": "अंतिम बार पब्लिश किया गया"
+  "lastPublish": "अंतिम बार पब्लिश किया गया",
+  "failedActivateReleases": "Failed to activate releases",
+  "createdRelease": "Created Release: {{name}}",
+  "failedCreatingRelease": "Failed creating a release",
+  "failedDeletingRelease": "Failed deleting release {{name}}",
+  "deletedRelease": "Deleted release {{name}}",
+  "updatedReleaseMember": "Updated release ({{releaseName}}) member ({{itemTitle}}) to version {{version}}"
 }

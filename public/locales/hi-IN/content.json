@@ -587,5 +587,19 @@
   "codeSampleBaseTemplateVersion": "संस्करण के साथ बेस टेम्पलेट",
   "codeSampleBaseTemplateVersionTip": "किसी विशिष्ट संस्करण संख्या के साथ ब्लॉक को रेंडर करने के लिए बेस टेम्पलेट का उपयोग करता है। संस्करण पैरामीटर जोड़ने से आप टेम्पलेट के किसी विशेष संस्करण को लक्षित कर सकते हैं।",
   "codeSampleSpecificVariant": "विशिष्ट ब्लॉक वेरिएंट",
-  "codeSampleSpecificVariantTip": "ब्लॉक के किसी विशिष्ट वेरिएंट का उपयोग करता है। वेरिएंट पैरामीटर ब्लॉक के किसी विशेष रूपांतर को उसके ZUID द्वारा लक्षित करता है।"
+  "codeSampleSpecificVariantTip": "ब्लॉक के किसी विशिष्ट वेरिएंट का उपयोग करता है। वेरिएंट पैरामीटर ब्लॉक के किसी विशेष रूपांतर को उसके ZUID द्वारा लक्षित करता है।",
+  "deleteItemFailure": "Failure deleting item: {{statusText}}",
+  "deleteItemSuccess": "Successfully deleted item",
+  "scheduledPublish": "Scheduled {{title}} to publish on {{time}} in the {{timezone}} timezone",
+  "publishedNow": "Published {{title}} now",
+  "errorScheduling": "Error scheduling {{title}}",
+  "errorPublishing": "Error publishing {{title}}",
+  "unscheduledVersion": "Unscheduled version {{version}}",
+  "unpublished": "Unpublished {{title}}",
+  "errorUnschedulingVersion": "Error unscheduling version {{version}}",
+  "errorUnpublishing": "Error unpublishing {{title}}",
+  "failedFetchItemPublishing": "Failed to fetch item publishing: {{error}}",
+  "failedFetchItemPublishings": "{{status}}: Failed to fetch item publishings: {{error}}",
+  "failedFetchItemPublishingsError": "Failed to fetch item publishings: {{error}}",
+  "failedFetchModelPublishings": "Failed to fetch model items publishings: {{error}}"
 }

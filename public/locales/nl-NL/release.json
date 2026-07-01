@@ -29,5 +29,11 @@
   "publishedItems_other": "{{count}} items gepubliceerd",
   "startNewPublishPlan": "Nieuw publicatieplan starten",
   "lang": "Taal",
-  "lastPublish": "Laatste publicatie"
+  "lastPublish": "Laatste publicatie",
+  "failedActivateReleases": "Failed to activate releases",
+  "createdRelease": "Created Release: {{name}}",
+  "failedCreatingRelease": "Failed creating a release",
+  "failedDeletingRelease": "Failed deleting release {{name}}",
+  "deletedRelease": "Deleted release {{name}}",
+  "updatedReleaseMember": "Updated release ({{releaseName}}) member ({{itemTitle}}) to version {{version}}"
 }

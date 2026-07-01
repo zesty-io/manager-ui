@@ -31,5 +31,11 @@
   "publishedItems_other": "Опубликовано {{count}} элемента",
   "startNewPublishPlan": "Запустить новый план публикации",
   "lang": "Язык",
-  "lastPublish": "Последняя публикация"
+  "lastPublish": "Последняя публикация",
+  "failedActivateReleases": "Failed to activate releases",
+  "createdRelease": "Created Release: {{name}}",
+  "failedCreatingRelease": "Failed creating a release",
+  "failedDeletingRelease": "Failed deleting release {{name}}",
+  "deletedRelease": "Deleted release {{name}}",
+  "updatedReleaseMember": "Updated release ({{releaseName}}) member ({{itemTitle}}) to version {{version}}"
 }

@@ -30,5 +30,11 @@
   "publishedItems_other": "Se han publicado {{count}} elementos",
   "startNewPublishPlan": "Iniciar nuevo plan de publicación",
   "lang": "Idioma",
-  "lastPublish": "Última publicación"
+  "lastPublish": "Última publicación",
+  "failedActivateReleases": "Failed to activate releases",
+  "createdRelease": "Created Release: {{name}}",
+  "failedCreatingRelease": "Failed creating a release",
+  "failedDeletingRelease": "Failed deleting release {{name}}",
+  "deletedRelease": "Deleted release {{name}}",
+  "updatedReleaseMember": "Updated release ({{releaseName}}) member ({{itemTitle}}) to version {{version}}"
 }
