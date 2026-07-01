@@ -1,12 +1,12 @@
 export const meta = {
-  name: "localize-subapp",
+  name: "localize",
   description:
-    "Full localization pipeline: Scout → Extract+Wire → Composer → Plumber → Verifier → Scribe",
+    "Localization pipeline for any target — file, folder, or sub-app: Scout → Extract+Wire → Composer → Verifier",
   phases: [
     {
       title: "Discovery",
       detail:
-        "Transitive import scan, dedup map, 3rd-party audit, batch assignment",
+        "Transitive import scan, namespace inference, dedup map, 3rd-party audit, batch assignment",
     },
     {
       title: "Extract & Wire",
@@ -21,35 +21,36 @@ export const meta = {
       title: "Verify",
       detail: "tsc, JSON validity, key parity, broken-key grep",
     },
-    {
-      title: "Scribe",
-      detail: "Update LOCALIZATION_TASKS.md with results and carry-overs",
-    },
   ],
 };
 
 // ─── Args ─────────────────────────────────────────────────────────────────────
-// args: { namespace: string, target: string | string[], lazyLoadRoot?: string }
-// namespace MUST be flat camelCase — e.g. "activePreview", NOT "active-preview".
-// Hyphens are inconsistent with the camelCase key convention; always camelCase.
-// e.g. { namespace: "activePreview", target: "src/apps/active-preview", lazyLoadRoot: "src/apps/active-preview/Preview.js" }
+// args: { target: string | string[], namespace?: string, lazyLoadRoot?: string }
+// namespace is OPTIONAL. If omitted, the Scout infers it from the target path(s)
+// using the same home-namespace rule as the rest of the pipeline:
+//   src/apps/<name>/** → flat camelCase of <name> (e.g. "active-preview" → "activePreview")
+//   src/shell/**       → "shell"
+//   src/utility/**     → "common"
+// For ambiguous/mixed targets, the Scout uses judgment and reports its reasoning.
+// If provided, namespace MUST be flat camelCase — e.g. "activePreview", NOT "active-preview".
+// e.g. { target: "src/apps/active-preview", lazyLoadRoot: "src/apps/active-preview/Preview.js" } (namespace inferred)
 // e.g. { namespace: "schema", target: "src/apps/schema/src", lazyLoadRoot: "src/apps/schema/src/app/index.tsx" }
 
 const resolvedArgs = typeof args === "string" ? JSON.parse(args) : args;
 
-if (!resolvedArgs || !resolvedArgs.namespace || !resolvedArgs.target) {
+if (!resolvedArgs || !resolvedArgs.target) {
   throw new Error(
-    "args must include { namespace: string, target: string | string[], lazyLoadRoot?: string }"
+    "args must include { target: string | string[], namespace?: string, lazyLoadRoot?: string }"
   );
 }
 
-if (/[^a-zA-Z0-9]/.test(resolvedArgs.namespace)) {
+if (resolvedArgs.namespace && /[^a-zA-Z0-9]/.test(resolvedArgs.namespace)) {
   throw new Error(
     `namespace must be flat camelCase (no hyphens, dots, or underscores). Got: "${resolvedArgs.namespace}"`
   );
 }
 
-const ns = resolvedArgs.namespace;
+const providedNs = resolvedArgs.namespace || null;
 const targetPaths = Array.isArray(resolvedArgs.target)
   ? resolvedArgs.target
   : [resolvedArgs.target];
@@ -77,6 +78,7 @@ const SCOUT_SCHEMA = {
     "existingKeyMap",
     "thirdPartyFlags",
     "needsLazyLoadPlumbing",
+    "resolvedNamespace",
   ],
   properties: {
     batches: {
@@ -149,6 +151,16 @@ const SCOUT_SCHEMA = {
     },
     needsLazyLoadPlumbing: { type: "boolean" },
     discoveredLazyLoadRoot: { type: ["string", "null"] },
+    resolvedNamespace: {
+      type: "string",
+      description:
+        "The flat camelCase namespace this pass targets — either the explicitly provided one, echoed back, or inferred from the target path(s)",
+    },
+    namespaceReasoning: {
+      type: "string",
+      description:
+        "One-sentence explanation of how resolvedNamespace was inferred. Empty when namespace was explicitly provided.",
+    },
   },
 };
 
@@ -239,10 +251,33 @@ const scout = await agent(
 You are the Scout for a localization workflow. Your job is full discovery: build a complete, batched file list from the target path(s), including transitive imports.
 
 ## Inputs
-- Target namespace: "${ns}"
+- Target namespace: ${
+    providedNs
+      ? `"${providedNs}" (explicitly provided)`
+      : "not provided — resolve it yourself in STEP 0 below"
+  }
 - Target paths: ${targetDisplay}
 - Lazy-load root: ${lazyLoadRoot || "not provided"}
 - Repo root: /home/nar/Developer/zesty/manager-ui
+
+---
+
+## STEP 0 — Resolve the target namespace
+${
+  providedNs
+    ? `The target namespace was explicitly provided: "${providedNs}". Set resolvedNamespace to "${providedNs}" exactly and leave namespaceReasoning empty.`
+    : `No namespace was provided — infer it from the target path(s) below. Do NOT just camelCase the directory name: some app directories use a DIFFERENT namespace than their folder name (e.g. "content-editor" → namespace "content", "code-editor" → namespace "code"). Ground your answer in real precedent, in this order:
+
+1. Run \`grep -rho 't("[a-zA-Z]*\\.' <a file or two near the target path> | sort -u\` (and the single-quote variant, and \`i18n.t(\`) to see what namespace prefix is already in use nearby.
+2. Cross-check against \`ls public/locales/en-US/\` — an existing \`<namespace>.json\` file is strong evidence of the namespace already established for that area.
+3. If the target is genuinely new (no existing t() calls nearby, no matching locale file) and lives directly under one of these roots, fall back to the mechanical rule:
+   - src/apps/<name>/** → flat camelCase of <name> (e.g. "active-preview" → "activePreview")
+   - src/shell/** → "shell"
+   - src/utility/** → "common"
+4. If the target path(s) don't cleanly match any of the above (e.g. a path outside src/apps|shell|utility, or multiple target paths spanning different apps), use judgment: pick whichever namespace is the true home of the primary user-facing strings — for a single file, that's whatever its closest siblings already use; for a folder/list spanning multiple homes, pick the one shared by the majority of files.
+
+Set resolvedNamespace to your chosen flat camelCase namespace, and set namespaceReasoning to a one-sentence explanation citing what you found (e.g. "sibling files in this dir already use content.* keys").`
+}
 
 ---
 
@@ -271,7 +306,7 @@ For each file, determine its HOME NAMESPACE:
 - src/utility/** → "common"
 - anything else → "unknown"
 
-Mark files whose homeNamespace !== "${ns}" as crossNamespace: true.
+Mark files whose homeNamespace !== your resolvedNamespace (from STEP 0) as crossNamespace: true.
 
 ---
 
@@ -324,10 +359,10 @@ Give each batch a short id string: "solo-0", "solo-1", "small-0", "large-0", etc
 ## STEP 6 — Lazy-load plumbing check
 ${
   lazyLoadRoot
-    ? `Read ${lazyLoadRoot}. Check if it already has a local <Suspense> boundary AND a useTranslation("${ns}") call. If EITHER is missing, set needsLazyLoadPlumbing: true. Otherwise false. Set discoveredLazyLoadRoot: "${lazyLoadRoot}".`
+    ? `Read ${lazyLoadRoot}. Check if it already has a local <Suspense> boundary AND a useTranslation(...) call for your resolvedNamespace (from STEP 0). If EITHER is missing, set needsLazyLoadPlumbing: true. Otherwise false. Set discoveredLazyLoadRoot: "${lazyLoadRoot}".`
     : `Auto-discover the sub-app entry point. Check these candidates in order and stop at the first file that exists:
 ${targetPaths.map((p) => `- ${p}/index.tsx\n- ${p}/index.js`).join("\n")}
-Read the first file found. Check if it has BOTH a <Suspense> boundary AND a useTranslation("${ns}") call.
+Read the first file found. Check if it has BOTH a <Suspense> boundary AND a useTranslation(...) call for your resolvedNamespace (from STEP 0).
 If EITHER is missing, set needsLazyLoadPlumbing: true; otherwise false.
 Set discoveredLazyLoadRoot to the path of the file you found, or null if none of the candidates exist.`
 }
@@ -338,6 +373,20 @@ Return the full structured result.
 `,
   { phase: "Discovery", schema: SCOUT_SCHEMA, effort: "high" }
 );
+
+const ns = scout.resolvedNamespace;
+if (!ns || /[^a-zA-Z0-9]/.test(ns)) {
+  throw new Error(
+    `Scout returned an invalid resolvedNamespace: "${ns}". Must be flat camelCase.`
+  );
+}
+if (!providedNs) {
+  log(
+    `Namespace not provided — resolved to "${ns}"${
+      scout.namespaceReasoning ? ` (${scout.namespaceReasoning})` : ""
+    }`
+  );
+}
 
 const totalFiles = scout.batches.reduce((n, b) => n + b.files.length, 0);
 const crossFiles = scout.batches.reduce(
@@ -571,7 +620,7 @@ for (const fr of allFileResults) {
   }
 }
 
-// Cross-namespace files: extracted but not wired — carried over to Scribe
+// Cross-namespace files: extracted but not wired — surfaced in the final summary
 const crossNsGaps = allFileResults.filter(
   (fr) => fr.homeNamespace !== ns && fr.strings.length > 0
 );
@@ -811,141 +860,61 @@ log(
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
-// PHASE 5 — SCRIBE
+// SUMMARY + RETURN
 // ─────────────────────────────────────────────────────────────────────────────
-phase("Scribe");
-
 const inaccessibleFlags = scout.thirdPartyFlags.filter(
   (f) => f.category === "inaccessible"
 );
 
-const scribeData = {
-  namespace: ns,
-  target: targetDisplay,
-  lazyLoadRoot: lazyLoadRoot,
-  stats: {
-    batchesRun: scout.batches.length,
-    filesWired: filesWiredCount,
-    newKeys: newCount,
-    reusedKeys: reusedCount,
-  },
-  verify: {
-    passed: verifyPassed,
-    tscPassed: verify.tscPassed,
-    tscErrors: verify.tscErrors || [],
-    jsonValid: verify.jsonValid,
-    jsonErrors: verify.jsonErrors || [],
-    keyParityPassed: verify.keyParityPassed,
-    keyParityIssues: verify.keyParityIssues || [],
-    brokenKeys: verify.brokenKeys || [],
-    lazyLoadConfirmed: verify.lazyLoadConfirmed,
-  },
-  crossNamespaceGaps: crossNsGaps.map((fr) => ({
-    file: fr.filePath,
-    homeNamespace: fr.homeNamespace,
-    stringCount: fr.strings.length,
-    followUp:
-      "Workflow({ name: 'localize-subapp', args: { namespace: '" +
-      fr.homeNamespace +
-      "', target: '" +
-      fr.filePath +
-      "' } })",
-  })),
-  inaccessibleThirdParty: inaccessibleFlags.map((f) => ({
-    file: f.file,
-    component: f.component,
-    library: f.importSource,
-    stringProps: f.stringProps || [],
-    reason: f.reason || "",
-  })),
-};
+const crossNamespaceGaps = crossNsGaps.map((fr) => ({
+  file: fr.filePath,
+  homeNamespace: fr.homeNamespace,
+  stringCount: fr.strings.length,
+  followUp: `Workflow({ name: "localize", args: { namespace: "${fr.homeNamespace}", target: "${fr.filePath}" } })`,
+}));
 
-await agent(
-  `
-You are the Scribe. Update LOCALIZATION_TASKS.md with the results of the "${ns}" localization pass.
+const inaccessibleThirdParty = inaccessibleFlags.map((f) => ({
+  file: f.file,
+  component: f.component,
+  library: f.importSource,
+  stringProps: f.stringProps || [],
+  reason: f.reason || "",
+}));
 
-## Pass results
-${JSON.stringify(scribeData, null, 2)}
-
-## What to update in LOCALIZATION_TASKS.md
-
-### 1. Board snapshot table (top of the file)
-Move "${ns}" from wherever it is (Up Next or Backlog) to the ✓ Done column.
-If the Up Next slot is now empty, promote the next Backlog item to Up Next.
-
-### 2. "▶ In Progress" section
-If "${ns}" appears here, remove it.
-
-### 3. Add a completed entry under "# ✓ Done"
-Format it like the existing done entries. Include:
-- [x] Lazy-load plumbing: ${
-    lazyLoadRoot ? lazyLoadRoot : "N/A (not applicable to this target)"
-  }
-- [x] en-US/${ns}.json populated — ${newCount} new keys${
-    reusedCount > 0 ? ", " + reusedCount + " reused from common/shell" : ""
-  }
-- [x] All 6 locales seeded with en-US values (manual translation pending)
-- [x] tsc: ${verify.tscPassed ? "PASS" : "FAIL — see issues below"}
-
-### 4. Cross-namespace gaps (if any)
-${
-  crossNsGaps.length > 0
-    ? `Add a "Carry-overs from ${ns} pass" note under the done entry. For each gap, add a sub-item:
-${scribeData.crossNamespaceGaps
-  .map(
-    (g) =>
-      `  - \`${g.homeNamespace}\` — ${g.file} (${g.stringCount} strings found but not wired; run: ${g.followUp})`
-  )
-  .join("\n")}`
-    : "No cross-namespace gaps — skip this section."
+if (crossNamespaceGaps.length > 0) {
+  log(
+    `${crossNamespaceGaps.length} cross-namespace gap(s) — strings extracted but not wired: ` +
+      crossNamespaceGaps
+        .map(
+          (g) =>
+            `${g.file} (${g.stringCount} strings, home: ${g.homeNamespace})`
+        )
+        .join("; ")
+  );
 }
 
-### 5. Verification failures (if any)
-${
-  !verifyPassed
-    ? `List each failing check as a manual action item under the done entry:
-${[
-  ...(verify.tscErrors || []).map((e) => "  - TypeScript: " + e),
-  ...(verify.keyParityIssues || []).map((e) => "  - Key parity: " + e),
-  ...(verify.brokenKeys || []).map(
-    (k) =>
-      "  - Broken key: " + k + " (used in code but missing from en-US JSON)"
-  ),
-  ...(verify.jsonErrors || []).map((e) => "  - JSON: " + e),
-].join("\n")}`
-    : "All checks passed — no failures to record."
+if (inaccessibleThirdParty.length > 0) {
+  log(
+    `${inaccessibleThirdParty.length} inaccessible third-party string source(s) flagged for manual review: ` +
+      inaccessibleThirdParty
+        .map((f) => `${f.component} in ${f.file} (${f.library})`)
+        .join("; ")
+  );
 }
 
-### 6. Third-party inaccessible strings (if any)
-${
-  inaccessibleFlags.length > 0
-    ? `Add to the "Phase 5 — Remaining" section:
-${scribeData.inaccessibleThirdParty
-  .map(
-    (f) =>
-      `  - [ ] ${f.component} in ${f.file} (${f.library}): ${
-        f.reason || "strings inaccessible via locale API"
-      } — decide: wrap, file Phase 5 item, or skip`
-  )
-  .join("\n")}`
-    : "No inaccessible third-party strings — skip this section."
+if (!verifyPassed) {
+  log(
+    "Verify FAILED — see the returned object's `verify` field for tscErrors/keyParityIssues/brokenKeys."
+  );
 }
 
-Write the updated LOCALIZATION_TASKS.md. Preserve all existing formatting, sections, and content not mentioned above.
-`,
-  { phase: "Scribe", label: "scribe:task-board", model: "haiku" }
-);
-
-log("Scribe done. LOCALIZATION_TASKS.md updated.");
-
-// ─────────────────────────────────────────────────────────────────────────────
-// RETURN
-// ─────────────────────────────────────────────────────────────────────────────
 return {
   namespace: ns,
   filesWired: filesWiredCount,
   newKeys: newCount,
   reusedKeys: reusedCount,
-  crossNamespaceGaps: crossNsGaps.length,
   verifyPassed,
+  verify,
+  crossNamespaceGaps,
+  inaccessibleThirdParty,
 };
