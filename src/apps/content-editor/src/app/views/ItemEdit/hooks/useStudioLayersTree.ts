@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   InteractionMode,
   LayersDropPosition,
@@ -77,6 +78,7 @@ export const useStudioLayersTree = ({
   selectedLayout,
   dndDisabled,
 }: Args) => {
+  const { t } = useTranslation();
   const [tree, setTree] = useState<LayersTreeNode[] | null>(null);
   // Everything is expanded by default; we only track what the user explicitly
   // collapses, so nodes that appear on later re-emits start open too.
@@ -166,20 +168,25 @@ export const useStudioLayersTree = ({
       if (node.kind === "codeFile") {
         return node.codeId
           ? codeFileNameById[node.codeId] || node.codeId
-          : "Page";
+          : t("content.studioLayersNodePage");
       }
       if (node.kind === "element") {
-        return node.tagName || "element";
+        return node.tagName || t("content.studioLayersNodeElement");
       }
       if (node.kind === "field") {
         // Dynamic content is labeled by its field name, not its value.
         const field = node.fieldZuid ? fieldsState[node.fieldZuid] : null;
-        return field?.label || field?.name || node.fieldType || "Field";
+        return (
+          field?.label ||
+          field?.name ||
+          node.fieldType ||
+          t("content.studioLayersNodeField")
+        );
       }
       // Static text shows its actual content.
       return node.label || "";
     },
-    [codeFileNameById, fieldsState]
+    [codeFileNameById, fieldsState, t]
   );
 
   const isNodeSelectable = useCallback(

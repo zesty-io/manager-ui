@@ -601,5 +601,10 @@
   "codeSampleBaseTemplateVersion": "Base Template with Version",
   "codeSampleBaseTemplateVersionTip": "Uses the base template for rendering the block with a specific version number. Adding the version parameter allows you to target a particular version of the template.",
   "codeSampleSpecificVariant": "Specific Block Variant",
-  "codeSampleSpecificVariantTip": "Uses a specific variant of the block. The variant parameter targets a particular variation of the block by its ZUID."
+  "codeSampleSpecificVariantTip": "Uses a specific variant of the block. The variant parameter targets a particular variation of the block by its ZUID.",
+  "studioLayersPanelTitle": "Layers",
+  "studioLayersEmptyState": "No layers found",
+  "studioLayersNodePage": "Page",
+  "studioLayersNodeElement": "element",
+  "studioLayersNodeField": "Field"
 }
