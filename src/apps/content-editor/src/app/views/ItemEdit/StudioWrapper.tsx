@@ -43,6 +43,7 @@ import {
 import { StudioHeader } from "./components/StudioWrapper/StudioHeader";
 import { StudioPreview } from "./components/StudioWrapper/StudioPreview";
 import { StudioSidePanel } from "./components/StudioWrapper/StudioSidePanel";
+import { StudioLayersPanel } from "./components/StudioWrapper/StudioLayersPanel";
 import {
   StudioSaveChange,
   StudioSaveChangesModal,
@@ -55,6 +56,7 @@ import {
 import { useStudioBridge } from "./hooks/useStudioBridge";
 import { InteractionMode, LayoutBreadcrumbItem } from "./hooks/studioTypes";
 import { useStudioSelection } from "./hooks/useStudioSelection";
+import { useStudioLayersTree } from "./hooks/useStudioLayersTree";
 import { getRefRegistry } from "../../../../../../engine/refRegistry";
 import { useMultiPermission } from "../../../../../../shell/hooks/use-permissions";
 import { MediaApp } from "../../../../../media/src/app";
@@ -156,6 +158,9 @@ export const StudioWrapper = () => {
       selector?: string;
       layoutId?: string;
       codeId?: string;
+      targetLayoutId?: string;
+      targetCodeId?: string;
+      position?: string;
       isLeafImg?: boolean;
       imgIndex?: number;
       newSrc?: string;
@@ -1109,6 +1114,36 @@ export const StudioWrapper = () => {
     bridgeUpdatedFieldZuidRef.current = fieldZuid;
   }, []);
 
+  const {
+    hasTree: hasLayersTree,
+    flatRows: layersFlatRows,
+    selectedNodeId: selectedLayersNodeId,
+    handleLayersTree,
+    resetTree: resetLayersTree,
+    toggleNode: toggleLayersNode,
+    handleNodeSelect: handleLayersNodeSelect,
+    canDrop: canDropLayersNode,
+    handleNodeDrop: handleLayersNodeDrop,
+  } = useStudioLayersTree({
+    interactionMode,
+    postCommandToBridge,
+    applyBridgeSelection,
+    applyLayoutSelection,
+    codeFileNameById,
+    fieldsState,
+    selectedElement,
+    selectedLayout,
+    dndDisabled: isSavingLayout || isRefreshing,
+  });
+
+  // The tree describes the current document — drop it whenever the iframe
+  // starts reloading or navigating; the fresh page re-emits it on load.
+  useEffect(() => {
+    if (isRefreshing || isNavigating) {
+      resetLayersTree();
+    }
+  }, [isNavigating, isRefreshing, resetLayersTree]);
+
   const { handlePreviewLoad } = useStudioBridge({
     dispatch,
     interactionMode,
@@ -1117,6 +1152,7 @@ export const StudioWrapper = () => {
     handleTemplateSourceMap,
     handleReorderOutput,
     handleLayoutContentUpdate,
+    handleLayersTree,
     applyLayoutSelection,
     clearLayoutSelection,
     applySelection: applyBridgeSelection,
@@ -1239,6 +1275,15 @@ export const StudioWrapper = () => {
             logoSrc={contentOneLogoOnly}
           />
           <Box display="flex" flex="1" minHeight={0} width="100%">
+            <StudioLayersPanel
+              hasTree={hasLayersTree}
+              flatRows={layersFlatRows}
+              selectedNodeId={selectedLayersNodeId}
+              onToggle={toggleLayersNode}
+              onSelect={handleLayersNodeSelect}
+              canDrop={canDropLayersNode}
+              onDrop={handleLayersNodeDrop}
+            />
             <StudioPreview
               iframeRef={iframeRef}
               iframeSrc={iframeSrc}
@@ -1249,6 +1294,7 @@ export const StudioWrapper = () => {
             {interactionMode === "content" ? (
               <StudioSidePanel
                 headerTitle={headerTitle}
+                selectedItemLabel={selectedItemLabel}
                 pageItemVersion={pageItemVersion}
                 unresolvedPath={unresolvedPath}
                 panelMode={panelMode}
