@@ -21,17 +21,51 @@ const isProductionLikeEnv = ["stage", "production"].includes(
   __CONFIG__?.ENV ?? ""
 );
 
+// Single source of truth for the supported locale tags. `SupportedLocale` is
+// derived from this so other modules (e.g. the date-fns locale map) can be
+// type-checked against it — adding a tag here surfaces gaps elsewhere via tsc.
+export const SUPPORTED_LOCALES = [
+  "en-US",
+  "es-ES",
+  "hi-IN",
+  "zh-CN",
+  "ru-RU",
+  "nl-NL",
+] as const;
+export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
+
+// Maps any browser language tag to the nearest supported locale by first trying
+// an exact match, then falling back to a base-language prefix match (e.g. "en"
+// → "en-US", "zh-TW" → "zh-CN"), then to "en-US".
+export function toSupportedLocale(lng: string): SupportedLocale {
+  if (SUPPORTED_LOCALES.includes(lng as SupportedLocale)) {
+    return lng as SupportedLocale;
+  }
+  const base = lng.split("-")[0];
+  return SUPPORTED_LOCALES.find((s) => s.startsWith(base)) ?? "en-US";
+}
+
 // Fallback off in dev so missing keys always trip handleMissingKey instead of
 // silently resolving to English. Prod keeps it so users never see raw keys.
 const fallbackLng = isProductionLikeEnv ? "en-US" : false;
 
 // Without a fallback, an empty detector result leaves i18next with no language
-// and crashes on the first lookup. Pin the stored locale (or en-US) in dev.
-const devInitialLng = isProductionLikeEnv
-  ? undefined
-  : (typeof localStorage !== "undefined" &&
-      localStorage.getItem("app_locale")) ||
-    "en-US";
+// and crashes on the first lookup. Pin the resolved locale in dev using the
+// same priority order as prod: localStorage → navigator → en-US.
+function resolveDevLng(): string {
+  if (typeof localStorage !== "undefined") {
+    const stored = localStorage.getItem("app_locale");
+    if (stored) {
+      return stored;
+    }
+  }
+  if (typeof navigator !== "undefined") {
+    return toSupportedLocale(navigator.language);
+  }
+  return "en-US";
+}
+
+const devInitialLng = isProductionLikeEnv ? undefined : resolveDevLng();
 
 // Dedupe Sentry reports — the dev path always throws instead.
 const reportedMissingKeys = new Set<string>();
@@ -82,19 +116,6 @@ const handleMissingKey = (
     extra: { key, namespace: ns, languages: lngs, fallbackValue },
   });
 };
-
-// Single source of truth for the supported locale tags. `SupportedLocale` is
-// derived from this so other modules (e.g. the date-fns locale map) can be
-// type-checked against it — adding a tag here surfaces gaps elsewhere via tsc.
-export const SUPPORTED_LOCALES = [
-  "en-US",
-  "es-ES",
-  "hi-IN",
-  "zh-CN",
-  "ru-RU",
-  "nl-NL",
-] as const;
-export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
 
 // Stage/production use the chained backend for localStorage caching. Dev/local
 // use HTTP directly so locale JSON edits are not hidden by stale
@@ -152,11 +173,12 @@ i18n
         },
 
     detection: {
-      order: ["localStorage"],
+      order: ["localStorage", "navigator"],
       // caches intentionally omitted — we write app_locale manually on explicit
       // changeLanguage() calls only, to prevent auto-write on fallback detection
       caches: [],
       lookupLocalStorage: "app_locale",
+      convertDetectedLanguage: toSupportedLocale,
     },
 
     nsSeparator: ".",

@@ -4,7 +4,7 @@ import { Box, Link, Typography } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 
-import i18n from "shell/i18n";
+import i18n, { toSupportedLocale } from "shell/i18n";
 import { store } from "shell/store";
 import { fetchInstance, fetchDomains } from "shell/store/instance";
 import { fetchUser } from "shell/store/user";
@@ -47,11 +47,12 @@ export default connect((state) => {
         const userLocale = prefs ? JSON.parse(prefs)?.locale : null;
 
         // Resolve the UI locale authoritatively from the logged-in user, falling
-        // back to the default. This matters when switching users: localStorage
-        // and i18n still hold the previous user's locale after logout, so a user
-        // with no saved locale (or a different one) must reset to their own
-        // rather than inherit the prior session's language.
-        const targetLocale = userLocale || "en-US";
+        // back to the browser language, then en-US. Reading navigator directly
+        // (not i18n.language) matters when switching users: localStorage and
+        // i18n still hold the previous user's locale after logout, so a user
+        // with no saved locale must not inherit the prior session's language.
+        const targetLocale =
+          userLocale || toSupportedLocale(navigator.language);
 
         if (targetLocale !== i18n.language) {
           i18n.changeLanguage(targetLocale);
