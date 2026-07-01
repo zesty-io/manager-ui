@@ -34,6 +34,16 @@ jobs:
             - Potential bugs or issues
             - Security implications
             - Performance considerations
+            - Localization compliance — read the "Localization (i18next)" section of
+              CLAUDE.md, then check whether this diff introduces new user-facing strings
+              (JSX text, string props, notify()/dispatch() messages, module-level maps,
+              class components) that should be wired through t()/i18n.t() instead of
+              hardcoded, per the "Where strings hide" and "What to SKIP" rules there.
+              If the diff touches public/locales/*.json, check changed values against
+              the "Value formatting rules" (no decorative characters, no ALL CAPS, no
+              HTML, no hardcoded URLs). If the diff adds a t()/i18n.t() call used with
+              `{ count }`, confirm matching `_one`/`_few`/`_many`/`_other` keys were
+              added for every locale that requires them per the pluralization table.
 
             Note: The PR branch is already checked out in the current working directory.
 
