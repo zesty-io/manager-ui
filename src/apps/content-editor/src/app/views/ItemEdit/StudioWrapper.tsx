@@ -1,5 +1,14 @@
 import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
-import { Alert, Box, Button, CircularProgress, Dialog } from "@mui/material";
+import {
+  Alert,
+  Box,
+  Button,
+  CircularProgress,
+  Dialog,
+  Modal,
+  Paper,
+} from "@mui/material";
+
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { MemoryRouter, useHistory, useLocation } from "react-router";
@@ -1232,23 +1241,27 @@ export const StudioWrapper = () => {
 
   return (
     <>
-      <Dialog
+      <Modal
         open
-        fullScreen
-        PaperProps={{
-          sx: {
-            overflow: "hidden",
-            bgcolor: "grey.900",
-            borderRadius: 0,
-          },
-        }}
+        hideBackdrop
+        disableEnforceFocus
+        disableAutoFocus
+        disablePortal
       >
-        <Box
-          display="flex"
-          flexDirection="column"
-          height="100%"
-          width="100%"
-          position="relative"
+        <Paper
+          role="dialog"
+          aria-modal="true"
+          aria-label="Studio editor"
+          variant="outlined"
+          square
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            height: "100%",
+            width: "100%",
+            bgcolor: "grey.900",
+            overflow: "hidden",
+          }}
         >
           <StudioHeader
             onLanguageChange={handleLanguageChange}
@@ -1400,15 +1413,17 @@ export const StudioWrapper = () => {
               handleDiscardPendingLayoutSave(onProceed);
             }}
           />
-        </Box>
-      </Dialog>
+        </Paper>
+      </Modal>
       {imageEditState && (
         <MemoryRouter>
           <Dialog
             open
             fullScreen
             sx={{ my: 2.5, mx: 10 }}
-            PaperProps={{ style: { borderRadius: "4px", overflow: "hidden" } }}
+            slotProps={{
+              paper: { style: { borderRadius: "4px", overflow: "hidden" } },
+            }}
             onClose={() => setImageEditState(null)}
           >
             <MediaApp
