@@ -900,7 +900,7 @@ export function publish(modelZUID, itemZUID, data, meta = {}) {
         );
         return dispatch(fetchItemPublishing(modelZUID, itemZUID));
       })
-      .catch((err) => {
+      .catch(() => {
         let message;
         if (data.publishAt === "now" && data?.unpublishAt === "never") {
           message = `Error cancelling scheduled unpublish for ${title}`;
@@ -910,6 +910,7 @@ export function publish(modelZUID, itemZUID, data, meta = {}) {
           message = `Error publishing ${title}`;
         }
         dispatch(notify({ message, kind: "error" }));
+        return { error: message };
       });
   };
 }
@@ -934,7 +935,7 @@ export function unpublish(modelZUID, itemZUID, publishZUID, options = {}) {
     )
       .then((res) => {
         if (res.error) {
-          throw res.error;
+          return Promise.reject(new Error(res.error));
         }
 
         const message = options.version
@@ -956,12 +957,12 @@ export function unpublish(modelZUID, itemZUID, publishZUID, options = {}) {
         );
         return dispatch(fetchItemPublishing(modelZUID, itemZUID));
       })
-      .catch((err) => {
+      .catch(() => {
         const message = options.version
           ? `Error Unscheduling version ${options.version}`
           : `Error Unpublishing ${title}`;
         dispatch(notify({ message, kind: "error" }));
-        throw err;
+        return { error: message };
       });
   };
 }

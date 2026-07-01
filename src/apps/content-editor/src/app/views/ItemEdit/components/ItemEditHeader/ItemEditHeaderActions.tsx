@@ -43,7 +43,6 @@ import {
   fetchItemPublishing,
 } from "../../../../../../../../shell/store/content";
 import { useGetUsersQuery } from "../../../../../../../../shell/services/accounts";
-import { formatDate } from "../../../../../../../../utility/formatDate";
 import { UnpublishDialog } from "./UnpublishDialog";
 import { usePermission } from "../../../../../../../../shell/hooks/use-permissions";
 import {
@@ -65,6 +64,7 @@ import {
   PUBLISH_ATTEMPT_WITHOUT_ALLOW_PUBLISH_STATUS,
   SCHEDULE_PUBLISH_ATTEMPT_WITHOUT_ALLOW_PUBLISH_STATUS,
 } from "../../../../../../../../amplitude-events";
+import { TooltipTitle } from "./TooltipTitle";
 const ITEM_STATES = {
   dirty: "dirty",
   published: "published",
@@ -173,7 +173,7 @@ export const ItemEditHeaderActions = ({
     new Date(item?.publishing?.unpublishAt).getTime() > Date.now()
   );
 
-  const gerUserNameByZUID = (userZUID?: string) => {
+  const getUserNameByZUID = (userZUID?: string) => {
     const user = users?.find((u) => u.ZUID === userZUID);
     const completeUserName = !user
       ? ""
@@ -187,14 +187,6 @@ export const ItemEditHeaderActions = ({
       { itemZUID: resolvedItemZUID, modelZUID: resolvedModelZUID },
       { skip: !resolvedItemZUID || !resolvedModelZUID }
     );
-
-  const getUserFullName = (userZUID: string) => {
-    if (!userZUID) {
-      return "";
-    }
-    const user = users?.find((user: any) => user.ZUID === userZUID);
-    return `${user?.firstName || ""} ${user?.lastName || ""}`.trim();
-  };
 
   useEffect(() => {
     // Automatically opens the create redirect modal
@@ -361,14 +353,6 @@ export const ItemEditHeaderActions = ({
 
   const publishButtonTooltipLabel =
     itemState === ITEM_STATES.dirty ? "Save & Publish Item" : "Publish Item";
-
-  const datePreposition = (date?: string) => {
-    if (!date) return "on";
-    const formatted = formatDate(date);
-    return formatted.includes("Today") || formatted.includes("Yesterday")
-      ? ""
-      : "on";
-  };
 
   const allowPublish = useMemo(() => {
     const allowPublishLabelZUIDs = statusLabels?.reduce((acc, next) => {
@@ -549,7 +533,7 @@ export const ItemEditHeaderActions = ({
             <TooltipTitle
               text={`v${item?.meta?.version} saved`}
               dateTime={item?.meta?.updatedAt || ""}
-              userName={gerUserNameByZUID(
+              userName={getUserNameByZUID(
                 lastItemUpdateAudit?.actionByUserZUID ||
                   item?.web?.createdByUserZUID
               )}
@@ -597,7 +581,7 @@ export const ItemEditHeaderActions = ({
               <TooltipTitle
                 text={`v${activePublishing?.version} published`}
                 dateTime={activePublishing?.publishAt || ""}
-                userName={gerUserNameByZUID(
+                userName={getUserNameByZUID(
                   activePublishing?.publishedByUserZUID ||
                     item?.web?.createdByUserZUID
                 )}
@@ -704,7 +688,7 @@ export const ItemEditHeaderActions = ({
             <TooltipTitle
               text={`v${item?.scheduling?.version} scheduled to publish`}
               dateTime={item?.scheduling?.publishAt || ""}
-              userName={gerUserNameByZUID(
+              userName={getUserNameByZUID(
                 item?.scheduling?.publishedByUserZUID ||
                   item?.meta?.createdByUserZUID
               )}
@@ -955,6 +939,9 @@ const PublishingMenu = ({
   setScheduledPublishDialogOpen,
   setPublishAfterUnschedule,
   handlePublish,
+  hasScheduledUnpublish,
+  modelZUID,
+  itemZUID,
 }: PublishingMenuProps) => {
   const history = useHistory();
   const menuActionIcon =

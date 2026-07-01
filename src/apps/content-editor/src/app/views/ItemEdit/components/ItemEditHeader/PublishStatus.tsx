@@ -4,6 +4,7 @@ import { useParams } from "react-router";
 import { useGetItemPublishingsQuery } from "../../../../../../../../shell/services/instance";
 import { formatDate } from "../../../../../../../../utility/formatDate";
 import { useGetUsersQuery } from "../../../../../../../../shell/services/accounts";
+import { TooltipTitle } from "./TooltipTitle";
 
 type PublishStatusProps = {
   currentVersion: number;
@@ -122,7 +123,7 @@ export const PublishStatus = ({ currentVersion }: PublishStatusProps) => {
                 text={`v${scheduledUnpublishing.version} scheduled to unpublish`}
                 dateTime={scheduledUnpublishing.unpublishAt || ""}
                 userName={getUserNameByZUID(
-                  activePublishing?.publishedByUserZUID
+                  scheduledUnpublishing?.publishedByUserZUID
                 )}
               />
             }

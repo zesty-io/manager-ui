@@ -41,6 +41,7 @@ export type ScheduleUnpublishDialogProps = {
 export const ScheduleUnpublishDialog = ({
   itemName,
   currentVersion,
+  scheduledPublishVersion,
   scheduledLocalText,
   creatorName,
   savedAgo,
@@ -50,6 +51,7 @@ export const ScheduleUnpublishDialog = ({
   isLoading,
   isSelectedDatetimePast,
   isAlreadyScheduled,
+  hasAnyScheduledPublish,
   onClose,
   onUnpublishNow,
   onSchedule,
@@ -113,6 +115,16 @@ export const ScheduleUnpublishDialog = ({
         </>
       ) : (
         <>
+          {hasAnyScheduledPublish && (
+            <Alert
+              severity="warning"
+              icon={<WarningRoundedIcon fontSize="inherit" />}
+              sx={{ mb: 2.5 }}
+            >
+              v{scheduledPublishVersion} is scheduled to publish. Scheduling an
+              unpublish will cancel that scheduled publish.
+            </Alert>
+          )}
           <Typography variant="subtitle2" fontWeight={600} mb={0.5}>
             Unpublish on
           </Typography>

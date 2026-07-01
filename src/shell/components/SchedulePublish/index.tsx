@@ -97,11 +97,10 @@ export const SchedulePublish = ({
         { localTime: localPretty, localTimezone: publishTimezone }
       )
     ) // @ts-expect-error untyped action
-      .then(() => {
-        onScheduleSuccess?.();
-      })
-      .catch(() => {
-        // Error notification handled by the thunk
+      .then((res) => {
+        if (!res?.error) {
+          onScheduleSuccess?.();
+        }
       })
       .finally(() => {
         setIsLoading(false);
@@ -119,11 +118,10 @@ export const SchedulePublish = ({
         { version: item?.scheduling?.version }
       )
     ) // @ts-expect-error untyped action
-      .then(() => {
-        onUnscheduleSuccess?.();
-      })
-      .catch(() => {
-        // Error notification handled by the thunk
+      .then((res) => {
+        if (!res?.error) {
+          onUnscheduleSuccess?.();
+        }
       })
       .finally(() => {
         setIsLoading(false);
@@ -171,11 +169,10 @@ export const SchedulePublish = ({
         { localTime: localPretty, localTimezone: publishTimezone }
       )
     ) // @ts-expect-error untyped action
-      .then(() => {
-        onScheduleSuccess?.();
-      })
-      .catch(() => {
-        // Error notification handled by the thunk
+      .then((res) => {
+        if (!res?.error) {
+          onScheduleSuccess?.();
+        }
       })
       .finally(() => {
         setIsLoading(false);
@@ -199,7 +196,13 @@ export const SchedulePublish = ({
             item?.scheduling?.ZUID,
             { version: item?.scheduling?.version }
           )
-        );
+        )
+          // @ts-expect-error untyped action
+          .then((res) => {
+            if (!!res?.error) {
+              throw new Error(res?.erro?.message);
+            }
+          });
       }
       await dispatch(
         publish(
@@ -212,7 +215,14 @@ export const SchedulePublish = ({
           },
           { localTime: "", localTimezone: publishTimezone }
         )
-      );
+      )
+        // @ts-expect-error untyped action
+        .then((res) => {
+          if (!!res?.error) {
+            throw new Error(res?.erro?.message);
+          }
+        });
+
       onUnscheduleSuccess?.();
     } catch {
       // Error notification is handled by the thunk; swallow here so the
