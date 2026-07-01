@@ -71,6 +71,7 @@ type Args = {
   handleTemplateSourceMap: (msg: any) => void;
   handleReorderOutput: (msg: any) => void;
   handleLayoutContentUpdate: (msg: any) => void;
+  handleLayersTree: (msg: any) => void;
   applyLayoutSelection: (next: {
     codeId?: string;
     layoutId?: string;
@@ -107,6 +108,7 @@ export const useStudioBridge = ({
   handleTemplateSourceMap,
   handleReorderOutput,
   handleLayoutContentUpdate,
+  handleLayersTree,
   applyLayoutSelection,
   clearLayoutSelection,
   applySelection,
@@ -125,6 +127,7 @@ export const useStudioBridge = ({
       css: bridgeInjectedCss,
     });
     syncBridgeInteractionMode(interactionMode);
+    postCommandToBridge({ action: "requestLayersTree" });
   }, [interactionMode, postCommandToBridge, syncBridgeInteractionMode]);
 
   const handleBridgeError = useCallback(
@@ -309,6 +312,11 @@ export const useStudioBridge = ({
         return;
       }
 
+      if (msg.type === "LAYERS_TREE") {
+        handleLayersTree(msg);
+        return;
+      }
+
       if (msg.type === "STATIC_EDIT_REJECTED") {
         dispatch(
           notify({
@@ -334,6 +342,7 @@ export const useStudioBridge = ({
     handleBridgeDomEvent,
     handleBridgeError,
     handleBridgeReady,
+    handleLayersTree,
     handleLayoutContentUpdate,
     handleReorderOutput,
     handleTemplateSourceMap,
