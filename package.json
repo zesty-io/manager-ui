@@ -15,6 +15,7 @@
   ],
   "scripts": {
     "cleanup": "cross-env echo 'FINISHED'",
+    "i18n:extract": "i18next",
     "build:local": "npm run task:clean && npm run task:webpack -- --node-env local",
     "build:dev": "npm run task:clean && npm run task:webpack -- --node-env development",
     "build:stage": "npm run task:clean && npm run task:webpack -- --node-env stage",

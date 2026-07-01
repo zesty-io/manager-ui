@@ -1,15 +1,15 @@
 {
-  "microsoftLogoAlt": "Logotipo de Microsoft",
-  "googleAnalyticsLogoAlt": "Logotipo de Google Analytics",
-  "npmLogoAlt": "Logotipo de NPM",
-  "nodejsLogoAlt": "Logotipo de NodeJS",
-  "googleChromeLogoAlt": "Logotipo de Google Chrome",
-  "zestyRocketLogoAlt": "Logotipo de Zesty Rocket",
+  "appNotInstalled": "La aplicación \"{{zuid}}\" no está instalada.",
   "exploreMarketplace": "Explorar el Marketplace",
-  "installAppBody": "Instala extensiones, aplicaciones y módulos de inicio rápido для acelerar tu proyecto de Zesty",
+  "googleAnalyticsLogoAlt": "Logotipo de Google Analytics",
+  "googleChromeLogoAlt": "Logotipo de Google Chrome",
   "goToMarketplace": "Ir al Marketplace",
   "headerTitleApps": "Aplicaciones",
+  "installAppBody": "Instala extensiones, aplicaciones y módulos de inicio rápido для acelerar tu proyecto de Zesty",
+  "microsoftLogoAlt": "Logotipo de Microsoft",
+  "nodejsLogoAlt": "Logotipo de NodeJS",
+  "npmLogoAlt": "Logotipo de NPM",
   "sidebarMarketplace": "Marketplace",
   "visitMarketplace": "Visitar el Marketplace",
-  "appNotInstalled": "La aplicación \"{{zuid}}\" no está instalada."
+  "zestyRocketLogoAlt": "Logotipo de Zesty Rocket"
 }

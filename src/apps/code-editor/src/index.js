@@ -28,7 +28,7 @@ const CodeAppInner = () => {
   // subtree until ready; child components use bare useTranslation() with
   // qualified keys once they're in the store.
   // "schema" is hoisted here because FileList imports NoResults from the
-  // schema app, which resolves t("schema.*") keys.
+  // schema app, which resolves keys under the schema namespace.
   useTranslation(["code", "schema"]);
   return <CodeEditor />;
 };
