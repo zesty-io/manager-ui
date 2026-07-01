@@ -15,6 +15,7 @@ import {
   FieldTypeMedia,
   MediaItem,
 } from "../../../../components/FieldTypeMedia";
+import DndContextProvider from "shell/components/DndContextProvider";
 import { MediaApp } from "../../../../../../../media/src/app";
 import { useLazyGetFileQuery } from "../../../../../../../../shell/services/mediaManager";
 import { fileExtension } from "../../../../../../../media/src/app/utils/fileUtils";
@@ -296,14 +297,16 @@ export const MetaImage = ({ onChange, skipImageFallback }: MetaImageProps) => {
         errors={{}}
       >
         <Stack gap={1.25}>
-          <MediaItem
-            index={0}
-            imageZUID={temporaryMetaImageURL}
-            isBynderAsset={temporaryMetaImageURL.includes("bynder.com")}
-            isBynderSessionValid={!!isBynderSessionValid}
-            hideActionButtons
-            hideDrag
-          />
+          <DndContextProvider>
+            <MediaItem
+              index={0}
+              imageZUID={temporaryMetaImageURL}
+              isBynderAsset={temporaryMetaImageURL.includes("bynder.com")}
+              isBynderSessionValid={!!isBynderSessionValid}
+              hideActionButtons
+              hideDrag
+            />
+          </DndContextProvider>
           <Button
             loading={isCreatingOgImageField || isUndeletingField}
             size="large"

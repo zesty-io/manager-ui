@@ -472,20 +472,16 @@ Cypress.Commands.add("cleanTestData", function () {
     TEST_DATA?.temp3?.name,
   ];
 
-  cy.apiRequest({ url: `${INSTANCE_API}/env/labels` }).then(
-    (response) => {
-      response?.data
-        ?.filter(
-          (label) => !label?.deletedAt && testLabels.includes(label?.name)
-        )
-        .forEach((label) => {
-          cy.apiRequest({
-            url: `${INSTANCE_API}/env/labels/${label.ZUID}`,
-            method: "DELETE",
-          });
+  cy.apiRequest({ url: `${INSTANCE_API}/env/labels` }).then((response) => {
+    response?.data
+      ?.filter((label) => !label?.deletedAt && testLabels.includes(label?.name))
+      .forEach((label) => {
+        cy.apiRequest({
+          url: `${INSTANCE_API}/env/labels/${label.ZUID}`,
+          method: "DELETE",
         });
-    }
-  );
+      });
+  });
 });
 
 Cypress.Commands.add("createTestData", () => {

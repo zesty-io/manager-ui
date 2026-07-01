@@ -1,5 +1,14 @@
 import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
-import { Alert, Box, Button, CircularProgress, Dialog } from "@mui/material";
+import {
+  Alert,
+  Box,
+  Button,
+  CircularProgress,
+  Dialog,
+  Modal,
+  Paper,
+} from "@mui/material";
+
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { MemoryRouter, useHistory, useLocation } from "react-router";
@@ -34,6 +43,7 @@ import {
 import { StudioHeader } from "./components/StudioWrapper/StudioHeader";
 import { StudioPreview } from "./components/StudioWrapper/StudioPreview";
 import { StudioSidePanel } from "./components/StudioWrapper/StudioSidePanel";
+import { StudioLayersPanel } from "./components/StudioWrapper/StudioLayersPanel";
 import {
   StudioSaveChange,
   StudioSaveChangesModal,
@@ -46,6 +56,7 @@ import {
 import { useStudioBridge } from "./hooks/useStudioBridge";
 import { InteractionMode, LayoutBreadcrumbItem } from "./hooks/studioTypes";
 import { useStudioSelection } from "./hooks/useStudioSelection";
+import { useStudioLayersTree } from "./hooks/useStudioLayersTree";
 import { getRefRegistry } from "../../../../../../engine/refRegistry";
 import { useMultiPermission } from "../../../../../../shell/hooks/use-permissions";
 import { MediaApp } from "../../../../../media/src/app";
@@ -147,6 +158,9 @@ export const StudioWrapper = () => {
       selector?: string;
       layoutId?: string;
       codeId?: string;
+      targetLayoutId?: string;
+      targetCodeId?: string;
+      position?: string;
       isLeafImg?: boolean;
       imgIndex?: number;
       newSrc?: string;
@@ -1100,6 +1114,36 @@ export const StudioWrapper = () => {
     bridgeUpdatedFieldZuidRef.current = fieldZuid;
   }, []);
 
+  const {
+    hasTree: hasLayersTree,
+    flatRows: layersFlatRows,
+    selectedNodeId: selectedLayersNodeId,
+    handleLayersTree,
+    resetTree: resetLayersTree,
+    toggleNode: toggleLayersNode,
+    handleNodeSelect: handleLayersNodeSelect,
+    canDrop: canDropLayersNode,
+    handleNodeDrop: handleLayersNodeDrop,
+  } = useStudioLayersTree({
+    interactionMode,
+    postCommandToBridge,
+    applyBridgeSelection,
+    applyLayoutSelection,
+    codeFileNameById,
+    fieldsState,
+    selectedElement,
+    selectedLayout,
+    dndDisabled: isSavingLayout || isRefreshing,
+  });
+
+  // The tree describes the current document — drop it whenever the iframe
+  // starts reloading or navigating; the fresh page re-emits it on load.
+  useEffect(() => {
+    if (isRefreshing || isNavigating) {
+      resetLayersTree();
+    }
+  }, [isNavigating, isRefreshing, resetLayersTree]);
+
   const { handlePreviewLoad } = useStudioBridge({
     dispatch,
     interactionMode,
@@ -1108,6 +1152,7 @@ export const StudioWrapper = () => {
     handleTemplateSourceMap,
     handleReorderOutput,
     handleLayoutContentUpdate,
+    handleLayersTree,
     applyLayoutSelection,
     clearLayoutSelection,
     applySelection: applyBridgeSelection,
@@ -1196,23 +1241,27 @@ export const StudioWrapper = () => {
 
   return (
     <>
-      <Dialog
+      <Modal
         open
-        fullScreen
-        PaperProps={{
-          sx: {
-            overflow: "hidden",
-            bgcolor: "grey.900",
-            borderRadius: 0,
-          },
-        }}
+        hideBackdrop
+        disableEnforceFocus
+        disableAutoFocus
+        disablePortal
       >
-        <Box
-          display="flex"
-          flexDirection="column"
-          height="100%"
-          width="100%"
-          position="relative"
+        <Paper
+          role="dialog"
+          aria-modal="true"
+          aria-label="Studio editor"
+          variant="outlined"
+          square
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            height: "100%",
+            width: "100%",
+            bgcolor: "grey.900",
+            overflow: "hidden",
+          }}
         >
           <StudioHeader
             onLanguageChange={handleLanguageChange}
@@ -1226,6 +1275,15 @@ export const StudioWrapper = () => {
             logoSrc={contentOneLogoOnly}
           />
           <Box display="flex" flex="1" minHeight={0} width="100%">
+            <StudioLayersPanel
+              hasTree={hasLayersTree}
+              flatRows={layersFlatRows}
+              selectedNodeId={selectedLayersNodeId}
+              onToggle={toggleLayersNode}
+              onSelect={handleLayersNodeSelect}
+              canDrop={canDropLayersNode}
+              onDrop={handleLayersNodeDrop}
+            />
             <StudioPreview
               iframeRef={iframeRef}
               iframeSrc={iframeSrc}
@@ -1236,6 +1294,7 @@ export const StudioWrapper = () => {
             {interactionMode === "content" ? (
               <StudioSidePanel
                 headerTitle={headerTitle}
+                selectedItemLabel={selectedItemLabel}
                 pageItemVersion={pageItemVersion}
                 unresolvedPath={unresolvedPath}
                 panelMode={panelMode}
@@ -1354,15 +1413,17 @@ export const StudioWrapper = () => {
               handleDiscardPendingLayoutSave(onProceed);
             }}
           />
-        </Box>
-      </Dialog>
+        </Paper>
+      </Modal>
       {imageEditState && (
         <MemoryRouter>
           <Dialog
             open
             fullScreen
             sx={{ my: 2.5, mx: 10 }}
-            PaperProps={{ style: { borderRadius: "4px", overflow: "hidden" } }}
+            slotProps={{
+              paper: { style: { borderRadius: "4px", overflow: "hidden" } },
+            }}
             onClose={() => setImageEditState(null)}
           >
             <MediaApp

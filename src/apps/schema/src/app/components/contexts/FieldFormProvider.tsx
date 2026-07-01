@@ -301,11 +301,8 @@ export const FieldFormProvider = ({
       }
 
       if (inputName === "integrationFieldConfig") {
-        const intField = (
-          isUpdateField
-            ? fieldData?.settings?.integrationFieldConfig
-            : formData?.integrationFieldConfig
-        ) as IntegrationFieldConfig;
+        const intField =
+          formData?.integrationFieldConfig as IntegrationFieldConfig;
 
         if (!intField?.endpoint || !intField?.type || !intField?.keyPaths) {
           newErrorsObj[inputName] = "Incomplete API Configuration";

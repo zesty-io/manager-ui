@@ -241,6 +241,7 @@ export const useStudioSelection = ({
           "markdown",
           "wysiwyg_basic",
           "wysiwyg_advanced",
+          "images",
         ].includes(fieldType)
       ) {
         postCommandToBridge({

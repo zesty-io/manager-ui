@@ -45,21 +45,21 @@ for (const file of findJsonl(root)) {
     }
     const spec = (e.spec || "").replace(/^.*cypress\/e2e\//, "cypress/e2e/");
     const key = `${spec} :: ${e.test}`;
-    const rec =
-      byTest.get(key) || {
-        reasons: new Set(),
-        statuses: new Set(),
-        urls: new Set(),
-        endpoints: new Set(),
-        err: "",
-      };
+    const rec = byTest.get(key) || {
+      reasons: new Set(),
+      statuses: new Set(),
+      urls: new Set(),
+      endpoints: new Set(),
+      err: "",
+    };
     if (e.reason) rec.reasons.add(e.reason);
     for (const r of e.responses || []) {
       if (r.status) rec.statuses.add(r.status);
       if (r.url) rec.urls.add(String(r.url).replace(/\?.*$/, ""));
     }
     // Slow / hanging / errored endpoints — the actionable detail for the BE team.
-    for (const ep of e.pendingEndpoints || []) rec.endpoints.add(`${ep} (no response)`);
+    for (const ep of e.pendingEndpoints || [])
+      rec.endpoints.add(`${ep} (no response)`);
     for (const ep of e.slowEndpoints || []) rec.endpoints.add(ep);
     for (const u of e.urlInError || [])
       rec.endpoints.add(String(u).replace(/\?.*$/, ""));
@@ -118,7 +118,9 @@ for (const [key, rec] of [...byTest.entries()].slice(0, 50)) {
     [...rec.endpoints].slice(0, 2).join("; ") ||
     (rec.err ? rec.err.replace(/\|/g, "\\|").slice(0, 90) : "");
   lines.push(
-    `| ${key.replace(/\|/g, "\\|")} | ${[...rec.reasons].join(", ")} | ${detail.replace(/\|/g, "\\|").slice(0, 120)} |`
+    `| ${key.replace(/\|/g, "\\|")} | ${[...rec.reasons].join(", ")} | ${detail
+      .replace(/\|/g, "\\|")
+      .slice(0, 120)} |`
   );
 }
 if (byTest.size > 50) lines.push(`| _…and ${byTest.size - 50} more_ | | |`);
