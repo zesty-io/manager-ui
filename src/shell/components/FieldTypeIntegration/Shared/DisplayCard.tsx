@@ -220,18 +220,20 @@ const DisplayCard = ({
               <Skeleton variant="rectangular" width="100%" height="100%" />
             ) : (
               <>
-                <CardMedia
-                  loading="lazy"
-                  component="img"
-                  sx={{
-                    width: "auto",
-                    height: "100%",
-                    display: noImage ? "none" : "block",
-                  }}
-                  image={thumbnailValue}
-                  onError={() => setMediaError(true)}
-                  onLoad={() => setMediaError(false)}
-                />
+                {!!thumbnailValue && (
+                  <CardMedia
+                    loading="lazy"
+                    component="img"
+                    sx={{
+                      width: "auto",
+                      height: "100%",
+                      display: noImage ? "none" : "block",
+                    }}
+                    image={thumbnailValue}
+                    onError={() => setMediaError(true)}
+                    onLoad={() => setMediaError(false)}
+                  />
+                )}
 
                 {renderIcon()}
               </>
