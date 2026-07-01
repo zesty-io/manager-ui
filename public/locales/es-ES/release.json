@@ -31,10 +31,10 @@
   "startNewPublishPlan": "Iniciar nuevo plan de publicación",
   "lang": "Idioma",
   "lastPublish": "Última publicación",
-  "failedActivateReleases": "Failed to activate releases",
-  "createdRelease": "Created Release: {{name}}",
-  "failedCreatingRelease": "Failed creating a release",
-  "failedDeletingRelease": "Failed deleting release {{name}}",
-  "deletedRelease": "Deleted release {{name}}",
-  "updatedReleaseMember": "Updated release ({{releaseName}}) member ({{itemTitle}}) to version {{version}}"
+  "failedActivateReleases": "Error al activar las versiones",
+  "createdRelease": "Versión creada: {{name}}",
+  "failedCreatingRelease": "Error al crear la versión",
+  "failedDeletingRelease": "Error al eliminar la versión {{name}}",
+  "deletedRelease": "Versión eliminada: {{name}}",
+  "updatedReleaseMember": "Se actualizó el elemento ({{itemTitle}}) de la versión ({{releaseName}}) a la versión {{version}}"
 }

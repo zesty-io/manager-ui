@@ -30,10 +30,10 @@
   "startNewPublishPlan": "Nieuw publicatieplan starten",
   "lang": "Taal",
   "lastPublish": "Laatste publicatie",
-  "failedActivateReleases": "Failed to activate releases",
-  "createdRelease": "Created Release: {{name}}",
-  "failedCreatingRelease": "Failed creating a release",
-  "failedDeletingRelease": "Failed deleting release {{name}}",
-  "deletedRelease": "Deleted release {{name}}",
-  "updatedReleaseMember": "Updated release ({{releaseName}}) member ({{itemTitle}}) to version {{version}}"
+  "failedActivateReleases": "Activeren van releases mislukt",
+  "createdRelease": "Release aangemaakt: {{name}}",
+  "failedCreatingRelease": "Aanmaken van een release mislukt",
+  "failedDeletingRelease": "Verwijderen van release {{name}} mislukt",
+  "deletedRelease": "Release {{name}} verwijderd",
+  "updatedReleaseMember": "Release ({{releaseName}}) lid ({{itemTitle}}) bijgewerkt naar versie {{version}}"
 }

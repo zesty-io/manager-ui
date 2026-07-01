@@ -29,10 +29,10 @@
   "startNewPublishPlan": "启动新发布计划",
   "lang": "语言",
   "lastPublish": "上次发布时间",
-  "failedActivateReleases": "Failed to activate releases",
-  "createdRelease": "Created Release: {{name}}",
-  "failedCreatingRelease": "Failed creating a release",
-  "failedDeletingRelease": "Failed deleting release {{name}}",
-  "deletedRelease": "Deleted release {{name}}",
-  "updatedReleaseMember": "Updated release ({{releaseName}}) member ({{itemTitle}}) to version {{version}}"
+  "failedActivateReleases": "激活发布失败",
+  "createdRelease": "已创建发布：{{name}}",
+  "failedCreatingRelease": "创建发布失败",
+  "failedDeletingRelease": "删除发布 {{name}} 失败",
+  "deletedRelease": "已删除发布 {{name}}",
+  "updatedReleaseMember": "已将发布 ({{releaseName}}) 的成员 ({{itemTitle}}) 更新至版本 {{version}}"
 }

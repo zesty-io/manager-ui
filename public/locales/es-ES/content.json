@@ -401,7 +401,7 @@
   "csvImportNone": "ninguno",
   "csvSettingsMetaLinkText": "Texto del enlace meta",
   "csvSettingsParentZuid": "ZUID del elemento padre",
-  "csvSettingsPathPart": "Path Part",
+  "csvSettingsPathPart": "Parte de ruta",
   "csvSettingsAutoPriority": "Establecer prioridad automáticamente",
   "csvSettingsNoSitemap": "No mostrar en el mapa del sitio",
   "csvSettingsCanonicalNotEnabled": "Las etiquetas canónicas no están habilitadas. Para más información, lee",

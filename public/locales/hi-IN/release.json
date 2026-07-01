@@ -30,10 +30,10 @@
   "startNewPublishPlan": "नई पब्लिश योजना शुरू करें",
   "lang": "भाषा",
   "lastPublish": "अंतिम बार पब्लिश किया गया",
-  "failedActivateReleases": "Failed to activate releases",
-  "createdRelease": "Created Release: {{name}}",
-  "failedCreatingRelease": "Failed creating a release",
-  "failedDeletingRelease": "Failed deleting release {{name}}",
-  "deletedRelease": "Deleted release {{name}}",
-  "updatedReleaseMember": "Updated release ({{releaseName}}) member ({{itemTitle}}) to version {{version}}"
+  "failedActivateReleases": "रिलीज़ सक्रिय करने में विफल",
+  "createdRelease": "रिलीज़ बनाई गई: {{name}}",
+  "failedCreatingRelease": "रिलीज़ बनाने में विफल",
+  "failedDeletingRelease": "रिलीज़ {{name}} हटाने में विफल",
+  "deletedRelease": "रिलीज़ {{name}} हटाई गई",
+  "updatedReleaseMember": "रिलीज़ ({{releaseName}}) के सदस्य ({{itemTitle}}) को वर्ज़न {{version}} में अपडेट किया गया"
 }

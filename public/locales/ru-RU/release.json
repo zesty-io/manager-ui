@@ -32,10 +32,10 @@
   "startNewPublishPlan": "Запустить новый план публикации",
   "lang": "Язык",
   "lastPublish": "Последняя публикация",
-  "failedActivateReleases": "Failed to activate releases",
-  "createdRelease": "Created Release: {{name}}",
-  "failedCreatingRelease": "Failed creating a release",
-  "failedDeletingRelease": "Failed deleting release {{name}}",
-  "deletedRelease": "Deleted release {{name}}",
-  "updatedReleaseMember": "Updated release ({{releaseName}}) member ({{itemTitle}}) to version {{version}}"
+  "failedActivateReleases": "Не удалось активировать релизы",
+  "createdRelease": "Релиз создан: {{name}}",
+  "failedCreatingRelease": "Не удалось создать релиз",
+  "failedDeletingRelease": "Не удалось удалить релиз {{name}}",
+  "deletedRelease": "Релиз {{name}} удалён",
+  "updatedReleaseMember": "Участник релиза ({{releaseName}}) ({{itemTitle}}) обновлён до версии {{version}}"
 }

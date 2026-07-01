@@ -385,7 +385,7 @@
   "csvImportNone": "无",
   "csvSettingsMetaLinkText": "Meta 链接文本",
   "csvSettingsParentZuid": "父级 ZUID",
-  "csvSettingsPathPart": "Path Part",
+  "csvSettingsPathPart": "路径部分",
   "csvSettingsAutoPriority": "自动设置优先级",
   "csvSettingsNoSitemap": "不在站点地图中显示",
   "csvSettingsCanonicalNotEnabled": "规范标签未启用。如需更多信息，请阅读",
