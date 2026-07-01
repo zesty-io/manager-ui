@@ -116,7 +116,7 @@ If `timings.json` does not exist, cypress-split falls back to distributing by sp
 
 **Mind your token usage.** Even a single small file fans out to several subagents (Discovery, one Extract & Wire agent per batch, Composer, Verifier) — a one-string component still used ~5 agents and ~350k tokens end to end in testing. Scope `target` to what you're actually adding (a component or a small folder) rather than a whole sub-app root unless you mean to re-run a full namespace pass, and prefer running it once per PR rather than repeatedly against overlapping targets.
 
-**You still have to translate manually.** The workflow only ever writes **English placeholder values** into the 5 non-English locale files — it does not translate. This is by design, not a gap: having every subagent in the pipeline also translate into 5 languages would meaningfully increase the token cost covered above for a step a human/QA pass needs to review anyway. After running it, open the diffed `public/locales/<locale>/<ns>.json` files (everywhere but `en-US`) and replace the English placeholders with real translations (machine-assisted is fine, but flag for native/QA review per `LOCALIZATION_PLAN.md`) before merging.
+**You still have to translate manually.** The workflow only ever writes **English placeholder values** into the 5 non-English locale files — it does not translate. This is by design, not a gap: having every subagent in the pipeline also translate into 5 languages would meaningfully increase the token cost covered above for a step a human/QA pass needs to review anyway. After running it, open the diffed `public/locales/<locale>/<ns>.json` files (everywhere but `en-US`) and replace the English placeholders with real translations (machine-assisted is fine, but flag for native/QA review per the Localization section of `CLAUDE.md`) before merging.
 
 New user-facing strings should go through the `localize` workflow rather than being wired up to i18next by hand — it extracts hardcoded strings, replaces them with `t()`/`<Trans>` calls, writes/updates the locale JSON across all 6 languages, and verifies the result. The script lives at `.claude/workflows/localize.js`.
 
@@ -142,7 +142,7 @@ Workflow({
 - `crossNamespaceGaps` — files pulled in transitively that live in a _different_ namespace than the target: their strings are extracted into that namespace's JSON but left unwired, since wiring them under the wrong namespace would misattribute them. Each entry includes a ready-to-run follow-up, e.g. `Workflow({ name: "localize", args: { namespace: "shell", target: "src/shell/store/ui.ts" } })`.
 - `inaccessibleThirdParty` — third-party components with hardcoded strings and no locale API; needs a manual call (wrap it, or accept it stays English).
 
-See `LOCALIZATION_PLAN.md` for the conventions this workflow enforces (key naming, pluralization/CLDR rules, what to skip, value-formatting rules).
+See the "Localization (i18next)" section of `CLAUDE.md` for the conventions this workflow enforces (key naming, pluralization/CLDR rules, what to skip, value-formatting rules).
 
 ---
 
