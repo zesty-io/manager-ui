@@ -606,5 +606,6 @@
   "studioLayersEmptyState": "No layers found",
   "studioLayersNodePage": "Page",
   "studioLayersNodeElement": "element",
-  "studioLayersNodeField": "Field"
+  "studioLayersNodeField": "Field",
+  "blocksReferencedInCodeOrFreestyle": "Blocks Referenced in Code or Freestyle"
 }

@@ -594,5 +594,6 @@
   "studioLayersEmptyState": "未找到图层",
   "studioLayersNodePage": "页面",
   "studioLayersNodeElement": "元素",
-  "studioLayersNodeField": "字段"
+  "studioLayersNodeField": "字段",
+  "blocksReferencedInCodeOrFreestyle": "代码或 Freestyle 中引用的区块"
 }

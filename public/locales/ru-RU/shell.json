@@ -580,5 +580,14 @@
   "forbiddenLoadInstancesList": "Вам запрещено загружать список инстанций",
   "failedLoadUserRole": "Не удалось загрузить вашу роль пользователя для этой инстанции.",
   "failedFetchRecentItems": "Возникла проблема при получении недавних элементов: {{error}}",
-  "failedFetchUsers": "Не удалось загрузить пользователей"
+  "failedFetchUsers": "Не удалось загрузить пользователей",
+  "tabAllMedia": "Все медиафайлы",
+  "tabActivityLogSuffix": "{{name}} — Журнал активности",
+  "tabCustomApp": "Кастомное приложение",
+  "tabActivityLog": "Журнал активности",
+  "tabMetrics": "Метрики",
+  "tabSettingsSuffix": "Настройки {{name}}",
+  "tabFontsSuffix": "Шрифты {{name}}",
+  "tabNewItem": "Новый элемент {{modelLabel}}",
+  "tabSearchResults": "Результаты поиска {{appName}}"
 }

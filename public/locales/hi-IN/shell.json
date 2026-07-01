@@ -566,5 +566,14 @@
   "forbiddenLoadInstancesList": "आपको इंस्टेंस सूची लोड करने की अनुमति नहीं है",
   "failedLoadUserRole": "इस इंस्टेंस के लिए आपकी उपयोगकर्ता भूमिका लोड करने में विफल।",
   "failedFetchRecentItems": "हाल के आइटम प्राप्त करने में समस्या हुई: {{error}}",
-  "failedFetchUsers": "उपयोगकर्ता प्राप्त करने में विफल"
+  "failedFetchUsers": "उपयोगकर्ता प्राप्त करने में विफल",
+  "tabAllMedia": "सभी मीडिया",
+  "tabActivityLogSuffix": "{{name}} - गतिविधि लॉग",
+  "tabCustomApp": "कस्टम ऐप",
+  "tabActivityLog": "गतिविधि लॉग",
+  "tabMetrics": "मेट्रिक्स",
+  "tabSettingsSuffix": "{{name}} सेटिंग्स",
+  "tabFontsSuffix": "{{name}} फ़ॉन्ट्स",
+  "tabNewItem": "नया {{modelLabel}} आइटम",
+  "tabSearchResults": "{{appName}} खोज परिणाम"
 }

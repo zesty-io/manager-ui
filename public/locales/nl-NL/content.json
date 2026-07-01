@@ -606,5 +606,6 @@
   "studioLayersEmptyState": "Geen lagen gevonden",
   "studioLayersNodePage": "Pagina",
   "studioLayersNodeElement": "element",
-  "studioLayersNodeField": "Veld"
+  "studioLayersNodeField": "Veld",
+  "blocksReferencedInCodeOrFreestyle": "Blokken waarnaar verwezen wordt in code of Freestyle"
 }

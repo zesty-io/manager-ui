@@ -606,5 +606,6 @@
   "studioLayersEmptyState": "कोई लेयर नहीं मिली",
   "studioLayersNodePage": "पेज",
   "studioLayersNodeElement": "एलिमेंट",
-  "studioLayersNodeField": "फ़ील्ड"
+  "studioLayersNodeField": "फ़ील्ड",
+  "blocksReferencedInCodeOrFreestyle": "कोड या फ्रीस्टाइल में संदर्भित ब्लॉक"
 }

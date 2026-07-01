@@ -564,5 +564,14 @@
   "forbiddenLoadInstancesList": "您无权加载实例列表",
   "failedLoadUserRole": "加载您在此实例中的用户角色失败。",
   "failedFetchRecentItems": "获取最近项目时出现问题：{{error}}",
-  "failedFetchUsers": "获取用户失败"
+  "failedFetchUsers": "获取用户失败",
+  "tabAllMedia": "所有媒体",
+  "tabActivityLogSuffix": "{{name}} - 活动日志",
+  "tabCustomApp": "自定义应用",
+  "tabActivityLog": "活动日志",
+  "tabMetrics": "指标",
+  "tabSettingsSuffix": "{{name}} 设置",
+  "tabFontsSuffix": "{{name}} 字体",
+  "tabNewItem": "新建 {{modelLabel}} 项目",
+  "tabSearchResults": "{{appName}} 搜索结果"
 }

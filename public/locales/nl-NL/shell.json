@@ -566,5 +566,14 @@
   "forbiddenLoadInstancesList": "U heeft geen toegang tot het laden van een instantielijst",
   "failedLoadUserRole": "Laden van uw gebruikersrol voor deze instantie mislukt.",
   "failedFetchRecentItems": "Er was een probleem bij het ophalen van recente items: {{error}}",
-  "failedFetchUsers": "Ophalen van gebruikers mislukt"
+  "failedFetchUsers": "Ophalen van gebruikers mislukt",
+  "tabAllMedia": "Alle media",
+  "tabActivityLogSuffix": "{{name}} - Activiteitenlogboek",
+  "tabCustomApp": "Aangepaste app",
+  "tabActivityLog": "Activiteitenlogboek",
+  "tabMetrics": "Statistieken",
+  "tabSettingsSuffix": "{{name}} Instellingen",
+  "tabFontsSuffix": "{{name}} Lettertypen",
+  "tabNewItem": "Nieuw {{modelLabel}}-item",
+  "tabSearchResults": "{{appName}} Zoekresultaten"
 }

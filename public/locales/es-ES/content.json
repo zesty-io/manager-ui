@@ -610,5 +610,6 @@
   "studioLayersEmptyState": "No se encontraron capas",
   "studioLayersNodePage": "Página",
   "studioLayersNodeElement": "elemento",
-  "studioLayersNodeField": "Campo"
+  "studioLayersNodeField": "Campo",
+  "blocksReferencedInCodeOrFreestyle": "Bloques referenciados en código o Freestyle"
 }

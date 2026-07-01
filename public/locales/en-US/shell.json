@@ -566,5 +566,14 @@
   "forbiddenLoadInstancesList": "You are forbidden from loading an instances list",
   "failedLoadUserRole": "Failed to load your user role for this instance.",
   "failedFetchRecentItems": "There was an issue fetching recent items: {{error}}",
-  "failedFetchUsers": "Failed to fetch users"
+  "failedFetchUsers": "Failed to fetch users",
+  "tabAllMedia": "All Media",
+  "tabActivityLogSuffix": "{{name}} - Activity Log",
+  "tabCustomApp": "Custom App",
+  "tabActivityLog": "Activity Log",
+  "tabMetrics": "Metrics",
+  "tabSettingsSuffix": "{{name}} Settings",
+  "tabFontsSuffix": "{{name}} Fonts",
+  "tabNewItem": "New {{modelLabel}} Item",
+  "tabSearchResults": "{{appName}} Search Results"
 }

@@ -573,5 +573,14 @@
   "forbiddenLoadInstancesList": "No tienes permiso para cargar la lista de instancias",
   "failedLoadUserRole": "Error al cargar tu rol de usuario para esta instancia.",
   "failedFetchRecentItems": "Hubo un problema al obtener los elementos recientes: {{error}}",
-  "failedFetchUsers": "Error al obtener los usuarios"
+  "failedFetchUsers": "Error al obtener los usuarios",
+  "tabAllMedia": "Todos los medios",
+  "tabActivityLogSuffix": "{{name}} - Registro de actividad",
+  "tabCustomApp": "Aplicación personalizada",
+  "tabActivityLog": "Registro de actividad",
+  "tabMetrics": "Métricas",
+  "tabSettingsSuffix": "Configuración de {{name}}",
+  "tabFontsSuffix": "Fuentes de {{name}}",
+  "tabNewItem": "Nuevo elemento de {{modelLabel}}",
+  "tabSearchResults": "Resultados de búsqueda de {{appName}}"
 }

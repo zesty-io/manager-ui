@@ -630,5 +630,6 @@
   "studioLayersEmptyState": "Слои не найдены",
   "studioLayersNodePage": "Страница",
   "studioLayersNodeElement": "элемент",
-  "studioLayersNodeField": "Поле"
+  "studioLayersNodeField": "Поле",
+  "blocksReferencedInCodeOrFreestyle": "Блоки, используемые в коде или Freestyle"
 }
