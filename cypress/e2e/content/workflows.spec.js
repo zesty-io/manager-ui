@@ -5,6 +5,7 @@ const NOW = Date.now();
 const TITLES = {
   publishLabel: `Publish Approval - ${NOW}`,
   testLabel: `Random Test Label - ${NOW}`,
+  noPermissionLabel: `No Permission Label - ${NOW}`,
 };
 const LABEL_DATA = {
   publishLabel: {
@@ -23,18 +24,29 @@ const LABEL_DATA = {
     addPermissionRoles: ["30-86f8ccec82-swp72s", "30-8ee88afe82-gmx631"],
     removePermissionRoles: ["30-86f8ccec82-swp72s", "30-8ee88afe82-gmx631"],
   },
+  // addPermissionRoles set to a role the test user does NOT have, so the app
+  // blocks adding it — this is what the "cannot add without permission" test needs.
+  noPermissionLabel: {
+    name: TITLES.noPermissionLabel,
+    description: "",
+    color: "#4E5BA6",
+    allowPublish: false,
+    addPermissionRoles: ["30-fcb3fc9083-mz27f9"],
+    removePermissionRoles: ["30-fcb3fc9083-mz27f9"],
+  },
 };
 const cleanUp = () => {
-  // Delete test content item
-  cy.task("cleanup:labels", [TITLES.publishLabel, TITLES.testLabel]);
+  cy.task("cleanup:labels");
 };
 
-describe("Content Item Workflows", () => {
+// retries disabled: these tests are an ordered, testIsolation:false chain that
+// adds/applies workflow labels — a retry re-adds a label that already persisted,
+// drifting the active-label count.
+describe("Content Item Workflows", { retries: 0 }, () => {
   let ITEM = null;
   before(() => {
     cleanUp();
 
-    // Create allow publish workflow label
     Object.values(LABEL_DATA).forEach((data) => {
       cy.task("api:createLabel", data);
     });
@@ -57,6 +69,9 @@ describe("Content Item Workflows", () => {
   });
 
   it("Can add a workflow label", () => {
+    // Intercept must be registered before the click that fires the PUT.
+    cy.intercept("PUT", "**/labels/*").as("updateLabel");
+
     ContentItemPage.elements.versionSelector().should("exist").click();
     ContentItemPage.elements.addWorkflowStatusLabel().should("exist").click();
     ContentItemPage.elements
@@ -67,8 +82,9 @@ describe("Content Item Workflows", () => {
 
     cy.get("body").type("{esc}");
 
-    cy.intercept("PUT", "**/labels/*").as("updateLabel");
-    cy.wait("@updateLabel");
+    cy.wait("@updateLabel")
+      .its("response.statusCode")
+      .should("be.oneOf", [200, 201]);
 
     cy.reload();
 
@@ -88,9 +104,11 @@ describe("Content Item Workflows", () => {
   it("Cannot add a workflow label when role has no permission", () => {
     ContentItemPage.elements.versionSelector().should("exist").click();
     ContentItemPage.elements.addWorkflowStatusLabel().should("exist").click();
+    // Click the label the test user lacks permission to add (deterministic, by
+    // name) — .first() was non-deterministic and often landed on an addable label.
     ContentItemPage.elements
       .workflowStatusLabelOption()
-      .first()
+      .contains(TITLES.noPermissionLabel)
       .should("exist")
       .click({ force: true });
 
@@ -128,6 +146,9 @@ describe("Content Item Workflows", () => {
   });
 
   it("Can publish a content item if label with allowPublish is applied", () => {
+    // Intercept must be registered before the click that fires the PUT.
+    cy.intercept("PUT", "**/labels/*").as("updateLabel");
+
     cy.reload();
     ContentItemPage.elements.versionSelector().should("exist").click();
     ContentItemPage.elements.addWorkflowStatusLabel().should("exist").click();
@@ -139,16 +160,25 @@ describe("Content Item Workflows", () => {
 
     cy.get("body").type("{esc}");
 
-    cy.intercept("PUT", "**/labels/*").as("updateLabel");
-    cy.wait("@updateLabel");
+    cy.wait("@updateLabel")
+      .its("response.statusCode")
+      .should("be.oneOf", [200, 201]);
 
     cy.reload();
+
+    cy.intercept("POST", "**/items/*/publishings").as("publishItem");
 
     ContentItemPage.elements.publishItemButton().should("exist").click();
     ContentItemPage.elements.confirmPublishItemButton().should("exist").click();
 
-    cy.intercept("GET", "**/publishings").as("publish");
-    cy.wait("@publish");
+    // Wait for the publish to persist, then reload so the indicator reads the
+    // fresh published state — it intermittently failed to render off the live
+    // post-publish refetch under load.
+    cy.wait("@publishItem")
+      .its("response.statusCode")
+      .should("be.oneOf", [200, 201]);
+
+    cy.reload();
 
     ContentItemPage.elements.contentPublishedIndicator().should("exist");
   });

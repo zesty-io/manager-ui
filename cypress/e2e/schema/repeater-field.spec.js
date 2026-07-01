@@ -12,27 +12,16 @@ describe("Schema: Repeater Field", () => {
       .then(($els) => [...$els].map((el) => el.getAttribute("data-cy")));
 
   before(() => {
-    cy.waitOn(
-      "/v1/content/models/6-ce80dbfe90-ptjpm6/fields?showDeleted=true",
-      () => {
-        cy.waitOn("/bin/1-6c9618c-r26pt/groups", () => {
-          cy.waitOn("/v1/content/models", () => {
-            cy.visit("/schema/6-ce80dbfe90-ptjpm6/fields");
+    cy.visit("/schema/6-ce80dbfe90-ptjpm6/fields");
+    // Page may load from IndexedDB cache — wait for UI instead of network
+    cy.getBySelector("create_new_content_item").should("exist").click();
 
-            cy.getBySelector("create_new_content_item").click();
-
-            cy.contains("Multi Page Model").click();
-            cy.contains("Next").click();
-            cy.contains("Display Name").next().type(modelName);
-            cy.get(".MuiDialog-container").within(() => {
-              cy.contains("Create Model").click();
-            });
-            cy.intercept("POST", "/models");
-            cy.intercept("GET", "/models");
-          });
-        });
-      }
-    );
+    cy.contains("Multi Page Model").click();
+    cy.contains("Next").click();
+    cy.contains("Display Name").next().type(modelName);
+    cy.get(".MuiDialog-container").within(() => {
+      cy.contains("Create Model").click();
+    });
   });
 
   it("Creates a new repeater field", () => {
@@ -389,12 +378,36 @@ describe("Schema: Repeater Field", () => {
     cy.getBySelector(`SubField_${SubFieldName}`).should("exist");
   });
 
+  it("Adds a date sub field", () => {
+    const SubFieldLabel = `Date`;
+    const SubFieldName = `date`;
+
+    cy.getBySelector("AddRepeaterSubFieldBtn").click();
+    cy.getBySelector("FieldItem_date").click();
+
+    cy.getBySelector("FieldFormInput_label").type(SubFieldLabel);
+    cy.getBySelector("SubFieldFormAddFieldBtn").click();
+    cy.getBySelector(`SubField_${SubFieldName}`).should("exist");
+  });
+
+  it("Adds a date and time sub field", () => {
+    const SubFieldLabel = `Date and Time`;
+    const SubFieldName = `date_and_time`;
+
+    cy.getBySelector("AddRepeaterSubFieldBtn").click();
+    cy.getBySelector("FieldItem_datetime").click();
+
+    cy.getBySelector("FieldFormInput_label").type(SubFieldLabel);
+    cy.getBySelector("SubFieldFormAddFieldBtn").click();
+    cy.getBySelector(`SubField_${SubFieldName}`).should("exist");
+  });
+
   it("Should save the added sub fields in the repeater field", () => {
     cy.getBySelector("FieldFormAddFieldBtn").click();
     cy.getBySelector(`Field_${fieldName}`).click();
     cy.getBySelector("SubFieldList")
       .find('[data-cy^="SubField_"]')
-      .should("have.length", 13);
+      .should("have.length", 15);
   });
 
   it("Should be able to add another field", () => {

@@ -1,18 +1,20 @@
+import { v4 as uuidv4 } from "uuid";
 const options = { timeout: 15000 };
 const forceClick = { force: true };
 
-const SEARCH_TERM = `cypress ${Date.now()}`;
-const TIMESTAMP = Date.now();
 const TIMEOUT = {
   timeout: 15000,
 };
 
-const BLOCK_MODEL_NAME = "Test Block Model";
-const CYPRESS_TEST_MODEL = "Cypress Test Model";
+const CYPRESS_TEST_MODEL = `Cypress Test Model | ${uuidv4()}`;
+const CYPRESS_TEST_MODEL_REF_ID = CYPRESS_TEST_MODEL.toLowerCase().replace(
+  /\W/g,
+  "_"
+);
 
 describe("Schema: Models", () => {
   before(() => {
-    cy.deleteModels([BLOCK_MODEL_NAME, CYPRESS_TEST_MODEL]);
+    cy.deleteModels([CYPRESS_TEST_MODEL]);
     cy.waitOn("/v1/content/models*", () => {
       cy.visit("/schema");
     });
@@ -44,11 +46,11 @@ describe("Schema: Models", () => {
     );
     cy.contains("Multi Page Model", options).click(forceClick);
     cy.contains("Next", options).click(forceClick);
-    cy.contains("Display Name", options).next().type("Cypress Test Model");
+    cy.contains("Display Name", options).next().type(CYPRESS_TEST_MODEL);
     cy.contains("Reference ID")
       .next()
       .find("input")
-      .should("have.value", "cypress_test_model");
+      .should("have.value", CYPRESS_TEST_MODEL_REF_ID);
 
     cy.contains("Model Parent").next().click();
 
@@ -82,25 +84,26 @@ describe("Schema: Models", () => {
       cy.contains("Save").click();
     });
     cy.wait(["@renameModel", "@getModels"]);
-    cy.contains("Cypress Test Model Updated", options).should("exist");
+    cy.contains(`${CYPRESS_TEST_MODEL} Updated`, options).should("exist");
   });
   it("Deletes model", () => {
     cy.getBySelector(`model-header-menu`, options).click(forceClick);
     cy.contains("Delete Model", options).click(forceClick);
     cy.get(".MuiDialog-container", options).within(() => {
       cy.get(".MuiOutlinedInput-root input", options).type(
-        "Cypress Test Model Updated"
+        `${CYPRESS_TEST_MODEL} Updated`
       );
     });
     cy.contains("Delete Forever", options).click();
   });
   it("Can navigate via breadcrumbs", () => {
     cy.waitOn(
-      "/v1/content/models/6-ce80dbfe90-ptjpm6/fields?showDeleted=true",
+      "/v1/content/models/6-a1a600-k0b6f0/fields?showDeleted=true",
       () => {
         cy.waitOn("/bin/1-6c9618c-r26pt/groups", () => {
           cy.waitOn("/v1/content/models", () => {
-            cy.visit("/schema/6-ce80dbfe90-ptjpm6/fields");
+            // Homepage
+            cy.visit("/schema/6-a1a600-k0b6f0/fields");
           });
         });
       }
@@ -111,11 +114,12 @@ describe("Schema: Models", () => {
   });
   it("Cannot set its model parent to be itself", () => {
     cy.waitOn(
-      "/v1/content/models/6-ce80dbfe90-ptjpm6/fields?showDeleted=true",
+      "/v1/content/models/6-a1a600-k0b6f0/fields?showDeleted=true",
       () => {
         cy.waitOn("/bin/1-6c9618c-r26pt/groups", () => {
           cy.waitOn("/v1/content/models", () => {
-            cy.visit("/schema/6-ce80dbfe90-ptjpm6/fields");
+            // Homepage
+            cy.visit("/schema/6-a1a600-k0b6f0/fields");
           });
         });
       }
@@ -142,30 +146,5 @@ describe("Schema: Models", () => {
       .find(".MuiBreadcrumbs-li")
       .eq(1)
       .contains("Model parenting itself");
-  });
-
-  //Skipped this. This has been tested on the starter block feature.
-  it.skip("Can create a block model", () => {
-    cy.waitOn("/v1/content/models*", () => {
-      cy.visit("/schema");
-    });
-
-    cy.getBySelector(`create-model-button-all-models`).click(TIMEOUT);
-    cy.contains("Block Model").click();
-    cy.contains("Next").click();
-    cy.contains("Display Name").next().type(BLOCK_MODEL_NAME);
-    cy.contains("Reference ID")
-      .next()
-      .find("input")
-      .should("have.value", BLOCK_MODEL_NAME);
-
-    cy.contains("Description").next().type("Block test model description");
-    cy.get(".MuiDialog-container").within(() => {
-      cy.contains("Create Model").click();
-    });
-    cy.intercept("POST", "/models");
-    cy.intercept("GET", "/models");
-
-    cy.contains(BLOCK_MODEL_NAME, TIMEOUT).should("exist");
   });
 });

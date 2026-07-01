@@ -49,18 +49,22 @@ const TABS = [
   {
     name: "Resources",
     icon: CategoryRounded,
+    dataCy: "activityLogTabResources",
   },
   {
     name: "Users",
     icon: GroupsRounded,
+    dataCy: "activityLogTabUsers",
   },
   {
     name: "Timeline",
     icon: ViewTimelineRounded,
+    dataCy: "activityLogTabTimeline",
   },
   {
     name: "Insights",
     icon: InsightsRounded,
+    dataCy: "activityLogTabInsights",
   },
 ];
 
@@ -99,7 +103,9 @@ export const Home = () => {
         end_date: toUTC(params.get("to")),
       }),
     },
-    skip: !initialized,
+    // Don't fire until a date range is set — otherwise the initial render (before
+    // the default dates are applied) sends an unscoped audits request.
+    skip: !initialized || !params.get("from") || !params.get("to"),
   });
 
   // Sets date parameters to 3 months
@@ -402,6 +408,7 @@ export const Home = () => {
           {TABS.map((tab) => (
             <Tab
               key={tab.name}
+              data-cy={tab.dataCy}
               icon={<SvgIcon component={tab.icon} fontSize="small" />}
               iconPosition="start"
               label={tab.name}
