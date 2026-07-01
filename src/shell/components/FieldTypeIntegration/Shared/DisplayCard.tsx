@@ -42,17 +42,6 @@ function renderValue(value: unknown): string {
   return String(value);
 }
 
-const MEDIA_ICONS: Record<string, JSX.Element> = {
-  play: <PlayCircleIcon fontSize="large" sx={{ color: "common.white" }} />,
-  video: <VideoCallRoundedIcon sx={{ color: "action.active" }} />,
-  image: (
-    <AddPhotoAlternateRoundedIcon
-      fontSize="small"
-      sx={{ color: "action.active" }}
-    />
-  ),
-} as const;
-
 const DisplayCard = ({
   type,
   heading,
@@ -65,12 +54,10 @@ const DisplayCard = ({
   showPlaceholders = false,
   loading,
 }: DisplayCardProps) => {
-  const [noImage, setNoImage] = useState(false);
+  const [mediaError, setMediaError] = useState(false);
   const isVideoType = ["video", "youtube", "mux"].includes(type);
   const isSpecialType = ["shopify", "youtube", "mux", "classy"].includes(type);
   const withCardMedia = !["classy", "text", "simple", "details"].includes(type);
-
-  const mediaType: "video" | "image" = isVideoType ? "video" : "image";
 
   const headingValue = loading ? (
     <Skeleton width={type === "simple" ? "90%" : "55%"} height="26px" />
@@ -85,8 +72,26 @@ const DisplayCard = ({
   const thumbnailValue = thumbnail && validateUrl(thumbnail) ? thumbnail : null;
   const detailValue = loading ? <Skeleton width="70px" /> : renderValue(detail);
 
-  const displayPlayIcon = showPlayIcon && isVideoType;
-  const displayMediaIcon = showPlaceholders && (noImage || !thumbnailValue);
+  const noImage = !thumbnailValue || mediaError;
+
+  const renderIcon = () => {
+    if (noImage) {
+      return isVideoType ? (
+        <VideoCallRoundedIcon sx={{ color: "action.active" }} />
+      ) : (
+        <AddPhotoAlternateRoundedIcon
+          fontSize="small"
+          sx={{ color: "action.active" }}
+        />
+      );
+    }
+
+    if (showPlayIcon && isVideoType) {
+      return <PlayCircleIcon fontSize="large" sx={{ color: "common.white" }} />;
+    }
+
+    return null;
+  };
 
   const renderCard = () => {
     if (type === "simple") {
@@ -215,22 +220,20 @@ const DisplayCard = ({
               <Skeleton variant="rectangular" width="100%" height="100%" />
             ) : (
               <>
-                {!!thumbnailValue && (
-                  <CardMedia
-                    loading="lazy"
-                    component="img"
-                    sx={{
-                      width: "auto",
-                      height: "100%",
-                      display: noImage ? "none" : "block",
-                    }}
-                    image={thumbnailValue}
-                    onError={() => setNoImage(true)}
-                    onLoad={() => setNoImage(false)}
-                  />
-                )}
-                {(displayPlayIcon || displayMediaIcon) &&
-                  MEDIA_ICONS[displayPlayIcon ? "play" : mediaType]}
+                <CardMedia
+                  loading="lazy"
+                  component="img"
+                  sx={{
+                    width: "auto",
+                    height: "100%",
+                    display: noImage ? "none" : "block",
+                  }}
+                  image={thumbnailValue}
+                  onError={() => setMediaError(true)}
+                  onLoad={() => setMediaError(false)}
+                />
+
+                {renderIcon()}
               </>
             )}
           </Box>

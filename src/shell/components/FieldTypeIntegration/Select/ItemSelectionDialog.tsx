@@ -39,7 +39,8 @@ const keyPathValuesToString = (
   item: ApiDataProps,
   keyPaths: IntegrationKeyPaths
 ) => {
-  const validValues = Object.values(keyPaths)
+  const { rootPath = "", ...filteredKeyPaths } = keyPaths;
+  const validValues = Object.values(filteredKeyPaths)
     ?.filter((value) => {
       if (Array.isArray(value)) return value?.length > 0;
       return value !== "" && value !== null && value !== undefined;
@@ -78,7 +79,7 @@ const getItemRowHeight = (
   details?: string[]
 ): number => {
   if (type === "simple") return 60;
-  if (type === "details" && !!details?.length && details?.length > 2)
+  if (type === "details" && details?.length > 2)
     return 96 + (details.length - 1) * 20;
   return 96;
 };
@@ -132,6 +133,7 @@ const RenderRow = ({ data, index, style }: RenderRowProps) => {
     /\s+/g,
     ""
   );
+
   const hasUpdates = !!localItem && remoteItemData !== localItemData;
   const pathData = {
     heading: get(item, keyPaths?.heading),
