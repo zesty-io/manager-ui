@@ -250,7 +250,12 @@ const CreateFile = memo(function CreateFile({
           borderColor: "border",
         }}
       >
-        <Button variant="outlined" color="inherit" onClick={onClose}>
+        <Button
+          data-cy="CreateFileCancelButton"
+          variant="outlined"
+          color="inherit"
+          onClick={onClose}
+        >
           Cancel
         </Button>
         <Button

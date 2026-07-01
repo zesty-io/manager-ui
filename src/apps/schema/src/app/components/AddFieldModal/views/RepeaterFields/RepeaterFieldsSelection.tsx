@@ -1,8 +1,6 @@
 import {
-  Dialog,
   DialogContent,
   DialogTitle,
-  Button,
   Typography,
   IconButton,
   Stack,
@@ -10,7 +8,12 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { FIELD_COPY_CONFIG, FieldListData, FieldType } from "../../../configs";
+import {
+  FIELD_COPY_CONFIG,
+  FIELD_CATEGORY_LABELS,
+  FieldListData,
+  FieldType,
+} from "../../../configs";
 import { FieldItem } from "../../FieldItem";
 
 const ALLOWED_REPEATER_FIELD_TYPES = new Set<FieldType>([
@@ -27,6 +30,8 @@ const ALLOWED_REPEATER_FIELD_TYPES = new Set<FieldType>([
   "color",
   "sort",
   "uuid",
+  "date",
+  "datetime",
 ]);
 
 const repeaterFields = {
@@ -40,6 +45,9 @@ const repeaterFields = {
     ALLOWED_REPEATER_FIELD_TYPES.has(field.type)
   ),
   numeric: FIELD_COPY_CONFIG.numeric.filter((field) =>
+    ALLOWED_REPEATER_FIELD_TYPES.has(field.type)
+  ),
+  dateandtime: FIELD_COPY_CONFIG.dateandtime.filter((field) =>
     ALLOWED_REPEATER_FIELD_TYPES.has(field.type)
   ),
   options: FIELD_COPY_CONFIG.options.filter((field) =>
@@ -107,8 +115,8 @@ export const RepeaterFieldsSelection = ({
           },
         }}
       >
-        {Object.keys(repeaterFields).map(
-          (fieldKey: keyof typeof repeaterFields) => (
+        {(Object.keys(repeaterFields) as (keyof typeof repeaterFields)[]).map(
+          (fieldKey) => (
             <Box className="field-type-group" key={fieldKey}>
               <Typography
                 component="p"
@@ -116,7 +124,7 @@ export const RepeaterFieldsSelection = ({
                 mb={1.5}
                 color="text.secondary"
               >
-                {fieldKey === "options" ? "Advanced" : fieldKey}
+                {FIELD_CATEGORY_LABELS[fieldKey] ?? fieldKey}
               </Typography>
               <Box
                 display="grid"

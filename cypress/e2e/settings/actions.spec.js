@@ -2,9 +2,9 @@ describe("Settings Actions", () => {
   const SAVED_MESSAGE = "Settings Saved";
 
   before(() => {
-    cy.waitOn("**/settings", () => {
-      cy.visit("/settings");
-    });
+    cy.visit("/settings");
+    // Settings may load from IndexedDB cache — wait for UI instead of network
+    cy.getBySelector("SettingsNav").should("exist");
   });
 
   it("Body Colors & Spacing", () => {
@@ -19,7 +19,8 @@ describe("Settings Actions", () => {
 
   it.only("Typography", () => {
     cy.get("[data-cy=SettingsNav]").contains("Typography").click();
-    cy.get("[data-cy=SubApp] .MuiSelect-select").first().click();
+    // font-weight has static options; the font-family selects are empty without installed fonts.
+    cy.get("#mui-component-select-headings-font-weight").click();
     cy.get(".MuiList-root li[aria-selected=false]").last().click();
     cy.get("#SaveSettings").click();
     cy.get('[data-cy="ConfirmSaveSettings"]').should("exist");
