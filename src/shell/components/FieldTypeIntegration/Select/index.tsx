@@ -32,7 +32,7 @@ const IntegrationFieldSelect = ({
   const [selectedItems, setSelectedItems] = useState<ApiDataProps[]>(
     value?.map((item) => ({
       ...item,
-      _itemId: item?.[config?.keyPaths?.itemId],
+      _itemId: get(item, config?.keyPaths?.itemId),
     })) || []
   );
 
@@ -69,9 +69,8 @@ const IntegrationFieldSelect = ({
       ? []
       : data?.map((item: ApiDataProps) => ({
           ...item,
-          _itemId: item?.[config?.keyPaths?.itemId],
+          _itemId: get(item, config?.keyPaths?.itemId),
         }));
-
     return itemWithId;
   }, [apiData, isError, isLoading, config?.keyPaths]);
 
@@ -79,7 +78,7 @@ const IntegrationFieldSelect = ({
     const newValue =
       value?.map((item) => ({
         ...item,
-        _itemId: item?.[config?.keyPaths?.itemId],
+        _itemId: get(item, config?.keyPaths?.itemId),
       })) || [];
     setSelectedItems(newValue);
   }, [value, setSelectedItems]);

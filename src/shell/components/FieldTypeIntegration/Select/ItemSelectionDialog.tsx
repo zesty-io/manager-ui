@@ -70,11 +70,6 @@ interface ItemSelectionDialogProps {
   onSave: (value: ApiDataProps[]) => void;
 }
 
-interface SyncItem {
-  id: string | number;
-  data: ApiDataProps;
-}
-
 const getItemRowHeight = (
   type: IntegrationTypes,
   details?: string[]
@@ -88,15 +83,13 @@ const getItemRowHeight = (
 type RenderRowDataProps = {
   loading?: boolean;
   type: IntegrationTypes;
-  value: ApiDataProps[];
   items: ApiDataProps[];
   selectedItems: ApiDataProps[];
   keyPaths: any;
   onSelect: (item: ApiDataProps) => void;
   maxItems?: number;
   onView: (item: ApiDataProps) => void;
-  onSync: (id: string | number, data: ApiDataProps) => void;
-  forSyncIds: (string | number)[];
+  onSync: (item: ApiDataProps) => void;
 };
 
 type RenderRowProps = Omit<ListChildComponentProps, "data"> & {
@@ -109,7 +102,6 @@ const RenderRow = ({ data, index, style }: RenderRowProps) => {
   const {
     loading = false,
     type,
-    value,
     items,
     selectedItems,
     keyPaths,
@@ -117,7 +109,6 @@ const RenderRow = ({ data, index, style }: RenderRowProps) => {
     maxItems,
     onView,
     onSync,
-    forSyncIds,
   } = data;
   const item = items[index];
   const selectedIds = selectedItems.map((item) => item?._itemId);
@@ -125,7 +116,7 @@ const RenderRow = ({ data, index, style }: RenderRowProps) => {
   const isSelected = selectedIds.includes(item?._itemId);
 
   const localItem =
-    value?.find((val) => val?.[keyPaths?.itemId] === item?._itemId) || null;
+    selectedItems?.find((val) => val?._itemId === item?._itemId) || null;
   const remoteItemData = keyPathValuesToString(item, keyPaths).replace(
     /\s+/g,
     ""
@@ -219,21 +210,18 @@ const RenderRow = ({ data, index, style }: RenderRowProps) => {
           justifyContent="space-between"
           alignItems="center"
         >
-          {!loading &&
-            !forSyncIds?.includes(item?._itemId) &&
-            isSelected &&
-            !!hasUpdates && (
-              <Tooltip title="Resync Values">
-                <IconButton
-                  data-cy="integrationResyncButton"
-                  color="primary"
-                  size="small"
-                  onClick={() => onSync(item?._itemId, item)}
-                >
-                  <Refresh />
-                </IconButton>
-              </Tooltip>
-            )}
+          {!loading && isSelected && !!hasUpdates && (
+            <Tooltip title="Resync Values">
+              <IconButton
+                data-cy="integrationResyncButton"
+                color="primary"
+                size="small"
+                onClick={() => onSync(item)}
+              >
+                <Refresh />
+              </IconButton>
+            </Tooltip>
+          )}
           <IconButton
             size="small"
             sx={{ borderRadius: 1, color: "action.active" }}
@@ -268,12 +256,10 @@ const ItemSelectionDialog = ({
   const [searchTerm, setSearchTerm] = useState("");
   const [jsonViewData, setJsonViewData] = useState<ApiDataProps | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [forSync, setForSync] = useState<SyncItem[]>([]);
 
   const itemHeight = getItemRowHeight(config?.type, config?.keyPaths?.details);
   const keyPaths = config?.keyPaths;
-  const forSyncIds = forSync?.map((sync) => sync?.id);
-  const hasChanges = !isEqual(value, selectedItems) || forSyncIds?.length > 0;
+  const hasChanges = !isEqual(value, selectedItems);
 
   const itemsIdMap = useMemo(
     () => new Set(items.map((sel) => sel._itemId)),
@@ -293,33 +279,16 @@ const ItemSelectionDialog = ({
     });
   };
 
-  const handleSync = (id: string | number, data: ApiDataProps) => {
-    setForSync((prev: SyncItem[]) => {
-      const existingIndex = prev.findIndex((item: SyncItem) => item.id === id);
-      if (existingIndex !== -1) {
-        return [
-          ...prev.slice(0, existingIndex),
-          { id, data },
-          ...prev.slice(existingIndex + 1),
-        ];
-      }
-      return [...prev, { id, data }];
-    });
+  const handleSync = (item: ApiDataProps) => {
+    setSelectedItems((prev) =>
+      prev.map((selected) =>
+        selected._itemId === item._itemId ? item : selected
+      )
+    );
   };
 
   const handleSave = () => {
-    const updatedItems = !forSync?.length
-      ? selectedItems
-      : selectedItems.map((item) => {
-          const syncItem = forSync.find(
-            (sync) =>
-              !!config?.keyPaths?.itemId &&
-              sync.id === item?.[config?.keyPaths?.itemId]
-          );
-          return syncItem?.data || item;
-        });
-
-    onSave(updatedItems);
+    onSave(selectedItems);
     onClose();
   };
 
@@ -333,9 +302,13 @@ const ItemSelectionDialog = ({
     if (!searchTerm) return items;
 
     const normalizedTerm = searchTerm.toLowerCase();
+    const { thumbnail = "", ...filteredKeyPaths } = keyPaths || {};
 
     const filtered = items.filter((item) => {
-      const searchString = keyPathValuesToString(item, keyPaths).toLowerCase();
+      const searchString = keyPathValuesToString(
+        item,
+        filteredKeyPaths
+      ).toLowerCase();
 
       return searchString.includes(normalizedTerm);
     });
@@ -345,7 +318,6 @@ const ItemSelectionDialog = ({
 
   const listData: RenderRowDataProps = {
     type: config?.type,
-    value,
     items: filteredItems,
     selectedItems: selectedItemsLocal,
     keyPaths: config?.keyPaths,
@@ -354,7 +326,6 @@ const ItemSelectionDialog = ({
     onView: handleView,
     loading: loading,
     onSync: handleSync,
-    forSyncIds,
   };
 
   return (
