@@ -55,8 +55,7 @@ const IntegrationFieldConfigure = ({
   );
   const [apiData, setApiData] = useState<any | null>(null);
 
-  const isConnected =
-    !!integrationFieldConfig?.endpoint && !!integrationFieldConfig?.type;
+  const isConnected = !!endpoint && !!type;
   const isFetchingApiData = status === "connecting";
 
   const onSave = useCallback(() => {
@@ -71,8 +70,13 @@ const IntegrationFieldConfigure = ({
   }, [endpoint, headers, type, keyPaths, onChange]);
 
   const onClose = useCallback(() => {
+    setEndpoint(integrationFieldConfig?.endpoint || "");
+    setHeaders(integrationFieldConfig?.headers || null);
+    setType(integrationFieldConfig?.type || null);
+    setKeyPaths(integrationFieldConfig?.keyPaths || null);
+    hasFetchedInitialData.current = false;
     setIsFormOpen(false);
-  }, []);
+  }, [integrationFieldConfig]);
 
   const onOpen = useCallback(() => {
     setIsFormOpen(true);
@@ -81,23 +85,25 @@ const IntegrationFieldConfigure = ({
 
   useEffect(() => {
     if (
-      !isUpdate ||
-      !endpoint ||
-      isFetchingApiData ||
-      !!apiData ||
-      hasFetchedInitialData.current
-    )
-      return;
+      !!isUpdate &&
+      !!integrationFieldConfig?.endpoint &&
+      !isFetchingApiData &&
+      !hasFetchedInitialData.current
+    ) {
+      setEndpoint(integrationFieldConfig?.endpoint || "");
+      setHeaders(integrationFieldConfig?.headers || null);
+      setType(integrationFieldConfig?.type || null);
+      setKeyPaths(integrationFieldConfig?.keyPaths || null);
 
-    hasFetchedInitialData.current = true;
-    const options = !headers
-      ? {}
-      : {
-          headers,
-        };
-
-    fetchApiData(endpoint, options);
-  }, [isUpdate, endpoint, headers, isFetchingApiData, apiData, fetchApiData]);
+      const options = !integrationFieldConfig?.headers
+        ? {}
+        : {
+            headers: integrationFieldConfig?.headers,
+          };
+      fetchApiData(integrationFieldConfig?.endpoint, options);
+      hasFetchedInitialData.current = true;
+    }
+  }, [isUpdate, integrationFieldConfig, isFetchingApiData, fetchApiData]);
 
   useEffect(() => {
     setApiData(data);
@@ -159,7 +165,7 @@ const IntegrationFieldConfigure = ({
 
   return (
     <Box>
-      {isConnected ? (
+      {isUpdate || isConnected ? (
         <>
           <Typography variant="h6" mb={1}>
             {t("shell.integrationApiConfigurationSettings")}
@@ -182,7 +188,7 @@ const IntegrationFieldConfigure = ({
               <InputBase
                 data-cy="integrationApiUrl"
                 readOnly
-                value={integrationFieldConfig?.endpoint}
+                value={endpoint}
                 sx={{ flexGrow: 1 }}
                 slotProps={{
                   input: {
@@ -200,7 +206,7 @@ const IntegrationFieldConfigure = ({
               <InputBase
                 data-cy="integrationDisplayType"
                 readOnly
-                value={integrationFieldConfig?.type}
+                value={type}
                 sx={{ flexGrow: 1 }}
                 slotProps={{
                   input: {

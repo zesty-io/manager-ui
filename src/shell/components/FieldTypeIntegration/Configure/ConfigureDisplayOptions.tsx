@@ -132,7 +132,6 @@ const ConfigureDisplayOptions = ({
 
   const handleSave = () => {
     onSave();
-    closeForm?.();
   };
 
   const handleRemoveDetail = (index: number) => {

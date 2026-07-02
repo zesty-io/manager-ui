@@ -1,11 +1,4 @@
-import {
-  useMemo,
-  useState,
-  useEffect,
-  ChangeEvent,
-  useCallback,
-  memo,
-} from "react";
+import { useMemo, useState, ChangeEvent, memo } from "react";
 import ReactDOM from "react-dom";
 import { useDispatch } from "react-redux";
 import { Trans, useTranslation } from "react-i18next";
@@ -46,12 +39,9 @@ import styles from "./Field.less";
 import { MemoryRouter } from "react-router";
 import { withAI } from "../../../../../../../shell/components/withAi";
 import { useGetContentModelFieldsQuery } from "../../../../../../../shell/services/instance";
-import {
-  ContentItem,
-  FieldSettings,
-} from "../../../../../../../shell/services/types";
+import { FieldSettings } from "../../../../../../../shell/services/types";
 import { FieldTypeMedia } from "../../FieldTypeMedia";
-import { debounce, parseInt } from "lodash";
+import { parseInt } from "lodash";
 import { useRegisterRef } from "../../../../../../../engine/useRegisterRef";
 import { IntegrationFieldSelect } from "shell/components/FieldTypeIntegration";
 import { useDebouncedInput } from "../../../../../../../shell/hooks/useDebouncedInput";
@@ -91,6 +81,7 @@ type FieldProps = {
   errors: Error;
   maxLength: number;
   minLength: number;
+  compact?: boolean;
 };
 
 export const Field = memo(
@@ -112,6 +103,7 @@ export const Field = memo(
     maxLength,
     minLength,
     version,
+    compact = false,
   }: FieldProps) => {
     const dispatch = useDispatch();
     const { t } = useTranslation("content");
@@ -376,9 +368,12 @@ export const Field = memo(
               onChange={(e) => onLocalChange(e.target.value)}
               fullWidth
               multiline
-              rows={6}
-              inputProps={{
-                "data-cy": `EditorField-${fieldData?.name || name}`,
+              minRows={6}
+              maxRows={compact ? 30 : 0}
+              slotProps={{
+                htmlInput: {
+                  "data-cy": `EditorField-${fieldData?.name || name}`,
+                },
               }}
               error={errors && Object.values(errors)?.some((error) => !!error)}
             />
@@ -390,7 +385,7 @@ export const Field = memo(
         const [characterCount, setCharacterCount] = useState(0);
 
         return (
-          <div className={styles.WYSIWYGFieldType}>
+          <div className={!compact ? styles.WYSIWYGFieldType : undefined}>
             <AIFieldShell
               ZUID={fieldData?.ZUID}
               name={fieldData?.name}
@@ -422,6 +417,7 @@ export const Field = memo(
                 error={
                   errors && Object.values(errors)?.some((error) => !!error)
                 }
+                compact={compact}
               />
             </AIFieldShell>
             {imageModal && renderMediaModal()}
@@ -431,7 +427,7 @@ export const Field = memo(
       case "markdown":
       case "article_writer":
         return (
-          <div className={styles.WYSIWYGFieldType}>
+          <div className={!compact ? styles.WYSIWYGFieldType : undefined}>
             <AIFieldShell
               key={rerenderKey}
               ZUID={fieldData?.ZUID}
@@ -461,6 +457,7 @@ export const Field = memo(
                 error={
                   errors && Object.values(errors)?.some((error) => !!error)
                 }
+                compact={compact}
               />
             </AIFieldShell>
             {imageModal && renderMediaModal()}
@@ -498,6 +495,7 @@ export const Field = memo(
                     ? settings.group_id
                     : null
                 }
+                compact={compact}
               />
             </FieldShell>
             {imageModal && (
@@ -748,6 +746,7 @@ export const Field = memo(
             <FieldTypeDate
               name={name}
               required={required}
+              compact={compact}
               // By appending "T00:00:00", we force JS to parse it as local midnight,
               value={value ? new Date(value + "T00:00:00") : null}
               // format="MMM dd, yyyy"
@@ -762,7 +761,7 @@ export const Field = memo(
       case "datetime":
         return (
           <FieldShell settings={fieldData} errors={errors}>
-            <Box maxWidth={360}>
+            <Box maxWidth={compact ? undefined : 360}>
               <FieldTypeDateTime
                 name={name}
                 required={required}
@@ -773,6 +772,7 @@ export const Field = memo(
                 error={
                   errors && Object.values(errors)?.some((error) => !!error)
                 }
+                compact={compact}
               />
             </Box>
           </FieldShell>

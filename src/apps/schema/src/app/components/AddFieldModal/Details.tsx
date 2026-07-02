@@ -141,9 +141,9 @@ export const Details = ({
         }
 
         if (fieldConfig.name === "integrationFieldConfig") {
-          integrationFieldConfig = isUpdateField
-            ? fieldData?.settings?.integrationFieldConfig
-            : (formData["integrationFieldConfig"] as IntegrationFieldConfig);
+          integrationFieldConfig = formData[
+            "integrationFieldConfig"
+          ] as IntegrationFieldConfig;
         }
 
         if (fieldConfig.name === "currency") {

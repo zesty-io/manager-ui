@@ -16,9 +16,17 @@ import {
   useMemo,
 } from "react";
 import Button from "@mui/material/Button";
-import { Typography, Stack, Box, TextField } from "@mui/material";
+import {
+  Typography,
+  Stack,
+  Box,
+  TextField,
+  IconButton,
+  Tooltip,
+} from "@mui/material";
 import { format, isValid } from "date-fns";
 import CalendarTodayRoundedIcon from "@mui/icons-material/CalendarTodayRounded";
+import CloseRounded from "@mui/icons-material/CloseRounded";
 
 export interface FieldTypeDateProps extends DatePickerProps<Date> {
   name: string;
@@ -31,6 +39,7 @@ export interface FieldTypeDateProps extends DatePickerProps<Date> {
   onClear?: () => void;
   showClearButton?: boolean;
   valueFormatPreview?: string;
+  compact?: boolean;
 }
 
 const parseDateInput = (input: string): Date | null => {
@@ -99,6 +108,7 @@ export const FieldTypeDate = memo(
         onClear,
         showClearButton = true,
         valueFormatPreview,
+        compact,
         ...props
       }: FieldTypeDateProps,
       ref
@@ -193,7 +203,11 @@ export const FieldTypeDate = memo(
           adapterLocale={getDateFnsLocale(i18n.language)}
         >
           <Stack direction="row" gap={0.5} alignItems="center">
-            <Box maxWidth={160} flexShrink={0}>
+            <Box
+              {...(compact
+                ? { flex: 1, minWidth: 0 }
+                : { maxWidth: 160, flexShrink: 0 })}
+            >
               <DatePicker
                 reduceAnimations
                 open={isOpen}
@@ -263,20 +277,33 @@ export const FieldTypeDate = memo(
             {!!slots?.timePicker && slots.timePicker}
             {!!slots?.timezonePicker && slots.timezonePicker}
 
-            {showClearButton && (
-              <Button
-                data-cy="dateFieldClearButton"
-                color="inherit"
-                variant="text"
-                size="small"
-                sx={{ minWidth: 45 }}
-                onClick={handleClear}
-              >
-                {t("common.clear")}
-              </Button>
-            )}
+            {showClearButton &&
+              (compact ? (
+                <Tooltip title={t("common.clear")}>
+                  <IconButton
+                    data-cy="dateFieldClearButton"
+                    size="small"
+                    onClick={handleClear}
+                    aria-label={t("common.clear")}
+                  >
+                    <CloseRounded fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              ) : (
+                <Button
+                  data-cy="dateFieldClearButton"
+                  color="inherit"
+                  variant="text"
+                  size="small"
+                  sx={{ minWidth: 45 }}
+                  onClick={handleClear}
+                >
+                  {t("common.clear")}
+                </Button>
+              ))}
           </Stack>
-          {(valueFormatPreview || props.value) && (
+
+          {(valueFormatPreview || props?.value) && (
             <Typography variant="body3" color="text.secondary" sx={{ mt: 0.5 }}>
               {valueFormatPreview ??
                 (props.value && isValid(props.value)
