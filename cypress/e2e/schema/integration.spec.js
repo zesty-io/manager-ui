@@ -619,6 +619,57 @@ describe("Integration Field", () => {
       });
     });
 
+    it("Persists a new endpoint through the full Edit API URL flow", () => {
+      const NEW_ENDPOINT =
+        "https://8xbq19z1-dev.preview.stage.zesty.io/api/generic-v2.json";
+
+      cy.intercept("**/get-url?url=*", {
+        statusCode: 200,
+        body: genericApi,
+      }).as("reconfigureGetUrl");
+
+      cy.visit(`/schema/${Cypress.env("modelZUID")}/fields`);
+      cy.getBySelector("Field_text").click();
+      cy.wait("@reconfigureGetUrl");
+
+      cy.intercept("PUT", "**/content/models/*/fields/*").as("updateField");
+
+      cy.getBySelector("integrationEditApiUrlButton").click();
+      cy.getBySelector("integrationFormDialog").should("exist");
+
+      cy.getBySelector("integrationEndpointInput")
+        .find("input")
+        .clear()
+        .type(NEW_ENDPOINT);
+
+      cy.intercept("**/get-url?url=*", {
+        statusCode: 200,
+        body: genericApi,
+      }).as("getNewUrl");
+
+      cy.getBySelector("integrationConnectButton").click();
+      cy.wait("@getNewUrl");
+
+      cy.getBySelector("integrationConnectionStatusLabel").should(
+        "contain",
+        "Connection Successful"
+      );
+      cy.getBySelector("integrationKeyPathsMismatchWarning").should(
+        "not.exist"
+      );
+
+      cy.getBySelector("integrationConnectionStatusButton").click();
+      cy.getBySelector("integrationConfigureOptionNextButton").click();
+      cy.getBySelector("integrationConfigureDisplayOptionsDoneButton").click();
+
+      cy.getBySelector("FieldFormAddFieldBtn").click();
+      cy.wait("@updateField").then(({ request }) => {
+        expect(request.body.settings.integrationFieldConfig.endpoint).to.equal(
+          NEW_ENDPOINT
+        );
+      });
+    });
+
     it("Edit API URL opens the Connect to API step; Edit Display Options still opens the Display Type step", () => {
       cy.intercept("**/get-url?url=*", {
         statusCode: 200,
