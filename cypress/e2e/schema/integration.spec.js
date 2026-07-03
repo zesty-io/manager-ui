@@ -1,5 +1,7 @@
 import genericApi from "../../fixtures/integration/generic.json";
 import specialApi from "../../fixtures/integration/special.json";
+import specialApiReshaped from "../../fixtures/integration/special-reshaped.json";
+import genericApiReshaped from "../../fixtures/integration/generic-reshaped.json";
 
 import { DISPLAY_OPTIONS_CONFIG } from "../../../src/shell/components/FieldTypeIntegration/constants";
 
@@ -615,6 +617,132 @@ describe("Integration Field", () => {
           "simple"
         );
       });
+    });
+
+    it("Edit API URL opens the Connect to API step; Edit Display Options still opens the Display Type step", () => {
+      cy.intercept("**/get-url?url=*", {
+        statusCode: 200,
+        body: genericApi,
+      }).as("reconfigureGetUrl");
+
+      cy.visit(`/schema/${Cypress.env("modelZUID")}/fields`);
+      cy.getBySelector("Field_text").click();
+      cy.wait("@reconfigureGetUrl");
+
+      // "Edit Display Options" preserves the original behavior — opens directly
+      // at the Display Type step.
+      cy.getBySelector("integrationConfigureButton").should(
+        "contain",
+        "Edit Display Options"
+      );
+      cy.getBySelector("integrationConfigureButton").click();
+      cy.getBySelector("integrationFormDialog").should("exist");
+      cy.getBySelector("integrationOptionsContainer").should("exist");
+      cy.contains("button", "Cancel").click();
+
+      // "Edit API URL" is the new entry point — opens at Connect to API,
+      // which was previously unreachable once a field was created.
+      cy.getBySelector("integrationEditApiUrlButton").should(
+        "contain",
+        "Edit API URL"
+      );
+      cy.getBySelector("integrationEditApiUrlButton").click();
+      cy.getBySelector("integrationFormDialog").should("exist");
+      cy.getBySelector("integrationEndpointInput").should("exist");
+    });
+
+    it("Warns, without blocking, when reconnecting to an endpoint whose shape no longer matches the saved key paths", () => {
+      // Self-contained: create a dedicated special-type field rather than
+      // relying on a field created (and named) by an earlier describe block —
+      // the field's `name` is not guaranteed to match the typed label/type.
+      const fieldLabel = "reconfigure shopify test field";
+
+      connectToEndpoint(ENDPOINTS.shopify, "shopify", specialApi);
+      addSpecialField("shopify");
+
+      cy.intercept(`**/v1/content/models/**`).as("getModelFields");
+      cy.getBySelector("FieldFormInput_label")
+        .find("input")
+        .focus()
+        .type("{selectAll}{del}");
+      cy.getBySelector("FieldFormInput_label").find("input").type(fieldLabel);
+      cy.getBySelector("FieldFormAddFieldBtn").click();
+      cy.wait("@getModelFields");
+
+      cy.intercept("**/get-url?url=*", {
+        statusCode: 200,
+        body: specialApi,
+      }).as("initialGetUrl");
+
+      cy.visit(`/schema/${Cypress.env("modelZUID")}/fields`);
+      cy.contains('[data-cy^="Field_"]', fieldLabel).click();
+      cy.wait("@initialGetUrl");
+
+      cy.getBySelector("integrationEditApiUrlButton").click();
+      cy.getBySelector("integrationFormDialog").should("exist");
+
+      cy.intercept("**/get-url?url=*", {
+        statusCode: 200,
+        body: specialApiReshaped,
+      }).as("reshapedGetUrl");
+
+      cy.getBySelector("integrationEndpointInput")
+        .find("input")
+        .clear()
+        .type(ENDPOINTS.classy);
+      cy.getBySelector("integrationConnectButton").click();
+      cy.wait("@reshapedGetUrl");
+
+      cy.getBySelector("integrationConnectionStatusLabel").should(
+        "contain",
+        "Connection Successful"
+      );
+      cy.getBySelector("integrationKeyPathsMismatchWarning").should(
+        "contain",
+        "different structure"
+      );
+
+      // The warning is non-blocking — Next still advances the flow.
+      cy.getBySelector("integrationConnectionStatusButton").click();
+      cy.getBySelector("integrationOptionsContainer").should("exist");
+    });
+
+    it("Warns on a generic (root-level array) field too, not just rootPath-based special types", () => {
+      // Generic display types (simple/text/image/video/details) store an
+      // empty rootPath — the response array itself is the root. This
+      // specifically pins the fix for the case that was previously skipped.
+      cy.intercept("**/get-url?url=*", {
+        statusCode: 200,
+        body: genericApi,
+      }).as("reconfigureGetUrl");
+
+      cy.visit(`/schema/${Cypress.env("modelZUID")}/fields`);
+      cy.getBySelector("Field_text").click();
+      cy.wait("@reconfigureGetUrl");
+
+      cy.getBySelector("integrationEditApiUrlButton").click();
+      cy.getBySelector("integrationFormDialog").should("exist");
+
+      cy.intercept("**/get-url?url=*", {
+        statusCode: 200,
+        body: genericApiReshaped,
+      }).as("reshapedGenericGetUrl");
+
+      cy.getBySelector("integrationEndpointInput")
+        .find("input")
+        .clear()
+        .type(ENDPOINTS.mux);
+      cy.getBySelector("integrationConnectButton").click();
+      cy.wait("@reshapedGenericGetUrl");
+
+      cy.getBySelector("integrationConnectionStatusLabel").should(
+        "contain",
+        "Connection Successful"
+      );
+      cy.getBySelector("integrationKeyPathsMismatchWarning").should(
+        "contain",
+        "different structure"
+      );
     });
   });
 });
