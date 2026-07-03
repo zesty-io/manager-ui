@@ -9,7 +9,7 @@ export function GetStarted(props) {
   return (
     <section className={styles.GetStarted}>
       <h1 className={styles.display}>{t("common.getStarted")}</h1>
-      <h2 className={styles.subheadline}>
+      <h2 className={styles.subheadline} data-cy="leadsGetStartedHeading">
         {t("leads.captureLeadsOnYourInstance")}
       </h2>
 

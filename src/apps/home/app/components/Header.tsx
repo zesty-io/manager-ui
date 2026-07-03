@@ -85,7 +85,11 @@ export const Header = ({ dateRange, onDateRangeChange }: Props) => {
         <Typography variant="h4" fontWeight={600}>
           {t("dashboard.greeting", { name: userFirstName })}
         </Typography>
-        <Typography variant="subtitle1" marginTop={0.5}>
+        <Typography
+          variant="subtitle1"
+          marginTop={0.5}
+          data-cy="dashboardInstanceSummary"
+        >
           {t("dashboard.instanceSummary")}{" "}
           <Box
             component="span"

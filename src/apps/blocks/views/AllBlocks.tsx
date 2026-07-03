@@ -71,7 +71,7 @@ export const AllBlocks = () => {
             backgroundColor: "background.paper",
           }}
         >
-          <Typography variant="h3" fontWeight="700">
+          <Typography variant="h3" fontWeight="700" data-cy="allBlocksTitle">
             {t("blocks.allBlocksTitle")}
           </Typography>
           <Stack direction="row" alignItems="center" gap={1}>
