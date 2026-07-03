@@ -43,7 +43,7 @@ const FIELD_DATA = {
 describe("Integration Field", () => {
   let MODEL = null;
   before(() => {
-    cy.task("seed:content", "fixtures/integration/fields.json").then(
+    cy.task("seed:content", "fixtures/integration/maxvalue.json").then(
       ({ model }) => {
         Cypress.env("modelZUID", model?.ZUID);
         MODEL = model;
@@ -61,11 +61,14 @@ describe("Integration Field", () => {
         it(`Submit Generic Type Field- ${valueType})`, () => {
           cy.intercept(`**/v1/content/models/**`).as("getModelFields");
 
-          cy.get('[data-cy="FieldFormInput_label"] input')
+          cy.getBySelector("FieldFormInput_label")
+            .find("input")
             .focus()
             .type("{selectAll}{del}");
-          cy.get('[data-cy="FieldFormInput_label"] input').type(`${valueType}`);
-          cy.get('[data-cy="FieldFormAddFieldBtn"]').click();
+          cy.getBySelector("FieldFormInput_label")
+            .find("input")
+            .type(`${valueType}`);
+          cy.getBySelector("FieldFormAddFieldBtn").click();
 
           cy.wait("@getModelFields").then((interception) => {
             const response = interception.response;
@@ -84,18 +87,65 @@ describe("Integration Field", () => {
         it(`Submit Special Type Field - ${valueType})`, () => {
           cy.intercept(`**/v1/content/models/**`).as("getModelFields");
 
-          cy.get('[data-cy="FieldFormInput_label"] input')
+          cy.getBySelector("FieldFormInput_label")
+            .find("input")
             .focus()
             .type("{selectAll}{del}");
-          cy.get('[data-cy="FieldFormInput_label"] input').type(`${valueType}`);
+          cy.getBySelector("FieldFormInput_label")
+            .find("input")
+            .type(`${valueType}`);
 
-          cy.get('[data-cy="FieldFormAddFieldBtn"]').click();
+          cy.getBySelector("FieldFormAddFieldBtn").click();
 
           cy.wait("@getModelFields").then((interception) => {
             const response = interception.response;
             expect(response?.statusMessage).to.equal("Created");
           });
         });
+      });
+    });
+
+    context("HTTP Headers", () => {
+      beforeEach(() => {
+        cy.visit(`/schema/${Cypress.env("modelZUID")}/fields`);
+        cy.getBySelector("AddFieldBtn").click();
+        cy.getBySelector("FieldItem_integration").click();
+        cy.getBySelector("integrationConfigureButton").click();
+        cy.getBySelector("integrationFormDialog").should("exist");
+        cy.getBySelector("integrationEndpointInput")
+          .find("input")
+          .clear()
+          .type(ENDPOINTS.generic);
+      });
+
+      it("Add HTTP Headers", () => {
+        cy.getBySelector("addHeaderButton").click();
+        cy.getBySelector("addHeaderButton").click();
+        cy.getBySelector("addHeaderButton").click();
+
+        cy.getBySelector("integrationHeadersContainer")
+          .children()
+          .should("have.length", 4);
+      });
+
+      it("Remove HTTP Headers", () => {
+        cy.getBySelector("addHeaderButton").click();
+        cy.getBySelector("addHeaderButton").click();
+        cy.getBySelector("addHeaderButton").click();
+
+        cy.getBySelector("integrationHeadersContainerRow-3")
+          .find('[data-cy="removeHeaderButton"]')
+          .click();
+        cy.getBySelector("integrationHeadersContainerRow-2")
+          .find('[data-cy="removeHeaderButton"]')
+          .click();
+        cy.getBySelector("integrationHeadersContainerRow-1")
+          .find('[data-cy="removeHeaderButton"]')
+          .click();
+
+        cy.getBySelector("integrationHeadersContainer")
+          .children()
+          .should("have.length", 1);
       });
     });
   });
@@ -118,63 +168,74 @@ describe("Integration Field", () => {
     });
     it("Create Content Item", () => {
       const modelZUID = Cypress.env("modelZUID");
+      cy.intercept("**/get-url?url=*", {
+        statusCode: 200,
+        body: genericApi,
+      }).as("reconfigureGetUrl");
 
       cy.visit(`/content/${modelZUID}/new`);
-      cy.get(`[data-cy="field:title"]`).find("input").type(MODEL?.label);
+      cy.getBySelector("field:title").find("input").type(MODEL?.label);
 
-      cy.get(
-        `[data-cy="field:simple"] [data-cy="integrationSelectItemsButton"]`
-      ).click();
-      cy.get('[data-cy="integrationSelectionFormDialog"]').should("exist");
+      cy.getBySelector("field:players")
+        .find('[data-cy="integrationSelectItemsButton"]')
+        .click();
+      cy.getBySelector("integrationSelectionFormDialog").should("exist");
     });
-    it("Search Filter with - results", () => {
-      cy.get('[data-cy="integrationSelectionFormSearchBox"] input')
-        .clear()
 
+    it("Search Filter with - results", () => {
+      cy.getBySelector("integrationSelectionFormSearchBox")
+        .find("input")
+        .clear()
         .type(genericApi[0].name);
 
       cy.get(".integrationSelectionFormListContainer")
         .children()
         .should("have.length", 2);
     });
+
     it("Search Filter - no items found", () => {
-      cy.get('[data-cy="integrationSelectionFormSearchBox"] input')
+      cy.getBySelector("integrationSelectionFormSearchBox")
+        .find("input")
         .clear()
         .type("xxxxxx");
 
-      cy.get('[data-cy="NoResultsContainer"]').should("exist");
+      cy.getBySelector("NoResultsContainer").should("exist");
     });
 
     it("Search Filter - reset search term by clicking Search again button", () => {
-      cy.get('[data-cy="NoResultsContainer"] button').click();
+      cy.getBySelector("NoResultsContainer").find("button").click();
 
-      cy.get('[data-cy="integrationSelectionFormSearchBox"] input')
+      cy.getBySelector("integrationSelectionFormSearchBox")
+        .find("input")
         .should("be.empty")
         .should("be.focused");
     });
-    it("select 3 Items from the list", () => {
-      cy.get(
-        '.integrationSelectionFormListContainer [data-cy="integrationSelectCard"]:eq(0) input'
-      ).check({ force: true });
-      cy.get(
-        '.integrationSelectionFormListContainer [data-cy="integrationSelectCard"]:eq(1) input'
-      ).check({ force: true });
-      cy.get(
-        '.integrationSelectionFormListContainer [data-cy="integrationSelectCard"]:eq(2) input'
-      ).check({ force: true });
 
-      cy.get('[data-cy="selectIntegrationFormDoneButton"]').click();
+    it("select 2 Items from the list", () => {
+      cy.getBySelector("integrationSelectCard")
+        .eq(0)
+        .find(".MuiCheckbox-root")
+        .click();
+      cy.getBySelector("integrationSelectCard")
+        .eq(1)
+        .find(".MuiCheckbox-root")
+        .click();
 
-      cy.get('[data-cy="integrationSelectionFormDialog"]').should("not.exist");
+      cy.getBySelector("selectIntegrationFormDoneButton").click();
 
-      cy.get('[data-cy="integrationListValueContainer"]')
+      cy.getBySelector("integrationSelectionFormDialog").should("not.exist");
+
+      cy.getBySelector("integrationListValueContainer")
         .children()
-        .should("have.length", 3);
+        .should("have.length", 2);
     });
+
     it("View Item's JSON data", () => {
-      cy.get(
-        '[data-cy="integrationListValueContainer"] .draggableCard:eq(0) .moreOptionButton'
-      ).click();
+      cy.getBySelector("integrationListValueContainer")
+        .find(".draggableCard")
+        .eq(0)
+        .find(".moreOptionButton")
+        .click();
       cy.get(
         ".MuiPopover-root.moreOptionMenu ul li.moreOptionMenuItem-view"
       ).click();
@@ -183,7 +244,7 @@ describe("Integration Field", () => {
         const apiText = JSON.stringify(genericApi[0]).replace(/\s+/g, "");
         expect(editorText).to.equal(apiText);
       });
-      cy.get('[data-cy="jsonCodeViewerCloseButton"]').click();
+      cy.getBySelector("jsonCodeViewerCloseButton").click();
     });
 
     it("Reorder Item List", () => {
@@ -192,68 +253,252 @@ describe("Integration Field", () => {
 
       const dataTransfer = new DataTransfer();
 
-      cy.get(
-        '[data-cy="integrationListValueContainer"] .draggableCard:eq(0) .draggableCardDragHandle'
-      ).trigger("dragstart", { dataTransfer });
+      cy.getBySelector("integrationListValueContainer")
+        .find(".draggableCard")
+        .eq(0)
+        .find(".draggableCardDragHandle")
+        .trigger("dragstart", { dataTransfer });
 
-      cy.get(
-        '[data-cy="integrationListValueContainer"] .draggableCard:eq(1)'
-      ).trigger("drop", { dataTransfer });
+      cy.getBySelector("integrationListValueContainer")
+        .find(".draggableCard")
+        .eq(1)
+        .trigger("drop", { dataTransfer });
 
-      cy.get(
-        '[data-cy="integrationListValueContainer"] .draggableCard:eq(0)'
-      ).contains(secondItemName, { matchCase: false });
-      cy.get(
-        '[data-cy="integrationListValueContainer"] .draggableCard:eq(1)'
-      ).contains(fistItemName, { matchCase: false });
+      cy.getBySelector("integrationListValueContainer")
+        .find(".draggableCard")
+        .eq(0)
+        .contains(secondItemName, { matchCase: false });
+      cy.getBySelector("integrationListValueContainer")
+        .find(".draggableCard")
+        .eq(1)
+        .contains(fistItemName, { matchCase: false });
     });
 
     it("Delete List Item", () => {
-      cy.get(
-        '[data-cy="integrationListValueContainer"] .draggableCard:eq(0) .moreOptionButton'
-      ).click();
+      cy.getBySelector("integrationListValueContainer")
+        .find(".draggableCard")
+        .eq(0)
+        .find(".moreOptionButton")
+        .click();
       cy.get(
         ".MuiPopover-root.moreOptionMenu ul li.moreOptionMenuItem-remove"
       ).click();
 
-      cy.get('[data-cy="integrationListValueContainer"]')
+      cy.getBySelector("integrationListValueContainer")
         .children()
-        .should("have.length", 2);
+        .should("have.length", 1);
     });
 
     it("Save Item", () => {
       cy.intercept("**/v1/content/models/*/items").as("saveItem");
-      cy.get('[data-cy="CreateItemSaveButton"]').click(forceClick);
+      cy.getBySelector("CreateItemSaveButton").click(forceClick);
 
       cy.wait("@saveItem");
 
-      cy.get('[data-cy="toast"]').contains("Created Item");
+      cy.getBySelector("toast").contains("Created Item");
+    });
+
+    it("Reload preserves saved selections", () => {
+      cy.reload();
+
+      cy.getBySelector("integrationListValueContainer")
+        .children()
+        .should("have.length", 1);
     });
   });
 
   describe("Search Filter with Non-string KeyPath", () => {
     it("Does not crash when a configured keyPath resolves to a number", () => {
       const modelZUID = Cypress.env("modelZUID");
+      cy.intercept("**/get-url?url=*", {
+        statusCode: 200,
+        body: genericApi,
+      }).as("reconfigureGetUrl");
 
       // Deterministic external data (live endpoint drifts from genericApi).
       cy.intercept("POST", "**/get-url*", { body: genericApi });
 
       cy.visit(`/content/${modelZUID}/new`);
-      cy.get('[data-cy="field:title"]').find("input").type(MODEL?.label);
+      cy.getBySelector("field:title").find("input").type(MODEL?.label);
 
-      cy.get(
-        `[data-cy="field:details"] [data-cy="integrationSelectItemsButton"]`
-      ).click();
-      cy.get('[data-cy="integrationSelectionFormDialog"]').should("exist");
+      cy.getBySelector("field:players")
+        .find('[data-cy="integrationSelectItemsButton"]')
+        .click();
+      cy.getBySelector("integrationSelectionFormDialog").should("exist");
 
-      cy.get('[data-cy="integrationSelectionFormSearchBox"] input')
+      cy.getBySelector("integrationSelectionFormSearchBox")
+        .find("input")
         .clear()
         .type(genericApi[0].name);
 
-      cy.get('[data-cy="integrationSelectionFormDialog"]').should("exist");
+      cy.getBySelector("integrationSelectionFormDialog").should("exist");
       cy.get(".integrationSelectionFormListContainer")
         .children()
         .should("have.length.at.least", 1);
+    });
+  });
+
+  describe("maxValue Lockout and Resync", () => {
+    let SHARED_MODEL = null;
+    let SHARED_CONTENT = null;
+    const modifiedApi = genericApi.map((player, i) =>
+      i === 0 ? { ...player, name: "Jalen Thompson Updated" } : player
+    );
+
+    before(() => {
+      cy.task("seed:content", "fixtures/integration/maxvalue.json").then(
+        ({ model, items }) => {
+          SHARED_MODEL = model;
+          SHARED_CONTENT = items[0];
+        }
+      );
+    });
+
+    describe("maxValue Lockout", () => {
+      it("Disables unselected checkboxes once the maxValue limit is reached", () => {
+        cy.intercept("**/get-url?url=*", {
+          statusCode: 200,
+          body: genericApi,
+        }).as("maxValueGetUrl");
+
+        cy.visit(`/content/${SHARED_MODEL.ZUID}/new`);
+        cy.getBySelector("field:title").find("input").type(SHARED_MODEL?.label);
+
+        cy.getBySelector("field:players")
+          .find('[data-cy="integrationSelectItemsButton"]')
+          .click();
+        cy.wait("@maxValueGetUrl");
+        cy.getBySelector("integrationSelectionFormDialog").should("exist");
+
+        cy.getBySelector("integrationSelectCard")
+          .eq(0)
+          .find(".MuiCheckbox-root")
+          .click();
+        cy.getBySelector("integrationSelectCard")
+          .eq(1)
+          .find(".MuiCheckbox-root")
+          .click();
+
+        cy.getBySelector("integrationSelectCard")
+          .eq(2)
+          .find("input")
+          .should("be.disabled");
+      });
+    });
+
+    describe("Resync", () => {
+      it("shows resync button on a selected item when remote data has changed", () => {
+        cy.intercept("**/get-url?url=*", {
+          statusCode: 200,
+          body: genericApi,
+        }).as("getUrl");
+
+        cy.visit(
+          `/content/${SHARED_MODEL?.ZUID}/${SHARED_CONTENT?.meta?.ZUID}`
+        );
+
+        cy.getBySelector("field:players")
+          .find('[data-cy="integrationSelectItemsButton"]')
+          .click();
+
+        cy.getBySelector("integrationSelectCard")
+          .eq(0)
+          .find(".MuiCheckbox-root")
+          .click();
+        cy.getBySelector("selectIntegrationFormDoneButton").click();
+        cy.getBySelector("integrationSelectionFormDialog").should("not.exist");
+
+        cy.intercept("**/get-url?url=*", {
+          statusCode: 200,
+          body: modifiedApi,
+        }).as("getModifiedUrl");
+
+        cy.getBySelector("field:players")
+          .find('[data-cy="integrationSelectItemsButton"]')
+          .click();
+
+        cy.getBySelector("integrationSelectionFormDialog").should("exist");
+
+        cy.getBySelector("integrationSelectCard")
+          .eq(0)
+          .find('[data-cy="integrationResyncButton"]')
+          .should("exist");
+
+        cy.get("body").click();
+      });
+
+      it("does not show resync button when remote data matches saved data", () => {
+        cy.intercept("**/get-url?url=*", {
+          statusCode: 200,
+          body: genericApi,
+        }).as("getUrl");
+
+        cy.visit(
+          `/content/${SHARED_MODEL?.ZUID}/${SHARED_CONTENT?.meta?.ZUID}`
+        );
+
+        cy.getBySelector("field:players")
+          .find('[data-cy="integrationSelectItemsButton"]')
+          .click();
+
+        cy.getBySelector("integrationSelectionFormDialog").should("exist");
+
+        cy.getBySelector("integrationSelectCard")
+          .eq(0)
+          .find('[data-cy="integrationResyncButton"]')
+          .should("not.exist");
+
+        cy.get("body").click(forceClick);
+      });
+
+      it("clicking resync updates the displayed item in the selected list", () => {
+        cy.intercept("**/get-url?url=*", {
+          statusCode: 200,
+          body: genericApi,
+        }).as("getUrl");
+        cy.visit(
+          `/content/${SHARED_MODEL?.ZUID}/${SHARED_CONTENT?.meta?.ZUID}`
+        );
+
+        cy.getBySelector("field:players")
+          .find('[data-cy="integrationSelectItemsButton"]')
+          .click();
+
+        cy.getBySelector("integrationSelectionFormDialog").should("exist");
+
+        cy.getBySelector("integrationSelectCard")
+          .eq(0)
+          .find(".MuiCheckbox-root")
+          .click();
+        cy.getBySelector("selectIntegrationFormDoneButton").click();
+
+        cy.intercept("**/get-url?url=*", {
+          statusCode: 200,
+          body: modifiedApi,
+        }).as("getModifiedUrl");
+
+        cy.getBySelector("field:players")
+          .find('[data-cy="integrationSelectItemsButton"]')
+          .click();
+
+        cy.getBySelector("integrationSelectCard")
+          .eq(0)
+          .find('[data-cy="integrationResyncButton"]')
+          .click();
+
+        cy.getBySelector("integrationSelectCard")
+          .eq(0)
+          .find('[data-cy="integrationResyncButton"]')
+          .should("not.exist");
+
+        cy.getBySelector("selectIntegrationFormDoneButton").click();
+        cy.getBySelector("integrationSelectionFormDialog").should("not.exist");
+
+        cy.getBySelector("integrationListValueContainer")
+          .find(".draggableCard")
+          .eq(0)
+          .should("contain.text", modifiedApi[0].name);
+      });
     });
   });
 
@@ -266,27 +511,32 @@ describe("Integration Field", () => {
 
       cy.visit(`/schema/${Cypress.env("modelZUID")}/fields`);
 
-      cy.get('[data-cy="Field_text"]').click();
+      cy.getBySelector("Field_text").click();
 
       cy.wait("@reconfigureGetUrl");
 
       cy.intercept("PUT", "**/content/models/*/fields/*").as("updateField");
 
-      cy.get('[data-cy="integrationConfigureButton"]').click();
-      cy.get('[data-cy="integrationFormDialog"]').should("exist");
+      cy.getBySelector("integrationConfigureButton").click();
+      cy.getBySelector("integrationFormDialog").should("exist");
 
-      cy.get('[data-cy="integrationConfigureOptionNextButton"]').click();
+      cy.getBySelector("integrationConfigureOptionNextButton").click();
 
-      cy.get('[data-cy="integrationKeyPathSelector-subHeading"]').click();
+      cy.getBySelector("integrationKeyPathSelector-itemId")
+        .find("input")
+        .should("have.value", KEY_PATHS.generic.itemId);
+      cy.getBySelector("integrationKeyPathSelector-heading")
+        .find("input")
+        .should("have.value", KEY_PATHS.generic.heading);
+
+      cy.getBySelector("integrationKeyPathSelector-subHeading").click();
       cy.get(`.MuiAutocomplete-listbox li:contains("position")`).click(
         forceClick
       );
 
-      cy.get(
-        '[data-cy="integrationConfigureDisplayOptionsDoneButton"]'
-      ).click();
+      cy.getBySelector("integrationConfigureDisplayOptionsDoneButton").click();
 
-      cy.get('[data-cy="FieldFormAddFieldBtn"]').click();
+      cy.getBySelector("FieldFormAddFieldBtn").click();
 
       cy.wait("@updateField").then(({ request }) => {
         expect(
@@ -370,7 +620,7 @@ describe("Integration Field", () => {
 });
 
 function connectToEndpoint(endpoint, type, apiData) {
-  // Mock data for special display types since we don't have endpoints for these types::
+  // Mock data for special display types since we don't have endpoints for these types:
   if (specialTypes.includes(type)) {
     cy.intercept("/get-url?url=*", {
       statusCode: 200,
@@ -380,93 +630,66 @@ function connectToEndpoint(endpoint, type, apiData) {
 
   cy.visit(`/schema/${Cypress.env("modelZUID")}/fields`);
 
-  cy.get('[data-cy="AddFieldBtn"]').click();
+  cy.getBySelector("AddFieldBtn").click();
 
-  cy.get('[data-cy="FieldItem_integration"]').click();
+  cy.getBySelector("FieldItem_integration").click();
 
-  cy.get('[data-cy="integrationConfigureButton"]').click();
-  cy.get('[data-cy="integrationFormDialog"]').should("exist");
-  cy.get('[data-cy="integrationEndpointInput"] input').clear().type(endpoint);
-
-  if (type === "simple") {
-    it("Add HTTP Headers", () => {
-      cy.get('[data-cy="addHeaderButton"]').click();
-      cy.get('[data-cy="addHeaderButton"]').click();
-      cy.get('[data-cy="addHeaderButton"]').click();
-
-      cy.get('[data-cy="integrationHeadersContainer"]')
-        .children()
-        .should("have.length", 5);
-    });
-
-    it("Remove HTTP Headers", () => {
-      cy.get(
-        '[data-cy="integrationHeadersContainerRow-3"] [data-cy="removeHeaderButton"]'
-      ).click();
-      cy.get(
-        '[data-cy="integrationHeadersContainerRow-2"] [data-cy="removeHeaderButton"]'
-      ).click();
-      cy.get(
-        '[data-cy="integrationHeadersContainerRow-1"] [data-cy="removeHeaderButton"]'
-      ).click();
-
-      cy.get('[data-cy="integrationHeadersContainer"]')
-        .children()
-        .should("have.length", 1);
-    });
-  }
+  cy.getBySelector("integrationConfigureButton").click();
+  cy.getBySelector("integrationFormDialog").should("exist");
+  cy.getBySelector("integrationEndpointInput")
+    .find("input")
+    .clear()
+    .type(endpoint);
 
   cy.intercept("**/get-url?url=*").as("getUrl");
 
-  cy.get('[data-cy="integrationConnectButton"]').click();
+  cy.getBySelector("integrationConnectButton").click();
 
   cy.wait("@getUrl");
 
-  cy.get('[data-cy="integrationConnectionStatusContainer"]').should("exist");
+  cy.getBySelector("integrationConnectionStatusContainer").should("exist");
 
-  cy.get('[data-cy="integrationConnectionStatusLabel"]').should(
+  cy.getBySelector("integrationConnectionStatusLabel").should(
     "contain",
     "Connection Successful"
   );
-  cy.get('[data-cy="integrationConnectionStatusButton"]').click();
+  cy.getBySelector("integrationConnectionStatusButton").click();
 }
 
 function addSpecialField(type) {
-  cy.get(`[data-cy="integrationRecommendedOptionsContainer"]`)
+  cy.getBySelector("integrationRecommendedOptionsContainer")
     .contains(`${type} card`, { matchCase: false })
     .should("exist");
 
-  //should be recommended and is active
-  cy.get(
-    `[data-cy="integrationRecommendedOptionsContainer"] [data-cy="integrationDisplayOption-${type}"]`
-  )
+  cy.getBySelector("integrationRecommendedOptionsContainer")
+    .find(`[data-cy="integrationDisplayOption-${type}"]`)
     .should("exist")
     .should("have.attr", "data-selected");
 
-  cy.get('[data-cy="integrationOptionsContainer"]')
+  cy.getBySelector("integrationOptionsContainer")
     .children()
     .should("have.length", genericTypes?.length);
 
-  cy.get('[data-cy="integrationOtherOptionsContainer"]')
+  cy.getBySelector("integrationOtherOptionsContainer")
     .children()
     .should("have.length", specialTypes?.length - 1);
 
-  cy.get('[data-cy="integrationConfigureOptionNextButton"]').click();
+  cy.getBySelector("integrationConfigureOptionNextButton").click();
 
-  cy.get(
-    `[data-cy="integrationKeyPathSelector-rootPath"] .MuiInputBase-root`
-  ).click();
+  cy.getBySelector("integrationKeyPathSelector-rootPath")
+    .find(".MuiInputBase-root")
+    .click();
 
   cy.get(
     `.MuiAutocomplete-listbox li p:contains("${KEY_PATHS.special.rootPath}")`
   ).click(forceClick);
 
-  cy.get('[data-cy="integrationConfigureOptionKeyPathContainer"]')
+  cy.getBySelector("integrationConfigureOptionKeyPathContainer")
     .children()
     .should("have.length", DISPLAY_OPTIONS_CONFIG?.[type]?.length);
 
   DISPLAY_OPTIONS_CONFIG?.[type].forEach((item) => {
-    cy.get(`[data-cy="integrationKeyPathSelector-${item.name}"]`).click();
+    cy.getBySelector(`integrationKeyPathSelector-${item.name}`).click();
     cy.get(
       `.MuiAutocomplete-listbox li p:contains("${
         KEY_PATHS.special?.[item.name]
@@ -474,39 +697,39 @@ function addSpecialField(type) {
     ).click(forceClick);
   });
 
-  cy.get('[data-cy="integrationConfigureDisplayOptionsDoneButton"]').click();
+  cy.getBySelector("integrationConfigureDisplayOptionsDoneButton").click();
 }
 
 function addGenericField(type) {
-  cy.get(`[data-cy="integrationDisplayOption-${type}"]`).click();
+  cy.getBySelector(`integrationDisplayOption-${type}`).click();
 
-  cy.get('[data-cy="integrationConfigureOptionNextButton"]').click();
+  cy.getBySelector("integrationConfigureOptionNextButton").click();
 
-  cy.get('[data-cy="integrationConfigureOptionKeyPathContainer"]')
+  cy.getBySelector("integrationConfigureOptionKeyPathContainer")
     .children()
     .should("have.length", DISPLAY_OPTIONS_CONFIG?.[type]?.length);
 
   DISPLAY_OPTIONS_CONFIG?.[type].forEach((item) => {
     if (item.name === "details") {
-      cy.get(
-        '[data-cy="integrationConfigureDisplayOptionsAddDetailButton"]'
+      cy.getBySelector(
+        "integrationConfigureDisplayOptionsAddDetailButton"
       ).click();
-      cy.get(
-        '[data-cy="integrationDetailsSelectorRow-0"] .MuiInputBase-root'
-      ).click();
+      cy.getBySelector("integrationDetailsSelectorRow-0")
+        .find(".MuiInputBase-root")
+        .click();
 
       cy.get(`.MuiAutocomplete-listbox li:contains("position")`).click(
         forceClick
       );
-      cy.get(
-        '[data-cy="integrationDetailsSelectorRow-1"] .MuiInputBase-root'
-      ).click();
+      cy.getBySelector("integrationDetailsSelectorRow-1")
+        .find(".MuiInputBase-root")
+        .click();
 
       cy.get(`.MuiAutocomplete-listbox li:contains("jerseyNo")`).click(
         forceClick
       );
     } else {
-      cy.get(`[data-cy="integrationKeyPathSelector-${item.name}"]`).click();
+      cy.getBySelector(`integrationKeyPathSelector-${item.name}`).click();
 
       cy.get(
         `.MuiAutocomplete-listbox li:contains("${
@@ -516,11 +739,12 @@ function addGenericField(type) {
     }
   });
 
-  cy.get('[data-cy="integrationConfigureDisplayOptionsDoneButton"]').click();
+  cy.getBySelector("integrationConfigureDisplayOptionsDoneButton").click();
 
-  cy.get('[data-cy="integrationApiUrl"] input').should(
-    "have.value",
-    FIELD_DATA.endpoint
-  );
-  cy.get('[data-cy="integrationDisplayType"] input').should("have.value", type);
+  cy.getBySelector("integrationApiUrl")
+    .find("input")
+    .should("have.value", FIELD_DATA.endpoint);
+  cy.getBySelector("integrationDisplayType")
+    .find("input")
+    .should("have.value", type);
 }
