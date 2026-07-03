@@ -5,7 +5,7 @@ import { IntegrationFieldConfig } from "../../../services/types";
 import AddIcon from "@mui/icons-material/Add";
 import ItemSelectionDialog from "./ItemSelectionDialog";
 import SelectedListItems from "./SelectedListItems";
-import { get } from "lodash";
+import { get, uniqueId } from "lodash";
 import useIntegrationField from "../useIntegrationField";
 import DndContextProvider from "shell/components/DndContextProvider";
 
@@ -76,10 +76,16 @@ const IntegrationFieldSelect = ({
 
   useEffect(() => {
     const newValue =
-      value?.map((item) => ({
-        ...item,
-        _itemId: get(item, config?.keyPaths?.itemId),
-      })) || [];
+      value?.map((item) => {
+        // The user has reconfigured the API, and the data structure has been updated.
+        // A unique ID should be assigned to each item so that users can still delete individual items manually.
+        // These items will not appear in the selection dialog and must be removed through manual deletion.
+        const itemId = get(item, config?.keyPaths?.itemId) || uniqueId();
+        return {
+          ...item,
+          _itemId: itemId,
+        };
+      }) || [];
     setSelectedItems(newValue);
   }, [value, setSelectedItems]);
 
