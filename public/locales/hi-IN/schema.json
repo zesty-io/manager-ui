@@ -603,7 +603,7 @@
   "renameModelTitle": "मॉडल का नाम बदलें",
   "repeaterDataStorageDescription": "डेटा ऑब्जेक्ट के JSON सरणी के रूप में संग्रहीत होता है, जिसे सीधे और each स्टेटमेंट के साथ Parsley के माध्यम से आसानी से एक्सेस किया जा सकता है।",
   "repeaterSubFieldCount_one": "{{count}} फ़ील्ड",
-  "repeaterSubFieldCount_other": "{{count}} फ़ील्ड",
+  "repeaterSubFieldCount_other": "{{count}} फ़ील्ड्स",
   "restEndpointLabel": "REST एंडपॉइंट (प्रमाणीकरण बेयरर आवश्यक)",
   "searchFieldTypesPlaceholder": "फ़ील्ड प्रकार खोजें",
   "searchModelsPlaceholder": "मॉडल खोजें",

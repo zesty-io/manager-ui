@@ -26,7 +26,7 @@
   "neverPublished": "Never published",
   "publishAll": "Publish All",
   "publishAllNoticeBody": "This will publish all members in this release. Purging all member URLs and related content.",
-  "publishedItems_one": "Published {{count}} items",
+  "publishedItems_one": "Published {{count}} item",
   "publishedItems_other": "Published {{count}} items",
   "publishing": "Publishing",
   "releasesHeading": "Releases",
