@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Button,
@@ -24,9 +24,10 @@ import {
   TARGET_OPTIONS,
   getToolTips,
 } from "../../../../../seo/src/app/components/RedirectsDialogProvider/constants";
-import { FieldWrapper } from "../../../../../seo/src/app/components/RedirectsDialogProvider/CreateRedirects/CreateForm";
+import { FieldWrapper } from "../../../../../seo/src/app/components/RedirectsDialogProvider/CreateRedirects/FieldWrapper";
 import SearchField from "../../../../../seo/src/app/components/RedirectsDialogProvider/CreateRedirects/SearchField";
 import PathField from "../../../../../seo/src/app/components/RedirectsDialogProvider/CreateRedirects/PathField";
+import { validateUrl } from "utility/validateUrl";
 import { searchItems } from "shell/store/content";
 export type ContentRedirectModalProps = {
   open: boolean;
@@ -34,21 +35,6 @@ export type ContentRedirectModalProps = {
   loading: boolean;
   currentItem: ContentItemProps | null;
   options: ContentItemProps[];
-};
-
-export const validateUrl = (url: string) => {
-  const validProtocols = ["http://", "https://"];
-
-  const hasValidProtocol = validProtocols.some((protocol) =>
-    url.startsWith(protocol)
-  );
-  if (!hasValidProtocol) return false;
-  try {
-    new URL(url);
-    return true;
-  } catch (_) {
-    return false;
-  }
 };
 
 export const ContentRedirectModal: FC<ContentRedirectModalProps> = ({
@@ -74,6 +60,15 @@ export const ContentRedirectModal: FC<ContentRedirectModalProps> = ({
   } = useRedirectsDialog();
 
   const isLoading = isRedirectsLoading || loading;
+
+  const urlValidation = useCallback(
+    (url: string) => {
+      const isValid = validateUrl(url);
+      setInvalidTarget(!isValid);
+      return isValid;
+    },
+    [setInvalidTarget]
+  );
 
   const handleCreateRedirect = async () => {
     const requestData = {
@@ -110,12 +105,6 @@ export const ContentRedirectModal: FC<ContentRedirectModalProps> = ({
       openErrorDialog(resubmitData);
     }
     onClose();
-  };
-
-  const urlValidation = (url: string) => {
-    const isValidUrl = validateUrl(url);
-    setInvalidTarget(!isValidUrl);
-    return isValidUrl;
   };
 
   const handleSearch = (term: string) => {

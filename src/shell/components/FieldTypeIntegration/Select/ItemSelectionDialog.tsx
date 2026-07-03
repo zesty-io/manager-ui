@@ -1,4 +1,4 @@
-import { useRef, useState, ChangeEvent, useMemo, useEffect } from "react";
+import { useRef, useState, ChangeEvent, useMemo } from "react";
 import {
   alpha,
   Box,
@@ -24,16 +24,40 @@ import {
 import { Check, Close, DataObject, Search, Refresh } from "@mui/icons-material";
 import {
   IntegrationFieldConfig,
+  IntegrationKeyPaths,
   IntegrationTypes,
 } from "../../../services/types";
-import { ApiDataProps, ApiDataWithIdProps } from "../types";
-import { DISPLAY_OPTIONS_CONFIG, LOADING_DATA } from "../constants";
-import { getKeyValue, keyPathValuesToString } from "../utils";
+import { ApiDataProps } from "../types";
+import { LOADING_DATA } from "../constants";
 import DisplayCard from "../Shared/DisplayCard";
 import { NoSearchResults } from "../../NoSearchResults";
 import JsonViewer from "../Shared/JsonViewer";
-import { isEqual } from "lodash";
+import { isEqual, get } from "lodash";
 import { useTranslation } from "react-i18next";
+
+// Extracts and concatenates all defined values from specified keys into a single searchable string
+const keyPathValuesToString = (
+  item: ApiDataProps,
+  keyPaths: IntegrationKeyPaths
+) => {
+  if (!keyPaths) return "";
+  const { rootPath = "", ...filteredKeyPaths } = keyPaths;
+  const validValues = Object.values(filteredKeyPaths)
+    ?.filter((value) => {
+      if (Array.isArray(value)) return value?.length > 0;
+      return value !== "" && value !== null && value !== undefined;
+    })
+    ?.flat();
+  const idParts = validValues?.map((key) => {
+    const value = get(item, key);
+    if (value !== null && typeof value === "object") {
+      return JSON.stringify(value);
+    } else {
+      return String(value);
+    }
+  });
+  return idParts?.join(";");
+};
 
 interface ItemSelectionDialogProps {
   title: string;
@@ -41,15 +65,10 @@ interface ItemSelectionDialogProps {
   maxItems?: number;
   open: boolean;
   onClose: () => void;
-  items: ApiDataWithIdProps[];
-  value: ApiDataWithIdProps[];
+  items: ApiDataProps[];
+  value: ApiDataProps[];
   config: IntegrationFieldConfig;
-  onSave: (value: ApiDataWithIdProps[]) => void;
-}
-
-interface SyncItem {
-  id: string | number;
-  data: ApiDataWithIdProps;
+  onSave: (value: ApiDataProps[]) => void;
 }
 
 const getItemRowHeight = (
@@ -65,15 +84,13 @@ const getItemRowHeight = (
 type RenderRowDataProps = {
   loading?: boolean;
   type: IntegrationTypes;
-  value: ApiDataProps[];
   items: ApiDataProps[];
   selectedItems: ApiDataProps[];
   keyPaths: any;
   onSelect: (item: ApiDataProps) => void;
   maxItems?: number;
   onView: (item: ApiDataProps) => void;
-  onSync: (id: string | number, data: ApiDataProps) => void;
-  forSyncIds: (string | number)[];
+  onSync: (item: ApiDataProps) => void;
 };
 
 type RenderRowProps = Omit<ListChildComponentProps, "data"> & {
@@ -87,38 +104,42 @@ const RenderRow = ({ data, index, style }: RenderRowProps) => {
   const {
     loading = false,
     type,
-    value,
     items,
     selectedItems,
     keyPaths,
     onSelect,
     maxItems,
     onView,
-
     onSync,
-    forSyncIds,
   } = data;
   const item = items[index];
   const selectedIds = selectedItems.map((item) => item?._itemId);
-  const limitReached = selectedIds.length >= maxItems;
+  const limitReached = !!maxItems && selectedIds.length >= maxItems;
   const isSelected = selectedIds.includes(item?._itemId);
 
   const localItem =
-    value?.find((val) => val?.[keyPaths?.itemId] === item?._itemId) || null;
-  const remoteItemData = keyPathValuesToString(item, keyPaths);
-  const localItemData = keyPathValuesToString(localItem, keyPaths);
+    selectedItems?.find((val) => val?._itemId === item?._itemId) || null;
+  const remoteItemData = keyPathValuesToString(item, keyPaths).replace(
+    /\s+/g,
+    ""
+  );
+  const localItemData = keyPathValuesToString(localItem, keyPaths).replace(
+    /\s+/g,
+    ""
+  );
+
   const hasUpdates = !!localItem && remoteItemData !== localItemData;
   const pathData = {
-    heading: getKeyValue(item, keyPaths?.heading),
-    subHeading: getKeyValue(item, keyPaths?.subHeading),
-    thumbnail: getKeyValue(item, keyPaths?.thumbnail),
-    detail: getKeyValue(item, keyPaths?.detail),
+    heading: get(item, keyPaths?.heading),
+    subHeading: get(item, keyPaths?.subHeading),
+    thumbnail: get(item, keyPaths?.thumbnail),
+    detail: get(item, keyPaths?.detail),
     details:
       type !== "details"
         ? null
         : keyPaths?.details?.map((detailKey: string) => ({
             key: detailKey,
-            value: getKeyValue(item, detailKey),
+            value: get(item, detailKey),
           })),
   };
 
@@ -191,20 +212,18 @@ const RenderRow = ({ data, index, style }: RenderRowProps) => {
           justifyContent="space-between"
           alignItems="center"
         >
-          {!loading &&
-            !forSyncIds?.includes(item?._itemId) &&
-            isSelected &&
-            !!hasUpdates && (
-              <Tooltip title={t("shell.integrationResyncValues")}>
-                <IconButton
-                  color="primary"
-                  size="small"
-                  onClick={() => onSync(item?._itemId, item)}
-                >
-                  <Refresh />
-                </IconButton>
-              </Tooltip>
-            )}
+          {!loading && isSelected && !!hasUpdates && (
+            <Tooltip title={t("shell.integrationResyncValues")}>
+              <IconButton
+                data-cy="integrationResyncButton"
+                color="primary"
+                size="small"
+                onClick={() => onSync(item)}
+              >
+                <Refresh />
+              </IconButton>
+            </Tooltip>
+          )}
           <IconButton
             size="small"
             sx={{ borderRadius: 1, color: "action.active" }}
@@ -236,19 +255,25 @@ const ItemSelectionDialog = ({
   const { t } = useTranslation();
   const searchInputRef = useRef(null);
   const drawerContainerRef = useRef(null);
-  const [selectedItems, setSelectedItems] =
-    useState<ApiDataWithIdProps[]>(value);
+  const [selectedItems, setSelectedItems] = useState<ApiDataProps[]>(value);
   const [searchTerm, setSearchTerm] = useState("");
-  const [jsonViewData, setJsonViewData] = useState<ApiDataWithIdProps>(null);
+  const [jsonViewData, setJsonViewData] = useState<ApiDataProps | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const itemHeight = getItemRowHeight(config?.type, config?.keyPaths?.details);
-  const displayConfig = DISPLAY_OPTIONS_CONFIG?.[config?.type] || [];
-  const keyPaths = config?.keyPaths;
-  const [forSync, setForSync] = useState<SyncItem[]>([]);
-  const forSyncIds = forSync?.map((sync) => sync?.id);
-  const hasChanges = !isEqual(value, selectedItems) || forSyncIds?.length > 0;
 
-  const handleSelect = (item: ApiDataWithIdProps) => {
+  const itemHeight = getItemRowHeight(config?.type, config?.keyPaths?.details);
+  const keyPaths = config?.keyPaths;
+  const hasChanges = !isEqual(value, selectedItems);
+
+  const itemsIdMap = useMemo(
+    () => new Set(items.map((sel) => sel._itemId)),
+    [items]
+  );
+
+  const selectedItemsLocal = selectedItems?.filter((item) =>
+    itemsIdMap.has(item._itemId)
+  );
+
+  const handleSelect = (item: ApiDataProps) => {
     setSelectedItems((prev) => {
       const ids = prev.map((i) => i._itemId);
       return ids.includes(item?._itemId)
@@ -256,35 +281,21 @@ const ItemSelectionDialog = ({
         : [...prev, item];
     });
   };
-  const handleSync = (id: string | number, data: ApiDataWithIdProps) => {
-    setForSync((prev: SyncItem[]) => {
-      const existingIndex = prev.findIndex((item: SyncItem) => item.id === id);
-      if (existingIndex !== -1) {
-        return [
-          ...prev.slice(0, existingIndex),
-          { id, data },
-          ...prev.slice(existingIndex + 1),
-        ];
-      }
-      return [...prev, { id, data }];
-    });
+
+  const handleSync = (item: ApiDataProps) => {
+    setSelectedItems((prev) =>
+      prev.map((selected) =>
+        selected._itemId === item._itemId ? item : selected
+      )
+    );
   };
 
   const handleSave = () => {
-    const updatedItems = !forSync?.length
-      ? selectedItems
-      : selectedItems.map((item) => {
-          const syncItem = forSync.find(
-            (sync) => sync.id === item?.[config?.keyPaths?.itemId]
-          );
-          return syncItem?.data || item;
-        });
-
-    onSave(updatedItems);
+    onSave(selectedItems);
     onClose();
   };
 
-  const handleView = (data: ApiDataWithIdProps) => {
+  const handleView = (data: ApiDataProps) => {
     setJsonViewData(data);
     setIsDrawerOpen(true);
   };
@@ -293,38 +304,31 @@ const ItemSelectionDialog = ({
     if (loading) return LOADING_DATA;
     if (!searchTerm) return items;
 
-    const validKeys = displayConfig
-      .filter((item) => item?.name !== "thumbnail")
-      .map((item) => keyPaths?.[item?.name as keyof typeof keyPaths])
-      .flat();
+    const normalizedTerm = searchTerm.toLowerCase();
+    const { thumbnail = "", ...filteredKeyPaths } = keyPaths || {};
 
     const filtered = items.filter((item) => {
-      const searchString = validKeys
-        ?.map((itemKey) => {
-          const value = getKeyValue(item, itemKey);
-          return typeof value === "string" ? value.trim() : "";
-        })
-        .join("\n")
-        .toLowerCase();
+      const searchString = keyPathValuesToString(
+        item,
+        filteredKeyPaths
+      ).toLowerCase();
 
-      return searchString.includes(searchTerm.toLowerCase());
+      return searchString.includes(normalizedTerm);
     });
 
     return filtered;
-  }, [loading, LOADING_DATA, items, searchTerm, keyPaths, displayConfig]);
+  }, [loading, items, searchTerm, keyPaths]);
 
   const listData: RenderRowDataProps = {
     type: config?.type,
-    value,
     items: filteredItems,
-    selectedItems,
+    selectedItems: selectedItemsLocal,
     keyPaths: config?.keyPaths,
     onSelect: handleSelect,
     maxItems,
     onView: handleView,
     loading: loading,
     onSync: handleSync,
-    forSyncIds,
   };
 
   return (
@@ -360,22 +364,30 @@ const ItemSelectionDialog = ({
         }}
       >
         <Typography variant="h3" fontWeight={700}>
-          {!loading && selectedItems.length
+          {!loading && selectedItemsLocal?.length > 0
             ? t("shell.integrationSelectedCount", {
-                count: selectedItems.length,
+                count: selectedItemsLocal.length,
               })
             : t("shell.integrationSelectTitle", { title })}
         </Typography>
 
         <Box display="flex" alignItems="center" gap={1}>
-          {!loading && selectedItems.length > 0 && (
+          {!loading && selectedItemsLocal?.length > 0 && (
             <>
               <Button
                 size="small"
                 variant="outlined"
                 color="inherit"
                 startIcon={<Close />}
-                onClick={() => setSelectedItems([])}
+                onClick={() => {
+                  const selectedItemsLocalIdsMap = new Set(
+                    selectedItemsLocal.map((sel) => sel._itemId)
+                  );
+                  const remainingItems = selectedItems?.filter(
+                    (item) => !selectedItemsLocalIdsMap.has(item._itemId)
+                  );
+                  setSelectedItems(remainingItems);
+                }}
               >
                 {t("shell.relationalDeselectAll")}
               </Button>

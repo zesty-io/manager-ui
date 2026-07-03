@@ -70,6 +70,7 @@ const IntegrationFieldConfigure = ({
   }, [endpoint, headers, type, keyPaths, onChange]);
 
   const onClose = useCallback(() => {
+    // reset state to initial values
     setEndpoint(integrationFieldConfig?.endpoint || "");
     setHeaders(integrationFieldConfig?.headers || null);
     setType(integrationFieldConfig?.type || null);
