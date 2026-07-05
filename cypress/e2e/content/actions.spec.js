@@ -245,6 +245,67 @@ describe("Actions in content editor", () => {
     cy.getBySelector("ContentPublishedIndicator").should("exist");
   });
 
+  it("Schedules an item for unpublishing", () => {
+    const { items, publishItem, publishings } = awaitRequests();
+    cy.visit(
+      `/content/${Cypress.env("modelZUID")}/${CONTENT_ITEMS?.[4]?.meta?.ZUID}`
+    );
+    cy.wait([items, publishings], { requestTimeout });
+
+    cy.getBySelector("PublishMenuButton").should("exist").should("be.enabled");
+    cy.getBySelector("PublishMenuButton").click();
+
+    cy.getBySelector("publishingMenu")
+      .should("exist")
+      .within(() => {
+        cy.getBySelector("UnpublishScheduleButton").should("exist");
+        cy.getBySelector("UnpublishScheduleButton").click();
+      });
+
+    cy.getBySelector("ScheduleUnpublishModal")
+      .should("exist")
+      .within(() => {
+        cy.getBySelector("ScheduleUnpublishButton").should("exist");
+        cy.getBySelector("ScheduleUnpublishButton").click();
+      });
+
+    cy.wait(publishItem);
+    cy.wait(publishings);
+
+    cy.getBySelector("ScheduledUnpublishIndicator").should("exist");
+  });
+
+  it("Unschedules an item's unpublish", () => {
+    const { items, publishItem, publishings } = awaitRequests();
+    cy.visit(
+      `/content/${Cypress.env("modelZUID")}/${CONTENT_ITEMS?.[4]?.meta?.ZUID}`
+    );
+    cy.wait([items, publishings], { requestTimeout });
+
+    cy.getBySelector("PublishMenuButton").should("exist").should("be.enabled");
+    cy.getBySelector("PublishMenuButton").click();
+
+    cy.getBySelector("publishingMenu")
+      .should("exist")
+      .within(() => {
+        cy.getBySelector("UnpublishScheduleButton")
+          .should("exist")
+          .should("contain", "Unschedule Unpublish")
+          .click();
+      });
+
+    cy.getBySelector("ScheduleUnpublishModal")
+      .should("exist")
+      .within(() => {
+        cy.getBySelector("UnscheduleUnpublishButton").should("exist");
+        cy.getBySelector("UnscheduleUnpublishButton").click();
+      });
+
+    cy.wait([publishItem, publishings], { requestTimeout });
+
+    cy.getBySelector("ScheduledUnpublishIndicator").should("not.exist");
+  });
+
   it("Unpublishes an item", () => {
     const { items, deletePublishedItem, publishings } = awaitRequests();
     cy.visit(
