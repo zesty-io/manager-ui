@@ -9,6 +9,8 @@ export type FieldWrapperProps = {
   toolTip?: string;
   isRequired?: boolean;
   error?: string;
+  warning?: string;
+  warningTestId?: string;
   children: React.ReactNode;
 };
 
@@ -19,6 +21,8 @@ export const FieldWrapper = ({
   toolTip,
   isRequired,
   error,
+  warning,
+  warningTestId,
   children,
 }: FieldWrapperProps) => {
   return (
@@ -77,6 +81,16 @@ export const FieldWrapper = ({
       {!!error && (
         <Typography variant="body2" color="error.main" mt={0.5}>
           {error}
+        </Typography>
+      )}
+      {!error && !!warning && (
+        <Typography
+          data-cy={warningTestId}
+          variant="body2"
+          color="warning.dark"
+          mt={0.5}
+        >
+          {warning}
         </Typography>
       )}
     </Box>
