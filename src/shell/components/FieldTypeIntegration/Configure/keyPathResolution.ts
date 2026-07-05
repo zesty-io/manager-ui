@@ -64,7 +64,9 @@ export const doKeyPathsResolve = (
   const rootData = keyPaths.rootPath
     ? get(apiData, keyPaths.rootPath)
     : apiData;
-  if (!Array.isArray(rootData) || !rootData.length) return false;
+  if (!Array.isArray(rootData)) return false;
+  // Valid but empty response gives no evidence of a structural mismatch.
+  if (!rootData.length) return true;
 
   const sample = rootData[0];
   const fieldsToCheck = [
@@ -72,6 +74,7 @@ export const doKeyPathsResolve = (
     keyPaths.subHeading,
     keyPaths.thumbnail,
     keyPaths.detail,
+    keyPaths.itemId,
     ...(keyPaths.details || []),
   ].filter((path): path is string => !!path);
 
