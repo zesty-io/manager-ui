@@ -156,6 +156,10 @@ export const ItemEditHeaderActions = ({
   const activePublishing = itemPublishings?.find(
     (itemPublishing) => itemPublishing._active
   );
+  const hasScheduledUnpublish = !!(
+    activePublishing?.unpublishAt &&
+    new Date(activePublishing.unpublishAt).getTime() > Date.now()
+  );
   const { data: statusLabels } = useGetWorkflowStatusLabelsQuery();
   const { data: itemWorkflowStatus, isLoading: isLoadingItemWorkflowStatus } =
     useGetItemWorkflowStatusQuery(
@@ -772,6 +776,8 @@ export const ItemEditHeaderActions = ({
         setPublishAfterSave={setPublishAfterSave}
         setScheduleAfterSave={setScheduleAfterSave}
         setUnpublishDialogOpen={setUnpublishDialogOpen}
+        hasScheduledUnpublish={hasScheduledUnpublish}
+        openScheduleUnpublishDialog={() => setScheduledPublishDialogOpen(true)}
         setScheduledPublishDialogOpen={(open) => {
           if (!allowPublish) {
             dispatch(
@@ -806,12 +812,19 @@ export const ItemEditHeaderActions = ({
       {scheduledPublishDialogOpen && (
         <SchedulePublish
           item={item}
+          mode={itemState === ITEM_STATES.published ? "unpublish" : "publish"}
+          hasScheduledUnpublish={hasScheduledUnpublish}
+          scheduledUnpublishAt={activePublishing?.unpublishAt}
           onClose={() => {
             setScheduledPublishDialogOpen(false);
           }}
           onPublishNow={() => {
             handlePublish();
             setScheduledPublishDialogOpen(false);
+          }}
+          onUnpublishNow={() => {
+            setScheduledPublishDialogOpen(false);
+            setUnpublishDialogOpen(true);
           }}
           onUnscheduleSuccess={() => {
             if (publishAfterUnschedule) {
@@ -890,6 +903,8 @@ type PublishingMenuProps = {
   setScheduledPublishDialogOpen: (value: boolean) => void;
   setPublishAfterUnschedule: () => void;
   handlePublish: () => void;
+  hasScheduledUnpublish?: boolean;
+  openScheduleUnpublishDialog: () => void;
   modelZUID: string;
   itemZUID: string;
 };
@@ -905,6 +920,8 @@ const PublishingMenu = ({
   setScheduledPublishDialogOpen,
   setPublishAfterUnschedule,
   handlePublish,
+  hasScheduledUnpublish,
+  openScheduleUnpublishDialog,
   modelZUID,
   itemZUID,
 }: PublishingMenuProps) => {
@@ -978,9 +995,6 @@ const PublishingMenu = ({
               case ITEM_STATES.scheduled:
                 setScheduledPublishDialogOpen(true);
                 break;
-              case ITEM_STATES.published:
-                console.log("schedule unpublish");
-                break;
               case ITEM_STATES.draft:
                 setScheduledPublishDialogOpen(true);
                 break;
@@ -996,9 +1010,23 @@ const PublishingMenu = ({
             ? "Save & Schedule Publish"
             : itemState === ITEM_STATES.scheduled
             ? "Unschedule Publish"
-            : itemState === ITEM_STATES.published
-            ? "Schedule Unpublish"
             : "Schedule Publish"}
+        </MenuItem>
+      )}
+      {itemState === ITEM_STATES.published && (
+        <MenuItem
+          onClick={() => {
+            openScheduleUnpublishDialog();
+            onClose();
+          }}
+          data-cy="UnpublishScheduleButton"
+        >
+          <ListItemIcon>
+            <CalendarTodayRounded fontSize="small" />
+          </ListItemIcon>
+          {hasScheduledUnpublish
+            ? "Unschedule Unpublish"
+            : "Schedule Unpublish"}
         </MenuItem>
       )}
 

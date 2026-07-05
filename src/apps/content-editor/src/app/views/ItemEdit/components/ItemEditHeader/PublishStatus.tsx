@@ -30,6 +30,12 @@ export const PublishStatus = ({ currentVersion }: PublishStatusProps) => {
       new Date(item.publishAt).getTime() > Date.now() &&
       !item.unpublishAt
   );
+  const scheduledUnpublishing = itemPublishings?.find(
+    (item) =>
+      item._active &&
+      item.unpublishAt &&
+      new Date(item.unpublishAt).getTime() > Date.now()
+  );
 
   const getUsername = (userZUID: string) => {
     const user = users?.find((user) => user.ZUID === userZUID);
@@ -96,6 +102,40 @@ export const PublishStatus = ({ currentVersion }: PublishStatusProps) => {
                 letterSpacing="0.46px"
               >
                 v{scheduledPublishing.version} Scheduled
+              </Typography>
+            </Stack>
+          </Tooltip>
+        )}
+      {scheduledUnpublishing &&
+        scheduledUnpublishing.version === currentVersion && (
+          <Tooltip
+            enterDelay={1000}
+            enterNextDelay={1000}
+            title={
+              <>
+                v{scheduledUnpublishing.version} scheduled to unpublish on{" "}
+                <br />
+                {formatDate(scheduledUnpublishing.unpublishAt)} <br />
+                by {getUsername(scheduledUnpublishing.publishedByUserZUID)}
+              </>
+            }
+            placement="bottom-start"
+          >
+            <Stack
+              data-cy="ScheduledUnpublishIndicator"
+              direction="row"
+              gap={1}
+              alignItems="center"
+            >
+              <ScheduleRounded fontSize="small" color="warning" />
+              <Typography
+                variant="body2"
+                color="warning.main"
+                fontWeight={500}
+                lineHeight="24px"
+                letterSpacing="0.46px"
+              >
+                v{scheduledUnpublishing.version} Scheduled Unpublish
               </Typography>
             </Stack>
           </Tooltip>

@@ -876,9 +876,17 @@ export function publish(modelZUID, itemZUID, data, meta = {}) {
         }
       })
       .then(() => {
-        const message = data.publishAt
-          ? `Scheduled ${title} to publish on ${meta.localTime} in the ${meta.localTimezone} timezone`
-          : `Published ${title} now`;
+        let message;
+
+        if (data.unpublishAt && data.unpublishAt !== "never") {
+          message = `Scheduled ${title} to unpublish on ${meta.localTime} in the ${meta.localTimezone} timezone`;
+        } else if (data.unpublishAt === "never") {
+          message = `Cancelled scheduled unpublish for ${title}`;
+        } else if (data.publishAt) {
+          message = `Scheduled ${title} to publish on ${meta.localTime} in the ${meta.localTimezone} timezone`;
+        } else {
+          message = `Published ${title} now`;
+        }
 
         return dispatch(
           notify({
@@ -896,9 +904,18 @@ export function publish(modelZUID, itemZUID, data, meta = {}) {
         return dispatch(fetchItemPublishing(modelZUID, itemZUID));
       })
       .catch((err) => {
-        const message = data.publishAt
-          ? `Error scheduling ${title}`
-          : `Error publishing ${title}`;
+        let message;
+
+        if (data.unpublishAt && data.unpublishAt !== "never") {
+          message = `Error scheduling unpublish for ${title}`;
+        } else if (data.unpublishAt === "never") {
+          message = `Error cancelling scheduled unpublish for ${title}`;
+        } else if (data.publishAt) {
+          message = `Error scheduling ${title}`;
+        } else {
+          message = `Error publishing ${title}`;
+        }
+
         dispatch(
           notify({
             message,
