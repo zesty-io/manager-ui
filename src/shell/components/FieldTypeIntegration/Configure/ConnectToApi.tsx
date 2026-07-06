@@ -73,6 +73,18 @@ const CONNECTION_STATUSES: {
     variant: "contained",
     color: "primary",
   },
+  invalid: {
+    icon: (
+      <InfoRoundedIcon fontSize="large" color="error" sx={{ fontSize: 40 }} />
+    ),
+    title: "Unsupported Response Format",
+    subTitle:
+      "The API connected, but its response can't be used to configure this field.",
+    buttonLabel: "Try Again",
+    buttonIcon: <AutorenewRoundedIcon fontSize="small" sx={{ fontSize: 40 }} />,
+    variant: "contained",
+    color: "primary",
+  },
 };
 
 const ConnectToApi = ({
@@ -95,7 +107,7 @@ const ConnectToApi = ({
   closeForm?: () => void;
 }) => {
   const focusRef = useRef<string>("url");
-  const { data, status, fetchApiData } = useIntegrationField();
+  const { data, status, invalidReason, fetchApiData } = useIntegrationField();
 
   const [isValidUrl, setIsValidUrl] = useState(true);
   const [reqAborted, setReqAborted] = useState<boolean>(false);
@@ -395,12 +407,15 @@ const ConnectToApi = ({
               {CONNECTION_STATUSES[status].title}
             </Typography>
             <Typography
+              data-cy="integrationConnectionStatusSubtitle"
               variant="body2"
               color="text.primary"
               fontWeight={400}
               textAlign="center"
             >
-              {CONNECTION_STATUSES[status].subTitle}
+              {status === "invalid"
+                ? invalidReason
+                : CONNECTION_STATUSES[status].subTitle}
             </Typography>
           </Box>
           <Button

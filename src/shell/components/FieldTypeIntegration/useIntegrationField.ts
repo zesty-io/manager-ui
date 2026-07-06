@@ -1,11 +1,64 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useGetExternalApiMutation } from "shell/services/cloudFunctions";
+import {
+  isObj,
+  getObjectKeyPaths,
+  getAllArrayKeyPaths,
+} from "./Configure/keyPathHelpers";
+
+// Mirrors the shape-walking that ConfigureDisplayOptions does when deriving
+// its key-selector options, so a response classified "ok" here is guaranteed
+// to actually produce selectable options there (and vice versa).
+export function classifyApiResponse(
+  apiData: unknown
+): { ok: true } | { ok: false; reason: string } {
+  if (apiData === null || apiData === undefined) {
+    return {
+      ok: false,
+      reason: "API returned no data. Expected a JSON array of objects.",
+    };
+  }
+
+  if (Array.isArray(apiData)) {
+    if (!apiData.length) {
+      return {
+        ok: false,
+        reason:
+          "API returned an empty array. Add at least one item to the response to configure display options.",
+      };
+    }
+    if (!getObjectKeyPaths(apiData[0] as object).length) {
+      return {
+        ok: false,
+        reason: `API returned an array of ${typeof apiData[0]}s. Expected an array of objects.`,
+      };
+    }
+    return { ok: true };
+  }
+
+  if (isObj(apiData)) {
+    if (!getAllArrayKeyPaths(apiData).length) {
+      return {
+        ok: false,
+        reason:
+          "API returned a single object with no array of objects nested inside. Expected either an array root or an object containing an array of objects.",
+      };
+    }
+    return { ok: true };
+  }
+
+  return {
+    ok: false,
+    reason: `API returned a ${typeof apiData}. Expected a JSON array of objects.`,
+  };
+}
 
 const useIntegrationField = () => {
   const [apiData, setApiData] = useState<any>(null);
   const [status, setStatus] = useState<
-    "connecting" | "success" | "failed" | null
+    "connecting" | "success" | "failed" | "invalid" | null
   >(null);
+  const [invalidReason, setInvalidReason] = useState<string>("");
   const [getExternalApi, { data }] = useGetExternalApiMutation();
 
   const currentEndpointRef = useRef<string>("");
@@ -23,6 +76,7 @@ const useIntegrationField = () => {
       currentEndpointRef.current = endpoint;
       setStatus("connecting");
       setApiData(null);
+      setInvalidReason("");
 
       try {
         const response: any = await getExternalApi({
@@ -33,6 +87,13 @@ const useIntegrationField = () => {
 
         if (!response?.error) {
           const responseData = await response.data;
+          const classification = classifyApiResponse(responseData);
+          if (classification.ok === false) {
+            setApiData(null);
+            setInvalidReason(classification.reason);
+            setStatus("invalid");
+            return;
+          }
           setApiData(responseData);
           setStatus("success");
         } else {
@@ -56,12 +117,14 @@ const useIntegrationField = () => {
       currentEndpointRef.current = "";
       setApiData(null);
       setStatus(null);
+      setInvalidReason("");
     };
   }, []);
 
   return {
     data: apiData,
     status,
+    invalidReason,
     fetchApiData,
   };
 };
