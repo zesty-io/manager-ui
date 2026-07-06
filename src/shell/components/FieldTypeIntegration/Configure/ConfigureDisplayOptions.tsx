@@ -471,7 +471,7 @@ const ConfigureDisplayOptions = ({
           data-cy="integrationConfigureDisplayOptionsDoneButton"
           variant="contained"
           startIcon={<CheckRounded />}
-          disabled={!isCompleted}
+          disabled={!isCompleted || !!itemIdDuplicateWarning}
           onClick={handleSave}
         >
           Done
