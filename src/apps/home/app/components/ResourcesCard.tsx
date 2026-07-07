@@ -178,6 +178,8 @@ export const ResourcesCard = ({ hideHeader, hideFooter }: Props) => {
           <Box
             display="flex"
             gap={2}
+            ml={1}
+            alignItems="center"
             sx={{
               img: {
                 cursor: "pointer",
