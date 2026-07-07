@@ -635,7 +635,7 @@ describe("Integration Field", () => {
       cy.intercept("POST", "**/get-url*", { body: genericApi });
     });
 
-    it("Warns, without blocking, when the chosen Item ID is not unique across sampled items", () => {
+    it("Blocks Done and warns when the chosen Item ID is not unique across sampled items", () => {
       cy.intercept("**/get-url?url=*", {
         statusCode: 200,
         body: genericApi,
@@ -649,8 +649,11 @@ describe("Integration Field", () => {
       cy.getBySelector("integrationFormDialog").should("exist");
       cy.getBySelector("integrationConfigureOptionNextButton").click();
 
-      // playerId (the field's current itemId) is unique — no warning yet.
+      // playerId (the field's current itemId) is unique — no warning, Done enabled.
       cy.getBySelector("integrationItemIdDuplicateWarning").should("not.exist");
+      cy.getBySelector("integrationConfigureDisplayOptionsDoneButton").should(
+        "not.be.disabled"
+      );
 
       cy.getBySelector("integrationKeyPathSelector-itemId").click();
       cy.get(`.MuiAutocomplete-listbox li:contains("position")`).click(
@@ -661,6 +664,16 @@ describe("Integration Field", () => {
         "contain",
         "is not unique"
       );
+      cy.getBySelector("integrationConfigureDisplayOptionsDoneButton").should(
+        "be.disabled"
+      );
+
+      // Switching back to a unique keyPath clears the warning and re-enables Done.
+      cy.getBySelector("integrationKeyPathSelector-itemId").click();
+      cy.get(`.MuiAutocomplete-listbox li:contains("playerId")`).click(
+        forceClick
+      );
+      cy.getBySelector("integrationItemIdDuplicateWarning").should("not.exist");
 
       cy.intercept("PUT", "**/content/models/*/fields/*").as("updateField");
       cy.getBySelector("integrationConfigureDisplayOptionsDoneButton").click();
@@ -668,7 +681,7 @@ describe("Integration Field", () => {
       cy.wait("@updateField").then(({ request }) => {
         expect(
           request.body.settings.integrationFieldConfig.keyPaths.itemId
-        ).to.equal("position");
+        ).to.equal("playerId");
       });
     });
   });
