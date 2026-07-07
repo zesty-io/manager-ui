@@ -27,10 +27,14 @@ import AddCircleIcon from "@mui/icons-material/AddCircle";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import { FormWrapper } from "../Shared/FormWrapper";
 import { FieldWrapper } from "../Shared/FieldWrapper";
-import { IntegrationRequestHeaders } from "../../../services/types";
+import {
+  IntegrationKeyPaths,
+  IntegrationRequestHeaders,
+} from "../../../services/types";
 import { validateUrl } from "utility/validateUrl";
 import useIntegrationField from "../useIntegrationField";
 import { v4 as uuidv4 } from "uuid";
+import { doKeyPathsResolve } from "./keyPathResolution";
 
 const CONNECTION_STATUSES: {
   [key: string]: {
@@ -96,6 +100,8 @@ const ConnectToApi = ({
   setApiData,
   setActiveStep,
   closeForm,
+  isUpdate = false,
+  keyPaths = null,
 }: {
   activeStep: number;
   endpoint: string;
@@ -105,6 +111,8 @@ const ConnectToApi = ({
   setApiData: (data: any) => void;
   setActiveStep: (step: number) => void;
   closeForm?: () => void;
+  isUpdate?: boolean;
+  keyPaths?: IntegrationKeyPaths | null;
 }) => {
   const focusRef = useRef<string>("url");
   const { data, status, invalidReason, fetchApiData } = useIntegrationField();
@@ -150,6 +158,12 @@ const ConnectToApi = ({
     setReqAborted(true);
     setActiveStep(0);
   };
+
+  const keyPathsMismatch =
+    status === "success" &&
+    isUpdate &&
+    !!keyPaths &&
+    !doKeyPathsResolve(data, keyPaths);
 
   const handleApiConnect = useCallback(() => {
     setReqAborted(false);
@@ -417,6 +431,19 @@ const ConnectToApi = ({
                 ? invalidReason || CONNECTION_STATUSES[status].subTitle
                 : CONNECTION_STATUSES[status].subTitle}
             </Typography>
+            {keyPathsMismatch && (
+              <Typography
+                data-cy="integrationKeyPathsMismatchWarning"
+                variant="body2"
+                color="warning.dark"
+                fontWeight={500}
+                textAlign="center"
+                sx={{ mt: 1 }}
+              >
+                This endpoint returns a different structure. Existing saved
+                items will display incorrectly and will need to be re-selected.
+              </Typography>
+            )}
           </Box>
           <Button
             data-cy="integrationConnectionStatusButton"

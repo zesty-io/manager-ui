@@ -30,7 +30,7 @@ import { get } from "lodash";
 import { IntegrationKeyPaths, IntegrationTypes } from "../../../services/types";
 import KeyPathSelector from "./KeyPathSelector";
 import DisplayCard from "../Shared/DisplayCard";
-import { getObjectKeyPaths, getAllArrayKeyPaths } from "./keyPathHelpers";
+import { getObjectKeyPaths, getAllArrayKeyPaths } from "./keyPathResolution";
 
 const ConfigureDisplayOptions = ({
   type,
