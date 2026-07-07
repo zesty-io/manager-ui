@@ -191,14 +191,14 @@ export const FieldFormProvider = ({
 
   /** Error setting */
   useEffect(() => {
-    if (!Object.keys(formData).length) {
+    if (!Object.keys(formData)?.length) {
       return;
     }
 
-    const currFieldNames = fields.map((field) => field.name);
+    const currFieldNames = fields?.map((field) => field.name);
     let newErrorsObj: Errors = {};
 
-    Object.keys(formData).map((inputName) => {
+    Object.keys(formData)?.map((inputName) => {
       if (
         inputName === "defaultValue" &&
         isDefaultValueEnabled &&

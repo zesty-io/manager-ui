@@ -105,7 +105,7 @@ const ConnectToApi = ({
   const [headersLocal, setHeadersLocal] = useState<
     Record<string, { key: string; value: string }>
   >(() => {
-    if (!headers || Object.keys(headers).length === 0) {
+    if (!headers || Object.keys(headers)?.length === 0) {
       const id = uuidv4();
       return { [id]: { key: "", value: "" } };
     }
@@ -118,7 +118,7 @@ const ConnectToApi = ({
 
   const handleNext = () => {
     const headersWithKeys = Object.values(headersLocal).filter((h) => !!h.key);
-    const reqHeaders = !headersWithKeys.length
+    const reqHeaders = !headersWithKeys?.length
       ? null
       : headersWithKeys.reduce<Record<string, string>>(
           (acc, { key, value }) => {
@@ -143,7 +143,7 @@ const ConnectToApi = ({
     setReqAborted(false);
     setApiData(null);
     const headersWithKeys = Object.values(headersLocal).filter((h) => !!h.key);
-    const options = !headersWithKeys.length
+    const options = !headersWithKeys?.length
       ? {}
       : {
           headers: headersWithKeys.reduce<Record<string, string>>(

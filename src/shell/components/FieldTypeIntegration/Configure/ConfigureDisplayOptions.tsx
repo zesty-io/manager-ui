@@ -117,7 +117,7 @@ const ConfigureDisplayOptions = ({
   };
 
   const handleRemoveDetail = (index: number) => {
-    if (detailsPathData.length === 1) {
+    if (detailsPathData?.length === 1) {
       setDetailsPathData([""]);
       lastDetailRef.current?.focus();
       return;
@@ -181,7 +181,7 @@ const ConfigureDisplayOptions = ({
     if (!itemIdPath || !apiData) return null;
 
     const data = (!rootPath ? apiData : get(apiData, rootPath)) || [];
-    if (!Array.isArray(data) || data.length < 2) return null;
+    if (!Array.isArray(data) || data?.length < 2) return null;
 
     const idValueCounts = new Map<unknown, number>();
     data.forEach((item: object) => {
@@ -194,7 +194,7 @@ const ConfigureDisplayOptions = ({
     );
     if (!hasDuplicates) return null;
 
-    return `"${itemIdPath}" is not unique across the ${data.length} sampled items — this can cause selections to be recognized incorrectly.`;
+    return `"${itemIdPath}" is not unique across the ${data?.length} sampled items — this can cause selections to be recognized incorrectly.`;
   }, [apiData, rootPath, rootPathData.itemId]);
 
   return (
@@ -258,7 +258,7 @@ const ConfigureDisplayOptions = ({
               </Typography>
             </Box>
 
-            {apiPathOptions.length > 0 && (
+            {apiPathOptions?.length > 0 && (
               <>
                 <FieldWrapper label="Data Path" isRequired>
                   <KeyPathSelector
@@ -287,7 +287,7 @@ const ConfigureDisplayOptions = ({
               gap={1.5}
               data-cy="integrationConfigureOptionKeyPathContainer"
             >
-              {rootPathOptions.length > 0 &&
+              {rootPathOptions?.length > 0 &&
                 displayConfig.map((config: ConfigProps) => (
                   <FieldWrapper
                     key={config.name}
