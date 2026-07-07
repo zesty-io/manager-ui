@@ -61,6 +61,7 @@
   "contactSupport": "Связаться с техподдержкой",
   "contentGenerated": "Ваш контент создан!",
   "contentItem": "Элемент контента",
+  "continueWith": "Продолжить с {{service}}",
   "copyInstanceZUID": "Копировать ZUID инстанса",
   "copyLink": "Скопировать ссылку",
   "createContentItem": "Создать элемент контента",

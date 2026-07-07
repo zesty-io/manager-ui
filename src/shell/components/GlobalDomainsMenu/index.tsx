@@ -156,7 +156,7 @@ export const GlobalDomainsMenu: FC<GlobalDomainsMenuProps> = ({
               {stageDomainText}
             </ListItemText>
           </Tooltip>
-          <Chip size="small" label={t("common.stage")} />
+          <Chip size="small" label={t("common.stage")} sx={{ ml: 1 }} />
         </MenuItem>
         {isLoadingDomains
           ? [...Array(5)].map((_, index) => (
@@ -188,6 +188,7 @@ export const GlobalDomainsMenu: FC<GlobalDomainsMenuProps> = ({
                       ? t("common.prod")
                       : t("common.stage")
                   }
+                  sx={{ ml: 1 }}
                 />
               </MenuItem>
             ))}

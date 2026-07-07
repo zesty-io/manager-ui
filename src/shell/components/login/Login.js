@@ -191,9 +191,18 @@ export default connect((state) => {
                   setError(err);
                 }}
               >
-                <SSOButton service="google" />
-                <SSOButton service="azure" />
-                <SSOButton service="github" />
+                <SSOButton
+                  service="google"
+                  label={t("shell.continueWith", { service: "Google" })}
+                />
+                <SSOButton
+                  service="azure"
+                  label={t("shell.continueWith", { service: "Microsoft" })}
+                />
+                <SSOButton
+                  service="github"
+                  label={t("shell.continueWith", { service: "Github" })}
+                />
               </SSOButtonGroup>
               <Box
                 display="flex"
