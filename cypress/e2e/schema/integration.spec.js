@@ -158,6 +158,7 @@ describe("Integration Field", () => {
           body: { name: "Solo", id: 1 },
         },
         { name: "array of primitives", body: [1, 2, 3, 4, 5] },
+        { name: "array of objects with no selectable keys", body: [{}] },
       ];
 
       invalidShapes.forEach(({ name, body }) => {

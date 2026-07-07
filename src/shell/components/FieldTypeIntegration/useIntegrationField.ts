@@ -27,10 +27,17 @@ export function classifyApiResponse(
           "API returned an empty array. Add at least one item to the response to configure display options.",
       };
     }
-    if (!getObjectKeyPaths(apiData[0] as object).length) {
+    if (!isObj(apiData[0])) {
       return {
         ok: false,
         reason: `API returned an array of ${typeof apiData[0]}s. Expected an array of objects.`,
+      };
+    }
+    if (!getObjectKeyPaths(apiData[0]).length) {
+      return {
+        ok: false,
+        reason:
+          "API returned an array of objects with no selectable keys. Make sure each object has at least one scalar property.",
       };
     }
     return { ok: true };
