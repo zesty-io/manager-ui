@@ -5,7 +5,6 @@ import FormatSizeRoundedIcon from "@mui/icons-material/FormatSizeRounded";
 import LanguageRoundedIcon from "@mui/icons-material/LanguageRounded";
 import PaletteRoundedIcon from "@mui/icons-material/PaletteRounded";
 import { Typography, Box, Stack } from "@mui/material";
-import { startCase } from "lodash";
 import { useTranslation } from "react-i18next";
 
 import { AppSideBar } from "../../../../../../shell/components/AppSidebar";
@@ -15,53 +14,10 @@ import {
   useGetInstanceStylesCategoriesQuery,
 } from "../../../../../../shell/services/instance";
 import noSearchResults from "../../../../../../../public/images/noSearchResults.svg";
-
-// Maps a raw instance-settings `category` value to its settings.json i18n key.
-// "Proxy" and "proxy" both resolve through the lowercase "proxy" entry since
-// they're the same category with a casing mismatch in the source data.
-const CATEGORY_TRANSLATION_KEYS: Record<string, string> = {
-  Exporter: "categoryExporter",
-  "For Custom Endpoint ": "categoryForCustomEndpoint",
-  Overrides: "categoryOverrides",
-  proxy: "categoryProxy",
-  analytics: "categoryAnalytics",
-  blog: "categoryBlog",
-  bynder: "categoryBynder",
-  "contact-form": "categoryContactForm",
-  custom: "categoryCustom",
-  developer: "categoryDeveloper",
-  extensions: "categoryExtensions",
-  general: "categoryGeneral",
-  groupby: "categoryGroupby",
-  i18n: "categoryI18n",
-  integrations: "categoryIntegrations",
-  "logo-section": "categoryLogoSection",
-  logosection: "categoryLogosection",
-  petdesk: "categoryPetdesk",
-  routing: "categoryRouting",
-  security: "categorySecurity",
-  seo: "categorySeo",
-  sitelink: "categorySitelink",
-  "social-links": "categorySocialLinks",
-  stripe: "categoryStripe",
-  tag_managers: "categoryTagManagers",
-  twitter: "categoryTwitter",
-  ups: "categoryUps",
-  verification: "categoryVerification",
-  youtube: "categoryYoutube",
-};
-
-// Translates a raw `category` value for display, falling back to the existing
-// startCase behavior for any category that hasn't been added to the map above.
-const getCategoryLabel = (
-  category: string,
-  t: (key: string) => string
-): string => {
-  const i18nKey = CATEGORY_TRANSLATION_KEYS[category];
-  return i18nKey
-    ? t(`settings.${i18nKey}`)
-    : startCase(category.replace(/_|-/g, " "));
-};
+import {
+  getCategoryLabel,
+  getStyleCategoryLabel,
+} from "../../utils/categoryLabels";
 
 const getFontsCat = (t: (key: string) => string): TreeItem[] => [
   {
@@ -161,7 +117,7 @@ export const SettingsNav = memo(() => {
       return [...instanceStylesCategories]
         .sort((a, b) => (a.sort > b.sort ? 1 : -1))
         .map((setting) => ({
-          label: setting.name,
+          label: getStyleCategoryLabel(setting.name, t),
           path: `/settings/styles/${setting.ID}`,
           icon: PaletteRoundedIcon,
           children: [] as TreeItem[],
@@ -169,7 +125,7 @@ export const SettingsNav = memo(() => {
     }
 
     return [];
-  }, [instanceStylesCategories]);
+  }, [instanceStylesCategories, t]);
 
   const navItems = useMemo(() => {
     if (keyword) {

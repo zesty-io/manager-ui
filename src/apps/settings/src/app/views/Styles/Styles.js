@@ -23,6 +23,7 @@ import Box from "@mui/material/Box";
 import { notify } from "../../../../../../shell/store/notifications";
 import { saveStyleVariable } from "../../../../../../shell/store/settings";
 import { useInstalledFonts } from "../Fonts/Installed";
+import { getStyleCategoryLabel } from "../../utils/categoryLabels";
 
 export default connect((state, props) => {
   const category = state.settings.catStyles?.find(
@@ -355,7 +356,7 @@ export default connect((state, props) => {
         </Portal>
       )}
       <TopBar
-        title={props?.category?.label}
+        title={getStyleCategoryLabel(props?.category?.label, t)}
         onSave={saveSettings}
         isNotSaved={dirtyFields.length > 0}
         isLoading={saving}

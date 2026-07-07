@@ -19,6 +19,7 @@ import { FieldWrapper, MainWrapper } from "../../components/Containers";
 import { Typography } from "@mui/material";
 import { notify } from "../../../../../../shell/store/notifications";
 import { updateSettings } from "../../../../../../shell/store/settings";
+import { getCategoryLabel } from "../../utils/categoryLabels";
 
 const DOCLINKS_MAP = {
   mode: "https://docs.zesty.io/docs/modes",
@@ -151,7 +152,7 @@ export default connect((state) => {
           notify({
             kind: "success",
             message: t("settings.categorySettingsSaved", {
-              category: capitalizeFirstLetter(props.match.params.category),
+              category: getCategoryLabel(props.match.params.category, t),
             }),
           })
         );
@@ -168,15 +169,11 @@ export default connect((state) => {
         );
       });
   }
-  function capitalizeFirstLetter(string) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
-  }
-
   let i = 0;
   return (
     <>
       <TopBar
-        title={`${capitalizeFirstLetter(props.match.params.category)}`}
+        title={getCategoryLabel(props.match.params.category, t)}
         onSave={saveFields}
         isNotSaved={dirtyFields.length > 0}
         isLoading={saving}
