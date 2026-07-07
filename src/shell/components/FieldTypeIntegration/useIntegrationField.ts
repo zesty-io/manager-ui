@@ -5,7 +5,7 @@ import {
   isObj,
   getObjectKeyPaths,
   getAllArrayKeyPaths,
-} from "./Configure/keyPathHelpers";
+} from "./Configure/keyPathResolution";
 
 // Mirrors the shape-walking that ConfigureDisplayOptions does when deriving
 // its key-selector options, so a response classified "ok" here is guaranteed
