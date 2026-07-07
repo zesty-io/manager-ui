@@ -16,6 +16,53 @@ import {
 } from "../../../../../../shell/services/instance";
 import noSearchResults from "../../../../../../../public/images/noSearchResults.svg";
 
+// Maps a raw instance-settings `category` value to its settings.json i18n key.
+// "Proxy" and "proxy" both resolve through the lowercase "proxy" entry since
+// they're the same category with a casing mismatch in the source data.
+const CATEGORY_TRANSLATION_KEYS: Record<string, string> = {
+  Exporter: "categoryExporter",
+  "For Custom Endpoint ": "categoryForCustomEndpoint",
+  Overrides: "categoryOverrides",
+  proxy: "categoryProxy",
+  analytics: "categoryAnalytics",
+  blog: "categoryBlog",
+  bynder: "categoryBynder",
+  "contact-form": "categoryContactForm",
+  custom: "categoryCustom",
+  developer: "categoryDeveloper",
+  extensions: "categoryExtensions",
+  general: "categoryGeneral",
+  groupby: "categoryGroupby",
+  i18n: "categoryI18n",
+  integrations: "categoryIntegrations",
+  "logo-section": "categoryLogoSection",
+  logosection: "categoryLogosection",
+  petdesk: "categoryPetdesk",
+  routing: "categoryRouting",
+  security: "categorySecurity",
+  seo: "categorySeo",
+  sitelink: "categorySitelink",
+  "social-links": "categorySocialLinks",
+  stripe: "categoryStripe",
+  tag_managers: "categoryTagManagers",
+  twitter: "categoryTwitter",
+  ups: "categoryUps",
+  verification: "categoryVerification",
+  youtube: "categoryYoutube",
+};
+
+// Translates a raw `category` value for display, falling back to the existing
+// startCase behavior for any category that hasn't been added to the map above.
+const getCategoryLabel = (
+  category: string,
+  t: (key: string) => string
+): string => {
+  const i18nKey = CATEGORY_TRANSLATION_KEYS[category];
+  return i18nKey
+    ? t(`settings.${i18nKey}`)
+    : startCase(category.replace(/_|-/g, " "));
+};
+
 const getFontsCat = (t: (key: string) => string): TreeItem[] => [
   {
     label: t("settings.navFontsInstalled"),
@@ -81,7 +128,7 @@ export const SettingsNav = memo(() => {
 
       const instanceSettingsCategories = Array.from(categories)?.map(
         (category) => ({
-          label: startCase(category.replace(/_|-/g, " ")),
+          label: getCategoryLabel(category, t),
           path: `/settings/instance/${category}`,
           icon: SettingsRoundedIcon,
           children: [] as TreeItem[],
@@ -89,13 +136,14 @@ export const SettingsNav = memo(() => {
       );
 
       // Makes sure that the Bynder settings item is present if the user hasn't added any Bynder integration setting yet
+      const bynderLabel = t("settings.categoryBynder");
       if (
         !instanceSettingsCategories.find(
-          (category) => category.label === "Bynder"
+          (category) => category.label === bynderLabel
         )
       ) {
         instanceSettingsCategories.push({
-          label: "Bynder",
+          label: bynderLabel,
           path: "/settings/instance/bynder",
           icon: SettingsRoundedIcon,
           children: [] as TreeItem[],
@@ -106,7 +154,7 @@ export const SettingsNav = memo(() => {
     }
 
     return [];
-  }, [rawInstanceSettings]);
+  }, [rawInstanceSettings, t]);
 
   const styleSettings: TreeItem[] = useMemo(() => {
     if (instanceStylesCategories?.length) {
@@ -254,6 +302,8 @@ export const SettingsNav = memo(() => {
     </AppSideBar>
   );
 });
+
+SettingsNav.displayName = "SettingsNav";
 
 type HeaderComponentProps = {
   title: string;
