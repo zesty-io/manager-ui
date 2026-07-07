@@ -159,6 +159,10 @@ describe("Integration Field", () => {
         },
         { name: "array of primitives", body: [1, 2, 3, 4, 5] },
         { name: "array of objects with no selectable keys", body: [{}] },
+        {
+          name: "single object with nested array of empty objects",
+          body: { items: [{}] },
+        },
       ];
 
       invalidShapes.forEach(({ name, body }) => {

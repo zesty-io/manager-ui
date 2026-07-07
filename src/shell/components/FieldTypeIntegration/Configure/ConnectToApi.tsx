@@ -414,7 +414,7 @@ const ConnectToApi = ({
               textAlign="center"
             >
               {status === "invalid"
-                ? invalidReason
+                ? invalidReason || CONNECTION_STATUSES[status].subTitle
                 : CONNECTION_STATUSES[status].subTitle}
             </Typography>
           </Box>

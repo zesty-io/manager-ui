@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
+import { get } from "lodash";
 import { useGetExternalApiMutation } from "shell/services/cloudFunctions";
 import {
   isObj,
@@ -44,11 +45,23 @@ export function classifyApiResponse(
   }
 
   if (isObj(apiData)) {
-    if (!getAllArrayKeyPaths(apiData).length) {
+    const arrayPaths = getAllArrayKeyPaths(apiData);
+    if (!arrayPaths.length) {
       return {
         ok: false,
         reason:
           "API returned a single object with no array of objects nested inside. Expected either an array root or an object containing an array of objects.",
+      };
+    }
+    const hasUsableArray = arrayPaths.some((path) => {
+      const item = get(apiData, path)?.[0];
+      return isObj(item) && getObjectKeyPaths(item).length > 0;
+    });
+    if (!hasUsableArray) {
+      return {
+        ok: false,
+        reason:
+          "API returned an object whose nested arrays contain no selectable keys. Make sure at least one nested array item has scalar properties.",
       };
     }
     return { ok: true };
