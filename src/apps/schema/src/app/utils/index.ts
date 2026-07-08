@@ -117,8 +117,9 @@ export const getErrorMessage = ({
       (value as string)?.length > maxLength
     ) {
       return `Shorten to less than ${maxLength} characters (${
-        (value as string).length
+        (value as string)?.length
       }/${maxLength})`;
+    }
     }
 
     // check for reserved field names
