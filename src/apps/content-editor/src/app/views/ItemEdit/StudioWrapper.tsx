@@ -1223,6 +1223,14 @@ export const StudioWrapper = () => {
   const slotPatchTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>(
     {}
   );
+  // Clear any pending debounced slot patches when the studio unmounts so a
+  // timer never fires into a stale closure.
+  useEffect(
+    () => () => {
+      Object.values(slotPatchTimers.current).forEach(clearTimeout);
+    },
+    []
+  );
   const handleSlotChange = useCallback(
     (slot: ElementSlot, value: string) => {
       const patch = selectedAttributeElement?.layoutPatch;

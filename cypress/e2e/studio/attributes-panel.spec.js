@@ -38,6 +38,8 @@ describe("Studio Attributes Panel", () => {
     cy.getBySelector(`${prefix}SaveChangesButton`).click();
     cy.getBySelector("StudioSaveChangesModal").should("exist");
     cy.getBySelector("StudioSaveAllButton").click();
+    // Let the modal fade out before any subsequent query.
+    cy.getBySelector("StudioSaveChangesModal").should("not.exist");
   };
 
   // Open a MUI TextField `select` (the data-cy sits on its hidden native input,

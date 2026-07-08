@@ -2084,7 +2084,7 @@
 
     if (payload.action === "updateImageSrc") {
       var imgLeaf = document.querySelector(
-        '[data-layout-id="' + payload.layoutId + '"]'
+        '[data-layout-id="' + CSS.escape(payload.layoutId) + '"]'
       );
       if (!imgLeaf) return;
       var imgTarget = payload.isLeafImg
@@ -2098,7 +2098,7 @@
 
     if (payload.action === "updateElementAttr" && payload.attr) {
       var attrLeaf = document.querySelector(
-        '[data-layout-id="' + payload.layoutId + '"]'
+        '[data-layout-id="' + CSS.escape(payload.layoutId) + '"]'
       );
       if (!attrLeaf) return;
       var attrTarget = payload.isSelf
@@ -2121,7 +2121,7 @@
     // own data-layout-id, so replacing textContent is safe.
     if (payload.action === "updateElementText") {
       var textLeaf = document.querySelector(
-        '[data-layout-id="' + payload.layoutId + '"]'
+        '[data-layout-id="' + CSS.escape(payload.layoutId) + '"]'
       );
       if (textLeaf) textLeaf.textContent = payload.value || "";
       return;
@@ -2131,8 +2131,11 @@
     // carrying over every attribute (data-layout-id, data-studio-id, class,
     // the studio-selected outline, …) and its children.
     if (payload.action === "updateElementTag" && payload.newTag) {
+      // Only swap to a tag the panel actually exposes — never createElement an
+      // arbitrary (or scripting) tag from an untrusted message.
+      if (!SUPPORTED_ELEMENTS[payload.newTag]) return;
       var tagLeaf = document.querySelector(
-        '[data-layout-id="' + payload.layoutId + '"]'
+        '[data-layout-id="' + CSS.escape(payload.layoutId) + '"]'
       );
       if (!tagLeaf || !tagLeaf.parentNode) return;
       var swapped = document.createElement(payload.newTag);

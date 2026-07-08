@@ -7,6 +7,21 @@ type LayoutStructureItem = {
   parentLayoutId: string | null;
 };
 
+// Tags the Attributes panel can swap an element to — mirrors the bridge's
+// SUPPORTED_ELEMENTS. Guards createElement against an arbitrary tag name.
+const SWAPPABLE_TAGS = new Set([
+  "img",
+  "video",
+  "h1",
+  "h2",
+  "h3",
+  "h4",
+  "h5",
+  "h6",
+  "p",
+  "span",
+]);
+
 const isLayoutBreadcrumbItem = (
   segment: unknown
 ): segment is LayoutBreadcrumbItem =>
@@ -788,7 +803,9 @@ export const useLayoutReorderState = ({
       const root = doc.getElementById("studio-el-root");
       if (!root) return;
 
-      const leaf = root.querySelector(`[data-layout-id="${layoutId}"]`);
+      const leaf = root.querySelector(
+        `[data-layout-id="${CSS.escape(layoutId)}"]`
+      );
       if (!leaf) return;
 
       const target = isSelf
@@ -830,7 +847,7 @@ export const useLayoutReorderState = ({
       if (!root) return;
 
       const leaf = root.querySelector(
-        `[data-layout-id="${layoutId}"]`
+        `[data-layout-id="${CSS.escape(layoutId)}"]`
       ) as HTMLElement | null;
       if (!leaf) return;
 
@@ -847,7 +864,8 @@ export const useLayoutReorderState = ({
   // children so nothing else about the element changes.
   const handleLayoutTagUpdate = useCallback(
     (codeId: string, layoutId: string, newTag: string) => {
-      if (!codeId || !layoutId || !newTag) return;
+      // Only createElement a tag the panel exposes — never an arbitrary tag.
+      if (!codeId || !layoutId || !SWAPPABLE_TAGS.has(newTag)) return;
 
       const cached = templateSourceByCodeIdRef.current[codeId];
       if (!cached) return;
@@ -861,7 +879,7 @@ export const useLayoutReorderState = ({
       if (!root) return;
 
       const leaf = root.querySelector(
-        `[data-layout-id="${layoutId}"]`
+        `[data-layout-id="${CSS.escape(layoutId)}"]`
       ) as HTMLElement | null;
       if (!leaf || !leaf.parentNode) return;
 
