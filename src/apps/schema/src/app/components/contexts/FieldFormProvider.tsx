@@ -191,7 +191,7 @@ export const FieldFormProvider = ({
 
   /** Error setting */
   useEffect(() => {
-    if (!Object.keys(formData)?.length) {
+    if (!Object.keys(formData ?? {}).length) {
       return;
     }
 
