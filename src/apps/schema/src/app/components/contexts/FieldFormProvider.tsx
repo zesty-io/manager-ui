@@ -198,7 +198,7 @@ export const FieldFormProvider = ({
     const currFieldNames = fields?.map((field) => field.name);
     let newErrorsObj: Errors = {};
 
-    Object.keys(formData)?.map((inputName) => {
+    Object.keys(formData).map((inputName) => {
       if (
         inputName === "defaultValue" &&
         isDefaultValueEnabled &&
