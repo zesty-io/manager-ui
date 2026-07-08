@@ -97,8 +97,8 @@ export const SchedulePublish = ({
         { localTime: localPretty, localTimezone: publishTimezone }
       )
     ) // @ts-expect-error untyped action
-      .then((res) => {
-        if (!res?.error) {
+      .then((response) => {
+        if (!response?.error) {
           onScheduleSuccess?.();
         }
       })
@@ -118,8 +118,8 @@ export const SchedulePublish = ({
         { version: item?.scheduling?.version }
       )
     ) // @ts-expect-error untyped action
-      .then((res) => {
-        if (!res?.error) {
+      .then((response) => {
+        if (!response?.error) {
           onUnscheduleSuccess?.();
         }
       })
@@ -169,8 +169,8 @@ export const SchedulePublish = ({
         { localTime: localPretty, localTimezone: publishTimezone }
       )
     ) // @ts-expect-error untyped action
-      .then((res) => {
-        if (!res?.error) {
+      .then((response) => {
+        if (!response?.error) {
           onScheduleSuccess?.();
         }
       })
@@ -198,9 +198,9 @@ export const SchedulePublish = ({
           )
         )
           // @ts-expect-error untyped action
-          .then((res) => {
-            if (!!res?.error) {
-              throw new Error(res?.erro?.message);
+          .then((response) => {
+            if (response?.error) {
+              throw new Error(response?.error?.message);
             }
           });
       }
@@ -217,9 +217,9 @@ export const SchedulePublish = ({
         )
       )
         // @ts-expect-error untyped action
-        .then((res) => {
-          if (!!res?.error) {
-            throw new Error(res?.erro?.message);
+        .then((response) => {
+          if (response?.error) {
+            throw new Error(response?.error?.message);
           }
         });
 
