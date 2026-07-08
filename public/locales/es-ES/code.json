@@ -44,7 +44,7 @@
   "fileListHeaderFileName": "Nombre del archivo",
   "fileListHeaderLastSaved": "Último guardado",
   "fileLocked": "Archivo bloqueado",
-  "fileLockedDescription": "{{firstName}} {{lastName}} está viendo <em>{{name}}</em> desde {{formattedDate}}. Desbloquea este elemento para ignorar esta advertencia y posiblemente sobrescribir los cambios de {{firstName}}.",
+  "fileLockedDescriptionRich": "{{firstName}} {{lastName}} está viendo <em>{{name}}</em> desde {{formattedDate}}. Desbloquea este elemento para ignorar esta advertencia y posiblemente sobrescribir los cambios de {{firstName}}.",
   "fileName": "Nombre del archivo",
   "fileNavHeaderSiteCss": "SITE.CSS",
   "fileNavHeaderSiteJs": "SITE.JS",

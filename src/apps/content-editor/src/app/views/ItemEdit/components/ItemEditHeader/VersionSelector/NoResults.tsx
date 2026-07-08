@@ -21,7 +21,7 @@ export const NoResults = ({ query, onSearchAgain }: NoResultsProps) => {
       <Box width={339} sx={{ whiteSpace: "break-spaces", textAlign: "center" }}>
         <Typography variant="h5" fontWeight={600}>
           <Trans
-            i18nKey="content.itemEditStatusSearchNoResultsTitle"
+            i18nKey="content.itemEditStatusSearchNoResultsTitleRich"
             values={{ search: query }}
             components={{ strong: <strong /> }}
           />

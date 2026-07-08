@@ -359,7 +359,7 @@
   "itemEditSelectFieldsForReview": "Select fields for review",
   "itemEditSelectTeamMembers": "Select team members",
   "itemEditSendEmail": "Send Email",
-  "itemEditStatusSearchNoResultsTitle": "Your search <strong>\"{{search}}\"</strong> could not find any results",
+  "itemEditStatusSearchNoResultsTitleRich": "Your search <strong>\"{{search}}\"</strong> could not find any results",
   "itemEditSwitchOffDuoMode": "Switch off DUO Mode",
   "itemEditSwitchOnDuoMode": "Switch on DUO Mode",
   "itemEditTabAnalytics": "Analytics",

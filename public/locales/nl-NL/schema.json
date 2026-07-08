@@ -104,7 +104,7 @@
   "dropdownOptionsLabel": "Vervolgkeuze-opties",
   "duplicate": "Dupliceren",
   "duplicateModel": "Model dupliceren",
-  "duplicateModelAlertBody": "U staat op het punt het model <strong>{{label}}</strong> te dupliceren met alle bestaande velden. Er worden geen inhoudsitems gedupliceerd.",
+  "duplicateModelAlertBodyRich": "U staat op het punt het model <strong>{{label}}</strong> te dupliceren met alle bestaande velden. Er worden geen inhoudsitems gedupliceerd.",
   "duplicateModelDescriptionLabel": "Beschrijving",
   "duplicateModelDescriptionPlaceholder": "Waarvoor wordt dit model gebruikt",
   "duplicateModelDisplayNameLabel": "Weergavenaam",

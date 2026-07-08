@@ -354,7 +354,7 @@
   "itemEditSelectFieldsForReview": "选择要审阅的字段",
   "itemEditSelectTeamMembers": "选择团队成员",
   "itemEditSendEmail": "发送电子邮件",
-  "itemEditStatusSearchNoResultsTitle": "你的搜索 <strong>“{{search}}”</strong> 未找到任何结果",
+  "itemEditStatusSearchNoResultsTitleRich": "你的搜索 <strong>“{{search}}”</strong> 未找到任何结果",
   "itemEditSwitchOffDuoMode": "关闭 DUO 模式",
   "itemEditSwitchOnDuoMode": "打开 DUO 模式",
   "itemEditTabAnalytics": "分析",

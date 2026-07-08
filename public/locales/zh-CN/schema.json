@@ -104,7 +104,7 @@
   "dropdownOptionsLabel": "下拉选项",
   "duplicate": "复制",
   "duplicateModel": "复制模型",
-  "duplicateModelAlertBody": "您即将复制 <strong>{{label}}</strong> 模型及其所有现有字段。不会复制任何内容项。",
+  "duplicateModelAlertBodyRich": "您即将复制 <strong>{{label}}</strong> 模型及其所有现有字段。不会复制任何内容项。",
   "duplicateModelDescriptionLabel": "描述",
   "duplicateModelDescriptionPlaceholder": "此模型将用于什么",
   "duplicateModelDisplayNameLabel": "显示名称",

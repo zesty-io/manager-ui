@@ -44,7 +44,7 @@
   "fileListHeaderFileName": "फ़ाइल का नाम",
   "fileListHeaderLastSaved": "अंतिम सहेजा गया",
   "fileLocked": "फ़ाइल लॉक है",
-  "fileLockedDescription": "{{firstName}} {{lastName}} {{formattedDate}} से <em>{{name}}</em> देख रहे हैं। इस चेतावनी को अनदेखा करने और संभवतः {{firstName}} के बदलावों को ओवरराइट करने के लिए इस आइटम को अनलॉक करें।",
+  "fileLockedDescriptionRich": "{{firstName}} {{lastName}} {{formattedDate}} से <em>{{name}}</em> देख रहे हैं। इस चेतावनी को अनदेखा करने और संभवतः {{firstName}} के बदलावों को ओवरराइट करने के लिए इस आइटम को अनलॉक करें।",
   "fileName": "फ़ाइल का नाम",
   "fileNavHeaderSiteCss": "SITE.CSS",
   "fileNavHeaderSiteJs": "SITE.JS",

@@ -44,7 +44,7 @@
   "fileListHeaderFileName": "Имя файла",
   "fileListHeaderLastSaved": "Последнее сохранение",
   "fileLocked": "Файл заблокирован",
-  "fileLockedDescription": "Пользователь {{firstName}} {{lastName}} просматривает <em>{{name}}</em> с {{formattedDate}}. Разблокируйте этот элемент, чтобы проигнорировать это предупреждение и, возможно, перезаписать изменения, сделанные {{firstName}}.",
+  "fileLockedDescriptionRich": "Пользователь {{firstName}} {{lastName}} просматривает <em>{{name}}</em> с {{formattedDate}}. Разблокируйте этот элемент, чтобы проигнорировать это предупреждение и, возможно, перезаписать изменения, сделанные {{firstName}}.",
   "fileName": "Имя файла",
   "fileNavHeaderSiteCss": "SITE.CSS",
   "fileNavHeaderSiteJs": "SITE.JS",

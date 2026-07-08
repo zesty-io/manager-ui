@@ -40,7 +40,7 @@ export const ChangeDialog: FC<ChangeDialogProps> = ({
   redirect,
   newPath,
 }) => {
-  const { t } = useTranslation("seo");
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const {
     openErrorDialog,

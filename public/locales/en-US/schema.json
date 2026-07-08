@@ -104,7 +104,7 @@
   "dropdownOptionsLabel": "Dropdown Options",
   "duplicate": "Duplicate",
   "duplicateModel": "Duplicate Model",
-  "duplicateModelAlertBody": "You're about to duplicate the <strong>{{label}}</strong> model with all of it's existing fields. No content items will be duplicated.",
+  "duplicateModelAlertBodyRich": "You're about to duplicate the <strong>{{label}}</strong> model with all of it's existing fields. No content items will be duplicated.",
   "duplicateModelDescriptionLabel": "Description",
   "duplicateModelDescriptionPlaceholder": "What is this model going to be used for",
   "duplicateModelDisplayNameLabel": "Display Name",

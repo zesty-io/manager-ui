@@ -44,7 +44,7 @@
   "fileListHeaderFileName": "File Name",
   "fileListHeaderLastSaved": "Last Saved",
   "fileLocked": "File Locked",
-  "fileLockedDescription": "{{firstName}} {{lastName}} is viewing <em>{{name}}</em> since {{formattedDate}} Unlock this item to ignore this warning and possibly overwrite {{firstName}}'s changes.",
+  "fileLockedDescriptionRich": "{{firstName}} {{lastName}} is viewing <em>{{name}}</em> since {{formattedDate}} Unlock this item to ignore this warning and possibly overwrite {{firstName}}'s changes.",
   "fileName": "File Name",
   "fileNavHeaderSiteCss": "SITE.CSS",
   "fileNavHeaderSiteJs": "SITE.JS",

@@ -104,7 +104,7 @@
   "dropdownOptionsLabel": "ड्रॉपडाउन विकल्प",
   "duplicate": "नकल बनाएं",
   "duplicateModel": "मॉडल की नकल बनाएं",
-  "duplicateModelAlertBody": "आप <strong>{{label}}</strong> मॉडल की उसके सभी मौजूदा फ़ील्ड के साथ नकल बनाने वाले हैं। कोई भी सामग्री आइटम नकल नहीं किया जाएगा।",
+  "duplicateModelAlertBodyRich": "आप <strong>{{label}}</strong> मॉडल की उसके सभी मौजूदा फ़ील्ड के साथ नकल बनाने वाले हैं। कोई भी सामग्री आइटम नकल नहीं किया जाएगा।",
   "duplicateModelDescriptionLabel": "विवरण",
   "duplicateModelDescriptionPlaceholder": "यह मॉडल किस लिए उपयोग होगा",
   "duplicateModelDisplayNameLabel": "प्रदर्शन नाम",

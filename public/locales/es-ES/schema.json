@@ -104,7 +104,7 @@
   "dropdownOptionsLabel": "Opciones desplegables",
   "duplicate": "Duplicar",
   "duplicateModel": "Duplicar modelo",
-  "duplicateModelAlertBody": "Estás a punto de duplicar el modelo <strong>{{label}}</strong> con todos sus campos existentes. No se duplicará ningún elemento de contenido.",
+  "duplicateModelAlertBodyRich": "Estás a punto de duplicar el modelo <strong>{{label}}</strong> con todos sus campos existentes. No se duplicará ningún elemento de contenido.",
   "duplicateModelDescriptionLabel": "Descripción",
   "duplicateModelDescriptionPlaceholder": "¿Para qué se va a usar este modelo?",
   "duplicateModelDisplayNameLabel": "Nombre de visualización",

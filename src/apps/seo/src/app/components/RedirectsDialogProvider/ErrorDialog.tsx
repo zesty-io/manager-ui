@@ -25,7 +25,7 @@ type ErrorDialogProps = {
 
 export const ErrorDialog: FC<ErrorDialogProps> = ({ open, onClose, data }) => {
   const dispatch = useDispatch();
-  const { t } = useTranslation("seo");
+  const { t } = useTranslation();
 
   const [errorPaths, setErrorPaths] = useState<ErrorPathProps[]>([]);
 

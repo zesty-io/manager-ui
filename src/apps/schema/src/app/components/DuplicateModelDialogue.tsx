@@ -248,7 +248,7 @@ export const DuplicateModelDialogue = ({ onClose, model }: Props) => {
         <Box display="flex" flexDirection="column" gap={2.5}>
           <Alert severity="info">
             <Trans
-              i18nKey="schema.duplicateModelAlertBody"
+              i18nKey="schema.duplicateModelAlertBodyRich"
               values={{ label: model.label }}
               components={{ strong: <strong /> }}
             />

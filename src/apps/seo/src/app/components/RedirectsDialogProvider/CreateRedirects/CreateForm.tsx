@@ -59,7 +59,7 @@ const CreateForm: FC<CreateFormProps> = ({
   isInternal = false,
 }) => {
   const dispatch = useDispatch();
-  const { t } = useTranslation("seo");
+  const { t } = useTranslation();
   const lastPathRef = useRef(null);
   const [paths, setPaths] = useState<PathProps[]>([
     { id: new Date().getTime() + 1000, path: "" },

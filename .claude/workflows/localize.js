@@ -258,7 +258,7 @@ You are the Scout for a localization workflow. Your job is full discovery: build
   }
 - Target paths: ${targetDisplay}
 - Lazy-load root: ${lazyLoadRoot || "not provided"}
-- Repo root: /home/nar/Developer/zesty/manager-ui
+- Repo root: the root of this git repository (run \`git rev-parse --show-toplevel\` to resolve it if needed)
 
 ---
 

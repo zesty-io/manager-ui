@@ -140,6 +140,12 @@ function visitWithLocale(path, locale) {
 }
 
 describe("sub-app translations", () => {
+  // cy.blockLock() and cy.blockAnnouncements() are already applied globally
+  // for every test in cypress/support/e2e.js; only auth needs to happen here.
+  beforeEach(() => {
+    cy.login();
+  });
+
   SUB_APPS.forEach(({ app, path, ns, selector, key }) => {
     LOCALES.forEach((locale) => {
       it(`renders ${app} in ${locale}`, () => {

@@ -104,7 +104,7 @@
   "dropdownOptionsLabel": "Параметры выпадающего списка",
   "duplicate": "Дублировать",
   "duplicateModel": "Дублировать модель",
-  "duplicateModelAlertBody": "Вы собираетесь дублировать модель <strong>{{label}}</strong> со всеми её существующими полями. Элементы контента дублированы не будут.",
+  "duplicateModelAlertBodyRich": "Вы собираетесь дублировать модель <strong>{{label}}</strong> со всеми её существующими полями. Элементы контента дублированы не будут.",
   "duplicateModelDescriptionLabel": "Описание",
   "duplicateModelDescriptionPlaceholder": "Для чего будет использоваться эта модель",
   "duplicateModelDisplayNameLabel": "Отображаемое имя",

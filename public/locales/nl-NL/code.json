@@ -44,7 +44,7 @@
   "fileListHeaderFileName": "Bestandsnaam",
   "fileListHeaderLastSaved": "Laatst opgeslagen",
   "fileLocked": "Bestand vergrendeld",
-  "fileLockedDescription": "{{firstName}} {{lastName}} bekijkt <em>{{name}}</em> sinds {{formattedDate}}. Ontgrendel dit item om deze waarschuwing te negeren en eventueel de wijzigingen van {{firstName}} te overschrijven.",
+  "fileLockedDescriptionRich": "{{firstName}} {{lastName}} bekijkt <em>{{name}}</em> sinds {{formattedDate}}. Ontgrendel dit item om deze waarschuwing te negeren en eventueel de wijzigingen van {{firstName}} te overschrijven.",
   "fileName": "Bestandsnaam",
   "fileNavHeaderSiteCss": "SITE.CSS",
   "fileNavHeaderSiteJs": "SITE.JS",

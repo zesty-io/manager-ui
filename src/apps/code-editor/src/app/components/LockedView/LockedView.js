@@ -125,7 +125,7 @@ export function LockedView(props) {
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
             <Trans
-              i18nKey="code.fileLockedDescription"
+              i18nKey="code.fileLockedDescriptionRich"
               values={{
                 firstName: lockData.firstName,
                 lastName: lockData.lastName,

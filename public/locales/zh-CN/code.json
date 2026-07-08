@@ -44,7 +44,7 @@
   "fileListHeaderFileName": "文件名称",
   "fileListHeaderLastSaved": "最后保存",
   "fileLocked": "文件已被锁定",
-  "fileLockedDescription": "自 {{formattedDate}} 以来，{{firstName}} {{lastName}} 正在查看 <em>{{name}}</em>。解锁此项将忽略此警告，并可能覆盖 {{firstName}} 的更改。",
+  "fileLockedDescriptionRich": "自 {{formattedDate}} 以来，{{firstName}} {{lastName}} 正在查看 <em>{{name}}</em>。解锁此项将忽略此警告，并可能覆盖 {{firstName}} 的更改。",
   "fileName": "文件名称",
   "fileNavHeaderSiteCss": "SITE.CSS",
   "fileNavHeaderSiteJs": "SITE.JS",

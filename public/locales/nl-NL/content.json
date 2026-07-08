@@ -359,7 +359,7 @@
   "itemEditSelectFieldsForReview": "Velden selecteren voor review",
   "itemEditSelectTeamMembers": "Teamleden selecteren",
   "itemEditSendEmail": "E-mail verzenden",
-  "itemEditStatusSearchNoResultsTitle": "Je zoekopdracht <strong>\"{{search}}\"</strong> heeft geen resultaten gevonden",
+  "itemEditStatusSearchNoResultsTitleRich": "Je zoekopdracht <strong>\"{{search}}\"</strong> heeft geen resultaten gevonden",
   "itemEditSwitchOffDuoMode": "DUO-modus uitschakelen",
   "itemEditSwitchOnDuoMode": "DUO-modus inschakelen",
   "itemEditTabAnalytics": "Analyses",

@@ -369,7 +369,7 @@
   "itemEditSelectFieldsForReview": "Выберите поля для проверки",
   "itemEditSelectTeamMembers": "Выберите участников команды",
   "itemEditSendEmail": "Отправить email",
-  "itemEditStatusSearchNoResultsTitle": "По запросу <strong>\"{{search}}\"</strong> ничего не найдено",
+  "itemEditStatusSearchNoResultsTitleRich": "По запросу <strong>\"{{search}}\"</strong> ничего не найдено",
   "itemEditSwitchOffDuoMode": "Выключить режим DUO",
   "itemEditSwitchOnDuoMode": "Включить режим DUO",
   "itemEditTabAnalytics": "Аналитика",

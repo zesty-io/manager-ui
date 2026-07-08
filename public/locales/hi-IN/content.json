@@ -359,7 +359,7 @@
   "itemEditSelectFieldsForReview": "समीक्षा के लिए फ़ील्ड चुनें",
   "itemEditSelectTeamMembers": "टीम सदस्य चुनें",
   "itemEditSendEmail": "ईमेल भेजें",
-  "itemEditStatusSearchNoResultsTitle": "आपकी खोज <strong>\"{{search}}\"</strong> से कोई परिणाम नहीं मिला",
+  "itemEditStatusSearchNoResultsTitleRich": "आपकी खोज <strong>\"{{search}}\"</strong> से कोई परिणाम नहीं मिला",
   "itemEditSwitchOffDuoMode": "DUO Mode बंद करें",
   "itemEditSwitchOnDuoMode": "DUO Mode चालू करें",
   "itemEditTabAnalytics": "विश्लेषण",

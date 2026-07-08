@@ -364,7 +364,7 @@
   "itemEditSelectFieldsForReview": "Seleccionar campos para revision",
   "itemEditSelectTeamMembers": "Seleccionar miembros del equipo",
   "itemEditSendEmail": "Enviar correo",
-  "itemEditStatusSearchNoResultsTitle": "Tu busqueda <strong>\"{{search}}\"</strong> no encontro resultados",
+  "itemEditStatusSearchNoResultsTitleRich": "Tu busqueda <strong>\"{{search}}\"</strong> no encontro resultados",
   "itemEditSwitchOffDuoMode": "Desactivar modo DUO",
   "itemEditSwitchOnDuoMode": "Activar modo DUO",
   "itemEditTabAnalytics": "Analitica",
