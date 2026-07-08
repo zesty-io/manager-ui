@@ -43,6 +43,7 @@ import {
 import { StudioHeader } from "./components/StudioWrapper/StudioHeader";
 import { StudioPreview } from "./components/StudioWrapper/StudioPreview";
 import { StudioSidePanel } from "./components/StudioWrapper/StudioSidePanel";
+import { StudioAttributesPanel } from "./components/StudioWrapper/StudioAttributesPanel";
 import { StudioLayersPanel } from "./components/StudioWrapper/StudioLayersPanel";
 import {
   StudioSaveChange,
@@ -54,7 +55,11 @@ import {
   useStudioContentSave,
 } from "./hooks/useStudioContentSave";
 import { useStudioBridge } from "./hooks/useStudioBridge";
-import { InteractionMode, LayoutBreadcrumbItem } from "./hooks/studioTypes";
+import {
+  ElementSlot,
+  InteractionMode,
+  LayoutBreadcrumbItem,
+} from "./hooks/studioTypes";
 import { useStudioSelection } from "./hooks/useStudioSelection";
 import { useStudioLayersTree } from "./hooks/useStudioLayersTree";
 import { getRefRegistry } from "../../../../../../engine/refRegistry";
@@ -106,6 +111,12 @@ export const StudioWrapper = () => {
     isLeafImg: boolean;
     imgIndex: number;
     currentSrc: string;
+    // Set when the picker was opened from the Attributes panel, so the panel's
+    // displayed value updates after a pick. `attr` is the target attribute
+    // (src or poster) and `tagName` addresses nested elements.
+    fromAttributesPanel?: boolean;
+    attr?: string;
+    tagName?: string;
   } | null>(null);
   const history = useHistory();
   const location = useLocation();
@@ -164,6 +175,12 @@ export const StudioWrapper = () => {
       isLeafImg?: boolean;
       imgIndex?: number;
       newSrc?: string;
+      attr?: string;
+      isSelf?: boolean;
+      tagName?: string;
+      elementIndex?: number;
+      newTag?: string;
+      booleanAttr?: boolean;
     }) => {
       const iframeWindow = iframeRef.current?.contentWindow;
       if (!iframeWindow) return;
@@ -185,6 +202,7 @@ export const StudioWrapper = () => {
   const {
     selectedElement,
     selectedLayout,
+    selectedAttributeElement,
     panelMode,
     filteredFieldName,
     setSelectedLayout,
@@ -194,6 +212,10 @@ export const StudioWrapper = () => {
     handleLayoutBreadcrumbSelect,
     clearHighlightOnly,
     applySelection,
+    applyAttributeSelection,
+    returnToAttributes,
+    updateSelectedSlotValue,
+    refreshSelectedElementSlots,
   } = useStudioSelection({
     postCommandToBridge,
     codeFileNameById,
@@ -692,6 +714,9 @@ export const StudioWrapper = () => {
     handleReorderOutput,
     handleLayoutContentUpdate,
     handleLayoutImageSrcUpdate,
+    handleLayoutElementAttrUpdate,
+    handleLayoutTextUpdate,
+    handleLayoutTagUpdate,
   } = useLayoutReorderState({
     webViews,
     codeFileNameById,
@@ -1129,10 +1154,13 @@ export const StudioWrapper = () => {
     postCommandToBridge,
     applyBridgeSelection,
     applyLayoutSelection,
+    applyAttributeSelection,
+    refreshSelectedElementSlots,
     codeFileNameById,
     fieldsState,
     selectedElement,
     selectedLayout,
+    selectedAttributeElement,
     dndDisabled: isSavingLayout || isRefreshing,
   });
 
@@ -1171,6 +1199,119 @@ export const StudioWrapper = () => {
     setIsRefreshing(false);
     handlePreviewLoad();
   }, [handlePreviewLoad]);
+
+  // Content mode: a dynamic slot (a bound attribute or bound text) was clicked
+  // — open the existing single-field content editor for its field.
+  const handleEditDynamicSlot = useCallback(
+    (slot: ElementSlot) => {
+      if (!slot.fieldZuid) return;
+      applyBridgeSelection({
+        studioId: slot.studioId,
+        fieldZuid: slot.fieldZuid,
+        fieldType: slot.fieldType,
+        itemZuid: slot.itemZuid,
+        modelZuid: slot.modelZuid,
+      });
+    },
+    [applyBridgeSelection]
+  );
+
+  // Layout mode: a slot was edited free-text. Live-update the preview on every
+  // keystroke (cheap postMessage) but debounce the template-source patch
+  // (DOMParse + restage) so we don't reparse on each character. Attributes
+  // write via setAttribute; text writes the element's inner text.
+  const slotPatchTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>(
+    {}
+  );
+  const handleSlotChange = useCallback(
+    (slot: ElementSlot, value: string) => {
+      const patch = selectedAttributeElement?.layoutPatch;
+      if (!patch || !patch.codeId) return;
+
+      if (slot.kind === "text") {
+        postCommandToBridge({
+          action: "updateElementText",
+          layoutId: patch.layoutId,
+          value,
+        });
+        clearTimeout(slotPatchTimers.current[slot.key]);
+        slotPatchTimers.current[slot.key] = setTimeout(() => {
+          handleLayoutTextUpdate(patch.codeId!, patch.layoutId, value);
+        }, 300);
+        return;
+      }
+
+      const attr = slot.attr || slot.key;
+      postCommandToBridge({
+        action: "updateElementAttr",
+        layoutId: patch.layoutId,
+        isSelf: patch.isSelf,
+        tagName: patch.tagName,
+        elementIndex: patch.elementIndex,
+        attr,
+        value,
+        booleanAttr: slot.booleanAttr,
+      });
+      clearTimeout(slotPatchTimers.current[slot.key]);
+      slotPatchTimers.current[slot.key] = setTimeout(() => {
+        handleLayoutElementAttrUpdate(
+          patch.codeId!,
+          patch.layoutId,
+          patch.isSelf,
+          patch.tagName,
+          patch.elementIndex,
+          attr,
+          value,
+          slot.booleanAttr
+        );
+      }, 300);
+    },
+    [
+      handleLayoutElementAttrUpdate,
+      handleLayoutTextUpdate,
+      postCommandToBridge,
+      selectedAttributeElement,
+    ]
+  );
+
+  // Layout mode: change the element's tag (e.g. h1 → h2, img → video). Only
+  // valid when the element carries its own data-layout-id (isSelf), since the
+  // swap is addressed by layout id. Applied immediately — it's a discrete
+  // select change, not per-keystroke.
+  const handleTagChange = useCallback(
+    (newTag: string) => {
+      const patch = selectedAttributeElement?.layoutPatch;
+      if (!patch || !patch.codeId || !patch.isSelf) return;
+      postCommandToBridge({
+        action: "updateElementTag",
+        layoutId: patch.layoutId,
+        newTag,
+      });
+      handleLayoutTagUpdate(patch.codeId, patch.layoutId, newTag);
+    },
+    [handleLayoutTagUpdate, postCommandToBridge, selectedAttributeElement]
+  );
+
+  // Layout mode: open the media picker for a media-URL slot (src or poster).
+  // Reuses the img media-picker dialog; the tag-agnostic patch maps onto its
+  // isLeafImg / imgIndex addressing, and `attr` records which attribute to set.
+  const handleBrowseAttributeMedia = useCallback(
+    (slot: ElementSlot) => {
+      const patch = selectedAttributeElement?.layoutPatch;
+      if (!patch || !patch.codeId) return;
+      setImageEditState({
+        codeId: patch.codeId,
+        layoutId: patch.layoutId,
+        isLeafImg: patch.isSelf,
+        imgIndex: patch.elementIndex,
+        currentSrc: slot.value,
+        fromAttributesPanel: true,
+        attr: slot.attr || "src",
+        tagName: patch.tagName,
+      });
+    },
+    [selectedAttributeElement]
+  );
 
   const renderInfoPanel = () => {
     if (!isResolved) {
@@ -1224,7 +1365,17 @@ export const StudioWrapper = () => {
         isLoadingItem={isSelectedItemLoading}
         visibleFieldName={filteredFieldName || undefined}
       />
-      {filteredFieldName ? (
+      {selectedAttributeElement ? (
+        <Button
+          data-cy="StudioBackToAttributes"
+          variant="outlined"
+          size="large"
+          fullWidth
+          onClick={returnToAttributes}
+        >
+          Back to Image Attributes
+        </Button>
+      ) : filteredFieldName ? (
         <Button
           variant="outlined"
           size="large"
@@ -1291,13 +1442,31 @@ export const StudioWrapper = () => {
               isBusy={isRefreshing || studioSaving || isSavingLayout}
               onLoad={handlePreviewFrameLoad}
             />
-            {interactionMode === "content" ? (
+            {panelMode === "attributes" && selectedAttributeElement ? (
+              <StudioAttributesPanel
+                mode={interactionMode}
+                elementKey={selectedAttributeElement.nodeId}
+                tagName={selectedAttributeElement.tagName}
+                slots={selectedAttributeElement.slots}
+                canChangeTag={
+                  interactionMode === "layout" &&
+                  !!selectedAttributeElement.layoutPatch?.isSelf
+                }
+                onChangeTag={handleTagChange}
+                onClose={requestClearSelection}
+                onEditDynamicSlot={handleEditDynamicSlot}
+                onChangeSlot={handleSlotChange}
+                onBrowseMedia={handleBrowseAttributeMedia}
+                drawerWidth={drawerWidth}
+                logoSrc={contentOneLogo}
+              />
+            ) : interactionMode === "content" ? (
               <StudioSidePanel
                 headerTitle={headerTitle}
                 selectedItemLabel={selectedItemLabel}
                 pageItemVersion={pageItemVersion}
                 unresolvedPath={unresolvedPath}
-                panelMode={panelMode}
+                panelMode={panelMode === "edit" ? "edit" : "info"}
                 clearSelection={requestClearSelection}
                 activeVersion={activeVersion}
                 selectedModelZUID={selectedModelZUID}
@@ -1433,20 +1602,46 @@ export const StudioWrapper = () => {
               addImagesCallback={(images: any[]) => {
                 if (!images.length) return;
                 const newSrc = images[0].url;
-                handleLayoutImageSrcUpdate(
-                  imageEditState.codeId,
-                  imageEditState.layoutId,
-                  imageEditState.isLeafImg,
-                  imageEditState.imgIndex,
-                  newSrc
-                );
-                postCommandToBridge({
-                  action: "updateImageSrc",
-                  layoutId: imageEditState.layoutId,
-                  isLeafImg: imageEditState.isLeafImg,
-                  imgIndex: imageEditState.imgIndex,
-                  newSrc,
-                });
+                if (imageEditState.fromAttributesPanel) {
+                  // Attributes-panel Browse: write the chosen URL to the
+                  // recorded attribute (src or poster) via the generic path.
+                  const attr = imageEditState.attr || "src";
+                  handleLayoutElementAttrUpdate(
+                    imageEditState.codeId,
+                    imageEditState.layoutId,
+                    imageEditState.isLeafImg,
+                    imageEditState.tagName || "img",
+                    imageEditState.imgIndex,
+                    attr,
+                    newSrc
+                  );
+                  postCommandToBridge({
+                    action: "updateElementAttr",
+                    layoutId: imageEditState.layoutId,
+                    isSelf: imageEditState.isLeafImg,
+                    tagName: imageEditState.tagName || "img",
+                    elementIndex: imageEditState.imgIndex,
+                    attr,
+                    value: newSrc,
+                  });
+                  updateSelectedSlotValue(attr, newSrc);
+                } else {
+                  // Canvas image-replace flow: img-specific src update.
+                  handleLayoutImageSrcUpdate(
+                    imageEditState.codeId,
+                    imageEditState.layoutId,
+                    imageEditState.isLeafImg,
+                    imageEditState.imgIndex,
+                    newSrc
+                  );
+                  postCommandToBridge({
+                    action: "updateImageSrc",
+                    layoutId: imageEditState.layoutId,
+                    isLeafImg: imageEditState.isLeafImg,
+                    imgIndex: imageEditState.imgIndex,
+                    newSrc,
+                  });
+                }
                 setImageEditState(null);
               }}
             />

@@ -716,39 +716,11 @@ export const useLayoutReorderState = ({
     ]
   );
 
-  const handleLayoutImageSrcUpdate = useCallback(
-    (
-      codeId: string,
-      layoutId: string,
-      isLeafImg: boolean,
-      imgIndex: number,
-      newSrc: string
-    ) => {
-      if (!codeId || !layoutId || !newSrc) return;
-
-      const cached = templateSourceByCodeIdRef.current[codeId];
-      if (!cached) return;
-
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(
-        `<div id="studio-img-root">${cached}</div>`,
-        "text/html"
-      );
-      const root = doc.getElementById("studio-img-root");
-      if (!root) return;
-
-      const leaf = root.querySelector(`[data-layout-id="${layoutId}"]`);
-      if (!leaf) return;
-
-      const imgTarget = isLeafImg
-        ? (leaf as HTMLElement)
-        : (Array.from(leaf.querySelectorAll("img"))[imgIndex] as HTMLElement);
-      if (!imgTarget) return;
-
-      imgTarget.setAttribute("src", newSrc);
-
-      const next = root.innerHTML;
-
+  // Write a region's patched source into the cache and stage it for save,
+  // preserving any pending reorder on that region. Shared by the attribute and
+  // text slot updaters.
+  const stageLayoutSourceUpdate = useCallback(
+    (codeId: string, next: string) => {
       templateSourceByCodeIdRef.current = {
         ...templateSourceByCodeIdRef.current,
         [codeId]: next,
@@ -790,6 +762,145 @@ export const useLayoutReorderState = ({
     []
   );
 
+  const handleLayoutElementAttrUpdate = useCallback(
+    (
+      codeId: string,
+      layoutId: string,
+      isSelf: boolean,
+      tagName: string,
+      elementIndex: number,
+      attr: string,
+      value: string,
+      booleanAttr?: boolean
+    ) => {
+      // Unlike `src`, an empty `alt` is a legitimate value, so only guard the
+      // addressing inputs here (not `value`).
+      if (!codeId || !layoutId || !attr) return;
+
+      const cached = templateSourceByCodeIdRef.current[codeId];
+      if (!cached) return;
+
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(
+        `<div id="studio-el-root">${cached}</div>`,
+        "text/html"
+      );
+      const root = doc.getElementById("studio-el-root");
+      if (!root) return;
+
+      const leaf = root.querySelector(`[data-layout-id="${layoutId}"]`);
+      if (!leaf) return;
+
+      const target = isSelf
+        ? (leaf as HTMLElement)
+        : (Array.from(leaf.querySelectorAll(tagName))[
+            elementIndex
+          ] as HTMLElement);
+      if (!target) return;
+
+      if (booleanAttr) {
+        // Presence toggle: "true" adds the bare attribute, "false" removes it.
+        if (value === "true") target.setAttribute(attr, "");
+        else target.removeAttribute(attr);
+      } else {
+        target.setAttribute(attr, value);
+      }
+
+      stageLayoutSourceUpdate(codeId, root.innerHTML);
+    },
+    [stageLayoutSourceUpdate]
+  );
+
+  // Patch a pure-text leaf's inner text into the cached source. Addressed by
+  // its own data-layout-id (text slots are only layout-editable for such
+  // leaves), so setting textContent is safe and escapes automatically.
+  const handleLayoutTextUpdate = useCallback(
+    (codeId: string, layoutId: string, value: string) => {
+      if (!codeId || !layoutId) return;
+
+      const cached = templateSourceByCodeIdRef.current[codeId];
+      if (!cached) return;
+
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(
+        `<div id="studio-el-root">${cached}</div>`,
+        "text/html"
+      );
+      const root = doc.getElementById("studio-el-root");
+      if (!root) return;
+
+      const leaf = root.querySelector(
+        `[data-layout-id="${layoutId}"]`
+      ) as HTMLElement | null;
+      if (!leaf) return;
+
+      leaf.textContent = value;
+
+      stageLayoutSourceUpdate(codeId, root.innerHTML);
+    },
+    [stageLayoutSourceUpdate]
+  );
+
+  // Change an element's tag in the cached source (e.g. h1 → h2, img → video).
+  // Addressed by its own data-layout-id; the replacement carries over every
+  // attribute (including data-layout-id / data-studio-id bindings) and its
+  // children so nothing else about the element changes.
+  const handleLayoutTagUpdate = useCallback(
+    (codeId: string, layoutId: string, newTag: string) => {
+      if (!codeId || !layoutId || !newTag) return;
+
+      const cached = templateSourceByCodeIdRef.current[codeId];
+      if (!cached) return;
+
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(
+        `<div id="studio-el-root">${cached}</div>`,
+        "text/html"
+      );
+      const root = doc.getElementById("studio-el-root");
+      if (!root) return;
+
+      const leaf = root.querySelector(
+        `[data-layout-id="${layoutId}"]`
+      ) as HTMLElement | null;
+      if (!leaf || !leaf.parentNode) return;
+
+      const swapped = doc.createElement(newTag);
+      Array.from(leaf.attributes).forEach((attribute) => {
+        swapped.setAttribute(attribute.name, attribute.value);
+      });
+      swapped.innerHTML = leaf.innerHTML;
+      leaf.parentNode.replaceChild(swapped, leaf);
+
+      stageLayoutSourceUpdate(codeId, root.innerHTML);
+    },
+    [stageLayoutSourceUpdate]
+  );
+
+  // Thin wrapper preserving the existing media-picker call site, which edits an
+  // <img> `src` addressed by the img-specific isLeafImg/imgIndex pair.
+  const handleLayoutImageSrcUpdate = useCallback(
+    (
+      codeId: string,
+      layoutId: string,
+      isLeafImg: boolean,
+      imgIndex: number,
+      newSrc: string
+    ) => {
+      if (!newSrc) return;
+      handleLayoutElementAttrUpdate(
+        codeId,
+        layoutId,
+        isLeafImg,
+        "img",
+        imgIndex,
+        "src",
+        newSrc
+      );
+    },
+    [handleLayoutElementAttrUpdate]
+  );
+
   return {
     pendingLayoutSave,
     pendingLayoutCodeIds,
@@ -801,5 +912,8 @@ export const useLayoutReorderState = ({
     handleReorderOutput,
     handleLayoutContentUpdate,
     handleLayoutImageSrcUpdate,
+    handleLayoutElementAttrUpdate,
+    handleLayoutTextUpdate,
+    handleLayoutTagUpdate,
   };
 };

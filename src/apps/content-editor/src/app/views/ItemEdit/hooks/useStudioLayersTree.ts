@@ -1,9 +1,12 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
+  ElementLayoutPatch,
+  ElementSlot,
   InteractionMode,
   LayersDropPosition,
   LayersTreeNode,
   LayoutSelection,
+  SelectedAttributeElement,
   SelectedElement,
 } from "./studioTypes";
 
@@ -59,22 +62,38 @@ type Args = {
     layoutId?: string;
     breadcrumb?: { layoutId?: string; label: string }[];
   }) => void;
+  applyAttributeSelection: (next: SelectedAttributeElement) => void;
+  refreshSelectedElementSlots: (
+    nodeId: string,
+    tagName: string,
+    slots: ElementSlot[],
+    layoutPatch: ElementLayoutPatch | null
+  ) => void;
   codeFileNameById: Record<string, string>;
   fieldsState: Record<string, any>;
   selectedElement: SelectedElement | null;
   selectedLayout: LayoutSelection | null;
+  selectedAttributeElement: SelectedAttributeElement | null;
   dndDisabled: boolean;
 };
+
+// An element node that exposes editable slots (e.g. an <img> or <h1>) —
+// clickable in both modes to open the Attributes panel.
+const isAttributeElement = (node: LayersTreeNode) =>
+  node.kind === "element" && !!node.slots && node.slots.length > 0;
 
 export const useStudioLayersTree = ({
   interactionMode,
   postCommandToBridge,
   applyBridgeSelection,
   applyLayoutSelection,
+  applyAttributeSelection,
+  refreshSelectedElementSlots,
   codeFileNameById,
   fieldsState,
   selectedElement,
   selectedLayout,
+  selectedAttributeElement,
   dndDisabled,
 }: Args) => {
   const [tree, setTree] = useState<LayersTreeNode[] | null>(null);
@@ -109,6 +128,9 @@ export const useStudioLayersTree = ({
   }, [tree]);
 
   const selectedNodeId = useMemo(() => {
+    // An open Attributes panel owns the highlight in both modes.
+    if (selectedAttributeElement) return selectedAttributeElement.nodeId;
+
     if (interactionMode === "layout") {
       if (!selectedLayout?.layoutId) return null;
       for (const node of nodeById.values()) {
@@ -147,7 +169,13 @@ export const useStudioLayersTree = ({
       }
     }
     return fallbackId;
-  }, [interactionMode, nodeById, selectedElement, selectedLayout]);
+  }, [
+    interactionMode,
+    nodeById,
+    selectedAttributeElement,
+    selectedElement,
+    selectedLayout,
+  ]);
 
   const toggleNode = useCallback((nodeId: string) => {
     setCollapsedIds((prev) => {
@@ -184,6 +212,9 @@ export const useStudioLayersTree = ({
 
   const isNodeSelectable = useCallback(
     (node: LayersTreeNode) => {
+      // Elements with editable attributes (e.g. <img>) are clickable in both
+      // modes to open the Attributes panel.
+      if (isAttributeElement(node)) return true;
       if (interactionMode === "layout") {
         // Elements select on the canvas; static text rows are clickable to
         // enter inline static editing on their enclosing element.
@@ -265,8 +296,37 @@ export const useStudioLayersTree = ({
     [applyLayoutSelection, parentById, postCommandToBridge]
   );
 
+  // A dynamic slot is bound to a content field — surface the field's name
+  // rather than its resolved value (mirrors the layers-row label).
+  const resolveSlotLabels = useCallback(
+    (slots: ElementSlot[] | undefined): ElementSlot[] =>
+      (slots || []).map((slot) => {
+        if (!slot.isDynamic || !slot.fieldZuid) return slot;
+        const field = fieldsState[slot.fieldZuid];
+        const fieldName = field?.label || field?.name;
+        return fieldName ? { ...slot, value: fieldName } : slot;
+      }),
+    [fieldsState]
+  );
+
   const handleNodeSelect = useCallback(
     (node: LayersTreeNode) => {
+      // Elements with editable attributes (e.g. <img>) open the Attributes
+      // panel in both modes. In layout mode also select the element on the
+      // canvas so the breadcrumb + outline follow.
+      if (isAttributeElement(node)) {
+        if (interactionMode === "layout" && node.layoutId && node.codeId) {
+          selectLayoutElement(node);
+        }
+        applyAttributeSelection({
+          nodeId: node.id,
+          tagName: node.tagName || "element",
+          slots: resolveSlotLabels(node.slots),
+          layoutPatch: node.layoutPatch ?? null,
+        });
+        return;
+      }
+
       // Static content in layout mode → enter inline static editing on the
       // nearest enclosing element (mirrors double-clicking it on the canvas).
       if (interactionMode === "layout" && node.kind === "text") {
@@ -306,15 +366,37 @@ export const useStudioLayersTree = ({
       });
     },
     [
+      applyAttributeSelection,
       applyBridgeSelection,
       interactionMode,
       isNodeSelectable,
       parentById,
       postCommandToBridge,
+      resolveSlotLabels,
       selectLayoutElement,
       toggleNode,
     ]
   );
+
+  // When the tree re-emits (e.g. after a tag swap changes which slots exist),
+  // refresh the open panel's element so it shows the new type's slots.
+  useEffect(() => {
+    const nodeId = selectedAttributeElement?.nodeId;
+    if (!nodeId) return;
+    const node = nodeById.get(nodeId);
+    if (!node || !isAttributeElement(node)) return;
+    refreshSelectedElementSlots(
+      nodeId,
+      node.tagName || "element",
+      resolveSlotLabels(node.slots),
+      node.layoutPatch ?? null
+    );
+  }, [
+    nodeById,
+    refreshSelectedElementSlots,
+    resolveSlotLabels,
+    selectedAttributeElement,
+  ]);
 
   const canDrop = useCallback(
     (
@@ -361,7 +443,9 @@ export const useStudioLayersTree = ({
 
       // Select the dragged element first — canvas drags require selection,
       // and the reorder pipeline re-roots the current selection's breadcrumb.
-      handleNodeSelect(source);
+      // Select it as a layout element directly (not via handleNodeSelect) so a
+      // draggable img doesn't pop open the Attributes panel mid-drag.
+      selectLayoutElement(source);
 
       postCommandToBridge({
         action: "moveLayoutElement",
@@ -372,7 +456,7 @@ export const useStudioLayersTree = ({
         position,
       });
     },
-    [canDrop, handleNodeSelect, nodeById, postCommandToBridge]
+    [canDrop, nodeById, postCommandToBridge, selectLayoutElement]
   );
 
   return {
