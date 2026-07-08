@@ -76,10 +76,17 @@ const IntegrationFieldSelect = ({
 
   useEffect(() => {
     const newValue =
-      value?.map((item) => ({
-        ...item,
-        _itemId: get(item, config?.keyPaths?.itemId),
-      })) || [];
+      value?.map((item, index) => {
+        // The user has reconfigured the API, and the data structure has been updated.
+        // A unique ID should be assigned to each item so that users can still delete individual items manually.
+        // These items will not appear in the selection dialog and must be removed through manual deletion.
+        const itemId =
+          get(item, config?.keyPaths?.itemId) || `unresolved-${index}`;
+        return {
+          ...item,
+          _itemId: itemId,
+        };
+      }) || [];
     setSelectedItems(newValue);
   }, [value, setSelectedItems]);
 
