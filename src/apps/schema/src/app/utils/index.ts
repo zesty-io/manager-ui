@@ -120,15 +120,14 @@ export const getErrorMessage = ({
         (value as string)?.length
       }/${maxLength})`;
     }
-    }
-
-    // check for reserved field names
-    if (RESERVED_FIELD_NAMES.includes(value)) {
-      return `"${value}" is a System Reserved Field Name`;
-    }
-
-    return "";
   }
+
+  // check for reserved field names
+  if (RESERVED_FIELD_NAMES.includes(value)) {
+    return `"${value}" is a System Reserved Field Name`;
+  }
+
+  return "";
 };
 
 export const getCategory = (type: string) => {
