@@ -28,10 +28,14 @@ import AddCircleIcon from "@mui/icons-material/AddCircle";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import { FormWrapper } from "../Shared/FormWrapper";
 import { FieldWrapper } from "../Shared/FieldWrapper";
-import { IntegrationRequestHeaders } from "../../../services/types";
+import {
+  IntegrationKeyPaths,
+  IntegrationRequestHeaders,
+} from "../../../services/types";
 import { validateUrl } from "utility/validateUrl";
 import useIntegrationField from "../useIntegrationField";
 import { v4 as uuidv4 } from "uuid";
+import { doKeyPathsResolve } from "./keyPathResolution";
 
 const CONNECTION_STATUSES: {
   [key: string]: {
@@ -84,6 +88,8 @@ const ConnectToApi = ({
   setApiData,
   setActiveStep,
   closeForm,
+  isUpdate = false,
+  keyPaths = null,
 }: {
   activeStep: number;
   endpoint: string;
@@ -93,6 +99,8 @@ const ConnectToApi = ({
   setApiData: (data: any) => void;
   setActiveStep: (step: number) => void;
   closeForm?: () => void;
+  isUpdate?: boolean;
+  keyPaths?: IntegrationKeyPaths | null;
 }) => {
   const { t } = useTranslation();
   const focusRef = useRef<string>("url");
@@ -139,6 +147,12 @@ const ConnectToApi = ({
     setReqAborted(true);
     setActiveStep(0);
   };
+
+  const keyPathsMismatch =
+    status === "success" &&
+    isUpdate &&
+    !!keyPaths &&
+    !doKeyPathsResolve(data, keyPaths);
 
   const handleApiConnect = useCallback(() => {
     setReqAborted(false);
@@ -401,6 +415,18 @@ const ConnectToApi = ({
             >
               {t(CONNECTION_STATUSES[status].subTitleKey)}
             </Typography>
+            {keyPathsMismatch && (
+              <Typography
+                data-cy="integrationKeyPathsMismatchWarning"
+                variant="body2"
+                color="warning.dark"
+                fontWeight={500}
+                textAlign="center"
+                sx={{ mt: 1 }}
+              >
+                {t("shell.integrationKeyPathsMismatchWarning")}
+              </Typography>
+            )}
           </Box>
           <Button
             data-cy="integrationConnectionStatusButton"

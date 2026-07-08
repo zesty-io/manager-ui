@@ -79,10 +79,13 @@ const IntegrationFieldConfigure = ({
     setIsFormOpen(false);
   }, [integrationFieldConfig]);
 
-  const onOpen = useCallback(() => {
-    setIsFormOpen(true);
-    setActiveStep(!isUpdate ? 0 : 1);
-  }, [isUpdate]);
+  const onOpen = useCallback(
+    (step?: number) => {
+      setIsFormOpen(true);
+      setActiveStep(step ?? (!isUpdate ? 0 : 1));
+    },
+    [isUpdate]
+  );
 
   useEffect(() => {
     if (
@@ -123,6 +126,8 @@ const IntegrationFieldConfigure = ({
             setApiData={setApiData}
             setActiveStep={setActiveStep}
             closeForm={onClose}
+            isUpdate={isUpdate}
+            keyPaths={keyPaths}
           />
         );
       case 1:
@@ -159,6 +164,7 @@ const IntegrationFieldConfigure = ({
     type,
     keyPaths,
     apiData,
+    isUpdate,
     onClose,
     fetchApiData,
     onSave,
@@ -223,22 +229,46 @@ const IntegrationFieldConfigure = ({
         </>
       ) : null}
 
-      <Button
-        data-cy="integrationConfigureButton"
-        variant="outlined"
-        color="primary"
-        startIcon={isConnected ? <Autorenew /> : <LinkRounded />}
-        onClick={onOpen}
-        sx={{ mt: 1 }}
-        loading={isFetchingApiData}
-        loadingPosition="start"
-      >
-        {isUpdate
-          ? t("shell.integrationReconfigureDisplayOptions")
-          : isConnected
-          ? t("shell.integrationReconfigure")
-          : t("shell.integrationConnectToApi")}
-      </Button>
+      {isUpdate ? (
+        <Box display="flex" gap={1} mt={1}>
+          <Button
+            data-cy="integrationEditApiUrlButton"
+            variant="outlined"
+            color="primary"
+            startIcon={<Autorenew />}
+            onClick={() => onOpen(0)}
+            loading={isFetchingApiData}
+            loadingPosition="start"
+          >
+            {t("shell.integrationEditApiUrl")}
+          </Button>
+          <Button
+            data-cy="integrationConfigureButton"
+            variant="outlined"
+            color="primary"
+            onClick={() => onOpen(1)}
+            loading={isFetchingApiData}
+            loadingPosition="start"
+          >
+            {t("shell.integrationEditDisplayOptions")}
+          </Button>
+        </Box>
+      ) : (
+        <Button
+          data-cy="integrationConfigureButton"
+          variant="outlined"
+          color="primary"
+          startIcon={isConnected ? <Autorenew /> : <LinkRounded />}
+          onClick={() => onOpen()}
+          sx={{ mt: 1 }}
+          loading={isFetchingApiData}
+          loadingPosition="start"
+        >
+          {isConnected
+            ? t("shell.integrationReconfigure")
+            : t("shell.integrationConnectToApi")}
+        </Button>
+      )}
       {!!error && (
         <Typography variant="body2" color="error.main" sx={{ mt: 0.5 }}>
           {error}
