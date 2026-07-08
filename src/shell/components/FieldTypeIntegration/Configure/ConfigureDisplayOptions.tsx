@@ -141,7 +141,10 @@ const ConfigureDisplayOptions = ({
     const idValueCounts = new Map<unknown, number>();
     data.forEach((item: object) => {
       const idValue = get(item, itemIdPath);
-      idValueCounts.set(idValue, (idValueCounts.get(idValue) || 0) + 1);
+      const idValue = get(item, itemIdPath);
+      if (idValue !== undefined) {
+        idValueCounts.set(idValue, (idValueCounts.get(idValue) ?? 0) + 1);
+      }
     });
 
     const hasDuplicates = Array.from(idValueCounts.values()).some(
