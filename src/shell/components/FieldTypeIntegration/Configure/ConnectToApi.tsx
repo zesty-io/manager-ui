@@ -113,7 +113,7 @@ const ConnectToApi = ({
   const [headersLocal, setHeadersLocal] = useState<
     Record<string, { key: string; value: string }>
   >(() => {
-    if (!headers || Object.keys(headers)?.length === 0) {
+    if (!headers || Object.keys(headers).length === 0) {
       const id = uuidv4();
       return { [id]: { key: "", value: "" } };
     }

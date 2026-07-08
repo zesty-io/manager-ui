@@ -136,11 +136,10 @@ const ConfigureDisplayOptions = ({
     if (!itemIdPath || !apiData) return null;
 
     const data = (!rootPath ? apiData : get(apiData, rootPath)) || [];
-    if (!Array.isArray(data) || data?.length < 2) return null;
+    if (!Array.isArray(data) || data.length < 2) return null;
 
     const idValueCounts = new Map<unknown, number>();
     data.forEach((item: object) => {
-      const idValue = get(item, itemIdPath);
       const idValue = get(item, itemIdPath);
       if (idValue !== undefined) {
         idValueCounts.set(idValue, (idValueCounts.get(idValue) ?? 0) + 1);
