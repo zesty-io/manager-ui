@@ -149,7 +149,7 @@ const ConfigureDisplayOptions = ({
     );
     if (!hasDuplicates) return null;
 
-    return `"${itemIdPath}" is not unique across the ${data?.length} sampled items — this can cause selections to be recognized incorrectly.`;
+    return `"${itemIdPath}" is not unique across the ${data.length} sampled items — this can cause selections to be recognized incorrectly.`;
   }, [apiData, rootPath, rootPathData.itemId]);
 
   return (
