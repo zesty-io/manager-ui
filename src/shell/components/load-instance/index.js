@@ -51,8 +51,10 @@ export default connect((state) => {
         // (not i18n.language) matters when switching users: localStorage and
         // i18n still hold the previous user's locale after logout, so a user
         // with no saved locale must not inherit the prior session's language.
-        const targetLocale =
-          userLocale || toSupportedLocale(navigator.language);
+        // toSupportedLocale wraps both sides since userLocale may be unsupported.
+        const targetLocale = toSupportedLocale(
+          userLocale || navigator.language
+        );
 
         if (targetLocale !== i18n.language) {
           i18n.changeLanguage(targetLocale);
