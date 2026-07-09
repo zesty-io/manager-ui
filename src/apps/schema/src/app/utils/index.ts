@@ -111,7 +111,12 @@ export const getErrorMessage = ({
       return "A field with this API/Parsley Reference already exists";
     }
 
-    if (validate.includes("length") && maxLength && value.length > maxLength) {
+    if (
+      validate.includes("length") &&
+      maxLength &&
+      value &&
+      value.length > maxLength
+    ) {
       return `Shorten to less than ${maxLength} characters (${value.length}/${maxLength})`;
     }
 
