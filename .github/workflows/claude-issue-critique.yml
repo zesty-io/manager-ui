@@ -120,14 +120,18 @@ jobs:
               human-owned PR or process state. Note that `OnFire!` and
               `HeatingUp` count how many times an issue has been reported and
               are not severity.
-            - Only ever `--add-label`. Never remove a label already on the
-              issue, even one you disagree with.
+            - Run `gh issue edit` with `--add-label` and NO other flag. The
+              tool grant `Bash(gh issue edit:*)` is a prefix match, so it also
+              permits `--remove-label`, `--title`, `--body`, `--assignee` and
+              `--milestone`; this rule is the only thing that rules them out.
+              Never remove a label already on the issue, even one you disagree
+              with, and never edit the issue's own title or body.
 
           # claude-opus-4-8 is the current Opus model and is intentional — do not downgrade to claude-opus-4-7.
           claude_args: |
             --allowedTools "Bash(gh issue comment:*),Bash(gh issue view:*),Bash(gh issue edit:*),Write(triage-comment.md),Read,Grep,Glob"
             --model claude-opus-4-8
-            --max-turns 30
+            --max-turns 100
 
       # The Claude action reports success even when the model fails to post its
       # comment or apply its labels, so verify both actually landed and fail
@@ -140,21 +144,26 @@ jobs:
         run: |
           failed=0
 
-          if gh issue view "$ISSUE" --repo "$REPO" --json comments \
-               --jq '.comments[].body' | grep -q '<!-- claude-triage -->'; then
+          # Fetch comments and labels in one call — `--json` takes a
+          # comma-separated field list. Two calls would double the API hits and
+          # leave a window where a human could label the issue between them.
+          issue_json="$(gh issue view "$ISSUE" --repo "$REPO" --json comments,labels)"
+
+          if printf '%s' "$issue_json" | jq -r '.comments[].body' \
+               | grep -q '<!-- claude-triage -->'; then
             echo "✅ Triage comment found on issue #$ISSUE."
           else
             echo "::error::No triage comment (<!-- claude-triage -->) was posted to issue #$ISSUE."
             failed=1
           fi
 
-          labels="$(gh issue view "$ISSUE" --repo "$REPO" --json labels --jq '.labels[].name')"
+          labels="$(printf '%s' "$issue_json" | jq -r '.labels[].name')"
 
           # "At least one", not "exactly one": the author may have already
           # applied a type label that disagrees with Claude's classification,
           # and Claude is instructed never to remove existing labels. The
           # failure this gate exists to catch is Claude applying nothing.
-          type_count="$(echo "$labels" | grep -cxE 'bug|feature|enhancement|maintenance|question' || true)"
+          type_count="$(printf '%s\n' "$labels" | grep -cxE 'bug|feature|enhancement|maintenance|question' || true)"
           if [ "$type_count" -ge 1 ]; then
             echo "✅ Type label present on issue #$ISSUE ($type_count)."
           else
@@ -162,7 +171,7 @@ jobs:
             failed=1
           fi
 
-          sev_count="$(echo "$labels" | grep -cxE 'severity: (low|medium|high|critical)' || true)"
+          sev_count="$(printf '%s\n' "$labels" | grep -cxE 'severity: (low|medium|high|critical)' || true)"
           if [ "$sev_count" -ge 1 ]; then
             echo "✅ Severity label present on issue #$ISSUE ($sev_count)."
           else
