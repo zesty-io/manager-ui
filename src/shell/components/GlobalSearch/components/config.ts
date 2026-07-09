@@ -98,7 +98,7 @@ export const SEARCH_ACCELERATORS: Record<ResourceType, SearchAccelerator> = {
     textKey: "common.code",
   },
   block: {
-    icon: CodeRounded,
+    icon: Block as SvgIconComponent,
     textKey: "shell.block",
   },
 } as const;
