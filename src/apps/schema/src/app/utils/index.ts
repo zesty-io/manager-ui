@@ -115,7 +115,12 @@ export const getErrorMessage = ({
       return i18n.t("schema.errorFieldReferenceExists");
     }
 
-    if (validate.includes("length") && maxLength && value.length > maxLength) {
+    if (
+      validate.includes("length") &&
+      maxLength &&
+      value &&
+      value.length > maxLength
+    ) {
       return i18n.t("schema.errorShortenToLess", {
         maxLength,
         currentLength: value.length,
