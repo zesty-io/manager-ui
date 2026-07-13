@@ -201,6 +201,16 @@ i18n
     react: {
       useSuspense: true,
     },
+  })
+  .then(() => {
+    Sentry.setTag("locale", i18n.language);
   });
+
+// Keeps the Sentry tag in sync with every subsequent changeLanguage() call
+// (e.g. load-instance resolving the logged-in user's saved locale, or a
+// settings-page language switcher), not just the initial detection above.
+i18n.on("languageChanged", (lng) => {
+  Sentry.setTag("locale", lng);
+});
 
 export default i18n;
