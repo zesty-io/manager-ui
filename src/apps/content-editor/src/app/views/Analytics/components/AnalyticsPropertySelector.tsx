@@ -10,11 +10,30 @@ type Props = {
   path?: string;
 };
 
+// A GA4 data stream's defaultUri is not guaranteed to be an absolute URL — it can
+// come back as a bare host ("example.com") or a malformed value, both of which
+// `new URL` rejects.
+const getHostname = (url: string): string => {
+  for (const candidate of [url, `https://${url}`]) {
+    try {
+      return new URL(candidate).hostname;
+    } catch {
+      // try the next candidate
+    }
+  }
+
+  return "";
+};
+
 const removeProtocolAndSubdomain = (url: string): string => {
   if (!url) return "";
 
-  const urlObj = new URL(url);
-  const parts = urlObj.hostname.split(".");
+  const hostname = getHostname(url);
+
+  // Show the raw value rather than nothing when it can't be parsed at all
+  if (!hostname) return url;
+
+  const parts = hostname.split(".");
 
   // Removes the subdomain
   if (parts.length > 2) {
@@ -35,6 +54,10 @@ export const AnalyticsPropertySelector = ({ showSkeleton, path }: Props) => {
   const propertyData = data?.properties?.find(
     (property: any) => property.name === propertyId
   );
+  // A property can also hold app data streams, which carry no defaultUri
+  const defaultUri: string = propertyData?.dataStreams?.find(
+    (dataStream: any) => dataStream?.webStreamData?.defaultUri
+  )?.webStreamData?.defaultUri;
 
   if (!propertyData || showSkeleton) {
     return (
@@ -48,24 +71,26 @@ export const AnalyticsPropertySelector = ({ showSkeleton, path }: Props) => {
   return (
     <>
       <Box display="flex" gap={0.5} alignItems="center">
-        <Link
-          href={`${propertyData?.dataStreams?.[0]?.webStreamData?.defaultUri}${path}`}
-          target="__blank"
-          sx={{
-            maxWidth: "440px",
-            direction: "rtl",
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            display: "block",
-            fontSize: "14px",
-            fontWeight: "500",
-          }}
-        >
-          {`${removeProtocolAndSubdomain(
-            propertyData?.dataStreams?.[0]?.webStreamData?.defaultUri
-          )}${path?.slice(0, -1) || ""}`}
-        </Link>
+        {!!defaultUri && (
+          <Link
+            href={`${defaultUri}${path ?? ""}`}
+            target="__blank"
+            sx={{
+              maxWidth: "440px",
+              direction: "rtl",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              display: "block",
+              fontSize: "14px",
+              fontWeight: "500",
+            }}
+          >
+            {`${removeProtocolAndSubdomain(defaultUri)}${
+              path?.slice(0, -1) || ""
+            }`}
+          </Link>
+        )}
 
         <Button
           data-cy="analytics-settings"
