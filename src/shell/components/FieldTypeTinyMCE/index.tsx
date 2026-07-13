@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import { Box, alpha } from "@mui/material";
 import { theme } from "@zesty-io/material";
@@ -123,6 +123,14 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
   const effectiveCompact = compact && !isFullscreen;
   const toolbar = effectiveCompact ? compactToolbar : normalToolbar;
 
+  // The Editor remounts whenever this key changes (version bump on save,
+  // compact/fullscreen toggle). The baseline is tagged with the key of the
+  // editor instance that captured it, so a remounted instance's normalization
+  // pass isn't compared against a stale baseline and can't re-dirty a just-saved
+  // item.
+  const editorKey = `${effectiveCompact}-${version}`;
+  const baselineRef = useRef<{ key: string; content: string } | null>(null);
+
   const EDITOR_HEIGHT = effectiveCompact
     ? COMPACT_EDITOR_HEIGHT
     : NORMAL_EDITOR_HEIGHT;
@@ -184,17 +192,24 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
         <Editor
           // key must change whenever effectiveCompact or version changes
           // to update toolbar and value
-          key={`${effectiveCompact}-${version}`}
+          key={editorKey}
           id={name}
           onFocusIn={onFocus}
           onFocusOut={onBlur}
           initialValue={initialValue}
           onEditorChange={(content, editor) => {
-            // Only propagate genuine user edits. TinyMCE fires onEditorChange
-            // while parsing/normalizing the initial HTML on init; isDirty() is
-            // false for those programmatic changes and true once the user edits,
-            // so this prevents marking the item dirty on load.
-            if (editor.isDirty()) {
+            // Only propagate genuine user edits. `content` is editor.getContent(),
+            // the same call that seeds the baseline in onInit, so this compares
+            // like-for-like. A baseline whose key doesn't match this editor
+            // instance (initial load, or a not-yet-initialized remount) is
+            // treated as absent, so TinyMCE's initial normalization pass never
+            // dirties the item on load. Once initialized, any content that
+            // differs from the baseline is a real edit — this fires on the first
+            // keystroke and on code-dialog/media inserts, where isDirty() lags.
+            if (
+              baselineRef.current?.key === editorKey &&
+              content !== baselineRef.current.content
+            ) {
               onChange(content, name, datatype);
             }
 
@@ -205,11 +220,15 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
           }}
           onInit={(_, editor) => {
             // Establish a clean baseline after the initial content loads so the
-            // normalization pass above isn't treated as a user edit.
+            // normalization pass above isn't treated as a user edit. Captured
+            // via getContent() (post-normalization) and tagged with this
+            // instance's key so a remount starts fresh.
+            baselineRef.current = {
+              key: editorKey,
+              content: editor.getContent(),
+            };
 
             setInitialValue(value ?? "");
-
-            editor.setDirty(false);
 
             const charCount =
               editor.plugins?.wordcount?.body?.getCharacterCount() ?? 0;
