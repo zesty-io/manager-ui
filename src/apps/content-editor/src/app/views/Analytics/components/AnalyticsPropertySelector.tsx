@@ -12,30 +12,23 @@ type Props = {
 
 // A GA4 data stream's defaultUri is not guaranteed to be an absolute URL — it can
 // come back as a bare host ("example.com") or a malformed value, both of which
-// `new URL` rejects.
-const getHostname = (url: string): string => {
-  for (const candidate of [url, `https://${url}`]) {
+// `new URL` rejects. Retrying with a scheme recovers the bare-host case; anything
+// still unparseable has no usable host to link to.
+const parseUri = (uri: string): URL | null => {
+  for (const candidate of [uri, `https://${uri}`]) {
     try {
-      return new URL(candidate).hostname;
+      return new URL(candidate);
     } catch {
       // try the next candidate
     }
   }
 
-  return "";
+  return null;
 };
 
-const removeProtocolAndSubdomain = (url: string): string => {
-  if (!url) return "";
-
-  const hostname = getHostname(url);
-
-  // Show the raw value rather than nothing when it can't be parsed at all
-  if (!hostname) return url;
-
+const removeSubdomain = (hostname: string): string => {
   const parts = hostname.split(".");
 
-  // Removes the subdomain
   if (parts.length > 2) {
     parts.shift();
   }
@@ -55,9 +48,12 @@ export const AnalyticsPropertySelector = ({ showSkeleton, path }: Props) => {
     (property: any) => property.name === propertyId
   );
   // A property can also hold app data streams, which carry no defaultUri
-  const defaultUri: string = propertyData?.dataStreams?.find(
+  const defaultUri: string | undefined = propertyData?.dataStreams?.find(
     (dataStream: any) => dataStream?.webStreamData?.defaultUri
   )?.webStreamData?.defaultUri;
+  const parsedUri = defaultUri ? parseUri(defaultUri) : null;
+  // Normalized so a bare host doesn't turn the href into a relative URL
+  const baseUrl = parsedUri?.href.replace(/\/$/, "");
 
   if (!propertyData || showSkeleton) {
     return (
@@ -71,9 +67,9 @@ export const AnalyticsPropertySelector = ({ showSkeleton, path }: Props) => {
   return (
     <>
       <Box display="flex" gap={0.5} alignItems="center">
-        {!!defaultUri && (
+        {!!parsedUri && (
           <Link
-            href={`${defaultUri}${path ?? ""}`}
+            href={`${baseUrl}${path ?? ""}`}
             target="__blank"
             sx={{
               maxWidth: "440px",
@@ -86,7 +82,7 @@ export const AnalyticsPropertySelector = ({ showSkeleton, path }: Props) => {
               fontWeight: "500",
             }}
           >
-            {`${removeProtocolAndSubdomain(defaultUri)}${
+            {`${removeSubdomain(parsedUri.hostname)}${
               path?.slice(0, -1) || ""
             }`}
           </Link>
