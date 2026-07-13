@@ -982,10 +982,7 @@ describe("Content Specs", () => {
       cy.getBySelector("SaveItemButton", options).should("not.exist");
 
       // 4. After the remount, a keystroke still dirties the item — proving the
-      //    baseline was re-established for the new editor instance. Intentionally
-      //    left unsaved: "b" never reaches the server, so it doesn't mutate the
-      //    seeded item. Do not add a save/cleanup step here — that would defeat
-      //    this assertion and write another change to the item.
+      //    baseline was re-established for the new editor instance.
       cy.iframe("#wysiwyg_basic_ifr").should("be.visible").click().type("b");
       cy.getBySelector("SaveItemButton", options).should("exist");
     });
