@@ -70,7 +70,8 @@ export const AnalyticsPropertySelector = ({ showSkeleton, path }: Props) => {
         {!!parsedUri && (
           <Link
             href={`${baseUrl}${path ?? ""}`}
-            target="__blank"
+            target="_blank"
+            rel="noopener noreferrer"
             sx={{
               maxWidth: "440px",
               direction: "rtl",
