@@ -198,18 +198,14 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
           onFocusOut={onBlur}
           initialValue={initialValue}
           onEditorChange={(content, editor) => {
-            // Only propagate genuine user edits. `content` is editor.getContent(),
-            // the same call that seeds the baseline in onInit, so this compares
-            // like-for-like. A baseline whose key doesn't match this editor
-            // instance (initial load, or a not-yet-initialized remount) is
-            // treated as absent, so TinyMCE's initial normalization pass never
-            // dirties the item on load. Once initialized, any content that
-            // differs from the baseline is a real edit — this fires on the first
-            // keystroke and on code-dialog/media inserts, where isDirty() lags.
+            // Baseline tracks the last content sent to the parent (see onInit):
+            // the key guard skips TinyMCE's pre-init normalization, while any
+            // later change — including undo back to the loaded value — syncs.
             if (
               baselineRef.current?.key === editorKey &&
               content !== baselineRef.current.content
             ) {
+              baselineRef.current.content = content;
               onChange(content, name, datatype);
             }
 
@@ -219,10 +215,8 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
             onCharacterCountChange && onCharacterCountChange(charCount);
           }}
           onInit={(_, editor) => {
-            // Establish a clean baseline after the initial content loads so the
-            // normalization pass above isn't treated as a user edit. Captured
-            // via getContent() (post-normalization) and tagged with this
-            // instance's key so a remount starts fresh.
+            // Seed the baseline with the loaded (post-normalization) content,
+            // tagged with this instance's key so a remount starts fresh.
             baselineRef.current = {
               key: editorKey,
               content: editor.getContent(),
