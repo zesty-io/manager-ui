@@ -65,7 +65,7 @@ export const ModelType: FC<ModelTypeProps> = ({ value, onChange }) => {
                   ? filter === activeModelTypeFilter
                   : index === 0
               }
-              key={index}
+              key={filter}
               data-cy={`filter_value_${filter}`}
               onClick={() => handleFilterSelect(filter)}
             >
