@@ -1,12 +1,60 @@
 import { createTheme } from "@mui/material/styles";
 import type { Theme } from "@mui/material/styles";
-import * as muiCoreLocales from "@mui/material/locale";
-import { enUS } from "@mui/material/locale";
-import * as dataGridLocales from "@mui/x-data-grid-pro/locales";
-import * as datePickersLocales from "@mui/x-date-pickers-pro/locales";
+import {
+  enUS as coreEnUS,
+  esES as coreEsES,
+  hiIN as coreHiIN,
+  zhCN as coreZhCN,
+  ruRU as coreRuRU,
+  nlNL as coreNlNL,
+} from "@mui/material/locale";
+import {
+  enUS as dataGridEnUS,
+  esES as dataGridEsES,
+  zhCN as dataGridZhCN,
+  ruRU as dataGridRuRU,
+  nlNL as dataGridNlNL,
+} from "@mui/x-data-grid-pro/locales";
+import {
+  enUS as datePickersEnUS,
+  esES as datePickersEsES,
+  zhCN as datePickersZhCN,
+  ruRU as datePickersRuRU,
+  nlNL as datePickersNlNL,
+} from "@mui/x-date-pickers-pro/locales";
 
-// All valid MUI locale strings — keyof typeof muiCoreLocales covers every
-// locale MUI core ships.
+// Named imports (not `import * as`) so webpack only bundles the locales this
+// app actually supports (see SUPPORTED_LOCALES in shell/i18n/index.ts)
+// instead of every locale MUI ships across all three packages.
+const muiCoreLocales = {
+  enUS: coreEnUS,
+  esES: coreEsES,
+  hiIN: coreHiIN,
+  zhCN: coreZhCN,
+  ruRU: coreRuRU,
+  nlNL: coreNlNL,
+};
+
+// hi-IN has no upstream Data Grid / Date Pickers translations (same gap
+// noted in CLAUDE.md's i18n section) -- omitted here, so lookups fall
+// through to the `|| {}` below and MUI's built-in English defaults apply.
+const dataGridLocales = {
+  enUS: dataGridEnUS,
+  esES: dataGridEsES,
+  zhCN: dataGridZhCN,
+  ruRU: dataGridRuRU,
+  nlNL: dataGridNlNL,
+};
+
+const datePickersLocales = {
+  enUS: datePickersEnUS,
+  esES: datePickersEsES,
+  zhCN: datePickersZhCN,
+  ruRU: datePickersRuRU,
+  nlNL: datePickersNlNL,
+};
+
+// Valid MUI locale strings for the locales this app currently supports.
 export type MuiLocaleString = keyof typeof muiCoreLocales;
 
 /**
@@ -33,7 +81,7 @@ export const localizeTheme = (
     baseTheme,
     (locale
       ? muiCoreLocales[locale as keyof typeof muiCoreLocales]
-      : undefined) ?? enUS,
+      : undefined) ?? coreEnUS,
     (locale && dataGridLocales[locale as keyof typeof dataGridLocales]) || {},
     (locale && datePickersLocales[locale as keyof typeof datePickersLocales]) ||
       {}
