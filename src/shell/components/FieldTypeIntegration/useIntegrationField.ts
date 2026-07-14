@@ -29,9 +29,10 @@ export function classifyApiResponse(
       };
     }
     if (!isObj(apiData[0])) {
+      const kind = apiData[0] === null ? "null" : typeof apiData[0];
       return {
         ok: false,
-        reason: `API returned an array of ${typeof apiData[0]}s. Expected an array of objects.`,
+        reason: `API returned an array of ${kind}s. Expected an array of objects.`,
       };
     }
     if (!getObjectKeyPaths(apiData[0]).length) {
