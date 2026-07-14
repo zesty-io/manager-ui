@@ -204,6 +204,11 @@ i18n
   })
   .then(() => {
     Sentry.setTag("locale", i18n.language);
+  })
+  .catch((err) => {
+    Sentry.captureException(err);
+  });
+    Sentry.setTag("locale", i18n.language);
   });
 
 // Keeps the Sentry tag in sync with every subsequent changeLanguage() call
