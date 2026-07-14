@@ -6,8 +6,8 @@
 // Locale is driven entirely client-side (navigator.language + the
 // "app_locale" localStorage key i18next-browser-languagedetector reads) so
 // no shared server-side state is touched. This intentionally does NOT use
-// the locale switcher UI -- that component was removed from this app (see
-// "Remove Locale Switcher") and locale selection now lives elsewhere.
+// a locale switcher UI -- locale selection is done in accounts-ui, not
+// manager-ui.
 //
 // The shared Cypress test account has a persisted `prefs.locale`, and
 // LoadInstance's boot logic (src/shell/components/load-instance/index.js)
