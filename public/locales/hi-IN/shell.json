@@ -281,7 +281,6 @@
   "integrationSaveChanges": "परिवर्तन सहेजें",
   "integrationSelectDataPath": "डेटा पथ चुनें",
   "integrationSelectDisplayType": "डिस्प्ले प्रकार चुनें",
-  "integrationSelectedCount": "{{count}} चयनित",
   "integrationSelectedCount_one": "{{count}} चयनित",
   "integrationSelectedCount_other": "{{count}} चयनित",
   "integrationSelectKeysToDisplay": "आइटम में दिखाने के लिए कुंजियां चुनें",

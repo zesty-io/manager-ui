@@ -281,7 +281,6 @@
   "integrationSaveChanges": "Wijzigingen opslaan",
   "integrationSelectDataPath": "Datapad selecteren",
   "integrationSelectDisplayType": "Selecteer een weergavetype",
-  "integrationSelectedCount": "{{count}} geselecteerd",
   "integrationSelectedCount_one": "{{count}} geselecteerd",
   "integrationSelectedCount_other": "{{count}} geselecteerd",
   "integrationSelectKeysToDisplay": "Selecteer sleutels om in item weer te geven",

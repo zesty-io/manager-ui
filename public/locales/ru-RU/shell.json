@@ -283,7 +283,6 @@
   "integrationSaveChanges": "Сохранить изменения",
   "integrationSelectDataPath": "Выберите путь к данным",
   "integrationSelectDisplayType": "Выберите тип отображения",
-  "integrationSelectedCount": "Выбрано: {{count}}",
   "integrationSelectedCount_one": "Выбрано: {{count}}",
   "integrationSelectedCount_few": "Выбрано: {{count}}",
   "integrationSelectedCount_many": "Выбрано: {{count}}",

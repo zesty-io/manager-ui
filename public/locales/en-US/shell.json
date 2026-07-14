@@ -281,7 +281,6 @@
   "integrationSaveChanges": "Save Changes",
   "integrationSelectDataPath": "Select Data Path",
   "integrationSelectDisplayType": "Select a Display Type",
-  "integrationSelectedCount": "{{count}} Selected",
   "integrationSelectedCount_one": "{{count}} Selected",
   "integrationSelectedCount_other": "{{count}} Selected",
   "integrationSelectKeysToDisplay": "Select Keys to Display in Item",

@@ -282,7 +282,6 @@
   "integrationSaveChanges": "Guardar cambios",
   "integrationSelectDataPath": "Seleccionar ruta de datos",
   "integrationSelectDisplayType": "Seleccionar un tipo de visualización",
-  "integrationSelectedCount": "{{count}} seleccionado(s)",
   "integrationSelectedCount_one": "{{count}} seleccionado(s)",
   "integrationSelectedCount_many": "{{count}} seleccionado(s)",
   "integrationSelectedCount_other": "{{count}} seleccionado(s)",

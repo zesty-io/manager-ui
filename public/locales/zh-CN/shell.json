@@ -280,7 +280,6 @@
   "integrationSaveChanges": "保存更改",
   "integrationSelectDataPath": "选择数据路径",
   "integrationSelectDisplayType": "选择显示类型",
-  "integrationSelectedCount": "已选择 {{count}} 个",
   "integrationSelectedCount_other": "已选择 {{count}} 个",
   "integrationSelectKeysToDisplay": "选择要在项目中显示的键",
   "integrationSelectRemoteItems": "选择远程项目",

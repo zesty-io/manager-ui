@@ -37,6 +37,11 @@ export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
 // Maps any browser language tag to the nearest supported locale by first trying
 // an exact match, then falling back to a base-language prefix match (e.g. "en"
 // → "en-US", "zh-TW" → "zh-CN"), then to "en-US".
+//
+// Note: the base-language match means "zh-TW" (Traditional Chinese, Taiwan)
+// resolves to "zh-CN" (Simplified Chinese) since we have no Traditional
+// Chinese bundle. Mutually intelligible but visually different scripts --
+// revisit with an explicit zh-TW branch if/when Traditional Chinese ships.
 export function toSupportedLocale(lng: string): SupportedLocale {
   if (SUPPORTED_LOCALES.includes(lng as SupportedLocale)) {
     return lng as SupportedLocale;
@@ -207,8 +212,6 @@ i18n
   })
   .catch((err) => {
     Sentry.captureException(err);
-  });
-    Sentry.setTag("locale", i18n.language);
   });
 
 // Keeps the Sentry tag in sync with every subsequent changeLanguage() call
