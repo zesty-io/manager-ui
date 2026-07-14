@@ -448,7 +448,6 @@
   "itemListSavePublishItemsTooltip": "Guardar y publicar elementos",
   "itemListSavePublishNow": "Guardar y publicar ahora",
   "itemListSaveSchedulePublish": "Guardar y programar publicación",
-  "itemListScheduleButton": "Programar publicación ({{count}})",
   "itemListScheduleButton_one": "Programar publicación ({{count}})",
   "itemListScheduleButton_many": "Programar publicación ({{count}})",
   "itemListScheduleButton_other": "Programar publicación ({{count}})",

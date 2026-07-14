@@ -459,7 +459,6 @@
   "itemListSavePublishItemsTooltip": "Сохранить и опубликовать элементы",
   "itemListSavePublishNow": "Сохранить и опубликовать сейчас",
   "itemListSaveSchedulePublish": "Сохранить и запланировать публикацию",
-  "itemListScheduleButton": "Запланировать публикацию ({{count}})",
   "itemListScheduleButton_one": "Запланировать публикацию ({{count}})",
   "itemListScheduleButton_few": "Запланировать публикацию ({{count}})",
   "itemListScheduleButton_many": "Запланировать публикацию ({{count}})",

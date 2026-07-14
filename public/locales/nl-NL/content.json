@@ -437,7 +437,6 @@
   "itemListSavePublishItemsTooltip": "Items opslaan en publiceren",
   "itemListSavePublishNow": "Opslaan en nu publiceren",
   "itemListSaveSchedulePublish": "Opslaan en publicatie plannen",
-  "itemListScheduleButton": "Publicatie plannen ({{count}})",
   "itemListScheduleButton_one": "Publicatie plannen ({{count}})",
   "itemListScheduleButton_other": "Publicatie plannen ({{count}})",
   "itemListSchedulePastWarning": "Omdat het geselecteerde tijdstip een huidige of verleden datum is, wordt dit direct gepubliceerd.",

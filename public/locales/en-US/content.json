@@ -437,7 +437,6 @@
   "itemListSavePublishItemsTooltip": "Save & Publish Items",
   "itemListSavePublishNow": "Save & Publish Now",
   "itemListSaveSchedulePublish": "Save & Schedule Publish",
-  "itemListScheduleButton": "Schedule Publish ({{count}})",
   "itemListScheduleButton_one": "Schedule Publish ({{count}})",
   "itemListScheduleButton_other": "Schedule Publish ({{count}})",
   "itemListSchedulePastWarning": "Since the selected time is a current or past date, this will be immediately published.",

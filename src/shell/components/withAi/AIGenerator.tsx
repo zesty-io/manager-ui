@@ -477,6 +477,7 @@ export const AIGenerator = ({
                         ? "primary.main"
                         : "text.secondary"
                     }
+                    textTransform="uppercase"
                     sx={{ mb: 0.5 }}
                   >
                     {t("shell.optionNumber", { number: index + 1 })}

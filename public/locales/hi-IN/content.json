@@ -437,7 +437,6 @@
   "itemListSavePublishItemsTooltip": "आइटम सहेजें और प्रकाशित करें",
   "itemListSavePublishNow": "सहेजें और अभी प्रकाशित करें",
   "itemListSaveSchedulePublish": "सहेजें और प्रकाशन निर्धारित करें",
-  "itemListScheduleButton": "प्रकाशन निर्धारित करें ({{count}})",
   "itemListScheduleButton_one": "प्रकाशन निर्धारित करें ({{count}})",
   "itemListScheduleButton_other": "प्रकाशन निर्धारित करें ({{count}})",
   "itemListSchedulePastWarning": "चूँकि चुना गया समय वर्तमान या बीती हुई तारीख है, इसे तुरंत प्रकाशित कर दिया जाएगा।",
