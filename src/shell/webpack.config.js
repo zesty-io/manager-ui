@@ -31,7 +31,7 @@ module.exports = async (env) => {
       managedPaths: [],
     },
     cache:
-      process.env.NODE_ENV === "development"
+      process.env.NODE_ENV === "development" && !process.env.CI
         ? // enables 5 second build times from cache instead of 30 seconds
           {
             type: "filesystem",
