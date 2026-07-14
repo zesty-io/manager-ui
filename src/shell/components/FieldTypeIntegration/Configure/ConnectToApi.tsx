@@ -126,7 +126,7 @@ const ConnectToApi = ({
 
   const handleNext = () => {
     const headersWithKeys = Object.values(headersLocal).filter((h) => !!h.key);
-    const reqHeaders = !headersWithKeys?.length
+    const reqHeaders = !headersWithKeys.length
       ? null
       : headersWithKeys.reduce<Record<string, string>>(
           (acc, { key, value }) => {
@@ -157,7 +157,7 @@ const ConnectToApi = ({
     setReqAborted(false);
     setApiData(null);
     const headersWithKeys = Object.values(headersLocal).filter((h) => !!h.key);
-    const options = !headersWithKeys?.length
+    const options = !headersWithKeys.length
       ? {}
       : {
           headers: headersWithKeys.reduce<Record<string, string>>(

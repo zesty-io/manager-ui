@@ -835,9 +835,7 @@ describe("Integration Field", () => {
       );
 
       cy.getBySelector("integrationKeyPathSelector-itemId").click();
-      cy.get(`.MuiAutocomplete-listbox li:contains("position")`).click(
-        forceClick
-      );
+      cy.getBySelector("integrationKeyPathOption-position").click(forceClick);
 
       cy.getBySelector("integrationItemIdDuplicateWarning").should(
         "contain",
@@ -849,9 +847,7 @@ describe("Integration Field", () => {
 
       // Switching back to a unique keyPath clears the warning and re-enables Done.
       cy.getBySelector("integrationKeyPathSelector-itemId").click();
-      cy.get(`.MuiAutocomplete-listbox li:contains("playerId")`).click(
-        forceClick
-      );
+      cy.getBySelector("integrationKeyPathOption-playerId").click(forceClick);
       cy.getBySelector("integrationItemIdDuplicateWarning").should("not.exist");
 
       cy.intercept("PUT", "**/content/models/*/fields/*").as("updateField");

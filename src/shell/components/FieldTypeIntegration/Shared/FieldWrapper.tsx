@@ -9,7 +9,7 @@ export type FieldWrapperProps = {
   toolTip?: string;
   isRequired?: boolean;
   error?: string;
-  warning?: string;
+  warning?: string | null;
   warningTestId?: string;
   children: React.ReactNode;
 };

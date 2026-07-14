@@ -67,10 +67,6 @@ const ConfigureDisplayOptions = ({
   );
   const [isCompleted, setIsCompleted] = useState<boolean>(false);
 
-  const handleSave = () => {
-    onSave();
-  };
-
   const handleRemoveDetail = (index: number) => {
     if (detailsPathData?.length === 1) {
       setDetailsPathData([""]);
@@ -254,7 +250,11 @@ const ConfigureDisplayOptions = ({
                     warning={
                       config.name === "itemId" ? itemIdDuplicateWarning : null
                     }
-                    warningTestId="integrationItemIdDuplicateWarning"
+                    warningTestId={
+                      config.name === "itemId"
+                        ? "integrationItemIdDuplicateWarning"
+                        : undefined
+                    }
                   >
                     {config.type === "option" ? (
                       <Box
@@ -429,7 +429,7 @@ const ConfigureDisplayOptions = ({
           variant="contained"
           startIcon={<CheckRounded />}
           disabled={!isCompleted || !!itemIdDuplicateWarning}
-          onClick={handleSave}
+          onClick={onSave}
         >
           Done
         </Button>
