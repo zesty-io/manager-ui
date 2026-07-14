@@ -11,7 +11,12 @@ import { modelIconMap, modelNameMap } from "../../utils";
 import { ModelType as ModelSet } from "../../../../../../shell/services/types";
 import { FilterButton } from "../../../../../../shell/components/Filters";
 
-const MODEL_TYPE_FILTERS: ModelSet[] = ["templateset", "pageset", "dataset"];
+const MODEL_TYPE_FILTERS: ModelSet[] = [
+  "templateset",
+  "pageset",
+  "dataset",
+  "block",
+];
 
 interface ModelTypeProps {
   value: ModelSet | "";
@@ -61,6 +66,7 @@ export const ModelType: FC<ModelTypeProps> = ({ value, onChange }) => {
                   : index === 0
               }
               key={index}
+              data-cy={`filter_value_${filter}`}
               onClick={() => handleFilterSelect(filter)}
             >
               <ListItemIcon>
