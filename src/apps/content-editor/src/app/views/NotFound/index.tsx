@@ -41,7 +41,7 @@ const NotFound = () => {
         </Typography>
         <Typography variant="body2" fontWeight="400" color="text.secondary">
           <Trans
-            i18nKey="content.notFoundContactBody"
+            i18nKey="content.notFoundContactBodyRich"
             components={{
               supportLink: (
                 <Typography

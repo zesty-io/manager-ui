@@ -57,7 +57,7 @@
   "httpCode302Label": "302 - Temporary Redirect",
   "httpCode302Temporary": "302 - Temporary",
   "importCsvXml": "Import CSV/XML",
-  "importErrorDialogBody": "The file format or structure doesn't match what we expected. Please check your CSV or XML file and refer to our <1>import guide</1> in our docs for the correct format.",
+  "importErrorDialogBodyRich": "The file format or structure doesn't match what we expected. Please check your CSV or XML file and refer to our <1>import guide</1> in our docs for the correct format.",
   "importErrorDialogHeader": "File Import Failed",
   "importFileReadError": "Failed reading file: {{err}}",
   "importInvalidFileSelected": "Invalid file selected",

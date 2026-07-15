@@ -8,7 +8,7 @@
   "auditTrailLoadError": "Не удалось загрузить лог активности",
   "branch": "Ветка (Branch)",
   "buildFasterBody": "Начните создавать динамические веб-сайты и приложения с помощью <parsleyLink />, языка шаблонов Zesty.io. Изучите наш интерактивный инструмент <replLink /> для быстрого практического ознакомления или узнайте больше из нашей подробной <docsLink />.",
-  "buildFasterHeading": "Создавайте быстрее и умнее с помощью Parsley! 🚀",
+  "buildFasterHeading": "Создавайте быстрее и умнее с помощью Parsley!",
   "changeCombineOrder": "Изменить порядок объединения и препроцессинга",
   "chooseFileType": "Выберите тип файла",
   "closeDrawer": "Закрыть панель {{metaShortcut}}",

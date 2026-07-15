@@ -480,7 +480,7 @@ export const FieldTypeMedia = forwardRef(
                     t("content.mediaDropToUpload")
                   ) : (
                     <Trans
-                      i18nKey="content.mediaDragAndDrop"
+                      i18nKey="content.mediaDragAndDropRich"
                       components={{ break: <br /> }}
                     />
                   )}

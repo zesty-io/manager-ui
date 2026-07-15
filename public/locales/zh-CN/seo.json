@@ -51,7 +51,7 @@
   "httpCode302Label": "302 - 临时重定向",
   "httpCode302Temporary": "302 - 临时",
   "importCsvXml": "导入 CSV/XML",
-  "importErrorDialogBody": "文件格式或结构与预期不符。请检查您的 CSV 或 XML 文件，并参考文档中的<1>导入指南</1>以了解正确格式。",
+  "importErrorDialogBodyRich": "文件格式或结构与预期不符。请检查您的 CSV 或 XML 文件，并参考文档中的<1>导入指南</1>以了解正确格式。",
   "importErrorDialogHeader": "文件导入失败",
   "importFileReadError": "读取文件失败：{{err}}",
   "importInvalidFileSelected": "所选文件无效",

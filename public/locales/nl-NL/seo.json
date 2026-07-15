@@ -57,7 +57,7 @@
   "httpCode302Label": "302 - Tijdelijke Omleiding",
   "httpCode302Temporary": "302 - Tijdelijk",
   "importCsvXml": "CSV/XML Importeren",
-  "importErrorDialogBody": "Het bestandsformaat of de structuur komt niet overeen met wat werd verwacht. Controleer uw CSV- of XML-bestand en raadpleeg onze <1>importgids</1> in onze documentatie voor het juiste formaat.",
+  "importErrorDialogBodyRich": "Het bestandsformaat of de structuur komt niet overeen met wat werd verwacht. Controleer uw CSV- of XML-bestand en raadpleeg onze <1>importgids</1> in onze documentatie voor het juiste formaat.",
   "importErrorDialogHeader": "Bestandsimport Mislukt",
   "importFileReadError": "Bestand lezen mislukt: {{err}}",
   "importInvalidFileSelected": "Ongeldig bestand geselecteerd",

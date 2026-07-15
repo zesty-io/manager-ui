@@ -44,7 +44,7 @@ export const DevResources = () => {
         }}
       >
         <Typography variant="h6" color="common.white">
-          {t("code.buildFasterHeading")}
+          {t("code.buildFasterHeading")} 🚀
         </Typography>
 
         <Typography variant="body3" color="grey.400">

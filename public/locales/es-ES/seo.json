@@ -63,7 +63,7 @@
   "httpCode302Label": "302 - Redirección Temporal",
   "httpCode302Temporary": "302 - Temporal",
   "importCsvXml": "Importar CSV/XML",
-  "importErrorDialogBody": "El formato o la estructura del archivo no coincide con lo esperado. Por favor, revisa tu archivo CSV o XML y consulta nuestra <1>guía de importación</1> en nuestra documentación para conocer el formato correcto.",
+  "importErrorDialogBodyRich": "El formato o la estructura del archivo no coincide con lo esperado. Por favor, revisa tu archivo CSV o XML y consulta nuestra <1>guía de importación</1> en nuestra documentación para conocer el formato correcto.",
   "importErrorDialogHeader": "Error en la Importación del Archivo",
   "importFileReadError": "Error al leer el archivo: {{err}}",
   "importInvalidFileSelected": "Archivo seleccionado no válido",

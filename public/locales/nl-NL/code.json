@@ -8,7 +8,7 @@
   "auditTrailLoadError": "Niet in staat om het activiteitenlogboek te laden",
   "branch": "Branch",
   "buildFasterBody": "Ga aan de slag met het bouwen van dynamische websites en applicaties met <parsleyLink />, de sjabloontaal van Zesty.io. Ontdek onze interactieve <replLink /> voor een snelle praktijkgerichte introductie, of lees meer in onze diepgaande <docsLink />.",
-  "buildFasterHeading": "Bouw sneller en slimmer met Parsley! 🚀",
+  "buildFasterHeading": "Bouw sneller en slimmer met Parsley!",
   "changeCombineOrder": "Volgorde van combineren en voorverwerken wijzigen",
   "chooseFileType": "Kies een bestandstype",
   "closeDrawer": "Lade sluiten {{metaShortcut}}",

@@ -7,7 +7,7 @@
   "createReleaseButton": "Create Release",
   "deletedRelease": "Deleted release {{name}}",
   "deleteRelease": "Delete Release",
-  "deleteWarning": "Deleting a release is a permenant action.",
+  "deleteWarning": "Deleting a release is a permanent action.",
   "errorMissingReleaseName": "Missing required release name",
   "failedActivateReleases": "Failed to activate releases",
   "failedCreatingRelease": "Failed creating a release",

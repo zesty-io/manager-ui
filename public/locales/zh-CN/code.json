@@ -7,7 +7,7 @@
   "auditTrailEmptyHint": "当此文件被保存或发布时，您将能够在这里看到何时由谁进行了修改的日志。",
   "auditTrailLoadError": "无法加载活动日志",
   "branch": "分支",
-  "buildFasterBody": "开始使用 Zesty.io 的 underground 模板语言 <parsleyLink /> 构建动态网站和应用程序。探索我们的交互式 <replLink /> 以获得快速的操作介绍，或者通过我们深入 transparent 的 <docsLink /> 了解更多信息。",
+  "buildFasterBody": "开始使用 Zesty.io 的模板语言 <parsleyLink /> 构建动态网站和应用程序。探索我们的交互式 <replLink /> 以获得快速的操作介绍，或者通过我们深入的 <docsLink /> 了解更多信息。",
   "buildFasterHeading": "利用 Parsley，构建更快、更智能！",
   "changeCombineOrder": "更改合并与预处理顺序",
   "chooseFileType": "请选择文件类型",

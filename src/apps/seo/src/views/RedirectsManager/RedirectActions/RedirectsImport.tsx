@@ -145,7 +145,7 @@ const ImportErrorDialog: FC<ImportErrorDialogProps> = ({
         </Stack>
         <Typography variant="body2" color="text.secondary" mt="8px">
           <Trans
-            i18nKey="seo.importErrorDialogBody"
+            i18nKey="seo.importErrorDialogBodyRich"
             components={{
               1: (
                 <Link

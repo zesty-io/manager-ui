@@ -8,7 +8,7 @@
   "auditTrailLoadError": "No se pudo cargar el registro de actividad",
   "branch": "Rama",
   "buildFasterBody": "Comienza a crear sitios web y aplicaciones dinámicas con <parsleyLink />, el lenguaje de plantillas de Zesty.io. Explora nuestro <replLink /> interactivo para una introducción práctica rápida, o aprende más a través de nuestra <docsLink /> detallada.",
-  "buildFasterHeading": "¡Construye más rápido y de forma más inteligente con Parsley! 🚀",
+  "buildFasterHeading": "¡Construye más rápido y de forma más inteligente con Parsley!",
   "changeCombineOrder": "Cambiar el orden de combinación y preprocesamiento",
   "chooseFileType": "Elige un tipo de archivo",
   "closeDrawer": "Cerrar panel {{metaShortcut}}",

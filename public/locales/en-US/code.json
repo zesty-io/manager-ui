@@ -8,7 +8,7 @@
   "auditTrailLoadError": "Unable to load activity log",
   "branch": "Branch",
   "buildFasterBody": "Get started building dynamic websites and applications with <parsleyLink />, Zesty.io's templating language. Explore our interactive <replLink /> for a quick hands-on introduction, or learn more through our in-depth <docsLink />.",
-  "buildFasterHeading": "Build Faster, Build Smarter with Parsley! 🚀",
+  "buildFasterHeading": "Build Faster, Build Smarter with Parsley!",
   "changeCombineOrder": "Change combine and pre-process order",
   "chooseFileType": "Choose a file type",
   "closeDrawer": "Close Drawer {{metaShortcut}}",
