@@ -10,13 +10,25 @@ type Props = {
   path?: string;
 };
 
-const removeProtocolAndSubdomain = (url: string): string => {
-  if (!url) return "";
+// A GA4 data stream's defaultUri is not guaranteed to be an absolute URL — it can
+// come back as a bare host ("example.com") or a malformed value, both of which
+// `new URL` rejects. Retrying with a scheme recovers the bare-host case; anything
+// still unparseable has no usable host to link to.
+const parseUri = (uri: string): URL | null => {
+  for (const candidate of [uri, `https://${uri}`]) {
+    try {
+      return new URL(candidate);
+    } catch {
+      // try the next candidate
+    }
+  }
 
-  const urlObj = new URL(url);
-  const parts = urlObj.hostname.split(".");
+  return null;
+};
 
-  // Removes the subdomain
+const removeSubdomain = (hostname: string): string => {
+  const parts = hostname.split(".");
+
   if (parts.length > 2) {
     parts.shift();
   }
@@ -35,6 +47,13 @@ export const AnalyticsPropertySelector = ({ showSkeleton, path }: Props) => {
   const propertyData = data?.properties?.find(
     (property: any) => property.name === propertyId
   );
+  // A property can also hold app data streams, which carry no defaultUri
+  const defaultUri: string | undefined = propertyData?.dataStreams?.find(
+    (dataStream: any) => dataStream?.webStreamData?.defaultUri
+  )?.webStreamData?.defaultUri;
+  const parsedUri = defaultUri ? parseUri(defaultUri) : null;
+  // Normalized so a bare host doesn't turn the href into a relative URL
+  const baseUrl = parsedUri?.href.replace(/\/$/, "");
 
   if (!propertyData || showSkeleton) {
     return (
@@ -48,24 +67,27 @@ export const AnalyticsPropertySelector = ({ showSkeleton, path }: Props) => {
   return (
     <>
       <Box display="flex" gap={0.5} alignItems="center">
-        <Link
-          href={`${propertyData?.dataStreams?.[0]?.webStreamData?.defaultUri}${path}`}
-          target="__blank"
-          sx={{
-            maxWidth: "440px",
-            direction: "rtl",
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            display: "block",
-            fontSize: "14px",
-            fontWeight: "500",
-          }}
-        >
-          {`${removeProtocolAndSubdomain(
-            propertyData?.dataStreams?.[0]?.webStreamData?.defaultUri
-          )}${path?.slice(0, -1) || ""}`}
-        </Link>
+        {!!parsedUri && (
+          <Link
+            href={`${baseUrl}${path ?? ""}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            sx={{
+              maxWidth: "440px",
+              direction: "rtl",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              display: "block",
+              fontSize: "14px",
+              fontWeight: "500",
+            }}
+          >
+            {`${removeSubdomain(parsedUri.hostname)}${
+              path?.slice(0, -1) || ""
+            }`}
+          </Link>
+        )}
 
         <Button
           data-cy="analytics-settings"
