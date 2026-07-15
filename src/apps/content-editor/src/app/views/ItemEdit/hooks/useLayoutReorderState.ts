@@ -840,11 +840,15 @@ export const useLayoutReorderState = ({
           ] as HTMLElement);
       if (!target) return;
 
-      if (booleanAttr) {
-        // Presence toggle: "true" adds the bare attribute, "false" removes it.
+      if (booleanAttr && (value === "true" || value === "false")) {
+        // Presence toggle from the on/off selector: "true" adds the bare
+        // attribute, "false" removes it.
         if (value === "true") target.setAttribute(attr, "");
         else target.removeAttribute(attr);
       } else {
+        // A connected boolean attribute carries a Parsley reference (e.g.
+        // autoplay="{{this.autoplay}}") — write it verbatim like any other
+        // attribute; Zesty drops the attribute when the field is falsy.
         target.setAttribute(attr, value);
       }
 

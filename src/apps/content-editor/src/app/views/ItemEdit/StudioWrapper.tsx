@@ -45,6 +45,7 @@ import { StudioPreview } from "./components/StudioWrapper/StudioPreview";
 import { StudioSidePanel } from "./components/StudioWrapper/StudioSidePanel";
 import { StudioInspectorPanel } from "./components/StudioWrapper/StudioInspectorPanel";
 import {
+  isBooleanReferenceableDatatype,
   isMediaSlotDatatype,
   isTextReferenceableDatatype,
 } from "./components/StudioWrapper/studioFieldMeta";
@@ -1377,6 +1378,15 @@ export const StudioWrapper = () => {
     [pageFields]
   );
 
+  // Fields offered on a boolean attribute (controls, autoplay, …) — yes/no only.
+  const booleanFields = useMemo<ConnectField[]>(
+    () =>
+      pageFields
+        .filter((field: any) => isBooleanReferenceableDatatype(field?.datatype))
+        .map(toConnectField),
+    [pageFields]
+  );
+
   // Layout mode: open the media picker for a media-URL slot (src or poster).
   // Reuses the img media-picker dialog; the tag-agnostic patch maps onto its
   // isLeafImg / imgIndex addressing, and `attr` records which attribute to set.
@@ -1544,6 +1554,7 @@ export const StudioWrapper = () => {
                 onBrowseMedia={handleBrowseMedia}
                 connectFields={connectFields}
                 mediaFields={mediaFields}
+                booleanFields={booleanFields}
                 drawerWidth={drawerWidth}
                 logoSrc={contentOneLogo}
               />

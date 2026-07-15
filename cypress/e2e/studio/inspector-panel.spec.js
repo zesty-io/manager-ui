@@ -237,6 +237,34 @@ describe("Studio Inspector Panel", () => {
     cy.getBySelector("StudioInspectorPanel").should("not.exist");
   });
 
+  it("shows a connected attribute as the same field chip in content mode", () => {
+    // A dynamic (bound) src renders as the connected field chip — the same UI as
+    // layout mode — not a raw input. A static attribute stays a plain input.
+    const node = elementNode("code-1", "img", [
+      {
+        kind: "attribute",
+        key: "src",
+        attr: "src",
+        isDynamic: true,
+        fieldType: "images",
+        value: "Hero Image",
+        sourceValue: "{{this.image.getImage()}}",
+        layoutEditable: true,
+        control: "text",
+      },
+      attrSlot("alt", "hero"),
+    ]);
+    feedTree(node);
+    openPanelFor(node);
+
+    cy.getBySelector("StudioConnectedField").should(
+      "contain.text",
+      "Hero Image"
+    );
+    cy.getBySelector("StudioSlotInput-src").should("not.exist");
+    cy.getBySelector("StudioSlotInput-alt").should("exist").and("be.disabled");
+  });
+
   it("surfaces the full video attribute set", () => {
     const node = videoNode("code-1");
     feedTree(node);
@@ -434,7 +462,7 @@ describe("Studio Inspector Panel", () => {
       cy.getBySelector("StudioSlotInput-text").should("not.exist");
 
       // Disconnect returns a free-form input; a new expression saves to the code.
-      cy.getBySelector("StudioDisconnect").click();
+      cy.getBySelector("StudioDisconnect-text").click();
       cy.getBySelector("StudioSlotInput-text")
         .should("exist")
         .and("have.value", "")
@@ -468,13 +496,13 @@ describe("Studio Inspector Panel", () => {
       // chip — which renders only when the value EXACTLY equals the field's
       // Parsley, so its presence also proves the emitted expression. The
       // free-form input is gone and the action flips to Disconnect.
-      cy.getBySelector("StudioConnectContent").click();
+      cy.getBySelector("StudioConnectContent-text").click();
       cy.getBySelector("StudioConnectField-title").click();
       cy.getBySelector("StudioConnectedField").should("contain.text", "title");
       cy.getBySelector("StudioSlotInput-text").should("not.exist");
 
       // Disconnect returns a free-form, empty input.
-      cy.getBySelector("StudioDisconnect").click();
+      cy.getBySelector("StudioDisconnect-text").click();
       cy.getBySelector("StudioSlotInput-text")
         .should("exist")
         .and("have.value", "");
@@ -499,7 +527,7 @@ describe("Studio Inspector Panel", () => {
       // The src dropdown offers MEDIA + external-URL fields (never text). A media
       // asset connects as a getImage() expression; the connected chip renders
       // only on an exact match, so seeing it proves the expression.
-      cy.getBySelector("StudioConnectContent").click();
+      cy.getBySelector("StudioConnectContent-src").click();
       cy.getBySelector("StudioConnectField-title").should("not.exist");
       cy.getBySelector("StudioConnectField-hero_image").click();
       cy.getBySelector("StudioConnectedField").should(
@@ -510,8 +538,8 @@ describe("Studio Inspector Panel", () => {
 
       // Disconnect, then connect an external-URL field — referenced plain, no
       // method. Saving writes exactly that expression to the code.
-      cy.getBySelector("StudioDisconnect").click();
-      cy.getBySelector("StudioConnectContent").click();
+      cy.getBySelector("StudioDisconnect-src").click();
+      cy.getBySelector("StudioConnectContent-src").click();
       cy.getBySelector("StudioConnectField-external_url").click();
       cy.getBySelector("StudioConnectedField").should(
         "contain.text",
@@ -523,6 +551,64 @@ describe("Studio Inspector Panel", () => {
       cy.wait("@updateWebView").then(({ request }) => {
         expect(request.body.code).to.contain("{{this.external_url}}");
         expect(request.body.code).not.to.contain("getImage");
+      });
+    });
+  });
+
+  it("connects a text field to an image alt attribute (text fields, not media)", () => {
+    setStudioMode("layout");
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+
+      seedLayoutElement(
+        webView.ZUID,
+        `<img data-layout-id="1" src="a.jpg" alt="hero" />`,
+        imgNode(webView.ZUID)
+      );
+
+      // `alt` holds words, so it offers TEXT fields (title) — never media.
+      cy.getBySelector("StudioConnectContent-alt").click();
+      cy.getBySelector("StudioConnectField-hero_image").should("not.exist");
+      cy.getBySelector("StudioConnectField-title").click();
+      cy.getBySelector("StudioConnectedField").should("contain.text", "title");
+    });
+  });
+
+  it("connects a yes/no field to a boolean video attribute, written verbatim", () => {
+    setStudioMode("layout");
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+      cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as("updateWebView");
+
+      seedLayoutElement(
+        webView.ZUID,
+        `<video data-layout-id="1" controls></video>`,
+        videoNode(webView.ZUID)
+      );
+
+      // The boolean "controls" attr offers yes/no fields only (the seed's
+      // show_controls) — never text/media. Connecting writes the field reference
+      // verbatim as the attribute value; Zesty drops the attribute when falsy.
+      cy.getBySelector("StudioConnectContent-controls").click();
+      cy.getBySelector("StudioConnectField-title").should("not.exist");
+      cy.getBySelector("StudioConnectField-show_controls").click();
+      cy.getBySelector("StudioConnectedField").should(
+        "contain.text",
+        "Show Controls"
+      );
+
+      cy.getBySelector("StudioLayoutSaveBar").should("exist");
+      saveAllViaModal("layout");
+      cy.wait("@updateWebView").then(({ request }) => {
+        expect(request.body.code).to.contain(
+          'controls="{{this.show_controls}}"'
+        );
       });
     });
   });

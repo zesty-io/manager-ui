@@ -58,6 +58,19 @@
       "settings": {
         "list": false
       }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "yes_no",
+      "name": "show_controls",
+      "label": "Show Controls",
+      "sort": 5,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": false
+      }
     }
   ],
   "items": [

@@ -343,6 +343,19 @@ export const useStudioSelection = ({
   const applyInspectorSelection = useCallback(
     (next: InspectorSelection) => {
       removeInspectorHighlight(inspectorSelection);
+      // Opening the Inspector clears any content-field selection — including its
+      // DOM highlight + contenteditable, not just the state. Nulling the state
+      // alone would leave the previously-selected text element still outlined.
+      if (selectedElement?.studioId) {
+        disableContentEditing(
+          selectedElement.studioId,
+          selectedElement.itemZuid
+        );
+        removeContentSelectedClass(
+          selectedElement.studioId,
+          selectedElement.itemZuid
+        );
+      }
       setInspectorSelection(next);
       setSelectedElement(null);
       setFilteredFieldName(null);
@@ -365,6 +378,9 @@ export const useStudioSelection = ({
       addLayoutSelectedClass,
       removeInspectorHighlight,
       inspectorSelection,
+      selectedElement,
+      disableContentEditing,
+      removeContentSelectedClass,
     ]
   );
 

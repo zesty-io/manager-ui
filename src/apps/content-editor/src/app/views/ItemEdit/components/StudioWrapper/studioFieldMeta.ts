@@ -186,6 +186,12 @@ export const isMediaSlotDatatype = (datatype?: string | null): boolean => {
   return category === "media" || category === "link";
 };
 
+// Whether a boolean attribute (controls, autoplay, muted, loop) can bind to this
+// field — only a yes/no field, whose value drives the attribute's presence.
+export const isBooleanReferenceableDatatype = (
+  datatype?: string | null
+): boolean => datatype === "yes_no";
+
 // The Parsley reference for a field. A media asset needs getImage() to resolve
 // to a URL; every other field (text, an external-URL link, …) is referenced
 // verbatim. One rule covers both dropdowns: media slots mix the two, text slots
