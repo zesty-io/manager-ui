@@ -509,7 +509,7 @@ describe("Studio Inspector Panel", () => {
     });
   });
 
-  it("connects media + external-URL fields to an image src, each with the right expression", () => {
+  it("connects a media asset to an image src, saving a getImage() expression", () => {
     setStudioMode("layout");
     cy.apiRequest({
       url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
@@ -524,9 +524,7 @@ describe("Studio Inspector Panel", () => {
         imgNode(webView.ZUID)
       );
 
-      // The src dropdown offers MEDIA + external-URL fields (never text). A media
-      // asset connects as a getImage() expression; the connected chip renders
-      // only on an exact match, so seeing it proves the expression.
+      // The src dropdown offers MEDIA + external-URL fields, never text.
       cy.getBySelector("StudioConnectContent-src").click();
       cy.getBySelector("StudioConnectField-title").should("not.exist");
       cy.getBySelector("StudioConnectField-hero_image").click();
@@ -536,9 +534,31 @@ describe("Studio Inspector Panel", () => {
       );
       cy.getBySelector("StudioSlotInput-src").should("not.exist");
 
-      // Disconnect, then connect an external-URL field — referenced plain, no
-      // method. Saving writes exactly that expression to the code.
-      cy.getBySelector("StudioDisconnect-src").click();
+      // A media asset resolves via getImage().
+      cy.getBySelector("StudioLayoutSaveBar").should("exist");
+      saveAllViaModal("layout");
+      cy.wait("@updateWebView").then(({ request }) => {
+        expect(request.body.code).to.contain("{{this.hero_image.getImage()}}");
+      });
+    });
+  });
+
+  it("connects an external-URL field to an image src, saved verbatim (no method)", () => {
+    setStudioMode("layout");
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+      cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as("updateWebView");
+
+      seedLayoutElement(
+        webView.ZUID,
+        `<img data-layout-id="1" src="a.jpg" />`,
+        imgNode(webView.ZUID)
+      );
+
+      // An external-URL field is a URL already — referenced plain, no method.
       cy.getBySelector("StudioConnectContent-src").click();
       cy.getBySelector("StudioConnectField-external_url").click();
       cy.getBySelector("StudioConnectedField").should(
