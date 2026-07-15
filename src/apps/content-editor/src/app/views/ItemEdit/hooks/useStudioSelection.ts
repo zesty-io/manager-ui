@@ -3,7 +3,7 @@ import {
   ElementLayoutPatch,
   ElementSlot,
   LayoutBreadcrumbItem,
-  SelectedAttributeElement,
+  InspectorSelection,
   SelectedElement,
   LayoutSelection,
 } from "./studioTypes";
@@ -28,14 +28,14 @@ export const useStudioSelection = ({
   const [selectedLayout, setSelectedLayout] = useState<LayoutSelection | null>(
     null
   );
-  const [panelMode, setPanelMode] = useState<"info" | "edit" | "attributes">(
+  const [panelMode, setPanelMode] = useState<"info" | "edit" | "inspector">(
     "info"
   );
   const [filteredFieldName, setFilteredFieldName] = useState<string | null>(
     null
   );
-  const [selectedAttributeElement, setSelectedAttributeElement] =
-    useState<SelectedAttributeElement | null>(null);
+  const [inspectorSelection, setInspectorSelection] =
+    useState<InspectorSelection | null>(null);
 
   const disableContentEditing = useCallback(
     (studioId?: string, itemZuid?: string) => {
@@ -75,10 +75,10 @@ export const useStudioSelection = ({
     [postCommandToBridge]
   );
 
-  // Remove whatever canvas highlight an attribute-element selection applied —
+  // Remove whatever canvas highlight an inspector selection applied —
   // either a layout outline (by layoutId) or a content outline (by studioId).
-  const removeAttributeElementHighlight = useCallback(
-    (sel: SelectedAttributeElement | null) => {
+  const removeInspectorHighlight = useCallback(
+    (sel: InspectorSelection | null) => {
       if (!sel) return;
       if (sel.layoutPatch?.layoutId && sel.layoutPatch.codeId) {
         postCommandToBridge({
@@ -110,16 +110,16 @@ export const useStudioSelection = ({
         selectedElement.itemZuid
       );
     }
-    removeAttributeElementHighlight(selectedAttributeElement);
+    removeInspectorHighlight(inspectorSelection);
     setSelectedElement(null);
-    setSelectedAttributeElement(null);
+    setInspectorSelection(null);
     setFilteredFieldName(null);
     setPanelMode("info");
   }, [
     disableContentEditing,
-    removeAttributeElementHighlight,
+    removeInspectorHighlight,
     removeContentSelectedClass,
-    selectedAttributeElement,
+    inspectorSelection,
     selectedElement,
   ]);
 
@@ -170,12 +170,12 @@ export const useStudioSelection = ({
       const layoutId = next.layoutId || "";
       if (!codeId || !layoutId) return;
 
-      // Selecting a layout element closes any open Attributes panel. The <img>
-      // path re-opens it right after via applyAttributeSelection.
-      if (selectedAttributeElement) {
-        removeAttributeElementHighlight(selectedAttributeElement);
-        setSelectedAttributeElement(null);
-        setPanelMode((prev) => (prev === "attributes" ? "info" : prev));
+      // Selecting a layout element closes any open Inspector panel. The <img>
+      // path re-opens it right after via applyInspectorSelection.
+      if (inspectorSelection) {
+        removeInspectorHighlight(inspectorSelection);
+        setInspectorSelection(null);
+        setPanelMode((prev) => (prev === "inspector" ? "info" : prev));
       }
 
       if (
@@ -208,9 +208,9 @@ export const useStudioSelection = ({
     [
       addLayoutSelectedClass,
       codeFileNameById,
-      removeAttributeElementHighlight,
+      removeInspectorHighlight,
       removeLayoutSelectedClass,
-      selectedAttributeElement,
+      inspectorSelection,
       selectedLayout,
       withCodeIdBreadcrumbRoot,
     ]
@@ -274,12 +274,12 @@ export const useStudioSelection = ({
       // Selecting a field that isn't one of the open attribute element's own
       // bindings means we've navigated away from it — close the Attributes
       // panel. Editing one of its dynamic attributes keeps it (for "Back").
-      const editingOwnAttribute = selectedAttributeElement?.slots.some(
+      const editingOwnAttribute = inspectorSelection?.slots.some(
         (a) => a.fieldZuid === fieldZuid
       );
-      if (!editingOwnAttribute && selectedAttributeElement) {
-        removeAttributeElementHighlight(selectedAttributeElement);
-        setSelectedAttributeElement(null);
+      if (!editingOwnAttribute && inspectorSelection) {
+        removeInspectorHighlight(inspectorSelection);
+        setInspectorSelection(null);
       }
 
       if (selectedElement?.studioId && selectedElement.studioId !== studioId) {
@@ -330,23 +330,23 @@ export const useStudioSelection = ({
     [
       disableContentEditing,
       postCommandToBridge,
-      removeAttributeElementHighlight,
+      removeInspectorHighlight,
       removeContentSelectedClass,
-      selectedAttributeElement,
+      inspectorSelection,
       selectedElement,
     ]
   );
 
-  // Open the Attributes panel for an element (e.g. an <img>). Highlights the
+  // Open the Inspector panel for an element (e.g. an <img>). Highlights the
   // element on the canvas — by layout id when addressable, otherwise by the
   // studio id of a dynamic attribute binding.
-  const applyAttributeSelection = useCallback(
-    (next: SelectedAttributeElement) => {
-      removeAttributeElementHighlight(selectedAttributeElement);
-      setSelectedAttributeElement(next);
+  const applyInspectorSelection = useCallback(
+    (next: InspectorSelection) => {
+      removeInspectorHighlight(inspectorSelection);
+      setInspectorSelection(next);
       setSelectedElement(null);
       setFilteredFieldName(null);
-      setPanelMode("attributes");
+      setPanelMode("inspector");
 
       if (next.layoutPatch?.layoutId && next.layoutPatch.codeId) {
         addLayoutSelectedClass(
@@ -363,14 +363,14 @@ export const useStudioSelection = ({
     [
       addContentSelectedClass,
       addLayoutSelectedClass,
-      removeAttributeElementHighlight,
-      selectedAttributeElement,
+      removeInspectorHighlight,
+      inspectorSelection,
     ]
   );
 
-  // Return from a dynamic-attribute field edit back to the Attributes panel,
+  // Return from a dynamic-attribute field edit back to the Inspector panel,
   // keeping the element selected but dropping the single-field editor state.
-  const returnToAttributes = useCallback(() => {
+  const returnToInspector = useCallback(() => {
     if (selectedElement?.fieldZuid) {
       disableContentEditing(selectedElement.studioId, selectedElement.itemZuid);
       removeContentSelectedClass(
@@ -380,20 +380,18 @@ export const useStudioSelection = ({
     }
     setSelectedElement(null);
     setFilteredFieldName(null);
-    setPanelMode("attributes");
+    setPanelMode("inspector");
     // Re-apply the element highlight the field edit may have cleared.
     if (
-      selectedAttributeElement?.layoutPatch?.layoutId &&
-      selectedAttributeElement.layoutPatch.codeId
+      inspectorSelection?.layoutPatch?.layoutId &&
+      inspectorSelection.layoutPatch.codeId
     ) {
       addLayoutSelectedClass(
-        selectedAttributeElement.layoutPatch.codeId,
-        selectedAttributeElement.layoutPatch.layoutId
+        inspectorSelection.layoutPatch.codeId,
+        inspectorSelection.layoutPatch.layoutId
       );
     } else {
-      const dynamicAttr = selectedAttributeElement?.slots.find(
-        (a) => a.studioId
-      );
+      const dynamicAttr = inspectorSelection?.slots.find((a) => a.studioId);
       if (dynamicAttr?.studioId) {
         addContentSelectedClass(dynamicAttr.studioId, dynamicAttr.itemZuid);
       }
@@ -403,31 +401,50 @@ export const useStudioSelection = ({
     addLayoutSelectedClass,
     disableContentEditing,
     removeContentSelectedClass,
-    selectedAttributeElement,
+    inspectorSelection,
     selectedElement,
   ]);
 
   // Re-sync the open panel's element from a freshly re-emitted layers tree
-  // (same nodeId) — e.g. after a tag swap changes which slots exist (img → video
-  // drops `alt`). No-ops when nothing changed to avoid needless re-renders. The
-  // panel owns its input values locally, so this never clobbers in-progress
-  // typing; it only refreshes the slot set / tag / patch.
-  const refreshSelectedElementSlots = useCallback(
+  // (same nodeId). This is STRUCTURAL only — it picks up which slots exist (e.g.
+  // a tag swap img → video drops `alt`), the tag, and the patch.
+  //
+  // `preserveValues` (layout mode) keeps the values the panel is holding. There,
+  // the tree's copy goes stale the moment you edit — the bridge re-reads the
+  // un-patched template (and, for a live DOM edit, a diverged element) — so
+  // re-pushing would clobber a pending edit or a just-picked media URL with the
+  // original value. Content mode is read-only, so its values are never at risk
+  // and MUST refresh: that's how a dynamic slot picks up its field name once
+  // `fieldsState` loads.
+  const refreshInspectorSlots = useCallback(
     (
       nodeId: string,
       tagName: string,
       slots: ElementSlot[],
-      layoutPatch: ElementLayoutPatch | null
+      layoutPatch: ElementLayoutPatch | null,
+      preserveValues: boolean
     ) => {
-      setSelectedAttributeElement((prev) => {
+      setInspectorSelection((prev) => {
         if (!prev || prev.nodeId !== nodeId) return prev;
+        const nextSlots = slots.map((slot) => {
+          const prevSlot = prev.slots.find((p) => p.key === slot.key);
+          // A slot that's new to this element (e.g. after a tag swap) always
+          // takes the tree's value — the panel isn't holding one for it.
+          if (!prevSlot) return slot;
+          return {
+            ...slot,
+            value: preserveValues ? prevSlot.value : slot.value,
+            // Never let a re-emit lock a slot that's already editable.
+            layoutEditable: prevSlot.layoutEditable || slot.layoutEditable,
+          };
+        });
         if (
           prev.tagName === tagName &&
-          JSON.stringify(prev.slots) === JSON.stringify(slots)
+          JSON.stringify(prev.slots) === JSON.stringify(nextSlots)
         ) {
           return prev;
         }
-        return { ...prev, tagName, slots, layoutPatch };
+        return { ...prev, tagName, slots: nextSlots, layoutPatch };
       });
     },
     []
@@ -436,8 +453,8 @@ export const useStudioSelection = ({
   // Patch a single slot's displayed value on the selected element (e.g. after
   // picking a new image `src` from the media library), so the panel reflects
   // it without waiting for a fresh layers tree.
-  const updateSelectedSlotValue = useCallback((key: string, value: string) => {
-    setSelectedAttributeElement((prev) =>
+  const updateInspectorSlotValue = useCallback((key: string, value: string) => {
+    setInspectorSelection((prev) =>
       prev
         ? {
             ...prev,
@@ -450,7 +467,7 @@ export const useStudioSelection = ({
   return {
     selectedElement,
     selectedLayout,
-    selectedAttributeElement,
+    inspectorSelection,
     panelMode,
     filteredFieldName,
     setSelectedLayout,
@@ -460,9 +477,9 @@ export const useStudioSelection = ({
     handleLayoutBreadcrumbSelect,
     clearHighlightOnly,
     applySelection,
-    applyAttributeSelection,
-    returnToAttributes,
-    updateSelectedSlotValue,
-    refreshSelectedElementSlots,
+    applyInspectorSelection,
+    returnToInspector,
+    updateInspectorSlotValue,
+    refreshInspectorSlots,
   };
 };

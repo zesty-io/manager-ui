@@ -43,7 +43,7 @@ import {
 import { StudioHeader } from "./components/StudioWrapper/StudioHeader";
 import { StudioPreview } from "./components/StudioWrapper/StudioPreview";
 import { StudioSidePanel } from "./components/StudioWrapper/StudioSidePanel";
-import { StudioAttributesPanel } from "./components/StudioWrapper/StudioAttributesPanel";
+import { StudioInspectorPanel } from "./components/StudioWrapper/StudioInspectorPanel";
 import { StudioLayersPanel } from "./components/StudioWrapper/StudioLayersPanel";
 import {
   StudioSaveChange,
@@ -111,10 +111,10 @@ export const StudioWrapper = () => {
     isLeafImg: boolean;
     imgIndex: number;
     currentSrc: string;
-    // Set when the picker was opened from the Attributes panel, so the panel's
+    // Set when the picker was opened from the Inspector panel, so the panel's
     // displayed value updates after a pick. `attr` is the target attribute
     // (src or poster) and `tagName` addresses nested elements.
-    fromAttributesPanel?: boolean;
+    fromInspector?: boolean;
     attr?: string;
     tagName?: string;
   } | null>(null);
@@ -169,6 +169,8 @@ export const StudioWrapper = () => {
       selector?: string;
       layoutId?: string;
       codeId?: string;
+      // Patched template source for `codeId` (syncTemplateSource).
+      source?: string;
       targetLayoutId?: string;
       targetCodeId?: string;
       position?: string;
@@ -181,6 +183,8 @@ export const StudioWrapper = () => {
       elementIndex?: number;
       newTag?: string;
       booleanAttr?: boolean;
+      // Which of the element's own text runs to write (updateElementText).
+      textIndex?: number;
     }) => {
       const iframeWindow = iframeRef.current?.contentWindow;
       if (!iframeWindow) return;
@@ -199,10 +203,20 @@ export const StudioWrapper = () => {
     []
   );
 
+  // The bridge reads its template source off the page's <template> blocks, which
+  // are frozen at render time. Push every unsaved layout edit down so it doesn't
+  // keep answering from the pre-edit source.
+  const syncTemplateSourceToBridge = useCallback(
+    (codeId: string, source: string) => {
+      postCommandToBridge({ action: "syncTemplateSource", codeId, source });
+    },
+    [postCommandToBridge]
+  );
+
   const {
     selectedElement,
     selectedLayout,
-    selectedAttributeElement,
+    inspectorSelection,
     panelMode,
     filteredFieldName,
     setSelectedLayout,
@@ -212,10 +226,10 @@ export const StudioWrapper = () => {
     handleLayoutBreadcrumbSelect,
     clearHighlightOnly,
     applySelection,
-    applyAttributeSelection,
-    returnToAttributes,
-    updateSelectedSlotValue,
-    refreshSelectedElementSlots,
+    applyInspectorSelection,
+    returnToInspector,
+    updateInspectorSlotValue,
+    refreshInspectorSlots,
   } = useStudioSelection({
     postCommandToBridge,
     codeFileNameById,
@@ -725,6 +739,7 @@ export const StudioWrapper = () => {
     dispatch,
     clearLayoutSelection,
     refreshPreviewFrame,
+    syncTemplateSourceToBridge,
     withCodeIdBreadcrumbRoot,
     onSelectedLayoutBreadcrumbChange: setSelectedLayout,
   });
@@ -1154,13 +1169,13 @@ export const StudioWrapper = () => {
     postCommandToBridge,
     applyBridgeSelection,
     applyLayoutSelection,
-    applyAttributeSelection,
-    refreshSelectedElementSlots,
+    applyInspectorSelection,
+    refreshInspectorSlots,
     codeFileNameById,
     fieldsState,
     selectedElement,
     selectedLayout,
-    selectedAttributeElement,
+    inspectorSelection,
     dndDisabled: isSavingLayout || isRefreshing,
   });
 
@@ -1233,15 +1248,31 @@ export const StudioWrapper = () => {
   );
   const handleSlotChange = useCallback(
     (slot: ElementSlot, value: string) => {
-      const patch = selectedAttributeElement?.layoutPatch;
+      const patch = inspectorSelection?.layoutPatch;
       if (!patch || !patch.codeId) return;
+      // Never write a slot we've declared non-editable. The inputs are already
+      // disabled in that case, so this is a guard on the invariant rather than
+      // a reachable path — it keeps "layoutEditable" the single source of truth
+      // for whether the template may be rewritten.
+      if (!slot.layoutEditable) return;
 
       if (slot.kind === "text") {
         postCommandToBridge({
           action: "updateElementText",
+          codeId: patch.codeId,
           layoutId: patch.layoutId,
           value,
+          textIndex: slot.textIndex,
         });
+
+        // An ADDRESSED run writes itself back: the bridge edits that one run and
+        // echoes the leaf's innerHTML as LAYOUT_CONTENT_UPDATE, which the host
+        // already knows how to fold into the source — preserving nested layout
+        // subtrees. Patching here as well would overwrite the leaf's whole text
+        // and take any nested <span> with it.
+        if (slot.textIndex !== undefined) return;
+
+        // A dynamic leaf has no nested markup, so the whole-content write is safe.
         clearTimeout(slotPatchTimers.current[slot.key]);
         slotPatchTimers.current[slot.key] = setTimeout(() => {
           handleLayoutTextUpdate(patch.codeId!, patch.layoutId, value);
@@ -1278,7 +1309,7 @@ export const StudioWrapper = () => {
       handleLayoutElementAttrUpdate,
       handleLayoutTextUpdate,
       postCommandToBridge,
-      selectedAttributeElement,
+      inspectorSelection,
     ]
   );
 
@@ -1288,7 +1319,7 @@ export const StudioWrapper = () => {
   // select change, not per-keystroke.
   const handleTagChange = useCallback(
     (newTag: string) => {
-      const patch = selectedAttributeElement?.layoutPatch;
+      const patch = inspectorSelection?.layoutPatch;
       if (!patch || !patch.codeId || !patch.isSelf) return;
       postCommandToBridge({
         action: "updateElementTag",
@@ -1297,15 +1328,25 @@ export const StudioWrapper = () => {
       });
       handleLayoutTagUpdate(patch.codeId, patch.layoutId, newTag);
     },
-    [handleLayoutTagUpdate, postCommandToBridge, selectedAttributeElement]
+    [handleLayoutTagUpdate, postCommandToBridge, inspectorSelection]
   );
+
+  // Layout mode: connect a content item to a text slot. A text slot's value is
+  // just the raw template content, so "connecting" means writing a Parsley
+  // expression (e.g. "{{this.title}}") in place of the static text — which the
+  // existing text write-path already persists. The content-item picker itself
+  // isn't built yet; this is the entry point it will hang off.
+  const handleConnectContent = useCallback((_slot: ElementSlot) => {
+    // TODO: open the content-item / field picker, then commit the chosen
+    // expression via handleSlotChange(slot, `{{this.<field>}}`).
+  }, []);
 
   // Layout mode: open the media picker for a media-URL slot (src or poster).
   // Reuses the img media-picker dialog; the tag-agnostic patch maps onto its
   // isLeafImg / imgIndex addressing, and `attr` records which attribute to set.
-  const handleBrowseAttributeMedia = useCallback(
+  const handleBrowseMedia = useCallback(
     (slot: ElementSlot) => {
-      const patch = selectedAttributeElement?.layoutPatch;
+      const patch = inspectorSelection?.layoutPatch;
       if (!patch || !patch.codeId) return;
       setImageEditState({
         codeId: patch.codeId,
@@ -1313,12 +1354,12 @@ export const StudioWrapper = () => {
         isLeafImg: patch.isSelf,
         imgIndex: patch.elementIndex,
         currentSrc: slot.value,
-        fromAttributesPanel: true,
+        fromInspector: true,
         attr: slot.attr || "src",
         tagName: patch.tagName,
       });
     },
-    [selectedAttributeElement]
+    [inspectorSelection]
   );
 
   const renderInfoPanel = () => {
@@ -1373,15 +1414,15 @@ export const StudioWrapper = () => {
         isLoadingItem={isSelectedItemLoading}
         visibleFieldName={filteredFieldName || undefined}
       />
-      {selectedAttributeElement ? (
+      {inspectorSelection ? (
         <Button
-          data-cy="StudioBackToAttributes"
+          data-cy="StudioBackToInspector"
           variant="outlined"
           size="large"
           fullWidth
-          onClick={returnToAttributes}
+          onClick={returnToInspector}
         >
-          Back to Image Attributes
+          Back to Element
         </Button>
       ) : filteredFieldName ? (
         <Button
@@ -1450,21 +1491,22 @@ export const StudioWrapper = () => {
               isBusy={isRefreshing || studioSaving || isSavingLayout}
               onLoad={handlePreviewFrameLoad}
             />
-            {panelMode === "attributes" && selectedAttributeElement ? (
-              <StudioAttributesPanel
+            {panelMode === "inspector" && inspectorSelection ? (
+              <StudioInspectorPanel
                 mode={interactionMode}
-                elementKey={selectedAttributeElement.nodeId}
-                tagName={selectedAttributeElement.tagName}
-                slots={selectedAttributeElement.slots}
+                elementKey={inspectorSelection.nodeId}
+                tagName={inspectorSelection.tagName}
+                slots={inspectorSelection.slots}
                 canChangeTag={
                   interactionMode === "layout" &&
-                  !!selectedAttributeElement.layoutPatch?.isSelf
+                  !!inspectorSelection.layoutPatch?.isSelf
                 }
                 onChangeTag={handleTagChange}
                 onClose={requestClearSelection}
                 onEditDynamicSlot={handleEditDynamicSlot}
                 onChangeSlot={handleSlotChange}
-                onBrowseMedia={handleBrowseAttributeMedia}
+                onBrowseMedia={handleBrowseMedia}
+                onConnectContent={handleConnectContent}
                 drawerWidth={drawerWidth}
                 logoSrc={contentOneLogo}
               />
@@ -1610,7 +1652,7 @@ export const StudioWrapper = () => {
               addImagesCallback={(images: any[]) => {
                 if (!images.length) return;
                 const newSrc = images[0].url;
-                if (imageEditState.fromAttributesPanel) {
+                if (imageEditState.fromInspector) {
                   // Attributes-panel Browse: write the chosen URL to the
                   // recorded attribute (src or poster) via the generic path.
                   const attr = imageEditState.attr || "src";
@@ -1632,7 +1674,7 @@ export const StudioWrapper = () => {
                     attr,
                     value: newSrc,
                   });
-                  updateSelectedSlotValue(attr, newSrc);
+                  updateInspectorSlotValue(attr, newSrc);
                 } else {
                   // Canvas image-replace flow: img-specific src update.
                   handleLayoutImageSrcUpdate(

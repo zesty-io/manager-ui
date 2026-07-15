@@ -7,7 +7,7 @@ type LayoutStructureItem = {
   parentLayoutId: string | null;
 };
 
-// Tags the Attributes panel can swap an element to — mirrors the bridge's
+// Tags the Inspector panel can swap an element to — mirrors the bridge's
 // SUPPORTED_ELEMENTS. Guards createElement against an arbitrary tag name.
 const SWAPPABLE_TAGS = new Set([
   "img",
@@ -20,6 +20,14 @@ const SWAPPABLE_TAGS = new Set([
   "h6",
   "p",
   "span",
+  "div",
+  "section",
+  "article",
+  "aside",
+  "header",
+  "footer",
+  "main",
+  "nav",
 ]);
 
 const isLayoutBreadcrumbItem = (
@@ -298,6 +306,10 @@ type Args = {
   dispatch: (action: any) => any;
   clearLayoutSelection: () => void;
   refreshPreviewFrame: (onReloadComplete?: () => void) => void;
+  // Mirrors a patched region down to the bridge. The bridge's own template
+  // source is frozen at page render, so it has to be told about edits we
+  // haven't saved yet — see writeTemplateSources.
+  syncTemplateSourceToBridge: (codeId: string, source: string) => void;
   withCodeIdBreadcrumbRoot: (
     codeId: string,
     breadcrumb: LayoutBreadcrumbItem[],
@@ -326,10 +338,31 @@ export const useLayoutReorderState = ({
   dispatch,
   clearLayoutSelection,
   refreshPreviewFrame,
+  syncTemplateSourceToBridge,
   withCodeIdBreadcrumbRoot,
   onSelectedLayoutBreadcrumbChange,
 }: Args) => {
   const templateSourceByCodeIdRef = useRef<Record<string, string>>({});
+
+  // The one way to write the template cache after boot. The bridge keeps its
+  // own copy, read straight off the page's <template> blocks and never updated
+  // — so any edit we hold and don't push down leaves the two disagreeing, and
+  // the bridge reads the pre-edit source back at us: the Inspector reopens on a
+  // stale value, and inline editing rejects the block as "dynamic content"
+  // because live DOM no longer matches the template. Funnelling every write
+  // through here keeps them in step by construction.
+  const writeTemplateSources = useCallback(
+    (patch: Record<string, string>) => {
+      templateSourceByCodeIdRef.current = {
+        ...templateSourceByCodeIdRef.current,
+        ...patch,
+      };
+      Object.keys(patch).forEach((codeId) => {
+        syncTemplateSourceToBridge(codeId, patch[codeId]);
+      });
+    },
+    [syncTemplateSourceToBridge]
+  );
   const [pendingLayoutSave, setPendingLayoutSave] =
     useState<LayoutReorderState | null>(null);
   const [isSavingLayout, setIsSavingLayout] = useState(false);
@@ -570,10 +603,7 @@ export const useLayoutReorderState = ({
         return;
       }
 
-      templateSourceByCodeIdRef.current = {
-        ...templateSourceByCodeIdRef.current,
-        [codeId]: next,
-      };
+      writeTemplateSources({ [codeId]: next });
 
       setPendingLayoutSave((prev) => {
         const prevRegion = prev?.regions?.[codeId];
@@ -611,7 +641,7 @@ export const useLayoutReorderState = ({
         };
       });
     },
-    [dispatch]
+    [dispatch, writeTemplateSources]
   );
 
   const handleReorderOutput = useCallback(
@@ -684,10 +714,7 @@ export const useLayoutReorderState = ({
 
       if (!Object.keys(mappedRegions).length) return;
 
-      templateSourceByCodeIdRef.current = {
-        ...templateSourceByCodeIdRef.current,
-        ...nextCachedSources,
-      };
+      writeTemplateSources(nextCachedSources);
 
       const primaryCodeId =
         typeof msg.primaryCodeId === "string" && msg.primaryCodeId
@@ -728,6 +755,7 @@ export const useLayoutReorderState = ({
       codeFileNameById,
       onSelectedLayoutBreadcrumbChange,
       withCodeIdBreadcrumbRoot,
+      writeTemplateSources,
     ]
   );
 
@@ -736,10 +764,7 @@ export const useLayoutReorderState = ({
   // text slot updaters.
   const stageLayoutSourceUpdate = useCallback(
     (codeId: string, next: string) => {
-      templateSourceByCodeIdRef.current = {
-        ...templateSourceByCodeIdRef.current,
-        [codeId]: next,
-      };
+      writeTemplateSources({ [codeId]: next });
 
       setPendingLayoutSave((prev) => {
         const prevRegion = prev?.regions?.[codeId];
@@ -774,7 +799,7 @@ export const useLayoutReorderState = ({
         };
       });
     },
-    []
+    [writeTemplateSources]
   );
 
   const handleLayoutElementAttrUpdate = useCallback(
