@@ -29,7 +29,7 @@ export const StudioPreview = ({
         border: "none",
         height: "100%",
         width: "100%",
-        bgcolor: "grey.900",
+        bgcolor: "common.white",
       }}
     />
     {isNavigating ? (
