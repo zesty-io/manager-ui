@@ -66,6 +66,17 @@ export type ElementLayoutPatch = {
   elementIndex: number;
 };
 
+// A content field offered in the Inspector's "Connect Item" dropdown. Picking
+// one writes its Parsley reference (`{{this.<name>}}`) into a text slot.
+export type ConnectField = {
+  // Parsley reference key — what goes in `{{this.<name>}}`.
+  name: string;
+  // Display name shown in the dropdown.
+  label: string;
+  // Zesty datatype, used for the row's icon + description.
+  datatype: string;
+};
+
 // The element whose slots are shown in the right-side Inspector panel.
 export type InspectorSelection = {
   nodeId: string;

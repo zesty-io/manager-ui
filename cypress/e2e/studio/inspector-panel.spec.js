@@ -410,7 +410,7 @@ describe("Studio Inspector Panel", () => {
     });
   });
 
-  it("opens a dynamic row in layout mode showing its code reference, and can rewrite it", () => {
+  it("shows a dynamic binding as a connected field, then disconnects to rewrite it", () => {
     setStudioMode("layout");
     cy.apiRequest({
       url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
@@ -426,17 +426,18 @@ describe("Studio Inspector Panel", () => {
         fieldNode(webView.ZUID, "{{this.title}}", "My Real Title")
       );
 
-      // Same Text panel as static — but layout mode MUST surface the raw
-      // template value, never the resolved output (writing the latter back would
-      // bake the rendered text over the binding). Plus a "Connect Content"
-      // affordance, and no Tag selector.
+      // A dynamic binding renders as a CONNECTED field chip — never the resolved
+      // output ("My Real Title"), never the raw "{{this.title}}" in a free-form
+      // input. No Tag selector, and the action is Disconnect.
       cy.getBySelector("StudioTagSelect").should("not.exist");
-      cy.getBySelector("StudioConnectContent").should("exist");
+      cy.getBySelector("StudioConnectedField").should("contain.text", "title");
+      cy.getBySelector("StudioSlotInput-text").should("not.exist");
+
+      // Disconnect returns a free-form input; a new expression saves to the code.
+      cy.getBySelector("StudioDisconnect").click();
       cy.getBySelector("StudioSlotInput-text")
         .should("exist")
-        .and("have.value", "{{this.title}}")
-        .and("not.have.value", "My Real Title")
-        .clear()
+        .and("have.value", "")
         .type("{{this.content}}", { parseSpecialCharSequences: false });
 
       cy.getBySelector("StudioLayoutSaveBar").should("exist");
@@ -445,6 +446,83 @@ describe("Studio Inspector Panel", () => {
       cy.wait("@updateWebView").then(({ request }) => {
         expect(request.body.code).to.contain("{{this.content}}");
         expect(request.body.code).not.to.contain("{{this.title}}");
+      });
+    });
+  });
+
+  it("connects a text field, shown as a connected field, then disconnects", () => {
+    setStudioMode("layout");
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+
+      seedLayoutElement(
+        webView.ZUID,
+        `<h1 data-layout-id="1">Hello</h1>`,
+        textNode(webView.ZUID, "Hello")
+      );
+
+      // Pick a text field. The raw "{{this.title}}" is hidden behind the field
+      // chip — which renders only when the value EXACTLY equals the field's
+      // Parsley, so its presence also proves the emitted expression. The
+      // free-form input is gone and the action flips to Disconnect.
+      cy.getBySelector("StudioConnectContent").click();
+      cy.getBySelector("StudioConnectField-title").click();
+      cy.getBySelector("StudioConnectedField").should("contain.text", "title");
+      cy.getBySelector("StudioSlotInput-text").should("not.exist");
+
+      // Disconnect returns a free-form, empty input.
+      cy.getBySelector("StudioDisconnect").click();
+      cy.getBySelector("StudioSlotInput-text")
+        .should("exist")
+        .and("have.value", "");
+    });
+  });
+
+  it("connects media + external-URL fields to an image src, each with the right expression", () => {
+    setStudioMode("layout");
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+      cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as("updateWebView");
+
+      seedLayoutElement(
+        webView.ZUID,
+        `<img data-layout-id="1" src="a.jpg" />`,
+        imgNode(webView.ZUID)
+      );
+
+      // The src dropdown offers MEDIA + external-URL fields (never text). A media
+      // asset connects as a getImage() expression; the connected chip renders
+      // only on an exact match, so seeing it proves the expression.
+      cy.getBySelector("StudioConnectContent").click();
+      cy.getBySelector("StudioConnectField-title").should("not.exist");
+      cy.getBySelector("StudioConnectField-hero_image").click();
+      cy.getBySelector("StudioConnectedField").should(
+        "contain.text",
+        "Hero Image"
+      );
+      cy.getBySelector("StudioSlotInput-src").should("not.exist");
+
+      // Disconnect, then connect an external-URL field — referenced plain, no
+      // method. Saving writes exactly that expression to the code.
+      cy.getBySelector("StudioDisconnect").click();
+      cy.getBySelector("StudioConnectContent").click();
+      cy.getBySelector("StudioConnectField-external_url").click();
+      cy.getBySelector("StudioConnectedField").should(
+        "contain.text",
+        "External URL"
+      );
+
+      cy.getBySelector("StudioLayoutSaveBar").should("exist");
+      saveAllViaModal("layout");
+      cy.wait("@updateWebView").then(({ request }) => {
+        expect(request.body.code).to.contain("{{this.external_url}}");
+        expect(request.body.code).not.to.contain("getImage");
       });
     });
   });

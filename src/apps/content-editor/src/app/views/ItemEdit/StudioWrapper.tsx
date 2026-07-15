@@ -44,6 +44,10 @@ import { StudioHeader } from "./components/StudioWrapper/StudioHeader";
 import { StudioPreview } from "./components/StudioWrapper/StudioPreview";
 import { StudioSidePanel } from "./components/StudioWrapper/StudioSidePanel";
 import { StudioInspectorPanel } from "./components/StudioWrapper/StudioInspectorPanel";
+import {
+  isMediaSlotDatatype,
+  isTextReferenceableDatatype,
+} from "./components/StudioWrapper/studioFieldMeta";
 import { StudioLayersPanel } from "./components/StudioWrapper/StudioLayersPanel";
 import {
   StudioSaveChange,
@@ -56,6 +60,7 @@ import {
 } from "./hooks/useStudioContentSave";
 import { useStudioBridge } from "./hooks/useStudioBridge";
 import {
+  ConnectField,
   ElementSlot,
   InteractionMode,
   LayoutBreadcrumbItem,
@@ -1336,10 +1341,41 @@ export const StudioWrapper = () => {
   // expression (e.g. "{{this.title}}") in place of the static text — which the
   // existing text write-path already persists. The content-item picker itself
   // isn't built yet; this is the entry point it will hang off.
-  const handleConnectContent = useCallback((_slot: ElementSlot) => {
-    // TODO: open the content-item / field picker, then commit the chosen
-    // expression via handleSlotChange(slot, `{{this.<field>}}`).
-  }, []);
+  // Fields of the item being edited, offered in a text slot's "Connect Item"
+  // dropdown. `this` in a Parsley expression resolves to the item rendering the
+  // template region, which for the main page is the page item — so its model's
+  // fields are what `{{this.<name>}}` can reference.
+  const pageFields = useMemo(() => {
+    if (!pageModelZUID) return [];
+    return Object.values(fieldsState)
+      .filter((field: any) => field?.contentModelZUID === pageModelZUID)
+      .sort((a: any, b: any) => (a?.sort ?? 0) - (b?.sort ?? 0));
+  }, [fieldsState, pageModelZUID]);
+
+  const toConnectField = (field: any): ConnectField => ({
+    name: field.name,
+    label: field.label || field.name,
+    datatype: field.datatype,
+  });
+
+  // Fields offered in a TEXT slot's "Connect Item" dropdown.
+  const connectFields = useMemo<ConnectField[]>(
+    () =>
+      pageFields
+        .filter((field: any) => isTextReferenceableDatatype(field?.datatype))
+        .map(toConnectField),
+    [pageFields]
+  );
+
+  // Fields offered in a MEDIA slot's (img/video src, poster) dropdown — media
+  // assets and external-URL fields.
+  const mediaFields = useMemo<ConnectField[]>(
+    () =>
+      pageFields
+        .filter((field: any) => isMediaSlotDatatype(field?.datatype))
+        .map(toConnectField),
+    [pageFields]
+  );
 
   // Layout mode: open the media picker for a media-URL slot (src or poster).
   // Reuses the img media-picker dialog; the tag-agnostic patch maps onto its
@@ -1506,7 +1542,8 @@ export const StudioWrapper = () => {
                 onEditDynamicSlot={handleEditDynamicSlot}
                 onChangeSlot={handleSlotChange}
                 onBrowseMedia={handleBrowseMedia}
-                onConnectContent={handleConnectContent}
+                connectFields={connectFields}
+                mediaFields={mediaFields}
                 drawerWidth={drawerWidth}
                 logoSrc={contentOneLogo}
               />

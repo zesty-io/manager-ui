@@ -4,6 +4,7 @@ import {
   Button,
   Drawer,
   IconButton,
+  Menu,
   MenuItem,
   Stack,
   TextField,
@@ -14,8 +15,14 @@ import { CloseRounded } from "@mui/icons-material";
 import BoltRounded from "@mui/icons-material/BoltRounded";
 import PhotoLibraryRounded from "@mui/icons-material/PhotoLibraryRounded";
 import AddLinkRounded from "@mui/icons-material/AddLinkRounded";
-import { ElementSlot } from "../../hooks/studioTypes";
+import LinkOffRounded from "@mui/icons-material/LinkOffRounded";
+import { ConnectField, ElementSlot } from "../../hooks/studioTypes";
 import { NO_TAG, TEXT_TAGS } from "./studioTags";
+import {
+  FIELD_CATEGORY_COLORS,
+  fieldToParsley,
+  getFieldMeta,
+} from "./studioFieldMeta";
 
 // Title shown for a supported element tag.
 const TAG_TITLES: Record<string, string> = {
@@ -121,6 +128,152 @@ const getBooleanOptions = (slot: ElementSlot) => {
   ];
 };
 
+// The small colour-coded field-type square (green text, red number, blue media,
+// pink link, …). Used both in the Connect Item dropdown rows and the connected
+// slot's chip so the two always look the same.
+const FieldIconChip = ({ datatype }: { datatype: string }) => {
+  const meta = getFieldMeta(datatype);
+  const colors = FIELD_CATEGORY_COLORS[meta.category];
+  const Icon = meta.Icon;
+  return (
+    <Box
+      sx={{
+        width: 24,
+        height: 24,
+        flexShrink: 0,
+        borderRadius: 1,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        bgcolor: colors.bg,
+        color: colors.fg,
+        border: `1px solid ${colors.fg}`,
+      }}
+    >
+      <Icon sx={{ fontSize: 16 }} />
+    </Box>
+  );
+};
+
+// A connected slot shows the bound field as a read-only chip instead of the raw
+// "{{this.title}}" expression — the input is no longer free-form until the field
+// is disconnected.
+const ConnectedFieldView = ({ field }: { field: ConnectField }) => (
+  <Stack
+    direction="row"
+    alignItems="center"
+    gap={1.5}
+    data-cy="StudioConnectedField"
+    sx={{
+      px: 1.5,
+      py: 1,
+      border: 1,
+      borderColor: "divider",
+      borderRadius: 1,
+      bgcolor: "action.hover",
+    }}
+  >
+    <FieldIconChip datatype={field.datatype} />
+    <Typography
+      variant="body2"
+      fontWeight={600}
+      color="text.primary"
+      noWrap
+      minWidth={0}
+    >
+      {field.label}
+    </Typography>
+  </Stack>
+);
+
+// The "Connect Item" affordance in a text slot's label row (mirrors the field
+// shell's AI/comment secondary actions). Opens a dropdown of the current item's
+// fields; picking one hands its Parsley reference back so the caller can write
+// it into the slot.
+const ConnectItemButton = ({
+  fields,
+  onPick,
+}: {
+  fields: ConnectField[];
+  onPick: (field: ConnectField) => void;
+}) => {
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+  return (
+    <>
+      <Button
+        data-cy="StudioConnectContent"
+        variant="text"
+        size="small"
+        disableRipple
+        startIcon={<AddLinkRounded sx={{ fontSize: 16 }} />}
+        onClick={(evt) => setAnchorEl(evt.currentTarget)}
+        sx={{
+          minWidth: 0,
+          px: 0.5,
+          py: 0.25,
+          color: "text.secondary",
+          fontWeight: 400,
+          textTransform: "none",
+        }}
+      >
+        Connect Item
+      </Button>
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={() => setAnchorEl(null)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+        transformOrigin={{ vertical: "top", horizontal: "right" }}
+        slotProps={{ paper: { sx: { borderRadius: 2, mt: 0.5 } } }}
+        MenuListProps={{ sx: { py: 1, minWidth: 280, maxWidth: 320 } }}
+      >
+        {fields.length === 0
+          ? [
+              <MenuItem key="__empty__" disabled>
+                No fields available
+              </MenuItem>,
+            ]
+          : fields.map((field) => {
+              const meta = getFieldMeta(field.datatype);
+              return (
+                <MenuItem
+                  key={field.name}
+                  data-cy={`StudioConnectField-${field.name}`}
+                  onClick={() => {
+                    onPick(field);
+                    setAnchorEl(null);
+                  }}
+                  sx={{ px: 2, py: 1, gap: 1.5, alignItems: "center" }}
+                >
+                  <FieldIconChip datatype={field.datatype} />
+                  <Stack minWidth={0}>
+                    <Typography
+                      variant="body2"
+                      fontWeight={600}
+                      color="text.primary"
+                      noWrap
+                    >
+                      {field.label}
+                    </Typography>
+                    {meta.description ? (
+                      <Typography
+                        variant="caption"
+                        color="text.secondary"
+                        noWrap
+                      >
+                        {meta.description}
+                      </Typography>
+                    ) : null}
+                  </Stack>
+                </MenuItem>
+              );
+            })}
+      </Menu>
+    </>
+  );
+};
+
 type StudioInspectorPanelProps = {
   mode: "content" | "layout";
   // Stable id of the selected element — reseeds the inputs when a different
@@ -138,9 +291,12 @@ type StudioInspectorPanelProps = {
   onChangeSlot: (slot: ElementSlot, value: string) => void;
   // Layout mode: browse media for an image `src` slot.
   onBrowseMedia: (slot: ElementSlot) => void;
-  // Layout mode: connect a content item to a text slot (writes a Parsley
-  // expression, e.g. "{{this.title}}", in place of static text).
-  onConnectContent: (slot: ElementSlot) => void;
+  // Fields of the item being edited, offered in a text slot's "Connect Item"
+  // dropdown. Picking one writes its Parsley reference into the slot.
+  connectFields: ConnectField[];
+  // Media fields, offered on img/video src + poster slots (writes an image
+  // expression, e.g. "{{this.hero.getImage()}}").
+  mediaFields: ConnectField[];
   drawerWidth: number;
   logoSrc: string;
 };
@@ -152,17 +308,21 @@ const SlotField = ({
   mode,
   value,
   onChangeSlot,
+  onDisconnect,
   onEditDynamicSlot,
   onBrowseMedia,
-  onConnectContent,
+  connectFields,
+  mediaFields,
 }: {
   slot: ElementSlot;
   mode: "content" | "layout";
   value: string;
   onChangeSlot: (slot: ElementSlot, value: string) => void;
+  onDisconnect: (slot: ElementSlot) => void;
   onEditDynamicSlot: (slot: ElementSlot) => void;
   onBrowseMedia: (slot: ElementSlot) => void;
-  onConnectContent: (slot: ElementSlot) => void;
+  connectFields: ConnectField[];
+  mediaFields: ConnectField[];
 }) => {
   const dataCy = `StudioSlotInput-${slot.key}`;
 
@@ -247,46 +407,92 @@ const SlotField = ({
     ? "This element can't be edited here."
     : null;
 
+  // The label row carries the "Connect Item" affordance on the right, like the
+  // field shell's secondary actions. A text slot offers text fields; a media
+  // slot (img/video src, poster) offers media + external-URL fields. The Parsley
+  // each field emits is decided per field by fieldToParsley, since a media slot
+  // mixes assets (getImage()) and plain URL references.
+  const connectableFields = !slot.layoutEditable
+    ? []
+    : isTextSlot
+    ? connectFields
+    : isMediaAttr
+    ? mediaFields
+    : [];
+
+  // A slot is "connected" when its value is exactly the Parsley a known field
+  // emits — whether the user just picked it or the template already bound it.
+  // Then the raw expression is hidden behind a read-only chip, and the button
+  // flips to Disconnect (which clears it back to a free-form input).
+  const connectedField = connectableFields.find(
+    (field) => fieldToParsley(field.name, field.datatype) === value
+  );
+
   return (
     <Stack gap={0.5}>
-      <Typography variant="body2" fontWeight={600} color="text.primary">
-        {getSlotLabel(slot)}
-      </Typography>
-      <Stack direction="row" gap={1} alignItems="flex-start">
-        <TextField
-          value={value}
-          fullWidth
-          multiline={multiline}
-          minRows={multiline ? 2 : undefined}
-          disabled={!slot.layoutEditable}
-          onChange={(evt) => onChangeSlot(slot, evt.target.value)}
-          inputProps={{ "data-cy": dataCy }}
-        />
-        {isMediaAttr && slot.layoutEditable ? (
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        gap={1}
+      >
+        <Typography variant="body2" fontWeight={600} color="text.primary">
+          {getSlotLabel(slot)}
+        </Typography>
+        {connectedField ? (
           <Button
-            data-cy={`StudioSlotBrowse-${slot.attr}`}
-            variant="outlined"
-            startIcon={<PhotoLibraryRounded fontSize="small" />}
-            sx={{ mt: 0.5, whiteSpace: "nowrap", flexShrink: 0 }}
-            onClick={() => onBrowseMedia(slot)}
-          >
-            Browse
-          </Button>
-        ) : null}
-      </Stack>
-      {isTextSlot && slot.layoutEditable ? (
-        <Box>
-          <Button
-            data-cy="StudioConnectContent"
+            data-cy="StudioDisconnect"
             variant="text"
             size="small"
-            startIcon={<AddLinkRounded fontSize="small" />}
-            onClick={() => onConnectContent(slot)}
+            disableRipple
+            startIcon={<LinkOffRounded sx={{ fontSize: 16 }} />}
+            onClick={() => onDisconnect(slot)}
+            sx={{
+              minWidth: 0,
+              px: 0.5,
+              py: 0.25,
+              color: "text.secondary",
+              fontWeight: 400,
+              textTransform: "none",
+            }}
           >
-            Connect Content
+            Disconnect
           </Button>
-        </Box>
-      ) : null}
+        ) : connectableFields.length > 0 ? (
+          <ConnectItemButton
+            fields={connectableFields}
+            onPick={(field) =>
+              onChangeSlot(slot, fieldToParsley(field.name, field.datatype))
+            }
+          />
+        ) : null}
+      </Stack>
+      {connectedField ? (
+        <ConnectedFieldView field={connectedField} />
+      ) : (
+        <Stack direction="row" gap={1} alignItems="flex-start">
+          <TextField
+            value={value}
+            fullWidth
+            multiline={multiline}
+            minRows={multiline ? 2 : undefined}
+            disabled={!slot.layoutEditable}
+            onChange={(evt) => onChangeSlot(slot, evt.target.value)}
+            inputProps={{ "data-cy": dataCy }}
+          />
+          {isMediaAttr && slot.layoutEditable ? (
+            <Button
+              data-cy={`StudioSlotBrowse-${slot.attr}`}
+              variant="outlined"
+              startIcon={<PhotoLibraryRounded fontSize="small" />}
+              sx={{ mt: 0.5, whiteSpace: "nowrap", flexShrink: 0 }}
+              onClick={() => onBrowseMedia(slot)}
+            >
+              Browse
+            </Button>
+          ) : null}
+        </Stack>
+      )}
       {disabledReason ? (
         <Typography variant="body2" color="text.secondary">
           {disabledReason}
@@ -307,7 +513,8 @@ export const StudioInspectorPanel = ({
   onEditDynamicSlot,
   onChangeSlot,
   onBrowseMedia,
-  onConnectContent,
+  connectFields,
+  mediaFields,
   drawerWidth,
   logoSrc,
 }: StudioInspectorPanelProps) => {
@@ -365,6 +572,16 @@ export const StudioInspectorPanel = ({
   const handleSlotValueChange = (slot: ElementSlot, value: string) => {
     setValues((prev) => ({ ...prev, [slot.key]: value }));
     onChangeSlot(slot, value);
+  };
+
+  // Disconnect is LOCAL only — clear the displayed value so the slot returns to
+  // a free-form input, but DON'T commit. The existing binding stays in the
+  // template until the user types a replacement (or reconnects a field).
+  // Committing an empty value instead would blank the node, drop its row from
+  // the re-emitted tree, and leave the panel pointing at a node that no longer
+  // exists — after which nothing the user types or reconnects would apply.
+  const handleSlotDisconnect = (slot: ElementSlot) => {
+    setValues((prev) => ({ ...prev, [slot.key]: "" }));
   };
 
   const tagFamily = getTagFamily(tag);
@@ -453,9 +670,11 @@ export const StudioInspectorPanel = ({
                 // once `fieldsState` resolves.
                 value={mode === "content" ? slot.value : values[slot.key] ?? ""}
                 onChangeSlot={handleSlotValueChange}
+                onDisconnect={handleSlotDisconnect}
                 onEditDynamicSlot={onEditDynamicSlot}
                 onBrowseMedia={onBrowseMedia}
-                onConnectContent={onConnectContent}
+                connectFields={connectFields}
+                mediaFields={mediaFields}
               />
             ))}
           </Stack>
