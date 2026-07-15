@@ -56,7 +56,7 @@ export const UserHeaderTitle = ({
         ],
       };
     }
-  }, [usersRoles, actionCount, id]);
+  }, [usersRoles, actionCount, id, latestActionDateTime]);
 
   const isLoading = isLoadingUsersRoles || isLoadingActions;
 
@@ -105,7 +105,7 @@ export const UserHeaderTitle = ({
               <Skeleton width="100%" />
             ) : (
               <Typography variant="caption" color="text.secondary">
-                {headerData?.subTitle?.join(" • ")}
+                {headerData?.subTitle?.filter(Boolean).join(" • ")}
               </Typography>
             )}
           </Stack>
