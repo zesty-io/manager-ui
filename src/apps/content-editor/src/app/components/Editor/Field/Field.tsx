@@ -466,7 +466,10 @@ export const Field = memo(
       case "images":
         const images = useMemo(() => {
           if (Array.isArray(value)) {
-            return value.filter(Boolean);
+            return value.filter(
+              (el: unknown): el is string =>
+                typeof el === "string" && Boolean(el)
+            );
           }
           return typeof value === "string"
             ? value.split(",").filter((el: string) => el)
