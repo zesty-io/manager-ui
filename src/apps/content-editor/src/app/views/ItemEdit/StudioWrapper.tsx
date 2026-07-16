@@ -191,6 +191,9 @@ export const StudioWrapper = () => {
       booleanAttr?: boolean;
       // Which of the element's own text runs to write (updateElementText).
       textIndex?: number;
+      // Resolved value to DISPLAY in the live DOM on connect, while the template
+      // still saves the Parsley `value` (updateElementText / updateElementAttr).
+      previewValue?: string;
     }) => {
       const iframeWindow = iframeRef.current?.contentWindow;
       if (!iframeWindow) return;
@@ -1252,6 +1255,40 @@ export const StudioWrapper = () => {
     },
     []
   );
+  // On connect, the panel emits a `{{this.field}}` Parsley ref. For the LIVE
+  // preview we show the field's RESOLVED value (its actual text, or a resolved
+  // image URL) instead of the raw expression, while the template still saves the
+  // Parsley — so a connection is visible without a save + reload. Returns the
+  // resolved display value, or null when `value` is a plain edit (not a field
+  // ref) or the field has no data to show. Fields always resolve against the
+  // page item, since our flow only ever emits `this.<pageItemField>`.
+  const resolvePreviewValue = useCallback(
+    (slot: ElementSlot, value: string): string | null => {
+      const match = value.match(/^\{\{\s*this\.(\w+)(\.getImage\(\))?\s*\}\}$/);
+      if (!match) return null;
+      const raw = (pageItem?.data as Record<string, any>)?.[match[1]];
+      if (slot.booleanAttr) {
+        // A boolean attribute's presence follows the field's truthiness.
+        const off =
+          raw === false ||
+          raw === 0 ||
+          raw === "0" ||
+          raw === "false" ||
+          raw === "" ||
+          raw == null;
+        return off ? "false" : "true";
+      }
+      if (raw === undefined || raw === null || raw === "") return null;
+      if (match[2]) {
+        // Image field → the URL getImage() resolves to, via the media resolver.
+        // @ts-expect-error CONFIG is provided globally at runtime
+        return `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${raw}/getimage`;
+      }
+      return String(raw);
+    },
+    [pageItem]
+  );
+
   const handleSlotChange = useCallback(
     (slot: ElementSlot, value: string) => {
       const patch = inspectorSelection?.layoutPatch;
@@ -1262,12 +1299,18 @@ export const StudioWrapper = () => {
       // for whether the template may be rewritten.
       if (!slot.layoutEditable) return;
 
+      // On connect this is the RESOLVED value to preview in the live DOM; on a
+      // plain edit it's undefined (the value IS what's shown). Either way the
+      // template saves `value`.
+      const previewValue = resolvePreviewValue(slot, value) ?? undefined;
+
       if (slot.kind === "text") {
         postCommandToBridge({
           action: "updateElementText",
           codeId: patch.codeId,
           layoutId: patch.layoutId,
           value,
+          previewValue,
           textIndex: slot.textIndex,
         });
 
@@ -1294,7 +1337,8 @@ export const StudioWrapper = () => {
         tagName: patch.tagName,
         elementIndex: patch.elementIndex,
         attr,
-        value,
+        // Show the resolved value in the live DOM; the template stages `value`.
+        value: previewValue ?? value,
         booleanAttr: slot.booleanAttr,
       });
       clearTimeout(slotPatchTimers.current[slot.key]);
@@ -1315,6 +1359,7 @@ export const StudioWrapper = () => {
       handleLayoutElementAttrUpdate,
       handleLayoutTextUpdate,
       postCommandToBridge,
+      resolvePreviewValue,
       inspectorSelection,
     ]
   );
