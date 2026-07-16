@@ -597,42 +597,6 @@ describe("Studio Inspector Panel", () => {
     });
   });
 
-  it("connects a yes/no field to a boolean video attribute, written verbatim", () => {
-    setStudioMode("layout");
-    cy.apiRequest({
-      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
-    }).then(({ data }) => {
-      const webView = data?.[0];
-      expect(webView?.ZUID).to.exist;
-      cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as("updateWebView");
-
-      seedLayoutElement(
-        webView.ZUID,
-        `<video data-layout-id="1" controls></video>`,
-        videoNode(webView.ZUID)
-      );
-
-      // The boolean "controls" attr offers yes/no fields only (the seed's
-      // show_controls) — never text/media. Connecting writes the field reference
-      // verbatim as the attribute value; Zesty drops the attribute when falsy.
-      cy.getBySelector("StudioConnectContent-controls").click();
-      cy.getBySelector("StudioConnectField-title").should("not.exist");
-      cy.getBySelector("StudioConnectField-show_controls").click();
-      cy.getBySelector("StudioConnectedField").should(
-        "contain.text",
-        "Show Controls"
-      );
-
-      cy.getBySelector("StudioLayoutSaveBar").should("exist");
-      saveAllViaModal("layout");
-      cy.wait("@updateWebView").then(({ request }) => {
-        expect(request.body.code).to.contain(
-          'controls="{{this.show_controls}}"'
-        );
-      });
-    });
-  });
-
   it("swaps an img to a video (Media Type) and saves the new tag", () => {
     setStudioMode("layout");
     cy.apiRequest({

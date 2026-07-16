@@ -45,7 +45,6 @@ import { StudioPreview } from "./components/StudioWrapper/StudioPreview";
 import { StudioSidePanel } from "./components/StudioWrapper/StudioSidePanel";
 import { StudioInspectorPanel } from "./components/StudioWrapper/StudioInspectorPanel";
 import {
-  isBooleanReferenceableDatatype,
   isMediaSlotDatatype,
   isTextReferenceableDatatype,
 } from "./components/StudioWrapper/studioFieldMeta";
@@ -1263,21 +1262,10 @@ export const StudioWrapper = () => {
   // ref) or the field has no data to show. Fields always resolve against the
   // page item, since our flow only ever emits `this.<pageItemField>`.
   const resolvePreviewValue = useCallback(
-    (slot: ElementSlot, value: string): string | null => {
+    (value: string): string | null => {
       const match = value.match(/^\{\{\s*this\.(\w+)(\.getImage\(\))?\s*\}\}$/);
       if (!match) return null;
       const raw = (pageItem?.data as Record<string, any>)?.[match[1]];
-      if (slot.booleanAttr) {
-        // A boolean attribute's presence follows the field's truthiness.
-        const off =
-          raw === false ||
-          raw === 0 ||
-          raw === "0" ||
-          raw === "false" ||
-          raw === "" ||
-          raw == null;
-        return off ? "false" : "true";
-      }
       if (raw === undefined || raw === null || raw === "") return null;
       if (match[2]) {
         // Image field → the URL getImage() resolves to, via the media resolver.
@@ -1302,7 +1290,7 @@ export const StudioWrapper = () => {
       // On connect this is the RESOLVED value to preview in the live DOM; on a
       // plain edit it's undefined (the value IS what's shown). Either way the
       // template saves `value`.
-      const previewValue = resolvePreviewValue(slot, value) ?? undefined;
+      const previewValue = resolvePreviewValue(value) ?? undefined;
 
       if (slot.kind === "text") {
         postCommandToBridge({
@@ -1419,15 +1407,6 @@ export const StudioWrapper = () => {
     () =>
       pageFields
         .filter((field: any) => isMediaSlotDatatype(field?.datatype))
-        .map(toConnectField),
-    [pageFields]
-  );
-
-  // Fields offered on a boolean attribute (controls, autoplay, …) — yes/no only.
-  const booleanFields = useMemo<ConnectField[]>(
-    () =>
-      pageFields
-        .filter((field: any) => isBooleanReferenceableDatatype(field?.datatype))
         .map(toConnectField),
     [pageFields]
   );
@@ -1599,7 +1578,6 @@ export const StudioWrapper = () => {
                 onBrowseMedia={handleBrowseMedia}
                 connectFields={connectFields}
                 mediaFields={mediaFields}
-                booleanFields={booleanFields}
                 drawerWidth={drawerWidth}
                 logoSrc={contentOneLogo}
               />

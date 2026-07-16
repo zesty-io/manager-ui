@@ -84,7 +84,7 @@ const FIELD_DATATYPE_META: Record<string, FieldDatatypeMeta> = {
   },
   yes_no: {
     Icon: ToggleOnRounded,
-    category: "options",
+    category: "neutral",
     description: "A true / false toggle",
   },
   dropdown: {
@@ -185,12 +185,6 @@ export const isMediaSlotDatatype = (datatype?: string | null): boolean => {
   const { category } = getFieldMeta(datatype);
   return category === "media" || category === "link";
 };
-
-// Whether a boolean attribute (controls, autoplay, muted, loop) can bind to this
-// field — only a yes/no field, whose value drives the attribute's presence.
-export const isBooleanReferenceableDatatype = (
-  datatype?: string | null
-): boolean => datatype === "yes_no";
 
 // The Parsley reference for a field. A media asset needs getImage() to resolve
 // to a URL; every other field (text, an external-URL link, …) is referenced

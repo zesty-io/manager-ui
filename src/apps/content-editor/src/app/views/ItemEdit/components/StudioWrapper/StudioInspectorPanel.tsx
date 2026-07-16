@@ -314,8 +314,6 @@ type StudioInspectorPanelProps = {
   // Media fields, offered on img/video src + poster slots (writes an image
   // expression, e.g. "{{this.hero.getImage()}}").
   mediaFields: ConnectField[];
-  // Yes/no fields, offered on boolean attributes (controls, autoplay, …).
-  booleanFields: ConnectField[];
   drawerWidth: number;
   logoSrc: string;
 };
@@ -388,7 +386,6 @@ const SlotField = ({
   onBrowseMedia,
   connectFields,
   mediaFields,
-  booleanFields,
 }: {
   slot: ElementSlot;
   mode: "content" | "layout";
@@ -399,7 +396,6 @@ const SlotField = ({
   onBrowseMedia: (slot: ElementSlot) => void;
   connectFields: ConnectField[];
   mediaFields: ConnectField[];
-  booleanFields: ConnectField[];
 }) => {
   const dataCy = `StudioSlotInput-${slot.key}`;
   const isSelect = slot.control === "select";
@@ -413,18 +409,15 @@ const SlotField = ({
   const isTextSlot = slot.kind === "text";
 
   // Which fields this slot's Connect Item dropdown offers: text/number/options
-  // for text slots + alt; media + external-URL for img/video src/poster; yes/no
-  // for boolean attributes. The Parsley each field emits is decided per field by
-  // fieldToParsley (a media asset resolves via getImage(); everything else is
-  // referenced verbatim, boolean fields included since Zesty drops a falsy attr).
+  // for text slots + alt; media + external-URL for img/video src/poster. The
+  // Parsley each field emits is decided per field by fieldToParsley (a media
+  // asset resolves via getImage(); everything else is referenced verbatim).
   const connectableFields = !slot.layoutEditable
     ? []
     : isTextSlot || isTextAttr
     ? connectFields
     : isMediaAttr
     ? mediaFields
-    : isSelect
-    ? booleanFields
     : [];
 
   // Connected when the value is exactly the Parsley a known field emits —
@@ -556,7 +549,6 @@ export const StudioInspectorPanel = ({
   onBrowseMedia,
   connectFields,
   mediaFields,
-  booleanFields,
   drawerWidth,
   logoSrc,
 }: StudioInspectorPanelProps) => {
@@ -717,7 +709,6 @@ export const StudioInspectorPanel = ({
                 onBrowseMedia={onBrowseMedia}
                 connectFields={connectFields}
                 mediaFields={mediaFields}
-                booleanFields={booleanFields}
               />
             ))}
           </Stack>
