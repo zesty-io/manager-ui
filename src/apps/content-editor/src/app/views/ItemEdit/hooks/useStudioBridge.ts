@@ -27,27 +27,27 @@ const bridgeInjectedCss = `
   .studio-dragging * {
     visibility: hidden !important;
   }
-  .studio-drop-before {
+  [data-layout-id].studio-drop-before {
     box-shadow:
       inset 0 4px 0 #ff9800,
       0 0 0 1px rgba(255, 152, 0, 0.35);
   }
-  .studio-drop-before-horizontal {
+  [data-layout-id].studio-drop-before-horizontal {
     box-shadow:
       inset 4px 0 0 #ff9800,
       0 0 0 1px rgba(255, 152, 0, 0.35);
   }
-  .studio-drop-after {
+  [data-layout-id].studio-drop-after {
     box-shadow:
       inset 0 -4px 0 #ff9800,
       0 0 0 1px rgba(255, 152, 0, 0.35);
   }
-  .studio-drop-after-horizontal {
+  [data-layout-id].studio-drop-after-horizontal {
     box-shadow:
       inset -4px 0 0 #ff9800,
       0 0 0 1px rgba(255, 152, 0, 0.35);
   }
-  .studio-drop-inside {
+  [data-layout-id].studio-drop-inside {
     background-color: rgba(255, 152, 0, 0.18);
     outline: 2px dashed #ff9800;
     outline-offset: 2px;
@@ -70,12 +70,12 @@ type Args = {
   handleTemplateSourceMap: (msg: any) => void;
   handleReorderOutput: (msg: any) => void;
   handleLayoutContentUpdate: (msg: any) => void;
+  handleLayersTree: (msg: any) => void;
   applyLayoutSelection: (next: {
     codeId?: string;
     layoutId?: string;
     breadcrumb?: { layoutId?: string; label: string }[];
   }) => void;
-  requestProceedWithPendingLayoutSave: (onProceed: () => void) => void;
   clearLayoutSelection: () => void;
   applySelection: (next: {
     studioId?: string;
@@ -86,10 +86,6 @@ type Args = {
   }) => void;
   fieldNameByZuid: Map<string, string>;
   currentHoverStudioIdRef: React.MutableRefObject<string | null>;
-  pendingLayoutHasMappedSource: boolean;
-  selectedLayoutCodeId?: string;
-  selectedItemDirty?: boolean;
-  selectedItemZUID?: string;
   clearSelection: () => void;
   previewReloadContinuationRef: MutableRefObject<null | (() => void)>;
   setIsNavigating: (value: boolean) => void;
@@ -111,16 +107,12 @@ export const useStudioBridge = ({
   handleTemplateSourceMap,
   handleReorderOutput,
   handleLayoutContentUpdate,
+  handleLayersTree,
   applyLayoutSelection,
-  requestProceedWithPendingLayoutSave,
   clearLayoutSelection,
   applySelection,
   fieldNameByZuid,
   currentHoverStudioIdRef,
-  pendingLayoutHasMappedSource,
-  selectedLayoutCodeId,
-  selectedItemDirty,
-  selectedItemZUID,
   clearSelection,
   previewReloadContinuationRef,
   setIsNavigating,
@@ -133,6 +125,7 @@ export const useStudioBridge = ({
       css: bridgeInjectedCss,
     });
     syncBridgeInteractionMode(interactionMode);
+    postCommandToBridge({ action: "requestLayersTree" });
   }, [interactionMode, postCommandToBridge, syncBridgeInteractionMode]);
 
   const handleBridgeError = useCallback(
@@ -185,17 +178,6 @@ export const useStudioBridge = ({
         case "mousedown":
         case "dblclick": {
           if (interactionMode !== "layout") return;
-          if (
-            pendingLayoutHasMappedSource &&
-            selectedLayoutCodeId &&
-            codeId &&
-            codeId !== selectedLayoutCodeId
-          ) {
-            requestProceedWithPendingLayoutSave(() =>
-              applyLayoutSelection({ codeId, layoutId, breadcrumb })
-            );
-            return;
-          }
           applyLayoutSelection({ codeId, layoutId, breadcrumb });
           return;
         }
@@ -212,28 +194,6 @@ export const useStudioBridge = ({
         case "click": {
           if (interactionMode === "layout") return;
           if (!fieldZuid) return;
-
-          const isChangingItem =
-            Boolean(itemZuid) &&
-            Boolean(selectedItemZUID) &&
-            itemZuid !== selectedItemZUID;
-          if (isChangingItem && selectedItemDirty) {
-            const openModal = (window as any).openContentNavigationModal;
-            if (typeof openModal === "function") {
-              openModal((shouldProceed: boolean) => {
-                if (shouldProceed) {
-                  applySelection({
-                    studioId,
-                    fieldZuid,
-                    fieldType,
-                    itemZuid,
-                    modelZuid,
-                  });
-                }
-              });
-              return;
-            }
-          }
 
           applySelection({
             studioId,
@@ -296,12 +256,7 @@ export const useStudioBridge = ({
       dispatch,
       fieldNameByZuid,
       interactionMode,
-      pendingLayoutHasMappedSource,
       postCommandToBridge,
-      requestProceedWithPendingLayoutSave,
-      selectedItemDirty,
-      selectedItemZUID,
-      selectedLayoutCodeId,
       onBridgeFieldInput,
     ]
   );
@@ -353,6 +308,11 @@ export const useStudioBridge = ({
         return;
       }
 
+      if (msg.type === "LAYERS_TREE") {
+        handleLayersTree(msg);
+        return;
+      }
+
       if (msg.type === "STATIC_EDIT_REJECTED") {
         dispatch(
           notify({
@@ -379,6 +339,7 @@ export const useStudioBridge = ({
     handleBridgeDomEvent,
     handleBridgeError,
     handleBridgeReady,
+    handleLayersTree,
     handleLayoutContentUpdate,
     handleReorderOutput,
     handleTemplateSourceMap,

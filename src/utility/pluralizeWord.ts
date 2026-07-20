@@ -1,3 +1,3 @@
 export default (word: string, count: number) => {
-  return count > 1 ? `${word}s` : word;
+  return count !== 1 ? `${word}s` : word;
 };

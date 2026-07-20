@@ -38,7 +38,9 @@ export const RowDialog = ({
   editRowData,
   isUpdate,
 }: RowDialogProps) => {
-  const [formData, setFormData] = useState<Record<string, any>>({});
+  const [formData, setFormData] = useState<Record<string, any>>(() =>
+    isUpdate && editRowData ? cloneDeep(editRowData) : {}
+  );
   const [formErrors, setFormErrors] = useState<Record<string, Error>>({});
   const [resetKey, setResetKey] = useState(0);
   const [version, setVersion] = useState(0);
@@ -71,12 +73,12 @@ export const RowDialog = ({
   // Set default values for the fields
   useEffect(() => {
     if (isUpdate) {
-      setFormData(editRowData);
+      // bump version to remount FieldTypeTinyMCE on dialog open
       setVersion((prev) => prev + 1);
     } else {
       setFormData(getInitialFormData());
     }
-  }, [getInitialFormData, isUpdate, editRowData]);
+  }, [getInitialFormData, isUpdate]);
 
   const handleChange = useCallback(
     (value, name) => {
@@ -331,7 +333,7 @@ export const RowDialog = ({
             <Button
               data-cy="RemoveRepeaterRowItemBtn"
               variant="contained"
-              onClick={() => onRemoveRow(formData.id)}
+              onClick={() => onRemoveRow(formData.__rowId__)}
               color="error"
               startIcon={<DeleteRoundedIcon />}
             >

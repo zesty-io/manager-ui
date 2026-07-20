@@ -15,6 +15,7 @@ import {
   FieldTypeMedia,
   MediaItem,
 } from "../../../../components/FieldTypeMedia";
+import DndContextProvider from "shell/components/DndContextProvider";
 import { MediaApp } from "../../../../../../../media/src/app";
 import { useLazyGetFileQuery } from "../../../../../../../../shell/services/mediaManager";
 import { fileExtension } from "../../../../../../../media/src/app/utils/fileUtils";
@@ -22,8 +23,9 @@ import { fetchFields } from "../../../../../../../../shell/store/fields";
 
 type MetaImageProps = {
   onChange: (value: string, name: string) => void;
+  skipImageFallback?: boolean;
 };
-export const MetaImage = ({ onChange }: MetaImageProps) => {
+export const MetaImage = ({ onChange, skipImageFallback }: MetaImageProps) => {
   const dispatch = useDispatch();
   const location = useLocation();
   const isCreateItemPage = location?.pathname?.split("/")?.pop() === "new";
@@ -60,7 +62,14 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
     localStorage.getItem("cvrt") && localStorage.getItem("cvad");
 
   const contentImages = useMemo(() => {
-    if (!modelFields?.length || !Object.keys(item?.data ?? {})?.length) return;
+    if (
+      skipImageFallback ||
+      !modelFields?.length ||
+      !Object.keys(item?.data ?? {})?.length
+    ) {
+      return;
+    }
+
     const mediaFieldsWithImageOnTheName: string[] = [];
     const otherMediaFields: string[] = [];
 
@@ -86,7 +95,7 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
     });
 
     return [...mediaFieldsWithImageOnTheName, ...otherMediaFields];
-  }, [modelFields, item?.data]);
+  }, [skipImageFallback, modelFields, item?.data]);
 
   useEffect(() => {
     if (!contentImages?.length) {
@@ -288,14 +297,16 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
         errors={{}}
       >
         <Stack gap={1.25}>
-          <MediaItem
-            index={0}
-            imageZUID={temporaryMetaImageURL}
-            isBynderAsset={temporaryMetaImageURL.includes("bynder.com")}
-            isBynderSessionValid={!!isBynderSessionValid}
-            hideActionButtons
-            hideDrag
-          />
+          <DndContextProvider>
+            <MediaItem
+              index={0}
+              imageZUID={temporaryMetaImageURL}
+              isBynderAsset={temporaryMetaImageURL.includes("bynder.com")}
+              isBynderSessionValid={!!isBynderSessionValid}
+              hideActionButtons
+              hideDrag
+            />
+          </DndContextProvider>
           <Button
             loading={isCreatingOgImageField || isUndeletingField}
             size="large"

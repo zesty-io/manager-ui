@@ -1,0 +1,18 @@
+{
+  "results": [
+    {
+      "id": 9001,
+      "name": "Reshaped Item One",
+      "hue": "Blue",
+      "image": "https://example.com/reshaped-one.jpg",
+      "cost": "$10"
+    },
+    {
+      "id": 9002,
+      "name": "Reshaped Item Two",
+      "hue": "Green",
+      "image": "https://example.com/reshaped-two.jpg",
+      "cost": "$20"
+    }
+  ]
+}

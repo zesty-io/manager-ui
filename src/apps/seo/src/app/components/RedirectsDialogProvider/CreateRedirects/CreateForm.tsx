@@ -1,4 +1,4 @@
-import { useState, FC, useRef, useMemo, ReactNode, useEffect } from "react";
+import { useState, FC, useRef, useMemo, useEffect, useCallback } from "react";
 import {
   Button,
   Dialog,
@@ -9,7 +9,7 @@ import {
   Box,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { DialogContent, TextField, MenuItem, Tooltip } from "@mui/material";
+import { DialogContent, TextField, MenuItem } from "@mui/material";
 import ShuffleIcon from "@mui/icons-material/Shuffle";
 import AddIcon from "@mui/icons-material/Add";
 import { IconButton } from "@zesty-io/material";
@@ -32,11 +32,11 @@ import {
   RedirectsTargetType,
 } from "../../../../../../../shell/services/types";
 import { notify } from "../../../../../../../shell/store/notifications";
-import InfoIcon from "@mui/icons-material/Info";
-import NotInterestedIcon from "@mui/icons-material/NotInterested";
 import SearchField from "./SearchField";
 import { AppState } from "shell/store/types";
 import { searchItems } from "shell/store/content";
+import { validateUrl } from "utility/validateUrl";
+import { FieldWrapper } from "./FieldWrapper";
 
 type CreateFormProps = {
   open: boolean;
@@ -50,21 +50,6 @@ type PathProps = {
 };
 
 export type PublishingsMap = Record<string, Publishing>;
-
-export const validateUrl = (url: string) => {
-  const validProtocols = ["http://", "https://"];
-
-  const hasValidProtocol = validProtocols.some((protocol) =>
-    url.startsWith(protocol)
-  );
-  if (!hasValidProtocol) return false;
-  try {
-    new URL(url);
-    return true;
-  } catch (_) {
-    return false;
-  }
-};
 
 const CreateForm: FC<CreateFormProps> = ({
   open,
@@ -84,6 +69,15 @@ const CreateForm: FC<CreateFormProps> = ({
   const [submitType, setSubmitType] = useState<"single" | "multiple">("single");
   const target = targetType === "page" ? targetInternal?.ZUID : targetPath;
   const [invalidTarget, setInvalidTarget] = useState<boolean>(false);
+
+  const urlValidation = useCallback(
+    (url: string) => {
+      const isValid = validateUrl(url);
+      setInvalidTarget(!isValid);
+      return isValid;
+    },
+    [setInvalidTarget]
+  );
 
   const isEdit = !!defaultValues?.ZUID;
   const actionType = !!isEdit ? "edit" : "create";
@@ -132,11 +126,6 @@ const CreateForm: FC<CreateFormProps> = ({
     !targetType ||
     invalidTarget;
 
-  const urlValidation = (url: string) => {
-    const isValidUrl = validateUrl(url);
-    setInvalidTarget(!isValidUrl);
-    return isValidUrl;
-  };
   const resetForm = () => {
     setPaths([{ id: new Date().getTime() + 1000, path: "" }]);
     setCode(301);
@@ -524,6 +513,7 @@ const CreateForm: FC<CreateFormProps> = ({
         }}
       >
         <Button
+          data-cy="RedirectsFormCancelButton"
           size="medium"
           variant="outlined"
           color="inherit"
@@ -560,98 +550,6 @@ const CreateForm: FC<CreateFormProps> = ({
         </Stack>
       </DialogActions>
     </Dialog>
-  );
-};
-
-type FieldWrapperProps = {
-  label: string;
-  tooltip?: string | ReactNode;
-  disabledTooltip?: string | ReactNode;
-  readOnly?: boolean;
-  children: ReactNode;
-};
-
-export const FieldWrapper: FC<FieldWrapperProps> = ({
-  label,
-  tooltip,
-  disabledTooltip,
-  readOnly = false,
-  children,
-}: FieldWrapperProps) => {
-  const withDisabledTooltip =
-    !!disabledTooltip && readOnly ? (
-      <Tooltip
-        title={
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-              gap: "8px",
-            }}
-          >
-            <NotInterestedIcon color="error" fontSize="small" />
-            {disabledTooltip}
-          </Box>
-        }
-        placement="top"
-        followCursor
-      >
-        <Box width="100%">{children}</Box>
-      </Tooltip>
-    ) : (
-      <>{children}</>
-    );
-
-  return (
-    <Box
-      width="100%"
-      display="flex"
-      flexDirection="column"
-      justifyContent="flex-start"
-      alignItems="flex-start"
-      rowGap="4px"
-    >
-      <Stack
-        direction="row"
-        justifyContent="flex-start"
-        alignItems="center"
-        width="100%"
-        gap="8px"
-      >
-        <Typography variant="body2" fontWeight={600}>
-          {label}
-        </Typography>
-        {!!tooltip && (
-          <Tooltip
-            title={tooltip}
-            placement="top-start"
-            slotProps={{
-              popper: {
-                style: {
-                  width: "fit-content",
-                  maxWidth: "600px",
-                },
-                modifiers: [
-                  {
-                    name: "offset",
-                    options: {
-                      offset: [-20, -10],
-                    },
-                  },
-                ],
-              },
-            }}
-          >
-            <InfoIcon
-              sx={{ width: "10px", height: "10px", color: "action.active" }}
-            />
-          </Tooltip>
-        )}
-      </Stack>
-      {withDisabledTooltip}
-    </Box>
   );
 };
 
