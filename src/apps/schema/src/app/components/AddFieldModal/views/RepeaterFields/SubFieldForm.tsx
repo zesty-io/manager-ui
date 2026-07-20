@@ -48,6 +48,7 @@ type SubFieldFormProps = {
   fieldData?: ContentModelField;
   onSubmit: (payload: RepeaterSubField, createAnotherField?: boolean) => void;
   subFields: RepeaterSubField[];
+  repeaterFieldName?: string;
 };
 
 type ActiveTab = "details" | "rules" | "learn";
@@ -62,6 +63,7 @@ const SubFieldFormContent = ({
   onModalClose,
   onBackClick,
   onSubmit,
+  repeaterFieldName,
 }: SubFieldFormProps) => {
   const isUpdateField = !isEmpty(fieldData);
   const [activeTab, setActiveTab] = useState<ActiveTab>("details");
@@ -283,6 +285,7 @@ const SubFieldFormContent = ({
             formData={formData}
             isSubmitClicked={isSubmitClicked}
             errors={errors}
+            repeaterFieldName={repeaterFieldName}
           />
         )}
         {activeTab === "rules" && (

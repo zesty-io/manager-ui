@@ -177,6 +177,7 @@ export const RepeaterFields = ({
               onModalClose={() => setOpenedView(null)}
               onBackClick={() => setOpenedView("selection")}
               onSubmit={handleAddField}
+              repeaterFieldName={name}
             />
           )}
           {openedView === "updateFieldForm" && (
@@ -201,6 +202,7 @@ export const RepeaterFields = ({
                   : undefined
               }
               onSubmit={handleUpdateField}
+              repeaterFieldName={name}
             />
           )}
         </Dialog>

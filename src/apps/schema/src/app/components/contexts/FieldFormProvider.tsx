@@ -103,6 +103,9 @@ export const FieldFormProvider = ({
           formFields.options = options as any;
         } else if (field.name === "tooltip") {
           formFields["tooltip"] = fieldData.settings?.tooltip || "";
+        } else if (field.name === "integrationFieldConfig") {
+          formFields["integrationFieldConfig"] =
+            fieldData.settings?.integrationFieldConfig;
         } else if (field.name === "defaultValue") {
           formFields["defaultValue"] =
             type === "number"
@@ -298,11 +301,8 @@ export const FieldFormProvider = ({
       }
 
       if (inputName === "integrationFieldConfig") {
-        const intField = (
-          isUpdateField
-            ? fieldData?.settings?.integrationFieldConfig
-            : formData?.integrationFieldConfig
-        ) as IntegrationFieldConfig;
+        const intField =
+          formData?.integrationFieldConfig as IntegrationFieldConfig;
 
         if (!intField?.endpoint || !intField?.type || !intField?.keyPaths) {
           newErrorsObj[inputName] = "Incomplete API Configuration";

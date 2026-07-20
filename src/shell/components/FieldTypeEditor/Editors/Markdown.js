@@ -17,7 +17,12 @@ export function MarkdownEditor(props) {
 
   return (
     <textarea
-      className={cx(styles.Markdown, props.error ? styles.hasError : "")}
+      data-cy="markdownEditorTextarea"
+      className={cx(
+        styles.Markdown,
+        props.error ? styles.hasError : "",
+        props.compact ? styles.compact : ""
+      )}
       placeholder={props.placeholder}
       value={value}
       onInput={onInput}

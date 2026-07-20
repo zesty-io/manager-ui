@@ -40,6 +40,7 @@ export interface SubMenu {
   onClick?: () => void;
   disableActive?: boolean;
   substringPathMatch?: boolean;
+  dataCy?: string;
 }
 interface Props {
   onFilterChange?: (keyword: string) => void;
@@ -280,6 +281,7 @@ export const AppSideBar = memo(
                             }}
                           >
                             <ListItemButton
+                              {...(menu.dataCy && { "data-cy": menu.dataCy })}
                               selected={menu.disableActive ? false : isActive}
                               sx={{
                                 height: 36,
