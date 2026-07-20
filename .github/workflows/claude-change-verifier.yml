@@ -1,0 +1,161 @@
+name: Claude Change Verifier
+
+# Static QA on every non-draft, same-repo PR into dev. Reads the PR diff, the changed source, and
+# the linked issue, judges the change against the issue's acceptance criteria from the code, and
+# posts (or updates) one QA sign-off comment. It never boots the app or drives a browser.
+# The check fails only on a clear FAIL or a missing report; INCONCLUSIVE stays green.
+
+on:
+  pull_request:
+    branches: [dev]
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths-ignore:
+      - "README*"
+      - "**/CHANGELOG*"
+      - "docs/**"
+      - "LICENSE*"
+      - ".gitignore"
+
+jobs:
+  verify:
+    # Fork PRs don't get ANTHROPIC_API_KEY; this uses pull_request (not pull_request_target).
+    if: >-
+      github.event.pull_request.draft == false &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    concurrency:
+      group: claude-verify-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: read
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          fetch-depth: 1
+
+      # Resolve the linked issue: branch name `<issue#>-slug`, then closing refs, then a body grep.
+      - name: Resolve linked issue
+        id: issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+          HEAD_REF: ${{ github.head_ref }}
+        run: |
+          set -uo pipefail
+          NUM=$(printf '%s' "$HEAD_REF" | grep -oE '(^|/)[0-9]+-' | grep -oE '[0-9]+' | head -1 || true)
+          if [ -z "$NUM" ]; then
+            NUM=$(gh api graphql \
+              -f query='query($o:String!,$r:String!,$p:Int!){repository(owner:$o,name:$r){pullRequest(number:$p){closingIssuesReferences(first:1){nodes{number}}}}}' \
+              -F o="${REPO%/*}" -F r="${REPO#*/}" -F p="$PR" \
+              --jq '.data.repository.pullRequest.closingIssuesReferences.nodes[0].number // empty' 2>/dev/null || true)
+          fi
+          echo "issue_number=${NUM:-}" >> "$GITHUB_OUTPUT"
+          echo "Linked issue: ${NUM:-<none> (change-only mode)}"
+
+      - uses: anthropics/claude-code-action@1dc994ee7a008f0ecc866d9ac23ef036b7229f84 # v1.0.127
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: |
+            --model claude-opus-4-7-1m
+            --max-turns 50
+            --allowedTools "Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh issue view:*),Read,Write,Grep,Glob"
+          prompt: |
+            You are a senior QA engineer reviewing a pull request from the code only — the PR diff and
+            the checked-out source. There is no running app or browser, so never claim to have observed
+            runtime behavior.
+
+            Inputs:
+              REPO         = ${{ github.repository }}
+              PR_NUMBER    = ${{ github.event.pull_request.number }}
+              ISSUE_NUMBER = ${{ steps.issue.outputs.issue_number }}   (empty = no linked issue)
+              REPORT_FILE  = ${{ github.workspace }}/qa-comment.md
+
+            1. If ISSUE_NUMBER is set, read it (gh issue view <ISSUE_NUMBER> --repo <REPO> --json
+               title,body,comments,labels) and derive a short numbered list of acceptance criteria.
+               If empty, run change-only mode: no criteria, just assess whether the change is correct.
+            2. Read the diff (gh pr diff <PR_NUMBER> --repo <REPO>), open the changed files, and
+               summarize in plain language what the change does.
+            3. Judge each criterion from the code as one of:
+                 ✅ Satisfied    — the code clearly implements it.
+                 ⚠️ Inconclusive — can't tell from the code alone. Not a failure.
+                 ❌ Not met      — the code clearly fails it (give evidence).
+               When unsure between ⚠️ and ❌, choose ⚠️.
+            4. Overall verdict: FAIL only if a criterion is ❌ or the diff shows a clear bug;
+               INCONCLUSIVE if nothing is clearly failing but you couldn't confirm; otherwise PASS.
+               Never FAIL on uncertainty.
+            5. Suggest Cypress coverage in prose (no code): find the real spec under cypress/e2e/<area>/
+               and describe the cases that would lock in the behavior.
+
+            Write the report to REPORT_FILE with the Write tool, in exactly this shape (keep both HTML
+            markers verbatim). Do not post a comment or reply in chat.
+
+              <!-- cv-verifier -->
+              ## QA Review — <PASS | FAIL | INCONCLUSIVE>
+              <If an issue: "Validates #<n>: <title>". Else: "No linked issue found — change-only QA.">
+
+              ### Acceptance criteria
+              <numbered list; each line starts with ✅ / ⚠️ / ❌. Change-only mode: list what you checked.>
+
+              ### What this change does
+              <plain-language summary>
+
+              ### Gaps & concerns
+              <unmet criteria, missing edge cases, regression risk — or "None observed">
+
+              ### Suggested Cypress coverage
+              <real spec file name + prose cases>
+
+              <!-- qa-verdict: <PASS_OR_FAIL_OR_INCONCLUSIVE> -->
+
+            Use plain ordered lists for criteria (refer to them as "criterion 1"); never write `#1`
+            (GitHub auto-links it). The only `#<n>` allowed is the "Validates #<n>" header.
+
+      # Post the report, or update the existing QA comment in place. Reads the verdict for the gate.
+      - name: Post or update QA comment
+        id: qa
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+          FILE="$GITHUB_WORKSPACE/qa-comment.md"
+          if [ ! -s "$FILE" ] || ! grep -q '<!-- cv-verifier -->' "$FILE"; then
+            echo "::warning::qa-comment.md missing or malformed; the QA gate will fail."
+            echo "no_report=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          BODY=$(cat "$FILE")
+          VERDICT=$(printf '%s' "$BODY" | grep -oiE '<!-- qa-verdict:[[:space:]]*(PASS|FAIL|INCONCLUSIVE)[[:space:]]*-->' \
+            | grep -oiE '(PASS|FAIL|INCONCLUSIVE)' | head -n1 | tr '[:lower:]' '[:upper:]' || true)
+          PAYLOAD=$(BODY="$BODY" python3 -c 'import os,json,sys; sys.stdout.write(json.dumps({"body": os.environ["BODY"]}))')
+          CID=$(gh api "repos/$REPO/issues/$PR/comments" --paginate \
+            --jq '.[] | select(.user.login == "github-actions[bot]") | select(.body | startswith("<!-- cv-verifier -->")) | .id' | head -n1)
+          if [ -n "${CID:-}" ]; then
+            printf '%s' "$PAYLOAD" | gh api -X PATCH "repos/$REPO/issues/comments/$CID" --input - --silent
+            echo "Updated QA comment $CID."
+          else
+            printf '%s' "$PAYLOAD" | gh api -X POST "repos/$REPO/issues/$PR/comments" --input - --silent
+            echo "Created QA comment."
+          fi
+          echo "verdict=${VERDICT:-}" >> "$GITHUB_OUTPUT"
+
+      - name: QA gate
+        if: always()
+        run: |
+          V="${{ steps.qa.outputs.verdict }}"
+          echo "QA verdict: ${V:-<none>} (no_report=${{ steps.qa.outputs.no_report || 'false' }})"
+          if [ "${{ steps.qa.outputs.no_report }}" = "true" ]; then
+            echo "::error::No QA report was produced — check the workflow logs."
+            exit 1
+          fi
+          if [ "$V" = "FAIL" ]; then
+            echo "::error::QA found an unmet criterion or a clear bug — see the QA Review comment."
+            exit 1
+          fi
