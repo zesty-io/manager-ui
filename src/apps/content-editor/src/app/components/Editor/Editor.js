@@ -1,15 +1,23 @@
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import {
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useRef,
+  useLayoutEffect,
+} from "react";
+import { Box } from "@mui/material";
 import { useDispatch } from "react-redux";
-import { AppLink } from "shell/components/AppLink";
 import { unescape } from "lodash";
 import { Field } from "./Field";
-
-import styles from "./Editor.less";
 import { cloneDeep, isEqual } from "lodash";
 import { useGetContentModelFieldsQuery } from "../../../../../../shell/services/instance";
 import { DYNAMIC_META_FIELD_NAMES } from "../../views/ItemEdit/Meta";
 import { FieldsLoader } from "./FieldsLoader";
-import { UsedBlocks } from "../UsedBlocks";
+import { useResizeObserver } from "shell/hooks/useResizeObserver";
+
+const COMPACT_MAX_WIDTH = 390;
 
 export const MaxLengths = {
   text: 150,
@@ -35,6 +43,10 @@ export default memo(function Editor({
   isLoadingItem,
   visibleFieldName,
 }) {
+  const containerRef = useRef(null);
+  const rects = useResizeObserver(containerRef);
+  // Initialise to false; useLayoutEffect below corrects it before first paint.
+  const [compact, setCompact] = useState(false);
   const dispatch = useDispatch();
   const isNewItem = itemZUID.slice(0, 3) === "new";
   const { data: fields, isFetching: isFetchingFields } =
@@ -42,6 +54,23 @@ export default memo(function Editor({
   const [isLoaded, setIsLoaded] = useState(false);
   const [prevFirstContentFieldValue, setPrevFirstContentFieldValue] =
     useState(null);
+
+  // Sync initial compact state before the browser paints. React batches the
+  // resulting setState with the first render so the user never sees the
+  // compact=false frame; TinyMCE therefore initialises with the correct key.
+  useLayoutEffect(() => {
+    if (containerRef.current) {
+      setCompact(
+        containerRef.current.getBoundingClientRect().width <= COMPACT_MAX_WIDTH
+      );
+    }
+  }, []);
+
+  useEffect(() => {
+    if (rects) {
+      setCompact(rects.width <= COMPACT_MAX_WIDTH);
+    }
+  }, [rects?.width]);
 
   const metaFields = useMemo(() => {
     if (fields?.length) {
@@ -398,50 +427,72 @@ export default memo(function Editor({
     }
   }, [isNewItem, setIsLoaded, applyDefaultValuesToItemData]);
 
-  if (isFetchingFields || isLoadingItem) {
-    return <FieldsLoader />;
-  }
-
-  if (!isLoaded) return null;
-
   return (
-    <div className={styles.Fields}>
-      {renderedFields?.map((field) => {
-        return (
-          <div
-            key={`${field.ZUID}`}
-            id={field.ZUID}
-            className={styles.Field}
-            data-cy={`field:${field.name}`}
-          >
-            <Field
-              ZUID={field.ZUID}
-              contentModelZUID={field.contentModelZUID}
-              active={active === field.ZUID}
-              name={field.name}
-              label={field.label}
-              description={field.description}
-              required={field.required}
-              relatedFieldZUID={field.relatedFieldZUID}
-              relatedModelZUID={field.relatedModelZUID}
-              datatype={field.datatype}
-              options={field.options}
-              settings={field.settings}
-              onChange={onChange}
-              onSave={onSave}
-              value={item?.data?.[field.name]}
-              version={item?.meta?.version}
-              langID={item?.meta?.langID}
-              errors={fieldErrors[field.name]}
-              maxLength={
-                field.settings?.maxCharLimit ?? MaxLengths[field.datatype]
-              }
-              minLength={field.settings?.minCharLimit ?? 0}
-            />
-          </div>
-        );
-      })}
-      {model.type !== "block" && <UsedBlocks />}
-    </div>
+    <>
+      <Box ref={containerRef} width="100%" />
+      <Box
+        data-cy="FieldsContainer"
+        sx={{
+          pr: 1,
+          display: "block",
+          width: "100%",
+          position: "relative",
+          boxSizing: "border-box",
+          overflow: "auto",
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
+          "&::-webkit-scrollbar": {
+            display: "none",
+          },
+        }}
+      >
+        {!isLoaded || isFetchingFields || isLoadingItem ? (
+          <FieldsLoader />
+        ) : (
+          renderedFields?.map((field) => (
+            <Box
+              key={field.ZUID}
+              id={field.ZUID}
+              data-cy={`field:${field?.name}`}
+              sx={{
+                py: 1.5,
+                px: 0,
+                "&:first-of-type": {
+                  px: 0,
+                  pt: 0,
+                  pb: 1,
+                },
+              }}
+            >
+              <Field
+                ZUID={field.ZUID}
+                contentModelZUID={field.contentModelZUID}
+                active={active === field.ZUID}
+                name={field.name}
+                label={field.label}
+                description={field.description}
+                required={field.required}
+                relatedFieldZUID={field.relatedFieldZUID}
+                relatedModelZUID={field.relatedModelZUID}
+                datatype={field.datatype}
+                options={field.options}
+                settings={field.settings}
+                onChange={onChange}
+                onSave={onSave}
+                value={item?.data?.[field.name]}
+                version={item?.meta?.version}
+                langID={item?.meta?.langID}
+                errors={fieldErrors[field.name]}
+                maxLength={
+                  field.settings?.maxCharLimit ?? MaxLengths[field.datatype]
+                }
+                minLength={field.settings?.minCharLimit ?? 0}
+                compact={compact}
+              />
+            </Box>
+          ))
+        )}
+      </Box>
+    </>
   );
 });

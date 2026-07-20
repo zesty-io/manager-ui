@@ -1,6 +1,14 @@
-import CloudUploadRoundedIcon from "@mui/icons-material/CloudUploadRounded";
 import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
-import { Alert, Box, Button, CircularProgress, Dialog } from "@mui/material";
+import {
+  Alert,
+  Box,
+  Button,
+  CircularProgress,
+  Dialog,
+  Modal,
+  Paper,
+} from "@mui/material";
+
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { MemoryRouter, useHistory, useLocation } from "react-router";
@@ -35,15 +43,39 @@ import {
 import { StudioHeader } from "./components/StudioWrapper/StudioHeader";
 import { StudioPreview } from "./components/StudioWrapper/StudioPreview";
 import { StudioSidePanel } from "./components/StudioWrapper/StudioSidePanel";
+import { StudioInspectorPanel } from "./components/StudioWrapper/StudioInspectorPanel";
+import {
+  isMediaSlotDatatype,
+  isTextReferenceableDatatype,
+} from "./components/StudioWrapper/studioFieldMeta";
+import { StudioLayersPanel } from "./components/StudioWrapper/StudioLayersPanel";
+import {
+  StudioSaveChange,
+  StudioSaveChangesModal,
+} from "./components/StudioWrapper/StudioSaveChangesModal";
 import { useLayoutReorderState } from "./hooks/useLayoutReorderState";
+import {
+  collectDirtyContentItems,
+  useStudioContentSave,
+} from "./hooks/useStudioContentSave";
 import { useStudioBridge } from "./hooks/useStudioBridge";
-import { InteractionMode, LayoutBreadcrumbItem } from "./hooks/studioTypes";
+import {
+  ConnectField,
+  ElementSlot,
+  InteractionMode,
+  LayoutBreadcrumbItem,
+} from "./hooks/studioTypes";
 import { useStudioSelection } from "./hooks/useStudioSelection";
+import { useStudioLayersTree } from "./hooks/useStudioLayersTree";
 import { getRefRegistry } from "../../../../../../engine/refRegistry";
-import { usePermission } from "../../../../../../shell/hooks/use-permissions";
+import { useMultiPermission } from "../../../../../../shell/hooks/use-permissions";
 import { MediaApp } from "../../../../../media/src/app";
 
 const drawerWidth = 440;
+
+// Duration the dark refresh overlay takes to fade in/out. Kept in sync with
+// the `transition` on the overlay in StudioPreview.
+const REFRESH_FADE_MS = 200;
 
 const withCodeIdBreadcrumbRoot = (
   codeId: string,
@@ -65,6 +97,7 @@ export const StudioWrapper = () => {
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const currentHoverStudioIdRef = useRef<string | null>(null);
   const [showPendingLayoutModal, setShowPendingLayoutModal] = useState(false);
+  const [showSaveChangesModal, setShowSaveChangesModal] = useState(false);
   const [interactionMode, setInteractionMode] =
     useState<InteractionMode>("content");
   const [studioSaving, setStudioSaving] = useState(false);
@@ -83,6 +116,12 @@ export const StudioWrapper = () => {
     isLeafImg: boolean;
     imgIndex: number;
     currentSrc: string;
+    // Set when the picker was opened from the Inspector panel, so the panel's
+    // displayed value updates after a pick. `attr` is the target attribute
+    // (src or poster) and `tagName` addresses nested elements.
+    fromInspector?: boolean;
+    attr?: string;
+    tagName?: string;
   } | null>(null);
   const history = useHistory();
   const location = useLocation();
@@ -135,9 +174,25 @@ export const StudioWrapper = () => {
       selector?: string;
       layoutId?: string;
       codeId?: string;
+      // Patched template source for `codeId` (syncTemplateSource).
+      source?: string;
+      targetLayoutId?: string;
+      targetCodeId?: string;
+      position?: string;
       isLeafImg?: boolean;
       imgIndex?: number;
       newSrc?: string;
+      attr?: string;
+      isSelf?: boolean;
+      tagName?: string;
+      elementIndex?: number;
+      newTag?: string;
+      booleanAttr?: boolean;
+      // Which of the element's own text runs to write (updateElementText).
+      textIndex?: number;
+      // Resolved value to DISPLAY in the live DOM on connect, while the template
+      // still saves the Parsley `value` (updateElementText / updateElementAttr).
+      previewValue?: string;
     }) => {
       const iframeWindow = iframeRef.current?.contentWindow;
       if (!iframeWindow) return;
@@ -156,9 +211,20 @@ export const StudioWrapper = () => {
     []
   );
 
+  // The bridge reads its template source off the page's <template> blocks, which
+  // are frozen at render time. Push every unsaved layout edit down so it doesn't
+  // keep answering from the pre-edit source.
+  const syncTemplateSourceToBridge = useCallback(
+    (codeId: string, source: string) => {
+      postCommandToBridge({ action: "syncTemplateSource", codeId, source });
+    },
+    [postCommandToBridge]
+  );
+
   const {
     selectedElement,
     selectedLayout,
+    inspectorSelection,
     panelMode,
     filteredFieldName,
     setSelectedLayout,
@@ -168,6 +234,10 @@ export const StudioWrapper = () => {
     handleLayoutBreadcrumbSelect,
     clearHighlightOnly,
     applySelection,
+    applyInspectorSelection,
+    returnToInspector,
+    updateInspectorSlotValue,
+    refreshInspectorSlots,
   } = useStudioSelection({
     postCommandToBridge,
     codeFileNameById,
@@ -218,6 +288,8 @@ export const StudioWrapper = () => {
     [buildIframeSrc, previewPath]
   );
   const [isNavigating, setIsNavigating] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const refreshTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const selectedItemZUID = selectedElement?.itemZuid || pageItemZUID;
   const selectedModelZUID = selectedElement?.modelZuid || pageModelZUID;
 
@@ -257,25 +329,9 @@ export const StudioWrapper = () => {
         }
       };
 
-      if (
-        selectedItem?.dirty &&
-        resolved?.meta?.ZUID &&
-        resolved.meta.ZUID !== selectedItemZUID
-      ) {
-        const openModal = (window as any).openContentNavigationModal;
-        if (typeof openModal === "function") {
-          openModal((shouldProceed: boolean) => {
-            if (shouldProceed) {
-              applyResolved();
-            }
-          });
-          return;
-        }
-      }
-
       applyResolved();
     },
-    [contentItems, dispatch, selectedItem?.dirty, selectedItemZUID]
+    [contentItems, dispatch]
   );
 
   useEffect(() => {
@@ -492,19 +548,186 @@ export const StudioWrapper = () => {
     return () => iframeEl.removeEventListener("load", handleLoad);
   }, []);
 
+  useEffect(
+    () => () => {
+      if (refreshTimeoutRef.current) {
+        clearTimeout(refreshTimeoutRef.current);
+      }
+    },
+    []
+  );
+
   const refreshPreviewFrame = useCallback(
     (onReloadComplete?: () => void) => {
       previewReloadContinuationRef.current = onReloadComplete || null;
-      setIsNavigating(true);
-      if (iframeRef.current) {
-        iframeRef.current.src = iframeSrc;
+      // Fade the dark overlay in first, then reload the iframe underneath it
+      // so the blank reload is hidden and edits are blocked until it finishes.
+      setIsRefreshing(true);
+      if (refreshTimeoutRef.current) {
+        clearTimeout(refreshTimeoutRef.current);
       }
+      refreshTimeoutRef.current = setTimeout(() => {
+        refreshTimeoutRef.current = null;
+        if (iframeRef.current) {
+          iframeRef.current.src = iframeSrc;
+        }
+      }, REFRESH_FADE_MS);
     },
     [iframeSrc]
   );
 
+  // Maps a saveItem() response's validation / server errors into the shared
+  // fieldErrors UI state and surfaces a notification. Shared by the single-item
+  // save (handleSave) and the staged batch save (useStudioContentSave).
+  const applyItemSaveErrors = useCallback(
+    (res: any, itemLabel: string, options?: { applyFieldErrors?: boolean }) => {
+      // `setFieldErrors` / `activeFields` are scoped to the selected item, so
+      // callers batch-saving non-selected items pass applyFieldErrors: false to
+      // get the toast without polluting the active item's field panel.
+      const applyFieldErrors = options?.applyFieldErrors ?? true;
+      if (res?.err === "VALIDATION_ERROR") {
+        if (applyFieldErrors) {
+          setFieldErrors((prev) => {
+            const errors = cloneDeep(prev);
+
+            res?.missingRequired?.forEach((field: any) => {
+              errors[field.name] = {
+                ...(errors[field.name] ?? {}),
+                MISSING_REQUIRED: true,
+              };
+            });
+
+            res?.lackingCharLength?.forEach((field: any) => {
+              errors[field.name] = {
+                ...(errors[field.name] ?? {}),
+                LACKING_MINLENGTH: field.settings?.minCharLimit,
+              };
+            });
+
+            res?.regexPatternMismatch?.forEach((field: any) => {
+              errors[field.name] = {
+                ...(errors[field.name] ?? {}),
+                REGEX_PATTERN_MISMATCH: field.settings?.regexMatchErrorMessage,
+              };
+            });
+
+            res?.regexRestrictPatternMatch?.forEach((field: any) => {
+              errors[field.name] = {
+                ...(errors[field.name] ?? {}),
+                REGEX_RESTRICT_PATTERN_MATCH:
+                  field.settings?.regexRestrictErrorMessage,
+              };
+            });
+
+            res?.invalidRange?.forEach((field: any) => {
+              errors[field.name] = {
+                ...(errors[field.name] ?? {}),
+                INVALID_RANGE: `Value must be between ${field.settings?.minValue} and ${field.settings?.maxValue}`,
+              };
+            });
+
+            res?.invalidBlockVariantValue?.forEach((field: any) => {
+              errors[field.name] = {
+                ...(errors[field.name] ?? {}),
+                INVALID_BLOCK_VARIANT: true,
+              };
+            });
+
+            return errors;
+          });
+        }
+
+        dispatch(
+          notify({
+            kind: "error",
+            message: `Cannot Save: ${itemLabel} - missing or invalid data`,
+          })
+        );
+        return;
+      }
+
+      if (res?.status === 400) {
+        if (
+          applyFieldErrors &&
+          res.error?.toLowerCase()?.includes("data too long")
+        ) {
+          const dataLongErrorMatch = res.error?.match(/'([^']*)'/);
+
+          if (dataLongErrorMatch?.[1]) {
+            const fieldName = dataLongErrorMatch[1];
+            const oneToManyFieldNames = activeFields?.reduce(
+              (names: string[], currItem: any) => {
+                if (currItem?.datatype === "one_to_many") {
+                  return [...names, currItem?.name];
+                }
+
+                return names;
+              },
+              []
+            );
+
+            setFieldErrors((prev) => {
+              const errors = cloneDeep(prev);
+              errors[fieldName] = {
+                ...(errors[fieldName] ?? {}),
+                CUSTOM_ERROR: oneToManyFieldNames?.includes(fieldName)
+                  ? "Cannot save field. Please reduce the total number of items selected."
+                  : "Cannot save field. Value is too long.",
+              };
+              return errors;
+            });
+          }
+        }
+
+        dispatch(
+          notify({
+            kind: "error",
+            message: `Cannot Save: ${itemLabel}${
+              res.error ? ` - ${res.error}` : ""
+            }`,
+          })
+        );
+        return;
+      }
+
+      dispatch(
+        notify({
+          kind: "error",
+          message: `Cannot Save: ${itemLabel}`,
+        })
+      );
+    },
+    [activeFields, dispatch]
+  );
+
+  const { saveAllContent, saveAndPublishAllContent, discardAllContent } =
+    useStudioContentSave({
+      dispatch,
+      refreshPreviewFrame,
+      applyItemSaveErrors,
+      setStudioSaving,
+    });
+
+  const dirtyContentItems = useMemo(
+    () => collectDirtyContentItems(contentItems),
+    [contentItems]
+  );
+  const hasPendingContentChanges = dirtyContentItems.length > 0;
+  const dirtyContentItemZUIDs = useMemo(
+    () => dirtyContentItems.map((item) => item.itemZUID),
+    [dirtyContentItems]
+  );
+  const canUpdatePendingContent = useMultiPermission(
+    "UPDATE",
+    dirtyContentItemZUIDs
+  );
+  const canPublishPendingContent = useMultiPermission(
+    "PUBLISH",
+    dirtyContentItemZUIDs
+  );
+
   const {
-    pendingLayoutSave,
+    pendingLayoutCodeIds,
     isSavingLayout,
     handleDiscardPendingLayoutSave,
     handleSavePendingLayout,
@@ -513,31 +736,127 @@ export const StudioWrapper = () => {
     handleReorderOutput,
     handleLayoutContentUpdate,
     handleLayoutImageSrcUpdate,
+    handleLayoutElementAttrUpdate,
+    handleLayoutTextUpdate,
+    handleLayoutTagUpdate,
   } = useLayoutReorderState({
     webViews,
     codeFileNameById,
     updateWebView,
     publishWebView,
     dispatch,
-    selectedLayoutCodeId: selectedLayout?.codeId,
     clearLayoutSelection,
     refreshPreviewFrame,
+    syncTemplateSourceToBridge,
     withCodeIdBreadcrumbRoot,
     onSelectedLayoutBreadcrumbChange: setSelectedLayout,
   });
-  const pendingLayoutCodeId = pendingLayoutSave?.codeId || null;
-  const canUpdatePendingLayout = usePermission(
+  const hasPendingLayoutChanges = pendingLayoutCodeIds.length > 0;
+  const canUpdatePendingLayout = useMultiPermission(
     "UPDATE",
-    pendingLayoutCodeId || undefined
+    pendingLayoutCodeIds
   );
-  const canPublishPendingLayout = usePermission(
+  const canPublishPendingLayout = useMultiPermission(
     "PUBLISH",
-    pendingLayoutCodeId || undefined
+    pendingLayoutCodeIds
   );
+
+  // The floating save bar is shared between modes ("gated by mode"): in layout
+  // mode it commits staged layout changes, in content mode it commits the
+  // staged multi-item content edits. Only the active mode's pending changes are
+  // ever surfaced because switching modes prompts to save/discard first.
+  const isLayoutMode = interactionMode === "layout";
+  const showSaveBar = isLayoutMode
+    ? hasPendingLayoutChanges
+    : hasPendingContentChanges;
+  const saveBarIsSaving = isLayoutMode ? isSavingLayout : studioSaving;
+  const saveBarCanSave = isLayoutMode
+    ? canUpdatePendingLayout
+    : canUpdatePendingContent;
+  const saveBarCanPublish = isLayoutMode
+    ? canPublishPendingLayout
+    : canPublishPendingContent;
+  const handleSaveBarCancel = isLayoutMode
+    ? () => handleDiscardPendingLayoutSave()
+    : () => {
+        void discardAllContent();
+      };
+  // The "Save Changes" bar button opens the modal; the modal's Save All /
+  // Save & Publish All buttons run the active mode's batch handlers and close.
+  // Close the modal on full success; keep it open on partial failure so the
+  // user sees which items remain (still listed + toasted) and can retry.
+  const closeModalUnlessFailed = (result: { failedCount?: number } | void) => {
+    if (!result || !result.failedCount) setShowSaveChangesModal(false);
+  };
+  const handleModalSaveAll = () => {
+    if (!saveBarCanSave) return;
+    Promise.resolve(
+      isLayoutMode ? handleSavePendingLayout() : saveAllContent()
+    ).then(closeModalUnlessFailed, () => {});
+  };
+  const handleModalSaveAndPublishAll = () => {
+    if (!saveBarCanPublish) return;
+    Promise.resolve(
+      isLayoutMode
+        ? handleSaveAndPublishPendingLayout()
+        : saveAndPublishAllContent()
+    ).then(closeModalUnlessFailed, () => {});
+  };
+
+  // Rows shown in the Save Changes modal — scoped to the active mode: content
+  // mode lists the staged content/block items, layout mode lists changed code
+  // files. (Per product: staging is gated by mode, never mixed.)
+  const saveChanges = useMemo<StudioSaveChange[]>(() => {
+    if (isLayoutMode) {
+      return pendingLayoutCodeIds.map((codeId) => {
+        const webView = webViews.find((view) => view.ZUID === codeId);
+        return {
+          id: codeId,
+          title: codeFileNameById[codeId] || webView?.fileName || codeId,
+          type: "Code",
+          versions:
+            typeof webView?.version === "number"
+              ? [{ version: webView.version, state: "published" }]
+              : [],
+        };
+      });
+    }
+
+    return dirtyContentItems.map((item) => {
+      const storeItem = contentItems[item.itemZUID];
+      const model = modelsState[item.modelZUID];
+      const draftVersion = storeItem?.meta?.version;
+      const publishedVersion = storeItem?.publishing?.version;
+      const versions: StudioSaveChange["versions"] = [];
+      if (typeof draftVersion === "number") {
+        versions.push({ version: draftVersion, state: "draft" });
+      }
+      if (
+        typeof publishedVersion === "number" &&
+        publishedVersion !== draftVersion
+      ) {
+        versions.push({ version: publishedVersion, state: "published" });
+      }
+      return {
+        id: item.itemZUID,
+        title: item.label,
+        type: model?.type === "block" ? "Block" : "Content",
+        versions,
+      };
+    });
+  }, [
+    codeFileNameById,
+    contentItems,
+    dirtyContentItems,
+    isLayoutMode,
+    modelsState,
+    pendingLayoutCodeIds,
+    webViews,
+  ]);
 
   const requestProceedWithPendingLayoutSave = useCallback(
     (onProceed: () => void) => {
-      if (!pendingLayoutSave?.mappedSource) {
+      if (!hasPendingLayoutChanges) {
         onProceed();
         return;
       }
@@ -545,7 +864,7 @@ export const StudioWrapper = () => {
       pendingLayoutContinuationRef.current = onProceed;
       setShowPendingLayoutModal(true);
     },
-    [pendingLayoutSave?.mappedSource]
+    [hasPendingLayoutChanges]
   );
 
   const syncBridgeInteractionMode = useCallback(
@@ -589,7 +908,7 @@ export const StudioWrapper = () => {
         syncBridgeInteractionMode(nextMode);
       };
 
-      if (nextMode === "layout" && selectedItem?.dirty) {
+      if (nextMode === "layout" && hasPendingContentChanges) {
         const openModal = (window as any).openContentNavigationModal;
         if (typeof openModal === "function") {
           openModal((shouldProceed: boolean) => {
@@ -601,7 +920,7 @@ export const StudioWrapper = () => {
         }
       }
 
-      if (nextMode === "content" && pendingLayoutSave?.mappedSource) {
+      if (nextMode === "content" && hasPendingLayoutChanges) {
         requestProceedWithPendingLayoutSave(applyInteractionModeChange);
         return;
       }
@@ -612,10 +931,10 @@ export const StudioWrapper = () => {
       clearLayoutSelection,
       clearSelection,
       interactionMode,
-      pendingLayoutSave?.mappedSource,
+      hasPendingLayoutChanges,
+      hasPendingContentChanges,
       postCommandToBridge,
       requestProceedWithPendingLayoutSave,
-      selectedItem?.dirty,
       syncBridgeInteractionMode,
     ]
   );
@@ -675,33 +994,9 @@ export const StudioWrapper = () => {
     updateItemByPath(normalized, { onApplied: clearSelection });
   }, [normalizedPathParam, updateItemByPath, clearSelection]);
 
-  const discardPendingEdits = useCallback(() => {
-    if (!selectedItemZUID || !selectedModelZUID) return Promise.resolve();
-    dispatch({
-      type: "UNMARK_ITEMS_DIRTY",
-      items: [selectedItemZUID],
-    });
-    return dispatch(fetchItem(selectedModelZUID, selectedItemZUID));
-  }, [dispatch, selectedItemZUID, selectedModelZUID]);
-
   const requestClearSelection = useCallback(() => {
-    if (!selectedItem?.dirty) {
-      clearSelection();
-      return;
-    }
-
-    const openModal = (window as any).openContentNavigationModal;
-    if (typeof openModal === "function") {
-      openModal((shouldProceed: boolean) => {
-        if (shouldProceed) {
-          clearSelection();
-        }
-      });
-      return;
-    }
-
     clearSelection();
-  }, [clearSelection, selectedItem?.dirty]);
+  }, [clearSelection]);
 
   useEffect(() => {
     if (interactionMode !== "content") return;
@@ -777,105 +1072,8 @@ export const StudioWrapper = () => {
         })
       )) as any;
 
-      if (res?.err === "VALIDATION_ERROR") {
-        const errors = cloneDeep(fieldErrors);
-
-        res?.missingRequired?.forEach((field: any) => {
-          errors[field.name] = {
-            ...(errors[field.name] ?? {}),
-            MISSING_REQUIRED: true,
-          };
-        });
-
-        res?.lackingCharLength?.forEach((field: any) => {
-          errors[field.name] = {
-            ...(errors[field.name] ?? {}),
-            LACKING_MINLENGTH: field.settings?.minCharLimit,
-          };
-        });
-
-        res?.regexPatternMismatch?.forEach((field: any) => {
-          errors[field.name] = {
-            ...(errors[field.name] ?? {}),
-            REGEX_PATTERN_MISMATCH: field.settings?.regexMatchErrorMessage,
-          };
-        });
-
-        res?.regexRestrictPatternMatch?.forEach((field: any) => {
-          errors[field.name] = {
-            ...(errors[field.name] ?? {}),
-            REGEX_RESTRICT_PATTERN_MATCH:
-              field.settings?.regexRestrictErrorMessage,
-          };
-        });
-
-        res?.invalidRange?.forEach((field: any) => {
-          errors[field.name] = {
-            ...(errors[field.name] ?? {}),
-            INVALID_RANGE: `Value must be between ${field.settings?.minValue} and ${field.settings?.maxValue}`,
-          };
-        });
-
-        res?.invalidBlockVariantValue?.forEach((field: any) => {
-          errors[field.name] = {
-            ...(errors[field.name] ?? {}),
-            INVALID_BLOCK_VARIANT: true,
-          };
-        });
-
-        setFieldErrors(errors);
-
-        dispatch(
-          notify({
-            kind: "error",
-            message: `Cannot Save: ${selectedItemLabel} - missing or invalid data`,
-          })
-        );
-        return res;
-      }
-
-      if (res?.status === 400) {
-        if (res.error?.toLowerCase()?.includes("data too long")) {
-          const dataLongErrorMatch = res.error?.match(/'([^']*)'/);
-
-          if (dataLongErrorMatch?.[1]) {
-            const fieldName = dataLongErrorMatch[1];
-            const errors = cloneDeep(fieldErrors);
-            const oneToManyFieldNames = activeFields?.reduce(
-              (names: string[], currItem: any) => {
-                if (currItem?.datatype === "one_to_many") {
-                  return [...names, currItem?.name];
-                }
-
-                return names;
-              },
-              []
-            );
-
-            errors[fieldName] = {
-              ...(errors[fieldName] ?? {}),
-              CUSTOM_ERROR: oneToManyFieldNames?.includes(fieldName)
-                ? "Cannot save field. Please reduce the total number of items selected."
-                : "Cannot save field. Value is too long.",
-            };
-
-            setFieldErrors(errors);
-          }
-        }
-
-        dispatch(
-          notify({
-            kind: "error",
-            message: `Cannot Save: ${selectedItemLabel}${
-              res.error ? ` - ${res.error}` : ""
-            }`,
-          })
-        );
-        return res;
-      }
-
-      // @ts-ignore
-      if (res?.status === 200) {
+      // Any 2xx is a successful save (saveItem resolves 201 on version create).
+      if (res?.status >= 200 && res?.status < 300) {
         dispatch(
           notify({
             kind: "success",
@@ -888,6 +1086,8 @@ export const StudioWrapper = () => {
           dispatch(fetchAllModelPublishings({ modelZUID: selectedModelZUID })),
         ]);
         refreshPreviewFrame();
+      } else {
+        applyItemSaveErrors(res, selectedItemLabel);
       }
 
       return res;
@@ -903,9 +1103,8 @@ export const StudioWrapper = () => {
       setStudioSaving(false);
     }
   }, [
-    activeFields,
+    applyItemSaveErrors,
     dispatch,
-    fieldErrors,
     selectedItemLabel,
     selectedItemZUID,
     selectedModelZUID,
@@ -963,6 +1162,39 @@ export const StudioWrapper = () => {
     bridgeUpdatedFieldZuidRef.current = fieldZuid;
   }, []);
 
+  const {
+    hasTree: hasLayersTree,
+    flatRows: layersFlatRows,
+    selectedNodeId: selectedLayersNodeId,
+    handleLayersTree,
+    resetTree: resetLayersTree,
+    toggleNode: toggleLayersNode,
+    handleNodeSelect: handleLayersNodeSelect,
+    canDrop: canDropLayersNode,
+    handleNodeDrop: handleLayersNodeDrop,
+  } = useStudioLayersTree({
+    interactionMode,
+    postCommandToBridge,
+    applyBridgeSelection,
+    applyLayoutSelection,
+    applyInspectorSelection,
+    refreshInspectorSlots,
+    codeFileNameById,
+    fieldsState,
+    selectedElement,
+    selectedLayout,
+    inspectorSelection,
+    dndDisabled: isSavingLayout || isRefreshing,
+  });
+
+  // The tree describes the current document — drop it whenever the iframe
+  // starts reloading or navigating; the fresh page re-emits it on load.
+  useEffect(() => {
+    if (isRefreshing || isNavigating) {
+      resetLayersTree();
+    }
+  }, [isNavigating, isRefreshing, resetLayersTree]);
+
   const { handlePreviewLoad } = useStudioBridge({
     dispatch,
     interactionMode,
@@ -971,22 +1203,234 @@ export const StudioWrapper = () => {
     handleTemplateSourceMap,
     handleReorderOutput,
     handleLayoutContentUpdate,
+    handleLayersTree,
     applyLayoutSelection,
-    requestProceedWithPendingLayoutSave,
     clearLayoutSelection,
     applySelection: applyBridgeSelection,
     fieldNameByZuid,
     currentHoverStudioIdRef,
-    pendingLayoutHasMappedSource: Boolean(pendingLayoutSave?.mappedSource),
-    selectedLayoutCodeId: selectedLayout?.codeId,
-    selectedItemDirty: selectedItem?.dirty,
-    selectedItemZUID,
     clearSelection,
     previewReloadContinuationRef,
     setIsNavigating,
     onBridgeFieldInput: handleBridgeFieldInput,
     onStaticEditImage: setImageEditState,
   });
+
+  const handlePreviewFrameLoad = useCallback(() => {
+    // The refreshed page has painted — drop the overlay, then run the
+    // existing bridge load handler.
+    setIsRefreshing(false);
+    handlePreviewLoad();
+  }, [handlePreviewLoad]);
+
+  // Content mode: a dynamic slot (a bound attribute or bound text) was clicked
+  // — open the existing single-field content editor for its field.
+  const handleEditDynamicSlot = useCallback(
+    (slot: ElementSlot) => {
+      if (!slot.fieldZuid) return;
+      applyBridgeSelection({
+        studioId: slot.studioId,
+        fieldZuid: slot.fieldZuid,
+        fieldType: slot.fieldType,
+        itemZuid: slot.itemZuid,
+        modelZuid: slot.modelZuid,
+      });
+    },
+    [applyBridgeSelection]
+  );
+
+  // Layout mode: a slot was edited free-text. Live-update the preview on every
+  // keystroke (cheap postMessage) but debounce the template-source patch
+  // (DOMParse + restage) so we don't reparse on each character. Attributes
+  // write via setAttribute; text writes the element's inner text.
+  const slotPatchTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>(
+    {}
+  );
+  // Clear any pending debounced slot patches when the studio unmounts so a
+  // timer never fires into a stale closure.
+  useEffect(
+    () => () => {
+      Object.values(slotPatchTimers.current).forEach(clearTimeout);
+    },
+    []
+  );
+  // On connect, the panel emits a `{{this.field}}` Parsley ref. For the LIVE
+  // preview we show the field's RESOLVED value (its actual text, or a resolved
+  // image URL) instead of the raw expression, while the template still saves the
+  // Parsley — so a connection is visible without a save + reload. Returns the
+  // resolved display value, or null when `value` is a plain edit (not a field
+  // ref) or the field has no data to show. Fields always resolve against the
+  // page item, since our flow only ever emits `this.<pageItemField>`.
+  const resolvePreviewValue = useCallback(
+    (value: string): string | null => {
+      const match = value.match(/^\{\{\s*this\.(\w+)(\.getImage\(\))?\s*\}\}$/);
+      if (!match) return null;
+      const raw = (pageItem?.data as Record<string, any>)?.[match[1]];
+      if (raw === undefined || raw === null || raw === "") return null;
+      if (match[2]) {
+        // Image field → the URL getImage() resolves to, via the media resolver.
+        // @ts-expect-error CONFIG is provided globally at runtime
+        return `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${raw}/getimage`;
+      }
+      return String(raw);
+    },
+    [pageItem]
+  );
+
+  const handleSlotChange = useCallback(
+    (slot: ElementSlot, value: string) => {
+      const patch = inspectorSelection?.layoutPatch;
+      if (!patch || !patch.codeId) return;
+      // Never write a slot we've declared non-editable. The inputs are already
+      // disabled in that case, so this is a guard on the invariant rather than
+      // a reachable path — it keeps "layoutEditable" the single source of truth
+      // for whether the template may be rewritten.
+      if (!slot.layoutEditable) return;
+
+      // On connect this is the RESOLVED value to preview in the live DOM; on a
+      // plain edit it's undefined (the value IS what's shown). Either way the
+      // template saves `value`.
+      const previewValue = resolvePreviewValue(value) ?? undefined;
+
+      if (slot.kind === "text") {
+        postCommandToBridge({
+          action: "updateElementText",
+          codeId: patch.codeId,
+          layoutId: patch.layoutId,
+          value,
+          previewValue,
+          textIndex: slot.textIndex,
+        });
+
+        // An ADDRESSED run writes itself back: the bridge edits that one run and
+        // echoes the leaf's innerHTML as LAYOUT_CONTENT_UPDATE, which the host
+        // already knows how to fold into the source — preserving nested layout
+        // subtrees. Patching here as well would overwrite the leaf's whole text
+        // and take any nested <span> with it.
+        if (slot.textIndex !== undefined) return;
+
+        // A dynamic leaf has no nested markup, so the whole-content write is safe.
+        clearTimeout(slotPatchTimers.current[slot.key]);
+        slotPatchTimers.current[slot.key] = setTimeout(() => {
+          handleLayoutTextUpdate(patch.codeId!, patch.layoutId, value);
+        }, 300);
+        return;
+      }
+
+      const attr = slot.attr || slot.key;
+      postCommandToBridge({
+        action: "updateElementAttr",
+        layoutId: patch.layoutId,
+        isSelf: patch.isSelf,
+        tagName: patch.tagName,
+        elementIndex: patch.elementIndex,
+        attr,
+        // Show the resolved value in the live DOM; the template stages `value`.
+        value: previewValue ?? value,
+        booleanAttr: slot.booleanAttr,
+      });
+      clearTimeout(slotPatchTimers.current[slot.key]);
+      slotPatchTimers.current[slot.key] = setTimeout(() => {
+        handleLayoutElementAttrUpdate(
+          patch.codeId!,
+          patch.layoutId,
+          patch.isSelf,
+          patch.tagName,
+          patch.elementIndex,
+          attr,
+          value,
+          slot.booleanAttr
+        );
+      }, 300);
+    },
+    [
+      handleLayoutElementAttrUpdate,
+      handleLayoutTextUpdate,
+      postCommandToBridge,
+      resolvePreviewValue,
+      inspectorSelection,
+    ]
+  );
+
+  // Layout mode: change the element's tag (e.g. h1 → h2, img → video). Only
+  // valid when the element carries its own data-layout-id (isSelf), since the
+  // swap is addressed by layout id. Applied immediately — it's a discrete
+  // select change, not per-keystroke.
+  const handleTagChange = useCallback(
+    (newTag: string) => {
+      const patch = inspectorSelection?.layoutPatch;
+      if (!patch || !patch.codeId || !patch.isSelf) return;
+      postCommandToBridge({
+        action: "updateElementTag",
+        layoutId: patch.layoutId,
+        newTag,
+      });
+      handleLayoutTagUpdate(patch.codeId, patch.layoutId, newTag);
+    },
+    [handleLayoutTagUpdate, postCommandToBridge, inspectorSelection]
+  );
+
+  // Layout mode: connect a content item to a text slot. A text slot's value is
+  // just the raw template content, so "connecting" means writing a Parsley
+  // expression (e.g. "{{this.title}}") in place of the static text — which the
+  // existing text write-path already persists. The content-item picker itself
+  // isn't built yet; this is the entry point it will hang off.
+  // Fields of the item being edited, offered in a text slot's "Connect Item"
+  // dropdown. `this` in a Parsley expression resolves to the item rendering the
+  // template region, which for the main page is the page item — so its model's
+  // fields are what `{{this.<name>}}` can reference.
+  const pageFields = useMemo(() => {
+    if (!pageModelZUID) return [];
+    return Object.values(fieldsState)
+      .filter((field: any) => field?.contentModelZUID === pageModelZUID)
+      .sort((a: any, b: any) => (a?.sort ?? 0) - (b?.sort ?? 0));
+  }, [fieldsState, pageModelZUID]);
+
+  const toConnectField = (field: any): ConnectField => ({
+    name: field.name,
+    label: field.label || field.name,
+    datatype: field.datatype,
+  });
+
+  // Fields offered in a TEXT slot's "Connect Item" dropdown.
+  const connectFields = useMemo<ConnectField[]>(
+    () =>
+      pageFields
+        .filter((field: any) => isTextReferenceableDatatype(field?.datatype))
+        .map(toConnectField),
+    [pageFields]
+  );
+
+  // Fields offered in a MEDIA slot's (img/video src, poster) dropdown — media
+  // assets and external-URL fields.
+  const mediaFields = useMemo<ConnectField[]>(
+    () =>
+      pageFields
+        .filter((field: any) => isMediaSlotDatatype(field?.datatype))
+        .map(toConnectField),
+    [pageFields]
+  );
+
+  // Layout mode: open the media picker for a media-URL slot (src or poster).
+  // Reuses the img media-picker dialog; the tag-agnostic patch maps onto its
+  // isLeafImg / imgIndex addressing, and `attr` records which attribute to set.
+  const handleBrowseMedia = useCallback(
+    (slot: ElementSlot) => {
+      const patch = inspectorSelection?.layoutPatch;
+      if (!patch || !patch.codeId) return;
+      setImageEditState({
+        codeId: patch.codeId,
+        layoutId: patch.layoutId,
+        isLeafImg: patch.isSelf,
+        imgIndex: patch.elementIndex,
+        currentSrc: slot.value,
+        fromInspector: true,
+        attr: slot.attr || "src",
+        tagName: patch.tagName,
+      });
+    },
+    [inspectorSelection]
+  );
 
   const renderInfoPanel = () => {
     if (!isResolved) {
@@ -1040,7 +1484,17 @@ export const StudioWrapper = () => {
         isLoadingItem={isSelectedItemLoading}
         visibleFieldName={filteredFieldName || undefined}
       />
-      {filteredFieldName ? (
+      {inspectorSelection ? (
+        <Button
+          data-cy="StudioBackToInspector"
+          variant="outlined"
+          size="large"
+          fullWidth
+          onClick={returnToInspector}
+        >
+          Back to Element
+        </Button>
+      ) : filteredFieldName ? (
         <Button
           variant="outlined"
           size="large"
@@ -1057,23 +1511,27 @@ export const StudioWrapper = () => {
 
   return (
     <>
-      <Dialog
+      <Modal
         open
-        fullScreen
-        PaperProps={{
-          sx: {
-            overflow: "hidden",
-            bgcolor: "grey.900",
-            borderRadius: 0,
-          },
-        }}
+        hideBackdrop
+        disableEnforceFocus
+        disableAutoFocus
+        disablePortal
       >
-        <Box
-          display="flex"
-          flexDirection="column"
-          height="100%"
-          width="100%"
-          position="relative"
+        <Paper
+          role="dialog"
+          aria-modal="true"
+          aria-label="Studio editor"
+          variant="outlined"
+          square
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            height: "100%",
+            width: "100%",
+            bgcolor: "grey.900",
+            overflow: "hidden",
+          }}
         >
           <StudioHeader
             onLanguageChange={handleLanguageChange}
@@ -1087,18 +1545,49 @@ export const StudioWrapper = () => {
             logoSrc={contentOneLogoOnly}
           />
           <Box display="flex" flex="1" minHeight={0} width="100%">
+            <StudioLayersPanel
+              hasTree={hasLayersTree}
+              flatRows={layersFlatRows}
+              selectedNodeId={selectedLayersNodeId}
+              onToggle={toggleLayersNode}
+              onSelect={handleLayersNodeSelect}
+              canDrop={canDropLayersNode}
+              onDrop={handleLayersNodeDrop}
+            />
             <StudioPreview
               iframeRef={iframeRef}
               iframeSrc={iframeSrc}
               isNavigating={isNavigating}
-              onLoad={handlePreviewLoad}
+              isBusy={isRefreshing || studioSaving || isSavingLayout}
+              onLoad={handlePreviewFrameLoad}
             />
-            {interactionMode === "content" ? (
+            {panelMode === "inspector" && inspectorSelection ? (
+              <StudioInspectorPanel
+                mode={interactionMode}
+                elementKey={inspectorSelection.nodeId}
+                tagName={inspectorSelection.tagName}
+                slots={inspectorSelection.slots}
+                canChangeTag={
+                  interactionMode === "layout" &&
+                  !!inspectorSelection.layoutPatch?.isSelf
+                }
+                onChangeTag={handleTagChange}
+                onClose={requestClearSelection}
+                onEditDynamicSlot={handleEditDynamicSlot}
+                onChangeSlot={handleSlotChange}
+                onBrowseMedia={handleBrowseMedia}
+                connectFields={connectFields}
+                mediaFields={mediaFields}
+                drawerWidth={drawerWidth}
+                logoSrc={contentOneLogo}
+              />
+            ) : interactionMode === "content" ? (
               <StudioSidePanel
                 headerTitle={headerTitle}
+                selectedItemLabel={selectedItemLabel}
                 pageItemVersion={pageItemVersion}
                 unresolvedPath={unresolvedPath}
-                panelMode={panelMode}
+                panelMode={panelMode === "edit" ? "edit" : "info"}
                 clearSelection={requestClearSelection}
                 activeVersion={activeVersion}
                 selectedModelZUID={selectedModelZUID}
@@ -1115,9 +1604,11 @@ export const StudioWrapper = () => {
               />
             ) : null}
           </Box>
-          {pendingLayoutSave?.mappedSource ? (
+          {showSaveBar && !showSaveChangesModal ? (
             <Box
-              data-cy="StudioLayoutSaveBar"
+              data-cy={
+                isLayoutMode ? "StudioLayoutSaveBar" : "StudioContentSaveBar"
+              }
               position="absolute"
               left="50%"
               bottom={24}
@@ -1136,67 +1627,57 @@ export const StudioWrapper = () => {
                 boxShadow={6}
               >
                 <Button
-                  data-cy="StudioLayoutCancelButton"
+                  data-cy={
+                    isLayoutMode
+                      ? "StudioLayoutCancelButton"
+                      : "StudioContentCancelButton"
+                  }
                   color="inherit"
-                  onClick={() => {
-                    handleDiscardPendingLayoutSave();
-                  }}
+                  onClick={handleSaveBarCancel}
+                  disabled={saveBarIsSaving}
                 >
                   Cancel
                 </Button>
                 <Button
-                  data-cy="StudioLayoutSaveButton"
+                  data-cy={
+                    isLayoutMode
+                      ? "StudioLayoutSaveChangesButton"
+                      : "StudioContentSaveChangesButton"
+                  }
                   variant="contained"
                   color="primary"
-                  startIcon={
-                    isSavingLayout ? undefined : (
-                      <SaveRoundedIcon fontSize="small" />
-                    )
-                  }
+                  startIcon={<SaveRoundedIcon fontSize="small" />}
                   sx={{ whiteSpace: "nowrap" }}
-                  onClick={() => {
-                    if (!canUpdatePendingLayout) return;
-                    void handleSavePendingLayout();
-                  }}
-                  disabled={isSavingLayout || !canUpdatePendingLayout}
+                  onClick={() => setShowSaveChangesModal(true)}
                 >
-                  {isSavingLayout ? (
-                    <CircularProgress size={16} color="inherit" />
-                  ) : (
-                    "Save"
-                  )}
-                </Button>
-                <Button
-                  data-cy="StudioLayoutSavePublishButton"
-                  variant="contained"
-                  color="success"
-                  startIcon={
-                    isSavingLayout ? undefined : (
-                      <CloudUploadRoundedIcon fontSize="small" />
-                    )
-                  }
-                  sx={{ whiteSpace: "nowrap" }}
-                  onClick={() => {
-                    if (!canPublishPendingLayout) return;
-                    void handleSaveAndPublishPendingLayout();
-                  }}
-                  disabled={isSavingLayout || !canPublishPendingLayout}
-                >
-                  {isSavingLayout ? (
-                    <CircularProgress size={16} color="inherit" />
-                  ) : (
-                    "Save and Publish"
-                  )}
+                  Save Changes
                 </Button>
               </Box>
             </Box>
           ) : null}
+          <StudioSaveChangesModal
+            open={showSaveChangesModal && showSaveBar}
+            changes={saveChanges}
+            isSaving={saveBarIsSaving}
+            canSave={saveBarCanSave}
+            canPublish={saveBarCanPublish}
+            onCancel={() => setShowSaveChangesModal(false)}
+            onSaveAll={handleModalSaveAll}
+            onSaveAndPublishAll={handleModalSaveAndPublishAll}
+          />
           <PendingEditsModal
-            show={Boolean(selectedItem?.dirty)}
-            loading={isSaving}
-            onSave={handleSave}
-            // @ts-ignore
-            onDiscard={discardPendingEdits}
+            show={hasPendingContentChanges}
+            loading={studioSaving}
+            onSave={async () => {
+              // Throw on partial failure so PendingEditsModal runs answer(false)
+              // and keeps the user in content mode to fix the failed items
+              // instead of navigating away and abandoning the dirty edits.
+              const result = await saveAllContent();
+              if (result.failedCount > 0) {
+                throw new Error(`${result.failedCount} item(s) failed to save`);
+              }
+            }}
+            onDiscard={discardAllContent}
           />
           <DirtyCodeModal
             title="Unsaved layout changes"
@@ -1222,15 +1703,17 @@ export const StudioWrapper = () => {
               handleDiscardPendingLayoutSave(onProceed);
             }}
           />
-        </Box>
-      </Dialog>
+        </Paper>
+      </Modal>
       {imageEditState && (
         <MemoryRouter>
           <Dialog
             open
             fullScreen
             sx={{ my: 2.5, mx: 10 }}
-            PaperProps={{ style: { borderRadius: "4px", overflow: "hidden" } }}
+            slotProps={{
+              paper: { style: { borderRadius: "4px", overflow: "hidden" } },
+            }}
             onClose={() => setImageEditState(null)}
           >
             <MediaApp
@@ -1240,20 +1723,46 @@ export const StudioWrapper = () => {
               addImagesCallback={(images: any[]) => {
                 if (!images.length) return;
                 const newSrc = images[0].url;
-                handleLayoutImageSrcUpdate(
-                  imageEditState.codeId,
-                  imageEditState.layoutId,
-                  imageEditState.isLeafImg,
-                  imageEditState.imgIndex,
-                  newSrc
-                );
-                postCommandToBridge({
-                  action: "updateImageSrc",
-                  layoutId: imageEditState.layoutId,
-                  isLeafImg: imageEditState.isLeafImg,
-                  imgIndex: imageEditState.imgIndex,
-                  newSrc,
-                });
+                if (imageEditState.fromInspector) {
+                  // Attributes-panel Browse: write the chosen URL to the
+                  // recorded attribute (src or poster) via the generic path.
+                  const attr = imageEditState.attr || "src";
+                  handleLayoutElementAttrUpdate(
+                    imageEditState.codeId,
+                    imageEditState.layoutId,
+                    imageEditState.isLeafImg,
+                    imageEditState.tagName || "img",
+                    imageEditState.imgIndex,
+                    attr,
+                    newSrc
+                  );
+                  postCommandToBridge({
+                    action: "updateElementAttr",
+                    layoutId: imageEditState.layoutId,
+                    isSelf: imageEditState.isLeafImg,
+                    tagName: imageEditState.tagName || "img",
+                    elementIndex: imageEditState.imgIndex,
+                    attr,
+                    value: newSrc,
+                  });
+                  updateInspectorSlotValue(attr, newSrc);
+                } else {
+                  // Canvas image-replace flow: img-specific src update.
+                  handleLayoutImageSrcUpdate(
+                    imageEditState.codeId,
+                    imageEditState.layoutId,
+                    imageEditState.isLeafImg,
+                    imageEditState.imgIndex,
+                    newSrc
+                  );
+                  postCommandToBridge({
+                    action: "updateImageSrc",
+                    layoutId: imageEditState.layoutId,
+                    isLeafImg: imageEditState.isLeafImg,
+                    imgIndex: imageEditState.imgIndex,
+                    newSrc,
+                  });
+                }
                 setImageEditState(null);
               }}
             />

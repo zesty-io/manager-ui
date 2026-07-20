@@ -5,6 +5,8 @@ import {
   WebView,
   Stylesheet,
   Script,
+  CreateStatusLabel,
+  WorkflowStatusLabel,
 } from "../src/shell/services/types";
 import "./support/commands";
 
@@ -74,6 +76,11 @@ declare global {
       ): Chainable<
         Partial<WebView> | Partial<Script> | Partial<Stylesheet> | null
       >;
+      task(event: "cleanup:labels"): Chainable<string[]>;
+      task(
+        event: "api:createLabel",
+        data: CreateStatusLabel
+      ): Chainable<WorkflowStatusLabel>;
     }
   }
 }

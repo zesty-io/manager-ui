@@ -14,7 +14,11 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useSelector } from "react-redux";
 
 import { FieldItem } from "../FieldItem";
-import { FieldListData, FIELD_COPY_CONFIG } from "../../configs";
+import {
+  FieldListData,
+  FIELD_COPY_CONFIG,
+  FIELD_CATEGORY_LABELS,
+} from "../../configs";
 import { AppState } from "../../../../../../../shell/store/types";
 import { User } from "../../../../../../../shell/services/types";
 
@@ -22,11 +26,6 @@ interface Props {
   onFieldClick: (fieldType: string, fieldName: string) => void;
   onModalClose: () => void;
 }
-
-const FIELD_CATEGORIES: Record<string, string> = {
-  dateandtime: "Date & Time",
-  options: "Advanced",
-};
 
 export const FieldSelection = ({ onFieldClick, onModalClose }: Props) => {
   const user: User = useSelector((state: AppState) => state.user);
@@ -142,7 +141,7 @@ export const FieldSelection = ({ onFieldClick, onModalClose }: Props) => {
               mb={1.5}
               color="text.secondary"
             >
-              {FIELD_CATEGORIES?.[fieldKey] || fieldKey}
+              {FIELD_CATEGORY_LABELS?.[fieldKey] || fieldKey}
             </Typography>
             <Box
               display="grid"

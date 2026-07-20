@@ -78,6 +78,7 @@ export const Converter = React.memo(function Converter(props) {
           version={props.version}
           onChange={onChange}
           error={props.error}
+          compact={props.compact}
         />
       )}
       {props.editor === "html" && (

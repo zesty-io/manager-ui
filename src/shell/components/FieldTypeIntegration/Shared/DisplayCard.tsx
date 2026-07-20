@@ -11,19 +11,36 @@ import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 import AddPhotoAlternateRoundedIcon from "@mui/icons-material/AddPhotoAlternateRounded";
 import VideoCallRoundedIcon from "@mui/icons-material/VideoCallRounded";
 import { IntegrationTypes } from "../../../services/types";
+import { validateUrl } from "utility/validateUrl";
 
 export type DisplayCardProps = {
   type: IntegrationTypes;
-  heading: string;
-  subHeading?: string;
-  thumbnail?: string;
-  rootPath?: string | null;
-  detail?: string;
-  details?: Record<string, string | number>[];
+  heading: string | undefined;
+  subHeading?: string | undefined;
+  thumbnail?: string | undefined;
+  rootPath?: string | undefined;
+  detail?: string | undefined;
+  details?: Record<string, unknown>[];
   mediaVariant?: "rounded" | "square";
   showPlayIcon?: boolean;
+  showPlaceholders?: boolean;
   loading?: boolean;
 };
+
+function renderValue(value: unknown): string {
+  if (value === undefined) return "";
+  if (Array.isArray(value)) {
+    return `[${value.map((v) => renderValue(v)).join(", ")}]`;
+  }
+  if (typeof value === "object" && value !== null) {
+    try {
+      return JSON.stringify(value, null, 2);
+    } catch {
+      return String(value);
+    }
+  }
+  return String(value);
+}
 
 const DisplayCard = ({
   type,
@@ -31,56 +48,50 @@ const DisplayCard = ({
   subHeading,
   thumbnail,
   detail,
-  details,
+  details = [],
   mediaVariant = "square",
-  showPlayIcon,
+  showPlayIcon = false,
+  showPlaceholders = false,
   loading,
 }: DisplayCardProps) => {
-  const [noImage, setNoImage] = useState(false);
+  const [mediaError, setMediaError] = useState(false);
   const isVideoType = ["video", "youtube", "mux"].includes(type);
   const isSpecialType = ["shopify", "youtube", "mux", "classy"].includes(type);
   const withCardMedia = !["classy", "text", "simple", "details"].includes(type);
 
-  const renderMediaIcon = () => {
-    if (!withCardMedia) return null;
-
-    if (showPlayIcon) {
-      return <PlayCircleIcon fontSize="large" sx={{ color: "common.white" }} />;
-    }
-
-    if (isVideoType) {
-      return <VideoCallRoundedIcon sx={{ color: "action.active" }} />;
-    }
-    return (
-      <AddPhotoAlternateRoundedIcon
-        fontSize="small"
-        sx={{ color: "action.active" }}
-      />
-    );
-  };
-
   const headingValue = loading ? (
     <Skeleton width={type === "simple" ? "90%" : "55%"} height="26px" />
-  ) : typeof heading === "boolean" ? (
-    String(heading)
   ) : (
-    heading || "Add Heading"
+    renderValue(heading)
   );
   const subHeadingValue = loading ? (
     <Skeleton width="90%" />
-  ) : typeof subHeading === "boolean" ? (
-    String(subHeading)
   ) : (
-    subHeading || "Add Subheading"
+    renderValue(subHeading)
   );
-  const thumbnailValue = thumbnail || null;
-  const detailValue = loading ? (
-    <Skeleton width="70px" />
-  ) : typeof detail === "boolean" ? (
-    String(detail)
-  ) : (
-    detail || "Add Detail"
-  );
+  const thumbnailValue = thumbnail && validateUrl(thumbnail) ? thumbnail : null;
+  const detailValue = loading ? <Skeleton width="70px" /> : renderValue(detail);
+
+  const noImage = !thumbnailValue || mediaError;
+
+  const renderIcon = () => {
+    if (noImage) {
+      return isVideoType ? (
+        <VideoCallRoundedIcon sx={{ color: "action.active" }} />
+      ) : (
+        <AddPhotoAlternateRoundedIcon
+          fontSize="small"
+          sx={{ color: "action.active" }}
+        />
+      );
+    }
+
+    if (showPlayIcon && isVideoType) {
+      return <PlayCircleIcon fontSize="large" sx={{ color: "common.white" }} />;
+    }
+
+    return null;
+  };
 
   const renderCard = () => {
     if (type === "simple") {
@@ -138,47 +149,47 @@ const DisplayCard = ({
             alignItems="flex-start"
             sx={{ width: "100%" }}
           >
-            {details?.map((item: Record<string, string>, index: number) => (
-              <Box
-                width="100%"
-                display="flex"
-                flexDirection="row"
-                justifyContent="space-between"
-                alignItems="center"
-                key={`${item?.key}-${index}`}
-              >
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  fontWeight={400}
-                  flexGrow={1}
+            {details?.map((item: Record<string, unknown>, index: number) => {
+              const itemKey =
+                showPlaceholders && !item?.key ? "+ Add Detail" : item?.key;
+              const itemValue =
+                showPlaceholders && !item?.key ? "" : renderValue(item?.value);
+              return (
+                <Box
+                  width="100%"
+                  display="flex"
+                  flexDirection="row"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  key={`${item?.key}-${index}`}
                 >
-                  {loading ? (
-                    <Skeleton sx={{ width: "95%" }} />
-                  ) : (
-                    item?.key || "+ Add Detail"
-                  )}
-                </Typography>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  fontWeight={400}
-                >
-                  {loading ? (
-                    <Skeleton
-                      sx={{
-                        width: "100px",
-                        height: "16px",
-                      }}
-                    />
-                  ) : typeof item?.value === "boolean" ? (
-                    String(item?.value)
-                  ) : (
-                    item?.value || ""
-                  )}
-                </Typography>
-              </Box>
-            ))}
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    fontWeight={400}
+                    flexGrow={1}
+                  >
+                    {loading ? <Skeleton sx={{ width: "95%" }} /> : itemKey}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    fontWeight={400}
+                  >
+                    {loading ? (
+                      <Skeleton
+                        sx={{
+                          width: "100px",
+                          height: "16px",
+                        }}
+                      />
+                    ) : (
+                      itemValue
+                    )}
+                  </Typography>
+                </Box>
+              );
+            })}
           </Box>
         </Box>
       );
@@ -211,6 +222,7 @@ const DisplayCard = ({
               <>
                 {!!thumbnailValue && (
                   <CardMedia
+                    loading="lazy"
                     component="img"
                     sx={{
                       width: "auto",
@@ -218,14 +230,12 @@ const DisplayCard = ({
                       display: noImage ? "none" : "block",
                     }}
                     image={thumbnailValue}
-                    onError={() => setNoImage(true)}
-                    onLoad={() => setNoImage(false)}
+                    onError={() => setMediaError(true)}
+                    onLoad={() => setMediaError(false)}
                   />
                 )}
-                {(!thumbnailValue ||
-                  noImage ||
-                  (showPlayIcon && isVideoType)) &&
-                  renderMediaIcon()}
+
+                {renderIcon()}
               </>
             )}
           </Box>
@@ -262,7 +272,7 @@ const DisplayCard = ({
             >
               {headingValue}
             </Typography>
-            {type === "shopify" && !!detail && (
+            {type === "shopify" && (
               <Typography
                 variant="body2"
                 noWrap
