@@ -1,5 +1,0 @@
-{
-  "filename": "seed-code-script.js",
-  "type": "text/javascript",
-  "code": "console.log('e2e seeded script');"
-}
