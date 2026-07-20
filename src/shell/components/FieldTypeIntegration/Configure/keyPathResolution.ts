@@ -1,7 +1,8 @@
 import { get } from "lodash";
 import { IntegrationKeyPaths } from "../../../services/types";
 
-const isObj = (v: unknown): v is object => typeof v === "object" && v !== null;
+export const isObj = (v: unknown): v is object =>
+  typeof v === "object" && v !== null;
 
 export const getObjectKeyPaths = (obj: object): string[] => {
   const acc: string[] = [];
