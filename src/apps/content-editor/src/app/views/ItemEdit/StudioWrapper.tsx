@@ -43,6 +43,11 @@ import {
 import { StudioHeader } from "./components/StudioWrapper/StudioHeader";
 import { StudioPreview } from "./components/StudioWrapper/StudioPreview";
 import { StudioSidePanel } from "./components/StudioWrapper/StudioSidePanel";
+import { StudioInspectorPanel } from "./components/StudioWrapper/StudioInspectorPanel";
+import {
+  isMediaSlotDatatype,
+  isTextReferenceableDatatype,
+} from "./components/StudioWrapper/studioFieldMeta";
 import { StudioLayersPanel } from "./components/StudioWrapper/StudioLayersPanel";
 import {
   StudioSaveChange,
@@ -54,7 +59,12 @@ import {
   useStudioContentSave,
 } from "./hooks/useStudioContentSave";
 import { useStudioBridge } from "./hooks/useStudioBridge";
-import { InteractionMode, LayoutBreadcrumbItem } from "./hooks/studioTypes";
+import {
+  ConnectField,
+  ElementSlot,
+  InteractionMode,
+  LayoutBreadcrumbItem,
+} from "./hooks/studioTypes";
 import { useStudioSelection } from "./hooks/useStudioSelection";
 import { useStudioLayersTree } from "./hooks/useStudioLayersTree";
 import { getRefRegistry } from "../../../../../../engine/refRegistry";
@@ -106,6 +116,12 @@ export const StudioWrapper = () => {
     isLeafImg: boolean;
     imgIndex: number;
     currentSrc: string;
+    // Set when the picker was opened from the Inspector panel, so the panel's
+    // displayed value updates after a pick. `attr` is the target attribute
+    // (src or poster) and `tagName` addresses nested elements.
+    fromInspector?: boolean;
+    attr?: string;
+    tagName?: string;
   } | null>(null);
   const history = useHistory();
   const location = useLocation();
@@ -158,12 +174,25 @@ export const StudioWrapper = () => {
       selector?: string;
       layoutId?: string;
       codeId?: string;
+      // Patched template source for `codeId` (syncTemplateSource).
+      source?: string;
       targetLayoutId?: string;
       targetCodeId?: string;
       position?: string;
       isLeafImg?: boolean;
       imgIndex?: number;
       newSrc?: string;
+      attr?: string;
+      isSelf?: boolean;
+      tagName?: string;
+      elementIndex?: number;
+      newTag?: string;
+      booleanAttr?: boolean;
+      // Which of the element's own text runs to write (updateElementText).
+      textIndex?: number;
+      // Resolved value to DISPLAY in the live DOM on connect, while the template
+      // still saves the Parsley `value` (updateElementText / updateElementAttr).
+      previewValue?: string;
     }) => {
       const iframeWindow = iframeRef.current?.contentWindow;
       if (!iframeWindow) return;
@@ -182,9 +211,20 @@ export const StudioWrapper = () => {
     []
   );
 
+  // The bridge reads its template source off the page's <template> blocks, which
+  // are frozen at render time. Push every unsaved layout edit down so it doesn't
+  // keep answering from the pre-edit source.
+  const syncTemplateSourceToBridge = useCallback(
+    (codeId: string, source: string) => {
+      postCommandToBridge({ action: "syncTemplateSource", codeId, source });
+    },
+    [postCommandToBridge]
+  );
+
   const {
     selectedElement,
     selectedLayout,
+    inspectorSelection,
     panelMode,
     filteredFieldName,
     setSelectedLayout,
@@ -194,6 +234,10 @@ export const StudioWrapper = () => {
     handleLayoutBreadcrumbSelect,
     clearHighlightOnly,
     applySelection,
+    applyInspectorSelection,
+    returnToInspector,
+    updateInspectorSlotValue,
+    refreshInspectorSlots,
   } = useStudioSelection({
     postCommandToBridge,
     codeFileNameById,
@@ -692,6 +736,9 @@ export const StudioWrapper = () => {
     handleReorderOutput,
     handleLayoutContentUpdate,
     handleLayoutImageSrcUpdate,
+    handleLayoutElementAttrUpdate,
+    handleLayoutTextUpdate,
+    handleLayoutTagUpdate,
   } = useLayoutReorderState({
     webViews,
     codeFileNameById,
@@ -700,6 +747,7 @@ export const StudioWrapper = () => {
     dispatch,
     clearLayoutSelection,
     refreshPreviewFrame,
+    syncTemplateSourceToBridge,
     withCodeIdBreadcrumbRoot,
     onSelectedLayoutBreadcrumbChange: setSelectedLayout,
   });
@@ -1129,10 +1177,13 @@ export const StudioWrapper = () => {
     postCommandToBridge,
     applyBridgeSelection,
     applyLayoutSelection,
+    applyInspectorSelection,
+    refreshInspectorSlots,
     codeFileNameById,
     fieldsState,
     selectedElement,
     selectedLayout,
+    inspectorSelection,
     dndDisabled: isSavingLayout || isRefreshing,
   });
 
@@ -1171,6 +1222,215 @@ export const StudioWrapper = () => {
     setIsRefreshing(false);
     handlePreviewLoad();
   }, [handlePreviewLoad]);
+
+  // Content mode: a dynamic slot (a bound attribute or bound text) was clicked
+  // — open the existing single-field content editor for its field.
+  const handleEditDynamicSlot = useCallback(
+    (slot: ElementSlot) => {
+      if (!slot.fieldZuid) return;
+      applyBridgeSelection({
+        studioId: slot.studioId,
+        fieldZuid: slot.fieldZuid,
+        fieldType: slot.fieldType,
+        itemZuid: slot.itemZuid,
+        modelZuid: slot.modelZuid,
+      });
+    },
+    [applyBridgeSelection]
+  );
+
+  // Layout mode: a slot was edited free-text. Live-update the preview on every
+  // keystroke (cheap postMessage) but debounce the template-source patch
+  // (DOMParse + restage) so we don't reparse on each character. Attributes
+  // write via setAttribute; text writes the element's inner text.
+  const slotPatchTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>(
+    {}
+  );
+  // Clear any pending debounced slot patches when the studio unmounts so a
+  // timer never fires into a stale closure.
+  useEffect(
+    () => () => {
+      Object.values(slotPatchTimers.current).forEach(clearTimeout);
+    },
+    []
+  );
+  // On connect, the panel emits a `{{this.field}}` Parsley ref. For the LIVE
+  // preview we show the field's RESOLVED value (its actual text, or a resolved
+  // image URL) instead of the raw expression, while the template still saves the
+  // Parsley — so a connection is visible without a save + reload. Returns the
+  // resolved display value, or null when `value` is a plain edit (not a field
+  // ref) or the field has no data to show. Fields always resolve against the
+  // page item, since our flow only ever emits `this.<pageItemField>`.
+  const resolvePreviewValue = useCallback(
+    (value: string): string | null => {
+      const match = value.match(/^\{\{\s*this\.(\w+)(\.getImage\(\))?\s*\}\}$/);
+      if (!match) return null;
+      const raw = (pageItem?.data as Record<string, any>)?.[match[1]];
+      if (raw === undefined || raw === null || raw === "") return null;
+      if (match[2]) {
+        // Image field → the URL getImage() resolves to, via the media resolver.
+        // @ts-expect-error CONFIG is provided globally at runtime
+        return `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${raw}/getimage`;
+      }
+      return String(raw);
+    },
+    [pageItem]
+  );
+
+  const handleSlotChange = useCallback(
+    (slot: ElementSlot, value: string) => {
+      const patch = inspectorSelection?.layoutPatch;
+      if (!patch || !patch.codeId) return;
+      // Never write a slot we've declared non-editable. The inputs are already
+      // disabled in that case, so this is a guard on the invariant rather than
+      // a reachable path — it keeps "layoutEditable" the single source of truth
+      // for whether the template may be rewritten.
+      if (!slot.layoutEditable) return;
+
+      // On connect this is the RESOLVED value to preview in the live DOM; on a
+      // plain edit it's undefined (the value IS what's shown). Either way the
+      // template saves `value`.
+      const previewValue = resolvePreviewValue(value) ?? undefined;
+
+      if (slot.kind === "text") {
+        postCommandToBridge({
+          action: "updateElementText",
+          codeId: patch.codeId,
+          layoutId: patch.layoutId,
+          value,
+          previewValue,
+          textIndex: slot.textIndex,
+        });
+
+        // An ADDRESSED run writes itself back: the bridge edits that one run and
+        // echoes the leaf's innerHTML as LAYOUT_CONTENT_UPDATE, which the host
+        // already knows how to fold into the source — preserving nested layout
+        // subtrees. Patching here as well would overwrite the leaf's whole text
+        // and take any nested <span> with it.
+        if (slot.textIndex !== undefined) return;
+
+        // A dynamic leaf has no nested markup, so the whole-content write is safe.
+        clearTimeout(slotPatchTimers.current[slot.key]);
+        slotPatchTimers.current[slot.key] = setTimeout(() => {
+          handleLayoutTextUpdate(patch.codeId!, patch.layoutId, value);
+        }, 300);
+        return;
+      }
+
+      const attr = slot.attr || slot.key;
+      postCommandToBridge({
+        action: "updateElementAttr",
+        layoutId: patch.layoutId,
+        isSelf: patch.isSelf,
+        tagName: patch.tagName,
+        elementIndex: patch.elementIndex,
+        attr,
+        // Show the resolved value in the live DOM; the template stages `value`.
+        value: previewValue ?? value,
+        booleanAttr: slot.booleanAttr,
+      });
+      clearTimeout(slotPatchTimers.current[slot.key]);
+      slotPatchTimers.current[slot.key] = setTimeout(() => {
+        handleLayoutElementAttrUpdate(
+          patch.codeId!,
+          patch.layoutId,
+          patch.isSelf,
+          patch.tagName,
+          patch.elementIndex,
+          attr,
+          value,
+          slot.booleanAttr
+        );
+      }, 300);
+    },
+    [
+      handleLayoutElementAttrUpdate,
+      handleLayoutTextUpdate,
+      postCommandToBridge,
+      resolvePreviewValue,
+      inspectorSelection,
+    ]
+  );
+
+  // Layout mode: change the element's tag (e.g. h1 → h2, img → video). Only
+  // valid when the element carries its own data-layout-id (isSelf), since the
+  // swap is addressed by layout id. Applied immediately — it's a discrete
+  // select change, not per-keystroke.
+  const handleTagChange = useCallback(
+    (newTag: string) => {
+      const patch = inspectorSelection?.layoutPatch;
+      if (!patch || !patch.codeId || !patch.isSelf) return;
+      postCommandToBridge({
+        action: "updateElementTag",
+        layoutId: patch.layoutId,
+        newTag,
+      });
+      handleLayoutTagUpdate(patch.codeId, patch.layoutId, newTag);
+    },
+    [handleLayoutTagUpdate, postCommandToBridge, inspectorSelection]
+  );
+
+  // Layout mode: connect a content item to a text slot. A text slot's value is
+  // just the raw template content, so "connecting" means writing a Parsley
+  // expression (e.g. "{{this.title}}") in place of the static text — which the
+  // existing text write-path already persists. The content-item picker itself
+  // isn't built yet; this is the entry point it will hang off.
+  // Fields of the item being edited, offered in a text slot's "Connect Item"
+  // dropdown. `this` in a Parsley expression resolves to the item rendering the
+  // template region, which for the main page is the page item — so its model's
+  // fields are what `{{this.<name>}}` can reference.
+  const pageFields = useMemo(() => {
+    if (!pageModelZUID) return [];
+    return Object.values(fieldsState)
+      .filter((field: any) => field?.contentModelZUID === pageModelZUID)
+      .sort((a: any, b: any) => (a?.sort ?? 0) - (b?.sort ?? 0));
+  }, [fieldsState, pageModelZUID]);
+
+  const toConnectField = (field: any): ConnectField => ({
+    name: field.name,
+    label: field.label || field.name,
+    datatype: field.datatype,
+  });
+
+  // Fields offered in a TEXT slot's "Connect Item" dropdown.
+  const connectFields = useMemo<ConnectField[]>(
+    () =>
+      pageFields
+        .filter((field: any) => isTextReferenceableDatatype(field?.datatype))
+        .map(toConnectField),
+    [pageFields]
+  );
+
+  // Fields offered in a MEDIA slot's (img/video src, poster) dropdown — media
+  // assets and external-URL fields.
+  const mediaFields = useMemo<ConnectField[]>(
+    () =>
+      pageFields
+        .filter((field: any) => isMediaSlotDatatype(field?.datatype))
+        .map(toConnectField),
+    [pageFields]
+  );
+
+  // Layout mode: open the media picker for a media-URL slot (src or poster).
+  // Reuses the img media-picker dialog; the tag-agnostic patch maps onto its
+  // isLeafImg / imgIndex addressing, and `attr` records which attribute to set.
+  const handleBrowseMedia = useCallback(
+    (slot: ElementSlot) => {
+      const patch = inspectorSelection?.layoutPatch;
+      if (!patch || !patch.codeId) return;
+      setImageEditState({
+        codeId: patch.codeId,
+        layoutId: patch.layoutId,
+        isLeafImg: patch.isSelf,
+        imgIndex: patch.elementIndex,
+        currentSrc: slot.value,
+        fromInspector: true,
+        attr: slot.attr || "src",
+        tagName: patch.tagName,
+      });
+    },
+    [inspectorSelection]
+  );
 
   const renderInfoPanel = () => {
     if (!isResolved) {
@@ -1224,7 +1484,17 @@ export const StudioWrapper = () => {
         isLoadingItem={isSelectedItemLoading}
         visibleFieldName={filteredFieldName || undefined}
       />
-      {filteredFieldName ? (
+      {inspectorSelection ? (
+        <Button
+          data-cy="StudioBackToInspector"
+          variant="outlined"
+          size="large"
+          fullWidth
+          onClick={returnToInspector}
+        >
+          Back to Element
+        </Button>
+      ) : filteredFieldName ? (
         <Button
           variant="outlined"
           size="large"
@@ -1291,13 +1561,33 @@ export const StudioWrapper = () => {
               isBusy={isRefreshing || studioSaving || isSavingLayout}
               onLoad={handlePreviewFrameLoad}
             />
-            {interactionMode === "content" ? (
+            {panelMode === "inspector" && inspectorSelection ? (
+              <StudioInspectorPanel
+                mode={interactionMode}
+                elementKey={inspectorSelection.nodeId}
+                tagName={inspectorSelection.tagName}
+                slots={inspectorSelection.slots}
+                canChangeTag={
+                  interactionMode === "layout" &&
+                  !!inspectorSelection.layoutPatch?.isSelf
+                }
+                onChangeTag={handleTagChange}
+                onClose={requestClearSelection}
+                onEditDynamicSlot={handleEditDynamicSlot}
+                onChangeSlot={handleSlotChange}
+                onBrowseMedia={handleBrowseMedia}
+                connectFields={connectFields}
+                mediaFields={mediaFields}
+                drawerWidth={drawerWidth}
+                logoSrc={contentOneLogo}
+              />
+            ) : interactionMode === "content" ? (
               <StudioSidePanel
                 headerTitle={headerTitle}
                 selectedItemLabel={selectedItemLabel}
                 pageItemVersion={pageItemVersion}
                 unresolvedPath={unresolvedPath}
-                panelMode={panelMode}
+                panelMode={panelMode === "edit" ? "edit" : "info"}
                 clearSelection={requestClearSelection}
                 activeVersion={activeVersion}
                 selectedModelZUID={selectedModelZUID}
@@ -1433,20 +1723,46 @@ export const StudioWrapper = () => {
               addImagesCallback={(images: any[]) => {
                 if (!images.length) return;
                 const newSrc = images[0].url;
-                handleLayoutImageSrcUpdate(
-                  imageEditState.codeId,
-                  imageEditState.layoutId,
-                  imageEditState.isLeafImg,
-                  imageEditState.imgIndex,
-                  newSrc
-                );
-                postCommandToBridge({
-                  action: "updateImageSrc",
-                  layoutId: imageEditState.layoutId,
-                  isLeafImg: imageEditState.isLeafImg,
-                  imgIndex: imageEditState.imgIndex,
-                  newSrc,
-                });
+                if (imageEditState.fromInspector) {
+                  // Attributes-panel Browse: write the chosen URL to the
+                  // recorded attribute (src or poster) via the generic path.
+                  const attr = imageEditState.attr || "src";
+                  handleLayoutElementAttrUpdate(
+                    imageEditState.codeId,
+                    imageEditState.layoutId,
+                    imageEditState.isLeafImg,
+                    imageEditState.tagName || "img",
+                    imageEditState.imgIndex,
+                    attr,
+                    newSrc
+                  );
+                  postCommandToBridge({
+                    action: "updateElementAttr",
+                    layoutId: imageEditState.layoutId,
+                    isSelf: imageEditState.isLeafImg,
+                    tagName: imageEditState.tagName || "img",
+                    elementIndex: imageEditState.imgIndex,
+                    attr,
+                    value: newSrc,
+                  });
+                  updateInspectorSlotValue(attr, newSrc);
+                } else {
+                  // Canvas image-replace flow: img-specific src update.
+                  handleLayoutImageSrcUpdate(
+                    imageEditState.codeId,
+                    imageEditState.layoutId,
+                    imageEditState.isLeafImg,
+                    imageEditState.imgIndex,
+                    newSrc
+                  );
+                  postCommandToBridge({
+                    action: "updateImageSrc",
+                    layoutId: imageEditState.layoutId,
+                    isLeafImg: imageEditState.isLeafImg,
+                    imgIndex: imageEditState.imgIndex,
+                    newSrc,
+                  });
+                }
                 setImageEditState(null);
               }}
             />
