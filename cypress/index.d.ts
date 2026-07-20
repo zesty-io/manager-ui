@@ -73,9 +73,7 @@ declare global {
       task(
         event: "seed:code",
         path: string
-      ): Chainable<
-        Partial<WebView> | Partial<Script> | Partial<Stylesheet> | null
-      >;
+      ): Chainable<Partial<WebView> | Partial<Script> | Partial<Stylesheet>>;
       task(event: "cleanup:labels"): Chainable<string[]>;
       task(
         event: "api:createLabel",

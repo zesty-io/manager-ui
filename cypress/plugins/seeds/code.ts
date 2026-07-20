@@ -3,7 +3,7 @@ import { join } from "path";
 
 import { WebView, Stylesheet, Script } from "../../../src/shell/services/types";
 
-export type SeedCodeTask = WebView | Stylesheet | Script | null;
+export type SeedCodeTask = WebView | Stylesheet | Script;
 const STYLESHEET_TYPES = ["text/css", "text/less", "text/scss", "text/sass"];
 
 module.exports = function code(config) {
@@ -28,16 +28,35 @@ module.exports = function code(config) {
         body: JSON.stringify(payload),
       });
       const resJson = await res.json();
-      return resJson?.data ?? null;
+      if (!resJson?.data?.ZUID) {
+        throw new Error(
+          `seed:code failed to create script "${filename}": ${JSON.stringify(
+            resJson
+          )}`
+        );
+      }
+      return resJson.data;
     }
 
     if (STYLESHEET_TYPES.includes(json.type)) {
       const res = await sdk.instance.createStylesheet(payload);
-      return res?.data ?? null;
+      if (!res?.data?.ZUID) {
+        throw new Error(
+          `seed:code failed to create stylesheet "${filename}": ${JSON.stringify(
+            res
+          )}`
+        );
+      }
+      return res.data;
     }
 
     const res = await sdk.instance.createView(payload);
-    return res?.data ?? null;
+    if (!res?.data?.ZUID) {
+      throw new Error(
+        `seed:code failed to create view "${filename}": ${JSON.stringify(res)}`
+      );
+    }
+    return res.data;
   }
 
   // CODE TASK MAPPING
