@@ -150,6 +150,64 @@ describe("Integration Field", () => {
           .should("have.length", 1);
       });
     });
+
+    context("Invalid Response Shape", () => {
+      const invalidShapes = [
+        { name: "null", body: null },
+        { name: "empty array", body: [] },
+        {
+          name: "single object with no nested array",
+          body: { name: "Solo", id: 1 },
+        },
+        { name: "array of primitives", body: [1, 2, 3, 4, 5] },
+        { name: "array of nulls", body: [null] },
+        { name: "array of objects with no selectable keys", body: [{}] },
+        {
+          name: "single object with nested array of empty objects",
+          body: { items: [{}] },
+        },
+      ];
+
+      invalidShapes.forEach(({ name, body }) => {
+        it(`blocks advancing and shows an error for: ${name}`, () => {
+          cy.intercept("**/get-url?url=*", { statusCode: 200, body }).as(
+            "getUrl"
+          );
+
+          cy.visit(`/schema/${Cypress.env("modelZUID")}/fields`);
+          cy.getBySelector("AddFieldBtn").click();
+          cy.getBySelector("FieldItem_integration").click();
+          cy.getBySelector("integrationConfigureButton").click();
+          cy.getBySelector("integrationFormDialog").should("exist");
+          cy.getBySelector("integrationEndpointInput")
+            .find("input")
+            .clear()
+            .type(ENDPOINTS.generic);
+
+          cy.getBySelector("integrationConnectButton").click();
+          cy.wait("@getUrl");
+
+          cy.getBySelector("integrationConnectionStatusContainer").should(
+            "exist"
+          );
+          cy.getBySelector("integrationConnectionStatusLabel").should(
+            "contain",
+            "Unsupported Response Format"
+          );
+          cy.getBySelector("integrationConnectionStatusSubtitle")
+            .invoke("text")
+            .should("not.be.empty");
+
+          // The action button must keep the user on the Connect step, not
+          // advance to Display Type where the Configure dead-end would occur.
+          cy.getBySelector("integrationConnectionStatusButton").click();
+          cy.getBySelector("integrationEndpointInput").should("exist");
+          cy.getBySelector("integrationSelectDisplayOptionsDialog").should(
+            "not.exist"
+          );
+        });
+      });
+    });
   });
 
   describe("Item Selection", () => {
