@@ -17,6 +17,7 @@ import {
 } from "@mui/material";
 import CloudUploadRoundedIcon from "@mui/icons-material/CloudUploadRounded";
 import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
+import { useTranslation } from "react-i18next";
 
 export type StudioSaveChangeType = "Content" | "Code" | "Block";
 
@@ -55,6 +56,8 @@ export const StudioSaveChangesModal = ({
   onSaveAll,
   onSaveAndPublishAll,
 }: StudioSaveChangesModalProps) => {
+  const { t } = useTranslation();
+
   if (!open) return null;
 
   return (
@@ -65,10 +68,10 @@ export const StudioSaveChangesModal = ({
     >
       <DialogTitle component="div" sx={{ pb: 1 }}>
         <Typography variant="h5" fontWeight={700}>
-          Save Changes
+          {t("shell.integrationSaveChanges")}
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-          Would you like to save or save and publish your changes?
+          {t("content.studioSaveChangesSubtitle")}
         </Typography>
       </DialogTitle>
       <DialogContent>
@@ -80,9 +83,15 @@ export const StudioSaveChangesModal = ({
         >
           <TableHead>
             <TableRow sx={{ bgcolor: "grey.50" }}>
-              <TableCell sx={{ fontWeight: 600, width: 96 }}>Vers.</TableCell>
-              <TableCell sx={{ fontWeight: 600 }}>Title</TableCell>
-              <TableCell sx={{ fontWeight: 600, width: 140 }}>Type</TableCell>
+              <TableCell sx={{ fontWeight: 600, width: 96 }}>
+                {t("content.studioSaveChangesVersionColumn")}
+              </TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>
+                {t("shell.legacySearchSortTitle")}
+              </TableCell>
+              <TableCell sx={{ fontWeight: 600, width: 140 }}>
+                {t("content.studioSaveChangesTypeColumn")}
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -119,7 +128,7 @@ export const StudioSaveChangesModal = ({
           onClick={onCancel}
           disabled={isSaving}
         >
-          Cancel
+          {t("common.cancel")}
         </Button>
         <Box display="flex" gap={1}>
           <Button
@@ -136,7 +145,7 @@ export const StudioSaveChangesModal = ({
             {isSaving ? (
               <CircularProgress size={16} color="inherit" />
             ) : (
-              "Save All"
+              t("content.studioSaveAllButton")
             )}
           </Button>
           <Button
@@ -153,7 +162,7 @@ export const StudioSaveChangesModal = ({
             {isSaving ? (
               <CircularProgress size={16} color="inherit" />
             ) : (
-              "Save & Publish All"
+              t("content.studioSaveAndPublishAllButton")
             )}
           </Button>
         </Box>

@@ -8,6 +8,29 @@ type LayoutStructureItem = {
   parentLayoutId: string | null;
 };
 
+// Tags the Inspector panel can swap an element to — mirrors the bridge's
+// SUPPORTED_ELEMENTS. Guards createElement against an arbitrary tag name.
+const SWAPPABLE_TAGS = new Set([
+  "img",
+  "video",
+  "h1",
+  "h2",
+  "h3",
+  "h4",
+  "h5",
+  "h6",
+  "p",
+  "span",
+  "div",
+  "section",
+  "article",
+  "aside",
+  "header",
+  "footer",
+  "main",
+  "nav",
+]);
+
 const isLayoutBreadcrumbItem = (
   segment: unknown
 ): segment is LayoutBreadcrumbItem =>
@@ -284,6 +307,10 @@ type Args = {
   dispatch: (action: any) => any;
   clearLayoutSelection: () => void;
   refreshPreviewFrame: (onReloadComplete?: () => void) => void;
+  // Mirrors a patched region down to the bridge. The bridge's own template
+  // source is frozen at page render, so it has to be told about edits we
+  // haven't saved yet — see writeTemplateSources.
+  syncTemplateSourceToBridge: (codeId: string, source: string) => void;
   withCodeIdBreadcrumbRoot: (
     codeId: string,
     breadcrumb: LayoutBreadcrumbItem[],
@@ -312,11 +339,32 @@ export const useLayoutReorderState = ({
   dispatch,
   clearLayoutSelection,
   refreshPreviewFrame,
+  syncTemplateSourceToBridge,
   withCodeIdBreadcrumbRoot,
   onSelectedLayoutBreadcrumbChange,
 }: Args) => {
   const { t, i18n } = useTranslation();
   const templateSourceByCodeIdRef = useRef<Record<string, string>>({});
+
+  // The one way to write the template cache after boot. The bridge keeps its
+  // own copy, read straight off the page's <template> blocks and never updated
+  // — so any edit we hold and don't push down leaves the two disagreeing, and
+  // the bridge reads the pre-edit source back at us: the Inspector reopens on a
+  // stale value, and inline editing rejects the block as "dynamic content"
+  // because live DOM no longer matches the template. Funnelling every write
+  // through here keeps them in step by construction.
+  const writeTemplateSources = useCallback(
+    (patch: Record<string, string>) => {
+      templateSourceByCodeIdRef.current = {
+        ...templateSourceByCodeIdRef.current,
+        ...patch,
+      };
+      Object.keys(patch).forEach((codeId) => {
+        syncTemplateSourceToBridge(codeId, patch[codeId]);
+      });
+    },
+    [syncTemplateSourceToBridge]
+  );
   const [pendingLayoutSave, setPendingLayoutSave] =
     useState<LayoutReorderState | null>(null);
   const [isSavingLayout, setIsSavingLayout] = useState(false);
@@ -565,10 +613,7 @@ export const useLayoutReorderState = ({
         return;
       }
 
-      templateSourceByCodeIdRef.current = {
-        ...templateSourceByCodeIdRef.current,
-        [codeId]: next,
-      };
+      writeTemplateSources({ [codeId]: next });
 
       setPendingLayoutSave((prev) => {
         const prevRegion = prev?.regions?.[codeId];
@@ -606,7 +651,7 @@ export const useLayoutReorderState = ({
         };
       });
     },
-    [dispatch, t]
+    [dispatch, t, writeTemplateSources]
   );
 
   const handleReorderOutput = useCallback(
@@ -679,10 +724,7 @@ export const useLayoutReorderState = ({
 
       if (!Object.keys(mappedRegions).length) return;
 
-      templateSourceByCodeIdRef.current = {
-        ...templateSourceByCodeIdRef.current,
-        ...nextCachedSources,
-      };
+      writeTemplateSources(nextCachedSources);
 
       const primaryCodeId =
         typeof msg.primaryCodeId === "string" && msg.primaryCodeId
@@ -723,46 +765,16 @@ export const useLayoutReorderState = ({
       codeFileNameById,
       onSelectedLayoutBreadcrumbChange,
       withCodeIdBreadcrumbRoot,
+      writeTemplateSources,
     ]
   );
 
-  const handleLayoutImageSrcUpdate = useCallback(
-    (
-      codeId: string,
-      layoutId: string,
-      isLeafImg: boolean,
-      imgIndex: number,
-      newSrc: string
-    ) => {
-      if (!codeId || !layoutId || !newSrc) return;
-
-      const cached = templateSourceByCodeIdRef.current[codeId];
-      if (!cached) return;
-
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(
-        `<div id="studio-img-root">${cached}</div>`,
-        "text/html"
-      );
-      const root = doc.getElementById("studio-img-root");
-      if (!root) return;
-
-      const leaf = root.querySelector(`[data-layout-id="${layoutId}"]`);
-      if (!leaf) return;
-
-      const imgTarget = isLeafImg
-        ? (leaf as HTMLElement)
-        : (Array.from(leaf.querySelectorAll("img"))[imgIndex] as HTMLElement);
-      if (!imgTarget) return;
-
-      imgTarget.setAttribute("src", newSrc);
-
-      const next = root.innerHTML;
-
-      templateSourceByCodeIdRef.current = {
-        ...templateSourceByCodeIdRef.current,
-        [codeId]: next,
-      };
+  // Write a region's patched source into the cache and stage it for save,
+  // preserving any pending reorder on that region. Shared by the attribute and
+  // text slot updaters.
+  const stageLayoutSourceUpdate = useCallback(
+    (codeId: string, next: string) => {
+      writeTemplateSources({ [codeId]: next });
 
       setPendingLayoutSave((prev) => {
         const prevRegion = prev?.regions?.[codeId];
@@ -797,7 +809,149 @@ export const useLayoutReorderState = ({
         };
       });
     },
-    []
+    [writeTemplateSources]
+  );
+
+  const handleLayoutElementAttrUpdate = useCallback(
+    (
+      codeId: string,
+      layoutId: string,
+      isSelf: boolean,
+      tagName: string,
+      elementIndex: number,
+      attr: string,
+      value: string,
+      booleanAttr?: boolean
+    ) => {
+      // Unlike `src`, an empty `alt` is a legitimate value, so only guard the
+      // addressing inputs here (not `value`).
+      if (!codeId || !layoutId || !attr) return;
+
+      const cached = templateSourceByCodeIdRef.current[codeId];
+      if (!cached) return;
+
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(
+        `<div id="studio-el-root">${cached}</div>`,
+        "text/html"
+      );
+      const root = doc.getElementById("studio-el-root");
+      if (!root) return;
+
+      const leaf = root.querySelector(
+        `[data-layout-id="${CSS.escape(layoutId)}"]`
+      );
+      if (!leaf) return;
+
+      const target = isSelf
+        ? (leaf as HTMLElement)
+        : (Array.from(leaf.querySelectorAll(tagName))[
+            elementIndex
+          ] as HTMLElement);
+      if (!target) return;
+
+      if (booleanAttr) {
+        // Presence toggle: "true" adds the bare attribute, "false" removes it.
+        if (value === "true") target.setAttribute(attr, "");
+        else target.removeAttribute(attr);
+      } else {
+        target.setAttribute(attr, value);
+      }
+
+      stageLayoutSourceUpdate(codeId, root.innerHTML);
+    },
+    [stageLayoutSourceUpdate]
+  );
+
+  // Patch a pure-text leaf's inner text into the cached source. Addressed by
+  // its own data-layout-id (text slots are only layout-editable for such
+  // leaves), so setting textContent is safe and escapes automatically.
+  const handleLayoutTextUpdate = useCallback(
+    (codeId: string, layoutId: string, value: string) => {
+      if (!codeId || !layoutId) return;
+
+      const cached = templateSourceByCodeIdRef.current[codeId];
+      if (!cached) return;
+
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(
+        `<div id="studio-el-root">${cached}</div>`,
+        "text/html"
+      );
+      const root = doc.getElementById("studio-el-root");
+      if (!root) return;
+
+      const leaf = root.querySelector(
+        `[data-layout-id="${CSS.escape(layoutId)}"]`
+      ) as HTMLElement | null;
+      if (!leaf) return;
+
+      leaf.textContent = value;
+
+      stageLayoutSourceUpdate(codeId, root.innerHTML);
+    },
+    [stageLayoutSourceUpdate]
+  );
+
+  // Change an element's tag in the cached source (e.g. h1 → h2, img → video).
+  // Addressed by its own data-layout-id; the replacement carries over every
+  // attribute (including data-layout-id / data-studio-id bindings) and its
+  // children so nothing else about the element changes.
+  const handleLayoutTagUpdate = useCallback(
+    (codeId: string, layoutId: string, newTag: string) => {
+      // Only createElement a tag the panel exposes — never an arbitrary tag.
+      if (!codeId || !layoutId || !SWAPPABLE_TAGS.has(newTag)) return;
+
+      const cached = templateSourceByCodeIdRef.current[codeId];
+      if (!cached) return;
+
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(
+        `<div id="studio-el-root">${cached}</div>`,
+        "text/html"
+      );
+      const root = doc.getElementById("studio-el-root");
+      if (!root) return;
+
+      const leaf = root.querySelector(
+        `[data-layout-id="${CSS.escape(layoutId)}"]`
+      ) as HTMLElement | null;
+      if (!leaf || !leaf.parentNode) return;
+
+      const swapped = doc.createElement(newTag);
+      Array.from(leaf.attributes).forEach((attribute) => {
+        swapped.setAttribute(attribute.name, attribute.value);
+      });
+      swapped.innerHTML = leaf.innerHTML;
+      leaf.parentNode.replaceChild(swapped, leaf);
+
+      stageLayoutSourceUpdate(codeId, root.innerHTML);
+    },
+    [stageLayoutSourceUpdate]
+  );
+
+  // Thin wrapper preserving the existing media-picker call site, which edits an
+  // <img> `src` addressed by the img-specific isLeafImg/imgIndex pair.
+  const handleLayoutImageSrcUpdate = useCallback(
+    (
+      codeId: string,
+      layoutId: string,
+      isLeafImg: boolean,
+      imgIndex: number,
+      newSrc: string
+    ) => {
+      if (!newSrc) return;
+      handleLayoutElementAttrUpdate(
+        codeId,
+        layoutId,
+        isLeafImg,
+        "img",
+        imgIndex,
+        "src",
+        newSrc
+      );
+    },
+    [handleLayoutElementAttrUpdate]
   );
 
   return {
@@ -811,5 +965,8 @@ export const useLayoutReorderState = ({
     handleReorderOutput,
     handleLayoutContentUpdate,
     handleLayoutImageSrcUpdate,
+    handleLayoutElementAttrUpdate,
+    handleLayoutTextUpdate,
+    handleLayoutTagUpdate,
   };
 };

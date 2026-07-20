@@ -193,7 +193,7 @@ export const StudioSidePanel = ({
               color="text.secondary"
               textAlign="center"
             >
-              Agentic Studio by Content.One
+              {t("content.studioAgenticStudioBy")} Content.One
             </Typography>
           </Box>
         </Box>

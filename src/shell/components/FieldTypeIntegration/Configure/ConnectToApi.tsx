@@ -77,6 +77,17 @@ const CONNECTION_STATUSES: {
     variant: "contained",
     color: "primary",
   },
+  invalid: {
+    icon: (
+      <InfoRoundedIcon fontSize="large" color="error" sx={{ fontSize: 40 }} />
+    ),
+    titleKey: "shell.integrationInvalidResponseFormat",
+    subTitleKey: "shell.integrationInvalidResponseFormatDescription",
+    buttonLabelKey: "shell.integrationTryAgain",
+    buttonIcon: <AutorenewRoundedIcon sx={{ fontSize: 40 }} />,
+    variant: "contained",
+    color: "primary",
+  },
 };
 
 const ConnectToApi = ({
@@ -104,7 +115,7 @@ const ConnectToApi = ({
 }) => {
   const { t } = useTranslation();
   const focusRef = useRef<string>("url");
-  const { data, status, fetchApiData } = useIntegrationField();
+  const { data, status, invalidReason, fetchApiData } = useIntegrationField();
 
   const [isValidUrl, setIsValidUrl] = useState(true);
   const [reqAborted, setReqAborted] = useState<boolean>(false);
@@ -408,12 +419,15 @@ const ConnectToApi = ({
               {t(CONNECTION_STATUSES[status].titleKey)}
             </Typography>
             <Typography
+              data-cy="integrationConnectionStatusSubtitle"
               variant="body2"
               color="text.primary"
               fontWeight={400}
               textAlign="center"
             >
-              {t(CONNECTION_STATUSES[status].subTitleKey)}
+              {status === "invalid"
+                ? invalidReason
+                : t(CONNECTION_STATUSES[status].subTitleKey)}
             </Typography>
             {keyPathsMismatch && (
               <Typography
