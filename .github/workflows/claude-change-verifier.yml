@@ -45,7 +45,7 @@ jobs:
           PR: ${{ github.event.pull_request.number }}
           HEAD_REF: ${{ github.head_ref }}
         run: |
-          set -uo pipefail
+          set -euo pipefail
           NUM=$(printf '%s' "$HEAD_REF" | grep -oE '(^|/)[0-9]+-' | grep -oE '[0-9]+' | head -1 || true)
           if [ -z "$NUM" ]; then
             NUM=$(gh api graphql \
@@ -137,6 +137,13 @@ jobs:
           # report quotes the marker earlier as an example, the trailing one still wins.
           VERDICT=$(printf '%s' "$BODY" | grep -oiE '<!-- qa-verdict:[[:space:]]*(PASS|FAIL|INCONCLUSIVE)[[:space:]]*-->' \
             | grep -oiE '(PASS|FAIL|INCONCLUSIVE)' | tail -n1 | tr '[:lower:]' '[:upper:]' || true)
+          # A report with no usable verdict marker is a broken report — treat it like a missing one
+          # (gate red) rather than letting an empty verdict fall through to a silent green.
+          if [ -z "$VERDICT" ]; then
+            echo "::warning::QA report has no usable qa-verdict marker; the QA gate will fail."
+            echo "no_report=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           PAYLOAD=$(BODY="$BODY" python3 -c 'import os,json,sys; sys.stdout.write(json.dumps({"body": os.environ["BODY"]}))')
           CID=$(gh api "repos/$REPO/issues/$PR/comments" --paginate \
             --jq '.[] | select(.user.login == "github-actions[bot]") | select(.body | startswith("<!-- cv-verifier -->")) | .id' | head -n1)
