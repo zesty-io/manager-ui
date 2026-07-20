@@ -27,9 +27,9 @@ describe("Code Editor Sidebar", { defaultCommandTimeout: 50000 }, () => {
   });
 
   it("Displays documents/files correctly", () => {
-    cy.get(
-      '[data-cy="html"] [id="html\\-\\/code\\/file\\/views\\/\\_\\_e2e\\_\\_"]'
-    ).as("e2eFolder");
+    cy.get('[data-cy="html"] [id="html-/code/file/views/__e2e__"]').as(
+      "e2eFolder"
+    );
 
     cy.get("@e2eFolder").within(() => {
       cy.get(".MuiTreeItem-content").click({ force: true });
@@ -47,7 +47,7 @@ describe("Code Editor Sidebar", { defaultCommandTimeout: 50000 }, () => {
     expect(FILENAME).to.not.be.empty;
 
     cy.get("@commitFolder")
-      .find(`[id="html\\-\\/code\\/file\\/views\\/${Cypress.env("fileZUID")}"]`)
+      .find(`[id="html-/code/file/views/${Cypress.env("fileZUID")}"]`)
       .scrollIntoView()
       .should("be.visible")
       .click();
@@ -64,7 +64,7 @@ describe("Code Editor Sidebar", { defaultCommandTimeout: 50000 }, () => {
       .should("be.enabled")
       .click();
 
-    cy.get(`[id="html\\-\\/code\\/file\\/views\\/${Cypress.env("fileZUID")}"]`)
+    cy.get(`[id="html-/code/file/views/${Cypress.env("fileZUID")}"]`)
       .scrollIntoView()
       .should("be.visible")
       .find('[data-cy="PublishIconButton"]')
@@ -82,7 +82,7 @@ describe("Code Editor Sidebar", { defaultCommandTimeout: 50000 }, () => {
       .should("be.enabled")
       .click();
 
-    cy.get(`[id="html\\-\\/code\\/file\\/views\\/${Cypress.env("fileZUID")}"]`)
+    cy.get(`[id="html-/code/file/views/${Cypress.env("fileZUID")}"]`)
       .scrollIntoView()
       .should("be.visible")
       .find('[data-cy="PublishIconButton"]')
