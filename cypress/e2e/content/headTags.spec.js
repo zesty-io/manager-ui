@@ -1,6 +1,21 @@
-// assumes no Head Tags as starting state
+import { API_ENDPOINTS } from "../../support/api";
+
+function cleanAllHeadTags() {
+  cy.apiRequest({
+    url: `${API_ENDPOINTS.devInstance}/web/headtags`,
+  }).then(({ data }) => {
+    (data || []).forEach((tag) => {
+      cy.apiRequest({
+        url: `${API_ENDPOINTS.devInstance}/web/headtags/${tag.ZUID}`,
+        method: "DELETE",
+      });
+    });
+  });
+}
+
 describe("Head Tags", () => {
   before(() => {
+    cleanAllHeadTags();
     cy.task("seed:content", "fixtures/item.json").then(
       ({ model, fields, items }) => {
         Cypress.env("modelZUID", model?.ZUID);
@@ -8,14 +23,20 @@ describe("Head Tags", () => {
       }
     );
   });
-  it("creates and deletes new head tag", () => {
-    cy.waitOn("/v1/content/models*", () => {
-      cy.visit(
-        `/content/${Cypress.env("modelZUID")}/${Cypress.env("itemZUID")}/head`
-      );
-    });
 
-    cy.contains("Create Head Tag").click();
+  after(() => {
+    cleanAllHeadTags();
+  });
+  it("creates and deletes new head tag", () => {
+    cy.intercept("GET", "**/v1/web/headtags").as("getHeadtags");
+
+    cy.visit(
+      `/content/${Cypress.env("modelZUID")}/${Cypress.env("itemZUID")}/head`
+    );
+
+    cy.wait("@getHeadtags");
+
+    cy.contains("Create Head Tag").should("exist").should("be.enabled").click();
 
     cy.getBySelector("newTagCard")
       .last()

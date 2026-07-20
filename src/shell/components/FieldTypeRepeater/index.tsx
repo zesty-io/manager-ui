@@ -1,0 +1,435 @@
+import { useState, useMemo, useEffect } from "react";
+import {
+  DataGridPro,
+  GRID_REORDER_COL_DEF,
+  GridColDef,
+  GridRenderCellParams,
+  GridRowOrderChangeParams,
+  GridRowSelectionModel,
+  useGridApiRef,
+} from "@mui/x-data-grid-pro";
+import Box from "@mui/material/Box";
+import IconButton from "@mui/material/IconButton";
+import DeleteIcon from "@mui/icons-material/Delete";
+import DragIndicatorRoundedIcon from "@mui/icons-material/DragIndicatorRounded";
+
+import { AddRowFooter } from "./AddRowFooter";
+import {
+  CURRENCY_OBJECT,
+  getHtmlText,
+} from "../../../apps/content-editor/src/app/views/ItemList/ItemListTable";
+import { ImageCell } from "../../../apps/content-editor/src/app/views/ItemList/TableCells/ImageCell";
+import { Link, Typography } from "@mui/material";
+import { ContentModelField } from "shell/services/types";
+import { RowDialog } from "./RowDialog";
+
+const HEADER_HEIGHT = 56;
+const ROW_HEIGHT = 56;
+
+const fieldTypeColumnConfigMap: Record<string, Partial<GridColDef>> = {
+  text: {
+    width: 360,
+    filterable: true,
+  },
+  textarea: {
+    width: 360,
+    filterable: true,
+  },
+  markdown: {
+    width: 360,
+    filterable: true,
+  },
+  wysiwyg_basic: {
+    width: 360,
+    valueFormatter: (value: any) => getHtmlText(value),
+    filterable: true,
+  },
+  images: {
+    width: 100,
+    renderCell: (params: GridRenderCellParams) => {
+      return <ImageCell params={params} />;
+    },
+  },
+  link: {
+    width: 360,
+    filterable: true,
+    renderCell: (params: any) => {
+      return (
+        <Link
+          underline="hover"
+          target="_blank"
+          href={params.value}
+          sx={{
+            color: "primary.main",
+            "&:hover": {
+              textDecorationColor: (theme) => theme.palette.primary.main,
+            },
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {params.value}
+        </Link>
+      );
+    },
+  },
+  currency: {
+    width: 160,
+    valueFormatter: (value: any) => {
+      if (value?.value === undefined || value?.value === null) return "";
+
+      return `${
+        CURRENCY_OBJECT[value?.currency]?.symbol_native
+      } ${new Intl.NumberFormat("en-US", {
+        minimumFractionDigits: 2,
+      }).format(value.value)}`;
+    },
+    align: "right",
+  },
+  number: {
+    width: 160,
+    valueFormatter: (value: any) => {
+      if (!value) return null;
+      return new Intl.NumberFormat("en-US").format(value);
+    },
+    filterable: true,
+    align: "right",
+  },
+  yes_no: {
+    width: 120,
+    filterable: true,
+  },
+  color: {
+    width: 140,
+    filterable: true,
+    renderCell: (params: GridRenderCellParams) => {
+      return (
+        <Box display="flex" alignItems="center" gap={1.5} height="100%">
+          <Box
+            sx={{
+              width: 32,
+              height: 32,
+              borderRadius: "8px",
+              backgroundColor: params.value,
+              border: (theme) =>
+                params.value?.toLowerCase() === "#ffffff"
+                  ? `1px solid ${theme.palette.border}`
+                  : "none",
+            }}
+          />
+          <Typography variant="body2">{params.value?.toUpperCase()}</Typography>
+        </Box>
+      );
+    },
+  },
+  dropdown: {
+    width: 240,
+    filterable: true,
+  },
+  sort: {
+    width: 112,
+    filterable: true,
+  },
+  uuid: {
+    width: 280,
+    filterable: true,
+  },
+};
+
+type FieldTypeRepeaterProps = {
+  field: ContentModelField;
+  value: Record<string, any>[];
+  onChange: (value: Record<string, any>[]) => void;
+};
+export const FieldTypeRepeater = ({
+  field,
+  value,
+  onChange,
+}: FieldTypeRepeaterProps) => {
+  const [rows, setRows] = useState<Record<string, any>[]>([]);
+  const apiRef = useGridApiRef();
+  const [rowSelectionModel, setRowSelectionModel] =
+    useState<GridRowSelectionModel>([]);
+  const [rowDialog, setRowDialog] = useState<"add" | "edit" | null>(null);
+  const [rowToEdit, setRowToEdit] = useState<Record<string, any> | null>(null);
+
+  useEffect(() => {
+    if (!value?.length) {
+      setRows([]);
+      return;
+    }
+
+    const processedRows = value.map((row, index) => ({
+      ...row,
+      __rowId__: index,
+      __rowReorder__: Object.values(row)[0],
+    }));
+
+    setRows(processedRows);
+  }, [value]);
+
+  useEffect(() => {
+    if (rows.length === 0) {
+      if (rowSelectionModel.length > 0) {
+        setRowSelectionModel([]);
+      }
+      return;
+    }
+
+    const validIds = new Set(rows.map((row) => row.__rowId__));
+    const filteredSelection = rowSelectionModel.filter((id) =>
+      validIds.has(id)
+    );
+
+    if (filteredSelection.length !== rowSelectionModel.length) {
+      setRowSelectionModel(filteredSelection);
+    }
+  }, [rows, rowSelectionModel]);
+
+  const baseColumns: GridColDef[] = useMemo(() => {
+    if (!field?.settings?.subFields?.length) return [];
+
+    return field.settings.subFields
+      ?.filter((field) => field.settings.list)
+      ?.sort((a, b) => a.sort - b.sort)
+      ?.map((field) => ({
+        field: field.name,
+        headerName: field.label,
+        ...fieldTypeColumnConfigMap[field.datatype],
+        valueGetter: (value, row) => {
+          switch (field.datatype) {
+            case "currency":
+              return {
+                value,
+                currency: field.settings.currency || "USD",
+              };
+
+            case "yes_no": {
+              if (value === null || value === undefined) {
+                return "";
+              }
+
+              // Shows the label of the option if options are defined
+              if (Object.keys(field.settings.options).length) {
+                return field.settings.options[value];
+              }
+
+              return value === 0 ? "No" : "Yes";
+            }
+
+            default:
+              return value;
+          }
+        },
+      }));
+  }, [field]);
+
+  const columns: GridColDef[] = useMemo(() => {
+    const hasSelectedRows = rowSelectionModel.length > 0 && rows.length > 0;
+
+    const mappedColumns = baseColumns.map((col) => ({
+      ...col,
+      headerName: hasSelectedRows ? "" : col.headerName,
+      renderHeader: hasSelectedRows
+        ? (): React.ReactNode => null
+        : col.renderHeader,
+      disableColumnMenu: hasSelectedRows ? true : col.disableColumnMenu,
+      sortable: hasSelectedRows ? false : col.sortable,
+    }));
+
+    return [
+      {
+        ...GRID_REORDER_COL_DEF,
+        width: 28,
+        minWidth: 28,
+      },
+      ...mappedColumns,
+    ];
+  }, [baseColumns, rowSelectionModel, rows.length]);
+
+  const cleanRows = (rowsToClean: Record<string, any>[]) => {
+    return rowsToClean.map((row: any) => {
+      const { __rowId__, __rowReorder__, ...rowData } = row;
+      return rowData;
+    });
+  };
+
+  const handleChange = (row: Record<string, any>) => {
+    const updatedRows = [...rows];
+
+    if (row.__rowId__ !== undefined) {
+      updatedRows[row.__rowId__] = row;
+    } else {
+      updatedRows.push(row);
+    }
+
+    onChange(cleanRows(updatedRows));
+  };
+
+  const handleRowOrderChange = (params: GridRowOrderChangeParams) => {
+    const { oldIndex, targetIndex } = params;
+    const newRows = [...rows];
+    const [removed] = newRows.splice(oldIndex, 1);
+    newRows.splice(targetIndex, 0, removed);
+
+    // Re-index row IDs to maintain order and selection consistency
+    const updatedRows = newRows.map((row, index) => ({
+      ...row,
+      __rowId__: index,
+    }));
+
+    onChange(cleanRows(updatedRows));
+  };
+
+  const handleRemoveRow = (id: number | number[]) => {
+    let updatedRows = [...rows];
+
+    if (Array.isArray(id)) {
+      updatedRows = updatedRows.filter((row) => !id.includes(row.__rowId__));
+    } else {
+      updatedRows.splice(id, 1);
+    }
+
+    onChange(cleanRows(updatedRows));
+    setRowDialog(null);
+    setRowToEdit(null);
+  };
+
+  return (
+    <>
+      <Box
+        sx={{
+          // 100px = header (56) + footer (44) so empty state only shows header/footer.
+          minHeight: 100,
+          // 675px = header (56) + 10 rows (560) + footer (44) + scrollbar buffer (15).
+          maxHeight: 675,
+          overflow: "hidden",
+          position: "relative",
+          // Prevents the DataGrid's column width from inflating this box's width.
+          // Without this, percentage-based widths on the DataGrid resolve circularly
+          // against the already-expanded parent, making horizontal scroll impossible.
+          contain: "inline-size",
+
+          // An ancestor has removed all scrollbars so we're re-enabling them here
+          "*": {
+            scrollbarWidth: "auto",
+            msOverflowStyle: "auto",
+            "&::-webkit-scrollbar": {
+              display: "block",
+            },
+          },
+        }}
+      >
+        {rowSelectionModel.length > 0 && (
+          <IconButton
+            data-cy="BulkRemoveRepeaterFieldRowsBtn"
+            onClick={() => {
+              handleRemoveRow(rowSelectionModel as number[]);
+              setRowSelectionModel([]);
+            }}
+            size="small"
+            sx={{
+              position: "absolute",
+              top: 10,
+              right: 12,
+              zIndex: 100,
+            }}
+          >
+            <DeleteIcon />
+          </IconButton>
+        )}
+        <DataGridPro
+          data-cy="RepeaterFieldGrid"
+          rowReordering
+          onRowOrderChange={handleRowOrderChange}
+          rows={rows}
+          getRowId={(row) => row.__rowId__}
+          apiRef={apiRef}
+          columns={columns}
+          checkboxSelection
+          disableRowSelectionOnClick
+          rowHeight={ROW_HEIGHT}
+          columnHeaderHeight={HEADER_HEIGHT}
+          pinnedColumns={{
+            left: ["__reorder__", "__check__"],
+          }}
+          rowSelectionModel={rowSelectionModel}
+          onRowSelectionModelChange={(newModel) =>
+            setRowSelectionModel(newModel)
+          }
+          onRowClick={(params) => {
+            setRowToEdit(params.row);
+            setRowDialog("edit");
+          }}
+          slots={{
+            footer: () => (
+              <AddRowFooter
+                fieldName={field.label}
+                onAddRow={() => setRowDialog("add")}
+              />
+            ),
+            noRowsOverlay: () => null,
+            rowReorderIcon: () => (
+              <DragIndicatorRoundedIcon fontSize="small" color="action" />
+            ),
+          }}
+          sx={{
+            width: "100%",
+            height: "fit-content",
+            // 100px = header (56) + footer (44).
+            minHeight: 100,
+            // 675px = header (56) + 10 rows (560) + footer (44) + scrollbar buffer (15).
+            maxHeight: 675,
+            backgroundColor: "common.white",
+
+            "& .MuiDataGrid-columnHeaderCheckbox": {
+              padding: 0,
+            },
+
+            "& .MuiDataGrid-columnHeaderReorder": {
+              padding: 0,
+            },
+
+            "& .MuiDataGrid-rowReorderCellContainer": {
+              padding: 0,
+            },
+
+            "& .MuiDataGrid-scrollbarFiller": {
+              backgroundColor: "grey.100",
+            },
+
+            "& .MuiDataGrid-filler": {
+              backgroundColor: "grey.100",
+            },
+
+            // Let the grid grow with content, then scroll internally once body hits 10 rows.
+            "& .MuiDataGrid-virtualScroller": {
+              // 575px = 10 rows (560) + scrollbar buffer (15).
+              maxHeight: 575,
+              overflowY: "auto !important",
+              overflowX: "auto !important",
+            },
+
+            "& .MuiDataGrid-virtualScrollerContent": {
+              display: rows.length === 0 ? "none" : undefined,
+            },
+          }}
+        />
+      </Box>
+      {rowDialog && (
+        <RowDialog
+          ZUID={field.ZUID}
+          onClose={() => {
+            setRowDialog(null);
+            setRowToEdit(null);
+          }}
+          name={field.label}
+          fields={field.settings.subFields || []}
+          onSubmit={handleChange}
+          onRemoveRow={handleRemoveRow}
+          editRowData={rowToEdit}
+          isUpdate={rowDialog === "edit"}
+        />
+      )}
+    </>
+  );
+};

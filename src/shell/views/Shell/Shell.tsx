@@ -29,6 +29,7 @@ import SchemaApp from "../../../apps/schema/src";
 import SeoApp from "../../../apps/seo/src";
 import SettingsApp from "../../../apps/settings/src";
 import HomeApp from "../../../apps/home";
+import StudioApp from "../../../apps/studio";
 import MarketplaceApp from "../../../apps/marketplace/src";
 import { BlocksApp } from "../../../apps/blocks";
 import { AppState } from "../../store/types";
@@ -41,7 +42,22 @@ import { registerNavigate } from "../../../engine/navigator";
 import { AIDrawer } from "./AIDrawer";
 import { useLocalStorage } from "react-use";
 import * as amplitude from "@amplitude/analytics-browser";
+import { sessionReplayPlugin } from "@amplitude/plugin-session-replay-browser";
 import instanceZUID from "../../../utility/instanceZUID";
+import { isZestyEmail } from "../../../utility/isZestyEmail";
+
+let sessionReplayAdded = false;
+function maybeEnableSessionReplay(email?: string) {
+  if (
+    !sessionReplayAdded &&
+    window.CONFIG?.ENV === "production" &&
+    !!email &&
+    !isZestyEmail(email)
+  ) {
+    amplitude.add(sessionReplayPlugin({ sampleRate: 1 }));
+    sessionReplayAdded = true;
+  }
+}
 
 export default memo(function Shell() {
   const dispatch = useDispatch();
@@ -79,6 +95,7 @@ export default memo(function Shell() {
   }, [history]);
 
   amplitude.setUserId(user.email);
+  maybeEnableSessionReplay(user.email);
 
   const identifyEvent = new amplitude.Identify();
   identifyEvent.set("instanceZUID", instance.ZUID);
@@ -145,6 +162,7 @@ export default memo(function Shell() {
                 <Box flex={1}>
                   <Switch>
                     <Route path="/release" component={ReleaseApp} />
+                    <Route path="/studio" component={StudioApp} />
 
                     <Route
                       path="/media/:groupID/file/:fileID"
@@ -244,7 +262,12 @@ export default memo(function Shell() {
                     <Route path="*" component={Missing} />
                   </Switch>
                 </Box>
-                {showAiDrawer && <AIDrawer key={pathname} />}
+                {showAiDrawer && (
+                  <AIDrawer
+                    onClose={() => setShowAiDrawer(false)}
+                    key={pathname}
+                  />
+                )}
               </Box>
             ) : (
               <LoadingShell />

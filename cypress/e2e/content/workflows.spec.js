@@ -1,15 +1,11 @@
 import ContentItemPage from "./pages/ContentItemPage";
-import CONFIG from "../../../src/shell/app.config";
-import instanceZUID from "../../../src/utility/instanceZUID";
+
 const NOW = Date.now();
 
-const INSTANCE_API = `${
-  CONFIG?.[process.env.NODE_ENV]?.API_INSTANCE_PROTOCOL
-}${instanceZUID}${CONFIG?.[process.env.NODE_ENV]?.API_INSTANCE}`;
 const TITLES = {
-  contentItem: `Content item workflow test ${NOW}`,
-  publishLabel: "Publish Approval",
-  testLabel: "Random Test Label",
+  publishLabel: `Publish Approval - ${NOW}`,
+  testLabel: `Random Test Label - ${NOW}`,
+  noPermissionLabel: `No Permission Label - ${NOW}`,
 };
 const LABEL_DATA = {
   publishLabel: {
@@ -28,78 +24,44 @@ const LABEL_DATA = {
     addPermissionRoles: ["30-86f8ccec82-swp72s", "30-8ee88afe82-gmx631"],
     removePermissionRoles: ["30-86f8ccec82-swp72s", "30-8ee88afe82-gmx631"],
   },
+  // addPermissionRoles set to a role the test user does NOT have, so the app
+  // blocks adding it — this is what the "cannot add without permission" test needs.
+  noPermissionLabel: {
+    name: TITLES.noPermissionLabel,
+    description: "",
+    color: "#4E5BA6",
+    allowPublish: false,
+    addPermissionRoles: ["30-fcb3fc9083-mz27f9"],
+    removePermissionRoles: ["30-fcb3fc9083-mz27f9"],
+  },
 };
 const cleanUp = () => {
-  // Delete test content item
-  cy.location("pathname").then((loc) => {
-    const [_, __, modelZUID, itemZUID] = loc?.split("/");
-    cy.apiRequest({
-      method: "DELETE",
-      url: `${INSTANCE_API}/content/models/${modelZUID}/items/${itemZUID}`,
-      failOnStatusCode: false, // This is only the cleanup so it doesn't matter if the content item exists or not
-    });
-  });
-
-  // Delete test labels
-  cy.apiRequest({
-    url: `${INSTANCE_API}/env/labels?showDeleted=true`,
-    failOnStatusCode: false, // This is only the cleanup so it doesn't matter if the labels exist or not
-  }).then((response) => {
-    response?.data
-      ?.filter(
-        (label) =>
-          !label?.deletedAt &&
-          [TITLES.publishLabel, TITLES.testLabel].includes(label?.name)
-      )
-      .forEach((label) => {
-        cy.apiRequest({
-          url: `${INSTANCE_API}/env/labels/${label.ZUID}`,
-          method: "DELETE",
-        });
-      });
-  });
+  cy.task("cleanup:labels");
 };
 
-describe("Content Item Workflows", () => {
+// retries disabled: these tests are an ordered, testIsolation:false chain that
+// adds/applies workflow labels — a retry re-adds a label that already persisted,
+// drifting the active-label count.
+describe("Content Item Workflows", { retries: 0 }, () => {
+  let ITEM = null;
   before(() => {
     cleanUp();
-    cy.intercept("POST", "**/labels").as("createLabel");
-    cy.intercept("GET", "**/labels*").as("getLabels");
 
-    // Create allow publish workflow label
     Object.values(LABEL_DATA).forEach((data) => {
-      cy.apiRequest({
-        method: "POST",
-        url: `${INSTANCE_API}/env/labels`,
-        body: data,
-      });
+      cy.task("api:createLabel", data);
     });
 
-    // Visit test page
-    cy.apiRequest({
-      method: "POST",
-      url: `${INSTANCE_API}/content/models/6-b6cde1aa9f-wftv50/items`,
-      body: {
-        data: {
-          title: TITLES.contentItem,
-          description: TITLES.contentItem,
-          tc_title: TITLES.contentItem,
-          tc_description: TITLES.contentItem,
-          tc_image: null,
-        },
-        web: {
-          canonicalTagMode: 1,
-          parentZUID: "0",
-          metaLinkText: TITLES.contentItem,
-          metaTitle: TITLES.contentItem,
-          pathPart: TITLES.contentItem?.replaceAll(" ", "-")?.toLowerCase(),
-          metaDescription: TITLES.contentItem,
-        },
-        meta: { langID: 1, contentModelZUID: "6-b6cde1aa9f-wftv50" },
-      },
-    }).then((response) => {
-      cy.visit(`/content/6-b6cde1aa9f-wftv50/${response.data?.ZUID}`);
-    });
+    cy.task("seed:content", "fixtures/item.json")
+      .then(({ model, items }) => {
+        Cypress.env("modelZUID", model?.ZUID);
+        Cypress.env("itemZUID", items[0]?.meta?.ZUID);
+        ITEM = items?.[0];
+      })
+      .then(() => {
+        cy.visit(
+          `/content/${Cypress.env("modelZUID")}/${Cypress.env("itemZUID")}`
+        );
+      });
   });
 
   after(() => {
@@ -107,6 +69,9 @@ describe("Content Item Workflows", () => {
   });
 
   it("Can add a workflow label", () => {
+    // Intercept must be registered before the click that fires the PUT.
+    cy.intercept("PUT", "**/labels/*").as("updateLabel");
+
     ContentItemPage.elements.versionSelector().should("exist").click();
     ContentItemPage.elements.addWorkflowStatusLabel().should("exist").click();
     ContentItemPage.elements
@@ -117,8 +82,9 @@ describe("Content Item Workflows", () => {
 
     cy.get("body").type("{esc}");
 
-    cy.intercept("PUT", "**/labels/*").as("updateLabel");
-    cy.wait("@updateLabel");
+    cy.wait("@updateLabel")
+      .its("response.statusCode")
+      .should("be.oneOf", [200, 201]);
 
     cy.reload();
 
@@ -138,9 +104,11 @@ describe("Content Item Workflows", () => {
   it("Cannot add a workflow label when role has no permission", () => {
     ContentItemPage.elements.versionSelector().should("exist").click();
     ContentItemPage.elements.addWorkflowStatusLabel().should("exist").click();
+    // Click the label the test user lacks permission to add (deterministic, by
+    // name) — .first() was non-deterministic and often landed on an addable label.
     ContentItemPage.elements
       .workflowStatusLabelOption()
-      .first()
+      .contains(TITLES.noPermissionLabel)
       .should("exist")
       .click({ force: true });
 
@@ -173,11 +141,14 @@ describe("Content Item Workflows", () => {
     ContentItemPage.elements
       .toast()
       .contains(
-        `Cannot Publish: "${TITLES.contentItem}". Does not have a status that allows publishing`
+        `Cannot Publish: "${ITEM?.web?.metaTitle}". Does not have a status that allows publishing`
       );
   });
 
   it("Can publish a content item if label with allowPublish is applied", () => {
+    // Intercept must be registered before the click that fires the PUT.
+    cy.intercept("PUT", "**/labels/*").as("updateLabel");
+
     cy.reload();
     ContentItemPage.elements.versionSelector().should("exist").click();
     ContentItemPage.elements.addWorkflowStatusLabel().should("exist").click();
@@ -189,16 +160,25 @@ describe("Content Item Workflows", () => {
 
     cy.get("body").type("{esc}");
 
-    cy.intercept("PUT", "**/labels/*").as("updateLabel");
-    cy.wait("@updateLabel");
+    cy.wait("@updateLabel")
+      .its("response.statusCode")
+      .should("be.oneOf", [200, 201]);
 
     cy.reload();
+
+    cy.intercept("POST", "**/items/*/publishings").as("publishItem");
 
     ContentItemPage.elements.publishItemButton().should("exist").click();
     ContentItemPage.elements.confirmPublishItemButton().should("exist").click();
 
-    cy.intercept("GET", "**/publishings").as("publish");
-    cy.wait("@publish");
+    // Wait for the publish to persist, then reload so the indicator reads the
+    // fresh published state — it intermittently failed to render off the live
+    // post-publish refetch under load.
+    cy.wait("@publishItem")
+      .its("response.statusCode")
+      .should("be.oneOf", [200, 201]);
+
+    cy.reload();
 
     ContentItemPage.elements.contentPublishedIndicator().should("exist");
   });

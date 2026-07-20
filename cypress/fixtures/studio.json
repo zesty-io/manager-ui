@@ -1,0 +1,78 @@
+{
+  "model": {
+    "label": "Studio Page",
+    "metaTitle": "Studio Page",
+    "type": "pageset",
+    "listed": true
+  },
+  "fields": [
+    {
+      "contentModelZUID": "",
+      "datatype": "text",
+      "name": "title",
+      "label": "title",
+      "sort": 1,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": true
+      }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "textarea",
+      "name": "body",
+      "label": "body",
+      "sort": 2,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": true
+      }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "images",
+      "name": "hero_image",
+      "label": "Hero Image",
+      "sort": 3,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": false,
+        "limit": 1
+      }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "link",
+      "name": "external_url",
+      "label": "External URL",
+      "sort": 4,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": false
+      }
+    }
+  ],
+  "items": [
+    {
+      "meta": {
+        "sort": 0
+      },
+      "web": {
+        "metaLinkText": "Studio Page",
+        "metaTitle": "Studio Page"
+      },
+      "data": {
+        "title": "Studio Title",
+        "body": "Studio Body"
+      }
+    }
+  ]
+}

@@ -18,6 +18,7 @@ const MANAGER_APPS = [
   "redirects",
   "settings",
   "apps",
+  "studio",
 ] as const;
 
 const Missing = () => {

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "react-router";
 import { useDispatch } from "react-redux";
 import {
@@ -14,6 +14,7 @@ import {
   Grid,
   ListItem,
   InputAdornment,
+  Fade,
 } from "@mui/material";
 import { isEmpty } from "lodash";
 import CloseIcon from "@mui/icons-material/Close";
@@ -23,59 +24,48 @@ import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import RuleRoundedIcon from "@mui/icons-material/RuleRounded";
 import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
 import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
-import PauseCircleOutlineRoundedIcon from "@mui/icons-material/PauseCircleOutlineRounded";
-import PlayCircleFilledRoundedIcon from "@mui/icons-material/PlayCircleFilledRounded";
+import VerticalSplitRoundedIcon from "@mui/icons-material/VerticalSplitRounded";
 
 import { FieldIcon } from "../../Field/FieldIcon";
-import {
-  FieldFormInput,
-  DropdownOptions,
-  AutocompleteConfig,
-} from "../FieldFormInput";
 import { useMediaRules } from "../../hooks/useMediaRules";
-import {
-  getCategory,
-  convertLabelValue,
-  getErrorMessage,
-} from "../../../utils";
+import { getCategory } from "../../../utils";
 import {
   useCreateContentModelFieldMutation,
   useUpdateContentModelFieldMutation,
   useBulkUpdateContentModelFieldMutation,
-  useGetContentModelsQuery,
-  useGetContentModelFieldsQuery,
   useDeleteContentModelFieldMutation,
   useUndeleteContentModelFieldMutation,
 } from "../../../../../../../shell/services/instance";
 import {
+  FieldFormProvider,
+  useFieldForm,
+  FormData,
+  Errors,
+  FormValue,
+  FieldBody,
+} from "../../contexts/FieldFormProvider";
+
+export { FieldFormProvider, useFieldForm };
+export type { FormData, Errors, FormValue, FieldBody };
+import {
   ContentModelField,
-  FieldSettings,
-  ContentModelFieldValue,
   FieldSettingsOptions,
   ContentModelFieldDataType,
+  IntegrationFieldConfig,
+  RepeaterSubField,
 } from "../../../../../../../shell/services/types";
-import { FIELD_COPY_CONFIG, TYPE_TEXT, FORM_CONFIG } from "../../configs";
+import { FIELD_COPY_CONFIG, TYPE_TEXT } from "../../configs";
 import { Learn } from "../Learn";
 import { notify } from "../../../../../../../shell/store/notifications";
 import { Rules } from "./Rules";
-import { MaxLengths } from "../../../../../../content-editor/src/app/components/Editor/Editor";
-import {
-  Currency,
-  currencies,
-} from "../../../../../../../shell/components/FieldTypeCurrency/currencies";
+import { RepeaterFields } from "./RepeaterFields";
+import { Details } from "../Details";
 
-type ActiveTab = "details" | "rules" | "learn";
+type ActiveTab = "details" | "rules" | "learn" | "repeater";
 type Params = {
   id: string;
 };
-export type FormValue = Exclude<ContentModelFieldValue, FieldSettings>;
-export interface FormData {
-  [key: string]: FormValue;
-}
-export interface Errors {
-  [key: string]: string | [string, string][];
-}
-interface Props {
+type FieldFormProps = {
   type: ContentModelFieldDataType;
   name: string;
   onModalClose: () => void;
@@ -84,8 +74,9 @@ interface Props {
   fieldData?: ContentModelField;
   sortIndex?: number | null;
   onCreateAnotherField?: () => void;
-}
-export const FieldForm = ({
+};
+
+const FieldFormContent = ({
   type,
   name,
   onModalClose,
@@ -94,8 +85,12 @@ export const FieldForm = ({
   fieldData,
   sortIndex,
   onCreateAnotherField,
-}: Props) => {
-  const [activeTab, setActiveTab] = useState<ActiveTab>("details");
+}: FieldFormProps) => {
+  const isUpdateField = !isEmpty(fieldData);
+  const showRepeaterFieldsTab = type === "repeater" && isUpdateField;
+  const [activeTab, setActiveTab] = useState<ActiveTab>(
+    showRepeaterFieldsTab ? "repeater" : "details"
+  );
   const [isSubmitClicked, setIsSubmitClicked] = useState(false);
   const [fieldStateOnSaveAction, setFieldStateOnSaveAction] = useState<
     "deactivate" | "reactivate"
@@ -104,8 +99,13 @@ export const FieldForm = ({
     useState(false);
   const { mediaFoldersOptions } = useMediaRules();
 
-  const [errors, setErrors] = useState<Errors>({});
-  const [formData, setFormData] = useState<FormData>({});
+  const {
+    formData,
+    errors,
+    handleFieldDataChange,
+    isDefaultValueEnabled,
+    setIsDefaultValueEnabled,
+  } = useFieldForm();
   const params = useParams<Params>();
   const { id } = params;
   const [
@@ -124,37 +124,7 @@ export const FieldForm = ({
     bulkUpdateContentModelField,
     { isLoading: isBulkUpdating, isSuccess: isBulkUpdated },
   ] = useBulkUpdateContentModelFieldMutation();
-  const { data: allModels, isLoading: isLoadingModels } =
-    useGetContentModelsQuery();
-  const {
-    data: selectedModelFields,
-    isFetching: isFetchingSelectedModelFields,
-  } = useGetContentModelFieldsQuery(
-    { modelZUID: formData?.relatedModelZUID as string },
-    {
-      skip: !formData.relatedModelZUID,
-    }
-  );
-  const isUpdateField = !isEmpty(fieldData);
   const isInbetweenField = sortIndex !== null;
-  const modelsOptions: DropdownOptions[] = useMemo(() => {
-    return allModels
-      ?.map((model) => {
-        return {
-          label: model.label,
-          value: model.ZUID,
-        };
-      })
-      ?.sort((a, b) => a.label.localeCompare(b.label));
-  }, [allModels]);
-  const fieldsOptions: DropdownOptions[] = useMemo(() => {
-    return selectedModelFields
-      ?.filter((field) => !field.deletedAt)
-      ?.map((field) => ({
-        label: field.label,
-        value: field.ZUID,
-      }));
-  }, [selectedModelFields]);
   const [
     deleteContentModelField,
     { isLoading: isDeletingField, isSuccess: isFieldDeleted },
@@ -164,120 +134,8 @@ export const FieldForm = ({
     { isLoading: isUndeletingField, isSuccess: isFieldUndeleted },
   ] = useUndeleteContentModelFieldMutation();
   const dispatch = useDispatch();
-  const [isDefaultValueEnabled, setIsDefaultValueEnabled] = useState(
-    fieldData?.settings?.defaultValue !== null &&
-      fieldData?.settings?.defaultValue !== undefined
-  );
 
-  /** Initiate field type form */
-  useEffect(() => {
-    let formFields: { [key: string]: FormValue } = {};
-    let errors: { [key: string]: string } = {};
-
-    if (!FORM_CONFIG[type]) {
-      return;
-    }
-
-    const flattenedFormConfig = [
-      ...FORM_CONFIG[type]?.details,
-      ...FORM_CONFIG[type]?.rules,
-    ];
-
-    flattenedFormConfig?.forEach((field) => {
-      if (isUpdateField) {
-        if (field.name === "list") {
-          formFields.list = fieldData.settings?.list;
-        } else if (field.name === "limit") {
-          formFields[field.name] = fieldData.settings?.[field.name];
-        } else if (field.name === "group_id") {
-          formFields[field.name] = fieldData.settings?.[field.name];
-        } else if (field.name === "options") {
-          // Convert the options object to an Array of objects for easier rendering
-          const options = Object.entries(
-            fieldData.settings?.options ?? {}
-          )?.map(([key, value]) => {
-            return {
-              [key]: value,
-            };
-          });
-          formFields.options = options;
-        } else if (field.name === "tooltip") {
-          formFields["tooltip"] = fieldData.settings?.tooltip || "";
-        } else if (field.name === "defaultValue") {
-          formFields["defaultValue"] =
-            type === "number"
-              ? fieldData.settings?.defaultValue || 0
-              : fieldData.settings?.defaultValue ?? null;
-        } else if (field.name === "minCharLimit") {
-          formFields["minCharLimit"] = fieldData.settings?.minCharLimit ?? null;
-        } else if (field.name === "maxCharLimit") {
-          formFields["maxCharLimit"] = fieldData.settings?.maxCharLimit ?? null;
-        } else if (field.name === "regexMatchPattern") {
-          formFields[field.name] = fieldData.settings?.[field.name] || null;
-        } else if (field.name === "regexMatchErrorMessage") {
-          formFields[field.name] = fieldData.settings?.[field.name] || null;
-        } else if (field.name === "regexRestrictPattern") {
-          formFields[field.name] = fieldData.settings?.[field.name] || null;
-        } else if (field.name === "regexRestrictErrorMessage") {
-          formFields[field.name] = fieldData.settings?.[field.name] || null;
-        } else if (field.name === "minValue") {
-          formFields[field.name] = fieldData.settings?.[field.name] ?? null;
-        } else if (field.name === "maxValue") {
-          formFields[field.name] = fieldData.settings?.[field.name] ?? null;
-        } else if (field.name === "currency") {
-          formFields[field.name] = fieldData.settings?.currency ?? "USD";
-        } else if (field.name === "fileExtensions") {
-          formFields[field.name] = fieldData.settings?.[field.name] ?? null;
-        } else if (field.name === "fileExtensionsErrorMessage") {
-          formFields[field.name] = fieldData.settings?.[field.name] ?? null;
-        } else {
-          formFields[field.name] = fieldData[field.name] as FormValue;
-        }
-
-        // Add the field name to the errors object if the field requires any validation
-        if (field.validate?.length) {
-          errors[field.name] = "";
-        }
-      } else {
-        if (field.type === "checkbox") {
-          // Only "list" checkbox will be checked by default
-          formFields[field.name] = field.name === "list";
-        } else if (field.type === "options") {
-          formFields[field.name] = [{ "": "" }];
-        } else if (field.type === "toggle_options") {
-          formFields[field.name] = [{ 0: "No" }, { 1: "Yes" }];
-        } else if (field.name === "defaultValue" && type === "number") {
-          formFields[field.name] = 0;
-        } else {
-          if (
-            field.name === "defaultValue" ||
-            field.name === "minCharLimit" ||
-            field.name === "maxCharLimit" ||
-            field.name === "regexMatchPattern" ||
-            field.name === "regexMatchErrorMessage" ||
-            field.name === "regexRestrictPattern" ||
-            field.name === "regexRestrictErrorMessage" ||
-            field.name === "minValue" ||
-            field.name === "maxValue" ||
-            field.name === "fileExtensions" ||
-            field.name === "fileExtensionsErrorMessage"
-          ) {
-            formFields[field.name] = null;
-          } else {
-            formFields[field.name] = "";
-          }
-        }
-
-        // Add the field name to the errors object if the field requires any validation
-        if (field.validate?.length) {
-          errors[field.name] = "";
-        }
-      }
-    });
-
-    setFormData(formFields);
-    setErrors(errors);
-  }, [type, fieldData, mediaFoldersOptions.length]);
+  // Initialization is handled in FieldFormProvider
 
   useEffect(() => {
     if (isBulkUpdated) {
@@ -313,172 +171,7 @@ export const FieldForm = ({
     }
   }, [isFieldCreated, isFieldUpdated]);
 
-  /** Error setting */
-  useEffect(() => {
-    if (!Object.keys(formData).length) {
-      return;
-    }
-
-    const currFieldNames = fields.map((field) => field.name);
-    let newErrorsObj: Errors = {};
-
-    Object.keys(formData).map((inputName) => {
-      if (
-        inputName === "defaultValue" &&
-        isDefaultValueEnabled &&
-        (formData.defaultValue === "" || formData.defaultValue === null)
-      ) {
-        newErrorsObj[inputName] = "Required Field. Please enter a value.";
-      }
-
-      if (type === "text" || type === "textarea") {
-        if (inputName === "minCharLimit" && !isNaN(+formData.minCharLimit)) {
-          if ((formData.minCharLimit as number) > MaxLengths[type]) {
-            newErrorsObj[
-              inputName
-            ] = `Cannot exceed ${MaxLengths[type]} characters`;
-          } else if (formData.minCharLimit > formData.maxCharLimit) {
-            newErrorsObj[inputName] = "Cannot exceed maximum character count";
-          }
-        }
-
-        if (
-          inputName === "maxCharLimit" &&
-          !isNaN(+formData.maxCharLimit) &&
-          (formData.maxCharLimit as number) > MaxLengths[type]
-        ) {
-          newErrorsObj[
-            inputName
-          ] = `Cannot exceed ${MaxLengths[type]} characters`;
-        }
-
-        if (inputName === "regexMatchPattern" && formData.regexMatchPattern) {
-          try {
-            new RegExp(formData.regexMatchPattern as string);
-          } catch (e) {
-            newErrorsObj[inputName] = "Invalid regex pattern";
-          }
-        }
-
-        if (
-          inputName === "regexMatchErrorMessage" &&
-          formData.regexMatchPattern !== null &&
-          formData.regexMatchErrorMessage === ""
-        ) {
-          newErrorsObj[inputName] = "Required Field. Please enter a value.";
-        }
-
-        if (
-          inputName === "regexRestrictPattern" &&
-          formData.regexRestrictPattern
-        ) {
-          try {
-            new RegExp(formData.regexRestrictPattern as string);
-          } catch (e) {
-            newErrorsObj[inputName] = "Invalid regex pattern";
-          }
-        }
-
-        if (
-          inputName === "regexRestrictErrorMessage" &&
-          formData.regexRestrictPattern !== null &&
-          formData.regexRestrictErrorMessage === ""
-        ) {
-          newErrorsObj[inputName] = "Required Field. Please enter a value.";
-        }
-      }
-
-      if (inputName === "minValue" && formData.minValue) {
-        if (isNaN(+formData.minValue)) {
-          newErrorsObj[inputName] = "Invalid number";
-        } else if (formData.minValue > formData.maxValue) {
-          newErrorsObj[inputName] = "Cannot exceed maximum value";
-        }
-      }
-
-      if (inputName === "maxValue" && formData.maxValue) {
-        if (isNaN(+formData.maxValue)) {
-          newErrorsObj[inputName] = "Invalid number";
-        } else if (formData.maxValue < formData.minValue) {
-          newErrorsObj[inputName] = "Cannot be less than minimum value";
-        }
-      }
-
-      if (inputName === "currency" && !formData.currency) {
-        newErrorsObj[inputName] = "Please select a currency";
-      }
-
-      if (
-        inputName === "fileExtensions" &&
-        formData.fileExtensions !== null &&
-        !(formData.fileExtensions as string[])?.length
-      ) {
-        newErrorsObj[inputName] = "This field is required";
-      }
-
-      if (
-        inputName === "fileExtensionsErrorMessage" &&
-        formData.fileExtensions !== null &&
-        formData.fileExtensionsErrorMessage === ""
-      ) {
-        newErrorsObj[inputName] = "This field is required";
-      }
-
-      if (
-        inputName in errors &&
-        ![
-          "defaultValue",
-          "minCharLimit",
-          "maxCharLimit",
-          "regexMatchPattern",
-          "regexRestrictPattern",
-          "regexMatchErrorMessage",
-          "regexRestrictErrorMessage",
-          "minValue",
-          "maxValue",
-          "currency",
-          "fileExtensions",
-          "fileExtensionsErrorMessage",
-        ].includes(inputName)
-      ) {
-        const { maxLength, label, validate } = FORM_CONFIG[type].details.find(
-          (field) => field.name === inputName
-        );
-
-        // Special validation for "name"
-        if (inputName === "name") {
-          newErrorsObj.name = getErrorMessage({
-            value: formData.name as string,
-            fieldNames: currFieldNames,
-            maxLength,
-            label,
-            validate,
-          });
-
-          // When updating a field, user can choose to just leave the reference name the same
-          if (isUpdateField && formData.name === fieldData.name) {
-            newErrorsObj.name = "";
-          }
-        } else if (inputName === "options") {
-          newErrorsObj.options = getErrorMessage({
-            value: formData.options as FieldSettingsOptions[],
-            maxLength,
-            validate,
-          });
-        } else {
-          // All other input validation
-          newErrorsObj[inputName] = getErrorMessage({
-            value: formData[inputName] as string,
-            maxLength,
-            label,
-            validate,
-          });
-        }
-      }
-    });
-
-    setErrors(newErrorsObj);
-  }, [formData, isDefaultValueEnabled]);
+  // Validation is handled in FieldFormProvider
 
   useEffect(() => {
     if (fieldCreationError) {
@@ -515,6 +208,7 @@ export const FieldForm = ({
 
   const handleSubmitForm = () => {
     setIsSubmitClicked(true);
+
     const hasErrors = Object.values(errors)
       .flat(2)
       .some((error) => error.length);
@@ -550,10 +244,7 @@ export const FieldForm = ({
     }
 
     // Common field values
-    let body: Omit<
-      ContentModelField,
-      "ZUID" | "datatypeOptions" | "createdAt" | "updatedAt" | "deletedAt"
-    > = {
+    let body: FieldBody = {
       contentModelZUID: id,
       name: formData.name as string,
       label: formData.label as string,
@@ -603,6 +294,9 @@ export const FieldForm = ({
           fileExtensionsErrorMessage:
             formData.fileExtensionsErrorMessage as string,
         }),
+        ...(formData.subFields && {
+          subFields: formData.subFields as RepeaterSubField[],
+        }),
       },
       sort: isUpdateField ? fieldData.sort : sort, // Just use the length since sort starts at 0
     };
@@ -622,6 +316,11 @@ export const FieldForm = ({
       );
 
       body.settings.options = optionsObject;
+    }
+
+    if (type === "integration") {
+      body.settings.integrationFieldConfig =
+        formData?.integrationFieldConfig as IntegrationFieldConfig;
     }
 
     if (isUpdateField) {
@@ -676,44 +375,6 @@ export const FieldForm = ({
         skipInvalidation: isInbetweenField,
       });
     }
-  };
-
-  const handleFieldDataChange = ({
-    inputName,
-    value,
-  }: {
-    inputName: string;
-    value: FormValue;
-  }) => {
-    const modelName =
-      inputName === "relatedModelZUID" && !!value
-        ? allModels?.find((model) => model.ZUID === value)?.label
-        : "";
-
-    // Form data update
-    setFormData((prevData) => ({
-      ...prevData,
-      [inputName]:
-        inputName === "name" ? convertLabelValue(value as string) : value,
-
-      // Auto populate "name" when "label" field changes
-      ...(inputName === "label" &&
-        !isUpdateField && {
-          name: convertLabelValue(value as string),
-        }),
-
-      // Reset relatedFieldZUID when model zuid changes
-      ...(inputName === "relatedModelZUID" && {
-        relatedFieldZUID: "",
-      }),
-
-      // Auto populate "name" and "label" when relatedModelZUID changes
-      ...(inputName === "relatedModelZUID" &&
-        !isUpdateField && {
-          name: convertLabelValue(modelName),
-          label: modelName,
-        }),
-    }));
   };
 
   const handleAddAnotherField = () => {
@@ -782,6 +443,15 @@ export const FieldForm = ({
             top: "2px",
           }}
         >
+          {showRepeaterFieldsTab && (
+            <Tab
+              data-cy="RepeaterFieldsTabBtn"
+              value="repeater"
+              label="Fields"
+              icon={<VerticalSplitRoundedIcon fontSize="small" />}
+              iconPosition="start"
+            />
+          )}
           <Tab
             data-cy="DetailsTabBtn"
             value="details"
@@ -789,13 +459,15 @@ export const FieldForm = ({
             icon={<InfoRoundedIcon fontSize="small" />}
             iconPosition="start"
           />
-          <Tab
-            data-cy="RulesTabBtn"
-            value="rules"
-            label="Rules"
-            icon={<RuleRoundedIcon fontSize="small" />}
-            iconPosition="start"
-          />
+          {type !== "repeater" && (
+            <Tab
+              data-cy="RulesTabBtn"
+              value="rules"
+              label="Rules"
+              icon={<RuleRoundedIcon fontSize="small" />}
+              iconPosition="start"
+            />
+          )}
           <Tab
             data-cy="LearnTabBtn"
             value="learn"
@@ -814,152 +486,32 @@ export const FieldForm = ({
           borderTop: 0,
         }}
       >
+        {activeTab === "repeater" && (
+          <RepeaterFields
+            name={fieldData.name}
+            label={fieldData.label}
+            fields={formData.subFields as FieldBody[]}
+            onChange={(fields) => {
+              handleFieldDataChange({ inputName: "subFields", value: fields });
+            }}
+          />
+        )}
+
         {activeTab === "details" && (
-          <Grid
-            data-cy="DetailsTab"
-            container
-            rowSpacing={2.5}
-            columnSpacing={2.5}
-            width="inherit"
-            // minHeight={448}
-            ml={0}
-          >
-            {FORM_CONFIG[type]?.details?.map((fieldConfig, index) => {
-              // Only show tooltip field when updating a field that already has a tooltip value
-              const hideTooltipField =
-                fieldConfig.name === "tooltip" &&
-                (!isUpdateField || !fieldData.settings?.tooltip?.length);
-
-              if (hideTooltipField) return;
-
-              let dropdownOptions: DropdownOptions[];
-              let disabled = false;
-              let renderOption: any;
-              let filterOptions: any;
-              let autocompleteConfig: AutocompleteConfig = {};
-
-              if (fieldConfig.name === "relatedModelZUID") {
-                dropdownOptions = modelsOptions;
-                disabled = isLoadingModels;
-              }
-
-              if (fieldConfig.name === "relatedFieldZUID") {
-                dropdownOptions = fieldsOptions;
-                disabled = isFetchingSelectedModelFields;
-              }
-
-              if (fieldConfig.name === "currency") {
-                const selectedValue = currencies.find(
-                  (currency) => currency.value === formData.currency
-                );
-                dropdownOptions = currencies;
-                renderOption = (props: any, value: Currency) => (
-                  <ListItem
-                    {...props}
-                    key={value.value}
-                    sx={{ color: "text.primary" }}
-                  >
-                    <Box
-                      component="img"
-                      height={16}
-                      src={`/images/flags/${value.countryCode?.toLowerCase()}.svg`}
-                      loading="lazy"
-                      alt={`${value.countryCode} flag`}
-                    />
-                    <Typography variant="body1" fontWeight={700} pl={1}>
-                      {value.value} {value.symbol_native} &nbsp;
-                    </Typography>
-                    <Typography variant="body1">{value.label}</Typography>
-                  </ListItem>
-                );
-                filterOptions = (options: Currency[], state: any) => {
-                  if (state.inputValue) {
-                    return options.filter(
-                      (option) =>
-                        option.label
-                          ?.toLowerCase()
-                          .includes(state.inputValue.toLowerCase()) ||
-                        option.value
-                          ?.toLowerCase()
-                          .includes(state.inputValue.toLowerCase())
-                    );
-                  } else {
-                    return options;
-                  }
-                };
-                autocompleteConfig.inputProps = {
-                  startAdornment: !!selectedValue && (
-                    <InputAdornment
-                      position="start"
-                      sx={{
-                        pl: 0.25,
-
-                        "&.MuiInputAdornment-root.MuiInputAdornment-positionStart":
-                          {
-                            color: "text.primary",
-                          },
-                      }}
-                    >
-                      <Box
-                        component="img"
-                        height={16}
-                        src={`/images/flags/${selectedValue.countryCode?.toLowerCase()}.svg`}
-                        loading="lazy"
-                        alt={`${selectedValue.countryCode} flag`}
-                      />
-                      <Typography variant="body1" fontWeight={700} pl={1}>
-                        {selectedValue.value} {selectedValue.symbol_native}
-                      </Typography>
-                    </InputAdornment>
-                  ),
-                };
-                autocompleteConfig.maxHeight = 256;
-              }
-
-              return (
-                <FieldFormInput
-                  key={index}
-                  fieldConfig={fieldConfig}
-                  onDataChange={handleFieldDataChange}
-                  errorMsg={isSubmitClicked && errors[fieldConfig.name]}
-                  prefillData={formData[fieldConfig.name]}
-                  dropdownOptions={dropdownOptions || []}
-                  disabled={disabled}
-                  renderOption={renderOption}
-                  filterOptions={filterOptions}
-                  autocompleteConfig={autocompleteConfig}
-                />
-              );
-            })}
-            {isUpdateField && (
-              <Grid size={12}>
-                <Button
-                  data-cy="DeactivateReactivateFieldUpdateModal"
-                  variant="outlined"
-                  color="inherit"
-                  startIcon={
-                    fieldStateOnSaveAction === "deactivate" ? (
-                      <PlayCircleFilledRoundedIcon color="action" />
-                    ) : (
-                      <PauseCircleOutlineRoundedIcon color="action" />
-                    )
-                  }
-                  onClick={() => {
-                    setFieldStateOnSaveAction(
-                      fieldStateOnSaveAction === "deactivate"
-                        ? "reactivate"
-                        : "deactivate"
-                    );
-                  }}
-                  loading={isDeletingField || isUndeletingField}
-                >
-                  {fieldStateOnSaveAction === "deactivate"
-                    ? "Reactivate Field"
-                    : "Deactivate Field"}
-                </Button>
-              </Grid>
-            )}
-          </Grid>
+          <Details
+            type={type}
+            isUpdateField={isUpdateField}
+            fieldData={fieldData}
+            onFieldDataChange={handleFieldDataChange}
+            formData={formData}
+            isSubmitClicked={isSubmitClicked}
+            errors={errors}
+            fieldStateOnSaveAction={fieldStateOnSaveAction}
+            setFieldStateOnSaveAction={setFieldStateOnSaveAction}
+            isDeletingField={isDeletingField}
+            isUndeletingField={isUndeletingField}
+            canDeactivate
+          />
         )}
 
         {activeTab === "rules" && (
@@ -1040,5 +592,17 @@ export const FieldForm = ({
         </DialogActions>
       )}
     </>
+  );
+};
+
+export const FieldForm = (props: FieldFormProps) => {
+  return (
+    <FieldFormProvider
+      type={props.type}
+      fields={props.fields}
+      fieldData={props.fieldData}
+    >
+      <FieldFormContent {...props} />
+    </FieldFormProvider>
   );
 };

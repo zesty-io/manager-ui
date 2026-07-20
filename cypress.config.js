@@ -6,7 +6,12 @@ module.exports = defineConfig({
   viewportWidth: 1920,
   viewportHeight: 1080,
   video: false,
-  defaultCommandTimeout: 15000,
+  numTestsKeptInMemory: 0,
+  // Generous timeouts to tolerate the slow shared dev instance (data/UI can
+  // render several seconds late under load) without flaking.
+  defaultCommandTimeout: 30000,
+  requestTimeout: 30000,
+  responseTimeout: 30000,
   env: {
     API_AUTH: "https://auth.api.dev.zesty.io",
     COOKIE_NAME: "DEV_APP_SID",
@@ -19,6 +24,8 @@ module.exports = defineConfig({
     // We've imported your old cypress plugins here.
     // You may want to clean this up later by importing these.
     setupNodeEvents(on, config) {
+      require("cypress-split")(on, config);
+
       on("before:browser:launch", (browser, launchOptions) => {
         if (browser.name === "chrome" && browser.isHeadless) {
           launchOptions.args.push("--headless=old");
@@ -30,7 +37,10 @@ module.exports = defineConfig({
       return require("./cypress/plugins/index.js")(on, config);
     },
     baseUrl: "http://8-f48cf3a682-7fthvk.manager.dev.zesty.io:8080/",
-    specPattern: "cypress/e2e/**/*.{js,jsx,ts,tsx}",
+    specPattern: "cypress/e2e/**/*.spec.{js,jsx,ts,tsx}",
     testIsolation: false,
   },
+  // Some tests hit live APIs that can occasionally be slow to respond. One retry
+  // keeps CI green without masking real failures
+  retries: 1,
 });

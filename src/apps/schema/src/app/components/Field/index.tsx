@@ -29,6 +29,7 @@ import {
 } from "../../../../../../shell/services/instance";
 import { TYPE_TEXT, SystemField, FieldType } from "../configs";
 import { notify } from "../../../../../../shell/store/notifications";
+import pluralizeWord from "../../../../../../utility/pluralizeWord";
 
 type Params = {
   id: string;
@@ -287,6 +288,13 @@ export const Field = ({
         </Tooltip>
         <Typography variant="body3" color="text.secondary">
           {TYPE_TEXT[field.datatype as FieldType]}
+          {field.datatype === "repeater" &&
+            ` (${
+              (field as ContentModelField).settings?.subFields?.length ?? 0
+            } ${pluralizeWord(
+              "field",
+              (field as ContentModelField).settings?.subFields?.length ?? 0
+            )})`}
         </Typography>
       </Box>
       <Box display="flex" alignItems="center" maxWidth="180px">

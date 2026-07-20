@@ -78,7 +78,6 @@ describe("Tabs actions", () => {
     cy.get('[data-testid="PushPinIcon"]').should("exist");
   });
 
-  // Broken test needs to be revisited on new tabs design
   it("creates a dropdown when many tabs are pinned", () => {
     cy.viewport(1280, 720);
     /*
@@ -112,7 +111,7 @@ describe("Tabs actions", () => {
       .find('[data-testid="PushPinIcon"]')
       .should("exist");
 
-    cy.wait(1000); // Makes sure that the pinned tabs have been properly saved to indexdb before navigating to a new url
+    cy.wait(100); // Makes sure that the pinned tabs have been properly saved to indexdb before navigating to a new url
 
     // Pin tab #3 and ensure it is pinned
     cy.waitOn("/redirects", () => {
@@ -131,7 +130,7 @@ describe("Tabs actions", () => {
       .find('[data-testid="PushPinIcon"]')
       .should("exist");
 
-    cy.wait(1000); // Makes sure that the pinned tabs have been properly saved to indexdb before navigating to a new url
+    cy.wait(100); // Makes sure that the pinned tabs have been properly saved to indexdb before navigating to a new url
 
     // Pin tab #4 and ensure it is pinned
     cy.waitOn("/leads", () => {
@@ -150,7 +149,7 @@ describe("Tabs actions", () => {
       .find('[data-testid="PushPinIcon"]')
       .should("exist");
 
-    cy.wait(1000); // Makes sure that the pinned tabs have been properly saved to indexdb before navigating to a new url
+    cy.wait(100); // Makes sure that the pinned tabs have been properly saved to indexdb before navigating to a new url
 
     // Pin tab #5 and ensure it is pinned
     cy.waitOn("/media", () => {
@@ -169,7 +168,7 @@ describe("Tabs actions", () => {
       .find('[data-testid="PushPinIcon"]')
       .should("exist");
 
-    cy.wait(1000); // Makes sure that the pinned tabs have been properly saved to indexdb before navigating to a new url
+    cy.wait(100); // Makes sure that the pinned tabs have been properly saved to indexdb before navigating to a new url
 
     // Ensure dropdown menu exists
     cy.getBySelector("TabsDropdownButton").should("exist");

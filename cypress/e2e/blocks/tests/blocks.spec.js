@@ -85,6 +85,19 @@ describe("All Blocks Tests", () => {
       timeout: 15_000,
     }).should("exist");
   });
+
+  it("creates a variant with no variant name", () => {
+    AllBlocksPage.visit();
+    cy.contains(CypressTestBlock).click(TIMEOUT);
+    cy.getBySelector("create-variant-button-header").click();
+    cy.getBySelector("variant-name-input").clear();
+    cy.getBySelector("create-variant-confirm-button").click();
+    cy.contains(new RegExp(`${CypressTestBlock}:\\s*`), {
+      timeout: 15_000,
+    }).should("exist");
+    cy.contains(CypressTestBlock).click(TIMEOUT);
+    cy.getBySelector("block-variant-card").should("have.length", 2);
+  });
 });
 
 function deleteTestDataModels() {
