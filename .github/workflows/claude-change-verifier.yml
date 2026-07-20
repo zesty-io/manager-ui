@@ -112,7 +112,9 @@ jobs:
               <!-- qa-verdict: <PASS_OR_FAIL_OR_INCONCLUSIVE> -->
 
             Use plain ordered lists for criteria (refer to them as "criterion 1"); never write `#1`
-            (GitHub auto-links it). The only `#<n>` allowed is the "Validates #<n>" header.
+            (GitHub auto-links it). The only `#<n>` allowed is the "Validates #<n>" header. Write the
+            `<!-- qa-verdict: ... -->` marker exactly once, as the final line — never quote it or the
+            `<!-- cv-verifier -->` marker anywhere else in the report.
 
       # Post the report, or update the existing QA comment in place. Reads the verdict for the gate.
       - name: Post or update QA comment
@@ -131,8 +133,10 @@ jobs:
             exit 0
           fi
           BODY=$(cat "$FILE")
+          # Take the LAST marker: the real verdict is the final line of the template, so if the
+          # report quotes the marker earlier as an example, the trailing one still wins.
           VERDICT=$(printf '%s' "$BODY" | grep -oiE '<!-- qa-verdict:[[:space:]]*(PASS|FAIL|INCONCLUSIVE)[[:space:]]*-->' \
-            | grep -oiE '(PASS|FAIL|INCONCLUSIVE)' | head -n1 | tr '[:lower:]' '[:upper:]' || true)
+            | grep -oiE '(PASS|FAIL|INCONCLUSIVE)' | tail -n1 | tr '[:lower:]' '[:upper:]' || true)
           PAYLOAD=$(BODY="$BODY" python3 -c 'import os,json,sys; sys.stdout.write(json.dumps({"body": os.environ["BODY"]}))')
           CID=$(gh api "repos/$REPO/issues/$PR/comments" --paginate \
             --jq '.[] | select(.user.login == "github-actions[bot]") | select(.body | startswith("<!-- cv-verifier -->")) | .id' | head -n1)
