@@ -24,7 +24,9 @@ export type FieldType =
   | "fontawesome"
   | "wysiwyg_advanced"
   | "article_writer"
-  | "block_selector"; // TODO: Will need to confirm if this type is already supported by the api
+  | "block_selector" // TODO: Will need to confirm if this type is already supported by the api
+  | "integration"
+  | "repeater";
 interface FieldListData {
   type: FieldType;
   name: string;
@@ -328,6 +330,24 @@ const FIELD_COPY_CONFIG: { [key: string]: FieldListData[] } = {
       subHeaderText: "Use to add order to content items",
     },
     {
+      type: "integration",
+      name: "Integration",
+      shortDescription: "Fetch and store data from APIs",
+      description:
+        "This field allows users to fetch data from a JSON API, select entries and then add them to a content item. The data remains static until reselected. Ensuring controlled updates.",
+      commonUses: [
+        "Stats - Fetch external stats",
+        "3rd Party Integration - Pull details from an external app",
+        "Forms - Import external form submissions",
+        "Import Content from another Zesty instance",
+        "External CMS - Display content from an external CMS",
+        "Spreadsheets - Pull spreadsheet data",
+      ],
+      proTip:
+        "The data is stored as a JSON object and can be accessed headlessly or with Parsley for dynamic rendering in templates. ",
+      subHeaderText: "Fetch and store data from APIs",
+    },
+    {
       type: "uuid",
       name: "UUID",
       shortDescription: "Generates unique, uneditable alphanumeric identifiers",
@@ -336,6 +356,17 @@ const FIELD_COPY_CONFIG: { [key: string]: FieldListData[] } = {
       commonUses: ["Product ID", "Inventory ID", "Employee ID"],
       proTip: "UUID are always unique and are non editable.",
       subHeaderText: "Use to set unique ids to each content item",
+    },
+    {
+      type: "repeater",
+      name: "Repeater",
+      shortDescription: "A repeating list of grouped fields",
+      description:
+        "The Repeater Field allows you to create a group of fields for repeating content. Useful for multiple items, such as slides, team members, or FAQs.",
+      commonUses: ["Slides", "Testimonials", "Recipes", "Event Times"],
+      proTip:
+        "Use a Repeater Field to manage lists or sections with a shared structure but unique content like recipes or testimonials.",
+      subHeaderText: "Used for groups of static fields",
     },
   ],
 };
@@ -364,6 +395,8 @@ const TYPE_TEXT: Record<FieldType, string> = {
   wysiwyg_basic: "WYSIWYG",
   yes_no: "Boolean",
   block_selector: "Block Selector",
+  integration: "Integration",
+  repeater: "Repeater",
 };
 
 const COMMON_FIELDS: InputField[] = [
@@ -408,9 +441,11 @@ const COMMON_FIELDS: InputField[] = [
     required: false,
     fullWidth: true,
     multiline: true,
+    maxLength: 500,
     gridSize: 12,
     tooltip:
       "Appears below the display label. Use this to provide instructions to content writers and API users.",
+    validate: ["length"],
   },
   {
     name: "required",
@@ -717,6 +752,26 @@ const FORM_CONFIG: Record<FieldType, FormConfig> = {
     details: [...COMMON_FIELDS],
     rules: [],
   },
+  integration: {
+    details: [
+      ...COMMON_FIELDS.slice(0, 4),
+      {
+        name: "integrationFieldConfig",
+        type: "config",
+        label: "API URL",
+        required: true,
+        gridSize: 12,
+        maxLength: 150,
+      },
+
+      ...COMMON_FIELDS.slice(4),
+    ],
+    rules: [...INPUT_RANGE_RULES],
+  },
+  repeater: {
+    details: [...COMMON_FIELDS.slice(0, 4)],
+    rules: [],
+  },
 };
 
 const SYSTEM_FIELDS: readonly SystemField[] = [
@@ -774,6 +829,11 @@ const SEO_FIELDS: readonly SystemField[] = [
     name: "seo_link_title",
   },
 ] as const;
+
+export const FIELD_CATEGORY_LABELS: Record<string, string> = {
+  dateandtime: "Date & Time",
+  options: "Advanced",
+};
 
 export {
   FieldListData,

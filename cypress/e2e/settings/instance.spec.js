@@ -2,9 +2,9 @@ describe("Instance", () => {
   const SAVED_MESSAGE = "Settings Saved";
 
   before(() => {
-    cy.waitOn("/v1/env/settings", () => {
-      cy.visit("/settings");
-    });
+    cy.visit("/settings");
+    // Settings may load from IndexedDB cache — wait for UI instead of network
+    cy.getBySelector("SubApp").should("exist");
   });
 
   it("General", () => {

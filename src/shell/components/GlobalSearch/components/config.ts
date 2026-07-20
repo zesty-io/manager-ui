@@ -96,7 +96,7 @@ export const SEARCH_ACCELERATORS: Record<ResourceType, SearchAccelerator> = {
     text: "Code",
   },
   block: {
-    icon: CodeRounded,
+    icon: Block as SvgIconComponent,
     text: "Block",
   },
 } as const;

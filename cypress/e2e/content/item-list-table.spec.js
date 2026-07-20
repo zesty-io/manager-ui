@@ -13,14 +13,12 @@ describe("Content item list table", () => {
   });
 
   it("Resolves internal link zuids", () => {
-    cy.waitOn("/search/items*", () => {
-      cy.waitOn("/v1/content/models**", () => {
-        cy.visit(`/content/${Cypress.env("modelZUID")}`);
-      });
-    });
+    cy.visit(`/content/${Cypress.env("modelZUID")}`);
+    // Content may load from IndexedDB cache — wait for UI instead of network
+    cy.getBySelector("listItemTable").should("exist");
 
     cy.getBySelector("sortByFilter_default").click();
-    cy.getBySelector(`"sort:text"`).click();
+    cy.getBySelector("sort:text").click();
     cy.getBySelector("listItemTable")
       .find('[data-cy="itemListRow"]')
       .first()
@@ -29,15 +27,13 @@ describe("Content item list table", () => {
   });
 
   it("properly removes deleted content items from cache even after page reload", () => {
-    cy.waitOn("/search/items*", () => {
-      cy.waitOn("/v1/content/models*", () => {
-        cy.visit(`/content/${Cypress.env("modelZUID")}/new`);
-      });
-    });
+    cy.visit(`/content/${Cypress.env("modelZUID")}/new`);
+    // Content may load from IndexedDB cache — wait for UI instead of network
+    cy.getBySelector("CreateItemSaveButton").should("exist");
 
     cy.intercept("/search/items*").as("searchItems");
     cy.intercept("/v1/content/models*").as("contentModels");
-    cy.getBySelector(`"field:text"`)
+    cy.getBySelector("field:text")
       .find("input")
       .clear()
       .type(`Delete me ${NOW}`);

@@ -12,7 +12,10 @@ export const FieldTypeEditor = React.memo(function FieldTypeEditor(props) {
   return (
     <div className={cx(styles.FieldTypeEditor, props.className)}>
       <div
-        className={styles.FieldTypeEditorPM}
+        className={cx(
+          styles.FieldTypeEditorPM,
+          props.compact && styles.compact
+        )}
         onFocus={props.onFocus}
         onBlur={props.onBlur}
       >
@@ -25,6 +28,7 @@ export const FieldTypeEditor = React.memo(function FieldTypeEditor(props) {
           onChange={props.onChange}
           mediaBrowser={props.mediaBrowser}
           error={props.error}
+          compact={props.compact}
         />
       </div>
     </div>

@@ -2,6 +2,9 @@ import {
   ContentItem,
   ContentModel,
   ContentModelField,
+  CreateStatusLabel,
+  RedirectRequest,
+  WorkflowStatusLabel,
 } from "../src/shell/services/types";
 import "./support/commands";
 
@@ -65,6 +68,19 @@ declare global {
         fields: Partial<ContentModelField>;
         items: Partial<ContentItem>;
       }>;
+      task(event: "cleanup:labels"): Chainable<string[]>;
+      task(
+        event: "api:createLabel",
+        data: CreateStatusLabel
+      ): Chainable<WorkflowStatusLabel>;
+      task(
+        event: "api:publishItem",
+        data: { modelZUID: string; itemZUID: string }
+      ): Chainable<any>;
+      task(
+        event: "api:createRedirect",
+        payload: RedirectRequest
+      ): Chainable<any>;
     }
   }
 }

@@ -1,10 +1,14 @@
 import { readFileSync } from "fs";
 import { join } from "path";
+import { v4 as uuidv4 } from "uuid";
 
 import {
   ContentItem,
   ContentModel,
   ContentModelField,
+  CreateStatusLabel,
+  RedirectRequest,
+  WorkflowStatusLabel,
 } from "../../../src/shell/services/types";
 
 export type SeedContentTask = {
@@ -23,7 +27,7 @@ module.exports = function content(config) {
     const json = JSON.parse(jsonString);
 
     const sdk = await getSDK(config);
-    const timeStamp = Date.now();
+    const timeStamp = uuidv4();
 
     // 1) Create Schema
     // Append commit id for spec tracking
@@ -35,8 +39,20 @@ module.exports = function content(config) {
       metaTitle: modelLabel,
       name: formatName(modelLabel),
     };
-    const modelResponse = await sdk.instance.createModel(modelPayload);
-    const model = modelResponse?.data;
+    // Retry up to 3 times — createModel can return null data under API load
+    let model = null;
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      const modelResponse = await sdk.instance.createModel(modelPayload);
+      model = modelResponse?.data;
+      if (model?.ZUID) break;
+      // API can be slow under parallel runner load — wait longer each attempt
+      if (attempt < 3) await new Promise((r) => setTimeout(r, 2000 * attempt));
+    }
+    if (!model?.ZUID) {
+      throw new Error(
+        `seed:content failed to create model after 3 attempts: "${modelPayload.label}"`
+      );
+    }
 
     // 2) Create Fields
     const fields = await Promise.all(
@@ -92,8 +108,54 @@ module.exports = function content(config) {
     };
   }
 
+  async function deleteAllLabels(): Promise<string[]> {
+    const sdk = await getSDK(config);
+    const allLabels = await sdk.instance.fetchLabels();
+    if (!allLabels?.data?.length) {
+      return [];
+    }
+
+    const deletePromises = allLabels?.data
+      .filter(
+        (label) => !["Needs Review", "Draft", "Approved"]?.includes(label?.name)
+      )
+      .map((label) => {
+        return sdk.instance.deleteLabel(label?.ZUID).then((res) => {
+          return res.data;
+        });
+      });
+
+    return await Promise.all(deletePromises);
+  }
+
+  async function createLabel(
+    data: CreateStatusLabel
+  ): Promise<WorkflowStatusLabel> {
+    const sdk = await getSDK(config);
+    return await sdk.instance.createLabel(data).then((res) => {
+      return res.data;
+    });
+  }
+
+  async function publishItem(modelZUID: string, itemZUID: string) {
+    const sdk = await getSDK(config);
+    const res = await sdk.instance.publishItem(modelZUID, itemZUID, 1);
+    return res.data;
+  }
+
+  async function createRedirect(payload: RedirectRequest) {
+    const sdk = await getSDK(config);
+    const res = await sdk.instance.createRedirect(payload);
+    return res.data;
+  }
+
   // CONTENT TASK MAPPING
   return {
     "seed:content": (path: string) => seedContent(path),
+    "api:createLabel": (data: CreateStatusLabel) => createLabel(data),
+    "cleanup:labels": () => deleteAllLabels(),
+    "api:publishItem": (data: { modelZUID: string; itemZUID: string }) =>
+      publishItem(data.modelZUID, data.itemZUID),
+    "api:createRedirect": (payload: RedirectRequest) => createRedirect(payload),
   };
 };

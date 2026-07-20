@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useHistory, useParams } from "react-router";
 import {
   Box,
@@ -49,6 +49,18 @@ export const BlockModel = () => {
   useEffect(() => {
     setShowCreateVariantDialog(!!params?.get("createVariant"));
   }, [params]);
+
+  const filteredData = useMemo(() => {
+    if (!data) return [];
+
+    const normalizedSearch = search.toLowerCase().trim();
+
+    if (!normalizedSearch) return data;
+
+    return data?.filter?.((item) =>
+      item.web.metaTitle?.toLowerCase().includes(normalizedSearch)
+    );
+  }, [data, search]);
 
   const model = models?.find((model) => model.ZUID === modelZUID);
 
@@ -135,19 +147,15 @@ export const BlockModel = () => {
               overflowY: "scroll",
             }}
           >
-            {data
-              ?.filter?.((item) =>
-                item.web.metaTitle.toLowerCase().includes(search.toLowerCase())
-              )
-              ?.map((item) => (
-                <BlockVariantCard
-                  key={item.meta.ZUID}
-                  item={item}
-                  onClick={() => {
-                    history.push(`/blocks/${modelZUID}/${item.meta.ZUID}`);
-                  }}
-                />
-              ))}
+            {filteredData.map((item) => (
+              <BlockVariantCard
+                key={item.meta.ZUID}
+                item={item}
+                onClick={() => {
+                  history.push(`/blocks/${modelZUID}/${item.meta.ZUID}`);
+                }}
+              />
+            ))}
           </Box>
         ) : (
           <Box
@@ -205,6 +213,7 @@ const BlockVariantCard = ({ item, onClick }: BlockVariantCardProps) => {
   const [noImage, setNoImage] = useState(false);
   return (
     <Box
+      data-cy="block-variant-card"
       key={item.meta.ZUID}
       width={265}
       sx={{
@@ -247,7 +256,7 @@ const BlockVariantCard = ({ item, onClick }: BlockVariantCardProps) => {
         height={52}
       >
         <Typography noWrap variant="body2">
-          {item.web.metaTitle}
+          {item.web.metaTitle ?? ""}
         </Typography>
       </Box>
     </Box>

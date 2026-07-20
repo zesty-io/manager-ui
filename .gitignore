@@ -16,3 +16,8 @@ coverage/
 .vscode
 .DS_Store
 .idea
+.nyc_output
+skills-lock.json
+.agents
+.playwright-mcp
+.claude/worktrees
