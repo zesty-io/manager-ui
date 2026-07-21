@@ -41,7 +41,7 @@ export const UserHeaderTitle = ({
     if (usersRoles) {
       const user = usersRoles?.find((userRole) => userRole.ZUID === id);
       return {
-        name: `${user?.firstName} ${user?.lastName}` ?? "",
+        name: user ? `${user.firstName} ${user.lastName}` : "Unknown User",
         imageUrl: `https://www.gravatar.com/avatar/${MD5(
           user?.email
         )}.jpg?s=40`,
@@ -56,7 +56,7 @@ export const UserHeaderTitle = ({
         ],
       };
     }
-  }, [usersRoles, actionCount]);
+  }, [usersRoles, actionCount, id, latestActionDateTime]);
 
   const isLoading = isLoadingUsersRoles || isLoadingActions;
 
@@ -105,7 +105,7 @@ export const UserHeaderTitle = ({
               <Skeleton width="100%" />
             ) : (
               <Typography variant="caption" color="text.secondary">
-                {headerData?.subTitle?.join(" • ")}
+                {headerData?.subTitle?.filter(Boolean).join(" • ")}
               </Typography>
             )}
           </Stack>
