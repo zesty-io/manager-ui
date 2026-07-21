@@ -31,6 +31,33 @@
       "settings": {
         "list": true
       }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "images",
+      "name": "hero_image",
+      "label": "Hero Image",
+      "sort": 3,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": false,
+        "limit": 1
+      }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "link",
+      "name": "external_url",
+      "label": "External URL",
+      "sort": 4,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": false
+      }
     }
   ],
   "items": [
