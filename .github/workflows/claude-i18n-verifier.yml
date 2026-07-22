@@ -45,7 +45,12 @@ jobs:
           PR: ${{ github.event.pull_request.number }}
         run: |
           set -euo pipefail
-          gh pr diff "$PR" --repo "$REPO" --name-only > changed_files.txt
+          # `gh pr diff` hits GitHub's 300-file diff-media-type cap on large PRs (HTTP 406).
+          # The paginated PR Files API has no such limit. Fetch it ONCE here (with patches
+          # included) and cache it — the "Extract relevant diff" step reuses this file instead
+          # of hitting the API a second time for the same data.
+          gh api "repos/$REPO/pulls/$PR/files" --paginate > pr_files.json
+          jq -r '.[].filename' pr_files.json > changed_files.txt
           if grep -qE '^src/.*\.(js|jsx|ts|tsx)$|^public/locales/' changed_files.txt; then
             echo "relevant=true" >> "$GITHUB_OUTPUT"
           else
@@ -73,6 +78,27 @@ jobs:
         if: steps.changed.outputs.relevant == 'true'
         run: node ci/scripts/check_i18n.js --changed-files changed_files.txt --tsc-output tsc-output.txt
 
+      # Pre-filter + pre-fetch the diff so Claude only ever sees i18n-relevant files, as plain
+      # text (cheaper than JSON-escaped patches) — never the full PR diff. Bounded so a huge PR
+      # degrades with a loud warning instead of ballooning context/cost.
+      - name: Extract relevant diff
+        id: diff
+        if: steps.changed.outputs.relevant == 'true'
+        run: |
+          set -euo pipefail
+          MAX_BYTES=200000
+          jq -r '.[] | select(.filename | test("^src/.*\\.(js|jsx|ts|tsx)$") or test("^public/locales/")) | "=== \(.filename) ===\n\(.patch // "(no patch available — file too large for GitHub to diff)")\n"' \
+            pr_files.json > i18n-relevant.diff
+          SIZE=$(wc -c < i18n-relevant.diff)
+          if [ "$SIZE" -gt "$MAX_BYTES" ]; then
+            echo "::warning::i18n-relevant.diff is ${SIZE} bytes; truncating to ${MAX_BYTES} to keep the review in budget."
+            head -c "$MAX_BYTES" i18n-relevant.diff > i18n-relevant.diff.tmp && mv i18n-relevant.diff.tmp i18n-relevant.diff
+            printf '\n\n[... diff truncated: this PR is too large to review in full — findings above are non-exhaustive ...]\n' >> i18n-relevant.diff
+            echo "truncated=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "truncated=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - uses: anthropics/claude-code-action@1dc994ee7a008f0ecc866d9ac23ef036b7229f84 # v1.0.127
         if: steps.changed.outputs.relevant == 'true'
         with:
@@ -80,18 +106,28 @@ jobs:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           claude_args: |
             --max-turns 50
-            --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr diff:*),Bash(gh pr view:*),Read,Write,Grep,Glob"
+            --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr view:*),Read,Write,Grep,Glob"
           prompt: |
             REPO: ${{ github.repository }}
             PR NUMBER: ${{ github.event.pull_request.number }}
             REPORT_FILE: ${{ github.workspace }}/i18n-comment.md
+            DIFF_TRUNCATED: ${{ steps.diff.outputs.truncated }}
 
             The PR branch is already checked out. i18n-objective-results.json (in the workspace
             root) holds deterministic findings already computed by a script — read it first;
             never re-judge or second-guess those, just report them.
 
-            Read CLAUDE.md's "Localization (i18next)" section for the full rules, then review
-            the PR diff (`gh pr diff`) for two things a script can't check:
+            Read CLAUDE.md's "Localization (i18next)" section for the full rules, then read
+            i18n-relevant.diff with the Read tool — it's the PR's diff, already pre-filtered to
+            only files under src/**/*.{js,jsx,ts,tsx} and public/locales/**, formatted as plain
+            `=== <filename> ===` sections. Never run `gh pr diff` or `gh api` to fetch the diff
+            yourself; this file is the full and only diff context you get. Some entries may say
+            "(no patch available — file too large for GitHub to diff)" — treat those as
+            un-reviewable, don't guess at their contents. If DIFF_TRUNCATED is "true", the PR was
+            too large to include in full — note this once in the report rather than silently
+            reviewing a partial diff as if it were complete.
+
+            Review the diff for two things a script can't check:
 
             1. Missed strings: new hardcoded user-facing copy (JSX text, string props, notify()/
                dispatch() messages, module-level string maps, class components) that should be
@@ -117,6 +153,7 @@ jobs:
 
               <!-- i18n-verifier -->
               ## i18n Verifier — <PASS | FAIL>
+              <If DIFF_TRUNCATED is "true": "⚠️ This PR's diff was too large to review in full — findings below are non-exhaustive." Otherwise omit this line.>
 
               ### 🔴 Blocking
               <one line per objective finding (verbatim from i18n-objective-results.json) plus
