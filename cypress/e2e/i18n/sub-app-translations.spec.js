@@ -139,6 +139,40 @@ function visitWithLocale(path, locale) {
   });
 }
 
+// Inverse of visitWithLocale above: injects a locale into the fetchUser
+// response's prefs instead of stripping it, so LoadInstance resolves to the
+// DB preference (src/shell/components/load-instance/index.js:55-57 --
+// `userLocale || navigator.language`) rather than navigator.language. Clears
+// any cached "app_locale" first so a pass can only be explained by the DB
+// value actually driving the resolved language, not a stale local cache.
+function visitWithDbLocale(path, dbLocale, navigatorLocale = "en-US") {
+  cy.intercept("GET", "**/users/*", (req) => {
+    req.continue((res) => {
+      const prefs = res.body?.data?.prefs;
+      if (typeof prefs !== "string") return;
+      try {
+        const parsed = JSON.parse(prefs);
+        parsed.locale = dbLocale;
+        res.body.data.prefs = JSON.stringify(parsed);
+      } catch {
+        // prefs wasn't valid JSON -- leave the response untouched.
+      }
+    });
+  });
+
+  cy.visit(path, {
+    onBeforeLoad(win) {
+      Object.defineProperty(win.navigator, "language", {
+        value: navigatorLocale,
+      });
+      Object.defineProperty(win.navigator, "languages", {
+        value: [navigatorLocale],
+      });
+      win.localStorage.removeItem("app_locale");
+    },
+  });
+}
+
 describe("sub-app translations", () => {
   // cy.blockLock() and cy.blockAnnouncements() are already applied globally
   // for every test in cypress/support/e2e.js; only auth needs to happen here.
@@ -160,5 +194,81 @@ describe("sub-app translations", () => {
         });
       });
     });
+  });
+
+  // The matrix above always strips the DB pref so navigator.language wins,
+  // to stay independent of the shared test account's real prefs. These cover
+  // the DB-preference and persistence paths that strategy can't reach.
+  const contentEditor = SUB_APPS.find((a) => a.app === "content-editor");
+  const schema = SUB_APPS.find((a) => a.app === "schema");
+
+  it("DB locale preference wins over navigator.language", () => {
+    cy.readFile(`public/locales/es-ES/${contentEditor.ns}.json`).then(
+      (strings) => {
+        const expected = strings[contentEditor.key];
+        expect(
+          expected,
+          `${contentEditor.ns}.${contentEditor.key} in es-ES`
+        ).to.be.a("string").and.not.be.empty;
+
+        visitWithDbLocale(contentEditor.path, "es-ES", "en-US");
+
+        cy.getBySelector(contentEditor.selector).should(
+          "contain.text",
+          expected
+        );
+      }
+    );
+  });
+
+  it("locale persists across in-app navigation", () => {
+    cy.readFile(`public/locales/es-ES/${contentEditor.ns}.json`).then(
+      (contentStrings) => {
+        cy.readFile(`public/locales/es-ES/${schema.ns}.json`).then(
+          (schemaStrings) => {
+            visitWithDbLocale(contentEditor.path, "es-ES", "en-US");
+            cy.getBySelector(contentEditor.selector).should(
+              "contain.text",
+              contentStrings[contentEditor.key]
+            );
+
+            // Client-side route change -- LoadInstance stays mounted, no
+            // fetchUser refetch -- so this proves the resolved locale
+            // carries over rather than being re-derived per route.
+            cy.getBySelector("SchemaApp").click();
+
+            cy.getBySelector(schema.selector).should(
+              "contain.text",
+              schemaStrings[schema.key]
+            );
+          }
+        );
+      }
+    );
+  });
+
+  it("locale persists across a page refresh", () => {
+    cy.readFile(`public/locales/es-ES/${contentEditor.ns}.json`).then(
+      (strings) => {
+        const expected = strings[contentEditor.key];
+
+        visitWithDbLocale(contentEditor.path, "es-ES", "en-US");
+        cy.getBySelector(contentEditor.selector).should(
+          "contain.text",
+          expected
+        );
+
+        // navigator.language reverts to its real default on reload (the
+        // onBeforeLoad stub doesn't carry over) -- staying Spanish here only
+        // works if the cached app_locale + intercepted DB pref persisted,
+        // not because of the navigator stub.
+        cy.reload();
+
+        cy.getBySelector(contentEditor.selector).should(
+          "contain.text",
+          expected
+        );
+      }
+    );
   });
 });
