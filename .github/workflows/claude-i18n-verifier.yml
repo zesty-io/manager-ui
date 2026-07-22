@@ -80,19 +80,20 @@ jobs:
 
       # Pre-filter + pre-fetch the diff so Claude only ever sees i18n-relevant files, as plain
       # text (cheaper than JSON-escaped patches) — never the full PR diff. Bounded so a huge PR
-      # degrades with a loud warning instead of ballooning context/cost.
+      # degrades with a loud warning instead of ballooning context/cost. The byte budget is
+      # split between source files and locale files, and each is round-robined across sub-apps
+      # / locales (see ci/scripts/build_i18n_diff.js) — a plain path-order truncation was found
+      # to always exhaust itself on public/locales/en-US/* first, leaving 0 of 503 source files
+      # and 0 of 4 non-English locales ever reviewed on a real large PR.
       - name: Extract relevant diff
         id: diff
         if: steps.changed.outputs.relevant == 'true'
         run: |
           set -euo pipefail
-          MAX_BYTES=200000
-          jq -r '.[] | select(.filename | test("^src/.*\\.(js|jsx|ts|tsx)$") or test("^public/locales/")) | "=== \(.filename) ===\n\(.patch // "(no patch available — file too large for GitHub to diff)")\n"' \
-            pr_files.json > i18n-relevant.diff
-          SIZE=$(wc -c < i18n-relevant.diff)
-          if [ "$SIZE" -gt "$MAX_BYTES" ]; then
-            echo "::warning::i18n-relevant.diff is ${SIZE} bytes; truncating to ${MAX_BYTES} to keep the review in budget."
-            head -c "$MAX_BYTES" i18n-relevant.diff > i18n-relevant.diff.tmp && mv i18n-relevant.diff.tmp i18n-relevant.diff
+          node ci/scripts/build_i18n_diff.js pr_files.json 200000 > i18n-relevant.diff 2> diff-stderr.txt
+          cat diff-stderr.txt
+          if grep -q "TRUNCATED" diff-stderr.txt; then
+            echo "::warning::i18n-relevant.diff was truncated to fit the review budget."
             printf '\n\n[... diff truncated: this PR is too large to review in full — findings above are non-exhaustive ...]\n' >> i18n-relevant.diff
             echo "truncated=true" >> "$GITHUB_OUTPUT"
           else
