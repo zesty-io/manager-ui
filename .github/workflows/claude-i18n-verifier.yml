@@ -1,0 +1,184 @@
+name: Claude i18n Verifier (TEST)
+
+# Dedicated i18n gap check on every non-draft, same-repo PR into dev that touches
+# translatable source or locale files. Two layers:
+#   1. A plain deterministic script (ci/scripts/check_i18n.js) checks TypeScript
+#      errors (scoped to changed files), locale JSON validity, cross-locale key
+#      parity (CLDR-plural-aware), and broken t()/i18n.t() key references.
+#   2. Claude reviews the diff for what only language/intent can catch: new
+#      hardcoded user-facing strings that should be wired through t(), value-
+#      formatting-rule violations, and translation quality (grammar + genuine
+#      translation, not an untranslated English leak) in changed locale values.
+# Both layers post inline PR comments and one sticky summary comment grouped by
+# severity; the check fails on any confirmed finding from either layer.
+
+on:
+  pull_request:
+    branches: [dev]
+    types: [opened, synchronize, reopened, ready_for_review]
+
+jobs:
+  verify:
+    # Fork PRs don't get ANTHROPIC_API_KEY; this uses pull_request (not pull_request_target).
+    if: >-
+      github.event.pull_request.draft == false &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    concurrency:
+      group: claude-i18n-verifier-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          fetch-depth: 1
+
+      # Skip everything below on PRs that don't touch translatable source or locale files.
+      - name: Detect relevant changes
+        id: changed
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+          gh pr diff "$PR" --repo "$REPO" --name-only > changed_files.txt
+          if grep -qE '^src/.*\.(js|jsx|ts|tsx)$|^public/locales/' changed_files.txt; then
+            echo "relevant=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "relevant=false" >> "$GITHUB_OUTPUT"
+            echo "No i18n-relevant files changed — skipping."
+          fi
+
+      - name: Set up Node
+        if: steps.changed.outputs.relevant == 'true'
+        uses: actions/setup-node@v4.1.0
+        with:
+          node-version: "22.19.0"
+          cache: "npm"
+          cache-dependency-path: package-lock.json
+
+      - name: Install Dependencies
+        if: steps.changed.outputs.relevant == 'true'
+        run: npm install --legacy-peer-deps
+
+      - name: Run TypeScript check
+        if: steps.changed.outputs.relevant == 'true'
+        run: npx tsc --noEmit --pretty false > tsc-output.txt 2>&1 || true
+
+      - name: Run objective i18n checks
+        if: steps.changed.outputs.relevant == 'true'
+        run: node ci/scripts/check_i18n.js --changed-files changed_files.txt --tsc-output tsc-output.txt
+
+      - uses: anthropics/claude-code-action@1dc994ee7a008f0ecc866d9ac23ef036b7229f84 # v1.0.127
+        if: steps.changed.outputs.relevant == 'true'
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: |
+            --max-turns 50
+            --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr diff:*),Bash(gh pr view:*),Read,Write,Grep,Glob"
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ github.event.pull_request.number }}
+            REPORT_FILE: ${{ github.workspace }}/i18n-comment.md
+
+            The PR branch is already checked out. i18n-objective-results.json (in the workspace
+            root) holds deterministic findings already computed by a script — read it first;
+            never re-judge or second-guess those, just report them.
+
+            Read CLAUDE.md's "Localization (i18next)" section for the full rules, then review
+            the PR diff (`gh pr diff`) for two things a script can't check:
+
+            1. Missed strings: new hardcoded user-facing copy (JSX text, string props, notify()/
+               dispatch() messages, module-level string maps, class components) that should be
+               wired through t()/i18n.t() instead, per the "Where strings hide" and "What to SKIP"
+               rules. Also check value-formatting-rule violations in any changed
+               public/locales/*.json value (no decorative characters, no ALL CAPS, no HTML, no
+               hardcoded URLs).
+            2. Translation quality: for every changed value in a non-English locale file
+               (public/locales/{es-ES,hi-IN,zh-CN,ru-RU,nl-NL}/*.json), confirm it reads as
+               grammatically correct in that language, and that it's an actual translation — not
+               the English string copied verbatim (ignoring {{var}} interpolations) or a stale
+               English placeholder.
+
+            For every finding — whether from i18n-objective-results.json or your own review —
+            place one inline comment at its file/line using
+            mcp__github_inline_comment__create_inline_comment (confirmed: true). If something is
+            genuinely ambiguous (can't tell if a string is UI copy vs. a skippable data value, or
+            a translation choice that's debatable rather than clearly wrong), do NOT post an
+            inline comment for it — list it under Advisory in the report instead.
+
+            Write the report to REPORT_FILE with the Write tool, in exactly this shape (keep both
+            HTML markers verbatim):
+
+              <!-- i18n-verifier -->
+              ## i18n Verifier — <PASS | FAIL>
+
+              ### 🔴 Blocking
+              <one line per objective finding (verbatim from i18n-objective-results.json) plus
+              every confident missed-string / formatting / translation-quality finding — or "None">
+
+              ### 🟡 Advisory
+              <ambiguous observations that aren't blocking — or "None">
+
+              <!-- i18n-verdict: <PASS_OR_FAIL> -->
+
+            FAIL if i18n-objective-results.json has "passed": false, OR you added anything under
+            Blocking. Otherwise PASS. Write the `<!-- i18n-verdict: ... -->` marker exactly once,
+            as the final line — never quote it or the `<!-- i18n-verifier -->` marker anywhere
+            else in the report. Do not post the summary comment yourself — a later step handles
+            that from REPORT_FILE.
+
+      # Post the report, or update the existing i18n comment in place. Reads the verdict for the gate.
+      - name: Post or update i18n comment
+        id: i18n
+        if: always() && steps.changed.outputs.relevant == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+          FILE="$GITHUB_WORKSPACE/i18n-comment.md"
+          if [ ! -s "$FILE" ] || ! grep -q '<!-- i18n-verifier -->' "$FILE"; then
+            echo "::warning::i18n-comment.md missing or malformed; the i18n gate will fail."
+            echo "no_report=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          BODY=$(cat "$FILE")
+          VERDICT=$(printf '%s' "$BODY" | grep -oiE '<!-- i18n-verdict:[[:space:]]*(PASS|FAIL)[[:space:]]*-->' \
+            | grep -oiE '(PASS|FAIL)' | tail -n1 | tr '[:lower:]' '[:upper:]' || true)
+          if [ -z "$VERDICT" ]; then
+            echo "::warning::i18n report has no usable i18n-verdict marker; the i18n gate will fail."
+            echo "no_report=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          PAYLOAD=$(BODY="$BODY" python3 -c 'import os,json,sys; sys.stdout.write(json.dumps({"body": os.environ["BODY"]}))')
+          CID=$(gh api "repos/$REPO/issues/$PR/comments" --paginate \
+            --jq '.[] | select(.user.login == "github-actions[bot]") | select(.body | startswith("<!-- i18n-verifier -->")) | .id' | head -n1)
+          if [ -n "${CID:-}" ]; then
+            printf '%s' "$PAYLOAD" | gh api -X PATCH "repos/$REPO/issues/comments/$CID" --input - --silent
+            echo "Updated i18n comment $CID."
+          else
+            printf '%s' "$PAYLOAD" | gh api -X POST "repos/$REPO/issues/$PR/comments" --input - --silent
+            echo "Created i18n comment."
+          fi
+          echo "verdict=${VERDICT:-}" >> "$GITHUB_OUTPUT"
+
+      - name: i18n gate
+        if: always() && steps.changed.outputs.relevant == 'true'
+        run: |
+          V="${{ steps.i18n.outputs.verdict }}"
+          echo "i18n verdict: ${V:-<none>} (no_report=${{ steps.i18n.outputs.no_report || 'false' }})"
+          if [ "${{ steps.i18n.outputs.no_report }}" = "true" ]; then
+            echo "::error::No i18n report was produced — check the workflow logs."
+            exit 1
+          fi
+          if [ "$V" = "FAIL" ]; then
+            echo "::error::i18n Verifier found a blocking issue — see the i18n Verifier comment."
+            exit 1
+          fi
