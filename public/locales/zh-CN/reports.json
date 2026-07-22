@@ -105,6 +105,7 @@
   "totalBandwidth": "总带宽",
   "totalRequests": "总请求数",
   "totalUsageBreakdown": "总使用量细分",
+  "unknownUser": "未知用户",
   "unpublished": "已取消发布",
   "url": "URL",
   "usageReportFor": "{{timePeriod}} {{unit}} 的使用报告：{{startDisplay}} - {{endDisplay}}",

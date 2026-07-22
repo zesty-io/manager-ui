@@ -281,6 +281,7 @@ export default function ItemEdit() {
       }
     } catch (err) {
       console.error("ItemEdit:load:error", err);
+      setNotFound(err?.message || t("content.itemEditNotFound"));
       throw err;
     } finally {
       if (isMounted.current) {

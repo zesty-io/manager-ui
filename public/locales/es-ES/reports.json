@@ -107,6 +107,7 @@
   "totalBandwidth": "Ancho de banda total",
   "totalRequests": "Total de solicitudes",
   "totalUsageBreakdown": "Desglose del uso total",
+  "unknownUser": "Usuario desconocido",
   "unpublished": "Despublicado",
   "url": "URL",
   "usageReportFor": "Informe de uso de {{timePeriod}} {{unit}} : {{startDisplay}} - {{endDisplay}}",

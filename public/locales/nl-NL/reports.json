@@ -106,6 +106,7 @@
   "totalBandwidth": "Totale bandbreedte",
   "totalRequests": "Totaal aantal verzoeken",
   "totalUsageBreakdown": "Overzicht van totaal verbruik",
+  "unknownUser": "Onbekende gebruiker",
   "unpublished": "Niet gepubliceerd",
   "url": "URL",
   "usageReportFor": "Verbruiksrapport voor {{timePeriod}} {{unit}} : {{startDisplay}} - {{endDisplay}}",

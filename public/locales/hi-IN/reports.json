@@ -106,6 +106,7 @@
   "totalBandwidth": "कुल बैंडविड्थ",
   "totalRequests": "कुल अनुरोध",
   "totalUsageBreakdown": "कुल उपयोग का विवरण",
+  "unknownUser": "अज्ञात उपयोगकर्ता",
   "unpublished": "अप्रकाशित किया गया",
   "url": "URL",
   "usageReportFor": "{{timePeriod}} {{unit}} की उपयोग रिपोर्ट : {{startDisplay}} - {{endDisplay}}",

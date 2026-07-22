@@ -371,6 +371,7 @@
   "itemEditNoDraftActivityLogs": "Нет записей редактирования в журнале активности для этого контента.",
   "itemEditNoPermissionAddStatus": "Нет разрешения добавить этот статус",
   "itemEditNoPermissionRemoveStatus": "Нет разрешения удалить этот статус",
+  "itemEditNotFound": "Элемент не найден",
   "itemEditOffline": "Не опубликовано",
   "itemEditOn": "в",
   "itemEditOpenDuoMode": "Открыть режим DUO",

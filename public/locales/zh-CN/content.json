@@ -356,6 +356,7 @@
   "itemEditNoDraftActivityLogs": "此内容没有活动日志编辑记录。",
   "itemEditNoPermissionAddStatus": "没有添加此状态的权限",
   "itemEditNoPermissionRemoveStatus": "没有移除此状态的权限",
+  "itemEditNotFound": "未找到项目",
   "itemEditOffline": "离线",
   "itemEditOn": "于",
   "itemEditOpenDuoMode": "打开 DUO 模式",

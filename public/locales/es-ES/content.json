@@ -366,6 +366,7 @@
   "itemEditNoDraftActivityLogs": "No hay registros de edicion en el registro de actividad para este contenido.",
   "itemEditNoPermissionAddStatus": "No tienes permiso para agregar este estado",
   "itemEditNoPermissionRemoveStatus": "No tienes permiso para quitar este estado",
+  "itemEditNotFound": "Elemento no encontrado",
   "itemEditOffline": "Sin conexion",
   "itemEditOn": "el",
   "itemEditOpenDuoMode": "Abrir modo DUO",

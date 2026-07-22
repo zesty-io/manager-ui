@@ -106,6 +106,7 @@
   "totalBandwidth": "Total Bandwidth",
   "totalRequests": "Total Requests",
   "totalUsageBreakdown": "Total Usage Breakdown",
+  "unknownUser": "Unknown User",
   "unpublished": "Unpublished",
   "url": "URL",
   "usageReportFor": "Usage Report for {{timePeriod}} {{unit}} : {{startDisplay}} - {{endDisplay}}",

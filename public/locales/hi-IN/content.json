@@ -361,6 +361,7 @@
   "itemEditNoDraftActivityLogs": "इस सामग्री के लिए कोई Activity Log edit logs नहीं हैं।",
   "itemEditNoPermissionAddStatus": "आपको यह स्थिति जोड़ने की अनुमति नहीं है",
   "itemEditNoPermissionRemoveStatus": "आपको यह स्थिति हटाने की अनुमति नहीं है",
+  "itemEditNotFound": "आइटम नहीं मिला",
   "itemEditOffline": "ऑफलाइन",
   "itemEditOn": "पर",
   "itemEditOpenDuoMode": "DUO Mode खोलें",

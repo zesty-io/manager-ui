@@ -108,6 +108,7 @@
   "totalBandwidth": "Общая пропускная способность",
   "totalRequests": "Всего запросов",
   "totalUsageBreakdown": "Детализация общего использования",
+  "unknownUser": "Неизвестный пользователь",
   "unpublished": "Снято с публикации",
   "url": "URL",
   "usageReportFor": "Отчет об использовании за {{timePeriod}} {{unit}} : {{startDisplay}} - {{endDisplay}}",

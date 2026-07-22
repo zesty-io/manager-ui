@@ -466,10 +466,17 @@ export const Field = memo(
 
       case "files":
       case "images":
-        const images = useMemo(
-          () => ((value as string) || "").split(",").filter((el: string) => el),
-          [value]
-        );
+        const images = useMemo(() => {
+          if (Array.isArray(value)) {
+            return value.filter(
+              (el: unknown): el is string =>
+                typeof el === "string" && Boolean(el)
+            );
+          }
+          return typeof value === "string"
+            ? value.split(",").filter((el: string) => el)
+            : [];
+        }, [value]);
         const error = errors && Object.values(errors)?.some((error) => !!error);
 
         return (
