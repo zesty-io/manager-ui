@@ -120,7 +120,7 @@ function fillBudget(entries, byteBudget) {
 
 function main() {
   const [, , inputFile, maxBytesArg] = process.argv;
-  const maxBytes = Number(maxBytesArg) || 200000;
+  const maxBytes = Number(maxBytesArg) || 300000;
   const files = JSON.parse(fs.readFileSync(inputFile, "utf8"));
 
   const relevant = files

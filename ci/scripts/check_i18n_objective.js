@@ -9,7 +9,7 @@
  * without an LLM judgment call.
  *
  * Usage:
- *   node ci/scripts/check_i18n.js --changed-files <file> --tsc-output <file>
+ *   node ci/scripts/check_i18n_objective.js --changed-files <file> --tsc-output <file>
  *     --changed-files  text file, one repo-relative path per line (from `gh pr diff --name-only`)
  *     --tsc-output     text file capturing `npx tsc --noEmit --pretty false` output
  *
@@ -97,6 +97,23 @@ function listSourceFiles(dir) {
 
 function escapeRegExp(s) {
   return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+// Blanks out comment content (keeping newlines, so line numbers stay accurate) before
+// scanning for t()/i18n.t() calls. Without this, example code inside a comment —
+// e.g. `// child components use qualified keys (t("dashboard.key")) once it's in the
+// store` — gets matched as a real call and reported as a broken key reference, even
+// though nothing actually invokes it. Confirmed on a real PR: both of a run's "broken
+// key" findings turned out to be this exact pattern, not real bugs.
+function stripComments(text) {
+  let stripped = text.replace(/\/\*[\s\S]*?\*\//g, (m) =>
+    m.replace(/[^\n]/g, " ")
+  );
+  stripped = stripped
+    .split("\n")
+    .map((line) => (line.trim().startsWith("//") ? "" : line))
+    .join("\n");
+  return stripped;
 }
 
 function checkJsonAndParity(ns, findings) {
@@ -189,7 +206,7 @@ function checkBrokenKeys(ns, srcFiles, findings) {
     const rel = path.relative(ROOT, file);
     let text;
     try {
-      text = fs.readFileSync(file, "utf8");
+      text = stripComments(fs.readFileSync(file, "utf8"));
     } catch {
       continue;
     }
