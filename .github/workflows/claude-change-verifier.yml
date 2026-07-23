@@ -115,16 +115,12 @@ jobs:
 
               <!-- qa-verdict: <PASS_OR_FAIL_OR_INCONCLUSIVE> -->
 
-            Use plain ordered lists for criteria (refer to them as "criterion 1"); never write `#1`
-            (GitHub auto-links it). The only `#<n>` allowed is the "Validates #<n>" header. Write the
-            `<!-- qa-verdict: ... -->` marker exactly once, as the final line — never quote it or the
-            `<!-- cv-verifier -->` marker anywhere else in the report.
-
-            The report is exactly: the verdict header, the issue line, the criteria list, and the
-            collapsed Cypress block. No summary section, no "gaps & concerns" section, no extra
-            prose — the "— why" clause on a ⚠️/❌ criterion is the only place for explanation.
-            The criteria list must read pass/fail at a glance. In change-only mode, ✅ lines with
-            no clause are the norm — add words only where something is wrong.
+            Rules: the report contains nothing beyond the template — no summary or extra sections.
+            The "— why" clause on a ⚠️/❌ line is the only place for explanation; ✅ lines get none.
+            In change-only mode the numbered list is the checks you performed. Never write `#<n>`
+            except in the "Validates #<n>" line (GitHub auto-links it). Write the
+            `<!-- qa-verdict: ... -->` marker exactly once, as the final line, and never quote
+            either HTML marker elsewhere in the report.
 
       # Post the report, or update the existing QA comment in place. Reads the verdict for the gate.
       - name: Post or update QA comment
