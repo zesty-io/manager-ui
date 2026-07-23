@@ -151,6 +151,10 @@ jobs:
             Blocking bullet into an inline PR comment automatically, so Blocking is reserved for
             confident, file/line-anchored findings only.
 
+            Keep every bullet to one short sentence: what's wrong and the fix, nothing else. Avoid
+            long explanations — no rationale, no background, no multi-clause justification. This is
+            a PR comment, not an essay.
+
             Write the report to REPORT_FILE with the Write tool, in exactly this shape (keep both
             HTML markers verbatim):
 
