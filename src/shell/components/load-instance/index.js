@@ -63,8 +63,8 @@ export default connect((state) => {
 
         if (targetLocale !== i18n.language) {
           i18n.changeLanguage(targetLocale);
-          document.documentElement.lang = targetLocale;
         }
+        document.documentElement.lang = targetLocale;
         localStorage.setItem("app_locale", targetLocale);
       });
       props
