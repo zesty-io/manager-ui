@@ -1,4 +1,4 @@
-name: Claude Localization Reviewer (TEST)
+name: Claude Localization Reviewer
 
 # Dedicated localization gap check for PRs into dev that touch source or locale files.
 #   1. ci/scripts/check_localization_objective.js: deterministic checks — TypeScript
