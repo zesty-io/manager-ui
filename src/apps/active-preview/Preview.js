@@ -1,5 +1,6 @@
 import { Suspense, useEffect, useRef, useState } from "react";
 import i18n from "./i18n";
+import { toSupportedLocale } from "shell/i18n";
 import { useTranslation } from "react-i18next";
 import {
   Button,
@@ -144,9 +145,10 @@ function PreviewInner(props) {
         if (msg.data.locale) {
           // Preload before switching so changeLanguage is always a cache-hit
           // and never triggers a re-suspend that would reset component state.
+          const safeLocale = toSupportedLocale(msg.data.locale);
           i18n
-            .loadLanguages(msg.data.locale)
-            .then(() => i18n.changeLanguage(msg.data.locale));
+            .loadLanguages(safeLocale)
+            .then(() => i18n.changeLanguage(safeLocale));
         }
         if (msg.data.previewUrl) {
           setPreviewUrl(msg.data.previewUrl);

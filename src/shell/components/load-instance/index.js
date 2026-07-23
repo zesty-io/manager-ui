@@ -44,7 +44,12 @@ export default connect((state) => {
 
       props.dispatch(fetchUser(props.user.ZUID)).then(() => {
         const { prefs } = store.getState().user;
-        const userLocale = prefs ? JSON.parse(prefs)?.locale : null;
+        let userLocale = null;
+        try {
+          userLocale = prefs ? JSON.parse(prefs)?.locale : null;
+        } catch {
+          // malformed prefs — fall through to navigator.language
+        }
 
         // Resolve the UI locale authoritatively from the logged-in user, falling
         // back to the browser language, then en-US. Reading navigator directly

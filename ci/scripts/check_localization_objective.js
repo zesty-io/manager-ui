@@ -108,9 +108,24 @@ function stripComments(text) {
   let stripped = text.replace(/\/\*[\s\S]*?\*\//g, (m) =>
     m.replace(/[^\n]/g, " ")
   );
+  // Strip both full-line (//) and trailing (code; // ...) line comments, skipping
+  // any // that appears inside a ' or " string literal (e.g. a URL).
   stripped = stripped
     .split("\n")
-    .map((line) => (line.trim().startsWith("//") ? "" : line))
+    .map((line) => {
+      let inStr = null;
+      for (let i = 0; i < line.length - 1; i++) {
+        const ch = line[i];
+        if (!inStr && (ch === '"' || ch === "'")) {
+          inStr = ch;
+        } else if (inStr && ch === inStr && line[i - 1] !== "\\") {
+          inStr = null;
+        } else if (!inStr && ch === "/" && line[i + 1] === "/") {
+          return line.slice(0, i);
+        }
+      }
+      return line;
+    })
     .join("\n");
   return stripped;
 }
