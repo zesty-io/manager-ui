@@ -2,7 +2,8 @@
 /*
  * Deterministically posts one inline PR review comment per finding bullet in a
  * markdown report, instead of relying on a Claude agent to reliably call its own
- * inline-comment tool. Observed on a real run of claude-i18n-verifier.yml: the report
+ * inline-comment tool. Observed on a real run of the Claude Localization Reviewer workflow
+ * (claude-localization-reviewer.yml): the report
  * correctly listed 2 findings with file:line references, the agent completed in far
  * fewer turns than usual, but created 0 inline comments despite the prompt explicitly
  * requiring one per finding — the requirement just isn't reliably honored by the model.
@@ -25,7 +26,7 @@
  *     --repo <owner/repo>
  *     --pr <number>
  *     --commit <sha>              PR head commit — comments anchor to this commit
- *     --label <text>              short prefix identifying the source, e.g. "i18n Verifier"
+ *     --label <text>              short prefix identifying the source, e.g. "Localization Reviewer"
  */
 const fs = require("fs");
 const { execFileSync } = require("child_process");

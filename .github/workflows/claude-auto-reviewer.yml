@@ -36,7 +36,7 @@ jobs:
             - Performance considerations
 
             Note: The PR branch is already checked out in the current working directory.
-            Localization compliance is reviewed separately by the "Claude i18n Verifier"
+            Localization compliance is reviewed separately by the "Claude Localization Reviewer"
             workflow — don't duplicate that review here.
 
             Use `gh pr comment` for top-level feedback.

@@ -1,8 +1,8 @@
-name: Claude i18n Verifier (TEST)
+name: Claude Localization Reviewer (TEST)
 
-# Dedicated i18n gap check on every non-draft, same-repo PR into dev that touches
+# Dedicated localization gap check on every non-draft, same-repo PR into dev that touches
 # translatable source or locale files. Two layers:
-#   1. A plain deterministic script (ci/scripts/check_i18n_objective.js) checks TypeScript
+#   1. A plain deterministic script (ci/scripts/check_localization_objective.js) checks TypeScript
 #      errors (scoped to changed files), locale JSON validity, cross-locale key
 #      parity (CLDR-plural-aware), and broken t()/i18n.t() key references.
 #   2. Claude reviews the diff for what only language/intent can catch: new
@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     concurrency:
-      group: claude-i18n-verifier-${{ github.event.pull_request.number }}
+      group: claude-localization-reviewer-${{ github.event.pull_request.number }}
       cancel-in-progress: true
     permissions:
       contents: read
@@ -76,13 +76,13 @@ jobs:
 
       - name: Run objective i18n checks
         if: steps.changed.outputs.relevant == 'true'
-        run: node ci/scripts/check_i18n_objective.js --changed-files changed_files.txt --tsc-output tsc-output.txt
+        run: node ci/scripts/check_localization_objective.js --changed-files changed_files.txt --tsc-output tsc-output.txt
 
       # Pre-filter + pre-fetch the diff so Claude only ever sees i18n-relevant files, as plain
       # text (cheaper than JSON-escaped patches) — never the full PR diff. Bounded so a huge PR
       # degrades with a loud warning instead of ballooning context/cost. Source files (the
       # missed-string check) claim the budget first; locale files only get what's left over,
-      # round-robined across sub-app dirs / locales respectively (see ci/scripts/build_i18n_diff.js)
+      # round-robined across sub-app dirs / locales respectively (see ci/scripts/build_localization_diff.js)
       # — a plain path-order truncation was found to always exhaust itself on
       # public/locales/en-US/* first, leaving 0 of 503 source files and 0 of 4 non-English
       # locales ever reviewed on a real large PR. 300KB (not 200KB) covers real PRs like #3784
@@ -93,7 +93,7 @@ jobs:
         if: steps.changed.outputs.relevant == 'true'
         run: |
           set -euo pipefail
-          node ci/scripts/build_i18n_diff.js pr_files.json 300000 > i18n-relevant.diff 2> diff-stderr.txt
+          node ci/scripts/build_localization_diff.js pr_files.json 300000 > i18n-relevant.diff 2> diff-stderr.txt
           cat diff-stderr.txt
           if grep -q "TRUNCATED" diff-stderr.txt; then
             echo "::warning::i18n-relevant.diff was truncated to fit the review budget."
@@ -158,8 +158,8 @@ jobs:
             Write the report to REPORT_FILE with the Write tool, in exactly this shape (keep both
             HTML markers verbatim):
 
-              <!-- i18n-verifier -->
-              ## i18n Verifier — <PASS | FAIL>
+              <!-- localization-reviewer -->
+              ## Localization Reviewer — <PASS | FAIL>
               <If DIFF_TRUNCATED is "true": "⚠️ This PR's diff was too large to review in full — findings below are non-exhaustive." Otherwise omit this line.>
 
               ### 🔴 Blocking
@@ -173,16 +173,16 @@ jobs:
               ### 🟡 Advisory
               <ambiguous observations that aren't blocking — or "None">
 
-              <!-- i18n-verdict: <PASS_OR_FAIL> -->
+              <!-- localization-verdict: <PASS_OR_FAIL> -->
 
             FAIL if i18n-objective-results.json has "passed": false, OR you added anything under
-            Blocking. Otherwise PASS. Write the `<!-- i18n-verdict: ... -->` marker exactly once,
-            as the final line — never quote it or the `<!-- i18n-verifier -->` marker anywhere
-            else in the report. Do not post the summary comment yourself, and do not create any
-            inline PR comments yourself — later steps handle both from REPORT_FILE.
+            Blocking. Otherwise PASS. Write the `<!-- localization-verdict: ... -->` marker exactly
+            once, as the final line — never quote it or the `<!-- localization-reviewer -->` marker
+            anywhere else in the report. Do not post the summary comment yourself, and do not create
+            any inline PR comments yourself — later steps handle both from REPORT_FILE.
 
-      # Post the report, or update the existing i18n comment in place. Reads the verdict for the gate.
-      - name: Post or update i18n comment
+      # Post the report, or update the existing comment in place. Reads the verdict for the gate.
+      - name: Post or update Localization Reviewer comment
         id: i18n
         if: always() && steps.changed.outputs.relevant == 'true'
         env:
@@ -192,28 +192,28 @@ jobs:
         run: |
           set -euo pipefail
           FILE="$GITHUB_WORKSPACE/i18n-comment.md"
-          if [ ! -s "$FILE" ] || ! grep -q '<!-- i18n-verifier -->' "$FILE"; then
-            echo "::warning::i18n-comment.md missing or malformed; the i18n gate will fail."
+          if [ ! -s "$FILE" ] || ! grep -q '<!-- localization-reviewer -->' "$FILE"; then
+            echo "::warning::report file missing or malformed; the Localization Reviewer gate will fail."
             echo "no_report=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           BODY=$(cat "$FILE")
-          VERDICT=$(printf '%s' "$BODY" | grep -oiE '<!-- i18n-verdict:[[:space:]]*(PASS|FAIL)[[:space:]]*-->' \
+          VERDICT=$(printf '%s' "$BODY" | grep -oiE '<!-- localization-verdict:[[:space:]]*(PASS|FAIL)[[:space:]]*-->' \
             | grep -oiE '(PASS|FAIL)' | tail -n1 | tr '[:lower:]' '[:upper:]' || true)
           if [ -z "$VERDICT" ]; then
-            echo "::warning::i18n report has no usable i18n-verdict marker; the i18n gate will fail."
+            echo "::warning::report has no usable localization-verdict marker; the gate will fail."
             echo "no_report=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           PAYLOAD=$(BODY="$BODY" python3 -c 'import os,json,sys; sys.stdout.write(json.dumps({"body": os.environ["BODY"]}))')
           CID=$(gh api "repos/$REPO/issues/$PR/comments" --paginate \
-            --jq '.[] | select(.user.login == "github-actions[bot]") | select(.body | startswith("<!-- i18n-verifier -->")) | .id' | head -n1)
+            --jq '.[] | select(.user.login == "github-actions[bot]") | select(.body | startswith("<!-- localization-reviewer -->")) | .id' | head -n1)
           if [ -n "${CID:-}" ]; then
             printf '%s' "$PAYLOAD" | gh api -X PATCH "repos/$REPO/issues/comments/$CID" --input - --silent
-            echo "Updated i18n comment $CID."
+            echo "Updated Localization Reviewer comment $CID."
           else
             printf '%s' "$PAYLOAD" | gh api -X POST "repos/$REPO/issues/$PR/comments" --input - --silent
-            echo "Created i18n comment."
+            echo "Created Localization Reviewer comment."
           fi
           echo "verdict=${VERDICT:-}" >> "$GITHUB_OUTPUT"
 
@@ -232,18 +232,18 @@ jobs:
             --repo "${{ github.repository }}" \
             --pr "${{ github.event.pull_request.number }}" \
             --commit "${{ github.event.pull_request.head.sha }}" \
-            --label "i18n Verifier"
+            --label "Localization Reviewer"
 
-      - name: i18n gate
+      - name: Localization Reviewer gate
         if: always() && steps.changed.outputs.relevant == 'true'
         run: |
           V="${{ steps.i18n.outputs.verdict }}"
-          echo "i18n verdict: ${V:-<none>} (no_report=${{ steps.i18n.outputs.no_report || 'false' }})"
+          echo "Localization Reviewer verdict: ${V:-<none>} (no_report=${{ steps.i18n.outputs.no_report || 'false' }})"
           if [ "${{ steps.i18n.outputs.no_report }}" = "true" ]; then
-            echo "::error::No i18n report was produced — check the workflow logs."
+            echo "::error::No Localization Reviewer report was produced — check the workflow logs."
             exit 1
           fi
           if [ "$V" = "FAIL" ]; then
-            echo "::error::i18n Verifier found a blocking issue — see the i18n Verifier comment."
+            echo "::error::Localization Reviewer found a blocking issue — see its comment."
             exit 1
           fi

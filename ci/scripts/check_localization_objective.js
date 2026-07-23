@@ -9,7 +9,7 @@
  * without an LLM judgment call.
  *
  * Usage:
- *   node ci/scripts/check_i18n_objective.js --changed-files <file> --tsc-output <file>
+ *   node ci/scripts/check_localization_objective.js --changed-files <file> --tsc-output <file>
  *     --changed-files  text file, one repo-relative path per line (from `gh pr diff --name-only`)
  *     --tsc-output     text file capturing `npx tsc --noEmit --pretty false` output
  *

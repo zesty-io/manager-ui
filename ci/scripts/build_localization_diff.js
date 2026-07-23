@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 /*
- * Builds the plain-text, i18n-relevant diff fed to Claude in claude-i18n-verifier.yml,
- * bounded to a byte budget so a huge PR can't blow Claude's context/cost.
+ * Builds the plain-text, i18n-relevant diff fed to Claude in the Claude Localization
+ * Reviewer workflow (claude-localization-reviewer.yml), bounded to a byte budget so a huge PR
+ * can't blow Claude's context/cost.
  *
  * GitHub's PR Files API returns files in plain path order — every public/locales/en-US/*
  * file, then es-ES, hi-IN, nl-NL, ru-RU, zh-CN, then src/* alphabetically by sub-app dir.
@@ -10,7 +11,7 @@
  * never reaches the rest — not "reduced coverage," a total blind spot for the
  * missed-string and translation-quality checks on any PR whose relevant diff crosses the
  * cap. Confirmed on a real run: 0 of 503 source files and 0 of 4 non-English locales
- * (hi-IN/zh-CN/ru-RU/nl-NL) were ever seen (see the "Claude i18n Verifier" workflow's
+ * (hi-IN/zh-CN/ru-RU/nl-NL) were ever seen (see the Claude Localization Reviewer workflow's
  * PR #4214 run).
  *
  * Fix: prioritize in the order the three semantic checks matter — missed-strings (needs
@@ -24,7 +25,7 @@
  * moved the same bug down a level: it exhausted all 15 namespaces of es-ES before ever
  * reaching hi-IN.
  *
- * Usage: node ci/scripts/build_i18n_diff.js <pr_files.json> <maxBytes> > i18n-relevant.diff
+ * Usage: node ci/scripts/build_localization_diff.js <pr_files.json> <maxBytes> > i18n-relevant.diff
  * Prints "TRUNCATED" to stderr as the last line iff the output was cut short.
  */
 const fs = require("fs");
