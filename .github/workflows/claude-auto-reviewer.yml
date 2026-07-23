@@ -3,7 +3,8 @@ name: Claude Auto Review
 # Code-level review on every non-draft PR into dev: bugs, security, performance, and CLAUDE.md
 # "Review red flags" only. The Claude Change Verifier workflow owns "what does this change do"
 # and acceptance-criteria QA — this workflow must never duplicate that. Findings land as inline
-# comments; one single-line verdict comment is created and updated in place.
+# comments; each run posts a fresh single-line verdict comment (deliberately NOT updated in
+# place) so the PR timeline shows the review history: "1 blocker" → fix commits → "no blockers".
 
 on:
   pull_request:
@@ -81,9 +82,9 @@ jobs:
             --model claude-sonnet-4-6
             --max-turns 20
 
-      # Post the summary, or update the existing review comment in place so pushes don't stack
-      # a new comment each run.
-      - name: Post or update review summary
+      # Always post a NEW verdict comment (never update in place): each push's verdict lands in
+      # the PR timeline between the commits it reviewed, preserving the review history.
+      - name: Post review verdict
         if: always()
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -93,17 +94,10 @@ jobs:
           set -euo pipefail
           FILE="$GITHUB_WORKSPACE/review-comment.md"
           if [ ! -s "$FILE" ] || ! grep -q '<!-- claude-code-review -->' "$FILE"; then
-            echo "::warning::review-comment.md missing or malformed; skipping summary comment."
+            echo "::warning::review-comment.md missing or malformed; skipping verdict comment."
             exit 0
           fi
           BODY=$(cat "$FILE")
           PAYLOAD=$(BODY="$BODY" python3 -c 'import os,json,sys; sys.stdout.write(json.dumps({"body": os.environ["BODY"]}))')
-          CID=$(gh api "repos/$REPO/issues/$PR/comments" --paginate \
-            --jq '.[] | select(.user.login == "github-actions[bot]") | select(.body | startswith("<!-- claude-code-review -->")) | .id' | head -n1)
-          if [ -n "${CID:-}" ]; then
-            printf '%s' "$PAYLOAD" | gh api -X PATCH "repos/$REPO/issues/comments/$CID" --input - --silent
-            echo "Updated review summary comment $CID."
-          else
-            printf '%s' "$PAYLOAD" | gh api -X POST "repos/$REPO/issues/$PR/comments" --input - --silent
-            echo "Created review summary comment."
-          fi
+          printf '%s' "$PAYLOAD" | gh api -X POST "repos/$REPO/issues/$PR/comments" --input - --silent
+          echo "Posted review verdict comment."
