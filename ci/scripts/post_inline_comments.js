@@ -1,21 +1,13 @@
 #!/usr/bin/env node
 /*
- * Deterministically posts one inline PR review comment per finding bullet in a
- * markdown report, instead of relying on a Claude agent to reliably call its own
- * inline-comment tool. Observed on a real run of the Claude Localization Reviewer workflow
- * (claude-localization-reviewer.yml): the report
- * correctly listed 2 findings with file:line references, the agent completed in far
- * fewer turns than usual, but created 0 inline comments despite the prompt explicitly
- * requiring one per finding — the requirement just isn't reliably honored by the model.
+ * Deterministically posts one inline PR review comment per finding bullet in a markdown
+ * report, instead of relying on a Claude agent to reliably call its own inline-comment tool.
  *
- * Generic by design so any Claude-based review workflow that writes a similarly-shaped
- * report can reuse it — it only assumes a section heading followed by bullets shaped
- * `- \`path:line\` — message`, nothing i18n-specific. Skips bullets that don't match
- * that shape (can't anchor an inline comment without a location — those still exist in
- * the report itself, just not inline), skips paths not in the PR's changed-file list
- * (GitHub rejects comments on files outside the diff), and de-dupes against existing
- * github-actions[bot] comments at the same path+line so re-runs on the same PR don't
- * repost duplicates on every push.
+ * Generic by design — any Claude review workflow with a similarly-shaped report can reuse
+ * it. Assumes a section heading followed by bullets shaped `- \`path:line\` — message`;
+ * skips bullets that don't match (no location to anchor to), skips paths not in the PR's
+ * changed-file list (GitHub rejects comments outside the diff), and de-dupes against
+ * existing github-actions[bot] comments at the same path+line.
  *
  * Usage:
  *   node ci/scripts/post_inline_comments.js

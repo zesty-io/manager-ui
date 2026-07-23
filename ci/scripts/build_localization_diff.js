@@ -1,29 +1,16 @@
 #!/usr/bin/env node
 /*
- * Builds the plain-text, i18n-relevant diff fed to Claude in the Claude Localization
- * Reviewer workflow (claude-localization-reviewer.yml), bounded to a byte budget so a huge PR
- * can't blow Claude's context/cost.
+ * Builds the plain-text, i18n-relevant diff fed to Claude in the Localization Reviewer
+ * workflow, bounded to a byte budget so a huge PR can't blow context/cost.
  *
- * GitHub's PR Files API returns files in plain path order — every public/locales/en-US/*
- * file, then es-ES, hi-IN, nl-NL, ru-RU, zh-CN, then src/* alphabetically by sub-app dir.
- * A naive "take the first N bytes of that order" truncation always exhausts itself on
- * whatever sorts first (en-US, then whichever sub-app dir is alphabetically earliest) and
- * never reaches the rest — not "reduced coverage," a total blind spot for the
- * missed-string and translation-quality checks on any PR whose relevant diff crosses the
- * cap. Confirmed on a real run: 0 of 503 source files and 0 of 4 non-English locales
- * (hi-IN/zh-CN/ru-RU/nl-NL) were ever seen (see the Claude Localization Reviewer workflow's
- * PR #4214 run).
+ * GitHub's Files API lists files in plain path order (locales/en-US first, then other
+ * locales, then src/* alphabetically) — taking the first N bytes of that order would
+ * exhaust the budget on whatever sorts first and miss everything else.
  *
- * Fix: prioritize in the order the three semantic checks matter — missed-strings (needs
- * source files) first, then formatting-rule violations and translation quality (both read
- * locale values, so they share the same content pool once we get to it). Source files get
- * first claim on the full byte budget; locale files only get whatever's left over. Within
- * each category, round-robin across groups instead of taking them in path order — sub-app
- * directory for source files, and *locale* (not namespace) for locale files, non-English
- * locales first since they serve both remaining checks while en-US only serves formatting.
- * An earlier version of this script grouped locale files by namespace instead, which just
- * moved the same bug down a level: it exhausted all 15 namespaces of es-ES before ever
- * reaching hi-IN.
+ * Instead: source files (missed-strings check) claim the budget first, then locale
+ * files get what's left. Within each, round-robin across groups (sub-app dir for
+ * source, locale for locale files) instead of path order, so the cap samples broadly
+ * instead of exhausting one group.
  *
  * Usage: node ci/scripts/build_localization_diff.js <pr_files.json> <maxBytes> > i18n-relevant.diff
  * Prints "TRUNCATED" to stderr as the last line iff the output was cut short.
@@ -121,7 +108,7 @@ function fillBudget(entries, byteBudget) {
 
 function main() {
   const [, , inputFile, maxBytesArg] = process.argv;
-  const maxBytes = Number(maxBytesArg) || 300000;
+  const maxBytes = Number(maxBytesArg) || 200000;
   const files = JSON.parse(fs.readFileSync(inputFile, "utf8"));
 
   const relevant = files
@@ -137,9 +124,8 @@ function main() {
     1
   );
 
-  // Waterfall, not a split: missed-strings (source files) claims the budget first: the
-  // other two checks only get whatever's left over, and may get nothing at all on a PR
-  // large enough that source changes alone exceed the cap.
+  // Waterfall: source files claim the budget first; locale files get whatever's left,
+  // possibly nothing on a PR large enough that source changes alone exceed the cap.
   const [srcText, srcTruncated] = fillBudget(srcEntries, maxBytes);
   const remaining = maxBytes - Buffer.byteLength(srcText, "utf8");
   const [localeText, localeTruncated] = fillBudget(localeEntries, remaining);

@@ -10,7 +10,7 @@
  *
  * Usage:
  *   node ci/scripts/check_localization_objective.js --changed-files <file> --tsc-output <file>
- *     --changed-files  text file, one repo-relative path per line (from `gh pr diff --name-only`)
+ *     --changed-files  text file, one repo-relative path per line (from the PR Files API)
  *     --tsc-output     text file capturing `npx tsc --noEmit --pretty false` output
  *
  * Writes i18n-objective-results.json to the current working directory and exits 0
@@ -103,8 +103,7 @@ function escapeRegExp(s) {
 // scanning for t()/i18n.t() calls. Without this, example code inside a comment —
 // e.g. `// child components use qualified keys (t("dashboard.key")) once it's in the
 // store` — gets matched as a real call and reported as a broken key reference, even
-// though nothing actually invokes it. Confirmed on a real PR: both of a run's "broken
-// key" findings turned out to be this exact pattern, not real bugs.
+// though nothing actually invokes it.
 function stripComments(text) {
   let stripped = text.replace(/\/\*[\s\S]*?\*\//g, (m) =>
     m.replace(/[^\n]/g, " ")

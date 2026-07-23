@@ -1,16 +1,11 @@
 name: Claude Localization Reviewer (TEST)
 
-# Dedicated localization gap check on every non-draft, same-repo PR into dev that touches
-# translatable source or locale files. Two layers:
-#   1. A plain deterministic script (ci/scripts/check_localization_objective.js) checks TypeScript
-#      errors (scoped to changed files), locale JSON validity, cross-locale key
-#      parity (CLDR-plural-aware), and broken t()/i18n.t() key references.
-#   2. Claude reviews the diff for what only language/intent can catch: new
-#      hardcoded user-facing strings that should be wired through t(), value-
-#      formatting-rule violations, and translation quality (grammar + genuine
-#      translation, not an untranslated English leak) in changed locale values.
-# Both layers post inline PR comments and one sticky summary comment grouped by
-# severity; the check fails on any confirmed finding from either layer.
+# Dedicated localization gap check for PRs into dev that touch source or locale files.
+#   1. ci/scripts/check_localization_objective.js: deterministic checks — TypeScript
+#      errors, locale JSON validity, cross-locale key parity, broken t()/i18n.t() refs.
+#   2. Claude reviews the diff for what only language/intent can catch: missed t()
+#      wiring, value-formatting violations, and translation quality.
+# Both post inline PR comments and one sticky summary comment; fails on any finding.
 
 on:
   pull_request:
@@ -45,10 +40,8 @@ jobs:
           PR: ${{ github.event.pull_request.number }}
         run: |
           set -euo pipefail
-          # `gh pr diff` hits GitHub's 300-file diff-media-type cap on large PRs (HTTP 406).
-          # The paginated PR Files API has no such limit. Fetch it ONCE here (with patches
-          # included) and cache it — the "Extract relevant diff" step reuses this file instead
-          # of hitting the API a second time for the same data.
+          # `gh pr diff` hits GitHub's 300-file diff cap on large PRs; the paginated Files
+          # API doesn't. Cache the result — "Extract relevant diff" reuses this file.
           gh api "repos/$REPO/pulls/$PR/files" --paginate > pr_files.json
           jq -r '.[].filename' pr_files.json > changed_files.txt
           if grep -qE '^src/.*\.(js|jsx|ts|tsx)$|^public/locales/' changed_files.txt; then
@@ -78,22 +71,15 @@ jobs:
         if: steps.changed.outputs.relevant == 'true'
         run: node ci/scripts/check_localization_objective.js --changed-files changed_files.txt --tsc-output tsc-output.txt
 
-      # Pre-filter + pre-fetch the diff so Claude only ever sees i18n-relevant files, as plain
-      # text (cheaper than JSON-escaped patches) — never the full PR diff. Bounded so a huge PR
-      # degrades with a loud warning instead of ballooning context/cost. Source files (the
-      # missed-string check) claim the budget first; locale files only get what's left over,
-      # round-robined across sub-app dirs / locales respectively (see ci/scripts/build_localization_diff.js)
-      # — a plain path-order truncation was found to always exhaust itself on
-      # public/locales/en-US/* first, leaving 0 of 503 source files and 0 of 4 non-English
-      # locales ever reviewed on a real large PR. 300KB (not 200KB) covers real PRs like #3784
-      # (144 files, 225KB relevant diff) that a smaller cap would truncate; it's still not enough
-      # for astronomical outlier PRs (600+ files), which fall back to a disclosed partial review.
+      # Plain-text, pre-filtered diff capped so a huge PR can't blow context/cost. Source
+      # files claim the budget first (missed-string check), then locale files get what's
+      # left, round-robined across sub-apps/locales — see ci/scripts/build_localization_diff.js.
       - name: Extract relevant diff
         id: diff
         if: steps.changed.outputs.relevant == 'true'
         run: |
           set -euo pipefail
-          node ci/scripts/build_localization_diff.js pr_files.json 300000 > i18n-relevant.diff 2> diff-stderr.txt
+          node ci/scripts/build_localization_diff.js pr_files.json 200000 > i18n-relevant.diff 2> diff-stderr.txt
           cat diff-stderr.txt
           if grep -q "TRUNCATED" diff-stderr.txt; then
             echo "::warning::i18n-relevant.diff was truncated to fit the review budget."
@@ -218,8 +204,7 @@ jobs:
           echo "verdict=${VERDICT:-}" >> "$GITHUB_OUTPUT"
 
       # Deterministic instead of relying on Claude to reliably call an inline-comment tool
-      # itself — observed skipping that step entirely on a real run despite an explicit
-      # per-finding instruction. Reusable: see ci/scripts/post_inline_comments.js.
+      # itself. Reusable: see ci/scripts/post_inline_comments.js.
       - name: Post inline comments for Blocking findings
         if: always() && steps.changed.outputs.relevant == 'true' && steps.i18n.outputs.no_report != 'true'
         env:
