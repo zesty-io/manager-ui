@@ -112,7 +112,9 @@ export default function Metrics() {
           </Button>
         </ButtonGroup>
 
-        <h1 className={styles.subheadline}>Zesty.io Usage Report </h1>
+        <h1 className={styles.subheadline}>
+          Zesty.io {t("reports.usageReport")}
+        </h1>
       </section>
 
       <WithLoader

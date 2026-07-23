@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Box,
   InputLabel,
@@ -32,12 +33,13 @@ export const SelectBlockGroupInput = ({
   onGroupZUIDChange,
   showGroupNameError,
 }: SelectBlockGroupInputProps) => {
+  const { t } = useTranslation();
   const { data: groups } = useGetGroupsQuery();
 
   return (
     <Box>
       <InputLabel>
-        Block Group
+        {t("schema.blockGroup")}
         <Tooltip
           placement="top"
           title="Add your block model to an existing group"

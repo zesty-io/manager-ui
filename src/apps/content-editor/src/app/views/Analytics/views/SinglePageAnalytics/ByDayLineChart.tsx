@@ -249,28 +249,28 @@ export const ByDayLineChart = ({
               color="inherit"
               onClick={() => setType(0)}
             >
-              Views
+              {t(typeLabelMap[0])}
             </Button>
             <Button
               variant={type === 1 ? "contained" : "outlined"}
               color="inherit"
               onClick={() => setType(1)}
             >
-              Avg. Engagement Time
+              {t(typeLabelMap[1])}
             </Button>
             <Button
               variant={type === 2 ? "contained" : "outlined"}
               color="inherit"
               onClick={() => setType(2)}
             >
-              Bounce Rate
+              {t(typeLabelMap[2])}
             </Button>
             <Button
               variant={type === 3 ? "contained" : "outlined"}
               color="inherit"
               onClick={() => setType(3)}
             >
-              Users
+              {t(typeLabelMap[3])}
             </Button>
           </ButtonGroup>
         )}
@@ -595,8 +595,10 @@ export const ByDayLineChart = ({
                     )
                   }
                 >
-                  View Version{" "}
-                  {itemPublishesByDayArray[tooltipModel?.dataIndex]?.version}
+                  {t("content.analyticsViewVersion", {
+                    version:
+                      itemPublishesByDayArray[tooltipModel?.dataIndex]?.version,
+                  })}
                 </Button>
               ) : null}
             </Box>

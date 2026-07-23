@@ -1522,7 +1522,7 @@ export const StudioWrapper = () => {
           fullWidth
           onClick={returnToInspector}
         >
-          Back to Element
+          {t("content.studioBackToElement")}
         </Button>
       ) : filteredFieldName ? (
         <Button

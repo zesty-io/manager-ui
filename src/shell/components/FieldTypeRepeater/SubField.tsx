@@ -582,7 +582,7 @@ export const SubField = memo(
             component={RouterLink}
             to={`/schema/${modelZUID}/field/${repeaterFieldItemZUID}`}
           >
-            Failed loading {field.label} field. Click here to view field schema.
+            {t("shell.repeaterFieldLoadFailed", { label: field.label })}
           </Link>
         );
         break;

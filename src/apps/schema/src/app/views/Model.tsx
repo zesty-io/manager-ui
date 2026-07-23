@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Box, Button } from "@mui/material";
 import { Redirect, Route, Switch, useParams, useHistory } from "react-router";
 import { FieldList } from "../components/FieldList";
@@ -15,6 +16,7 @@ type Params = {
   id: string;
 };
 export const Model = () => {
+  const { t } = useTranslation();
   const [isAddFieldModalOpen, setAddFieldModalOpen] = useState(false);
   const [sortIndex, setSortIndex] = useState<number | null>(null);
   const history = useHistory();
@@ -43,7 +45,7 @@ export const Model = () => {
             variant="contained"
             onClick={() => history.push("/schema")}
           >
-            Go to All Models
+            {t("schema.goToAllModels")}
           </Button>
         }
       />

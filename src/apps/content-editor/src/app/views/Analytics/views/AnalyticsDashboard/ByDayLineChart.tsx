@@ -1,5 +1,6 @@
 import { theme } from "@zesty-io/material";
 import { useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Line } from "react-chartjs-2";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import {
@@ -45,6 +46,7 @@ export const ByDayLineChart = ({
   data,
   loading = true,
 }: Props) => {
+  const { t } = useTranslation();
   const chartRef = useRef<any>(null);
   const [tooltipModel, setTooltipModel] = useState<any>(null);
   const [isTooltipEntered, setIsTooltipEntered] = useState(false);
@@ -215,7 +217,7 @@ export const ByDayLineChart = ({
       >
         <Box sx={{ p: 2 }}>
           <Typography variant="body1" fontWeight={600}>
-            Sessions
+            {t("content.analyticsMetricSessions")}
           </Typography>
           <Typography variant="body1" color="text.secondary" sx={{ mt: 0.5 }}>
             {formatLocalized(
