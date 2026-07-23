@@ -33,9 +33,7 @@ export const ComingSoon = () => {
           control={<Checkbox disabled />}
           label={
             <>
-              <Typography variant="body2">
-                {t("schema.defaultValue")}
-              </Typography>
+              <Typography variant="body2">I am a hardcoded string</Typography>
               <Typography variant="body3" color="text.secondary">
                 {t("schema.defaultValueDescription")}
               </Typography>
