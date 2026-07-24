@@ -4,7 +4,7 @@ export function languages(state = [], action) {
   switch (action.type) {
     case "LOADED_LOCAL_LANGUAGES":
     case "FETCH_LANGUAGES_SUCCESS":
-      return action.payload;
+      return Array.isArray(action.payload) ? action.payload : state;
     default:
       return state;
   }

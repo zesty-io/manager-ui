@@ -47,9 +47,9 @@ export const useSearchBlocksByKeyword = ({
   const languages: Language[] = useSelector(
     (state: AppState) => state?.languages
   );
-  const defaultLanguage = languages?.find(
-    (lang: Language) => lang?.default && lang?.active
-  );
+  const defaultLanguage = Array.isArray(languages)
+    ? languages.find((lang: Language) => lang?.default && lang?.active)
+    : undefined;
 
   const models = useSelector((state: AppState) => state?.models);
   const contents = useSelector((state: AppState) => state?.content);
@@ -68,8 +68,9 @@ export const useSearchBlocksByKeyword = ({
 
   const languageMap = useMemo<LanguageMap>(
     () =>
-      !!languages?.length &&
-      Object.fromEntries(languages?.map((lang) => [lang?.ID, lang])),
+      Array.isArray(languages) &&
+      !!languages.length &&
+      Object.fromEntries(languages.map((lang) => [lang?.ID, lang])),
     [languages]
   );
 
@@ -96,7 +97,9 @@ export const useSearchBlocksByKeyword = ({
     }
 
     const blockModelZUIDs = new Set(blocks.map((block) => block?.ZUID));
-    const validLangIDs = new Set(languages.map((lang) => lang?.ID));
+    const validLangIDs = new Set(
+      Array.isArray(languages) ? languages.map((lang) => lang?.ID) : []
+    );
 
     return contentItems.filter(
       (content: ContentItem) =>
