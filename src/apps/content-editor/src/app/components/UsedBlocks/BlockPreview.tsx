@@ -104,6 +104,7 @@ export const BlockPreview = ({
           <IconButton
             data-cy="EditBlock"
             size="small"
+            disabled={isLoadingBlockModel}
             onClick={() =>
               history.push(
                 `/blocks/${variantData?.meta?.contentModelZUID}/${variantData?.meta?.ZUID}`
