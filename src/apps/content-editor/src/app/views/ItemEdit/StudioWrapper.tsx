@@ -28,6 +28,7 @@ import Editor from "../../components/Editor/Editor";
 import { FieldError } from "../../components/Editor/FieldError";
 import { PendingEditsModal } from "../../components/PendingEditsModal";
 import { DirtyCodeModal } from "../../../../../../shell/components/DirtyCodeModal";
+import { ResizableContainer } from "../../../../../../shell/components/ResizeableContainer";
 import contentOneLogoOnly from "../../../../../../../public/images/contentOneLogoOnly.webp";
 import contentOneLogo from "../../../../../../../public/images/contentOneLogo.webp";
 import {
@@ -1170,6 +1171,7 @@ export const StudioWrapper = () => {
     resetTree: resetLayersTree,
     toggleNode: toggleLayersNode,
     handleNodeSelect: handleLayersNodeSelect,
+    openInspectorForLayoutElement,
     canDrop: canDropLayersNode,
     handleNodeDrop: handleLayersNodeDrop,
   } = useStudioLayersTree({
@@ -1195,6 +1197,22 @@ export const StudioWrapper = () => {
     }
   }, [isNavigating, isRefreshing, resetLayersTree]);
 
+  // Canvas layout selection (bridge mousedown/dblclick) selects the element
+  // AND opens its Inspector panel, mirroring a click on its layers-tree row.
+  const handleBridgeLayoutSelection = useCallback(
+    (next: {
+      codeId?: string;
+      layoutId?: string;
+      breadcrumb?: LayoutBreadcrumbItem[];
+    }) => {
+      applyLayoutSelection(next);
+      if (next.codeId && next.layoutId) {
+        openInspectorForLayoutElement(next.codeId, next.layoutId);
+      }
+    },
+    [applyLayoutSelection, openInspectorForLayoutElement]
+  );
+
   const { handlePreviewLoad } = useStudioBridge({
     dispatch,
     interactionMode,
@@ -1204,7 +1222,7 @@ export const StudioWrapper = () => {
     handleReorderOutput,
     handleLayoutContentUpdate,
     handleLayersTree,
-    applyLayoutSelection,
+    applyLayoutSelection: handleBridgeLayoutSelection,
     clearLayoutSelection,
     applySelection: applyBridgeSelection,
     fieldNameByZuid,
@@ -1545,15 +1563,23 @@ export const StudioWrapper = () => {
             logoSrc={contentOneLogoOnly}
           />
           <Box display="flex" flex="1" minHeight={0} width="100%">
-            <StudioLayersPanel
-              hasTree={hasLayersTree}
-              flatRows={layersFlatRows}
-              selectedNodeId={selectedLayersNodeId}
-              onToggle={toggleLayersNode}
-              onSelect={handleLayersNodeSelect}
-              canDrop={canDropLayersNode}
-              onDrop={handleLayersNodeDrop}
-            />
+            <ResizableContainer
+              id="studioLayersPanel"
+              defaultWidth={220}
+              minWidth={220}
+              maxWidth={400}
+              collapsible={false}
+            >
+              <StudioLayersPanel
+                hasTree={hasLayersTree}
+                flatRows={layersFlatRows}
+                selectedNodeId={selectedLayersNodeId}
+                onToggle={toggleLayersNode}
+                onSelect={handleLayersNodeSelect}
+                canDrop={canDropLayersNode}
+                onDrop={handleLayersNodeDrop}
+              />
+            </ResizableContainer>
             <StudioPreview
               iframeRef={iframeRef}
               iframeSrc={iframeSrc}
