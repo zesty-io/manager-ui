@@ -1,13 +1,24 @@
+import { API_ENDPOINTS } from "../../support/api";
+
 describe("Studio Freestyle Alert", () => {
   let studioPath = "/";
   let itemZUID = "";
   let modelZUID = "";
+  let webViews = [];
 
   before(() => {
     cy.task("seed:content", "fixtures/studio.json").then(({ items }) => {
       itemZUID = items[0].meta.ZUID;
       modelZUID = items[0].meta.contentModelZUID;
       studioPath = `/${items[0].web.pathPart}`;
+    });
+
+    // Snapshot the instance's real views once so the stub below can replay them
+    // verbatim rather than proxying to the upstream API per request.
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      webViews = data || [];
     });
   });
 
@@ -18,18 +29,26 @@ describe("Studio Freestyle Alert", () => {
   // A Freestyle-built layout is identified by a per-item view file at
   // /z/pvl/<itemZUID>.zhtml. Rather than create (and have to clean up) a real
   // view file on the dev instance — which would also change how the page
-  // actually renders — append a synthetic entry to the web views response.
+  // actually renders — serve the real view list plus a synthetic entry.
+  //
+  // This replies directly instead of proxying with req.continue: the "Edit in
+  // Freestyle" test navigates away mid-flight, and an aborted upstream request
+  // fails the test outright when a response callback is attached.
   const stubFreestyleView = () => {
     cy.intercept({ method: "GET", url: "**/web/views*" }, (req) => {
-      req.continue((res) => {
-        if (Array.isArray(res.body?.data)) {
-          res.body.data.push({
-            ZUID: "11-freestyle-pvl-view",
-            fileName: `/z/pvl/${itemZUID}.zhtml`,
-            type: "templateset",
-            version: 1,
-          });
-        }
+      req.reply({
+        statusCode: 200,
+        body: {
+          data: [
+            ...webViews,
+            {
+              ZUID: "11-freestyle-pvl-view",
+              fileName: `/z/pvl/${itemZUID}.zhtml`,
+              type: "templateset",
+              version: 1,
+            },
+          ],
+        },
       });
     }).as("webViews");
   };
