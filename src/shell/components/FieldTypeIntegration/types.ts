@@ -73,4 +73,5 @@ export type ConfigProps = {
   isRequired?: boolean;
   description?: string;
   placeholder?: string;
+  toolTip?: string;
 };
