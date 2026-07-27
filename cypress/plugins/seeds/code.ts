@@ -9,14 +9,17 @@ const STYLESHEET_TYPES = ["text/css", "text/less", "text/scss", "text/sass"];
 module.exports = function code(config) {
   const { getSDK } = require("./utils");
 
-  async function seedCode(path: string): Promise<SeedCodeTask> {
+  async function seedCode(
+    path: string,
+    overrides: Record<string, any> = {}
+  ): Promise<SeedCodeTask> {
     const jsonString = readFileSync(join(__dirname, "../../", path), "utf8");
     const json = JSON.parse(jsonString);
 
     const sdk = await getSDK(config);
     const timeStamp = Date.now();
     const filename = `/__e2e__/${config.env.COMMIT_ID}/${timeStamp} | ${json.filename}`;
-    const payload = { ...json, filename };
+    const payload = { ...json, ...overrides, filename };
 
     if (json.type === "text/javascript") {
       const res = await fetch(`${config.env.API_INSTANCE_URL}/web/scripts`, {
@@ -61,6 +64,16 @@ module.exports = function code(config) {
 
   // CODE TASK MAPPING
   return {
-    "seed:code": (path: string) => seedCode(path),
+    // Accepts either a plain fixture path (existing call sites) or
+    // `{ path, overrides }` when a caller needs to merge in values that can
+    // only be known at test run time (e.g. a freshly-created contentModelZUID).
+    "seed:code": (
+      args: string | { path: string; overrides?: Record<string, any> }
+    ) => {
+      if (typeof args === "string") {
+        return seedCode(args);
+      }
+      return seedCode(args.path, args.overrides);
+    },
   };
 };
