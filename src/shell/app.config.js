@@ -49,6 +49,8 @@ module.exports = {
     MARKETING_INSTANCE_DOMAIN: "https://www.zesty.io/",
     MARKETING_ANNOUNCEMENT_MODEL_ZUID: "6-90fbdcadfc-4lc0s5",
     AMPLITUDE_API_KEY: "7054515be52d21916740cd82f5a00d2b",
+    SLACK_FEEDBACK_EMAIL:
+      "studio-feedback-aaaavjybr6vbajheqdowljikbe@zesty-io.slack.com,bobby@content.one",
   },
   stage: {
     VERSION: pkg.version,
@@ -96,6 +98,8 @@ module.exports = {
     MARKETING_INSTANCE_DOMAIN: "https://kfg6bckb-dev.preview.stage.zesty.io/",
     MARKETING_ANNOUNCEMENT_MODEL_ZUID: "6-90fbdcadfc-4lc0s5",
     AMPLITUDE_API_KEY: "7054515be52d21916740cd82f5a00d2b",
+    SLACK_FEEDBACK_EMAIL:
+      "studio-feedback-aaaavjybr6vbajheqdowljikbe@zesty-io.slack.com,bobby@content.one",
   },
   development: {
     VERSION: pkg.version,
@@ -145,6 +149,8 @@ module.exports = {
     MARKETING_INSTANCE_DOMAIN: "https://kfg6bckb-dev.preview.stage.zesty.io/",
     MARKETING_ANNOUNCEMENT_MODEL_ZUID: "6-90fbdcadfc-4lc0s5",
     AMPLITUDE_API_KEY: "7054515be52d21916740cd82f5a00d2b",
+    SLACK_FEEDBACK_EMAIL:
+      "studio-feedback-aaaavjybr6vbajheqdowljikbe@zesty-io.slack.com,bobby@content.one",
   },
   local: {
     VERSION: pkg.version,
@@ -191,5 +197,7 @@ module.exports = {
     MARKETING_INSTANCE_DOMAIN: "https://kfg6bckb-dev.preview.stage.zesty.io/",
     MARKETING_ANNOUNCEMENT_MODEL_ZUID: "6-90fbdcadfc-4lc0s5",
     AMPLITUDE_API_KEY: "",
+    SLACK_FEEDBACK_EMAIL:
+      "studio-feedback-aaaavjybr6vbajheqdowljikbe@zesty-io.slack.com,bobby@content.one",
   },
 };

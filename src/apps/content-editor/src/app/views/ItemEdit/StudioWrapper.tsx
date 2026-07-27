@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { MemoryRouter, useHistory, useLocation } from "react-router";
 import { cloneDeep } from "lodash";
 import { AppState } from "../../../../../../shell/store/types";
+import instanceZUID from "../../../../../../utility/instanceZUID";
 import {
   fetchAllModelPublishings,
   fetchItem,
@@ -42,6 +43,7 @@ import {
   useUpdateWebViewMutation,
 } from "../../../../../../shell/services/instance";
 import { StudioHeader } from "./components/StudioWrapper/StudioHeader";
+import { StudioFeedbackModal } from "./components/StudioWrapper/StudioFeedbackModal";
 import { StudioPreview } from "./components/StudioWrapper/StudioPreview";
 import { StudioSidePanel } from "./components/StudioWrapper/StudioSidePanel";
 import { StudioInspectorPanel } from "./components/StudioWrapper/StudioInspectorPanel";
@@ -99,6 +101,7 @@ export const StudioWrapper = () => {
   const currentHoverStudioIdRef = useRef<string | null>(null);
   const [showPendingLayoutModal, setShowPendingLayoutModal] = useState(false);
   const [showSaveChangesModal, setShowSaveChangesModal] = useState(false);
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [interactionMode, setInteractionMode] =
     useState<InteractionMode>("content");
   const [studioSaving, setStudioSaving] = useState(false);
@@ -146,6 +149,7 @@ export const StudioWrapper = () => {
   const contentItems = useSelector((state: AppState) => state.content);
   const modelsState = useSelector((state: AppState) => state.models);
   const fieldsState = useSelector((state: AppState) => state.fields);
+  const userEmail = useSelector((state: AppState) => state.user.email);
   const { data: webViews = [] } = useGetWebViewsQuery({ status: "dev" });
   const [updateWebView] = useUpdateWebViewMutation();
   const [publishWebView] = usePublishWebViewMutation();
@@ -1561,6 +1565,7 @@ export const StudioWrapper = () => {
             pageItemZUID={pageItemZUID}
             unresolvedPath={unresolvedPath}
             logoSrc={contentOneLogoOnly}
+            onFeedbackClick={() => setShowFeedbackModal(true)}
           />
           <Box display="flex" flex="1" minHeight={0} width="100%">
             <ResizableContainer
@@ -1731,6 +1736,15 @@ export const StudioWrapper = () => {
           />
         </Paper>
       </Modal>
+      <StudioFeedbackModal
+        open={showFeedbackModal}
+        onClose={() => setShowFeedbackModal(false)}
+        email={userEmail}
+        instanceZUID={instanceZUID}
+        pageModelZUID={pageModelZUID}
+        pageItemZUID={pageItemZUID}
+        interactionMode={interactionMode}
+      />
       {imageEditState && (
         <MemoryRouter>
           <Dialog

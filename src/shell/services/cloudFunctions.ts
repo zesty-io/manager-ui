@@ -83,6 +83,22 @@ export const cloudFunctionsApi = createApi({
         };
       },
     }),
+    sendEmail: builder.mutation<
+      any,
+      {
+        to: string;
+        subject: string;
+        body: string;
+      }
+    >({
+      query: (body) => {
+        return {
+          url: `sendEmail`,
+          method: "POST",
+          body,
+        };
+      },
+    }),
   }),
 });
 
@@ -95,4 +111,5 @@ export const {
   useDownloadCsvQuery,
   useLazyDownloadCsvQuery,
   useGetExternalApiMutation,
+  useSendEmailMutation,
 } = cloudFunctionsApi;

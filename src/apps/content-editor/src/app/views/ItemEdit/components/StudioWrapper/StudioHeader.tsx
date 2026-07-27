@@ -1,6 +1,6 @@
 import AutoAwesomeMosaicRoundedIcon from "@mui/icons-material/AutoAwesomeMosaicRounded";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
-import { Box, Chip, Switch } from "@mui/material";
+import { Box, Button, Chip, Switch } from "@mui/material";
 import { alpha, styled } from "@mui/material/styles";
 import { LanguageSelector } from "../ItemEditHeader/LanguageSelector";
 
@@ -19,6 +19,7 @@ type StudioHeaderProps = {
   pageItemZUID: string;
   unresolvedPath: boolean;
   logoSrc: string;
+  onFeedbackClick: () => void;
 };
 
 const StudioModeSwitch = styled(Switch)(({ theme }) => ({
@@ -91,6 +92,7 @@ export const StudioHeader = ({
   pageItemZUID,
   unresolvedPath,
   logoSrc,
+  onFeedbackClick,
 }: StudioHeaderProps) => {
   const [codeIdSegment, ...pathSegments] = selectedLayoutBreadcrumb;
 
@@ -192,6 +194,15 @@ export const StudioHeader = ({
         ) : null}
       </Box>
       <Box display="flex" alignItems="center" gap={1.5}>
+        <Button
+          data-cy="StudioFeedbackButton"
+          color="inherit"
+          size="small"
+          onClick={onFeedbackClick}
+          sx={{ fontWeight: 500 }}
+        >
+          Feedback
+        </Button>
         <Box minWidth={96}>
           <LanguageSelector
             modelZUIDOverride={pageModelZUID}
