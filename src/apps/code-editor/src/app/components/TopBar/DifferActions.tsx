@@ -1,4 +1,4 @@
-import { memo, useState, useEffect } from "react";
+import { memo, useState, useEffect, HTMLAttributes } from "react";
 
 import { useHistory } from "react-router";
 import { Select, Button, MenuItem, Box, Typography } from "@mui/material";
@@ -34,6 +34,17 @@ interface FileVersion {
   status: string;
   createdAt: string;
 }
+
+// MUI's `SelectDisplayProps` type (`React.HTMLAttributes<HTMLDivElement>`) has
+// no `data-*` index signature, so a `data-cy` object literal fails the excess
+// property check when assigned inline. Declaring it as a typed constant first
+// avoids that (structural typing still allows the extra property).
+const codeOneSelectDisplayProps = {
+  "data-cy": "code-app-differ-version-select-one",
+} as HTMLAttributes<HTMLDivElement>;
+const codeTwoSelectDisplayProps = {
+  "data-cy": "code-app-differ-version-select-two",
+} as HTMLAttributes<HTMLDivElement>;
 
 export const DifferActions = memo(function DifferActions(
   props: DifferActionsProps
@@ -193,6 +204,7 @@ export const DifferActions = memo(function DifferActions(
             }}
           >
             <Select
+              SelectDisplayProps={codeOneSelectDisplayProps}
               id="codeOne"
               name="codeOne"
               defaultValue="local"
@@ -226,6 +238,7 @@ export const DifferActions = memo(function DifferActions(
             <EastIcon fontSize="small" />
 
             <Select
+              SelectDisplayProps={codeTwoSelectDisplayProps}
               id="codeTwo"
               name="codeTwo"
               value={selectedVersion}
@@ -251,6 +264,7 @@ export const DifferActions = memo(function DifferActions(
           {props.synced ? (
             <>
               <Button
+                data-cy="code-app-differ-load-version-button"
                 variant="contained"
                 color="success"
                 size="small"
@@ -274,6 +288,7 @@ export const DifferActions = memo(function DifferActions(
             </>
           ) : (
             <Button
+              data-cy="code-app-differ-save-version-button"
               variant="contained"
               loadingPosition="start"
               size="small"

@@ -227,6 +227,7 @@ const TopBar = memo(function TopBar(props: TopBarProps) {
                     placement="bottom"
                   >
                     <IconButton
+                      data-cy="code-app-diff-versions-button"
                       size="small"
                       sx={{ color: "grey.400" }}
                       onClick={() => {
@@ -324,6 +325,7 @@ const MoreOptions = (props: MoreOptionsProps) => {
   return (
     <>
       <IconButton
+        data-cy="code-app-more-options-button"
         size="small"
         sx={{ color: "grey.400" }}
         id="more-options"
@@ -355,6 +357,7 @@ const MoreOptions = (props: MoreOptionsProps) => {
       >
         <MenuList>
           <MenuItem
+            data-cy="code-app-delete-file-menuitem"
             onClick={() => {
               handleClose();
               props.openDeleteDialog();
