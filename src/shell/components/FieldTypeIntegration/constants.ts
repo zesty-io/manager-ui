@@ -118,6 +118,7 @@ const ITEM_ID: ConfigProps = {
   type: "text",
   isRequired: true,
   placeholderKey: "shell.selectPlaceholder",
+  toolTipKey: "shell.integrationItemIdToolTip",
 };
 
 const HEADING: ConfigProps = {

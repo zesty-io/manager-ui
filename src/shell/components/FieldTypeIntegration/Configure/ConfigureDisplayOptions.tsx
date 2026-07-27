@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Button,
@@ -69,12 +69,8 @@ const ConfigureDisplayOptions = ({
   );
   const [isCompleted, setIsCompleted] = useState<boolean>(false);
 
-  const handleSave = () => {
-    onSave();
-  };
-
   const handleRemoveDetail = (index: number) => {
-    if (detailsPathData.length === 1) {
+    if (detailsPathData?.length === 1) {
       setDetailsPathData([""]);
       lastDetailRef.current?.focus();
       return;
@@ -130,6 +126,34 @@ const ConfigureDisplayOptions = ({
     }
     setIsCompleted(completed);
   }, [displayConfig, rootPathData, detailsPathData, rootPath]);
+
+  // Heuristic only: flags duplicate Item ID values in the sampled response.
+  // Absence of a warning does not guarantee the keyPath is unique — see #4091.
+  const itemIdDuplicateWarning = useMemo(() => {
+    const itemIdPath = rootPathData.itemId;
+    if (!itemIdPath || !apiData) return null;
+
+    const data = (!rootPath ? apiData : get(apiData, rootPath)) || [];
+    if (!Array.isArray(data) || data.length < 2) return null;
+
+    const idValueCounts = new Map<unknown, number>();
+    data.forEach((item: object) => {
+      const idValue = get(item, itemIdPath);
+      if (idValue !== undefined) {
+        idValueCounts.set(idValue, (idValueCounts.get(idValue) ?? 0) + 1);
+      }
+    });
+
+    const hasDuplicates = Array.from(idValueCounts.values()).some(
+      (count) => count > 1
+    );
+    if (!hasDuplicates) return null;
+
+    return t("shell.integrationItemIdNotUniqueWarning", {
+      itemIdPath,
+      count: data.length,
+    });
+  }, [apiData, rootPath, rootPathData.itemId, t]);
 
   return (
     <FormWrapper height="calc(100vh - 40px)" width="1200px">
@@ -191,7 +215,7 @@ const ConfigureDisplayOptions = ({
               </Typography>
             </Box>
 
-            {apiPathOptions.length > 0 && (
+            {apiPathOptions?.length > 0 && (
               <>
                 <FieldWrapper label={t("shell.integrationDataPath")} isRequired>
                   <KeyPathSelector
@@ -220,7 +244,7 @@ const ConfigureDisplayOptions = ({
               gap={1.5}
               data-cy="integrationConfigureOptionKeyPathContainer"
             >
-              {rootPathOptions.length > 0 &&
+              {rootPathOptions?.length > 0 &&
                 displayConfig.map((config: ConfigProps) => (
                   <FieldWrapper
                     key={config.name}
@@ -229,6 +253,15 @@ const ConfigureDisplayOptions = ({
                       config.descriptionKey && t(config.descriptionKey)
                     }
                     isRequired={true}
+                    toolTip={config.toolTipKey && t(config.toolTipKey)}
+                    warning={
+                      config.name === "itemId" ? itemIdDuplicateWarning : null
+                    }
+                    warningTestId={
+                      config.name === "itemId"
+                        ? "integrationItemIdDuplicateWarning"
+                        : undefined
+                    }
                   >
                     {config.type === "option" ? (
                       <Box
@@ -408,8 +441,8 @@ const ConfigureDisplayOptions = ({
           data-cy="integrationConfigureDisplayOptionsDoneButton"
           variant="contained"
           startIcon={<CheckRounded />}
-          disabled={!isCompleted}
-          onClick={handleSave}
+          disabled={!isCompleted || !!itemIdDuplicateWarning}
+          onClick={onSave}
         >
           {t("common.done")}
         </Button>

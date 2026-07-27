@@ -274,6 +274,8 @@
   "integrationInvalidResponseFormatDescription": "La API se conectó, pero su respuesta no se puede usar para configurar este campo.",
   "integrationInvalidUrlHelper": "Ingresa una URL válida, p. ej. https://api.example.org/items.json",
   "integrationItemId": "ID del elemento",
+  "integrationItemIdNotUniqueWarning": "\"{{itemIdPath}}\" no es único entre los {{count}} elementos de muestra — esto puede hacer que las selecciones se reconozcan de forma incorrecta.",
+  "integrationItemIdToolTip": "Elige un valor que la API garantice que sea único para cada elemento (por ejemplo, un ID de base de datos), no uno que solo parezca único en una muestra pequeña. Un ID de elemento no único puede hacer que las selecciones se reconozcan de forma incorrecta.",
   "integrationItemPreview": "Vista previa del elemento",
   "integrationItemPreviewDescription": "Cómo verán los elementos los editores de contenido",
   "integrationKey": "Clave",

@@ -272,6 +272,8 @@
   "integrationInvalidResponseFormatDescription": "API 已连接，但其响应无法用于配置此字段。",
   "integrationInvalidUrlHelper": "请输入有效的 URL，例如 https://api.example.org/items.json",
   "integrationItemId": "项目 ID",
+  "integrationItemIdNotUniqueWarning": "\"{{itemIdPath}}\" 在抽样的 {{count}} 个项目中并不唯一 — 这可能导致选择被错误识别。",
+  "integrationItemIdToolTip": "请选择一个 API 保证对每个项目都唯一的值（例如数据库 ID），而不是仅在小样本中看起来唯一的值。项目 ID 不唯一可能导致选择被错误识别。",
   "integrationItemPreview": "项目预览",
   "integrationItemPreviewDescription": "项目将如何呈现给内容编辑者",
   "integrationKey": "键",

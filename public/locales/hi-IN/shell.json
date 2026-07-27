@@ -273,6 +273,8 @@
   "integrationInvalidResponseFormatDescription": "API कनेक्ट हो गया, लेकिन इसकी प्रतिक्रिया का उपयोग इस फ़ील्ड को कॉन्फ़िगर करने के लिए नहीं किया जा सकता।",
   "integrationInvalidUrlHelper": "कृपया मान्य URL दर्ज करें, जैसे https://api.example.org/items.json",
   "integrationItemId": "आइटम ID",
+  "integrationItemIdNotUniqueWarning": "\"{{itemIdPath}}\" नमूने के {{count}} आइटम में अद्वितीय नहीं है — इससे चयन गलत तरीके से पहचाने जा सकते हैं।",
+  "integrationItemIdToolTip": "ऐसा मान चुनें जिसे API हर आइटम के लिए अद्वितीय होने की गारंटी देता है (जैसे, एक डेटाबेस ID), न कि ऐसा मान जो केवल छोटे नमूने में अद्वितीय दिखता हो। गैर-अद्वितीय आइटम ID के कारण चयन गलत तरीके से पहचाने जा सकते हैं।",
   "integrationItemPreview": "आइटम पूर्वावलोकन",
   "integrationItemPreviewDescription": "कंटेंट एडिटर्स को आइटम कैसे दिखाई देंगे",
   "integrationKey": "कुंजी",

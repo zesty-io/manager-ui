@@ -82,7 +82,11 @@ const KeyPathSelector = ({
         const { key, ...otherProps } = props;
 
         return (
-          <li key={key} {...otherProps}>
+          <li
+            key={key}
+            {...otherProps}
+            data-cy={`integrationKeyPathOption-${option}`}
+          >
             <Box
               display="flex"
               alignItems="center"

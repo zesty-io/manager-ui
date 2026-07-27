@@ -118,15 +118,13 @@ export const getErrorMessage = ({
     if (
       validate.includes("length") &&
       maxLength &&
-      value &&
-      value.length > maxLength
+      (value as string)?.length > maxLength
     ) {
       return i18n.t("schema.errorShortenToLess", {
         maxLength,
         currentLength: value.length,
       });
     }
-
     // check for reserved field names
     if (RESERVED_FIELD_NAMES.includes(value)) {
       return i18n.t("schema.errorSystemReservedFieldName", { value });

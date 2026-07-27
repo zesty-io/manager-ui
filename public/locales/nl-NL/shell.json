@@ -273,6 +273,8 @@
   "integrationInvalidResponseFormatDescription": "De API is verbonden, maar het antwoord kan niet worden gebruikt om dit veld te configureren.",
   "integrationInvalidUrlHelper": "Voer een geldige URL in, bijv. https://api.example.org/items.json",
   "integrationItemId": "Item-ID",
+  "integrationItemIdNotUniqueWarning": "\"{{itemIdPath}}\" is niet uniek binnen de {{count}} steekproefitems — dit kan ertoe leiden dat selecties verkeerd worden herkend.",
+  "integrationItemIdToolTip": "Kies een waarde waarvan de API garandeert dat deze uniek is voor elk item (bijvoorbeeld een database-ID), niet slechts een waarde die uniek lijkt in een kleine steekproef. Een niet-unieke item-ID kan ertoe leiden dat selecties verkeerd worden herkend.",
   "integrationItemPreview": "Itemvoorbeeld",
   "integrationItemPreviewDescription": "Hoe items aan contenteditors worden weergegeven",
   "integrationKey": "Sleutel",

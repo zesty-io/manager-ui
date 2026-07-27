@@ -275,6 +275,8 @@
   "integrationInvalidResponseFormatDescription": "API подключён, но его ответ нельзя использовать для настройки этого поля.",
   "integrationInvalidUrlHelper": "Введите допустимый URL, например https://api.example.org/items.json",
   "integrationItemId": "ID элемента",
+  "integrationItemIdNotUniqueWarning": "\"{{itemIdPath}}\" не уникален среди {{count}} выбранных элементов — это может привести к неправильному распознаванию выбора.",
+  "integrationItemIdToolTip": "Выберите значение, уникальность которого для каждого элемента гарантирует API (например, ID базы данных), а не значение, которое просто выглядит уникальным на небольшой выборке. Неуникальный ID элемента может привести к неправильному распознаванию выбора.",
   "integrationItemPreview": "Предпросмотр элемента",
   "integrationItemPreviewDescription": "Как элементы будут отображаться для редакторов контента",
   "integrationKey": "Ключ",

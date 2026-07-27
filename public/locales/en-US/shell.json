@@ -273,6 +273,8 @@
   "integrationInvalidResponseFormatDescription": "The API connected, but its response can't be used to configure this field.",
   "integrationInvalidUrlHelper": "Please enter a valid URL. e.g. https://api.example.org/items.json",
   "integrationItemId": "Item ID",
+  "integrationItemIdNotUniqueWarning": "\"{{itemIdPath}}\" is not unique across the {{count}} sampled items — this can cause selections to be recognized incorrectly.",
+  "integrationItemIdToolTip": "Choose a value the API guarantees is unique for every item (e.g. a database ID) — not just one that looks unique in a small sample. A non-unique Item ID can cause selections to be recognized incorrectly.",
   "integrationItemPreview": "Item Preview",
   "integrationItemPreviewDescription": "How the items will appear to content editors",
   "integrationKey": "Key",
