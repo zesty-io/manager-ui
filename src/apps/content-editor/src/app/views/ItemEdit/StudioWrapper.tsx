@@ -50,6 +50,7 @@ import {
   isTextReferenceableDatatype,
 } from "./components/StudioWrapper/studioFieldMeta";
 import { StudioLayersPanel } from "./components/StudioWrapper/StudioLayersPanel";
+import { StudioFreestyleAlert } from "./components/StudioWrapper/StudioFreestyleAlert";
 import {
   StudioSaveChange,
   StudioSaveChangesModal,
@@ -395,6 +396,33 @@ export const StudioWrapper = () => {
   const handleEditInManager = useCallback(() => {
     if (!pageModelZUID || !pageItemZUID) return;
     history.push(`/content/${pageModelZUID}/${pageItemZUID}`);
+  }, [pageModelZUID, pageItemZUID, history]);
+
+  // A layout built in Freestyle is backed by its own per-item view file rather
+  // than the model's shared template, so it is only editable in the Freestyle
+  // app. Same convention Content.js uses to find an item's Freestyle template.
+  const isFreestyleLayout = useMemo(
+    () =>
+      !!pageItemZUID &&
+      webViews.some(
+        (view) => view?.fileName === `/z/pvl/${pageItemZUID}.zhtml`
+      ),
+    [pageItemZUID, webViews]
+  );
+
+  const [freestyleAlertDismissed, setFreestyleAlertDismissed] = useState(false);
+
+  // Re-surface the notice whenever the preview moves to a different item — a
+  // dismissal applies to the page it was dismissed on, not the whole session.
+  useEffect(() => {
+    setFreestyleAlertDismissed(false);
+  }, [pageItemZUID]);
+
+  const showFreestyleAlert = isFreestyleLayout && !freestyleAlertDismissed;
+
+  const handleEditInFreestyle = useCallback(() => {
+    if (!pageModelZUID || !pageItemZUID) return;
+    history.push(`/content/${pageModelZUID}/${pageItemZUID}/freestyle`);
   }, [pageModelZUID, pageItemZUID, history]);
 
   const fields = useMemo(() => {
@@ -1586,6 +1614,15 @@ export const StudioWrapper = () => {
               isNavigating={isNavigating}
               isBusy={isRefreshing || studioSaving || isSavingLayout}
               onLoad={handlePreviewFrameLoad}
+              overlaySlot={
+                isLayoutMode && showFreestyleAlert ? (
+                  <StudioFreestyleAlert
+                    showEditAction
+                    onEditInFreestyle={handleEditInFreestyle}
+                    onDismiss={() => setFreestyleAlertDismissed(true)}
+                  />
+                ) : null
+              }
             />
             {panelMode === "inspector" && inspectorSelection ? (
               <StudioInspectorPanel
@@ -1627,6 +1664,14 @@ export const StudioWrapper = () => {
                 infoPanel={renderInfoPanel()}
                 drawerWidth={drawerWidth}
                 logoSrc={contentOneLogo}
+                alertSlot={
+                  showFreestyleAlert ? (
+                    <StudioFreestyleAlert
+                      onEditInFreestyle={handleEditInFreestyle}
+                      onDismiss={() => setFreestyleAlertDismissed(true)}
+                    />
+                  ) : null
+                }
               />
             ) : null}
           </Box>

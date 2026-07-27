@@ -31,6 +31,8 @@ type StudioSidePanelProps = {
   infoPanel: ReactNode;
   drawerWidth: number;
   logoSrc: string;
+  // Pinned under the panel header, above the scrolling body.
+  alertSlot?: ReactNode;
 };
 
 export const StudioSidePanel = ({
@@ -52,6 +54,7 @@ export const StudioSidePanel = ({
   infoPanel,
   drawerWidth,
   logoSrc,
+  alertSlot,
 }: StudioSidePanelProps) => (
   <Drawer
     data-cy="StudioSidePanel"
@@ -114,6 +117,7 @@ export const StudioSidePanel = ({
           )}
         </Stack>
       </Stack>
+      {alertSlot}
       <Box flex="1" overflow="auto" pr={1}>
         {unresolvedPath ? (
           <Box
