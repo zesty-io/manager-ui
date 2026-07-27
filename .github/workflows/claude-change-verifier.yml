@@ -68,6 +68,11 @@ jobs:
             the checked-out source. There is no running app or browser, so never claim to have observed
             runtime behavior.
 
+            A separate "Claude Auto Review" workflow already reviews this PR for bugs, security,
+            performance, and code conventions. Do not duplicate it: your only job is to judge the
+            change against the linked issue's acceptance criteria. Mention a code-level problem
+            only when it directly causes a criterion to fail.
+
             Inputs:
               REPO         = ${{ github.repository }}
               PR_NUMBER    = ${{ github.event.pull_request.number }}
@@ -77,8 +82,9 @@ jobs:
             1. If ISSUE_NUMBER is set, read it (gh issue view <ISSUE_NUMBER> --repo <REPO> --json
                title,body,comments,labels) and derive a short numbered list of acceptance criteria.
                If empty, run change-only mode: no criteria, just assess whether the change is correct.
-            2. Read the diff (gh pr diff <PR_NUMBER> --repo <REPO>), open the changed files, and
-               summarize in plain language what the change does.
+            2. Read the diff (gh pr diff <PR_NUMBER> --repo <REPO>) and open the changed files to
+               understand what the change does. This is for your judgment only — the report does
+               not include a change summary.
             3. Judge each criterion from the code as one of:
                  ✅ Satisfied    — the code clearly implements it.
                  ⚠️ Inconclusive — can't tell from the code alone. Not a failure.
@@ -94,27 +100,27 @@ jobs:
             markers verbatim). Do not post a comment or reply in chat.
 
               <!-- cv-verifier -->
-              ## QA Review — <PASS | FAIL | INCONCLUSIVE>
+              ## QA Review — <✅ PASS | ❌ FAIL | ⚠️ INCONCLUSIVE>
               <If an issue: "Validates #<n>: <title>". Else: "No linked issue found — change-only QA.">
 
-              ### Acceptance criteria
-              <numbered list; each line starts with ✅ / ⚠️ / ❌. Change-only mode: list what you checked.>
+              1. ✅ <criterion in one line>
+              2. ❌ <criterion in one line> — <why it fails, one clause>
+              3. ⚠️ <criterion in one line> — <what couldn't be confirmed, one clause>
 
-              ### What this change does
-              <plain-language summary>
+              <details>
+              <summary>Suggested Cypress coverage</summary>
 
-              ### Gaps & concerns
-              <unmet criteria, missing edge cases, regression risk — or "None observed">
-
-              ### Suggested Cypress coverage
               <real spec file name + prose cases>
+              </details>
 
               <!-- qa-verdict: <PASS_OR_FAIL_OR_INCONCLUSIVE> -->
 
-            Use plain ordered lists for criteria (refer to them as "criterion 1"); never write `#1`
-            (GitHub auto-links it). The only `#<n>` allowed is the "Validates #<n>" header. Write the
-            `<!-- qa-verdict: ... -->` marker exactly once, as the final line — never quote it or the
-            `<!-- cv-verifier -->` marker anywhere else in the report.
+            Rules: the report contains nothing beyond the template — no summary or extra sections.
+            The "— why" clause on a ⚠️/❌ line is the only place for explanation; ✅ lines get none.
+            In change-only mode the numbered list is the checks you performed. Never write `#<n>`
+            except in the "Validates #<n>" line (GitHub auto-links it). Write the
+            `<!-- qa-verdict: ... -->` marker exactly once, as the final line, and never quote
+            either HTML marker elsewhere in the report.
 
       # Post the report, or update the existing QA comment in place. Reads the verdict for the gate.
       - name: Post or update QA comment
