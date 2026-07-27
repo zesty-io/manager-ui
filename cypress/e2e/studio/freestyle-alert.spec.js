@@ -72,6 +72,9 @@ describe("Studio Freestyle Alert", () => {
 
     cy.getBySelector("StudioSidePanel").should("exist");
     cy.getBySelector("StudioFreestyleAlert").should("not.exist");
+    // The panel button keeps its normal destination.
+    cy.getBySelector("StudioEditInManagerButton").should("exist");
+    cy.getBySelector("StudioEditInFreestyleButton").should("not.exist");
 
     setStudioMode("layout");
     cy.getBySelector("StudioFreestyleAlert").should("not.exist");
@@ -86,9 +89,15 @@ describe("Studio Freestyle Alert", () => {
       .and("contain.text", "This layout was created in Freestyle")
       .and("contain.text", "Editing only available in Freestyle");
 
-    // Per design the content-mode alert has no "Edit in Freestyle" action.
+    // Per design the content-mode alert itself is dismiss-only — the action
+    // lives in the side panel's own full-width button instead.
     cy.getBySelector("StudioFreestyleAlertEditButton").should("not.exist");
     cy.getBySelector("StudioFreestyleAlertCloseButton").should("exist");
+
+    cy.getBySelector("StudioEditInManagerButton").should("not.exist");
+    cy.getBySelector("StudioEditInFreestyleButton")
+      .should("exist")
+      .and("contain.text", "Edit in Freestyle");
   });
 
   it("dismisses the content mode alert", () => {
@@ -114,13 +123,25 @@ describe("Studio Freestyle Alert", () => {
     cy.getBySelector("StudioFreestyleAlertEditButton").should("exist");
   });
 
-  it("links to the item in the Freestyle app", () => {
+  it("links to the item in the Freestyle app from layout mode", () => {
     stubFreestyleView();
     visitStudio();
 
     setStudioMode("layout");
 
     cy.getBySelector("StudioFreestyleAlertEditButton").click();
+
+    cy.location("pathname").should(
+      "eq",
+      `/content/${modelZUID}/${itemZUID}/freestyle`
+    );
+  });
+
+  it("links to the item in the Freestyle app from the content mode panel", () => {
+    stubFreestyleView();
+    visitStudio();
+
+    cy.getBySelector("StudioEditInFreestyleButton").click();
 
     cy.location("pathname").should(
       "eq",

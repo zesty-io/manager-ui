@@ -2,8 +2,8 @@ import { CloseRounded, WarningRounded } from "@mui/icons-material";
 import { Alert, AlertTitle, Button, IconButton, Stack } from "@mui/material";
 
 type StudioFreestyleAlertProps = {
-  // Per design the "Edit in Freestyle" action only appears on the floating
-  // layout-mode alert; the content-mode alert in the side panel is dismiss-only.
+  // Layout mode carries the action inside the alert. Content mode leaves it out
+  // — there the side panel's own full-width button becomes "Edit in Freestyle".
   showEditAction?: boolean;
   onEditInFreestyle: () => void;
   onDismiss: () => void;
@@ -27,7 +27,10 @@ export const StudioFreestyleAlert = ({
             size="small"
             color="inherit"
             onClick={onEditInFreestyle}
-            sx={{ whiteSpace: "nowrap" }}
+            // The theme's filled Alert only sets contrast text on the message
+            // and title, leaving the root dark — so color="inherit" resolves to
+            // text.secondary here. Pin white to match the design.
+            sx={{ color: "common.white", whiteSpace: "nowrap" }}
           >
             Edit in Freestyle
           </Button>

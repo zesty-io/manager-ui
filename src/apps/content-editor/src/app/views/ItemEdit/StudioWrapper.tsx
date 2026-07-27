@@ -1659,6 +1659,8 @@ export const StudioWrapper = () => {
                 hasErrors={hasErrors}
                 isSelectedItemLoading={isSelectedItemLoading}
                 onEditInManager={handleEditInManager}
+                isFreestyleLayout={isFreestyleLayout}
+                onEditInFreestyle={handleEditInFreestyle}
                 onSave={handleSave}
                 editorPanel={renderEditorPanel()}
                 infoPanel={renderInfoPanel()}
