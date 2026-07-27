@@ -1,4 +1,7 @@
 export function MD5(s) {
+  if (typeof s !== "string") {
+    s = "";
+  }
   function L(k, d) {
     return (k << d) | (k >>> (32 - d));
   }

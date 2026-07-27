@@ -114,12 +114,12 @@ export const getErrorMessage = ({
     if (
       validate.includes("length") &&
       maxLength &&
-      value &&
-      value.length > maxLength
+      (value as string)?.length > maxLength
     ) {
-      return `Shorten to less than ${maxLength} characters (${value.length}/${maxLength})`;
+      return `Shorten to less than ${maxLength} characters (${
+        (value as string)?.length
+      }/${maxLength})`;
     }
-
     // check for reserved field names
     if (RESERVED_FIELD_NAMES.includes(value)) {
       return `"${value}" is a System Reserved Field Name`;
