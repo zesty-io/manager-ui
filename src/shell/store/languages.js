@@ -4,7 +4,16 @@ export function languages(state = [], action) {
   switch (action.type) {
     case "LOADED_LOCAL_LANGUAGES":
     case "FETCH_LANGUAGES_SUCCESS":
-      return Array.isArray(action.payload) ? action.payload : state;
+      if (!Array.isArray(action.payload)) {
+        console.warn(
+          "languages reducer: invalid payload (expected array, got",
+          typeof action.payload,
+          "), keeping previous state:",
+          action.payload
+        );
+        return state;
+      }
+      return action.payload;
     default:
       return state;
   }

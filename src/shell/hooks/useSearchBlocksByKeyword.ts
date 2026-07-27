@@ -68,9 +68,9 @@ export const useSearchBlocksByKeyword = ({
 
   const languageMap = useMemo<LanguageMap>(
     () =>
-      Array.isArray(languages) &&
-      !!languages.length &&
-      Object.fromEntries(languages.map((lang) => [lang?.ID, lang])),
+      Array.isArray(languages) && languages.length
+        ? Object.fromEntries(languages.map((lang) => [lang?.ID, lang]))
+        : {},
     [languages]
   );
 
