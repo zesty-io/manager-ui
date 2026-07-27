@@ -69,7 +69,8 @@ const DisplayCard = ({
   ) : (
     renderValue(subHeading)
   );
-  const thumbnailValue = thumbnail && validateUrl(thumbnail) ? thumbnail : null;
+  const thumbnailValue =
+    typeof thumbnail === "string" && validateUrl(thumbnail) ? thumbnail : null;
   const detailValue = loading ? <Skeleton width="70px" /> : renderValue(detail);
 
   const noImage = !thumbnailValue || mediaError;

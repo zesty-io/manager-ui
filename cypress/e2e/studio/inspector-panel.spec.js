@@ -334,6 +334,13 @@ describe("Studio Inspector Panel", () => {
         children: [hello],
       });
 
+      // The tree defaults to one level: the host wraps `hello` in a Text
+      // placeholder (div → No Tag → hello), which starts collapsed. Expand it
+      // via its chevron — clicking the row itself would open ITS panel.
+      cy.get(`[data-cy="StudioLayersRow"][data-node-id="${hello.id}:noTag"]`)
+        .find('[data-cy="StudioLayersRowChevron"]')
+        .click();
+
       // This run had no slot at all before it was addressable — the panel could
       // not reach text that shared its element with another node.
       openPanelFor(hello);
