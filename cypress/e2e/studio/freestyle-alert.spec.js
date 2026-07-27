@@ -7,9 +7,12 @@ describe("Studio Freestyle Alert", () => {
   let webViews = [];
 
   before(() => {
-    cy.task("seed:content", "fixtures/studio.json").then(({ items }) => {
+    // modelZUID comes off the returned model, not items[0].meta — the seeded
+    // item's meta does not carry contentModelZUID back, which would leave both
+    // the path assertions and the deleteModel cleanup silently undefined.
+    cy.task("seed:content", "fixtures/studio.json").then(({ model, items }) => {
       itemZUID = items[0].meta.ZUID;
-      modelZUID = items[0].meta.contentModelZUID;
+      modelZUID = model.ZUID;
       studioPath = `/${items[0].web.pathPart}`;
     });
 
