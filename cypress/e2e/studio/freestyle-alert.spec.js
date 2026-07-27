@@ -11,6 +11,10 @@ describe("Studio Freestyle Alert", () => {
     });
   });
 
+  after(() => {
+    if (modelZUID) cy.deleteModel(modelZUID);
+  });
+
   // A Freestyle-built layout is identified by a per-item view file at
   // /z/pvl/<itemZUID>.zhtml. Rather than create (and have to clean up) a real
   // view file on the dev instance — which would also change how the page
