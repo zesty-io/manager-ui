@@ -33,6 +33,7 @@
   "deleteRedirectDescriptionPlural_other": "删除这 {{count}} 个传入路径的重定向",
   "deleteRedirectDescriptionSingular": "删除此传入路径的重定向",
   "deleteRedirectDescriptionSuffix": "将立即从您的网站中移除。此操作无法撤销。",
+  "deleteRedirectDescriptionSuffix_other": "将立即从您的网站中移除。此操作无法撤销。",
   "deleteRedirectsButton": "删除重定向（{{count}}）",
   "deleteRedirectsButton_other": "删除重定向（{{count}}）",
   "deleteRedirectTitle_other": "删除 {{count}} 个重定向",

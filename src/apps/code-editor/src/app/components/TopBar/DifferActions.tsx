@@ -144,7 +144,10 @@ export const DifferActions = memo(function DifferActions(
   const options = versions.map((version) => {
     const d = new Date(version.createdAt);
     const pretty = isValid(d)
-      ? formatLocalized(d, "MMM do yyyy, 'at' h:mm a")
+      ? t("common.dateAtTime", {
+          date: formatLocalized(d, "MMM do yyyy"),
+          time: formatLocalized(d, "h:mm a"),
+        })
       : version.createdAt;
     let html = (
       <Box display="flex" alignItems="center" columnGap={0.5}>

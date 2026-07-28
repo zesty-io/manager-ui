@@ -15,6 +15,7 @@
   "create": "Создать",
   "createdBy": "Создано",
   "dateAfterValue": "После {{date}}",
+  "dateAtTime": "{{date}}, {{time}}",
   "dateBeforeValue": "До {{date}}",
   "dateOnValue": "{{date}}",
   "delete": "Удалить",

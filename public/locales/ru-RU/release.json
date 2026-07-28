@@ -2,6 +2,7 @@
   "activateButton": "Активировать приложение релизов",
   "activateSubtitle": "Публикуйте группы контента одновременно.",
   "createdAt": "Дата создания",
+  "createdOn": "{{date}}, {{time}}",
   "createdRelease": "Релиз создан: {{name}}",
   "createRelease": "Создать релиз",
   "createReleaseButton": "Создать релиз",

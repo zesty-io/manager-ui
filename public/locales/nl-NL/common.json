@@ -15,6 +15,7 @@
   "create": "Aanmaken",
   "createdBy": "Aangemaakt door",
   "dateAfterValue": "Na {{date}}",
+  "dateAtTime": "op {{date}} om {{time}}",
   "dateBeforeValue": "Vóór {{date}}",
   "dateOnValue": "Op {{date}}",
   "delete": "Verwijderen",

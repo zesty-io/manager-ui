@@ -67,16 +67,44 @@ function readLines(filePath) {
     .filter(Boolean);
 }
 
-function namespaceForFile(filePath) {
+// A file's directory only tells us its "home" namespace by convention — the
+// namespace its own strings would live in. It does NOT tell us every
+// namespace the file actually references: a shared utility under
+// src/utility/ (home namespace "shell") can still call i18n.t("common.foo").
+// So this returns the home namespace plus every namespace actually used in
+// a t()/i18n.t() call within the file, unioned in main()'s affectedNamespaces.
+const NAMESPACE_CALL_PATTERN =
+  /(?:i18n\.)?t\(\s*(["'])([A-Za-z][A-Za-z0-9]*)\.[A-Za-z0-9_]+\1/g;
+
+function namespacesForFile(filePath) {
+  const namespaces = new Set();
+
   const localeMatch = filePath.match(/^public\/locales\/[^/]+\/([^/]+)\.json$/);
-  if (localeMatch) return localeMatch[1];
+  if (localeMatch) {
+    namespaces.add(localeMatch[1]);
+    return namespaces;
+  }
 
   const appMatch = filePath.match(/^src\/apps\/([^/]+)\//);
-  if (appMatch && APP_NS_MAP[appMatch[1]]) return APP_NS_MAP[appMatch[1]];
+  if (appMatch && APP_NS_MAP[appMatch[1]]) {
+    namespaces.add(APP_NS_MAP[appMatch[1]]);
+  } else if (/^src\/(shell|utility|engine)\//.test(filePath)) {
+    namespaces.add("shell");
+  }
 
-  if (/^src\/(shell|utility|engine)\//.test(filePath)) return "shell";
+  let text;
+  try {
+    text = stripComments(fs.readFileSync(path.join(ROOT, filePath), "utf8"));
+  } catch {
+    return namespaces;
+  }
+  NAMESPACE_CALL_PATTERN.lastIndex = 0;
+  let m;
+  while ((m = NAMESPACE_CALL_PATTERN.exec(text))) {
+    namespaces.add(m[2]);
+  }
 
-  return null;
+  return namespaces;
 }
 
 function listSourceFiles(dir) {
@@ -284,8 +312,7 @@ function main() {
 
   const affectedNamespaces = new Set();
   for (const f of changedFiles) {
-    const ns = namespaceForFile(f);
-    if (ns) affectedNamespaces.add(ns);
+    for (const ns of namespacesForFile(f)) affectedNamespaces.add(ns);
   }
 
   if (affectedNamespaces.size === 0) {

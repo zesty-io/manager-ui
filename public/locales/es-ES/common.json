@@ -15,6 +15,7 @@
   "create": "Crear",
   "createdBy": "Creado por",
   "dateAfterValue": "Después del {{date}}",
+  "dateAtTime": "el {{date}} a las {{time}}",
   "dateBeforeValue": "Antes del {{date}}",
   "dateOnValue": "El {{date}}",
   "delete": "Eliminar",

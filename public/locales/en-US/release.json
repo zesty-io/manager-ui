@@ -2,6 +2,7 @@
   "activateButton": "Activate Release App",
   "activateSubtitle": "Publish groups of content at the same time.",
   "createdAt": "Created At",
+  "createdOn": "{{time}} on {{date}}",
   "createdRelease": "Created Release: {{name}}",
   "createRelease": "Create Release",
   "createReleaseButton": "Create Release",

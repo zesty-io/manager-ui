@@ -2,6 +2,7 @@
   "activateButton": "Activar la aplicación de lanzamientos",
   "activateSubtitle": "Publica grupos de contenido al mismo tiempo.",
   "createdAt": "Creado el",
+  "createdOn": "{{time}} el {{date}}",
   "createdRelease": "Versión creada: {{name}}",
   "createRelease": "Crear lanzamiento",
   "createReleaseButton": "Crear lanzamiento",

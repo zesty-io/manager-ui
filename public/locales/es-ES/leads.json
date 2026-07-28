@@ -10,6 +10,7 @@
   "exportCsv": "Exportar CSV",
   "exportCsvTitle": "Exportar CSV de datos de leads según los filtros seleccionados",
   "formGroup": "Grupo de formulario",
+  "formGroupAll": "Todos",
   "getStartedBodyText": "Al crear un formulario en tu instancia que incluya el campo zlf, puedes comenzar a capturar leads de inmediato.",
   "howToCreateALeadForm": "Cómo crear un formulario de leads",
   "learnMoreAbout": "Más información sobre",

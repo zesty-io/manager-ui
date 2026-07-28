@@ -117,9 +117,11 @@ export const EditorActions = memo(function EditorActions(
             ? t("code.saveFileShortcut", { shortcut: saveShortcut })
             : t("code.versionSavedByUser", {
                 n: props?.version,
-                date: `${!fileLastUpdate ? "" : "on"} ${formatDate(
-                  props?.updatedAt
-                )}`,
+                date: fileLastUpdate
+                  ? t("common.dateOnValue", {
+                      date: formatDate(props?.updatedAt),
+                    })
+                  : formatDate(props?.updatedAt),
                 user: props?.updatedBy || t("code.unknown"),
               })
         }
@@ -147,9 +149,11 @@ export const EditorActions = memo(function EditorActions(
             ? t("code.publishFileShortcut", { shortcut: publishShortcut })
             : t("code.versionPublishedByUser", {
                 n: props?.version,
-                date: `${!props?.publishedAt ? "" : "on"} ${formatDate(
-                  props?.publishedAt
-                )}`,
+                date: props?.publishedAt
+                  ? t("common.dateOnValue", {
+                      date: formatDate(props?.publishedAt),
+                    })
+                  : formatDate(props?.publishedAt),
                 user: props?.publishedBy || t("code.unknown"),
               })
         }

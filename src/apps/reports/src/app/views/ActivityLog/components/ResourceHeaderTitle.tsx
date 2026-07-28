@@ -74,7 +74,10 @@ export const ResourceHeaderTitle = ({
         t("reports.lastUpdated", {
           date:
             d && isValid(d)
-              ? formatLocalized(d, "do MMMM yyyy 'at' h:mm a")
+              ? t("common.dateAtTime", {
+                  date: formatLocalized(d, "do MMMM yyyy"),
+                  time: formatLocalized(d, "h:mm a"),
+                })
               : "",
         }),
       ],

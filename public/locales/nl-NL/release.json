@@ -2,6 +2,7 @@
   "activateButton": "Release-app activeren",
   "activateSubtitle": "Publiceer groepen inhoud tegelijkertijd.",
   "createdAt": "Aangemaakt op",
+  "createdOn": "{{time}} op {{date}}",
   "createdRelease": "Release aangemaakt: {{name}}",
   "createRelease": "Release aanmaken",
   "createReleaseButton": "Release aanmaken",

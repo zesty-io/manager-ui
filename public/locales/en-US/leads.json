@@ -10,6 +10,7 @@
   "exportCsv": "Export CSV",
   "exportCsvTitle": "Export CSV of lead data by selected filters",
   "formGroup": "Form Group",
+  "formGroupAll": "All",
   "getStartedBodyText": "By creating a form on your instance which includes the zlf input you can begin instantly capturing leads.",
   "howToCreateALeadForm": "How to Create a Lead Form",
   "learnMoreAbout": "Learn more about",

@@ -34,12 +34,18 @@ export const ActivityDetails = () => {
 
   const createdOn =
     createdDate && isValid(createdDate)
-      ? formatLocalized(createdDate, "do MMMM, yyyy 'at' h:mm a")
+      ? t("common.dateAtTime", {
+          date: formatLocalized(createdDate, "do MMMM, yyyy"),
+          time: formatLocalized(createdDate, "h:mm a"),
+        })
       : "";
 
   const updatedOn =
     updatedDate && isValid(updatedDate)
-      ? formatLocalized(updatedDate, "do MMMM, yyyy 'at' h:mm a")
+      ? t("common.dateAtTime", {
+          date: formatLocalized(updatedDate, "do MMMM, yyyy"),
+          time: formatLocalized(updatedDate, "h:mm a"),
+        })
       : "";
 
   const handleCopy = (data: string) => {

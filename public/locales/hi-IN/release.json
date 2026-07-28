@@ -2,6 +2,7 @@
   "activateButton": "रिलीज़ ऐप सक्रिय करें",
   "activateSubtitle": "कंटेंट के ग्रुप्स को एक ही समय में पब्लिश करें।",
   "createdAt": "बनाने का समय",
+  "createdOn": "{{date}} को {{time}} बजे",
   "createdRelease": "रिलीज़ बनाई गई: {{name}}",
   "createRelease": "रिलीज़ बनाएं",
   "createReleaseButton": "रिलीज़ बनाएं",

@@ -15,6 +15,7 @@
   "create": "创建",
   "createdBy": "创建人",
   "dateAfterValue": "晚于 {{date}}",
+  "dateAtTime": "在 {{date}} {{time}}",
   "dateBeforeValue": "早于 {{date}}",
   "dateOnValue": "在 {{date}}",
   "delete": "删除",

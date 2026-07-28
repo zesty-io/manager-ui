@@ -10,6 +10,7 @@
   "exportCsv": "CSV निर्यात करें",
   "exportCsvTitle": "चयनित फ़िल्टर के अनुसार लीड डेटा का CSV निर्यात करें",
   "formGroup": "फ़ॉर्म समूह",
+  "formGroupAll": "सभी",
   "getStartedBodyText": "अपने इंस्टेंस पर एक फ़ॉर्म बनाकर जिसमें zlf इनपुट शामिल हो, आप तुरंत लीड कैप्चर करना शुरू कर सकते हैं।",
   "howToCreateALeadForm": "लीड फ़ॉर्म कैसे बनाएं",
   "learnMoreAbout": "अधिक जानें",

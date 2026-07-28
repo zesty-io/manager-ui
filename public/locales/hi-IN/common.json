@@ -15,6 +15,7 @@
   "create": "बनाएं",
   "createdBy": "द्वारा बनाया गया",
   "dateAfterValue": "{{date}} के बाद",
+  "dateAtTime": "{{date}} को {{time}} बजे",
   "dateBeforeValue": "{{date}} से पहले",
   "dateOnValue": "{{date}} को",
   "delete": "डिलीट करें",

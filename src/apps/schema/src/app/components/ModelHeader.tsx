@@ -84,7 +84,10 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
   const updatedAt = model?.updatedAt ? new Date(model.updatedAt) : null;
   const lastUpdated =
     updatedAt && isValid(updatedAt)
-      ? formatLocalized(updatedAt, "do MMMM yyyy 'at' h:mm a")
+      ? t("common.dateAtTime", {
+          date: formatLocalized(updatedAt, "do MMMM yyyy"),
+          time: formatLocalized(updatedAt, "h:mm a"),
+        })
       : "";
 
   return (

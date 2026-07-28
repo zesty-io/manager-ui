@@ -101,7 +101,10 @@ export const TimelineItem = (props) => {
           const d = new Date(publishAt || props.action?.happenedAt);
           return isValid(d)
             ? t("reports.actionScheduledPublishOn", {
-                date: formatLocalized(d, "MMMM dd 'at' hh:mm a"),
+                date: t("common.dateAtTime", {
+                  date: formatLocalized(d, "MMMM dd"),
+                  time: formatLocalized(d, "hh:mm a"),
+                }),
               })
             : t("reports.actionScheduledPublish");
         default:

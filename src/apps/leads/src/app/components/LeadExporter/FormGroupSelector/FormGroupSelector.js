@@ -24,7 +24,7 @@ export default connect((state) => {
           groups: [
             {
               value: FORM_GROUP_PRESETS.ALL,
-              inputLabel: FORM_GROUP_PRESETS.ALL,
+              inputLabel: props.t("leads.formGroupAll"),
               component: FORM_GROUP_PRESETS.ALL,
             },
             ...this.generateFormGroups(props.leads),
@@ -61,7 +61,7 @@ export default connect((state) => {
               name="form-group-filter"
               defaultValue={{
                 value: FORM_GROUP_PRESETS.ALL,
-                inputLabel: FORM_GROUP_PRESETS.ALL,
+                inputLabel: t("leads.formGroupAll"),
                 component: FORM_GROUP_PRESETS.ALL,
               }}
               onChange={(_, option) => {

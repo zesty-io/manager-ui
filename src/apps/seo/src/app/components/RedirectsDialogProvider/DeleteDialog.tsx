@@ -105,7 +105,9 @@ export const DeleteDialog: FC<DeleteDialogProps> = ({
           </Typography>
         </Stack>
         <Typography variant="body2" color="text.secondary" sx={{ mt: "8px" }}>
-          {`${descriptionPart} ${t("seo.deleteRedirectDescriptionSuffix")}`}
+          {`${descriptionPart} ${t("seo.deleteRedirectDescriptionSuffix", {
+            count: redirects?.length,
+          })}`}
         </Typography>
       </DialogTitle>
       <DialogContent sx={{ p: 0 }} data-cy="RedirectsDeleteDialog">

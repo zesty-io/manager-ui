@@ -2,6 +2,7 @@
   "activateButton": "启用发布应用",
   "activateSubtitle": "同时发布多组内容。",
   "createdAt": "创建时间",
+  "createdOn": "于 {{date}} {{time}}",
   "createdRelease": "已创建发布：{{name}}",
   "createRelease": "创建发布",
   "createReleaseButton": "创建发布",
