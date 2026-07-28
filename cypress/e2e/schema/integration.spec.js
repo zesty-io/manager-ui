@@ -854,6 +854,70 @@ describe("Integration Field", () => {
       );
     });
   });
+
+  describe("Non-unique Item ID (regression #4091)", () => {
+    // Own model, seeded fresh, so reconfiguring itemId to a non-unique
+    // keyPath here can't affect the itemId=playerId fields used elsewhere.
+    let DUPLICATE_MODEL = null;
+
+    before(() => {
+      cy.task("seed:content", "fixtures/integration/maxvalue.json").then(
+        ({ model }) => {
+          DUPLICATE_MODEL = model;
+        }
+      );
+    });
+
+    beforeEach(() => {
+      cy.intercept("POST", "**/get-url*", { body: genericApi });
+    });
+
+    it("Blocks Done and warns when the chosen Item ID is not unique across sampled items", () => {
+      cy.intercept("**/get-url?url=*", {
+        statusCode: 200,
+        body: genericApi,
+      }).as("reconfigureGetUrl");
+
+      cy.visit(`/schema/${DUPLICATE_MODEL.ZUID}/fields`);
+      cy.getBySelector("Field_players").click();
+      cy.wait("@reconfigureGetUrl");
+
+      cy.getBySelector("integrationConfigureButton").click();
+      cy.getBySelector("integrationFormDialog").should("exist");
+      cy.getBySelector("integrationConfigureOptionNextButton").click();
+
+      // playerId (the field's current itemId) is unique — no warning, Done enabled.
+      cy.getBySelector("integrationItemIdDuplicateWarning").should("not.exist");
+      cy.getBySelector("integrationConfigureDisplayOptionsDoneButton").should(
+        "not.be.disabled"
+      );
+
+      cy.getBySelector("integrationKeyPathSelector-itemId").click();
+      cy.getBySelector("integrationKeyPathOption-position").click(forceClick);
+
+      cy.getBySelector("integrationItemIdDuplicateWarning").should(
+        "contain",
+        "is not unique"
+      );
+      cy.getBySelector("integrationConfigureDisplayOptionsDoneButton").should(
+        "be.disabled"
+      );
+
+      // Switching back to a unique keyPath clears the warning and re-enables Done.
+      cy.getBySelector("integrationKeyPathSelector-itemId").click();
+      cy.getBySelector("integrationKeyPathOption-playerId").click(forceClick);
+      cy.getBySelector("integrationItemIdDuplicateWarning").should("not.exist");
+
+      cy.intercept("PUT", "**/content/models/*/fields/*").as("updateField");
+      cy.getBySelector("integrationConfigureDisplayOptionsDoneButton").click();
+      cy.getBySelector("FieldFormAddFieldBtn").click();
+      cy.wait("@updateField").then(({ request }) => {
+        expect(
+          request.body.settings.integrationFieldConfig.keyPaths.itemId
+        ).to.equal("playerId");
+      });
+    });
+  });
 });
 
 function connectToEndpoint(endpoint, type, apiData) {

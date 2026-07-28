@@ -118,6 +118,8 @@ const ITEM_ID: ConfigProps = {
   type: "text",
   isRequired: true,
   placeholder: "Select",
+  toolTip:
+    "Choose a value the API guarantees is unique for every item (e.g. a database ID) — not just one that looks unique in a small sample. A non-unique Item ID can cause selections to be recognized incorrectly.",
 };
 
 const HEADING: ConfigProps = {
