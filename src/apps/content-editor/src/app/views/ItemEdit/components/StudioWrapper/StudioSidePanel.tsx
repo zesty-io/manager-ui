@@ -27,9 +27,11 @@ type StudioSidePanelProps = {
   isSelectedItemLoading: boolean;
   onEditInManager: () => void;
   // On a Freestyle-built layout this slot becomes "Edit in Freestyle" instead,
-  // since the layout is only editable in that app.
+  // since the layout is only editable in that app. The handler is required
+  // rather than optional so the flag can never be set without one — that would
+  // render an enabled button whose onClick is undefined.
   isFreestyleLayout?: boolean;
-  onEditInFreestyle?: () => void;
+  onEditInFreestyle: () => void;
   onSave: () => void;
   editorPanel: ReactNode;
   infoPanel: ReactNode;

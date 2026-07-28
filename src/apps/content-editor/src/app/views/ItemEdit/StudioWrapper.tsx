@@ -410,15 +410,27 @@ export const StudioWrapper = () => {
     [pageItemZUID, webViews]
   );
 
-  const [freestyleAlertDismissed, setFreestyleAlertDismissed] = useState(false);
+  // Dismissal is tracked per mode, not globally: in layout mode the overlay is
+  // the only route to Freestyle, so a dismissal in content mode (where the
+  // panel button still offers it) must not suppress it there too.
+  const [dismissedAlertModes, setDismissedAlertModes] = useState<
+    InteractionMode[]
+  >([]);
 
   // Re-surface the notice whenever the preview moves to a different item — a
   // dismissal applies to the page it was dismissed on, not the whole session.
   useEffect(() => {
-    setFreestyleAlertDismissed(false);
+    setDismissedAlertModes([]);
   }, [pageItemZUID]);
 
-  const showFreestyleAlert = isFreestyleLayout && !freestyleAlertDismissed;
+  const dismissFreestyleAlert = useCallback(() => {
+    setDismissedAlertModes((prev) =>
+      prev.includes(interactionMode) ? prev : [...prev, interactionMode]
+    );
+  }, [interactionMode]);
+
+  const showFreestyleAlert =
+    isFreestyleLayout && !dismissedAlertModes.includes(interactionMode);
 
   const handleEditInFreestyle = useCallback(() => {
     if (!pageModelZUID || !pageItemZUID) return;
@@ -1619,7 +1631,7 @@ export const StudioWrapper = () => {
                   <StudioFreestyleAlert
                     showEditAction
                     onEditInFreestyle={handleEditInFreestyle}
-                    onDismiss={() => setFreestyleAlertDismissed(true)}
+                    onDismiss={dismissFreestyleAlert}
                   />
                 ) : null
               }
@@ -1670,7 +1682,7 @@ export const StudioWrapper = () => {
                   showFreestyleAlert ? (
                     <StudioFreestyleAlert
                       onEditInFreestyle={handleEditInFreestyle}
-                      onDismiss={() => setFreestyleAlertDismissed(true)}
+                      onDismiss={dismissFreestyleAlert}
                     />
                   ) : null
                 }

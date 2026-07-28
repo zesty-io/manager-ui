@@ -152,6 +152,20 @@ describe("Studio Freestyle Alert", () => {
     );
   });
 
+  it("keeps the layout mode alert after dismissing it in content mode", () => {
+    stubFreestyleView();
+    visitStudio();
+
+    cy.getBySelector("StudioFreestyleAlertCloseButton").click();
+    cy.getBySelector("StudioFreestyleAlert").should("not.exist");
+
+    // Layout mode's overlay is the only route to Freestyle there, so a content
+    // mode dismissal must not suppress it.
+    setStudioMode("layout");
+    cy.getBySelector("StudioFreestyleAlert").should("exist");
+    cy.getBySelector("StudioFreestyleAlertEditButton").should("exist");
+  });
+
   it("dismisses the layout mode alert", () => {
     stubFreestyleView();
     visitStudio();
