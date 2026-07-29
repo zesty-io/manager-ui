@@ -49,6 +49,7 @@ import {
   isMediaSlotDatatype,
   isTextReferenceableDatatype,
 } from "./components/StudioWrapper/studioFieldMeta";
+import { parseParsleyRef } from "./components/StudioWrapper/studioParsley";
 import { StudioLayersPanel } from "./components/StudioWrapper/StudioLayersPanel";
 import {
   StudioSaveChange,
@@ -1272,20 +1273,41 @@ export const StudioWrapper = () => {
     },
     []
   );
-  // On connect, the panel emits a `{{this.field}}` Parsley ref. For the LIVE
-  // preview we show the field's RESOLVED value (its actual text, or a resolved
-  // image URL) instead of the raw expression, while the template still saves the
-  // Parsley — so a connection is visible without a save + reload. Returns the
-  // resolved display value, or null when `value` is a plain edit (not a field
-  // ref) or the field has no data to show. Fields always resolve against the
-  // page item, since our flow only ever emits `this.<pageItemField>`.
+  // `contentItems` changes on every content keystroke anywhere in the app. Read
+  // it through a ref so resolvePreviewValue — and therefore handleSlotChange,
+  // which is handed straight to the panel — keeps a stable identity.
+  const contentItemsRef = useRef(contentItems);
+  contentItemsRef.current = contentItems;
+
+  // On connect, the panel emits a Parsley ref. For the LIVE preview we show the
+  // field's RESOLVED value (its actual text, or a resolved image URL) instead of
+  // the raw expression, while the template still saves the Parsley — so a
+  // connection is visible without a save + reload. Returns the resolved display
+  // value, or null when `value` is a plain edit (not a field ref) or the field
+  // has no data to show. A `this.` ref resolves against the page item; a
+  // `<model>.filter(<zuid>)` ref resolves against that pinned item, which
+  // searchItems already merged into the content store when the user picked it.
+  // Returns:
+  //   null — `value` is not a field reference at all (a plain free-text edit).
+  //          The caller sends no previewValue; the DOM shows what was typed.
+  //   ""   — it IS a reference that resolves to nothing, because the field is
+  //          empty on that item. Common across locales: a field set on en-US is
+  //          frequently null on its es/cs-CZ siblings.
+  //
+  // The empty case MUST still be sent. When previewValue is absent the bridge
+  // falls back to printing `value`, which would paint the literal
+  // "{{model.filter(zuid).field}}" onto the canvas — the binding looking broken
+  // when it is merely empty.
   const resolvePreviewValue = useCallback(
     (value: string): string | null => {
-      const match = value.match(/^\{\{\s*this\.(\w+)(\.getImage\(\))?\s*\}\}$/);
-      if (!match) return null;
-      const raw = (pageItem?.data as Record<string, any>)?.[match[1]];
-      if (raw === undefined || raw === null || raw === "") return null;
-      if (match[2]) {
+      const ref = parseParsleyRef(value);
+      if (!ref) return null;
+      const item = ref.source
+        ? contentItemsRef.current[ref.source.itemZUID]
+        : pageItem;
+      const raw = (item?.data as Record<string, any>)?.[ref.name];
+      if (raw === undefined || raw === null || raw === "") return "";
+      if (ref.isMedia) {
         // Image field → the URL getImage() resolves to, via the media resolver.
         // @ts-expect-error CONFIG is provided globally at runtime
         return `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${raw}/getimage`;
@@ -1293,6 +1315,61 @@ export const StudioWrapper = () => {
       return String(raw);
     },
     [pageItem]
+  );
+
+  // Parsley names a model by its reference name; fetchItem needs its ZUID.
+  // Derived from the models already in the store rather than its own query —
+  // Studio's boot already fetches content/models, and a second request for the
+  // same data would just race it.
+  const modelZUIDByName = useMemo(
+    () =>
+      Object.values(modelsState ?? {})
+        .filter((model: any) => model?.name && model?.ZUID)
+        .sort((a: any, b: any) => a.ZUID.localeCompare(b.ZUID))
+        .reduce<Record<string, string>>((acc, model: any) => {
+          // First by ZUID wins when two models share a `name` — see
+          // useCrossModelConnectField for why that ambiguity is tolerable.
+          if (!(model.name in acc)) acc[model.name] = model.ZUID;
+          return acc;
+        }, {}),
+    [modelsState]
+  );
+
+  // The live-preview half of a slot write, split out so it can be replayed once
+  // a referenced item's data arrives. Never touches the template — the staged
+  // template value is written exactly once, by handleSlotChange below.
+  const postSlotPreview = useCallback(
+    (
+      slot: ElementSlot,
+      patch: NonNullable<typeof inspectorSelection>["layoutPatch"],
+      value: string,
+      previewValue?: string
+    ) => {
+      if (!patch) return;
+      if (slot.kind === "text") {
+        postCommandToBridge({
+          action: "updateElementText",
+          codeId: patch.codeId,
+          layoutId: patch.layoutId,
+          value,
+          previewValue,
+          textIndex: slot.textIndex,
+        });
+        return;
+      }
+      postCommandToBridge({
+        action: "updateElementAttr",
+        layoutId: patch.layoutId,
+        isSelf: patch.isSelf,
+        tagName: patch.tagName,
+        elementIndex: patch.elementIndex,
+        attr: slot.attr || slot.key,
+        // Show the resolved value in the live DOM; the template stages `value`.
+        value: previewValue ?? value,
+        booleanAttr: slot.booleanAttr,
+      });
+    },
+    [postCommandToBridge]
   );
 
   const handleSlotChange = useCallback(
@@ -1310,16 +1387,32 @@ export const StudioWrapper = () => {
       // template saves `value`.
       const previewValue = resolvePreviewValue(value) ?? undefined;
 
-      if (slot.kind === "text") {
-        postCommandToBridge({
-          action: "updateElementText",
-          codeId: patch.codeId,
-          layoutId: patch.layoutId,
-          value,
-          previewValue,
-          textIndex: slot.textIndex,
-        });
+      postSlotPreview(slot, patch, value, previewValue);
 
+      // A cross-item connect can only preview once we hold the referenced
+      // item's data. searchItems normally merged it when the user picked the
+      // item, but a binding that predates this session hasn't been through that
+      // — fetch it and replay the PREVIEW only. The template write below already
+      // staged the raw Parsley and must not run twice.
+      //
+      // Keyed on whether the ITEM is loaded, not on previewValue: "" is now a
+      // legitimate resolved result (an empty field), so it must not be mistaken
+      // for "we couldn't resolve this yet".
+      const ref = parseParsleyRef(value);
+      const refItemZUID = ref?.source?.itemZUID;
+      if (refItemZUID && !contentItemsRef.current[refItemZUID]?.data) {
+        const refModelZUID = modelZUIDByName[ref!.source!.modelName];
+        if (refModelZUID) {
+          Promise.resolve(dispatch(fetchItem(refModelZUID, refItemZUID))).then(
+            () => {
+              const replay = resolvePreviewValue(value);
+              if (replay !== null) postSlotPreview(slot, patch, value, replay);
+            }
+          );
+        }
+      }
+
+      if (slot.kind === "text") {
         // An ADDRESSED run writes itself back: the bridge edits that one run and
         // echoes the leaf's innerHTML as LAYOUT_CONTENT_UPDATE, which the host
         // already knows how to fold into the source — preserving nested layout
@@ -1336,17 +1429,6 @@ export const StudioWrapper = () => {
       }
 
       const attr = slot.attr || slot.key;
-      postCommandToBridge({
-        action: "updateElementAttr",
-        layoutId: patch.layoutId,
-        isSelf: patch.isSelf,
-        tagName: patch.tagName,
-        elementIndex: patch.elementIndex,
-        attr,
-        // Show the resolved value in the live DOM; the template stages `value`.
-        value: previewValue ?? value,
-        booleanAttr: slot.booleanAttr,
-      });
       clearTimeout(slotPatchTimers.current[slot.key]);
       slotPatchTimers.current[slot.key] = setTimeout(() => {
         handleLayoutElementAttrUpdate(
@@ -1362,9 +1444,11 @@ export const StudioWrapper = () => {
       }, 300);
     },
     [
+      dispatch,
       handleLayoutElementAttrUpdate,
       handleLayoutTextUpdate,
-      postCommandToBridge,
+      modelZUIDByName,
+      postSlotPreview,
       resolvePreviewValue,
       inspectorSelection,
     ]

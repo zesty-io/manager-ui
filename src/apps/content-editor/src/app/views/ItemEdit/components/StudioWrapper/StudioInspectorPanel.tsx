@@ -2,12 +2,15 @@ import { useEffect, useState } from "react";
 import {
   Box,
   Button,
+  Divider,
   Drawer,
   IconButton,
   Menu,
   MenuItem,
+  Skeleton,
   Stack,
   TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import { CloseRounded } from "@mui/icons-material";
@@ -16,11 +19,11 @@ import AddLinkRounded from "@mui/icons-material/AddLinkRounded";
 import LinkOffRounded from "@mui/icons-material/LinkOffRounded";
 import { ConnectField, ElementSlot } from "../../hooks/studioTypes";
 import { NO_TAG, TEXT_TAGS } from "./studioTags";
-import {
-  FIELD_CATEGORY_COLORS,
-  fieldToParsley,
-  getFieldMeta,
-} from "./studioFieldMeta";
+import { getFieldMeta } from "./studioFieldMeta";
+import { FieldIconChip } from "./FieldIconChip";
+import { connectFieldToParsley, parseParsleyRef } from "./studioParsley";
+import { useCrossModelConnectField } from "../../hooks/useCrossModelConnectField";
+import { StudioLinkItemDialog } from "./StudioLinkItemDialog";
 
 // Title shown for a supported element tag.
 const TAG_TITLES: Record<string, string> = {
@@ -126,33 +129,6 @@ const getBooleanOptions = (slot: ElementSlot) => {
   ];
 };
 
-// The small colour-coded field-type square (green text, red number, blue media,
-// pink link, …). Used both in the Connect Item dropdown rows and the connected
-// slot's chip so the two always look the same.
-const FieldIconChip = ({ datatype }: { datatype: string }) => {
-  const meta = getFieldMeta(datatype);
-  const colors = FIELD_CATEGORY_COLORS[meta.category];
-  const Icon = meta.Icon;
-  return (
-    <Box
-      sx={{
-        width: 24,
-        height: 24,
-        flexShrink: 0,
-        borderRadius: 1,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        bgcolor: colors.bg,
-        color: colors.fg,
-        border: `1px solid ${colors.fg}`,
-      }}
-    >
-      <Icon sx={{ fontSize: 16 }} />
-    </Box>
-  );
-};
-
 // A connected slot shows its bound field as a chip instead of a raw value —
 // used in BOTH modes so "connected to a field" looks the same everywhere. In
 // content mode it's clickable (opens the field's content editor, shown with a
@@ -161,9 +137,19 @@ const FieldIconChip = ({ datatype }: { datatype: string }) => {
 const ConnectedFieldView = ({
   field,
   onClick,
+  caption,
+  loading,
+  error,
 }: {
   field: ConnectField;
   onClick?: () => void;
+  // Second line naming where the field comes from — the other item's model, for
+  // a cross-item binding. Absent for a `this.` binding, which needs no source.
+  caption?: string;
+  // The caption is still being fetched; skeleton it rather than flash a guess.
+  loading?: boolean;
+  // The model or field the binding names no longer exists.
+  error?: boolean;
 }) => {
   const clickable = Boolean(onClick);
   return (
@@ -177,7 +163,7 @@ const ConnectedFieldView = ({
         px: 1.5,
         py: 1,
         border: 1,
-        borderColor: "divider",
+        borderColor: error ? "warning.main" : "divider",
         borderRadius: 1,
         bgcolor: "action.hover",
         ...(clickable && {
@@ -187,17 +173,92 @@ const ConnectedFieldView = ({
       }}
     >
       <FieldIconChip datatype={field.datatype} />
-      <Typography
-        variant="body2"
-        fontWeight={600}
-        color="text.primary"
-        noWrap
-        minWidth={0}
-        flex={1}
-      >
-        {field.label}
-      </Typography>
+      <Stack minWidth={0} flex={1}>
+        <Typography
+          variant="body2"
+          fontWeight={600}
+          color={error ? "warning.dark" : "text.primary"}
+          noWrap
+        >
+          {field.label}
+        </Typography>
+        {loading ? (
+          <Skeleton width={90} height={12} />
+        ) : caption ? (
+          // The link icon is what makes "this points somewhere else" legible at
+          // a glance. Without it the caption reads as a field description, and a
+          // cross-item binding is indistinguishable from a local one.
+          <Stack direction="row" alignItems="center" gap={0.5} minWidth={0}>
+            <AddLinkRounded
+              sx={{
+                fontSize: 14,
+                flexShrink: 0,
+                color: error ? "warning.dark" : "text.secondary",
+              }}
+            />
+            <Typography
+              data-cy="StudioConnectedFieldCaption"
+              variant="caption"
+              color={error ? "warning.dark" : "text.secondary"}
+              noWrap
+            >
+              {caption}
+            </Typography>
+          </Stack>
+        ) : null}
+      </Stack>
     </Stack>
+  );
+};
+
+// A slot bound to a field on ANOTHER content item. Mounted only when a
+// cross-item reference actually parsed, so the RTK Query subscriptions behind
+// useCrossModelConnectField don't exist for the vast majority of slots — and so
+// no hook runs conditionally inside SlotField, which early-returns for content
+// mode before it would reach here.
+const CrossModelConnectedField = ({
+  source,
+  fieldName,
+  isMedia,
+}: {
+  source: { modelName: string; itemZUID: string };
+  fieldName: string;
+  isMedia: boolean;
+}) => {
+  const resolution = useCrossModelConnectField(source, fieldName, isMedia);
+  if (!resolution) return null;
+
+  const modelLabel = resolution.field.source?.modelLabel || source.modelName;
+  const itemLabel = resolution.field.source?.itemLabel;
+
+  // Name the ITEM, not just the model. `filter(<zuid>)` pins one specific item,
+  // and a model's locale siblings all share its label — "Homepage" alone can't
+  // tell you whether this points at the en-US or the es one.
+  const caption =
+    resolution.status === "unresolved"
+      ? resolution.reason === "model"
+        ? `Model "${source.modelName}" no longer exists`
+        : `Field "${fieldName}" no longer exists`
+      : itemLabel
+      ? `${modelLabel} · ${itemLabel}`
+      : modelLabel;
+
+  return (
+    <Tooltip
+      title={`Linked from ${modelLabel} · ${itemLabel ?? source.itemZUID} (${
+        source.itemZUID
+      })`}
+      placement="top-start"
+    >
+      <Box>
+        <ConnectedFieldView
+          field={resolution.field}
+          caption={caption}
+          loading={resolution.status === "resolving"}
+          error={resolution.status === "unresolved"}
+        />
+      </Box>
+    </Tooltip>
   );
 };
 
@@ -208,11 +269,15 @@ const ConnectedFieldView = ({
 const ConnectItemButton = ({
   fields,
   onPick,
+  onOpenCrossModel,
   dataCy,
+  crossModelDataCy,
 }: {
   fields: ConnectField[];
   onPick: (field: ConnectField) => void;
+  onOpenCrossModel: () => void;
   dataCy: string;
+  crossModelDataCy: string;
 }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -245,47 +310,55 @@ const ConnectItemButton = ({
         slotProps={{ paper: { sx: { borderRadius: 2, mt: 0.5 } } }}
         MenuListProps={{ sx: { py: 1, minWidth: 280, maxWidth: 320 } }}
       >
-        {fields.length === 0
-          ? [
-              <MenuItem key="__empty__" disabled>
-                No fields available
-              </MenuItem>,
-            ]
-          : fields.map((field) => {
-              const meta = getFieldMeta(field.datatype);
-              return (
-                <MenuItem
-                  key={field.name}
-                  data-cy={`StudioConnectField-${field.name}`}
-                  onClick={() => {
-                    onPick(field);
-                    setAnchorEl(null);
-                  }}
-                  sx={{ px: 2, py: 1, gap: 1.5, alignItems: "center" }}
+        {fields.map((field) => {
+          const meta = getFieldMeta(field.datatype);
+          return (
+            <MenuItem
+              key={field.name}
+              data-cy={`StudioConnectField-${field.name}`}
+              onClick={() => {
+                onPick(field);
+                setAnchorEl(null);
+              }}
+              sx={{ px: 2, py: 1, gap: 1.5, alignItems: "center" }}
+            >
+              <FieldIconChip datatype={field.datatype} />
+              <Stack minWidth={0}>
+                <Typography
+                  variant="body2"
+                  fontWeight={600}
+                  color="text.primary"
+                  noWrap
                 >
-                  <FieldIconChip datatype={field.datatype} />
-                  <Stack minWidth={0}>
-                    <Typography
-                      variant="body2"
-                      fontWeight={600}
-                      color="text.primary"
-                      noWrap
-                    >
-                      {field.label}
-                    </Typography>
-                    {meta.description ? (
-                      <Typography
-                        variant="caption"
-                        color="text.secondary"
-                        noWrap
-                      >
-                        {meta.description}
-                      </Typography>
-                    ) : null}
-                  </Stack>
-                </MenuItem>
-              );
-            })}
+                  {field.label}
+                </Typography>
+                {meta.description ? (
+                  <Typography variant="caption" color="text.secondary" noWrap>
+                    {meta.description}
+                  </Typography>
+                ) : null}
+              </Stack>
+            </MenuItem>
+          );
+        })}
+        {fields.length > 0 ? <Divider sx={{ my: 1 }} /> : null}
+        {/* Always offered, even when the current item has no bindable fields —
+            that's exactly when binding another item's field is most useful. */}
+        {/* Text only — no field-type chip and no description. This row names an
+            action, not a field, so it deliberately does NOT wear the row
+            treatment its siblings above do. */}
+        <MenuItem
+          data-cy={crossModelDataCy}
+          onClick={() => {
+            setAnchorEl(null);
+            onOpenCrossModel();
+          }}
+          sx={{ px: 2, py: 1 }}
+        >
+          <Typography variant="body2" fontWeight={500} color="text.secondary">
+            Link from other content item
+          </Typography>
+        </MenuItem>
       </Menu>
     </>
   );
@@ -325,15 +398,22 @@ const SlotLabelRow = ({
   slotKey,
   label,
   connectableFields,
-  connectedField,
+  isConnected,
+  canConnect,
   onPick,
+  onOpenCrossModel,
   onDisconnect,
 }: {
   slotKey: string;
   label: string;
   connectableFields: ConnectField[];
-  connectedField?: ConnectField;
+  isConnected: boolean;
+  // Whether this slot can be bound at all. Distinct from
+  // `connectableFields.length`: the current item may have no bindable fields
+  // while another item does, so the cross-item entry point must still show.
+  canConnect: boolean;
   onPick: (field: ConnectField) => void;
+  onOpenCrossModel: () => void;
   onDisconnect: () => void;
 }) => (
   <Stack
@@ -345,7 +425,7 @@ const SlotLabelRow = ({
     <Typography variant="body2" fontWeight={600} color="text.primary">
       {label}
     </Typography>
-    {connectedField ? (
+    {isConnected ? (
       <Button
         data-cy={`StudioDisconnect-${slotKey}`}
         variant="text"
@@ -364,11 +444,13 @@ const SlotLabelRow = ({
       >
         Disconnect
       </Button>
-    ) : connectableFields.length > 0 ? (
+    ) : canConnect ? (
       <ConnectItemButton
         fields={connectableFields}
         onPick={onPick}
+        onOpenCrossModel={onOpenCrossModel}
         dataCy={`StudioConnectContent-${slotKey}`}
+        crossModelDataCy={`StudioConnectOtherItem-${slotKey}`}
       />
     ) : null}
   </Stack>
@@ -397,6 +479,9 @@ const SlotField = ({
   connectFields: ConnectField[];
   mediaFields: ConnectField[];
 }) => {
+  // Declared before the content-mode early return below, so the hook order is
+  // unconditional.
+  const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const dataCy = `StudioSlotInput-${slot.key}`;
   const isSelect = slot.control === "select";
   const multiline = slot.kind === "text";
@@ -410,7 +495,7 @@ const SlotField = ({
 
   // Which fields this slot's Connect Item dropdown offers: text/number/options
   // for text slots + alt; media + external-URL for img/video src/poster. The
-  // Parsley each field emits is decided per field by fieldToParsley (a media
+  // Parsley each field emits is decided per field by buildParsley (a media
   // asset resolves via getImage(); everything else is referenced verbatim).
   const connectableFields = !slot.layoutEditable
     ? []
@@ -420,12 +505,33 @@ const SlotField = ({
     ? mediaFields
     : [];
 
-  // Connected when the value is exactly the Parsley a known field emits —
-  // whether the user just picked it or the template already bound it. The raw
-  // expression is then hidden behind a read-only chip.
-  const connectedField = connectableFields.find(
-    (field) => fieldToParsley(field.name, field.datatype) === value
-  );
+  // Whether this slot is bindable at all — a bindable KIND of slot whose
+  // template we can rewrite. Independent of whether the current item happens to
+  // have matching fields, because binding another item's field doesn't depend
+  // on that.
+  const canConnect =
+    slot.layoutEditable && (isTextSlot || isTextAttr || isMediaAttr);
+
+  // Parse rather than regenerate. Regenerating a byte-identical string from the
+  // in-memory field list only ever worked because we wrote both sides; the
+  // template can hold whitespace we didn't write, and a cross-item reference
+  // names a model we may not have fetched yet.
+  const parsedRef = parseParsleyRef(value);
+
+  // A `this.` reference is connected only when it names a field this slot may
+  // bind — preserving today's behaviour exactly, so an unknown or
+  // non-connectable `this.` ref still falls back to a free-form input.
+  const connectedField = parsedRef?.source
+    ? undefined
+    : connectableFields.find((field) => field.name === parsedRef?.name);
+
+  // A cross-item reference is treated as connected on sight. We can't disprove
+  // it without a network round-trip, and rendering a text input while that
+  // resolves would let a keystroke land in — and overwrite — a live binding.
+  // Deliberately asymmetric with the `this.` case above, where the field list is
+  // known synchronously so "unknown" really is certain.
+  const crossModelRef = parsedRef?.source ? parsedRef : undefined;
+  const isConnected = Boolean(connectedField || crossModelRef);
 
   // Content mode is read-only. A connected (dynamic) slot uses the SAME field
   // chip as layout mode — clickable, opening its content editor. A static slot
@@ -480,13 +586,19 @@ const SlotField = ({
         slotKey={slot.key}
         label={getSlotLabel(slot)}
         connectableFields={connectableFields}
-        connectedField={connectedField}
-        onPick={(field) =>
-          onChangeSlot(slot, fieldToParsley(field.name, field.datatype))
-        }
+        isConnected={isConnected}
+        canConnect={canConnect}
+        onPick={(field) => onChangeSlot(slot, connectFieldToParsley(field))}
+        onOpenCrossModel={() => setLinkDialogOpen(true)}
         onDisconnect={() => onDisconnect(slot)}
       />
-      {connectedField ? (
+      {crossModelRef ? (
+        <CrossModelConnectedField
+          source={crossModelRef.source!}
+          fieldName={crossModelRef.name}
+          isMedia={crossModelRef.isMedia}
+        />
+      ) : connectedField ? (
         <ConnectedFieldView field={connectedField} />
       ) : isSelect ? (
         <TextField
@@ -531,6 +643,22 @@ const SlotField = ({
         <Typography variant="body2" color="text.secondary">
           {disabledReason}
         </Typography>
+      ) : null}
+      {/* Mounted only while open. Every element in the tree renders a SlotField
+          per slot, and the dialog subscribes to the whole content store plus
+          getContentModels (which has keepUnusedDataFor ~0, so each extra
+          subscriber churns a refetch). Keeping it mounted cost far more than
+          the mount does. Unmounting also makes the reset-on-close free. */}
+      {linkDialogOpen ? (
+        <StudioLinkItemDialog
+          open
+          fieldFilter={isMediaAttr ? "media" : "text"}
+          onClose={() => setLinkDialogOpen(false)}
+          onConfirm={(field) => {
+            setLinkDialogOpen(false);
+            onChangeSlot(slot, connectFieldToParsley(field));
+          }}
+        />
       ) : null}
     </Stack>
   );
