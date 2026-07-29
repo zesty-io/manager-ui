@@ -1298,6 +1298,13 @@ export const StudioWrapper = () => {
   // falls back to printing `value`, which would paint the literal
   // "{{model.filter(zuid).field}}" onto the canvas — the binding looking broken
   // when it is merely empty.
+  //
+  // This deliberately covers `this.` refs too, not just cross-item ones. An
+  // empty local media field previously left the raw Parsley as the src, and
+  // `src="{{this.logo}}"` is strictly worse than `src=""`: the browser resolves
+  // it against the base URL and fires a real request (measured: a GET for
+  // /%7B%7Bthis.logo%7D%7D → 404), whereas an empty src fires none. Scoping the
+  // "" return to `ref.source` would reintroduce exactly that.
   const resolvePreviewValue = useCallback(
     (value: string): string | null => {
       const ref = parseParsleyRef(value);
