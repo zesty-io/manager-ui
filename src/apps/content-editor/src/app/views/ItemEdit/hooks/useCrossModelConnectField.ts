@@ -61,11 +61,15 @@ export const useCrossModelConnectField = (
   // whole point of `filter(<zuid>)` is that it pins one. Read from the store
   // (the IndexedDB warm cache usually already holds it) and fall back to the
   // ZUID rather than firing a request per binding.
-  const contentItems = useSelector((state: AppState) => state.content);
+  // Subscribe to the ONE item, not the whole content map: `state.content` is
+  // rebuilt on every content change, so selecting it would re-render every
+  // cross-item chip in the panel on each keystroke anywhere in the app.
+  const entry = useSelector(
+    (state: AppState) => (state.content as any)[source?.itemZUID ?? ""]
+  );
   const languages = useSelector((state: AppState) => state.languages);
   const itemLabel = useMemo(() => {
     if (!source?.itemZUID) return undefined;
-    const entry = (contentItems as any)[source.itemZUID];
     if (!entry) return source.itemZUID;
     const title =
       entry.web?.metaTitle ||
@@ -76,7 +80,7 @@ export const useCrossModelConnectField = (
       (lang) => lang.ID === entry.meta?.langID
     )?.code;
     return langCode ? `(${langCode}) ${title}` : title;
-  }, [contentItems, languages, source?.itemZUID]);
+  }, [entry, languages, source?.itemZUID]);
 
   return useMemo(() => {
     if (!source) return null;

@@ -1029,6 +1029,16 @@ describe("Studio Inspector Panel", () => {
         linkedModelLabel
       );
 
+      // The caption must name the ITEM as well as the model. `filter()` pins one
+      // specific item and a model's locale siblings all share its label, so the
+      // model alone can't tell you which one this points at. The langCode prefix
+      // is the tell: it can only come from resolving the item, never from the
+      // model label. (Falls back to the raw ZUID when the item isn't cached.)
+      cy.getBySelector("StudioConnectedFieldCaption").should(
+        "contain.text",
+        "(en-US)"
+      );
+
       // Disconnect returns a free-form, empty input.
       cy.getBySelector("StudioDisconnect-text").click();
       cy.getBySelector("StudioSlotInput-text")
@@ -1064,6 +1074,98 @@ describe("Studio Inspector Panel", () => {
       cy.getBySelector("StudioSlotInput-src").should("not.exist");
       cy.getBySelector("StudioConnectedField").should("contain.text", "Logo");
       cy.getBySelector("StudioDisconnect-src").should("exist");
+    });
+  });
+
+  it("flags a cross-item binding whose model no longer exists", () => {
+    setStudioMode("layout");
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+
+      // A model that was deleted after the binding was written — the state you
+      // land in whenever a linked model is removed. It must still render as a
+      // connected chip (never a raw input a keystroke can destroy) but say so.
+      const expression = `{{model_deleted_${Date.now()}.filter(${linkedItemZUID}).company_name}}`;
+      const node = {
+        ...textNode(webView.ZUID, "Acme Corp"),
+        slots: [textSlot("Acme Corp", false, expression, 0)],
+      };
+
+      seedLayoutElement(
+        webView.ZUID,
+        `<h1 data-layout-id="1">${expression}</h1>`,
+        node
+      );
+
+      cy.getBySelector("StudioSlotInput-text").should("not.exist");
+      cy.getBySelector("StudioConnectedField").should("exist");
+      cy.getBySelector("StudioConnectedFieldCaption").should(
+        "contain.text",
+        "no longer exists"
+      );
+      cy.getBySelector("StudioDisconnect-text").should("exist");
+    });
+  });
+
+  it("flags a cross-item binding whose field no longer exists on a live model", () => {
+    setStudioMode("layout");
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+
+      // Model resolves, field doesn't — a different branch from the above, and
+      // the one that catches a field renamed out from under a binding.
+      const expression = `{{${linkedModelName}.filter(${linkedItemZUID}).field_deleted_${Date.now()}}}`;
+      const node = {
+        ...textNode(webView.ZUID, "Acme Corp"),
+        slots: [textSlot("Acme Corp", false, expression, 0)],
+      };
+
+      seedLayoutElement(
+        webView.ZUID,
+        `<h1 data-layout-id="1">${expression}</h1>`,
+        node
+      );
+
+      cy.getBySelector("StudioSlotInput-text").should("not.exist");
+      cy.getBySelector("StudioConnectedFieldCaption").should(
+        "contain.text",
+        "no longer exists"
+      );
+    });
+  });
+
+  it("reads back a reference written with whitespace inside the braces", () => {
+    setStudioMode("layout");
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+
+      // Hand-written Parsley is spaced however its author felt like. The parser
+      // tolerates it deliberately — we're reading template text we didn't write,
+      // so byte-identity with our own builder's output isn't available.
+      const expression = `{{ ${linkedModelName} . filter( ${linkedItemZUID} ) . company_name }}`;
+      const node = {
+        ...textNode(webView.ZUID, "Acme Corp"),
+        slots: [textSlot("Acme Corp", false, expression, 0)],
+      };
+
+      seedLayoutElement(
+        webView.ZUID,
+        `<h1 data-layout-id="1">${expression}</h1>`,
+        node
+      );
+
+      cy.getBySelector("StudioSlotInput-text").should("not.exist");
+      cy.getBySelector("StudioConnectedField").should("exist");
+      cy.getBySelector("StudioDisconnect-text").should("exist");
     });
   });
 

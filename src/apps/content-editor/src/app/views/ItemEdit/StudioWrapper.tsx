@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector, useStore } from "react-redux";
 import { MemoryRouter, useHistory, useLocation } from "react-router";
 import { cloneDeep } from "lodash";
 import { AppState } from "../../../../../../shell/store/types";
@@ -1273,11 +1273,18 @@ export const StudioWrapper = () => {
     },
     []
   );
-  // `contentItems` changes on every content keystroke anywhere in the app. Read
-  // it through a ref so resolvePreviewValue — and therefore handleSlotChange,
-  // which is handed straight to the panel — keeps a stable identity.
-  const contentItemsRef = useRef(contentItems);
-  contentItemsRef.current = contentItems;
+  // Read content straight off the store rather than through the `contentItems`
+  // render value. Two reasons: it keeps resolvePreviewValue — and therefore
+  // handleSlotChange, handed straight to the panel — at a stable identity even
+  // though `contentItems` changes on every keystroke; and it stays correct
+  // inside the fetch-and-replay `.then()` below, which runs after the reducer
+  // but BEFORE React re-renders, so any render-time snapshot would be stale
+  // exactly when the replay needs it.
+  const store = useStore();
+  const getContentItems = useCallback(
+    () => (store.getState() as AppState).content,
+    [store]
+  );
 
   // On connect, the panel emits a Parsley ref. For the LIVE preview we show the
   // field's RESOLVED value (its actual text, or a resolved image URL) instead of
@@ -1310,7 +1317,7 @@ export const StudioWrapper = () => {
       const ref = parseParsleyRef(value);
       if (!ref) return null;
       const item = ref.source
-        ? contentItemsRef.current[ref.source.itemZUID]
+        ? getContentItems()[ref.source.itemZUID]
         : pageItem;
       const raw = (item?.data as Record<string, any>)?.[ref.name];
       if (raw === undefined || raw === null || raw === "") return "";
@@ -1321,7 +1328,7 @@ export const StudioWrapper = () => {
       }
       return String(raw);
     },
-    [pageItem]
+    [getContentItems, pageItem]
   );
 
   // Parsley names a model by its reference name; fetchItem needs its ZUID.
@@ -1407,7 +1414,7 @@ export const StudioWrapper = () => {
       // for "we couldn't resolve this yet".
       const ref = parseParsleyRef(value);
       const refItemZUID = ref?.source?.itemZUID;
-      if (refItemZUID && !contentItemsRef.current[refItemZUID]?.data) {
+      if (refItemZUID && !getContentItems()[refItemZUID]?.data) {
         const refModelZUID = modelZUIDByName[ref!.source!.modelName];
         if (refModelZUID) {
           Promise.resolve(dispatch(fetchItem(refModelZUID, refItemZUID))).then(
@@ -1452,6 +1459,7 @@ export const StudioWrapper = () => {
     },
     [
       dispatch,
+      getContentItems,
       handleLayoutElementAttrUpdate,
       handleLayoutTextUpdate,
       modelZUIDByName,
