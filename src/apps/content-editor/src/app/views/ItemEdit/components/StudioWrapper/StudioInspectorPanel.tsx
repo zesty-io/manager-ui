@@ -185,26 +185,17 @@ const ConnectedFieldView = ({
         {loading ? (
           <Skeleton width={90} height={12} />
         ) : caption ? (
-          // The link icon is what makes "this points somewhere else" legible at
-          // a glance. Without it the caption reads as a field description, and a
-          // cross-item binding is indistinguishable from a local one.
-          <Stack direction="row" alignItems="center" gap={0.5} minWidth={0}>
-            <AddLinkRounded
-              sx={{
-                fontSize: 14,
-                flexShrink: 0,
-                color: error ? "warning.dark" : "text.secondary",
-              }}
-            />
-            <Typography
-              data-cy="StudioConnectedFieldCaption"
-              variant="caption"
-              color={error ? "warning.dark" : "text.secondary"}
-              noWrap
-            >
-              {caption}
-            </Typography>
-          </Stack>
+          // The caption names the source model AND item — a local `this.`
+          // binding renders no caption at all, so its presence is what marks a
+          // slot as pointing somewhere else.
+          <Typography
+            data-cy="StudioConnectedFieldCaption"
+            variant="caption"
+            color={error ? "warning.dark" : "text.secondary"}
+            noWrap
+          >
+            {caption}
+          </Typography>
         ) : null}
       </Stack>
     </Stack>
