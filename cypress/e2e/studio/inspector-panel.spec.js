@@ -852,6 +852,31 @@ describe("Studio Inspector Panel", () => {
     });
   });
 
+  it("closes the Inspector after discarding via Cancel", () => {
+    setStudioMode("layout");
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+
+      seedLayoutElement(
+        webView.ZUID,
+        `<h1 data-layout-id="1">Hello</h1>`,
+        headingNode(webView.ZUID)
+      );
+      cy.getBySelector("StudioInspectorPanel").should("exist");
+
+      selectMuiOption("StudioTagSelect", "h2");
+      cy.getBySelector("StudioLayoutCancelButton").should("exist").click();
+
+      // Discard reloads the preview and rebuilds the tree exactly like a save
+      // does, so it has to leave the same clean slate behind.
+      cy.getBySelector("StudioInspectorPanel").should("not.exist");
+      cy.getBySelector("StudioLayoutCancelButton").should("not.exist");
+    });
+  });
+
   it("offers Link from other content item below the current item's fields", () => {
     setStudioMode("layout");
     cy.apiRequest({

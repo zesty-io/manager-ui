@@ -823,10 +823,25 @@ export const StudioWrapper = () => {
   const saveBarCanPublish = isLayoutMode
     ? canPublishPendingLayout
     : canPublishPendingContent;
+  // Saving AND discarding both reload the preview and rebuild the layers tree, so
+  // afterwards neither the canvas nor the tree row is still selected. Leaving the
+  // Inspector open would describe a selection nothing else agrees with.
+  //
+  // Only the Inspector — a content-mode field editor is deliberately left alone,
+  // since dropping it would eject the user from what they were editing.
+  const deselectAfterPreviewReload = useCallback(() => {
+    if (inspectorSelection) clearSelection();
+    clearLayoutSelection();
+  }, [clearLayoutSelection, clearSelection, inspectorSelection]);
+
+  // Discard runs the deselect once the frame has actually reloaded, so a tree
+  // re-emit racing the reload can't reinstate the selection we just dropped.
   const handleSaveBarCancel = isLayoutMode
-    ? () => handleDiscardPendingLayoutSave()
+    ? () => handleDiscardPendingLayoutSave(deselectAfterPreviewReload)
     : () => {
-        void discardAllContent();
+        void Promise.resolve(discardAllContent()).then(
+          deselectAfterPreviewReload
+        );
       };
   // The "Save Changes" bar button opens the modal; the modal's Save All /
   // Save & Publish All buttons run the active mode's batch handlers and close.
@@ -835,14 +850,7 @@ export const StudioWrapper = () => {
   const closeModalUnlessFailed = (result: { failedCount?: number } | void) => {
     if (result && result.failedCount) return;
     setShowSaveChangesModal(false);
-    // A successful save rebuilds the layers tree and reloads the preview, so
-    // neither the tree row nor the canvas is still selected. Leaving the
-    // Inspector open would describe a selection nothing else agrees with.
-    //
-    // Only the Inspector — a content-mode field editor is deliberately left
-    // alone, since dropping it would eject the user from what they were editing.
-    if (inspectorSelection) clearSelection();
-    clearLayoutSelection();
+    deselectAfterPreviewReload();
   };
   const handleModalSaveAll = () => {
     if (!saveBarCanSave) return;
