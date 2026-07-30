@@ -176,10 +176,19 @@ jobs:
 
             STEP 4 — Evidence discipline, and your turn budget.
             A finding counts only if you REPRODUCED IT TWICE. Reset to a known state and do it
-            again before you write it down. The moment a finding is confirmed, screenshot it
-            with mcp__playwright__browser_take_screenshot using a short descriptive filename
-            (e.g. empty-title-saves-blank.png) — capture it there and then, not later, because
-            the state that shows the bug will be gone. Discard anything you cannot reproduce.
+            again before you write it down. Discard anything you cannot reproduce.
+
+            Evidence is captured by CALLING A TOOL, not by writing a filename. The order is
+            strict and there is no exception:
+              1. Reproduce the failure so the broken state is on screen.
+              2. CALL mcp__playwright__browser_take_screenshot with an explicit `filename`
+                 argument (e.g. empty-title-saves-blank.png). Do this while the state is on
+                 screen — it is gone once you navigate away.
+              3. Only then write the finding, referencing exactly the filename you just passed.
+            A SCREENSHOT: token for a file you did not actually create is a fabricated citation:
+            it makes the report look evidenced when it is not, and a later step will flag it as
+            missing. If you have no screenshot for a finding, write the finding WITHOUT any
+            SCREENSHOT: line rather than inventing one.
 
             You have a HARD limit of 80 turns and there is no warning before it is reached.
             Everything you have not written to REPORT_FILE when you hit it is lost, and the run
@@ -213,6 +222,12 @@ jobs:
             "No reproducible edge-case failures found on the surfaces this PR changes."
             AN EMPTY REPORT IS A VALID AND COMMON OUTCOME. Never pad it with speculative or
             unreproduced findings, and never report a finding you did not screenshot.
+
+            Before you finish, REWRITE THE SUMMARY LINE so it describes the run as completed.
+            The early draft you wrote mid-run will contain provisional wording like "still
+            investigating" — that is correct while you are working and wrong once you stop. It
+            is the first thing a reviewer reads, and left stale it makes a finished pass look
+            abandoned. State what you covered and, if you ran short of turns, what you did not.
 
             Finish by calling mcp__playwright__browser_close. Do not post any comment
             yourself — a later step does that.

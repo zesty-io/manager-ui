@@ -32,7 +32,7 @@ fi
 if [ ! -d "$ARTIFACTS_DIR" ] || [ -z "$(find "$ARTIFACTS_DIR" -type f -name '*.png' 2>/dev/null)" ]; then
     echo "No screenshots in $ARTIFACTS_DIR."
     # Still strip the tokens so the comment never renders a broken SCREENSHOT: link.
-    python3 ci/scripts/rewrite_screenshot_links.py "$REPORT_FILE" /dev/null
+    python3 ci/scripts/rewrite_screenshot_links.py "$REPORT_FILE" /dev/null "$ARTIFACTS_DIR"
     exit 0
 fi
 
@@ -41,7 +41,7 @@ find "$ARTIFACTS_DIR" -type f -name "*.png" -exec basename {} \;
 
 gsutil -m cp "$ARTIFACTS_DIR"/*.png "$BUCKET/$PREFIX/" || {
     echo "::warning::Failed to upload screenshots to GCS; the comment will reference the run artifact instead."
-    python3 ci/scripts/rewrite_screenshot_links.py "$REPORT_FILE" /dev/null
+    python3 ci/scripts/rewrite_screenshot_links.py "$REPORT_FILE" /dev/null "$ARTIFACTS_DIR"
     exit 0
 }
 
@@ -75,7 +75,7 @@ else
     echo "::warning::Screenshots uploaded but not addressable; the comment will reference the run artifact."
 fi
 
-python3 ci/scripts/rewrite_screenshot_links.py "$REPORT_FILE" "$URL_MAP"
+python3 ci/scripts/rewrite_screenshot_links.py "$REPORT_FILE" "$URL_MAP" "$ARTIFACTS_DIR"
 rm -f "$URL_MAP"
 
 echo "***** DONE *****"
