@@ -122,6 +122,7 @@ jobs:
       # "the QA pass was cut short" — so swallow it and let the reporting steps run on whatever
       # the agent managed to write.
       - uses: anthropics/claude-code-action@1dc994ee7a008f0ecc866d9ac23ef036b7229f84 # v1.0.127
+        id: agent
         continue-on-error: true
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -189,13 +190,13 @@ jobs:
             step verifies every reference against the files on disk and flags any that are
             missing, so an invented one makes the whole report look untrustworthy.
 
-            You have a HARD limit of 80 turns and there is no warning before it is reached.
+            You have a HARD limit of 150 turns and there is no warning before it is reached.
             Everything you have not written to REPORT_FILE when you hit it is lost, and the run
             produces nothing at all. So:
               - Write REPORT_FILE once early, as soon as you know the scope, even if it only
                 says no findings yet.
               - Rewrite it immediately after each confirmed finding. Never batch them up.
-              - Once you have spent roughly 60 turns, stop probing, finalise the report, and
+              - Once you have spent roughly 120 turns, stop probing, finalise the report, and
                 close the browser — an accurate partial report beats an interrupted perfect one.
             If you stopped early, say so in the summary line and name what you did not get to.
 
@@ -235,7 +236,20 @@ jobs:
             --mcp-config '{"mcpServers":{"playwright":{"command":"npx","args":["@playwright/mcp","--headless","--isolated","--no-sandbox","--storage-state","${{ github.workspace }}/auth-state.json","--output-dir","${{ github.workspace }}/qa-artifacts","--viewport-size","1920x1080","--test-id-attribute","data-cy"]}}}'
             --allowedTools "mcp__playwright__browser_navigate,mcp__playwright__browser_navigate_back,mcp__playwright__browser_snapshot,mcp__playwright__browser_find,mcp__playwright__browser_click,mcp__playwright__browser_type,mcp__playwright__browser_fill_form,mcp__playwright__browser_select_option,mcp__playwright__browser_hover,mcp__playwright__browser_drag,mcp__playwright__browser_drop,mcp__playwright__browser_press_key,mcp__playwright__browser_wait_for,mcp__playwright__browser_tabs,mcp__playwright__browser_take_screenshot,mcp__playwright__browser_console_messages,mcp__playwright__browser_network_requests,mcp__playwright__browser_evaluate,mcp__playwright__browser_resize,mcp__playwright__browser_handle_dialog,mcp__playwright__browser_close,Bash(gh pr diff:*),Bash(gh pr view:*),Bash(git diff:*),Bash(git log:*),Read,Write,Grep,Glob"
             --model claude-sonnet-5
-            --max-turns 80
+            --max-turns 150
+
+      # continue-on-error keeps a cut-short pass from failing the PR, but it also turns the step
+      # green, which made a truncated run indistinguishable from a complete one — the agent
+      # stopped mid-probe and its provisional summary shipped as if it were final. Say so, on
+      # the run and in the comment, so partial coverage is never mistaken for a clean bill.
+      - name: Note Incomplete Run
+        if: always() && steps.agent.outcome == 'failure'
+        run: |
+          echo "::warning::The QA agent did not run to completion (turn limit or error). Findings are real but coverage is partial."
+          FILE="negative-qa-comment.md"
+          if [ -s "$FILE" ]; then
+            printf '\n\n---\n_⚠️ This pass did not run to completion — the agent stopped before finishing. Anything reported above still stands, but coverage is partial and the summary may read as provisional._\n' >> "$FILE"
+          fi
 
       - name: Upload Screenshots and Rewrite Links
         if: always()
