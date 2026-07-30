@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
+  ConnectField,
   ElementLayoutPatch,
   ElementSlot,
   InteractionMode,
@@ -10,6 +11,7 @@ import {
   SelectedElement,
 } from "./studioTypes";
 import { NO_TAG, isTextTag } from "../components/StudioWrapper/studioTags";
+import { parseParsleyRef } from "../components/StudioWrapper/studioParsley";
 
 export type LayersFlatRow = {
   node: LayersTreeNode;
@@ -78,6 +80,10 @@ type Args = {
   ) => void;
   codeFileNameById: Record<string, string>;
   fieldsState: Record<string, any>;
+  // The field the user picked, keyed `codeId::layoutId::slotKey`. Supplied by
+  // StudioWrapper so a freshly connected row can be labelled with the real field
+  // rather than a name recovered from the expression.
+  connectedBySlot: Record<string, ConnectField>;
   selectedElement: SelectedElement | null;
   selectedLayout: LayoutSelection | null;
   inspectorSelection: InspectorSelection | null;
@@ -154,6 +160,30 @@ const isPanelNode = (node: LayersTreeNode, interactionMode: InteractionMode) =>
     node.kind === "text" ||
     (node.kind === "field" && interactionMode === "layout"));
 
+// A leaf element's single addressable content row — the text run or bound
+// field carrying its Text ("Value") slot. Recognized by its layoutPatch
+// addressing the leaf element (that's how the bridge marks a leaf's own runs),
+// so a nested element's text never matches. Returns null when the element has
+// no such row, or has several — each run is then reachable only through its
+// own tree row.
+const findLoneTextSlotChild = (node: LayersTreeNode): LayersTreeNode | null => {
+  const matches: LayersTreeNode[] = [];
+  const visit = (children: LayersTreeNode[]) => {
+    children.forEach((child) => {
+      if (
+        child.layoutPatch?.layoutId === node.layoutId &&
+        child.layoutPatch?.codeId === node.codeId &&
+        (child.slots || []).some((slot) => slot.kind === "text")
+      ) {
+        matches.push(child);
+      }
+      visit(child.children);
+    });
+  };
+  visit(node.children);
+  return matches.length === 1 ? matches[0] : null;
+};
+
 export const useStudioLayersTree = ({
   interactionMode,
   postCommandToBridge,
@@ -163,15 +193,18 @@ export const useStudioLayersTree = ({
   refreshInspectorSlots,
   codeFileNameById,
   fieldsState,
+  connectedBySlot,
   selectedElement,
   selectedLayout,
   inspectorSelection,
   dndDisabled,
 }: Args) => {
   const [tree, setTree] = useState<LayersTreeNode[] | null>(null);
-  // Everything is expanded by default; we only track what the user explicitly
-  // collapses, so nodes that appear on later re-emits start open too.
-  const [collapsedIds, setCollapsedIds] = useState<Set<string>>(new Set());
+  // Rows the user has flipped AWAY from their default expansion. Root rows
+  // default OPEN (a fresh panel shows one level); everything else defaults
+  // CLOSED. Storing the delta rather than an absolute set keeps both defaults
+  // applying to nodes that first appear in later re-emits.
+  const [toggledIds, setToggledIds] = useState<Set<string>>(new Set());
 
   const handleLayersTree = useCallback((msg: any) => {
     const nextTree: LayersTreeNode[] = Array.isArray(msg?.tree)
@@ -182,7 +215,7 @@ export const useStudioLayersTree = ({
 
   const resetTree = useCallback(() => {
     setTree(null);
-    setCollapsedIds(new Set());
+    setToggledIds(new Set());
   }, []);
 
   const { nodeById, parentById } = useMemo(() => {
@@ -198,6 +231,20 @@ export const useStudioLayersTree = ({
     index(tree || [], null);
     return { nodeById: byId, parentById: parents };
   }, [tree]);
+
+  // Whether a row is expanded before the user ever touches it: only the
+  // tree's root rows (no parent) are open, showing one level; everything
+  // below starts closed.
+  const isDefaultOpen = useCallback(
+    (node: LayersTreeNode) => !parentById.get(node.id),
+    [parentById]
+  );
+
+  const isNodeExpanded = useCallback(
+    (node: LayersTreeNode) =>
+      isDefaultOpen(node) ? !toggledIds.has(node.id) : toggledIds.has(node.id),
+    [isDefaultOpen, toggledIds]
+  );
 
   const selectedNodeId = useMemo(() => {
     // An open Inspector panel owns the highlight in both modes.
@@ -249,8 +296,34 @@ export const useStudioLayersTree = ({
     selectedLayout,
   ]);
 
+  // A selection (canvas click, drill-down, inspector open) can land on a row
+  // whose ancestors are collapsed — expand them so the selected row actually
+  // renders; the panel's scroll-into-view can't reach an unrendered row.
+  // Deliberately NOT keyed on toggledIds: collapsing an ancestor of the
+  // current selection afterwards is a user choice this must not fight.
+  useEffect(() => {
+    if (!selectedNodeId) return;
+    setToggledIds((prev) => {
+      const next = new Set(prev);
+      let changed = false;
+      let parent = parentById.get(selectedNodeId) || null;
+      while (parent) {
+        // Force-expand relative to each row's default: a default-open row
+        // expands by REMOVING its toggle, a default-closed one by ADDING it.
+        if (isDefaultOpen(parent)) {
+          if (next.delete(parent.id)) changed = true;
+        } else if (!next.has(parent.id)) {
+          next.add(parent.id);
+          changed = true;
+        }
+        parent = parentById.get(parent.id) || null;
+      }
+      return changed ? next : prev;
+    });
+  }, [isDefaultOpen, parentById, selectedNodeId]);
+
   const toggleNode = useCallback((nodeId: string) => {
-    setCollapsedIds((prev) => {
+    setToggledIds((prev) => {
       const next = new Set(prev);
       if (next.has(nodeId)) {
         next.delete(nodeId);
@@ -278,12 +351,34 @@ export const useStudioLayersTree = ({
       if (node.kind === "field") {
         // Dynamic content is labeled by its field name, not its value.
         const field = node.fieldZuid ? fieldsState[node.fieldZuid] : null;
-        return field?.label || field?.name || node.fieldType || "Field";
+        if (field?.label || field?.name) return field.label || field.name;
+
+        // A freshly connected slot has no fieldZuid — the bridge is handed the
+        // Parsley expression and never learns which field it refers to. Use the
+        // ConnectField the user actually picked.
+        // A field row represents one binding, so look up THAT slot rather than
+        // scanning the element's slots — a prefix match could label a `src` row
+        // with the field picked for `alt`.
+        const slotKey = node.slots?.[0]?.key;
+        const picked =
+          node.layoutPatch && slotKey
+            ? connectedBySlot[
+                `${node.layoutPatch.codeId}::${node.layoutPatch.layoutId}::${slotKey}`
+              ]
+            : undefined;
+        if (picked) return picked.label || picked.name;
+
+        // Nothing recorded (a binding that predates this session reaches here
+        // only if its markers are missing) — name it from the expression.
+        const ref = parseParsleyRef(node.slots?.[0]?.sourceValue || "");
+        if (ref) return ref.name;
+
+        return node.fieldType || "Field";
       }
       // Static text shows its actual content.
       return node.label || "";
     },
-    [codeFileNameById, fieldsState]
+    [codeFileNameById, connectedBySlot, fieldsState]
   );
 
   const isNodeSelectable = useCallback(
@@ -311,7 +406,7 @@ export const useStudioLayersTree = ({
     ) => {
       nodes.forEach((node) => {
         const hasChildren = node.children.length > 0;
-        const expanded = !collapsedIds.has(node.id);
+        const expanded = isNodeExpanded(node);
         rows.push({
           node,
           depth,
@@ -337,9 +432,9 @@ export const useStudioLayersTree = ({
     return rows;
   }, [
     dndDisabled,
-    collapsedIds,
     getRowLabel,
     interactionMode,
+    isNodeExpanded,
     isNodeSelectable,
     selectedNodeId,
     tree,
@@ -396,6 +491,48 @@ export const useStudioLayersTree = ({
         return fieldName ? { ...slot, value: fieldName } : slot;
       }),
     [fieldsState, interactionMode]
+  );
+
+  // Open the Inspector for a canvas-selected layout element, mirroring the
+  // layers tree (layout mode only — content-mode canvas clicks route straight
+  // to the field editor). Which panel opens depends on the element:
+  //   - An element with its own attribute slots (an <img>'s src, an <a>'s
+  //     href) opens ITS panel, like clicking its tree row.
+  //   - A bare text leaf (an <h1>, a <p> — no attribute slots) opens its lone
+  //     text run's / bound field's panel — titled "Text", holding the Value
+  //     input — like clicking that child's tree row. The canvas can't select
+  //     the child directly, so the element click stands in for it.
+  // No-op when the tree hasn't arrived yet or nothing is panel-worthy; the
+  // selection stands and any open Inspector was already closed by
+  // applyLayoutSelection.
+  const openInspectorForLayoutElement = useCallback(
+    (codeId: string, layoutId: string) => {
+      if (interactionMode !== "layout") return;
+      for (const node of nodeById.values()) {
+        if (
+          node.kind === "element" &&
+          node.layoutId === layoutId &&
+          node.codeId === codeId
+        ) {
+          const textChild = node.slots?.length
+            ? null
+            : findLoneTextSlotChild(node);
+          const target =
+            textChild && isPanelNode(textChild, interactionMode)
+              ? textChild
+              : node;
+          if (!isPanelNode(target, interactionMode)) return;
+          applyInspectorSelection({
+            nodeId: target.id,
+            tagName: target.tagName || "",
+            slots: resolveSlotValues(target.slots),
+            layoutPatch: target.layoutPatch ?? null,
+          });
+          return;
+        }
+      }
+    },
+    [applyInspectorSelection, interactionMode, nodeById, resolveSlotValues]
   );
 
   const handleNodeSelect = useCallback(
@@ -563,6 +700,7 @@ export const useStudioLayersTree = ({
     resetTree,
     toggleNode,
     handleNodeSelect,
+    openInspectorForLayoutElement,
     canDrop,
     handleNodeDrop,
   };

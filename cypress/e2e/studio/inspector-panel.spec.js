@@ -7,6 +7,12 @@ import { API_ENDPOINTS } from "../../support/api";
 describe("Studio Inspector Panel", () => {
   let studioPath = "/";
   let modelZUID = "";
+  // The second seeded model + item, used as the cross-item link target.
+  let linkedModelZUID = "";
+  let linkedModelName = "";
+  let linkedModelLabel = "";
+  let linkedItemZUID = "";
+  let linkedItemTitle = "";
 
   const postBridgeMessage = (message) => {
     cy.getBySelector("StudioHeader").should("exist");
@@ -207,15 +213,101 @@ describe("Studio Inspector Panel", () => {
     openPanelFor(node);
   };
 
+  // Open the link dialog for a slot and pick the seeded "Studio Linked" item.
+  const openLinkDialogAndPickItem = (slotKey) => {
+    cy.getBySelector(`StudioConnectContent-${slotKey}`).click();
+    cy.getBySelector(`StudioConnectOtherItem-${slotKey}`).click();
+    cy.getBySelector("StudioLinkItemDialog").should("exist");
+    // Nothing picked yet.
+    cy.getBySelector("StudioLinkItemConfirm").should("be.disabled");
+
+    cy.get('[data-cy="StudioLinkItemSearchInput"] input').type("Studio Linked");
+    cy.wait("@linkSearch");
+    // Match by name rather than position — the store also holds the studio page
+    // item, and option order is by createdAt.
+    cy.contains('[role="option"]', "Studio Linked").click();
+
+    // Item picked, field not — still blocked.
+    cy.getBySelector("StudioLinkItemConfirm").should("be.disabled");
+  };
+
+  // Open the "Field to connect" select and pick an option. The select is
+  // disabled while the other model's fields load, and a click on a disabled MUI
+  // Select is silently swallowed — so wait for it to enable first rather than
+  // clicking into a dead control.
+  const pickLinkField = (fieldName) => {
+    cy.getBySelector("StudioLinkItemFieldSelect").should("not.be.disabled");
+    selectMuiOption("StudioLinkItemFieldSelect", fieldName);
+  };
+
+  // Drives the "Link from other content item" dialog end to end: search, pick
+  // the seeded item, pick a field, confirm.
+  const linkOtherItem = (slotKey, fieldName) => {
+    openLinkDialogAndPickItem(slotKey);
+    pickLinkField(fieldName);
+    cy.getBySelector("StudioLinkItemConfirm").should("not.be.disabled").click();
+    cy.getBySelector("StudioLinkItemDialog").should("not.exist");
+  };
+
+  // The search index is eventually consistent, so a freshly seeded item may not
+  // come back from /search/items yet. Stub ONLY this query — the studio's own
+  // path resolution also searches, and blanket-stubbing would break it. The
+  // stubbed body carries the REAL model + item ZUIDs, so content/models and
+  // content/models/:zuid/fields are still hit for real and the model-name and
+  // field-datatype resolution chain is genuinely exercised.
+  const stubLinkSearch = () =>
+    cy
+      .intercept(
+        {
+          method: "GET",
+          url: "**/search/items**",
+          query: { q: "Studio Linked" },
+        },
+        {
+          statusCode: 200,
+          body: {
+            data: [
+              {
+                meta: {
+                  ZUID: linkedItemZUID,
+                  contentModelZUID: linkedModelZUID,
+                  langID: 1,
+                  createdAt: "2020-01-01T00:00:00Z",
+                },
+                web: {
+                  metaTitle: linkedItemTitle,
+                  metaLinkText: linkedItemTitle,
+                  path: "/studio-linked/",
+                },
+                data: { company_name: "Acme Corp" },
+                publishing: null,
+              },
+            ],
+          },
+        }
+      )
+      .as("linkSearch");
+
   before(() => {
     cy.task("seed:content", "fixtures/studio.json").then(({ model, items }) => {
       modelZUID = model.ZUID;
       studioPath = `/${items[0].web.pathPart}`;
     });
+    cy.task("seed:content", "fixtures/studio-linked.json").then(
+      ({ model, items }) => {
+        linkedModelZUID = model.ZUID;
+        // The Parsley reference name — formatName(label), not the label.
+        linkedModelName = model.name;
+        linkedModelLabel = model.label;
+        linkedItemZUID = items[0].meta.ZUID;
+        linkedItemTitle = items[0].web.metaTitle;
+      }
+    );
   });
 
   after(() => {
     if (modelZUID) cy.deleteModel(modelZUID);
+    if (linkedModelZUID) cy.deleteModel(linkedModelZUID);
   });
 
   beforeEach(() => {
@@ -333,6 +425,13 @@ describe("Studio Inspector Panel", () => {
         ...elementNode(webView.ZUID, "div", []),
         children: [hello],
       });
+
+      // The tree defaults to one level: the host wraps `hello` in a Text
+      // placeholder (div → No Tag → hello), which starts collapsed. Expand it
+      // via its chevron — clicking the row itself would open ITS panel.
+      cy.get(`[data-cy="StudioLayersRow"][data-node-id="${hello.id}:noTag"]`)
+        .find('[data-cy="StudioLayersRowChevron"]')
+        .click();
 
       // This run had no slot at all before it was addressable — the panel could
       // not reach text that shared its element with another node.
@@ -723,6 +822,464 @@ describe("Studio Inspector Panel", () => {
         expect(request.body.code).to.contain("controls");
         expect(request.body.code).to.contain("<video");
       });
+    });
+  });
+
+  it("closes the Inspector after a successful save", () => {
+    setStudioMode("layout");
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+      cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as("updateWebView");
+
+      seedLayoutElement(
+        webView.ZUID,
+        `<h1 data-layout-id="1">Hello</h1>`,
+        headingNode(webView.ZUID)
+      );
+      cy.getBySelector("StudioInspectorPanel").should("exist");
+
+      selectMuiOption("StudioTagSelect", "h2");
+      saveAllViaModal("layout");
+      cy.wait("@updateWebView");
+
+      // A save rebuilds the tree and reloads the preview, so the row and the
+      // canvas are both deselected — the Inspector must not be left describing a
+      // selection nothing else agrees with.
+      cy.getBySelector("StudioInspectorPanel").should("not.exist");
+    });
+  });
+
+  it("closes the Inspector after discarding via Cancel", () => {
+    setStudioMode("layout");
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+
+      seedLayoutElement(
+        webView.ZUID,
+        `<h1 data-layout-id="1">Hello</h1>`,
+        headingNode(webView.ZUID)
+      );
+      cy.getBySelector("StudioInspectorPanel").should("exist");
+
+      selectMuiOption("StudioTagSelect", "h2");
+      cy.getBySelector("StudioLayoutCancelButton").should("exist").click();
+
+      // Discard reloads the preview and rebuilds the tree exactly like a save
+      // does, so it has to leave the same clean slate behind.
+      cy.getBySelector("StudioInspectorPanel").should("not.exist");
+      cy.getBySelector("StudioLayoutCancelButton").should("not.exist");
+    });
+  });
+
+  it("offers Link from other content item below the current item's fields", () => {
+    setStudioMode("layout");
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+
+      seedLayoutElement(
+        webView.ZUID,
+        `<h1 data-layout-id="1">Hello</h1>`,
+        textNode(webView.ZUID, "Hello")
+      );
+
+      cy.getBySelector("StudioConnectContent-text").click();
+      // The current item's fields are still offered; the cross-item row is
+      // appended after them, never in place of them.
+      cy.getBySelector("StudioConnectField-title").should("exist");
+      cy.getBySelector("StudioConnectOtherItem-text")
+        .should("exist")
+        .and("contain.text", "Link from other content item");
+    });
+  });
+
+  it("links a text field from another content item, saving a filter() expression", () => {
+    setStudioMode("layout");
+    stubLinkSearch();
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+      cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as("updateWebView");
+
+      seedLayoutElement(
+        webView.ZUID,
+        `<h1 data-layout-id="1">Hello</h1>`,
+        textNode(webView.ZUID, "Hello")
+      );
+
+      linkOtherItem("text", "company_name");
+
+      // Shown as a chip naming the field, with the source model underneath —
+      // never the raw expression in an editable input.
+      cy.getBySelector("StudioConnectedField").should(
+        "contain.text",
+        "Company Name"
+      );
+      cy.getBySelector("StudioSlotInput-text").should("not.exist");
+
+      // An addressed text run is staged from the bridge's echo, not from the
+      // host's write — the bridge puts the Parsley in the run, snapshots the
+      // leaf's innerHTML, and echoes THAT (then swaps in the resolved value for
+      // display). Stand in for the (cross-origin) bridge.
+      const expression = `{{${linkedModelName}.filter(${linkedItemZUID}).company_name}}`;
+      postBridgeMessage({
+        type: "LAYOUT_CONTENT_UPDATE",
+        codeId: webView.ZUID,
+        layoutId: "1",
+        innerHtml: expression,
+      });
+
+      cy.getBySelector("StudioLayoutSaveBar").should("exist");
+      saveAllViaModal("layout");
+      cy.wait("@updateWebView").then(({ request }) => {
+        expect(request.body.code).to.contain(expression);
+      });
+    });
+  });
+
+  it("links a media field from another item to an img src, emitting getImage()", () => {
+    setStudioMode("layout");
+    stubLinkSearch();
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+      cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as("updateWebView");
+
+      seedLayoutElement(
+        webView.ZUID,
+        `<img data-layout-id="1" src="a.jpg" />`,
+        imgNode(webView.ZUID)
+      );
+
+      openLinkDialogAndPickItem("src");
+
+      // A media slot filters the OTHER model's fields the same way it filters
+      // the current item's — media only, never text.
+      cy.getBySelector("StudioLinkItemFieldSelect").should("not.be.disabled");
+      cy.getBySelector("StudioLinkItemFieldSelect").parent().click();
+      cy.getBySelector("StudioLinkItemField-logo").should("exist");
+      cy.getBySelector("StudioLinkItemField-company_name").should("not.exist");
+      cy.getBySelector("StudioLinkItemField-logo").click();
+      cy.getBySelector("StudioLinkItemConfirm").click();
+
+      cy.getBySelector("StudioSlotInput-src").should("not.exist");
+      cy.getBySelector("StudioLayoutSaveBar").should("exist");
+      saveAllViaModal("layout");
+      cy.wait("@updateWebView").then(({ request }) => {
+        expect(request.body.code).to.contain(
+          `{{${linkedModelName}.filter(${linkedItemZUID}).logo.getImage()}}`
+        );
+      });
+    });
+  });
+
+  it("offers only text fields when linking another item to an alt attribute", () => {
+    setStudioMode("layout");
+    stubLinkSearch();
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+
+      seedLayoutElement(
+        webView.ZUID,
+        `<img data-layout-id="1" src="a.jpg" alt="hero" />`,
+        imgNode(webView.ZUID)
+      );
+
+      openLinkDialogAndPickItem("alt");
+
+      cy.getBySelector("StudioLinkItemFieldSelect").should("not.be.disabled");
+      cy.getBySelector("StudioLinkItemFieldSelect").parent().click();
+      cy.getBySelector("StudioLinkItemField-company_name").should("exist");
+      cy.getBySelector("StudioLinkItemField-logo").should("not.exist");
+    });
+  });
+
+  it("closes the link dialog without committing, from Cancel and from the X", () => {
+    setStudioMode("layout");
+    stubLinkSearch();
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+
+      seedLayoutElement(
+        webView.ZUID,
+        `<h1 data-layout-id="1">Hello</h1>`,
+        textNode(webView.ZUID, "Hello")
+      );
+
+      // The field select only appears once an item is chosen.
+      cy.getBySelector("StudioConnectContent-text").click();
+      cy.getBySelector("StudioConnectOtherItem-text").click();
+      cy.getBySelector("StudioLinkItemFieldSelect").should("not.exist");
+      cy.getBySelector("StudioLinkItemCancel").click();
+      cy.getBySelector("StudioLinkItemDialog").should("not.exist");
+
+      cy.getBySelector("StudioConnectContent-text").click();
+      cy.getBySelector("StudioConnectOtherItem-text").click();
+      cy.getBySelector("StudioLinkItemDialogClose").click();
+      cy.getBySelector("StudioLinkItemDialog").should("not.exist");
+
+      // Neither route wrote anything.
+      cy.getBySelector("StudioSlotInput-text")
+        .should("exist")
+        .and("have.value", "Hello");
+      cy.getBySelector("StudioLayoutSaveBar").should("not.exist");
+    });
+  });
+
+  it("reads back an existing cross-item binding as a connected field chip", () => {
+    setStudioMode("layout");
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+
+      const expression = `{{${linkedModelName}.filter(${linkedItemZUID}).company_name}}`;
+      const node = {
+        ...textNode(webView.ZUID, "Acme Corp"),
+        slots: [textSlot("Acme Corp", false, expression, 0)],
+      };
+
+      seedLayoutElement(
+        webView.ZUID,
+        `<h1 data-layout-id="1">${expression}</h1>`,
+        node
+      );
+
+      // Connected on sight — parsing is synchronous, so no input is ever
+      // rendered that a keystroke could clobber the binding through.
+      cy.getBySelector("StudioSlotInput-text").should("not.exist");
+      cy.getBySelector("StudioConnectedField").should("exist");
+      cy.getBySelector("StudioDisconnect-text").should("exist");
+
+      // The label and caption arrive once models + fields resolve, proving the
+      // model-name -> ZUID -> fields chain ran against the real API.
+      cy.getBySelector("StudioConnectedField").should(
+        "contain.text",
+        "Company Name"
+      );
+      cy.getBySelector("StudioConnectedFieldCaption").should(
+        "contain.text",
+        linkedModelLabel
+      );
+
+      // The caption must name the ITEM as well as the model. `filter()` pins one
+      // specific item and a model's locale siblings all share its label, so the
+      // model alone can't tell you which one this points at. The langCode prefix
+      // is the tell: it can only come from resolving the item, never from the
+      // model label. (Falls back to the raw ZUID when the item isn't cached.)
+      cy.getBySelector("StudioConnectedFieldCaption").should(
+        "contain.text",
+        "(en-US)"
+      );
+
+      // Disconnect returns a free-form, empty input.
+      cy.getBySelector("StudioDisconnect-text").click();
+      cy.getBySelector("StudioSlotInput-text")
+        .should("exist")
+        .and("have.value", "");
+    });
+  });
+
+  it("reads back a cross-item getImage() binding on an img src", () => {
+    setStudioMode("layout");
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+
+      const expression = `{{${linkedModelName}.filter(${linkedItemZUID}).logo.getImage()}}`;
+      const node = elementNode(webView.ZUID, "img", [
+        attrSlot("src", "resolved.jpg", expression),
+        attrSlot("alt", "hero"),
+      ]);
+
+      seedLayoutElement(
+        webView.ZUID,
+        `<img data-layout-id="1" src="${expression}" alt="hero" />`,
+        node
+      );
+
+      // The media half of read-back. app-freestyle's equivalent parser handles
+      // neither first() nor filter(), so its cross-item image bindings never
+      // render a chip and can't be cleared — this pins that we don't regress
+      // into the same shape.
+      cy.getBySelector("StudioSlotInput-src").should("not.exist");
+      cy.getBySelector("StudioConnectedField").should("contain.text", "Logo");
+      cy.getBySelector("StudioDisconnect-src").should("exist");
+    });
+  });
+
+  it("flags a cross-item binding whose model no longer exists", () => {
+    setStudioMode("layout");
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+
+      // A model that was deleted after the binding was written — the state you
+      // land in whenever a linked model is removed. It must still render as a
+      // connected chip (never a raw input a keystroke can destroy) but say so.
+      const expression = `{{model_deleted_${Date.now()}.filter(${linkedItemZUID}).company_name}}`;
+      const node = {
+        ...textNode(webView.ZUID, "Acme Corp"),
+        slots: [textSlot("Acme Corp", false, expression, 0)],
+      };
+
+      seedLayoutElement(
+        webView.ZUID,
+        `<h1 data-layout-id="1">${expression}</h1>`,
+        node
+      );
+
+      cy.getBySelector("StudioSlotInput-text").should("not.exist");
+      cy.getBySelector("StudioConnectedField").should("exist");
+      cy.getBySelector("StudioConnectedFieldCaption").should(
+        "contain.text",
+        "no longer exists"
+      );
+      cy.getBySelector("StudioDisconnect-text").should("exist");
+    });
+  });
+
+  it("flags a cross-item binding whose field no longer exists on a live model", () => {
+    setStudioMode("layout");
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+
+      // Model resolves, field doesn't — a different branch from the above, and
+      // the one that catches a field renamed out from under a binding.
+      const expression = `{{${linkedModelName}.filter(${linkedItemZUID}).field_deleted_${Date.now()}}}`;
+      const node = {
+        ...textNode(webView.ZUID, "Acme Corp"),
+        slots: [textSlot("Acme Corp", false, expression, 0)],
+      };
+
+      seedLayoutElement(
+        webView.ZUID,
+        `<h1 data-layout-id="1">${expression}</h1>`,
+        node
+      );
+
+      cy.getBySelector("StudioSlotInput-text").should("not.exist");
+      cy.getBySelector("StudioConnectedFieldCaption").should(
+        "contain.text",
+        "no longer exists"
+      );
+    });
+  });
+
+  it("reads back a reference written with whitespace inside the braces", () => {
+    setStudioMode("layout");
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+
+      // Hand-written Parsley is spaced however its author felt like. The parser
+      // tolerates it deliberately — we're reading template text we didn't write,
+      // so byte-identity with our own builder's output isn't available.
+      const expression = `{{ ${linkedModelName} . filter( ${linkedItemZUID} ) . company_name }}`;
+      const node = {
+        ...textNode(webView.ZUID, "Acme Corp"),
+        slots: [textSlot("Acme Corp", false, expression, 0)],
+      };
+
+      seedLayoutElement(
+        webView.ZUID,
+        `<h1 data-layout-id="1">${expression}</h1>`,
+        node
+      );
+
+      cy.getBySelector("StudioSlotInput-text").should("not.exist");
+      cy.getBySelector("StudioConnectedField").should("exist");
+      cy.getBySelector("StudioDisconnect-text").should("exist");
+    });
+  });
+
+  it("reads back a binding whose field name contains characters formatName strips", () => {
+    setStudioMode("layout");
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+
+      // Names created straight through the API or a JS SDK never pass through
+      // formatName(), so hyphens (and worse) genuinely occur in the wild. The
+      // parser must key off the delimiters, not an assumed alphabet — matching
+      // only [\w]+ here silently drops the binding back to a raw text input,
+      // where the next keystroke destroys it.
+      const expression = `{{articles.filter(7-a2eed7bef2-slw088).node-sdk_updateItem_1733876716599}}`;
+      const node = {
+        ...textNode(webView.ZUID, "Resolved value"),
+        slots: [textSlot("Resolved value", false, expression, 0)],
+      };
+
+      seedLayoutElement(
+        webView.ZUID,
+        `<h1 data-layout-id="1">${expression}</h1>`,
+        node
+      );
+
+      cy.getBySelector("StudioSlotInput-text").should("not.exist");
+      cy.getBySelector("StudioConnectedField").should("exist");
+      cy.getBySelector("StudioDisconnect-text").should("exist");
+    });
+  });
+
+  it("keeps a cross-item src chip when the layers tree re-emits the node", () => {
+    setStudioMode("layout");
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+
+      const expression = `{{${linkedModelName}.filter(${linkedItemZUID}).logo.getImage()}}`;
+      const node = elementNode(webView.ZUID, "img", [
+        attrSlot("src", "resolved.jpg", expression),
+        attrSlot("alt", "hero"),
+      ]);
+
+      seedLayoutElement(
+        webView.ZUID,
+        `<img data-layout-id="1" src="${expression}" alt="hero" />`,
+        node
+      );
+      cy.getBySelector("StudioConnectedField").should("exist");
+
+      // The panel's `values` buffer is re-seeded for src/poster on every tree
+      // emit. If a re-emit ever fed the RESOLVED src back in, the chip would
+      // flip to an input holding the resolved URL and the next save would bake
+      // it over the binding.
+      feedTree(node);
+      cy.getBySelector("StudioConnectedField").should("exist");
+      cy.getBySelector("StudioSlotInput-src").should("not.exist");
     });
   });
 });
