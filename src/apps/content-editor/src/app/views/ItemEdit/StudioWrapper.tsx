@@ -118,12 +118,16 @@ export const StudioWrapper = () => {
   const [isFetchingItem, setIsFetchingItem] = useState(false);
   const [isFetchingModel, setIsFetchingModel] = useState(false);
   const [isFetchingFields, setIsFetchingFields] = useState(false);
-  // The field the user picked, per painted leaf (`codeId::layoutId`). The bridge
+  // The field the user picked, per SLOT (`codeId::layoutId::slotKey`). The bridge
   // is only ever handed the Parsley expression, so it can't tell the layers tree
   // which field a freshly connected row shows. We already have the ConnectField
   // at pick time — keep it rather than trying to recover a name from the
   // expression afterwards.
-  const [connectedByLeaf, setConnectedByLeaf] = useState<
+  //
+  // Keyed per slot, not per element: an <img> has several (src, alt, poster), and
+  // an element-level key meant a plain-text edit to ANY of them dropped the label
+  // recorded for a sibling that is still connected.
+  const [connectedBySlot, setConnectedBySlot] = useState<
     Record<string, ConnectField>
   >({});
   const [imageEditState, setImageEditState] = useState<{
@@ -1256,7 +1260,7 @@ export const StudioWrapper = () => {
     refreshInspectorSlots,
     codeFileNameById,
     fieldsState,
-    connectedByLeaf,
+    connectedBySlot,
     selectedElement,
     selectedLayout,
     inspectorSelection,
@@ -1479,12 +1483,12 @@ export const StudioWrapper = () => {
       const writeKey = `${leafKey}::${slot.key}`;
       latestSlotWriteRef.current[writeKey] = value;
 
-      setConnectedByLeaf((prev) => {
-        if (connected) return { ...prev, [leafKey]: connected };
-        // A plain edit replaces whatever was bound here.
-        if (!prev[leafKey]) return prev;
+      setConnectedBySlot((prev) => {
+        if (connected) return { ...prev, [writeKey]: connected };
+        // A plain edit replaces whatever was bound in THIS slot only.
+        if (!prev[writeKey]) return prev;
         const next = { ...prev };
-        delete next[leafKey];
+        delete next[writeKey];
         return next;
       });
 
