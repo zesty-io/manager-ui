@@ -29,7 +29,20 @@ if [ ! -f "$REPORT_FILE" ]; then
     exit 0
 fi
 
-if [ ! -d "$ARTIFACTS_DIR" ] || [ -z "$(find "$ARTIFACTS_DIR" -type f -name '*.png' 2>/dev/null)" ]; then
+mkdir -p "$ARTIFACTS_DIR"
+
+# Playwright MCP's --output-dir governs console logs and page snapshots but NOT screenshots:
+# browser_take_screenshot runs page.screenshot({path: './<filename>'}), which resolves against
+# the process cwd. So evidence lands at the workspace root while everything else lands in the
+# output dir. Sweep those in rather than silently reporting "no screenshots captured" — that
+# looked exactly like the agent skipping evidence, and cost several runs to diagnose.
+# maxdepth 1 keeps this to the workspace root; the repo's own PNGs all live in subdirectories.
+for stray in $(find . -maxdepth 1 -type f -name '*.png' 2>/dev/null); do
+    echo "recovering screenshot from workspace root: $(basename "$stray")"
+    mv "$stray" "$ARTIFACTS_DIR/"
+done
+
+if [ -z "$(find "$ARTIFACTS_DIR" -type f -name '*.png' 2>/dev/null)" ]; then
     echo "No screenshots in $ARTIFACTS_DIR."
     # Still strip the tokens so the comment never renders a broken SCREENSHOT: link.
     python3 ci/scripts/rewrite_screenshot_links.py "$REPORT_FILE" /dev/null "$ARTIFACTS_DIR"
