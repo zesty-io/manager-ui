@@ -110,6 +110,9 @@ export const DYNAMIC_META_FIELD_NAMES = [
   "tc_image",
 ];
 
+// The web fields every content item must have a value for before it can be saved.
+const REQUIRED_FIELDS = ["metaTitle", "parentZUID", "pathPart"];
+
 type Errors = Record<string, Error>;
 type MetaProps = {
   isSaving: boolean;
@@ -180,12 +183,6 @@ export const Meta = forwardRef(
 
       return {};
     }, [fields]);
-
-    const REQUIRED_FIELDS = useMemo(() => {
-      const fields = ["metaTitle", "parentZUID", "pathPart"];
-
-      return fields;
-    }, [model]);
 
     const isHomepage = useMemo(() => {
       if (!homepageItem) return false;
