@@ -20,12 +20,20 @@ on:
         description: "PR number to QA"
         required: true
 
-# Same group as ci.yaml — every run shares one live dev instance, and a QA agent mutating
-# content while Cypress asserts on it would break both. Known consequence: GitHub keeps only
-# one *pending* run per group, so on a busy day queued runs get cancelled. If that becomes a
-# problem, switch to `group: manager-ui-negative-qa`.
+# Its own repo-wide group, deliberately NOT ci.yaml's manager-ui-e2e-dev-instance.
+#
+# Sharing that group meant competing with every PR's Cypress suite for the single *pending*
+# slot GitHub allows per concurrency group. This job is the lowest-priority thing in it, so it
+# lost that race routinely — observed in practice: a queued run was cancelled before its job
+# ever started because another PR's ci run claimed the slot. A QA job that silently doesn't run
+# is worse than one that runs at an awkward moment.
+#
+# One QA agent at a time repo-wide still bounds the load this puts on the shared dev instance.
+# The real protection against cross-contamination isn't the concurrency group anyway — it's
+# qa_seed.mjs giving each run its own throwaway model and item, which the agent is instructed
+# to mutate exclusively.
 concurrency:
-  group: manager-ui-e2e-dev-instance
+  group: manager-ui-negative-qa
   cancel-in-progress: false
 
 jobs:
