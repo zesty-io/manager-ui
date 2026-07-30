@@ -10,28 +10,23 @@ import {
   Typography,
 } from "@mui/material";
 import { useSendEmailMutation } from "shell/services/cloudFunctions";
+import { useSelector } from "react-redux";
+import { AppState } from "shell/store/types";
 
 type StudioFeedbackModalProps = {
   open: boolean;
   onClose: () => void;
   email: string;
-  instanceZUID: string;
-  pageModelZUID: string;
-  pageItemZUID: string;
-  interactionMode: "content" | "layout";
 };
 
 export const StudioFeedbackModal = ({
   open,
   onClose,
   email,
-  instanceZUID,
-  pageModelZUID,
-  pageItemZUID,
-  interactionMode,
 }: StudioFeedbackModalProps) => {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const user = useSelector((state: AppState) => state.user);
   const [sendEmail, { isLoading: isSubmitting }] = useSendEmailMutation();
 
   const handleClose = () => {
@@ -46,23 +41,12 @@ export const StudioFeedbackModal = ({
 
     setError("");
 
-    const body = `
-<blockquote style="border-left: 3px solid #444;padding: 0 12px;">${message}</blockquote>
-
-<p>Context:</p>
-<ul>
-<li>Email: ${email}</li>
-<li>Instance ZUID: ${instanceZUID}</li>
-<li>Page Model ZUID: ${pageModelZUID}</li>
-<li>Page Item ZUID: ${pageItemZUID}</li>
-<li>Interaction Mode: ${interactionMode}</li>
-</ul>
-      `;
-
     sendEmail({
       to: CONFIG.SLACK_FEEDBACK_EMAIL,
-      subject: `Studio Feedback from ${email}`,
-      body,
+      from: email,
+      subject: `${user?.firstName} ${user?.lastName}`,
+      body: message,
+      template: "raw",
     })
       .unwrap()
       .then(() => {
@@ -89,7 +73,7 @@ export const StudioFeedbackModal = ({
         </Typography>
       </DialogTitle>
       <DialogContent>
-        <Typography variant="caption" color="text.secondary" component="div">
+        <Typography variant="subtitle2" color="text.primary" fontWeight={600}>
           How was your experience with studio-mode
         </Typography>
         <TextField
@@ -97,7 +81,7 @@ export const StudioFeedbackModal = ({
           fullWidth
           multiline
           minRows={4}
-          placeholder="Please provide detailed feedback about your experience"
+          placeholder="This is a feedback message"
           value={message}
           onChange={(evt) => setMessage(evt.target.value)}
           disabled={isSubmitting}

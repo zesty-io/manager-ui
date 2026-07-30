@@ -14,7 +14,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { MemoryRouter, useHistory, useLocation } from "react-router";
 import { cloneDeep } from "lodash";
 import { AppState } from "../../../../../../shell/store/types";
-import instanceZUID from "../../../../../../utility/instanceZUID";
 import {
   fetchAllModelPublishings,
   fetchItem,
@@ -1740,10 +1739,6 @@ export const StudioWrapper = () => {
         open={showFeedbackModal}
         onClose={() => setShowFeedbackModal(false)}
         email={userEmail}
-        instanceZUID={instanceZUID}
-        pageModelZUID={pageModelZUID}
-        pageItemZUID={pageItemZUID}
-        interactionMode={interactionMode}
       />
       {imageEditState && (
         <MemoryRouter>

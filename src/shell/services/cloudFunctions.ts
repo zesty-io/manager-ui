@@ -89,6 +89,8 @@ export const cloudFunctionsApi = createApi({
         to: string;
         subject: string;
         body: string;
+        from?: string;
+        template?: string;
       }
     >({
       query: (body) => {

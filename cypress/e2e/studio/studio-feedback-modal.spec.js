@@ -7,13 +7,6 @@ describe("Studio Feedback Modal", () => {
     });
   });
 
-  const setStudioMode = (mode) => {
-    cy.getBySelector("StudioHeader").should("exist");
-    cy.getBySelector("StudioModeToggle")
-      .find('input[type="checkbox"]')
-      [mode === "layout" ? "check" : "uncheck"]();
-  };
-
   const openFeedbackModal = () => {
     cy.getBySelector("StudioFeedbackButton").click();
     cy.getBySelector("StudioFeedbackModal").should("exist");
@@ -44,11 +37,7 @@ describe("Studio Feedback Modal", () => {
     cy.getBySelector("StudioFeedbackMessageInput")
       .find("textarea")
       .first()
-      .should(
-        "have.attr",
-        "placeholder",
-        "Please provide detailed feedback about your experience"
-      );
+      .should("have.attr", "placeholder", "This is a feedback message");
     cy.getBySelector("StudioFeedbackCancelButton").should("exist");
     cy.getBySelector("StudioFeedbackSubmitButton").should("exist");
   });
@@ -101,13 +90,10 @@ describe("Studio Feedback Modal", () => {
     cy.getBySelector("StudioFeedbackSubmitButton").click();
 
     cy.window().then((win) => {
-      const instanceZUID = win.location.host.split(".")[0];
-
       cy.wait("@sendEmail").then(({ request }) => {
         expect(request.body.to).to.eq(win.CONFIG.SLACK_FEEDBACK_EMAIL);
         expect(request.body.subject).to.be.a("string").and.not.be.empty;
         expect(request.body.body).to.contain("This is a feedback message");
-        expect(request.body.body).to.contain(instanceZUID);
       });
     });
 
@@ -137,25 +123,5 @@ describe("Studio Feedback Modal", () => {
       .first()
       .should("have.value", "This is a feedback message");
     cy.getBySelector("StudioFeedbackSubmitButton").should("be.enabled");
-  });
-
-  it("captures the active interaction mode at time of submission", () => {
-    cy.intercept("POST", "**/sendEmail", {
-      statusCode: 200,
-      body: {},
-    }).as("sendEmail");
-
-    setStudioMode("layout");
-    openFeedbackModal();
-    cy.getBySelector("StudioFeedbackMessageInput")
-      .find("textarea")
-      .first()
-      .type("Feedback while in layout mode");
-
-    cy.getBySelector("StudioFeedbackSubmitButton").click();
-
-    cy.wait("@sendEmail").then(({ request }) => {
-      expect(request.body.body).to.contain("layout");
-    });
   });
 });
