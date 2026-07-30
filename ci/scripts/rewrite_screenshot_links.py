@@ -12,8 +12,14 @@ artifact rather than left as a broken image — a comment full of broken image i
 
 Usage: rewrite_screenshot_links.py <report.md> <url-map>
 where <url-map> is lines of "<filename> <url>", or /dev/null when nothing was uploaded.
+An optional third argument is the artifacts directory, used to tell two very different
+situations apart: a screenshot that exists but could not be given a URL, versus a screenshot
+the agent referenced but never actually captured. Reporting the second as "see the artifact"
+sends reviewers hunting for a file that was never taken, so it is called out as missing and
+raised as a warning on the run.
 """
 
+import os
 import re
 import sys
 
@@ -22,6 +28,7 @@ TOKEN = re.compile(r"!\[([^\]]*)\]\(SCREENSHOT:([^)]+)\)")
 
 def main() -> int:
     report_path, url_map_path = sys.argv[1], sys.argv[2]
+    artifacts_dir = sys.argv[3] if len(sys.argv) > 3 else None
 
     urls = {}
     try:
@@ -36,25 +43,40 @@ def main() -> int:
     with open(report_path, encoding="utf-8") as fh:
         body = fh.read()
 
-    missing = []
+    on_disk, never_captured = [], []
 
     def replace(match: "re.Match[str]") -> str:
         caption, name = match.group(1), match.group(2).strip()
         url = urls.get(name)
         if url:
             return f"![{caption}]({url})"
-        missing.append(name)
-        return f"_evidence: `{name}` — see the `negative-qa-artifacts` run artifact_"
+        exists = bool(
+            artifacts_dir and os.path.isfile(os.path.join(artifacts_dir, name))
+        )
+        if exists:
+            on_disk.append(name)
+            return f"_evidence: `{name}` — see the `negative-qa-artifacts` run artifact_"
+        never_captured.append(name)
+        return f"_⚠️ no screenshot was captured for this finding (`{name}`)_"
 
     rewritten = TOKEN.sub(replace, body)
 
     with open(report_path, "w", encoding="utf-8") as fh:
         fh.write(rewritten)
 
-    resolved = len(urls)
-    print(f"Rewrote {resolved} screenshot link(s); {len(missing)} unresolved.")
-    if missing:
-        print("Unresolved: " + ", ".join(sorted(set(missing))))
+    print(
+        f"Screenshot links: {len(urls)} linked, "
+        f"{len(on_disk)} artifact-only, {len(never_captured)} never captured."
+    )
+    if on_disk:
+        print("Artifact-only: " + ", ".join(sorted(set(on_disk))))
+    if never_captured:
+        # A finding whose evidence was never taken is a prompt-compliance failure, not a
+        # cosmetic one — surface it on the run rather than letting the report imply proof.
+        print(
+            "::warning::Report cites screenshots that were never captured: "
+            + ", ".join(sorted(set(never_captured)))
+        )
     return 0
 
 
