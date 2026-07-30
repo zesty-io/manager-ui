@@ -1405,6 +1405,10 @@ export const StudioWrapper = () => {
     [modelsState]
   );
 
+  // Latest value written to each slot, keyed `codeId::layoutId::slotKey`. Only
+  // the async preview replay reads it, to detect that its write is stale.
+  const latestSlotWriteRef = useRef<Record<string, string>>({});
+
   // The live-preview half of a slot write, split out so it can be replayed once
   // a referenced item's data arrives. Never touches the template — the staged
   // template value is written exactly once, by handleSlotChange below.
@@ -1466,6 +1470,11 @@ export const StudioWrapper = () => {
       const previewValue = resolvePreviewValue(value) ?? undefined;
 
       const leafKey = `${patch.codeId}::${patch.layoutId}`;
+      // Records the most recent value written to each slot so the async preview
+      // replay below can tell whether it has been superseded.
+      const writeKey = `${leafKey}::${slot.key}`;
+      latestSlotWriteRef.current[writeKey] = value;
+
       setConnectedByLeaf((prev) => {
         if (connected) return { ...prev, [leafKey]: connected };
         // A plain edit replaces whatever was bound here.
@@ -1493,6 +1502,11 @@ export const StudioWrapper = () => {
         if (refModelZUID) {
           Promise.resolve(dispatch(fetchItem(refModelZUID, refItemZUID))).then(
             () => {
+              // The replay closes over `value`, so it must not fire if the user
+              // has since changed this slot — disconnecting and typing a
+              // replacement inside the fetch window would otherwise repaint the
+              // OLD binding's resolved value over the new text. Last write wins.
+              if (latestSlotWriteRef.current[writeKey] !== value) return;
               const replay = resolvePreviewValue(value);
               if (replay !== null) postSlotPreview(slot, patch, value, replay);
             }
