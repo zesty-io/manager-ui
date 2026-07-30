@@ -829,19 +829,23 @@ export const StudioWrapper = () => {
   //
   // Only the Inspector — a content-mode field editor is deliberately left alone,
   // since dropping it would eject the user from what they were editing.
-  const deselectAfterPreviewReload = useCallback(() => {
+  // Deliberately synchronous, NOT hung off refreshPreviewFrame's completion
+  // callback: that only fires on the iframe's load event, so a preview that
+  // never finishes loading would leave the panel selected forever. The save path
+  // has always deselected synchronously without the tree re-emit reinstating it.
+  const deselectForPreviewReload = useCallback(() => {
     if (inspectorSelection) clearSelection();
     clearLayoutSelection();
   }, [clearLayoutSelection, clearSelection, inspectorSelection]);
 
-  // Discard runs the deselect once the frame has actually reloaded, so a tree
-  // re-emit racing the reload can't reinstate the selection we just dropped.
   const handleSaveBarCancel = isLayoutMode
-    ? () => handleDiscardPendingLayoutSave(deselectAfterPreviewReload)
+    ? () => {
+        handleDiscardPendingLayoutSave();
+        deselectForPreviewReload();
+      }
     : () => {
-        void Promise.resolve(discardAllContent()).then(
-          deselectAfterPreviewReload
-        );
+        deselectForPreviewReload();
+        void discardAllContent();
       };
   // The "Save Changes" bar button opens the modal; the modal's Save All /
   // Save & Publish All buttons run the active mode's batch handlers and close.
@@ -850,7 +854,7 @@ export const StudioWrapper = () => {
   const closeModalUnlessFailed = (result: { failedCount?: number } | void) => {
     if (result && result.failedCount) return;
     setShowSaveChangesModal(false);
-    deselectAfterPreviewReload();
+    deselectForPreviewReload();
   };
   const handleModalSaveAll = () => {
     if (!saveBarCanSave) return;
