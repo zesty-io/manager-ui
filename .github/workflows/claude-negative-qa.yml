@@ -117,7 +117,12 @@ jobs:
       - name: Verify Authenticated Session
         run: node ci/scripts/qa_verify_session.mjs
 
+      # This workflow is advisory and must never fail a PR. The action exits non-zero when the
+      # agent hits its turn limit, which would otherwise turn the check red for what is really
+      # "the QA pass was cut short" — so swallow it and let the reporting steps run on whatever
+      # the agent managed to write.
       - uses: anthropics/claude-code-action@1dc994ee7a008f0ecc866d9ac23ef036b7229f84 # v1.0.127
+        continue-on-error: true
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
@@ -169,11 +174,22 @@ jobs:
             it. If a control you need to reach has no data-cy attribute, that is itself worth
             noting in the report — CLAUDE.md requires one on every interactive element.
 
-            STEP 4 — Evidence discipline.
+            STEP 4 — Evidence discipline, and your turn budget.
             A finding counts only if you REPRODUCED IT TWICE. Reset to a known state and do it
-            again before you write it down. For each confirmed finding take a screenshot with
-            mcp__playwright__browser_take_screenshot using a short descriptive filename
-            (e.g. empty-title-saves-blank.png). Discard anything you cannot reproduce.
+            again before you write it down. The moment a finding is confirmed, screenshot it
+            with mcp__playwright__browser_take_screenshot using a short descriptive filename
+            (e.g. empty-title-saves-blank.png) — capture it there and then, not later, because
+            the state that shows the bug will be gone. Discard anything you cannot reproduce.
+
+            You have a HARD limit of 80 turns and there is no warning before it is reached.
+            Everything you have not written to REPORT_FILE when you hit it is lost, and the run
+            produces nothing at all. So:
+              - Write REPORT_FILE once early, as soon as you know the scope, even if it only
+                says no findings yet.
+              - Rewrite it immediately after each confirmed finding. Never batch them up.
+              - Once you have spent roughly 60 turns, stop probing, finalise the report, and
+                close the browser — an accurate partial report beats an interrupted perfect one.
+            If you stopped early, say so in the summary line and name what you did not get to.
 
             STEP 5 — Report.
             Write REPORT_FILE with the Write tool. First line must be exactly:
