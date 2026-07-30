@@ -825,6 +825,33 @@ describe("Studio Inspector Panel", () => {
     });
   });
 
+  it("closes the Inspector after a successful save", () => {
+    setStudioMode("layout");
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+      cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as("updateWebView");
+
+      seedLayoutElement(
+        webView.ZUID,
+        `<h1 data-layout-id="1">Hello</h1>`,
+        headingNode(webView.ZUID)
+      );
+      cy.getBySelector("StudioInspectorPanel").should("exist");
+
+      selectMuiOption("StudioTagSelect", "h2");
+      saveAllViaModal("layout");
+      cy.wait("@updateWebView");
+
+      // A save rebuilds the tree and reloads the preview, so the row and the
+      // canvas are both deselected — the Inspector must not be left describing a
+      // selection nothing else agrees with.
+      cy.getBySelector("StudioInspectorPanel").should("not.exist");
+    });
+  });
+
   it("offers Link from other content item below the current item's fields", () => {
     setStudioMode("layout");
     cy.apiRequest({

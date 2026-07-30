@@ -79,6 +79,12 @@ const drawerWidth = 440;
 // the `transition` on the overlay in StudioPreview.
 const REFRESH_FADE_MS = 200;
 
+// Whether a resolved field value is markup rather than plain text. Deliberately
+// narrow: it wants a real tag (`<h2`, `</p>`, `<br/>`), so prose containing a
+// stray comparison like "5 < 6" is still previewed as text.
+const looksLikeHtml = (value: string): boolean =>
+  /<\/?[a-z][a-z0-9-]*(\s[^<>]*)?\/?>/i.test(value);
+
 const withCodeIdBreadcrumbRoot = (
   codeId: string,
   breadcrumb: LayoutBreadcrumbItem[],
@@ -112,6 +118,14 @@ export const StudioWrapper = () => {
   const [isFetchingItem, setIsFetchingItem] = useState(false);
   const [isFetchingModel, setIsFetchingModel] = useState(false);
   const [isFetchingFields, setIsFetchingFields] = useState(false);
+  // The field the user picked, per painted leaf (`codeId::layoutId`). The bridge
+  // is only ever handed the Parsley expression, so it can't tell the layers tree
+  // which field a freshly connected row shows. We already have the ConnectField
+  // at pick time — keep it rather than trying to recover a name from the
+  // expression afterwards.
+  const [connectedByLeaf, setConnectedByLeaf] = useState<
+    Record<string, ConnectField>
+  >({});
   const [imageEditState, setImageEditState] = useState<{
     codeId: string;
     layoutId: string;
@@ -147,6 +161,20 @@ export const StudioWrapper = () => {
   const contentItems = useSelector((state: AppState) => state.content);
   const modelsState = useSelector((state: AppState) => state.models);
   const fieldsState = useSelector((state: AppState) => state.fields);
+  // Read content straight off the store rather than through the `contentItems`
+  // render value. Three reasons: it keeps resolvePreviewValue — and therefore
+  // handleSlotChange, handed straight to the panel — at a stable identity even
+  // though `contentItems` changes on every keystroke; it stays correct inside
+  // the fetch-and-replay `.then()` below, which runs after the reducer but
+  // BEFORE React re-renders, so any render-time snapshot would be stale exactly
+  // when the replay needs it; and it lets the revalidation effects below check
+  // the cache without taking `contentItems` as a dependency, which would make
+  // an unconditional fetch re-trigger itself forever.
+  const store = useStore();
+  const getContentItems = useCallback(
+    () => (store.getState() as AppState).content,
+    [store]
+  );
   const { data: webViews = [] } = useGetWebViewsQuery({ status: "dev" });
   const [updateWebView] = useUpdateWebViewMutation();
   const [publishWebView] = usePublishWebViewMutation();
@@ -195,6 +223,9 @@ export const StudioWrapper = () => {
       // Resolved value to DISPLAY in the live DOM on connect, while the template
       // still saves the Parsley `value` (updateElementText / updateElementAttr).
       previewValue?: string;
+      // `previewValue` is markup and should be parsed rather than written as
+      // text (a wysiwyg/markdown field). Text slots only.
+      previewAsHtml?: boolean;
     }) => {
       const iframeWindow = iframeRef.current?.contentWindow;
       if (!iframeWindow) return;
@@ -228,7 +259,7 @@ export const StudioWrapper = () => {
     selectedLayout,
     inspectorSelection,
     panelMode,
-    filteredFieldName,
+    filteredFieldZuid,
     setSelectedLayout,
     clearSelection,
     clearLayoutSelection,
@@ -437,6 +468,16 @@ export const StudioWrapper = () => {
     return map;
   }, [activeFields]);
 
+  // Derived, not snapshotted at click time: selecting a field on an EXTERNAL
+  // item switches `selectedModelZUID`, and that model's fields are still being
+  // fetched when the click is handled. Resolving here means the panel narrows as
+  // soon as they land instead of staying stuck on "all fields".
+  const filteredFieldName = useMemo(
+    () =>
+      filteredFieldZuid ? fieldNameByZuid.get(filteredFieldZuid) || null : null,
+    [fieldNameByZuid, filteredFieldZuid]
+  );
+
   const hasErrors = useMemo(() => {
     const errorList = Object.values(fieldErrors)
       ?.map((error) => {
@@ -456,18 +497,22 @@ export const StudioWrapper = () => {
     setFieldErrors(errors);
   }, []);
 
+  // `state.content` is hydrated from the IndexedDB warm cache at boot
+  // (src/shell/index.js), so an entry being *present* says nothing about how
+  // *current* it is — the cached copy can be many versions behind whatever the
+  // API has. So always revalidate on mount and whenever the page item changes,
+  // the way ItemEdit's `load()` does; the cache only decides whether we can
+  // render something while the request is in flight. Checking the cache through
+  // getContentItems() rather than the `contentItems` render value is what keeps
+  // this effect from re-triggering itself off its own fetch.
   useEffect(() => {
     if (!pageModelZUID || !pageItemZUID) return;
-    const currentItemInStore = contentItems[pageItemZUID]?.meta?.ZUID;
-    if (!currentItemInStore) {
-      setIsFetchingItem(true);
-      Promise.resolve(dispatch(fetchItem(pageModelZUID, pageItemZUID))).finally(
-        () => setIsFetchingItem(false)
-      );
-    } else {
-      setIsFetchingItem(false);
-    }
-  }, [dispatch, pageItem, pageItemZUID, pageModelZUID]);
+    const hasWarmCopy = Boolean(getContentItems()[pageItemZUID]?.meta?.ZUID);
+    if (!hasWarmCopy) setIsFetchingItem(true);
+    Promise.resolve(dispatch(fetchItem(pageModelZUID, pageItemZUID))).finally(
+      () => setIsFetchingItem(false)
+    );
+  }, [dispatch, getContentItems, pageItemZUID, pageModelZUID]);
 
   useEffect(() => {
     if (!pageModelZUID) return;
@@ -788,7 +833,16 @@ export const StudioWrapper = () => {
   // Close the modal on full success; keep it open on partial failure so the
   // user sees which items remain (still listed + toasted) and can retry.
   const closeModalUnlessFailed = (result: { failedCount?: number } | void) => {
-    if (!result || !result.failedCount) setShowSaveChangesModal(false);
+    if (result && result.failedCount) return;
+    setShowSaveChangesModal(false);
+    // A successful save rebuilds the layers tree and reloads the preview, so
+    // neither the tree row nor the canvas is still selected. Leaving the
+    // Inspector open would describe a selection nothing else agrees with.
+    //
+    // Only the Inspector — a content-mode field editor is deliberately left
+    // alone, since dropping it would eject the user from what they were editing.
+    if (inspectorSelection) clearSelection();
+    clearLayoutSelection();
   };
   const handleModalSaveAll = () => {
     if (!saveBarCanSave) return;
@@ -1046,6 +1100,23 @@ export const StudioWrapper = () => {
       selectedElement.fieldType &&
       ["text", "textarea"].includes(selectedElement.fieldType)
     ) {
+      // A text field can hold markup, and WebEngine renders it as markup — so
+      // the server already painted a real element here. Seeding it as text
+      // would replace that element with its own escaped tags, which is both
+      // wrong on the canvas and a visible regression from the pristine render.
+      // Sniff the value, matching what postSlotPreview does for layout slots.
+      // The bridge records which way it painted and echoes inline edits back
+      // the same way, so the round trip keeps the markup either way.
+      if (looksLikeHtml(nextValue)) {
+        postCommandToBridge({
+          action: "setHtmlByField",
+          fieldZuid: selectedElement.fieldZuid,
+          itemZuid: selectedElement.itemZuid,
+          html: nextValue,
+        });
+        return;
+      }
+
       postCommandToBridge({
         action: "setTextByField",
         fieldZuid: selectedElement.fieldZuid,
@@ -1113,21 +1184,24 @@ export const StudioWrapper = () => {
     refreshPreviewFrame,
   ]);
 
+  // Same warm-cache caveat as the page item above: revalidate the newly
+  // selected item instead of trusting whatever is already in `state.content`.
+  // Keyed on the model/item pair so re-selecting the same element — or the
+  // fetch's own write to the store — doesn't refetch.
+  const selectedItemZuid = selectedElement?.itemZuid;
+  const selectedItemModelZuid = selectedElement?.modelZuid;
   useEffect(() => {
-    const selectedItemZuid = selectedElement?.itemZuid;
-    if (!selectedItemZuid) return;
+    if (!selectedItemZuid || !selectedItemModelZuid) return;
+    const hasWarmCopy = Boolean(
+      getContentItems()[selectedItemZuid]?.meta?.ZUID
+    );
+    if (!hasWarmCopy) setIsFetchingItem(true);
+    Promise.resolve(
+      dispatch(fetchItem(selectedItemModelZuid, selectedItemZuid))
+    ).finally(() => setIsFetchingItem(false));
+  }, [dispatch, getContentItems, selectedItemModelZuid, selectedItemZuid]);
 
-    const resolvedModelZuid = selectedElement?.modelZuid;
-
-    const selectedItemInStore = contentItems[selectedItemZuid]?.meta?.ZUID;
-
-    if (resolvedModelZuid && !selectedItemInStore) {
-      setIsFetchingItem(true);
-      Promise.resolve(
-        dispatch(fetchItem(resolvedModelZuid, selectedItemZuid))
-      ).finally(() => setIsFetchingItem(false));
-    }
-
+  useEffect(() => {
     if (
       selectedElement?.modelZuid &&
       selectedElement.modelZuid !== pageModelZUID &&
@@ -1138,27 +1212,13 @@ export const StudioWrapper = () => {
         () => setIsFetchingModel(false)
       );
     }
-  }, [
-    contentItems,
-    dispatch,
-    pageItemZUID,
-    pageModelZUID,
-    modelsState,
-    selectedElement,
-  ]);
+  }, [dispatch, pageModelZUID, modelsState, selectedElement]);
 
-  const applyBridgeSelection = useCallback(
-    (next: {
-      studioId?: string;
-      fieldZuid: string;
-      fieldType?: string;
-      itemZuid?: string;
-      modelZuid?: string;
-    }) => {
-      applySelection(next, fieldNameByZuid);
-    },
-    [applySelection, fieldNameByZuid]
-  );
+  // Alias only — the hooks below take this under a bridge-specific prop name.
+  // It used to close over `fieldNameByZuid` to resolve the filtered field name
+  // eagerly; that lookup now lives in a memo (see filteredFieldName), which also
+  // stops every consumer of this callback from re-running when fields load.
+  const applyBridgeSelection = applySelection;
 
   const handleBridgeFieldInput = useCallback((fieldZuid: string) => {
     bridgeUpdatedFieldZuidRef.current = fieldZuid;
@@ -1184,6 +1244,7 @@ export const StudioWrapper = () => {
     refreshInspectorSlots,
     codeFileNameById,
     fieldsState,
+    connectedByLeaf,
     selectedElement,
     selectedLayout,
     inspectorSelection,
@@ -1273,19 +1334,6 @@ export const StudioWrapper = () => {
     },
     []
   );
-  // Read content straight off the store rather than through the `contentItems`
-  // render value. Two reasons: it keeps resolvePreviewValue — and therefore
-  // handleSlotChange, handed straight to the panel — at a stable identity even
-  // though `contentItems` changes on every keystroke; and it stays correct
-  // inside the fetch-and-replay `.then()` below, which runs after the reducer
-  // but BEFORE React re-renders, so any render-time snapshot would be stale
-  // exactly when the replay needs it.
-  const store = useStore();
-  const getContentItems = useCallback(
-    () => (store.getState() as AppState).content,
-    [store]
-  );
-
   // On connect, the panel emits a Parsley ref. For the LIVE preview we show the
   // field's RESOLVED value (its actual text, or a resolved image URL) instead of
   // the raw expression, while the template still saves the Parsley — so a
@@ -1367,10 +1415,18 @@ export const StudioWrapper = () => {
           layoutId: patch.layoutId,
           value,
           previewValue,
+          // A wysiwyg/markdown field resolves to markup. Written as text it
+          // would show its own tags as characters, so tell the bridge to parse
+          // it. Detected from the VALUE rather than the datatype on purpose: for
+          // a cross-item ref we don't hold the other model's field types here,
+          // and a rich-text field whose content happens to be plain needs no
+          // HTML treatment anyway.
+          previewAsHtml: previewValue ? looksLikeHtml(previewValue) : undefined,
           textIndex: slot.textIndex,
         });
         return;
       }
+      // Attribute values are never markup — no previewAsHtml here.
       postCommandToBridge({
         action: "updateElementAttr",
         layoutId: patch.layoutId,
@@ -1387,7 +1443,7 @@ export const StudioWrapper = () => {
   );
 
   const handleSlotChange = useCallback(
-    (slot: ElementSlot, value: string) => {
+    (slot: ElementSlot, value: string, connected?: ConnectField) => {
       const patch = inspectorSelection?.layoutPatch;
       if (!patch || !patch.codeId) return;
       // Never write a slot we've declared non-editable. The inputs are already
@@ -1400,6 +1456,16 @@ export const StudioWrapper = () => {
       // plain edit it's undefined (the value IS what's shown). Either way the
       // template saves `value`.
       const previewValue = resolvePreviewValue(value) ?? undefined;
+
+      const leafKey = `${patch.codeId}::${patch.layoutId}`;
+      setConnectedByLeaf((prev) => {
+        if (connected) return { ...prev, [leafKey]: connected };
+        // A plain edit replaces whatever was bound here.
+        if (!prev[leafKey]) return prev;
+        const next = { ...prev };
+        delete next[leafKey];
+        return next;
+      });
 
       postSlotPreview(slot, patch, value, previewValue);
 

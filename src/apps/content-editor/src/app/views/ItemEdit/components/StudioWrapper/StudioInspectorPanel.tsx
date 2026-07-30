@@ -369,7 +369,13 @@ type StudioInspectorPanelProps = {
   // Content mode: a dynamic slot was clicked — open its field editor.
   onEditDynamicSlot: (slot: ElementSlot) => void;
   // Layout mode: a slot value was edited.
-  onChangeSlot: (slot: ElementSlot, value: string) => void;
+  onChangeSlot: (
+    slot: ElementSlot,
+    value: string,
+    // The field the user picked. Kept so the layers tree can label the row with
+    // its real name instead of re-deriving one from the expression.
+    connected?: ConnectField
+  ) => void;
   // Layout mode: browse media for an image `src` slot.
   onBrowseMedia: (slot: ElementSlot) => void;
   // Fields of the item being edited, offered in a text slot's "Connect Item"
@@ -463,7 +469,13 @@ const SlotField = ({
   slot: ElementSlot;
   mode: "content" | "layout";
   value: string;
-  onChangeSlot: (slot: ElementSlot, value: string) => void;
+  onChangeSlot: (
+    slot: ElementSlot,
+    value: string,
+    // The field the user picked. Kept so the layers tree can label the row with
+    // its real name instead of re-deriving one from the expression.
+    connected?: ConnectField
+  ) => void;
   onDisconnect: (slot: ElementSlot) => void;
   onEditDynamicSlot: (slot: ElementSlot) => void;
   onBrowseMedia: (slot: ElementSlot) => void;
@@ -579,7 +591,9 @@ const SlotField = ({
         connectableFields={connectableFields}
         isConnected={isConnected}
         canConnect={canConnect}
-        onPick={(field) => onChangeSlot(slot, connectFieldToParsley(field))}
+        onPick={(field) =>
+          onChangeSlot(slot, connectFieldToParsley(field), field)
+        }
         onOpenCrossModel={() => setLinkDialogOpen(true)}
         onDisconnect={() => onDisconnect(slot)}
       />
@@ -647,7 +661,7 @@ const SlotField = ({
           onClose={() => setLinkDialogOpen(false)}
           onConfirm={(field) => {
             setLinkDialogOpen(false);
-            onChangeSlot(slot, connectFieldToParsley(field));
+            onChangeSlot(slot, connectFieldToParsley(field), field);
           }}
         />
       ) : null}
@@ -722,9 +736,13 @@ export const StudioInspectorPanel = ({
   }, [slots]);
 
   // Update the local displayed value AND commit the change upstream.
-  const handleSlotValueChange = (slot: ElementSlot, value: string) => {
+  const handleSlotValueChange = (
+    slot: ElementSlot,
+    value: string,
+    connected?: ConnectField
+  ) => {
     setValues((prev) => ({ ...prev, [slot.key]: value }));
-    onChangeSlot(slot, value);
+    onChangeSlot(slot, value, connected);
   };
 
   // Disconnect is LOCAL only — clear the displayed value so the slot returns to

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
+  ConnectField,
   ElementLayoutPatch,
   ElementSlot,
   InteractionMode,
@@ -10,6 +11,7 @@ import {
   SelectedElement,
 } from "./studioTypes";
 import { NO_TAG, isTextTag } from "../components/StudioWrapper/studioTags";
+import { parseParsleyRef } from "../components/StudioWrapper/studioParsley";
 
 export type LayersFlatRow = {
   node: LayersTreeNode;
@@ -78,6 +80,10 @@ type Args = {
   ) => void;
   codeFileNameById: Record<string, string>;
   fieldsState: Record<string, any>;
+  // The field the user picked, per painted leaf (`codeId::layoutId`). Supplied by
+  // StudioWrapper so a freshly connected row can be labelled with the real field
+  // rather than a name recovered from the expression.
+  connectedByLeaf: Record<string, ConnectField>;
   selectedElement: SelectedElement | null;
   selectedLayout: LayoutSelection | null;
   inspectorSelection: InspectorSelection | null;
@@ -187,6 +193,7 @@ export const useStudioLayersTree = ({
   refreshInspectorSlots,
   codeFileNameById,
   fieldsState,
+  connectedByLeaf,
   selectedElement,
   selectedLayout,
   inspectorSelection,
@@ -344,12 +351,29 @@ export const useStudioLayersTree = ({
       if (node.kind === "field") {
         // Dynamic content is labeled by its field name, not its value.
         const field = node.fieldZuid ? fieldsState[node.fieldZuid] : null;
-        return field?.label || field?.name || node.fieldType || "Field";
+        if (field?.label || field?.name) return field.label || field.name;
+
+        // A freshly connected slot has no fieldZuid — the bridge is handed the
+        // Parsley expression and never learns which field it refers to. Use the
+        // ConnectField the user actually picked.
+        const picked = node.layoutPatch
+          ? connectedByLeaf[
+              `${node.layoutPatch.codeId}::${node.layoutPatch.layoutId}`
+            ]
+          : undefined;
+        if (picked) return picked.label || picked.name;
+
+        // Nothing recorded (a binding that predates this session reaches here
+        // only if its markers are missing) — name it from the expression.
+        const ref = parseParsleyRef(node.slots?.[0]?.sourceValue || "");
+        if (ref) return ref.name;
+
+        return node.fieldType || "Field";
       }
       // Static text shows its actual content.
       return node.label || "";
     },
-    [codeFileNameById, fieldsState]
+    [codeFileNameById, connectedByLeaf, fieldsState]
   );
 
   const isNodeSelectable = useCallback(
