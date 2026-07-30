@@ -178,17 +178,16 @@ jobs:
             A finding counts only if you REPRODUCED IT TWICE. Reset to a known state and do it
             again before you write it down. Discard anything you cannot reproduce.
 
-            Evidence is captured by CALLING A TOOL, not by writing a filename. The order is
-            strict and there is no exception:
-              1. Reproduce the failure so the broken state is on screen.
-              2. CALL mcp__playwright__browser_take_screenshot with an explicit `filename`
-                 argument (e.g. empty-title-saves-blank.png). Do this while the state is on
-                 screen — it is gone once you navigate away.
-              3. Only then write the finding, referencing exactly the filename you just passed.
-            A SCREENSHOT: token for a file you did not actually create is a fabricated citation:
-            it makes the report look evidenced when it is not, and a later step will flag it as
-            missing. If you have no screenshot for a finding, write the finding WITHOUT any
-            SCREENSHOT: line rather than inventing one.
+            Capture evidence in this order, while the broken state is still on screen — it is
+            gone once you navigate away:
+              1. Reproduce the failure.
+              2. Call mcp__playwright__browser_take_screenshot with an explicit `filename`
+                 argument — a plain name with no directory, e.g. empty-title-saves-blank.png.
+              3. Write the finding, referencing exactly that filename.
+            Only reference a filename you actually passed to the tool. If a finding has no
+            screenshot, write it WITHOUT a SCREENSHOT: line rather than inventing one — a later
+            step verifies every reference against the files on disk and flags any that are
+            missing, so an invented one makes the whole report look untrustworthy.
 
             You have a HARD limit of 80 turns and there is no warning before it is reached.
             Everything you have not written to REPORT_FILE when you hit it is lost, and the run
