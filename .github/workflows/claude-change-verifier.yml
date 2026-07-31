@@ -176,11 +176,27 @@ jobs:
             exit 1
           fi
 
-      # THROWAWAY — diagnostic only, delete once we know whether Sentry MCP is reachable
-      # from claude-code-action in CI. Never gates the job (always() + continue-on-error).
+  mcp-debug:
+    # THROWAWAY — diagnostic only, delete this job once we know whether Sentry MCP is reachable
+    # from claude-code-action in CI. This runs as its own job (own runner) rather than a second
+    # step in `verify`: invoking the claude-code-action binary twice within a single job hit an
+    # internal "directory mismatch ... fd 4" error, apparently stale runtime state (Bun/Node fd
+    # tracking, or a stale tsconfig.json handle) left over from the first invocation's process.
+    # continue-on-error at the job level means this can never affect required-check status.
+    if: >-
+      github.event.pull_request.draft == false &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    continue-on-error: true
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          fetch-depth: 1
+
       - name: "Debug: list MCP tools and probe Sentry MCP"
-        if: always()
-        continue-on-error: true
         uses: anthropics/claude-code-action@1dc994ee7a008f0ecc866d9ac23ef036b7229f84 # v1.0.127
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
