@@ -29,6 +29,7 @@ const EDIT_REDIRECTS = {
 
 describe("Content item redirects", () => {
   let CURRENT_CONTENT;
+  // Only assigned/read inside the skipped "Redirect Content Item" test below.
   let REDIRECT_ITEMS;
 
   before(() => {
@@ -82,9 +83,10 @@ describe("Content item redirects", () => {
     cy.getBySelector("DeleteRedirect").click();
     cy.getBySelector("ConfirmDeleteRedirect").click();
 
-    cy.get(".MuiDataGrid-cell")
-      .contains(`${CURRENT_CONTENT?.name}/${REDIRECTS[0].path}/updated`)
-      .should("have.length", 0);
+    cy.contains(
+      ".MuiDataGrid-cell",
+      `${CURRENT_CONTENT?.name}/${REDIRECTS[0].path}/updated`
+    ).should("not.exist");
   });
 
   it("Add Incoming Redirect", () => {
@@ -208,7 +210,7 @@ function createTestRedirects(ZUID, path) {
   REDIRECTS.forEach((redirect) => {
     cy.task("api:createRedirect", {
       ...redirect,
-      path: `${path}/${redirect.path}`,
+      path: `/${path}/${redirect.path}`,
       target: ZUID,
     });
   });

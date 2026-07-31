@@ -139,6 +139,7 @@ module.exports = function content(config) {
 
   async function publishItem(modelZUID: string, itemZUID: string) {
     const sdk = await getSDK(config);
+    // Version 1: safe because callers only pass items just created by seedContent.
     const res = await sdk.instance.publishItem(modelZUID, itemZUID, 1);
     return res.data;
   }
