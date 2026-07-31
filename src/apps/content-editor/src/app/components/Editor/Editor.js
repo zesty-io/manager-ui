@@ -250,18 +250,18 @@ export default memo(function Editor({
         };
       }
 
-      if (
-        ["one_to_many", "wysiwyg_advanced", "wysiwyg_basic"].includes(
-          field.datatype
-        )
-      ) {
-        // Clear out the error after changing the value
-        // Note: These errors are most of the time validation errors from the api
-        errors[name] = {
-          ...(errors[name] ?? []),
-          CUSTOM_ERROR: "",
-        };
-      }
+      // Clear out the error after changing the value.
+      // CUSTOM_ERROR only ever comes from the API's "data too long" 400 handler
+      // (ItemEdit / ItemCreate / StudioWrapper), so it is stale as soon as the
+      // value changes — it must clear for every datatype, not just the three
+      // this used to enumerate. Studio surfaced the gap: it doesn't block the
+      // save on client-side errors the way ItemEdit does, so a `text` field
+      // actually reaches that 400 and then kept showing "Cannot save field.
+      // Value is too long." no matter how far the value was reduced.
+      errors[name] = {
+        ...(errors[name] ?? []),
+        CUSTOM_ERROR: "",
+      };
 
       if (!isEqual(errors, fieldErrors)) {
         onUpdateFieldErrors(errors);

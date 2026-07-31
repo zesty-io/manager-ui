@@ -31,7 +31,12 @@ export const useStudioSelection = ({
   const [panelMode, setPanelMode] = useState<"info" | "edit" | "inspector">(
     "info"
   );
-  const [filteredFieldName, setFilteredFieldName] = useState<string | null>(
+  // The field the panel is narrowed to, held as a ZUID rather than a name.
+  // Resolving the name here would have to happen at click time, before the
+  // fields of an *external* item's model have been fetched — the lookup would
+  // miss and the filter would silently fall back to "show everything". The
+  // caller owns the ZUID->name map and derives the name reactively instead.
+  const [filteredFieldZuid, setFilteredFieldZuid] = useState<string | null>(
     null
   );
   const [inspectorSelection, setInspectorSelection] =
@@ -113,7 +118,7 @@ export const useStudioSelection = ({
     removeInspectorHighlight(inspectorSelection);
     setSelectedElement(null);
     setInspectorSelection(null);
-    setFilteredFieldName(null);
+    setFilteredFieldZuid(null);
     setPanelMode("info");
   }, [
     disableContentEditing,
@@ -255,20 +260,17 @@ export const useStudioSelection = ({
         selectedElement.itemZuid
       );
     }
-    setFilteredFieldName(null);
+    setFilteredFieldZuid(null);
   }, [disableContentEditing, removeContentSelectedClass, selectedElement]);
 
   const applySelection = useCallback(
-    (
-      next: {
-        studioId?: string;
-        fieldZuid: string;
-        fieldType?: string;
-        itemZuid?: string;
-        modelZuid?: string;
-      },
-      fieldNameByZuid: Map<string, string>
-    ) => {
+    (next: {
+      studioId?: string;
+      fieldZuid: string;
+      fieldType?: string;
+      itemZuid?: string;
+      modelZuid?: string;
+    }) => {
       const { studioId, fieldZuid, fieldType, itemZuid, modelZuid } = next;
 
       // Selecting a field that isn't one of the open attribute element's own
@@ -300,7 +302,7 @@ export const useStudioSelection = ({
         itemZuid,
         modelZuid,
       });
-      setFilteredFieldName(fieldNameByZuid.get(fieldZuid) || null);
+      setFilteredFieldZuid(fieldZuid || null);
       setPanelMode("edit");
       postCommandToBridge({
         action: "addClass",
@@ -358,7 +360,7 @@ export const useStudioSelection = ({
       }
       setInspectorSelection(next);
       setSelectedElement(null);
-      setFilteredFieldName(null);
+      setFilteredFieldZuid(null);
       setPanelMode("inspector");
 
       if (next.layoutPatch?.layoutId && next.layoutPatch.codeId) {
@@ -395,7 +397,7 @@ export const useStudioSelection = ({
       );
     }
     setSelectedElement(null);
-    setFilteredFieldName(null);
+    setFilteredFieldZuid(null);
     setPanelMode("inspector");
     // Re-apply the element highlight the field edit may have cleared.
     if (
@@ -485,7 +487,7 @@ export const useStudioSelection = ({
     selectedLayout,
     inspectorSelection,
     panelMode,
-    filteredFieldName,
+    filteredFieldZuid,
     setSelectedLayout,
     clearSelection,
     clearLayoutSelection,

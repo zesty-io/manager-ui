@@ -125,6 +125,12 @@ type SearchFieldProps = {
   onChange: (value: ContentItemProps) => void;
   readOnly?: boolean;
   onSearch?: (term: string) => void;
+  // Test-hook prefix. Defaults to the redirects naming so existing specs and
+  // both original call sites keep the exact selectors they had.
+  dataCy?: string;
+  // The unpublished-item warning is redirect-specific ("incoming paths will
+  // lead to your 404 page"), so callers outside redirects opt out of it.
+  hideUnpublishedWarning?: boolean;
 };
 
 const SearchField: React.FC<SearchFieldProps> = ({
@@ -135,6 +141,8 @@ const SearchField: React.FC<SearchFieldProps> = ({
   onChange,
   readOnly = false,
   onSearch,
+  dataCy = "RedirectsSearchField",
+  hideUnpublishedWarning = false,
 }) => {
   const { t } = useTranslation();
   const textInputRef = React.useRef(null);
@@ -195,7 +203,7 @@ const SearchField: React.FC<SearchFieldProps> = ({
         </Paper>
       ) : (
         <Autocomplete
-          data-cy="RedirectsSearchFieldInput"
+          data-cy={`${dataCy}Input`}
           readOnly={readOnly}
           disabled={readOnly}
           open={readOnly ? false : open}
@@ -220,7 +228,7 @@ const SearchField: React.FC<SearchFieldProps> = ({
             return (
               <TextField
                 {...params}
-                data-cy="RedirectsSearchFieldInputField"
+                data-cy={`${dataCy}InputField`}
                 inputRef={textInputRef}
                 slotProps={{
                   input: {
@@ -292,12 +300,12 @@ const SearchField: React.FC<SearchFieldProps> = ({
         />
       )}
 
-      {value && !value?.isPublished && (
+      {value && !value?.isPublished && !hideUnpublishedWarning && (
         <Typography
           variant="body2"
           color="warning.dark"
           mt="4px"
-          data-cy="RedirectsSearchFieldError"
+          data-cy={`${dataCy}Error`}
         >
           {t(TARGET_ERRORS.unpublished)}
         </Typography>
