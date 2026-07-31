@@ -204,9 +204,13 @@ jobs:
           # show_full_output so the transcript (tool list + the get_sentry_resource attempt) is
           # visible in the log even if the Write call below is denied again for any reason.
           show_full_output: true
+          # There is no `mcp_config` / `allowed_tools` top-level input on this action version —
+          # only `claude_args` (raw CLI flags) and `settings` exist. MCP servers and tool grants
+          # both have to go through the CLI's own flags here instead.
           claude_args: |
             --max-turns 50
-            --allowedTools "Write"
+            --mcp-config '{"mcpServers":{"sentry":{"type":"http","url":"https://mcp.sentry.dev/mcp","headers":{"Authorization":"Bearer ${{ secrets.SENTRY_AUTH_TOKEN }}"}}}}'
+            --allowedTools "Write,mcp__sentry"
           prompt: |
             This is a one-off diagnostic run. Do not read the PR, the issue, or post any
             comments — it is unrelated to QA review.
