@@ -175,3 +175,36 @@ jobs:
             echo "::error::QA found an unmet criterion or a clear bug — see the QA Review comment."
             exit 1
           fi
+
+      # THROWAWAY — diagnostic only, delete once we know whether Sentry MCP is reachable
+      # from claude-code-action in CI. Never gates the job (always() + continue-on-error).
+      - name: "Debug: list MCP tools and probe Sentry MCP"
+        if: always()
+        continue-on-error: true
+        uses: anthropics/claude-code-action@1dc994ee7a008f0ecc866d9ac23ef036b7229f84 # v1.0.127
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: |
+            --max-turns 5
+          prompt: |
+            This is a one-off diagnostic run. Do not read the PR, the issue, or post any
+            comments — it is unrelated to QA review.
+
+            1. List every MCP server and MCP tool you currently have available (server name and
+               tool name for each). Report only what actually appears in your tool list — do not
+               guess or assume any tool exists.
+            2. Attempt to call the Sentry MCP tool named `get_sentry_resource` (it may be
+               namespaced, e.g. `mcp__<server>__get_sentry_resource`). Report verbatim whether
+               the call succeeded (include the result) or the exact error you received (tool not
+               found, auth failure, etc).
+
+            Write your findings as plain text to ${{ github.workspace }}/mcp-debug.txt with the
+            Write tool. Keep it short and factual.
+
+      - name: "Debug: print MCP probe output"
+        if: always()
+        run: |
+          echo "::group::mcp-debug.txt"
+          cat "$GITHUB_WORKSPACE/mcp-debug.txt" 2>/dev/null || echo "(no mcp-debug.txt produced)"
+          echo "::endgroup::"
