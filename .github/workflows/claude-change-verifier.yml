@@ -209,7 +209,7 @@ jobs:
           # both have to go through the CLI's own flags here instead.
           claude_args: |
             --max-turns 50
-            --mcp-config '{"mcpServers":{"sentry":{"type":"http","url":"https://mcp.sentry.dev/mcp","headers":{"Authorization":"Bearer ${{ secrets.SENTRY_AUTH_TOKEN }}"}}}}'
+            --mcp-config '{"mcpServers":{"sentry":{"type":"http","url":"https://mcp.sentry.dev/mcp","headers":{"Authorization":"Sentry-Bearer ${{ secrets.SENTRY_AUTH_TOKEN }}"}}}}'
             --allowedTools "Write,mcp__sentry"
           prompt: |
             This is a one-off diagnostic run. Do not read the PR, the issue, or post any
