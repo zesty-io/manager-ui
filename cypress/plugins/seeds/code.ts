@@ -9,8 +9,11 @@ const STYLESHEET_TYPES = ["text/css", "text/less", "text/scss", "text/sass"];
 module.exports = function code(config) {
   const { getSDK } = require("./utils");
 
-  async function seedCode(path: string): Promise<SeedCodeTask> {
-    const jsonString = readFileSync(join(__dirname, "../../", path), "utf8");
+  async function seedCode(fixturePath: string): Promise<SeedCodeTask> {
+    const jsonString = readFileSync(
+      join(__dirname, "../../", fixturePath),
+      "utf8"
+    );
     const json = JSON.parse(jsonString);
 
     const sdk = await getSDK(config);
@@ -27,6 +30,12 @@ module.exports = function code(config) {
         },
         body: JSON.stringify(payload),
       });
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(
+          `seed:code failed to create script "${filename}" (${res.status}): ${text}`
+        );
+      }
       const resJson = await res.json();
       if (!resJson?.data?.ZUID) {
         throw new Error(
@@ -61,6 +70,6 @@ module.exports = function code(config) {
 
   // CODE TASK MAPPING
   return {
-    "seed:code": (path: string) => seedCode(path),
+    "seed:code": (fixturePath: string) => seedCode(fixturePath),
   };
 };
