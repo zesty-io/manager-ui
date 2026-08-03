@@ -66,8 +66,25 @@ export type ElementLayoutPatch = {
   elementIndex: number;
 };
 
+// Where a Parsley reference resolves from when it is NOT `this` — i.e. a field
+// on some other content item, pinned to that exact item by ZUID. Carries both
+// the Parsley identity (modelName + itemZUID are the only two things that reach
+// the template) and the ZUID/labels the panel needs to fetch and display it.
+export type ConnectSource = {
+  // ContentModel.name — the Parsley reference name, NOT ContentModel.label.
+  modelName: string;
+  // ContentModel.ZUID — needed to fetch that model's fields.
+  modelZUID: string;
+  // The specific content item the reference is pinned to.
+  itemZUID: string;
+  // Display only. Absent when the source was resolved back out of a template
+  // string, until the model/field lookup lands.
+  modelLabel?: string;
+  itemLabel?: string;
+};
+
 // A content field offered in the Inspector's "Connect Item" dropdown. Picking
-// one writes its Parsley reference (`{{this.<name>}}`) into a text slot.
+// one writes its Parsley reference into a text slot.
 export type ConnectField = {
   // Parsley reference key — what goes in `{{this.<name>}}`.
   name: string;
@@ -75,6 +92,9 @@ export type ConnectField = {
   label: string;
   // Zesty datatype, used for the row's icon + description.
   datatype: string;
+  // Absent => `{{this.<name>}}` (a field on the item rendering the region).
+  // Present => `{{<modelName>.filter(<itemZUID>).<name>}}`.
+  source?: ConnectSource;
 };
 
 // The element whose slots are shown in the right-side Inspector panel.
