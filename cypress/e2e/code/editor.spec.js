@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import EDITOR_FILE from "../../fixtures/code/editor.json";
+import { API_ENDPOINTS } from "../../support/api";
 
 describe("Code App - Editor", () => {
   let EDITOR_DATA;
@@ -188,13 +189,19 @@ describe("Code App - Editor - Show suggestions", () => {
         });
       })
       .then(() => {
-        return cy.task("seed:code", {
-          path: "fixtures/code/editor-suggestions.json",
-          overrides: { contentModelZUID: MODEL_ZUID },
-        });
+        return cy.task("seed:code", "fixtures/code/editor.json");
       })
       .then((res) => {
         FILE_ZUID = res?.ZUID;
+        // Bind the file to the freshly-created model - the model ZUID only
+        // exists at test run time, so this can't live in the seed fixture.
+        return cy.apiRequest({
+          method: "PUT",
+          url: `${API_ENDPOINTS.devInstance}/web/views/${FILE_ZUID}`,
+          body: { contentModelZUID: MODEL_ZUID },
+        });
+      })
+      .then(() => {
         // Wait for the model's fields to actually load into the store before
         // proceeding - Monaco's completion provider reads `state.fields`
         // synchronously at the moment the trigger character is typed, and
