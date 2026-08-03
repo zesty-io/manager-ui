@@ -180,23 +180,12 @@ export const isTextReferenceableDatatype = (
 
 // Whether a media slot's (img/video src, poster) "Connect Item" dropdown should
 // offer this field: a media asset (resolved to a URL via getImage()) or an
-// external-URL field (used verbatim). See fieldToParsley for the difference.
+// external-URL field (used verbatim). See buildParsley in ./studioParsley for
+// the difference.
 export const isMediaSlotDatatype = (datatype?: string | null): boolean => {
   const { category } = getFieldMeta(datatype);
   return category === "media" || category === "link";
 };
-
-// The Parsley reference for a field. A media asset needs getImage() to resolve
-// to a URL; every other field (text, an external-URL link, …) is referenced
-// verbatim. One rule covers both dropdowns: media slots mix the two, text slots
-// only ever hold the plain form.
-export const fieldToParsley = (
-  name: string,
-  datatype?: string | null
-): string =>
-  getFieldMeta(datatype).category === "media"
-    ? `{{this.${name}.getImage()}}`
-    : `{{this.${name}}}`;
 
 // Chip fill / icon colour per category, from the Figma dropdown. Kept as literal
 // hex because these are the design system's field-type tints, not MUI palette
