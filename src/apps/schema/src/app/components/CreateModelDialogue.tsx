@@ -269,7 +269,14 @@ export const CreateModelDialogue = ({
                 </Typography>
                 <Box display="flex" alignItems="center" gap={1} mt={1}>
                   <MenuBookRoundedIcon color="info" />{" "}
-                  <Link variant="body2" href="#" underline="always">
+                  <Link
+                    data-cy="model-types-docs-link"
+                    variant="body2"
+                    href="https://docs.zesty.io/docs/creating-a-content-model#types-of-content-models"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    underline="always"
+                  >
                     {t("schema.readDocsModelTypes")}
                   </Link>
                 </Box>
