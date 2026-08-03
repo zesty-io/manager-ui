@@ -60,8 +60,6 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          # Pinned so the model can't drift with the action's default. Sonnet is enough for
-          # reading a diff against acceptance criteria; the deeper review runs in Auto Review.
           claude_args: |
             --model claude-sonnet-5
             --max-turns 50
