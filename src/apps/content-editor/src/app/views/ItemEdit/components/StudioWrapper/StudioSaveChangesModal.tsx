@@ -58,6 +58,12 @@ export const StudioSaveChangesModal = ({
 }: StudioSaveChangesModalProps) => {
   const { t } = useTranslation();
 
+  const typeLabels: Record<StudioSaveChangeType, string> = {
+    Content: t("content.studioSaveChangeTypeContent"),
+    Code: t("content.studioSaveChangeTypeCode"),
+    Block: t("content.studioSaveChangeTypeBlock"),
+  };
+
   if (!open) return null;
 
   return (
@@ -114,7 +120,11 @@ export const StudioSaveChangesModal = ({
                   <Typography variant="body2">{change.title}</Typography>
                 </TableCell>
                 <TableCell>
-                  <Chip size="small" label={change.type} variant="filled" />
+                  <Chip
+                    size="small"
+                    label={typeLabels[change.type]}
+                    variant="filled"
+                  />
                 </TableCell>
               </TableRow>
             ))}
