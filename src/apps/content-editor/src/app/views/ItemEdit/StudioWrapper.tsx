@@ -52,6 +52,7 @@ import {
 } from "./components/StudioWrapper/studioFieldMeta";
 import { parseParsleyRef } from "./components/StudioWrapper/studioParsley";
 import { StudioLayersPanel } from "./components/StudioWrapper/StudioLayersPanel";
+import { StudioFreestyleAlert } from "./components/StudioWrapper/StudioFreestyleAlert";
 import {
   StudioSaveChange,
   StudioSaveChangesModal,
@@ -435,6 +436,45 @@ export const StudioWrapper = () => {
   const handleEditInManager = useCallback(() => {
     if (!pageModelZUID || !pageItemZUID) return;
     history.push(`/content/${pageModelZUID}/${pageItemZUID}`);
+  }, [pageModelZUID, pageItemZUID, history]);
+
+  // A layout built in Freestyle is backed by its own per-item view file rather
+  // than the model's shared template, so it is only editable in the Freestyle
+  // app. Same convention Content.js uses to find an item's Freestyle template.
+  const isFreestyleLayout = useMemo(
+    () =>
+      !!pageItemZUID &&
+      webViews.some(
+        (view) => view?.fileName === `/z/pvl/${pageItemZUID}.zhtml`
+      ),
+    [pageItemZUID, webViews]
+  );
+
+  // Dismissal is tracked per mode, not globally: in layout mode the overlay is
+  // the only route to Freestyle, so a dismissal in content mode (where the
+  // panel button still offers it) must not suppress it there too.
+  const [dismissedAlertModes, setDismissedAlertModes] = useState<
+    InteractionMode[]
+  >([]);
+
+  // Re-surface the notice whenever the preview moves to a different item — a
+  // dismissal applies to the page it was dismissed on, not the whole session.
+  useEffect(() => {
+    setDismissedAlertModes([]);
+  }, [pageItemZUID]);
+
+  const dismissFreestyleAlert = useCallback(() => {
+    setDismissedAlertModes((prev) =>
+      prev.includes(interactionMode) ? prev : [...prev, interactionMode]
+    );
+  }, [interactionMode]);
+
+  const showFreestyleAlert =
+    isFreestyleLayout && !dismissedAlertModes.includes(interactionMode);
+
+  const handleEditInFreestyle = useCallback(() => {
+    if (!pageModelZUID || !pageItemZUID) return;
+    history.push(`/content/${pageModelZUID}/${pageItemZUID}/freestyle`);
   }, [pageModelZUID, pageItemZUID, history]);
 
   const fields = useMemo(() => {
@@ -1793,6 +1833,15 @@ export const StudioWrapper = () => {
               isNavigating={isNavigating}
               isBusy={isRefreshing || studioSaving || isSavingLayout}
               onLoad={handlePreviewFrameLoad}
+              overlaySlot={
+                isLayoutMode && showFreestyleAlert ? (
+                  <StudioFreestyleAlert
+                    showEditAction
+                    onEditInFreestyle={handleEditInFreestyle}
+                    onDismiss={dismissFreestyleAlert}
+                  />
+                ) : null
+              }
             />
             {panelMode === "inspector" && inspectorSelection ? (
               <StudioInspectorPanel
@@ -1829,11 +1878,21 @@ export const StudioWrapper = () => {
                 hasErrors={hasErrors}
                 isSelectedItemLoading={isSelectedItemLoading}
                 onEditInManager={handleEditInManager}
+                isFreestyleLayout={isFreestyleLayout}
+                onEditInFreestyle={handleEditInFreestyle}
                 onSave={handleSave}
                 editorPanel={renderEditorPanel()}
                 infoPanel={renderInfoPanel()}
                 drawerWidth={drawerWidth}
                 logoSrc={contentOneLogo}
+                alertSlot={
+                  showFreestyleAlert ? (
+                    <StudioFreestyleAlert
+                      onEditInFreestyle={handleEditInFreestyle}
+                      onDismiss={dismissFreestyleAlert}
+                    />
+                  ) : null
+                }
               />
             ) : null}
           </Box>
