@@ -1,0 +1,51 @@
+{
+  "model": {
+    "label": "Studio Linked",
+    "metaTitle": "Studio Linked",
+    "type": "pageset",
+    "listed": true
+  },
+  "fields": [
+    {
+      "contentModelZUID": "",
+      "datatype": "text",
+      "name": "company_name",
+      "label": "Company Name",
+      "sort": 1,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": true
+      }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "images",
+      "name": "logo",
+      "label": "Logo",
+      "sort": 2,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": {
+        "list": false,
+        "limit": 1
+      }
+    }
+  ],
+  "items": [
+    {
+      "meta": {
+        "sort": 0
+      },
+      "web": {
+        "metaLinkText": "Studio Linked",
+        "metaTitle": "Studio Linked"
+      },
+      "data": {
+        "company_name": "Acme Corp"
+      }
+    }
+  ]
+}
