@@ -117,6 +117,7 @@ export const EditorActions = memo(function EditorActions(
         isLoading={isNotSaved && (isSaving || isPublishing)}
         onClick={onSave}
         isDisabled={!canUpdate}
+        data-cy="SaveCodeButton"
       />
 
       <ActionButton
@@ -140,6 +141,7 @@ export const EditorActions = memo(function EditorActions(
         isLoading={isUnpublished && isPublishing}
         onClick={onPublish}
         isDisabled={!canPublish}
+        data-cy="PublishCodeButton"
       />
     </Box>
   );

@@ -30,6 +30,12 @@ module.exports = function code(config) {
         },
         body: JSON.stringify(payload),
       });
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(
+          `seed:code failed to create script "${filename}" (${res.status}): ${text}`
+        );
+      }
       const resJson = await res.json();
       if (!resJson?.data?.ZUID) {
         throw new Error(
