@@ -193,19 +193,22 @@ jobs:
             You have a HARD limit of 150 turns and there is no warning before it is reached.
             Everything you have not written to REPORT_FILE when you hit it is lost, and the run
             produces nothing at all. So:
-              - Write REPORT_FILE once early, as soon as you know the scope, even if it only
-                says no findings yet.
+              - Write REPORT_FILE once early, as soon as you know the scope.
               - Rewrite it immediately after each confirmed finding. Never batch them up.
               - Once you have spent roughly 120 turns, stop probing, finalise the report, and
                 close the browser — an accurate partial report beats an interrupted perfect one.
-            If you stopped early, say so in the summary line and name what you did not get to.
+            You do not need to flag that you stopped early: a later step detects it and adds a
+            note to the comment automatically. Just make sure what you did find is written down.
 
             STEP 5 — Report.
             Write REPORT_FILE with the Write tool. First line must be exactly:
 
               <!-- negative-qa -->
 
-            Then "## Negative QA" and a one-line summary. Then one section per finding:
+            Then "## Negative QA", then STRAIGHT INTO THE FINDINGS. Do NOT write an overview,
+            preamble, or summary paragraph — no recap of what the diff changes, no description
+            of what you attacked, no verdict sentence. A reviewer opens this to see what broke;
+            anything above the first finding pushes that off the screen. One section each:
 
               ### <emoji> <one-line finding>
               **Type:** regression from this PR | pre-existing on the touched surface
@@ -218,16 +221,27 @@ jobs:
             Reference screenshots ONLY as SCREENSHOT:<filename>.png — a later step rewrites
             those into real URLs. Do not invent paths or URLs for them.
 
-            If you found nothing, the report is the marker line, "## Negative QA", and
-            "No reproducible edge-case failures found on the surfaces this PR changes."
-            AN EMPTY REPORT IS A VALID AND COMMON OUTCOME. Never pad it with speculative or
-            unreproduced findings, and never report a finding you did not screenshot.
+            After the findings, list what you probed that behaved correctly, plus any cleanup
+            you did. This matters — it is how a reviewer tells a thorough pass from a shallow
+            one — but it is reference material, not the headline, so it MUST be collapsed
+            inside a details block, exactly like this:
 
-            Before you finish, REWRITE THE SUMMARY LINE so it describes the run as completed.
-            The early draft you wrote mid-run will contain provisional wording like "still
-            investigating" — that is correct while you are working and wrong once you stop. It
-            is the first thing a reviewer reads, and left stale it makes a finished pass look
-            abandoned. State what you covered and, if you ran short of turns, what you did not.
+              <details>
+              <summary>Also checked and working correctly</summary>
+
+              - <thing you tried> — <what correctly happened>
+              - <thing you tried> — <what correctly happened>
+
+              </details>
+
+            Keep the blank lines after <summary> and before </details> — GitHub will not render
+            the markdown inside without them.
+
+            If you found nothing, the report is the marker line, "## Negative QA", the single
+            line "No reproducible edge-case failures found on the surfaces this PR changes.",
+            and the collapsed details block. AN EMPTY REPORT IS A VALID AND COMMON OUTCOME.
+            Never pad it with speculative or unreproduced findings, and never report a finding
+            you did not screenshot.
 
             Finish by calling mcp__playwright__browser_close. Do not post any comment
             yourself — a later step does that.
