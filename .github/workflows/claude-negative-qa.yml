@@ -10,10 +10,23 @@ name: Claude Negative QA
 # Advisory only: it never fails the build. Agentic browser exploration is non-deterministic,
 # and a false positive blocking a merge would burn the team's trust in it within a week.
 
+# Runs itself exactly ONCE per PR, then never again without a human asking.
+#
+# Deliberately no `synchronize`: a full pass is ~9 minutes of agent time plus a Chromium
+# install, and re-running it on every push would spend that on typo fixes and review nits. The
+# first pass is the one that finds things; after that you generally want it only once you have
+# actually changed the surface it was probing.
+#
+# `opened` covers a PR raised ready; `ready_for_review` covers one raised as a draft, where the
+# `opened` event fires while the job's draft guard is still skipping it. Exactly one of the two
+# ever reaches the job, so this is once per PR, not twice.
+#
+# To run it again: either "Re-run jobs" on the previous run, or Run workflow from the Actions
+# tab with the PR number — pick the PR's branch as the ref so the diff and code match.
 on:
   pull_request:
     branches: [dev]
-    types: [opened, synchronize, reopened, ready_for_review]
+    types: [opened, ready_for_review]
   workflow_dispatch:
     inputs:
       pr_number:
