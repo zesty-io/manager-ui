@@ -113,6 +113,26 @@ describe("Studio Feedback Modal", () => {
     cy.getBySelector("StudioFeedbackModal").should("not.exist");
   });
 
+  it("captures the active interaction mode at time of submission", () => {
+    cy.intercept("POST", "**/sendEmail", {
+      statusCode: 200,
+      body: {},
+    }).as("sendEmail");
+
+    cy.getBySelector("StudioModeToggle").find('input[type="checkbox"]').check();
+    openFeedbackModal();
+    cy.getBySelector("StudioFeedbackMessageInput")
+      .find("textarea")
+      .first()
+      .type("Feedback while in layout mode");
+
+    cy.getBySelector("StudioFeedbackSubmitButton").click();
+
+    cy.wait("@sendEmail").then(({ request }) => {
+      expect(request.body.body).to.contain("<b>Mode:</b> layout");
+    });
+  });
+
   it("escapes HTML in the feedback message before sending", () => {
     cy.intercept("POST", "**/sendEmail", {
       statusCode: 200,

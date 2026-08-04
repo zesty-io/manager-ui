@@ -84,6 +84,7 @@ export const cloudFunctionsApi = createApi({
       },
     }),
     sendEmail: builder.mutation<
+      // any: response shape isn't documented by the external cloud function; no caller reads it
       any,
       {
         to: string;

@@ -57,7 +57,9 @@ export const StudioFeedbackModal = ({
 
     setError("");
 
-    const feedbackSubject = `${user?.firstName} ${user?.lastName}`.trim();
+    const feedbackSubject = [user?.firstName, user?.lastName]
+      .filter(Boolean)
+      .join(" ");
 
     const feedbackBody = [
       `<b>User:</b> ${escapeHtml(email)}`,
