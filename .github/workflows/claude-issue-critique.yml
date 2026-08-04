@@ -4,6 +4,15 @@ on:
     # `edited` is needed for the duplicate-check job (re-evaluate when title/body
     # change); the triage job below stays gated to `opened` only.
     types: [opened, edited]
+  # TEMPORARY — for manually re-testing duplicate-check against a disposable
+  # test issue without waiting for a real issues event. Remove this trigger
+  # (and the workflow_dispatch handling in duplicate-check below) once done.
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: "Issue number to run duplicate-check against"
+        required: true
+        type: string
 
 jobs:
   triage:
@@ -189,19 +198,30 @@ jobs:
   # re-running triage. Fires on `opened` and on `edited` when the title or body
   # actually changed (see the `if`) — closes zesty-io/manager-ui#4229.
   duplicate-check:
+    # TEMPORARY: the `github.event_name == 'workflow_dispatch'` branch, the
+    # `|| github.event.inputs.issue_number` fallbacks below, and the
+    # `on.workflow_dispatch` trigger above all exist only for manual
+    # re-testing — remove all three (leaving plain `github.event.issue.number`
+    # again) once testing is done.
     if: >-
-      github.event.issue.user.type != 'Bot' &&
-      (github.event.action == 'opened' ||
-       (github.event.action == 'edited' &&
-        (github.event.changes.title != null || github.event.changes.body != null)))
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.issue.user.type != 'Bot' &&
+       (github.event.action == 'opened' ||
+        (github.event.action == 'edited' &&
+         (github.event.changes.title != null || github.event.changes.body != null))))
     runs-on: ubuntu-latest
     timeout-minutes: 20
     concurrency:
-      group: claude-dup-check-${{ github.event.issue.number }}
+      group: claude-dup-check-${{ github.event.inputs.issue_number || github.event.issue.number }}
       cancel-in-progress: true
     permissions:
       contents: read
       issues: write
+    env:
+      # Resolves to the workflow_dispatch input during manual testing, or the
+      # real triggering issue's number otherwise — every step below should
+      # reference this instead of github.event.issue.number directly.
+      ISSUE_NUMBER: ${{ github.event.inputs.issue_number || github.event.issue.number }}
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
@@ -213,7 +233,7 @@ jobs:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           prompt: |
             # Role
-            You are checking whether GitHub issue #${{ github.event.issue.number }}
+            You are checking whether GitHub issue #${{ env.ISSUE_NUMBER }}
             in ${{ github.repository }} is a likely duplicate of an existing issue
             (open or closed), and separately noting any other issues that look
             topically related. You never post anything yourself — you only write
@@ -230,13 +250,13 @@ jobs:
             # Steps
             1. Read the triggering issue (use `--json`, not the plain view — see
                the note in the sibling triage job about cli/cli#11992):
-               `gh issue view ${{ github.event.issue.number }} --repo ${{ github.repository }} --json title,body,author,createdAt`
+               `gh issue view ${{ env.ISSUE_NUMBER }} --repo ${{ github.repository }} --json title,body,author,createdAt`
             2. Search both open and closed issues for candidates. Use
                `gh issue list --repo ${{ github.repository }} --state all --search "<keywords>" --json number,title,state,createdAt,closedAt,updatedAt,body,comments --limit 50`
                with a few different keyword combinations pulled from the title
                and body (symptom, feature name, error string, etc.) — one search
                rarely surfaces everything. Always exclude issue
-               #${{ github.event.issue.number }} itself from candidates.
+               #${{ env.ISSUE_NUMBER }} itself from candidates.
             3. For any candidate that looks plausible, read it more closely
                (`gh issue view <n> --repo ${{ github.repository }} --json title,body,state,createdAt,closedAt,comments,labels`)
                to judge whether it's genuinely the same underlying bug, feature
@@ -369,7 +389,7 @@ jobs:
         id: dup
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ISSUE: ${{ github.event.issue.number }}
+          ISSUE: ${{ env.ISSUE_NUMBER }}
           REPO: ${{ github.repository }}
         run: |
           set -euo pipefail
