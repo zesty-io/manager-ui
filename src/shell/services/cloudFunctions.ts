@@ -84,8 +84,10 @@ export const cloudFunctionsApi = createApi({
       },
     }),
     sendEmail: builder.mutation<
-      // any: response shape isn't documented by the external cloud function; no caller reads it
-      any,
+      // On success (200) the cloud function echoes mailgun-js's send() callback
+      // body verbatim under `msg`. Non-2xx responses are handled as RTK Query
+      // errors by fetchBaseQuery, so this type only describes the 200 shape.
+      { msg: { id: string; message: string } },
       {
         to: string;
         subject: string;
