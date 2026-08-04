@@ -382,8 +382,8 @@ jobs:
             (skip the whole thing if there's nothing to add):
 
               Also, a couple other ones that might be worth a look:
-              - #<n> (<title>) — <one-line why>
-              - #<n> (<title>) — <one-line why>
+              - #<n> — <one-line why>
+              - #<n> — <one-line why>
 
             **LOW tier with related issues (no duplicate at all)** — this is
             the only case with no confirm/close ask; keep it low-key, same
@@ -392,8 +392,8 @@ jobs:
 
               <!-- claude-dup-check -->
               👋 @<issue author> — didn't find a likely duplicate, but a couple of these looked like they might be related:
-              - #<n> (<title>) — <one-line why>
-              - #<n> (<title>) — <one-line why>
+              - #<n> — <one-line why>
+              - #<n> — <one-line why>
 
               Just flagging for context, no action needed.
 
