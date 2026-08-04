@@ -278,14 +278,19 @@ jobs:
                Print your score and reasoning in your own output as you go (this
                run's log is the audit trail), then write it into the result file
                per the Result file section below regardless of tier.
-            5. Separately, note up to 3 other issues that are **topically
-               related but not duplicate candidates** — e.g. adjacent bugs in
-               the same subsystem, a broader tracking issue, prior discussion
-               that provides useful context. Do this regardless of the
-               duplicate tier, including a Low result — related issues are
-               tracked independently of whether a duplicate was found. Don't
-               pad this list — omit it entirely if nothing is meaningfully
-               related.
+            5. Separately, note up to 3 other issues that are **substantively
+               related but not duplicate candidates**. The bar: a reader
+               would agree it directly helps understand or resolve this
+               issue — the same code path, a tracking issue this would close,
+               prior discussion of the same root cause. Sharing an author, a
+               general subsystem, or being loosely "also CI/tooling" is NOT
+               enough on its own — that's surface-level, not substantive.
+               When the only connection is topical rather than substantive,
+               leave it out. Do this regardless of the duplicate tier,
+               including a Low result — related issues are tracked
+               independently of whether a duplicate was found. A genuine
+               "nothing related" is the common, correct outcome — don't
+               stretch for a weak match just to fill the list.
 
             # Handling multiple duplicate candidates
             - The overall comment tone is set by the **highest** tier present.
@@ -333,31 +338,39 @@ jobs:
             across re-runs (this gets PATCHed in place on every edit, so
             consistency matters more than variety here).
 
+            Formatting, always, for every tier below: each paragraph must be
+            written as ONE continuous line in the file — never insert a line
+            break in the middle of a sentence. A blank line is the only thing
+            that starts a new paragraph. (The wrapping in this prompt's own
+            source is just this YAML file's line width; do not reproduce it —
+            GitHub renders a mid-sentence line break as an actual visual
+            break, which is why that must never happen.) Also never write
+            out an issue's title next to its number — GitHub auto-renders the
+            title inline when you reference `#<n>`, so adding it yourself
+            just duplicates it; write bare `#<n>`.
+
             **HIGH tier** — name the match(es) from "Handling multiple
-            duplicate candidates" above and state it confidently:
+            duplicate candidates" above and state it confidently, as two
+            separate paragraphs — the claim, then the ask:
 
               <!-- claude-dup-check -->
-              👋 @<issue author> — this looks like it might be a duplicate of
-              #<n> (<title>). Mind confirming? If it's the same one, feel free
-              to close this out and add any missing details over there — if
-              it's actually different, just let us know and we'll leave this
-              open.
+              👋 @<issue author> — this looks like it might be a duplicate of #<n>.
 
-            **MEDIUM tier (no High present)** — same shape, hedged instead of
-            confident:
+              Mind confirming? If it's the same one, feel free to close this out and add any missing details over there — if it's actually different, just let us know and we'll leave this open.
+
+            **MEDIUM tier (no High present)** — same two-paragraph shape,
+            hedged instead of confident:
 
               <!-- claude-dup-check -->
-              👋 @<issue author> — this might be related to #<n> (<title>) —
-              not fully sure they're the same one, but wanted to flag it. If
-              you think it is, feel free to close this out (and drop any
-              extra details on the original) — otherwise no worries, just let
-              us know it's different.
+              👋 @<issue author> — this might be related to #<n> — not fully sure they're the same one, but wanted to flag it.
+
+              If you think it is, feel free to close this out (and drop any extra details on the original) — otherwise no worries, just let us know it's different.
 
             For either tier, if there are OTHER issues worth a glance — a
             Medium riding alongside a High, or anything from step 5 — tack on
-            a short intro line plus a bullet per issue, so the reader can
-            scan them instead of parsing a run-on sentence (skip the whole
-            thing if there's nothing to add):
+            one more paragraph: a short intro line plus a bullet per issue, so
+            the reader can scan them instead of parsing a run-on sentence
+            (skip the whole thing if there's nothing to add):
 
               Also, a couple other ones that might be worth a look:
               - #<n> — <one-line why>
@@ -365,11 +378,11 @@ jobs:
 
             **LOW tier with related issues (no duplicate at all)** — this is
             the only case with no confirm/close ask; keep it low-key, same
-            bullet treatment for the related issues:
+            bullet treatment, and still two paragraphs (the related list,
+            then the closing line):
 
               <!-- claude-dup-check -->
-              👋 @<issue author> — didn't find a likely duplicate, but a
-              couple of these looked like they might be related:
+              👋 @<issue author> — didn't find a likely duplicate, but a couple of these looked like they might be related:
               - #<n> — <one-line why>
               - #<n> — <one-line why>
 
