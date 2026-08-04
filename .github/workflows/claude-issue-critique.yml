@@ -280,17 +280,26 @@ jobs:
                per the Result file section below regardless of tier.
             5. Separately, note up to 3 other issues that are **substantively
                related but not duplicate candidates**. The bar: a reader
-               would agree it directly helps understand or resolve this
-               issue — the same code path, a tracking issue this would close,
-               prior discussion of the same root cause. Sharing an author, a
-               general subsystem, or being loosely "also CI/tooling" is NOT
-               enough on its own — that's surface-level, not substantive.
-               When the only connection is topical rather than substantive,
-               leave it out. Do this regardless of the duplicate tier,
-               including a Low result — related issues are tracked
-               independently of whether a duplicate was found. A genuine
-               "nothing related" is the common, correct outcome — don't
-               stretch for a weak match just to fill the list.
+               would agree it directly helps understand or resolve THIS
+               issue's actual subject matter — the same code path, a
+               tracking issue this would close, prior discussion of the same
+               root cause. Concretely NOT enough, on its own: same author,
+               same general subsystem, both being "CI automation," or both
+               being a GitHub Actions workflow that reacts to issue creation
+               and posts a comment. Example of what to reject: an issue
+               about auto-running root-cause analysis on Sentry-linked
+               issues is NOT related to an issue about duplicate detection,
+               even though both are "a CI workflow triggered by `issues:
+               opened` that posts an automated comment" by the same author —
+               that shared shape is categorical, not substantive; they solve
+               different problems and neither informs the other. If your
+               best candidate is only related in that shallow, categorical
+               way, the correct move is to leave it out, not include it with
+               a hedge like "adjacent but distinct." Do this regardless of
+               the duplicate tier, including a Low result — related issues
+               are tracked independently of whether a duplicate was found. A
+               genuine "nothing related" is the common, correct outcome —
+               don't stretch for a weak match just to fill the list.
 
             # Handling multiple duplicate candidates
             - The overall comment tone is set by the **highest** tier present.
@@ -344,17 +353,17 @@ jobs:
             that starts a new paragraph. (The wrapping in this prompt's own
             source is just this YAML file's line width; do not reproduce it —
             GitHub renders a mid-sentence line break as an actual visual
-            break, which is why that must never happen.) Also never write
-            out an issue's title next to its number — GitHub auto-renders the
-            title inline when you reference `#<n>`, so adding it yourself
-            just duplicates it; write bare `#<n>`.
+            break, which is why that must never happen.) Do include each
+            issue's title next to its number, as `#<n> (<title>)` — a bare
+            `#<n>` only shows the title on hover, which most readers won't
+            trigger, so it needs to be spelled out to actually be readable.
 
             **HIGH tier** — name the match(es) from "Handling multiple
             duplicate candidates" above and state it confidently, as two
             separate paragraphs — the claim, then the ask:
 
               <!-- claude-dup-check -->
-              👋 @<issue author> — this looks like it might be a duplicate of #<n>.
+              👋 @<issue author> — this looks like it might be a duplicate of #<n> (<title>).
 
               Mind confirming? If it's the same one, feel free to close this out and add any missing details over there — if it's actually different, just let us know and we'll leave this open.
 
@@ -362,7 +371,7 @@ jobs:
             hedged instead of confident:
 
               <!-- claude-dup-check -->
-              👋 @<issue author> — this might be related to #<n> — not fully sure they're the same one, but wanted to flag it.
+              👋 @<issue author> — this might be related to #<n> (<title>) — not fully sure they're the same one, but wanted to flag it.
 
               If you think it is, feel free to close this out (and drop any extra details on the original) — otherwise no worries, just let us know it's different.
 
@@ -373,8 +382,8 @@ jobs:
             (skip the whole thing if there's nothing to add):
 
               Also, a couple other ones that might be worth a look:
-              - #<n> — <one-line why>
-              - #<n> — <one-line why>
+              - #<n> (<title>) — <one-line why>
+              - #<n> (<title>) — <one-line why>
 
             **LOW tier with related issues (no duplicate at all)** — this is
             the only case with no confirm/close ask; keep it low-key, same
@@ -383,8 +392,8 @@ jobs:
 
               <!-- claude-dup-check -->
               👋 @<issue author> — didn't find a likely duplicate, but a couple of these looked like they might be related:
-              - #<n> — <one-line why>
-              - #<n> — <one-line why>
+              - #<n> (<title>) — <one-line why>
+              - #<n> (<title>) — <one-line why>
 
               Just flagging for context, no action needed.
 
