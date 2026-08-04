@@ -37,7 +37,11 @@ describe("Studio Feedback Modal", () => {
     cy.getBySelector("StudioFeedbackMessageInput")
       .find("textarea")
       .first()
-      .should("have.attr", "placeholder", "This is a feedback message");
+      .should(
+        "have.attr",
+        "placeholder",
+        "Please provide detailed feedback about your experience"
+      );
     cy.getBySelector("StudioFeedbackCancelButton").should("exist");
     cy.getBySelector("StudioFeedbackSubmitButton").should("exist");
   });

@@ -109,7 +109,7 @@ export const StudioFeedbackModal = ({
           fullWidth
           multiline
           minRows={4}
-          placeholder="This is a feedback message"
+          placeholder="Please provide detailed feedback about your experience"
           value={message}
           onChange={(evt) => setMessage(evt.target.value)}
           disabled={isSubmitting}
