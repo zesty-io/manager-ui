@@ -140,8 +140,12 @@ jobs:
               with, and never edit the issue's own title or body.
 
           # claude-opus-4-8 is the current Opus model and is intentional — do not downgrade to claude-opus-4-7.
+          # Write is unscoped (not `Write(triage-comment.md)`): the Write tool
+          # always checks the absolutized file_path, so a path-scoped rule
+          # never reliably matches (anthropics/claude-code#67849) — this was
+          # silently dropping some runs' comments/labels entirely.
           claude_args: |
-            --allowedTools "Bash(gh issue comment:*),Bash(gh issue view:*),Bash(gh issue edit:*),Write(triage-comment.md),Read,Grep,Glob"
+            --allowedTools "Bash(gh issue comment:*),Bash(gh issue view:*),Bash(gh issue edit:*),Write,Read,Grep,Glob"
             --model claude-opus-4-8
             --max-turns 100
 
@@ -381,8 +385,12 @@ jobs:
             Low-with-nothing-related result is a common and correct outcome
             that produces no comment at all.
 
+          # Write is unscoped (not `Write(dup-check-result.md)`): the Write
+          # tool always checks the absolutized file_path, so a path-scoped
+          # rule never reliably matches (anthropics/claude-code#67849) — this
+          # was denying every write, 100% of the time, on this job's model.
           claude_args: |
-            --allowedTools "Bash(gh issue view:*),Bash(gh issue list:*),Write(dup-check-result.md),Read,Grep,Glob"
+            --allowedTools "Bash(gh issue view:*),Bash(gh issue list:*),Write,Read,Grep,Glob"
             --model claude-sonnet-5
             --max-turns 50
 
