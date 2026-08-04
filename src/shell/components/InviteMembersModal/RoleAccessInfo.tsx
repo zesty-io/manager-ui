@@ -85,6 +85,7 @@ export const RoleAccessInfo = ({ role }: Props) => {
     "activity log": t("shell.roleAccessActivityLog"),
     redirects: t("shell.navRedirects"),
     settings: t("shell.navSettings"),
+    apps: t("shell.navApps"),
   };
 
   return (
