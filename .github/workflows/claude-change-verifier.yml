@@ -61,6 +61,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           claude_args: |
+            --model claude-sonnet-5
             --max-turns 50
             --allowedTools "Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh issue view:*),Read,Write,Grep,Glob"
           prompt: |
