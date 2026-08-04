@@ -55,12 +55,33 @@ describe("Integration Field", () => {
 
   describe("Add Field", () => {
     context("Generic Display Types", () => {
-      genericTypes.forEach((valueType) => {
+      // One visit for the whole block: each iteration re-opens the Add
+      // Field dialog (via AddFieldBtn) rather than reloading the page.
+      before(() => {
+        cy.visit(`/schema/${Cypress.env("modelZUID")}/fields`);
+      });
+
+      // Hit the real endpoint exactly once so this suite still exercises a
+      // genuine end-to-end connection; every remaining display type replays
+      // that captured response instead of paying for another live request.
+      let liveGenericApiResponse = null;
+
+      genericTypes.forEach((valueType, index) => {
         it(`${valueType}`.toUpperCase(), () => {
-          connectToEndpoint(FIELD_DATA.endpoint, valueType, genericApi);
+          if (index === 0) {
+            connectToEndpoint(FIELD_DATA.endpoint, null, {
+              visit: false,
+              onResponse: (body) => {
+                liveGenericApiResponse = body;
+              },
+            });
+          } else {
+            connectToEndpoint(FIELD_DATA.endpoint, liveGenericApiResponse, {
+              visit: false,
+            });
+          }
           addGenericField(valueType);
-        });
-        it(`Submit Generic Type Field- ${valueType})`, () => {
+
           cy.intercept(`**/v1/content/models/**`).as("getModelFields");
 
           cy.getBySelector("FieldFormInput_label")
@@ -81,12 +102,17 @@ describe("Integration Field", () => {
     });
 
     context("Special Display Types", () => {
+      before(() => {
+        cy.visit(`/schema/${Cypress.env("modelZUID")}/fields`);
+      });
+
       specialTypes.forEach((valueType) => {
         it(`${valueType}`.toUpperCase(), () => {
-          connectToEndpoint(ENDPOINTS[valueType], valueType, specialApi);
+          connectToEndpoint(ENDPOINTS[valueType], specialApi, {
+            visit: false,
+          });
           addSpecialField(valueType);
-        });
-        it(`Submit Special Type Field - ${valueType})`, () => {
+
           cy.intercept(`**/v1/content/models/**`).as("getModelFields");
 
           cy.getBySelector("FieldFormInput_label")
@@ -108,7 +134,7 @@ describe("Integration Field", () => {
     });
 
     context("HTTP Headers", () => {
-      beforeEach(() => {
+      before(() => {
         cy.visit(`/schema/${Cypress.env("modelZUID")}/fields`);
         cy.getBySelector("AddFieldBtn").click();
         cy.getBySelector("FieldItem_integration").click();
@@ -120,16 +146,12 @@ describe("Integration Field", () => {
           .type(ENDPOINTS.generic);
       });
 
-      it("Add HTTP Headers", () => {
+      it("Adds and removes HTTP Headers", () => {
         Cypress._.times(3, () => cy.getBySelector("addHeaderButton").click());
 
         cy.getBySelector("integrationHeadersContainer")
           .children()
           .should("have.length", 4);
-      });
-
-      it("Remove HTTP Headers", () => {
-        Cypress._.times(3, () => cy.getBySelector("addHeaderButton").click());
 
         [3, 2, 1].forEach((row) => {
           cy.getBySelector(`integrationHeadersContainerRow-${row}`)
@@ -160,17 +182,23 @@ describe("Integration Field", () => {
         },
       ];
 
+      // One visit for the whole block: the "keep user on Connect step"
+      // assertion below means each iteration already leaves the dialog on
+      // the endpoint-input step, ready for the next shape without reloading.
+      before(() => {
+        cy.visit(`/schema/${Cypress.env("modelZUID")}/fields`);
+        cy.getBySelector("AddFieldBtn").click();
+        cy.getBySelector("FieldItem_integration").click();
+        cy.getBySelector("integrationConfigureButton").click();
+        cy.getBySelector("integrationFormDialog").should("exist");
+      });
+
       invalidShapes.forEach(({ name, body }) => {
         it(`blocks advancing and shows an error for: ${name}`, () => {
           cy.intercept("**/get-url?url=*", { statusCode: 200, body }).as(
             "getUrl"
           );
 
-          cy.visit(`/schema/${Cypress.env("modelZUID")}/fields`);
-          cy.getBySelector("AddFieldBtn").click();
-          cy.getBySelector("FieldItem_integration").click();
-          cy.getBySelector("integrationConfigureButton").click();
-          cy.getBySelector("integrationFormDialog").should("exist");
           cy.getBySelector("integrationEndpointInput")
             .find("input")
             .clear()
@@ -699,7 +727,7 @@ describe("Integration Field", () => {
       // the field's `name` is not guaranteed to match the typed label/type.
       const fieldLabel = "reconfigure shopify test field";
 
-      connectToEndpoint(ENDPOINTS.shopify, "shopify", specialApi);
+      connectToEndpoint(ENDPOINTS.shopify, specialApi);
       addSpecialField("shopify");
 
       cy.intercept(`**/v1/content/models/**`).as("getModelFields");
@@ -843,16 +871,26 @@ describe("Integration Field", () => {
   });
 });
 
-function connectToEndpoint(endpoint, type, apiData) {
-  // Mock data for special display types since we don't have endpoints for these types:
-  if (specialTypes.includes(type)) {
-    cy.intercept("/get-url?url=*", {
+function connectToEndpoint(
+  endpoint,
+  apiData,
+  { visit = true, onResponse } = {}
+) {
+  // Mock the API response so most calls are deterministic and don't pay for
+  // a real network round trip. Pass apiData=null to let this one request hit
+  // the real endpoint instead (paired with onResponse to capture it).
+  if (apiData) {
+    cy.intercept("**/get-url?url=*", {
       statusCode: 200,
       body: apiData,
-    });
+    }).as("getUrl");
+  } else {
+    cy.intercept("**/get-url?url=*").as("getUrl");
   }
 
-  cy.visit(`/schema/${Cypress.env("modelZUID")}/fields`);
+  if (visit) {
+    cy.visit(`/schema/${Cypress.env("modelZUID")}/fields`);
+  }
 
   cy.getBySelector("AddFieldBtn").click();
 
@@ -865,11 +903,11 @@ function connectToEndpoint(endpoint, type, apiData) {
     .clear()
     .type(endpoint);
 
-  cy.intercept("**/get-url?url=*").as("getUrl");
-
   cy.getBySelector("integrationConnectButton").click();
 
-  cy.wait("@getUrl");
+  cy.wait("@getUrl").then((interception) => {
+    onResponse?.(interception.response?.body);
+  });
 
   cy.getBySelector("integrationConnectionStatusContainer").should("exist");
 
