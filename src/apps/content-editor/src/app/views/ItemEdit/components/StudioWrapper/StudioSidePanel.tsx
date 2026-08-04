@@ -26,11 +26,19 @@ type StudioSidePanelProps = {
   hasErrors: boolean;
   isSelectedItemLoading: boolean;
   onEditInManager: () => void;
+  // On a Freestyle-built layout this slot becomes "Edit in Freestyle" instead,
+  // since the layout is only editable in that app. The handler is required
+  // rather than optional so the flag can never be set without one — that would
+  // render an enabled button whose onClick is undefined.
+  isFreestyleLayout?: boolean;
+  onEditInFreestyle: () => void;
   onSave: () => void;
   editorPanel: ReactNode;
   infoPanel: ReactNode;
   drawerWidth: number;
   logoSrc: string;
+  // Pinned under the panel header, above the scrolling body.
+  alertSlot?: ReactNode;
 };
 
 export const StudioSidePanel = ({
@@ -47,11 +55,14 @@ export const StudioSidePanel = ({
   hasErrors,
   isSelectedItemLoading,
   onEditInManager,
+  isFreestyleLayout,
+  onEditInFreestyle,
   onSave,
   editorPanel,
   infoPanel,
   drawerWidth,
   logoSrc,
+  alertSlot,
 }: StudioSidePanelProps) => (
   <Drawer
     data-cy="StudioSidePanel"
@@ -114,6 +125,7 @@ export const StudioSidePanel = ({
           )}
         </Stack>
       </Stack>
+      {alertSlot}
       <Box flex="1" overflow="auto" pr={1}>
         {unresolvedPath ? (
           <Box
@@ -161,15 +173,20 @@ export const StudioSidePanel = ({
           </Stack>
         ) : (
           <Button
+            data-cy={
+              isFreestyleLayout
+                ? "StudioEditInFreestyleButton"
+                : "StudioEditInManagerButton"
+            }
             variant="outlined"
             size="large"
             fullWidth
             color="primary"
             sx={{ mb: 2 }}
             disabled={unresolvedPath}
-            onClick={onEditInManager}
+            onClick={isFreestyleLayout ? onEditInFreestyle : onEditInManager}
           >
-            Edit in Zesty Manager
+            {isFreestyleLayout ? "Edit in Freestyle" : "Edit in Zesty Manager"}
           </Button>
         )}
         <Box

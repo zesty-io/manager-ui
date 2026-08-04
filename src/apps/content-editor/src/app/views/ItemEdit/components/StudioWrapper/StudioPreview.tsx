@@ -1,5 +1,5 @@
 import { Box, CircularProgress } from "@mui/material";
-import { RefObject } from "react";
+import { ReactNode, RefObject } from "react";
 
 type StudioPreviewProps = {
   iframeRef: RefObject<HTMLIFrameElement>;
@@ -7,6 +7,8 @@ type StudioPreviewProps = {
   isNavigating: boolean;
   isBusy: boolean;
   onLoad: () => void;
+  // Floats over the top of the canvas, above the refresh overlay.
+  overlaySlot?: ReactNode;
 };
 
 export const StudioPreview = ({
@@ -15,6 +17,7 @@ export const StudioPreview = ({
   isNavigating,
   isBusy,
   onLoad,
+  overlaySlot,
 }: StudioPreviewProps) => (
   <Box position="relative" flex="1" minWidth={0}>
     <Box
@@ -68,5 +71,20 @@ export const StudioPreview = ({
     >
       {isBusy ? <CircularProgress size={28} /> : null}
     </Box>
+    {overlaySlot ? (
+      <Box
+        sx={{
+          position: "absolute",
+          top: 40,
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: 640,
+          maxWidth: "calc(100% - 48px)",
+          zIndex: 4,
+        }}
+      >
+        {overlaySlot}
+      </Box>
+    ) : null}
   </Box>
 );
