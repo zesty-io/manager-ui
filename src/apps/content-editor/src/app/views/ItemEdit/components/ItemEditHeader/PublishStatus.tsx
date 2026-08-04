@@ -35,7 +35,13 @@ export const PublishStatus = ({ currentVersion }: PublishStatusProps) => {
     (item) =>
       item?._active &&
       item?.unpublishAt &&
-      new Date(item?.unpublishAt).getTime() > Date.now()
+      new Date(item?.unpublishAt).getTime() > Date.now() &&
+      // Check if the unpublishAt date is different from the publishAt date of the scheduled publishing
+      // This ensures that we only consider it a scheduled unpublishing if the unpublishAt date is different from the publishAt date of the scheduled publishing
+      item.publishAt &&
+      new Date(item?.publishAt).getTime() <= Date.now() &&
+      new Date(item?.unpublishAt).getTime() !==
+        new Date(scheduledPublishing?.publishAt).getTime()
   );
 
   const getUserNameByZUID = (userZUID?: string) => {

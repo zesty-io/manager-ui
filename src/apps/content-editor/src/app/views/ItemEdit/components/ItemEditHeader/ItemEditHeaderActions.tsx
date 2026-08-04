@@ -336,15 +336,9 @@ export const ItemEditHeaderActions = ({
   const itemState = (() => {
     if (item?.dirty) {
       return ITEM_STATES.dirty;
-    } else if (
-      item?.scheduling?.isScheduled &&
-      item?.scheduling?.version === item?.meta.version
-    ) {
+    } else if (item?.scheduling?.isScheduled) {
       return ITEM_STATES.scheduled;
-    } else if (
-      item?.publishing?.isPublished &&
-      item?.publishing?.version === item?.meta.version
-    ) {
+    } else if (activePublishing?.version === item?.meta.version) {
       return ITEM_STATES.published;
     } else {
       return ITEM_STATES.draft;
