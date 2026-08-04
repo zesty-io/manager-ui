@@ -13,8 +13,12 @@ import { useSendEmailMutation } from "shell/services/cloudFunctions";
 import { useSelector } from "react-redux";
 import { AppState } from "shell/store/types";
 
+// `value` is typed as required `string` on every caller's prop, but several
+// callers pass Redux fields (e.g. `instance?.name`) that are `any` at the
+// state layer and genuinely `undefined` until their slice finishes loading —
+// coalesce defensively rather than trust the prop type.
 const escapeHtml = (value: string): string =>
-  value
+  (value ?? "")
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
