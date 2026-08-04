@@ -13,16 +13,32 @@ import { useSendEmailMutation } from "shell/services/cloudFunctions";
 import { useSelector } from "react-redux";
 import { AppState } from "shell/store/types";
 
+const escapeHtml = (value: string): string =>
+  value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+
 type StudioFeedbackModalProps = {
   open: boolean;
   onClose: () => void;
   email: string;
+  instanceName: string;
+  instanceZUID: string;
+  activePage: string;
+  mode: "content" | "layout";
 };
 
 export const StudioFeedbackModal = ({
   open,
   onClose,
   email,
+  instanceName,
+  instanceZUID,
+  activePage,
+  mode,
 }: StudioFeedbackModalProps) => {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -41,11 +57,23 @@ export const StudioFeedbackModal = ({
 
     setError("");
 
+    const feedbackSubject = `${user?.firstName} ${user?.lastName}`.trim();
+
+    const feedbackBody = [
+      `<b>User:</b> ${escapeHtml(email)}`,
+      `<b>Instance:</b> ${escapeHtml(instanceZUID)} (${escapeHtml(
+        instanceName
+      )})`,
+      `<b>Page:</b> ${escapeHtml(activePage)}`,
+      `<b>Mode:</b> ${escapeHtml(mode)}`,
+      `<b>Message:</b><br>${escapeHtml(message).replace(/\n/g, "<br>")}`,
+    ].join("<br>");
+
     sendEmail({
       to: CONFIG.SLACK_FEEDBACK_EMAIL,
       from: email,
-      subject: `${user?.firstName} ${user?.lastName}`,
-      body: message,
+      subject: feedbackSubject || email,
+      body: feedbackBody,
       template: "raw",
     })
       .unwrap()

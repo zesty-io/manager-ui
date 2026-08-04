@@ -93,11 +93,40 @@ describe("Studio Feedback Modal", () => {
       cy.wait("@sendEmail").then(({ request }) => {
         expect(request.body.to).to.eq(win.CONFIG.SLACK_FEEDBACK_EMAIL);
         expect(request.body.subject).to.be.a("string").and.not.be.empty;
-        expect(request.body.body).to.contain("This is a feedback message");
+        expect(request.body.body).to.contain(
+          `<b>Message:</b><br>This is a feedback message`
+        );
+        expect(request.body.body).to.contain(
+          `<b>User:</b> ${request.body.from}`
+        );
+        expect(request.body.body).to.match(/<b>Instance:<\/b> .+\(.+\)/);
+        expect(request.body.body).to.contain(`<b>Page:</b> ${studioPath}`);
+        expect(request.body.body).to.contain("<b>Mode:</b> content");
+        expect(request.body.body.split("<br>")).to.have.length(6);
       });
     });
 
     cy.getBySelector("StudioFeedbackModal").should("not.exist");
+  });
+
+  it("escapes HTML in the feedback message before sending", () => {
+    cy.intercept("POST", "**/sendEmail", {
+      statusCode: 200,
+      body: {},
+    }).as("sendEmail");
+
+    openFeedbackModal();
+    cy.getBySelector("StudioFeedbackMessageInput")
+      .find("textarea")
+      .first()
+      .type('<img src=x onerror="alert(1)">');
+
+    cy.getBySelector("StudioFeedbackSubmitButton").click();
+
+    cy.wait("@sendEmail").then(({ request }) => {
+      expect(request.body.body).to.not.contain("<img");
+      expect(request.body.body).to.contain("&lt;img");
+    });
   });
 
   it("shows an inline error and re-enables the form when submission fails", () => {

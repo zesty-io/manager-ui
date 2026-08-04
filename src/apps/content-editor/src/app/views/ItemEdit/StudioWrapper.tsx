@@ -1993,6 +1993,10 @@ export const StudioWrapper = () => {
         open={showFeedbackModal}
         onClose={() => setShowFeedbackModal(false)}
         email={userEmail}
+        instanceName={instance?.name}
+        instanceZUID={instance?.ZUID}
+        activePage={previewPath}
+        mode={interactionMode}
       />
       {imageEditState && (
         <MemoryRouter>
