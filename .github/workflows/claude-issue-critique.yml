@@ -280,26 +280,17 @@ jobs:
                per the Result file section below regardless of tier.
             5. Separately, note up to 3 other issues that are **substantively
                related but not duplicate candidates**. The bar: a reader
-               would agree it directly helps understand or resolve THIS
-               issue's actual subject matter — the same code path, a
-               tracking issue this would close, prior discussion of the same
-               root cause. Concretely NOT enough, on its own: same author,
-               same general subsystem, both being "CI automation," or both
-               being a GitHub Actions workflow that reacts to issue creation
-               and posts a comment. Example of what to reject: an issue
-               about auto-running root-cause analysis on Sentry-linked
-               issues is NOT related to an issue about duplicate detection,
-               even though both are "a CI workflow triggered by `issues:
-               opened` that posts an automated comment" by the same author —
-               that shared shape is categorical, not substantive; they solve
-               different problems and neither informs the other. If your
-               best candidate is only related in that shallow, categorical
-               way, the correct move is to leave it out, not include it with
-               a hedge like "adjacent but distinct." Do this regardless of
-               the duplicate tier, including a Low result — related issues
-               are tracked independently of whether a duplicate was found. A
-               genuine "nothing related" is the common, correct outcome —
-               don't stretch for a weak match just to fill the list.
+               would agree it directly helps understand or resolve this
+               issue — the same code path, a tracking issue this would close,
+               prior discussion of the same root cause. Sharing an author, a
+               general subsystem, or being loosely "also CI/tooling" is NOT
+               enough on its own — that's surface-level, not substantive.
+               When the only connection is topical rather than substantive,
+               leave it out. Do this regardless of the duplicate tier,
+               including a Low result — related issues are tracked
+               independently of whether a duplicate was found. A genuine
+               "nothing related" is the common, correct outcome — don't
+               stretch for a weak match just to fill the list.
 
             # Handling multiple duplicate candidates
             - The overall comment tone is set by the **highest** tier present.
