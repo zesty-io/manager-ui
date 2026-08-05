@@ -1,0 +1,62 @@
+{
+  "model": {
+    "label": "Redirects",
+    "type": "pageset",
+    "listed": true
+  },
+  "fields": [
+    {
+      "contentModelZUID": "",
+      "datatype": "text",
+      "name": "text",
+      "label": "text",
+      "sort": 0,
+      "settings": {
+        "list": true
+      }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "textarea",
+      "name": "textarea",
+      "label": "textarea",
+      "sort": 1,
+
+      "settings": {
+        "list": true
+      }
+    }
+  ],
+  "items": [
+    {
+      "data": { "text": "text 1", "textarea": "textarea 1" },
+      "web": {
+        "metaTitle": "Redirects",
+        "metaLinkText": "Redirects"
+      },
+      "meta": {
+        "sort": 0
+      }
+    },
+    {
+      "data": { "text": "text 2", "textarea": "textarea 2" },
+      "web": {
+        "metaTitle": "Redirects 2",
+        "metaLinkText": "Redirects 2"
+      },
+      "meta": {
+        "sort": 1
+      }
+    },
+    {
+      "data": { "text": "text 3", "textarea": "textarea 3" },
+      "web": {
+        "metaTitle": "Redirects 3",
+        "metaLinkText": "Redirects 3"
+      },
+      "meta": {
+        "sort": 2
+      }
+    }
+  ]
+}
