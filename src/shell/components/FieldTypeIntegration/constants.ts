@@ -27,7 +27,7 @@ export const GENERIC_DISPLAY_TYPES: DisplayOptionCardProps[] = [
     card: {
       heading: "Washington-state-mountain.jpg",
       subHeading: "A photo of a beautiful mountain in the state of Washington",
-      thumbnail: "/images/integration-sample-image.png",
+      thumbnail: `${window.location.origin}/images/integration-sample-image.png`,
     },
   },
   {
@@ -37,7 +37,7 @@ export const GENERIC_DISPLAY_TYPES: DisplayOptionCardProps[] = [
     card: {
       heading: "Chugging through Sri Lanka's tea plantations",
       subHeading: "13:10",
-      thumbnail: "/images/integration-sample-video.png",
+      thumbnail: `${window.location.origin}/images/integration-sample-video.png`,
     },
   },
   {
@@ -77,7 +77,7 @@ export const SPECIAL_DISPLAY_TYPES: DisplayOptionCardProps[] = [
     card: {
       heading: "HK01Bq7FrEQmIu3QpRiZZ98HQOOZjm6BYyg17eEunlyo",
       subHeading: "13:10",
-      thumbnail: "/images/integration-sample-video.png",
+      thumbnail: `${window.location.origin}/images/integration-sample-video.png`,
     },
   },
   {
@@ -87,7 +87,7 @@ export const SPECIAL_DISPLAY_TYPES: DisplayOptionCardProps[] = [
     card: {
       heading: "Chugging through Sri Lanka's tea plantations",
       subHeading: "13:10 • 92M views • 1 month ago",
-      thumbnail: "/images/integration-sample-video.png",
+      thumbnail: `${window.location.origin}/images/integration-sample-video.png`,
     },
   },
   {
@@ -98,7 +98,7 @@ export const SPECIAL_DISPLAY_TYPES: DisplayOptionCardProps[] = [
       heading: "Basic Chair",
       subHeading: "Furniture",
       detail: "$73.00",
-      thumbnail: "/images/integration-sample-image.png",
+      thumbnail: `${window.location.origin}/images/integration-sample-image.png`,
     },
   },
   {
@@ -118,6 +118,8 @@ const ITEM_ID: ConfigProps = {
   type: "text",
   isRequired: true,
   placeholder: "Select",
+  toolTip:
+    "Choose a value the API guarantees is unique for every item (e.g. a database ID) — not just one that looks unique in a small sample. A non-unique Item ID can cause selections to be recognized incorrectly.",
 };
 
 const HEADING: ConfigProps = {

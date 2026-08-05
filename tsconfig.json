@@ -12,7 +12,8 @@
     "esModuleInterop": true,
     "types": ["react"],
     "paths": {
-      "shell/*": ["./src/shell/*"]
+      "shell/*": ["./src/shell/*"],
+      "utility/*": ["./src/utility/*"]
     }
   }
 }

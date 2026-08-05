@@ -7,6 +7,7 @@ import RecentActorsRoundedIcon from "@mui/icons-material/RecentActorsRounded";
 import HistoryRoundedIcon from "@mui/icons-material/HistoryRounded";
 import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
 import ShuffleRoundedIcon from "@mui/icons-material/ShuffleRounded";
+import ExtensionRoundedIcon from "@mui/icons-material/ExtensionRounded";
 
 const roleAccess = [
   [
@@ -17,6 +18,7 @@ const roleAccess = [
     "leads",
     "activity log",
     "redirects",
+    "apps",
     "settings",
   ],
   [
@@ -27,12 +29,23 @@ const roleAccess = [
     "leads",
     "activity log",
     "redirects",
+    "apps",
     "settings",
   ],
-  ["content", "schema", "code", "media", "leads", "redirects", "settings"],
-  ["content", "media", "leads", "redirects"],
-  ["content", "media", "leads"],
-  ["content"],
+  [
+    "content",
+    "schema",
+    "code",
+    "media",
+    "leads",
+    "activity log",
+    "redirects",
+    "apps",
+    "settings",
+  ],
+  ["content", "media", "leads", "redirects", "activity log", "apps"],
+  ["content", "media", "leads", "activity log", "apps"],
+  ["content", "media", "apps"],
 ];
 
 const iconStyles = {
@@ -49,6 +62,7 @@ const accessIcon = {
   "activity log": <HistoryRoundedIcon color="action" sx={iconStyles} />,
   redirects: <ShuffleRoundedIcon color="action" sx={iconStyles} />,
   settings: <SettingsRoundedIcon color="action" sx={iconStyles} />,
+  apps: <ExtensionRoundedIcon color="action" sx={iconStyles} />,
 };
 
 interface Props {
