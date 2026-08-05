@@ -906,6 +906,12 @@ export function publish(modelZUID, itemZUID, data, meta = {}) {
           message = `Error cancelling scheduled unpublish for ${title}`;
         } else if (data.publishAt !== "now" && !!data.publishAt) {
           message = `Error scheduling ${title}`;
+        } else if (
+          data.publishAt === "now" &&
+          !!data.unpublishAt &&
+          data.unpublishAt !== "never"
+        ) {
+          message = `Error scheduling unpublish for ${title}`;
         } else {
           message = `Error publishing ${title}`;
         }
