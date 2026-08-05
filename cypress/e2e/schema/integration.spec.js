@@ -55,12 +55,33 @@ describe("Integration Field", () => {
 
   describe("Add Field", () => {
     context("Generic Display Types", () => {
-      genericTypes.forEach((valueType) => {
+      // One visit for the whole block: each iteration re-opens the Add
+      // Field dialog (via AddFieldBtn) rather than reloading the page.
+      before(() => {
+        cy.visit(`/schema/${Cypress.env("modelZUID")}/fields`);
+      });
+
+      // Hit the real endpoint exactly once so this suite still exercises a
+      // genuine end-to-end connection; every remaining display type replays
+      // that captured response instead of paying for another live request.
+      let liveGenericApiResponse = null;
+
+      genericTypes.forEach((valueType, index) => {
         it(`${valueType}`.toUpperCase(), () => {
-          connectToEndpoint(FIELD_DATA.endpoint, valueType, genericApi);
+          if (index === 0) {
+            connectToEndpoint(FIELD_DATA.endpoint, null, {
+              visit: false,
+              onResponse: (body) => {
+                liveGenericApiResponse = body;
+              },
+            });
+          } else {
+            connectToEndpoint(FIELD_DATA.endpoint, liveGenericApiResponse, {
+              visit: false,
+            });
+          }
           addGenericField(valueType);
-        });
-        it(`Submit Generic Type Field- ${valueType})`, () => {
+
           cy.intercept(`**/v1/content/models/**`).as("getModelFields");
 
           cy.getBySelector("FieldFormInput_label")
@@ -81,12 +102,17 @@ describe("Integration Field", () => {
     });
 
     context("Special Display Types", () => {
+      before(() => {
+        cy.visit(`/schema/${Cypress.env("modelZUID")}/fields`);
+      });
+
       specialTypes.forEach((valueType) => {
         it(`${valueType}`.toUpperCase(), () => {
-          connectToEndpoint(ENDPOINTS[valueType], valueType, specialApi);
+          connectToEndpoint(ENDPOINTS[valueType], specialApi, {
+            visit: false,
+          });
           addSpecialField(valueType);
-        });
-        it(`Submit Special Type Field - ${valueType})`, () => {
+
           cy.intercept(`**/v1/content/models/**`).as("getModelFields");
 
           cy.getBySelector("FieldFormInput_label")
@@ -108,7 +134,7 @@ describe("Integration Field", () => {
     });
 
     context("HTTP Headers", () => {
-      beforeEach(() => {
+      before(() => {
         cy.visit(`/schema/${Cypress.env("modelZUID")}/fields`);
         cy.getBySelector("AddFieldBtn").click();
         cy.getBySelector("FieldItem_integration").click();
@@ -120,30 +146,18 @@ describe("Integration Field", () => {
           .type(ENDPOINTS.generic);
       });
 
-      it("Add HTTP Headers", () => {
-        cy.getBySelector("addHeaderButton").click();
-        cy.getBySelector("addHeaderButton").click();
-        cy.getBySelector("addHeaderButton").click();
+      it("Adds and removes HTTP Headers", () => {
+        Cypress._.times(3, () => cy.getBySelector("addHeaderButton").click());
 
         cy.getBySelector("integrationHeadersContainer")
           .children()
           .should("have.length", 4);
-      });
 
-      it("Remove HTTP Headers", () => {
-        cy.getBySelector("addHeaderButton").click();
-        cy.getBySelector("addHeaderButton").click();
-        cy.getBySelector("addHeaderButton").click();
-
-        cy.getBySelector("integrationHeadersContainerRow-3")
-          .find('[data-cy="removeHeaderButton"]')
-          .click();
-        cy.getBySelector("integrationHeadersContainerRow-2")
-          .find('[data-cy="removeHeaderButton"]')
-          .click();
-        cy.getBySelector("integrationHeadersContainerRow-1")
-          .find('[data-cy="removeHeaderButton"]')
-          .click();
+        [3, 2, 1].forEach((row) => {
+          cy.getBySelector(`integrationHeadersContainerRow-${row}`)
+            .find('[data-cy="removeHeaderButton"]')
+            .click();
+        });
 
         cy.getBySelector("integrationHeadersContainer")
           .children()
@@ -168,17 +182,23 @@ describe("Integration Field", () => {
         },
       ];
 
+      // One visit for the whole block: the "keep user on Connect step"
+      // assertion below means each iteration already leaves the dialog on
+      // the endpoint-input step, ready for the next shape without reloading.
+      before(() => {
+        cy.visit(`/schema/${Cypress.env("modelZUID")}/fields`);
+        cy.getBySelector("AddFieldBtn").click();
+        cy.getBySelector("FieldItem_integration").click();
+        cy.getBySelector("integrationConfigureButton").click();
+        cy.getBySelector("integrationFormDialog").should("exist");
+      });
+
       invalidShapes.forEach(({ name, body }) => {
         it(`blocks advancing and shows an error for: ${name}`, () => {
           cy.intercept("**/get-url?url=*", { statusCode: 200, body }).as(
             "getUrl"
           );
 
-          cy.visit(`/schema/${Cypress.env("modelZUID")}/fields`);
-          cy.getBySelector("AddFieldBtn").click();
-          cy.getBySelector("FieldItem_integration").click();
-          cy.getBySelector("integrationConfigureButton").click();
-          cy.getBySelector("integrationFormDialog").should("exist");
           cy.getBySelector("integrationEndpointInput")
             .find("input")
             .clear()
@@ -220,26 +240,13 @@ describe("Integration Field", () => {
       // close any JSON viewer left open by a prior test
       cy.get("body").then(($b) => {
         if ($b.find('[data-cy="jsonCodeViewerCloseButton"]').length) {
-          cy.get('[data-cy="jsonCodeViewerCloseButton"]').click({
-            force: true,
-          });
+          cy.getBySelector("jsonCodeViewerCloseButton").click(forceClick);
         }
       });
     });
+
     it("Create Content Item", () => {
-      const modelZUID = Cypress.env("modelZUID");
-      cy.intercept("**/get-url?url=*", {
-        statusCode: 200,
-        body: genericApi,
-      }).as("reconfigureGetUrl");
-
-      cy.visit(`/content/${modelZUID}/new`);
-      cy.getBySelector("field:title").find("input").type(MODEL?.label);
-
-      cy.getBySelector("field:players")
-        .find('[data-cy="integrationSelectItemsButton"]')
-        .click();
-      cy.getBySelector("integrationSelectionFormDialog").should("exist");
+      createContentItemAndOpenSelector(Cypress.env("modelZUID"), MODEL?.label);
     });
 
     it("Search Filter with - results", () => {
@@ -368,23 +375,13 @@ describe("Integration Field", () => {
   });
 
   describe("Search Filter with Non-string KeyPath", () => {
-    it("Does not crash when a configured keyPath resolves to a number", () => {
-      const modelZUID = Cypress.env("modelZUID");
-      cy.intercept("**/get-url?url=*", {
-        statusCode: 200,
-        body: genericApi,
-      }).as("reconfigureGetUrl");
-
+    beforeEach(() => {
       // Deterministic external data (live endpoint drifts from genericApi).
       cy.intercept("POST", "**/get-url*", { body: genericApi });
+    });
 
-      cy.visit(`/content/${modelZUID}/new`);
-      cy.getBySelector("field:title").find("input").type(MODEL?.label);
-
-      cy.getBySelector("field:players")
-        .find('[data-cy="integrationSelectItemsButton"]')
-        .click();
-      cy.getBySelector("integrationSelectionFormDialog").should("exist");
+    it("Does not crash when a configured keyPath resolves to a number", () => {
+      createContentItemAndOpenSelector(Cypress.env("modelZUID"), MODEL?.label);
 
       cy.getBySelector("integrationSelectionFormSearchBox")
         .find("input")
@@ -413,6 +410,19 @@ describe("Integration Field", () => {
         }
       );
     });
+
+    function openSharedContentSelector(apiData = genericApi) {
+      cy.intercept("**/get-url?url=*", {
+        statusCode: 200,
+        body: apiData,
+      }).as("getUrl");
+
+      cy.visit(`/content/${SHARED_MODEL?.ZUID}/${SHARED_CONTENT?.meta?.ZUID}`);
+
+      cy.getBySelector("field:players")
+        .find('[data-cy="integrationSelectItemsButton"]')
+        .click();
+    }
 
     describe("maxValue Lockout", () => {
       it("Disables unselected checkboxes once the maxValue limit is reached", () => {
@@ -448,18 +458,7 @@ describe("Integration Field", () => {
 
     describe("Resync", () => {
       it("shows resync button on a selected item when remote data has changed", () => {
-        cy.intercept("**/get-url?url=*", {
-          statusCode: 200,
-          body: genericApi,
-        }).as("getUrl");
-
-        cy.visit(
-          `/content/${SHARED_MODEL?.ZUID}/${SHARED_CONTENT?.meta?.ZUID}`
-        );
-
-        cy.getBySelector("field:players")
-          .find('[data-cy="integrationSelectItemsButton"]')
-          .click();
+        openSharedContentSelector();
 
         cy.getBySelector("integrationSelectCard")
           .eq(0)
@@ -488,18 +487,7 @@ describe("Integration Field", () => {
       });
 
       it("does not show resync button when remote data matches saved data", () => {
-        cy.intercept("**/get-url?url=*", {
-          statusCode: 200,
-          body: genericApi,
-        }).as("getUrl");
-
-        cy.visit(
-          `/content/${SHARED_MODEL?.ZUID}/${SHARED_CONTENT?.meta?.ZUID}`
-        );
-
-        cy.getBySelector("field:players")
-          .find('[data-cy="integrationSelectItemsButton"]')
-          .click();
+        openSharedContentSelector();
 
         cy.getBySelector("integrationSelectionFormDialog").should("exist");
 
@@ -512,17 +500,7 @@ describe("Integration Field", () => {
       });
 
       it("clicking resync updates the displayed item in the selected list", () => {
-        cy.intercept("**/get-url?url=*", {
-          statusCode: 200,
-          body: genericApi,
-        }).as("getUrl");
-        cy.visit(
-          `/content/${SHARED_MODEL?.ZUID}/${SHARED_CONTENT?.meta?.ZUID}`
-        );
-
-        cy.getBySelector("field:players")
-          .find('[data-cy="integrationSelectItemsButton"]')
-          .click();
+        openSharedContentSelector();
 
         cy.getBySelector("integrationSelectionFormDialog").should("exist");
 
@@ -540,6 +518,8 @@ describe("Integration Field", () => {
         cy.getBySelector("field:players")
           .find('[data-cy="integrationSelectItemsButton"]')
           .click();
+
+        cy.getBySelector("integrationSelectionFormDialog").should("exist");
 
         cy.getBySelector("integrationSelectCard")
           .eq(0)
@@ -563,17 +543,29 @@ describe("Integration Field", () => {
   });
 
   describe("Reconfigure Display Options", () => {
-    it("Persists keyPath changes when updating an integration field", () => {
+    function openFieldForReconfigure({
+      apiData = genericApi,
+      selector = "Field_text",
+      matchByText = false,
+    } = {}) {
       cy.intercept("**/get-url?url=*", {
         statusCode: 200,
-        body: genericApi,
+        body: apiData,
       }).as("reconfigureGetUrl");
 
       cy.visit(`/schema/${Cypress.env("modelZUID")}/fields`);
 
-      cy.getBySelector("Field_text").click();
+      if (matchByText) {
+        cy.contains('[data-cy^="Field_"]', selector).click();
+      } else {
+        cy.getBySelector(selector).click();
+      }
 
       cy.wait("@reconfigureGetUrl");
+    }
+
+    it("Persists keyPath changes when updating an integration field", () => {
+      openFieldForReconfigure();
 
       cy.intercept("PUT", "**/content/models/*/fields/*").as("updateField");
 
@@ -606,70 +598,53 @@ describe("Integration Field", () => {
     });
 
     it("Cancelling mid-reconfigure leaves the displayed type unchanged", () => {
-      cy.intercept("**/get-url?url=*", {
-        statusCode: 200,
-        body: genericApi,
-      }).as("reconfigureGetUrl");
+      openFieldForReconfigure();
 
-      cy.visit(`/schema/${Cypress.env("modelZUID")}/fields`);
-      cy.get('[data-cy="Field_text"]').click();
-      cy.wait("@reconfigureGetUrl");
-
-      cy.get('[data-cy="integrationDisplayType"] input')
+      cy.getBySelector("integrationDisplayType")
+        .find("input")
         .invoke("val")
         .as("originalType");
 
-      cy.get('[data-cy="integrationConfigureButton"]').click();
-      cy.get('[data-cy="integrationFormDialog"]').should("exist");
+      cy.getBySelector("integrationConfigureButton").click();
+      cy.getBySelector("integrationFormDialog").should("exist");
 
-      cy.get('[data-cy="integrationDisplayOption-simple"]').click(forceClick);
+      cy.getBySelector("integrationDisplayOption-simple").click(forceClick);
       cy.contains("button", "Cancel").click();
-      cy.get('[data-cy="integrationFormDialog"]').should("not.exist");
+      cy.getBySelector("integrationFormDialog").should("not.exist");
 
       cy.get("@originalType").then((originalType) => {
-        cy.get('[data-cy="integrationDisplayType"] input').should(
-          "have.value",
-          originalType
-        );
+        cy.getBySelector("integrationDisplayType")
+          .find("input")
+          .should("have.value", originalType);
       });
     });
 
     it("Updates the displayed type after a successful reconfigure", () => {
-      cy.intercept("**/get-url?url=*", {
-        statusCode: 200,
-        body: genericApi,
-      }).as("reconfigureGetUrl");
-
-      cy.visit(`/schema/${Cypress.env("modelZUID")}/fields`);
-      cy.get('[data-cy="Field_text"]').click();
-      cy.wait("@reconfigureGetUrl");
+      openFieldForReconfigure();
 
       cy.intercept("PUT", "**/content/models/*/fields/*").as("updateField");
 
-      cy.get('[data-cy="integrationConfigureButton"]').click();
-      cy.get('[data-cy="integrationFormDialog"]').should("exist");
+      cy.getBySelector("integrationConfigureButton").click();
+      cy.getBySelector("integrationFormDialog").should("exist");
 
-      cy.get('[data-cy="integrationDisplayOption-simple"]').click(forceClick);
-      cy.get('[data-cy="integrationConfigureOptionNextButton"]').click();
+      cy.getBySelector("integrationDisplayOption-simple").click(forceClick);
+      cy.getBySelector("integrationConfigureOptionNextButton").click();
 
-      cy.get('[data-cy="integrationKeyPathSelector-itemId"]').click();
+      cy.getBySelector("integrationKeyPathSelector-itemId").click();
       cy.get(`.MuiAutocomplete-listbox li:contains("playerId")`).click(
         forceClick
       );
 
-      cy.get('[data-cy="integrationKeyPathSelector-heading"]').click();
+      cy.getBySelector("integrationKeyPathSelector-heading").click();
       cy.get(`.MuiAutocomplete-listbox li:contains("name")`).click(forceClick);
 
-      cy.get(
-        '[data-cy="integrationConfigureDisplayOptionsDoneButton"]'
-      ).click();
+      cy.getBySelector("integrationConfigureDisplayOptionsDoneButton").click();
 
-      cy.get('[data-cy="integrationDisplayType"] input').should(
-        "have.value",
-        "simple"
-      );
+      cy.getBySelector("integrationDisplayType")
+        .find("input")
+        .should("have.value", "simple");
 
-      cy.get('[data-cy="FieldFormAddFieldBtn"]').click();
+      cy.getBySelector("FieldFormAddFieldBtn").click();
       cy.wait("@updateField").then(({ request }) => {
         expect(request.body.settings.integrationFieldConfig.type).to.equal(
           "simple"
@@ -681,14 +656,7 @@ describe("Integration Field", () => {
       const NEW_ENDPOINT =
         "https://8xbq19z1-dev.preview.stage.zesty.io/api/generic-v2.json";
 
-      cy.intercept("**/get-url?url=*", {
-        statusCode: 200,
-        body: genericApi,
-      }).as("reconfigureGetUrl");
-
-      cy.visit(`/schema/${Cypress.env("modelZUID")}/fields`);
-      cy.getBySelector("Field_text").click();
-      cy.wait("@reconfigureGetUrl");
+      openFieldForReconfigure();
 
       cy.intercept("PUT", "**/content/models/*/fields/*").as("updateField");
 
@@ -729,14 +697,7 @@ describe("Integration Field", () => {
     });
 
     it("Edit API URL opens the Connect to API step; Edit Display Options still opens the Display Type step", () => {
-      cy.intercept("**/get-url?url=*", {
-        statusCode: 200,
-        body: genericApi,
-      }).as("reconfigureGetUrl");
-
-      cy.visit(`/schema/${Cypress.env("modelZUID")}/fields`);
-      cy.getBySelector("Field_text").click();
-      cy.wait("@reconfigureGetUrl");
+      openFieldForReconfigure();
 
       // "Edit Display Options" preserves the original behavior — opens directly
       // at the Display Type step.
@@ -766,7 +727,7 @@ describe("Integration Field", () => {
       // the field's `name` is not guaranteed to match the typed label/type.
       const fieldLabel = "reconfigure shopify test field";
 
-      connectToEndpoint(ENDPOINTS.shopify, "shopify", specialApi);
+      connectToEndpoint(ENDPOINTS.shopify, specialApi);
       addSpecialField("shopify");
 
       cy.intercept(`**/v1/content/models/**`).as("getModelFields");
@@ -778,14 +739,11 @@ describe("Integration Field", () => {
       cy.getBySelector("FieldFormAddFieldBtn").click();
       cy.wait("@getModelFields");
 
-      cy.intercept("**/get-url?url=*", {
-        statusCode: 200,
-        body: specialApi,
-      }).as("initialGetUrl");
-
-      cy.visit(`/schema/${Cypress.env("modelZUID")}/fields`);
-      cy.contains('[data-cy^="Field_"]', fieldLabel).click();
-      cy.wait("@initialGetUrl");
+      openFieldForReconfigure({
+        apiData: specialApi,
+        selector: fieldLabel,
+        matchByText: true,
+      });
 
       cy.getBySelector("integrationEditApiUrlButton").click();
       cy.getBySelector("integrationFormDialog").should("exist");
@@ -820,14 +778,7 @@ describe("Integration Field", () => {
       // Generic display types (simple/text/image/video/details) store an
       // empty rootPath — the response array itself is the root. This
       // specifically pins the fix for the case that was previously skipped.
-      cy.intercept("**/get-url?url=*", {
-        statusCode: 200,
-        body: genericApi,
-      }).as("reconfigureGetUrl");
-
-      cy.visit(`/schema/${Cypress.env("modelZUID")}/fields`);
-      cy.getBySelector("Field_text").click();
-      cy.wait("@reconfigureGetUrl");
+      openFieldForReconfigure();
 
       cy.getBySelector("integrationEditApiUrlButton").click();
       cy.getBySelector("integrationFormDialog").should("exist");
@@ -854,18 +805,92 @@ describe("Integration Field", () => {
       );
     });
   });
+
+  describe("Non-unique Item ID (regression #4091)", () => {
+    // Own model, seeded fresh, so reconfiguring itemId to a non-unique
+    // keyPath here can't affect the itemId=playerId fields used elsewhere.
+    let DUPLICATE_MODEL = null;
+
+    before(() => {
+      cy.task("seed:content", "fixtures/integration/maxvalue.json").then(
+        ({ model }) => {
+          DUPLICATE_MODEL = model;
+        }
+      );
+    });
+
+    beforeEach(() => {
+      cy.intercept("POST", "**/get-url*", { body: genericApi });
+    });
+
+    it("Blocks Done and warns when the chosen Item ID is not unique across sampled items", () => {
+      cy.intercept("**/get-url?url=*", {
+        statusCode: 200,
+        body: genericApi,
+      }).as("reconfigureGetUrl");
+
+      cy.visit(`/schema/${DUPLICATE_MODEL.ZUID}/fields`);
+      cy.getBySelector("Field_players").click();
+      cy.wait("@reconfigureGetUrl");
+
+      cy.getBySelector("integrationConfigureButton").click();
+      cy.getBySelector("integrationFormDialog").should("exist");
+      cy.getBySelector("integrationConfigureOptionNextButton").click();
+
+      // playerId (the field's current itemId) is unique — no warning, Done enabled.
+      cy.getBySelector("integrationItemIdDuplicateWarning").should("not.exist");
+      cy.getBySelector("integrationConfigureDisplayOptionsDoneButton").should(
+        "not.be.disabled"
+      );
+
+      cy.getBySelector("integrationKeyPathSelector-itemId").click();
+      cy.getBySelector("integrationKeyPathOption-position").click(forceClick);
+
+      cy.getBySelector("integrationItemIdDuplicateWarning").should(
+        "contain",
+        "is not unique"
+      );
+      cy.getBySelector("integrationConfigureDisplayOptionsDoneButton").should(
+        "be.disabled"
+      );
+
+      // Switching back to a unique keyPath clears the warning and re-enables Done.
+      cy.getBySelector("integrationKeyPathSelector-itemId").click();
+      cy.getBySelector("integrationKeyPathOption-playerId").click(forceClick);
+      cy.getBySelector("integrationItemIdDuplicateWarning").should("not.exist");
+
+      cy.intercept("PUT", "**/content/models/*/fields/*").as("updateField");
+      cy.getBySelector("integrationConfigureDisplayOptionsDoneButton").click();
+      cy.getBySelector("FieldFormAddFieldBtn").click();
+      cy.wait("@updateField").then(({ request }) => {
+        expect(
+          request.body.settings.integrationFieldConfig.keyPaths.itemId
+        ).to.equal("playerId");
+      });
+    });
+  });
 });
 
-function connectToEndpoint(endpoint, type, apiData) {
-  // Mock data for special display types since we don't have endpoints for these types:
-  if (specialTypes.includes(type)) {
-    cy.intercept("/get-url?url=*", {
+function connectToEndpoint(
+  endpoint,
+  apiData,
+  { visit = true, onResponse } = {}
+) {
+  // Mock the API response so most calls are deterministic and don't pay for
+  // a real network round trip. Pass apiData=null to let this one request hit
+  // the real endpoint instead (paired with onResponse to capture it).
+  if (apiData) {
+    cy.intercept("**/get-url?url=*", {
       statusCode: 200,
       body: apiData,
-    });
+    }).as("getUrl");
+  } else {
+    cy.intercept("**/get-url?url=*").as("getUrl");
   }
 
-  cy.visit(`/schema/${Cypress.env("modelZUID")}/fields`);
+  if (visit) {
+    cy.visit(`/schema/${Cypress.env("modelZUID")}/fields`);
+  }
 
   cy.getBySelector("AddFieldBtn").click();
 
@@ -878,11 +903,11 @@ function connectToEndpoint(endpoint, type, apiData) {
     .clear()
     .type(endpoint);
 
-  cy.intercept("**/get-url?url=*").as("getUrl");
-
   cy.getBySelector("integrationConnectButton").click();
 
-  cy.wait("@getUrl");
+  cy.wait("@getUrl").then((interception) => {
+    onResponse?.(interception.response?.body);
+  });
 
   cy.getBySelector("integrationConnectionStatusContainer").should("exist");
 
@@ -984,4 +1009,16 @@ function addGenericField(type) {
   cy.getBySelector("integrationDisplayType")
     .find("input")
     .should("have.value", type);
+}
+
+function createContentItemAndOpenSelector(modelZUID, label) {
+  cy.intercept("**/get-url?url=*", { statusCode: 200, body: genericApi });
+
+  cy.visit(`/content/${modelZUID}/new`);
+  cy.getBySelector("field:title").find("input").type(label);
+
+  cy.getBySelector("field:players")
+    .find('[data-cy="integrationSelectItemsButton"]')
+    .click();
+  cy.getBySelector("integrationSelectionFormDialog").should("exist");
 }
