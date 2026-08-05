@@ -157,6 +157,10 @@ export const SchedulePublish = ({
       selectedUtc,
       publishTimezone
     );
+
+    // Schedule Unpublish is only shown when there are no scheduled publishes,
+    // so there's no need to pre-process the deletion of a scheduled publish.
+
     dispatch(
       publish(
         item?.meta?.contentModelZUID,
@@ -200,7 +204,7 @@ export const SchedulePublish = ({
           // @ts-expect-error untyped action
           .then((response) => {
             if (response?.error) {
-              throw new Error(response?.error?.message);
+              throw new Error(response?.error);
             }
           });
       }
@@ -219,7 +223,7 @@ export const SchedulePublish = ({
         // @ts-expect-error untyped action
         .then((response) => {
           if (response?.error) {
-            throw new Error(response?.error?.message);
+            throw new Error(response?.error);
           }
         });
 
