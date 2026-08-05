@@ -1,15 +1,26 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
+  ConnectField,
+  ElementLayoutPatch,
+  ElementSlot,
   InteractionMode,
   LayersDropPosition,
   LayersTreeNode,
   LayoutSelection,
+  InspectorSelection,
   SelectedElement,
 } from "./studioTypes";
+import { NO_TAG, isTextTag } from "../components/StudioWrapper/studioTags";
+import { parseParsleyRef } from "../components/StudioWrapper/studioParsley";
 
 export type LayersFlatRow = {
   node: LayersTreeNode;
   depth: number;
+  // Tag of the enclosing element row, if any. A text node uses it to tell
+  // whether a text element above it already identifies the text (an <h1>), or
+  // whether it is loose in a container (<div>hello</div>) and has to stand in
+  // for the missing text element itself.
+  parentTagName: string | null;
   label: string;
   hasChildren: boolean;
   expanded: boolean;
@@ -59,11 +70,118 @@ type Args = {
     layoutId?: string;
     breadcrumb?: { layoutId?: string; label: string }[];
   }) => void;
+  applyInspectorSelection: (next: InspectorSelection) => void;
+  refreshInspectorSlots: (
+    nodeId: string,
+    tagName: string,
+    slots: ElementSlot[],
+    layoutPatch: ElementLayoutPatch | null,
+    preserveValues: boolean
+  ) => void;
   codeFileNameById: Record<string, string>;
   fieldsState: Record<string, any>;
+  // The field the user picked, keyed `codeId::layoutId::slotKey`. Supplied by
+  // StudioWrapper so a freshly connected row can be labelled with the real field
+  // rather than a name recovered from the expression.
+  connectedBySlot: Record<string, ConnectField>;
   selectedElement: SelectedElement | null;
   selectedLayout: LayoutSelection | null;
+  inspectorSelection: InspectorSelection | null;
   dndDisabled: boolean;
+};
+
+// Content rows the tree treats as "the element's text": a static text run, or a
+// field rendering inline (an attribute binding is a field row too, but it is not
+// the element's text).
+const isInlineTextNode = (node: LayersTreeNode) =>
+  node.kind === "text" || (node.kind === "field" && !node.attr);
+
+// Give every un-wrapped run of text a text element to live under.
+//
+// The bridge reports the DOM as it is, so `<div>hello</div>` arrives as a text
+// row hanging directly off a container, while `<h1>hello</h1>` arrives as a text
+// element with the text nested inside it. Those are the same thing to a user —
+// text, and the tag around it — so the tree shouldn't render them as two
+// different shapes. Here we insert a placeholder text element wherever one is
+// missing, giving both cases the identical container/value pair:
+//
+//   <h1>hello</h1>     h1       →  hello
+//   <div>hello</div>   div → No Tag → hello
+//
+// The placeholder is PRESENTATIONAL. It deliberately carries no layoutPatch,
+// which is what makes its Tag selector read-only downstream (canChangeTag keys
+// off layoutPatch.isSelf).
+//
+// Giving it a tag would have to WRAP the text in a new element, and that is a
+// different operation from the tag swap this panel does — one we can't perform
+// yet. Every address in the patch layer is a data-layout-id, and loose text
+// doesn't have one: addressing it means indexing text runs positionally, which
+// is only sound when the template and the rendered DOM have the same shape.
+// Parsley loops and conditionals break that, and guessing wrong writes the edit
+// into the wrong place in the customer's source. So the tag stays read-only
+// until positional addressing is built with a correspondence check behind it.
+const withTextElementPlaceholders = (
+  nodes: LayersTreeNode[],
+  parentTagName: string | null
+): LayersTreeNode[] =>
+  nodes.map((node) => {
+    const next: LayersTreeNode = {
+      ...node,
+      children: withTextElementPlaceholders(node.children, node.tagName),
+    };
+
+    // Already inside a text element (or is not text at all) — nothing to do.
+    if (!isInlineTextNode(next) || isTextTag(parentTagName)) return next;
+
+    return {
+      id: `${next.id}:noTag`,
+      kind: "element",
+      tagName: NO_TAG,
+      codeId: next.codeId,
+      // No layout id of its own: this element does not exist in the markup.
+      layoutId: null,
+      layoutPatch: null,
+      // An array (even empty) is what makes a node open the Inspector, so the
+      // placeholder behaves like any other element row: click it, see its tag.
+      slots: [],
+      children: [next],
+    };
+  });
+
+// A node the Inspector panel can open: a supported element (its `slots` array
+// is set — attributes and/or the Tag selector, even when empty for a plain
+// heading or the No Tag placeholder), a text node carrying an editable Text
+// slot, or — in layout mode only — a dynamic field row, whose slot holds the
+// underlying code reference. In content mode a field row still routes to the
+// content editor instead.
+const isPanelNode = (node: LayersTreeNode, interactionMode: InteractionMode) =>
+  Array.isArray(node.slots) &&
+  (node.kind === "element" ||
+    node.kind === "text" ||
+    (node.kind === "field" && interactionMode === "layout"));
+
+// A leaf element's single addressable content row — the text run or bound
+// field carrying its Text ("Value") slot. Recognized by its layoutPatch
+// addressing the leaf element (that's how the bridge marks a leaf's own runs),
+// so a nested element's text never matches. Returns null when the element has
+// no such row, or has several — each run is then reachable only through its
+// own tree row.
+const findLoneTextSlotChild = (node: LayersTreeNode): LayersTreeNode | null => {
+  const matches: LayersTreeNode[] = [];
+  const visit = (children: LayersTreeNode[]) => {
+    children.forEach((child) => {
+      if (
+        child.layoutPatch?.layoutId === node.layoutId &&
+        child.layoutPatch?.codeId === node.codeId &&
+        (child.slots || []).some((slot) => slot.kind === "text")
+      ) {
+        matches.push(child);
+      }
+      visit(child.children);
+    });
+  };
+  visit(node.children);
+  return matches.length === 1 ? matches[0] : null;
 };
 
 export const useStudioLayersTree = ({
@@ -71,27 +189,33 @@ export const useStudioLayersTree = ({
   postCommandToBridge,
   applyBridgeSelection,
   applyLayoutSelection,
+  applyInspectorSelection,
+  refreshInspectorSlots,
   codeFileNameById,
   fieldsState,
+  connectedBySlot,
   selectedElement,
   selectedLayout,
+  inspectorSelection,
   dndDisabled,
 }: Args) => {
   const [tree, setTree] = useState<LayersTreeNode[] | null>(null);
-  // Everything is expanded by default; we only track what the user explicitly
-  // collapses, so nodes that appear on later re-emits start open too.
-  const [collapsedIds, setCollapsedIds] = useState<Set<string>>(new Set());
+  // Rows the user has flipped AWAY from their default expansion. Root rows
+  // default OPEN (a fresh panel shows one level); everything else defaults
+  // CLOSED. Storing the delta rather than an absolute set keeps both defaults
+  // applying to nodes that first appear in later re-emits.
+  const [toggledIds, setToggledIds] = useState<Set<string>>(new Set());
 
   const handleLayersTree = useCallback((msg: any) => {
     const nextTree: LayersTreeNode[] = Array.isArray(msg?.tree)
       ? msg.tree.filter(isLayersTreeNode)
       : [];
-    setTree(nextTree);
+    setTree(withTextElementPlaceholders(nextTree, null));
   }, []);
 
   const resetTree = useCallback(() => {
     setTree(null);
-    setCollapsedIds(new Set());
+    setToggledIds(new Set());
   }, []);
 
   const { nodeById, parentById } = useMemo(() => {
@@ -108,7 +232,24 @@ export const useStudioLayersTree = ({
     return { nodeById: byId, parentById: parents };
   }, [tree]);
 
+  // Whether a row is expanded before the user ever touches it: only the
+  // tree's root rows (no parent) are open, showing one level; everything
+  // below starts closed.
+  const isDefaultOpen = useCallback(
+    (node: LayersTreeNode) => !parentById.get(node.id),
+    [parentById]
+  );
+
+  const isNodeExpanded = useCallback(
+    (node: LayersTreeNode) =>
+      isDefaultOpen(node) ? !toggledIds.has(node.id) : toggledIds.has(node.id),
+    [isDefaultOpen, toggledIds]
+  );
+
   const selectedNodeId = useMemo(() => {
+    // An open Inspector panel owns the highlight in both modes.
+    if (inspectorSelection) return inspectorSelection.nodeId;
+
     if (interactionMode === "layout") {
       if (!selectedLayout?.layoutId) return null;
       for (const node of nodeById.values()) {
@@ -147,10 +288,42 @@ export const useStudioLayersTree = ({
       }
     }
     return fallbackId;
-  }, [interactionMode, nodeById, selectedElement, selectedLayout]);
+  }, [
+    interactionMode,
+    nodeById,
+    inspectorSelection,
+    selectedElement,
+    selectedLayout,
+  ]);
+
+  // A selection (canvas click, drill-down, inspector open) can land on a row
+  // whose ancestors are collapsed — expand them so the selected row actually
+  // renders; the panel's scroll-into-view can't reach an unrendered row.
+  // Deliberately NOT keyed on toggledIds: collapsing an ancestor of the
+  // current selection afterwards is a user choice this must not fight.
+  useEffect(() => {
+    if (!selectedNodeId) return;
+    setToggledIds((prev) => {
+      const next = new Set(prev);
+      let changed = false;
+      let parent = parentById.get(selectedNodeId) || null;
+      while (parent) {
+        // Force-expand relative to each row's default: a default-open row
+        // expands by REMOVING its toggle, a default-closed one by ADDING it.
+        if (isDefaultOpen(parent)) {
+          if (next.delete(parent.id)) changed = true;
+        } else if (!next.has(parent.id)) {
+          next.add(parent.id);
+          changed = true;
+        }
+        parent = parentById.get(parent.id) || null;
+      }
+      return changed ? next : prev;
+    });
+  }, [isDefaultOpen, parentById, selectedNodeId]);
 
   const toggleNode = useCallback((nodeId: string) => {
-    setCollapsedIds((prev) => {
+    setToggledIds((prev) => {
       const next = new Set(prev);
       if (next.has(nodeId)) {
         next.delete(nodeId);
@@ -169,21 +342,50 @@ export const useStudioLayersTree = ({
           : "Page";
       }
       if (node.kind === "element") {
+        // The placeholder is a text element that has no tag yet — the tree calls
+        // it what it is. "No Tag" is a statement about its tag, and that belongs
+        // in the Tag selector, not in the row's name.
+        if (node.tagName === NO_TAG) return "Text";
         return node.tagName || "element";
       }
       if (node.kind === "field") {
         // Dynamic content is labeled by its field name, not its value.
         const field = node.fieldZuid ? fieldsState[node.fieldZuid] : null;
-        return field?.label || field?.name || node.fieldType || "Field";
+        if (field?.label || field?.name) return field.label || field.name;
+
+        // A freshly connected slot has no fieldZuid — the bridge is handed the
+        // Parsley expression and never learns which field it refers to. Use the
+        // ConnectField the user actually picked.
+        // A field row represents one binding, so look up THAT slot rather than
+        // scanning the element's slots — a prefix match could label a `src` row
+        // with the field picked for `alt`.
+        const slotKey = node.slots?.[0]?.key;
+        const picked =
+          node.layoutPatch && slotKey
+            ? connectedBySlot[
+                `${node.layoutPatch.codeId}::${node.layoutPatch.layoutId}::${slotKey}`
+              ]
+            : undefined;
+        if (picked) return picked.label || picked.name;
+
+        // Nothing recorded (a binding that predates this session reaches here
+        // only if its markers are missing) — name it from the expression.
+        const ref = parseParsleyRef(node.slots?.[0]?.sourceValue || "");
+        if (ref) return ref.name;
+
+        return node.fieldType || "Field";
       }
       // Static text shows its actual content.
       return node.label || "";
     },
-    [codeFileNameById, fieldsState]
+    [codeFileNameById, connectedBySlot, fieldsState]
   );
 
   const isNodeSelectable = useCallback(
     (node: LayersTreeNode) => {
+      // Elements with editable attributes (e.g. <img>) are clickable in both
+      // modes to open the Inspector panel.
+      if (isPanelNode(node, interactionMode)) return true;
       if (interactionMode === "layout") {
         // Elements select on the canvas; static text rows are clickable to
         // enter inline static editing on their enclosing element.
@@ -197,13 +399,18 @@ export const useStudioLayersTree = ({
 
   const flatRows = useMemo<LayersFlatRow[]>(() => {
     const rows: LayersFlatRow[] = [];
-    const visit = (nodes: LayersTreeNode[], depth: number) => {
+    const visit = (
+      nodes: LayersTreeNode[],
+      depth: number,
+      parentTagName: string | null
+    ) => {
       nodes.forEach((node) => {
         const hasChildren = node.children.length > 0;
-        const expanded = !collapsedIds.has(node.id);
+        const expanded = isNodeExpanded(node);
         rows.push({
           node,
           depth,
+          parentTagName,
           label: getRowLabel(node),
           hasChildren,
           expanded,
@@ -217,17 +424,17 @@ export const useStudioLayersTree = ({
             !!node.codeId,
         });
         if (hasChildren && expanded) {
-          visit(node.children, depth + 1);
+          visit(node.children, depth + 1, node.tagName);
         }
       });
     };
-    visit(tree || [], 0);
+    visit(tree || [], 0, null);
     return rows;
   }, [
     dndDisabled,
-    collapsedIds,
     getRowLabel,
     interactionMode,
+    isNodeExpanded,
     isNodeSelectable,
     selectedNodeId,
     tree,
@@ -265,10 +472,91 @@ export const useStudioLayersTree = ({
     [applyLayoutSelection, parentById, postCommandToBridge]
   );
 
+  // Pick which of a slot's two values the panel shows, by mode:
+  //   layout  — the RAW template value (what you're actually editing). Never the
+  //             resolved output, which would bake over a Parsley binding.
+  //   content — the resolved value; a field-bound slot shows the field's NAME
+  //             (mirrors the layers-row label) and clicks through to its editor.
+  const resolveSlotValues = useCallback(
+    (slots: ElementSlot[] | undefined): ElementSlot[] =>
+      (slots || []).map((slot) => {
+        if (interactionMode === "layout") {
+          return slot.sourceValue !== undefined
+            ? { ...slot, value: slot.sourceValue }
+            : slot;
+        }
+        if (!slot.isDynamic || !slot.fieldZuid) return slot;
+        const field = fieldsState[slot.fieldZuid];
+        const fieldName = field?.label || field?.name;
+        return fieldName ? { ...slot, value: fieldName } : slot;
+      }),
+    [fieldsState, interactionMode]
+  );
+
+  // Open the Inspector for a canvas-selected layout element, mirroring the
+  // layers tree (layout mode only — content-mode canvas clicks route straight
+  // to the field editor). Which panel opens depends on the element:
+  //   - An element with its own attribute slots (an <img>'s src, an <a>'s
+  //     href) opens ITS panel, like clicking its tree row.
+  //   - A bare text leaf (an <h1>, a <p> — no attribute slots) opens its lone
+  //     text run's / bound field's panel — titled "Text", holding the Value
+  //     input — like clicking that child's tree row. The canvas can't select
+  //     the child directly, so the element click stands in for it.
+  // No-op when the tree hasn't arrived yet or nothing is panel-worthy; the
+  // selection stands and any open Inspector was already closed by
+  // applyLayoutSelection.
+  const openInspectorForLayoutElement = useCallback(
+    (codeId: string, layoutId: string) => {
+      if (interactionMode !== "layout") return;
+      for (const node of nodeById.values()) {
+        if (
+          node.kind === "element" &&
+          node.layoutId === layoutId &&
+          node.codeId === codeId
+        ) {
+          const textChild = node.slots?.length
+            ? null
+            : findLoneTextSlotChild(node);
+          const target =
+            textChild && isPanelNode(textChild, interactionMode)
+              ? textChild
+              : node;
+          if (!isPanelNode(target, interactionMode)) return;
+          applyInspectorSelection({
+            nodeId: target.id,
+            tagName: target.tagName || "",
+            slots: resolveSlotValues(target.slots),
+            layoutPatch: target.layoutPatch ?? null,
+          });
+          return;
+        }
+      }
+    },
+    [applyInspectorSelection, interactionMode, nodeById, resolveSlotValues]
+  );
+
   const handleNodeSelect = useCallback(
     (node: LayersTreeNode) => {
-      // Static content in layout mode → enter inline static editing on the
-      // nearest enclosing element (mirrors double-clicking it on the canvas).
+      // Elements (Tag selector + attributes) and editable text nodes (Text
+      // input) open the Inspector panel in both modes. In layout mode an
+      // element also selects on the canvas so the breadcrumb + outline follow;
+      // a text node has no layoutId so it skips that. An empty tagName marks a
+      // text node — the panel titles it "Text" and hides the Tag selector.
+      if (isPanelNode(node, interactionMode)) {
+        if (interactionMode === "layout" && node.layoutId && node.codeId) {
+          selectLayoutElement(node);
+        }
+        applyInspectorSelection({
+          nodeId: node.id,
+          tagName: node.tagName || "",
+          slots: resolveSlotValues(node.slots),
+          layoutPatch: node.layoutPatch ?? null,
+        });
+        return;
+      }
+
+      // Non-editable static text in layout mode → enter inline static editing
+      // on the nearest enclosing element (mirrors double-clicking on canvas).
       if (interactionMode === "layout" && node.kind === "text") {
         let host = parentById.get(node.id) || null;
         while (
@@ -306,15 +594,42 @@ export const useStudioLayersTree = ({
       });
     },
     [
+      applyInspectorSelection,
       applyBridgeSelection,
       interactionMode,
       isNodeSelectable,
       parentById,
       postCommandToBridge,
+      resolveSlotValues,
       selectLayoutElement,
       toggleNode,
     ]
   );
+
+  // When the tree re-emits (e.g. after a tag swap changes which slots exist),
+  // refresh the open panel's element so it shows the new type's slots.
+  useEffect(() => {
+    const nodeId = inspectorSelection?.nodeId;
+    if (!nodeId) return;
+    const node = nodeById.get(nodeId);
+    if (!node || !isPanelNode(node, interactionMode)) return;
+    refreshInspectorSlots(
+      nodeId,
+      // Empty tagName marks a text/field row — the panel titles it "Text" and
+      // hides the Tag selector.
+      node.tagName || "",
+      resolveSlotValues(node.slots),
+      node.layoutPatch ?? null,
+      // Only layout mode holds editable values worth protecting from a re-emit.
+      interactionMode === "layout"
+    );
+  }, [
+    interactionMode,
+    nodeById,
+    refreshInspectorSlots,
+    resolveSlotValues,
+    inspectorSelection,
+  ]);
 
   const canDrop = useCallback(
     (
@@ -361,7 +676,9 @@ export const useStudioLayersTree = ({
 
       // Select the dragged element first — canvas drags require selection,
       // and the reorder pipeline re-roots the current selection's breadcrumb.
-      handleNodeSelect(source);
+      // Select it as a layout element directly (not via handleNodeSelect) so a
+      // draggable img doesn't pop open the Inspector panel mid-drag.
+      selectLayoutElement(source);
 
       postCommandToBridge({
         action: "moveLayoutElement",
@@ -372,7 +689,7 @@ export const useStudioLayersTree = ({
         position,
       });
     },
-    [canDrop, handleNodeSelect, nodeById, postCommandToBridge]
+    [canDrop, nodeById, postCommandToBridge, selectLayoutElement]
   );
 
   return {
@@ -383,6 +700,7 @@ export const useStudioLayersTree = ({
     resetTree,
     toggleNode,
     handleNodeSelect,
+    openInspectorForLayoutElement,
     canDrop,
     handleNodeDrop,
   };

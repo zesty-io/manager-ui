@@ -2,9 +2,9 @@ import { RefObject } from "react";
 import { Box, Typography, Autocomplete, Paper, TextField } from "@mui/material";
 
 import { COLOR_MAP } from "../constants";
-import { getKeyValue } from "../utils";
+import { get } from "lodash";
 import { IntegrationTypes } from "../../../services/types";
-import { validateUrl } from "../utils";
+import { validateUrl } from "utility/validateUrl";
 
 const KeyPathSelector = ({
   value,
@@ -30,7 +30,7 @@ const KeyPathSelector = ({
 }) => {
   const filteredOptions = restrictedTypes.length
     ? options.filter((option) => {
-        const optionValue = getKeyValue(data, option);
+        const optionValue = get(data, option);
         const valueType = typeof optionValue;
         return !restrictedTypes.includes(valueType);
       })
@@ -72,7 +72,7 @@ const KeyPathSelector = ({
         <TextField {...params} placeholder={placeholder} inputRef={inputRef} />
       )}
       renderOption={(props, option) => {
-        const optionValue = data ? getKeyValue(data, option) : null;
+        const optionValue = data ? get(data, option) : null;
         const valueType = getValueType(optionValue);
         const isUrl =
           valueType === "string" && validateUrl(optionValue as string);
@@ -82,7 +82,11 @@ const KeyPathSelector = ({
         const { key, ...otherProps } = props;
 
         return (
-          <li key={key} {...otherProps}>
+          <li
+            key={key}
+            {...otherProps}
+            data-cy={`integrationKeyPathOption-${option}`}
+          >
             <Box
               display="flex"
               alignItems="center"
