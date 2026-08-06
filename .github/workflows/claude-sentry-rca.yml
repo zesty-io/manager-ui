@@ -18,6 +18,17 @@ name: Claude Sentry RCA
 # it can be pointed at hand-crafted, human-authored test fixtures — that's an
 # acceptable gap for a short-lived testing trigger, not for something that
 # ships permanently.
+#
+# TODO(#4231): also remove the `push` trigger below, and the
+# `if: github.event_name != 'push'` guard on the Detect step. GitHub only
+# lists a workflow (and only lets `gh workflow run` address it by name) once a
+# run of it has happened via SOME trigger, on SOME branch — `issues` has no
+# git ref to run against pre-merge, and `workflow_dispatch` can't be invoked
+# until the workflow is already registered, so neither one can bootstrap
+# itself. `push` is ref-scoped, so one push to this branch with this trigger
+# present registers the workflow, after which workflow_dispatch works against
+# it going forward. The guard makes that one bootstrap run a clean no-op
+# instead of erroring out on an empty issue number.
 on:
   issues:
     types: [opened]
@@ -27,6 +38,8 @@ on:
         description: "TEMPORARY, pre-merge testing only — existing issue number to run this workflow against. Remove this trigger before merging to dev."
         required: true
         type: string
+  push:
+    branches: [maintenance/4231-sentry-rca-workflow]
 
 jobs:
   sentry-rca:
@@ -46,6 +59,7 @@ jobs:
       # instead of branching the whole step on github.event_name.
       - name: Detect Sentry-origin issue
         id: detect
+        if: github.event_name != 'push'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
