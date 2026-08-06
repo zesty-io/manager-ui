@@ -157,11 +157,20 @@ jobs:
                actual code, not just the trace.
             3. Determine the root cause from the code you actually opened. Cite only
                files you opened; never invent paths or line numbers.
-            4. Attempt an actual fix by editing files in the working tree. Do NOT
-               create a branch or commit yet — this edit is a trial, made directly on
-               the checked-out ref, purely to find out whether a confident fix is
-               reachable at all. Whether a clean edit falls out of this step is itself
-               evidence for the classification in section B.
+            4. Attempt an actual fix by editing files in the working tree, based on your
+               best theory from step 3 — even if you're not fully certain it's correct,
+               or it's one of several plausible candidates rather than a single provable
+               cause. A probable fix is worth proposing and trying; don't withhold it
+               just because it isn't provably certain — that judgment belongs in
+               Confidence and the classification in section B, not in whether you
+               attempt a fix at all. Do NOT create a branch or commit yet — this edit is
+               a trial, made directly on the checked-out ref. Whether a clean edit falls
+               out of this step is itself evidence for the classification in section B.
+               - Only skip the trial edit entirely — no fix attempted, nothing to
+                 propose — when you have no plausible theory at all to try, e.g. the
+                 trace is too opaque to suggest even a candidate mechanism. This should
+                 be rare: the bar for "nothing to propose" is much higher than the bar
+                 for "propose something, even a reasoned guess."
 
             # B. Classify
             Two independent determinations, both needed regardless of each other's
@@ -226,16 +235,29 @@ jobs:
             <explanation>
 
             ### Proposed Fix
-            <diff or description>
+            <diff or description of the trial fix that was tried and discarded, or
+            "None — root cause itself is unresolved" if no fix was even attempted>
+
+            **Recommended next step:** <one concrete, actionable instruction for
+            whoever picks this up next — never leave this open-ended. Say specifically
+            what would need to happen to move this forward, e.g. "Reproduce by rapidly
+            switching between CSS files in the code editor; if the trial mitigation
+            above stops it, that confirms the theory and it can be applied for real" or
+            "Root cause is still unresolved — needs local reproduction before any fix is
+            worth attempting" or "This may not be fixable on our side; consider filing
+            upstream against <library>.". The reader should never finish this comment
+            unsure whether to try the proposed mitigation as-is, verify it first, or
+            look for a different approach entirely.
 
             ### Confidence
             <High | Medium | Low> — <one-line why>
 
             ### Classification: Complex (RCA only)
-            <one line per failed criterion, naming it by its actual title from
-            sentry-rca-classification.md, its PASS/FAIL status, and why — e.g.
-            "**Root-cause certainty: FAIL** — multiple plausible causes...". Never
-            write "Factor 1"/"Factor 2" or any other numeric reference.>
+            <a markdown bullet list, one `-` item per failed criterion, naming it by its
+            actual title from sentry-rca-classification.md, its PASS/FAIL status, and
+            why — e.g. "- **Root-cause certainty: FAIL** — multiple plausible
+            causes...". Never write "Factor 1"/"Factor 2" or any other numeric
+            reference.>
 
             <RUN_MARKER>
             ```
@@ -280,9 +302,9 @@ jobs:
             - <what the fix does>
 
             ## Classification
-            <one line per criterion, naming it by its actual title from
-            sentry-rca-classification.md, confirming PASS, and why — same naming rule
-            as the RCA-only template: never "Factor 1"/"Factor 2".>
+            <a markdown bullet list, one `-` item per criterion, naming it by its actual
+            title from sentry-rca-classification.md, confirming PASS, and why — same
+            naming rule as the RCA-only template: never "Factor 1"/"Factor 2".>
 
             ## Test plan
             - [ ] <concrete step to verify the fix>
