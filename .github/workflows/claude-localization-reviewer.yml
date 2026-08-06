@@ -5,7 +5,9 @@ name: Claude Localization Reviewer
 #      errors, locale JSON validity, cross-locale key parity, broken t()/i18n.t() refs.
 #   2. Claude reviews the diff for what only language/intent can catch: missed t()
 #      wiring, value-formatting violations, and translation quality.
-# Both post inline PR comments and one sticky summary comment; fails on any finding.
+# Posts inline PR comments plus a summary comment; fails on any finding. Each run posts a
+# fresh summary comment (deliberately NOT updated in place) so the PR timeline shows the
+# review history: "FAIL" → fix commits → "PASS" — mirrors claude-auto-reviewer.yml.
 
 on:
   pull_request:
@@ -167,8 +169,9 @@ jobs:
             anywhere else in the report. Do not post the summary comment yourself, and do not create
             any inline PR comments yourself — later steps handle both from REPORT_FILE.
 
-      # Post the report, or update the existing comment in place. Reads the verdict for the gate.
-      - name: Post or update Localization Reviewer comment
+      # Always post a NEW summary comment (never update in place): each push's verdict lands
+      # in the PR timeline between the commits it reviewed, preserving the review history.
+      - name: Post Localization Reviewer comment
         id: i18n
         if: always() && steps.changed.outputs.relevant == 'true'
         env:
@@ -192,15 +195,8 @@ jobs:
             exit 0
           fi
           PAYLOAD=$(BODY="$BODY" python3 -c 'import os,json,sys; sys.stdout.write(json.dumps({"body": os.environ["BODY"]}))')
-          CID=$(gh api "repos/$REPO/issues/$PR/comments" --paginate \
-            --jq '.[] | select(.user.login == "github-actions[bot]") | select(.body | startswith("<!-- localization-reviewer -->")) | .id' | head -n1)
-          if [ -n "${CID:-}" ]; then
-            printf '%s' "$PAYLOAD" | gh api -X PATCH "repos/$REPO/issues/comments/$CID" --input - --silent
-            echo "Updated Localization Reviewer comment $CID."
-          else
-            printf '%s' "$PAYLOAD" | gh api -X POST "repos/$REPO/issues/$PR/comments" --input - --silent
-            echo "Created Localization Reviewer comment."
-          fi
+          printf '%s' "$PAYLOAD" | gh api -X POST "repos/$REPO/issues/$PR/comments" --input - --silent
+          echo "Posted Localization Reviewer comment."
           echo "verdict=${VERDICT:-}" >> "$GITHUB_OUTPUT"
 
       # Deterministic instead of relying on Claude to reliably call an inline-comment tool
