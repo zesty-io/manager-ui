@@ -146,8 +146,12 @@ function stripComments(text) {
         const ch = line[i];
         if (!inStr && (ch === '"' || ch === "'")) {
           inStr = ch;
-        } else if (inStr && ch === inStr && line[i - 1] !== "\\") {
-          inStr = null;
+        } else if (inStr && ch === inStr) {
+          let backslashes = 0;
+          while (line[i - 1 - backslashes] === "\\") backslashes++;
+          if (backslashes % 2 === 0) {
+            inStr = null;
+          }
         } else if (!inStr && ch === "/" && line[i + 1] === "/") {
           return line.slice(0, i);
         }

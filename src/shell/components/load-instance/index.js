@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { Box, Link, Typography } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
+import { useTranslation } from "react-i18next";
 
 import i18n, { toSupportedLocale } from "shell/i18n";
 import { store } from "shell/store";
@@ -36,6 +37,7 @@ export default connect((state) => {
     const [error, setError] = useState("");
     const [noPermission, setNoPermission] = useState(false);
     const { refetch: refetchCurrentUserRoles } = useGetCurrentUserRolesQuery();
+    const { t } = useTranslation("shell");
 
     useEffect(() => {
       if (!props.auth.valid) {
@@ -123,12 +125,12 @@ export default connect((state) => {
           <Link
             underline="none"
             color="secondary"
-            title={i18n.t("shell.zestyAccountTitle")}
+            title={t("shell.zestyAccountTitle")}
             href={`${CONFIG.URL_ACCOUNTS}/instances`}
             sx={{ p: 2 }}
           >
             <FontAwesomeIcon icon={faUser} />
-            &nbsp; {i18n.t("shell.goToAccounts")}
+            &nbsp; {t("shell.goToAccounts")}
           </Link>
         </Box>
       );
