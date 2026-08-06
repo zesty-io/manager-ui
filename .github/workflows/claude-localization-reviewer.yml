@@ -99,6 +99,7 @@ jobs:
           claude_args: |
             --max-turns 50
             --allowedTools "Bash(gh pr view:*),Read,Write,Grep,Glob"
+            --model claude-sonnet-5
           prompt: |
             REPO: ${{ github.repository }}
             PR NUMBER: ${{ github.event.pull_request.number }}
