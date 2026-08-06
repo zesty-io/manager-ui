@@ -148,7 +148,7 @@ jobs:
             HTML markers verbatim):
 
               <!-- localization-reviewer -->
-              ## Localization Reviewer — <PASS | FAIL>
+              ## Localization Reviewer — <verdict line>
               <If DIFF_TRUNCATED is "true": "⚠️ This PR's diff was too large to review in full — findings below are non-exhaustive." Otherwise omit this line.>
 
               ### 🔴 Blocking
@@ -164,11 +164,22 @@ jobs:
 
               <!-- localization-verdict: <PASS_OR_FAIL> -->
 
+            <verdict line> mirrors the Claude Auto Review workflow's terse verdict phrasing —
+            counts, not prose, and never a zero count segment:
+              ✅ No blockers
+              ✅ No blockers · 🟡 M advisory note(s)
+              🔴 N blocker(s) · 🟡 M advisory note(s) — see inline comments
+            N is the number of Blocking bullets (0 if "None"), M the number of Advisory bullets.
+            Say "see inline comments" only when N > 0, since only Blocking bullets get posted as
+            inline comments — Advisory ones live only in this comment's body.
+
             FAIL if i18n-objective-results.json has "passed": false, OR you added anything under
-            Blocking. Otherwise PASS. Write the `<!-- localization-verdict: ... -->` marker exactly
-            once, as the final line — never quote it or the `<!-- localization-reviewer -->` marker
-            anywhere else in the report. Do not post the summary comment yourself, and do not create
-            any inline PR comments yourself — later steps handle both from REPORT_FILE.
+            Blocking. Otherwise PASS. This PASS/FAIL is the `<!-- localization-verdict: ... -->`
+            marker used by the merge gate — independent of the human-readable verdict line above,
+            which reports counts rather than pass/fail. Write the marker exactly once, as the final
+            line — never quote it or the `<!-- localization-reviewer -->` marker anywhere else in
+            the report. Do not post the summary comment yourself, and do not create any inline PR
+            comments yourself — later steps handle both from REPORT_FILE.
 
       # Always post a NEW summary comment (never update in place): each push's verdict lands
       # in the PR timeline between the commits it reviewed, preserving the review history.
