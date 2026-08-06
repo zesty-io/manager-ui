@@ -1,6 +1,6 @@
 // Smoke-checks the pre-authenticated browser session before the QA agent is allowed to start.
 //
-// The whole negative-QA workflow rests on one trick: qa_seed.mjs writes auth-state.json, and
+// The whole negative-QA workflow rests on one trick: qa_session.mjs writes auth-state.json, and
 // Playwright MCP's --storage-state loads it so the agent lands on an already-signed-in app.
 // When that breaks — a renamed MCP flag, an expired token, a changed cookie name — nothing
 // throws. The agent just sees a login screen, spends its full turn budget finding nothing,
@@ -50,7 +50,7 @@ try {
   } else if (!auth.valid) {
     failure =
       "The app booted but auth.valid is false — the storage-state session was rejected. " +
-      "Check the cookie name/domain written by qa_seed.mjs against CONFIG.COOKIE_NAME in " +
+      "Check the cookie name/domain written by qa_session.mjs against CONFIG.COOKIE_NAME in " +
       "src/shell/app.config.js, and that Playwright MCP still supports --storage-state.";
   }
 } catch (err) {

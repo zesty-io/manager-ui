@@ -41,10 +41,9 @@ on:
 # ever started because another PR's ci run claimed the slot. A QA job that silently doesn't run
 # is worse than one that runs at an awkward moment.
 #
-# One QA agent at a time repo-wide still bounds the load this puts on the shared dev instance.
-# The real protection against cross-contamination isn't the concurrency group anyway — it's
-# qa_seed.mjs giving each run its own throwaway model and item, which the agent is instructed
-# to mutate exclusively.
+# Now that QA targets its own instance, this group no longer protects other PRs from anything —
+# it exists solely to stop two QA agents mutating the same fixtures at once and reading each
+# other's damage as findings. Isolation from the Cypress suite comes from the instance itself.
 concurrency:
   group: manager-ui-negative-qa
   cancel-in-progress: false
@@ -64,7 +63,11 @@ jobs:
       pull-requests: write
     env:
       PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number }}
-      BASE_URL: http://8-f48cf3a682-7fthvk.manager.dev.zesty.io:8080
+      # The dedicated INTERNAL-NEGATIVE-QA instance, NOT the Cypress instance. Its fixtures are
+      # authored once in production and reach the dev environment via the nightly prod→dev sync,
+      # which doubles as the cleanup — whatever the agent breaks is reset overnight.
+      QA_INSTANCE_ZUID: 8-acabf6a8d6-bj9tr2
+      BASE_URL: http://8-acabf6a8d6-bj9tr2.manager.dev.zesty.io:8080
       # Pinned, not @latest: the MCP server's CLI flags are load-bearing here (--storage-state
       # is how the agent gets an authenticated browser), and a silent flag rename on a floating
       # version would look like "the whole app is behind a login screen" rather than a bug.
@@ -97,11 +100,18 @@ jobs:
         with:
           project_id: zesty-dev
 
-      # Pulls ci/.env (KMS-decrypted test credentials) and writes the /etc/hosts entry.
-      # The app derives its instance ZUID from window.location.host, so it cannot be
-      # reached at localhost — the hosts alias is load-bearing, not a convenience.
+      # Pulls ci/.env (KMS-decrypted test credentials). It also writes the Cypress instance's
+      # hosts entry, which is harmless here.
       - name: Setup Testing Environment
         run: npm run ci:test:setup
+
+      # The app derives its instance ZUID from window.location.host, so it cannot be reached at
+      # localhost — this alias is load-bearing, not a convenience. Added here rather than in
+      # ci/scripts/update_etc_hosts.sh so the Cypress suite's setup stays untouched.
+      - name: Add QA Instance Hosts Entry
+        run: |
+          echo "127.0.0.1 ${QA_INSTANCE_ZUID}.manager.dev.zesty.io" | sudo tee -a /etc/hosts
+          grep "${QA_INSTANCE_ZUID}" /etc/hosts
 
       # --no-save so this never lands in package.json/package-lock and the other CI jobs don't
       # pay for it on every `npm install`. Installing it locally first means the subsequent
@@ -112,11 +122,12 @@ jobs:
           npm install --no-save --legacy-peer-deps "@playwright/mcp@${PLAYWRIGHT_MCP_VERSION}"
           npx playwright install --with-deps chromium
 
-      # Seeds a throwaway model + item and writes auth-state.json, a Playwright storage state
-      # holding just the session cookie. The agent is handed an already-authenticated browser,
-      # so the token never enters its prompt or transcript.
-      - name: Seed QA Content
-        run: node ci/scripts/qa_seed.mjs
+      # Resolves the instance's fixture content and writes auth-state.json, a Playwright storage
+      # state holding just the session cookie. The agent is handed an already-authenticated
+      # browser, so the token never enters its prompt or transcript. Fails loudly if the
+      # fixtures are absent — most likely the nightly sync has not carried them into dev yet.
+      - name: Establish QA Session
+        run: node ci/scripts/qa_session.mjs
 
       - name: Start Dev Server
         run: |
@@ -163,11 +174,19 @@ jobs:
             the diff actually touches. If the diff is docs/config/CI only, write an empty
             report and stop — that is a correct outcome, not a failure.
 
-            STEP 2 — Test data discipline.
-            Read CONTEXT. It names a model and item seeded specifically for this run, plus the
-            URL to reach them. Mutate ONLY those records. The dev instance is shared with every
-            other PR's Cypress run and several specs assert on specific live records — touching
-            anything else will break unrelated builds.
+            STEP 2 — The instance is yours.
+            Read CONTEXT. It describes INTERNAL-NEGATIVE-QA, an instance that exists only for
+            this workflow, and names the fixture model, its fields and its items.
+
+            You may mutate ANYTHING on this instance — edit, delete, publish, unpublish, create
+            new items, corrupt data deliberately. Nothing else shares it, and it is restored
+            wholesale from production every night, so there is no cleanup to do and no way for
+            you to break another PR. Do not hold back on destructive paths: delete-while-
+            referenced, publish-then-unpublish, and unsaved-changes-then-navigate are exactly
+            the sequences that break in production and that nobody tests by hand.
+
+            The one thing to avoid is wasting turns on housekeeping. Do not restore values you
+            changed and do not clean up after yourself — the nightly sync does it for you.
 
             STEP 3 — Attack the changed surface.
             Snapshot before each interaction. Work through, as applicable to what changed:
@@ -322,8 +341,6 @@ jobs:
             echo "Posted negative-QA comment."
           fi
 
-      # Always runs, so a crashed or timed-out agent never leaks records onto the shared
-      # dev instance. Exits 0 even on failure — cleanup must not mask the QA result.
-      - name: Clean Up Seeded Content
-        if: always()
-        run: node ci/scripts/qa_cleanup.mjs
+      # No cleanup step by design: the instance is disposable and the nightly prod→dev sync
+      # resets it wholesale. That is strictly more robust than tearing down per run, which
+      # left debris whenever the agent crashed before cleanup could run.
