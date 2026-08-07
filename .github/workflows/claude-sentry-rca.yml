@@ -1,25 +1,13 @@
 name: Claude Sentry RCA
 
-# Fires on every new issue. A cheap, non-LLM regex step first checks whether the issue
-# body is Sentry's auto-generated "Create GitHub Issue" format; everything else exits
-# immediately. For a real Sentry-origin issue, Claude fetches the underlying Sentry
-# issue via the Sentry MCP server, attempts a trial fix, and classifies it against
-# .github/claude/sentry-rca-classification.md (the tunable bar, not this workflow) —
-# but Claude never touches git or gh itself. It only writes its findings to a fixed
-# set of files (classification.json, rca-comment.md / pr-description.md); every actual
-# GitHub/git side effect (labels, comments, branch/commit/push, PR creation) is a
-# separate deterministic shell step that reads those files. This keeps Claude's tool
-# grant to read-only + Sentry MCP + Write/Edit (no Bash), and gives the workflow two
-# "trust but verify" checkpoints instead of one:
-#   1. Parse classification — rejects a missing/malformed classification.json before
-#      anything branches on it.
-#   2. Verify an outcome was produced — confirms the branch that ran actually landed
-#      its comment/label or PR on GitHub.
-# Outcome:
-#   - all four criteria pass  -> commit the fix, push a branch, open a PR
-#   - any criterion fails     -> discard the trial fix, post an RCA-only comment
-# The job can be safely re-run manually (e.g. after a transient Sentry API error); each
-# run posts its own run-scoped comment rather than being deduped against a prior run's.
+# For a real Sentry-origin issue (detected by a cheap regex step, everything else is a
+# no-op), Claude investigates via the Sentry MCP server and attempts a trial fix, then
+# classifies it against .github/claude/sentry-rca-classification.md — but Claude never
+# touches git or gh itself, only Write/Edit. It just writes its findings to fixed files
+# (classification.json, rca-comment.md / pr-description.md); every GitHub/git side
+# effect is a separate deterministic step that reads those files instead. The job can
+# be safely re-run manually; each run posts its own run-scoped comment rather than
+# being deduped against a prior run's.
 
 # TODO(#4231): remove the `workflow_dispatch` trigger below (and the
 # `github.event.issue.number || inputs.issue_number` / `EVENT_NAME` plumbing it
