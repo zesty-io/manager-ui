@@ -302,21 +302,11 @@ jobs:
 
   triage:
     needs: duplicate-check
-    # Skip bot-authored issues (Dependabot, Sentry, etc.), non-open events —
-    # `edited` was added to the trigger for duplicate-check, not for
-    # re-triage — and issues duplicate-check already flagged as a HIGH-
-    # confidence match, to avoid an Opus run on a ticket likely to be closed
-    # as a duplicate. `always()` is required here: without it, GitHub skips
-    # this job's `if` entirely (and thus skips triage) whenever
-    # duplicate-check fails, which we don't want — a bug in duplicate-check
-    # should never block triage. `needs.duplicate-check.outputs.tier` reads
-    # empty (safely != 'HIGH') if that job failed before determining a tier,
-    # or was itself skipped (e.g. bot-authored issue), so triage still runs
-    # in both cases. If a HIGH call turns out wrong, there's no automatic
-    # re-trigger today — a human applies the labels/comment by hand for that
-    # (expected to be rare) case; GitHub's own "re-run" won't help here since
-    # a skipped job isn't a failed one, and re-running the whole workflow
-    # would just re-derive the same HIGH verdict.
+    # Skip bot-authored issues, non-`opened` events, and HIGH-confidence
+    # duplicates (avoids wasting an Opus run on a likely-duplicate ticket).
+    # `always()` is required: without it, a duplicate-check failure would
+    # skip triage too. Its tier output reads empty (safely != 'HIGH') if
+    # that job failed or was skipped, so triage still runs either way.
     if: >-
       always() &&
       github.event.issue.user.type != 'Bot' &&
