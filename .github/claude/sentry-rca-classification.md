@@ -1,12 +1,14 @@
 # Sentry RCA auto-fix classification criteria
 
 Used by `.github/workflows/claude-sentry-rca.yml` after it has already attempted a
-trial fix for a Sentry-origin issue. Score all four factors below. Auto-fix (commit
-the trial fix, push a branch, open a PR) only if **all four pass**. If any factor
-fails, discard the trial fix and post an RCA-only comment instead.
+trial fix for a Sentry-origin issue. Score all four factors below. Record `"simple"`
+in `classification.json` only if **all four pass** — the workflow then commits the
+trial fix, pushes a branch, and opens a PR. If any factor fails, record `"complex"`
+instead — the workflow discards the trial fix and posts an RCA-only comment.
 
-Always state which factor(s) failed and why, in whichever output you produce — this
-is what lets the bar get tuned over time instead of guessing at a fixed rule once.
+Always state which factor(s) failed and why, in whichever output file you write —
+this is what lets the bar get tuned over time instead of guessing at a fixed rule
+once.
 
 This file is the single source of truth for the bar. Edit it directly to tune the
 bar — no changes to the workflow YAML or its prompt are needed.
