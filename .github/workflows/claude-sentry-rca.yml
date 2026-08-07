@@ -407,6 +407,34 @@ jobs:
           echo "severity=$severity" >> "$GITHUB_OUTPUT"
           echo "✅ classification.json is valid — verdict: $verdict"
 
+      # Applies regardless of verdict (complex or simple) — severity describes the
+      # underlying bug, not whether it was auto-fixable. Runs once, in one place, so
+      # both branches below share the same enforcement instead of duplicating it.
+      - name: Apply severity label
+        if: steps.classify.outputs.fetch_failed == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          ISSUE: ${{ steps.detect.outputs.number }}
+          NEW_LABEL: "severity: ${{ steps.classify.outputs.severity }}"
+        run: |
+          set -euo pipefail
+          # Guarantee at most one severity label at a time. Without this, manually
+          # re-running the job against an issue that already carries a severity label
+          # from a prior run (a different verdict, or just a re-run to refresh the RCA)
+          # would only ever add, never replace — stacking up multiple severity labels
+          # on the same issue instead of leaving exactly the latest run's tier.
+          existing=$(gh issue view "$ISSUE" --repo "$REPO" --json labels -q '.labels[].name' \
+            | grep -E '^severity: (low|medium|high|critical)$' || true)
+          while IFS= read -r label; do
+            [ -z "$label" ] && continue
+            if [ "$label" != "$NEW_LABEL" ]; then
+              gh issue edit "$ISSUE" --repo "$REPO" --remove-label "$label"
+            fi
+          done <<< "$existing"
+          gh issue edit "$ISSUE" --repo "$REPO" --add-label "$NEW_LABEL"
+          echo "✅ Applied \"$NEW_LABEL\" to issue #$ISSUE (any other severity label removed)."
+
       - name: Post RCA-only comment
         if: steps.classify.outputs.verdict == 'complex'
         env:
@@ -422,9 +450,6 @@ jobs:
           # Discard the trial fix — this path never commits it.
           git checkout -- .
           gh issue comment "$ISSUE" --repo "$REPO" --body-file rca-comment.md
-          if [ "${{ steps.classify.outputs.fetch_failed }}" != "true" ]; then
-            gh issue edit "$ISSUE" --repo "$REPO" --add-label "severity: ${{ steps.classify.outputs.severity }}"
-          fi
           echo "✅ Posted RCA-only comment on issue #$ISSUE."
 
       - name: Open auto-fix PR
@@ -455,7 +480,6 @@ jobs:
             --label "sentry-auto-fix" \
             --reviewer agalin920,geodem127,finnar-bin \
             --body-file pr-description.md
-          gh issue edit "$ISSUE" --repo "$REPO" --add-label "severity: ${{ steps.classify.outputs.severity }}"
           echo "✅ Opened auto-fix PR on branch $branch for issue #$ISSUE."
 
       # Checkpoint 2: confirm the branch that ran actually produced its outcome on
