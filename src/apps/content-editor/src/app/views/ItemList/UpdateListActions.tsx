@@ -344,9 +344,9 @@ export const UpdateListActions = ({ items }: UpdateListActionsProps) => {
       </Box>
       {showPublishesModal && (
         <ConfirmPublishesModal
-          items={itemsToPublish?.map((itemZUID) =>
-            items?.find((item) => item.meta.ZUID === itemZUID)
-          )}
+          items={itemsToPublish
+            ?.map((itemZUID) => items?.find((item) => item.meta.ZUID === itemZUID))
+            .filter(Boolean)}
           onCancel={() => {
             setItemsToPublish([]);
             clearStagedChanges({});
@@ -392,9 +392,9 @@ export const UpdateListActions = ({ items }: UpdateListActionsProps) => {
       )}
       {showScheduleModal && (
         <SchedulePublishesModal
-          items={itemsToSchedule?.map((itemZUID) =>
-            items?.find((item) => item.meta.ZUID === itemZUID)
-          )}
+          items={itemsToSchedule
+            ?.map((itemZUID) => items?.find((item) => item.meta.ZUID === itemZUID))
+            .filter(Boolean)}
           onCancel={() => {
             setItemsToSchedule([]);
             clearStagedChanges({});
@@ -440,9 +440,11 @@ export const UpdateListActions = ({ items }: UpdateListActionsProps) => {
       )}
       {showDeletesModal && (
         <ConfirmDeletesDialog
-          items={selectedItems?.map((itemZUID: string) =>
-            items?.find((item) => item.meta.ZUID === itemZUID)
-          )}
+          items={selectedItems
+            ?.map((itemZUID: string) =>
+              items?.find((item) => item.meta.ZUID === itemZUID)
+            )
+            .filter(Boolean)}
           onCancel={() => {
             setShowDeletesModal(false);
           }}
