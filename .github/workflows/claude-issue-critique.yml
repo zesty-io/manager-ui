@@ -7,9 +7,27 @@ on:
 
 jobs:
   triage:
-    # Skip bot-authored issues (Dependabot, Sentry, etc.) and non-open events —
-    # `edited` was added to the trigger for duplicate-check, not for re-triage.
-    if: github.event.issue.user.type != 'Bot' && github.event.action == 'opened'
+    needs: duplicate-check
+    # Skip bot-authored issues (Dependabot, Sentry, etc.), non-open events —
+    # `edited` was added to the trigger for duplicate-check, not for
+    # re-triage — and issues duplicate-check already flagged as a HIGH-
+    # confidence match, to avoid an Opus run on a ticket likely to be closed
+    # as a duplicate. `always()` is required here: without it, GitHub skips
+    # this job's `if` entirely (and thus skips triage) whenever
+    # duplicate-check fails, which we don't want — a bug in duplicate-check
+    # should never block triage. `needs.duplicate-check.outputs.tier` reads
+    # empty (safely != 'HIGH') if that job failed before determining a tier,
+    # or was itself skipped (e.g. bot-authored issue), so triage still runs
+    # in both cases. If a HIGH call turns out wrong, there's no automatic
+    # re-trigger today — a human applies the labels/comment by hand for that
+    # (expected to be rare) case; GitHub's own "re-run" won't help here since
+    # a skipped job isn't a failed one, and re-running the whole workflow
+    # would just re-derive the same HIGH verdict.
+    if: >-
+      always() &&
+      github.event.issue.user.type != 'Bot' &&
+      github.event.action == 'opened' &&
+      needs.duplicate-check.outputs.tier != 'HIGH'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     concurrency:
@@ -188,10 +206,14 @@ jobs:
 
           exit "$failed"
 
-  # Separate job (not a step in `triage`) so it has its own concurrency group,
-  # its own gate, and can be re-run on its own from the Actions UI without
-  # re-running triage. Fires on `opened` and on `edited` when the title or body
-  # actually changed (see the `if`) — closes zesty-io/manager-ui#4229.
+  # Separate job (not a step in `triage`) so it has its own concurrency group
+  # and its own gate. `triage` now depends on this job's `tier` output (see
+  # its `needs`/`if`), so it's no longer fully independent in that direction
+  # — re-running duplicate-check alone still works standalone, but triage
+  # won't start until this job finishes. Fires on `opened` and on `edited`
+  # when the title or body actually changed (see the `if`) — closes
+  # zesty-io/manager-ui#4229.
+  # TODO: Add a label to the ticket to easily find duplicates
   duplicate-check:
     if: >-
       github.event.issue.user.type != 'Bot' &&
@@ -206,6 +228,8 @@ jobs:
     permissions:
       contents: read
       issues: write
+    outputs:
+      tier: ${{ steps.dup.outputs.tier }}
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
