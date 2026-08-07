@@ -13,7 +13,6 @@ jobs:
   # won't start until this job finishes. Fires on `opened` and on `edited`
   # when the title or body actually changed (see the `if`) — closes
   # zesty-io/manager-ui#4229.
-  # TODO: Add a label to the ticket to easily find duplicates
   duplicate-check:
     if: >-
       github.event.issue.user.type != 'Bot' &&
@@ -147,23 +146,27 @@ jobs:
             issue's title next to its number, as `#<n> (<title>)` — a bare
             `#<n>` only shows the title on hover, which most readers won't
             trigger, so it needs to be spelled out to actually be readable.
+            Never use an em dash (—) anywhere in the comment body itself; it
+            reads as an AI tell. Use a comma, a period, or start a new
+            sentence instead. The templates below are already written this
+            way; keep them that way when you fill in the bracketed bits.
 
             **HIGH tier** — name the match(es) from "Handling multiple
             duplicate candidates" above and state it confidently, as two
             separate paragraphs — the claim, then the ask:
 
               <!-- claude-dup-check -->
-              👋 @<issue author> — this looks like it might be a duplicate of #<n> (<title>).
+              👋 @<issue author>, this looks like a duplicate of #<n> (<title>).
 
-              Mind confirming? If it's the same one, feel free to close this out and add any missing details over there — if it's actually different, just let us know and we'll leave this open.
+              Mind confirming? If it's the same one, feel free to close this out and add any missing details over there. If it's actually different, just let us know and we'll leave this open.
 
             **MEDIUM tier (no High present)** — same two-paragraph shape,
             hedged instead of confident:
 
               <!-- claude-dup-check -->
-              👋 @<issue author> — this might be related to #<n> (<title>) — not fully sure they're the same one, but wanted to flag it.
+              👋 @<issue author>, this might be related to #<n> (<title>). Not fully sure they're the same one, but wanted to flag it.
 
-              If you think it is, feel free to close this out (and drop any extra details on the original) — otherwise no worries, just let us know it's different.
+              If you think it is, feel free to close this out (and drop any extra details on the original). Otherwise no worries, just let us know it's different.
 
             For either tier, if there are OTHER issues worth a glance — a
             Medium riding alongside a High, or anything from step 5 — tack on
@@ -172,8 +175,8 @@ jobs:
             (skip the whole thing if there's nothing to add):
 
               Also, a couple other ones that might be worth a look:
-              - #<n> — <one-line why>
-              - #<n> — <one-line why>
+              - #<n>: <one-line why>
+              - #<n>: <one-line why>
 
             **LOW tier with related issues (no duplicate at all)** — this is
             the only case with no confirm/close ask; keep it low-key, same
@@ -181,9 +184,9 @@ jobs:
             then the closing line):
 
               <!-- claude-dup-check -->
-              👋 @<issue author> — didn't find a likely duplicate, but a couple of these looked like they might be related:
-              - #<n> — <one-line why>
-              - #<n> — <one-line why>
+              👋 @<issue author>, didn't find a likely duplicate, but a couple of these looked like they might be related:
+              - #<n>: <one-line why>
+              - #<n>: <one-line why>
 
               Just flagging for context, no action needed.
 
@@ -239,6 +242,11 @@ jobs:
             exit 1
           fi
           echo "tier=$TIER" >> "$GITHUB_OUTPUT"
+
+          if [ "$TIER" = "HIGH" ] || [ "$TIER" = "MEDIUM" ]; then
+            gh issue edit "$ISSUE" --repo "$REPO" --add-label "duplicate"
+            echo "✅ Applied 'duplicate' label to #$ISSUE (tier=$TIER)."
+          fi
 
           # HIGH/MEDIUM always require a comment body (the duplicate ask).
           # LOW may or may not have one — it gets a body only when step 5 found
