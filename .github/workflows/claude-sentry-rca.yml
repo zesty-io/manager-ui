@@ -242,6 +242,19 @@ jobs:
 
             # C. Write outputs (never run git or gh — you have no access to either)
 
+            Tone for rca-comment.md and pr-description.md (classification.json is data,
+            not prose — this doesn't apply there): write like an engineer on this team
+            actually posting to a real GitHub issue, not like an AI summarizing one.
+            Short, direct sentences. No em dashes — use a period, a comma, or
+            parentheses instead; em dashes are one of the more obvious tells that a
+            comment was written by an LLM, and the whole point of this comment is that
+            it reads as a colleague's analysis. Also skip other AI-writing tells: no
+            "Furthermore"/"Additionally"/"It's worth noting that" transitions, no
+            padding a list to a "rule of three" when two or four items is what's
+            actually true, no hedging filler ("it appears that", "this may suggest").
+            State findings plainly. This is about phrasing only — never soften or
+            invent the substance to sound more natural.
+
             ## C.1 WORKSPACE/classification.json — always write this file, except in
             the fetch-failed case (C.3), where it has a reduced shape. Exact keys and
             allowed values matter: a deterministic step parses this file and fails the
@@ -285,26 +298,26 @@ jobs:
 
             ### Proposed Fix
             <diff or description of the trial fix that was tried and discarded, or
-            "None — root cause itself is unresolved" if no fix was even attempted>
+            "None. Root cause itself is unresolved" if no fix was even attempted>
 
             **➡️ Recommended next step:** <one concrete, actionable instruction for
-            whoever picks this up next — never leave this open-ended. Say specifically
+            whoever picks this up next. Never leave this open-ended. Say specifically
             what would need to happen to move this forward, e.g. "Reproduce by rapidly
             switching between CSS files in the code editor; if the trial mitigation
             above stops it, that confirms the theory and it can be applied for real" or
-            "Root cause is still unresolved — needs local reproduction before any fix is
+            "Root cause is still unresolved. Needs local reproduction before any fix is
             worth attempting" or "This may not be fixable on our side; consider filing
             upstream against <library>.". The reader should never finish this comment
             unsure whether to try the proposed mitigation as-is, verify it first, or
             look for a different approach entirely.
 
             ### Confidence
-            <High | Medium | Low> — <one-line why>
+            <High | Medium | Low>: <one-line why>
 
             ### ⚠️ Classification: Complex (RCA only)
             <a markdown bullet list, one `-` item per failed criterion, naming it by its
             actual title from sentry-rca-classification.md, its PASS/FAIL status, and
-            why — e.g. "- **Root-cause certainty: FAIL** — multiple plausible
+            why, e.g. "- **Root-cause certainty: FAIL**. Multiple plausible
             causes...". Never write "Factor 1"/"Factor 2" or any other numeric
             reference.>
 
@@ -330,8 +343,8 @@ jobs:
             **Sentry Issue:** [<SENTRY_SHORT_ID>](<SENTRY_PERMALINK>)
 
             ⚠️ Could not fetch this Sentry issue's data (<one-line reason: bad ID /
-            resolved or deleted / API error>). No root-cause analysis was performed —
-            check the Sentry issue directly.
+            resolved or deleted / API error>). No root-cause analysis was performed.
+            Check the Sentry issue directly.
 
             <RUN_MARKER>
             ```
