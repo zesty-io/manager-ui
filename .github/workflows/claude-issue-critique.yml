@@ -298,6 +298,13 @@ jobs:
             echo "::error::No usable duplicate-check result was produced — see the workflow logs."
             exit 1
           fi
+          # HIGH/MEDIUM require a body; the post step already fails in this
+          # case, but without this guard the gate (which always runs) prints
+          # a misleading ✅ on top of that failure instead of explaining it.
+          if [ "$TIER" != "LOW" ] && [ "$HAS_BODY" != "true" ]; then
+            echo "::error::Tier is $TIER but no comment body was produced — see the workflow logs."
+            exit 1
+          fi
           # A body is only ever produced for HIGH/MEDIUM (always) or LOW-with-
           # related-issues (sometimes) — whenever one was produced, it must
           # have actually posted. No body at all (tier-agnostic) is silent
@@ -313,13 +320,17 @@ jobs:
     # Skip bot-authored issues, non-`opened` events, and HIGH-confidence
     # duplicates (avoids wasting an Opus run on a likely-duplicate ticket).
     # `always()` is required: without it, a duplicate-check failure would
-    # skip triage too. Its tier output reads empty (safely != 'HIGH') if
-    # that job failed or was skipped, so triage still runs either way.
+    # skip triage too. The explicit `result != 'success'` check matters
+    # because `outputs.tier` isn't reliably empty on failure: if the model
+    # writes a HIGH tier marker but omits the comment body, that job fails
+    # *after* tier is already in $GITHUB_OUTPUT, so the output alone can't
+    # tell success from failure.
     if: >-
       always() &&
       github.event.issue.user.type != 'Bot' &&
       github.event.action == 'opened' &&
-      needs.duplicate-check.outputs.tier != 'HIGH'
+      (needs.duplicate-check.result != 'success' ||
+       needs.duplicate-check.outputs.tier != 'HIGH')
     runs-on: ubuntu-latest
     timeout-minutes: 20
     concurrency:
