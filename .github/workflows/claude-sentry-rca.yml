@@ -416,9 +416,19 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
           ISSUE: ${{ steps.detect.outputs.number }}
-          NEW_LABEL: "severity: ${{ steps.classify.outputs.severity }}"
+          SEVERITY: ${{ steps.classify.outputs.severity }}
         run: |
           set -euo pipefail
+          # Parse classification already validates severity, but re-check here too
+          # rather than trusting that step's output blindly — if it's ever wrong, this
+          # step is where a bad value would otherwise get committed to a real label
+          # (or silently fail with an unhelpful gh error for an unrecognized string).
+          if [[ ! "$SEVERITY" =~ ^(low|medium|high|critical)$ ]]; then
+            echo "::error::❌ invalid severity from classify step: '$SEVERITY'"
+            exit 1
+          fi
+          NEW_LABEL="severity: $SEVERITY"
+
           # Guarantee at most one severity label at a time. Without this, manually
           # re-running the job against an issue that already carries a severity label
           # from a prior run (a different verdict, or just a re-run to refresh the RCA)
