@@ -459,6 +459,7 @@ jobs:
           echo "✅ Posted RCA-only comment on issue #$ISSUE."
 
       - name: Open auto-fix PR
+        id: openpr
         if: steps.classify.outputs.verdict == 'simple'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -482,10 +483,11 @@ jobs:
           git add -A -- . ':(exclude)classification.json' ':(exclude)pr-description.md' ':(exclude)rca-comment.md'
           git commit -m "$title"
           git push -u origin "$branch"
-          gh pr create --repo "$REPO" --base dev --title "$title" \
+          pr_url=$(gh pr create --repo "$REPO" --base dev --title "$title" \
             --label "sentry-auto-fix" \
             --reviewer agalin920,geodem127,finnar-bin \
-            --body-file pr-description.md
+            --body-file pr-description.md)
+          echo "pr_number=${pr_url##*/}" >> "$GITHUB_OUTPUT"
           echo "✅ Opened auto-fix PR on branch $branch for issue #$ISSUE."
 
       # Checkpoint 2: confirm the branch that ran actually produced its outcome on
@@ -496,6 +498,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
           ISSUE: ${{ steps.detect.outputs.number }}
+          PR_NUMBER: ${{ steps.openpr.outputs.pr_number }}
           MARKER: "<!-- sentry-rca:${{ github.run_id }} -->"
         run: |
           set -euo pipefail
@@ -503,8 +506,11 @@ jobs:
             echo "✅ RCA comment for this run found on issue #$ISSUE."
             exit 0
           fi
-          if gh pr list --repo "$REPO" --search "Resolves #$ISSUE" --state all --json body -q '.[].body' | grep -qF "$MARKER"; then
-            echo "✅ Auto-fix PR for this run found for issue #$ISSUE."
+          # Look up the exact PR by number rather than gh pr list --search: search hits
+          # GitHub's search index, which is eventually consistent and can lag a few
+          # seconds behind a PR that was just created in the previous step.
+          if [ -n "$PR_NUMBER" ] && gh pr view "$PR_NUMBER" --repo "$REPO" --json body -q '.body' | grep -qF "$MARKER"; then
+            echo "✅ Auto-fix PR #$PR_NUMBER for this run found for issue #$ISSUE."
             exit 0
           fi
           echo "::error::❌ Run ${{ github.run_id }} produced neither an RCA comment nor a fix PR for issue #$ISSUE."
