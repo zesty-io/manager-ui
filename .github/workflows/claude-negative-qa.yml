@@ -1,28 +1,11 @@
 name: Claude Negative QA
 
-# The dynamic counterpart to Claude Change Verifier. That workflow reviews a PR from the code
-# only and answers "does this satisfy the issue?"; this one boots the real app in a real
-# browser and answers "what breaks when I misuse it?". Cypress covers the happy paths, and its
-# specs are written by the same person who wrote the feature — so they encode the author's
-# assumptions. This job is a senior QA persona that attacks the PR's changed surface with the
-# inputs nobody thought about, and reports the failures with screenshots as evidence.
-#
-# Advisory only: it never fails the build. Agentic browser exploration is non-deterministic,
-# and a false positive blocking a merge would burn the team's trust in it within a week.
+# Drives the real app in a browser and attacks the PR's changed surface, as the dynamic
+# counterpart to Claude Change Verifier. Advisory only — it never fails the build.
 
-# Runs itself exactly ONCE per PR, then never again without a human asking.
-#
-# Deliberately no `synchronize`: a full pass is ~9 minutes of agent time plus a Chromium
-# install, and re-running it on every push would spend that on typo fixes and review nits. The
-# first pass is the one that finds things; after that you generally want it only once you have
-# actually changed the surface it was probing.
-#
-# `opened` covers a PR raised ready; `ready_for_review` covers one raised as a draft, where the
-# `opened` event fires while the job's draft guard is still skipping it. Exactly one of the two
-# ever reaches the job, so this is once per PR, not twice.
-#
-# To run it again: either "Re-run jobs" on the previous run, or Run workflow from the Actions
-# tab with the PR number — pick the PR's branch as the ref so the diff and code match.
+# Once per PR: no `synchronize`, since a pass costs ~9 minutes of agent time. Exactly one of
+# `opened` / `ready_for_review` reaches the job (the draft guard skips the other). Re-run from
+# the Actions tab with the PR number, selecting the PR's branch as the ref.
 on:
   pull_request:
     branches: [dev]
@@ -33,25 +16,16 @@ on:
         description: "PR number to QA"
         required: true
 
-# Its own repo-wide group, deliberately NOT ci.yaml's manager-ui-e2e-dev-instance.
-#
-# Sharing that group meant competing with every PR's Cypress suite for the single *pending*
-# slot GitHub allows per concurrency group. This job is the lowest-priority thing in it, so it
-# lost that race routinely — observed in practice: a queued run was cancelled before its job
-# ever started because another PR's ci run claimed the slot. A QA job that silently doesn't run
-# is worse than one that runs at an awkward moment.
-#
-# Now that QA targets its own instance, this group no longer protects other PRs from anything —
-# it exists solely to stop two QA agents mutating the same fixtures at once and reading each
-# other's damage as findings. Isolation from the Cypress suite comes from the instance itself.
+# Its own group, not ci.yaml's — sharing that one meant losing the single pending slot to
+# every PR's Cypress run and being cancelled before starting. Only stops two QA agents
+# mutating the same fixtures at once; isolation from Cypress comes from the instance.
 concurrency:
   group: manager-ui-negative-qa
   cancel-in-progress: false
 
 jobs:
   negative-qa:
-    # Fork PRs get neither ANTHROPIC_API_KEY nor GCP_DEV_SA_KEY; this uses pull_request
-    # (not pull_request_target) so there is no path to leak them.
+    # Fork PRs get neither secret; pull_request (not _target) means no path to leak them.
     if: >-
       github.event_name == 'workflow_dispatch' ||
       (github.event.pull_request.draft == false &&
@@ -63,14 +37,12 @@ jobs:
       pull-requests: write
     env:
       PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number }}
-      # The dedicated INTERNAL-NEGATIVE-QA instance, NOT the Cypress instance. Its fixtures are
-      # authored once in production and reach the dev environment via the nightly prod→dev sync,
-      # which doubles as the cleanup — whatever the agent breaks is reset overnight.
+      # INTERNAL-NEGATIVE-QA, not the Cypress instance. Fixtures are authored in production and
+      # reach dev via the nightly sync, which doubles as the cleanup.
       QA_INSTANCE_ZUID: 8-acabf6a8d6-bj9tr2
       BASE_URL: http://8-acabf6a8d6-bj9tr2.manager.dev.zesty.io:8080
-      # Pinned, not @latest: the MCP server's CLI flags are load-bearing here (--storage-state
-      # is how the agent gets an authenticated browser), and a silent flag rename on a floating
-      # version would look like "the whole app is behind a login screen" rather than a bug.
+      # Pinned: --storage-state is load-bearing, and a silent rename would look like the app
+      # being behind a login screen rather than a bug.
       PLAYWRIGHT_MCP_VERSION: 0.0.78
 
     steps:
@@ -100,23 +72,19 @@ jobs:
         with:
           project_id: zesty-dev
 
-      # Pulls ci/.env (KMS-decrypted test credentials). It also writes the Cypress instance's
-      # hosts entry, which is harmless here.
+      # Pulls ci/.env (KMS-decrypted test credentials).
       - name: Setup Testing Environment
         run: npm run ci:test:setup
 
-      # The app derives its instance ZUID from window.location.host, so it cannot be reached at
-      # localhost — this alias is load-bearing, not a convenience. Added here rather than in
-      # ci/scripts/update_etc_hosts.sh so the Cypress suite's setup stays untouched.
+      # The app derives its ZUID from window.location.host, so localhost cannot work. Kept out
+      # of ci/scripts/update_etc_hosts.sh so the Cypress suite's setup stays untouched.
       - name: Add QA Instance Hosts Entry
         run: |
           echo "127.0.0.1 ${QA_INSTANCE_ZUID}.manager.dev.zesty.io" | sudo tee -a /etc/hosts
           grep "${QA_INSTANCE_ZUID}" /etc/hosts
 
-      # --no-save so this never lands in package.json/package-lock and the other CI jobs don't
-      # pay for it on every `npm install`. Installing it locally first means the subsequent
-      # `npx playwright install` resolves to the exact playwright build @playwright/mcp pins,
-      # so the browser binaries always match the driver.
+      # --no-save keeps it out of package-lock so other CI jobs don't pay for it. Installing
+      # first makes `npx playwright install` match the exact build @playwright/mcp pins.
       - name: Install Playwright MCP and Chromium
         run: |
           npm install --no-save --legacy-peer-deps "@playwright/mcp@${PLAYWRIGHT_MCP_VERSION}"
@@ -128,21 +96,14 @@ jobs:
           npx wait-on -t 180000 http://localhost:8080
           echo "Dev server up."
 
-      # Resolves the instance's fixture content, writes auth-state.json (a Playwright storage
-      # state holding just the session cookie, so the token never enters the agent's prompt or
-      # transcript), then opens a browser and asserts the session actually works.
-      #
-      # Both halves fail loudly on purpose. Missing fixtures usually mean the nightly sync
-      # hasn't carried them into dev yet; a rejected session means the agent would spend its
-      # whole turn budget staring at a login screen and report "no findings" — indistinguishable
-      # from a clean PR.
+      # Writes auth-state.json (session cookie only, so the token never enters the agent's
+      # prompt) and asserts the session works. A rejected session would otherwise burn the whole
+      # turn budget on a login screen and report "no findings" — same shape as a clean PR.
       - name: Establish and Verify QA Session
         run: node ci/scripts/qa_session.mjs
 
-      # This workflow is advisory and must never fail a PR. The action exits non-zero when the
-      # agent hits its turn limit, which would otherwise turn the check red for what is really
-      # "the QA pass was cut short" — so swallow it and let the reporting steps run on whatever
-      # the agent managed to write.
+      # Advisory: the action exits non-zero on turn exhaustion, which is "cut short", not
+      # "failed". Swallow it and report whatever was written.
       - uses: anthropics/claude-code-action@1dc994ee7a008f0ecc866d9ac23ef036b7229f84 # v1.0.127
         id: agent
         continue-on-error: true
@@ -284,10 +245,8 @@ jobs:
             --model claude-sonnet-5
             --max-turns 150
 
-      # continue-on-error keeps a cut-short pass from failing the PR, but it also turns the step
-      # green, which made a truncated run indistinguishable from a complete one — the agent
-      # stopped mid-probe and its provisional summary shipped as if it were final. Say so, on
-      # the run and in the comment, so partial coverage is never mistaken for a clean bill.
+      # continue-on-error also turns the step green, making a truncated run look complete.
+      # Say so on the run and in the comment.
       - name: Note Incomplete Run
         if: always() && steps.agent.outcome == 'failure'
         run: |
@@ -301,8 +260,7 @@ jobs:
         if: always()
         run: python3 ci/scripts/publish_qa_screenshots.py qa-artifacts negative-qa-comment.md
 
-      # The durable copy. GCS is what makes images render inline in the comment, but that
-      # bucket is shared and periodically purged, so keep the real evidence here too.
+      # Durable copy: the GCS bucket is shared and periodically purged.
       - name: Upload QA Artifacts
         if: always()
         uses: actions/upload-artifact@v4
@@ -314,8 +272,7 @@ jobs:
             devserver.log
           if-no-files-found: ignore
 
-      # Upsert rather than append: unlike the code reviewer's verdict, these findings are long,
-      # so a fresh comment per push would bury the PR conversation.
+      # Upsert: these findings are long, so a comment per push would bury the conversation.
       - name: Post QA Findings
         if: always()
         env:
@@ -341,6 +298,4 @@ jobs:
             echo "Posted negative-QA comment."
           fi
 
-      # No cleanup step by design: the instance is disposable and the nightly prod→dev sync
-      # resets it wholesale. That is strictly more robust than tearing down per run, which
-      # left debris whenever the agent crashed before cleanup could run.
+      # No cleanup step: the nightly sync resets the instance wholesale.

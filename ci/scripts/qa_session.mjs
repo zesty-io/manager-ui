@@ -1,21 +1,5 @@
-// Hands the negative-QA agent an already-authenticated browser, and proves it works before
-// any agent time is spent.
-//
-// That is the whole job. The agent discovers what content exists by browsing — it owns the
-// instance, the nav lists the models, the content list shows the items. An earlier version
-// also called the API to build a manifest of models/items/fields, which made sense when
-// content was seeded per run and the agent couldn't reliably find records created seconds
-// earlier. On a fixed instance that manifest was just describing a screen the agent was about
-// to look at, so it is gone.
-//
-// Output, written to the repo root and gitignored:
-//   auth-state.json — Playwright storage state holding only the session cookie. Playwright MCP
-//                     loads it at browser start, so the agent is already logged in and the
-//                     token never has to appear in its prompt or transcript.
-//
-// The verification is not decoration. If the session silently fails, the agent sees a login
-// screen, burns its whole turn budget finding nothing, and reports "no findings" —
-// indistinguishable from a clean PR. Failing loudly here is the point.
+// Signs the negative-QA agent's browser in and proves it worked, by writing auth-state.json
+// for Playwright MCP's --storage-state. Keeps the token out of the agent's prompt entirely.
 
 import { createRequire } from "module";
 import { readFileSync, writeFileSync } from "fs";
@@ -25,23 +9,15 @@ import { fileURLToPath } from "url";
 const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 
-// The dedicated QA instance (INTERNAL-NEGATIVE-QA). Deliberately NOT the Cypress instance
-// (8-f48cf3a682-7fthvk) — that one is shared with every PR's e2e run.
+// INTERNAL-NEGATIVE-QA, not the Cypress instance (8-f48cf3a682-7fthvk).
 const INSTANCE_ZUID = process.env.QA_INSTANCE_ZUID || "8-acabf6a8d6-bj9tr2";
-
-// Skip the browser check when running this by hand without a dev server up.
 const SKIP_VERIFY = process.env.QA_SKIP_VERIFY === "true";
 
-// Service URLs come from the app's own config so they cannot drift from what the running
-// app uses. `development` is the block `npm start` selects.
 const CONFIG = require(join(ROOT, "src", "shell", "app.config.js")).development;
-
 const MANAGER_HOST = `${INSTANCE_ZUID}.manager.dev.zesty.io:8080`;
 const BASE_URL = `http://${MANAGER_HOST}`;
 
 function readCredentials() {
-  // In CI, ci/.env is produced by ci/scripts/pull_ci_secrets.sh (GCS + KMS).
-  // Locally, fall back to cypress.env.json so this can be exercised by hand.
   try {
     const parsed = require("dotenv").config({
       path: join(ROOT, "ci", ".env"),
@@ -53,7 +29,7 @@ function readCredentials() {
       };
     }
   } catch {
-    // fall through
+    // fall through to the local file
   }
 
   const local = JSON.parse(
@@ -80,7 +56,6 @@ async function login({ email, password }) {
   const json = await res.json();
   const token = json?.meta?.token;
   if (!token) {
-    // Never echo the response wholesale — it can carry account detail.
     throw new Error(
       `Login failed (${res.status} ${json?.message ?? "no token returned"}). ` +
         "If this is a 401, the CI test-user credentials have rotated."
@@ -90,9 +65,7 @@ async function login({ email, password }) {
 }
 
 function writeAuthState(token) {
-  // Host-only, non-secure, non-httpOnly — exactly what cy.setCookie produces. The app reads it
-  // with js-cookie in src/utility/request.js and sends it as an Authorization bearer, so this
-  // one cookie is enough for the boot-time verify() to succeed.
+  // Host-only, non-secure, non-httpOnly — same shape as cy.setCookie, so js-cookie can read it.
   writeFileSync(
     join(ROOT, "auth-state.json"),
     JSON.stringify(
@@ -117,13 +90,9 @@ function writeAuthState(token) {
   );
 }
 
-// Scope of this check, so nobody relies on a guarantee it does not give: it drives Playwright
-// directly, NOT the Playwright MCP server the agent uses. It therefore proves the cookie is
-// valid, the host resolves, and the app boots signed in — the failures that actually happen —
-// but it would NOT catch the MCP server loading the storage state differently, or dropping
-// --storage-state on a version bump. Pinning PLAYWRIGHT_MCP_VERSION is what guards that.
+// Drives Playwright directly, not the MCP server, so it proves the cookie and the app boot but
+// not that MCP still honours --storage-state. Pinning PLAYWRIGHT_MCP_VERSION guards that.
 async function verifySession() {
-  // Imported lazily so login/write still runs where Playwright isn't installed.
   const { chromium } = await import("playwright");
 
   const browser = await chromium.launch({ headless: true });
@@ -140,10 +109,7 @@ async function verifySession() {
       timeout: 90000,
     });
 
-    // Ask the store, not the DOM. `auth.checking` is the boot-time race against verify(), and
-    // "is there a password field on screen" is not a reliable proxy — the signed-in shell
-    // renders one anyway. Reading window.zestyStore is the legacy compatibility shim; reads
-    // are tolerated (writes are not — see CLAUDE.md).
+    // Ask the store, not the DOM: the signed-in shell renders a password input anyway.
     const auth = await page
       .waitForFunction(
         () => {
@@ -182,8 +148,6 @@ async function verifySession() {
 
 async function main() {
   writeAuthState(await login(readCredentials()));
-
-  // Never print the token.
   console.log(`Signed in to ${INSTANCE_ZUID}. Base URL: ${BASE_URL}`);
 
   if (SKIP_VERIFY) {
