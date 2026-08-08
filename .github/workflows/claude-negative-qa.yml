@@ -122,24 +122,22 @@ jobs:
           npm install --no-save --legacy-peer-deps "@playwright/mcp@${PLAYWRIGHT_MCP_VERSION}"
           npx playwright install --with-deps chromium
 
-      # Resolves the instance's fixture content and writes auth-state.json, a Playwright storage
-      # state holding just the session cookie. The agent is handed an already-authenticated
-      # browser, so the token never enters its prompt or transcript. Fails loudly if the
-      # fixtures are absent — most likely the nightly sync has not carried them into dev yet.
-      - name: Establish QA Session
-        run: node ci/scripts/qa_session.mjs
-
       - name: Start Dev Server
         run: |
           npm start > devserver.log 2>&1 &
           npx wait-on -t 180000 http://localhost:8080
           echo "Dev server up."
 
-      # Fail loudly here rather than letting the agent burn 80 turns discovering it can't get
-      # past the login screen and then reporting "no findings" — which is indistinguishable
+      # Resolves the instance's fixture content, writes auth-state.json (a Playwright storage
+      # state holding just the session cookie, so the token never enters the agent's prompt or
+      # transcript), then opens a browser and asserts the session actually works.
+      #
+      # Both halves fail loudly on purpose. Missing fixtures usually mean the nightly sync
+      # hasn't carried them into dev yet; a rejected session means the agent would spend its
+      # whole turn budget staring at a login screen and report "no findings" — indistinguishable
       # from a clean PR.
-      - name: Verify Authenticated Session
-        run: node ci/scripts/qa_verify_session.mjs
+      - name: Establish and Verify QA Session
+        run: node ci/scripts/qa_session.mjs
 
       # This workflow is advisory and must never fail a PR. The action exits non-zero when the
       # agent hits its turn limit, which would otherwise turn the check red for what is really
@@ -297,9 +295,9 @@ jobs:
             printf '\n\n---\n_⚠️ This pass did not run to completion — the agent stopped before finishing. Anything reported above still stands, but coverage is partial and the summary may read as provisional._\n' >> "$FILE"
           fi
 
-      - name: Upload Screenshots and Rewrite Links
+      - name: Publish Screenshots and Rewrite Links
         if: always()
-        run: ./ci/scripts/upload_qa_screenshots.sh qa-artifacts negative-qa-comment.md
+        run: python3 ci/scripts/publish_qa_screenshots.py qa-artifacts negative-qa-comment.md
 
       # The durable copy. GCS is what makes images render inline in the comment, but that
       # bucket is shared and periodically purged, so keep the real evidence here too.
