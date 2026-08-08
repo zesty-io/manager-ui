@@ -40,7 +40,6 @@ jobs:
       # INTERNAL-NEGATIVE-QA, not the Cypress instance. Fixtures are authored in production and
       # reach dev via the nightly sync, which doubles as the cleanup.
       QA_INSTANCE_ZUID: 8-acabf6a8d6-bj9tr2
-      BASE_URL: http://8-acabf6a8d6-bj9tr2.manager.dev.zesty.io:8080
       # Pinned: --storage-state is load-bearing, and a silent rename would look like the app
       # being behind a login screen rather than a bug.
       PLAYWRIGHT_MCP_VERSION: 0.0.78
@@ -117,7 +116,7 @@ jobs:
             Inputs:
               REPO        = ${{ github.repository }}
               PR_NUMBER   = ${{ env.PR_NUMBER }}
-              BASE_URL    = ${{ env.BASE_URL }}
+              BASE_URL    = http://${{ env.QA_INSTANCE_ZUID }}.manager.dev.zesty.io:8080
               REPORT_FILE = ${{ github.workspace }}/negative-qa-comment.md
 
             A separate "QA Review" workflow already validates this PR against its issue's
