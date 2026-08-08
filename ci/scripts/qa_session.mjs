@@ -11,7 +11,6 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 
 // INTERNAL-NEGATIVE-QA, not the Cypress instance (8-f48cf3a682-7fthvk).
 const INSTANCE_ZUID = process.env.QA_INSTANCE_ZUID || "8-acabf6a8d6-bj9tr2";
-const SKIP_VERIFY = process.env.QA_SKIP_VERIFY === "true";
 
 const CONFIG = require(join(ROOT, "src", "shell", "app.config.js")).development;
 const MANAGER_HOST = `${INSTANCE_ZUID}.manager.dev.zesty.io:8080`;
@@ -144,11 +143,6 @@ async function verifySession() {
 async function main() {
   writeAuthState(await login(readCredentials()));
   console.log(`Signed in to ${INSTANCE_ZUID}. Base URL: ${BASE_URL}`);
-
-  if (SKIP_VERIFY) {
-    console.log("QA_SKIP_VERIFY=true — skipping the browser session check.");
-    return;
-  }
 
   await verifySession();
   console.log("Session check passed — the browser is authenticated.");
