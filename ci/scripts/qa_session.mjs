@@ -1,22 +1,21 @@
-// Prepares the negative-QA run: authenticates a browser session, resolves the fixture content
-// the agent works on, and proves the session actually works before any agent time is spent.
+// Hands the negative-QA agent an already-authenticated browser, and proves it works before
+// any agent time is spent.
 //
-// QA targets a dedicated instance (INTERNAL-NEGATIVE-QA) whose fixtures are authored once in
-// production and arrive in the dev environment through the nightly prod→dev sync. That sync is
-// also the cleanup: whatever the agent mutates is reset overnight, so there is nothing to tear
-// down and no window in which a half-finished run leaves debris behind. It also means the agent
-// is free to mutate anything it finds here — nothing else shares this instance, unlike the
-// Cypress instance where a stray write breaks other PRs.
+// That is the whole job. The agent discovers what content exists by browsing — it owns the
+// instance, the nav lists the models, the content list shows the items. An earlier version
+// also called the API to build a manifest of models/items/fields, which made sense when
+// content was seeded per run and the agent couldn't reliably find records created seconds
+// earlier. On a fixed instance that manifest was just describing a screen the agent was about
+// to look at, so it is gone.
 //
-// Outputs, both written to the repo root and both gitignored:
-//   auth-state.json  — Playwright storage state holding only the session cookie. Playwright
-//                      MCP loads it at browser start, so the QA agent is already logged in
-//                      and the token never has to appear in its prompt or transcript.
-//   qa-context.json  — the fixture ZUIDs and URLs the agent works against. No secrets.
+// Output, written to the repo root and gitignored:
+//   auth-state.json — Playwright storage state holding only the session cookie. Playwright MCP
+//                     loads it at browser start, so the agent is already logged in and the
+//                     token never has to appear in its prompt or transcript.
 //
-// The verification at the end is not optional decoration. If the session silently fails, the
-// agent sees a login screen, burns its whole turn budget finding nothing, and reports "no
-// findings" — indistinguishable from a clean PR. Failing loudly here is the whole point.
+// The verification is not decoration. If the session silently fails, the agent sees a login
+// screen, burns its whole turn budget finding nothing, and reports "no findings" —
+// indistinguishable from a clean PR. Failing loudly here is the point.
 
 import { createRequire } from "module";
 import { readFileSync, writeFileSync } from "fs";
@@ -26,13 +25,9 @@ import { fileURLToPath } from "url";
 const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 
-// The dedicated QA instance. Deliberately NOT the Cypress instance
+// The dedicated QA instance (INTERNAL-NEGATIVE-QA). Deliberately NOT the Cypress instance
 // (8-f48cf3a682-7fthvk) — that one is shared with every PR's e2e run.
 const INSTANCE_ZUID = process.env.QA_INSTANCE_ZUID || "8-acabf6a8d6-bj9tr2";
-
-// The model the agent works against, resolved by name rather than ZUID so the fixture can be
-// recreated in the instance without touching this repo.
-const FIXTURE_MODEL_NAME = process.env.QA_FIXTURE_MODEL || "qa_negative_test";
 
 // Skip the browser check when running this by hand without a dev server up.
 const SKIP_VERIFY = process.env.QA_SKIP_VERIFY === "true";
@@ -41,13 +36,12 @@ const SKIP_VERIFY = process.env.QA_SKIP_VERIFY === "true";
 // app uses. `development` is the block `npm start` selects.
 const CONFIG = require(join(ROOT, "src", "shell", "app.config.js")).development;
 
-const API_BASE = `${CONFIG.API_INSTANCE_PROTOCOL}${INSTANCE_ZUID}${CONFIG.API_INSTANCE}`;
 const MANAGER_HOST = `${INSTANCE_ZUID}.manager.dev.zesty.io:8080`;
 const BASE_URL = `http://${MANAGER_HOST}`;
 
 function readCredentials() {
   // In CI, ci/.env is produced by ci/scripts/pull_ci_secrets.sh (GCS + KMS).
-  // Locally, fall back to cypress.env.json so the script can be exercised by hand.
+  // Locally, fall back to cypress.env.json so this can be exercised by hand.
   try {
     const parsed = require("dotenv").config({
       path: join(ROOT, "ci", ".env"),
@@ -95,71 +89,10 @@ async function login({ email, password }) {
   return token;
 }
 
-async function resolveFixtures(token) {
-  // Returns the `data` payload directly, and owns the status check. Checking here rather than
-  // at each call site is what stops a 5xx on the items request falling through a `?? []` and
-  // resurfacing as "has no items to test against" — a message that blames the fixture for
-  // what is actually an outage.
-  async function getData(path) {
-    const res = await fetch(`${API_BASE}${path}`, {
-      headers: { authorization: `Bearer ${token}` },
-    });
-    if (!res.ok) {
-      throw new Error(
-        `GET ${path} returned ${res.status} for ${INSTANCE_ZUID}. ` +
-          "Check the test user has access to this instance in the dev environment."
-      );
-    }
-    return (await res.json())?.data ?? [];
-  }
-
-  const models = await getData("/content/models");
-  const model = models.find((m) => m.name === FIXTURE_MODEL_NAME);
-
-  if (!model) {
-    // Truncated: point the wrong instance at this and you get a couple of hundred names,
-    // which buries the sentence that actually tells you what to do.
-    const names = models.map((m) => m.name);
-    const found = names.length
-      ? names.slice(0, 10).join(", ") +
-        (names.length > 10 ? ` … (+${names.length - 10} more)` : "")
-      : "(none)";
-    throw new Error(
-      `No model named "${FIXTURE_MODEL_NAME}" on ${INSTANCE_ZUID} in the dev environment. ` +
-        `Found: ${found}. ` +
-        "The fixtures are authored in production and reach dev via the nightly sync — if they " +
-        "were added today, they will not be here until tomorrow's sync has run."
-    );
-  }
-
-  // The API does not return items in sort order, so pick the primary deterministically —
-  // otherwise contentUrl points at a different item run to run and repro steps in one
-  // report will not line up with the next.
-  const items = (await getData(`/content/models/${model.ZUID}/items`)).sort(
-    (a, b) => (a.meta?.sort ?? 0) - (b.meta?.sort ?? 0)
-  );
-  if (!items.length) {
-    throw new Error(
-      `Model "${FIXTURE_MODEL_NAME}" (${model.ZUID}) has no items to test against.`
-    );
-  }
-
-  const fields = (await getData(`/content/models/${model.ZUID}/fields`)).map(
-    (f) => ({
-      name: f.name,
-      label: f.label,
-      datatype: f.datatype,
-      required: !!f.required,
-    })
-  );
-
-  return { model, items, fields };
-}
-
-function writeSessionFiles(token, { model, items, fields }) {
-  // Host-only, non-secure, non-httpOnly — exactly what cy.setCookie produces. The app reads
-  // it with js-cookie in src/utility/request.js and sends it as an Authorization bearer, so
-  // this one cookie is enough for the boot-time verify() to succeed.
+function writeAuthState(token) {
+  // Host-only, non-secure, non-httpOnly — exactly what cy.setCookie produces. The app reads it
+  // with js-cookie in src/utility/request.js and sends it as an Authorization bearer, so this
+  // one cookie is enough for the boot-time verify() to succeed.
   writeFileSync(
     join(ROOT, "auth-state.json"),
     JSON.stringify(
@@ -182,37 +115,6 @@ function writeSessionFiles(token, { model, items, fields }) {
       2
     )
   );
-
-  const contentUrl = `${BASE_URL}/content/${model.ZUID}/${items[0]?.meta?.ZUID}`;
-  writeFileSync(
-    join(ROOT, "qa-context.json"),
-    JSON.stringify(
-      {
-        baseUrl: BASE_URL,
-        instanceZUID: INSTANCE_ZUID,
-        instanceName: "INTERNAL-NEGATIVE-QA",
-        disposable: true,
-        model: {
-          ZUID: model.ZUID,
-          name: model.name,
-          label: model.label,
-          type: model.type,
-        },
-        fields,
-        items: items.map((i) => ({
-          ZUID: i.meta?.ZUID,
-          metaTitle: i.web?.metaTitle,
-          pathPart: i.web?.pathPart,
-          url: `${BASE_URL}/content/${model.ZUID}/${i.meta?.ZUID}`,
-        })),
-        contentUrl,
-      },
-      null,
-      2
-    )
-  );
-
-  return contentUrl;
 }
 
 // Scope of this check, so nobody relies on a guarantee it does not give: it drives Playwright
@@ -220,8 +122,8 @@ function writeSessionFiles(token, { model, items, fields }) {
 // valid, the host resolves, and the app boots signed in — the failures that actually happen —
 // but it would NOT catch the MCP server loading the storage state differently, or dropping
 // --storage-state on a version bump. Pinning PLAYWRIGHT_MCP_VERSION is what guards that.
-async function verifySession(contentUrl) {
-  // Imported lazily so the resolve/write half still runs where Playwright isn't installed.
+async function verifySession() {
+  // Imported lazily so login/write still runs where Playwright isn't installed.
   const { chromium } = await import("playwright");
 
   const browser = await chromium.launch({ headless: true });
@@ -233,7 +135,7 @@ async function verifySession(contentUrl) {
   let failure = null;
 
   try {
-    await page.goto(contentUrl, {
+    await page.goto(BASE_URL, {
       waitUntil: "domcontentloaded",
       timeout: 90000,
     });
@@ -260,12 +162,12 @@ async function verifySession(contentUrl) {
         "A first request to a new host can also exceed this while webpack compiles.";
     } else if (!auth.valid) {
       failure =
-        "The app booted but auth.valid is false — the session cookie was rejected. " +
-        "Check the cookie name/domain written above against CONFIG.COOKIE_NAME in " +
-        "src/shell/app.config.js, and that the token has not expired.";
+        "The app booted but auth.valid is false — the session cookie was rejected. Check the " +
+        "cookie name/domain above against CONFIG.COOKIE_NAME in src/shell/app.config.js, that " +
+        "the token has not expired, and that the test user can access this instance in dev.";
     }
   } catch (err) {
-    failure = `Could not load ${contentUrl}: ${err.message}`;
+    failure = `Could not load ${BASE_URL}: ${err.message}`;
   }
 
   if (failure) {
@@ -279,23 +181,17 @@ async function verifySession(contentUrl) {
 }
 
 async function main() {
-  const token = await login(readCredentials());
-  const fixtures = await resolveFixtures(token);
-  const contentUrl = writeSessionFiles(token, fixtures);
+  writeAuthState(await login(readCredentials()));
 
   // Never print the token.
-  console.log(
-    `Resolved ${FIXTURE_MODEL_NAME} (${fixtures.model.ZUID}) with ` +
-      `${fixtures.items.length} item(s), ${fixtures.fields.length} field(s).`
-  );
-  console.log(`Content URL: ${contentUrl}`);
+  console.log(`Signed in to ${INSTANCE_ZUID}. Base URL: ${BASE_URL}`);
 
   if (SKIP_VERIFY) {
     console.log("QA_SKIP_VERIFY=true — skipping the browser session check.");
     return;
   }
 
-  await verifySession(contentUrl);
+  await verifySession();
   console.log("Session check passed — the browser is authenticated.");
 }
 

@@ -157,7 +157,6 @@ jobs:
               REPO        = ${{ github.repository }}
               PR_NUMBER   = ${{ env.PR_NUMBER }}
               BASE_URL    = ${{ env.BASE_URL }}
-              CONTEXT     = ${{ github.workspace }}/qa-context.json
               REPORT_FILE = ${{ github.workspace }}/negative-qa-comment.md
 
             A separate "QA Review" workflow already validates this PR against its issue's
@@ -173,8 +172,11 @@ jobs:
             report and stop — that is a correct outcome, not a failure.
 
             STEP 2 — The instance is yours.
-            Read CONTEXT. It describes INTERNAL-NEGATIVE-QA, an instance that exists only for
-            this workflow, and names the fixture model, its fields and its items.
+            BASE_URL is INTERNAL-NEGATIVE-QA, an instance that exists only for this workflow.
+            Everything on it is disposable fixture data. Find your way around it the way you
+            would any CMS — the left nav lists the models, each model lists its items — rather
+            than expecting a manifest. The models named qa_negative_* are the ones built for
+            you, and they carry the full range of field types plus relationships between them.
 
             You may mutate ANYTHING on this instance — edit, delete, publish, unpublish, create
             new items, corrupt data deliberately. Nothing else shares it, and it is restored
