@@ -203,6 +203,11 @@ function writeSessionFiles(token, { model, items, fields }) {
   return contentUrl;
 }
 
+// Scope of this check, so nobody relies on a guarantee it does not give: it drives Playwright
+// directly, NOT the Playwright MCP server the agent uses. It therefore proves the cookie is
+// valid, the host resolves, and the app boots signed in — the failures that actually happen —
+// but it would NOT catch the MCP server loading the storage state differently, or dropping
+// --storage-state on a version bump. Pinning PLAYWRIGHT_MCP_VERSION is what guards that.
 async function verifySession(contentUrl) {
   // Imported lazily so the resolve/write half still runs where Playwright isn't installed.
   const { chromium } = await import("playwright");
@@ -243,9 +248,9 @@ async function verifySession(contentUrl) {
         "A first request to a new host can also exceed this while webpack compiles.";
     } else if (!auth.valid) {
       failure =
-        "The app booted but auth.valid is false — the storage-state session was rejected. " +
+        "The app booted but auth.valid is false — the session cookie was rejected. " +
         "Check the cookie name/domain written above against CONFIG.COOKIE_NAME in " +
-        "src/shell/app.config.js, and that Playwright MCP still supports --storage-state.";
+        "src/shell/app.config.js, and that the token has not expired.";
     }
   } catch (err) {
     failure = `Could not load ${contentUrl}: ${err.message}`;
