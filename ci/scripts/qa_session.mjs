@@ -136,11 +136,6 @@ async function verifySession() {
     failure = `Could not load ${BASE_URL}: ${err.message}`;
   }
 
-  if (failure) {
-    await page
-      .screenshot({ path: join(ROOT, "qa-session-check-failed.png") })
-      .catch(() => {});
-  }
   await browser.close();
 
   if (failure) throw new Error(failure);
