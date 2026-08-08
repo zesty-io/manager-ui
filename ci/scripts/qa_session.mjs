@@ -96,23 +96,37 @@ async function login({ email, password }) {
 }
 
 async function resolveFixtures(token) {
-  const authed = { authorization: `Bearer ${token}` };
-  const get = (path) => fetch(`${API_BASE}${path}`, { headers: authed });
-
-  const modelsRes = await get("/content/models");
-  if (!modelsRes.ok) {
-    throw new Error(
-      `GET /content/models returned ${modelsRes.status} for ${INSTANCE_ZUID}. ` +
-        "Check the test user has access to this instance in the dev environment."
-    );
+  // Returns the `data` payload directly, and owns the status check. Checking here rather than
+  // at each call site is what stops a 5xx on the items request falling through a `?? []` and
+  // resurfacing as "has no items to test against" — a message that blames the fixture for
+  // what is actually an outage.
+  async function getData(path) {
+    const res = await fetch(`${API_BASE}${path}`, {
+      headers: { authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) {
+      throw new Error(
+        `GET ${path} returned ${res.status} for ${INSTANCE_ZUID}. ` +
+          "Check the test user has access to this instance in the dev environment."
+      );
+    }
+    return (await res.json())?.data ?? [];
   }
-  const models = (await modelsRes.json())?.data ?? [];
+
+  const models = await getData("/content/models");
   const model = models.find((m) => m.name === FIXTURE_MODEL_NAME);
 
   if (!model) {
+    // Truncated: point the wrong instance at this and you get a couple of hundred names,
+    // which buries the sentence that actually tells you what to do.
+    const names = models.map((m) => m.name);
+    const found = names.length
+      ? names.slice(0, 10).join(", ") +
+        (names.length > 10 ? ` … (+${names.length - 10} more)` : "")
+      : "(none)";
     throw new Error(
       `No model named "${FIXTURE_MODEL_NAME}" on ${INSTANCE_ZUID} in the dev environment. ` +
-        `Found: ${models.map((m) => m.name).join(", ") || "(none)"}. ` +
+        `Found: ${found}. ` +
         "The fixtures are authored in production and reach dev via the nightly sync — if they " +
         "were added today, they will not be here until tomorrow's sync has run."
     );
@@ -121,25 +135,23 @@ async function resolveFixtures(token) {
   // The API does not return items in sort order, so pick the primary deterministically —
   // otherwise contentUrl points at a different item run to run and repro steps in one
   // report will not line up with the next.
-  const items = (
-    (await (await get(`/content/models/${model.ZUID}/items`)).json())?.data ??
-    []
-  ).sort((a, b) => (a.meta?.sort ?? 0) - (b.meta?.sort ?? 0));
+  const items = (await getData(`/content/models/${model.ZUID}/items`)).sort(
+    (a, b) => (a.meta?.sort ?? 0) - (b.meta?.sort ?? 0)
+  );
   if (!items.length) {
     throw new Error(
       `Model "${FIXTURE_MODEL_NAME}" (${model.ZUID}) has no items to test against.`
     );
   }
 
-  const fields = (
-    (await (await get(`/content/models/${model.ZUID}/fields`)).json())?.data ??
-    []
-  ).map((f) => ({
-    name: f.name,
-    label: f.label,
-    datatype: f.datatype,
-    required: !!f.required,
-  }));
+  const fields = (await getData(`/content/models/${model.ZUID}/fields`)).map(
+    (f) => ({
+      name: f.name,
+      label: f.label,
+      datatype: f.datatype,
+      required: !!f.required,
+    })
+  );
 
   return { model, items, fields };
 }
