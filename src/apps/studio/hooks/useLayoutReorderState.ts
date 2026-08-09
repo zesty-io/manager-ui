@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useRef, useState } from "react";
 import { notify } from "shell/store/notifications";
-import { LayoutBreadcrumbItem } from "./studioTypes";
+import { LayoutBreadcrumbItem, LinkWrapperState } from "./studioTypes";
 
 type LayoutStructureItem = {
   layoutId: string;
@@ -280,6 +280,48 @@ const patchLeafInnerHtml = (
   return root.innerHTML;
 };
 
+type LayoutLeafLookup = {
+  doc: Document;
+  root: HTMLElement;
+  leaf: HTMLElement;
+};
+
+// Parse a cached template region and resolve one [data-layout-id] element
+// inside it. The link operations all address the wrapping <a> RELATIVE to that
+// element — the wrapper has no id of its own — so they share the lookup and
+// re-serialize `root.innerHTML` once they've mutated it.
+const resolveLayoutLeaf = (
+  source: string,
+  layoutId: string
+): LayoutLeafLookup | null => {
+  if (!source || !layoutId) return null;
+
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(
+    `<div id="studio-el-root">${source}</div>`,
+    "text/html"
+  );
+  const root = doc.getElementById("studio-el-root");
+  if (!root) return null;
+
+  const leaf = root.querySelector(
+    `[data-layout-id="${CSS.escape(layoutId)}"]`
+  ) as HTMLElement | null;
+  if (!leaf) return null;
+
+  return { doc, root, leaf };
+};
+
+// Attributes whose empty value means "absent", not "empty string". A link's
+// `target` is the only one today: choosing "No" must leave no attribute behind
+// rather than write `target=""` into saved view code.
+const REMOVED_WHEN_EMPTY = new Set(["target"]);
+
+const writeAttribute = (el: HTMLElement, attr: string, value: string) => {
+  if (!value && REMOVED_WHEN_EMPTY.has(attr)) el.removeAttribute(attr);
+  else el.setAttribute(attr, value);
+};
+
 const stripLayoutIdsFromSource = (source: string): string => {
   if (!source) return "";
 
@@ -343,6 +385,12 @@ export const useLayoutReorderState = ({
   onSelectedLayoutBreadcrumbChange,
 }: Args) => {
   const templateSourceByCodeIdRef = useRef<Record<string, string>>({});
+  // Bumped on every change to the template cache. The cache itself is a ref, so
+  // writing it re-renders nothing — which is right for the write paths, but not
+  // for the Inspector's Link section: that is DERIVED from the template, so its
+  // reader has to change identity when the template does or the panel goes on
+  // showing the pre-edit wrapper.
+  const [templateSourceVersion, setTemplateSourceVersion] = useState(0);
 
   // The one way to write the template cache after boot. The bridge keeps its
   // own copy, read straight off the page's <template> blocks and never updated
@@ -360,6 +408,7 @@ export const useLayoutReorderState = ({
       Object.keys(patch).forEach((codeId) => {
         syncTemplateSourceToBridge(codeId, patch[codeId]);
       });
+      setTemplateSourceVersion((prev) => prev + 1);
     },
     [syncTemplateSourceToBridge]
   );
@@ -579,6 +628,7 @@ export const useLayoutReorderState = ({
       ...templateSourceByCodeIdRef.current,
       ...incoming,
     };
+    setTemplateSourceVersion((prev) => prev + 1);
   }, []);
 
   const handleLayoutContentUpdate = useCallback(
@@ -845,7 +895,7 @@ export const useLayoutReorderState = ({
         if (value === "true") target.setAttribute(attr, "");
         else target.removeAttribute(attr);
       } else {
-        target.setAttribute(attr, value);
+        writeAttribute(target, attr, value);
       }
 
       stageLayoutSourceUpdate(codeId, root.innerHTML);
@@ -920,6 +970,132 @@ export const useLayoutReorderState = ({
     [stageLayoutSourceUpdate]
   );
 
+  // ---------------------------------------------------------------------------
+  // Link wrapper
+  //
+  // Wrapping is the first Studio operation that CREATES an element, and the
+  // element it creates has no backend-minted identity. Rather than mint one —
+  // layout ids come from the render pipeline and are stripped again by
+  // stripLayoutIdsFromSource before save, so a client-side id would be a
+  // fabricated identity that vanishes on the next render — every operation here
+  // addresses the wrapper as the PARENT of the already-addressed
+  // [data-layout-id] element. That needs no new identity and stays correct
+  // across re-renders.
+  // ---------------------------------------------------------------------------
+
+  // What the Inspector's Link section shows for an element: the <a> around it,
+  // and whether one may be added. Read off the cached template rather than
+  // reported by the bridge — reading a parent tag is something the host can do
+  // for itself, and every byte of bridge is hand-deployed.
+  const readLinkWrapper = useCallback(
+    (codeId: string, layoutId: string): LinkWrapperState | null => {
+      const cached = templateSourceByCodeIdRef.current[codeId];
+      if (!cached) return null;
+
+      const found = resolveLayoutLeaf(cached, layoutId);
+      if (!found) return null;
+
+      const { leaf } = found;
+      // The element IS a link: its own href slot already edits it, so it
+      // neither reports a wrapper nor offers to add one.
+      if (leaf.tagName === "A") return { wrapper: null, canWrap: false };
+
+      const wrapper = leaf.parentElement;
+      if (wrapper && wrapper.tagName === "A") {
+        return {
+          wrapper: {
+            href: wrapper.getAttribute("href") || "",
+            target: wrapper.getAttribute("target") || "",
+          },
+          canWrap: false,
+        };
+      }
+
+      // A link further up the tree still rules out wrapping — nested <a> is
+      // invalid HTML — but it is not this element's to edit.
+      return { wrapper: null, canWrap: !leaf.closest("a") };
+    },
+    // The template cache is a ref, so this version counter is what gives the
+    // reader a new identity when the source changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [templateSourceVersion]
+  );
+
+  const handleLayoutWrapInLink = useCallback(
+    (codeId: string, layoutId: string) => {
+      if (!codeId || !layoutId) return;
+
+      const cached = templateSourceByCodeIdRef.current[codeId];
+      if (!cached) return;
+
+      const found = resolveLayoutLeaf(cached, layoutId);
+      if (!found) return;
+
+      const { doc, root, leaf } = found;
+      if (!leaf.parentNode) return;
+      // `closest` covers the element itself, so this refuses both an <a> inside
+      // an <a> and an <a> around an <a>.
+      if (leaf.closest("a")) return;
+
+      // Deliberately attribute-less: an <a> with no href isn't a link yet, which
+      // is exactly the state the panel shows before a URL is typed.
+      const wrapper = doc.createElement("a");
+      leaf.parentNode.insertBefore(wrapper, leaf);
+      wrapper.appendChild(leaf);
+
+      stageLayoutSourceUpdate(codeId, root.innerHTML);
+    },
+    [stageLayoutSourceUpdate]
+  );
+
+  const handleLayoutUnwrapLink = useCallback(
+    (codeId: string, layoutId: string) => {
+      if (!codeId || !layoutId) return;
+
+      const cached = templateSourceByCodeIdRef.current[codeId];
+      if (!cached) return;
+
+      const found = resolveLayoutLeaf(cached, layoutId);
+      if (!found) return;
+
+      const { root, leaf } = found;
+      const wrapper = leaf.parentElement;
+      if (!wrapper || wrapper.tagName !== "A" || !wrapper.parentNode) return;
+
+      // Move every child out in order. The wrapper may hold siblings of the
+      // addressed element — an author-written <a> around an image AND its
+      // caption — and dropping them would delete page content.
+      while (wrapper.firstChild) {
+        wrapper.parentNode.insertBefore(wrapper.firstChild, wrapper);
+      }
+      wrapper.parentNode.removeChild(wrapper);
+
+      stageLayoutSourceUpdate(codeId, root.innerHTML);
+    },
+    [stageLayoutSourceUpdate]
+  );
+
+  const handleLayoutLinkAttrUpdate = useCallback(
+    (codeId: string, layoutId: string, attr: string, value: string) => {
+      if (!codeId || !layoutId || !attr) return;
+
+      const cached = templateSourceByCodeIdRef.current[codeId];
+      if (!cached) return;
+
+      const found = resolveLayoutLeaf(cached, layoutId);
+      if (!found) return;
+
+      const { root, leaf } = found;
+      const wrapper = leaf.parentElement;
+      if (!wrapper || wrapper.tagName !== "A") return;
+
+      writeAttribute(wrapper, attr, value);
+
+      stageLayoutSourceUpdate(codeId, root.innerHTML);
+    },
+    [stageLayoutSourceUpdate]
+  );
+
   // Thin wrapper preserving the existing media-picker call site, which edits an
   // <img> `src` addressed by the img-specific isLeafImg/imgIndex pair.
   const handleLayoutImageSrcUpdate = useCallback(
@@ -958,5 +1134,9 @@ export const useLayoutReorderState = ({
     handleLayoutElementAttrUpdate,
     handleLayoutTextUpdate,
     handleLayoutTagUpdate,
+    readLinkWrapper,
+    handleLayoutWrapInLink,
+    handleLayoutUnwrapLink,
+    handleLayoutLinkAttrUpdate,
   };
 };
