@@ -48,8 +48,8 @@ import { StudioInspectorPanel } from "./components/StudioWrapper/StudioInspector
 import {
   isMediaSlotDatatype,
   isTextReferenceableDatatype,
-} from "./components/StudioWrapper/studioFieldMeta";
-import { parseParsleyRef } from "./components/StudioWrapper/studioParsley";
+} from "../../../../../studio/components/studioFieldMeta";
+import { parseParsleyRef } from "../../../../../studio/components/studioParsley";
 import { StudioLayersPanel } from "./components/StudioWrapper/StudioLayersPanel";
 import { StudioFreestyleAlert } from "./components/StudioWrapper/StudioFreestyleAlert";
 import {
@@ -67,7 +67,7 @@ import {
   ElementSlot,
   InteractionMode,
   LayoutBreadcrumbItem,
-} from "./hooks/studioTypes";
+} from "../../../../../studio/hooks/studioTypes";
 import { useStudioSelection } from "./hooks/useStudioSelection";
 import { useStudioLayersTree } from "./hooks/useStudioLayersTree";
 import { getRefRegistry } from "../../../../../../engine/refRegistry";

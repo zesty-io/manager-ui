@@ -5,7 +5,7 @@ import {
   useGetContentModelsQuery,
 } from "../../../../../../../shell/services/instance";
 import { AppState } from "../../../../../../../shell/store/types";
-import { ConnectField } from "./studioTypes";
+import { ConnectField } from "../../../../../../studio/hooks/studioTypes";
 
 // Read-back for a cross-item Parsley reference.
 //
