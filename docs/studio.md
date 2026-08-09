@@ -28,7 +28,7 @@ src/apps/studio/
     studioTags.ts · studioFieldMeta.ts · studioParsley.ts
 ```
 
-Nothing outside this directory imports a Studio module — `src/shell/views/Shell/Shell.tsx` imports `apps/studio` and that is the only edge in. Studio itself reaches _out_ to a handful of content-editor internals (`Editor`, `FieldError`, `PendingEditsModal`, `ContentInfo`, `ItemEditHeader/*`), plus `apps/media` and `apps/seo`. Keep the arrows pointing that way: if you find yourself importing Studio from content-editor, the shared piece belongs in `src/shell/` instead.
+Nothing outside this directory imports a Studio module — `src/shell/views/Shell/Shell.tsx` imports `apps/studio` and that is the only edge in. Studio itself reaches _out_ to a handful of content-editor internals (`Editor`, `FieldError`, `PendingEditsModal`, `ContentInfo`, `ItemEditHeader/*`), plus `apps/media`, `apps/seo`, `src/engine/refRegistry` and `public/images/*`. Treat that list as a starting point rather than a guarantee — an inventory maintained by hand drifts. `grep -rn 'from "\.\./' src/apps/studio/` is the authoritative version. Keep the arrows pointing that way: if you find yourself importing Studio from content-editor, the shared piece belongs in `src/shell/` instead.
 
 `StudioWrapper` renders inside a full-screen MUI `<Modal>` with three columns: **layers panel | preview iframe | side panel** (Inspector or content editor).
 
@@ -142,7 +142,7 @@ Partial failure keeps the Save Changes modal open.
 
 ## Parsley references and cross-item bindings
 
-`studioParsley.ts` is the **only** place Studio writes or reads a Parsley reference — two functions and one regex. Keep it that way; the same feature in another codebase builds and parses Parsley in five places, and they drifted.
+`studioParsley.ts` is the **only** place Studio writes or reads a Parsley reference — `buildParsley`, `parseParsleyRef`, a `connectFieldToParsley` wrapper over the first, and one regex. Keep it that way; the same feature in another codebase builds and parses Parsley in five places, and they drifted.
 
 ```
 {{this.title}}                                    field on the item rendering the region
