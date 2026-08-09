@@ -17,11 +17,20 @@ import { CloseRounded } from "@mui/icons-material";
 import PhotoLibraryRounded from "@mui/icons-material/PhotoLibraryRounded";
 import AddLinkRounded from "@mui/icons-material/AddLinkRounded";
 import LinkOffRounded from "@mui/icons-material/LinkOffRounded";
-import { ConnectField, ElementSlot } from "../../hooks/studioTypes";
-import { NO_TAG, TEXT_TAGS } from "./studioTags";
-import { getFieldMeta } from "./studioFieldMeta";
-import { FieldIconChip } from "./FieldIconChip";
-import { connectFieldToParsley, parseParsleyRef } from "./studioParsley";
+import {
+  ConnectField,
+  ElementSlot,
+} from "../../../../../../../studio/hooks/studioTypes";
+import {
+  NO_TAG,
+  TEXT_TAGS,
+} from "../../../../../../../studio/components/studioTags";
+import { getFieldMeta } from "../../../../../../../studio/components/studioFieldMeta";
+import { FieldIconChip } from "../../../../../../../studio/components/FieldIconChip";
+import {
+  connectFieldToParsley,
+  parseParsleyRef,
+} from "../../../../../../../studio/components/studioParsley";
 import { useCrossModelConnectField } from "../../hooks/useCrossModelConnectField";
 import { StudioLinkItemDialog } from "./StudioLinkItemDialog";
 

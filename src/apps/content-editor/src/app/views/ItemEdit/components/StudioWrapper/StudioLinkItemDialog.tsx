@@ -26,12 +26,12 @@ import {
 import SearchField from "../../../../../../../seo/src/app/components/RedirectsDialogProvider/CreateRedirects/SearchField";
 import { FieldWrapper } from "../../../../../../../seo/src/app/components/RedirectsDialogProvider/CreateRedirects/FieldWrapper";
 import { ContentItemProps } from "../../../../../../../seo/src/app/components/RedirectsDialogProvider/constants";
-import { ConnectField } from "../../hooks/studioTypes";
+import { ConnectField } from "../../../../../../../studio/hooks/studioTypes";
 import {
   isMediaSlotDatatype,
   isTextReferenceableDatatype,
-} from "./studioFieldMeta";
-import { FieldIconChip } from "./FieldIconChip";
+} from "../../../../../../../studio/components/studioFieldMeta";
+import { FieldIconChip } from "../../../../../../../studio/components/FieldIconChip";
 
 // One field row — used BOTH for the dropdown options and for the Select's
 // chosen value, so the two can't drift.

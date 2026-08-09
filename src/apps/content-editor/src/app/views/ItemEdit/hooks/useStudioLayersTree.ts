@@ -9,9 +9,12 @@ import {
   LayoutSelection,
   InspectorSelection,
   SelectedElement,
-} from "./studioTypes";
-import { NO_TAG, isTextTag } from "../components/StudioWrapper/studioTags";
-import { parseParsleyRef } from "../components/StudioWrapper/studioParsley";
+} from "../../../../../../studio/hooks/studioTypes";
+import {
+  NO_TAG,
+  isTextTag,
+} from "../../../../../../studio/components/studioTags";
+import { parseParsleyRef } from "../../../../../../studio/components/studioParsley";
 
 export type LayersFlatRow = {
   node: LayersTreeNode;
