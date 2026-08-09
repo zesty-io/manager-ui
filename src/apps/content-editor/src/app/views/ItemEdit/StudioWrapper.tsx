@@ -41,21 +41,21 @@ import {
   usePublishWebViewMutation,
   useUpdateWebViewMutation,
 } from "../../../../../../shell/services/instance";
-import { StudioHeader } from "./components/StudioWrapper/StudioHeader";
-import { StudioPreview } from "./components/StudioWrapper/StudioPreview";
-import { StudioSidePanel } from "./components/StudioWrapper/StudioSidePanel";
-import { StudioInspectorPanel } from "./components/StudioWrapper/StudioInspectorPanel";
+import { StudioHeader } from "../../../../../studio/components/StudioHeader";
+import { StudioPreview } from "../../../../../studio/components/StudioPreview";
+import { StudioSidePanel } from "../../../../../studio/components/StudioSidePanel";
+import { StudioInspectorPanel } from "../../../../../studio/components/StudioInspectorPanel";
 import {
   isMediaSlotDatatype,
   isTextReferenceableDatatype,
 } from "../../../../../studio/components/studioFieldMeta";
 import { parseParsleyRef } from "../../../../../studio/components/studioParsley";
-import { StudioLayersPanel } from "./components/StudioWrapper/StudioLayersPanel";
-import { StudioFreestyleAlert } from "./components/StudioWrapper/StudioFreestyleAlert";
+import { StudioLayersPanel } from "../../../../../studio/components/StudioLayersPanel";
+import { StudioFreestyleAlert } from "../../../../../studio/components/StudioFreestyleAlert";
 import {
   StudioSaveChange,
   StudioSaveChangesModal,
-} from "./components/StudioWrapper/StudioSaveChangesModal";
+} from "../../../../../studio/components/StudioSaveChangesModal";
 import { useLayoutReorderState } from "./hooks/useLayoutReorderState";
 import {
   collectDirtyContentItems,
