@@ -22,7 +22,7 @@ import { NO_TAG, TEXT_TAGS } from "./studioTags";
 import { getFieldMeta } from "./studioFieldMeta";
 import { FieldIconChip } from "./FieldIconChip";
 import { connectFieldToParsley, parseParsleyRef } from "./studioParsley";
-import { useCrossModelConnectField } from "../../content-editor/src/app/views/ItemEdit/hooks/useCrossModelConnectField";
+import { useCrossModelConnectField } from "../hooks/useCrossModelConnectField";
 import { StudioLinkItemDialog } from "./StudioLinkItemDialog";
 
 // Title shown for a supported element tag.
