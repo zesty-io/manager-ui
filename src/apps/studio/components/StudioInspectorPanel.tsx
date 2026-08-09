@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { MouseEvent, useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -17,11 +17,16 @@ import { CloseRounded } from "@mui/icons-material";
 import PhotoLibraryRounded from "@mui/icons-material/PhotoLibraryRounded";
 import AddLinkRounded from "@mui/icons-material/AddLinkRounded";
 import LinkOffRounded from "@mui/icons-material/LinkOffRounded";
-import { ConnectField, ElementSlot } from "../hooks/studioTypes";
+import LinkRounded from "@mui/icons-material/LinkRounded";
+import { ConnectField, ElementSlot, LinkWrapper } from "../hooks/studioTypes";
 import { NO_TAG, TEXT_TAGS } from "./studioTags";
 import { getFieldMeta } from "./studioFieldMeta";
 import { FieldIconChip } from "./FieldIconChip";
-import { connectFieldToParsley, parseParsleyRef } from "./studioParsley";
+import {
+  buildParsley,
+  connectFieldToParsley,
+  parseParsleyRef,
+} from "./studioParsley";
 import { useCrossModelConnectField } from "../hooks/useCrossModelConnectField";
 import { StudioLinkItemDialog } from "./StudioLinkItemDialog";
 
@@ -99,6 +104,7 @@ const SLOT_LABELS: Record<string, string> = {
   src: "Source",
   alt: "Alt text",
   href: "URL",
+  target: "Open in new tab",
   poster: "Video Poster",
   controls: "Video Control Visibility",
   autoplay: "Autoplay",
@@ -128,6 +134,22 @@ const getBooleanOptions = (slot: ElementSlot) => {
     { value: "false", label: off },
   ];
 };
+
+// A link's `target` is not a boolean attribute — it holds "_blank" — but the
+// design offers it as a plain Yes/No, so the panel does the translation and
+// treats anything else (including an absent attribute) as No.
+const NEW_TAB_VALUE = "_blank";
+const NEW_TAB_OPTIONS = [
+  { value: NEW_TAB_VALUE, label: "Yes" },
+  { value: "", label: "No" },
+];
+const toNewTabValue = (target: string) =>
+  target === NEW_TAB_VALUE ? NEW_TAB_VALUE : "";
+
+// A fragment never leaves the page, so "open in new tab" is meaningless for it
+// — the design drops the row entirely. An empty href has nothing to open yet.
+const canOpenInNewTab = (href: string) =>
+  Boolean(href) && !href.startsWith("#");
 
 // A connected slot shows its bound field as a chip instead of a raw value —
 // used in BOTH modes so "connected to a field" looks the same everywhere. In
@@ -230,6 +252,11 @@ const CrossModelConnectedField = ({
       ? resolution.reason === "model"
         ? `Model "${source.modelName}" no longer exists`
         : `Field "${fieldName}" no longer exists`
+      : // An item reference (a link bound to the item's page URL) already puts
+      // the item on the first line, so repeating it here would say the same
+      // thing twice — name the model alone.
+      !fieldName
+      ? modelLabel
       : itemLabel
       ? `${modelLabel} · ${itemLabel}`
       : modelLabel;
@@ -253,6 +280,36 @@ const CrossModelConnectedField = ({
   );
 };
 
+// The Connect Item affordance itself. Shared by the field-picking version below
+// and by the link controls, where the reference is to an ITEM (its page URL)
+// and so there is no field step to put in a dropdown.
+const ConnectItemTrigger = ({
+  dataCy,
+  onClick,
+}: {
+  dataCy: string;
+  onClick: (evt: MouseEvent<HTMLButtonElement>) => void;
+}) => (
+  <Button
+    data-cy={dataCy}
+    variant="text"
+    size="small"
+    disableRipple
+    startIcon={<AddLinkRounded sx={{ fontSize: 16 }} />}
+    onClick={onClick}
+    sx={{
+      minWidth: 0,
+      px: 0.5,
+      py: 0.25,
+      color: "text.secondary",
+      fontWeight: 400,
+      textTransform: "none",
+    }}
+  >
+    Connect Item
+  </Button>
+);
+
 // The "Connect Item" affordance in a text slot's label row (mirrors the field
 // shell's AI/comment secondary actions). Opens a dropdown of the current item's
 // fields; picking one hands its Parsley reference back so the caller can write
@@ -274,24 +331,10 @@ const ConnectItemButton = ({
 
   return (
     <>
-      <Button
-        data-cy={dataCy}
-        variant="text"
-        size="small"
-        disableRipple
-        startIcon={<AddLinkRounded sx={{ fontSize: 16 }} />}
+      <ConnectItemTrigger
+        dataCy={dataCy}
         onClick={(evt) => setAnchorEl(evt.currentTarget)}
-        sx={{
-          minWidth: 0,
-          px: 0.5,
-          py: 0.25,
-          color: "text.secondary",
-          fontWeight: 400,
-          textTransform: "none",
-        }}
-      >
-        Connect Item
-      </Button>
+      />
       <Menu
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
@@ -384,6 +427,15 @@ type StudioInspectorPanelProps = {
   // Media fields, offered on img/video src + poster slots (writes an image
   // expression, e.g. "{{this.hero.getImage()}}").
   mediaFields: ConnectField[];
+  // Layout mode: the <a> wrapping the selected element, and whether one may be
+  // added. Both are derived from the cached template — the wrapper has no
+  // data-layout-id, so it never appears as a slot on the layers tree.
+  linkWrapper: LinkWrapper | null;
+  canAddLink: boolean;
+  onAddLink: () => void;
+  onRemoveLink: () => void;
+  onChangeLinkHref: (value: string) => void;
+  onChangeLinkTarget: (value: string) => void;
   drawerWidth: number;
   logoSrc: string;
 };
@@ -397,6 +449,7 @@ const SlotLabelRow = ({
   connectableFields,
   isConnected,
   canConnect,
+  connectsToItem,
   onPick,
   onOpenCrossModel,
   onDisconnect,
@@ -409,6 +462,10 @@ const SlotLabelRow = ({
   // `connectableFields.length`: the current item may have no bindable fields
   // while another item does, so the cross-item entry point must still show.
   canConnect: boolean;
+  // The binding names an ITEM rather than a field (an href resolves to the
+  // item's page URL), so there is no field dropdown — the button opens the
+  // item picker straight away.
+  connectsToItem?: boolean;
   onPick: (field: ConnectField) => void;
   onOpenCrossModel: () => void;
   onDisconnect: () => void;
@@ -441,7 +498,12 @@ const SlotLabelRow = ({
       >
         Disconnect
       </Button>
-    ) : canConnect ? (
+    ) : !canConnect ? null : connectsToItem ? (
+      <ConnectItemTrigger
+        dataCy={`StudioConnectContent-${slotKey}`}
+        onClick={onOpenCrossModel}
+      />
+    ) : (
       <ConnectItemButton
         fields={connectableFields}
         onPick={onPick}
@@ -449,7 +511,7 @@ const SlotLabelRow = ({
         dataCy={`StudioConnectContent-${slotKey}`}
         crossModelDataCy={`StudioConnectOtherItem-${slotKey}`}
       />
-    ) : null}
+    )}
   </Stack>
 );
 
@@ -486,7 +548,6 @@ const SlotField = ({
   // unconditional.
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const dataCy = `StudioSlotInput-${slot.key}`;
-  const isSelect = slot.control === "select";
   const multiline = slot.kind === "text";
   const isMediaAttr =
     slot.kind === "attribute" &&
@@ -495,11 +556,23 @@ const SlotField = ({
   // like a text node.
   const isTextAttr = slot.kind === "attribute" && slot.attr === "alt";
   const isTextSlot = slot.kind === "text";
+  // An <a>'s own destination. Binds to an ITEM (its page URL), never a field.
+  const isLinkAttr = slot.kind === "attribute" && slot.attr === "href";
+  // An <a>'s `target`. Not a boolean attribute, but the panel presents it as
+  // one; the select's options are the only values it can hold.
+  const isNewTabAttr = slot.kind === "attribute" && slot.attr === "target";
+  const isSelect = slot.control === "select" || isNewTabAttr;
+  const selectOptions = isNewTabAttr
+    ? NEW_TAB_OPTIONS
+    : getBooleanOptions(slot);
+  const selectValue = isNewTabAttr ? toNewTabValue(value) : value;
 
   // Which fields this slot's Connect Item dropdown offers: text/number/options
   // for text slots + alt; media + external-URL for img/video src/poster. The
   // Parsley each field emits is decided per field by buildParsley (a media
   // asset resolves via getImage(); everything else is referenced verbatim).
+  // An href is deliberately absent here: it binds to an item, not a field, so
+  // it has no dropdown to fill.
   const connectableFields = !slot.layoutEditable
     ? []
     : isTextSlot || isTextAttr
@@ -513,7 +586,8 @@ const SlotField = ({
   // have matching fields, because binding another item's field doesn't depend
   // on that.
   const canConnect =
-    slot.layoutEditable && (isTextSlot || isTextAttr || isMediaAttr);
+    slot.layoutEditable &&
+    (isTextSlot || isTextAttr || isMediaAttr || isLinkAttr);
 
   // Parse rather than regenerate. Regenerating a byte-identical string from the
   // in-memory field list only ever worked because we wrote both sides; the
@@ -524,9 +598,10 @@ const SlotField = ({
   // A `this.` reference is connected only when it names a field this slot may
   // bind — preserving today's behaviour exactly, so an unknown or
   // non-connectable `this.` ref still falls back to a free-form input.
-  const connectedField = parsedRef?.source
-    ? undefined
-    : connectableFields.find((field) => field.name === parsedRef?.name);
+  const connectedField =
+    parsedRef?.source || parsedRef?.kind === "url"
+      ? undefined
+      : connectableFields.find((field) => field.name === parsedRef?.name);
 
   // A cross-item reference is treated as connected on sight. We can't disprove
   // it without a network round-trip, and rendering a text input while that
@@ -553,12 +628,12 @@ const SlotField = ({
         ) : isSelect ? (
           <TextField
             select
-            value={value}
+            value={selectValue}
             fullWidth
             disabled
             inputProps={{ "data-cy": dataCy }}
           >
-            {getBooleanOptions(slot).map((option) => (
+            {selectOptions.map((option) => (
               <MenuItem key={option.value} value={option.value}>
                 {option.label}
               </MenuItem>
@@ -591,6 +666,7 @@ const SlotField = ({
         connectableFields={connectableFields}
         isConnected={isConnected}
         canConnect={canConnect}
+        connectsToItem={isLinkAttr}
         onPick={(field) =>
           onChangeSlot(slot, connectFieldToParsley(field), field)
         }
@@ -608,13 +684,13 @@ const SlotField = ({
       ) : isSelect ? (
         <TextField
           select
-          value={value}
+          value={selectValue}
           fullWidth
           disabled={!slot.layoutEditable}
           onChange={(evt) => onChangeSlot(slot, evt.target.value)}
           inputProps={{ "data-cy": dataCy }}
         >
-          {getBooleanOptions(slot).map((option) => (
+          {selectOptions.map((option) => (
             <MenuItem key={option.value} value={option.value}>
               {option.label}
             </MenuItem>
@@ -657,14 +733,214 @@ const SlotField = ({
       {linkDialogOpen ? (
         <StudioLinkItemDialog
           open
-          fieldFilter={isMediaAttr ? "media" : "text"}
+          fieldFilter={isLinkAttr ? "url" : isMediaAttr ? "media" : "text"}
           onClose={() => setLinkDialogOpen(false)}
           onConfirm={(field) => {
             setLinkDialogOpen(false);
-            onChangeSlot(slot, connectFieldToParsley(field), field);
+            onChangeSlot(
+              slot,
+              isLinkAttr
+                ? buildParsley({ kind: "url", source: field.source })
+                : connectFieldToParsley(field),
+              field
+            );
           }}
         />
       ) : null}
+    </Stack>
+  );
+};
+
+// The fields of an existing link wrapper. Mounted only while the element IS
+// wrapped, so the URL input's local state is seeded — and reset — by the wrap
+// and unwrap themselves; there is no stale value to clear on re-linking.
+const LinkFields = ({
+  linkWrapper,
+  onChangeHref,
+  onChangeTarget,
+}: {
+  linkWrapper: LinkWrapper;
+  onChangeHref: (value: string) => void;
+  onChangeTarget: (value: string) => void;
+}) => {
+  // Owned locally, exactly like a slot input: the template write is debounced,
+  // so the derived wrapper lags a keystroke behind what has been typed.
+  const [href, setHref] = useState(linkWrapper.href);
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  // Parse rather than compare — the same reason the slots do. A connected href
+  // holds an item-level reference: "{{<model>.filter(<zuid>).getUrl()}}".
+  const parsedRef = parseParsleyRef(href);
+  const connectedItem =
+    parsedRef?.kind === "url" && parsedRef.source ? parsedRef.source : null;
+
+  const handleHrefChange = (value: string) => {
+    setHref(value);
+    onChangeHref(value);
+  };
+
+  return (
+    <>
+      <Stack gap={0.5}>
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+          gap={1}
+        >
+          <Typography variant="body2" fontWeight={600} color="text.primary">
+            Link to
+          </Typography>
+          {connectedItem ? (
+            <Button
+              data-cy="StudioLinkDisconnect"
+              variant="text"
+              size="small"
+              disableRipple
+              startIcon={<LinkOffRounded sx={{ fontSize: 16 }} />}
+              // Local only, like a slot's Disconnect: the binding stays in the
+              // template until a replacement is typed or picked, so clearing it
+              // can never leave the link pointing nowhere by accident.
+              onClick={() => setHref("")}
+              sx={{
+                minWidth: 0,
+                px: 0.5,
+                py: 0.25,
+                color: "text.secondary",
+                fontWeight: 400,
+                textTransform: "none",
+              }}
+            >
+              Disconnect
+            </Button>
+          ) : (
+            <ConnectItemTrigger
+              dataCy="StudioLinkConnectItem"
+              onClick={() => setDialogOpen(true)}
+            />
+          )}
+        </Stack>
+        {connectedItem ? (
+          <CrossModelConnectedField
+            source={connectedItem}
+            // An item reference names no field — the chip resolves the item.
+            fieldName=""
+            isMedia={false}
+          />
+        ) : (
+          <TextField
+            value={href}
+            fullWidth
+            placeholder="link url or id"
+            onChange={(evt) => handleHrefChange(evt.target.value)}
+            inputProps={{ "data-cy": "StudioLinkToInput" }}
+          />
+        )}
+      </Stack>
+
+      {canOpenInNewTab(href) ? (
+        <Stack gap={0.5}>
+          <Typography variant="body2" fontWeight={600} color="text.primary">
+            {SLOT_LABELS.target}
+          </Typography>
+          <TextField
+            select
+            value={toNewTabValue(linkWrapper.target)}
+            fullWidth
+            onChange={(evt) => onChangeTarget(evt.target.value)}
+            inputProps={{ "data-cy": "StudioOpenInNewTab" }}
+          >
+            {NEW_TAB_OPTIONS.map((option) => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </TextField>
+        </Stack>
+      ) : null}
+
+      {/* Mounted only while open — see the note on the slot dialog. */}
+      {dialogOpen ? (
+        <StudioLinkItemDialog
+          open
+          fieldFilter="url"
+          onClose={() => setDialogOpen(false)}
+          onConfirm={(field) => {
+            setDialogOpen(false);
+            handleHrefChange(
+              buildParsley({ kind: "url", source: field.source })
+            );
+          }}
+        />
+      ) : null}
+    </>
+  );
+};
+
+// The Link control from the design: a full-width "Add Link" button until the
+// element is wrapped, then the wrapper's own fields under a Link header with an
+// unlink action. Layout mode only — wrapping rewrites the template, and content
+// mode never does.
+//
+// The wrapper is not a bridge-reported slot. It has no data-layout-id of its
+// own (see readLinkWrapper), so it is addressed as the parent of the element
+// the panel already has coordinates for, and read straight off the template.
+const LinkSection = ({
+  linkWrapper,
+  canAddLink,
+  onAddLink,
+  onRemoveLink,
+  onChangeHref,
+  onChangeTarget,
+}: {
+  linkWrapper: LinkWrapper | null;
+  canAddLink: boolean;
+  onAddLink: () => void;
+  onRemoveLink: () => void;
+  onChangeHref: (value: string) => void;
+  onChangeTarget: (value: string) => void;
+}) => {
+  if (!linkWrapper) {
+    if (!canAddLink) return null;
+    return (
+      <Button
+        data-cy="StudioAddLink"
+        variant="outlined"
+        color="inherit"
+        fullWidth
+        startIcon={<LinkRounded fontSize="small" />}
+        onClick={onAddLink}
+      >
+        Add Link
+      </Button>
+    );
+  }
+
+  return (
+    <Stack gap={2.5}>
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        gap={1}
+      >
+        <Typography variant="subtitle2" fontWeight={600} color="text.primary">
+          Link
+        </Typography>
+        <IconButton
+          data-cy="StudioRemoveLink"
+          aria-label="Remove link"
+          size="small"
+          onClick={onRemoveLink}
+        >
+          <LinkOffRounded fontSize="small" />
+        </IconButton>
+      </Stack>
+      <LinkFields
+        linkWrapper={linkWrapper}
+        onChangeHref={onChangeHref}
+        onChangeTarget={onChangeTarget}
+      />
     </Stack>
   );
 };
@@ -682,6 +958,12 @@ export const StudioInspectorPanel = ({
   onBrowseMedia,
   connectFields,
   mediaFields,
+  linkWrapper,
+  canAddLink,
+  onAddLink,
+  onRemoveLink,
+  onChangeLinkHref,
+  onChangeLinkTarget,
   drawerWidth,
   logoSrc,
 }: StudioInspectorPanelProps) => {
@@ -848,6 +1130,19 @@ export const StudioInspectorPanel = ({
                 mediaFields={mediaFields}
               />
             ))}
+            {mode === "layout" ? (
+              // Keyed on the element so the URL input reseeds when a different
+              // one is selected, the same way `values` is reset above.
+              <LinkSection
+                key={elementKey}
+                linkWrapper={linkWrapper}
+                canAddLink={canAddLink}
+                onAddLink={onAddLink}
+                onRemoveLink={onRemoveLink}
+                onChangeHref={onChangeLinkHref}
+                onChangeTarget={onChangeLinkTarget}
+              />
+            ) : null}
           </Stack>
         </Box>
 

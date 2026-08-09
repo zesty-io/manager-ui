@@ -30,6 +30,11 @@ export const useCrossModelConnectField = (
   fieldName: string,
   isMedia: boolean
 ): CrossModelResolution | null => {
+  // An ITEM-level reference — a link's `getUrl()` — names no field at all, so
+  // the field half of the lookup has nothing to resolve and is skipped
+  // entirely. Resolving the model and the item is the whole job.
+  const isItemRef = !fieldName;
+
   const { data: models, isFetching: isFetchingModels } =
     useGetContentModelsQuery(undefined, { skip: !source });
 
@@ -48,7 +53,7 @@ export const useCrossModelConnectField = (
   const { data: fields, isFetching: isFetchingFields } =
     useGetContentModelFieldsQuery(
       { modelZUID: model?.ZUID },
-      { skip: !model?.ZUID }
+      { skip: !model?.ZUID || isItemRef }
     );
 
   const field = useMemo(
@@ -92,6 +97,24 @@ export const useCrossModelConnectField = (
       modelLabel: model?.label,
       itemLabel,
     };
+
+    if (isItemRef) {
+      // The chip's first line names the ITEM — pinning one item is the whole
+      // point of filter(<zuid>) — so the model belongs in the caption instead.
+      const itemField = {
+        name: "",
+        label: itemLabel || source.itemZUID,
+        datatype: "internal_link",
+        source: sourceBase,
+      };
+      if (!models || isFetchingModels) {
+        return { status: "resolving", field: itemField };
+      }
+      if (!model) {
+        return { status: "unresolved", reason: "model", field: itemField };
+      }
+      return { status: "resolved", field: itemField };
+    }
 
     if (
       !models ||
@@ -153,6 +176,7 @@ export const useCrossModelConnectField = (
     fieldName,
     isFetchingFields,
     isFetchingModels,
+    isItemRef,
     isMedia,
     itemLabel,
     model,

@@ -830,6 +830,10 @@ export const StudioWrapper = () => {
     handleLayoutElementAttrUpdate,
     handleLayoutTextUpdate,
     handleLayoutTagUpdate,
+    readLinkWrapper,
+    handleLayoutWrapInLink,
+    handleLayoutUnwrapLink,
+    handleLayoutLinkAttrUpdate,
   } = useLayoutReorderState({
     webViews,
     codeFileNameById,
@@ -1626,6 +1630,92 @@ export const StudioWrapper = () => {
     [handleLayoutTagUpdate, postCommandToBridge, inspectorSelection]
   );
 
+  // Layout mode: the <a> around the selected element, plus whether one may be
+  // added. Derived from the cached template on every read rather than stored on
+  // the selection — the template is the source of truth for it, and a copy on
+  // the selection would go stale the moment anything else patched the region.
+  //
+  // `isSelf` is required: the wrapper is inserted around the [data-layout-id]
+  // element, so an element addressed as "the Nth <img> inside this region" has
+  // nothing stable to hang one off. A text row carries its parent element's
+  // patch, which is the element a link should wrap anyway.
+  const linkWrapperState = useMemo(() => {
+    if (interactionMode !== "layout") return null;
+    const patch = inspectorSelection?.layoutPatch;
+    if (!patch?.codeId || !patch.isSelf) return null;
+    return readLinkWrapper(patch.codeId, patch.layoutId);
+  }, [inspectorSelection, interactionMode, readLinkWrapper]);
+
+  const handleAddLink = useCallback(() => {
+    const patch = inspectorSelection?.layoutPatch;
+    if (!patch?.codeId || !patch.isSelf) return;
+    // No href/target in the payload: the bridge leaves out what it isn't given,
+    // so the live <a> matches the attribute-less one staged into the template.
+    postCommandToBridge({
+      action: "wrapElementInLink",
+      layoutId: patch.layoutId,
+    });
+    handleLayoutWrapInLink(patch.codeId, patch.layoutId);
+  }, [handleLayoutWrapInLink, inspectorSelection, postCommandToBridge]);
+
+  const handleRemoveLink = useCallback(() => {
+    const patch = inspectorSelection?.layoutPatch;
+    if (!patch?.codeId || !patch.isSelf) return;
+    postCommandToBridge({
+      action: "unwrapElementLink",
+      layoutId: patch.layoutId,
+    });
+    handleLayoutUnwrapLink(patch.codeId, patch.layoutId);
+  }, [handleLayoutUnwrapLink, inspectorSelection, postCommandToBridge]);
+
+  // Shared by the URL input and the Open-in-new-tab select. Same split as a
+  // slot write: the bridge is told immediately so the canvas keeps up, while
+  // the template patch is debounced for `href` because it re-parses the whole
+  // region on every keystroke. A select is a discrete change, so it isn't.
+  const handleLinkAttrChange = useCallback(
+    (attr: "href" | "target", value: string) => {
+      const patch = inspectorSelection?.layoutPatch;
+      if (!patch?.codeId || !patch.isSelf) return;
+
+      // An href may be a Parsley reference. The canvas gets the resolved URL;
+      // the template keeps the expression, exactly as slots do.
+      const previewValue = attr === "href" ? resolvePreviewValue(value) : null;
+
+      postCommandToBridge({
+        action: "wrapElementInLink",
+        layoutId: patch.layoutId,
+        [attr]: previewValue ?? value,
+      });
+
+      if (attr !== "href") {
+        handleLayoutLinkAttrUpdate(patch.codeId, patch.layoutId, attr, value);
+        return;
+      }
+
+      const timerKey = `link:${attr}`;
+      clearTimeout(slotPatchTimers.current[timerKey]);
+      slotPatchTimers.current[timerKey] = setTimeout(() => {
+        handleLayoutLinkAttrUpdate(patch.codeId!, patch.layoutId, attr, value);
+      }, 300);
+    },
+    [
+      handleLayoutLinkAttrUpdate,
+      inspectorSelection,
+      postCommandToBridge,
+      resolvePreviewValue,
+    ]
+  );
+
+  const handleLinkHrefChange = useCallback(
+    (value: string) => handleLinkAttrChange("href", value),
+    [handleLinkAttrChange]
+  );
+
+  const handleLinkTargetChange = useCallback(
+    (value: string) => handleLinkAttrChange("target", value),
+    [handleLinkAttrChange]
+  );
+
   // Layout mode: connect a content item to a text slot. A text slot's value is
   // just the raw template content, so "connecting" means writing a Parsley
   // expression (e.g. "{{this.title}}") in place of the static text — which the
@@ -1851,6 +1941,12 @@ export const StudioWrapper = () => {
                 onBrowseMedia={handleBrowseMedia}
                 connectFields={connectFields}
                 mediaFields={mediaFields}
+                linkWrapper={linkWrapperState?.wrapper ?? null}
+                canAddLink={Boolean(linkWrapperState?.canWrap)}
+                onAddLink={handleAddLink}
+                onRemoveLink={handleRemoveLink}
+                onChangeLinkHref={handleLinkHrefChange}
+                onChangeLinkTarget={handleLinkTargetChange}
                 drawerWidth={drawerWidth}
                 logoSrc={contentOneLogo}
               />
