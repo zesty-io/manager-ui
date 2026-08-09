@@ -1,7 +1,7 @@
 import { MutableRefObject, useCallback, useEffect } from "react";
-import { notify } from "../../../../../../../shell/store/notifications";
-import { Sentry } from "../../../../../../../utility/sentry";
-import { InteractionMode } from "../../../../../../studio/hooks/studioTypes";
+import { notify } from "shell/store/notifications";
+import { Sentry } from "utility/sentry";
+import { InteractionMode } from "./studioTypes";
 
 const bridgeInjectedCss = `
   .studio-hover {

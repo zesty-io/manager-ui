@@ -56,20 +56,20 @@ import {
   StudioSaveChange,
   StudioSaveChangesModal,
 } from "../../../../../studio/components/StudioSaveChangesModal";
-import { useLayoutReorderState } from "./hooks/useLayoutReorderState";
+import { useLayoutReorderState } from "../../../../../studio/hooks/useLayoutReorderState";
 import {
   collectDirtyContentItems,
   useStudioContentSave,
-} from "./hooks/useStudioContentSave";
-import { useStudioBridge } from "./hooks/useStudioBridge";
+} from "../../../../../studio/hooks/useStudioContentSave";
+import { useStudioBridge } from "../../../../../studio/hooks/useStudioBridge";
 import {
   ConnectField,
   ElementSlot,
   InteractionMode,
   LayoutBreadcrumbItem,
 } from "../../../../../studio/hooks/studioTypes";
-import { useStudioSelection } from "./hooks/useStudioSelection";
-import { useStudioLayersTree } from "./hooks/useStudioLayersTree";
+import { useStudioSelection } from "../../../../../studio/hooks/useStudioSelection";
+import { useStudioLayersTree } from "../../../../../studio/hooks/useStudioLayersTree";
 import { getRefRegistry } from "../../../../../../engine/refRegistry";
 import { useMultiPermission } from "../../../../../../shell/hooks/use-permissions";
 import { MediaApp } from "../../../../../media/src/app";

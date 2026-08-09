@@ -6,7 +6,7 @@ import {
   InspectorSelection,
   SelectedElement,
   LayoutSelection,
-} from "../../../../../../studio/hooks/studioTypes";
+} from "./studioTypes";
 
 type Args = {
   postCommandToBridge: (cmd: any) => void;
