@@ -1824,6 +1824,48 @@ describe("Studio Inspector Panel", () => {
     });
   });
 
+  it("discards a debounced write instead of letting it re-dirty the region", () => {
+    setStudioMode("layout");
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+
+      seedLayoutElement(
+        webView.ZUID,
+        `<img data-layout-id="1" src="a.jpg" alt="hero">`,
+        imgNode(webView.ZUID)
+      );
+
+      // Something staged, so the save bar — and its Cancel — are present.
+      cy.getBySelector("StudioAddLink").click();
+      cy.getBySelector("StudioLayoutSaveBar").should("exist");
+
+      // Freeze time, then queue a debounced write that cannot fire on its own.
+      cy.clock(null, ["setTimeout", "clearTimeout"]);
+      cy.getBySelector("StudioLinkToInput").type("https://www.zesty.io/");
+      cy.getBySelector("StudioLayoutCancelButton").click();
+
+      // Advance well past the 300ms debounce. A cancelled timer has nothing to
+      // fire; a surviving one re-dirties the region the user just discarded and
+      // races the TEMPLATE_SOURCE_MAP the preview reload brings back.
+      cy.tick(2000);
+      cy.clock().invoke("restore");
+
+      // Drive a full render cycle that can be waited on POSITIVELY before
+      // asserting the absence. `should("not.exist")` passes on its first
+      // evaluation, so asserting it straight after tick() would go green even
+      // when the stale write repaints the bar a moment later — verified: the
+      // test passed with the fix reverted until this step was added.
+      const node = imgNode(webView.ZUID);
+      feedTree(node);
+      openPanelFor(node);
+
+      cy.getBySelector("StudioLayoutSaveBar").should("not.exist");
+    });
+  });
+
   it("keeps a hand-written target visible instead of flattening it to No", () => {
     setStudioMode("layout");
     cy.apiRequest({

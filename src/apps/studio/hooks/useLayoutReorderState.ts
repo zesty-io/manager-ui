@@ -400,8 +400,11 @@ type Args = {
   publishWebView: (args: any) => { unwrap: () => Promise<any> };
   dispatch: (action: any) => any;
   clearLayoutSelection: () => void;
+  // Drops every debounced template write without running it. Used by discard,
+  // where a timer firing afterwards would re-dirty the region just thrown away.
+  cancelAllPendingPatches: () => void;
   // Runs every debounced template write immediately and returns the codeIds it
-  // touched. Called before a save reads the template cache, since a write still
+  // actually staged. Called before a save reads the template cache, since a write still
   // in its timer would otherwise miss the PUT and then land on an already-saved
   // region. The codeIds are needed because staging is a state update that has
   // not applied yet when the save loop reads pendingLayoutSave.
@@ -438,6 +441,7 @@ export const useLayoutReorderState = ({
   publishWebView,
   dispatch,
   clearLayoutSelection,
+  cancelAllPendingPatches,
   flushPendingPatches,
   refreshPreviewFrame,
   syncTemplateSourceToBridge,
@@ -487,11 +491,21 @@ export const useLayoutReorderState = ({
 
   const handleDiscardPendingLayoutSave = useCallback(
     (onComplete?: () => void) => {
+      // Before clearing state, not after: a debounced write still in flight
+      // would otherwise land 300ms from now, re-dirty the region the user just
+      // discarded, and race the fresh TEMPLATE_SOURCE_MAP the preview reload
+      // is about to merge.
+      cancelAllPendingPatches();
       clearPendingLayoutState();
       clearLayoutSelection();
       refreshPreviewFrame(onComplete);
     },
-    [clearLayoutSelection, clearPendingLayoutState, refreshPreviewFrame]
+    [
+      cancelAllPendingPatches,
+      clearLayoutSelection,
+      clearPendingLayoutState,
+      refreshPreviewFrame,
+    ]
   );
 
   // Saves each pending region sequentially. Returns the list of saved results.
@@ -943,13 +957,13 @@ export const useLayoutReorderState = ({
       attr: string,
       value: string,
       booleanAttr?: boolean
-    ) => {
+    ): boolean => {
       // Unlike `src`, an empty `alt` is a legitimate value, so only guard the
       // addressing inputs here (not `value`).
-      if (!codeId || !layoutId || !attr) return;
+      if (!codeId || !layoutId || !attr) return false;
 
       const cached = templateSourceByCodeIdRef.current[codeId];
-      if (!cached) return;
+      if (!cached) return false;
 
       const parser = new DOMParser();
       const doc = parser.parseFromString(
@@ -957,19 +971,19 @@ export const useLayoutReorderState = ({
         "text/html"
       );
       const root = doc.getElementById("studio-el-root");
-      if (!root) return;
+      if (!root) return false;
 
       const leaf = root.querySelector(
         `[data-layout-id="${CSS.escape(layoutId)}"]`
       );
-      if (!leaf) return;
+      if (!leaf) return false;
 
       const target = isSelf
         ? (leaf as HTMLElement)
         : (Array.from(leaf.querySelectorAll(tagName))[
             elementIndex
           ] as HTMLElement);
-      if (!target) return;
+      if (!target) return false;
 
       if (booleanAttr) {
         // Presence toggle: "true" adds the bare attribute, "false" removes it.
@@ -980,6 +994,7 @@ export const useLayoutReorderState = ({
       }
 
       stageLayoutSourceUpdate(codeId, root.innerHTML);
+      return true;
     },
     [stageLayoutSourceUpdate]
   );
@@ -988,11 +1003,11 @@ export const useLayoutReorderState = ({
   // its own data-layout-id (text slots are only layout-editable for such
   // leaves), so setting textContent is safe and escapes automatically.
   const handleLayoutTextUpdate = useCallback(
-    (codeId: string, layoutId: string, value: string) => {
-      if (!codeId || !layoutId) return;
+    (codeId: string, layoutId: string, value: string): boolean => {
+      if (!codeId || !layoutId) return false;
 
       const cached = templateSourceByCodeIdRef.current[codeId];
-      if (!cached) return;
+      if (!cached) return false;
 
       const parser = new DOMParser();
       const doc = parser.parseFromString(
@@ -1000,16 +1015,17 @@ export const useLayoutReorderState = ({
         "text/html"
       );
       const root = doc.getElementById("studio-el-root");
-      if (!root) return;
+      if (!root) return false;
 
       const leaf = root.querySelector(
         `[data-layout-id="${CSS.escape(layoutId)}"]`
       ) as HTMLElement | null;
-      if (!leaf) return;
+      if (!leaf) return false;
 
       leaf.textContent = value;
 
       stageLayoutSourceUpdate(codeId, root.innerHTML);
+      return true;
     },
     [stageLayoutSourceUpdate]
   );
@@ -1167,22 +1183,28 @@ export const useLayoutReorderState = ({
   );
 
   const handleLayoutLinkAttrUpdate = useCallback(
-    (codeId: string, layoutId: string, attr: string, value: string) => {
-      if (!codeId || !layoutId || !attr) return;
+    (
+      codeId: string,
+      layoutId: string,
+      attr: string,
+      value: string
+    ): boolean => {
+      if (!codeId || !layoutId || !attr) return false;
 
       const cached = templateSourceByCodeIdRef.current[codeId];
-      if (!cached) return;
+      if (!cached) return false;
 
       const found = resolveLayoutLeaf(cached, layoutId);
-      if (!found) return;
+      if (!found) return false;
 
       const { root, leaf } = found;
       const wrapper = leaf.parentElement;
-      if (!wrapper || wrapper.tagName !== "A") return;
+      if (!wrapper || wrapper.tagName !== "A") return false;
 
       writeAttribute(wrapper, attr, value);
 
       stageLayoutSourceUpdate(codeId, root.innerHTML);
+      return true;
     },
     [stageLayoutSourceUpdate]
   );
@@ -1196,9 +1218,9 @@ export const useLayoutReorderState = ({
       isLeafImg: boolean,
       imgIndex: number,
       newSrc: string
-    ) => {
-      if (!newSrc) return;
-      handleLayoutElementAttrUpdate(
+    ): boolean => {
+      if (!newSrc) return false;
+      return handleLayoutElementAttrUpdate(
         codeId,
         layoutId,
         isLeafImg,

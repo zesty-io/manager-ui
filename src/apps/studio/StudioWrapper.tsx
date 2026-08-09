@@ -828,12 +828,15 @@ export const StudioWrapper = () => {
   // FLUSH the queue rather than race it. The codeId travels with the callback
   // because a flush has to tell the save loop WHICH regions it just dirtied —
   // deriving that by parsing the key would encode the key format twice.
+  // `run` reports whether it actually staged anything: every patch function
+  // early-returns when the cache or the leaf won't resolve, and a flush must
+  // not claim a region it failed to touch.
   const pendingPatches = useRef<
-    Record<string, { codeId: string; run: () => void }>
+    Record<string, { codeId: string; run: () => boolean }>
   >({});
 
   const schedulePatch = useCallback(
-    (key: string, codeId: string, run: () => void) => {
+    (key: string, codeId: string, run: () => boolean) => {
       clearTimeout(slotPatchTimers.current[key]);
       pendingPatches.current[key] = { codeId, run };
       slotPatchTimers.current[key] = setTimeout(() => {
@@ -865,6 +868,11 @@ export const StudioWrapper = () => {
   // this flush dirties for the first time is not yet in the caller's copy of
   // pendingLayoutSave, so the save loop has to be told about it separately or
   // it would be left out of the PUT and stay dirty.
+  //
+  // Only regions a patch actually STAGED are reported. Every patch function
+  // early-returns when the cache or the leaf won't resolve, and reporting
+  // intent instead of effect would PUT a region with no change in it — and, on
+  // Save & Publish, burn a version on a file the user never edited.
   const flushPendingPatches = useCallback(() => {
     const pending = pendingPatches.current;
     pendingPatches.current = {};
@@ -872,10 +880,22 @@ export const StudioWrapper = () => {
     Object.keys(pending).forEach((key) => {
       clearTimeout(slotPatchTimers.current[key]);
       delete slotPatchTimers.current[key];
-      codeIds.add(pending[key].codeId);
-      pending[key].run();
+      if (pending[key].run()) codeIds.add(pending[key].codeId);
     });
     return Array.from(codeIds);
+  }, []);
+
+  // Drop every debounced write without running it. Discard's counterpart to the
+  // flush: the user has just thrown these edits away, so a timer firing 300ms
+  // later would re-dirty the region they discarded and race the fresh
+  // TEMPLATE_SOURCE_MAP the preview reload brings back.
+  const cancelAllPendingPatches = useCallback(() => {
+    const pending = pendingPatches.current;
+    pendingPatches.current = {};
+    Object.keys(pending).forEach((key) => {
+      clearTimeout(slotPatchTimers.current[key]);
+      delete slotPatchTimers.current[key];
+    });
   }, []);
 
   // Clear any pending debounced slot patches when the studio unmounts so a
@@ -911,6 +931,7 @@ export const StudioWrapper = () => {
     publishWebView,
     dispatch,
     clearLayoutSelection,
+    cancelAllPendingPatches,
     flushPendingPatches,
     refreshPreviewFrame,
     syncTemplateSourceToBridge,
@@ -974,6 +995,18 @@ export const StudioWrapper = () => {
     if (result && result.failedCount) return;
     setShowSaveChangesModal(false);
     deselectForPreviewReload();
+  };
+  // Opening the modal is where the pending set stops being an implementation
+  // detail and starts being a contract: `pendingLayoutCodeIds` feeds both the
+  // useMultiPermission gate above and the file list the user is about to
+  // confirm. A region sitting in a 300ms debounce is in neither, yet the save
+  // would PUT it — and Save & Publish would publish it — without its ZUID ever
+  // passing hasPermission. Flushing here lets the write stage and the state
+  // settle before either is read; the flush inside handleSavePendingLayout
+  // stays as belt-and-braces and will normally find nothing left to do.
+  const handleOpenSaveChangesModal = () => {
+    if (isLayoutMode) flushPendingPatches();
+    setShowSaveChangesModal(true);
   };
   const handleModalSaveAll = () => {
     if (!saveBarCanSave) return;
@@ -1043,7 +1076,13 @@ export const StudioWrapper = () => {
 
   const requestProceedWithPendingLayoutSave = useCallback(
     (onProceed: () => void) => {
-      if (!hasPendingLayoutChanges) {
+      // The other reader of the pending set, and gated on the same
+      // canUpdatePendingLayout. A debounced write has to land before the
+      // decision — including the decision NOT to prompt, which would otherwise
+      // navigate away and leave the timer to re-dirty a region nobody is
+      // watching. A no-op when nothing is queued.
+      const flushedCodeIds = flushPendingPatches();
+      if (!hasPendingLayoutChanges && !flushedCodeIds.length) {
         onProceed();
         return;
       }
@@ -1051,7 +1090,7 @@ export const StudioWrapper = () => {
       pendingLayoutContinuationRef.current = onProceed;
       setShowPendingLayoutModal(true);
     },
-    [hasPendingLayoutChanges]
+    [flushPendingPatches, hasPendingLayoutChanges]
   );
 
   const syncBridgeInteractionMode = useCallback(
@@ -1641,14 +1680,14 @@ export const StudioWrapper = () => {
         if (slot.textIndex !== undefined) return;
 
         // A dynamic leaf has no nested markup, so the whole-content write is safe.
-        schedulePatch(`${leafKey}::${slot.key}`, patch.codeId!, () => {
-          handleLayoutTextUpdate(patch.codeId!, patch.layoutId, value);
-        });
+        schedulePatch(`${leafKey}::${slot.key}`, patch.codeId!, () =>
+          handleLayoutTextUpdate(patch.codeId!, patch.layoutId, value)
+        );
         return;
       }
 
       const attr = slot.attr || slot.key;
-      schedulePatch(`${leafKey}::${slot.key}`, patch.codeId!, () => {
+      schedulePatch(`${leafKey}::${slot.key}`, patch.codeId!, () =>
         handleLayoutElementAttrUpdate(
           patch.codeId!,
           patch.layoutId,
@@ -1658,8 +1697,8 @@ export const StudioWrapper = () => {
           attr,
           value,
           slot.booleanAttr
-        );
-      });
+        )
+      );
     },
     [
       dispatch,
@@ -1802,9 +1841,9 @@ export const StudioWrapper = () => {
         [attr]: previewValue ?? value,
       });
 
-      schedulePatch(linkTimerKey(linkPatch, attr), codeId, () => {
-        handleLayoutLinkAttrUpdate(codeId, layoutId, attr, value);
-      });
+      schedulePatch(linkTimerKey(linkPatch, attr), codeId, () =>
+        handleLayoutLinkAttrUpdate(codeId, layoutId, attr, value)
+      );
     },
     [
       handleLayoutLinkAttrUpdate,
@@ -2136,7 +2175,7 @@ export const StudioWrapper = () => {
                   color="primary"
                   startIcon={<SaveRoundedIcon fontSize="small" />}
                   sx={{ whiteSpace: "nowrap" }}
-                  onClick={() => setShowSaveChangesModal(true)}
+                  onClick={handleOpenSaveChangesModal}
                 >
                   Save Changes
                 </Button>
