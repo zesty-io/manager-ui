@@ -1423,9 +1423,12 @@ export const StudioWrapper = () => {
       const item = ref.source
         ? getContentItems()[ref.source.itemZUID]
         : pageItem;
+      // An item-level getUrl() resolves to the item's own route, which lives on
+      // `web.path` rather than anywhere in `data`.
+      if (ref.kind === "url") return (item as any)?.web?.path || "";
       const raw = (item?.data as Record<string, any>)?.[ref.name];
       if (raw === undefined || raw === null || raw === "") return "";
-      if (ref.isMedia) {
+      if (ref.kind === "media") {
         // Image field → the URL getImage() resolves to, via the media resolver.
         // @ts-expect-error CONFIG is provided globally at runtime
         return `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${raw}/getimage`;

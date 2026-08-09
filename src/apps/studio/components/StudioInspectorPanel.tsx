@@ -601,7 +601,7 @@ const SlotField = ({
         <CrossModelConnectedField
           source={crossModelRef.source!}
           fieldName={crossModelRef.name}
-          isMedia={crossModelRef.isMedia}
+          isMedia={crossModelRef.kind === "media"}
         />
       ) : connectedField ? (
         <ConnectedFieldView field={connectedField} />
