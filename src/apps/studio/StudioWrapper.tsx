@@ -13,66 +13,66 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector, useStore } from "react-redux";
 import { MemoryRouter, useHistory, useLocation } from "react-router";
 import { cloneDeep } from "lodash";
-import { AppState } from "../../../../../../shell/store/types";
+import { AppState } from "shell/store/types";
 import {
   fetchAllModelPublishings,
   fetchItem,
   saveItem,
-} from "../../../../../../shell/store/content";
-import { fetchModel } from "../../../../../../shell/store/models";
-import { fetchAuditTrailDrafting } from "../../../../../../shell/store/logs";
-import { notify } from "../../../../../../shell/store/notifications";
-import { fetchFields } from "../../../../../../shell/store/fields";
-import { ContentInfo } from "./Content/Actions/Widgets/ContentInfo";
-import Editor from "../../components/Editor/Editor";
-import { FieldError } from "../../components/Editor/FieldError";
-import { PendingEditsModal } from "../../components/PendingEditsModal";
-import { DirtyCodeModal } from "../../../../../../shell/components/DirtyCodeModal";
-import { ResizableContainer } from "../../../../../../shell/components/ResizeableContainer";
-import contentOneLogoOnly from "../../../../../../../public/images/contentOneLogoOnly.webp";
-import contentOneLogo from "../../../../../../../public/images/contentOneLogo.webp";
+} from "shell/store/content";
+import { fetchModel } from "shell/store/models";
+import { fetchAuditTrailDrafting } from "shell/store/logs";
+import { notify } from "shell/store/notifications";
+import { fetchFields } from "shell/store/fields";
+import { ContentInfo } from "../content-editor/src/app/views/ItemEdit/Content/Actions/Widgets/ContentInfo";
+import Editor from "../content-editor/src/app/components/Editor/Editor";
+import { FieldError } from "../content-editor/src/app/components/Editor/FieldError";
+import { PendingEditsModal } from "../content-editor/src/app/components/PendingEditsModal";
+import { DirtyCodeModal } from "shell/components/DirtyCodeModal";
+import { ResizableContainer } from "shell/components/ResizeableContainer";
+import contentOneLogoOnly from "../../../public/images/contentOneLogoOnly.webp";
+import contentOneLogo from "../../../public/images/contentOneLogo.webp";
 import {
   findItemByPath,
   normalizePath,
   resolveItemByPath,
-} from "../../../../../studio/utils/pathResolver";
+} from "./utils/pathResolver";
 import {
   useGetWebViewsQuery,
   usePublishWebViewMutation,
   useUpdateWebViewMutation,
-} from "../../../../../../shell/services/instance";
-import { StudioHeader } from "../../../../../studio/components/StudioHeader";
-import { StudioPreview } from "../../../../../studio/components/StudioPreview";
-import { StudioSidePanel } from "../../../../../studio/components/StudioSidePanel";
-import { StudioInspectorPanel } from "../../../../../studio/components/StudioInspectorPanel";
+} from "shell/services/instance";
+import { StudioHeader } from "./components/StudioHeader";
+import { StudioPreview } from "./components/StudioPreview";
+import { StudioSidePanel } from "./components/StudioSidePanel";
+import { StudioInspectorPanel } from "./components/StudioInspectorPanel";
 import {
   isMediaSlotDatatype,
   isTextReferenceableDatatype,
-} from "../../../../../studio/components/studioFieldMeta";
-import { parseParsleyRef } from "../../../../../studio/components/studioParsley";
-import { StudioLayersPanel } from "../../../../../studio/components/StudioLayersPanel";
-import { StudioFreestyleAlert } from "../../../../../studio/components/StudioFreestyleAlert";
+} from "./components/studioFieldMeta";
+import { parseParsleyRef } from "./components/studioParsley";
+import { StudioLayersPanel } from "./components/StudioLayersPanel";
+import { StudioFreestyleAlert } from "./components/StudioFreestyleAlert";
 import {
   StudioSaveChange,
   StudioSaveChangesModal,
-} from "../../../../../studio/components/StudioSaveChangesModal";
-import { useLayoutReorderState } from "../../../../../studio/hooks/useLayoutReorderState";
+} from "./components/StudioSaveChangesModal";
+import { useLayoutReorderState } from "./hooks/useLayoutReorderState";
 import {
   collectDirtyContentItems,
   useStudioContentSave,
-} from "../../../../../studio/hooks/useStudioContentSave";
-import { useStudioBridge } from "../../../../../studio/hooks/useStudioBridge";
+} from "./hooks/useStudioContentSave";
+import { useStudioBridge } from "./hooks/useStudioBridge";
 import {
   ConnectField,
   ElementSlot,
   InteractionMode,
   LayoutBreadcrumbItem,
-} from "../../../../../studio/hooks/studioTypes";
-import { useStudioSelection } from "../../../../../studio/hooks/useStudioSelection";
-import { useStudioLayersTree } from "../../../../../studio/hooks/useStudioLayersTree";
-import { getRefRegistry } from "../../../../../../engine/refRegistry";
-import { useMultiPermission } from "../../../../../../shell/hooks/use-permissions";
-import { MediaApp } from "../../../../../media/src/app";
+} from "./hooks/studioTypes";
+import { useStudioSelection } from "./hooks/useStudioSelection";
+import { useStudioLayersTree } from "./hooks/useStudioLayersTree";
+import { getRefRegistry } from "../../engine/refRegistry";
+import { useMultiPermission } from "shell/hooks/use-permissions";
+import { MediaApp } from "../media/src/app";
 
 const drawerWidth = 440;
 
