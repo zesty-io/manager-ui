@@ -28,13 +28,14 @@ export type CrossModelResolution =
 export const useCrossModelConnectField = (
   source: { modelName: string; itemZUID: string } | undefined,
   fieldName: string,
-  isMedia: boolean
-): CrossModelResolution | null => {
+  isMedia: boolean,
   // An ITEM-level reference — a link's `getUrl()` — names no field at all, so
   // the field half of the lookup has nothing to resolve and is skipped
-  // entirely. Resolving the model and the item is the whole job.
-  const isItemRef = !fieldName;
-
+  // entirely; resolving the model and the item is the whole job. Asked for
+  // explicitly rather than inferred from an empty `fieldName`: a caller that
+  // passes "" by accident would otherwise get item rendering and no error.
+  isItemRef = false
+): CrossModelResolution | null => {
   const { data: models, isFetching: isFetchingModels } =
     useGetContentModelsQuery(undefined, { skip: !source });
 

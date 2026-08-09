@@ -125,6 +125,13 @@ export type InspectorSelection = {
   tagName: string;
   slots: ElementSlot[];
   layoutPatch?: ElementLayoutPatch | null;
+  // Whether the Link controls belong on this row. An element row owns them; a
+  // text/field row owns them only when it is its element's LONE content row,
+  // since every run of a leaf carries the same element-addressing layoutPatch
+  // and wrapping from one of several would swallow content the panel isn't
+  // showing. Derived from the tree, not from the template — see
+  // ownsElementLinkControls.
+  ownsLinkControls?: boolean;
 };
 
 export type LayoutBreadcrumbItem = {

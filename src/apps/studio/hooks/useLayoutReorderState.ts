@@ -312,6 +312,39 @@ const resolveLayoutLeaf = (
   return { doc, root, leaf };
 };
 
+// Parents that cannot legally hold an <a>, so an element inside one cannot be
+// wrapped. This is not pedantry about validity: `<tbody><a><tr>…</tr></a></tbody>`
+// serializes fine, and DOMParser and the live DOM both accept it, so the canvas
+// shows a working link — but the next SERVER render foster-parents the <a> out
+// of the table and the content comes back unlinked. Preview and production
+// diverge silently, and no save-time check can catch it because the string is
+// well-formed. Refusing up front is the only place this can be caught.
+const CANNOT_HOLD_LINK = new Set([
+  "UL",
+  "OL",
+  "TABLE",
+  "THEAD",
+  "TBODY",
+  "TFOOT",
+  "TR",
+  "SELECT",
+  "OPTGROUP",
+  "DL",
+  "PICTURE",
+  "HEAD",
+]);
+
+// Whether an <a> may be inserted around this element. Both the panel's Add Link
+// affordance and the write itself go through here, so the write fails closed on
+// its own rather than trusting the UI to have hidden the button.
+const canWrapInLink = (leaf: HTMLElement): boolean => {
+  // `closest` covers the element itself, so this refuses an <a> inside an <a>
+  // and an <a> around an <a> alike.
+  if (leaf.closest("a")) return false;
+  const parent = leaf.parentElement;
+  return !parent || !CANNOT_HOLD_LINK.has(parent.tagName);
+};
+
 // Attributes whose empty value means "absent", not "empty string". A link's
 // `target` is the only one today: choosing "No" must leave no attribute behind
 // rather than write `target=""` into saved view code.
@@ -347,6 +380,10 @@ type Args = {
   publishWebView: (args: any) => { unwrap: () => Promise<any> };
   dispatch: (action: any) => any;
   clearLayoutSelection: () => void;
+  // Runs every debounced template write immediately. Called before a save
+  // reads the template cache, since a write still in its timer would otherwise
+  // miss the PUT and then land on an already-saved region.
+  flushPendingPatches: () => void;
   refreshPreviewFrame: (onReloadComplete?: () => void) => void;
   // Mirrors a patched region down to the bridge. The bridge's own template
   // source is frozen at page render, so it has to be told about edits we
@@ -379,6 +416,7 @@ export const useLayoutReorderState = ({
   publishWebView,
   dispatch,
   clearLayoutSelection,
+  flushPendingPatches,
   refreshPreviewFrame,
   syncTemplateSourceToBridge,
   withCodeIdBreadcrumbRoot,
@@ -515,6 +553,12 @@ export const useLayoutReorderState = ({
 
   const handleSavePendingLayout = useCallback(
     async (onComplete?: () => void) => {
+      // Land every debounced write before reading the cache. savePendingLayout-
+      // Sources reads templateSourceByCodeIdRef, which the flush updates
+      // synchronously, so a URL typed a moment ago is in the PUT rather than
+      // arriving after it.
+      flushPendingPatches();
+
       if (!pendingLayoutSave) return;
       if (!Object.keys(pendingLayoutSave.regions).length) return;
 
@@ -555,6 +599,7 @@ export const useLayoutReorderState = ({
     [
       codeFileNameById,
       dispatch,
+      flushPendingPatches,
       formatSavedFileNames,
       pendingLayoutSave,
       refreshPreviewFrame,
@@ -563,6 +608,8 @@ export const useLayoutReorderState = ({
   );
 
   const handleSaveAndPublishPendingLayout = useCallback(async () => {
+    flushPendingPatches();
+
     if (!pendingLayoutSave) return;
     if (!Object.keys(pendingLayoutSave.regions).length) return;
 
@@ -614,6 +661,7 @@ export const useLayoutReorderState = ({
   }, [
     codeFileNameById,
     dispatch,
+    flushPendingPatches,
     formatSavedFileNames,
     pendingLayoutSave,
     publishWebView,
@@ -1013,7 +1061,7 @@ export const useLayoutReorderState = ({
 
       // A link further up the tree still rules out wrapping — nested <a> is
       // invalid HTML — but it is not this element's to edit.
-      return { wrapper: null, canWrap: !leaf.closest("a") };
+      return { wrapper: null, canWrap: canWrapInLink(leaf) };
     },
     // The template cache is a ref, so this version counter is what gives the
     // reader a new identity when the source changes.
@@ -1033,9 +1081,10 @@ export const useLayoutReorderState = ({
 
       const { doc, root, leaf } = found;
       if (!leaf.parentNode) return;
-      // `closest` covers the element itself, so this refuses both an <a> inside
-      // an <a> and an <a> around an <a>.
-      if (leaf.closest("a")) return;
+      // Re-checked here rather than assumed from the hidden button: the panel
+      // and this write are separate paths, and only one of them owns the file
+      // that gets saved.
+      if (!canWrapInLink(leaf)) return;
 
       // Deliberately attribute-less: an <a> with no href isn't a link yet, which
       // is exactly the state the panel shows before a URL is typed.

@@ -136,15 +136,20 @@ const getBooleanOptions = (slot: ElementSlot) => {
 };
 
 // A link's `target` is not a boolean attribute — it holds "_blank" — but the
-// design offers it as a plain Yes/No, so the panel does the translation and
-// treats anything else (including an absent attribute) as No.
+// design offers it as a plain Yes/No, so the panel does the translation.
 const NEW_TAB_VALUE = "_blank";
 const NEW_TAB_OPTIONS = [
   { value: NEW_TAB_VALUE, label: "Yes" },
   { value: "", label: "No" },
 ];
-const toNewTabValue = (target: string) =>
-  target === NEW_TAB_VALUE ? NEW_TAB_VALUE : "";
+
+// …but ONLY for the two values the select can round-trip. `target="_top"` or a
+// named frame is legitimate hand-written markup, and rendering it as "No" would
+// both hide the real value and destroy it on the first click. Anything else
+// falls back to a plain text input, the same way an unparseable Parsley
+// reference degrades to one.
+const isNewTabSelectable = (target: string) =>
+  target === "" || target === NEW_TAB_VALUE;
 
 // A fragment never leaves the page, so "open in new tab" is meaningless for it
 // — the design drops the row entirely. An empty href has nothing to open yet.
@@ -233,12 +238,20 @@ const CrossModelConnectedField = ({
   source,
   fieldName,
   isMedia,
+  isItemRef,
 }: {
   source: { modelName: string; itemZUID: string };
   fieldName: string;
   isMedia: boolean;
+  // The reference names the ITEM (a link's page URL), not a field on it.
+  isItemRef?: boolean;
 }) => {
-  const resolution = useCrossModelConnectField(source, fieldName, isMedia);
+  const resolution = useCrossModelConnectField(
+    source,
+    fieldName,
+    isMedia,
+    isItemRef
+  );
   if (!resolution) return null;
 
   const modelLabel = resolution.field.source?.modelLabel || source.modelName;
@@ -255,7 +268,7 @@ const CrossModelConnectedField = ({
       : // An item reference (a link bound to the item's page URL) already puts
       // the item on the first line, so repeating it here would say the same
       // thing twice — name the model alone.
-      !fieldName
+      isItemRef
       ? modelLabel
       : itemLabel
       ? `${modelLabel} · ${itemLabel}`
@@ -558,14 +571,17 @@ const SlotField = ({
   const isTextSlot = slot.kind === "text";
   // An <a>'s own destination. Binds to an ITEM (its page URL), never a field.
   const isLinkAttr = slot.kind === "attribute" && slot.attr === "href";
-  // An <a>'s `target`. Not a boolean attribute, but the panel presents it as
-  // one; the select's options are the only values it can hold.
-  const isNewTabAttr = slot.kind === "attribute" && slot.attr === "target";
+  // An <a>'s `target`, presented as the design's Yes/No — but only while it
+  // holds a value that choice can express. A named frame stays a text input,
+  // so the panel never hides a value it is about to overwrite.
+  const isNewTabAttr =
+    slot.kind === "attribute" &&
+    slot.attr === "target" &&
+    isNewTabSelectable(value);
   const isSelect = slot.control === "select" || isNewTabAttr;
   const selectOptions = isNewTabAttr
     ? NEW_TAB_OPTIONS
     : getBooleanOptions(slot);
-  const selectValue = isNewTabAttr ? toNewTabValue(value) : value;
 
   // Which fields this slot's Connect Item dropdown offers: text/number/options
   // for text slots + alt; media + external-URL for img/video src/poster. The
@@ -628,7 +644,7 @@ const SlotField = ({
         ) : isSelect ? (
           <TextField
             select
-            value={selectValue}
+            value={value}
             fullWidth
             disabled
             inputProps={{ "data-cy": dataCy }}
@@ -684,7 +700,7 @@ const SlotField = ({
       ) : isSelect ? (
         <TextField
           select
-          value={selectValue}
+          value={value}
           fullWidth
           disabled={!slot.layoutEditable}
           onChange={(evt) => onChangeSlot(slot, evt.target.value)}
@@ -779,6 +795,15 @@ const LinkFields = ({
     onChangeHref(value);
   };
 
+  // Shown whenever the destination can open a tab — and ALSO whenever a target
+  // is already set, even for a fragment. Hiding a row that still holds a value
+  // would go on saving a `target` the user can neither see nor clear; keeping
+  // it visible is the non-destructive half of that choice.
+  const showNewTabRow = canOpenInNewTab(href) || Boolean(linkWrapper.target);
+  // A named frame or `_top` is legitimate hand-written markup. Flattening it to
+  // Yes/No would hide the real value and destroy it on the first click.
+  const newTabSelectable = isNewTabSelectable(linkWrapper.target);
+
   return (
     <>
       <Stack gap={0.5}>
@@ -798,10 +823,14 @@ const LinkFields = ({
               size="small"
               disableRipple
               startIcon={<LinkOffRounded sx={{ fontSize: 16 }} />}
-              // Local only, like a slot's Disconnect: the binding stays in the
-              // template until a replacement is typed or picked, so clearing it
-              // can never leave the link pointing nowhere by accident.
-              onClick={() => setHref("")}
+              // Committed, unlike a slot's Disconnect. That one stays local
+              // because writing "" would blank the node and drop its row from
+              // the re-emitted tree, stranding the panel. A wrapper has no such
+              // problem: href="" leaves the <a> in place and readLinkWrapper
+              // still finds it. Keeping it local here would instead mean
+              // Disconnect-then-Save silently saved the binding the user had
+              // just removed.
+              onClick={() => handleHrefChange("")}
               sx={{
                 minWidth: 0,
                 px: 0.5,
@@ -826,6 +855,7 @@ const LinkFields = ({
             // An item reference names no field — the chip resolves the item.
             fieldName=""
             isMedia={false}
+            isItemRef
           />
         ) : (
           <TextField
@@ -838,24 +868,33 @@ const LinkFields = ({
         )}
       </Stack>
 
-      {canOpenInNewTab(href) ? (
+      {showNewTabRow ? (
         <Stack gap={0.5}>
           <Typography variant="body2" fontWeight={600} color="text.primary">
-            {SLOT_LABELS.target}
+            {newTabSelectable ? SLOT_LABELS.target : "Target"}
           </Typography>
-          <TextField
-            select
-            value={toNewTabValue(linkWrapper.target)}
-            fullWidth
-            onChange={(evt) => onChangeTarget(evt.target.value)}
-            inputProps={{ "data-cy": "StudioOpenInNewTab" }}
-          >
-            {NEW_TAB_OPTIONS.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.label}
-              </MenuItem>
-            ))}
-          </TextField>
+          {newTabSelectable ? (
+            <TextField
+              select
+              value={linkWrapper.target}
+              fullWidth
+              onChange={(evt) => onChangeTarget(evt.target.value)}
+              inputProps={{ "data-cy": "StudioOpenInNewTab" }}
+            >
+              {NEW_TAB_OPTIONS.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </TextField>
+          ) : (
+            <TextField
+              value={linkWrapper.target}
+              fullWidth
+              onChange={(evt) => onChangeTarget(evt.target.value)}
+              inputProps={{ "data-cy": "StudioLinkTarget" }}
+            />
+          )}
         </Stack>
       ) : null}
 
