@@ -6,14 +6,13 @@ See [`CLAUDE.md`](../CLAUDE.md) for repo-wide architecture and conventions.
 
 ## Where the code lives
 
-The routed sub-app is a shim. All the real code sits inside content-editor's `ItemEdit` views:
+All of it is under `src/apps/studio/`:
 
 ```
-src/apps/studio/index.tsx                    <Route path="/studio"> → <StudioWrapper/>
-src/apps/studio/utils/pathResolver.ts        normalizePath / findItemByPath / resolveItemByPath
-
-src/apps/content-editor/src/app/views/ItemEdit/
+src/apps/studio/
+  index.tsx                                  <Route path="/studio"> → <StudioWrapper/>
   StudioWrapper.tsx                          the orchestrator (~2000 lines)
+  utils/pathResolver.ts                      normalizePath / findItemByPath / resolveItemByPath
   hooks/
     studioTypes.ts                           LayersTreeNode, ElementSlot, ElementLayoutPatch, …
     useStudioBridge.ts                       window "message" listener; routes bridge → host
@@ -22,12 +21,14 @@ src/apps/content-editor/src/app/views/ItemEdit/
     useLayoutReorderState.ts                 template source patching + save/publish
     useStudioContentSave.ts                  batch content-item save/publish/discard
     useCrossModelConnectField.ts             read-back for a cross-item binding
-  components/StudioWrapper/
+  components/
     StudioHeader · StudioPreview · StudioSidePanel · StudioInspectorPanel
     StudioLayersPanel · StudioLayersTreeItem · StudioSaveChangesModal
     StudioLinkItemDialog · StudioFreestyleAlert · FieldIconChip
     studioTags.ts · studioFieldMeta.ts · studioParsley.ts
 ```
+
+Nothing outside this directory imports a Studio module — `src/shell/views/Shell/Shell.tsx` imports `apps/studio` and that is the only edge in. Studio itself reaches _out_ to a handful of content-editor internals (`Editor`, `FieldError`, `PendingEditsModal`, `ContentInfo`, `ItemEditHeader/*`), plus `apps/media` and `apps/seo`. Keep the arrows pointing that way: if you find yourself importing Studio from content-editor, the shared piece belongs in `src/shell/` instead.
 
 `StudioWrapper` renders inside a full-screen MUI `<Modal>` with three columns: **layers panel | preview iframe | side panel** (Inspector or content editor).
 

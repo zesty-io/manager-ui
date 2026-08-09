@@ -56,7 +56,7 @@ Each `src/apps/<name>/src/index.js` exports the app's root component and (option
 - `settings` → `SettingsApp` — instance settings.
 - `home` → `HomeApp` — dashboard / landing.
 - `leads` → `LeadsApp` — lead capture.
-- `studio` → `StudioApp` — visual builder. A shim only: the real code lives under `content-editor/.../ItemEdit/` and the in-iframe agent it drives lives in a **separate repo**. Read [`docs/studio.md`](docs/studio.md) before working on it.
+- `studio` → `StudioApp` — visual builder. `index.tsx` is a route shim over `StudioWrapper.tsx`; the in-iframe agent it drives lives in a **separate repo**. Read [`docs/studio.md`](docs/studio.md) before working on it.
 - `marketplace` → `MarketplaceApp` — app/integration directory.
 - `blocks` → `BlocksApp` — reusable content blocks.
 - `active-preview` — **not** routed via `Shell.tsx`; it's the separate webpack entry that renders the preview iframe.
