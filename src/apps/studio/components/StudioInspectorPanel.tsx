@@ -960,11 +960,17 @@ const LinkSection = ({
 }) => {
   if (!linkWrapper) {
     if (!canAddLink) return null;
+    // `color="primary"` is the brand orange the design calls for, and it is the
+    // same treatment the panel's other full-width outlined action ("Edit in
+    // Zesty Manager") already uses. NOT `color="inherit"`: the theme's
+    // `outlinedInherit` override repaints text and border as text.secondary /
+    // palette.border, which is the panel's slate — that override was the whole
+    // reason this button rendered grey.
     return (
       <Button
         data-cy="StudioAddLink"
         variant="outlined"
-        color="inherit"
+        color="primary"
         fullWidth
         startIcon={<LinkRounded fontSize="small" />}
         onClick={onAddLink}
