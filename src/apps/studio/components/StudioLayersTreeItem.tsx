@@ -24,12 +24,9 @@ import WidgetsRounded from "@mui/icons-material/WidgetsRounded";
 import AutoAwesomeMotionRounded from "@mui/icons-material/AutoAwesomeMotionRounded";
 import KeyboardArrowDownRounded from "@mui/icons-material/KeyboardArrowDownRounded";
 import KeyboardArrowRightRounded from "@mui/icons-material/KeyboardArrowRightRounded";
-import { LayersFlatRow } from "../../hooks/useStudioLayersTree";
-import {
-  LayersDropPosition,
-  LayersTreeNode,
-} from "../../../../../../../studio/hooks/studioTypes";
-import { isTextTag } from "../../../../../../../studio/components/studioTags";
+import { LayersFlatRow } from "../../content-editor/src/app/views/ItemEdit/hooks/useStudioLayersTree";
+import { LayersDropPosition, LayersTreeNode } from "../hooks/studioTypes";
+import { isTextTag } from "./studioTags";
 
 type LayersIcon = typeof CodeRounded;
 

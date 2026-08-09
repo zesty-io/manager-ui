@@ -14,24 +14,21 @@ import {
 } from "@mui/material";
 import { CloseRounded } from "@mui/icons-material";
 
-import { AppState } from "../../../../../../../../shell/store/types";
-import {
-  searchItems,
-  fetchItem,
-} from "../../../../../../../../shell/store/content";
+import { AppState } from "shell/store/types";
+import { searchItems, fetchItem } from "shell/store/content";
 import {
   useGetContentModelFieldsQuery,
   useGetContentModelsQuery,
-} from "../../../../../../../../shell/services/instance";
-import SearchField from "../../../../../../../seo/src/app/components/RedirectsDialogProvider/CreateRedirects/SearchField";
-import { FieldWrapper } from "../../../../../../../seo/src/app/components/RedirectsDialogProvider/CreateRedirects/FieldWrapper";
-import { ContentItemProps } from "../../../../../../../seo/src/app/components/RedirectsDialogProvider/constants";
-import { ConnectField } from "../../../../../../../studio/hooks/studioTypes";
+} from "shell/services/instance";
+import SearchField from "../../seo/src/app/components/RedirectsDialogProvider/CreateRedirects/SearchField";
+import { FieldWrapper } from "../../seo/src/app/components/RedirectsDialogProvider/CreateRedirects/FieldWrapper";
+import { ContentItemProps } from "../../seo/src/app/components/RedirectsDialogProvider/constants";
+import { ConnectField } from "../hooks/studioTypes";
 import {
   isMediaSlotDatatype,
   isTextReferenceableDatatype,
-} from "../../../../../../../studio/components/studioFieldMeta";
-import { FieldIconChip } from "../../../../../../../studio/components/FieldIconChip";
+} from "./studioFieldMeta";
+import { FieldIconChip } from "./FieldIconChip";
 
 // One field row — used BOTH for the dropdown options and for the Select's
 // chosen value, so the two can't drift.
