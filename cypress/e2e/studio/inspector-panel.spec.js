@@ -1054,6 +1054,17 @@ describe("Studio Inspector Panel", () => {
         textNode(webView.ZUID, "Hello")
       );
 
+      // No frozen clock here, deliberately. A committed value on THIS slot
+      // never reaches schedulePatch: handleSlotChange returns early for a text
+      // run with a textIndex, because an addressed run is written back through
+      // the bridge's LAYOUT_CONTENT_UPDATE echo instead. So there is no pending
+      // debounce for a tick to flush, and the assertion that actually catches a
+      // spurious commit is the positive one below — the input is still present
+      // holding its original value, which a connect would have replaced with a
+      // chip. (Freezing setTimeout here also breaks the dialog outright: MUI's
+      // invisible backdrop never finishes its 195ms exit transition and covers
+      // the next button.)
+
       // The field select only appears once an item is chosen.
       cy.getBySelector("StudioConnectContent-text").click();
       cy.getBySelector("StudioConnectOtherItem-text").click();
@@ -1066,7 +1077,9 @@ describe("Studio Inspector Panel", () => {
       cy.getBySelector("StudioLinkItemDialogClose").click();
       cy.getBySelector("StudioLinkItemDialog").should("not.exist");
 
-      // Neither route wrote anything.
+      // Neither route wrote anything: a commit would have swapped this input
+      // for a connected-field chip.
+      cy.getBySelector("StudioConnectedField").should("not.exist");
       cy.getBySelector("StudioSlotInput-text")
         .should("exist")
         .and("have.value", "Hello");
@@ -1821,6 +1834,100 @@ describe("Studio Inspector Panel", () => {
         );
       });
       cy.getBySelector("StudioSaveChangesModal").should("not.exist");
+    });
+  });
+
+  it("prompts on mode switch for an edit still inside its debounce", () => {
+    setStudioMode("layout");
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+
+      // An ATTRIBUTE slot: it is the debounced write path. A text run with a
+      // textIndex would not do — handleSlotChange returns before schedulePatch
+      // for those, since the bridge echo writes them back instead.
+      seedLayoutElement(
+        webView.ZUID,
+        `<img data-layout-id="1" src="a.jpg" alt="hero">`,
+        imgNode(webView.ZUID)
+      );
+
+      // Type and leave layout mode inside the 300ms window. hasPendingLayout-
+      // Changes is still false here, so gating the prompt on it skips the one
+      // function that knows to flush — the timer then lands with the app in
+      // content mode and strands the edit behind a save bar the user cannot
+      // see until they switch back.
+      cy.clock(null, ["setTimeout", "clearTimeout"]);
+      cy.getBySelector("StudioSlotInput-alt").clear().type("Updated alt");
+      setStudioMode("content");
+
+      cy.getBySelector("DirtyCodeModal").should("exist");
+      cy.getBySelector("DirtyCodeModalDiscard").click();
+      cy.clock().invoke("restore");
+    });
+  });
+
+  it("lists a debounced region in the Save Changes modal it was flushed for", () => {
+    setStudioMode("layout");
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+
+      // TWO regions, because one cannot tell the two flush sites apart: with a
+      // single region the wrap has already staged it, so the modal lists it
+      // wherever the flush lives. The distinction only shows when a region is
+      // reachable ONLY through a pending debounce — that is the region the
+      // permission gate and this list would otherwise never see.
+      //
+      // The second codeId is synthetic and nothing is saved here, so no second
+      // real view file is touched on the shared dev instance.
+      const otherCodeId = "code-2";
+      postBridgeMessage({
+        type: "TEMPLATE_SOURCE_MAP",
+        templateSourceByCodeId: {
+          [webView.ZUID]: `<img data-layout-id="1" src="a.jpg" alt="hero">`,
+          [otherCodeId]: `<a><img data-layout-id="1" src="b.jpg" alt="two"></a>`,
+        },
+      });
+      postBridgeMessage({
+        type: "LAYERS_TREE",
+        tree: [webView.ZUID, otherCodeId].map((codeId) => ({
+          id: codeId,
+          kind: "codeFile",
+          tagName: null,
+          codeId,
+          layoutId: null,
+          children: [imgNode(codeId)],
+        })),
+      });
+
+      // Region one is staged outright, so the save bar exists.
+      openPanelFor(imgNode(webView.ZUID));
+      cy.getBySelector("StudioAddLink").click();
+      cy.getBySelector("StudioLayoutSaveBar").should("exist");
+
+      // Region two is dirtied only by a debounce that cannot fire.
+      cy.clock(null, ["setTimeout", "clearTimeout"]);
+      openPanelFor(imgNode(otherCodeId));
+      cy.getBySelector("StudioLinkToInput").type("https://www.zesty.io/");
+
+      cy.getBySelector("StudioLayoutSaveChangesButton").click();
+      cy.getBySelector("StudioSaveChangesModal").should("exist");
+
+      // Both regions listed. Flushing at Save All instead would show one, and
+      // region two would then be PUT — and on Save & Publish published —
+      // without appearing in the list the user is confirming, and without its
+      // ZUID passing the useMultiPermission gate computed from the same set.
+      cy.getBySelector("StudioSaveChangeRow").should("have.length", 2);
+
+      // Cancel rather than save: the assertion is about what the modal shows,
+      // and region two's synthetic codeId has no view file behind it.
+      cy.getBySelector("StudioSaveChangesCancelButton").click();
+      cy.clock().invoke("restore");
     });
   });
 

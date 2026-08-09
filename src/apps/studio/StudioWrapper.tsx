@@ -1146,7 +1146,13 @@ export const StudioWrapper = () => {
         }
       }
 
-      if (nextMode === "content" && hasPendingLayoutChanges) {
+      // Deliberately NOT gated on hasPendingLayoutChanges. A debounced write
+      // that hasn't fired yet leaves that flag false, so gating here would skip
+      // the one function that knows to flush it — the timer would then land
+      // with isLayoutMode already false, staging an edit into a save bar the
+      // user cannot see until they switch back. The callee proceeds immediately
+      // when there is genuinely nothing pending, so this costs no prompt.
+      if (nextMode === "content") {
         requestProceedWithPendingLayoutSave(applyInteractionModeChange);
         return;
       }
@@ -1157,7 +1163,6 @@ export const StudioWrapper = () => {
       clearLayoutSelection,
       clearSelection,
       interactionMode,
-      hasPendingLayoutChanges,
       hasPendingContentChanges,
       postCommandToBridge,
       requestProceedWithPendingLayoutSave,
