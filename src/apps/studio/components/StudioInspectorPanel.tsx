@@ -988,7 +988,12 @@ const LinkSection = ({
         alignItems="center"
         gap={1}
       >
-        <Typography variant="subtitle2" fontWeight={600} color="text.primary">
+        {/* A muted section label, deliberately lighter than the `Link to`
+            field label beneath it. Rendering both text.primary/600 flattened
+            the hierarchy into two headings of equal weight; the design has one
+            grey section heading over one dark bold field label. The weight
+            comes from subtitle2's own 500 rather than an override. */}
+        <Typography variant="subtitle2" color="text.secondary">
           Link
         </Typography>
         <IconButton
