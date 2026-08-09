@@ -322,11 +322,13 @@ const resolveLayoutLeaf = (
 const CANNOT_HOLD_LINK = new Set([
   "UL",
   "OL",
+  "MENU",
   "TABLE",
   "THEAD",
   "TBODY",
   "TFOOT",
   "TR",
+  "COLGROUP",
   "SELECT",
   "OPTGROUP",
   "DL",
@@ -334,13 +336,31 @@ const CANNOT_HOLD_LINK = new Set([
   "HEAD",
 ]);
 
-// Whether an <a> may be inserted around this element. Both the panel's Add Link
-// affordance and the write itself go through here, so the write fails closed on
-// its own rather than trusting the UI to have hidden the button.
+// Whether an <a> may be inserted around this element.
+//
+// Both the panel's Add Link affordance and the write itself go through here, so
+// the write fails closed on its own rather than trusting the UI to have hidden
+// the button.
+//
+// Scope note: this only sees the region resolveLayoutLeaf parsed, which is
+// wrapped in a synthetic `<div id="studio-el-root">`. A root-level element
+// therefore always reports a DIV parent and cannot see the context the code
+// file is included into — a region `{{include}}`d inside a <ul> looks wrappable
+// from here. Catching that needs the including template, which the host does
+// not hold per region.
 const canWrapInLink = (leaf: HTMLElement): boolean => {
   // `closest` covers the element itself, so this refuses an <a> inside an <a>
   // and an <a> around an <a> alike.
   if (leaf.closest("a")) return false;
+
+  // …and a link BELOW it is just as fatal, by the same content-model rule read
+  // in the other direction. Wrapping `<p>Read <a href="/x">this</a> now</p>`
+  // serializes fine, but re-parsing runs the adoption agency algorithm: the
+  // outer <a> is closed, the <p> escapes it, and a spurious `<a>Read </a>` is
+  // minted around the leading text. That mutates author content, and it is the
+  // ordinary shape of a <nav>, a <p> or a <section>, not an exotic one.
+  if (leaf.querySelector("a")) return false;
+
   const parent = leaf.parentElement;
   return !parent || !CANNOT_HOLD_LINK.has(parent.tagName);
 };
@@ -380,10 +400,12 @@ type Args = {
   publishWebView: (args: any) => { unwrap: () => Promise<any> };
   dispatch: (action: any) => any;
   clearLayoutSelection: () => void;
-  // Runs every debounced template write immediately. Called before a save
-  // reads the template cache, since a write still in its timer would otherwise
-  // miss the PUT and then land on an already-saved region.
-  flushPendingPatches: () => void;
+  // Runs every debounced template write immediately and returns the codeIds it
+  // touched. Called before a save reads the template cache, since a write still
+  // in its timer would otherwise miss the PUT and then land on an already-saved
+  // region. The codeIds are needed because staging is a state update that has
+  // not applied yet when the save loop reads pendingLayoutSave.
+  flushPendingPatches: () => string[];
   refreshPreviewFrame: (onReloadComplete?: () => void) => void;
   // Mirrors a patched region down to the bridge. The bridge's own template
   // source is frozen at page render, so it has to be told about edits we
@@ -475,67 +497,79 @@ export const useLayoutReorderState = ({
   // Saves each pending region sequentially. Returns the list of saved results.
   // On the first failure: throws (caller surfaces the error). Already-saved
   // regions are removed from pendingLayoutSave so the user can retry the rest.
-  const savePendingLayoutSources = useCallback(async () => {
-    if (!pendingLayoutSave) return [];
-    const codeIds = Object.keys(pendingLayoutSave.regions);
-    if (!codeIds.length) return [];
+  // `alsoSaveCodeIds` covers regions a pre-save flush just dirtied. Their
+  // staging is a state update that has not applied yet, so they are absent from
+  // this closure's pendingLayoutSave — without them a URL typed a moment ago
+  // would be written to the cache, skipped by the PUT, and left dirty.
+  const savePendingLayoutSources = useCallback(
+    async (alsoSaveCodeIds: string[] = []) => {
+      const codeIds = Array.from(
+        new Set([
+          ...Object.keys(pendingLayoutSave?.regions || {}),
+          ...alsoSaveCodeIds,
+        ])
+      );
+      if (!codeIds.length) return [];
 
-    const savedResults: Array<{
-      codeId: string;
-      webView: any;
-      updatedWebView: any;
-    }> = [];
+      const savedResults: Array<{
+        codeId: string;
+        webView: any;
+        updatedWebView: any;
+      }> = [];
 
-    for (const codeId of codeIds) {
-      const latestSource = templateSourceByCodeIdRef.current[codeId];
-      if (typeof latestSource !== "string") {
-        throw new Error(
-          `Unable to resolve cached template for code file ${codeId}.`
-        );
+      for (const codeId of codeIds) {
+        const latestSource = templateSourceByCodeIdRef.current[codeId];
+        if (typeof latestSource !== "string") {
+          throw new Error(
+            `Unable to resolve cached template for code file ${codeId}.`
+          );
+        }
+
+        const webView = webViews.find((view) => view.ZUID === codeId);
+        if (!webView) {
+          throw new Error(
+            `Unable to resolve code file ${codeId} for layout save.`
+          );
+        }
+
+        const sanitizedSource = stripLayoutIdsFromSource(latestSource);
+
+        try {
+          const updatedWebView = await updateWebView({
+            ZUID: codeId,
+            body: {
+              ...webView,
+              code: sanitizedSource,
+            },
+          }).unwrap();
+
+          savedResults.push({ codeId, webView, updatedWebView });
+
+          // Remove the now-saved region from pending state so a retry doesn't
+          // re-save it. Functional, so a region the flush staged moments ago is
+          // removed from the state that write produced, not from a stale copy.
+          setPendingLayoutSave((prev) => {
+            if (!prev) return prev;
+            const { [codeId]: _saved, ...rest } = prev.regions;
+            if (!Object.keys(rest).length) return null;
+            return {
+              regions: rest,
+              primaryCodeId:
+                prev.primaryCodeId === codeId
+                  ? Object.keys(rest)[0]
+                  : prev.primaryCodeId,
+            };
+          });
+        } catch (err) {
+          (err as any).failedCodeId = codeId;
+          throw err;
+        }
       }
 
-      const webView = webViews.find((view) => view.ZUID === codeId);
-      if (!webView) {
-        throw new Error(
-          `Unable to resolve code file ${codeId} for layout save.`
-        );
-      }
-
-      const sanitizedSource = stripLayoutIdsFromSource(latestSource);
-
-      try {
-        const updatedWebView = await updateWebView({
-          ZUID: codeId,
-          body: {
-            ...webView,
-            code: sanitizedSource,
-          },
-        }).unwrap();
-
-        savedResults.push({ codeId, webView, updatedWebView });
-
-        // Remove the now-saved region from pending state so a retry doesn't
-        // re-save it.
-        setPendingLayoutSave((prev) => {
-          if (!prev) return prev;
-          const { [codeId]: _saved, ...rest } = prev.regions;
-          if (!Object.keys(rest).length) return null;
-          return {
-            regions: rest,
-            primaryCodeId:
-              prev.primaryCodeId === codeId
-                ? Object.keys(rest)[0]
-                : prev.primaryCodeId,
-          };
-        });
-      } catch (err) {
-        (err as any).failedCodeId = codeId;
-        throw err;
-      }
-    }
-
-    return savedResults;
-  }, [pendingLayoutSave, updateWebView, webViews]);
+      return savedResults;
+    },
+    [pendingLayoutSave, updateWebView, webViews]
+  );
 
   const formatSavedFileNames = useCallback(
     (results: Array<{ codeId: string; webView: any }>) => {
@@ -556,16 +590,16 @@ export const useLayoutReorderState = ({
       // Land every debounced write before reading the cache. savePendingLayout-
       // Sources reads templateSourceByCodeIdRef, which the flush updates
       // synchronously, so a URL typed a moment ago is in the PUT rather than
-      // arriving after it.
-      flushPendingPatches();
+      // arriving after it. Its regions are passed on explicitly because the
+      // staging they trigger is a state update this closure cannot see yet.
+      const flushedCodeIds = flushPendingPatches();
 
-      if (!pendingLayoutSave) return;
-      if (!Object.keys(pendingLayoutSave.regions).length) return;
+      if (!pendingLayoutCodeIds.length && !flushedCodeIds.length) return;
 
       setIsSavingLayout(true);
 
       try {
-        const results = await savePendingLayoutSources();
+        const results = await savePendingLayoutSources(flushedCodeIds);
         if (!results.length) return;
 
         refreshPreviewFrame(onComplete);
@@ -601,22 +635,21 @@ export const useLayoutReorderState = ({
       dispatch,
       flushPendingPatches,
       formatSavedFileNames,
-      pendingLayoutSave,
+      pendingLayoutCodeIds,
       refreshPreviewFrame,
       savePendingLayoutSources,
     ]
   );
 
   const handleSaveAndPublishPendingLayout = useCallback(async () => {
-    flushPendingPatches();
+    const flushedCodeIds = flushPendingPatches();
 
-    if (!pendingLayoutSave) return;
-    if (!Object.keys(pendingLayoutSave.regions).length) return;
+    if (!pendingLayoutCodeIds.length && !flushedCodeIds.length) return;
 
     setIsSavingLayout(true);
 
     try {
-      const results = await savePendingLayoutSources();
+      const results = await savePendingLayoutSources(flushedCodeIds);
       if (!results.length) return;
 
       for (const { codeId, webView } of results) {
@@ -663,7 +696,7 @@ export const useLayoutReorderState = ({
     dispatch,
     flushPendingPatches,
     formatSavedFileNames,
-    pendingLayoutSave,
+    pendingLayoutCodeIds,
     publishWebView,
     refreshPreviewFrame,
     savePendingLayoutSources,
@@ -1069,22 +1102,27 @@ export const useLayoutReorderState = ({
     [templateSourceVersion]
   );
 
+  // Both wrap and unwrap report whether they actually staged anything, so the
+  // caller can post to the bridge only on success. The bridge applies these
+  // commands with its own, laxer guards — and it is hand-deployed, so it cannot
+  // be assumed to match this file. Posting first and validating afterwards
+  // would let a refusal here still mutate the canvas.
   const handleLayoutWrapInLink = useCallback(
-    (codeId: string, layoutId: string) => {
-      if (!codeId || !layoutId) return;
+    (codeId: string, layoutId: string): boolean => {
+      if (!codeId || !layoutId) return false;
 
       const cached = templateSourceByCodeIdRef.current[codeId];
-      if (!cached) return;
+      if (!cached) return false;
 
       const found = resolveLayoutLeaf(cached, layoutId);
-      if (!found) return;
+      if (!found) return false;
 
       const { doc, root, leaf } = found;
-      if (!leaf.parentNode) return;
+      if (!leaf.parentNode) return false;
       // Re-checked here rather than assumed from the hidden button: the panel
       // and this write are separate paths, and only one of them owns the file
       // that gets saved.
-      if (!canWrapInLink(leaf)) return;
+      if (!canWrapInLink(leaf)) return false;
 
       // Deliberately attribute-less: an <a> with no href isn't a link yet, which
       // is exactly the state the panel shows before a URL is typed.
@@ -1093,23 +1131,26 @@ export const useLayoutReorderState = ({
       wrapper.appendChild(leaf);
 
       stageLayoutSourceUpdate(codeId, root.innerHTML);
+      return true;
     },
     [stageLayoutSourceUpdate]
   );
 
   const handleLayoutUnwrapLink = useCallback(
-    (codeId: string, layoutId: string) => {
-      if (!codeId || !layoutId) return;
+    (codeId: string, layoutId: string): boolean => {
+      if (!codeId || !layoutId) return false;
 
       const cached = templateSourceByCodeIdRef.current[codeId];
-      if (!cached) return;
+      if (!cached) return false;
 
       const found = resolveLayoutLeaf(cached, layoutId);
-      if (!found) return;
+      if (!found) return false;
 
       const { root, leaf } = found;
       const wrapper = leaf.parentElement;
-      if (!wrapper || wrapper.tagName !== "A" || !wrapper.parentNode) return;
+      if (!wrapper || wrapper.tagName !== "A" || !wrapper.parentNode) {
+        return false;
+      }
 
       // Move every child out in order. The wrapper may hold siblings of the
       // addressed element — an author-written <a> around an image AND its
@@ -1120,6 +1161,7 @@ export const useLayoutReorderState = ({
       wrapper.parentNode.removeChild(wrapper);
 
       stageLayoutSourceUpdate(codeId, root.innerHTML);
+      return true;
     },
     [stageLayoutSourceUpdate]
   );

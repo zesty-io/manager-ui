@@ -574,10 +574,14 @@ const SlotField = ({
   // An <a>'s `target`, presented as the design's Yes/No — but only while it
   // holds a value that choice can express. A named frame stays a text input,
   // so the panel never hides a value it is about to overwrite.
+  //
+  // Keyed on the slot's own value, not the edit buffer: the buffer changes per
+  // keystroke, so clearing a hand-written "_top" would swap the text input for
+  // a select under the cursor. The slot's value only moves on a tree re-emit.
   const isNewTabAttr =
     slot.kind === "attribute" &&
     slot.attr === "target" &&
-    isNewTabSelectable(value);
+    isNewTabSelectable(slot.value);
   const isSelect = slot.control === "select" || isNewTabAttr;
   const selectOptions = isNewTabAttr
     ? NEW_TAB_OPTIONS
@@ -694,6 +698,10 @@ const SlotField = ({
           source={crossModelRef.source!}
           fieldName={crossModelRef.name}
           isMedia={crossModelRef.kind === "media"}
+          // An <a>'s href can hold an item reference too — Connect Item on this
+          // very slot writes one. Without this the hook takes the field branch,
+          // looks for a field named "", and renders the binding as an error.
+          isItemRef={crossModelRef.kind === "url"}
         />
       ) : connectedField ? (
         <ConnectedFieldView field={connectedField} />
@@ -782,7 +790,16 @@ const LinkFields = ({
   // Owned locally, exactly like a slot input: the template write is debounced,
   // so the derived wrapper lags a keystroke behind what has been typed.
   const [href, setHref] = useState(linkWrapper.href);
+  const [target, setTarget] = useState(linkWrapper.target);
   const [dialogOpen, setDialogOpen] = useState(false);
+
+  // Which control the target gets is decided ONCE, from the value the template
+  // held when this wrapper appeared. Deriving it from the live value would swap
+  // the text input for the Yes/No select under the cursor the moment a
+  // hand-written "_top" is cleared to "".
+  const [targetIsFreeText] = useState(
+    () => !isNewTabSelectable(linkWrapper.target)
+  );
 
   // Parse rather than compare — the same reason the slots do. A connected href
   // holds an item-level reference: "{{<model>.filter(<zuid>).getUrl()}}".
@@ -795,14 +812,16 @@ const LinkFields = ({
     onChangeHref(value);
   };
 
+  const handleTargetChange = (value: string) => {
+    setTarget(value);
+    onChangeTarget(value);
+  };
+
   // Shown whenever the destination can open a tab — and ALSO whenever a target
   // is already set, even for a fragment. Hiding a row that still holds a value
   // would go on saving a `target` the user can neither see nor clear; keeping
   // it visible is the non-destructive half of that choice.
-  const showNewTabRow = canOpenInNewTab(href) || Boolean(linkWrapper.target);
-  // A named frame or `_top` is legitimate hand-written markup. Flattening it to
-  // Yes/No would hide the real value and destroy it on the first click.
-  const newTabSelectable = isNewTabSelectable(linkWrapper.target);
+  const showNewTabRow = canOpenInNewTab(href) || Boolean(target);
 
   return (
     <>
@@ -871,14 +890,21 @@ const LinkFields = ({
       {showNewTabRow ? (
         <Stack gap={0.5}>
           <Typography variant="body2" fontWeight={600} color="text.primary">
-            {newTabSelectable ? SLOT_LABELS.target : "Target"}
+            {targetIsFreeText ? "Target" : SLOT_LABELS.target}
           </Typography>
-          {newTabSelectable ? (
+          {targetIsFreeText ? (
+            <TextField
+              value={target}
+              fullWidth
+              onChange={(evt) => handleTargetChange(evt.target.value)}
+              inputProps={{ "data-cy": "StudioLinkTarget" }}
+            />
+          ) : (
             <TextField
               select
-              value={linkWrapper.target}
+              value={target}
               fullWidth
-              onChange={(evt) => onChangeTarget(evt.target.value)}
+              onChange={(evt) => handleTargetChange(evt.target.value)}
               inputProps={{ "data-cy": "StudioOpenInNewTab" }}
             >
               {NEW_TAB_OPTIONS.map((option) => (
@@ -887,13 +913,6 @@ const LinkFields = ({
                 </MenuItem>
               ))}
             </TextField>
-          ) : (
-            <TextField
-              value={linkWrapper.target}
-              fullWidth
-              onChange={(evt) => onChangeTarget(evt.target.value)}
-              inputProps={{ "data-cy": "StudioLinkTarget" }}
-            />
           )}
         </Stack>
       ) : null}

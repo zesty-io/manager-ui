@@ -1623,6 +1623,57 @@ describe("Studio Inspector Panel", () => {
     });
   });
 
+  it("offers no Add Link on an element that already contains a link", () => {
+    setStudioMode("layout");
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+
+      // A link BELOW the element is as fatal as one above it. Wrapping
+      // serializes fine, but re-parsing runs the adoption agency algorithm: the
+      // outer <a> closes, the <div> escapes it, and a spurious <a>See </a> is
+      // minted around the leading text — author content mutated by a wrap.
+      // A <nav>, <p> or <section> containing a link is the ordinary shape.
+      seedLayoutElement(
+        webView.ZUID,
+        `<div data-layout-id="1">See <a href="/x">docs</a></div>`,
+        elementNode(webView.ZUID, "div", [])
+      );
+
+      cy.getBySelector("StudioInspectorPanel").should("exist");
+      cy.getBySelector("StudioAddLink").should("not.exist");
+    });
+  });
+
+  it("reads back a getUrl() binding on an <a>'s own href slot", () => {
+    setStudioMode("layout");
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+
+      // The slot path, not the wrapper's — Connect Item on an <a>'s href writes
+      // exactly this. It has a `source`, so it resolves through the cross-item
+      // chip, and the chip must not treat "no field named ''" as a broken
+      // binding.
+      const expression = `{{${linkedModelName}.filter(${linkedItemZUID}).getUrl()}}`;
+      seedLayoutElement(
+        webView.ZUID,
+        `<a data-layout-id="1" href="${expression}">Read more</a>`,
+        linkNode(webView.ZUID, "/studio-linked/", expression)
+      );
+
+      cy.getBySelector("StudioSlotInput-href").should("not.exist");
+      cy.getBySelector("StudioConnectedField").should("exist");
+      cy.getBySelector("StudioConnectedFieldCaption")
+        .should("contain.text", linkedModelLabel)
+        .and("not.contain.text", "no longer exists");
+    });
+  });
+
   it("offers Add Link on a heading's lone text row, which speaks for it", () => {
     setStudioMode("layout");
     cy.apiRequest({
@@ -1745,15 +1796,31 @@ describe("Studio Inspector Panel", () => {
       // and the wrap has ALREADY raised the save bar, so nothing here waits for
       // that timer — the save has to flush it rather than race it, or an <a>
       // with no href is what gets persisted.
+      //
+      // setTimeout is frozen for the whole gesture so the debounce provably
+      // CANNOT fire: any href in the PUT got there through the flush, not by
+      // beating the clock. Without this the test still passes today, but only
+      // because saveAllViaModal happens to take longer than 300ms — a faster
+      // modal would turn it green with the flush removed. Only the timer
+      // functions are faked; React schedules through MessageChannel and the
+      // PUT goes over fetch, so neither is affected.
+      cy.clock(null, ["setTimeout", "clearTimeout"]);
       cy.getBySelector("StudioAddLink").click();
       cy.getBySelector("StudioLinkToInput").type("https://www.zesty.io/");
-      saveAllViaModal("layout");
+
+      // Inlined rather than saveAllViaModal: the modal's exit transition needs
+      // real timers, so the clock is restored before waiting on it to leave.
+      cy.getBySelector("StudioLayoutSaveChangesButton").click();
+      cy.getBySelector("StudioSaveChangesModal").should("exist");
+      cy.getBySelector("StudioSaveAllButton").click();
+      cy.clock().invoke("restore");
 
       cy.wait("@updateWebView").then(({ request }) => {
         expect(request.body.code).to.contain(
           '<a href="https://www.zesty.io/"><img'
         );
       });
+      cy.getBySelector("StudioSaveChangesModal").should("not.exist");
     });
   });
 
