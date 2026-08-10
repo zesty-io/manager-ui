@@ -1,4 +1,4 @@
-import { ConnectField, ConnectSource } from "../../hooks/studioTypes";
+import { ConnectField, ConnectSource } from "../hooks/studioTypes";
 import { getFieldMeta } from "./studioFieldMeta";
 
 // ---------------------------------------------------------------------------
