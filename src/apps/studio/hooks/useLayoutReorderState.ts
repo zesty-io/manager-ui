@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useRef, useState } from "react";
-import { notify } from "../../../../../../../shell/store/notifications";
+import { notify } from "shell/store/notifications";
 import { LayoutBreadcrumbItem } from "./studioTypes";
 
 type LayoutStructureItem = {
