@@ -42,7 +42,7 @@ import {
   useUpdateWebViewMutation,
 } from "shell/services/instance";
 import { StudioHeader } from "./components/StudioHeader";
-import { StudioFeedbackModal } from "./components/StudioWrapper/StudioFeedbackModal";
+import { StudioFeedbackModal } from "./components/StudioFeedbackModal";
 import { StudioPreview } from "./components/StudioPreview";
 import { StudioSidePanel } from "./components/StudioSidePanel";
 import { StudioInspectorPanel } from "./components/StudioInspectorPanel";
