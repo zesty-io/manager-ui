@@ -1,8 +1,8 @@
 import { DragEvent, useCallback, useEffect, useRef, useState } from "react";
 import { Box, Typography } from "@mui/material";
 import { StudioLayersTreeItem } from "./StudioLayersTreeItem";
-import { LayersFlatRow } from "../../hooks/useStudioLayersTree";
-import { LayersDropPosition, LayersTreeNode } from "../../hooks/studioTypes";
+import { LayersFlatRow } from "../hooks/useStudioLayersTree";
+import { LayersDropPosition, LayersTreeNode } from "../hooks/studioTypes";
 
 // Mirrors the canvas drag behavior: the outer bands of a row mean
 // before/after, the middle means drop inside.
