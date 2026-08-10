@@ -225,6 +225,16 @@ describe("Studio Inspector Panel", () => {
     openPanelFor(node);
   };
 
+  // Type the search term and click the seeded item's own option row. Addressed
+  // by its ZUID rather than its label: the store also holds the studio page
+  // item, option order is by createdAt, and a label is user copy that a rename
+  // would quietly redirect this click to a different result.
+  const searchAndPickLinkedItem = () => {
+    cy.get('[data-cy="StudioLinkItemSearchInput"] input').type("Studio Linked");
+    cy.wait("@linkSearch");
+    cy.getBySelector(`StudioLinkItemSearchOption-${linkedItemZUID}`).click();
+  };
+
   // Open the link dialog for a slot and pick the seeded "Studio Linked" item.
   const openLinkDialogAndPickItem = (slotKey) => {
     cy.getBySelector(`StudioConnectContent-${slotKey}`).click();
@@ -233,11 +243,7 @@ describe("Studio Inspector Panel", () => {
     // Nothing picked yet.
     cy.getBySelector("StudioLinkItemConfirm").should("be.disabled");
 
-    cy.get('[data-cy="StudioLinkItemSearchInput"] input').type("Studio Linked");
-    cy.wait("@linkSearch");
-    // Match by name rather than position — the store also holds the studio page
-    // item, and option order is by createdAt.
-    cy.contains('[role="option"]', "Studio Linked").click();
+    searchAndPickLinkedItem();
 
     // Item picked, field not — still blocked.
     cy.getBySelector("StudioLinkItemConfirm").should("be.disabled");
@@ -260,9 +266,7 @@ describe("Studio Inspector Panel", () => {
     cy.getBySelector("StudioLinkItemDialog").should("exist");
     cy.getBySelector("StudioLinkItemConfirm").should("be.disabled");
 
-    cy.get('[data-cy="StudioLinkItemSearchInput"] input').type("Studio Linked");
-    cy.wait("@linkSearch");
-    cy.contains('[role="option"]', "Studio Linked").click();
+    searchAndPickLinkedItem();
 
     // No field step at all — that is the difference from a field binding.
     cy.getBySelector("StudioLinkItemFieldSelect").should("not.exist");
@@ -277,6 +281,23 @@ describe("Studio Inspector Panel", () => {
     pickLinkField(fieldName);
     cy.getBySelector("StudioLinkItemConfirm").should("not.be.disabled").click();
     cy.getBySelector("StudioLinkItemDialog").should("not.exist");
+  };
+
+  // Every control the Link section shows for a wrapper that has no destination
+  // yet. Shared by the two ways of reaching that state — the attribute-less <a>
+  // our own wrap emits, and a hand-written <a href=""> — so "those read back
+  // the same" is one set of assertions rather than a claim in a comment.
+  const assertUnsetLinkWrapper = () => {
+    // Positive first, so the absences below are asserted against a Link section
+    // that has provably rendered rather than one that has not arrived yet.
+    cy.getBySelector("StudioLinkToInput").should("have.value", "");
+    cy.getBySelector("StudioRemoveLink").should("exist");
+    cy.getBySelector("StudioLinkConnectItem").should("exist");
+    // Nothing to open, and no hand-written target to keep visible.
+    cy.getBySelector("StudioOpenInNewTab").should("not.exist");
+    cy.getBySelector("StudioLinkTarget").should("not.exist");
+    // Already wrapped, so there is nothing left to add.
+    cy.getBySelector("StudioAddLink").should("not.exist");
   };
 
   // The search index is eventually consistent, so a freshly seeded item may not
@@ -1349,11 +1370,10 @@ describe("Studio Inspector Panel", () => {
       cy.getBySelector("StudioLinkToInput").should("not.exist");
       cy.getBySelector("StudioAddLink").click();
 
-      // A fresh wrapper has no href, so there is nothing to open in a new tab.
-      cy.getBySelector("StudioLinkToInput").should("have.value", "");
-      cy.getBySelector("StudioOpenInNewTab").should("not.exist");
+      // A fresh wrapper carries no attributes, so it reads back as a link with
+      // no destination — the same state a hand-written <a href=""> produces.
+      assertUnsetLinkWrapper();
       // Wrapping is itself an edit, even before a URL is typed.
-      cy.getBySelector("StudioAddLink").should("not.exist");
       cy.getBySelector("StudioLayoutSaveBar").should("exist");
 
       saveAllViaModal("layout");
@@ -1394,6 +1414,29 @@ describe("Studio Inspector Panel", () => {
           '<a href="https://www.zesty.io/"><img'
         );
       });
+    });
+  });
+
+  // Our own wrap emits an <a> with no href attribute at all, but an author
+  // hand-writing `<a href="">` leaves an empty-but-present one. readLinkWrapper
+  // normalises both through `getAttribute("href") || ""`, so the panel must not
+  // tell them apart — same controls, same empty input, no target row. Asserted
+  // with the very same helper the attribute-less wrap uses.
+  it("reads an empty href exactly like a wrapper with no href attribute", () => {
+    setStudioMode("layout");
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+
+      seedLayoutElement(
+        webView.ZUID,
+        `<a href=""><img data-layout-id="1" src="a.jpg" alt="hero"></a>`,
+        imgNode(webView.ZUID)
+      );
+
+      assertUnsetLinkWrapper();
     });
   });
 
