@@ -11,8 +11,8 @@ import {
   InspectorSelection,
   SelectedElement,
 } from "./studioTypes";
-import { NO_TAG, isTextTag } from "../components/StudioWrapper/studioTags";
-import { parseParsleyRef } from "../components/StudioWrapper/studioParsley";
+import { NO_TAG, isTextTag } from "../components/studioTags";
+import { parseParsleyRef } from "../components/studioParsley";
 
 export type LayersFlatRow = {
   node: LayersTreeNode;

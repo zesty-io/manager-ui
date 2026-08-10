@@ -15,19 +15,16 @@ import {
 } from "@mui/material";
 import { CloseRounded } from "@mui/icons-material";
 
-import { AppState } from "../../../../../../../../shell/store/types";
-import {
-  searchItems,
-  fetchItem,
-} from "../../../../../../../../shell/store/content";
+import { AppState } from "shell/store/types";
+import { searchItems, fetchItem } from "shell/store/content";
 import {
   useGetContentModelFieldsQuery,
   useGetContentModelsQuery,
-} from "../../../../../../../../shell/services/instance";
-import SearchField from "../../../../../../../seo/src/app/components/RedirectsDialogProvider/CreateRedirects/SearchField";
-import { FieldWrapper } from "../../../../../../../seo/src/app/components/RedirectsDialogProvider/CreateRedirects/FieldWrapper";
-import { ContentItemProps } from "../../../../../../../seo/src/app/components/RedirectsDialogProvider/constants";
-import { ConnectField } from "../../hooks/studioTypes";
+} from "shell/services/instance";
+import SearchField from "../../seo/src/app/components/RedirectsDialogProvider/CreateRedirects/SearchField";
+import { FieldWrapper } from "../../seo/src/app/components/RedirectsDialogProvider/CreateRedirects/FieldWrapper";
+import { ContentItemProps } from "../../seo/src/app/components/RedirectsDialogProvider/constants";
+import { ConnectField } from "../hooks/studioTypes";
 import {
   isMediaSlotDatatype,
   isTextReferenceableDatatype,

@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { notify } from "../../../../../../../shell/store/notifications";
+import { notify } from "shell/store/notifications";
 import { LayoutBreadcrumbItem } from "./studioTypes";
 
 type LayoutStructureItem = {

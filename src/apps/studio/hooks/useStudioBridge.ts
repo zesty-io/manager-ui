@@ -1,7 +1,7 @@
 import { MutableRefObject, useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { notify } from "../../../../../../../shell/store/notifications";
-import { Sentry } from "../../../../../../../utility/sentry";
+import { notify } from "shell/store/notifications";
+import { Sentry } from "utility/sentry";
 import { InteractionMode } from "./studioTypes";
 
 const bridgeInjectedCss = `

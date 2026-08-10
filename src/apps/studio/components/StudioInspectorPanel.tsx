@@ -19,12 +19,12 @@ import AddLinkRounded from "@mui/icons-material/AddLinkRounded";
 import LinkOffRounded from "@mui/icons-material/LinkOffRounded";
 import { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
-import { ConnectField, ElementSlot } from "../../hooks/studioTypes";
+import { ConnectField, ElementSlot } from "../hooks/studioTypes";
 import { NO_TAG, TEXT_TAGS } from "./studioTags";
 import { getFieldMeta } from "./studioFieldMeta";
 import { FieldIconChip } from "./FieldIconChip";
 import { connectFieldToParsley, parseParsleyRef } from "./studioParsley";
-import { useCrossModelConnectField } from "../../hooks/useCrossModelConnectField";
+import { useCrossModelConnectField } from "../hooks/useCrossModelConnectField";
 import { StudioLinkItemDialog } from "./StudioLinkItemDialog";
 
 // Title shown for a supported element tag.
