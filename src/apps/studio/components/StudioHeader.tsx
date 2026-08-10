@@ -2,7 +2,7 @@ import AutoAwesomeMosaicRoundedIcon from "@mui/icons-material/AutoAwesomeMosaicR
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import { Box, Button, Chip, Switch } from "@mui/material";
 import { alpha, styled } from "@mui/material/styles";
-import { LanguageSelector } from "../ItemEditHeader/LanguageSelector";
+import { LanguageSelector } from "../../content-editor/src/app/views/ItemEdit/components/ItemEditHeader/LanguageSelector";
 
 type LayoutBreadcrumbItem = {
   layoutId?: string;

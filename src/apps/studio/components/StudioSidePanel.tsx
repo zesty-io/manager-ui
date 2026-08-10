@@ -8,9 +8,9 @@ import {
   Typography,
 } from "@mui/material";
 import { ReactNode } from "react";
-import RedirectsDialogContextProvider from "../../../../../../../seo/src/app/components/RedirectsDialogProvider";
-import { ItemEditHeaderActions } from "../ItemEditHeader/ItemEditHeaderActions";
-import { VersionSelector } from "../ItemEditHeader/VersionSelector";
+import RedirectsDialogContextProvider from "../../seo/src/app/components/RedirectsDialogProvider";
+import { ItemEditHeaderActions } from "../../content-editor/src/app/views/ItemEdit/components/ItemEditHeader/ItemEditHeaderActions";
+import { VersionSelector } from "../../content-editor/src/app/views/ItemEdit/components/ItemEditHeader/VersionSelector";
 
 type StudioSidePanelProps = {
   headerTitle: string;

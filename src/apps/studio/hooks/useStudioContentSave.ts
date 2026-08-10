@@ -1,15 +1,15 @@
 import { useCallback } from "react";
 import { useStore } from "react-redux";
 import { chunk } from "lodash";
-import { AppState } from "../../../../../../../shell/store/types";
-import { ContentItemWithDirtyAndPublishing } from "../../../../../../../shell/services/types";
+import { AppState } from "shell/store/types";
+import { ContentItemWithDirtyAndPublishing } from "shell/services/types";
 import {
   fetchAllModelPublishings,
   fetchItem,
   saveItem,
-} from "../../../../../../../shell/store/content";
-import { notify } from "../../../../../../../shell/store/notifications";
-import { useCreateItemPublishingMutation } from "../../../../../../../shell/services/instance";
+} from "shell/store/content";
+import { notify } from "shell/store/notifications";
+import { useCreateItemPublishingMutation } from "shell/services/instance";
 
 // Number of items published per batch. Mirrors the chunk size used by the
 // release publish flow (shell/store/releases.js) so we don't hammer the API
