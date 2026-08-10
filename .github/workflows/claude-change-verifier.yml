@@ -60,6 +60,10 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          # The Sentry RCA workflow opens auto-fix PRs as github-actions[bot] (the default
+          # GITHUB_TOKEN identity) — without this, claude-code-action's human-actor check
+          # rejects the run outright before it ever reads the diff.
+          allowed_bots: "github-actions"
           claude_args: |
             --model claude-sonnet-5
             --max-turns 50
