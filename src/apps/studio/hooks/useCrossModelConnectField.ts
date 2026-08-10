@@ -3,8 +3,8 @@ import { useSelector } from "react-redux";
 import {
   useGetContentModelFieldsQuery,
   useGetContentModelsQuery,
-} from "../../../../../../../shell/services/instance";
-import { AppState } from "../../../../../../../shell/store/types";
+} from "shell/services/instance";
+import { AppState } from "shell/store/types";
 import { ConnectField } from "./studioTypes";
 
 // Read-back for a cross-item Parsley reference.

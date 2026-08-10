@@ -13,48 +13,49 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector, useStore } from "react-redux";
 import { MemoryRouter, useHistory, useLocation } from "react-router";
 import { cloneDeep } from "lodash";
-import { AppState } from "../../../../../../shell/store/types";
+import { AppState } from "shell/store/types";
 import {
   fetchAllModelPublishings,
   fetchItem,
   saveItem,
-} from "../../../../../../shell/store/content";
-import { fetchModel } from "../../../../../../shell/store/models";
-import { fetchAuditTrailDrafting } from "../../../../../../shell/store/logs";
-import { notify } from "../../../../../../shell/store/notifications";
-import { fetchFields } from "../../../../../../shell/store/fields";
-import { ContentInfo } from "./Content/Actions/Widgets/ContentInfo";
-import Editor from "../../components/Editor/Editor";
-import { FieldError } from "../../components/Editor/FieldError";
-import { PendingEditsModal } from "../../components/PendingEditsModal";
-import { DirtyCodeModal } from "../../../../../../shell/components/DirtyCodeModal";
-import { ResizableContainer } from "../../../../../../shell/components/ResizeableContainer";
-import contentOneLogoOnly from "../../../../../../../public/images/contentOneLogoOnly.webp";
-import contentOneLogo from "../../../../../../../public/images/contentOneLogo.webp";
+} from "shell/store/content";
+import { fetchModel } from "shell/store/models";
+import { fetchAuditTrailDrafting } from "shell/store/logs";
+import { notify } from "shell/store/notifications";
+import { fetchFields } from "shell/store/fields";
+import { ContentInfo } from "../content-editor/src/app/views/ItemEdit/Content/Actions/Widgets/ContentInfo";
+import Editor from "../content-editor/src/app/components/Editor/Editor";
+import { FieldError } from "../content-editor/src/app/components/Editor/FieldError";
+import { PendingEditsModal } from "../content-editor/src/app/components/PendingEditsModal";
+import { DirtyCodeModal } from "shell/components/DirtyCodeModal";
+import { ResizableContainer } from "shell/components/ResizeableContainer";
+import contentOneLogoOnly from "../../../public/images/contentOneLogoOnly.webp";
+import contentOneLogo from "../../../public/images/contentOneLogo.webp";
 import {
   findItemByPath,
   normalizePath,
   resolveItemByPath,
-} from "../../../../../studio/utils/pathResolver";
+} from "./utils/pathResolver";
 import {
   useGetWebViewsQuery,
   usePublishWebViewMutation,
   useUpdateWebViewMutation,
-} from "../../../../../../shell/services/instance";
-import { StudioHeader } from "./components/StudioWrapper/StudioHeader";
-import { StudioPreview } from "./components/StudioWrapper/StudioPreview";
-import { StudioSidePanel } from "./components/StudioWrapper/StudioSidePanel";
-import { StudioInspectorPanel } from "./components/StudioWrapper/StudioInspectorPanel";
+} from "shell/services/instance";
+import { StudioHeader } from "./components/StudioHeader";
+import { StudioPreview } from "./components/StudioPreview";
+import { StudioSidePanel } from "./components/StudioSidePanel";
+import { StudioInspectorPanel } from "./components/StudioInspectorPanel";
 import {
   isMediaSlotDatatype,
   isTextReferenceableDatatype,
-} from "./components/StudioWrapper/studioFieldMeta";
-import { parseParsleyRef } from "./components/StudioWrapper/studioParsley";
-import { StudioLayersPanel } from "./components/StudioWrapper/StudioLayersPanel";
+} from "./components/studioFieldMeta";
+import { parseParsleyRef } from "./components/studioParsley";
+import { StudioLayersPanel } from "./components/StudioLayersPanel";
+import { StudioFreestyleAlert } from "./components/StudioFreestyleAlert";
 import {
   StudioSaveChange,
   StudioSaveChangesModal,
-} from "./components/StudioWrapper/StudioSaveChangesModal";
+} from "./components/StudioSaveChangesModal";
 import { useLayoutReorderState } from "./hooks/useLayoutReorderState";
 import {
   collectDirtyContentItems,
@@ -69,9 +70,9 @@ import {
 } from "./hooks/studioTypes";
 import { useStudioSelection } from "./hooks/useStudioSelection";
 import { useStudioLayersTree } from "./hooks/useStudioLayersTree";
-import { getRefRegistry } from "../../../../../../engine/refRegistry";
-import { useMultiPermission } from "../../../../../../shell/hooks/use-permissions";
-import { MediaApp } from "../../../../../media/src/app";
+import { getRefRegistry } from "../../engine/refRegistry";
+import { useMultiPermission } from "shell/hooks/use-permissions";
+import { MediaApp } from "../media/src/app";
 
 const drawerWidth = 440;
 
@@ -431,6 +432,45 @@ export const StudioWrapper = () => {
   const handleEditInManager = useCallback(() => {
     if (!pageModelZUID || !pageItemZUID) return;
     history.push(`/content/${pageModelZUID}/${pageItemZUID}`);
+  }, [pageModelZUID, pageItemZUID, history]);
+
+  // A layout built in Freestyle is backed by its own per-item view file rather
+  // than the model's shared template, so it is only editable in the Freestyle
+  // app. Same convention Content.js uses to find an item's Freestyle template.
+  const isFreestyleLayout = useMemo(
+    () =>
+      !!pageItemZUID &&
+      webViews.some(
+        (view) => view?.fileName === `/z/pvl/${pageItemZUID}.zhtml`
+      ),
+    [pageItemZUID, webViews]
+  );
+
+  // Dismissal is tracked per mode, not globally: in layout mode the overlay is
+  // the only route to Freestyle, so a dismissal in content mode (where the
+  // panel button still offers it) must not suppress it there too.
+  const [dismissedAlertModes, setDismissedAlertModes] = useState<
+    InteractionMode[]
+  >([]);
+
+  // Re-surface the notice whenever the preview moves to a different item — a
+  // dismissal applies to the page it was dismissed on, not the whole session.
+  useEffect(() => {
+    setDismissedAlertModes([]);
+  }, [pageItemZUID]);
+
+  const dismissFreestyleAlert = useCallback(() => {
+    setDismissedAlertModes((prev) =>
+      prev.includes(interactionMode) ? prev : [...prev, interactionMode]
+    );
+  }, [interactionMode]);
+
+  const showFreestyleAlert =
+    isFreestyleLayout && !dismissedAlertModes.includes(interactionMode);
+
+  const handleEditInFreestyle = useCallback(() => {
+    if (!pageModelZUID || !pageItemZUID) return;
+    history.push(`/content/${pageModelZUID}/${pageItemZUID}/freestyle`);
   }, [pageModelZUID, pageItemZUID, history]);
 
   const fields = useMemo(() => {
@@ -1781,6 +1821,15 @@ export const StudioWrapper = () => {
               isNavigating={isNavigating}
               isBusy={isRefreshing || studioSaving || isSavingLayout}
               onLoad={handlePreviewFrameLoad}
+              overlaySlot={
+                isLayoutMode && showFreestyleAlert ? (
+                  <StudioFreestyleAlert
+                    showEditAction
+                    onEditInFreestyle={handleEditInFreestyle}
+                    onDismiss={dismissFreestyleAlert}
+                  />
+                ) : null
+              }
             />
             {panelMode === "inspector" && inspectorSelection ? (
               <StudioInspectorPanel
@@ -1817,11 +1866,21 @@ export const StudioWrapper = () => {
                 hasErrors={hasErrors}
                 isSelectedItemLoading={isSelectedItemLoading}
                 onEditInManager={handleEditInManager}
+                isFreestyleLayout={isFreestyleLayout}
+                onEditInFreestyle={handleEditInFreestyle}
                 onSave={handleSave}
                 editorPanel={renderEditorPanel()}
                 infoPanel={renderInfoPanel()}
                 drawerWidth={drawerWidth}
                 logoSrc={contentOneLogo}
+                alertSlot={
+                  showFreestyleAlert ? (
+                    <StudioFreestyleAlert
+                      onEditInFreestyle={handleEditInFreestyle}
+                      onDismiss={dismissFreestyleAlert}
+                    />
+                  ) : null
+                }
               />
             ) : null}
           </Box>
