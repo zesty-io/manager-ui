@@ -100,6 +100,7 @@
   "pleaseAddLeadingSlash": "Пожалуйста, добавьте косую черту в начале пути к файлу. Пример: /{{name}}",
   "previewCssWebpage": "Предпросмотр CSS",
   "previewFileWebpage": "Предпросмотр {{fileName}}",
+  "previewInstantJson": "Предпросмотр {{path}}",
   "previewItemWebpage": "Предпросмотр страницы элемента",
   "previewJavascriptWebpage": "Предпросмотр Javascript",
   "previewJson": "Предварительный просмотр JSON",

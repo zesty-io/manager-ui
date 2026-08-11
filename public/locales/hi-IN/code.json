@@ -100,6 +100,7 @@
   "pleaseAddLeadingSlash": "कृपया फ़ाइल पाथ में शुरुआत में स्लैश जोड़ें जैसे: /{{name}}",
   "previewCssWebpage": "CSS का पूर्वावलोकन",
   "previewFileWebpage": "{{fileName}} का पूर्वावलोकन करें",
+  "previewInstantJson": "{{path}} का पूर्वावलोकन करें",
   "previewItemWebpage": "आइटम वेबपेज का पूर्वावलोकन",
   "previewJavascriptWebpage": "Javascript का पूर्वावलोकन",
   "previewJson": "JSON का पूर्वावलोकन",

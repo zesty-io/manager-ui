@@ -100,6 +100,7 @@
   "pleaseAddLeadingSlash": "请在文件路径前添加斜杠，例如：/{{name}}",
   "previewCssWebpage": "预览 CSS 页面",
   "previewFileWebpage": "预览 {{fileName}}",
+  "previewInstantJson": "预览 {{path}}",
   "previewItemWebpage": "预览项目网页",
   "previewJavascriptWebpage": "预览 Javascript 页面",
   "previewJson": "预览 JSON",

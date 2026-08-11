@@ -798,7 +798,7 @@ const verify = await agent(
 Run all verification checks for the "${ns}" localization pass and return structured results.
 
 ## Check 1: TypeScript
-Run from /home/nar/Developer/zesty/manager-ui:
+Run from the repository root (resolve it with \`git rev-parse --show-toplevel\` if needed):
 \`npx tsc --noEmit\`
 Record any errors (file, line, message). Set tscPassed: false if there are any errors.
 

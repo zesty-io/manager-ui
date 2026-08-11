@@ -216,7 +216,7 @@ export default function FileStatus({ file, items }: FileStatusProps) {
         <Link
           href={`${urlPreview}/-/instant/${file.contentModelZUID}.json`}
           target="_blank"
-          title={t("code.previewPathWebpage", {
+          title={t("code.previewInstantJson", {
             path: `${file.contentModelZUID} JSON`,
           })}
           style={{

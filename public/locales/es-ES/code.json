@@ -100,6 +100,7 @@
   "pleaseAddLeadingSlash": "Por favor, añade una barra diagonal inicial en la ruta del archivo. Ej: /{{name}}",
   "previewCssWebpage": "Vista previa de CSS",
   "previewFileWebpage": "Vista previa de {{fileName}}",
+  "previewInstantJson": "Vista previa de {{path}}",
   "previewItemWebpage": "Vista previa de la página del elemento",
   "previewJavascriptWebpage": "Vista previa de JavaScript",
   "previewJson": "Vista previa de JSON",

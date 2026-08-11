@@ -100,6 +100,7 @@
   "pleaseAddLeadingSlash": "Please add leading slash in file path EX: /{{name}}",
   "previewCssWebpage": "Preview CSS Webpage",
   "previewFileWebpage": "Preview {{fileName}} Webpage",
+  "previewInstantJson": "Preview {{path}}",
   "previewItemWebpage": "Preview Item Webpage",
   "previewJavascriptWebpage": "Preview Javascript Webpage",
   "previewJson": "Preview JSON",
