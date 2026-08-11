@@ -377,6 +377,24 @@ jobs:
             exit 1
           fi
 
+          # Independently re-check the "Blast radius" hard veto from
+          # sentry-rca-classification.md against the actual trial-fix diff, instead of
+          # trusting Claude's self-reported PASS for it. Sentry issue content (exception
+          # messages, tags, breadcrumbs) is untrusted, and a crafted payload aiming to
+          # push an unreviewed fix through a lenient self-classification is exactly the
+          # scenario this criterion exists to block — so for this one factor, check the
+          # real file paths on disk rather than relying on the model's own judgment.
+          if [ "$verdict" = "simple" ]; then
+            veto_hit=$(git diff --name-only | grep -E \
+              '^(src/shell/store/auth\.js|src/shell/hooks/use-permissions\.js|src/shell/index\.js|src/shell/services/util\.js|src/shell/webpack\.config\.js|\.github/workflows/)' \
+              || true)
+            if [ -n "$veto_hit" ]; then
+              echo "::error::❌ Trial fix touches a blast-radius veto path but was classified as simple — refusing to trust that classification and failing closed rather than opening a PR. Touched veto path(s):"
+              echo "$veto_hit"
+              exit 1
+            fi
+          fi
+
           echo "verdict=$verdict" >> "$GITHUB_OUTPUT"
           echo "fetch_failed=$fetch_failed" >> "$GITHUB_OUTPUT"
           echo "severity=$severity" >> "$GITHUB_OUTPUT"
@@ -454,6 +472,10 @@ jobs:
           title=$(jq -r '.pr_title' classification.json)
           branch="fix/$ISSUE-$slug"
 
+          # actions/checkout wires up a credential helper for pushing, but never sets a
+          # commit identity — git commit fails outright on a bare runner without this.
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
           git checkout -b "$branch"
           # -A stages the whole tree, which would otherwise sweep up the workflow's own
           # untracked scratch files (classification.json, pr-description.md) into the fix
