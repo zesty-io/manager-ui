@@ -9,31 +9,16 @@ name: Claude Sentry RCA
 # be safely re-run manually; each run posts its own run-scoped comment rather than
 # being deduped against a prior run's.
 
-# TODO(#4231): remove the `workflow_dispatch` trigger below (and the
-# `github.event.issue.number || inputs.issue_number` / `EVENT_NAME` plumbing it
-# requires in the Detect step) before merging to dev. It exists only so this
-# workflow can be manually run against a chosen issue number for pre-merge
-# testing. It deliberately skips the author-is-a-bot check (see Detect step) so
-# it can be pointed at hand-crafted, human-authored test fixtures — that's an
-# acceptable gap for a short-lived testing trigger, not for something that
-# ships permanently.
-#
 on:
   issues:
     types: [opened]
-  workflow_dispatch:
-    inputs:
-      issue_number:
-        description: "TEMPORARY, pre-merge testing only — existing issue number to run this workflow against. Remove this trigger before merging to dev."
-        required: true
-        type: string
 
 jobs:
   sentry-rca:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     concurrency:
-      group: claude-sentry-rca-${{ github.event.issue.number || inputs.issue_number }}
+      group: claude-sentry-rca-${{ github.event.issue.number }}
       cancel-in-progress: true
     permissions:
       contents: write
@@ -41,16 +26,13 @@ jobs:
       issues: write
     steps:
       # Always re-fetch the body via `gh issue view` rather than trusting
-      # github.event.issue.body — that field doesn't exist at all on a
-      # workflow_dispatch run, so this keeps both trigger paths identical
-      # instead of branching the whole step on github.event_name.
+      # github.event.issue.body, so the detection logic has one source of truth.
       - name: Detect Sentry-origin issue
         id: detect
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
-          ISSUE: ${{ github.event.issue.number || inputs.issue_number }}
-          EVENT_NAME: ${{ github.event_name }}
+          ISSUE: ${{ github.event.issue.number }}
         run: |
           set -euo pipefail
           echo "number=$ISSUE" >> "$GITHUB_OUTPUT"
@@ -66,14 +48,11 @@ jobs:
           fi
 
           # Content match alone only proves the body is Sentry-shaped, not that Sentry
-          # wrote it — a human opening a real issue could paste the same first line. On
-          # the real issues:opened trigger, also require the author to be a bot (Sentry's
-          # GitHub App, like every other integration, posts as a bot actor) so a
-          # human-authored issue can never be treated as Sentry-origin. This is skipped on
-          # workflow_dispatch, since manual runs are an explicit, trusted human action
-          # against a hand-picked issue (including hand-crafted test fixtures, which are
-          # always human-authored).
-          if [ "$EVENT_NAME" = "issues" ] && [ "$IS_BOT" != "true" ]; then
+          # wrote it — a human opening a real issue could paste the same first line. Also
+          # require the author to be a bot (Sentry's GitHub App, like every other
+          # integration, posts as a bot actor) so a human-authored issue can never be
+          # treated as Sentry-origin.
+          if [ "$IS_BOT" != "true" ]; then
             echo "matched=false" >> "$GITHUB_OUTPUT"
             echo "🚫 First line matched the Sentry format, but the issue author is not a bot — refusing to treat a human-authored issue as Sentry-origin."
             exit 0
