@@ -93,6 +93,23 @@ jobs:
           gh label create "severity: low"      --repo "$REPO" --color "0E8A16" --force \
             --description "Minor impact — cosmetic, rare edge case, or easy workaround"
 
+      # A --mcp-config value passed inline in claude_args becomes a literal CLI argument
+      # for the claude process — GitHub's log masking hides it from workflow logs, but
+      # not from process listings (`ps aux`, /proc/<pid>/cmdline) on the runner. Writing
+      # it to a file instead (the pattern this action's own docs use for secrets) means
+      # only a path ever appears in argv; the token only ever touches disk and the
+      # process's own env/config read, never the command line. $RUNNER_TEMP, not the
+      # checked-out workspace, so this file can never get swept up by the auto-fix
+      # step's later `git add -A`.
+      - name: Write Sentry MCP config
+        if: steps.detect.outputs.matched == 'true'
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+        run: |
+          cat > "$RUNNER_TEMP/sentry-mcp-config.json" << EOF
+          {"mcpServers":{"sentry":{"type":"http","url":"https://mcp.sentry.dev/mcp","headers":{"Authorization":"Sentry-Bearer $SENTRY_AUTH_TOKEN"}}}}
+          EOF
+
       # No Bash grant at all — Claude investigates, attempts a trial fix in the working
       # tree, and writes its verdict + content to fixed files. It never runs git or gh.
       # Every side effect on GitHub/git happens in the deterministic steps below, which
@@ -106,7 +123,7 @@ jobs:
           claude_args: |
             --model claude-sonnet-5
             --max-turns 80
-            --mcp-config '{"mcpServers":{"sentry":{"type":"http","url":"https://mcp.sentry.dev/mcp","headers":{"Authorization":"Sentry-Bearer ${{ secrets.SENTRY_AUTH_TOKEN }}"}}}}'
+            --mcp-config ${{ runner.temp }}/sentry-mcp-config.json
             --allowedTools "mcp__sentry,Read,Grep,Glob,Write,Edit"
           prompt: |
             # Role
@@ -385,7 +402,12 @@ jobs:
           # scenario this criterion exists to block — so for this one factor, check the
           # real file paths on disk rather than relying on the model's own judgment.
           if [ "$verdict" = "simple" ]; then
-            veto_hit=$(git diff --name-only | grep -E \
+            # `git diff --name-only` alone only sees modifications to already-tracked
+            # files — a brand-new file (Claude has Write, not just Edit) is untracked and
+            # invisible to it, yet still gets swept into the fix commit by the `git add
+            # -A` in the auto-fix step below. `git ls-files --others --exclude-standard`
+            # covers exactly that gap: untracked, non-gitignored new files.
+            veto_hit=$({ git diff --name-only; git ls-files --others --exclude-standard; } | grep -E \
               '^(src/shell/store/auth\.js|src/shell/hooks/use-permissions\.js|src/shell/index\.js|src/shell/services/util\.js|src/shell/webpack\.config\.js|\.github/workflows/)' \
               || true)
             if [ -n "$veto_hit" ]; then
