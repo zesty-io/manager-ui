@@ -1,0 +1,31 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    groups:
+      security-updates:
+        applies-to: security-updates
+        patterns:
+          - "*"
+      dev-dependencies:
+        applies-to: version-updates
+        dependency-type: "development"
+        patterns:
+          - "*"
+      production-dependencies:
+        applies-to: version-updates
+        dependency-type: "production"
+        update-types:
+          - "minor"
+          - "patch"
+    ignore:
+      # TinyMCE relicensed at 7.0 from MIT to GPL-2.0-or-later, and there is no
+      # fixed 6.x for the open advisories. The upgrade is a licensing decision,
+      # tracked separately. Blocking only the major keeps a future 6.x security
+      # release proposable, and the alerts stay visible either way.
+      - dependency-name: "tinymce"
+        update-types:
+          - "version-update:semver-major"
