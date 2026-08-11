@@ -83,21 +83,14 @@ jobs:
             1. If ISSUE_NUMBER is set, read it (gh issue view <ISSUE_NUMBER> --repo <REPO> --json
                title,body,comments,labels) and derive a short numbered list of acceptance criteria.
                If empty, run change-only mode: no criteria, just assess whether the change is correct.
-            2. Read the PR description (gh pr view <PR_NUMBER> --repo <REPO> --json body --jq .body)
-               and the diff (gh pr diff <PR_NUMBER> --repo <REPO>), then open the changed files to
+            2. Read the diff (gh pr diff <PR_NUMBER> --repo <REPO>) and open the changed files to
                understand what the change does. This is for your judgment only — the report does
                not include a change summary.
             3. Judge each criterion from the code as one of:
-                 ✅ Satisfied    — the code clearly implements it, OR the PR description explicitly
-                                   documents and justifies a deviation from the criterion's literal
-                                   wording (e.g. a technical constraint found during implementation)
-                                   — note the deviation and its stated reason in one clause.
+                 ✅ Satisfied    — the code clearly implements it.
                  ⚠️ Inconclusive — can't tell from the code alone. Not a failure.
-                 ❌ Not met      — the code clearly fails it and the PR description does not explain
-                                   why (give evidence).
-               When unsure between ⚠️ and ❌, choose ⚠️. A documented, deliberate deviation is never
-               a ❌ on its own — only flag it if the PR description's own justification doesn't hold
-               up against the code (e.g. it claims a constraint that isn't actually there).
+                 ❌ Not met      — the code clearly fails it (give evidence).
+               When unsure between ⚠️ and ❌, choose ⚠️.
             4. Overall verdict: FAIL only if a criterion is ❌ or the diff shows a clear bug;
                INCONCLUSIVE if nothing is clearly failing but you couldn't confirm; otherwise PASS.
                Never FAIL on uncertainty.
