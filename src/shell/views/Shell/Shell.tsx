@@ -39,7 +39,7 @@ import { Products } from "../../services/types";
 import styles from "./Shell.less";
 import { LoadingShell } from "./LoadingShell";
 import { registerNavigate } from "../../../engine/navigator";
-import { AIDrawer } from "./AIDrawer";
+import { AIDrawer } from "../../components/AIDrawer";
 import { useLocalStorage } from "react-use";
 import * as amplitude from "@amplitude/analytics-browser";
 import { sessionReplayPlugin } from "@amplitude/plugin-session-replay-browser";

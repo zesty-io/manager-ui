@@ -369,6 +369,8 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
         temperature,
         chatZuid: urlChatZUID,
         url: window.location.href,
+        // roleZUID is needed to create a new chat session when Generate Suggestions button is clicked and there is no existing chatZUID yet
+        ...(!urlChatZUID && { roleZuid: userRole.ZUID }),
       });
       setResponses((prev) => ({
         ...prev,
