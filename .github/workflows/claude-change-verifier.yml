@@ -19,13 +19,9 @@ on:
 jobs:
   verify:
     # Fork PRs don't get ANTHROPIC_API_KEY; this uses pull_request (not pull_request_target).
-    # github-actions[bot] is the identity of every workflow that opens a PR with the
-    # default GITHUB_TOKEN, not just the Sentry RCA auto-fix path — without the label
-    # check, any future bot-authored PR into dev would also trigger this workflow.
     if: >-
       github.event.pull_request.draft == false &&
-      github.event.pull_request.head.repo.full_name == github.repository &&
-      (github.event.pull_request.user.type != 'Bot' || contains(github.event.pull_request.labels.*.name, 'sentry-auto-fix'))
+      github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     timeout-minutes: 15
     concurrency:
@@ -66,8 +62,7 @@ jobs:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           # The Sentry RCA workflow opens auto-fix PRs as github-actions[bot] (the default
           # GITHUB_TOKEN identity) — without this, claude-code-action's human-actor check
-          # rejects the run outright before it ever reads the diff. The job-level `if:`
-          # above restricts which bot-authored PRs actually reach this step.
+          # rejects the run outright before it ever reads the diff.
           allowed_bots: "github-actions"
           claude_args: |
             --model claude-sonnet-5
