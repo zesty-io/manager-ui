@@ -22,7 +22,11 @@ import { getRefRegistry } from "../../../engine/refRegistry";
 import geminiLogo from "../../../../public/images/geminiLogo.svg";
 import { AppState } from "shell/store/types";
 import { useGetUsersRolesQuery } from "shell/services/accounts";
-import { ChatPrompt } from "shell/services/types";
+import { useGetContentModelsQuery } from "shell/services/instance";
+import {
+  ChatPrompt,
+  ContentItemWithDirtyAndPublishing,
+} from "shell/services/types";
 import geminiIcon from "../../../../public/images/geminiIcon.svg";
 import { ChatThread } from "./ChatThread";
 
@@ -99,6 +103,7 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
   const isInCodeApp = /^\/code\/file\/.+/.test(pathname);
   const user = useSelector((state: AppState) => state.user);
   const { data: roles } = useGetUsersRolesQuery();
+  const { data: contentModels } = useGetContentModelsQuery();
   const [latestPromptZUIDs, setLatestPromptZUIDs] = useState<Set<string>>(
     new Set()
   );
@@ -109,6 +114,10 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
   const { modelZUID, itemZUID } = zuidMatch
     ? { modelZUID: zuidMatch[1], itemZUID: zuidMatch[2] }
     : { modelZUID: undefined, itemZUID: undefined };
+  const item = useSelector(
+    (state: AppState) =>
+      state.content[itemZUID] as ContentItemWithDirtyAndPublishing
+  );
 
   const chatStorageKey = `ai-drawer-${pathname}-chatZUID`;
   const [urlChatZUID, setUrlChatZUID, removeUrlChatZUID] = useLocalStorage<
@@ -143,6 +152,35 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
   const hasInitializedResponseSyncRef = useRef(false);
   const isEnabled =
     isInContentApp || isInContentMeta || isInBlocks || isInCodeApp;
+
+  const drawerTitle = useMemo(() => {
+    if (isInCodeApp) {
+      const fileName = getRefRegistry()?.["code-editor"]?.context()?.fileName;
+      return `/${fileName?.trim()?.replace(/^\/+/, "")}`;
+    }
+
+    if (isInContentApp || isInContentMeta || isInBlocks) {
+      const model = contentModels?.find((model) => model.ZUID === modelZUID);
+      const headerTitle = item?.web?.metaTitle || item?.web?.metaLinkText || "";
+
+      return (
+        (model?.type === "block"
+          ? `${model?.label}: ${headerTitle}`
+          : headerTitle) || ""
+      );
+    }
+
+    return "AI Assistant Beta";
+  }, [
+    isInCodeApp,
+    isInContentApp,
+    isInContentMeta,
+    isInBlocks,
+    pathname,
+    contentModels,
+    modelZUID,
+    item,
+  ]);
 
   const userRole = useMemo(
     () => roles?.find((role) => role.ZUID === user.ZUID),
@@ -407,8 +445,20 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
             borderBottom={1}
             borderColor="divider"
           >
-            <Typography variant="body2" fontWeight={500}>
-              AI Assistant Beta
+            <Typography
+              variant="body2"
+              fontWeight={500}
+              sx={{
+                display: "-webkit-box",
+                WebkitLineClamp: "2",
+                WebkitBoxOrient: "vertical",
+                wordBreak: "break-word",
+                wordWrap: "break-word",
+                hyphens: "auto",
+                overflow: "hidden",
+              }}
+            >
+              {drawerTitle}
             </Typography>
 
             <IconButton
