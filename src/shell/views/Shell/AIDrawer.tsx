@@ -703,7 +703,9 @@ export const AIDrawer: FC<AIDrawerProps> = ({ onClose }) => {
                     }
                     onChange={(_, value) => setSelectedTone(value)}
                     value={selectedTone}
-                    getOptionLabel={(option: any) => t(option.labelKey)}
+                    getOptionLabel={(option: (typeof TONE_OPTIONS)[number]) =>
+                      t(option.labelKey)
+                    }
                     options={TONE_OPTIONS}
                     renderInput={(params: any) => (
                       <TextField {...params} fullWidth />

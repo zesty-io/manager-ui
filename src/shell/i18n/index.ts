@@ -61,7 +61,7 @@ function resolveDevLng(): string {
   if (typeof localStorage !== "undefined") {
     const stored = localStorage.getItem("app_locale");
     if (stored) {
-      return stored;
+      return toSupportedLocale(stored);
     }
   }
   if (typeof navigator !== "undefined") {

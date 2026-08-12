@@ -533,7 +533,9 @@ export const AIGenerator = ({
                   onChange={(_, value) =>
                     updateFieldData({ tone: value.value })
                   }
-                  getOptionLabel={(option: any) => t(option.labelKey)}
+                  getOptionLabel={(option: (typeof TONE_OPTIONS)[number]) =>
+                    t(option.labelKey)
+                  }
                   value={TONE_OPTIONS.find(
                     (option) => option.value === fieldData.tone
                   )}
@@ -766,7 +768,9 @@ export const AIGenerator = ({
                   option.value === value.value
                 }
                 onChange={(_, value) => updateFieldData({ tone: value.value })}
-                getOptionLabel={(option: any) => t(option.labelKey)}
+                getOptionLabel={(option: (typeof TONE_OPTIONS)[number]) =>
+                  t(option.labelKey)
+                }
                 value={TONE_OPTIONS.find(
                   (option) => option.value === fieldData.tone
                 )}

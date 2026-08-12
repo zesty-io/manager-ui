@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 import instanceZUID from "../../utility/instanceZUID";
+import { Sentry } from "../../utility/sentry";
 import { getResponseData, prepareHeaders } from "./util";
 import { fetchUser } from "../store/user";
 import {
@@ -86,7 +87,9 @@ export const accountsApi = createApi({
         try {
           await queryFulfilled;
           dispatch(fetchUser(userZUID));
-        } catch {}
+        } catch (err) {
+          Sentry.captureException(err);
+        }
       },
     }),
     getInstalledApps: builder.query<InstalledApp[], void>({
