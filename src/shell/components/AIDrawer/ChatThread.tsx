@@ -121,7 +121,13 @@ export const ChatThread = ({
   return (
     <>
       <Box display="flex" flexGrow={1} overflow="auto">
-        <Box display="block" overflow="auto" my={1} width="100%">
+        <Box
+          display="block"
+          overflow="auto"
+          width="100%"
+          pl={2}
+          sx={{ scrollbarGutter: "stable" }}
+        >
           <Box
             flex="1"
             display="flex"
@@ -129,6 +135,7 @@ export const ChatThread = ({
             gap={2}
             ref={chatContainerRef}
             justifyContent="flex-end"
+            mt={1}
             sx={{
               position: "relative",
               boxSizing: "border-box",
@@ -319,49 +326,52 @@ export const ChatThread = ({
           </Box>
         </Box>
       </Box>
-      <Box>
-        <Box
-          display="flex"
-          flexDirection="column"
-          justifyContent="space-between"
-          rowGap={1}
+
+      <Box
+        display="flex"
+        flexDirection="column"
+        justifyContent="space-between"
+        rowGap={1.5}
+        px={2}
+        mt={1}
+      >
+        <Button
+          data-cy="AIDrawerGenerateSuggestions"
+          size="small"
+          variant="outlined"
+          fullWidth
+          onClick={() => handleGenerateSuggestions(composerSeed)}
         >
-          <Button
-            data-cy="AIDrawerGenerateSuggestions"
-            size="small"
-            variant="outlined"
-            fullWidth
-            onClick={() => handleGenerateSuggestions(composerSeed)}
-          >
-            Generate Suggestions
-          </Button>
-          <PromptComposer
-            ref={composerRef}
-            seed={composerSeed}
-            disabled={isLoading || isLoadingChatSessionLog}
-            onSubmit={handlePrompt}
-            onHasValueChange={setHasComposerValue}
-          />
-        </Box>
-        <Box
-          display="flex"
-          alignItems="center"
-          justifyContent="space-between"
-          my={0.5}
+          Generate Suggestions
+        </Button>
+        <PromptComposer
+          ref={composerRef}
+          seed={composerSeed}
+          disabled={isLoading || isLoadingChatSessionLog}
+          onSubmit={handlePrompt}
+          onHasValueChange={setHasComposerValue}
+        />
+      </Box>
+      <Box
+        display="flex"
+        alignItems="center"
+        justifyContent="space-between"
+        px={2}
+        pb={2}
+        pt={1.5}
+      >
+        <Button
+          data-cy="AIDrawerClearChat"
+          variant="text"
+          color="inherit"
+          onClick={() => {
+            removeUrlChatZUID();
+            setResponses({});
+          }}
         >
-          <Box display="flex" alignItems="flex-start" flexGrow={1}>
-            <Button
-              data-cy="AIDrawerClearChat"
-              variant="text"
-              color="inherit"
-              onClick={() => {
-                removeUrlChatZUID();
-                setResponses({});
-              }}
-            >
-              Clear Chat
-            </Button>
-          </Box>
+          Clear Chat
+        </Button>
+        <Box display="flex" gap={1}>
           <IconButton
             data-cy="AIDrawerSettings"
             onClick={() => setSettingsOpen(!settingsOpen)}
@@ -375,6 +385,8 @@ export const ChatThread = ({
             onClick={() => composerRef.current?.submit()}
             disabled={!hasComposerValue}
             sx={{
+              flexShrink: 0,
+              flexBasis: 32,
               borderRadius: 6,
               padding: 0.5,
               minWidth: 0,
@@ -389,95 +401,94 @@ export const ChatThread = ({
             <ArrowUpwardRounded fontSize="small" />
           </Button>
         </Box>
-        <Collapse
-          orientation="vertical"
-          collapsedSize={0}
-          sx={{ position: "relative" }}
-          in={settingsOpen}
-        >
-          <Box py={2}>
-            <FormGroup>
-              <FormControlLabel
-                sx={{
-                  mx: 0,
-                }}
-                control={
-                  <Switch
-                    data-cy="AIDrawerAutoApplyToggle"
-                    size="small"
-                    checked={autoApply}
-                    onChange={(e) => setAutoApply(e.target.checked)}
-                  />
-                }
-                label={
-                  <Typography variant="subtitle2" color="text.secondary">
-                    Auto apply
-                  </Typography>
-                }
-              />
-            </FormGroup>
-            <Box>
-              <Stack direction="row" gap={1} alignItems="center" mt={1}>
-                <InputLabel sx={{ mb: 0 }}>Language</InputLabel>
-                <Tooltip
-                  title="Set the language in which you'd like the text to be generated."
-                  placement="top"
-                >
-                  <InfoRoundedIcon color="action" sx={{ fontSize: 12 }} />
-                </Tooltip>
-              </Stack>
-              <Autocomplete
-                autoHighlight
-                disableClearable
-                isOptionEqualToValue={(option: any, value: any) =>
-                  option.value === value.value
-                }
-                onChange={(event, value) => setSelectedLanguage(value)}
-                value={selectedLanguage}
-                options={languageOptions}
-                renderInput={(params: any) => (
-                  <TextField
-                    {...params}
-                    fullWidth
-                    InputProps={{
-                      ...params.InputProps,
-                      startAdornment: (
-                        <InputAdornment position="start" sx={{ width: 24 }}>
-                          <LanguageRoundedIcon fontSize="small" />
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
-                )}
-              />
-            </Box>
-            <Box>
-              <Stack direction="row" gap={1} alignItems="center" mt={1}>
-                <InputLabel sx={{ mb: 0 }}>Tone</InputLabel>
-                <Tooltip
-                  title="Set the desired style and mood of the generated text"
-                  placement="top"
-                >
-                  <InfoRoundedIcon color="action" sx={{ fontSize: 12 }} />
-                </Tooltip>
-              </Stack>
-              <Autocomplete
-                autoHighlight
-                disableClearable
-                isOptionEqualToValue={(option: any, value: any) =>
-                  option.value === value.value
-                }
-                onChange={(_, value) => setSelectedTone(value)}
-                value={selectedTone}
-                options={TONE_OPTIONS}
-                renderInput={(params: any) => (
-                  <TextField {...params} fullWidth />
-                )}
-              />
-            </Box>
-          </Box>
-        </Collapse>
       </Box>
+      <Collapse
+        orientation="vertical"
+        collapsedSize={0}
+        sx={{
+          position: "relative",
+          flexShrink: 0,
+          px: 2,
+          pb: settingsOpen ? 2 : 0,
+        }}
+        in={settingsOpen}
+      >
+        <FormGroup>
+          <FormControlLabel
+            sx={{
+              mx: 0,
+            }}
+            control={
+              <Switch
+                data-cy="AIDrawerAutoApplyToggle"
+                size="small"
+                checked={autoApply}
+                onChange={(e) => setAutoApply(e.target.checked)}
+              />
+            }
+            label={
+              <Typography variant="subtitle2" color="text.secondary">
+                Auto apply
+              </Typography>
+            }
+          />
+        </FormGroup>
+
+        <Stack direction="row" gap={1} alignItems="center" mt={1}>
+          <InputLabel sx={{ mb: 0 }}>Language</InputLabel>
+          <Tooltip
+            title="Set the language in which you'd like the text to be generated."
+            placement="top"
+          >
+            <InfoRoundedIcon color="action" sx={{ fontSize: 12 }} />
+          </Tooltip>
+        </Stack>
+        <Autocomplete
+          autoHighlight
+          disableClearable
+          isOptionEqualToValue={(option: any, value: any) =>
+            option.value === value.value
+          }
+          onChange={(event, value) => setSelectedLanguage(value)}
+          value={selectedLanguage}
+          options={languageOptions}
+          renderInput={(params: any) => (
+            <TextField
+              {...params}
+              fullWidth
+              InputProps={{
+                ...params.InputProps,
+                startAdornment: (
+                  <InputAdornment position="start" sx={{ width: 24 }}>
+                    <LanguageRoundedIcon fontSize="small" />
+                  </InputAdornment>
+                ),
+              }}
+            />
+          )}
+        />
+
+        <Stack direction="row" gap={1} alignItems="center" mt={1}>
+          <InputLabel sx={{ mb: 0 }}>Tone</InputLabel>
+          <Tooltip
+            title="Set the desired style and mood of the generated text"
+            placement="top"
+          >
+            <InfoRoundedIcon color="action" sx={{ fontSize: 12 }} />
+          </Tooltip>
+        </Stack>
+        <Autocomplete
+          autoHighlight
+          disableClearable
+          isOptionEqualToValue={(option: any, value: any) =>
+            option.value === value.value
+          }
+          onChange={(_, value) => setSelectedTone(value)}
+          value={selectedTone}
+          options={TONE_OPTIONS}
+          renderInput={(params: any) => <TextField {...params} fullWidth />}
+        />
+      </Collapse>
     </>
   );
 };

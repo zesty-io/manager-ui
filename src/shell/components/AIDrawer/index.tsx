@@ -337,12 +337,9 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
         flexDirection: "column",
         minWidth: 300,
         maxWidth: 300,
-        px: 2,
-        pt: 2,
         boxSizing: "border-box",
         position: "relative",
         overflow: "hidden",
-        marginTop: -5,
         bgcolor: "background.paper",
         zIndex: (theme) => theme.zIndex.speedDial + 1,
       }}
@@ -402,53 +399,26 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
           <Box
             data-cy="AIDrawerEnabled"
             display="flex"
-            alignItems={"center"}
-            justifyContent={"space-between"}
-            position="relative"
-            gap={1}
+            alignItems="center"
+            justifyContent="space-between"
+            height={52}
+            px={2}
+            py={1.25}
+            borderBottom={1}
+            borderColor="divider"
           >
-            <Box display="flex" alignItems={"center"} gap={1}>
-              <Stack
-                width={40}
-                height={40}
-                borderRadius="50%"
-                justifyContent="center"
-                alignItems="center"
-              >
-                <Box
-                  component="img"
-                  src={geminiIcon}
-                  alt="Gemini Icon"
-                  width="32px"
-                  display="block"
-                />
-              </Stack>
-              <Box>
-                <Box
-                  component="img"
-                  src={geminiLogo}
-                  alt="Gemini Logo"
-                  width="40px"
-                  display="block"
-                />
-                <Typography variant="h5" fontWeight={700}>
-                  AI Assistant Beta
-                </Typography>
-              </Box>
-              <IconButton
-                size="small"
-                onClick={() => {
-                  onClose();
-                }}
-                sx={{
-                  position: "absolute",
-                  right: 0,
-                  top: 0,
-                }}
-              >
-                <CloseIcon fontSize="medium" />
-              </IconButton>
-            </Box>
+            <Typography variant="body2" fontWeight={500}>
+              AI Assistant Beta
+            </Typography>
+
+            <IconButton
+              size="small"
+              onClick={() => {
+                onClose();
+              }}
+            >
+              <CloseIcon fontSize="medium" />
+            </IconButton>
           </Box>
           <ChatThread
             responses={responses}
