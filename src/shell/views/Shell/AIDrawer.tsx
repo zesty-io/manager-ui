@@ -18,7 +18,16 @@ import {
   Typography,
 } from "@mui/material";
 import { useSelector } from "react-redux";
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  forwardRef,
+  memo,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   useGeminiGenerationMutation,
   useGetChatSessionLogQuery,
@@ -156,8 +165,9 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
   >(chatStorageKey, undefined);
   const [responses, setResponses] = useState<Record<string, any[]>>({});
   const [composerSeed, setComposerSeed] = useState("");
+  const [hasComposerValue, setHasComposerValue] = useState(false);
+  const composerRef = useRef<PromptComposerHandle>(null);
 
-  const promptIsEmpty = isEmpty(composerSeed.trim());
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [autoApply, setAutoApply] = useState(false);
 
@@ -718,9 +728,11 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
                 Generate Suggestions
               </Button>
               <PromptComposer
+                ref={composerRef}
                 seed={composerSeed}
                 disabled={isLoading || isLoadingChatSessionLog}
                 onSubmit={handlePrompt}
+                onHasValueChange={setHasComposerValue}
               />
             </Box>
             <Box
@@ -752,16 +764,16 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
 
               <Button
                 variant="contained"
-                onClick={() => handlePrompt(composerSeed)}
-                disabled={promptIsEmpty}
+                onClick={() => composerRef.current?.submit()}
+                disabled={!hasComposerValue}
                 sx={{
                   borderRadius: 6,
                   padding: 0.5,
                   minWidth: 0,
-                  backgroundColor: promptIsEmpty
+                  backgroundColor: !hasComposerValue
                     ? "transparent!important"
                     : "primary.main",
-                  color: promptIsEmpty
+                  color: !hasComposerValue
                     ? "action.active"
                     : "primary.contrastText",
                 }}
@@ -868,49 +880,69 @@ type PromptComposerProps = {
   seed: string;
   disabled: boolean;
   onSubmit: (value: string) => void;
+  onHasValueChange: (hasValue: boolean) => void;
+};
+
+export type PromptComposerHandle = {
+  submit: () => void;
 };
 
 const PromptComposer = memo(
-  ({ seed, disabled, onSubmit }: PromptComposerProps) => {
-    const [draft, setDraft] = useState(seed);
-    const inputRef = useRef<HTMLInputElement>(null);
+  forwardRef<PromptComposerHandle, PromptComposerProps>(
+    ({ seed, disabled, onSubmit, onHasValueChange }, ref) => {
+      const [draft, setDraft] = useState(seed);
+      const inputRef = useRef<HTMLInputElement>(null);
+      const hasValueRef = useRef(false);
 
-    useEffect(() => {
-      setDraft(seed);
-      if (seed) {
-        inputRef.current?.focus();
-      }
-    }, [seed]);
+      useEffect(() => {
+        setDraft(seed);
+        if (seed) {
+          inputRef.current?.focus();
+        }
+      }, [seed]);
 
-    const submitDraft = () => {
-      if (!draft.trim()) {
-        return;
-      }
-      onSubmit(draft);
-      setDraft("");
-    };
+      // Only notifies the parent when emptiness actually flips, not on every
+      // keystroke, so the parent (a long chat thread) doesn't re-render while typing.
+      useEffect(() => {
+        const hasValue = !isEmpty(draft.trim());
+        if (hasValueRef.current !== hasValue) {
+          hasValueRef.current = hasValue;
+          onHasValueChange(hasValue);
+        }
+      }, [draft, onHasValueChange]);
 
-    return (
-      <TextField
-        data-cy="AIDrawerComposer"
-        inputRef={inputRef}
-        disabled={disabled}
-        placeholder={`Ask for anything, for example "Cater my content to a specific audience"`}
-        variant="outlined"
-        fullWidth
-        multiline
-        rows={4}
-        onChange={(e) => setDraft(e.target.value)}
-        value={draft}
-        onKeyPress={(e) => {
-          if (e.key === "Enter" && !e.shiftKey) {
-            e.preventDefault();
-            submitDraft();
-          }
-        }}
-      />
-    );
-  }
+      const submitDraft = useCallback(() => {
+        if (!draft.trim()) {
+          return;
+        }
+        onSubmit(draft);
+        setDraft("");
+      }, [draft, onSubmit]);
+
+      useImperativeHandle(ref, () => ({ submit: submitDraft }), [submitDraft]);
+
+      return (
+        <TextField
+          data-cy="AIDrawerComposer"
+          inputRef={inputRef}
+          disabled={disabled}
+          placeholder={`Ask for anything, for example "Cater my content to a specific audience"`}
+          variant="outlined"
+          fullWidth
+          multiline
+          rows={4}
+          onChange={(e) => setDraft(e.target.value)}
+          value={draft}
+          onKeyPress={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              submitDraft();
+            }
+          }}
+        />
+      );
+    }
+  )
 );
 PromptComposer.displayName = "PromptComposer";
 
