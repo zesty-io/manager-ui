@@ -393,6 +393,14 @@ jobs:
             echo "::error::❌ invalid severity in classification.json: '$severity'"
             exit 1
           fi
+          if [ "$verdict" = "simple" ]; then
+            branch_slug=$(jq -r '.branch_slug' classification.json)
+            pr_title=$(jq -r '.pr_title' classification.json)
+            if [ -z "$branch_slug" ] || [ -z "$pr_title" ]; then
+              echo "::error::❌ branch_slug and pr_title must both be non-empty for verdict=simple — got branch_slug='$branch_slug', pr_title='$pr_title'."
+              exit 1
+            fi
+          fi
 
           # Independently re-check the "Blast radius" hard veto from
           # sentry-rca-classification.md against the actual trial-fix diff, instead of
