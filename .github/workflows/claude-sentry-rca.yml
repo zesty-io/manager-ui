@@ -514,9 +514,31 @@ jobs:
           git add -A -- . ':(exclude)classification.json' ':(exclude)pr-description.md' ':(exclude)rca-comment.md'
           git commit -m "$title"
           git push -u origin "$branch"
+
+          # gh pr create resolves --reviewer logins to IDs before it creates anything —
+          # if even one of these three no longer has repo access, the whole PR creation
+          # fails, not just the reviewer request. Check each one first and only request
+          # whichever still have access, so losing one (or all) of them degrades the
+          # review assignment instead of blocking the PR outright.
+          candidate_reviewers=(agalin920 geodem127 finnar-bin)
+          valid_reviewers=()
+          for r in "${candidate_reviewers[@]}"; do
+            if gh api "repos/$REPO/collaborators/$r" >/dev/null 2>&1; then
+              valid_reviewers+=("$r")
+            else
+              echo "::warning::Reviewer '$r' no longer has access to $REPO — skipping."
+            fi
+          done
+          reviewer_args=()
+          if [ ${#valid_reviewers[@]} -gt 0 ]; then
+            IFS=,
+            reviewer_args=(--reviewer "${valid_reviewers[*]}")
+            unset IFS
+          fi
+
           pr_url=$(gh pr create --repo "$REPO" --base dev --title "$title" \
             --label "sentry-auto-fix" \
-            --reviewer agalin920,geodem127,finnar-bin \
+            "${reviewer_args[@]}" \
             --body-file pr-description.md)
           echo "pr_number=${pr_url##*/}" >> "$GITHUB_OUTPUT"
           echo "✅ Opened auto-fix PR on branch $branch for issue #$ISSUE."
