@@ -67,6 +67,11 @@ jobs:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         if: steps.detect.outputs.matched == 'true'
         with:
+          # An `issues` event has no natural ref of its own, so checkout would otherwise
+          # fall back to whatever the repo's default branch happens to be configured as.
+          # The auto-fix PR always targets dev — pin it explicitly rather than relying on
+          # that setting staying aligned with it.
+          ref: dev
           fetch-depth: 1
 
       # gh pr create / gh issue edit fail outright if a --label doesn't exist yet, and by
@@ -431,6 +436,11 @@ jobs:
             content_hit=""
             while IFS= read -r f; do
               [ -z "$f" ] && continue
+              # These are the workflow's own scratch files, never part of the fix commit
+              # (git add -A excludes them below) — scanning their prose for the token
+              # would false-positive if Claude's own PR description happens to mention
+              # LOADED_LOCAL_ while explaining why a fix is unrelated to it.
+              case "$f" in classification.json|pr-description.md|rca-comment.md) continue ;; esac
               if [ -f "$f" ] && grep -qF "LOADED_LOCAL_" "$f"; then
                 content_hit="$content_hit$f"$'\n'
               fi
