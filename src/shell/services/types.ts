@@ -83,19 +83,19 @@ export type IntegrationRequestHeaders<T extends string = string> = {
 };
 
 export type IntegrationKeyPaths = {
-  rootPath?: string | null;
-  itemId?: string | null;
-  heading?: string | null;
-  subHeading?: string | null;
-  thumbnail?: string | null;
-  detail?: string | null;
-  details?: string[] | null;
+  rootPath?: string | undefined;
+  itemId?: string;
+  heading?: string | undefined;
+  subHeading?: string | undefined;
+  thumbnail?: string | undefined;
+  detail?: string | undefined;
+  details?: string[] | undefined;
 };
 
 export type IntegrationFieldConfig = {
   endpoint: string;
   headers: IntegrationRequestHeaders | null;
-  type: IntegrationTypes | null;
+  type: IntegrationTypes;
   keyPaths: IntegrationKeyPaths | null;
 };
 

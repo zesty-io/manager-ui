@@ -14,9 +14,17 @@ import {
   useMemo,
 } from "react";
 import Button from "@mui/material/Button";
-import { Typography, Stack, Box, TextField } from "@mui/material";
+import {
+  Typography,
+  Stack,
+  Box,
+  TextField,
+  IconButton,
+  Tooltip,
+} from "@mui/material";
 import { format, isValid } from "date-fns";
 import CalendarTodayRoundedIcon from "@mui/icons-material/CalendarTodayRounded";
+import CloseRounded from "@mui/icons-material/CloseRounded";
 
 export interface FieldTypeDateProps extends DatePickerProps<Date> {
   name: string;
@@ -29,6 +37,7 @@ export interface FieldTypeDateProps extends DatePickerProps<Date> {
   onClear?: () => void;
   showClearButton?: boolean;
   valueFormatPreview?: string;
+  compact?: boolean;
 }
 
 const parseDateInput = (input: string): Date | null => {
@@ -87,6 +96,11 @@ const parseDateInput = (input: string): Date | null => {
   return new Date(year, isValidMonth ? month : currentMonth, day);
 };
 
+const getStoredDateText = (value: unknown): string => {
+  if (!value || !isValid(value)) return "";
+  return `Stored as ${format(value as Date, "yyyy-MM-dd")}`;
+};
+
 export const FieldTypeDate = memo(
   forwardRef(
     (
@@ -97,6 +111,7 @@ export const FieldTypeDate = memo(
         onClear,
         showClearButton = true,
         valueFormatPreview,
+        compact,
         ...props
       }: FieldTypeDateProps,
       ref
@@ -175,7 +190,11 @@ export const FieldTypeDate = memo(
       return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <Stack direction="row" gap={0.5} alignItems="center">
-            <Box maxWidth={160} flexShrink={0}>
+            <Box
+              {...(compact
+                ? { flex: 1, minWidth: 0 }
+                : { maxWidth: 160, flexShrink: 0 })}
+            >
               <DatePicker
                 reduceAnimations
                 open={isOpen}
@@ -245,25 +264,35 @@ export const FieldTypeDate = memo(
             {!!slots?.timePicker && slots.timePicker}
             {!!slots?.timezonePicker && slots.timezonePicker}
 
-            {showClearButton && (
-              <Button
-                data-cy="dateFieldClearButton"
-                color="inherit"
-                variant="text"
-                size="small"
-                sx={{ minWidth: 45 }}
-                onClick={handleClear}
-              >
-                Clear
-              </Button>
-            )}
+            {showClearButton &&
+              (compact ? (
+                <Tooltip title="Clear">
+                  <IconButton
+                    data-cy="dateFieldClearButton"
+                    size="small"
+                    onClick={handleClear}
+                    aria-label="Clear"
+                  >
+                    <CloseRounded fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              ) : (
+                <Button
+                  data-cy="dateFieldClearButton"
+                  color="inherit"
+                  variant="text"
+                  size="small"
+                  sx={{ minWidth: 45 }}
+                  onClick={handleClear}
+                >
+                  Clear
+                </Button>
+              ))}
           </Stack>
-          {(valueFormatPreview || props.value) && (
+
+          {(valueFormatPreview || props?.value) && (
             <Typography variant="body3" color="text.secondary" sx={{ mt: 0.5 }}>
-              {valueFormatPreview ??
-                (props.value && isValid(props.value)
-                  ? `Stored as ${format(props.value, "yyyy-MM-dd")}`
-                  : "")}
+              {valueFormatPreview || getStoredDateText(props?.value)}
             </Typography>
           )}
         </LocalizationProvider>

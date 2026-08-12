@@ -24,6 +24,7 @@ type FieldTypeDateTimeProps = {
   selectedTimezone?: string;
   onTimezoneChange?: (timezone: string) => void;
   disablePast?: boolean;
+  compact?: boolean;
 };
 
 // --- helpers (local) ---
@@ -87,6 +88,7 @@ export const FieldTypeDateTime = ({
   selectedTimezone,
   onTimezoneChange,
   disablePast = false,
+  compact,
 }: FieldTypeDateTimeProps) => {
   const timeFieldRef = useRef<HTMLDivElement>(null);
   const optionsRef = useRef<HTMLDivElement>(null);
@@ -195,6 +197,7 @@ export const FieldTypeDateTime = ({
           setInputValue("");
         }}
         error={error}
+        compact={compact}
         slots={{
           timePicker: (
             <Tooltip
@@ -208,7 +211,7 @@ export const FieldTypeDateTime = ({
                 key={timeKeyCount}
                 open={isTimeFieldActive}
                 value={timeString}
-                forcePopupIcon={false}
+                forcePopupIcon={!!compact}
                 inputValue={inputValue}
                 options={TIME_OPTIONS}
                 getOptionLabel={(option) => {
@@ -252,8 +255,9 @@ export const FieldTypeDateTime = ({
                 }}
                 onInputChange={(_, v) => setInputValue(v)}
                 sx={{
-                  width: 96,
-                  flexShrink: 0,
+                  ...(compact
+                    ? { flex: 1, minWidth: 0 }
+                    : { width: 96, flexShrink: 0 }),
                   "& .MuiAutocomplete-inputRoot": {
                     py: 0.75,
                     px: 1,

@@ -53,8 +53,7 @@ const IntegrationFieldConfigure = ({
   );
   const [apiData, setApiData] = useState<any | null>(null);
 
-  const isConnected =
-    !!integrationFieldConfig?.endpoint && !!integrationFieldConfig?.type;
+  const isConnected = !!endpoint && !!type;
   const isFetchingApiData = status === "connecting";
 
   const onSave = useCallback(() => {
@@ -69,33 +68,44 @@ const IntegrationFieldConfigure = ({
   }, [endpoint, headers, type, keyPaths, onChange]);
 
   const onClose = useCallback(() => {
+    // reset state to initial values
+    setEndpoint(integrationFieldConfig?.endpoint || "");
+    setHeaders(integrationFieldConfig?.headers || null);
+    setType(integrationFieldConfig?.type || null);
+    setKeyPaths(integrationFieldConfig?.keyPaths || null);
+    hasFetchedInitialData.current = false;
     setIsFormOpen(false);
-  }, []);
+  }, [integrationFieldConfig]);
 
-  const onOpen = useCallback(() => {
-    setIsFormOpen(true);
-    setActiveStep(!isUpdate ? 0 : 1);
-  }, [isUpdate]);
+  const onOpen = useCallback(
+    (step?: number) => {
+      setIsFormOpen(true);
+      setActiveStep(step ?? (!isUpdate ? 0 : 1));
+    },
+    [isUpdate]
+  );
 
   useEffect(() => {
     if (
-      !isUpdate ||
-      !endpoint ||
-      isFetchingApiData ||
-      !!apiData ||
-      hasFetchedInitialData.current
-    )
-      return;
+      !!isUpdate &&
+      !!integrationFieldConfig?.endpoint &&
+      !isFetchingApiData &&
+      !hasFetchedInitialData.current
+    ) {
+      setEndpoint(integrationFieldConfig?.endpoint || "");
+      setHeaders(integrationFieldConfig?.headers || null);
+      setType(integrationFieldConfig?.type || null);
+      setKeyPaths(integrationFieldConfig?.keyPaths || null);
 
-    hasFetchedInitialData.current = true;
-    const options = !headers
-      ? {}
-      : {
-          headers,
-        };
-
-    fetchApiData(endpoint, options);
-  }, [isUpdate, endpoint, headers, isFetchingApiData, apiData, fetchApiData]);
+      const options = !integrationFieldConfig?.headers
+        ? {}
+        : {
+            headers: integrationFieldConfig?.headers,
+          };
+      fetchApiData(integrationFieldConfig?.endpoint, options);
+      hasFetchedInitialData.current = true;
+    }
+  }, [isUpdate, integrationFieldConfig, isFetchingApiData, fetchApiData]);
 
   useEffect(() => {
     setApiData(data);
@@ -114,6 +124,8 @@ const IntegrationFieldConfigure = ({
             setApiData={setApiData}
             setActiveStep={setActiveStep}
             closeForm={onClose}
+            isUpdate={isUpdate}
+            keyPaths={keyPaths}
           />
         );
       case 1:
@@ -150,6 +162,7 @@ const IntegrationFieldConfigure = ({
     type,
     keyPaths,
     apiData,
+    isUpdate,
     onClose,
     fetchApiData,
     onSave,
@@ -157,7 +170,7 @@ const IntegrationFieldConfigure = ({
 
   return (
     <Box>
-      {isConnected ? (
+      {isUpdate || isConnected ? (
         <>
           <Typography variant="h6" mb={1}>
             API Configuration Settings
@@ -180,7 +193,7 @@ const IntegrationFieldConfigure = ({
               <InputBase
                 data-cy="integrationApiUrl"
                 readOnly
-                value={integrationFieldConfig?.endpoint}
+                value={endpoint}
                 sx={{ flexGrow: 1 }}
                 slotProps={{
                   input: {
@@ -198,7 +211,7 @@ const IntegrationFieldConfigure = ({
               <InputBase
                 data-cy="integrationDisplayType"
                 readOnly
-                value={integrationFieldConfig?.type}
+                value={type}
                 sx={{ flexGrow: 1 }}
                 slotProps={{
                   input: {
@@ -214,22 +227,44 @@ const IntegrationFieldConfigure = ({
         </>
       ) : null}
 
-      <Button
-        data-cy="integrationConfigureButton"
-        variant="outlined"
-        color="primary"
-        startIcon={isConnected ? <Autorenew /> : <LinkRounded />}
-        onClick={onOpen}
-        sx={{ mt: 1 }}
-        loading={isFetchingApiData}
-        loadingPosition="start"
-      >
-        {isUpdate
-          ? "Reconfigure Display Options"
-          : isConnected
-          ? "Reconfigure"
-          : "Connect to API"}
-      </Button>
+      {isUpdate ? (
+        <Box display="flex" gap={1} mt={1}>
+          <Button
+            data-cy="integrationEditApiUrlButton"
+            variant="outlined"
+            color="primary"
+            startIcon={<Autorenew />}
+            onClick={() => onOpen(0)}
+            loading={isFetchingApiData}
+            loadingPosition="start"
+          >
+            Edit API URL
+          </Button>
+          <Button
+            data-cy="integrationConfigureButton"
+            variant="outlined"
+            color="primary"
+            onClick={() => onOpen(1)}
+            loading={isFetchingApiData}
+            loadingPosition="start"
+          >
+            Edit Display Options
+          </Button>
+        </Box>
+      ) : (
+        <Button
+          data-cy="integrationConfigureButton"
+          variant="outlined"
+          color="primary"
+          startIcon={isConnected ? <Autorenew /> : <LinkRounded />}
+          onClick={() => onOpen()}
+          sx={{ mt: 1 }}
+          loading={isFetchingApiData}
+          loadingPosition="start"
+        >
+          {isConnected ? "Reconfigure" : "Connect to API"}
+        </Button>
+      )}
       {!!error && (
         <Typography variant="body2" color="error.main" sx={{ mt: 0.5 }}>
           {error}

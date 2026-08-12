@@ -7,6 +7,7 @@ import {
   ContentModel,
   ContentModelField,
   CreateStatusLabel,
+  RedirectRequest,
   WorkflowStatusLabel,
 } from "../../../src/shell/services/types";
 
@@ -136,10 +137,26 @@ module.exports = function content(config) {
     });
   }
 
+  async function publishItem(modelZUID: string, itemZUID: string) {
+    const sdk = await getSDK(config);
+    // Version 1: safe because callers only pass items just created by seedContent.
+    const res = await sdk.instance.publishItem(modelZUID, itemZUID, 1);
+    return res.data;
+  }
+
+  async function createRedirect(payload: RedirectRequest) {
+    const sdk = await getSDK(config);
+    const res = await sdk.instance.createRedirect(payload);
+    return res.data;
+  }
+
   // CONTENT TASK MAPPING
   return {
     "seed:content": (path: string) => seedContent(path),
     "api:createLabel": (data: CreateStatusLabel) => createLabel(data),
     "cleanup:labels": () => deleteAllLabels(),
+    "api:publishItem": (data: { modelZUID: string; itemZUID: string }) =>
+      publishItem(data.modelZUID, data.itemZUID),
+    "api:createRedirect": (payload: RedirectRequest) => createRedirect(payload),
   };
 };

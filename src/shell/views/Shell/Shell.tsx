@@ -42,7 +42,22 @@ import { registerNavigate } from "../../../engine/navigator";
 import { AIDrawer } from "./AIDrawer";
 import { useLocalStorage } from "react-use";
 import * as amplitude from "@amplitude/analytics-browser";
+import { sessionReplayPlugin } from "@amplitude/plugin-session-replay-browser";
 import instanceZUID from "../../../utility/instanceZUID";
+import { isZestyEmail } from "../../../utility/isZestyEmail";
+
+let sessionReplayAdded = false;
+function maybeEnableSessionReplay(email?: string) {
+  if (
+    !sessionReplayAdded &&
+    window.CONFIG?.ENV === "production" &&
+    !!email &&
+    !isZestyEmail(email)
+  ) {
+    amplitude.add(sessionReplayPlugin({ sampleRate: 1 }));
+    sessionReplayAdded = true;
+  }
+}
 
 export default memo(function Shell() {
   const dispatch = useDispatch();
@@ -80,6 +95,7 @@ export default memo(function Shell() {
   }, [history]);
 
   amplitude.setUserId(user.email);
+  maybeEnableSessionReplay(user.email);
 
   const identifyEvent = new amplitude.Identify();
   identifyEvent.set("instanceZUID", instance.ZUID);

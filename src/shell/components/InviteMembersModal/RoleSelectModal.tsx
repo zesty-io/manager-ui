@@ -43,6 +43,7 @@ const iconStyles = {
   padding: 1,
   borderRadius: "20px",
   display: "block",
+  fontSize: 32,
 };
 
 const roleIcons = [

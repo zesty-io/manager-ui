@@ -1,0 +1,54 @@
+{
+  "model": {
+    "label": "Schema - Integration MaxValue",
+    "type": "pageset",
+    "listed": true
+  },
+  "fields": [
+    {
+      "label": "Title",
+      "name": "title",
+      "datatype": "text",
+      "sort": 0,
+      "settings": {
+        "list": true
+      }
+    },
+    {
+      "label": "Players",
+      "name": "players",
+      "datatype": "integration",
+      "sort": 1,
+      "settings": {
+        "maxValue": 2,
+        "integrationFieldConfig": {
+          "endpoint": "https://8xbq19z1-dev.preview.stage.zesty.io/api/generic.json",
+          "headers": null,
+          "type": "simple",
+          "keyPaths": {
+            "detail": null,
+            "details": null,
+            "heading": "name",
+            "itemId": "playerId",
+            "rootPath": "",
+            "subHeading": null,
+            "thumbnail": null
+          }
+        },
+        "list": true
+      }
+    }
+  ],
+  "items": [
+    {
+      "web": {
+        "metaTitle": "Integration MaxValue",
+        "metaLinkText": "Integration MaxValue"
+      },
+      "data": {
+        "title": null,
+        "players": null
+      }
+    }
+  ]
+}

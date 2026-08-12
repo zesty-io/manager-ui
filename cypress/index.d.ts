@@ -3,6 +3,7 @@ import {
   ContentModel,
   ContentModelField,
   CreateStatusLabel,
+  RedirectRequest,
   WorkflowStatusLabel,
 } from "../src/shell/services/types";
 import "./support/commands";
@@ -72,6 +73,14 @@ declare global {
         event: "api:createLabel",
         data: CreateStatusLabel
       ): Chainable<WorkflowStatusLabel>;
+      task(
+        event: "api:publishItem",
+        data: { modelZUID: string; itemZUID: string }
+      ): Chainable<any>;
+      task(
+        event: "api:createRedirect",
+        payload: RedirectRequest
+      ): Chainable<any>;
     }
   }
 }

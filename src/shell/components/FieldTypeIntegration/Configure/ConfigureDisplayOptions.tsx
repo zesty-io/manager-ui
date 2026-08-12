@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import {
   Button,
   DialogActions,
@@ -26,72 +26,11 @@ import { FormWrapper } from "../Shared/FormWrapper";
 import { FieldWrapper } from "../Shared/FieldWrapper";
 import { DISPLAY_OPTIONS_CONFIG } from "../constants";
 import { ConfigProps } from "../types";
-import { getKeyValue } from "../utils";
+import { get } from "lodash";
 import { IntegrationKeyPaths, IntegrationTypes } from "../../../services/types";
 import KeyPathSelector from "./KeyPathSelector";
 import DisplayCard from "../Shared/DisplayCard";
-
-const getObjectKeyPaths = <T extends object>(obj: T, prefix = ""): string[] => {
-  const result: string[] = [];
-
-  for (const key in obj) {
-    if (Object.prototype.hasOwnProperty.call(obj, key)) {
-      const currentKey = prefix ? `${prefix}.${key}` : key;
-      const value = (obj as Record<string, unknown>)[key];
-
-      if (typeof value === "object" && value !== null) {
-        if (Array.isArray(value)) {
-          value.forEach((arrayElement, index) => {
-            const arrayKey = `${currentKey}[${index}]`;
-            if (typeof arrayElement === "object" && arrayElement !== null) {
-              result.push(...getObjectKeyPaths(arrayElement, arrayKey));
-            } else {
-              result.push(arrayKey);
-            }
-          });
-        } else {
-          result.push(...getObjectKeyPaths(value, currentKey));
-        }
-      } else {
-        result.push(currentKey);
-      }
-    }
-  }
-
-  return result;
-};
-
-const getAllArrayKeyPaths = <T extends object>(
-  obj: T,
-  prefix = ""
-): string[] => {
-  const result: string[] = [];
-
-  for (const key in obj) {
-    if (Object.prototype.hasOwnProperty.call(obj, key)) {
-      const currentKey = prefix ? `${prefix}.${key}` : key;
-      const value = (obj as Record<string, unknown>)[key];
-
-      if (Array.isArray(value)) {
-        if (value.length > 0 && typeof value[0] === "object") {
-          result.push(currentKey);
-        }
-
-        value.forEach((item, index) => {
-          if (typeof item === "object" && item !== null) {
-            result.push(
-              ...getAllArrayKeyPaths(item, `${currentKey}[${index}]`)
-            );
-          }
-        });
-      } else if (typeof value === "object" && value !== null) {
-        result.push(...getAllArrayKeyPaths(value, currentKey));
-      }
-    }
-  }
-
-  return result;
-};
+import { getObjectKeyPaths, getAllArrayKeyPaths } from "./keyPathResolution";
 
 const ConfigureDisplayOptions = ({
   type,
@@ -128,13 +67,8 @@ const ConfigureDisplayOptions = ({
   );
   const [isCompleted, setIsCompleted] = useState<boolean>(false);
 
-  const handleSave = () => {
-    onSave();
-    closeForm?.();
-  };
-
   const handleRemoveDetail = (index: number) => {
-    if (detailsPathData.length === 1) {
+    if (detailsPathData?.length === 1) {
       setDetailsPathData([""]);
       lastDetailRef.current?.focus();
       return;
@@ -146,7 +80,7 @@ const ConfigureDisplayOptions = ({
     if (!apiData || rootData) return;
 
     if (rootPath) {
-      const dataRoot = getKeyValue(apiData, rootPath)[0];
+      const dataRoot = get(apiData, rootPath)?.[0];
       const optionsRaw = getObjectKeyPaths(dataRoot);
       setRootData(dataRoot);
       setRootPathOptions(optionsRaw);
@@ -190,6 +124,31 @@ const ConfigureDisplayOptions = ({
     }
     setIsCompleted(completed);
   }, [displayConfig, rootPathData, detailsPathData, rootPath]);
+
+  // Heuristic only: flags duplicate Item ID values in the sampled response.
+  // Absence of a warning does not guarantee the keyPath is unique — see #4091.
+  const itemIdDuplicateWarning = useMemo(() => {
+    const itemIdPath = rootPathData.itemId;
+    if (!itemIdPath || !apiData) return null;
+
+    const data = (!rootPath ? apiData : get(apiData, rootPath)) || [];
+    if (!Array.isArray(data) || data.length < 2) return null;
+
+    const idValueCounts = new Map<unknown, number>();
+    data.forEach((item: object) => {
+      const idValue = get(item, itemIdPath);
+      if (idValue !== undefined) {
+        idValueCounts.set(idValue, (idValueCounts.get(idValue) ?? 0) + 1);
+      }
+    });
+
+    const hasDuplicates = Array.from(idValueCounts.values()).some(
+      (count) => count > 1
+    );
+    if (!hasDuplicates) return null;
+
+    return `"${itemIdPath}" is not unique across the ${data.length} sampled items — this can cause selections to be recognized incorrectly.`;
+  }, [apiData, rootPath, rootPathData.itemId]);
 
   return (
     <FormWrapper height="calc(100vh - 40px)" width="1200px">
@@ -252,7 +211,7 @@ const ConfigureDisplayOptions = ({
               </Typography>
             </Box>
 
-            {apiPathOptions.length > 0 && (
+            {apiPathOptions?.length > 0 && (
               <>
                 <FieldWrapper label="Data Path" isRequired>
                   <KeyPathSelector
@@ -261,7 +220,7 @@ const ConfigureDisplayOptions = ({
                     options={apiPathOptions}
                     placeholder="Select Data Path"
                     onChange={(value) => {
-                      const rootDataRaw = getKeyValue(apiData, value)[0];
+                      const rootDataRaw = get(apiData, value)?.[0];
                       const rootPathOptionsRaw = getObjectKeyPaths(rootDataRaw);
                       setRootData(rootDataRaw);
                       setRootPathOptions(rootPathOptionsRaw);
@@ -281,12 +240,21 @@ const ConfigureDisplayOptions = ({
               gap={1.5}
               data-cy="integrationConfigureOptionKeyPathContainer"
             >
-              {rootPathOptions.length > 0 &&
+              {rootPathOptions?.length > 0 &&
                 displayConfig.map((config: ConfigProps) => (
                   <FieldWrapper
                     key={config.name}
                     label={config.label}
                     isRequired={true}
+                    toolTip={config.toolTip}
+                    warning={
+                      config.name === "itemId" ? itemIdDuplicateWarning : null
+                    }
+                    warningTestId={
+                      config.name === "itemId"
+                        ? "integrationItemIdDuplicateWarning"
+                        : undefined
+                    }
                   >
                     {config.type === "option" ? (
                       <Box
@@ -411,15 +379,32 @@ const ConfigureDisplayOptions = ({
               />
               <DisplayCard
                 type={type}
-                heading={getKeyValue(rootData, rootPathData.heading)}
-                subHeading={getKeyValue(rootData, rootPathData.subHeading)}
-                thumbnail={getKeyValue(rootData, rootPathData.thumbnail)}
-                detail={getKeyValue(rootData, rootPathData.detail)}
+                heading={
+                  !rootPathData.heading
+                    ? "Add Heading"
+                    : get(rootData, rootPathData.heading)
+                }
+                subHeading={
+                  !rootPathData.subHeading
+                    ? "Add Subheading"
+                    : get(rootData, rootPathData.subHeading)
+                }
+                detail={
+                  !rootPathData.detail
+                    ? "Add Detail"
+                    : get(rootData, rootPathData.detail)
+                }
                 details={detailsPathData?.map((keyPath) => ({
-                  key: keyPath || "",
-                  value: !keyPath ? "" : getKeyValue(rootData, keyPath),
+                  key: !keyPath ? "+ Add Detail" : keyPath,
+                  value: !keyPath ? "" : get(rootData, keyPath),
                 }))}
+                thumbnail={
+                  !rootPathData.thumbnail
+                    ? ""
+                    : get(rootData, rootPathData.thumbnail)
+                }
                 showPlayIcon={false}
+                showPlaceholders
               />
               <MoreHoriz color="action" sx={{ m: 1.75 }} />
             </Paper>
@@ -443,8 +428,8 @@ const ConfigureDisplayOptions = ({
           data-cy="integrationConfigureDisplayOptionsDoneButton"
           variant="contained"
           startIcon={<CheckRounded />}
-          disabled={!isCompleted}
-          onClick={handleSave}
+          disabled={!isCompleted || !!itemIdDuplicateWarning}
+          onClick={onSave}
         >
           Done
         </Button>

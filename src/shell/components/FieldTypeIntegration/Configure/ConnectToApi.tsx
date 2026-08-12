@@ -27,10 +27,14 @@ import AddCircleIcon from "@mui/icons-material/AddCircle";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import { FormWrapper } from "../Shared/FormWrapper";
 import { FieldWrapper } from "../Shared/FieldWrapper";
-import { IntegrationRequestHeaders } from "../../../services/types";
-import { validateUrl } from "../utils";
+import {
+  IntegrationKeyPaths,
+  IntegrationRequestHeaders,
+} from "../../../services/types";
+import { validateUrl } from "utility/validateUrl";
 import useIntegrationField from "../useIntegrationField";
 import { v4 as uuidv4 } from "uuid";
+import { doKeyPathsResolve } from "./keyPathResolution";
 
 const CONNECTION_STATUSES: {
   [key: string]: {
@@ -69,7 +73,19 @@ const CONNECTION_STATUSES: {
     subTitle:
       "We couldn't connect to the API endpoint you entered. This may be due to an unexpected structure, a missing or invalid URL, or incorrect custom integrationHeaders.",
     buttonLabel: "Try Again",
-    buttonIcon: <AutorenewRoundedIcon fontSize="small" sx={{ fontSize: 40 }} />,
+    buttonIcon: <AutorenewRoundedIcon sx={{ fontSize: 40 }} />,
+    variant: "contained",
+    color: "primary",
+  },
+  invalid: {
+    icon: (
+      <InfoRoundedIcon fontSize="large" color="error" sx={{ fontSize: 40 }} />
+    ),
+    title: "Unsupported Response Format",
+    subTitle:
+      "The API connected, but its response can't be used to configure this field.",
+    buttonLabel: "Try Again",
+    buttonIcon: <AutorenewRoundedIcon sx={{ fontSize: 40 }} />,
     variant: "contained",
     color: "primary",
   },
@@ -84,6 +100,8 @@ const ConnectToApi = ({
   setApiData,
   setActiveStep,
   closeForm,
+  isUpdate = false,
+  keyPaths = null,
 }: {
   activeStep: number;
   endpoint: string;
@@ -93,9 +111,11 @@ const ConnectToApi = ({
   setApiData: (data: any) => void;
   setActiveStep: (step: number) => void;
   closeForm?: () => void;
+  isUpdate?: boolean;
+  keyPaths?: IntegrationKeyPaths | null;
 }) => {
   const focusRef = useRef<string>("url");
-  const { data, status, fetchApiData } = useIntegrationField();
+  const { data, status, invalidReason, fetchApiData } = useIntegrationField();
 
   const [isValidUrl, setIsValidUrl] = useState(true);
   const [reqAborted, setReqAborted] = useState<boolean>(false);
@@ -138,6 +158,12 @@ const ConnectToApi = ({
     setReqAborted(true);
     setActiveStep(0);
   };
+
+  const keyPathsMismatch =
+    status === "success" &&
+    isUpdate &&
+    !!keyPaths &&
+    !doKeyPathsResolve(data, keyPaths);
 
   const handleApiConnect = useCallback(() => {
     setReqAborted(false);
@@ -395,13 +421,29 @@ const ConnectToApi = ({
               {CONNECTION_STATUSES[status].title}
             </Typography>
             <Typography
+              data-cy="integrationConnectionStatusSubtitle"
               variant="body2"
               color="text.primary"
               fontWeight={400}
               textAlign="center"
             >
-              {CONNECTION_STATUSES[status].subTitle}
+              {status === "invalid"
+                ? invalidReason
+                : CONNECTION_STATUSES[status].subTitle}
             </Typography>
+            {keyPathsMismatch && (
+              <Typography
+                data-cy="integrationKeyPathsMismatchWarning"
+                variant="body2"
+                color="warning.dark"
+                fontWeight={500}
+                textAlign="center"
+                sx={{ mt: 1 }}
+              >
+                This endpoint returns a different structure. Existing saved
+                items will display incorrectly and will need to be re-selected.
+              </Typography>
+            )}
           </Box>
           <Button
             data-cy="integrationConnectionStatusButton"

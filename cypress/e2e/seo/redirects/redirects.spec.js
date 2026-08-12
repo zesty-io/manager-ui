@@ -306,6 +306,34 @@ describe("Redirects", () => {
     });
   });
 
+  describe("Path Field Character Validation", () => {
+    it("Allowed Characters", () => {
+      cy.getElement('[data-cy="RedirectActionCreateButton"]').click();
+
+      const allowedInput = "abc-123_test.value~foo&bar=baz?qux$1:2#3*4%5";
+
+      cy.getElement('[data-cy="RedirectsFieldPath"]:eq(0) input')
+        .type(allowedInput, { parseSpecialCharSequences: false })
+        .should("have.value", `/${allowedInput}`);
+
+      cy.getBySelector("RedirectsFormCancelButton").click();
+    });
+
+    it("Invalid Characters", () => {
+      cy.getElement('[data-cy="RedirectActionCreateButton"]').click();
+
+      // Characters outside the PathField allowlist (@ ! ^ ( ) + , ;) are
+      // dropped as they're typed, leaving only the allowed letters behind.
+      cy.getElement('[data-cy="RedirectsFieldPath"]:eq(0) input')
+        .type("ab@cd!ef^gh(ij)kl+mn,op;qr", {
+          parseSpecialCharSequences: false,
+        })
+        .should("have.value", "/abcdefghijklmnopqr");
+
+      cy.getBySelector("RedirectsFormCancelButton").click();
+    });
+  });
+
   describe("Update Redirect", () => {
     it("Success", () => {
       cy.getElement(".MuiDataGrid-cell")

@@ -1,4 +1,11 @@
 name: Claude Auto Review
+
+# Code-level review on every non-draft PR into dev: bugs, security, performance, and CLAUDE.md
+# "Review red flags" only. The Claude Change Verifier workflow owns "what does this change do"
+# and acceptance-criteria QA — this workflow must never duplicate that. Findings land as inline
+# comments; each run posts a fresh single-line verdict comment (deliberately NOT updated in
+# place) so the PR timeline shows the review history: "1 blocker" → fix commits → "no blockers".
+
 on:
   pull_request:
     branches: [dev]
@@ -22,26 +29,75 @@ jobs:
 
       - uses: anthropics/claude-code-action@1dc994ee7a008f0ecc866d9ac23ef036b7229f84 # v1.0.127
         with:
-          use_sticky_comment: true
           github_token: ${{ secrets.GITHUB_TOKEN }}
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           prompt: |
-            REPO: ${{ github.repository }}
-            PR NUMBER: ${{ github.event.pull_request.number }}
+            You are the CODE reviewer for this pull request. A separate "QA Review" workflow
+            already summarizes what the change does and validates it against the linked issue's
+            acceptance criteria. Do not duplicate it: no change summary, no restating the diff,
+            no judging whether the PR satisfies its issue, no test-coverage suggestions.
 
-            Please review this pull request with a focus on:
-            - Code quality and best practices
-            - Potential bugs or issues
-            - Security implications
-            - Performance considerations
+            Inputs:
+              REPO        = ${{ github.repository }}
+              PR_NUMBER   = ${{ github.event.pull_request.number }}
+              REPORT_FILE = ${{ github.workspace }}/review-comment.md
 
-            Note: The PR branch is already checked out in the current working directory.
+            Read the diff (gh pr diff <PR_NUMBER> --repo <REPO>) and the checked-out source, and
+            look only for, in priority order:
+              1. Bugs — logic errors, crashes, broken edge cases, regressions.
+              2. Security issues.
+              3. Performance problems (re-render perf matters in this repo — see CLAUDE.md).
+              4. Violations of the "Review red flags" list in CLAUDE.md.
 
-            Use `gh pr comment` for top-level feedback.
-            Use `mcp__github_inline_comment__create_inline_comment` (with `confirmed: true`) to highlight specific code issues.
-            Only post GitHub comments - don't submit review text as messages.
+            Report only findings you are confident are real. No style nits, no praise, no
+            speculative "consider…" advice without a concrete failure mode. An empty review is
+            a valid and common outcome.
+
+            For each finding, post one inline comment with
+            mcp__github_inline_comment__create_inline_comment (confirmed: true), shaped as:
+              **<🔴 or 🟡> <one-line finding>**
+              <at most 3 sentences: what breaks and when, then the fix — a sentence or a short
+               code block.>
+            Severity: 🔴 Blocker — will break something. 🟡 Warning — likely problem or a
+            red-flag violation.
+
+            Then write the verdict to REPORT_FILE with the Write tool. It is exactly two lines
+            (keep the HTML marker verbatim as the first line) and nothing else — no table, no
+            list of findings, no prose:
+
+              <!-- claude-code-review -->
+              ## Code Review — <verdict>
+
+            where <verdict> is exactly one of:
+              ✅ No blockers
+              ✅ No blockers · 🟡 M warning(s) — see inline comments
+              🔴 N blocker(s) · 🟡 M warning(s) — see inline comments
+            Never write a zero count — omit that segment instead.
+
+            The inline comments ARE the review; the verdict comment only answers "can this
+            merge?". Do not post the verdict comment yourself and do not reply in chat.
 
           claude_args: |
-            --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Read,Grep,Glob"
+            --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr diff:*),Bash(gh pr view:*),Read,Write,Grep,Glob"
             --model claude-sonnet-4-6
-            --max-turns 20
+            --max-turns 50
+
+      # Always post a NEW verdict comment (never update in place): each push's verdict lands in
+      # the PR timeline between the commits it reviewed, preserving the review history.
+      - name: Post review verdict
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+          FILE="$GITHUB_WORKSPACE/review-comment.md"
+          if [ ! -s "$FILE" ] || ! grep -q '<!-- claude-code-review -->' "$FILE"; then
+            echo "::warning::review-comment.md missing or malformed; skipping verdict comment."
+            exit 0
+          fi
+          BODY=$(cat "$FILE")
+          PAYLOAD=$(BODY="$BODY" python3 -c 'import os,json,sys; sys.stdout.write(json.dumps({"body": os.environ["BODY"]}))')
+          printf '%s' "$PAYLOAD" | gh api -X POST "repos/$REPO/issues/$PR/comments" --input - --silent
+          echo "Posted review verdict comment."

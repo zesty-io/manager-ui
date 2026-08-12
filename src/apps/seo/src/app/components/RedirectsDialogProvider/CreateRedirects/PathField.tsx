@@ -40,7 +40,7 @@ const PathField: FC<PathFieldProps> = ({
 
       if (!data) return;
       data = data.replace(/ /g, "-").replace(/\s+/g, "");
-      const allowedChars = /^[a-zA-Z0-9\-_.~&=/?\$:#\*]+$/;
+      const allowedChars = /^[a-zA-Z0-9\-_.~&=/?\$:#\*%]+$/;
       if (!allowedChars.test(data)) {
         event.preventDefault();
         return;

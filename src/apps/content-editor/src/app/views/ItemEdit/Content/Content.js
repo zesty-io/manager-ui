@@ -349,7 +349,7 @@ export default function Content(props) {
               hasErrors={props.hasErrors}
               isLoadingItem={isLoadingItem}
             />
-            {props.model.type !== "block" && (
+            {props?.model?.type !== "block" && (
               <UsedBlocks
                 blockReferences={blockReferences}
                 isBuildingReferences={isBuildingReferences}

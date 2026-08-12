@@ -954,4 +954,37 @@ describe("Content Specs", () => {
         .should("not.contain.text", "bulk remove row");
     });
   });
+
+  describe("WYSIWYG dirty detection", () => {
+    before(() => {
+      cy.waitOn("/v1/content/models*", () => {
+        cy.visit(
+          `/content/${Cypress.env("modelZUID")}/${Cypress.env("itemZUID")}`
+        );
+      });
+    });
+
+    it("dirties on the first keystroke and clears after save", () => {
+      // 1. A freshly loaded item is clean — no save button.
+      cy.getBySelector("SaveItemButton", options).should("not.exist");
+
+      // 2. A single character is enough to dirty the item (past the 500ms
+      //    input debounce, which .should() retries through).
+      cy.iframe("#wysiwyg_basic_ifr").should("be.visible").click().type("a");
+      cy.getBySelector("SaveItemButton", options).should("exist");
+
+      // 3. Saving clears the dirty state and it stays clear through the
+      //    post-save version bump + editor remount.
+      cy.waitOn("/v1/content/models/*/items/*", () => {
+        cy.getBySelector("SaveItemButton").should("be.enabled").click();
+      });
+      cy.getBySelector("toast").contains("Item Saved").should("exist");
+      cy.getBySelector("SaveItemButton", options).should("not.exist");
+
+      // 4. After the remount, a keystroke still dirties the item — proving the
+      //    baseline was re-established for the new editor instance.
+      cy.iframe("#wysiwyg_basic_ifr").should("be.visible").click().type("b");
+      cy.getBySelector("SaveItemButton", options).should("exist");
+    });
+  });
 });
