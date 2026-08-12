@@ -415,12 +415,30 @@ jobs:
             # invisible to it, yet still gets swept into the fix commit by the `git add
             # -A` in the auto-fix step below. `git ls-files --others --exclude-standard`
             # covers exactly that gap: untracked, non-gitignored new files.
-            veto_hit=$({ git diff --name-only; git ls-files --others --exclude-standard; } | grep -E \
+            touched_files=$({ git diff --name-only; git ls-files --others --exclude-standard; } | sort -u)
+
+            veto_hit=$(printf '%s\n' "$touched_files" | grep -E \
               '^(src/shell/store/auth\.js|src/shell/hooks/use-permissions\.js|src/shell/index\.js|src/shell/services/util\.js|src/shell/webpack\.config\.js|\.github/workflows/)' \
               || true)
-            if [ -n "$veto_hit" ]; then
+
+            # IndexedDB warm-cache hydration reducers (LOADED_LOCAL_* case handlers) are
+            # spread across shell and per-app store files rather than one fixed path —
+            # matching by filename would mean maintaining an ever-growing list that's
+            # already missed several real files once. Instead, treat any touched file
+            # whose current content contains the action-type prefix itself as a veto
+            # hit, the same way the other entries above veto a whole file, not just
+            # specific lines within it.
+            content_hit=""
+            while IFS= read -r f; do
+              [ -z "$f" ] && continue
+              if [ -f "$f" ] && grep -qF "LOADED_LOCAL_" "$f"; then
+                content_hit="$content_hit$f"$'\n'
+              fi
+            done <<< "$touched_files"
+
+            if [ -n "$veto_hit" ] || [ -n "$content_hit" ]; then
               echo "::error::❌ Trial fix touches a blast-radius veto path but was classified as simple — refusing to trust that classification and failing closed rather than opening a PR. Touched veto path(s):"
-              echo "$veto_hit"
+              printf '%s\n%s\n' "$veto_hit" "$content_hit"
               exit 1
             fi
           fi

@@ -31,7 +31,11 @@ infrastructure rather than a code defect).
 
 - `src/shell/store/auth.js` (auth/session — explicitly legacy, leave-as-is)
 - `src/shell/hooks/use-permissions.js` (permission gating)
-- IndexedDB warm-cache hydration (`LOADED_LOCAL_*` reducers, `src/shell/index.js`)
+- IndexedDB warm-cache hydration — `src/shell/index.js` plus any reducer with a
+  `LOADED_LOCAL_*` case handler. That currently includes several `src/shell/store/*.js`
+  files and per-app store files under `src/apps/*/store/*.js`; don't trust this list to
+  stay exhaustive as reducers change — check for the `LOADED_LOCAL_` prefix itself, not
+  a fixed set of paths.
 - RTK Query base config (`src/shell/services/util.js`)
 - webpack config (`src/shell/webpack.config.js`)
 - any `.github/workflows/**` file
