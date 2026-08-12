@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import { Box, alpha } from "@mui/material";
 import { theme } from "@zesty-io/material";
@@ -38,6 +38,7 @@ import "tinymce/plugins/autoresize";
 import "./plugins/slashcommands";
 import "./plugins/socialmediaembed";
 import "./plugins/imageresizer";
+import "./plugins/compactToolbar";
 
 // importing plugin resources
 import "tinymce/plugins/emoticons/js/emojis";
@@ -45,7 +46,6 @@ import "tinymce/plugins/emoticons/js/emojis";
 import { File } from "../../services/types";
 import { useGetInstanceSettingsQuery } from "../../services/instance";
 
-const EDITOR_HEIGHT = 560;
 const IMAGE_FILE_TYPES = [
   ".jpg",
   ".jpeg",
@@ -70,6 +70,20 @@ const VIDEO_FILE_TYPES = [
   ".html5",
 ] as const;
 
+const NORMAL_EDITOR_HEIGHT = 560;
+const COMPACT_EDITOR_HEIGHT = 259;
+
+const compactToolbar =
+  "compactBlocks | bold italic underline compactAlign compactLists | zestyMediaApp media link | fullscreen";
+const normalToolbar =
+  "slashcommands blocks | bold italic underline | backcolor | " +
+  "align | " +
+  "bullist numlist outdent indent | " +
+  "zestyMediaApp media link | bynder socialmediaembed table | " +
+  "searchreplace | superscript subscript strikethrough removeformat | " +
+  "codesample insertdatetime charmap emoticons | " +
+  "undo redo | code help | fullscreen";
+
 type FieldTypeTinyMCEProps = {
   value: any;
   version?: any;
@@ -83,6 +97,7 @@ type FieldTypeTinyMCEProps = {
   onSave?: () => void;
   mediaBrowser: (opts: any) => void;
   onCharacterCountChange?: (charCount: number) => void;
+  compact?: boolean;
 };
 export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
   value,
@@ -97,11 +112,28 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
   onSave,
   mediaBrowser,
   onCharacterCountChange,
+  compact = false,
 }: FieldTypeTinyMCEProps) {
   // NOTE: controlled component
   const [initialValue, setInitialValue] = useState(value);
   const [isSkinLoaded, setIsSkinLoaded] = useState(false);
   const { data: rawInstanceSettings } = useGetInstanceSettingsQuery();
+
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const effectiveCompact = compact && !isFullscreen;
+  const toolbar = effectiveCompact ? compactToolbar : normalToolbar;
+
+  // The Editor remounts whenever this key changes (version bump on save,
+  // compact/fullscreen toggle). The baseline is tagged with the key of the
+  // editor instance that captured it, so a remounted instance's normalization
+  // pass isn't compared against a stale baseline and can't re-dirty a just-saved
+  // item.
+  const editorKey = `${effectiveCompact}-${version}`;
+  const baselineRef = useRef<{ key: string; content: string } | null>(null);
+
+  const EDITOR_HEIGHT = effectiveCompact
+    ? COMPACT_EDITOR_HEIGHT
+    : NORMAL_EDITOR_HEIGHT;
 
   // Checks if the bynder portal and token are set
   const isBynderSessionValid =
@@ -115,18 +147,27 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
     [rawInstanceSettings]
   );
 
-  // NOTE: update if version changes
-  useEffect(() => {
-    setInitialValue(value);
-  }, [version]);
-
   return (
     <Box
       id="tinyMceWrapper"
+      data-compact={effectiveCompact}
       sx={{
         minHeight: EDITOR_HEIGHT,
+        "&[data-compact='true']": {
+          "& .tox-toolbar__group": {
+            "& .tox-tbtn": {
+              transform: "scale(0.85)",
+            },
+          },
+          // Push the fullscreen button group (always last in compact toolbar) to the far right.
+          // Uses :last-child instead of aria-label so it doesn't break when TinyMCE updates.
+          "& .tox-toolbar__primary .tox-toolbar__group:last-child": {
+            position: "absolute",
+            right: 0,
+          },
+        },
         "& .tox.tox-tinymce": {
-          borderColor: error && "error.main",
+          borderColor: error ? "error.main" : undefined,
         },
         "&:has(div.tox-fullscreen)": {
           backgroundColor: alpha(theme.palette.grey[900], 0.5),
@@ -143,22 +184,28 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
           evt.target instanceof Element &&
           evt.target.id === "tinyMceWrapper"
         ) {
-          tinymce.activeEditor.execCommand("mceFullScreen");
+          tinymce.activeEditor?.execCommand("mceFullScreen");
         }
       }}
     >
-      <Box sx={{ visibility: isSkinLoaded ? "visibile" : "hidden" }}>
+      <Box sx={{ visibility: isSkinLoaded ? "visible" : "hidden" }}>
         <Editor
+          // key must change whenever effectiveCompact or version changes
+          // to update toolbar and value
+          key={editorKey}
           id={name}
           onFocusIn={onFocus}
           onFocusOut={onBlur}
           initialValue={initialValue}
           onEditorChange={(content, editor) => {
-            // Only propagate genuine user edits. TinyMCE fires onEditorChange
-            // while parsing/normalizing the initial HTML on init; isDirty() is
-            // false for those programmatic changes and true once the user edits,
-            // so this prevents marking the item dirty on load.
-            if (editor.isDirty()) {
+            // Baseline tracks the last content sent to the parent (see onInit):
+            // the key guard skips TinyMCE's pre-init normalization, while any
+            // later change — including undo back to the loaded value — syncs.
+            if (
+              baselineRef.current?.key === editorKey &&
+              content !== baselineRef.current.content
+            ) {
+              baselineRef.current.content = content;
               onChange(content, name, datatype);
             }
 
@@ -168,14 +215,23 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
             onCharacterCountChange && onCharacterCountChange(charCount);
           }}
           onInit={(_, editor) => {
-            // Establish a clean baseline after the initial content loads so the
-            // normalization pass above isn't treated as a user edit.
-            editor.setDirty(false);
+            // Seed the baseline with the loaded (post-normalization) content,
+            // tagged with this instance's key so a remount starts fresh.
+            baselineRef.current = {
+              key: editorKey,
+              content: editor.getContent(),
+            };
+
+            setInitialValue(value ?? "");
 
             const charCount =
               editor.plugins?.wordcount?.body?.getCharacterCount() ?? 0;
 
             onCharacterCountChange && onCharacterCountChange(charCount);
+            // component re-render due to fullscreen toggle.
+            if (isFullscreen) {
+              editor.execCommand("mceFullScreen");
+            }
           }}
           onKeyDown={(evt) => {
             // Makes sure that when scrolling through a collection group, it
@@ -220,10 +276,10 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
             // We want the width to automatically be set to preserve the image proportions
             newImageNode.removeAttribute("height");
 
-            const currentValue = tinymce?.activeEditor?.getContent() ?? "";
+            const currentValue = tinymce.activeEditor?.getContent() ?? "";
 
             // Update the content with the new image data
-            tinymce?.activeEditor?.setContent(
+            tinymce.activeEditor?.setContent(
               currentValue.replace(
                 clonedCurrentNode.outerHTML?.replaceAll("&", "&amp;"),
                 newImageNode.outerHTML
@@ -251,6 +307,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
               "slashcommands",
               "socialmediaembed",
               "imageresizer",
+              "compactToolbar",
               // "bynder",
             ],
             // NOTE: premium plugins are being loaded from a self hosted location
@@ -258,26 +315,16 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
             external_plugins: externalPlugins ?? {},
 
             // Editor Settings
-            toolbar:
-              "slashcommands blocks | \
-              bold italic underline backcolor | \
-              zestyMediaApp media bynder link socialmediaembed table | \
-              align bullist numlist outdent indent | \
-              searchreplace | \
-              superscript subscript strikethrough removeformat | \
-              codesample insertdatetime charmap emoticons | \
-              undo redo | \
-              code help | \
-              fullscreen",
+            toolbar: toolbar,
             contextmenu: "bold italic link | copy paste",
-            toolbar_mode: "wrap",
+            toolbar_mode: effectiveCompact ? "sliding" : "wrap",
             relative_urls: false,
             branding: false,
             menubar: false,
             statusbar: false,
             object_resizing: true,
             block_formats:
-              "Paragraph=p; Heading 1=h1; Heading 2=h2; Heading 3=h3; Heading 4=h4; Heading 5=h5; Heading 6=h6; Blockquoute=blockquote; Preformatted=pre",
+              "Paragraph=p; Heading 1=h1; Heading 2=h2; Heading 3=h3; Heading 4=h4; Heading 5=h5; Heading 6=h6; Blockquote=blockquote; Preformatted=pre",
             color_default_background: "none",
             help_tabs: ["shortcuts", "keyboardnav", "versions"],
 
@@ -303,8 +350,9 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
             // Plugin Settings
             quickbars_insert_toolbar: false,
             quickbars_image_toolbar: false,
-            quickbars_selection_toolbar:
-              "blocks | bold italic underline backcolor link superscript subscript strikethrough | align bullist numlist outdent indent | removeformat",
+            quickbars_selection_toolbar: effectiveCompact
+              ? false
+              : "blocks | bold italic underline backcolor link superscript subscript strikethrough | align bullist numlist outdent indent | removeformat",
             help_accessibility: false,
 
             // powerpaste_word_import: "prompt",
@@ -319,6 +367,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
             // Therefore we opt for the resize handle over auto resizing
             resize: false,
             min_height: EDITOR_HEIGHT,
+            ...(effectiveCompact && { max_height: EDITOR_HEIGHT }),
 
             // skin: false,
             skin_url: "/vendors/tinymce/skins/ui/Zesty",
@@ -372,7 +421,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
 
               editor.on("keydown", (evt: any) => {
                 if (evt.key === "Escape") {
-                  if (editor.plugins.fullscreen.isFullscreen()) {
+                  if (editor.plugins.fullscreen?.isFullscreen()) {
                     editor.execCommand("mceFullScreen");
                     evt.preventDefault();
                   }
@@ -381,6 +430,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
 
               // Limits the content width to 640px when in fullscreen
               editor.on("FullscreenStateChanged", (evt: any) => {
+                setIsFullscreen(evt.state);
                 if (evt.state) {
                   editor.contentDocument.documentElement.style.display = "flex";
                   editor.contentDocument.body.style.width = "640px";
@@ -458,7 +508,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
                   url: bynderPortalUrlSetting?.value,
                   onSuccess: (assets) => {
                     if (assets?.length) {
-                      tinymce.activeEditor.insertContent(
+                      tinymce.activeEditor?.insertContent(
                         assets
                           .map((asset) => {
                             const filename = asset.originalUrl.split("/").pop();

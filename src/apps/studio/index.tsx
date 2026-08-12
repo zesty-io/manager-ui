@@ -1,6 +1,6 @@
 import { Route, Switch } from "react-router-dom";
 
-import { StudioWrapper } from "../content-editor/src/app/views/ItemEdit/StudioWrapper";
+import { StudioWrapper } from "./StudioWrapper";
 
 export const StudioApp = () => {
   return (

@@ -191,11 +191,11 @@ export const FieldFormProvider = ({
 
   /** Error setting */
   useEffect(() => {
-    if (!Object.keys(formData).length) {
+    if (!Object.keys(formData ?? {}).length) {
       return;
     }
 
-    const currFieldNames = fields.map((field) => field.name);
+    const currFieldNames = fields?.map((field) => field.name);
     let newErrorsObj: Errors = {};
 
     Object.keys(formData).map((inputName) => {
@@ -301,11 +301,8 @@ export const FieldFormProvider = ({
       }
 
       if (inputName === "integrationFieldConfig") {
-        const intField = (
-          isUpdateField
-            ? fieldData?.settings?.integrationFieldConfig
-            : formData?.integrationFieldConfig
-        ) as IntegrationFieldConfig;
+        const intField =
+          formData?.integrationFieldConfig as IntegrationFieldConfig;
 
         if (!intField?.endpoint || !intField?.type || !intField?.keyPaths) {
           newErrorsObj[inputName] = "Incomplete API Configuration";
