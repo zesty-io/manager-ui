@@ -367,6 +367,8 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
     [geminiGenerate, urlChatZUID]
   );
 
+  if (!isEnabled) return <></>;
+
   return (
     <Paper
       elevation={16}
@@ -382,118 +384,64 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
         zIndex: (theme) => theme.zIndex.speedDial + 1,
       }}
     >
-      {!isEnabled && (
-        <>
-          <Box position="relative" display="flex" alignItems={"center"} gap={1}>
-            <Stack
-              width={40}
-              height={40}
-              borderRadius="50%"
-              justifyContent="center"
-              alignItems="center"
-            >
-              <Box
-                component="img"
-                src={geminiIcon}
-                alt="Gemini Icon"
-                width="32px"
-                display="block"
-              />
-            </Stack>
-            <Box>
-              <Box
-                component="img"
-                src={geminiLogo}
-                alt="Gemini Logo"
-                width="40px"
-                display="block"
-              />
-              <Typography variant="h5" fontWeight={700}>
-                AI Assistant Beta
-              </Typography>
-            </Box>
-            <IconButton
-              size="small"
-              onClick={() => {
-                onClose();
-              }}
-              sx={{
-                position: "absolute",
-                right: 0,
-                top: 0,
-              }}
-            >
-              <CloseIcon fontSize="medium" />
-            </IconButton>
-          </Box>
-          <Typography variant="body1" data-cy="AIDrawerDisabled">
-            Only available in content app.
-          </Typography>
-        </>
-      )}
+      <Box
+        data-cy="AIDrawerEnabled"
+        display="flex"
+        alignItems="center"
+        justifyContent="space-between"
+        height={52}
+        px={2}
+        py={1.25}
+        borderBottom={1}
+        borderColor="divider"
+      >
+        <Typography
+          variant="body2"
+          fontWeight={500}
+          sx={{
+            display: "-webkit-box",
+            WebkitLineClamp: "2",
+            WebkitBoxOrient: "vertical",
+            wordBreak: "break-word",
+            wordWrap: "break-word",
+            hyphens: "auto",
+            overflow: "hidden",
+          }}
+        >
+          {drawerTitle}
+        </Typography>
 
-      {isEnabled && (
-        <>
-          <Box
-            data-cy="AIDrawerEnabled"
-            display="flex"
-            alignItems="center"
-            justifyContent="space-between"
-            height={52}
-            px={2}
-            py={1.25}
-            borderBottom={1}
-            borderColor="divider"
-          >
-            <Typography
-              variant="body2"
-              fontWeight={500}
-              sx={{
-                display: "-webkit-box",
-                WebkitLineClamp: "2",
-                WebkitBoxOrient: "vertical",
-                wordBreak: "break-word",
-                wordWrap: "break-word",
-                hyphens: "auto",
-                overflow: "hidden",
-              }}
-            >
-              {drawerTitle}
-            </Typography>
-
-            <IconButton
-              size="small"
-              onClick={() => {
-                onClose();
-              }}
-            >
-              <CloseIcon fontSize="medium" />
-            </IconButton>
-          </Box>
-          <ChatThread
-            responses={responses}
-            setResponses={setResponses}
-            latestPromptZUIDs={latestPromptZUIDs}
-            autoApply={autoApply}
-            setAutoApply={setAutoApply}
-            isInCodeApp={isInCodeApp}
-            isLoading={isLoading}
-            isLoadingChatSessionLog={isLoadingChatSessionLog}
-            urlChatZUID={urlChatZUID}
-            removeUrlChatZUID={removeUrlChatZUID}
-            updatePromptApprovalStatus={updatePromptApprovalStatus}
-            composerSeed={composerSeed}
-            setComposerSeed={setComposerSeed}
-            selectedLanguage={selectedLanguage}
-            setSelectedLanguage={setSelectedLanguage}
-            selectedTone={selectedTone}
-            setSelectedTone={setSelectedTone}
-            handlePrompt={handlePrompt}
-            handleGenerateSuggestions={handleGenerateSuggestions}
-            responsesEndRef={responsesEndRef}
-          />
-        </>
-      )}
+        <IconButton
+          size="small"
+          onClick={() => {
+            onClose();
+          }}
+        >
+          <CloseIcon fontSize="medium" />
+        </IconButton>
+      </Box>
+      <ChatThread
+        responses={responses}
+        setResponses={setResponses}
+        latestPromptZUIDs={latestPromptZUIDs}
+        autoApply={autoApply}
+        setAutoApply={setAutoApply}
+        isInCodeApp={isInCodeApp}
+        isLoading={isLoading}
+        isLoadingChatSessionLog={isLoadingChatSessionLog}
+        urlChatZUID={urlChatZUID}
+        removeUrlChatZUID={removeUrlChatZUID}
+        updatePromptApprovalStatus={updatePromptApprovalStatus}
+        composerSeed={composerSeed}
+        setComposerSeed={setComposerSeed}
+        selectedLanguage={selectedLanguage}
+        setSelectedLanguage={setSelectedLanguage}
+        selectedTone={selectedTone}
+        setSelectedTone={setSelectedTone}
+        handlePrompt={handlePrompt}
+        handleGenerateSuggestions={handleGenerateSuggestions}
+        responsesEndRef={responsesEndRef}
+      />
     </Paper>
   );
 };
