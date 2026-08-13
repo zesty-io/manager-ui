@@ -1,11 +1,4 @@
-import {
-  Box,
-  Button,
-  IconButton,
-  Paper,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Box, IconButton, Paper, Typography } from "@mui/material";
 import { useSelector } from "react-redux";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -19,7 +12,6 @@ import { useLocation } from "react-router";
 import { suggestionSystemInstruction } from "./systemInstructions";
 import { useLocalStorage } from "react-use";
 import { getRefRegistry } from "../../../engine/refRegistry";
-import geminiLogo from "../../../../public/images/geminiLogo.svg";
 import { AppState } from "shell/store/types";
 import { useGetUsersRolesQuery } from "shell/services/accounts";
 import { useGetContentModelsQuery } from "shell/services/instance";
@@ -27,8 +19,8 @@ import {
   ChatPrompt,
   ContentItemWithDirtyAndPublishing,
 } from "shell/services/types";
-import geminiIcon from "../../../../public/images/geminiIcon.svg";
 import { ChatThread } from "./ChatThread";
+import { ChatHistory } from "./ChatHistory";
 
 const parseResponse = (rawResponse: string) => {
   if (!rawResponse) return;
@@ -420,7 +412,8 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
           <CloseIcon fontSize="medium" />
         </IconButton>
       </Box>
-      <ChatThread
+      <ChatHistory />
+      {/*<ChatThread
         responses={responses}
         setResponses={setResponses}
         latestPromptZUIDs={latestPromptZUIDs}
@@ -441,7 +434,7 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
         handlePrompt={handlePrompt}
         handleGenerateSuggestions={handleGenerateSuggestions}
         responsesEndRef={responsesEndRef}
-      />
+      />*/}
     </Paper>
   );
 };
