@@ -41,6 +41,7 @@ import { ConfirmPublishModal } from "../../ConfirmPublishModal";
 import { fetchItem, fetchItemPublishing } from "../../../store/content";
 import { SchedulePublish } from "../../SchedulePublish";
 import { useDomain } from "../../../hooks/use-domain";
+import { asRenderableText } from "../../../../utility/asRenderableText";
 
 type ActiveItemProps = {
   itemZUID: string;
@@ -236,15 +237,12 @@ export const ActiveItem = memo(
     };
 
     // The display field is picked by a Schema admin and can be an object-shaped
-    // datatype (images, repeater, one_to_one), which `Data`'s index signature does not
-    // describe. Drop anything non-primitive so it falls through to the meta fallbacks
-    // below instead of throwing "Objects are not valid as a React child" when rendered.
-    const relatedFieldValue = contentItem?.data[relatedFieldData?.name];
-    const relatedFieldTitle =
-      typeof relatedFieldValue === "string" ||
-      typeof relatedFieldValue === "number"
-        ? relatedFieldValue
-        : undefined;
+    // datatype (images, repeater, one_to_one). Drop anything non-primitive so it falls
+    // through to the meta fallbacks below instead of throwing "Objects are not valid as
+    // a React child" when rendered.
+    const relatedFieldTitle = asRenderableText(
+      contentItem?.data[relatedFieldData?.name]
+    );
 
     const itemTitle = !!contentItem
       ? relatedFieldTitle ||

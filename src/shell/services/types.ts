@@ -152,7 +152,11 @@ export interface Meta {
   createdByUserZUID: string;
 }
 export interface Data {
-  [key: string]: number | string | null | undefined;
+  // A content item's field values are shaped by the model's datatypes, which include
+  // object-shaped ones (`repeater` writes `Record<string, any>[]`, `images` writes an
+  // array). There is no per-model type to describe that here, so reads stay `unknown`
+  // and must be narrowed at the point of use — see `utility/asRenderableText`.
+  [key: string]: unknown;
 }
 
 type UnorderedQuery = {

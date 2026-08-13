@@ -299,7 +299,7 @@ export const SinglePageAnalytics = ({ item, loading }: Props) => {
                   metricsReport?.rows,
                   ["date_range_0"],
                   0
-                ) || 0
+                )[0] ?? 0
               )
             }
             priorValue={
@@ -310,7 +310,7 @@ export const SinglePageAnalytics = ({ item, loading }: Props) => {
                       metricsReport?.rows,
                       ["date_range_1"],
                       0
-                    ) || 0
+                    )[0] ?? 0
                   )
             }
             description="A pageview is defined as a view of a page on your site that is being tracked by the Analytics tracking code. If a user clicks reload after reaching the page or navigates to a different page and then returns to the original page, then this is counted as an additional page view."
@@ -340,7 +340,7 @@ export const SinglePageAnalytics = ({ item, loading }: Props) => {
                   metricsReport?.rows,
                   ["date_range_0"],
                   2
-                ) || 0
+                )[0] ?? 0
               )
             }
             priorValue={
@@ -351,7 +351,7 @@ export const SinglePageAnalytics = ({ item, loading }: Props) => {
                       metricsReport?.rows,
                       ["date_range_1"],
                       2
-                    ) || 0
+                    )[0] ?? 0
                   )
             }
             description="Bounce rate is the percentage of people who land on a page and leave without performing a specific action."
@@ -366,7 +366,7 @@ export const SinglePageAnalytics = ({ item, loading }: Props) => {
                   metricsReport?.rows,
                   ["date_range_0"],
                   3
-                ) || 0
+                )[0] ?? 0
               )
             }
             priorValue={
@@ -377,7 +377,7 @@ export const SinglePageAnalytics = ({ item, loading }: Props) => {
                       metricsReport?.rows,
                       ["date_range_1"],
                       3
-                    ) || 0
+                    )[0] ?? 0
                   )
             }
             description="A conversion is a user action that you count because you consider it important, such as a purchase, game level completion, or website or app scroll activity."

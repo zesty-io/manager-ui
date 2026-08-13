@@ -15,8 +15,9 @@ export const StagedChangesProvider = ({
     // which varies by field datatype — its callers `BooleanCell` and `DropdownCell`
     // already declare their own `handleChange` the same way
     (id: GridRowId, field: string, value: any) => {
-      // Rows added inline get a `new…` string id; MUI supplies numeric ids elsewhere,
-      // so coerce rather than assume `startsWith` exists
+      // `ItemList/index.tsx` sets every row id to `meta.ZUID`, so this is a string
+      // today and `String()` is a no-op; it is here because `GridRowId` also admits
+      // numbers, which have no `startsWith`.
       if (String(id).startsWith("new")) {
         return;
       }

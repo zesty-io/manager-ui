@@ -151,8 +151,12 @@ export const InAppAnnouncement = () => {
           <Box
             component="img"
             alt="announcement-banner-image"
+            // Omit the attribute rather than emptying it — `src=""` makes the browser
+            // re-request the document URL
             src={
-              featureImageUrl ? `${featureImageUrl}?fit=cover&width=1280` : ""
+              featureImageUrl
+                ? `${featureImageUrl}?fit=cover&width=1280`
+                : undefined
             }
             maxWidth="100%"
             maxHeight="100%"
