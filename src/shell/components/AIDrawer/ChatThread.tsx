@@ -335,15 +335,17 @@ export const ChatThread = ({
         px={2}
         mt={1}
       >
-        <Button
-          data-cy="AIDrawerGenerateSuggestions"
-          size="small"
-          variant="outlined"
-          fullWidth
-          onClick={() => handleGenerateSuggestions(composerSeed)}
-        >
-          Generate Suggestions
-        </Button>
+        {!Object.entries(responses)?.length && (
+          <Button
+            data-cy="AIDrawerGenerateSuggestions"
+            size="small"
+            variant="outlined"
+            fullWidth
+            onClick={() => handleGenerateSuggestions(composerSeed)}
+          >
+            Generate Suggestions
+          </Button>
+        )}
         <PromptComposer
           ref={composerRef}
           seed={composerSeed}

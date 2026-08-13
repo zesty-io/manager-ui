@@ -13,6 +13,7 @@ import { useSelector } from "react-redux";
 import { AppState } from "../../store/types";
 import { User } from "../../services/types";
 import { isZestyEmail } from "../../../utility/isZestyEmail";
+import { useLocation } from "react-router";
 
 type Props = {
   onShowAiDrawerToggle: () => void;
@@ -20,6 +21,14 @@ type Props = {
 
 export const GlobalTopbar = memo(({ onShowAiDrawerToggle }: Props) => {
   const user: User = useSelector((state: AppState) => state.user);
+  const { pathname } = useLocation();
+  const isInContentApp = /^\/content\/[^/]+\/[^/]+$/.test(pathname);
+  const isInContentMeta = /^\/content\/[^/]+\/[^/]+\/meta$/.test(pathname);
+  const isInBlocks = /^\/blocks\/[^/]+\/[^/]+\/?$/.test(pathname);
+  const isInCodeApp = /^\/code\/file\/.+/.test(pathname);
+  const hasAISupport =
+    isInContentApp || isInContentMeta || isInBlocks || isInCodeApp;
+
   return (
     <Stack
       direction="row"
@@ -46,15 +55,17 @@ export const GlobalTopbar = memo(({ onShowAiDrawerToggle }: Props) => {
         <GlobalTabs />
       </Box>
       <Stack direction="row" flexBasis={72} alignItems="baseline" gap={1}>
-        <IconButton
-          data-cy="AIDrawerToggle"
-          onClick={() => {
-            onShowAiDrawerToggle();
-          }}
-          size="small"
-        >
-          <Brain fontSize="inherit" />
-        </IconButton>
+        {hasAISupport && (
+          <IconButton
+            data-cy="AIDrawerToggle"
+            onClick={() => {
+              onShowAiDrawerToggle();
+            }}
+            size="small"
+          >
+            <Brain fontSize="inherit" />
+          </IconButton>
+        )}
         <DomainSwitcher />
         <GlobalNotifications />
       </Stack>
