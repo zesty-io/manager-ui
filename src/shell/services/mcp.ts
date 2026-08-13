@@ -34,6 +34,16 @@ export const mcpApi = createApi({
         { type: "ChatSessionLog", id: chatZUID },
       ],
     }),
+    getChatSessions: builder.query<ChatSession[], void>({
+      query: () => {
+        return {
+          url: `chats`,
+          method: "GET",
+        };
+      },
+      transformResponse: getResponseData,
+      providesTags: ["ChatSessions"],
+    }),
     getChatSessionLog: builder.query<ChatSessionLog, { chatZUID: string }>({
       query: ({ chatZUID }) => {
         return {
@@ -65,4 +75,5 @@ export const {
   useGeminiGenerationMutation,
   useGetChatSessionLogQuery,
   useUpdatePromptApprovalStatusMutation,
+  useGetChatSessionsQuery,
 } = mcpApi;

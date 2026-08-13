@@ -766,6 +766,8 @@ export type ChatSession = {
   updatedAt: string;
   deletedAt: string | null;
   chatZuid: string;
+  referer: string;
+  title: string;
 };
 export type ChatPromptMetadata =
   | {

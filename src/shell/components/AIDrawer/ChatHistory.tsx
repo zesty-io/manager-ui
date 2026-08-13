@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Stack,
   Box,
@@ -11,13 +11,71 @@ import {
   TableRow,
   TableCell,
   TableBody,
+  Tooltip,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
+import { debounce } from "lodash";
+import {
+  differenceInSeconds,
+  differenceInMinutes,
+  differenceInHours,
+  differenceInDays,
+  differenceInMonths,
+  differenceInYears,
+  isValid,
+} from "date-fns";
+
+import { useGetChatSessionsQuery } from "shell/services/mcp";
+
+const formatShortRelativeTime = (date: Date) => {
+  const now = new Date();
+
+  const years = differenceInYears(now, date);
+  if (years > 0) return `${years}y ago`;
+
+  const months = differenceInMonths(now, date);
+  if (months > 0) return `${months}mo ago`;
+
+  const days = differenceInDays(now, date);
+  if (days > 0) return `${days}d ago`;
+
+  const hours = differenceInHours(now, date);
+  if (hours > 0) return `${hours}h ago`;
+
+  const minutes = differenceInMinutes(now, date);
+  if (minutes > 0) return `${minutes}m ago`;
+
+  return `${Math.max(differenceInSeconds(now, date), 0)}s ago`;
+};
 
 export const ChatHistory = () => {
   const [count, setCount] = useState(5);
+  const [searchTerm, setSearchTerm] = useState("");
   const [selectedChat, setSelectedChat] = useState<number | null>(null);
+  const { data: chatSessions } = useGetChatSessionsQuery();
+
+  const relevantChatSessions = useMemo(() => {
+    if (!chatSessions) return [];
+
+    return chatSessions.filter(
+      (session) => session.referer === window.location.href
+    );
+  }, [chatSessions, window.location.href]);
+
+  const filteredChatSessions = useMemo(() => {
+    const normalizedSearchTerm = searchTerm?.trim().toLowerCase();
+
+    if (!normalizedSearchTerm) return relevantChatSessions;
+
+    return relevantChatSessions.filter((session) =>
+      session.title?.toLowerCase().includes(normalizedSearchTerm)
+    );
+  }, [relevantChatSessions, searchTerm]);
+
+  const handleSearch = debounce((term: string) => {
+    setSearchTerm(term);
+  }, 300);
 
   return (
     <Stack
@@ -45,6 +103,7 @@ export const ChatHistory = () => {
           sx={{
             mb: 2,
           }}
+          onChange={(e) => handleSearch(e.target.value)}
         />
         <TableContainer
           sx={{
@@ -58,6 +117,8 @@ export const ChatHistory = () => {
               border: 1,
               borderColor: "border",
               borderRadius: 2,
+              tableLayout: "fixed",
+              width: "100%",
             }}
           >
             <TableHead>
@@ -65,37 +126,68 @@ export const ChatHistory = () => {
                 <TableCell
                   sx={{
                     bgcolor: "grey.100",
-                    fontSize: "12px",
-                    lineHeight: "20px",
-                    fontWeight: 600,
                     borderColor: "border",
                   }}
                 >
-                  Chat History
+                  <Typography variant="body2" fontWeight={600}>
+                    Chat History
+                  </Typography>
                 </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {Array(count)
-                .fill(0)
-                .map((_, index) => (
+              {filteredChatSessions.map((session, index) => {
+                const updatedDate = session.updatedAt
+                  ? new Date(session.updatedAt)
+                  : null;
+                const updatedAgo =
+                  updatedDate && isValid(updatedDate)
+                    ? formatShortRelativeTime(updatedDate)
+                    : "";
+
+                return (
                   <TableRow
-                    key={index}
+                    key={session.chatZuid}
                     hover
                     data-cy="ChatHistoryRow"
-                    onClick={() => setSelectedChat(index)}
+                    // onClick={() => setSelectedChat(index)}
                     sx={{ cursor: "pointer" }}
                   >
                     <TableCell
                       sx={{
-                        borderBottom: index === count - 1 ? 0 : 1,
+                        borderBottom:
+                          index === filteredChatSessions.length - 1 ? 0 : 1,
                         borderColor: "border",
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 0.25,
+                        overflow: "hidden",
                       }}
                     >
-                      lorem ipsum {index}
+                      <Tooltip title={session.title || "Untitled Chat"}>
+                        <Typography
+                          variant="body2"
+                          noWrap
+                          sx={{
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            minWidth: 0,
+                          }}
+                        >
+                          {session.title || "Untitled Chat"}
+                        </Typography>
+                      </Tooltip>
+                      <Typography
+                        variant="body3"
+                        color="text.disabled"
+                        fontWeight={600}
+                      >
+                        {updatedAgo}
+                      </Typography>
                     </TableCell>
                   </TableRow>
-                ))}
+                );
+              })}
             </TableBody>
           </Table>
         </TableContainer>
