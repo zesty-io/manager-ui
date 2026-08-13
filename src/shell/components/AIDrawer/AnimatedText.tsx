@@ -35,7 +35,11 @@ export const AnimatedText = ({ text, animate, onGrow }: AnimatedTextProps) => {
   }, []);
 
   return (
-    <Typography data-cy="AIDrawerSystemOutput" variant="body2">
+    <Typography
+      data-cy="AIDrawerSystemOutput"
+      variant="body2"
+      sx={{ overflowWrap: "break-word" }}
+    >
       {displayedText}
     </Typography>
   );
