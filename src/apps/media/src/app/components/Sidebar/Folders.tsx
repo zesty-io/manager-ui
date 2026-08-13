@@ -365,7 +365,10 @@ export const Folders = ({ lockedToGroupId }: Props) => {
     }
   }, [bins]);
 
-  const handleItemDrop = useCallback((draggedItem, target) => {
+  // `any` matches the contract this is passed to — `NavTree`'s
+  // `onItemDrop?: (draggedItem: any, targetItem: any) => void` — which carries either
+  // a media file or a folder node
+  const handleItemDrop = useCallback((draggedItem: any, target: any) => {
     // Allow drag and drop of file when the target folder is in the same eco bin or is the actual eco bin root
     if (
       draggedItem.bin_id === target.bin_id ||

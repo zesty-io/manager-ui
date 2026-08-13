@@ -195,7 +195,7 @@ export const Meta = forwardRef(
     }, [homepageItem, itemZUID]);
 
     const handleOnChange = useCallback(
-      (value, name) => {
+      (value: string, name: string) => {
         if (!name) {
           throw new Error("Input is missing name attribute");
         }

@@ -152,7 +152,7 @@ export interface Meta {
   createdByUserZUID: string;
 }
 export interface Data {
-  [key: string]: number | string | null | undefined | unknown;
+  [key: string]: number | string | null | undefined;
 }
 
 type UnorderedQuery = {

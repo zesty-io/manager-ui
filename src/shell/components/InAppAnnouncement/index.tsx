@@ -122,6 +122,8 @@ export const InAppAnnouncement = () => {
     return <></>;
   }
 
+  const featureImageUrl = latestAnnouncement?.feature_image?.data[0]?.url;
+
   return (
     <Dialog
       open
@@ -150,8 +152,7 @@ export const InAppAnnouncement = () => {
             component="img"
             alt="announcement-banner-image"
             src={
-              `${latestAnnouncement?.feature_image?.data[0]?.url}?fit=cover&width=1280` ??
-              ""
+              featureImageUrl ? `${featureImageUrl}?fit=cover&width=1280` : ""
             }
             maxWidth="100%"
             maxHeight="100%"

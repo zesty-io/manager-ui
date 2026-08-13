@@ -68,11 +68,19 @@ export const UnpublishedRelatedItem = ({
     return null;
   }, [contentItem, imageFieldName]);
 
-  const fieldValue =
+  // The related field is picked by a Schema admin and can be an object-shaped datatype
+  // (images, repeater, one_to_one), which `Data`'s index signature does not describe.
+  // Drop anything non-primitive so it falls through to the fallbacks below instead of
+  // throwing "Objects are not valid as a React child" when rendered.
+  const rawFieldValue =
     contentItem?.data[
       modelFields?.find((field) => field.ZUID === contentItem.relatedFieldZUID)
         ?.name
     ];
+  const fieldValue =
+    typeof rawFieldValue === "string" || typeof rawFieldValue === "number"
+      ? rawFieldValue
+      : undefined;
 
   return (
     <ListItem disableGutters dense divider={divider}>

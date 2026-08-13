@@ -235,8 +235,19 @@ export const ActiveItem = memo(
         });
     };
 
+    // The display field is picked by a Schema admin and can be an object-shaped
+    // datatype (images, repeater, one_to_one), which `Data`'s index signature does not
+    // describe. Drop anything non-primitive so it falls through to the meta fallbacks
+    // below instead of throwing "Objects are not valid as a React child" when rendered.
+    const relatedFieldValue = contentItem?.data[relatedFieldData?.name];
+    const relatedFieldTitle =
+      typeof relatedFieldValue === "string" ||
+      typeof relatedFieldValue === "number"
+        ? relatedFieldValue
+        : undefined;
+
     const itemTitle = !!contentItem
-      ? contentItem?.data[relatedFieldData?.name] ||
+      ? relatedFieldTitle ||
         contentItem?.web?.metaTitle ||
         contentItem?.web?.metaLinkText
       : `${itemZUID} (Deleted)`;
