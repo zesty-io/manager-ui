@@ -17,7 +17,6 @@ import {
 export const mediaManagerApi = createApi({
   reducerPath: "mediaManagerApi",
   baseQuery: fetchBaseQuery({
-    // @ts-ignore
     baseUrl: `${__CONFIG__.SERVICE_MEDIA_MANAGER}`,
     prepareHeaders,
   }),

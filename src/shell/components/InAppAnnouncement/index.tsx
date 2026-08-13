@@ -22,8 +22,7 @@ export const InAppAnnouncement = () => {
     "READ_ANNOUNCEMENTS_ZUID"
   );
   const cookieOptions = {
-    // @ts-ignore
-    domain: __CONFIG__.COOKIE_DOMAIN,
+    domain: CONFIG.COOKIE_DOMAIN,
     expires: addYears(new Date(), 1),
   };
 
