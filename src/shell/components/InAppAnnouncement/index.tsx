@@ -13,6 +13,7 @@ import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
 import ScheduledRoundedIcon from "@mui/icons-material/ScheduleRounded";
 import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 import { useCookie } from "react-use";
+import Cookies from "js-cookie";
 
 import { useGetAnnouncementsQuery } from "../../services/marketing";
 
@@ -31,6 +32,15 @@ export const InAppAnnouncement = () => {
     const parsedAnnouncementZuids = readAnnouncementsCookie
       ? JSON.parse(readAnnouncementsCookie)
       : [];
+
+    // #1358: this cookie used to be written host-only (domain was undefined via
+    // __CONFIG__), and js-cookie's get() returns the first match in document.cookie,
+    // so a stale host-only cookie would shadow the domain-scoped one written below.
+    // The dismissal list survives: readAnnouncementsCookie was read before this.
+    // Migration only — safe to delete once every user has loaded the app once
+    // after this ships. The legacy cookie's max lifetime is one year from a
+    // user's last pre-deploy visit.
+    Cookies.remove("READ_ANNOUNCEMENTS_ZUID");
 
     updateReadAnnouncementsCookie(
       JSON.stringify(parsedAnnouncementZuids),

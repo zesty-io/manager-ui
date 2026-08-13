@@ -7,9 +7,10 @@
  * deliberately accepted: keys that some blocks omit are typed as present
  * regardless of the build env — API_METRICS, INSTANCE_SCREENSHOTS_BUCKET,
  * URL_APPS, URL_MARKETPLACE and SERVICE_MEDIA_MODIFY are absent from `local`,
- * and GOOGLE_WEB_FONTS_KEY from `local` and `development`, so reading one of
- * those in such a build yields undefined with no compile error. Restoring env
- * parity in app.config.js is tracked separately.
+ * GOOGLE_WEB_FONTS_KEY from `local` and `development`, and the lowercase
+ * `service` object from `stage`, so reading one of those in such a build yields
+ * undefined with no compile error. Restoring env parity in app.config.js is
+ * tracked separately.
  */
 type EnvConfigModule = typeof import("shell/app.config");
 type AuthoredConfig = EnvConfigModule["production"];
@@ -24,7 +25,7 @@ interface BuildInfo {
     gitBranch: string;
     buildEngineer: string;
     gitState: string;
-    buildTimeStamp: string;
+    buildTimeStamp: number;
   };
   message: string;
 }
