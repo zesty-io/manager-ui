@@ -17,10 +17,12 @@ import Cookies from "js-cookie";
 
 import { useGetAnnouncementsQuery } from "../../services/marketing";
 
+const READ_ANNOUNCEMENTS_COOKIE = "READ_ANNOUNCEMENTS_ZUID";
+
 export const InAppAnnouncement = () => {
   const { data: announcements } = useGetAnnouncementsQuery();
   const [readAnnouncementsCookie, updateReadAnnouncementsCookie] = useCookie(
-    "READ_ANNOUNCEMENTS_ZUID"
+    READ_ANNOUNCEMENTS_COOKIE
   );
   const cookieOptions = {
     domain: CONFIG.COOKIE_DOMAIN,
@@ -29,21 +31,40 @@ export const InAppAnnouncement = () => {
 
   useEffect(() => {
     // Initializes and keeps on bumping the read announcements cookie to permanently keep it on the browser
-    const parsedAnnouncementZuids = readAnnouncementsCookie
-      ? JSON.parse(readAnnouncementsCookie)
-      : [];
-
+    //
     // #1358: this cookie used to be written host-only (domain was undefined via
-    // __CONFIG__), and js-cookie's get() returns the first match in document.cookie,
-    // so a stale host-only cookie would shadow the domain-scoped one written below.
-    // The dismissal list survives: readAnnouncementsCookie was read before this.
+    // __CONFIG__), so a user can hold both a host-only and a domain-scoped copy.
+    // js-cookie's get() returns whichever appears first in document.cookie, which
+    // is ordered by creation time — so we cannot rely on reading the right one.
+    // Union every copy instead, then collapse to a single domain-scoped cookie.
     // Migration only — safe to delete once every user has loaded the app once
     // after this ships. The legacy cookie's max lifetime is one year from a
     // user's last pre-deploy visit.
-    Cookies.remove("READ_ANNOUNCEMENTS_ZUID");
+    const mergedAnnouncementZuids = new Set<string>();
+
+    document.cookie
+      .split("; ")
+      .filter((cookie) => cookie.startsWith(`${READ_ANNOUNCEMENTS_COOKIE}=`))
+      .forEach((cookie) => {
+        try {
+          const zuids = JSON.parse(
+            decodeURIComponent(
+              cookie.slice(READ_ANNOUNCEMENTS_COOKIE.length + 1)
+            )
+          );
+
+          if (Array.isArray(zuids)) {
+            zuids.forEach((zuid) => mergedAnnouncementZuids.add(zuid));
+          }
+        } catch {
+          // A malformed copy must not abort the migration or the write below
+        }
+      });
+
+    Cookies.remove(READ_ANNOUNCEMENTS_COOKIE);
 
     updateReadAnnouncementsCookie(
-      JSON.stringify(parsedAnnouncementZuids),
+      JSON.stringify([...mergedAnnouncementZuids]),
       cookieOptions
     );
   }, []);
