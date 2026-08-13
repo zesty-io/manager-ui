@@ -37,9 +37,14 @@ export const InAppAnnouncement = () => {
     // js-cookie's get() returns whichever appears first in document.cookie, which
     // is ordered by creation time — so we cannot rely on reading the right one.
     // Union every copy instead, then collapse to a single domain-scoped cookie.
-    // Migration only — safe to delete once every user has loaded the app once
-    // after this ships. The legacy cookie's max lifetime is one year from a
-    // user's last pre-deploy visit.
+    //
+    // Migration only — removable once every user has loaded the app once after
+    // this ships (the legacy cookie's max lifetime is one year from a user's
+    // last pre-deploy visit). It is also the only producer of the value written
+    // below, so removing it means restoring the plain read it replaced —
+    // `const zuids = readAnnouncementsCookie ? JSON.parse(readAnnouncementsCookie) : [];`
+    // — as the value passed to updateReadAnnouncementsCookie. Deleting the block
+    // on its own writes an empty list over every user's dismissals.
     const mergedAnnouncementZuids = new Set<string>();
 
     document.cookie
@@ -47,14 +52,22 @@ export const InAppAnnouncement = () => {
       .filter((cookie) => cookie.startsWith(`${READ_ANNOUNCEMENTS_COOKIE}=`))
       .forEach((cookie) => {
         try {
+          // Mirrors the lenient decode in js-cookie 2.2.1's reader (the decode()
+          // helper in js.cookie.js): a stray "%" is left alone instead of
+          // throwing a URIError, so every copy Cookies.get() could have read is
+          // a copy this union keeps.
           const zuids = JSON.parse(
-            decodeURIComponent(
-              cookie.slice(READ_ANNOUNCEMENTS_COOKIE.length + 1)
-            )
+            cookie
+              .slice(READ_ANNOUNCEMENTS_COOKIE.length + 1)
+              .replace(/(%[0-9A-Z]{2})+/g, decodeURIComponent)
           );
 
           if (Array.isArray(zuids)) {
-            zuids.forEach((zuid) => mergedAnnouncementZuids.add(zuid));
+            zuids.forEach((zuid) => {
+              if (typeof zuid === "string") {
+                mergedAnnouncementZuids.add(zuid);
+              }
+            });
           }
         } catch {
           // A malformed copy must not abort the migration or the write below
@@ -84,7 +97,13 @@ export const InAppAnnouncement = () => {
   }, [announcements]);
 
   const readAnnouncements = useMemo(() => {
-    return readAnnouncementsCookie ? JSON.parse(readAnnouncementsCookie) : [];
+    // Runs during render, before the migration effect — a corrupt cookie must
+    // not throw into the ErrorBoundary and take Shell down with it
+    try {
+      return readAnnouncementsCookie ? JSON.parse(readAnnouncementsCookie) : [];
+    } catch {
+      return [];
+    }
   }, [readAnnouncementsCookie]);
 
   const onIgnoreAnnouncement = (zuid: string) => {
