@@ -168,9 +168,9 @@ describe("Studio Wrapper", () => {
 
   const setStudioMode = (mode) => {
     cy.getBySelector("StudioHeader").should("exist");
-    cy.getBySelector("StudioModeToggle")
-      .find('input[type="checkbox"]')
-      [mode === "layout" ? "check" : "uncheck"]();
+    // The mode control is a ToggleButtonGroup rendering only the modes the
+    // signed-in role is entitled to, so select the option directly.
+    cy.getBySelector(`StudioModeToggleOption-${mode}`).click();
   };
 
   beforeEach(() => {

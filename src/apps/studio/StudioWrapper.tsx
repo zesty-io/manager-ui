@@ -14,6 +14,7 @@ import { useDispatch, useSelector, useStore } from "react-redux";
 import { MemoryRouter, useHistory, useLocation } from "react-router";
 import { cloneDeep } from "lodash";
 import { AppState } from "shell/store/types";
+import { usePermission } from "shell/hooks/use-permissions";
 import {
   fetchAllModelPublishings,
   fetchItem,
@@ -102,6 +103,19 @@ const withCodeIdBreadcrumbRoot = (
 
 export const StudioWrapper = () => {
   const dispatch = useDispatch();
+
+  // Which interaction modes this user is entitled to. Layout mode writes view
+  // source, so it requires code access; content mode requires content update.
+  // The mode toggle renders only these, and no code path may set a mode
+  // outside this list.
+  const canEditCode = usePermission("CODE");
+  const canEditContent = usePermission("UPDATE");
+  const availableModes = useMemo<InteractionMode[]>(() => {
+    const modes: InteractionMode[] = [];
+    if (canEditContent) modes.push("content");
+    if (canEditCode) modes.push("layout");
+    return modes;
+  }, [canEditContent, canEditCode]);
 
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const currentHoverStudioIdRef = useRef<string | null>(null);
@@ -1003,6 +1017,9 @@ export const StudioWrapper = () => {
   const handleInteractionModeChange = useCallback(
     (nextMode: InteractionMode) => {
       if (interactionMode === nextMode) return;
+      // Refuse a mode the user is not entitled to, before any of the
+      // dirty-state branches below can run and commit the change.
+      if (!availableModes.includes(nextMode)) return;
 
       const applyInteractionModeChange = () => {
         if (currentHoverStudioIdRef.current) {
@@ -1040,6 +1057,7 @@ export const StudioWrapper = () => {
       applyInteractionModeChange();
     },
     [
+      availableModes,
       clearLayoutSelection,
       clearSelection,
       interactionMode,
@@ -1050,6 +1068,19 @@ export const StudioWrapper = () => {
       syncBridgeInteractionMode,
     ]
   );
+
+  // Clamp the active mode into what the user is entitled to. This runs on
+  // mount (the initial "content" is not necessarily allowed) and again if
+  // entitlement narrows while Studio is open. Selection is not cleared here:
+  // unlike a user-driven switch, nothing has been chosen yet at mount.
+  useEffect(() => {
+    if (!availableModes.length) return;
+    if (availableModes.includes(interactionMode)) return;
+
+    const fallbackMode = availableModes[0];
+    setInteractionMode(fallbackMode);
+    syncBridgeInteractionMode(fallbackMode);
+  }, [availableModes, interactionMode, syncBridgeInteractionMode]);
 
   const handleLanguageChange = useCallback(
     (langCode: string) => {
@@ -1790,6 +1821,7 @@ export const StudioWrapper = () => {
             onLanguageChange={handleLanguageChange}
             interactionMode={interactionMode}
             onInteractionModeChange={handleInteractionModeChange}
+            availableModes={availableModes}
             selectedLayoutBreadcrumb={selectedLayout?.breadcrumb || []}
             onLayoutBreadcrumbClick={handleLayoutBreadcrumbSelect}
             pageModelZUID={pageModelZUID}
