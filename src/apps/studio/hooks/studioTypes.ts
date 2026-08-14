@@ -116,7 +116,18 @@ export type LayoutSelection = {
   breadcrumb: LayoutBreadcrumbItem[];
 };
 
-export type InteractionMode = "content" | "layout";
+// "studio" is the union of content and layout, and the default for a user
+// entitled to both. It exists host-side only: the bridge branches on mode at
+// ten sites, every one written as === "layout" or !== "layout", so a third
+// value there would route studio into content behaviour at half of them.
+// syncBridgeInteractionMode maps studio -> layout at the boundary instead.
+export type InteractionMode = "content" | "layout" | "studio";
+
+// Modes whose canvas grammar is layout's: mousedown selects, dblclick drills.
+export const LAYOUT_GRAMMAR_MODES: InteractionMode[] = ["layout", "studio"];
+
+export const usesLayoutGrammar = (mode: InteractionMode): boolean =>
+  LAYOUT_GRAMMAR_MODES.includes(mode);
 
 // "element" = an HTML element (collapsible container). "field" = dynamic
 // content (a studio field marker) rendered as a text row with a bolt.

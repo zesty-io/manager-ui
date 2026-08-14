@@ -17,6 +17,17 @@ const CONTRIBUTOR_ROLE_ZUID = "31-71cfc74-c0ntr1b0t0r";
 const DEVELOPER_ROLE_ZUID = "31-71cfc74-d3v3l0p3r";
 
 describe("Studio mode entitlement", () => {
+  const codeId = "11-studio-test-view";
+  let itemZUID = "";
+  let studioPath = "/";
+
+  before(() => {
+    cy.task("seed:content", "fixtures/studio.json").then(({ items }) => {
+      itemZUID = items[0].meta.ZUID;
+      studioPath = `/${items[0].web.pathPart}`;
+    });
+  });
+
   const asRole = (systemRoleZUID) => {
     cy.intercept("GET", ENDPOINTS.userRoles, (req) => {
       req.continue((res) => {
@@ -42,9 +53,24 @@ describe("Studio mode entitlement", () => {
     }).as("getUser");
   };
 
+  const postBridgeMessage = (message) => {
+    cy.getBySelector("StudioHeader").should("exist");
+    cy.window().then(
+      (win) =>
+        new Cypress.Promise((resolve) => {
+          win.requestAnimationFrame(() => {
+            win.requestAnimationFrame(() => {
+              win.postMessage({ source: "studio-bridge", message }, "*");
+              resolve();
+            });
+          });
+        })
+    );
+  };
+
   const visitStudio = () => {
     cy.waitOn("/v1/content/models**", () => {
-      cy.visit("/studio?path=/");
+      cy.visit(`/studio?path=${studioPath}`);
     });
     cy.getBySelector("StudioHeader").should("exist");
   };
@@ -69,6 +95,62 @@ describe("Studio mode entitlement", () => {
 
     cy.getBySelector("StudioModeToggleOption-layout").should("not.exist");
     cy.getBySelector("StudioModeToggle").should("not.exist");
+  });
+
+  it("refuses a layout-write message from a role without code access", () => {
+    asRole(CONTRIBUTOR_ROLE_ZUID);
+    visitStudio();
+    cy.getBySelector("StudioPreviewFrame").should("exist");
+
+    // The mode toggle is not a gate on this path. These messages arrive from
+    // the preview window, so anything able to postMessage can send them —
+    // which is exactly what this spec does.
+    postBridgeMessage({
+      type: "TEMPLATE_SOURCE_MAP",
+      templateSourceByCodeId: {
+        [codeId]:
+          '<div data-layout-id="1">One</div><div data-layout-id="2">Two</div>',
+      },
+    });
+    postBridgeMessage({
+      type: "REORDER_OUTPUT",
+      regions: [
+        {
+          codeId,
+          selector: "[data-layout-id]",
+          orderedLayoutIds: ["2", "1"],
+          layoutStructure: [
+            { layoutId: "2", parentLayoutId: null },
+            { layoutId: "1", parentLayoutId: null },
+          ],
+          outputHtml:
+            '<div data-layout-id="2">Two</div><div data-layout-id="1">One</div>',
+        },
+      ],
+      primaryCodeId: codeId,
+      selectedLayoutId: "2",
+      selectedLayoutBreadcrumb: [{ layoutId: "2", label: "div" }],
+      selector: "[data-layout-id]",
+    });
+
+    // A bare should("not.exist") here is a race, not an assertion: it resolves
+    // on the first check, before the message has been handled, and so passes
+    // even when the write IS staged. Verified by mutation — removing the guard
+    // left it green.
+    //
+    // Instead, stage a content change the contributor IS entitled to make and
+    // wait for its save bar. That bar appearing proves the message queue has
+    // drained past the layout write, so the Layout section's absence from the
+    // modal is now evidence rather than timing.
+    cy.window().then((win) => {
+      win.zestyStore.dispatch({ type: "MARK_ITEM_DIRTY", itemZUID });
+    });
+
+    cy.getBySelector("StudioContentSaveBar").should("exist");
+    cy.getBySelector("StudioContentSaveChangesButton").click();
+    cy.getBySelector("StudioSaveChangesModal").should("exist");
+    cy.getBySelector("StudioSaveChangeRow").should("exist");
+    cy.getBySelector("StudioSaveChangeSection-Layout").should("not.exist");
   });
 });
 

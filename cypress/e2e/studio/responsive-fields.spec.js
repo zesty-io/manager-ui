@@ -76,6 +76,11 @@ describe("Studio - Responsive field components", () => {
     cy.waitOn("/v1/content/models/*/fields*", () => {
       cy.visit(`/studio?path=${studioPath}`);
     });
+    // These specs drive the content editor panel. Studio is the default mode
+    // and shows no right panel until something is selected, so enter content
+    // mode explicitly rather than relying on the default.
+    cy.getBySelector("StudioHeader").should("exist");
+    cy.getBySelector("StudioModeToggleOption-content").click();
     cy.getBySelector("StudioSidePanel").should("exist");
   });
 

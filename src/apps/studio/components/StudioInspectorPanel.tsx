@@ -356,7 +356,11 @@ const ConnectItemButton = ({
 };
 
 type StudioInspectorPanelProps = {
-  mode: "content" | "layout";
+  // Capabilities, not a mode. content -> layout:false/content:true;
+  // layout -> true/false; studio -> true/true. A third mode string would make
+  // every fork here three-way; two booleans keep each fork binary.
+  canEditLayout: boolean;
+  canEditContent: boolean;
   // Stable id of the selected element — reseeds the inputs when a different
   // element is chosen without fighting the user's in-progress typing.
   elementKey: string;
@@ -457,7 +461,8 @@ const SlotLabelRow = ({
 // with the test hook on the input element itself.
 const SlotField = ({
   slot,
-  mode,
+  canEditLayout,
+  canEditContent,
   value,
   onChangeSlot,
   onDisconnect,
@@ -467,7 +472,8 @@ const SlotField = ({
   mediaFields,
 }: {
   slot: ElementSlot;
-  mode: "content" | "layout";
+  canEditLayout: boolean;
+  canEditContent: boolean;
   value: string;
   onChangeSlot: (
     slot: ElementSlot,
@@ -536,10 +542,11 @@ const SlotField = ({
   const crossModelRef = parsedRef?.source ? parsedRef : undefined;
   const isConnected = Boolean(connectedField || crossModelRef);
 
-  // Content mode is read-only. A connected (dynamic) slot uses the SAME field
-  // chip as layout mode — clickable, opening its content editor. A static slot
-  // shows its value in a disabled input (or select, for a boolean attribute).
-  if (mode === "content") {
+  // Without layout capability the panel is read-only. A connected (dynamic)
+  // slot uses the SAME field chip as the editable panel — clickable, opening
+  // its content editor. A static slot shows its value in a disabled input (or
+  // select, for a boolean attribute).
+  if (!canEditLayout) {
     return (
       <Stack gap={0.5}>
         <Typography variant="body2" fontWeight={600} color="text.primary">
@@ -577,7 +584,7 @@ const SlotField = ({
     );
   }
 
-  // Layout mode: edit the underlying template. A connected slot shows the field
+  // Editable: write the underlying template. A connected slot shows the field
   // chip; otherwise a free-form input (or a Yes/No select for a boolean attr).
   const disabledReason = !slot.layoutEditable
     ? "This element can't be edited here."
@@ -604,7 +611,10 @@ const SlotField = ({
           isMedia={crossModelRef.isMedia}
         />
       ) : connectedField ? (
-        <ConnectedFieldView field={connectedField} />
+        <ConnectedFieldView
+          field={connectedField}
+          onClick={canEditContent ? () => onEditDynamicSlot(slot) : undefined}
+        />
       ) : isSelect ? (
         <TextField
           select
@@ -670,7 +680,8 @@ const SlotField = ({
 };
 
 export const StudioInspectorPanel = ({
-  mode,
+  canEditLayout,
+  canEditContent,
   elementKey,
   tagName,
   slots,
@@ -833,13 +844,14 @@ export const StudioInspectorPanel = ({
               <SlotField
                 key={slot.key}
                 slot={slot}
-                mode={mode}
+                canEditLayout={canEditLayout}
+                canEditContent={canEditContent}
                 // `values` is an EDITING buffer, so it only applies to layout
                 // mode. Content mode is read-only and renders the slot straight
                 // through — otherwise the buffer (seeded once per element) would
                 // go stale, e.g. never picking up a dynamic slot's field name
                 // once `fieldsState` resolves.
-                value={mode === "content" ? slot.value : values[slot.key] ?? ""}
+                value={canEditLayout ? values[slot.key] ?? "" : slot.value}
                 onChangeSlot={handleSlotValueChange}
                 onDisconnect={handleSlotDisconnect}
                 onEditDynamicSlot={onEditDynamicSlot}

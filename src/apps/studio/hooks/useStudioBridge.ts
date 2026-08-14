@@ -1,7 +1,7 @@
 import { MutableRefObject, useCallback, useEffect } from "react";
 import { notify } from "shell/store/notifications";
 import { Sentry } from "utility/sentry";
-import { InteractionMode } from "./studioTypes";
+import { InteractionMode, usesLayoutGrammar } from "./studioTypes";
 
 const bridgeInjectedCss = `
   .studio-hover {
@@ -65,6 +65,8 @@ const bridgeInjectedCss = `
 type Args = {
   dispatch: (action: any) => any;
   interactionMode: InteractionMode;
+  /** Whether this user may write view source. Gates the layout-write messages. */
+  canEditLayout: boolean;
   syncBridgeInteractionMode: (nextMode: InteractionMode) => void;
   postCommandToBridge: (cmd: any) => void;
   handleTemplateSourceMap: (msg: any) => void;
@@ -102,6 +104,7 @@ type Args = {
 export const useStudioBridge = ({
   dispatch,
   interactionMode,
+  canEditLayout,
   syncBridgeInteractionMode,
   postCommandToBridge,
   handleTemplateSourceMap,
@@ -177,13 +180,13 @@ export const useStudioBridge = ({
       switch (eventType) {
         case "mousedown":
         case "dblclick": {
-          if (interactionMode !== "layout") return;
+          if (!usesLayoutGrammar(interactionMode)) return;
           applyLayoutSelection({ codeId, layoutId, breadcrumb });
           return;
         }
 
         case "escape": {
-          if (interactionMode === "layout") {
+          if (usesLayoutGrammar(interactionMode)) {
             clearLayoutSelection();
             return;
           }
@@ -192,7 +195,7 @@ export const useStudioBridge = ({
         }
 
         case "click": {
-          if (interactionMode === "layout") return;
+          if (usesLayoutGrammar(interactionMode)) return;
           if (!fieldZuid) return;
 
           applySelection({
@@ -221,7 +224,7 @@ export const useStudioBridge = ({
         }
 
         case "mouseover": {
-          if (interactionMode === "layout") return;
+          if (usesLayoutGrammar(interactionMode)) return;
           if (!studioId) return;
           currentHoverStudioIdRef.current = studioId;
           postCommandToBridge({
@@ -234,7 +237,7 @@ export const useStudioBridge = ({
         }
 
         case "mouseout": {
-          if (interactionMode === "layout") return;
+          if (usesLayoutGrammar(interactionMode)) return;
           if (!studioId) return;
           if (currentHoverStudioIdRef.current === studioId) {
             currentHoverStudioIdRef.current = null;
@@ -298,13 +301,36 @@ export const useStudioBridge = ({
         return;
       }
 
+      // Both of these stage a write to view source. They arrive as window
+      // messages from the preview, so the mode toggle is not a gate on them:
+      // anything that can postMessage can send them. Refuse without code
+      // capability rather than relying on the UI never offering the mode.
       if (msg.type === "REORDER_OUTPUT") {
+        if (!canEditLayout) return;
         handleReorderOutput(msg);
         return;
       }
 
       if (msg.type === "LAYOUT_CONTENT_UPDATE") {
+        if (!canEditLayout) return;
         handleLayoutContentUpdate(msg);
+        return;
+      }
+
+      // Studio mode only: the bridge resolved a positive field binding at the
+      // leaf, so open that field's content editor. The same selection path a
+      // layers-row click takes — no new selection machinery.
+      if (msg.type === "DYNAMIC_EDIT_REQUEST") {
+        if (interactionMode !== "studio") return;
+        if (!msg.fieldZuid) return;
+
+        applySelection({
+          studioId: msg.studioId,
+          fieldZuid: msg.fieldZuid,
+          fieldType: msg.fieldType,
+          itemZuid: msg.itemZuid,
+          modelZuid: msg.modelZuid,
+        });
         return;
       }
 
@@ -335,6 +361,8 @@ export const useStudioBridge = ({
       window.removeEventListener("message", handleMessage);
     };
   }, [
+    applySelection,
+    canEditLayout,
     clearSelection,
     handleBridgeDomEvent,
     handleBridgeError,
@@ -343,6 +371,7 @@ export const useStudioBridge = ({
     handleLayoutContentUpdate,
     handleReorderOutput,
     handleTemplateSourceMap,
+    interactionMode,
     onStaticEditImage,
   ]);
 

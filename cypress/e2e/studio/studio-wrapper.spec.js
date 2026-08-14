@@ -187,6 +187,11 @@ describe("Studio Wrapper", () => {
       .and("have.attr", "src")
       .and("include", "studio=bridge");
 
+    // Studio is the default for a role with both capabilities, and it shows no
+    // right panel until something is selected — matching layout, not content.
+    cy.getBySelector("StudioSidePanel").should("not.exist");
+
+    setStudioMode("content");
     cy.getBySelector("StudioSidePanel").should("exist");
 
     setStudioMode("layout");
@@ -699,6 +704,9 @@ describe("Studio Wrapper", () => {
   // the item to be hydrated into the store first so MARK_ITEM_DIRTY isn't a
   // no-op (the reducer only flips items already present in state.content).
   const dirtyPageContent = () => {
+    // Content mode explicitly: the panel is this helper's hydration signal,
+    // and studio (the default) renders no panel until something is selected.
+    setStudioMode("content");
     cy.getBySelector("StudioSidePanel").should("exist");
     cy.window().should((win) => {
       expect(

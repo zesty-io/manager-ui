@@ -1,4 +1,5 @@
 import AutoAwesomeMosaicRoundedIcon from "@mui/icons-material/AutoAwesomeMosaicRounded";
+import AutoAwesomeRoundedIcon from "@mui/icons-material/AutoAwesomeRounded";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import { Box, Chip, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { LanguageSelector } from "../../content-editor/src/app/views/ItemEdit/components/ItemEditHeader/LanguageSelector";
@@ -28,6 +29,11 @@ const MODE_OPTIONS: {
   label: string;
   icon: JSX.Element;
 }[] = [
+  {
+    mode: "studio",
+    label: "Studio",
+    icon: <AutoAwesomeRoundedIcon fontSize="small" />,
+  },
   {
     mode: "content",
     label: "Content",

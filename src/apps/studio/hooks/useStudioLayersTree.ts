@@ -9,6 +9,7 @@ import {
   LayoutSelection,
   InspectorSelection,
   SelectedElement,
+  usesLayoutGrammar,
 } from "./studioTypes";
 import { NO_TAG, isTextTag } from "../components/studioTags";
 import { parseParsleyRef } from "../components/studioParsley";
@@ -158,7 +159,7 @@ const isPanelNode = (node: LayersTreeNode, interactionMode: InteractionMode) =>
   Array.isArray(node.slots) &&
   (node.kind === "element" ||
     node.kind === "text" ||
-    (node.kind === "field" && interactionMode === "layout"));
+    (node.kind === "field" && usesLayoutGrammar(interactionMode)));
 
 // A leaf element's single addressable content row — the text run or bound
 // field carrying its Text ("Value") slot. Recognized by its layoutPatch
@@ -250,7 +251,7 @@ export const useStudioLayersTree = ({
     // An open Inspector panel owns the highlight in both modes.
     if (inspectorSelection) return inspectorSelection.nodeId;
 
-    if (interactionMode === "layout") {
+    if (usesLayoutGrammar(interactionMode)) {
       if (!selectedLayout?.layoutId) return null;
       for (const node of nodeById.values()) {
         if (
@@ -386,7 +387,7 @@ export const useStudioLayersTree = ({
       // Elements with editable attributes (e.g. <img>) are clickable in both
       // modes to open the Inspector panel.
       if (isPanelNode(node, interactionMode)) return true;
-      if (interactionMode === "layout") {
+      if (usesLayoutGrammar(interactionMode)) {
         // Elements select on the canvas; static text rows are clickable to
         // enter inline static editing on their enclosing element.
         if (node.kind === "element") return !!node.layoutId && !!node.codeId;
@@ -418,7 +419,7 @@ export const useStudioLayersTree = ({
           selectable: isNodeSelectable(node),
           draggable:
             !dndDisabled &&
-            interactionMode === "layout" &&
+            usesLayoutGrammar(interactionMode) &&
             node.kind === "element" &&
             !!node.layoutId &&
             !!node.codeId,
@@ -480,7 +481,7 @@ export const useStudioLayersTree = ({
   const resolveSlotValues = useCallback(
     (slots: ElementSlot[] | undefined): ElementSlot[] =>
       (slots || []).map((slot) => {
-        if (interactionMode === "layout") {
+        if (usesLayoutGrammar(interactionMode)) {
           return slot.sourceValue !== undefined
             ? { ...slot, value: slot.sourceValue }
             : slot;
@@ -507,7 +508,7 @@ export const useStudioLayersTree = ({
   // applyLayoutSelection.
   const openInspectorForLayoutElement = useCallback(
     (codeId: string, layoutId: string) => {
-      if (interactionMode !== "layout") return;
+      if (!usesLayoutGrammar(interactionMode)) return;
       for (const node of nodeById.values()) {
         if (
           node.kind === "element" &&
@@ -543,7 +544,11 @@ export const useStudioLayersTree = ({
       // a text node has no layoutId so it skips that. An empty tagName marks a
       // text node — the panel titles it "Text" and hides the Tag selector.
       if (isPanelNode(node, interactionMode)) {
-        if (interactionMode === "layout" && node.layoutId && node.codeId) {
+        if (
+          usesLayoutGrammar(interactionMode) &&
+          node.layoutId &&
+          node.codeId
+        ) {
           selectLayoutElement(node);
         }
         applyInspectorSelection({
@@ -557,7 +562,7 @@ export const useStudioLayersTree = ({
 
       // Non-editable static text in layout mode → enter inline static editing
       // on the nearest enclosing element (mirrors double-clicking on canvas).
-      if (interactionMode === "layout" && node.kind === "text") {
+      if (usesLayoutGrammar(interactionMode) && node.kind === "text") {
         let host = parentById.get(node.id) || null;
         while (
           host &&
@@ -580,7 +585,7 @@ export const useStudioLayersTree = ({
         return;
       }
 
-      if (interactionMode === "layout") {
+      if (usesLayoutGrammar(interactionMode)) {
         selectLayoutElement(node);
         return;
       }
@@ -621,7 +626,7 @@ export const useStudioLayersTree = ({
       resolveSlotValues(node.slots),
       node.layoutPatch ?? null,
       // Only layout mode holds editable values worth protecting from a re-emit.
-      interactionMode === "layout"
+      usesLayoutGrammar(interactionMode)
     );
   }, [
     interactionMode,
@@ -637,7 +642,7 @@ export const useStudioLayersTree = ({
       targetId: string,
       position: LayersDropPosition
     ): boolean => {
-      if (dndDisabled || interactionMode !== "layout") return false;
+      if (dndDisabled || !usesLayoutGrammar(interactionMode)) return false;
       const source = nodeById.get(sourceId);
       const target = nodeById.get(targetId);
       if (!source || !target || source === target) return false;

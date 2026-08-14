@@ -317,6 +317,8 @@ describe("Studio Inspector Panel", () => {
   });
 
   it("opens the inspector panel with read-only src + alt for an img in content mode", () => {
+    // Studio is the default now; this test is about content mode.
+    setStudioMode("content");
     const node = imgNode("code-1");
     feedTree(node);
     openPanelFor(node);
@@ -330,6 +332,8 @@ describe("Studio Inspector Panel", () => {
   });
 
   it("shows a connected attribute as the same field chip in content mode", () => {
+    // Studio is the default now; this test is about content mode.
+    setStudioMode("content");
     // A dynamic (bound) src renders as the connected field chip — the same UI as
     // layout mode — not a raw input. A static attribute stays a plain input.
     const node = elementNode("code-1", "img", [
