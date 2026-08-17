@@ -27,7 +27,6 @@ import {
   isValid,
 } from "date-fns";
 
-import { useGetChatSessionsQuery } from "shell/services/mcp";
 import { ChatSession } from "shell/services/types";
 
 const formatShortRelativeTime = (date: Date) => {
@@ -51,30 +50,30 @@ const formatShortRelativeTime = (date: Date) => {
   return `${Math.max(differenceInSeconds(now, date), 0)}s ago`;
 };
 
-export const ChatHistory = () => {
-  const [count, setCount] = useState(5);
+type ChatHistoryProps = {
+  sessions: ChatSession[];
+  isLoading: boolean;
+  onSelectSession: (chatZUID: string) => void;
+  onNewChat: () => void;
+};
+
+export const ChatHistory = ({
+  sessions,
+  isLoading,
+  onSelectSession,
+  onNewChat,
+}: ChatHistoryProps) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedChat, setSelectedChat] = useState<number | null>(null);
-  const { data: chatSessions, isLoading: isLoadingChatSessions } =
-    useGetChatSessionsQuery();
-
-  const relevantChatSessions = useMemo(() => {
-    if (!chatSessions) return [];
-
-    return chatSessions.filter(
-      (session) => session.referer === window.location.href
-    );
-  }, [chatSessions, window.location.href]);
 
   const filteredChatSessions = useMemo(() => {
     const normalizedSearchTerm = searchTerm?.trim().toLowerCase();
 
-    if (!normalizedSearchTerm) return relevantChatSessions;
+    if (!normalizedSearchTerm) return sessions;
 
-    return relevantChatSessions.filter((session) =>
+    return sessions.filter((session) =>
       session.title?.toLowerCase().includes(normalizedSearchTerm)
     );
-  }, [relevantChatSessions, searchTerm]);
+  }, [sessions, searchTerm]);
 
   const handleSearch = debounce((term: string) => {
     setSearchTerm(term);
@@ -140,9 +139,10 @@ export const ChatHistory = () => {
             </TableHead>
             <TableBody>
               <ChatHistoryRows
-                isLoading={isLoadingChatSessions}
+                isLoading={isLoading}
                 sessions={filteredChatSessions}
                 searchTerm={searchTerm}
+                onSelectSession={onSelectSession}
               />
             </TableBody>
           </Table>
@@ -153,7 +153,7 @@ export const ChatHistory = () => {
         variant="contained"
         startIcon={<AddCircleIcon />}
         sx={{ mt: 2, flexShrink: 0 }}
-        onClick={() => setCount(count + 1)}
+        onClick={onNewChat}
       >
         New Chat
       </Button>
@@ -167,12 +167,14 @@ type ChatHistoryRowsProps = {
   isLoading: boolean;
   sessions: ChatSession[];
   searchTerm: string;
+  onSelectSession: (chatZUID: string) => void;
 };
 
 const ChatHistoryRows = ({
   isLoading,
   sessions,
   searchTerm,
+  onSelectSession,
 }: ChatHistoryRowsProps) => {
   if (isLoading) {
     return (
@@ -231,6 +233,7 @@ const ChatHistoryRows = ({
             key={session.chatZuid}
             hover
             data-cy="ChatHistoryRow"
+            onClick={() => onSelectSession(session.chatZuid)}
             sx={{ cursor: "pointer" }}
           >
             <TableCell

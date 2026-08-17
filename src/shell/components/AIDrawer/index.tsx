@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   useGeminiGenerationMutation,
   useGetChatSessionLogQuery,
+  useGetChatSessionsQuery,
   useUpdatePromptApprovalStatusMutation,
 } from "../../services/mcp";
 import CloseIcon from "@mui/icons-material/Close";
@@ -139,6 +140,17 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
       }
     );
   const [updatePromptApprovalStatus] = useUpdatePromptApprovalStatusMutation();
+  const { data: chatSessions, isLoading: isLoadingChatSessions } =
+    useGetChatSessionsQuery();
+  const [isStartingNewChat, setIsStartingNewChat] = useState(false);
+
+  const relevantChatSessions = useMemo(() => {
+    if (!chatSessions) return [];
+
+    return chatSessions.filter(
+      (session) => session.referer === window.location.href
+    );
+  }, [chatSessions, pathname]);
 
   const responsesEndRef = useRef(null);
   const hasInitializedResponseSyncRef = useRef(false);
@@ -188,6 +200,11 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
       prev === aiResponse.chatZuid ? prev : aiResponse.chatZuid
     );
   }, [aiResponse, setUrlChatZUID]);
+
+  // Once a real chat is active, the "force new chat" override is no longer relevant
+  useEffect(() => {
+    if (urlChatZUID) setIsStartingNewChat(false);
+  }, [urlChatZUID]);
 
   // Auto-applies AI responses to the editor when available
   useEffect(() => {
@@ -359,6 +376,21 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
     [geminiGenerate, urlChatZUID]
   );
 
+  const handleSelectChatSession = useCallback(
+    (chatZUID: string) => setUrlChatZUID(chatZUID),
+    [setUrlChatZUID]
+  );
+
+  const handleStartNewChat = useCallback(() => {
+    setResponses({});
+    setIsStartingNewChat(true);
+  }, []);
+
+  const showChatThread =
+    Boolean(urlChatZUID) ||
+    isStartingNewChat ||
+    (!isLoadingChatSessions && !relevantChatSessions.length);
+
   if (!isEnabled) return <></>;
 
   return (
@@ -412,29 +444,37 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
           <CloseIcon fontSize="medium" />
         </IconButton>
       </Box>
-      <ChatHistory />
-      {/*<ChatThread
-        responses={responses}
-        setResponses={setResponses}
-        latestPromptZUIDs={latestPromptZUIDs}
-        autoApply={autoApply}
-        setAutoApply={setAutoApply}
-        isInCodeApp={isInCodeApp}
-        isLoading={isLoading}
-        isLoadingChatSessionLog={isLoadingChatSessionLog}
-        urlChatZUID={urlChatZUID}
-        removeUrlChatZUID={removeUrlChatZUID}
-        updatePromptApprovalStatus={updatePromptApprovalStatus}
-        composerSeed={composerSeed}
-        setComposerSeed={setComposerSeed}
-        selectedLanguage={selectedLanguage}
-        setSelectedLanguage={setSelectedLanguage}
-        selectedTone={selectedTone}
-        setSelectedTone={setSelectedTone}
-        handlePrompt={handlePrompt}
-        handleGenerateSuggestions={handleGenerateSuggestions}
-        responsesEndRef={responsesEndRef}
-      />*/}
+      {showChatThread ? (
+        <ChatThread
+          responses={responses}
+          setResponses={setResponses}
+          latestPromptZUIDs={latestPromptZUIDs}
+          autoApply={autoApply}
+          setAutoApply={setAutoApply}
+          isInCodeApp={isInCodeApp}
+          isLoading={isLoading}
+          isLoadingChatSessionLog={isLoadingChatSessionLog}
+          urlChatZUID={urlChatZUID}
+          removeUrlChatZUID={removeUrlChatZUID}
+          updatePromptApprovalStatus={updatePromptApprovalStatus}
+          composerSeed={composerSeed}
+          setComposerSeed={setComposerSeed}
+          selectedLanguage={selectedLanguage}
+          setSelectedLanguage={setSelectedLanguage}
+          selectedTone={selectedTone}
+          setSelectedTone={setSelectedTone}
+          handlePrompt={handlePrompt}
+          handleGenerateSuggestions={handleGenerateSuggestions}
+          responsesEndRef={responsesEndRef}
+        />
+      ) : (
+        <ChatHistory
+          sessions={relevantChatSessions}
+          isLoading={isLoadingChatSessions}
+          onSelectSession={handleSelectChatSession}
+          onNewChat={handleStartNewChat}
+        />
+      )}
     </Paper>
   );
 };
