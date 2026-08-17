@@ -143,174 +143,192 @@ export const ChatThread = ({
               width: "100%",
             }}
           >
-            {Object.entries(responses).map(([promptZUID, promptResponses]) => {
-              return promptResponses.map((response, responseIndex) => {
-                const shouldAnimate =
-                  latestPromptZUIDs.has(promptZUID) &&
-                  response.type !== "USER_INPUT";
+            {isLoadingChatSessionLog ? (
+              <>
+                <Skeleton
+                  data-cy="AIDrawerChatSessionLogSkeleton"
+                  variant="rounded"
+                  width="60%"
+                  height={40}
+                  sx={{ ml: "auto", borderRadius: 2 }}
+                />
+                <Skeleton
+                  variant="rounded"
+                  width="75%"
+                  height={64}
+                  sx={{ borderRadius: 2 }}
+                />
+              </>
+            ) : (
+              Object.entries(responses).map(([promptZUID, promptResponses]) => {
+                return promptResponses.map((response, responseIndex) => {
+                  const shouldAnimate =
+                    latestPromptZUIDs.has(promptZUID) &&
+                    response.type !== "USER_INPUT";
 
-                if (response.type === "USER_INPUT") {
-                  return (
-                    <Box
-                      data-cy="AIDrawerUserInput"
-                      key={`${promptZUID}-${responseIndex}`}
-                      px={1.5}
-                      py={1}
-                      mt={responseIndex === 0 ? 1 : 0}
-                      sx={{
-                        borderRadius: 2,
-                        maxWidth: "184px",
-                        width: "fit-content",
-                        color: "white",
-                        ml: "auto",
-                        backgroundColor: "grey.500",
-                      }}
-                    >
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          borderRadius: 1,
-                          wordBreak: "break-word",
-                          fontStyle:
-                            response.payload.value.startsWith(
-                              "Generate suggestions"
-                            ) && "italic",
-                        }}
-                      >
-                        {response.payload.value}
-                      </Typography>
-                    </Box>
-                  );
-                } else if (response.type === "SYSTEM_SUGGESTION") {
-                  return (
-                    <Button
-                      data-cy="AIDrawerSystemSuggestion"
-                      key={`${promptZUID}-${responseIndex}`}
-                      onClick={() => {
-                        setComposerSeed(response.payload.value);
-                      }}
-                      sx={{
-                        textAlign: "left",
-                        justifyContent: "flex-start",
-                        width: "fit-content",
-                        px: 1.5,
-                        py: 1,
-                        borderRadius: 2,
-                      }}
-                      variant="contained"
-                      color="inherit"
-                      endIcon={<ChevronRightRounded />}
-                    >
-                      <AnimatedText
-                        text={response.payload.value}
-                        animate={shouldAnimate}
-                        onGrow={() => {
-                          if (responsesEndRef.current) {
-                            responsesEndRef.current.scrollIntoView({
-                              behavior: "smooth",
-                            });
-                          }
-                        }}
-                      />
-                    </Button>
-                  );
-                } else if (response.type === "NAVIGATE") {
-                  return (
-                    <Button
-                      key={`${promptZUID}-${responseIndex}`}
-                      variant="contained"
-                      sx={{ width: "fit-content" }}
-                      onClick={() => {
-                        enqueueAction({
-                          type: response.type,
-                          payload: {
-                            path: response.payload.path,
-                          },
-                        });
-                      }}
-                      endIcon={<ArrowForward fontSize="small" />}
-                    >
-                      Navigate
-                    </Button>
-                  );
-                }
-
-                return (
-                  <Box
-                    key={`${promptZUID}-${responseIndex}`}
-                    sx={{
-                      maxWidth: response.payload?.value?.startsWith("3-")
-                        ? "unset"
-                        : 160,
-                    }}
-                  >
-                    {response.payload.refKey && (
-                      <Typography
-                        variant="body3"
-                        fontWeight={600}
-                        color="text.disabled"
-                        sx={{
-                          mb: 1.25,
-                        }}
-                      >
-                        {response.payload.refKey}
-                      </Typography>
-                    )}
-                    {response.payload?.value?.startsWith("3-") ? (
-                      <GeneratedImage src={response.payload.value} />
-                    ) : (
-                      <AnimatedText
+                  if (response.type === "USER_INPUT") {
+                    return (
+                      <Box
+                        data-cy="AIDrawerUserInput"
                         key={`${promptZUID}-${responseIndex}`}
-                        text={response.payload.value}
-                        animate={shouldAnimate && !isInCodeApp}
-                        onGrow={() => {
-                          if (responsesEndRef.current) {
-                            responsesEndRef.current.scrollIntoView({
-                              behavior: "smooth",
-                            });
-                          }
+                        px={1.5}
+                        py={1}
+                        mt={responseIndex === 0 ? 1 : 0}
+                        sx={{
+                          borderRadius: 2,
+                          maxWidth: "184px",
+                          width: "fit-content",
+                          color: "white",
+                          ml: "auto",
+                          backgroundColor: "grey.500",
                         }}
-                      />
-                    )}
-                    {!autoApply && response.type === "SET_VALUE" && (
+                      >
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            borderRadius: 1,
+                            wordBreak: "break-word",
+                            fontStyle:
+                              response.payload.value.startsWith(
+                                "Generate suggestions"
+                              ) && "italic",
+                          }}
+                        >
+                          {response.payload.value}
+                        </Typography>
+                      </Box>
+                    );
+                  } else if (response.type === "SYSTEM_SUGGESTION") {
+                    return (
                       <Button
-                        data-cy="AIDrawerSetValue"
+                        data-cy="AIDrawerSystemSuggestion"
+                        key={`${promptZUID}-${responseIndex}`}
+                        onClick={() => {
+                          setComposerSeed(response.payload.value);
+                        }}
+                        sx={{
+                          textAlign: "left",
+                          justifyContent: "flex-start",
+                          width: "fit-content",
+                          px: 1.5,
+                          py: 1,
+                          borderRadius: 2,
+                        }}
                         variant="contained"
-                        sx={{ mt: 1.25 }}
-                        disabled={response.approval === "1"}
+                        color="inherit"
+                        endIcon={<ChevronRightRounded />}
+                      >
+                        <AnimatedText
+                          text={response.payload.value}
+                          animate={shouldAnimate}
+                          onGrow={() => {
+                            if (responsesEndRef.current) {
+                              responsesEndRef.current.scrollIntoView({
+                                behavior: "smooth",
+                              });
+                            }
+                          }}
+                        />
+                      </Button>
+                    );
+                  } else if (response.type === "NAVIGATE") {
+                    return (
+                      <Button
+                        key={`${promptZUID}-${responseIndex}`}
+                        variant="contained"
+                        sx={{ width: "fit-content" }}
                         onClick={() => {
                           enqueueAction({
                             type: response.type,
                             payload: {
-                              refKey: response.payload.refKey,
-                              value: response.payload.value,
+                              path: response.payload.path,
                             },
                           });
-                          updatePromptApprovalStatus({
-                            chatZUID: urlChatZUID,
-                            promptZUID,
-                            approval: "1",
-                          });
-                          // Optimistically mark as approved so the button
-                          // disables immediately without waiting for a re-fetch
-                          setResponses((prev) => ({
-                            ...prev,
-                            [promptZUID]: prev[promptZUID].map((response) =>
-                              response.type === "SET_VALUE"
-                                ? { ...response, approval: "1" }
-                                : response
-                            ),
-                          }));
                         }}
-                        startIcon={<AutoFixHighRounded fontSize="small" />}
+                        endIcon={<ArrowForward fontSize="small" />}
                       >
-                        Apply
+                        Navigate
                       </Button>
-                    )}
-                  </Box>
-                );
-              });
-            })}
+                    );
+                  }
+
+                  return (
+                    <Box
+                      key={`${promptZUID}-${responseIndex}`}
+                      sx={{
+                        maxWidth: response.payload?.value?.startsWith("3-")
+                          ? "unset"
+                          : 160,
+                      }}
+                    >
+                      {response.payload.refKey && (
+                        <Typography
+                          variant="body3"
+                          fontWeight={600}
+                          color="text.disabled"
+                          sx={{
+                            mb: 1.25,
+                          }}
+                        >
+                          {response.payload.refKey}
+                        </Typography>
+                      )}
+                      {response.payload?.value?.startsWith("3-") ? (
+                        <GeneratedImage src={response.payload.value} />
+                      ) : (
+                        <AnimatedText
+                          key={`${promptZUID}-${responseIndex}`}
+                          text={response.payload.value}
+                          animate={shouldAnimate && !isInCodeApp}
+                          onGrow={() => {
+                            if (responsesEndRef.current) {
+                              responsesEndRef.current.scrollIntoView({
+                                behavior: "smooth",
+                              });
+                            }
+                          }}
+                        />
+                      )}
+                      {!autoApply && response.type === "SET_VALUE" && (
+                        <Button
+                          data-cy="AIDrawerSetValue"
+                          variant="contained"
+                          sx={{ mt: 1.25 }}
+                          disabled={response.approval === "1"}
+                          onClick={() => {
+                            enqueueAction({
+                              type: response.type,
+                              payload: {
+                                refKey: response.payload.refKey,
+                                value: response.payload.value,
+                              },
+                            });
+                            updatePromptApprovalStatus({
+                              chatZUID: urlChatZUID,
+                              promptZUID,
+                              approval: "1",
+                            });
+                            // Optimistically mark as approved so the button
+                            // disables immediately without waiting for a re-fetch
+                            setResponses((prev) => ({
+                              ...prev,
+                              [promptZUID]: prev[promptZUID].map((response) =>
+                                response.type === "SET_VALUE"
+                                  ? { ...response, approval: "1" }
+                                  : response
+                              ),
+                            }));
+                          }}
+                          startIcon={<AutoFixHighRounded fontSize="small" />}
+                        >
+                          Apply
+                        </Button>
+                      )}
+                    </Box>
+                  );
+                });
+              })
+            )}
             <div ref={responsesEndRef} />
             {isLoading && (
               <Box
