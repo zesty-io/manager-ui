@@ -303,7 +303,7 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
     }
 
     setResponses(restoredResponses);
-  }, [open, isLoadingChatSessionLog, chatSessionLog]);
+  }, [open, isLoadingChatSessionLog, chatSessionLog, urlChatZUID]);
 
   const handlePrompt = useCallback(
     (newPrompt: string) => {
