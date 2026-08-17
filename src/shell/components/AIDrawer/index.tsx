@@ -85,6 +85,18 @@ const normalizeChatSessionLog = (prompts: ChatPrompt[] = []) => {
   return promptMap;
 };
 
+const parseZUIDsFromPath = (pathname: string) => {
+  // Matches /content/<modelZUID>/<itemZUID>[/meta|/seo] and
+  // /blocks/<modelZUID>/<itemZUID>, with an optional trailing slash.
+  const zuidMatch = pathname.match(
+    /^\/(?:content|blocks)\/([^/]+)\/([^/]+)(?:\/(meta|seo))?\/?$/
+  );
+
+  return zuidMatch
+    ? { modelZUID: zuidMatch[1], itemZUID: zuidMatch[2] }
+    : { modelZUID: undefined, itemZUID: undefined };
+};
+
 export type AIDrawerProps = {
   onClose: () => void;
   open: boolean;
@@ -101,12 +113,7 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
   const [latestPromptZUIDs, setLatestPromptZUIDs] = useState<Set<string>>(
     new Set()
   );
-  const zuidMatch = pathname.match(
-    /^\/content\/([^/]+)\/([^/]+)(?:\/(meta|seo))?$/
-  );
-  const { modelZUID, itemZUID } = zuidMatch
-    ? { modelZUID: zuidMatch[1], itemZUID: zuidMatch[2] }
-    : { modelZUID: undefined, itemZUID: undefined };
+  const { modelZUID, itemZUID } = parseZUIDsFromPath(pathname);
   const item = useSelector(
     (state: AppState) =>
       state.content[itemZUID] as ContentItemWithDirtyAndPublishing
