@@ -985,8 +985,13 @@ export const StudioWrapper = () => {
       failedCount += 1;
     }
 
+    // A save hook may have registered a post-reload continuation while the
+    // refresh was suppressed. Hand it to the single real refresh instead of
+    // letting the no-arg call clear it.
     suppressPreviewRefreshRef.current = false;
-    refreshPreviewFrame();
+    const storedContinuation = previewReloadContinuationRef.current;
+    previewReloadContinuationRef.current = null;
+    refreshPreviewFrame(storedContinuation || undefined);
     return { failedCount };
   };
 
@@ -1174,6 +1179,15 @@ export const StudioWrapper = () => {
   //
   // Selection is not cleared on either path. Unlike a user-driven switch,
   // nothing has been selected yet when these fire.
+  //
+  // Pending work is a different matter. A user-driven switch routes through
+  // the modals in handleInteractionModeChange, but this path cannot: the
+  // entitlement is already gone, so there is nothing to offer — the write
+  // would be rejected by the server. Leaving the change staged is worse than
+  // dropping it, because the mode that could commit it is now unreachable and
+  // the save bar disappears with it: the edit stays applied in memory with no
+  // affordance to save, discard, or even see it. So discard explicitly and
+  // say so, rather than silently stranding it.
   useEffect(() => {
     if (!availableModes.length) return;
 
@@ -1183,9 +1197,39 @@ export const StudioWrapper = () => {
     const nextMode = availableModes[0];
     if (nextMode === interactionMode) return;
 
+    const losesLayout = !usesLayoutGrammar(nextMode) && hasPendingLayoutChanges;
+    const losesContent = nextMode === "layout" && hasPendingContentChanges;
+
+    if (losesLayout) handleDiscardPendingLayoutSave();
+    if (losesContent) void discardAllContent();
+
+    if (losesLayout || losesContent) {
+      dispatch(
+        notify({
+          kind: "warn",
+          message:
+            "Your permissions changed while Studio was open, so unsaved " +
+            (losesLayout && losesContent
+              ? "content and layout changes were discarded."
+              : losesLayout
+              ? "layout changes were discarded."
+              : "content changes were discarded."),
+        })
+      );
+    }
+
     setInteractionMode(nextMode);
     syncBridgeInteractionMode(nextMode);
-  }, [availableModes, interactionMode, syncBridgeInteractionMode]);
+  }, [
+    availableModes,
+    dispatch,
+    discardAllContent,
+    handleDiscardPendingLayoutSave,
+    hasPendingContentChanges,
+    hasPendingLayoutChanges,
+    interactionMode,
+    syncBridgeInteractionMode,
+  ]);
 
   const handleLanguageChange = useCallback(
     (langCode: string) => {
@@ -1467,6 +1511,40 @@ export const StudioWrapper = () => {
     [applyLayoutSelection, openInspectorForLayoutElement]
   );
 
+  // The bridge resolved a bound leaf on the canvas. Open the Inspector for that
+  // element FIRST, then select the field.
+  //
+  // Order is the whole point. `applySelection` keeps an open Inspector only
+  // when its slots carry the field being edited, and clears it otherwise —
+  // so selecting straight from the canvas closes the Inspector and takes
+  // "Back to Element" with it. `openInspectorForLayoutElement` resolves the
+  // element to its lone bound text child, whose slots DO carry the fieldZuid,
+  // which is exactly why the layers-row route keeps the button and this one
+  // did not.
+  const handleDynamicEditRequest = useCallback(
+    (msg: {
+      codeId?: string;
+      layoutId?: string;
+      studioId?: string;
+      fieldZuid: string;
+      fieldType?: string;
+      itemZuid?: string;
+      modelZuid?: string;
+    }) => {
+      if (msg.codeId && msg.layoutId) {
+        openInspectorForLayoutElement(msg.codeId, msg.layoutId);
+      }
+      applyBridgeSelection({
+        studioId: msg.studioId,
+        fieldZuid: msg.fieldZuid,
+        fieldType: msg.fieldType,
+        itemZuid: msg.itemZuid,
+        modelZuid: msg.modelZuid,
+      });
+    },
+    [applyBridgeSelection, openInspectorForLayoutElement]
+  );
+
   const { handlePreviewLoad } = useStudioBridge({
     dispatch,
     interactionMode,
@@ -1479,6 +1557,7 @@ export const StudioWrapper = () => {
     applyLayoutSelection: handleBridgeLayoutSelection,
     clearLayoutSelection,
     applySelection: applyBridgeSelection,
+    onDynamicEditRequest: handleDynamicEditRequest,
     canEditLayout,
     fieldNameByZuid,
     currentHoverStudioIdRef,

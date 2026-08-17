@@ -124,6 +124,47 @@ describe("Studio Full Mode", () => {
   // identically with the guard removed. Asserting it would measure the drawer
   // condition, not the guard.
 
+  it("shows the layout breadcrumb trail in full mode", () => {
+    // Full mode uses layout's drill-down grammar, so it needs layout's way
+    // back up. This regressed once: the header still gated the trail on
+    // `interactionMode === "layout"`, so full mode could drill with no trail.
+    postBridgeMessage({
+      type: "DOM_EVENT",
+      eventType: "mousedown",
+      element: { dataset: { codeId, layoutId: "2" } },
+      breadcrumb: [{ layoutId: "2", label: "div" }],
+    });
+
+    cy.getBySelector("StudioBreadcrumbs").should("exist");
+    cy.getBySelector("StudioBreadcrumbChip").should("contain.text", "div");
+  });
+
+  it("discards and reports unsaved layout work when code access is revoked mid-session", () => {
+    stageLayoutChange();
+    cy.getBySelector("StudioLayoutSaveBar").should("exist");
+
+    // Narrow entitlement underneath the open session, exactly as a background
+    // role refetch would. The clamp used to switch mode silently, leaving the
+    // edit applied in memory with no save bar and no way back to layout mode.
+    cy.window().then((win) => {
+      const role = win.zestyStore.getState().userRole;
+      win.zestyStore.dispatch({
+        type: "FETCH_USER_ROLE_SUCCESS",
+        payload: {
+          data: {
+            ...role,
+            systemRoleZUID: "31-71cfc74-c0ntr1b0t0r",
+            systemRole: { ...role.systemRole, super: false },
+          },
+        },
+      });
+    });
+
+    // The user is told, rather than left with a vanished save bar.
+    cy.contains("permissions changed", { timeout: 10000 }).should("exist");
+    cy.getBySelector("StudioLayoutSaveBar").should("not.exist");
+  });
+
   it("commits content and layout together from one save bar", () => {
     stageContentChange();
     stageLayoutChange();

@@ -4,27 +4,13 @@ import { useMemo } from "react";
 import { useSelector } from "react-redux";
 import { createSelector } from "reselect";
 import instanceZUID from "../../utility/instanceZUID";
+// Single source of truth: the same roles that receive the "code" product.
+import { CODE_ROLE_ZUIDS } from "../store/products";
 
 const getUser = (state) => state.user;
 const getRole = (state) => state.userRole;
 const selectUser = createSelector([getUser], (user) => user);
 const selectRole = createSelector([getRole], (role) => role);
-
-/**
- * System roles that grant code access. These are the same roles that receive
- * the "code" product in shell/store/products.js, so entitlement stays
- * consistent with what the global menu already grants.
- *
- * Matched by ZUID rather than by systemRole.name: names are editable and a
- * renamed role would silently lose or gain access.
- */
-const CODE_ROLE_ZUIDS = [
-  "31-71cfc74-0wn3r", // owner
-  "31-71cfc74-4dm13", // admin
-  "31-71cfc74-4cc4dm13", // account admin
-  "31-71cfc74-d3v3l0p3r", // developer
-  "31-71cfc74-d3vc0n", // dev console
-];
 
 export function hasPermission(user, role, action, zuid = instanceZUID) {
   // "With great power comes great responsibility" - Benjamin Franklin Parker

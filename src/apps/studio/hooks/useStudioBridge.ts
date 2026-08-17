@@ -67,6 +67,16 @@ type Args = {
   interactionMode: InteractionMode;
   /** Whether this user may write view source. Gates the layout-write messages. */
   canEditLayout: boolean;
+  /** Bound leaf resolved on the canvas — opens that field's content editor. */
+  onDynamicEditRequest: (msg: {
+    codeId?: string;
+    layoutId?: string;
+    studioId?: string;
+    fieldZuid: string;
+    fieldType?: string;
+    itemZuid?: string;
+    modelZuid?: string;
+  }) => void;
   syncBridgeInteractionMode: (nextMode: InteractionMode) => void;
   postCommandToBridge: (cmd: any) => void;
   handleTemplateSourceMap: (msg: any) => void;
@@ -105,6 +115,7 @@ export const useStudioBridge = ({
   dispatch,
   interactionMode,
   canEditLayout,
+  onDynamicEditRequest,
   syncBridgeInteractionMode,
   postCommandToBridge,
   handleTemplateSourceMap,
@@ -324,7 +335,9 @@ export const useStudioBridge = ({
         if (interactionMode !== "full") return;
         if (!msg.fieldZuid) return;
 
-        applySelection({
+        onDynamicEditRequest({
+          codeId: msg.codeId,
+          layoutId: msg.layoutId,
           studioId: msg.studioId,
           fieldZuid: msg.fieldZuid,
           fieldType: msg.fieldType,
@@ -363,6 +376,7 @@ export const useStudioBridge = ({
   }, [
     applySelection,
     canEditLayout,
+    onDynamicEditRequest,
     clearSelection,
     handleBridgeDomEvent,
     handleBridgeError,

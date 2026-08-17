@@ -3,7 +3,7 @@ import AutoAwesomeRoundedIcon from "@mui/icons-material/AutoAwesomeRounded";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import { Box, Chip, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { LanguageSelector } from "../../content-editor/src/app/views/ItemEdit/components/ItemEditHeader/LanguageSelector";
-import { InteractionMode } from "../hooks/studioTypes";
+import { InteractionMode, usesLayoutGrammar } from "../hooks/studioTypes";
 
 type LayoutBreadcrumbItem = {
   layoutId?: string;
@@ -88,7 +88,8 @@ export const StudioHeader = ({
         sx={{ height: 32 }}
       />
       <Box flex="1" display="flex" justifyContent="center" minWidth={0} px={2}>
-        {interactionMode === "layout" && selectedLayoutBreadcrumb.length ? (
+        {usesLayoutGrammar(interactionMode) &&
+        selectedLayoutBreadcrumb.length ? (
           <Box
             data-cy="StudioBreadcrumbs"
             display="flex"
