@@ -246,7 +246,12 @@ const ChatHistoryRows = ({
                 overflow: "hidden",
               }}
             >
-              <Tooltip title={title} disableInteractive>
+              <Tooltip
+                title={title}
+                disableInteractive
+                enterDelay={500}
+                enterNextDelay={500}
+              >
                 <Typography
                   variant="body2"
                   noWrap

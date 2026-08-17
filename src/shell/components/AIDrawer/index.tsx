@@ -1,4 +1,4 @@
-import { Box, IconButton, Paper, Typography } from "@mui/material";
+import { Box, IconButton, Paper, Skeleton, Typography } from "@mui/material";
 import { useSelector } from "react-redux";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -132,13 +132,22 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
 
   const [geminiGenerate, { isLoading, data: aiResponse }] =
     useGeminiGenerationMutation();
-  const { data: chatSessionLog, isLoading: isLoadingChatSessionLog } =
-    useGetChatSessionLogQuery(
-      { chatZUID: urlChatZUID },
-      {
-        skip: !urlChatZUID || !open,
-      }
-    );
+  const {
+    data: chatSessionLog,
+    currentData: currentChatSessionLog,
+    isFetching: isFetchingChatSessionLog,
+  } = useGetChatSessionLogQuery(
+    { chatZUID: urlChatZUID },
+    {
+      skip: !urlChatZUID || !open,
+    }
+  );
+  // The hook's own `isLoading` stays false when switching sessions, since RTK
+  // Query keeps the previous session's `data` visible until the new one
+  // loads. `currentData` isn't sticky, so this is only true when we're
+  // missing data for the session actually on screen right now.
+  const isLoadingChatSessionLog =
+    isFetchingChatSessionLog && currentChatSessionLog === undefined;
   const [updatePromptApprovalStatus] = useUpdatePromptApprovalStatusMutation();
   const { data: chatSessions, isLoading: isLoadingChatSessions } =
     useGetChatSessionsQuery();
@@ -426,7 +435,7 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
 
   return (
     <Paper
-      elevation={16}
+      elevation={8}
       sx={{
         display: "flex",
         flexDirection: "column",
@@ -437,6 +446,7 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
         overflow: "hidden",
         bgcolor: "background.paper",
         zIndex: (theme) => theme.zIndex.speedDial + 1,
+        borderRadius: 0,
       }}
     >
       <Box
@@ -460,21 +470,30 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
               <ArrowBackRoundedIcon fontSize="small" />
             </IconButton>
           )}
-          <Typography
-            variant="body2"
-            fontWeight={500}
-            sx={{
-              display: "-webkit-box",
-              WebkitLineClamp: "2",
-              WebkitBoxOrient: "vertical",
-              wordBreak: "break-word",
-              wordWrap: "break-word",
-              hyphens: "auto",
-              overflow: "hidden",
-            }}
-          >
-            {drawerTitle}
-          </Typography>
+          {isLoadingChatSessionLog ? (
+            <Skeleton
+              data-cy="AIDrawerTitleSkeleton"
+              variant="rounded"
+              width={140}
+              height={20}
+            />
+          ) : (
+            <Typography
+              variant="body2"
+              fontWeight={500}
+              sx={{
+                display: "-webkit-box",
+                WebkitLineClamp: "2",
+                WebkitBoxOrient: "vertical",
+                wordBreak: "break-word",
+                wordWrap: "break-word",
+                hyphens: "auto",
+                overflow: "hidden",
+              }}
+            >
+              {drawerTitle}
+            </Typography>
+          )}
         </Box>
 
         <IconButton
