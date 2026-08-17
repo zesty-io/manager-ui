@@ -7,7 +7,7 @@ import { API_ENDPOINTS } from "../../support/api";
 // from the parent window exactly as the other studio specs do. That is also
 // what lets DYNAMIC_EDIT_REQUEST be exercised here before the bridge change
 // that emits it has shipped: the host contract is testable on its own.
-describe("Studio Mode", () => {
+describe("Studio Full Mode", () => {
   let studioPath = "/";
   let itemZUID = "";
   const codeId = "11-studio-test-view";
@@ -85,8 +85,8 @@ describe("Studio Mode", () => {
     cy.getBySelector("StudioHeader").should("exist");
   });
 
-  it("defaults to studio mode and offers all three options", () => {
-    cy.getBySelector("StudioModeToggleOption-studio").should(
+  it("defaults to full mode and offers all three options", () => {
+    cy.getBySelector("StudioModeToggleOption-full").should(
       "have.attr",
       "aria-pressed",
       "true"

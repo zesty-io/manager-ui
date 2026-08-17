@@ -321,7 +321,7 @@ export const useStudioBridge = ({
       // leaf, so open that field's content editor. The same selection path a
       // layers-row click takes — no new selection machinery.
       if (msg.type === "DYNAMIC_EDIT_REQUEST") {
-        if (interactionMode !== "studio") return;
+        if (interactionMode !== "full") return;
         if (!msg.fieldZuid) return;
 
         applySelection({

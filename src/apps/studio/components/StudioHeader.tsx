@@ -14,8 +14,14 @@ type StudioHeaderProps = {
   onLanguageChange: (langCode: string) => void;
   interactionMode: InteractionMode;
   onInteractionModeChange: (mode: InteractionMode) => void;
-  /** Modes this user is entitled to. The toggle renders only these. */
+  /** Modes this user is entitled to. The switch can never exceed these. */
   availableModes: InteractionMode[];
+  /**
+   * Whether the mode switch is offered at all. Mode is normally resolved from
+   * permissions and not selectable; Zesty staff keep the switch so one account
+   * can exercise every surface.
+   */
+  canSelectMode: boolean;
   selectedLayoutBreadcrumb: LayoutBreadcrumbItem[];
   onLayoutBreadcrumbClick: (layoutId: string) => void;
   pageModelZUID: string;
@@ -30,8 +36,8 @@ const MODE_OPTIONS: {
   icon: JSX.Element;
 }[] = [
   {
-    mode: "studio",
-    label: "Studio",
+    mode: "full",
+    label: "Full",
     icon: <AutoAwesomeRoundedIcon fontSize="small" />,
   },
   {
@@ -51,6 +57,7 @@ export const StudioHeader = ({
   interactionMode,
   onInteractionModeChange,
   availableModes,
+  canSelectMode,
   selectedLayoutBreadcrumb,
   onLayoutBreadcrumbClick,
   pageModelZUID,
@@ -169,7 +176,7 @@ export const StudioHeader = ({
             disabled={unresolvedPath}
           />
         </Box>
-        {availableModes.length > 1 ? (
+        {canSelectMode && availableModes.length > 1 ? (
           <ToggleButtonGroup
             data-cy="StudioModeToggle"
             exclusive

@@ -15,6 +15,7 @@ import { MemoryRouter, useHistory, useLocation } from "react-router";
 import { cloneDeep } from "lodash";
 import { AppState } from "shell/store/types";
 import { usePermission } from "shell/hooks/use-permissions";
+import { isZestyEmail } from "utility/isZestyEmail";
 import {
   fetchAllModelPublishings,
   fetchItem,
@@ -117,7 +118,7 @@ export const StudioWrapper = () => {
   const availableModes = useMemo<InteractionMode[]>(
     () =>
       [
-        canEditContent && canEditLayout && "studio",
+        canEditContent && canEditLayout && "full",
         canEditContent && "content",
         canEditLayout && "layout",
       ].filter(Boolean) as InteractionMode[],
@@ -131,6 +132,17 @@ export const StudioWrapper = () => {
   // role arrives; instead the mode is promoted to the preferred default once
   // entitlement resolves, and only until the user picks a mode themselves.
   const userChoseModeRef = useRef(false);
+
+  // Per the PRD, mode is resolved from permissions rather than chosen: a user
+  // is placed in the mode that matches their access and is never offered one
+  // they cannot act in. Zesty staff keep the switch so a single account can
+  // exercise all three surfaces without re-provisioning roles.
+  //
+  // This is presentation only. `availableModes` still bounds what any switch
+  // can reach, so a staff account cannot select into a mode it lacks the
+  // permissions for.
+  const userEmail = useSelector((state: AppState) => state.user?.email);
+  const canSelectMode = isZestyEmail(userEmail || "");
 
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const currentHoverStudioIdRef = useRef<string | null>(null);
@@ -1158,7 +1170,7 @@ export const StudioWrapper = () => {
   //    while Studio is open.
   // 2. Promote — until the user picks a mode themselves, track the preferred
   //    default. This is what resolves the hydration race: the mode starts as
-  //    "content" and becomes "studio" when the role arrives.
+  //    "content" and becomes "full" when the role arrives.
   //
   // Selection is not cleared on either path. Unlike a user-driven switch,
   // nothing has been selected yet when these fire.
@@ -1829,7 +1841,7 @@ export const StudioWrapper = () => {
         <Alert severity="info" variant="standard">
           {interactionMode === "layout"
             ? "Drag blocks on the canvas to reorder the layout"
-            : interactionMode === "studio"
+            : interactionMode === "full"
             ? "Select items on the canvas to edit them, or drag blocks to reorder the layout"
             : "Select items on the canvas to make edits"}
         </Alert>
@@ -1918,6 +1930,7 @@ export const StudioWrapper = () => {
             interactionMode={interactionMode}
             onInteractionModeChange={handleInteractionModeChange}
             availableModes={availableModes}
+            canSelectMode={canSelectMode}
             selectedLayoutBreadcrumb={selectedLayout?.breadcrumb || []}
             onLayoutBreadcrumbClick={handleLayoutBreadcrumbSelect}
             pageModelZUID={pageModelZUID}
@@ -1981,7 +1994,7 @@ export const StudioWrapper = () => {
                 logoSrc={contentOneLogo}
               />
             ) : interactionMode === "content" ||
-              (interactionMode === "studio" && panelMode === "edit") ? (
+              (interactionMode === "full" && panelMode === "edit") ? (
               // Studio renders the content editor when a field is being
               // edited, but otherwise shows nothing — matching layout, which
               // has no right panel at all. Falling through to `panelMode`'s
