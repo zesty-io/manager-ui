@@ -158,25 +158,44 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
   const isEnabled =
     isInContentApp || isInContentMeta || isInBlocks || isInCodeApp;
 
+  const showChatThread =
+    Boolean(urlChatZUID) ||
+    isStartingNewChat ||
+    (!isLoadingChatSessions && !relevantChatSessions.length);
+  const hasOtherChatSessions = relevantChatSessions.length > 0;
+
   const drawerTitle = useMemo(() => {
-    if (isInCodeApp) {
-      const fileName = getRefRegistry()?.["code-editor"]?.context()?.fileName;
-      return `/${fileName?.trim()?.replace(/^\/+/, "")}`;
+    if (!showChatThread) {
+      if (isInCodeApp) {
+        const fileName = getRefRegistry()?.["code-editor"]?.context()?.fileName;
+        return `/${fileName?.trim()?.replace(/^\/+/, "")}`;
+      }
+
+      if (isInContentApp || isInContentMeta || isInBlocks) {
+        const model = contentModels?.find((model) => model.ZUID === modelZUID);
+        const headerTitle =
+          item?.web?.metaTitle || item?.web?.metaLinkText || "";
+
+        return (
+          (model?.type === "block"
+            ? `${model?.label}: ${headerTitle}`
+            : headerTitle) || ""
+        );
+      }
+
+      return "AI Assistant Beta";
     }
 
-    if (isInContentApp || isInContentMeta || isInBlocks) {
-      const model = contentModels?.find((model) => model.ZUID === modelZUID);
-      const headerTitle = item?.web?.metaTitle || item?.web?.metaLinkText || "";
-
-      return (
-        (model?.type === "block"
-          ? `${model?.label}: ${headerTitle}`
-          : headerTitle) || ""
+    if (urlChatZUID) {
+      const activeSession = relevantChatSessions.find(
+        (session) => session.chatZuid === urlChatZUID
       );
+      return activeSession?.title || "Untitled Chat";
     }
 
-    return "AI Assistant Beta";
+    return hasOtherChatSessions ? "New Chat" : "AI Assistant Beta";
   }, [
+    showChatThread,
     isInCodeApp,
     isInContentApp,
     isInContentMeta,
@@ -185,6 +204,9 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
     contentModels,
     modelZUID,
     item,
+    urlChatZUID,
+    relevantChatSessions,
+    hasOtherChatSessions,
   ]);
 
   const userRole = useMemo(
@@ -392,12 +414,6 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
     setResponses({});
     setIsStartingNewChat(false);
   }, [removeUrlChatZUID]);
-
-  const showChatThread =
-    Boolean(urlChatZUID) ||
-    isStartingNewChat ||
-    (!isLoadingChatSessions && !relevantChatSessions.length);
-  const hasOtherChatSessions = relevantChatSessions.length > 0;
 
   if (!isEnabled) return <></>;
 

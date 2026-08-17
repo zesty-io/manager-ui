@@ -246,7 +246,7 @@ const ChatHistoryRows = ({
                 overflow: "hidden",
               }}
             >
-              <Tooltip title={title}>
+              <Tooltip title={title} disableInteractive>
                 <Typography
                   variant="body2"
                   noWrap
