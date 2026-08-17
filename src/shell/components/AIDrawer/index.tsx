@@ -8,6 +8,7 @@ import {
   useUpdatePromptApprovalStatusMutation,
 } from "../../services/mcp";
 import CloseIcon from "@mui/icons-material/Close";
+import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import { enqueueAction } from "../../../engine/queue";
 import { useLocation } from "react-router";
 import { suggestionSystemInstruction } from "./systemInstructions";
@@ -386,10 +387,17 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
     setIsStartingNewChat(true);
   }, []);
 
+  const handleBackToHistory = useCallback(() => {
+    removeUrlChatZUID();
+    setResponses({});
+    setIsStartingNewChat(false);
+  }, [removeUrlChatZUID]);
+
   const showChatThread =
     Boolean(urlChatZUID) ||
     isStartingNewChat ||
     (!isLoadingChatSessions && !relevantChatSessions.length);
+  const hasOtherChatSessions = relevantChatSessions.length > 0;
 
   if (!isEnabled) return <></>;
 
@@ -419,21 +427,32 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
         borderBottom={1}
         borderColor="divider"
       >
-        <Typography
-          variant="body2"
-          fontWeight={500}
-          sx={{
-            display: "-webkit-box",
-            WebkitLineClamp: "2",
-            WebkitBoxOrient: "vertical",
-            wordBreak: "break-word",
-            wordWrap: "break-word",
-            hyphens: "auto",
-            overflow: "hidden",
-          }}
-        >
-          {drawerTitle}
-        </Typography>
+        <Box display="flex" alignItems="center" gap={1} minWidth={0}>
+          {showChatThread && hasOtherChatSessions && (
+            <IconButton
+              size="small"
+              data-cy="AIDrawerBackButton"
+              onClick={handleBackToHistory}
+            >
+              <ArrowBackRoundedIcon fontSize="small" />
+            </IconButton>
+          )}
+          <Typography
+            variant="body2"
+            fontWeight={500}
+            sx={{
+              display: "-webkit-box",
+              WebkitLineClamp: "2",
+              WebkitBoxOrient: "vertical",
+              wordBreak: "break-word",
+              wordWrap: "break-word",
+              hyphens: "auto",
+              overflow: "hidden",
+            }}
+          >
+            {drawerTitle}
+          </Typography>
+        </Box>
 
         <IconButton
           size="small"
