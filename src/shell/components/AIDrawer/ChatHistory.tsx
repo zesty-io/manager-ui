@@ -12,6 +12,7 @@ import {
   TableCell,
   TableBody,
   Tooltip,
+  Skeleton,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
@@ -27,6 +28,7 @@ import {
 } from "date-fns";
 
 import { useGetChatSessionsQuery } from "shell/services/mcp";
+import { ChatSession } from "shell/services/types";
 
 const formatShortRelativeTime = (date: Date) => {
   const now = new Date();
@@ -53,7 +55,8 @@ export const ChatHistory = () => {
   const [count, setCount] = useState(5);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedChat, setSelectedChat] = useState<number | null>(null);
-  const { data: chatSessions } = useGetChatSessionsQuery();
+  const { data: chatSessions, isLoading: isLoadingChatSessions } =
+    useGetChatSessionsQuery();
 
   const relevantChatSessions = useMemo(() => {
     if (!chatSessions) return [];
@@ -136,58 +139,11 @@ export const ChatHistory = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredChatSessions.map((session, index) => {
-                const updatedDate = session.updatedAt
-                  ? new Date(session.updatedAt)
-                  : null;
-                const updatedAgo =
-                  updatedDate && isValid(updatedDate)
-                    ? formatShortRelativeTime(updatedDate)
-                    : "";
-
-                return (
-                  <TableRow
-                    key={session.chatZuid}
-                    hover
-                    data-cy="ChatHistoryRow"
-                    // onClick={() => setSelectedChat(index)}
-                    sx={{ cursor: "pointer" }}
-                  >
-                    <TableCell
-                      sx={{
-                        borderBottom:
-                          index === filteredChatSessions.length - 1 ? 0 : 1,
-                        borderColor: "border",
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: 0.25,
-                        overflow: "hidden",
-                      }}
-                    >
-                      <Tooltip title={session.title || "Untitled Chat"}>
-                        <Typography
-                          variant="body2"
-                          noWrap
-                          sx={{
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            minWidth: 0,
-                          }}
-                        >
-                          {session.title || "Untitled Chat"}
-                        </Typography>
-                      </Tooltip>
-                      <Typography
-                        variant="body3"
-                        color="text.disabled"
-                        fontWeight={600}
-                      >
-                        {updatedAgo}
-                      </Typography>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
+              <ChatHistoryRows
+                isLoading={isLoadingChatSessions}
+                sessions={filteredChatSessions}
+                searchTerm={searchTerm}
+              />
             </TableBody>
           </Table>
         </TableContainer>
@@ -202,5 +158,115 @@ export const ChatHistory = () => {
         New Chat
       </Button>
     </Stack>
+  );
+};
+
+const CHAT_HISTORY_SKELETON_ROW_COUNT = 3;
+
+type ChatHistoryRowsProps = {
+  isLoading: boolean;
+  sessions: ChatSession[];
+  searchTerm: string;
+};
+
+const ChatHistoryRows = ({
+  isLoading,
+  sessions,
+  searchTerm,
+}: ChatHistoryRowsProps) => {
+  if (isLoading) {
+    return (
+      <>
+        {Array.from({ length: CHAT_HISTORY_SKELETON_ROW_COUNT }).map(
+          (_, index) => (
+            <TableRow key={index}>
+              <TableCell
+                sx={{
+                  borderBottom:
+                    index === CHAT_HISTORY_SKELETON_ROW_COUNT - 1 ? 0 : 1,
+                  borderColor: "border",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 0.25,
+                }}
+              >
+                <Skeleton variant="text" width="60%" />
+                <Skeleton variant="text" width="30%" />
+              </TableCell>
+            </TableRow>
+          )
+        )}
+      </>
+    );
+  }
+
+  if (!sessions.length) {
+    return (
+      <TableRow>
+        <TableCell>
+          <Typography variant="body2">
+            {searchTerm
+              ? `No chat history available for "${searchTerm}".`
+              : "No chat history available."}
+          </Typography>
+        </TableCell>
+      </TableRow>
+    );
+  }
+
+  return (
+    <>
+      {sessions.map((session, index) => {
+        const title = session.title || "Untitled Chat";
+        const updatedDate = session.updatedAt
+          ? new Date(session.updatedAt)
+          : null;
+        const updatedAgo =
+          updatedDate && isValid(updatedDate)
+            ? formatShortRelativeTime(updatedDate)
+            : "";
+
+        return (
+          <TableRow
+            key={session.chatZuid}
+            hover
+            data-cy="ChatHistoryRow"
+            sx={{ cursor: "pointer" }}
+          >
+            <TableCell
+              sx={{
+                borderBottom: index === sessions.length - 1 ? 0 : 1,
+                borderColor: "border",
+                display: "flex",
+                flexDirection: "column",
+                gap: 0.25,
+                overflow: "hidden",
+              }}
+            >
+              <Tooltip title={title}>
+                <Typography
+                  variant="body2"
+                  noWrap
+                  sx={{
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    minWidth: 0,
+                  }}
+                >
+                  {title}
+                </Typography>
+              </Tooltip>
+              <Typography
+                variant="body3"
+                color="text.disabled"
+                fontWeight={600}
+              >
+                {updatedAgo}
+              </Typography>
+            </TableCell>
+          </TableRow>
+        );
+      })}
+    </>
   );
 };
