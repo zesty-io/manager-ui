@@ -114,7 +114,9 @@ export default memo(function Shell() {
       height="100vh"
       overflow="clip"
       display="grid"
-      gridTemplateColumns={openNav ? "200px 1fr" : "48px 1fr"}
+      gridTemplateColumns={
+        openNav ? "200px minmax(0, 1fr)" : "48px minmax(0, 1fr)"
+      }
       sx={{
         flex: 1,
         backgroundColor: "background.paper",
@@ -159,7 +161,7 @@ export default memo(function Shell() {
                   height: "100%",
                 }}
               >
-                <Box flex={1}>
+                <Box flex={1} minWidth={0}>
                   <Switch>
                     <Route path="/release" component={ReleaseApp} />
                     <Route path="/studio" component={StudioApp} />
