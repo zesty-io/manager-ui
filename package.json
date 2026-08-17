@@ -35,8 +35,7 @@
     "task:webpack": "cross-env NODE_OPTIONS='--max_old_space_size=4096' webpack --progress --config src/shell/webpack.config.js",
     "test": "./node_modules/.bin/cypress run --headless --browser electron --reporter list",
     "test:open": "./node_modules/.bin/cypress open",
-    "typecheck": "tsc --noEmit",
-    "typecheck:src": "bash scripts/typecheck-src.sh"
+    "typecheck": "./ci/scripts/typecheck.sh"
   },
   "dependencies": {
     "@aeaton/react-prosemirror": "^0.21.1",
