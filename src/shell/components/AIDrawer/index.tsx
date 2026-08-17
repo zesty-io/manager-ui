@@ -101,7 +101,6 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
   const [latestPromptZUIDs, setLatestPromptZUIDs] = useState<Set<string>>(
     new Set()
   );
-  const prevPromptZUIDsRef = useRef<Set<string>>(new Set());
   const zuidMatch = pathname.match(
     /^\/content\/([^/]+)\/([^/]+)(?:\/(meta|seo))?$/
   );
@@ -154,7 +153,9 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
   }, [chatSessions, pathname]);
 
   const responsesEndRef = useRef(null);
-  const hasInitializedResponseSyncRef = useRef(false);
+  // Tracks whether the next chatSessionLog sync is the result of a prompt we
+  // just sent live, vs. restoring history from opening/switching chats.
+  const isAwaitingLiveResponseRef = useRef(false);
   const isEnabled =
     isInContentApp || isInContentMeta || isInBlocks || isInCodeApp;
 
@@ -288,18 +289,22 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
         // ascending order but the data is stored in descending order
         normalizeChatSessionLog([...chatSessionLog?.prompts])
       : {};
-    const currentPromptZUIDs = Object.keys(restoredResponses);
 
-    if (!hasInitializedResponseSyncRef.current) {
-      hasInitializedResponseSyncRef.current = true;
-      prevPromptZUIDsRef.current = new Set(currentPromptZUIDs);
-      setLatestPromptZUIDs(new Set());
-    } else {
-      const newPromptZUIDs = currentPromptZUIDs.filter(
-        (promptZUID) => !prevPromptZUIDsRef.current.has(promptZUID)
+    // Only animate/auto-apply prompts that just arrived from a live model
+    // call. Opening or switching to a chat (or the initial mount) also
+    // surfaces prompts we haven't rendered before, but that's restored
+    // history, not a fresh response, so it shouldn't animate. `responses`
+    // is read here as a snapshot of what's currently rendered, not as a
+    // dependency, since this effect should only react to session changes.
+    if (isAwaitingLiveResponseRef.current) {
+      const knownPromptZUIDs = new Set(Object.keys(responses));
+      const newPromptZUIDs = Object.keys(restoredResponses).filter(
+        (promptZUID) => !knownPromptZUIDs.has(promptZUID)
       );
       setLatestPromptZUIDs(new Set(newPromptZUIDs));
-      prevPromptZUIDsRef.current = new Set(currentPromptZUIDs);
+      isAwaitingLiveResponseRef.current = false;
+    } else {
+      setLatestPromptZUIDs(new Set());
     }
 
     setResponses(restoredResponses);
@@ -319,6 +324,7 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
       const temperature = 0.5;
       const trimmedPrompt = newPrompt.trim();
 
+      isAwaitingLiveResponseRef.current = true;
       geminiGenerate({
         prompt: trimmedPrompt,
         tone: selectedTone.value,
@@ -374,6 +380,7 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
         ? `Generate suggestions: ${normalizedPrompt}`
         : "Generate suggestions for my content fields";
 
+      isAwaitingLiveResponseRef.current = true;
       geminiGenerate({
         prompt: promptValue,
         systemInstruction,
