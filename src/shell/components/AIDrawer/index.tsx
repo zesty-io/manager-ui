@@ -146,11 +146,14 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
   // Query keeps the previous session's `data` visible until the new one
   // loads. `currentData` isn't sticky, so this is only true when we're
   // missing data for the session actually on screen right now.
-  const isLoadingChatSessionLog =
+  const isChatSessionLogUnresolved =
     isFetchingChatSessionLog && currentChatSessionLog === undefined;
   const [updatePromptApprovalStatus] = useUpdatePromptApprovalStatusMutation();
-  const { data: chatSessions, isLoading: isLoadingChatSessions } =
-    useGetChatSessionsQuery();
+  const {
+    data: chatSessions,
+    isLoading: isLoadingChatSessions,
+    refetch: refetchChatSessions,
+  } = useGetChatSessionsQuery();
   const [isStartingNewChat, setIsStartingNewChat] = useState(false);
 
   const relevantChatSessions = useMemo(() => {
@@ -165,6 +168,11 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
   // Tracks whether the next chatSessionLog sync is the result of a prompt we
   // just sent live, vs. restoring history from opening/switching chats.
   const isAwaitingLiveResponseRef = useRef(false);
+  // A live prompt's response is already rendered optimistically, so don't show
+  // the loading skeleton while its chatSessionLog fetch (e.g. for a brand new
+  // chat) is still catching up in the background.
+  const isLoadingChatSessionLog =
+    isChatSessionLogUnresolved && !isAwaitingLiveResponseRef.current;
   const isEnabled =
     isInContentApp || isInContentMeta || isInBlocks || isInCodeApp;
 
@@ -232,7 +240,17 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
     setUrlChatZUID((prev) =>
       prev === aiResponse.chatZuid ? prev : aiResponse.chatZuid
     );
-  }, [aiResponse, setUrlChatZUID]);
+
+    // A response can carry a chatZuid we don't have in the sessions cache yet
+    // (a brand new chat). Refetch so it shows up in ChatHistory and the
+    // drawer title can pick up its title.
+    const isKnownSession = chatSessions?.some(
+      (session) => session.chatZuid === aiResponse.chatZuid
+    );
+    if (!isKnownSession) {
+      refetchChatSessions();
+    }
+  }, [aiResponse, setUrlChatZUID, chatSessions, refetchChatSessions]);
 
   // Once a real chat is active, the "force new chat" override is no longer relevant
   useEffect(() => {
@@ -289,7 +307,7 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
 
   // Maps the chat session log to a normalized format for rendering
   useEffect(() => {
-    if (!open || isLoadingChatSessionLog) {
+    if (!open || isChatSessionLogUnresolved) {
       return;
     }
 
@@ -317,7 +335,7 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
     }
 
     setResponses(restoredResponses);
-  }, [open, isLoadingChatSessionLog, chatSessionLog, urlChatZUID]);
+  }, [open, isChatSessionLogUnresolved, chatSessionLog, urlChatZUID]);
 
   const handlePrompt = useCallback(
     (newPrompt: string) => {
