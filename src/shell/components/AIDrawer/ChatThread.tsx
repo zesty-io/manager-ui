@@ -415,21 +415,24 @@ export const ChatThread = ({
           </IconButton>
 
           <Button
+            data-cy="AIDrawerSend"
             variant="contained"
             onClick={() => composerRef.current?.submit()}
-            disabled={!hasComposerValue}
+            disabled={!hasComposerValue || isLoading || isLoadingChatSessionLog}
             sx={{
               flexShrink: 0,
               flexBasis: 32,
               borderRadius: 6,
               padding: 0.5,
               minWidth: 0,
-              backgroundColor: !hasComposerValue
-                ? "transparent!important"
-                : "primary.main",
-              color: !hasComposerValue
-                ? "action.active"
-                : "primary.contrastText",
+              backgroundColor:
+                !hasComposerValue || isLoading || isLoadingChatSessionLog
+                  ? "transparent!important"
+                  : "primary.main",
+              color:
+                !hasComposerValue || isLoading || isLoadingChatSessionLog
+                  ? "action.active"
+                  : "primary.contrastText",
             }}
           >
             <ArrowUpwardRounded fontSize="small" />
@@ -489,6 +492,7 @@ export const ChatThread = ({
           renderInput={(params: any) => (
             <TextField
               {...params}
+              data-cy="AIDrawerLanguageSelect"
               fullWidth
               InputProps={{
                 ...params.InputProps,
@@ -520,7 +524,9 @@ export const ChatThread = ({
           onChange={(_, value) => setSelectedTone(value)}
           value={selectedTone}
           options={TONE_OPTIONS}
-          renderInput={(params: any) => <TextField {...params} fullWidth />}
+          renderInput={(params: any) => (
+            <TextField {...params} data-cy="AIDrawerToneSelect" fullWidth />
+          )}
         />
       </Collapse>
     </>

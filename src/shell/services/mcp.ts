@@ -29,8 +29,8 @@ export const mcpApi = createApi({
           body,
         };
       },
-      invalidatesTags: (result, error, { chatZUID }) => [
-        { type: "ChatSessionLog", id: chatZUID },
+      invalidatesTags: (result, error, { chatZuid }) => [
+        { type: "ChatSessionLog", id: chatZuid },
       ],
     }),
     getChatSessions: builder.query<ChatSession[], void>({

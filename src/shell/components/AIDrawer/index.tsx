@@ -428,7 +428,7 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
         chatZuid: urlChatZUID,
         url: window.location.href,
         // roleZUID is needed to create a new chat session when Generate Suggestions button is clicked and there is no existing chatZUID yet
-        ...(!urlChatZUID && { roleZuid: userRole.ZUID }),
+        ...(!urlChatZUID && userRole?.ZUID && { roleZuid: userRole.ZUID }),
       });
       setResponses((prev) => ({
         ...prev,
@@ -443,7 +443,7 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
       }));
       setComposerSeed("");
     },
-    [geminiGenerate, urlChatZUID]
+    [geminiGenerate, urlChatZUID, userRole]
   );
 
   const handleSelectChatSession = useCallback(
