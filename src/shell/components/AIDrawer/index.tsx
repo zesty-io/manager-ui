@@ -293,15 +293,21 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
 
       if (hasSetValue) {
         // Optimistically mark as approved so the button disables immediately
-        // without waiting for a re-fetch (mirrors the manual Apply button behavior)
-        setResponses((prev) => ({
-          ...prev,
-          [latestPromptZUID]: prev[latestPromptZUID].map((response) =>
-            response.type === "SET_VALUE"
-              ? { ...response, approval: "1" }
-              : response
-          ),
-        }));
+        // without waiting for a re-fetch (mirrors the manual Apply button behavior).
+        // `prev` may no longer have this key if the chat session was switched or
+        // cleared between this effect running and the update being applied.
+        setResponses((prev) => {
+          if (!prev[latestPromptZUID]) return prev;
+
+          return {
+            ...prev,
+            [latestPromptZUID]: prev[latestPromptZUID].map((response) =>
+              response.type === "SET_VALUE"
+                ? { ...response, approval: "1" }
+                : response
+            ),
+          };
+        });
       }
     }
   }, [autoApply, latestPromptZUIDs, responses, urlChatZUID]);

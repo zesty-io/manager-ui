@@ -234,6 +234,7 @@ export const ChatThread = ({
                   } else if (response.type === "NAVIGATE") {
                     return (
                       <Button
+                        data-cy="AIDrawerNavigate"
                         key={`${promptZUID}-${responseIndex}`}
                         variant="contained"
                         sx={{ width: "fit-content" }}
@@ -309,15 +310,21 @@ export const ChatThread = ({
                               approval: "1",
                             });
                             // Optimistically mark as approved so the button
-                            // disables immediately without waiting for a re-fetch
-                            setResponses((prev) => ({
-                              ...prev,
-                              [promptZUID]: prev[promptZUID].map((response) =>
-                                response.type === "SET_VALUE"
-                                  ? { ...response, approval: "1" }
-                                  : response
-                              ),
-                            }));
+                            // disables immediately without waiting for a re-fetch.
+                            // `prev` may no longer have this key if the chat
+                            // session was switched or cleared before this applies.
+                            setResponses((prev) => {
+                              if (!prev[promptZUID]) return prev;
+
+                              return {
+                                ...prev,
+                                [promptZUID]: prev[promptZUID].map((response) =>
+                                  response.type === "SET_VALUE"
+                                    ? { ...response, approval: "1" }
+                                    : response
+                                ),
+                              };
+                            });
                           }}
                           startIcon={<AutoFixHighRounded fontSize="small" />}
                         >
