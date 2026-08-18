@@ -278,55 +278,67 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
   // Auto-applies AI responses to the editor when available
   useEffect(() => {
     if (!autoApply || !urlChatZUID) return;
-
-    const latestPromptZUID = latestPromptZUIDs.values().next().value;
-    if (!latestPromptZUID) return;
+    if (!latestPromptZUIDs.size) return;
 
     // Reads the latest `responses` via the ref (instead of depending on
     // `responses` directly) and skips already-approved responses, so this
     // effect is safe to re-run after the `setResponses` call below without
     // re-enqueueing the same action or re-sending the approval PATCH.
-    const promptResponses = responsesRef.current[latestPromptZUID];
-    if (!promptResponses) return;
+    // A single log delta can surface more than one new prompt ZUID (e.g. a
+    // batch update), so every entry in the set needs to be applied, not just
+    // the first.
+    const approvedPromptZUIDs: string[] = [];
 
-    const unappliedSetValueResponses = promptResponses.filter(
-      (response) => response.type === "SET_VALUE" && response.approval !== "1"
-    );
-    if (!unappliedSetValueResponses.length) return;
+    latestPromptZUIDs.forEach((promptZUID) => {
+      const promptResponses = responsesRef.current[promptZUID];
+      if (!promptResponses) return;
 
-    // Side effects run here, outside the state updater below — a
-    // `setResponses` updater can run more than once per call (e.g. React 18
-    // Strict Mode double-invokes it in development to surface impurities),
-    // which would otherwise double-enqueue the action and double-PATCH.
-    unappliedSetValueResponses.forEach((response) => {
-      enqueueAction({
-        type: response.type,
-        payload: {
-          refKey: response.payload.refKey,
-          value: response.payload.value,
-        },
+      const unappliedSetValueResponses = promptResponses.filter(
+        (response) => response.type === "SET_VALUE" && response.approval !== "1"
+      );
+      if (!unappliedSetValueResponses.length) return;
+
+      // Side effects run here, outside the state updater below — a
+      // `setResponses` updater can run more than once per call (e.g. React 18
+      // Strict Mode double-invokes it in development to surface impurities),
+      // which would otherwise double-enqueue the action and double-PATCH.
+      unappliedSetValueResponses.forEach((response) => {
+        enqueueAction({
+          type: response.type,
+          payload: {
+            refKey: response.payload.refKey,
+            value: response.payload.value,
+          },
+        });
+        updatePromptApprovalStatus({
+          chatZUID: urlChatZUID,
+          promptZUID,
+          approval: "1",
+        });
       });
-      updatePromptApprovalStatus({
-        chatZUID: urlChatZUID,
-        promptZUID: latestPromptZUID,
-        approval: "1",
-      });
+
+      approvedPromptZUIDs.push(promptZUID);
     });
+
+    if (!approvedPromptZUIDs.length) return;
 
     // Optimistically mark as approved so the button disables immediately
     // without waiting for a re-fetch (mirrors the manual Apply button behavior).
     setResponses((previousResponses) => {
-      const currentPromptResponses = previousResponses[latestPromptZUID];
-      if (!currentPromptResponses) return previousResponses;
+      const nextResponses = { ...previousResponses };
 
-      return {
-        ...previousResponses,
-        [latestPromptZUID]: currentPromptResponses.map((response) =>
+      approvedPromptZUIDs.forEach((promptZUID) => {
+        const currentPromptResponses = nextResponses[promptZUID];
+        if (!currentPromptResponses) return;
+
+        nextResponses[promptZUID] = currentPromptResponses.map((response) =>
           response.type === "SET_VALUE"
             ? { ...response, approval: "1" }
             : response
-        ),
-      };
+        );
+      });
+
+      return nextResponses;
     });
   }, [autoApply, latestPromptZUIDs, urlChatZUID, updatePromptApprovalStatus]);
 
