@@ -98,6 +98,7 @@ export const ChatHistory = ({
       >
         <TextField
           fullWidth
+          data-cy="AIDrawerHistorySearch"
           placeholder="Search Chats"
           InputProps={{
             startAdornment: <SearchIcon color="action" />,
@@ -150,6 +151,7 @@ export const ChatHistory = ({
       </Box>
       <Button
         fullWidth
+        data-cy="AIDrawerNewChat"
         variant="contained"
         startIcon={<AddCircleIcon />}
         sx={{ mt: 2, flexShrink: 0 }}
@@ -233,6 +235,7 @@ const ChatHistoryRows = ({
             key={session.chatZuid}
             hover
             data-cy="ChatHistoryRow"
+            data-chat-zuid={session.chatZuid}
             onClick={() => onSelectSession(session.chatZuid)}
             sx={{ cursor: "pointer" }}
           >
