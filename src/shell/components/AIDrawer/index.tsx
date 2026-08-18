@@ -23,6 +23,12 @@ import {
 } from "shell/services/types";
 import { ChatThread } from "./ChatThread";
 import { ChatHistory } from "./ChatHistory";
+import {
+  isContentAppPath,
+  isContentMetaPath,
+  isBlocksPath,
+  isCodeAppPath,
+} from "utility/isAIDrawerSupportedPath";
 
 const parseResponse = (rawResponse: string) => {
   if (!rawResponse) return;
@@ -103,10 +109,10 @@ export type AIDrawerProps = {
 };
 export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
   const { pathname, search } = useLocation();
-  const isInContentApp = /^\/content\/[^/]+\/[^/]+$/.test(pathname);
-  const isInContentMeta = /^\/content\/[^/]+\/[^/]+\/meta$/.test(pathname);
-  const isInBlocks = /^\/blocks\/[^/]+\/[^/]+\/?$/.test(pathname);
-  const isInCodeApp = /^\/code\/file\/.+/.test(pathname);
+  const isInContentApp = isContentAppPath(pathname);
+  const isInContentMeta = isContentMetaPath(pathname);
+  const isInBlocks = isBlocksPath(pathname);
+  const isInCodeApp = isCodeAppPath(pathname);
   const user = useSelector((state: AppState) => state.user);
   const { data: roles } = useGetUsersRolesQuery();
   const { data: contentModels } = useGetContentModelsQuery();
@@ -124,6 +130,11 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
     string | undefined
   >(chatStorageKey, undefined);
   const [responses, setResponses] = useState<Record<string, any[]>>({});
+  // Mirrors `responses` for effects that need to read the latest value
+  // without depending on it directly — `responses` changes on every
+  // approval update, which would otherwise re-trigger those effects.
+  const responsesRef = useRef(responses);
+  responsesRef.current = responses;
   const [composerSeed, setComposerSeed] = useState("");
 
   const [autoApply, setAutoApply] = useState(false);
@@ -271,39 +282,46 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
     const latestPromptZUID = latestPromptZUIDs.values().next().value;
     if (!latestPromptZUID) return;
 
-    // Reads/writes `responses` through the updater (instead of the outer
-    // closure) and skips already-approved responses so this effect is safe
-    // to re-run after the `setResponses` call below without re-enqueueing
-    // the same action or re-sending the approval PATCH.
-    setResponses((previousResponses) => {
-      const promptResponses = previousResponses[latestPromptZUID];
-      if (!promptResponses) return previousResponses;
+    // Reads the latest `responses` via the ref (instead of depending on
+    // `responses` directly) and skips already-approved responses, so this
+    // effect is safe to re-run after the `setResponses` call below without
+    // re-enqueueing the same action or re-sending the approval PATCH.
+    const promptResponses = responsesRef.current[latestPromptZUID];
+    if (!promptResponses) return;
 
-      const unappliedSetValueResponses = promptResponses.filter(
-        (response) => response.type === "SET_VALUE" && response.approval !== "1"
-      );
-      if (!unappliedSetValueResponses.length) return previousResponses;
+    const unappliedSetValueResponses = promptResponses.filter(
+      (response) => response.type === "SET_VALUE" && response.approval !== "1"
+    );
+    if (!unappliedSetValueResponses.length) return;
 
-      unappliedSetValueResponses.forEach((response) => {
-        enqueueAction({
-          type: response.type,
-          payload: {
-            refKey: response.payload.refKey,
-            value: response.payload.value,
-          },
-        });
-        updatePromptApprovalStatus({
-          chatZUID: urlChatZUID,
-          promptZUID: latestPromptZUID,
-          approval: "1",
-        });
+    // Side effects run here, outside the state updater below — a
+    // `setResponses` updater can run more than once per call (e.g. React 18
+    // Strict Mode double-invokes it in development to surface impurities),
+    // which would otherwise double-enqueue the action and double-PATCH.
+    unappliedSetValueResponses.forEach((response) => {
+      enqueueAction({
+        type: response.type,
+        payload: {
+          refKey: response.payload.refKey,
+          value: response.payload.value,
+        },
       });
+      updatePromptApprovalStatus({
+        chatZUID: urlChatZUID,
+        promptZUID: latestPromptZUID,
+        approval: "1",
+      });
+    });
 
-      // Optimistically mark as approved so the button disables immediately
-      // without waiting for a re-fetch (mirrors the manual Apply button behavior).
+    // Optimistically mark as approved so the button disables immediately
+    // without waiting for a re-fetch (mirrors the manual Apply button behavior).
+    setResponses((previousResponses) => {
+      const currentPromptResponses = previousResponses[latestPromptZUID];
+      if (!currentPromptResponses) return previousResponses;
+
       return {
         ...previousResponses,
-        [latestPromptZUID]: promptResponses.map((response) =>
+        [latestPromptZUID]: currentPromptResponses.map((response) =>
           response.type === "SET_VALUE"
             ? { ...response, approval: "1" }
             : response
