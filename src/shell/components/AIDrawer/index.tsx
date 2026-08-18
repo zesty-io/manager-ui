@@ -266,51 +266,51 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
 
   // Auto-applies AI responses to the editor when available
   useEffect(() => {
-    if (!autoApply) return;
+    if (!autoApply || !urlChatZUID) return;
 
     const latestPromptZUID = latestPromptZUIDs.values().next().value;
+    if (!latestPromptZUID) return;
 
-    if (latestPromptZUID) {
-      const promptsArray = responses[latestPromptZUID];
-      const hasSetValue = promptsArray?.some((p) => p.type === "SET_VALUE");
+    // Reads/writes `responses` through the updater (instead of the outer
+    // closure) and skips already-approved responses so this effect is safe
+    // to re-run after the `setResponses` call below without re-enqueueing
+    // the same action or re-sending the approval PATCH.
+    setResponses((previousResponses) => {
+      const promptResponses = previousResponses[latestPromptZUID];
+      if (!promptResponses) return previousResponses;
 
-      promptsArray?.forEach((prompt) => {
-        if (prompt.type === "SET_VALUE") {
-          enqueueAction({
-            type: prompt.type,
-            payload: {
-              refKey: prompt.payload.refKey,
-              value: prompt.payload.value,
-            },
-          });
-          updatePromptApprovalStatus({
-            chatZUID: urlChatZUID,
-            promptZUID: latestPromptZUID,
-            approval: "1",
-          });
-        }
+      const unappliedSetValueResponses = promptResponses.filter(
+        (response) => response.type === "SET_VALUE" && response.approval !== "1"
+      );
+      if (!unappliedSetValueResponses.length) return previousResponses;
+
+      unappliedSetValueResponses.forEach((response) => {
+        enqueueAction({
+          type: response.type,
+          payload: {
+            refKey: response.payload.refKey,
+            value: response.payload.value,
+          },
+        });
+        updatePromptApprovalStatus({
+          chatZUID: urlChatZUID,
+          promptZUID: latestPromptZUID,
+          approval: "1",
+        });
       });
 
-      if (hasSetValue) {
-        // Optimistically mark as approved so the button disables immediately
-        // without waiting for a re-fetch (mirrors the manual Apply button behavior).
-        // `prev` may no longer have this key if the chat session was switched or
-        // cleared between this effect running and the update being applied.
-        setResponses((prev) => {
-          if (!prev[latestPromptZUID]) return prev;
-
-          return {
-            ...prev,
-            [latestPromptZUID]: prev[latestPromptZUID].map((response) =>
-              response.type === "SET_VALUE"
-                ? { ...response, approval: "1" }
-                : response
-            ),
-          };
-        });
-      }
-    }
-  }, [autoApply, latestPromptZUIDs, responses, urlChatZUID]);
+      // Optimistically mark as approved so the button disables immediately
+      // without waiting for a re-fetch (mirrors the manual Apply button behavior).
+      return {
+        ...previousResponses,
+        [latestPromptZUID]: promptResponses.map((response) =>
+          response.type === "SET_VALUE"
+            ? { ...response, approval: "1" }
+            : response
+        ),
+      };
+    });
+  }, [autoApply, latestPromptZUIDs, urlChatZUID, updatePromptApprovalStatus]);
 
   useEffect(() => {
     if (responsesEndRef.current) {
@@ -325,9 +325,7 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
     }
 
     const restoredResponses = chatSessionLog?.prompts?.length
-      ? // Reversing the prompts array before normalizing since the UI needs to render this in
-        // ascending order but the data is stored in descending order
-        normalizeChatSessionLog([...chatSessionLog?.prompts])
+      ? normalizeChatSessionLog([...chatSessionLog?.prompts])
       : {};
 
     // Only animate/auto-apply prompts that just arrived from a live model
