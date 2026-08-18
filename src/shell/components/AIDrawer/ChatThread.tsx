@@ -297,6 +297,8 @@ export const ChatThread = ({
                           sx={{ mt: 1.25 }}
                           disabled={response.approval === "1"}
                           onClick={() => {
+                            if (!urlChatZUID) return;
+
                             enqueueAction({
                               type: response.type,
                               payload: {
@@ -309,19 +311,23 @@ export const ChatThread = ({
                               promptZUID,
                               approval: "1",
                             });
-                            // Optimistically mark as approved so the button
-                            // disables immediately without waiting for a re-fetch.
+                            // Optimistically mark only this response as approved
+                            // (not every SET_VALUE response for the prompt) so
+                            // applying one field doesn't silently disable Apply
+                            // on the prompt's other generated fields.
                             // `prev` may no longer have this key if the chat
                             // session was switched or cleared before this applies.
                             setResponses((prev) => {
-                              if (!prev[promptZUID]) return prev;
+                              const promptResponses = prev[promptZUID];
+                              if (!promptResponses) return prev;
 
                               return {
                                 ...prev,
-                                [promptZUID]: prev[promptZUID].map((response) =>
-                                  response.type === "SET_VALUE"
-                                    ? { ...response, approval: "1" }
-                                    : response
+                                [promptZUID]: promptResponses.map(
+                                  (promptResponse) =>
+                                    promptResponse === response
+                                      ? { ...promptResponse, approval: "1" }
+                                      : promptResponse
                                 ),
                               };
                             });

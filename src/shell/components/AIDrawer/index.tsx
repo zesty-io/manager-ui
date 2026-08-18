@@ -102,7 +102,7 @@ export type AIDrawerProps = {
   open: boolean;
 };
 export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
-  const { pathname } = useLocation();
+  const { pathname, search } = useLocation();
   const isInContentApp = /^\/content\/[^/]+\/[^/]+$/.test(pathname);
   const isInContentMeta = /^\/content\/[^/]+\/[^/]+\/meta$/.test(pathname);
   const isInBlocks = /^\/blocks\/[^/]+\/[^/]+\/?$/.test(pathname);
@@ -169,7 +169,7 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
     return chatSessions.filter(
       (session) => session.referer === window.location.href
     );
-  }, [chatSessions, pathname]);
+  }, [chatSessions, pathname, search]);
 
   const responsesEndRef = useRef(null);
   // Tracks whether the next chatSessionLog sync is the result of a prompt we
