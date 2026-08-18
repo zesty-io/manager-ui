@@ -13,6 +13,7 @@ import { useSelector } from "react-redux";
 import { AppState } from "../../store/types";
 import { User } from "../../services/types";
 import { isZestyEmail } from "../../../utility/isZestyEmail";
+import { isAIDrawerSupportedPath } from "../../../utility/isAIDrawerSupportedPath";
 import { useLocation } from "react-router";
 
 type Props = {
@@ -22,12 +23,7 @@ type Props = {
 export const GlobalTopbar = memo(({ onShowAiDrawerToggle }: Props) => {
   const user: User = useSelector((state: AppState) => state.user);
   const { pathname } = useLocation();
-  const isInContentApp = /^\/content\/[^/]+\/[^/]+$/.test(pathname);
-  const isInContentMeta = /^\/content\/[^/]+\/[^/]+\/meta$/.test(pathname);
-  const isInBlocks = /^\/blocks\/[^/]+\/[^/]+\/?$/.test(pathname);
-  const isInCodeApp = /^\/code\/file\/.+/.test(pathname);
-  const hasAISupport =
-    isInContentApp || isInContentMeta || isInBlocks || isInCodeApp;
+  const hasAISupport = isAIDrawerSupportedPath(pathname);
 
   return (
     <Stack
