@@ -75,9 +75,10 @@ export const ChatHistory = ({
     );
   }, [sessions, searchTerm]);
 
-  const handleSearch = debounce((term: string) => {
-    setSearchTerm(term);
-  }, 300);
+  const handleSearch = useMemo(
+    () => debounce((term: string) => setSearchTerm(term), 300),
+    []
+  );
 
   return (
     <Stack
