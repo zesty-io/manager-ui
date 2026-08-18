@@ -144,7 +144,6 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
                 lineHeight="10px"
                 color="grey.500"
                 underline="none"
-                // @ts-ignore
                 href={`https://github.com/zesty-io/manager-ui/commit/${CONFIG?.build?.data?.gitCommit}`}
                 target="_blank"
                 rel="noopener"
@@ -155,11 +154,7 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
                   wordWrap: "break-word",
                 }}
               >
-                #
-                {
-                  //@ts-ignore
-                  CONFIG?.build?.data?.gitCommit
-                }
+                #{CONFIG?.build?.data?.gitCommit}
               </Link>
             </Stack>
           </Stack>

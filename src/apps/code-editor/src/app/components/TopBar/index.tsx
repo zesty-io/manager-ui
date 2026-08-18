@@ -106,7 +106,6 @@ const TopBar = memo(function TopBar(props: TopBarProps) {
               <Link
                 underline="none"
                 color="secondary"
-                //@ts-expect-error
                 href={`${CONFIG.URL_PREVIEW_FULL}/-/instant/${props.contentModelZUID}.json`}
                 target="_blank"
                 title="Preview JSON"
@@ -377,7 +376,6 @@ const MoreOptions = (props: MoreOptionsProps) => {
             <MenuItem
               onClick={() =>
                 window.open(
-                  //@ts-expect-error
                   `${CONFIG.URL_PREVIEW_FULL}/-/instant/${props?.contentModelZUID}.json`,
                   "_blank"
                 )

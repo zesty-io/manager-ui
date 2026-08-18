@@ -102,7 +102,6 @@ type Requests = SharedMetricsData & {
 export const metricsApi = createApi({
   reducerPath: "metricsApi",
   baseQuery: fetchBaseQuery({
-    // @ts-ignore
     baseUrl: `${__CONFIG__.API_METRICS}/accounts/${instanceZUID}`,
     prepareHeaders,
   }),

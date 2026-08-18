@@ -96,7 +96,6 @@ export const PropertiesDialog = ({ onClose }: Props) => {
 
   const receiveMessage = (event: MessageEvent<Message>) => {
     if (
-      // @ts-ignore
       event.origin === CONFIG.API_ANALYTICS &&
       event.data.source === "zesty"
     ) {
@@ -112,7 +111,6 @@ export const PropertiesDialog = ({ onClose }: Props) => {
   const initiate = () => {
     tabWindow?.close();
     tabWindow = window.open(
-      // @ts-ignore
       `${CONFIG.API_ANALYTICS}/ga4/auth/connect?user_id=${user.ID}&account_id=${instance.ID}`
     );
   };

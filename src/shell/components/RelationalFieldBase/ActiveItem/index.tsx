@@ -186,10 +186,7 @@ export const ActiveItem = memo(
         const value = String(contentItem.data[imageFieldName]).split(",")?.[0];
 
         if (value.startsWith("3-")) {
-          return `${
-            // @ts-ignore
-            CONFIG.SERVICE_MEDIA_RESOLVER
-          }/resolve/${value}/getimage/?w=64&h=64&type=crop`;
+          return `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${value}/getimage/?w=64&h=64&type=crop`;
         } else {
           return value;
         }
@@ -467,7 +464,6 @@ export const ActiveItem = memo(
             {!!contentItem?.meta?.version && (
               <MenuItem
                 onClick={() => {
-                  // @ts-expect-error Config not typed
                   let devUrl = `${CONFIG.URL_PREVIEW_PROTOCOL}${instance.randomHashID}${CONFIG.URL_PREVIEW}${contentItem?.web?.path}`;
 
                   if (previewLock) {
