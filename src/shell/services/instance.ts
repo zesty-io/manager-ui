@@ -39,7 +39,6 @@ import { batchApiRequests } from "../../utility/batchApiRequests";
 export const instanceApi = createApi({
   reducerPath: "instanceApi",
   baseQuery: fetchBaseQuery({
-    // @ts-ignore
     baseUrl: `${__CONFIG__.API_INSTANCE_PROTOCOL}${instanceZUID}${__CONFIG__.API_INSTANCE}`,
     prepareHeaders,
   }),
@@ -322,7 +321,6 @@ export const instanceApi = createApi({
       { instance_zuid: string; repository: string; parent_zuid: string }
     >({
       query: (body) => ({
-        // @ts-ignore
         url: `${CONFIG.SERVICE_INSTANCE_INSTALLER}/install/model`,
         method: "POST",
         body,

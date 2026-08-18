@@ -11,7 +11,6 @@ import {
 export const mcpApi = createApi({
   reducerPath: "mcpApi",
   baseQuery: fetchBaseQuery({
-    // @ts-ignore
     baseUrl: `${__CONFIG__.MCP_DOMAIN}`,
     prepareHeaders: (headers) => {
       const preparedHeaders = prepareAuthHeaders(headers);
