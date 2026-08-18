@@ -766,10 +766,7 @@ const GeneratedImage = ({ src }: { src: string }) => {
         width="100%"
         height="100%"
         sx={{ objectFit: "cover" }}
-        src={`${
-          // @ts-ignore
-          CONFIG.SERVICE_MEDIA_RESOLVER
-        }/resolve/${src}/getimage/?w=200&h=200&type=fit`}
+        src={`${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${src}/getimage/?w=200&h=200&type=fit`}
         onLoad={() => setLoading(false)}
         onError={() => setLoading(false)} // hide spinner if image fails
         style={{ visibility: loading ? "hidden" : "visible" }}
