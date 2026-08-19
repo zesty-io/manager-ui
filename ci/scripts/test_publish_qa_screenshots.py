@@ -30,8 +30,7 @@ class TokenRegexTest(unittest.TestCase):
         self.assertEqual(names("![a](SCREENSHOT:a.png)"), ["a.png"])
 
     def test_caption_containing_a_bracket(self):
-        # The real caption from PR #4271, whose two screenshots the old `[^\]]*` dropped:
-        # the backticked `[]` describes an empty cookie array and ended the group early.
+        # The real caption from PR #4271, whose two screenshots this dropped.
         caption = ("Cookie state immediately before reload, showing both the "
                    "domain-scoped `[]` cookie and the host-scoped one")
         self.assertEqual(
@@ -40,12 +39,10 @@ class TokenRegexTest(unittest.TestCase):
         )
 
     def test_caption_containing_a_data_cy_selector(self):
-        # This repo puts data-cy on every interactive element, so QA captions quote them.
         text = '![the [data-cy="save"] button after failure](SCREENSHOT:b.png)'
         self.assertEqual(names(text), ["b.png"])
 
     def test_two_tokens_on_one_line(self):
-        # The lazy `.*?` must not run the first token's `)` together with the second caption.
         self.assertEqual(
             names("![a](SCREENSHOT:a.png) and ![b](SCREENSHOT:b.png)"), ["a.png", "b.png"]
         )
@@ -54,33 +51,22 @@ class TokenRegexTest(unittest.TestCase):
         self.assertEqual(names("![](SCREENSHOT:c.png)"), ["c.png"])
 
     def test_caption_cannot_span_a_newline(self):
-        # For a well-formed token the tempering carries this on its own — the caption can
-        # never start before the token's own `![`, so \n never gets the chance to matter.
-        # The link form has no `![` to temper against, so here the newline exclusion is the
-        # only thing stopping the caption starting at the stray `![` two lines up and
-        # eating the prose. Asserting the caption, not the filename: `a.png` is captured
-        # either way, so a test that checked only the name would pass against re.DOTALL.
+        # Assert the caption: `a.png` is captured either way, so checking only the
+        # name would pass against re.DOTALL.
         text = "![stray bracket\nprose\n[a](SCREENSHOT:a.png)"
         self.assertEqual(captions(text), [])
         self.assertEqual(names(text), [])
 
     def test_caption_cannot_swallow_an_earlier_image_on_the_same_line(self):
-        # A lazy caption backtracks, so without tempering it would start at the `![` of the
-        # chart image and run to the `]` of the token — consuming the chart and the prose.
         text = "![chart](https://x.test/c.png) and ![b](SCREENSHOT:b.png)"
         self.assertEqual(captions(text), ["b"])
         self.assertEqual(names(text), ["b.png"])
 
     def test_caption_cannot_swallow_an_earlier_image_before_a_link_form_token(self):
-        # `![` tempering alone does not cover the link form: with no `!`, the caption can
-        # still start at the earlier image's `![`. Excluding `](` as well stops it, and the
-        # token is then left for the leftover scan rather than eating the image.
         text = "![baseline](https://x.test/base.png) vs [regressed](SCREENSHOT:reg.png)"
         self.assertEqual(names(text), [])
 
     def test_caption_cannot_start_inside_a_nested_image(self):
-        # `![` tempering makes the match start at the *nested* image, so the caption ran
-        # from `thumb` and the substitution truncated the outer caption's opening text.
         text = "![before ![thumb](t.png) after](SCREENSHOT:a.png)"
         self.assertEqual(names(text), [])
 
@@ -121,9 +107,6 @@ class RewriteReportTest(unittest.TestCase):
         self.assertNotIn("::error::", out)
 
     def test_text_before_a_token_survives_on_the_artifact_only_path(self):
-        # The artifact-only and never-captured paths drop the caption, so a caption that
-        # swallowed the preceding image would delete it outright — and silently, because
-        # the token did match and the leftover scan sees nothing left to report.
         (self.artifacts / "b.png").write_bytes(b"\x89PNG")
         body, out = self.rewrite("![chart](https://x.test/c.png) and ![b](SCREENSHOT:b.png)")
         self.assertEqual(
@@ -143,10 +126,6 @@ class RewriteReportTest(unittest.TestCase):
         self.assertIn("0 linked, 0 artifact-only, 1 never captured", out)
 
     def test_link_form_token_leaves_the_preceding_image_alone_and_errors(self):
-        # A `[cap](SCREENSHOT:x)` token has no `!`, so `![` tempering alone let the caption
-        # start at the baseline image and the never-captured branch deleted it — silently,
-        # since the token did match. It is now unmatched, so the image survives and the
-        # leftover scan says so.
         body, out = self.rewrite(
             "![baseline](https://x.test/base.png) vs [regressed](SCREENSHOT:reg.png)"
         )
@@ -155,8 +134,6 @@ class RewriteReportTest(unittest.TestCase):
         self.assertIn("::error::1 screenshot token(s) survived rewriting", out)
 
     def test_nested_image_caption_leaves_the_nested_image_alone_and_errors(self):
-        # Same silent deletion one level in: the caption used to start at the nested
-        # `![thumb`, so the artifact-only branch cut the outer caption's opening text away.
         (self.artifacts / "a.png").write_bytes(b"\x89PNG")
         body, out = self.rewrite("![before ![thumb](t.png) after](SCREENSHOT:a.png)")
         self.assertIn("![thumb](t.png)", body)
@@ -164,10 +141,8 @@ class RewriteReportTest(unittest.TestCase):
         self.assertIn("::error::1 screenshot token(s) survived rewriting", out)
 
     def test_unparsed_token_is_reported_as_an_error(self):
-        # A token the regex cannot reach leaves every counter at zero, which reads exactly
-        # like a report that cited no screenshots. The leftover scan exists to break that
-        # tie. The unclosed `)` makes this unparseable under every variant of TOKEN, so the
-        # test pins the scan rather than any one narrowing of the caption group.
+        # Unclosed `)` is unparseable under every variant of TOKEN, so this pins the
+        # scan rather than any one narrowing of the caption group.
         body, out = self.rewrite("![a](SCREENSHOT:a.png")
         self.assertIn("SCREENSHOT:a.png", body)
         self.assertIn("0 linked, 0 artifact-only, 0 never captured", out)
@@ -175,14 +150,11 @@ class RewriteReportTest(unittest.TestCase):
         self.assertIn("SCREENSHOT:a.png", out.split("::error::")[1])
 
     def test_repeated_leftover_token_is_counted_once(self):
-        # The count and the list are the same set, so a token cited twice reads as one
-        # surviving token rather than "2 ... : SCREENSHOT:a.png".
         _, out = self.rewrite("![a](SCREENSHOT:a.png\n![a](SCREENSHOT:a.png\n")
         self.assertIn("::error::1 screenshot token(s) survived rewriting", out)
         self.assertEqual(out.count("SCREENSHOT:a.png"), 1)
 
     def test_never_captured_token_warns_without_a_leftover_error(self):
-        # The substituted placeholder must not itself trip the leftover scan.
         body, out = self.rewrite("![a](SCREENSHOT:a.png)")
         self.assertNotIn("SCREENSHOT:", body)
         self.assertIn("never captured: a.png", out)

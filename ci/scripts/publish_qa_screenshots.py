@@ -16,15 +16,9 @@ from pathlib import Path
 
 BUCKET = "gs://cypress_screenshots"
 PUBLIC_BASE = "https://storage.googleapis.com/cypress_screenshots"
-# Captions routinely contain `]` — JSON arrays, and data-cy selectors, which this repo
-# puts on every interactive element. Match lazily up to the literal "](SCREENSHOT:"
-# instead of forbidding `]` in the caption. The caption itself may contain neither `![`
-# nor `](`: without that tempering, a lazy match starting at an earlier markdown image
-# or link backtracks across it and swallows the text in between, which `replace` then
-# drops on the artifact-only and never-captured paths. The cost is that a caption
-# nesting a markdown link (`![see [docs](http://x) here](SCREENSHOT:a.png)`) no longer
-# matches — it never did on the old `[^\]]*` either, and the leftover scan below now
-# reports it as an `::error::` instead of losing it silently.
+# Captions contain `]` (JSON arrays, data-cy selectors), so the group cannot forbid it.
+# It cannot be plainly lazy either: it would backtrack across an earlier `![` or `](` and
+# swallow the text between, which `replace` drops on its non-linked paths.
 TOKEN = re.compile(r"!\[((?:(?!!\[|\]\().)*?)\]\(SCREENSHOT:([^)]+)\)")
 
 
@@ -97,11 +91,8 @@ def rewrite_report(report: Path, urls: dict[str, str], artifacts: Path) -> None:
         print("::warning::Report cites screenshots that were never captured: "
               + ", ".join(sorted(set(missing))))
 
-    # The counters above are derived from substitutions that happened, so a token TOKEN
-    # never matched leaves them all at zero — indistinguishable from a report citing no
-    # screenshots. Scanning the rewritten text catches every token that survives carrying
-    # a name, which is the shape a malformed token takes in practice. It cannot see one
-    # with no name at all (`![a](SCREENSHOT:)`); that case still passes unremarked.
+    # The counters above only see substitutions that happened, so a token TOKEN never
+    # matched leaves them at zero — indistinguishable from a report citing none.
     leftover = sorted(set(re.findall(r"SCREENSHOT:[^\s)]+", rewritten)))
     if leftover:
         print(f"::error::{len(leftover)} screenshot token(s) survived rewriting — the "
