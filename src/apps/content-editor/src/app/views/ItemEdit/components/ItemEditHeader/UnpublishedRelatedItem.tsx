@@ -59,10 +59,7 @@ export const UnpublishedRelatedItem = ({
       const value = String(contentItem.data[imageFieldName]).split(",")?.[0];
 
       if (value.startsWith("3-")) {
-        return `${
-          // @ts-ignore
-          CONFIG.SERVICE_MEDIA_RESOLVER
-        }/resolve/${value}/getimage/?w=64&h=64&type=crop`;
+        return `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${value}/getimage/?w=64&h=64&type=crop`;
       } else {
         return value;
       }

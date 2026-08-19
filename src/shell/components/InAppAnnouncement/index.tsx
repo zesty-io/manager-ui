@@ -13,28 +13,71 @@ import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
 import ScheduledRoundedIcon from "@mui/icons-material/ScheduleRounded";
 import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 import { useCookie } from "react-use";
+import Cookies from "js-cookie";
 
 import { useGetAnnouncementsQuery } from "../../services/marketing";
+
+const READ_ANNOUNCEMENTS_COOKIE = "READ_ANNOUNCEMENTS_ZUID";
 
 export const InAppAnnouncement = () => {
   const { data: announcements } = useGetAnnouncementsQuery();
   const [readAnnouncementsCookie, updateReadAnnouncementsCookie] = useCookie(
-    "READ_ANNOUNCEMENTS_ZUID"
+    READ_ANNOUNCEMENTS_COOKIE
   );
   const cookieOptions = {
-    // @ts-ignore
-    domain: __CONFIG__.COOKIE_DOMAIN,
+    domain: CONFIG.COOKIE_DOMAIN,
     expires: addYears(new Date(), 1),
   };
 
   useEffect(() => {
     // Initializes and keeps on bumping the read announcements cookie to permanently keep it on the browser
-    const parsedAnnouncementZuids = readAnnouncementsCookie
-      ? JSON.parse(readAnnouncementsCookie)
-      : [];
+    //
+    // #1358: this cookie used to be written host-only (domain was undefined via
+    // __CONFIG__), so a user can hold both a host-only and a domain-scoped copy.
+    // js-cookie's get() returns whichever appears first in document.cookie, which
+    // is ordered by creation time — so we cannot rely on reading the right one.
+    // Union every copy instead, then collapse to a single domain-scoped cookie.
+    //
+    // Migration only — removable once every user has loaded the app once after
+    // this ships (the legacy cookie's max lifetime is one year from a user's
+    // last pre-deploy visit). It is also the only producer of the value written
+    // below, so removing it means restoring the plain read it replaced —
+    // `const zuids = readAnnouncementsCookie ? JSON.parse(readAnnouncementsCookie) : [];`
+    // — as the value passed to updateReadAnnouncementsCookie. Deleting the block
+    // on its own writes an empty list over every user's dismissals.
+    const mergedAnnouncementZuids = new Set<string>();
+
+    document.cookie
+      .split("; ")
+      .filter((cookie) => cookie.startsWith(`${READ_ANNOUNCEMENTS_COOKIE}=`))
+      .forEach((cookie) => {
+        try {
+          // Mirrors the lenient decode in js-cookie 2.2.1's reader (the decode()
+          // helper in js.cookie.js): a stray "%" is left alone instead of
+          // throwing a URIError, so every copy Cookies.get() could have read is
+          // a copy this union keeps.
+          const zuids = JSON.parse(
+            cookie
+              .slice(READ_ANNOUNCEMENTS_COOKIE.length + 1)
+              .replace(/(%[0-9A-Z]{2})+/g, decodeURIComponent)
+          );
+
+          if (Array.isArray(zuids)) {
+            zuids.forEach((zuid) => {
+              if (typeof zuid === "string") {
+                mergedAnnouncementZuids.add(zuid);
+              }
+            });
+          }
+        } catch {
+          // A malformed copy must not abort the migration or the write below
+        }
+      });
+
+    Cookies.remove(READ_ANNOUNCEMENTS_COOKIE);
 
     updateReadAnnouncementsCookie(
-      JSON.stringify(parsedAnnouncementZuids),
+      JSON.stringify([...mergedAnnouncementZuids]),
       cookieOptions
     );
   }, []);
@@ -54,7 +97,13 @@ export const InAppAnnouncement = () => {
   }, [announcements]);
 
   const readAnnouncements = useMemo(() => {
-    return readAnnouncementsCookie ? JSON.parse(readAnnouncementsCookie) : [];
+    // Runs during render, before the migration effect — a corrupt cookie must
+    // not throw into the ErrorBoundary and take Shell down with it
+    try {
+      return readAnnouncementsCookie ? JSON.parse(readAnnouncementsCookie) : [];
+    } catch {
+      return [];
+    }
   }, [readAnnouncementsCookie]);
 
   const onIgnoreAnnouncement = (zuid: string) => {
