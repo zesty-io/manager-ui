@@ -1,6 +1,6 @@
 # Sentry RCA auto-fix classification criteria
 
-Used by `.github/workflows/claude-sentry-rca.yml` after it has already attempted a
+Used by `.github/workflows/claude-sentry-handler.yml` after it has already attempted a
 trial fix for a Sentry-origin issue. Score all four factors below. Record `"simple"`
 in `classification.json` only if **all four pass** — the workflow then commits the
 trial fix, pushes a branch, and opens a PR. If any factor fails, record `"complex"`
