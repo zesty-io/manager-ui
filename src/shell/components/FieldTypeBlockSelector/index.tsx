@@ -94,7 +94,6 @@ export const FieldTypeBlockSelector = ({
     if (!blockValue || !variants?.length || !instance || !selectedVariantData)
       return "";
 
-    // @ts-expect-error config not typed
     const domain = `${CONFIG.URL_PREVIEW_PROTOCOL}${instance?.randomHashID}${CONFIG.URL_PREVIEW}`;
     let path = `/-/block/${blockValue.model?.value}.html?variant=${selectedVariantData?.meta?.ZUID}&_bypassError=true`;
 

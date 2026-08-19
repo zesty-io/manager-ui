@@ -51,7 +51,6 @@ const FileType = (
 export default function FileStatus({ file, items }: FileStatusProps) {
   const { t } = useTranslation();
   const instance = useSelector((state: any) => state.instance);
-  //@ts-expect-error
   const urlPreview = CONFIG.URL_PREVIEW_FULL;
   const urlFileName = file?.fileName?.trim()?.replace(/^\/+/, "");
 

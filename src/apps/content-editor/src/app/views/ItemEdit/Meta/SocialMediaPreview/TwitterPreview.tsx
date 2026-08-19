@@ -34,10 +34,7 @@ export const TwitterPreview = ({ imageURL }: TwitterPreviewProps) => {
 
       if (tcImage.startsWith("3-")) {
         setTcImageURL(
-          `${
-            // @ts-ignore
-            CONFIG.SERVICE_MEDIA_RESOLVER
-          }/resolve/${
+          `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${
             item?.data?.tc_image
           }/getimage/?w=${128}&h=${128}&type=fit`
         );

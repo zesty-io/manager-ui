@@ -42,7 +42,6 @@ export const APIEndpoints = ({ type }: APIEndpointsProps) => {
       <MenuItem
         onClick={() => {
           window.open(
-            // @ts-expect-error config not typed
             `${CONFIG.URL_PREVIEW_PROTOCOL}${instance.randomHashID}${CONFIG.URL_PREVIEW}${apiTypeEndpointMap[type]}`,
             "_blank"
           );
@@ -58,7 +57,6 @@ export const APIEndpoints = ({ type }: APIEndpointsProps) => {
             width: 172,
           }}
         >
-          {/* @ts-expect-error config not typed */}
           {`${instance.randomHashID}${CONFIG.URL_PREVIEW}${apiTypeEndpointMap[type]}`}
         </Typography>
         <Chip size="small" label={t("common.dev")} />

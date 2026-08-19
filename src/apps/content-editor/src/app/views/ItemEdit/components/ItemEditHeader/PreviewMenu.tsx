@@ -47,7 +47,6 @@ export const PreviewMenu = () => {
       : "";
   const prodUrl = domain + pathPart;
 
-  // @ts-expect-error Config not typed
   let devUrl = `${CONFIG.URL_PREVIEW_PROTOCOL}${instance.randomHashID}${CONFIG.URL_PREVIEW}${item?.web?.path}`;
 
   if (previewLock) {

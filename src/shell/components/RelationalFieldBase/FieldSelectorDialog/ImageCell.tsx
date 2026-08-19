@@ -24,10 +24,7 @@ export const ImageCell = ({ imageFieldName, itemZUID }: ImageCellProps) => {
       const value = String(contentItem.data[imageFieldName]).split(",")?.[0];
 
       if (value.startsWith("3-")) {
-        return `${
-          // @ts-ignore
-          CONFIG.SERVICE_MEDIA_RESOLVER
-        }/resolve/${value}/getimage/?w=40&h=40&type=crop`;
+        return `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${value}/getimage/?w=40&h=40&type=crop`;
       } else {
         return value;
       }

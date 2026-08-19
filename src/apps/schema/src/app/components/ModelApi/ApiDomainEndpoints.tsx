@@ -81,14 +81,12 @@ export const ApiDomainEndpoints = ({ type }: Props) => {
             }}
           >
             <Link
-              // @ts-ignore
               href={`${CONFIG.URL_PREVIEW_PROTOCOL}${instance.randomHashID}${CONFIG.URL_PREVIEW}${apiTypeEndpointMap[type]}`}
               target="_blank"
             >
               <Typography
                 component="li"
                 variant="body2"
-                // @ts-ignore
               >{`${instance.randomHashID}${CONFIG.URL_PREVIEW}${apiTypeEndpointMap[type]}`}</Typography>
             </Link>
           </Box>

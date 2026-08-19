@@ -175,7 +175,6 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({ anchorEl, onClose }) => {
           <MenuItem
             onClick={() =>
               handleOpenUrl(
-                // @ts-ignore
                 `${CONFIG.URL_PREVIEW_PROTOCOL}${instance.randomHashID}${CONFIG.URL_PREVIEW}`
               )
             }

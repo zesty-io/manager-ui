@@ -164,7 +164,6 @@ export const NameCell = ({
               borderRadius: "4px",
             }}
             src={`${
-              // @ts-ignore
               CONFIG.SERVICE_MEDIA_RESOLVER
             }/resolve/${getImage()}/getimage/?w=200&h=200&type=fit`}
             onError={(e) => {

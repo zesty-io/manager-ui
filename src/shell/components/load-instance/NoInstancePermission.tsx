@@ -39,7 +39,6 @@ export const NoInstancePermission = () => {
             variant="contained"
             color="primary"
             startIcon={<GridViewRounded />}
-            // @ts-expect-error
             href={`${CONFIG.URL_ACCOUNTS}/instances`}
           >
             {t("shell.viewYourInstances")}

@@ -57,7 +57,6 @@ export const GlobalDomainsMenu: FC<GlobalDomainsMenuProps> = ({
   const [refreshCache, { isSuccess, isLoading, isError }] =
     useRefreshCacheMutation();
 
-  // @ts-ignore
   const stageDomainText = `${instance?.randomHashID}${CONFIG.URL_PREVIEW}`;
 
   useEffect(() => {
@@ -138,7 +137,6 @@ export const GlobalDomainsMenu: FC<GlobalDomainsMenuProps> = ({
         <MenuItem
           onClick={() =>
             handleOpenUrl(
-              // @ts-ignore
               `${CONFIG.URL_PREVIEW_PROTOCOL}${instance.randomHashID}${CONFIG.URL_PREVIEW}`
             )
           }
