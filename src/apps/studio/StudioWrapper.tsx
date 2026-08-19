@@ -15,7 +15,6 @@ import { MemoryRouter, useHistory, useLocation } from "react-router";
 import { cloneDeep } from "lodash";
 import { AppState } from "shell/store/types";
 import { usePermission } from "shell/hooks/use-permissions";
-import { isZestyEmail } from "utility/isZestyEmail";
 import {
   fetchAllModelPublishings,
   fetchItem,
@@ -135,14 +134,21 @@ export const StudioWrapper = () => {
 
   // Per the PRD, mode is resolved from permissions rather than chosen: a user
   // is placed in the mode that matches their access and is never offered one
-  // they cannot act in. Zesty staff keep the switch so a single account can
-  // exercise all three surfaces without re-provisioning roles.
+  // they cannot act in. Staff keep the switch so a single account can exercise
+  // all three surfaces without re-provisioning roles.
   //
-  // This is presentation only. `availableModes` still bounds what any switch
+  // Gated on `user.staff`, the same flag that decides whether Studio appears in
+  // the global menu (`shell/store/products.js`), so the feature has one
+  // definition of "internal" rather than two. An email-domain check was the
+  // first implementation and diverged from it in both directions: staff on a
+  // non-Zesty address lost the switch, and a Zesty address without the staff
+  // flag gained it.
+  //
+  // This is presentation only. `availableModes` still bounds what the switch
   // can reach, so a staff account cannot select into a mode it lacks the
   // permissions for.
-  const userEmail = useSelector((state: AppState) => state.user?.email);
-  const canSelectMode = isZestyEmail(userEmail || "");
+  const isStaff = useSelector((state: AppState) => !!state.user?.staff);
+  const canSelectMode = isStaff;
 
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const currentHoverStudioIdRef = useRef<string | null>(null);

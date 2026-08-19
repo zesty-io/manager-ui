@@ -1,6 +1,6 @@
 // Studio resolves its mode from the signed-in user's permissions rather than
 // asking them to choose one. These specs assert that resolution: which modes an
-// account is entitled to, that the switch is offered only to Zesty staff, and
+// account is entitled to, that the switch is offered only to staff, and
 // that the entitlement holds on paths the switch does not control.
 //
 // Both the roles response and the user record are rewritten rather than
@@ -29,7 +29,7 @@ describe("Studio mode entitlement", () => {
     });
   });
 
-  const asRole = (systemRoleZUID, { email } = {}) => {
+  const asRole = (systemRoleZUID, { staff = false } = {}) => {
     cy.intercept("GET", ENDPOINTS.userRoles, (req) => {
       req.continue((res) => {
         if (!Array.isArray(res.body?.data)) return;
@@ -49,11 +49,9 @@ describe("Studio mode entitlement", () => {
     cy.intercept("GET", ENDPOINTS.user, (req) => {
       req.continue((res) => {
         if (!res.body?.data) return;
-        res.body.data = {
-          ...res.body.data,
-          staff: false,
-          ...(email ? { email } : {}),
-        };
+        // `hasPermission` short-circuits to true for staff, so role-based
+        // tests must clear it; the switch-gate test sets it deliberately.
+        res.body.data = { ...res.body.data, staff };
       });
     }).as("getUser");
   };
@@ -81,7 +79,7 @@ describe("Studio mode entitlement", () => {
   };
 
   it("offers every mode to a staff account with content and code access", () => {
-    asRole(DEVELOPER_ROLE_ZUID);
+    asRole(DEVELOPER_ROLE_ZUID, { staff: true });
     visitStudio();
 
     cy.getBySelector("StudioModeToggle").should("exist");
@@ -102,15 +100,16 @@ describe("Studio mode entitlement", () => {
     cy.getBySelector("StudioModeToggle").should("not.exist");
   });
 
-  // Mode is resolved from permissions and is not selectable. Zesty staff are
-  // the exception, which is what every other test in this file relies on — the
-  // Cypress account is a @zesty.io address.
-  it("offers no mode switch to a non-Zesty account, even with full access", () => {
-    asRole(DEVELOPER_ROLE_ZUID, { email: "someone@example.com" });
+  // Mode is resolved from permissions and is not selectable. Staff are the
+  // exception, gated on the same `user.staff` flag that decides whether Studio
+  // appears in the global menu.
+  it("offers no mode switch to a non-staff account, even with full access", () => {
+    asRole(DEVELOPER_ROLE_ZUID, { staff: false });
     visitStudio();
 
-    // Positive first: the app rendered and the account is fully entitled, so a
-    // missing switch is the gate rather than a blank page or a narrow role.
+    // Positive first: the app rendered and the role carries both capabilities,
+    // so a missing switch is the gate rather than a blank page or a narrow
+    // role. Without this the assertion below passes on any failed render.
     cy.getBySelector("StudioPreviewFrame").should("exist");
     cy.getBySelector("StudioModeToggle").should("not.exist");
   });
