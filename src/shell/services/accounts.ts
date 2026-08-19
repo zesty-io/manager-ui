@@ -18,7 +18,6 @@ import {
 export const accountsApi = createApi({
   reducerPath: "accountsApi",
   baseQuery: fetchBaseQuery({
-    // @ts-ignore
     baseUrl: `${__CONFIG__.API_ACCOUNTS}/`,
     prepareHeaders,
   }),
