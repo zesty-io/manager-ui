@@ -269,7 +269,6 @@ const Row = ({ index, data, style }: any) => {
   const instance = data[index];
 
   const handleSwitchInstance = (ZUID: string) => {
-    // @ts-ignore
     window.location.href = `${CONFIG.URL_MANAGER_PROTOCOL}${ZUID}${CONFIG.URL_MANAGER}`;
   };
 
