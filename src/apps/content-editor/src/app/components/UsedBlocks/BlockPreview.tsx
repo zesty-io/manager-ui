@@ -31,7 +31,6 @@ export const BlockPreview = ({
   const url = useMemo(() => {
     if (!variantData || !blockModelData || !instance) return "";
 
-    // @ts-expect-error config not typed
     const domain = `${CONFIG.URL_PREVIEW_PROTOCOL}${instance?.randomHashID}${CONFIG.URL_PREVIEW}`;
     const path = `/-/block/${blockModelData.name}.html`;
     const url = new URL(`${domain}${path}`);

@@ -83,7 +83,6 @@ export default function LinkedContent({ file, items }: LinkedContentProps) {
                       position: "relative",
                       color: "info.dark",
                     }}
-                    // @ts-expect-error Config not typed
                     href={`${CONFIG?.URL_PREVIEW_FULL}${item?.web?.path}`}
                     target="_blank"
                     title="Preview Item Webpage"

@@ -344,7 +344,6 @@ export const StudioWrapper = () => {
     (path: string) => {
       const normalized = normalizePath(path || "/");
       const instanceHash = instance?.randomHashID ?? "";
-      // @ts-expect-error Config is provided globally at runtime
       const baseUrl = `${CONFIG.URL_PREVIEW_PROTOCOL}${instanceHash}${CONFIG.URL_PREVIEW}${normalized}`;
       const queryParams = new URLSearchParams();
 
@@ -1643,7 +1642,6 @@ export const StudioWrapper = () => {
       if (raw === undefined || raw === null || raw === "") return "";
       if (ref.isMedia) {
         // Image field → the URL getImage() resolves to, via the media resolver.
-        // @ts-expect-error CONFIG is provided globally at runtime
         return `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${raw}/getimage`;
       }
       return String(raw);
