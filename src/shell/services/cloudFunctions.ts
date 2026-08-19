@@ -7,7 +7,6 @@ import { IntegrationRequestHeaders } from "./types";
 export const cloudFunctionsApi = createApi({
   reducerPath: "cloudFunctionsApi",
   baseQuery: fetchBaseQuery({
-    // @ts-ignore
     baseUrl: `${__CONFIG__.CLOUD_FUNCTIONS_DOMAIN}`,
     prepareHeaders,
   }),
@@ -35,7 +34,6 @@ export const cloudFunctionsApi = createApi({
           url: `createScreenshot`,
           method: "GET",
           params: {
-            // @ts-ignore
             bucket: `${__CONFIG__.INSTANCE_SCREENSHOTS_BUCKET}`,
             url: url,
             w: 1280,

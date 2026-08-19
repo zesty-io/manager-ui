@@ -292,7 +292,6 @@ export const Favicon = ({ onCloseFaviconModal }: FaviconProps) => {
                   {SIZES.map((size) => (
                     <figure key={size}>
                       <img
-                        // @ts-expect-error
                         src={`${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${faviconData?.faviconZUID}/getimage/?w=${size}&h=${size}&type=fit`}
                       />
                       <figcaption>{`${size}x${size}`}</figcaption>
