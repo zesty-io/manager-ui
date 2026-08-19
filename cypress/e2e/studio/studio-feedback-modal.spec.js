@@ -101,7 +101,7 @@ describe("Studio Feedback Modal", () => {
           `<b>Message:</b><br>This is a feedback message`
         );
         expect(request.body.body).to.contain(
-          `<b>User:</b> ${request.body.from}`
+          `<b>User:</b> ${Cypress.env("email")}`
         );
         expect(request.body.body).to.match(/<b>Instance:<\/b> .+\(.+\)/);
         expect(request.body.body).to.contain(`<b>Page:</b> ${studioPath}`);

@@ -61,9 +61,10 @@ export const StudioFeedbackModal = ({
 
     setError("");
 
-    const feedbackSubject = [user?.firstName, user?.lastName]
+    const feedbackName = [user?.firstName, user?.lastName]
       .filter(Boolean)
       .join(" ");
+    const feedbackSubject = `Studio feedback from ${feedbackName || email}`;
 
     const feedbackBody = [
       `<b>User:</b> ${escapeHtml(email)}`,
@@ -77,8 +78,7 @@ export const StudioFeedbackModal = ({
 
     sendEmail({
       to: CONFIG.SLACK_FEEDBACK_EMAIL,
-      from: email,
-      subject: feedbackSubject || email,
+      subject: feedbackSubject,
       body: feedbackBody,
       template: "raw",
     })
