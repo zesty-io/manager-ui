@@ -18,11 +18,14 @@ BUCKET = "gs://cypress_screenshots"
 PUBLIC_BASE = "https://storage.googleapis.com/cypress_screenshots"
 # Captions routinely contain `]` — JSON arrays, and data-cy selectors, which this repo
 # puts on every interactive element. Match lazily up to the literal "](SCREENSHOT:"
-# instead of forbidding `]` in the caption. The caption itself may not contain `![`:
-# without that, a lazy match starting at an ordinary markdown image earlier on the line
-# backtracks across it and swallows the text in between, which `replace` then drops on
-# the artifact-only and never-captured paths.
-TOKEN = re.compile(r"!\[((?:(?!!\[).)*?)\]\(SCREENSHOT:([^)]+)\)")
+# instead of forbidding `]` in the caption. The caption itself may contain neither `![`
+# nor `](`: without that tempering, a lazy match starting at an earlier markdown image
+# or link backtracks across it and swallows the text in between, which `replace` then
+# drops on the artifact-only and never-captured paths. The cost is that a caption
+# nesting a markdown link (`![see [docs](http://x) here](SCREENSHOT:a.png)`) no longer
+# matches — it never did on the old `[^\]]*` either, and the leftover scan below now
+# reports it as an `::error::` instead of losing it silently.
+TOKEN = re.compile(r"!\[((?:(?!!\[|\]\().)*?)\]\(SCREENSHOT:([^)]+)\)")
 
 
 def run(cmd, **kw):
