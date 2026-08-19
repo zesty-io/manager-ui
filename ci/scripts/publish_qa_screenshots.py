@@ -16,7 +16,11 @@ from pathlib import Path
 
 BUCKET = "gs://cypress_screenshots"
 PUBLIC_BASE = "https://storage.googleapis.com/cypress_screenshots"
-TOKEN = re.compile(r"!\[([^\]]*)\]\(SCREENSHOT:([^)]+)\)")
+# Captions routinely contain `]` — JSON arrays, and data-cy selectors, which this repo
+# puts on every interactive element. Match lazily up to the literal "](SCREENSHOT:"
+# instead of forbidding `]` in the caption; `.*?` backtracks minimally, so plain
+# captions and two tokens on one line behave exactly as before.
+TOKEN = re.compile(r"!\[(.*?)\]\(SCREENSHOT:([^)]+)\)")
 
 
 def run(cmd, **kw):
@@ -79,13 +83,22 @@ def rewrite_report(report: Path, urls: dict[str, str], artifacts: Path) -> None:
         missing.append(name)
         return f"_⚠️ no screenshot was captured for this finding (`{name}`)_"
 
-    report.write_text(TOKEN.sub(replace, report.read_text(encoding="utf-8")), encoding="utf-8")
+    rewritten = TOKEN.sub(replace, report.read_text(encoding="utf-8"))
+    report.write_text(rewritten, encoding="utf-8")
 
     print(f"Screenshot links: {len(linked)} linked, {len(on_disk)} artifact-only, "
           f"{len(missing)} never captured.")
     if missing:
         print("::warning::Report cites screenshots that were never captured: "
               + ", ".join(sorted(set(missing))))
+
+    # The counters above are derived from substitutions that happened, so a token TOKEN
+    # never matched leaves them all at zero — indistinguishable from a report citing no
+    # screenshots. Scan the rewritten text so an unparsed token can't fail silently.
+    leftover = re.findall(r"SCREENSHOT:[^\s)]+", rewritten)
+    if leftover:
+        print(f"::error::{len(leftover)} screenshot token(s) survived rewriting — the "
+              f"comment will render raw markup: {', '.join(sorted(set(leftover)))}")
 
 
 def main() -> int:
