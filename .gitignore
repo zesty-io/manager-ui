@@ -27,3 +27,7 @@ auth-state.json
 qa-artifacts/
 negative-qa-comment.md
 devserver.log
+
+# python bytecode from ci/scripts tests
+__pycache__/
+*.pyc

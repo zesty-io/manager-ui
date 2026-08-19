@@ -18,9 +18,11 @@ BUCKET = "gs://cypress_screenshots"
 PUBLIC_BASE = "https://storage.googleapis.com/cypress_screenshots"
 # Captions routinely contain `]` — JSON arrays, and data-cy selectors, which this repo
 # puts on every interactive element. Match lazily up to the literal "](SCREENSHOT:"
-# instead of forbidding `]` in the caption; `.*?` backtracks minimally, so plain
-# captions and two tokens on one line behave exactly as before.
-TOKEN = re.compile(r"!\[(.*?)\]\(SCREENSHOT:([^)]+)\)")
+# instead of forbidding `]` in the caption. The caption itself may not contain `![`:
+# without that, a lazy match starting at an ordinary markdown image earlier on the line
+# backtracks across it and swallows the text in between, which `replace` then drops on
+# the artifact-only and never-captured paths.
+TOKEN = re.compile(r"!\[((?:(?!!\[).)*?)\]\(SCREENSHOT:([^)]+)\)")
 
 
 def run(cmd, **kw):
@@ -94,11 +96,13 @@ def rewrite_report(report: Path, urls: dict[str, str], artifacts: Path) -> None:
 
     # The counters above are derived from substitutions that happened, so a token TOKEN
     # never matched leaves them all at zero — indistinguishable from a report citing no
-    # screenshots. Scan the rewritten text so an unparsed token can't fail silently.
-    leftover = re.findall(r"SCREENSHOT:[^\s)]+", rewritten)
+    # screenshots. Scanning the rewritten text catches every token that survives carrying
+    # a name, which is the shape a malformed token takes in practice. It cannot see one
+    # with no name at all (`![a](SCREENSHOT:)`); that case still passes unremarked.
+    leftover = sorted(set(re.findall(r"SCREENSHOT:[^\s)]+", rewritten)))
     if leftover:
         print(f"::error::{len(leftover)} screenshot token(s) survived rewriting — the "
-              f"comment will render raw markup: {', '.join(sorted(set(leftover)))}")
+              f"comment will render raw markup: {', '.join(leftover)}")
 
 
 def main() -> int:
