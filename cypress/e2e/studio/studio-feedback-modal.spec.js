@@ -1,10 +1,16 @@
 describe("Studio Feedback Modal", () => {
   let studioPath = "/";
+  let modelZUID;
 
   before(() => {
-    cy.task("seed:content", "fixtures/studio.json").then(({ items }) => {
+    cy.task("seed:content", "fixtures/studio.json").then(({ model, items }) => {
+      modelZUID = model.ZUID;
       studioPath = `/${items[0].web.pathPart}`;
     });
+  });
+
+  after(() => {
+    if (modelZUID) cy.deleteModel(modelZUID);
   });
 
   const openFeedbackModal = () => {
