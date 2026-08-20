@@ -440,6 +440,7 @@ export const useStudioSelection = ({
       tagName: string,
       slots: ElementSlot[],
       layoutPatch: ElementLayoutPatch | null,
+      ownsLinkControls: boolean,
       preserveValues: boolean
     ) => {
       setInspectorSelection((prev) => {
@@ -458,11 +459,18 @@ export const useStudioSelection = ({
         });
         if (
           prev.tagName === tagName &&
+          prev.ownsLinkControls === ownsLinkControls &&
           JSON.stringify(prev.slots) === JSON.stringify(nextSlots)
         ) {
           return prev;
         }
-        return { ...prev, tagName, slots: nextSlots, layoutPatch };
+        return {
+          ...prev,
+          tagName,
+          slots: nextSlots,
+          layoutPatch,
+          ownsLinkControls,
+        };
       });
     },
     []
