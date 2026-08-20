@@ -151,37 +151,61 @@ export const SchedulePublish = ({
       )
     : "";
 
-  const handleScheduleUnpublish = () => {
+  const handleScheduleUnpublish = async () => {
     setIsLoading(true);
     const { publishAtUtcStr, localPretty } = formatPayloadTimes(
       selectedUtc,
       publishTimezone
     );
 
-    // Schedule Unpublish is only shown when there are no scheduled publishes,
-    // so there's no need to pre-process the deletion of a scheduled publish.
+    try {
+      // A scheduled publish blocks the API from accepting this POST with
+      // "already has a scheduled publish event." Delete it first — the dialog
+      // already warns the user that scheduling an unpublish cancels it.
+      if (hasAnyScheduledPublish) {
+        await dispatch(
+          unpublish(
+            item?.meta?.contentModelZUID,
+            item?.meta?.ZUID,
+            item?.scheduling?.ZUID,
+            { version: item?.scheduling?.version }
+          )
+        )
+          // @ts-expect-error untyped action
+          .then((response) => {
+            if (response?.error) {
+              throw new Error(response?.error);
+            }
+          });
+      }
 
-    dispatch(
-      publish(
-        item?.meta?.contentModelZUID,
-        item?.meta?.ZUID,
-        {
-          publishAt: "now",
-          unpublishAt: publishAtUtcStr,
-          version: item?.meta?.version,
-        },
-        { localTime: localPretty, localTimezone: publishTimezone }
+      await dispatch(
+        publish(
+          item?.meta?.contentModelZUID,
+          item?.meta?.ZUID,
+          {
+            publishAt: "now",
+            unpublishAt: publishAtUtcStr,
+            version: item?.meta?.version,
+          },
+          { localTime: localPretty, localTimezone: publishTimezone }
+        )
       )
-    ) // @ts-expect-error untyped action
-      .then((response) => {
-        if (!response?.error) {
-          onScheduleSuccess?.();
-        }
-      })
-      .finally(() => {
-        setIsLoading(false);
-        onClose();
-      });
+        // @ts-expect-error untyped action
+        .then((response) => {
+          if (response?.error) {
+            throw new Error(response?.error);
+          }
+        });
+
+      onScheduleSuccess?.();
+    } catch {
+      // Error notification is handled by the thunk; swallow here so the
+      // finally block always closes the dialog cleanly.
+    } finally {
+      setIsLoading(false);
+      onClose();
+    }
   };
 
   const handleUnscheduleUnpublish = async () => {
