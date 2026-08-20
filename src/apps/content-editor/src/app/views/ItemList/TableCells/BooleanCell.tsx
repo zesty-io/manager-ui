@@ -1,10 +1,13 @@
 import { useStagedChanges } from "../StagedChangesContext";
 import { GridRenderCellParams } from "@mui/x-data-grid-pro";
 import { ToggleButtonGroup, ToggleButton } from "@mui/material";
+import { ContentModelField } from "../../../../../../../shell/services/types";
 
 export const BooleanCell = ({ params }: { params: GridRenderCellParams }) => {
   const { stagedChanges, updateStagedChanges } = useStagedChanges();
-  const field = params.row.fieldData[params.field];
+  // `params.row` is untyped (`GridRenderCellParams` defaults its row model to `any`),
+  // so annotate here to keep `settings.options` a `Record<string, string>`
+  const field: ContentModelField = params.row.fieldData[params.field];
   const handleChange = (value: any) => {
     updateStagedChanges(params.row.id, params.field, value);
   };
