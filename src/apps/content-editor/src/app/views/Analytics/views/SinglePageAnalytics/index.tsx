@@ -123,49 +123,59 @@ export const SinglePageAnalytics = ({ item, loading }: Props) => {
   const averageEngagementTime = useMemo(() => {
     // TODO: calculate compared avg engagement time
     // Get all user count
-    const dr0New =
-      +findValuesForDimensions(
+    const dr0New = +(
+      findValuesForDimensions(
         totalUsersReport?.rows,
         ["date_range_0", "new"],
         0
-      ) ?? 0;
-    const dr0Returning =
-      +findValuesForDimensions(
+      )[0] ?? 0
+    );
+    const dr0Returning = +(
+      findValuesForDimensions(
         totalUsersReport?.rows,
         ["date_range_0", "returning"],
         0
-      ) ?? 0;
-    const dr1New =
-      +findValuesForDimensions(
+      )[0] ?? 0
+    );
+    const dr1New = +(
+      findValuesForDimensions(
         totalUsersReport?.rows,
         ["date_range_1", "new"],
         0
-      ) ?? 0;
-    const dr1Returning =
-      +findValuesForDimensions(
+      )[0] ?? 0
+    );
+    const dr1Returning = +(
+      findValuesForDimensions(
         totalUsersReport?.rows,
         ["date_range_1", "returning"],
         0
-      ) ?? 0;
-    const comparedNew =
-      +findValuesForDimensions(comparedTotalUsersReport?.rows, ["new"], 0) ?? 0;
-    const comparedReturning =
-      +findValuesForDimensions(
+      )[0] ?? 0
+    );
+    const comparedNew = +(
+      findValuesForDimensions(comparedTotalUsersReport?.rows, ["new"], 0)[0] ??
+      0
+    );
+    const comparedReturning = +(
+      findValuesForDimensions(
         comparedTotalUsersReport?.rows,
         ["returning"],
         0
-      ) ?? 0;
-    const dr0TotalUsers = dr0New + dr0Returning ?? 0;
-    const dr1TotalUsers = dr1New + dr1Returning ?? 0;
-    const comparedTotalUsers = comparedNew + comparedReturning ?? 0;
+      )[0] ?? 0
+    );
+    const dr0TotalUsers = dr0New + dr0Returning;
+    const dr1TotalUsers = dr1New + dr1Returning;
+    const comparedTotalUsers = comparedNew + comparedReturning;
 
     // Get total engagement time
-    const dr0EngagementTime =
-      +findValuesForDimensions(metricsReport?.rows, ["date_range_0"], 4) ?? 0;
-    const dr1EngagementTime =
-      +findValuesForDimensions(metricsReport?.rows, ["date_range_1"], 4) ?? 0;
-    const comparedEngagementTime =
-      +comparedMetricsReport?.rows?.[0]?.metricValues?.[4]?.value ?? 0;
+    const dr0EngagementTime = +(
+      findValuesForDimensions(metricsReport?.rows, ["date_range_0"], 4)[0] ?? 0
+    );
+    const dr1EngagementTime = +(
+      findValuesForDimensions(metricsReport?.rows, ["date_range_1"], 4)[0] ?? 0
+    );
+    const comparedEngagementTime = +(
+      comparedMetricsReport?.rows?.[0]?.metricValues?.[4]?.value ?? 0
+    );
 
     // Calculate avg engagement time
     const dr0AvgEngagementTime =
@@ -289,7 +299,7 @@ export const SinglePageAnalytics = ({ item, loading }: Props) => {
                   metricsReport?.rows,
                   ["date_range_0"],
                   0
-                ) || 0
+                )[0] ?? 0
               )
             }
             priorValue={
@@ -300,7 +310,7 @@ export const SinglePageAnalytics = ({ item, loading }: Props) => {
                       metricsReport?.rows,
                       ["date_range_1"],
                       0
-                    ) || 0
+                    )[0] ?? 0
                   )
             }
             description="A pageview is defined as a view of a page on your site that is being tracked by the Analytics tracking code. If a user clicks reload after reaching the page or navigates to a different page and then returns to the original page, then this is counted as an additional page view."
@@ -330,7 +340,7 @@ export const SinglePageAnalytics = ({ item, loading }: Props) => {
                   metricsReport?.rows,
                   ["date_range_0"],
                   2
-                ) || 0
+                )[0] ?? 0
               )
             }
             priorValue={
@@ -341,7 +351,7 @@ export const SinglePageAnalytics = ({ item, loading }: Props) => {
                       metricsReport?.rows,
                       ["date_range_1"],
                       2
-                    ) || 0
+                    )[0] ?? 0
                   )
             }
             description="Bounce rate is the percentage of people who land on a page and leave without performing a specific action."
@@ -356,7 +366,7 @@ export const SinglePageAnalytics = ({ item, loading }: Props) => {
                   metricsReport?.rows,
                   ["date_range_0"],
                   3
-                ) || 0
+                )[0] ?? 0
               )
             }
             priorValue={
@@ -367,7 +377,7 @@ export const SinglePageAnalytics = ({ item, loading }: Props) => {
                       metricsReport?.rows,
                       ["date_range_1"],
                       3
-                    ) || 0
+                    )[0] ?? 0
                   )
             }
             description="A conversion is a user action that you count because you consider it important, such as a purchase, game level completion, or website or app scroll activity."
