@@ -66,6 +66,28 @@ export type ElementLayoutPatch = {
   elementIndex: number;
 };
 
+// The <a> that wraps a selected element, as the Inspector's Link section sees
+// it. Both values are read off the TEMPLATE, so `href` may be a raw Parsley
+// expression rather than a URL.
+export type LinkWrapper = {
+  href: string;
+  // "" when the attribute is absent; "_blank" opens a new tab.
+  target: string;
+};
+
+// Everything the Link section needs about an element's surroundings. Derived
+// from the cached template on every read rather than stored: the wrapper has no
+// data-layout-id of its own (layout ids are minted by the render pipeline and
+// stripped before save), so it is only ever addressed as the parent of the
+// element the panel already has coordinates for.
+export type LinkWrapperState = {
+  // The <a> immediately wrapping the element, when there is one.
+  wrapper: LinkWrapper | null;
+  // False when the element is already a link, or sits inside one further up:
+  // nested <a> is invalid HTML, and the enclosing link is the one to edit.
+  canWrap: boolean;
+};
+
 // Where a Parsley reference resolves from when it is NOT `this` — i.e. a field
 // on some other content item, pinned to that exact item by ZUID. Carries both
 // the Parsley identity (modelName + itemZUID are the only two things that reach
@@ -103,6 +125,13 @@ export type InspectorSelection = {
   tagName: string;
   slots: ElementSlot[];
   layoutPatch?: ElementLayoutPatch | null;
+  // Whether the Link controls belong on this row. An element row owns them; a
+  // text/field row owns them only when it is its element's LONE content row,
+  // since every run of a leaf carries the same element-addressing layoutPatch
+  // and wrapping from one of several would swallow content the panel isn't
+  // showing. Derived from the tree, not from the template — see
+  // ownsElementLinkControls.
+  ownsLinkControls?: boolean;
 };
 
 export type LayoutBreadcrumbItem = {
