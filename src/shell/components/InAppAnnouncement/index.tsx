@@ -122,6 +122,8 @@ export const InAppAnnouncement = () => {
     return <></>;
   }
 
+  const featureImageUrl = latestAnnouncement?.feature_image?.data[0]?.url;
+
   return (
     <Dialog
       open
@@ -149,9 +151,12 @@ export const InAppAnnouncement = () => {
           <Box
             component="img"
             alt="announcement-banner-image"
+            // Omit the attribute rather than emptying it — `src=""` makes the browser
+            // re-request the document URL
             src={
-              `${latestAnnouncement?.feature_image?.data[0]?.url}?fit=cover&width=1280` ??
-              ""
+              featureImageUrl
+                ? `${featureImageUrl}?fit=cover&width=1280`
+                : undefined
             }
             maxWidth="100%"
             maxHeight="100%"
