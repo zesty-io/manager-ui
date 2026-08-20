@@ -138,7 +138,7 @@ export const SchedulePublish = ({
     new Date(item?.scheduling?.publishAt).getTime() > Date.now();
 
   const isAlreadyScheduledUnpublish = !!(
-    item?.meta?.version === item?.publishing?.version &&
+    item?.publishing?.isPublished &&
     item?.publishing?.unpublishAt &&
     new Date(item?.publishing?.unpublishAt).getTime() > Date.now()
   );

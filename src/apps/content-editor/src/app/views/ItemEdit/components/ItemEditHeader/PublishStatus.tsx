@@ -118,42 +118,40 @@ export const PublishStatus = ({ currentVersion }: PublishStatusProps) => {
           </Tooltip>
         )}
 
-      {!!scheduledUnpublishing &&
-        scheduledUnpublishing?._active &&
-        scheduledUnpublishing.version === currentVersion && (
-          <Tooltip
-            enterDelay={1000}
-            enterNextDelay={1000}
-            title={
-              <TooltipTitle
-                text={`v${scheduledUnpublishing.version} scheduled to unpublish`}
-                dateTime={scheduledUnpublishing.unpublishAt || ""}
-                userName={getUserNameByZUID(
-                  scheduledUnpublishing?.publishedByUserZUID
-                )}
-              />
-            }
-            placement="bottom-start"
+      {!!scheduledUnpublishing && scheduledUnpublishing?._active && (
+        <Tooltip
+          enterDelay={1000}
+          enterNextDelay={1000}
+          title={
+            <TooltipTitle
+              text={`v${scheduledUnpublishing.version} scheduled to unpublish`}
+              dateTime={scheduledUnpublishing.unpublishAt || ""}
+              userName={getUserNameByZUID(
+                scheduledUnpublishing?.publishedByUserZUID
+              )}
+            />
+          }
+          placement="bottom-start"
+        >
+          <Stack
+            data-cy="ScheduledUnpublishIndicator"
+            direction="row"
+            gap={1}
+            alignItems="center"
           >
-            <Stack
-              data-cy="ScheduledUnpublishIndicator"
-              direction="row"
-              gap={1}
-              alignItems="center"
+            <ScheduleRounded fontSize="small" color="warning" />
+            <Typography
+              variant="body2"
+              color="warning.main"
+              fontWeight={500}
+              lineHeight="24px"
+              letterSpacing="0.46px"
             >
-              <ScheduleRounded fontSize="small" color="warning" />
-              <Typography
-                variant="body2"
-                color="warning.main"
-                fontWeight={500}
-                lineHeight="24px"
-                letterSpacing="0.46px"
-              >
-                {`v${scheduledUnpublishing.version} Scheduled Unpublish`}
-              </Typography>
-            </Stack>
-          </Tooltip>
-        )}
+              {`v${scheduledUnpublishing.version} Scheduled Unpublish`}
+            </Typography>
+          </Stack>
+        </Tooltip>
+      )}
     </Stack>
   );
 };
