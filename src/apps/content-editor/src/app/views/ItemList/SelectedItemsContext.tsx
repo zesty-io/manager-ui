@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useCallback } from "react";
+import { GridRowId } from "@mui/x-data-grid-pro";
 
 const SelectedItemsContext = createContext(null);
 
@@ -7,9 +8,9 @@ export const SelectedItemsProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [selected, setSelected] = useState([]);
+  const [selected, setSelected] = useState<GridRowId[]>([]);
 
-  const setSelectedItems = useCallback((items) => {
+  const setSelectedItems = useCallback((items: GridRowId[]) => {
     if (items.length > 100) {
       setSelected(items.slice(0, 100));
     } else {

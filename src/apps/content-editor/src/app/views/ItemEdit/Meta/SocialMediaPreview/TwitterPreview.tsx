@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 
 import { useDomain } from "../../../../../../../../shell/hooks/use-domain";
 import { AppState } from "../../../../../../../../shell/store/types";
+import { asRenderableText } from "../../../../../../../../utility/asRenderableText";
 
 type TwitterPreviewProps = {
   imageURL: string;
@@ -124,7 +125,9 @@ export const TwitterPreview = ({ imageURL }: TwitterPreviewProps) => {
             textOverflow: "ellipsis",
           }}
         >
-          {item?.data?.tc_title || item?.web?.metaTitle || "Meta Title"}
+          {asRenderableText(item?.data?.tc_title) ||
+            item?.web?.metaTitle ||
+            "Meta Title"}
         </Typography>
         <Typography
           data-cy="TwitterCardDescription"
@@ -145,7 +148,7 @@ export const TwitterPreview = ({ imageURL }: TwitterPreviewProps) => {
             textOverflow: "ellipsis",
           }}
         >
-          {item?.data?.tc_description ||
+          {asRenderableText(item?.data?.tc_description) ||
             item?.web?.metaDescription ||
             "Meta Description"}
         </Typography>
