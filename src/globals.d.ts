@@ -1,34 +1,12 @@
 /**
- * Derived from src/shell/app.config.js — adding a key to its `production` block
- * makes it available here with no edit to this file. See #1358.
+ * Ambient declarations for the injected config globals.
  *
- * `production` is the canonical schema because it is the superset of all four
- * env blocks (34 keys; stage 33, development 33, local 28). The consequence,
- * deliberately accepted: keys that some blocks omit are typed as present
- * regardless of the build env — API_METRICS, INSTANCE_SCREENSHOTS_BUCKET,
- * URL_APPS, URL_MARKETPLACE and SERVICE_MEDIA_MODIFY are absent from `local`,
- * GOOGLE_WEB_FONTS_KEY from `local` and `development`, and the lowercase
- * `service` object from `stage`, so reading one of those in such a build yields
- * undefined with no compile error. Restoring env parity in app.config.js is
- * tracked separately.
+ * The *derived* halves of these types live in `src/shell/configTypes.ts`, which is
+ * a real `.ts` module and therefore still type-checked under
+ * `tsconfig.json`'s `skipLibCheck: true`. Do not move them back here — a broken
+ * derivation inside a `.d.ts` is silently suppressed by that flag and takes the
+ * whole of `CONFIG`'s typing down with it. See the comment at the top of that file.
  */
-type EnvConfigModule = typeof import("shell/app.config");
-type AuthoredConfig = EnvConfigModule["production"];
-
-/** Added unconditionally at build time by src/shell/webpack.config.js:24; shape from etc/release.js:27-39. */
-interface BuildInfo {
-  _meta: Record<string, unknown>;
-  data: {
-    version: string;
-    environment: string;
-    gitCommit: string;
-    gitBranch: string;
-    buildEngineer: string;
-    gitState: string;
-    buildTimeStamp: number;
-  };
-  message: string;
-}
 
 /**
  * Build-time global: webpack DefinePlugin substitutes the JSON literal of
@@ -38,20 +16,12 @@ interface BuildInfo {
  * The runtime-only keys (URL_MANAGER, DOMAIN, COOKIE_DOMAIN, URL_PREVIEW_FULL)
  * are deliberately absent here so that reading one is a compile error.
  */
-declare const __CONFIG__: AuthoredConfig & { build: BuildInfo };
+declare const __CONFIG__: import("shell/configTypes").AuthoredConfigWithBuild;
 
-/** Merged at runtime — src/shell/index.js:38-41 and src/apps/active-preview/index.js:8-11. */
-type RuntimeConfig = AuthoredConfig & { build: BuildInfo } & ReturnType<
-    typeof import("utility/getRuntimeEnv").default
-  > & {
-    /** Created only after fetchInstance() resolves — load-instance/index.js:53. */
-    URL_PREVIEW_FULL?: string;
-  };
-
-declare var CONFIG: RuntimeConfig;
+declare var CONFIG: import("shell/configTypes").RuntimeConfig;
 
 interface Window {
-  CONFIG: RuntimeConfig;
+  CONFIG: import("shell/configTypes").RuntimeConfig;
   zesty?: any;
   zestyStore?: any;
   randomQuote?: { quote: string; quotee: string };
