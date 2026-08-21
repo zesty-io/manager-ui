@@ -54,7 +54,7 @@ describe("Code Editor Sidebar", { defaultCommandTimeout: 50000 }, () => {
   });
 
   it("Show icon for unpublished files/documents", () => {
-    cy.get('[data-cy="CodeEditorContainer"]')
+    cy.getBySelector("code-app-editor-container")
       .find("textarea")
       .eq(0)
       .type("xxxx");
@@ -72,7 +72,7 @@ describe("Code Editor Sidebar", { defaultCommandTimeout: 50000 }, () => {
   });
 
   it("Publish file/document when clicking the publish icon", () => {
-    cy.get('[data-cy="CodeEditorContainer"]')
+    cy.getBySelector("code-app-editor-container")
       .find("textarea")
       .eq(0)
       .type("xxxx");
