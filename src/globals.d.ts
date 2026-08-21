@@ -1,12 +1,4 @@
-/**
- * Ambient declarations for the injected config globals.
- *
- * The *derived* halves of these types live in `src/shell/configTypes.ts`, which is
- * a real `.ts` module and therefore still type-checked under
- * `tsconfig.json`'s `skipLibCheck: true`. Do not move them back here — a broken
- * derivation inside a `.d.ts` is silently suppressed by that flag and takes the
- * whole of `CONFIG`'s typing down with it. See the comment at the top of that file.
- */
+// Ambient declarations only — derived types live in src/shell/configTypes.ts.
 
 /**
  * Build-time global: webpack DefinePlugin substitutes the JSON literal of

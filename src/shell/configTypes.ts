@@ -1,24 +1,6 @@
-/**
- * The parts of the `CONFIG` / `__CONFIG__` global typing that are *derived* from
- * source modules rather than written out by hand.
- *
- * They live in a `.ts` file, not in `src/globals.d.ts`, on purpose. `tsconfig.json`
- * sets `skipLibCheck: true`, which stops TypeScript checking the inside of every
- * `.d.ts`. An ambient declaration that breaks still fails loudly at its use sites,
- * so that is a safe trade — but a *derived* alias fails silently: the derivation
- * errors only inside the declaration file, the alias degrades to the error type
- * (which behaves as `any`), and every consumer keeps compiling. Under
- * `skipLibCheck` there would be no error at all, and `CONFIG` would quietly become
- * untyped across the whole app.
- *
- * Verified rather than assumed: renaming `production` to anything else in
- * `src/shell/app.config.js` produced `0` errors with these aliases in a `.d.ts` and
- * `skipLibCheck` on, and correctly reported `TS2339` with them here.
- *
- * Keep anything of the form `typeof import(...)`, `ReturnType<...>` or an indexed
- * access into another module in this file. Plain `declare` / `interface` blocks
- * belong in `src/globals.d.ts`.
- */
+// Derived CONFIG types live here rather than in globals.d.ts: `skipLibCheck` stops
+// TypeScript checking inside .d.ts files, so a broken derivation there degrades to
+// `any` silently. Keep `typeof import(...)` / `ReturnType<...>` in this file.
 
 /**
  * Derived from src/shell/app.config.js — adding a key to its `production` block
@@ -52,7 +34,6 @@ export interface BuildInfo {
   message: string;
 }
 
-/** The build-time global's shape — see the `__CONFIG__` declaration in src/globals.d.ts. */
 export type AuthoredConfigWithBuild = AuthoredConfig & { build: BuildInfo };
 
 /** Merged at runtime — src/shell/index.js:38-41 and src/apps/active-preview/index.js:8-11. */
