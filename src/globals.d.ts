@@ -1,5 +1,3 @@
-// Ambient declarations only — derived types live in src/shell/configTypes.ts.
-
 /**
  * Build-time global: webpack DefinePlugin substitutes the JSON literal of
  * app.config.js[NODE_ENV] plus `build` (webpack.config.js:218). It is a source

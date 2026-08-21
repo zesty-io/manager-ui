@@ -106,7 +106,7 @@ On boot, `src/shell/index.js` reads several keys from IndexedDB (`<ZUID>:languag
 
 Mixed JS/TS. `tsconfig.json` sets `allowJs: true`, `noImplicitAny: true`, `skipLibCheck: true`, `jsx: "react-jsx"`, and a single path alias `shell/* → ./src/shell/*`. Webpack adds matching aliases for `shell`, `utility`, and `apps`. `ts-loader` compiles `.ts(x)`; `babel-loader` handles `.js`.
 
-`skipLibCheck: true` means the inside of every `.d.ts` goes unchecked, including this repo's own. Ambient declarations are fine — they fail at their use sites — but a derived type (`typeof import(...)`, `ReturnType<...>`) fails silently and degrades to `any`, so those belong in a real `.ts` file. That is what `src/shell/configTypes.ts` is for; `src/globals.d.ts` holds only ambient `declare` blocks.
+`skipLibCheck: true` skips checking inside every `.d.ts`, including this repo's own. Ambient declarations still fail at their use sites, but a derived type (`typeof import(...)`, `ReturnType<...>`) fails silently and degrades to `any` — keep those in a real `.ts` file, which is what `src/shell/configTypes.ts` is for.
 
 Coverage instrumentation (`babel-plugin-istanbul`) is hard-coded `on` in the webpack config — leave it that way unless intentionally changing CI coverage behavior.
 
