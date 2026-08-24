@@ -29,22 +29,8 @@ describe("Studio Inspector Panel", () => {
     );
   };
 
-  // These specs drive a tree they built themselves, but the page now renders
-  // for real and its bridge posts its own tree a beat later. Whichever lands
-  // last wins, so wait for the real one before fabricating — otherwise the
-  // fabricated rows are replaced mid-test and the panel closes under the click.
-  const awaitRealTree = () =>
-    cy.window({ timeout: 60000 }).should((win) => {
-      expect(
-        (win.__realTrees || 0) > 0,
-        "the preview's own bridge posted its layers tree"
-      ).to.be.true;
-    });
-
-  const feedTree = (node) => {
-    awaitRealTree();
+  const feedTree = (node) =>
     postBridgeMessage({ type: "LAYERS_TREE", tree: [node] });
-  };
 
   const setStudioMode = (mode) => {
     cy.getBySelector("StudioHeader").should("exist");
@@ -354,7 +340,13 @@ describe("Studio Inspector Panel", () => {
       .as("linkSearch");
 
   before(() => {
-    cy.task("seed:content", "fixtures/studio.json").then(({ model, items }) => {
+    cy.task("seed:content", {
+      // This spec builds every layers tree it asserts against, so a live
+      // preview bridge is not realism here — it is a second writer whose
+      // trees replace these rows mid-click. Opt out of the seeded view.
+      path: "fixtures/studio.json",
+      skipView: true,
+    }).then(({ model, items }) => {
       modelZUID = model.ZUID;
       studioPath = `/${items[0].web.pathPart}`;
     });
@@ -379,16 +371,6 @@ describe("Studio Inspector Panel", () => {
     cy.stubStaffUser();
     cy.waitOn("/v1/content/models**", () => {
       cy.visit(`/studio?path=${studioPath}`);
-    });
-    // Count only trees the preview sent; the ones this spec posts come from
-    // the parent window and would otherwise satisfy the wait immediately.
-    cy.window().then((win) => {
-      win.__realTrees = 0;
-      win.addEventListener("message", (e) => {
-        if (e.source !== win && e.data?.message?.type === "LAYERS_TREE") {
-          win.__realTrees += 1;
-        }
-      });
     });
   });
 
@@ -1380,6 +1362,28 @@ describe("Studio Inspector Panel", () => {
   // render pipeline and are stripped again before save — so it is addressed as
   // the PARENT of the element the panel already has coordinates for, and the
   // panel reads it back out of the cached template rather than off the tree.
+  // Nearly shipped: the Inspector gates LinkSection on canEditLayout, which is
+  // true in full mode, but `linkPatch` was still `interactionMode !== "layout"`
+  // — so the section rendered with canAddLink false and the control silently
+  // vanished. Asserting Add Link is present is exactly what linkPatch feeds.
+  it("offers the link control in full mode, not only layout", () => {
+    // full is the default; no toggle click needed.
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+
+      seedLayoutElement(
+        webView.ZUID,
+        `<img data-layout-id="1" src="a.jpg" alt="hero">`,
+        imgNode(webView.ZUID)
+      );
+
+      cy.getBySelector("StudioAddLink").should("exist");
+    });
+  });
+
   it("wraps the selected element in a link and saves the <a>", () => {
     setStudioMode("layout");
     cy.apiRequest({

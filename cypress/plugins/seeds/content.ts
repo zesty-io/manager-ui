@@ -26,7 +26,16 @@ module.exports = function content(config) {
   const { formatName } = require("../../../src/utility/formatName");
   const { getSDK } = require("./utils");
 
-  async function seedContent(path: string): Promise<SeedContentTask> {
+  // Accepts a fixture path, or `{ path, skipView }` for a spec that must NOT
+  // have a live bridge. A spec that builds its own LAYERS_TREE is racing the
+  // preview's: whichever lands last wins, and the preview keeps emitting on
+  // every DOM mutation, so its rows vanish mid-click at unpredictable moments.
+  // Opting out is the fix for those; it is not a general escape hatch.
+  async function seedContent(
+    arg: string | { path: string; skipView?: boolean }
+  ): Promise<SeedContentTask> {
+    const path = typeof arg === "string" ? arg : arg.path;
+    const skipView = typeof arg === "string" ? false : !!arg.skipView;
     const jsonString = readFileSync(join(__dirname, "../../", path), "utf8");
     const json = JSON.parse(jsonString);
 
@@ -113,7 +122,7 @@ module.exports = function content(config) {
     // Replacing the code with an explicit template renders in well under a
     // second and produces real markers, a real bridge, and a real canvas.
     let view = null;
-    if (json.view) {
+    if (json.view && !skipView) {
       const code = readFileSync(join(__dirname, "../../", json.view), "utf8");
 
       // The auto-created view can lag the model by a moment under API load.
@@ -203,7 +212,8 @@ module.exports = function content(config) {
 
   // CONTENT TASK MAPPING
   return {
-    "seed:content": (path: string) => seedContent(path),
+    "seed:content": (arg: string | { path: string; skipView?: boolean }) =>
+      seedContent(arg),
     "api:createLabel": (data: CreateStatusLabel) => createLabel(data),
     "cleanup:labels": () => deleteAllLabels(),
     "api:publishItem": (data: { modelZUID: string; itemZUID: string }) =>

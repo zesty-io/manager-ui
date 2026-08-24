@@ -608,13 +608,15 @@ export const useLayoutReorderState = ({
       // staging they trigger is a state update this closure cannot see yet.
       const flushedCodeIds = flushPendingPatches();
 
-      if (!pendingLayoutCodeIds.length && !flushedCodeIds.length) return;
+      if (!pendingLayoutCodeIds.length && !flushedCodeIds.length) {
+        return { failed: false };
+      }
 
       setIsSavingLayout(true);
 
       try {
         const results = await savePendingLayoutSources(flushedCodeIds);
-        if (!results.length) return;
+        if (!results.length) return { failed: false };
 
         refreshPreviewFrame(onComplete);
         dispatch(
@@ -623,6 +625,7 @@ export const useLayoutReorderState = ({
             message: `Saved ${formatSavedFileNames(results)}`,
           })
         );
+        return { failed: false };
       } catch (error: any) {
         const failedCodeId = error?.failedCodeId;
         const failedName = failedCodeId
@@ -640,6 +643,7 @@ export const useLayoutReorderState = ({
                 : "Failed to save layout."),
           })
         );
+        return { failed: true };
       } finally {
         setIsSavingLayout(false);
       }

@@ -1082,7 +1082,17 @@ export const StudioWrapper = () => {
       // Layout writes view source and strips layout ids; running it after the
       // content writes avoids racing two preview reloads against a layers-tree
       // rebuild.
-      if (hasPendingLayoutChanges) await saveLayout();
+      //
+      // handleSavePendingLayout catches its own errors and toasts them, so a
+      // failed layout save resolves normally and the catch below never runs.
+      // Read its reported outcome rather than inferring one from a throw,
+      // otherwise the modal closes on a half-save it claims to keep open.
+      if (hasPendingLayoutChanges) {
+        const layoutResult = (await saveLayout()) as
+          | { failed?: boolean }
+          | undefined;
+        if (layoutResult?.failed) failedCount += 1;
+      }
     } catch {
       failedCount += 1;
     }
@@ -1965,7 +1975,9 @@ export const StudioWrapper = () => {
   // keeps a text row from wrapping content the panel isn't showing — a run of a
   // multi-run leaf carries the same element patch as the leaf itself.
   const linkPatch = useMemo(() => {
-    if (interactionMode !== "layout") return null;
+    // Full mode renders LinkSection (the Inspector gates it on canEditLayout),
+    // so a layout-only guard here leaves the control visible and inert.
+    if (!usesLayoutGrammar(interactionMode)) return null;
     if (!inspectorSelection?.ownsLinkControls) return null;
     const patch = inspectorSelection.layoutPatch;
     if (!patch?.codeId || !patch.isSelf) return null;
@@ -2305,7 +2317,7 @@ export const StudioWrapper = () => {
             {panelMode === "inspector" && inspectorSelection ? (
               <StudioInspectorPanel
                 canEditLayout={usesLayoutGrammar(interactionMode)}
-                canEditContent={interactionMode !== "layout"}
+                canEditContent={usesContentEditing(interactionMode)}
                 elementKey={inspectorSelection.nodeId}
                 tagName={inspectorSelection.tagName}
                 slots={inspectorSelection.slots}

@@ -345,10 +345,13 @@ export const useStudioBridge = ({
       // layers-row click takes — no new selection machinery.
       if (msg.type === "DYNAMIC_EDIT_REQUEST") {
         // The bridge is binary and posts this from both the canvas and the
-        // layers panel without knowing the mode. Layout mode can reach a bound
-        // leaf but cannot edit it, so tell the user rather than dropping the
-        // gesture on the floor.
-        if (interactionMode !== "full") {
+        // layers panel without knowing the mode. Layout is the only mode that
+        // can reach a bound leaf and not edit it, so it is the only one that
+        // gets redirected — telling a content-mode user to switch to content
+        // mode would be nonsense. The deployed bridge cannot send this in
+        // content wire mode today; this is the same stance the layout-write
+        // handlers above take, that anything able to postMessage can send it.
+        if (!usesContentEditing(interactionMode)) {
           dispatch(
             notify({ kind: "warn", message: SWITCH_TO_CONTENT_MESSAGE })
           );
@@ -377,10 +380,9 @@ export const useStudioBridge = ({
         dispatch(
           notify({
             kind: "warn",
-            message:
-              interactionMode === "full"
-                ? NOT_A_SINGLE_FIELD_MESSAGE
-                : SWITCH_TO_CONTENT_MESSAGE,
+            message: usesContentEditing(interactionMode)
+              ? NOT_A_SINGLE_FIELD_MESSAGE
+              : SWITCH_TO_CONTENT_MESSAGE,
           })
         );
         return;
