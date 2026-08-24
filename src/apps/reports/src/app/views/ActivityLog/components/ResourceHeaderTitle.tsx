@@ -100,7 +100,7 @@ export const ResourceHeaderTitle = ({
 
           if (contentModel) {
             data.subTitle.unshift(
-              `${modelNameMap[contentModel?.type]} Content Item` ?? ""
+              `${modelNameMap[contentModel?.type] ?? ""} Content Item`.trim()
             );
           }
 
