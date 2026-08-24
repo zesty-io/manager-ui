@@ -1354,6 +1354,11 @@ export const StudioWrapper = () => {
     }
 
     setInteractionMode(nextMode);
+    // This clamp is involuntary, so it must not read back as a deliberate
+    // pick — otherwise the guard above sees an entitled mode plus a "user
+    // chose it" flag and refuses to re-promote when entitlement is restored,
+    // stranding the user in the degraded mode.
+    userChoseModeRef.current = false;
     syncBridgeInteractionMode(nextMode);
   }, [
     availableModes,
