@@ -1,7 +1,11 @@
 import { MutableRefObject, useCallback, useEffect } from "react";
 import { notify } from "shell/store/notifications";
 import { Sentry } from "utility/sentry";
-import { InteractionMode, usesLayoutGrammar } from "./studioTypes";
+import {
+  InteractionMode,
+  usesContentEditing,
+  usesLayoutGrammar,
+} from "./studioTypes";
 
 // Layout mode genuinely has a Content mode to send the user to. Studio's full
 // mode does not — it IS both — so the same rejection needs different words.
@@ -227,7 +231,8 @@ export const useStudioBridge = ({
         }
 
         case "input": {
-          if (interactionMode !== "content" || !fieldZuid || !itemZuid) return;
+          if (!usesContentEditing(interactionMode) || !fieldZuid || !itemZuid)
+            return;
           const fieldName = fieldNameByZuid.get(fieldZuid);
           if (!fieldName) return;
 

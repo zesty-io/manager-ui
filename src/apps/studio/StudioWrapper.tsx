@@ -68,6 +68,7 @@ import {
   ElementSlot,
   InteractionMode,
   LayoutBreadcrumbItem,
+  usesContentEditing,
   usesLayoutGrammar,
 } from "./hooks/studioTypes";
 import { useStudioSelection } from "./hooks/useStudioSelection";
@@ -1296,7 +1297,7 @@ export const StudioWrapper = () => {
   }, [clearSelection]);
 
   useEffect(() => {
-    if (interactionMode !== "content") return;
+    if (!usesContentEditing(interactionMode)) return;
     if (
       !selectedElement?.studioId ||
       !selectedElement.fieldZuid ||

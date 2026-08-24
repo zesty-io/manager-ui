@@ -135,6 +135,51 @@ describe("Studio Full Mode", () => {
     cy.getBySelector("StudioSidePanel").should("exist");
   });
 
+  it("writes an inline canvas edit back to the item in full mode", () => {
+    // Two-way binding's canvas -> panel half. It was gated on
+    // `interactionMode === "content"`, so full mode dropped every inline edit
+    // and the side panel never moved. A real field zuid is required: the
+    // handler resolves it through `fieldNameByZuid` and bails when it misses,
+    // which a fabricated zuid would do for the wrong reason.
+    cy.window().then((win) => {
+      const state = win.zestyStore.getState();
+      const modelZUID = state.content[itemZUID]?.meta?.contentModelZUID;
+      const field = Object.values(state.fields).find(
+        (f) =>
+          f.contentModelZUID === modelZUID &&
+          ["text", "textarea"].includes(f.datatype)
+      );
+      expect(field?.ZUID, "a text field on the seeded model").to.exist;
+
+      postBridgeMessage({
+        type: "DOM_EVENT",
+        eventType: "input",
+        element: {
+          dataset: {
+            studioId: `${itemZUID}:${field.name}`,
+            fieldZuid: field.ZUID,
+            fieldType: field.datatype,
+            itemZuid: itemZUID,
+            modelZuid: modelZUID,
+          },
+        },
+        value: "EDITED_ON_CANVAS",
+      });
+
+      cy.window()
+        .its(`zestyStore`)
+        .then((store) =>
+          cy
+            .wrap(null)
+            .should(() =>
+              expect(
+                store.getState().content[itemZUID]?.data?.[field.name]
+              ).to.eq("EDITED_ON_CANVAS")
+            )
+        );
+    });
+  });
+
   it("tells the user why an inline edit was refused, without naming a mode that does not exist here", () => {
     // The bridge rejects a leaf that is neither statically editable nor bound
     // to one field. Full mode IS content plus layout, so the old copy sent the
