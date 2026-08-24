@@ -996,10 +996,6 @@ export const StudioWrapper = () => {
     onSelectedLayoutBreadcrumbChange: setSelectedLayout,
   });
   const hasPendingLayoutChanges = pendingLayoutCodeIds.length > 0;
-  const canUpdatePendingLayout = useMultiPermission(
-    "UPDATE",
-    pendingLayoutCodeIds
-  );
   const canPublishPendingLayout = useMultiPermission(
     "PUBLISH",
     pendingLayoutCodeIds
@@ -1020,7 +1016,7 @@ export const StudioWrapper = () => {
       ? "StudioLayout"
       : "StudioContent";
   const saveBarIsSaving = studioSaving || isSavingLayout;
-  const saveBarCanSave = canUpdatePendingContent && canUpdatePendingLayout;
+  const saveBarCanSave = canUpdatePendingContent && canEditLayout;
   const saveBarCanPublish = canPublishPendingContent && canPublishPendingLayout;
   // Saving AND discarding both reload the preview and rebuild the layers tree, so
   // afterwards neither the canvas nor the tree row is still selected. Leaving the
@@ -1191,7 +1187,7 @@ export const StudioWrapper = () => {
   const requestProceedWithPendingLayoutSave = useCallback(
     (onProceed: () => void) => {
       // The other reader of the pending set, and gated on the same
-      // canUpdatePendingLayout. A debounced write has to land before the
+      // canEditLayout. A debounced write has to land before the
       // decision — including the decision NOT to prompt, which would otherwise
       // navigate away and leave the timer to re-dirty a region nobody is
       // watching. A no-op when nothing is queued.
@@ -2455,13 +2451,13 @@ export const StudioWrapper = () => {
             content="You have unsaved layout changes. Save them before continuing?"
             open={showPendingLayoutModal}
             loading={isSavingLayout}
-            saveDisabled={!canUpdatePendingLayout}
+            saveDisabled={!canEditLayout}
             onCancel={() => {
               setShowPendingLayoutModal(false);
               pendingLayoutContinuationRef.current = null;
             }}
             onSave={async () => {
-              if (!canUpdatePendingLayout) return;
+              if (!canEditLayout) return;
               const onProceed = pendingLayoutContinuationRef.current;
               setShowPendingLayoutModal(false);
               pendingLayoutContinuationRef.current = null;
