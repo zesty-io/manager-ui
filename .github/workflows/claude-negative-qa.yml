@@ -3,20 +3,10 @@ name: Claude Negative QA
 # Drives the real app in a browser and attacks the PR's changed surface, as the dynamic
 # counterpart to Claude Change Verifier. Advisory only — it never fails the build.
 
-# Runs on every push to an open PR. It used to run once, on `opened`, to save the ~9 minutes
-# of agent time a pass costs — but a report is only worth reading if it describes the code that
-# is actually there. #4275 is the case that settled it: the one report was written against the
-# PR's first commit and stayed on the PR for ten days and sixteen commits, still describing a
-# data-loss bug that had been fixed on commit three, while nothing had ever looked at the rest.
-#
-# The cost is real and is the tradeoff being accepted: one pass per push, serialized. Runs stay
-# advisory and never fail the build, so a queue delays feedback and cannot block a merge. The
-# concurrency group below is deliberately global, not per-PR — two QA agents on the shared
-# fixture instance would collide — so pushes across all PRs form one queue.
-#
-# Still dispatchable by hand. If you do: pass the PR number AND select the PR's branch as the
-# ref. Dispatching with the number alone runs against whatever ref you left selected (twice on
-# 2026-08-24 that was `dev`), which QAs the wrong code and says nothing about the PR.
+# Runs on every push: a once-per-PR report goes stale silently and a stale finding reads
+# exactly like a live one. Costs ~9 min of agent time per push, serialized; advisory, so a
+# queue never blocks a merge. Dispatching by hand needs the PR's branch as the ref, not just
+# the pr_number input — the input only says where to comment.
 on:
   pull_request:
     branches: [dev]
@@ -29,13 +19,9 @@ on:
 
 # Its own group, not ci.yaml's — sharing that one meant losing the single pending slot to
 # every PR's Cypress run and being cancelled before starting. Only stops two QA agents
-# mutating the same fixtures at once; isolation from Cypress comes from the instance.
-#
-# `cancel-in-progress` stays false even now that pushes trigger runs: the group is global, so
-# cancelling would let a push on one PR kill another PR's in-flight pass. The cost is that a
-# burst of pushes queues passes against superseded commits. If that queue becomes the problem,
-# the fix is a "skip if this is no longer the PR head" guard at the top of the job, not
-# per-PR concurrency, which would put two agents on the fixture instance at once.
+# mutating the same fixtures at once; isolation from Cypress comes from the instance. Stays
+# non-cancelling now pushes trigger runs — cancelling a global group would let one PR's push
+# kill another's run.
 concurrency:
   group: manager-ui-negative-qa
   cancel-in-progress: false
