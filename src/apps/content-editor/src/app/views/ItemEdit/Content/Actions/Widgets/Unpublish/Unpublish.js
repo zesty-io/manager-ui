@@ -47,7 +47,7 @@ export const Unpublish = memo(function Unpublish(props) {
             fontWeight: 400,
             fontSize: "12px",
             lineHeight: "32px",
-            color: "#101828",
+            color: "text.primary",
           },
         }}
         title="UNPUBLISH"
@@ -95,12 +95,12 @@ export const Unpublish = memo(function Unpublish(props) {
               loadingPosition="start"
               startIcon={<ManageAccountsRoundedIcon />}
               sx={{
-                backgroundColor: "#F2F4F7",
+                backgroundColor: "grey.100",
                 color: "text.secondary",
                 mt: 1.5,
 
                 "&:hover": {
-                  backgroundColor: "#E4E7EC",
+                  backgroundColor: "grey.200",
                   color: "text.secondary",
                 },
               }}

@@ -57,7 +57,7 @@ export const ContentInfo = (props) => {
             fontWeight: 400,
             fontSize: "12px",
             lineHeight: "32px",
-            color: "#101828",
+            color: "text.primary",
           },
         }}
         title="INFO"
@@ -136,7 +136,7 @@ export const ContentInfo = (props) => {
                 }}
               />
             </Box>
-            <Stack width="fit-content" sx={{ color: "#475467" }}>
+            <Stack width="fit-content" sx={{ color: "text.secondary" }}>
               <Button
                 component={Link}
                 to={`/schema/${props.modelZUID}`}

@@ -60,7 +60,7 @@ export default connect((state) => {
               fontWeight: 400,
               fontSize: "12px",
               lineHeight: "32px",
-              color: "#101828",
+              color: "text.primary",
             },
           }}
           title="PUBLISH HISTORY"
@@ -101,7 +101,7 @@ export default connect((state) => {
                       fontWeight: 500,
                       fontSize: "14px",
                       lineHeight: "20px",
-                      color: "#101828",
+                      color: "text.primary",
                     }}
                   >
                     Not published
@@ -122,7 +122,7 @@ export default connect((state) => {
                             fontWeight: 500,
                             fontSize: "14px",
                             lineHeight: "20px",
-                            color: "#101828",
+                            color: "text.primary",
                           }}
                         >{`${firstName} ${lastName}`}</Typography>
                         <Typography

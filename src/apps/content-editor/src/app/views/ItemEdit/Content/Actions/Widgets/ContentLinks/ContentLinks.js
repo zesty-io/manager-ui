@@ -37,7 +37,7 @@ export const ContentLinks = memo(function ContentLinks(props) {
               fontWeight: 400,
               fontSize: "12px",
               lineHeight: "32px",
-              color: "#101828",
+              color: "text.primary",
             },
           }}
           title="LINKS"

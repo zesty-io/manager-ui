@@ -44,7 +44,7 @@ export const WidgetListed = memo(function WidgetListed(props) {
             fontWeight: 400,
             fontSize: "12px",
             lineHeight: "32px",
-            color: "#101828",
+            color: "text.primary",
           },
         }}
         title="PARSLEY BEHAVIORS"

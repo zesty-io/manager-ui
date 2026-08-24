@@ -56,7 +56,7 @@ export default connect((state, props) => {
             fontWeight: 400,
             fontSize: "12px",
             lineHeight: "32px",
-            color: "#101828",
+            color: "text.primary",
           },
         }}
         title="DRAFT HISTORY"
@@ -99,7 +99,7 @@ export default connect((state, props) => {
                       fontWeight: 500,
                       fontSize: "14px",
                       lineHeight: "20px",
-                      color: "#101828",
+                      color: "text.primary",
                     }}
                   >{`${log.firstName} ${log.lastName}`}</Typography>
                   <Typography
@@ -133,7 +133,7 @@ export default connect((state, props) => {
               fontWeight: 500,
               fontSize: "14px",
               lineHeight: "20px",
-              color: "#101828",
+              color: "text.primary",
             }}
           >
             No Activity Log edit logs for this content.
