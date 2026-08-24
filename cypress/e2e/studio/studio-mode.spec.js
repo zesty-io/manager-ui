@@ -276,6 +276,20 @@ describe("Studio Full Mode", () => {
     cy.getBySelector("StudioSaveChangeSection-Layout").should("not.exist");
   });
 
+  // NOT COVERED, deliberately: "keeps the modal open when the LAYOUT half
+  // fails". Written, then removed — it passed with the fix reverted, through
+  // five variants (settling on the failure toast, stubbing the content half
+  // green, waiting on both PUTs). A test that survives its own mutation is not
+  // evidence, and the team has removed two of these before rather than leave
+  // them looking like coverage.
+  //
+  // It also surfaced something unexplained and worth its own look: with
+  // `failedCount` forced to 0 the modal STAYS OPEN anyway, so
+  // `closeModalUnlessFailed` may not be closing it on the merged path at all.
+  // Until that is understood, a test here cannot distinguish the fix from the
+  // bug. The fix in `runMergedSave` (reading `{ failed }` rather than waiting
+  // for a throw that never comes) rests on reading the code, not on a test.
+
   it("keeps the modal open with only the failed half when content save fails", () => {
     // The layout half has to actually succeed for this test to say anything,
     // which means addressing a real web view — a fabricated code id fails the

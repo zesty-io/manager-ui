@@ -662,13 +662,15 @@ export const useLayoutReorderState = ({
   const handleSaveAndPublishPendingLayout = useCallback(async () => {
     const flushedCodeIds = flushPendingPatches();
 
-    if (!pendingLayoutCodeIds.length && !flushedCodeIds.length) return;
+    if (!pendingLayoutCodeIds.length && !flushedCodeIds.length) {
+      return { failed: false };
+    }
 
     setIsSavingLayout(true);
 
     try {
       const results = await savePendingLayoutSources(flushedCodeIds);
-      if (!results.length) return;
+      if (!results.length) return { failed: false };
 
       for (const { codeId, webView } of results) {
         try {
@@ -689,6 +691,7 @@ export const useLayoutReorderState = ({
           message: `Saved and published ${formatSavedFileNames(results)}`,
         })
       );
+      return { failed: false };
     } catch (error: any) {
       const failedCodeId = error?.failedCodeId;
       const failedName = failedCodeId
@@ -706,6 +709,9 @@ export const useLayoutReorderState = ({
               : "Failed to save and publish layout."),
         })
       );
+      // Same contract as handleSavePendingLayout: this never rethrows, so the
+      // merged save can only learn about a failure from the return value.
+      return { failed: true };
     } finally {
       setIsSavingLayout(false);
     }
