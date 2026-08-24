@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, ReactNode, useState } from "react";
 import { Box, Typography, Button } from "@mui/material";
 import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
 import { useMetaKey } from "../../../../../shell/hooks/useMetaKey";
@@ -15,6 +15,7 @@ type TopBarProps = {
   matchPath?: string;
   saveHidden?: boolean;
   titleHidden?: boolean;
+  children?: ReactNode;
 };
 
 export const TopBar: FC<TopBarProps> = ({

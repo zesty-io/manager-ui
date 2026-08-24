@@ -81,7 +81,10 @@ export const RowDialog = ({
   }, [getInitialFormData, isUpdate]);
 
   const handleChange = useCallback(
-    (value, name) => {
+    // `value` is `any` to match the contract this is passed to — `SubField.tsx:42`
+    // declares `onChange: (value: any, name: string) => void`, since a sub-field value
+    // can be any repeater datatype
+    (value: any, name: string) => {
       if (!name) {
         throw new Error("Input is missing name attribute");
       }
