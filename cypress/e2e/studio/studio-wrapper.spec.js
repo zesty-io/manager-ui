@@ -174,6 +174,7 @@ describe("Studio Wrapper", () => {
   };
 
   beforeEach(() => {
+    cy.stubStaffUser();
     cy.waitOn("/v1/content/models**", () => {
       cy.visit(`/studio?path=${studioPath}`);
     });

@@ -21,12 +21,7 @@ describe("Studio Full Mode", () => {
   // toggle has to stub the flag and reload — the gate itself is covered in
   // mode-entitlement.spec.js, so stubbing it here tests full mode, not the gate.
   const reloadAsStaff = () => {
-    cy.intercept("GET", "**/v1/users/*", (req) => {
-      req.continue((res) => {
-        if (!res.body?.data) return;
-        res.body.data = { ...res.body.data, staff: true };
-      });
-    }).as("getUserAsStaff");
+    cy.stubStaffUser();
     cy.waitOn("/v1/content/models**", () => {
       cy.visit(`/studio?path=${studioPath}`);
     });

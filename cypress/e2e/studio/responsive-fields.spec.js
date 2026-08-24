@@ -73,6 +73,7 @@ describe("Studio - Responsive field components", () => {
       }
     );
 
+    cy.stubStaffUser();
     cy.waitOn("/v1/content/models/*/fields*", () => {
       cy.visit(`/studio?path=${studioPath}`);
     });
