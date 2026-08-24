@@ -29,8 +29,22 @@ describe("Studio Inspector Panel", () => {
     );
   };
 
-  const feedTree = (node) =>
+  // These specs drive a tree they built themselves, but the page now renders
+  // for real and its bridge posts its own tree a beat later. Whichever lands
+  // last wins, so wait for the real one before fabricating — otherwise the
+  // fabricated rows are replaced mid-test and the panel closes under the click.
+  const awaitRealTree = () =>
+    cy.window({ timeout: 60000 }).should((win) => {
+      expect(
+        (win.__realTrees || 0) > 0,
+        "the preview's own bridge posted its layers tree"
+      ).to.be.true;
+    });
+
+  const feedTree = (node) => {
+    awaitRealTree();
     postBridgeMessage({ type: "LAYERS_TREE", tree: [node] });
+  };
 
   const setStudioMode = (mode) => {
     cy.getBySelector("StudioHeader").should("exist");
@@ -365,6 +379,16 @@ describe("Studio Inspector Panel", () => {
     cy.stubStaffUser();
     cy.waitOn("/v1/content/models**", () => {
       cy.visit(`/studio?path=${studioPath}`);
+    });
+    // Count only trees the preview sent; the ones this spec posts come from
+    // the parent window and would otherwise satisfy the wait immediately.
+    cy.window().then((win) => {
+      win.__realTrees = 0;
+      win.addEventListener("message", (e) => {
+        if (e.source !== win && e.data?.message?.type === "LAYERS_TREE") {
+          win.__realTrees += 1;
+        }
+      });
     });
   });
 
