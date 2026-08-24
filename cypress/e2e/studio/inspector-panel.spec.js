@@ -122,9 +122,13 @@ describe("Studio Inspector Panel", () => {
     ]);
 
   // A link. Its `href` is bound to a field, so the raw template value is a
-  // Parsley expression while the rendered page shows the resolved URL.
-  const linkNode = (codeId, resolvedHref, sourceHref) =>
-    elementNode(codeId, "a", [attrSlot("href", resolvedHref, sourceHref)]);
+  // Parsley expression while the rendered page shows the resolved URL. `target`
+  // mirrors the bridge's SUPPORTED_ELEMENTS.a, which exposes both.
+  const linkNode = (codeId, resolvedHref, sourceHref, target = "") =>
+    elementNode(codeId, "a", [
+      attrSlot("href", resolvedHref, sourceHref),
+      attrSlot("target", target),
+    ]);
 
   // A heading element carries no text slot — just the Tag selector (its `slots`
   // array is present but empty). Its inner text lives on a separate text node.
@@ -195,6 +199,14 @@ describe("Studio Inspector Panel", () => {
     children: [textNode(codeId, value)],
   });
 
+  // An <h1> with its content nested inside it, the shape the bridge emits for
+  // `<h1>Hello</h1>`. `children` decides whether the heading has ONE content
+  // row (so that row speaks for the whole element) or several.
+  const headingWithContent = (codeId, children) => ({
+    ...headingNode(codeId),
+    children,
+  });
+
   // Click a specific tree row by node id (robust against any tree the real
   // preview iframe might also emit) and confirm the panel opened.
   const openPanelFor = (node) => {
@@ -213,6 +225,16 @@ describe("Studio Inspector Panel", () => {
     openPanelFor(node);
   };
 
+  // Type the search term and click the seeded item's own option row. Addressed
+  // by its ZUID rather than its label: the store also holds the studio page
+  // item, option order is by createdAt, and a label is user copy that a rename
+  // would quietly redirect this click to a different result.
+  const searchAndPickLinkedItem = () => {
+    cy.get('[data-cy="StudioLinkItemSearchInput"] input').type("Studio Linked");
+    cy.wait("@linkSearch");
+    cy.getBySelector(`StudioLinkItemSearchOption-${linkedItemZUID}`).click();
+  };
+
   // Open the link dialog for a slot and pick the seeded "Studio Linked" item.
   const openLinkDialogAndPickItem = (slotKey) => {
     cy.getBySelector(`StudioConnectContent-${slotKey}`).click();
@@ -221,11 +243,7 @@ describe("Studio Inspector Panel", () => {
     // Nothing picked yet.
     cy.getBySelector("StudioLinkItemConfirm").should("be.disabled");
 
-    cy.get('[data-cy="StudioLinkItemSearchInput"] input').type("Studio Linked");
-    cy.wait("@linkSearch");
-    // Match by name rather than position — the store also holds the studio page
-    // item, and option order is by createdAt.
-    cy.contains('[role="option"]', "Studio Linked").click();
+    searchAndPickLinkedItem();
 
     // Item picked, field not — still blocked.
     cy.getBySelector("StudioLinkItemConfirm").should("be.disabled");
@@ -240,6 +258,22 @@ describe("Studio Inspector Panel", () => {
     selectMuiOption("StudioLinkItemFieldSelect", fieldName);
   };
 
+  // The link controls bind to an ITEM (its page URL via getUrl()), not to a
+  // field, so their Connect Item button opens the picker straight away and the
+  // picked item is on its own enough to confirm.
+  const pickLinkedItem = (triggerDataCy) => {
+    cy.getBySelector(triggerDataCy).click();
+    cy.getBySelector("StudioLinkItemDialog").should("exist");
+    cy.getBySelector("StudioLinkItemConfirm").should("be.disabled");
+
+    searchAndPickLinkedItem();
+
+    // No field step at all — that is the difference from a field binding.
+    cy.getBySelector("StudioLinkItemFieldSelect").should("not.exist");
+    cy.getBySelector("StudioLinkItemConfirm").should("not.be.disabled").click();
+    cy.getBySelector("StudioLinkItemDialog").should("not.exist");
+  };
+
   // Drives the "Link from other content item" dialog end to end: search, pick
   // the seeded item, pick a field, confirm.
   const linkOtherItem = (slotKey, fieldName) => {
@@ -247,6 +281,23 @@ describe("Studio Inspector Panel", () => {
     pickLinkField(fieldName);
     cy.getBySelector("StudioLinkItemConfirm").should("not.be.disabled").click();
     cy.getBySelector("StudioLinkItemDialog").should("not.exist");
+  };
+
+  // Every control the Link section shows for a wrapper that has no destination
+  // yet. Shared by the two ways of reaching that state — the attribute-less <a>
+  // our own wrap emits, and a hand-written <a href=""> — so "those read back
+  // the same" is one set of assertions rather than a claim in a comment.
+  const assertUnsetLinkWrapper = () => {
+    // Positive first, so the absences below are asserted against a Link section
+    // that has provably rendered rather than one that has not arrived yet.
+    cy.getBySelector("StudioLinkToInput").should("have.value", "");
+    cy.getBySelector("StudioRemoveLink").should("exist");
+    cy.getBySelector("StudioLinkConnectItem").should("exist");
+    // Nothing to open, and no hand-written target to keep visible.
+    cy.getBySelector("StudioOpenInNewTab").should("not.exist");
+    cy.getBySelector("StudioLinkTarget").should("not.exist");
+    // Already wrapped, so there is nothing left to add.
+    cy.getBySelector("StudioAddLink").should("not.exist");
   };
 
   // The search index is eventually consistent, so a freshly seeded item may not
@@ -1024,6 +1075,17 @@ describe("Studio Inspector Panel", () => {
         textNode(webView.ZUID, "Hello")
       );
 
+      // No frozen clock here, deliberately. A committed value on THIS slot
+      // never reaches schedulePatch: handleSlotChange returns early for a text
+      // run with a textIndex, because an addressed run is written back through
+      // the bridge's LAYOUT_CONTENT_UPDATE echo instead. So there is no pending
+      // debounce for a tick to flush, and the assertion that actually catches a
+      // spurious commit is the positive one below — the input is still present
+      // holding its original value, which a connect would have replaced with a
+      // chip. (Freezing setTimeout here also breaks the dialog outright: MUI's
+      // invisible backdrop never finishes its 195ms exit transition and covers
+      // the next button.)
+
       // The field select only appears once an item is chosen.
       cy.getBySelector("StudioConnectContent-text").click();
       cy.getBySelector("StudioConnectOtherItem-text").click();
@@ -1036,7 +1098,9 @@ describe("Studio Inspector Panel", () => {
       cy.getBySelector("StudioLinkItemDialogClose").click();
       cy.getBySelector("StudioLinkItemDialog").should("not.exist");
 
-      // Neither route wrote anything.
+      // Neither route wrote anything: a commit would have swapped this input
+      // for a connected-field chip.
+      cy.getBySelector("StudioConnectedField").should("not.exist");
       cy.getBySelector("StudioSlotInput-text")
         .should("exist")
         .and("have.value", "Hello");
@@ -1280,6 +1344,719 @@ describe("Studio Inspector Panel", () => {
       feedTree(node);
       cy.getBySelector("StudioConnectedField").should("exist");
       cy.getBySelector("StudioSlotInput-src").should("not.exist");
+    });
+  });
+
+  // The <a> a wrap creates carries no data-layout-id — layout ids come from the
+  // render pipeline and are stripped again before save — so it is addressed as
+  // the PARENT of the element the panel already has coordinates for, and the
+  // panel reads it back out of the cached template rather than off the tree.
+  it("wraps the selected element in a link and saves the <a>", () => {
+    setStudioMode("layout");
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+      cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as("updateWebView");
+
+      seedLayoutElement(
+        webView.ZUID,
+        `<img data-layout-id="1" src="a.jpg" alt="hero">`,
+        imgNode(webView.ZUID)
+      );
+
+      // Unlinked: the only affordance is Add Link.
+      cy.getBySelector("StudioLinkToInput").should("not.exist");
+      cy.getBySelector("StudioAddLink").click();
+
+      // A fresh wrapper carries no attributes, so it reads back as a link with
+      // no destination — the same state a hand-written <a href=""> produces.
+      assertUnsetLinkWrapper();
+      // Wrapping is itself an edit, even before a URL is typed.
+      cy.getBySelector("StudioLayoutSaveBar").should("exist");
+
+      saveAllViaModal("layout");
+      cy.wait("@updateWebView").then(({ request }) => {
+        // The <a> holds no attributes yet — an unfinished link is not a link.
+        expect(request.body.code).to.contain(
+          '<a><img src="a.jpg" alt="hero"></a>'
+        );
+      });
+    });
+  });
+
+  it("saves a URL typed into an existing link wrapper", () => {
+    setStudioMode("layout");
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+      cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as("updateWebView");
+
+      seedLayoutElement(
+        webView.ZUID,
+        `<a><img data-layout-id="1" src="a.jpg" alt="hero"></a>`,
+        imgNode(webView.ZUID)
+      );
+
+      cy.getBySelector("StudioOpenInNewTab").should("not.exist");
+      cy.getBySelector("StudioLinkToInput").type("https://www.zesty.io/");
+      cy.getBySelector("StudioOpenInNewTab").should("exist");
+
+      // The URL write is debounced, so the save bar appearing IS the signal
+      // that it reached the template — nothing else has been edited here.
+      cy.getBySelector("StudioLayoutSaveBar").should("exist");
+      saveAllViaModal("layout");
+      cy.wait("@updateWebView").then(({ request }) => {
+        expect(request.body.code).to.contain(
+          '<a href="https://www.zesty.io/"><img'
+        );
+      });
+    });
+  });
+
+  // Our own wrap emits an <a> with no href attribute at all, but an author
+  // hand-writing `<a href="">` leaves an empty-but-present one. readLinkWrapper
+  // normalises both through `getAttribute("href") || ""`, so the panel must not
+  // tell them apart — same controls, same empty input, no target row. Asserted
+  // with the very same helper the attribute-less wrap uses.
+  it("reads an empty href exactly like a wrapper with no href attribute", () => {
+    setStudioMode("layout");
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+
+      seedLayoutElement(
+        webView.ZUID,
+        `<a href=""><img data-layout-id="1" src="a.jpg" alt="hero"></a>`,
+        imgNode(webView.ZUID)
+      );
+
+      assertUnsetLinkWrapper();
+    });
+  });
+
+  it("hides Open in new tab for a fragment href", () => {
+    setStudioMode("layout");
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+
+      seedLayoutElement(
+        webView.ZUID,
+        `<img data-layout-id="1" src="a.jpg" alt="hero">`,
+        imgNode(webView.ZUID)
+      );
+
+      cy.getBySelector("StudioAddLink").click();
+
+      // A fragment never leaves the page, so the row is meaningless for it.
+      cy.getBySelector("StudioLinkToInput").type("#section-two");
+      cy.getBySelector("StudioOpenInNewTab").should("not.exist");
+
+      // …and comes back the moment the destination can open a tab.
+      cy.getBySelector("StudioLinkToInput").clear().type("/about/");
+      cy.getBySelector("StudioOpenInNewTab").should("exist");
+    });
+  });
+
+  it("writes target=_blank from Open in new tab, and removes it again", () => {
+    setStudioMode("layout");
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+      cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as("updateWebView");
+
+      // Already wrapped, so the panel opens straight into the linked state.
+      seedLayoutElement(
+        webView.ZUID,
+        `<a href="/about/"><img data-layout-id="1" src="a.jpg" alt="hero"></a>`,
+        imgNode(webView.ZUID)
+      );
+
+      cy.getBySelector("StudioAddLink").should("not.exist");
+      cy.getBySelector("StudioLinkToInput").should("have.value", "/about/");
+
+      selectMuiOption("StudioOpenInNewTab", "_blank");
+      // The select's displayed value is read back off the template, so this
+      // only passes once the write has actually landed there.
+      cy.getBySelector("StudioOpenInNewTab").should("have.value", "_blank");
+
+      // "No" must REMOVE the attribute — `target=""` is noise in saved code.
+      selectMuiOption("StudioOpenInNewTab", "");
+      cy.getBySelector("StudioOpenInNewTab").should("have.value", "");
+
+      saveAllViaModal("layout");
+      cy.wait("@updateWebView").then(({ request }) => {
+        expect(request.body.code).to.contain('<a href="/about/">');
+        expect(request.body.code).not.to.contain("target");
+      });
+    });
+  });
+
+  it("removes the link, leaving the element and its siblings in place", () => {
+    setStudioMode("layout");
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+      cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as("updateWebView");
+
+      // The wrapper holds a caption as well as the addressed image — unwrapping
+      // must move both out, not just the element the panel is pointing at.
+      seedLayoutElement(
+        webView.ZUID,
+        `<a href="/about/" target="_blank"><img data-layout-id="1" src="a.jpg" alt="hero"><span>Caption</span></a>`,
+        imgNode(webView.ZUID)
+      );
+
+      cy.getBySelector("StudioRemoveLink").click();
+      cy.getBySelector("StudioLinkToInput").should("not.exist");
+      cy.getBySelector("StudioAddLink").should("exist");
+
+      saveAllViaModal("layout");
+      cy.wait("@updateWebView").then(({ request }) => {
+        // No trailing space: an attribute-less <a> is exactly what a wrap
+        // creates, so it has to be caught too.
+        expect(request.body.code).not.to.contain("<a");
+        expect(request.body.code).to.contain("<img");
+        expect(request.body.code).to.contain("<span>Caption</span>");
+      });
+    });
+  });
+
+  it("binds a link to another content item, saving getUrl()", () => {
+    setStudioMode("layout");
+    stubLinkSearch();
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+      cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as("updateWebView");
+
+      seedLayoutElement(
+        webView.ZUID,
+        `<a href=""><img data-layout-id="1" src="a.jpg" alt="hero"></a>`,
+        imgNode(webView.ZUID)
+      );
+
+      pickLinkedItem("StudioLinkConnectItem");
+
+      // The binding is to the ITEM, so the chip names the item and the raw
+      // input is gone — a keystroke must not be able to land on it.
+      cy.getBySelector("StudioLinkToInput").should("not.exist");
+      cy.getBySelector("StudioConnectedField").should("exist");
+
+      saveAllViaModal("layout");
+      cy.wait("@updateWebView").then(({ request }) => {
+        expect(request.body.code).to.contain(
+          `{{${linkedModelName}.filter(${linkedItemZUID}).getUrl()}}`
+        );
+      });
+    });
+  });
+
+  it("reads back a getUrl() link as a connected item, never a resolved URL", () => {
+    setStudioMode("layout");
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+
+      cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as("updateWebView");
+
+      const expression = `{{${linkedModelName}.filter(${linkedItemZUID}).getUrl()}}`;
+      seedLayoutElement(
+        webView.ZUID,
+        `<a href="${expression}"><img data-layout-id="1" src="a.jpg" alt="hero"></a>`,
+        imgNode(webView.ZUID)
+      );
+
+      // Connected on sight — the parse is synchronous, so the input is never
+      // rendered for even one frame.
+      cy.getBySelector("StudioLinkToInput").should("not.exist");
+      cy.getBySelector("StudioConnectedField").should("exist");
+      // Resolving the model name proves the read-back ran, not just the parse.
+      cy.getBySelector("StudioConnectedFieldCaption").should(
+        "contain.text",
+        linkedModelLabel
+      );
+
+      // Disconnect COMMITS here, unlike a slot's. A wrapper survives an empty
+      // href, so there is no reason to defer — and deferring would mean
+      // Disconnect-then-Save silently kept the binding just removed.
+      cy.getBySelector("StudioLinkDisconnect").click();
+      cy.getBySelector("StudioLinkToInput")
+        .should("exist")
+        .and("have.value", "");
+
+      cy.getBySelector("StudioLayoutSaveBar").should("exist");
+      saveAllViaModal("layout");
+      cy.wait("@updateWebView").then(({ request }) => {
+        expect(request.body.code).not.to.contain("getUrl()");
+        expect(request.body.code).to.contain("<img");
+      });
+    });
+  });
+
+  it("gives a link its own href and Open in new tab controls, but no Add Link", () => {
+    setStudioMode("layout");
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+
+      // An <a> edits its own href through its slot; nesting links is invalid.
+      seedLayoutElement(
+        webView.ZUID,
+        `<a data-layout-id="1" href="/about/">Read more</a>`,
+        linkNode(webView.ZUID, "/about/", "/about/")
+      );
+
+      cy.getBySelector("StudioAddLink").should("not.exist");
+      cy.getBySelector("StudioSlotInput-href").should("have.value", "/about/");
+      // `target` is exposed as the same Yes/No choice, not as a raw string.
+      cy.getBySelector("StudioSlotInput-target").should("have.value", "");
+      // …and its destination can be bound to an item, like a wrapper's can.
+      cy.getBySelector("StudioConnectContent-href").should("exist");
+    });
+  });
+
+  it("offers no Add Link for an element already inside a link", () => {
+    setStudioMode("layout");
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+
+      // A link further up rules out wrapping, but isn't this element's to edit
+      // either — it belongs to whichever element it directly wraps.
+      seedLayoutElement(
+        webView.ZUID,
+        `<a href="/about/"><span><img data-layout-id="1" src="a.jpg" alt="hero"></span></a>`,
+        imgNode(webView.ZUID)
+      );
+
+      cy.getBySelector("StudioSlotInput-src").should("exist");
+      cy.getBySelector("StudioAddLink").should("not.exist");
+      cy.getBySelector("StudioLinkToInput").should("not.exist");
+    });
+  });
+
+  it("offers no Add Link where an <a> cannot legally go", () => {
+    setStudioMode("layout");
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+
+      // `<tbody><a><tr>…` serializes fine and the live DOM accepts it, so the
+      // canvas would show a working link — but the next SERVER render foster-
+      // parents the <a> out of the table and the content comes back unlinked.
+      // Nothing downstream can catch that, so the offer is withheld up front.
+      seedLayoutElement(
+        webView.ZUID,
+        `<table><tbody><tr data-layout-id="1"><td>Cell</td></tr></tbody></table>`,
+        elementNode(webView.ZUID, "tr", [])
+      );
+
+      cy.getBySelector("StudioInspectorPanel").should("exist");
+      cy.getBySelector("StudioAddLink").should("not.exist");
+    });
+  });
+
+  it("offers no Add Link on an element that already contains a link", () => {
+    setStudioMode("layout");
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+
+      // A link BELOW the element is as fatal as one above it. Wrapping
+      // serializes fine, but re-parsing runs the adoption agency algorithm: the
+      // outer <a> closes, the <div> escapes it, and a spurious <a>See </a> is
+      // minted around the leading text — author content mutated by a wrap.
+      // A <nav>, <p> or <section> containing a link is the ordinary shape.
+      seedLayoutElement(
+        webView.ZUID,
+        `<div data-layout-id="1">See <a href="/x">docs</a></div>`,
+        elementNode(webView.ZUID, "div", [])
+      );
+
+      cy.getBySelector("StudioInspectorPanel").should("exist");
+      cy.getBySelector("StudioAddLink").should("not.exist");
+    });
+  });
+
+  it("reads back a getUrl() binding on an <a>'s own href slot", () => {
+    setStudioMode("layout");
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+
+      // The slot path, not the wrapper's — Connect Item on an <a>'s href writes
+      // exactly this. It has a `source`, so it resolves through the cross-item
+      // chip, and the chip must not treat "no field named ''" as a broken
+      // binding.
+      const expression = `{{${linkedModelName}.filter(${linkedItemZUID}).getUrl()}}`;
+      seedLayoutElement(
+        webView.ZUID,
+        `<a data-layout-id="1" href="${expression}">Read more</a>`,
+        linkNode(webView.ZUID, "/studio-linked/", expression)
+      );
+
+      cy.getBySelector("StudioSlotInput-href").should("not.exist");
+      cy.getBySelector("StudioConnectedField").should("exist");
+      cy.getBySelector("StudioConnectedFieldCaption")
+        .should("contain.text", linkedModelLabel)
+        .and("not.contain.text", "no longer exists");
+    });
+  });
+
+  it("offers Add Link on a heading's lone text row, which speaks for it", () => {
+    setStudioMode("layout");
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+      cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as("updateWebView");
+
+      // A canvas click on an <h1> opens its lone text row, not the element row,
+      // so the control has to live there too or it is unreachable from the page.
+      const hello = textNode(webView.ZUID, "Hello");
+      seedLayoutElement(
+        webView.ZUID,
+        `<h1 data-layout-id="1">Hello</h1>`,
+        headingWithContent(webView.ZUID, [hello])
+      );
+
+      openPanelFor(hello);
+      cy.getBySelector("StudioSlotInput-text").should("have.value", "Hello");
+      cy.getBySelector("StudioAddLink").click();
+
+      // The wrap goes around the ELEMENT the row speaks for, not the run.
+      saveAllViaModal("layout");
+      cy.wait("@updateWebView").then(({ request }) => {
+        expect(request.body.code).to.contain("<a><h1>Hello</h1></a>");
+      });
+    });
+  });
+
+  it("offers Add Link on a lone dynamic field row", () => {
+    setStudioMode("layout");
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+
+      // A bound leaf's Value row is the same shape of stand-in as a text run.
+      const bound = fieldNode(webView.ZUID, "{{this.title}}", "Resolved Title");
+      seedLayoutElement(
+        webView.ZUID,
+        `<h1 data-layout-id="1">{{this.title}}</h1>`,
+        headingWithContent(webView.ZUID, [bound])
+      );
+
+      openPanelFor(bound);
+      cy.getBySelector("StudioAddLink").should("exist");
+    });
+  });
+
+  it("offers no Add Link on one run of a multi-run element", () => {
+    setStudioMode("layout");
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+
+      // Every run of a leaf carries the SAME element-addressing layoutPatch, so
+      // wrapping from one of several would swallow the whole element — here the
+      // <span> the panel isn't showing. The panel titles this row "Text" and
+      // shows one Value input, so that wrap would be invisible before it landed.
+      const now = textNode(webView.ZUID, "now", 1);
+      seedLayoutElement(
+        webView.ZUID,
+        `<h1 data-layout-id="1">Read <span data-layout-id="2">this</span> now</h1>`,
+        headingWithContent(webView.ZUID, [
+          textNode(webView.ZUID, "Read", 0),
+          now,
+        ])
+      );
+
+      openPanelFor(now);
+      cy.getBySelector("StudioSlotInput-text").should("have.value", "now");
+      cy.getBySelector("StudioAddLink").should("not.exist");
+    });
+  });
+
+  it("persists target=_blank chosen for a link", () => {
+    setStudioMode("layout");
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+      cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as("updateWebView");
+
+      seedLayoutElement(
+        webView.ZUID,
+        `<a href="/about/"><img data-layout-id="1" src="a.jpg" alt="hero"></a>`,
+        imgNode(webView.ZUID)
+      );
+
+      selectMuiOption("StudioOpenInNewTab", "_blank");
+
+      saveAllViaModal("layout");
+      cy.wait("@updateWebView").then(({ request }) => {
+        expect(request.body.code).to.contain('target="_blank"');
+      });
+    });
+  });
+
+  it("saves a URL typed immediately before pressing Save", () => {
+    setStudioMode("layout");
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+      cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as("updateWebView");
+
+      seedLayoutElement(
+        webView.ZUID,
+        `<img data-layout-id="1" src="a.jpg" alt="hero">`,
+        imgNode(webView.ZUID)
+      );
+
+      // Wrap, type and save as one gesture. The URL write is debounced 300ms
+      // and the wrap has ALREADY raised the save bar, so nothing here waits for
+      // that timer — the save has to flush it rather than race it, or an <a>
+      // with no href is what gets persisted.
+      //
+      // setTimeout is frozen for the whole gesture so the debounce provably
+      // CANNOT fire: any href in the PUT got there through the flush, not by
+      // beating the clock. Without this the test still passes today, but only
+      // because saveAllViaModal happens to take longer than 300ms — a faster
+      // modal would turn it green with the flush removed. Only the timer
+      // functions are faked; React schedules through MessageChannel and the
+      // PUT goes over fetch, so neither is affected.
+      cy.clock(null, ["setTimeout", "clearTimeout"]);
+      cy.getBySelector("StudioAddLink").click();
+      cy.getBySelector("StudioLinkToInput").type("https://www.zesty.io/");
+
+      // Inlined rather than saveAllViaModal: the modal's exit transition needs
+      // real timers, so the clock is restored before waiting on it to leave.
+      cy.getBySelector("StudioLayoutSaveChangesButton").click();
+      cy.getBySelector("StudioSaveChangesModal").should("exist");
+      cy.getBySelector("StudioSaveAllButton").click();
+      cy.clock().invoke("restore");
+
+      cy.wait("@updateWebView").then(({ request }) => {
+        expect(request.body.code).to.contain(
+          '<a href="https://www.zesty.io/"><img'
+        );
+      });
+      cy.getBySelector("StudioSaveChangesModal").should("not.exist");
+    });
+  });
+
+  it("prompts on mode switch for an edit still inside its debounce", () => {
+    setStudioMode("layout");
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+
+      // An ATTRIBUTE slot: it is the debounced write path. A text run with a
+      // textIndex would not do — handleSlotChange returns before schedulePatch
+      // for those, since the bridge echo writes them back instead.
+      seedLayoutElement(
+        webView.ZUID,
+        `<img data-layout-id="1" src="a.jpg" alt="hero">`,
+        imgNode(webView.ZUID)
+      );
+
+      // Type and leave layout mode inside the 300ms window. hasPendingLayout-
+      // Changes is still false here, so gating the prompt on it skips the one
+      // function that knows to flush — the timer then lands with the app in
+      // content mode and strands the edit behind a save bar the user cannot
+      // see until they switch back.
+      cy.clock(null, ["setTimeout", "clearTimeout"]);
+      cy.getBySelector("StudioSlotInput-alt").clear().type("Updated alt");
+      setStudioMode("content");
+
+      cy.getBySelector("DirtyCodeModal").should("exist");
+      cy.getBySelector("DirtyCodeModalDiscard").click();
+      cy.clock().invoke("restore");
+    });
+  });
+
+  it("lists a debounced region in the Save Changes modal it was flushed for", () => {
+    setStudioMode("layout");
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+
+      // TWO regions, because one cannot tell the two flush sites apart: with a
+      // single region the wrap has already staged it, so the modal lists it
+      // wherever the flush lives. The distinction only shows when a region is
+      // reachable ONLY through a pending debounce — that is the region the
+      // permission gate and this list would otherwise never see.
+      //
+      // The second codeId is synthetic and nothing is saved here, so no second
+      // real view file is touched on the shared dev instance.
+      const otherCodeId = "code-2";
+      postBridgeMessage({
+        type: "TEMPLATE_SOURCE_MAP",
+        templateSourceByCodeId: {
+          [webView.ZUID]: `<img data-layout-id="1" src="a.jpg" alt="hero">`,
+          [otherCodeId]: `<a><img data-layout-id="1" src="b.jpg" alt="two"></a>`,
+        },
+      });
+      postBridgeMessage({
+        type: "LAYERS_TREE",
+        tree: [webView.ZUID, otherCodeId].map((codeId) => ({
+          id: codeId,
+          kind: "codeFile",
+          tagName: null,
+          codeId,
+          layoutId: null,
+          children: [imgNode(codeId)],
+        })),
+      });
+
+      // Region one is staged outright, so the save bar exists.
+      openPanelFor(imgNode(webView.ZUID));
+      cy.getBySelector("StudioAddLink").click();
+      cy.getBySelector("StudioLayoutSaveBar").should("exist");
+
+      // Region two is dirtied only by a debounce that cannot fire.
+      cy.clock(null, ["setTimeout", "clearTimeout"]);
+      openPanelFor(imgNode(otherCodeId));
+      cy.getBySelector("StudioLinkToInput").type("https://www.zesty.io/");
+
+      cy.getBySelector("StudioLayoutSaveChangesButton").click();
+      cy.getBySelector("StudioSaveChangesModal").should("exist");
+
+      // Both regions listed. Flushing at Save All instead would show one, and
+      // region two would then be PUT — and on Save & Publish published —
+      // without appearing in the list the user is confirming, and without its
+      // ZUID passing the useMultiPermission gate computed from the same set.
+      cy.getBySelector("StudioSaveChangeRow").should("have.length", 2);
+
+      // Cancel rather than save: the assertion is about what the modal shows,
+      // and region two's synthetic codeId has no view file behind it.
+      cy.getBySelector("StudioSaveChangesCancelButton").click();
+      cy.clock().invoke("restore");
+    });
+  });
+
+  it("discards a debounced write instead of letting it re-dirty the region", () => {
+    setStudioMode("layout");
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+
+      seedLayoutElement(
+        webView.ZUID,
+        `<img data-layout-id="1" src="a.jpg" alt="hero">`,
+        imgNode(webView.ZUID)
+      );
+
+      // Something staged, so the save bar — and its Cancel — are present.
+      cy.getBySelector("StudioAddLink").click();
+      cy.getBySelector("StudioLayoutSaveBar").should("exist");
+
+      // Freeze time, then queue a debounced write that cannot fire on its own.
+      cy.clock(null, ["setTimeout", "clearTimeout"]);
+      cy.getBySelector("StudioLinkToInput").type("https://www.zesty.io/");
+      cy.getBySelector("StudioLayoutCancelButton").click();
+
+      // Advance well past the 300ms debounce. A cancelled timer has nothing to
+      // fire; a surviving one re-dirties the region the user just discarded and
+      // races the TEMPLATE_SOURCE_MAP the preview reload brings back.
+      cy.tick(2000);
+      cy.clock().invoke("restore");
+
+      // Drive a full render cycle that can be waited on POSITIVELY before
+      // asserting the absence. `should("not.exist")` passes on its first
+      // evaluation, so asserting it straight after tick() would go green even
+      // when the stale write repaints the bar a moment later — verified: the
+      // test passed with the fix reverted until this step was added.
+      const node = imgNode(webView.ZUID);
+      feedTree(node);
+      openPanelFor(node);
+
+      cy.getBySelector("StudioLayoutSaveBar").should("not.exist");
+    });
+  });
+
+  it("keeps a hand-written target visible instead of flattening it to No", () => {
+    setStudioMode("layout");
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+
+      // `_top` and named frames are legitimate markup. Rendering them as "No"
+      // would hide the real value and destroy it on the first click.
+      seedLayoutElement(
+        webView.ZUID,
+        `<a href="/about/" target="_top"><img data-layout-id="1" src="a.jpg" alt="hero"></a>`,
+        imgNode(webView.ZUID)
+      );
+
+      cy.getBySelector("StudioOpenInNewTab").should("not.exist");
+      cy.getBySelector("StudioLinkTarget").should("have.value", "_top");
+    });
+  });
+
+  it("keeps the target row visible when the href becomes a fragment", () => {
+    setStudioMode("layout");
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+
+      seedLayoutElement(
+        webView.ZUID,
+        `<a href="/about/" target="_blank"><img data-layout-id="1" src="a.jpg" alt="hero"></a>`,
+        imgNode(webView.ZUID)
+      );
+
+      cy.getBySelector("StudioOpenInNewTab").should("have.value", "_blank");
+
+      // A fragment can't open a tab, but the target is still SET — hiding the
+      // row would keep saving a value the user can neither see nor clear.
+      cy.getBySelector("StudioLinkToInput").clear().type("#section-two");
+      cy.getBySelector("StudioOpenInNewTab").should("exist");
     });
   });
 });

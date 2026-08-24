@@ -14,6 +14,7 @@ import {
   ContentItemWithDirtyAndPublishing,
 } from "../../../../../../../../shell/services/types";
 import { useGetContentModelFieldsQuery } from "../../../../../../../../shell/services/instance";
+import { asRenderableText } from "../../../../../../../../utility/asRenderableText";
 
 export type ContentItemWithRelatedZUIDs = ContentItemWithDirtyAndPublishing & {
   relatedModelZUID: string;
@@ -68,11 +69,16 @@ export const UnpublishedRelatedItem = ({
     return null;
   }, [contentItem, imageFieldName]);
 
-  const fieldValue =
+  // The related field is picked by a Schema admin and can be an object-shaped datatype
+  // (images, repeater, one_to_one). Drop anything non-primitive so it falls through to
+  // the fallbacks below instead of throwing "Objects are not valid as a React child"
+  // when rendered.
+  const fieldValue = asRenderableText(
     contentItem?.data[
       modelFields?.find((field) => field.ZUID === contentItem.relatedFieldZUID)
         ?.name
-    ];
+    ]
+  );
 
   return (
     <ListItem disableGutters dense divider={divider}>

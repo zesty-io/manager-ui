@@ -187,6 +187,13 @@ export const isMediaSlotDatatype = (datatype?: string | null): boolean => {
   return category === "media" || category === "link";
 };
 
+// Whether a content model renders a page of its own. `getUrl()` returns an
+// item's relative URL and only exists for models WITH a view, so a dataset or a
+// block item would resolve to nothing — the link item picker leaves them out
+// rather than let someone bind an href that can never resolve.
+export const isRoutedModelType = (type?: string | null): boolean =>
+  type === "templateset" || type === "pageset";
+
 // Chip fill / icon colour per category, from the Figma dropdown. Kept as literal
 // hex because these are the design system's field-type tints, not MUI palette
 // roles.
