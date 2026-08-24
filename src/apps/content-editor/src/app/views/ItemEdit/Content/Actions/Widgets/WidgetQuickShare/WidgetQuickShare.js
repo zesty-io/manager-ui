@@ -100,7 +100,7 @@ export const WidgetQuickShare = memo(function WidgetQuickShare(props) {
               <FontAwesomeIcon
                 icon={faTwitterSquare}
                 style={{
-                  color: "#0BA5EC",
+                  color: theme.palette.info.main,
                   marginRight: "8px",
                   width: "16px",
                   height: "16px",
@@ -127,7 +127,7 @@ export const WidgetQuickShare = memo(function WidgetQuickShare(props) {
               <FontAwesomeIcon
                 icon={faFacebookSquare}
                 style={{
-                  color: "#0BA5EC",
+                  color: theme.palette.info.main,
                   marginRight: "8px",
                   width: "16px",
                   height: "16px",
@@ -154,7 +154,7 @@ export const WidgetQuickShare = memo(function WidgetQuickShare(props) {
               <FontAwesomeIcon
                 icon={faLinkedinIn}
                 style={{
-                  color: "#0BA5EC",
+                  color: theme.palette.info.main,
                   marginRight: "8px",
                   width: "16px",
                   height: "16px",
@@ -181,7 +181,7 @@ export const WidgetQuickShare = memo(function WidgetQuickShare(props) {
               <FontAwesomeIcon
                 icon={faRedditSquare}
                 style={{
-                  color: "#0BA5EC",
+                  color: theme.palette.info.main,
                   marginRight: "8px",
                   width: "16px",
                   height: "16px",

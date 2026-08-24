@@ -115,7 +115,7 @@ export const ContentInfo = (props) => {
                 inputProps={{
                   sx: {
                     ":read-only": {
-                      textFillColor: "#101828",
+                      textFillColor: theme.palette.text.primary,
                     },
                   },
                 }}
