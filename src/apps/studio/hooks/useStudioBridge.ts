@@ -3,6 +3,13 @@ import { notify } from "shell/store/notifications";
 import { Sentry } from "utility/sentry";
 import { InteractionMode, usesLayoutGrammar } from "./studioTypes";
 
+// Layout mode genuinely has a Content mode to send the user to. Studio's full
+// mode does not — it IS both — so the same rejection needs different words.
+const SWITCH_TO_CONTENT_MESSAGE =
+  "This block contains dynamic content and cannot be edited inline. Switch to Content mode to make edits.";
+const NOT_A_SINGLE_FIELD_MESSAGE =
+  "This block can't be edited inline because its content is not a single connected field.";
+
 const bridgeInjectedCss = `
   .studio-hover {
     outline: 1px dashed #00bcd4;
@@ -332,7 +339,16 @@ export const useStudioBridge = ({
       // leaf, so open that field's content editor. The same selection path a
       // layers-row click takes — no new selection machinery.
       if (msg.type === "DYNAMIC_EDIT_REQUEST") {
-        if (interactionMode !== "full") return;
+        // The bridge is binary and posts this from both the canvas and the
+        // layers panel without knowing the mode. Layout mode can reach a bound
+        // leaf but cannot edit it, so tell the user rather than dropping the
+        // gesture on the floor.
+        if (interactionMode !== "full") {
+          dispatch(
+            notify({ kind: "warn", message: SWITCH_TO_CONTENT_MESSAGE })
+          );
+          return;
+        }
         if (!msg.fieldZuid) return;
 
         onDynamicEditRequest({
@@ -357,7 +373,9 @@ export const useStudioBridge = ({
           notify({
             kind: "warn",
             message:
-              "This block contains dynamic content and cannot be edited inline. Switch to Content mode to make edits.",
+              interactionMode === "full"
+                ? NOT_A_SINGLE_FIELD_MESSAGE
+                : SWITCH_TO_CONTENT_MESSAGE,
           })
         );
         return;

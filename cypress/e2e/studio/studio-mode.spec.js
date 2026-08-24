@@ -16,6 +16,23 @@ describe("Studio Full Mode", () => {
     <div data-layout-id="2">Two</div>
   `;
 
+  // The account CI signs in as is NOT staff, and `canSelectMode = user.staff`,
+  // so the mode toggle does not render for it at all. Any test that drives the
+  // toggle has to stub the flag and reload — the gate itself is covered in
+  // mode-entitlement.spec.js, so stubbing it here tests full mode, not the gate.
+  const reloadAsStaff = () => {
+    cy.intercept("GET", "**/v1/users/*", (req) => {
+      req.continue((res) => {
+        if (!res.body?.data) return;
+        res.body.data = { ...res.body.data, staff: true };
+      });
+    }).as("getUserAsStaff");
+    cy.waitOn("/v1/content/models**", () => {
+      cy.visit(`/studio?path=${studioPath}`);
+    });
+    cy.getBySelector("StudioHeader").should("exist");
+  };
+
   const postBridgeMessage = (message) => {
     cy.getBySelector("StudioHeader").should("exist");
     cy.window().then(
@@ -86,6 +103,7 @@ describe("Studio Full Mode", () => {
   });
 
   it("defaults to full mode and offers all three options", () => {
+    reloadAsStaff();
     cy.getBySelector("StudioModeToggleOption-full").should(
       "have.attr",
       "aria-pressed",
@@ -117,12 +135,38 @@ describe("Studio Full Mode", () => {
     cy.getBySelector("StudioSidePanel").should("exist");
   });
 
-  // Deliberately not covered: "ignores a bound-leaf request in layout mode".
-  // The host guard (`interactionMode !== "studio"`) is correct and kept, but
-  // it has no observable consequence to assert against — layout mode renders
-  // no right panel whether or not the message is handled, so the test passes
-  // identically with the guard removed. Asserting it would measure the drawer
-  // condition, not the guard.
+  it("tells the user why an inline edit was refused, without naming a mode that does not exist here", () => {
+    // The bridge rejects a leaf that is neither statically editable nor bound
+    // to one field. Full mode IS content plus layout, so the old copy sent the
+    // user to a "Content mode" that full mode already contains.
+    postBridgeMessage({ type: "STATIC_EDIT_REJECTED", layoutId: "2" });
+
+    cy.getBySelector("toast")
+      .should("contain.text", "not a single connected field")
+      .and("not.contain.text", "Switch to Content mode");
+  });
+
+  // This case used to be "deliberately not covered": the layout-mode guard on
+  // DYNAMIC_EDIT_REQUEST had no observable consequence, because layout renders
+  // no right panel whether or not the message is handled. It has one now — the
+  // guard tells the user instead of dropping the gesture — so it is testable.
+  it("tells a layout-mode user that a bound leaf needs content editing", () => {
+    reloadAsStaff();
+    cy.getBySelector("StudioModeToggleOption-layout").click();
+
+    postBridgeMessage({
+      type: "DYNAMIC_EDIT_REQUEST",
+      studioId: `${itemZUID}:title`,
+      fieldZuid: "fake-field-zuid",
+      fieldType: "text",
+      itemZuid: itemZUID,
+      modelZuid: "fake-model-zuid",
+    });
+
+    cy.getBySelector("toast").should("contain.text", "Switch to Content mode");
+    // The panel staying shut is what proves the guard still guards.
+    cy.getBySelector("StudioSidePanel").should("not.exist");
+  });
 
   it("shows the layout breadcrumb trail in full mode", () => {
     // Full mode uses layout's drill-down grammar, so it needs layout's way
