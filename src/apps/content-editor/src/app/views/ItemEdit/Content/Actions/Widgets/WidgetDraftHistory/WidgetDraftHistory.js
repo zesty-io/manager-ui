@@ -1,3 +1,5 @@
+import { alpha } from "@mui/material/styles";
+import { theme } from "@zesty-io/material";
 import { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import {
@@ -47,7 +49,7 @@ export default connect((state, props) => {
           p: 0,
           backgroundColor: "transparent",
           fontSize: "16px",
-          color: "#10182866",
+          color: alpha(theme.palette.text.primary, 0.4),
           borderBottom: 1,
           borderColor: "grey.200",
         }}
@@ -107,7 +109,7 @@ export default connect((state, props) => {
                       fontWeight: 500,
                       fontSize: "14px",
                       lineHeight: "20px",
-                      color: "#1018288f",
+                      color: alpha(theme.palette.text.primary, 0.56),
                     }}
                   >
                     {isValid(new Date(log.happenedAt))

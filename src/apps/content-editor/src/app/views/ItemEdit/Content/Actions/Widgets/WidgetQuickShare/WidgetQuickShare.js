@@ -1,3 +1,5 @@
+import { alpha } from "@mui/material/styles";
+import { theme } from "@zesty-io/material";
 import { memo } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Card from "@mui/material/Card";
@@ -36,7 +38,7 @@ export const WidgetQuickShare = memo(function WidgetQuickShare(props) {
           p: 0,
           backgroundColor: "transparent",
           fontSize: "16px",
-          color: "#10182866",
+          color: alpha(theme.palette.text.primary, 0.4),
           borderBottom: 1,
           borderColor: "grey.200",
         }}

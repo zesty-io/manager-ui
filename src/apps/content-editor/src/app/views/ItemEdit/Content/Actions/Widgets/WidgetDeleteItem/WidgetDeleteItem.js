@@ -1,3 +1,4 @@
+import { alpha } from "@mui/material/styles";
 import { memo, useState } from "react";
 import { useHistory } from "react-router-dom";
 import Button from "@mui/material/Button";
@@ -11,7 +12,7 @@ import Typography from "@mui/material/Typography";
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
 import CardContent from "@mui/material/CardContent";
-import { ConfirmDialog } from "@zesty-io/material";
+import { ConfirmDialog, theme } from "@zesty-io/material";
 
 import { deleteItem } from "shell/store/content";
 import { unpinTab } from "shell/store/ui";
@@ -29,7 +30,7 @@ export const WidgetDeleteItem = memo(function WidgetDeleteItem(props) {
             p: 0,
             backgroundColor: "transparent",
             fontSize: "16px",
-            color: "#10182866",
+            color: alpha(theme.palette.text.primary, 0.4),
             borderBottom: 1,
             borderColor: "grey.200",
           }}
