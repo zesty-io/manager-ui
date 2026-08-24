@@ -712,7 +712,7 @@ export function dismissFileUploads() {
     const state: State = getState().mediaRevamp;
     const inProgressUploads = state.uploads.filter(
       (upload) => upload.status === "inProgress"
-    ) as unknown as StagedUpload[];
+    ) as InProgressUpload[];
     const failedUploads = state.uploads.filter(
       (upload) => upload.status === "failed"
     ) as FailedUpload[];

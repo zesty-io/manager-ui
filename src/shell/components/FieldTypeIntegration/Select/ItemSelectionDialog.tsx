@@ -17,10 +17,7 @@ import {
   Typography,
 } from "@mui/material";
 import AutoSizer from "react-virtualized-auto-sizer";
-import {
-  List,
-  CellComponentProps as ListChildComponentProps,
-} from "react-window";
+import { List, RowComponentProps } from "react-window";
 import { Check, Close, DataObject, Search, Refresh } from "@mui/icons-material";
 import {
   IntegrationFieldConfig,
@@ -93,11 +90,10 @@ type RenderRowDataProps = {
   onSync: (item: ApiDataProps) => void;
 };
 
-type RenderRowProps = Omit<ListChildComponentProps, "data"> & {
-  index?: number;
-  style?: React.CSSProperties;
+// `index`, `style` and `ariaAttributes` are injected by `List`; only `data` is ours
+type RenderRowProps = RowComponentProps<{
   data: RenderRowDataProps;
-};
+}>;
 
 const RenderRow = ({ data, index, style }: RenderRowProps) => {
   const { t } = useTranslation();

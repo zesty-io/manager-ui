@@ -77,6 +77,7 @@ type Args = {
     tagName: string,
     slots: ElementSlot[],
     layoutPatch: ElementLayoutPatch | null,
+    ownsLinkControls: boolean,
     preserveValues: boolean
   ) => void;
   codeFileNameById: Record<string, string>;
@@ -183,6 +184,36 @@ const findLoneTextSlotChild = (node: LayersTreeNode): LayersTreeNode | null => {
   };
   visit(node.children);
   return matches.length === 1 ? matches[0] : null;
+};
+
+// Whether the Inspector's Link controls belong on THIS row.
+//
+// An element row owns them outright. A text or field row owns them only when it
+// is its element's LONE content row. Every such row carries its element's
+// layoutPatch — that is how the bridge marks a leaf's own runs — so wrapping
+// from any of them wraps the whole element. That only reads as "link this
+// thing" when the row IS the whole thing: for one run of `<p>Read <span>this
+// </span> now</p>`, the panel shows a single Value input holding `now` while
+// the wrap would swallow the paragraph and the span with it.
+//
+// This is the same predicate the canvas already uses to decide which panel to
+// open (findLoneTextSlotChild in openInspectorForLayoutElement), so the two
+// entry points agree by construction.
+const ownsElementLinkControls = (
+  node: LayersTreeNode,
+  parentById: Map<string, LayersTreeNode | null>
+): boolean => {
+  if (node.kind === "element") return true;
+  const layoutId = node.layoutPatch?.layoutId;
+  if (!layoutId) return false;
+
+  let host = parentById.get(node.id) || null;
+  while (host && !(host.kind === "element" && host.layoutId === layoutId)) {
+    host = parentById.get(host.id) || null;
+  }
+  if (!host) return false;
+
+  return findLoneTextSlotChild(host)?.id === node.id;
 };
 
 export const useStudioLayersTree = ({
@@ -372,8 +403,13 @@ export const useStudioLayersTree = ({
 
         // Nothing recorded (a binding that predates this session reaches here
         // only if its markers are missing) — name it from the expression.
+        // An item-level reference (a link's getUrl()) names no field, so there
+        // is no name to fall back on — keep going rather than label the row "".
         const ref = parseParsleyRef(node.slots?.[0]?.sourceValue || "");
-        if (ref) return ref.name;
+        if (ref)
+          return (
+            ref.name || node.fieldType || t("content.studioLayersNodeField")
+          );
 
         return node.fieldType || t("content.studioLayersNodeField");
       }
@@ -532,12 +568,22 @@ export const useStudioLayersTree = ({
             tagName: target.tagName || "",
             slots: resolveSlotValues(target.slots),
             layoutPatch: target.layoutPatch ?? null,
+            // Always true on this path — `target` is either the element or the
+            // lone content row findLoneTextSlotChild just returned — but it is
+            // derived rather than hardcoded so the two stay in step.
+            ownsLinkControls: ownsElementLinkControls(target, parentById),
           });
           return;
         }
       }
     },
-    [applyInspectorSelection, interactionMode, nodeById, resolveSlotValues]
+    [
+      applyInspectorSelection,
+      interactionMode,
+      nodeById,
+      parentById,
+      resolveSlotValues,
+    ]
   );
 
   const handleNodeSelect = useCallback(
@@ -556,6 +602,7 @@ export const useStudioLayersTree = ({
           tagName: node.tagName || "",
           slots: resolveSlotValues(node.slots),
           layoutPatch: node.layoutPatch ?? null,
+          ownsLinkControls: ownsElementLinkControls(node, parentById),
         });
         return;
       }
@@ -625,12 +672,16 @@ export const useStudioLayersTree = ({
       node.tagName || "",
       resolveSlotValues(node.slots),
       node.layoutPatch ?? null,
+      // A re-emit can add or remove sibling runs, so which row owns the Link
+      // controls is re-derived rather than carried over.
+      ownsElementLinkControls(node, parentById),
       // Only layout mode holds editable values worth protecting from a re-emit.
       interactionMode === "layout"
     );
   }, [
     interactionMode,
     nodeById,
+    parentById,
     refreshInspectorSlots,
     resolveSlotValues,
     inspectorSelection,

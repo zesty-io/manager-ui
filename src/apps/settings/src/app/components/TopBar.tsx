@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, ReactNode, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, Typography, Button } from "@mui/material";
 import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
@@ -16,6 +16,7 @@ type TopBarProps = {
   matchPath?: string;
   saveHidden?: boolean;
   titleHidden?: boolean;
+  children?: ReactNode;
 };
 
 export const TopBar: FC<TopBarProps> = ({

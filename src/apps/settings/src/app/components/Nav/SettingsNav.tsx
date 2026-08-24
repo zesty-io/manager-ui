@@ -83,7 +83,7 @@ export const SettingsNav = memo(() => {
       );
 
       const instanceSettingsCategories = Array.from(categories)?.map(
-        (category) => ({
+        (category): TreeItem => ({
           label: getCategoryLabel(category, t),
           path: `/settings/instance/${category}`,
           icon: SettingsRoundedIcon,
@@ -116,12 +116,14 @@ export const SettingsNav = memo(() => {
     if (instanceStylesCategories?.length) {
       return [...instanceStylesCategories]
         .sort((a, b) => (a.sort > b.sort ? 1 : -1))
-        .map((setting) => ({
-          label: getStyleCategoryLabel(setting.name, t),
-          path: `/settings/styles/${setting.ID}`,
-          icon: PaletteRoundedIcon,
-          children: [] as TreeItem[],
-        }));
+        .map(
+          (setting): TreeItem => ({
+            label: getStyleCategoryLabel(setting.name, t),
+            path: `/settings/styles/${setting.ID}`,
+            icon: PaletteRoundedIcon,
+            children: [],
+          })
+        );
     }
 
     return [];

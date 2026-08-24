@@ -91,7 +91,7 @@ export const InternalLink = ({
   }, [internalLinkRelatedItem, Object.keys(allItems).length, t]);
 
   const onInternalLinkSearch = useCallback(
-    (term) => dispatch(searchItems(term)),
+    (term: string) => dispatch(searchItems(term)),
     []
   );
 

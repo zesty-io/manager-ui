@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { KeyboardArrowDownRounded } from "@mui/icons-material";
 import { useStagedChanges } from "../StagedChangesContext";
+import { ContentModelField } from "../../../../../../../shell/services/types";
 
 export const DropDownCell = ({ params }: { params: GridRenderCellParams }) => {
   const { t } = useTranslation();
@@ -12,7 +13,9 @@ export const DropDownCell = ({ params }: { params: GridRenderCellParams }) => {
   const selectLabel = t("content.selectPlaceholder");
   const { stagedChanges, updateStagedChanges } = useStagedChanges();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const field = params.row.fieldData[params.field];
+  // `params.row` is untyped (`GridRenderCellParams` defaults its row model to `any`),
+  // so annotate here to keep `settings.options` a `Record<string, string>`
+  const field: ContentModelField = params.row.fieldData[params.field];
   const handleChange = (value: any) => {
     setAnchorEl(null);
 

@@ -156,7 +156,7 @@ const DisplayCard = ({
               const itemKey =
                 showPlaceholders && !item?.key
                   ? t("shell.integrationAddDetailWithPlus")
-                  : item?.key;
+                  : renderValue(item?.key);
               const itemValue =
                 showPlaceholders && !item?.key ? "" : renderValue(item?.value);
               return (

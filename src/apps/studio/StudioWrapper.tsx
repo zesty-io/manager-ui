@@ -826,6 +826,96 @@ export const StudioWrapper = () => {
     dirtyContentItemZUIDs
   );
 
+  // Layout mode: a slot was edited free-text. Live-update the preview on every
+  // keystroke (cheap postMessage) but debounce the template-source patch
+  // (DOMParse + restage) so we don't reparse on each character. Attributes
+  // write via setAttribute; text writes the element's inner text.
+  const slotPatchTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>(
+    {}
+  );
+  // What each pending timer will run, kept alongside the handle so a save can
+  // FLUSH the queue rather than race it. The codeId travels with the callback
+  // because a flush has to tell the save loop WHICH regions it just dirtied —
+  // deriving that by parsing the key would encode the key format twice.
+  // `run` reports whether it actually staged anything: every patch function
+  // early-returns when the cache or the leaf won't resolve, and a flush must
+  // not claim a region it failed to touch.
+  const pendingPatches = useRef<
+    Record<string, { codeId: string; run: () => boolean }>
+  >({});
+
+  const schedulePatch = useCallback(
+    (key: string, codeId: string, run: () => boolean) => {
+      clearTimeout(slotPatchTimers.current[key]);
+      pendingPatches.current[key] = { codeId, run };
+      slotPatchTimers.current[key] = setTimeout(() => {
+        delete slotPatchTimers.current[key];
+        delete pendingPatches.current[key];
+        run();
+      }, 300);
+    },
+    []
+  );
+
+  const cancelPatch = useCallback((key: string) => {
+    clearTimeout(slotPatchTimers.current[key]);
+    delete slotPatchTimers.current[key];
+    delete pendingPatches.current[key];
+  }, []);
+
+  // Run every debounced write NOW, synchronously, and report the regions it
+  // touched.
+  //
+  // A save reads the template cache straight out of a ref, so a write still
+  // sitting in its 300ms timer misses the PUT entirely — and then lands
+  // afterwards, re-raising the save bar on a region that was just saved, with
+  // an edit the user believes is already persisted. Type a URL and hit Save
+  // quickly and you save an <a> with no href. Clearing the timers instead would
+  // lose the edit outright, so they have to be run, not cancelled.
+  //
+  // The returned codeIds matter because staging is a STATE update: a region
+  // this flush dirties for the first time is not yet in the caller's copy of
+  // pendingLayoutSave, so the save loop has to be told about it separately or
+  // it would be left out of the PUT and stay dirty.
+  //
+  // Only regions a patch actually STAGED are reported. Every patch function
+  // early-returns when the cache or the leaf won't resolve, and reporting
+  // intent instead of effect would PUT a region with no change in it — and, on
+  // Save & Publish, burn a version on a file the user never edited.
+  const flushPendingPatches = useCallback(() => {
+    const pending = pendingPatches.current;
+    pendingPatches.current = {};
+    const codeIds = new Set<string>();
+    Object.keys(pending).forEach((key) => {
+      clearTimeout(slotPatchTimers.current[key]);
+      delete slotPatchTimers.current[key];
+      if (pending[key].run()) codeIds.add(pending[key].codeId);
+    });
+    return Array.from(codeIds);
+  }, []);
+
+  // Drop every debounced write without running it. Discard's counterpart to the
+  // flush: the user has just thrown these edits away, so a timer firing 300ms
+  // later would re-dirty the region they discarded and race the fresh
+  // TEMPLATE_SOURCE_MAP the preview reload brings back.
+  const cancelAllPendingPatches = useCallback(() => {
+    const pending = pendingPatches.current;
+    pendingPatches.current = {};
+    Object.keys(pending).forEach((key) => {
+      clearTimeout(slotPatchTimers.current[key]);
+      delete slotPatchTimers.current[key];
+    });
+  }, []);
+
+  // Clear any pending debounced slot patches when the studio unmounts so a
+  // timer never fires into a stale closure.
+  useEffect(
+    () => () => {
+      Object.values(slotPatchTimers.current).forEach(clearTimeout);
+    },
+    []
+  );
+
   const {
     pendingLayoutCodeIds,
     isSavingLayout,
@@ -839,6 +929,10 @@ export const StudioWrapper = () => {
     handleLayoutElementAttrUpdate,
     handleLayoutTextUpdate,
     handleLayoutTagUpdate,
+    readLinkWrapper,
+    handleLayoutWrapInLink,
+    handleLayoutUnwrapLink,
+    handleLayoutLinkAttrUpdate,
   } = useLayoutReorderState({
     webViews,
     codeFileNameById,
@@ -846,6 +940,8 @@ export const StudioWrapper = () => {
     publishWebView,
     dispatch,
     clearLayoutSelection,
+    cancelAllPendingPatches,
+    flushPendingPatches,
     refreshPreviewFrame,
     syncTemplateSourceToBridge,
     withCodeIdBreadcrumbRoot,
@@ -908,6 +1004,18 @@ export const StudioWrapper = () => {
     if (result && result.failedCount) return;
     setShowSaveChangesModal(false);
     deselectForPreviewReload();
+  };
+  // Opening the modal is where the pending set stops being an implementation
+  // detail and starts being a contract: `pendingLayoutCodeIds` feeds both the
+  // useMultiPermission gate above and the file list the user is about to
+  // confirm. A region sitting in a 300ms debounce is in neither, yet the save
+  // would PUT it — and Save & Publish would publish it — without its ZUID ever
+  // passing hasPermission. Flushing here lets the write stage and the state
+  // settle before either is read; the flush inside handleSavePendingLayout
+  // stays as belt-and-braces and will normally find nothing left to do.
+  const handleOpenSaveChangesModal = () => {
+    if (isLayoutMode) flushPendingPatches();
+    setShowSaveChangesModal(true);
   };
   const handleModalSaveAll = () => {
     if (!saveBarCanSave) return;
@@ -977,7 +1085,13 @@ export const StudioWrapper = () => {
 
   const requestProceedWithPendingLayoutSave = useCallback(
     (onProceed: () => void) => {
-      if (!hasPendingLayoutChanges) {
+      // The other reader of the pending set, and gated on the same
+      // canUpdatePendingLayout. A debounced write has to land before the
+      // decision — including the decision NOT to prompt, which would otherwise
+      // navigate away and leave the timer to re-dirty a region nobody is
+      // watching. A no-op when nothing is queued.
+      const flushedCodeIds = flushPendingPatches();
+      if (!hasPendingLayoutChanges && !flushedCodeIds.length) {
         onProceed();
         return;
       }
@@ -985,7 +1099,7 @@ export const StudioWrapper = () => {
       pendingLayoutContinuationRef.current = onProceed;
       setShowPendingLayoutModal(true);
     },
-    [hasPendingLayoutChanges]
+    [flushPendingPatches, hasPendingLayoutChanges]
   );
 
   const syncBridgeInteractionMode = useCallback(
@@ -1041,7 +1155,13 @@ export const StudioWrapper = () => {
         }
       }
 
-      if (nextMode === "content" && hasPendingLayoutChanges) {
+      // Deliberately NOT gated on hasPendingLayoutChanges. A debounced write
+      // that hasn't fired yet leaves that flag false, so gating here would skip
+      // the one function that knows to flush it — the timer would then land
+      // with isLayoutMode already false, staging an edit into a save bar the
+      // user cannot see until they switch back. The callee proceeds immediately
+      // when there is genuinely nothing pending, so this costs no prompt.
+      if (nextMode === "content") {
         requestProceedWithPendingLayoutSave(applyInteractionModeChange);
         return;
       }
@@ -1052,7 +1172,6 @@ export const StudioWrapper = () => {
       clearLayoutSelection,
       clearSelection,
       interactionMode,
-      hasPendingLayoutChanges,
       hasPendingContentChanges,
       postCommandToBridge,
       requestProceedWithPendingLayoutSave,
@@ -1386,21 +1505,6 @@ export const StudioWrapper = () => {
     [applyBridgeSelection]
   );
 
-  // Layout mode: a slot was edited free-text. Live-update the preview on every
-  // keystroke (cheap postMessage) but debounce the template-source patch
-  // (DOMParse + restage) so we don't reparse on each character. Attributes
-  // write via setAttribute; text writes the element's inner text.
-  const slotPatchTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>(
-    {}
-  );
-  // Clear any pending debounced slot patches when the studio unmounts so a
-  // timer never fires into a stale closure.
-  useEffect(
-    () => () => {
-      Object.values(slotPatchTimers.current).forEach(clearTimeout);
-    },
-    []
-  );
   // On connect, the panel emits a Parsley ref. For the LIVE preview we show the
   // field's RESOLVED value (its actual text, or a resolved image URL) instead of
   // the raw expression, while the template still saves the Parsley — so a
@@ -1434,9 +1538,14 @@ export const StudioWrapper = () => {
       const item = ref.source
         ? getContentItems()[ref.source.itemZUID]
         : pageItem;
+      // An item-level getUrl() resolves to the item's own route, which lives on
+      // `web.path` rather than anywhere in `data`. Cast because the content
+      // store is still typed `any` end to end (see AppState's TODO) — `item`
+      // above is already untyped, so this reads no worse than its neighbours.
+      if (ref.kind === "url") return (item as any)?.web?.path || "";
       const raw = (item?.data as Record<string, any>)?.[ref.name];
       if (raw === undefined || raw === null || raw === "") return "";
-      if (ref.isMedia) {
+      if (ref.kind === "media") {
         // Image field → the URL getImage() resolves to, via the media resolver.
         return `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${raw}/getimage`;
       }
@@ -1527,6 +1636,11 @@ export const StudioWrapper = () => {
       // template saves `value`.
       const previewValue = resolvePreviewValue(value) ?? undefined;
 
+      // Not a unique element address: it omits isSelf/tagName/elementIndex, so
+      // two `isSelf: false` elements addressed as the Nth same-tag descendant of
+      // the same region share it. Kept anyway because it is the shape writeKey
+      // and connectedBySlot already use, and diverging from them here would be
+      // worse than the collision — but do not read it as an identity.
       const leafKey = `${patch.codeId}::${patch.layoutId}`;
       // Records the most recent value written to each slot so the async preview
       // replay below can tell whether it has been superseded.
@@ -1581,16 +1695,14 @@ export const StudioWrapper = () => {
         if (slot.textIndex !== undefined) return;
 
         // A dynamic leaf has no nested markup, so the whole-content write is safe.
-        clearTimeout(slotPatchTimers.current[slot.key]);
-        slotPatchTimers.current[slot.key] = setTimeout(() => {
-          handleLayoutTextUpdate(patch.codeId!, patch.layoutId, value);
-        }, 300);
+        schedulePatch(`${leafKey}::${slot.key}`, patch.codeId!, () =>
+          handleLayoutTextUpdate(patch.codeId!, patch.layoutId, value)
+        );
         return;
       }
 
       const attr = slot.attr || slot.key;
-      clearTimeout(slotPatchTimers.current[slot.key]);
-      slotPatchTimers.current[slot.key] = setTimeout(() => {
+      schedulePatch(`${leafKey}::${slot.key}`, patch.codeId!, () =>
         handleLayoutElementAttrUpdate(
           patch.codeId!,
           patch.layoutId,
@@ -1600,8 +1712,8 @@ export const StudioWrapper = () => {
           attr,
           value,
           slot.booleanAttr
-        );
-      }, 300);
+        )
+      );
     },
     [
       dispatch,
@@ -1611,6 +1723,7 @@ export const StudioWrapper = () => {
       modelZUIDByName,
       postSlotPreview,
       resolvePreviewValue,
+      schedulePatch,
       inspectorSelection,
     ]
   );
@@ -1631,6 +1744,139 @@ export const StudioWrapper = () => {
       handleLayoutTagUpdate(patch.codeId, patch.layoutId, newTag);
     },
     [handleLayoutTagUpdate, postCommandToBridge, inspectorSelection]
+  );
+
+  // The element the Link controls act on, when the current selection has any.
+  //
+  // `isSelf` is required because the wrapper is inserted around the
+  // [data-layout-id] element, so an element addressed as "the Nth <img> inside
+  // this region" has nothing stable to hang one off. `ownsLinkControls` is what
+  // keeps a text row from wrapping content the panel isn't showing — a run of a
+  // multi-run leaf carries the same element patch as the leaf itself.
+  const linkPatch = useMemo(() => {
+    if (interactionMode !== "layout") return null;
+    if (!inspectorSelection?.ownsLinkControls) return null;
+    const patch = inspectorSelection.layoutPatch;
+    if (!patch?.codeId || !patch.isSelf) return null;
+    return { codeId: patch.codeId, layoutId: patch.layoutId };
+  }, [inspectorSelection, interactionMode]);
+
+  // The <a> around that element, plus whether one may be added. Derived from
+  // the cached template on every template write rather than stored on the
+  // selection — the template is the source of truth, and a copy would go stale
+  // the moment anything else patched the region.
+  //
+  // Cost: one DOMParser pass over the whole region per template write while the
+  // Inspector is open. Same order as the write paths themselves, which already
+  // re-parse the region on every patch, so this doesn't change the shape of the
+  // problem — but it is why the href write below stays debounced.
+  const linkWrapperState = useMemo(() => {
+    if (!linkPatch) return null;
+    return readLinkWrapper(linkPatch.codeId, linkPatch.layoutId);
+  }, [linkPatch, readLinkWrapper]);
+
+  // Debounced template writes are keyed per element AND per attribute. A single
+  // "link:href" key would let a timer started on one wrapper land on whatever
+  // wrapper exists 300ms later: unwrap-then-rewrap inside that window would
+  // resurrect the old URL into a link the panel shows as empty, and switching
+  // elements would drop the first element's write entirely.
+  const linkTimerKey = (
+    patch: { codeId: string; layoutId: string },
+    attr: string
+  ) => `${patch.codeId}:${patch.layoutId}:link:${attr}`;
+
+  // Wrapping and unwrapping supersede anything still in flight for this
+  // element's link — the wrapper those writes were aimed at is about to stop
+  // existing (or start existing empty).
+  const clearPendingLinkWrites = useCallback(
+    (patch: { codeId: string; layoutId: string }) => {
+      cancelPatch(linkTimerKey(patch, "href"));
+      cancelPatch(linkTimerKey(patch, "target"));
+    },
+    [cancelPatch]
+  );
+
+  // Template first, canvas second. The bridge applies these with its own,
+  // laxer guards and is deployed by hand, so it cannot be assumed to refuse
+  // what this host refuses — posting first would let a rejected wrap still
+  // mutate the canvas and leave the preview describing markup no save contains.
+  const handleAddLink = useCallback(() => {
+    if (!linkPatch) return;
+    clearPendingLinkWrites(linkPatch);
+    if (!handleLayoutWrapInLink(linkPatch.codeId, linkPatch.layoutId)) return;
+    // No href/target in the payload: the bridge leaves out what it isn't given,
+    // so the live <a> matches the attribute-less one staged into the template.
+    postCommandToBridge({
+      action: "wrapElementInLink",
+      layoutId: linkPatch.layoutId,
+    });
+  }, [
+    clearPendingLinkWrites,
+    handleLayoutWrapInLink,
+    linkPatch,
+    postCommandToBridge,
+  ]);
+
+  const handleRemoveLink = useCallback(() => {
+    if (!linkPatch) return;
+    clearPendingLinkWrites(linkPatch);
+    if (!handleLayoutUnwrapLink(linkPatch.codeId, linkPatch.layoutId)) return;
+    postCommandToBridge({
+      action: "unwrapElementLink",
+      layoutId: linkPatch.layoutId,
+    });
+  }, [
+    clearPendingLinkWrites,
+    handleLayoutUnwrapLink,
+    linkPatch,
+    postCommandToBridge,
+  ]);
+
+  // Shared by the URL input and the target control. Same split as a slot write:
+  // the bridge is told immediately so the canvas keeps up, while the template
+  // patch is debounced because it re-parses the whole region — twice, in fact,
+  // since linkWrapperState re-derives from the result.
+  //
+  // `target` is debounced along with `href` rather than written straight
+  // through: it is only a select while it holds "" or "_blank", and a
+  // hand-written value ("_top", a named frame) is typed into a text field a
+  // character at a time. A save flushes whatever is still pending.
+  const handleLinkAttrChange = useCallback(
+    (attr: "href" | "target", value: string) => {
+      if (!linkPatch) return;
+      const { codeId, layoutId } = linkPatch;
+
+      // An href may be a Parsley reference. The canvas gets the resolved URL;
+      // the template keeps the expression, exactly as slots do.
+      const previewValue = attr === "href" ? resolvePreviewValue(value) : null;
+
+      postCommandToBridge({
+        action: "wrapElementInLink",
+        layoutId,
+        [attr]: previewValue ?? value,
+      });
+
+      schedulePatch(linkTimerKey(linkPatch, attr), codeId, () =>
+        handleLayoutLinkAttrUpdate(codeId, layoutId, attr, value)
+      );
+    },
+    [
+      handleLayoutLinkAttrUpdate,
+      linkPatch,
+      postCommandToBridge,
+      resolvePreviewValue,
+      schedulePatch,
+    ]
+  );
+
+  const handleLinkHrefChange = useCallback(
+    (value: string) => handleLinkAttrChange("href", value),
+    [handleLinkAttrChange]
+  );
+
+  const handleLinkTargetChange = useCallback(
+    (value: string) => handleLinkAttrChange("target", value),
+    [handleLinkAttrChange]
   );
 
   // Layout mode: connect a content item to a text slot. A text slot's value is
@@ -1858,6 +2104,12 @@ export const StudioWrapper = () => {
                 onBrowseMedia={handleBrowseMedia}
                 connectFields={connectFields}
                 mediaFields={mediaFields}
+                linkWrapper={linkWrapperState?.wrapper ?? null}
+                canAddLink={Boolean(linkWrapperState?.canWrap)}
+                onAddLink={handleAddLink}
+                onRemoveLink={handleRemoveLink}
+                onChangeLinkHref={handleLinkHrefChange}
+                onChangeLinkTarget={handleLinkTargetChange}
                 drawerWidth={drawerWidth}
                 logoSrc={contentOneLogo}
               />
@@ -1938,7 +2190,7 @@ export const StudioWrapper = () => {
                   color="primary"
                   startIcon={<SaveRoundedIcon fontSize="small" />}
                   sx={{ whiteSpace: "nowrap" }}
-                  onClick={() => setShowSaveChangesModal(true)}
+                  onClick={handleOpenSaveChangesModal}
                 >
                   {t("content.studioSaveChanges")}
                 </Button>

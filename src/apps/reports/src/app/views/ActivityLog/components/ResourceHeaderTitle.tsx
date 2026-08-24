@@ -109,7 +109,11 @@ export const ResourceHeaderTitle = ({
 
           if (contentModel) {
             data.subTitle.unshift(
-              `${t(modelNameMap[contentModel?.type])} ${t("shell.contentItem")}`
+              `${
+                modelNameMap[contentModel?.type]
+                  ? t(modelNameMap[contentModel?.type])
+                  : ""
+              } ${t("shell.contentItem")}`.trim()
             );
           }
 

@@ -27,6 +27,7 @@ import { ContentItemProps } from "../../seo/src/app/components/RedirectsDialogPr
 import { ConnectField } from "../hooks/studioTypes";
 import {
   isMediaSlotDatatype,
+  isRoutedModelType,
   isTextReferenceableDatatype,
 } from "./studioFieldMeta";
 import { FieldIconChip } from "./FieldIconChip";
@@ -51,9 +52,13 @@ type StudioLinkItemDialogProps = {
   open: boolean;
   // Which of the other item's fields this slot may bind. The SAME predicates
   // used for the current item's dropdown, applied to the other model.
-  fieldFilter: "text" | "media";
+  //
+  // "url" is not a field filter at all: a link binds to the ITEM (its page URL
+  // via getUrl()), so the dialog stops at the item and offers no field step.
+  fieldFilter: "text" | "media" | "url";
   onClose: () => void;
-  // Always called with `source` populated.
+  // Always called with `source` populated. For "url" the field carries no
+  // `name` — there is no field to name.
   onConfirm: (field: ConnectField) => void;
 };
 
@@ -65,6 +70,9 @@ export const StudioLinkItemDialog = ({
 }: StudioLinkItemDialogProps) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
+  // A link binds to the item itself, so the dialog stops there: no field step,
+  // and only items whose model has a view (getUrl() resolves nothing else).
+  const isItemLink = fieldFilter === "url";
   const [item, setItem] = useState<ContentItemProps | null>(null);
   const [fieldName, setFieldName] = useState("");
   const [isSearching, setIsSearching] = useState(false);
@@ -79,7 +87,13 @@ export const StudioLinkItemDialog = ({
   const options = useMemo<ContentItemProps[]>(() => {
     return Object.values(contentItems)
       .filter(
-        (entry: any) => entry?.meta?.ZUID && !entry.meta.ZUID.includes("new")
+        (entry: any) =>
+          entry?.meta?.ZUID &&
+          !entry.meta.ZUID.includes("new") &&
+          (!isItemLink ||
+            isRoutedModelType(
+              models?.find((m) => m.ZUID === entry.meta?.contentModelZUID)?.type
+            ))
       )
       .sort(
         (a: any, b: any) =>
@@ -102,7 +116,7 @@ export const StudioLinkItemDialog = ({
           ?.type,
         isPublished: entry.publishing?.isPublished || false,
       }));
-  }, [contentItems, languages, models]);
+  }, [contentItems, isItemLink, languages, models]);
 
   const modelZUID = item?.ZUID
     ? (contentItems as any)[item.ZUID]?.meta?.contentModelZUID
@@ -113,7 +127,10 @@ export const StudioLinkItemDialog = ({
   );
 
   const { data: fields, isFetching: isFetchingFields } =
-    useGetContentModelFieldsQuery({ modelZUID }, { skip: !modelZUID });
+    useGetContentModelFieldsQuery(
+      { modelZUID },
+      { skip: !modelZUID || isItemLink }
+    );
 
   // getContentModelFields defaults to showDeleted: true, so the deletedAt
   // filter is required — not defensive.
@@ -158,15 +175,19 @@ export const StudioLinkItemDialog = ({
 
   const selectedField = fieldOptions.find((f) => f.name === fieldName);
   const canConfirm = Boolean(
-    item?.ZUID && selectedField && model?.name && model?.ZUID
+    item?.ZUID && (isItemLink || selectedField) && model?.name && model?.ZUID
   );
 
   const handleConfirm = () => {
-    if (!canConfirm || !selectedField || !model || !item) return;
+    if (!canConfirm || !model || !item) return;
     onConfirm({
-      name: selectedField.name,
-      label: selectedField.label || selectedField.name,
-      datatype: selectedField.datatype,
+      // An item link names no field: the reference is `getUrl()` on the item,
+      // and the chip identifies it by the item's own label.
+      name: selectedField?.name ?? "",
+      label: selectedField
+        ? selectedField.label || selectedField.name
+        : item.label,
+      datatype: selectedField?.datatype ?? "internal_link",
       source: {
         modelName: model.name,
         modelZUID: model.ZUID,
@@ -195,7 +216,9 @@ export const StudioLinkItemDialog = ({
           {t("content.studioLinkItemDialogTitle")}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          {t("content.studioLinkItemDialogSubtitle")}
+          {isItemLink
+            ? t("content.studioLinkItemDialogSubtitleForItem")
+            : t("content.studioLinkItemDialogSubtitle")}
         </Typography>
         <IconButton
           data-cy="StudioLinkItemDialogClose"
@@ -216,7 +239,11 @@ export const StudioLinkItemDialog = ({
         <Stack gap={2.5} p={2.5}>
           <FieldWrapper
             label={t("content.studioLinkItemContentItemLabel")}
-            tooltip={t("content.studioLinkItemContentItemTooltip")}
+            tooltip={
+              isItemLink
+                ? t("content.studioLinkItemContentItemTooltipForItem")
+                : t("content.studioLinkItemContentItemTooltip")
+            }
           >
             <SearchField
               options={options}
@@ -229,7 +256,7 @@ export const StudioLinkItemDialog = ({
             />
           </FieldWrapper>
 
-          {item ? (
+          {item && !isItemLink ? (
             <FieldWrapper
               label={t("content.studioLinkItemFieldLabel")}
               tooltip={t("content.studioLinkItemFieldTooltip")}

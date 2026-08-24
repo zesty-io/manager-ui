@@ -14,7 +14,10 @@ import DescriptionIcon from "@mui/icons-material/Description";
 import { debounce } from "lodash";
 
 export const ListOption: React.FC<
-  ContentItemProps & { isListItem?: boolean }
+  // `data-cy` is declared rather than left to the `...props` spread: it is set
+  // explicitly by the caller, and JSX excess-property checking rejects an
+  // attribute a component's props type does not name.
+  ContentItemProps & { isListItem?: boolean; "data-cy"?: string }
 > = ({
   label,
   path,
@@ -275,6 +278,10 @@ const SearchField: React.FC<SearchFieldProps> = ({
             <ListOption
               {...props}
               key={option.ZUID}
+              // Keyed by ZUID so a spec can click one specific result instead
+              // of matching on its label — the label is user copy and the list
+              // is sorted by createdAt, so neither is a stable handle.
+              data-cy={`${dataCy}Option-${option.ZUID}`}
               label={option.label}
               path={option.path}
               ZUID={option.ZUID}
