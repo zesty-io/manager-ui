@@ -1016,7 +1016,12 @@ export const StudioWrapper = () => {
       ? "StudioLayout"
       : "StudioContent";
   const saveBarIsSaving = studioSaving || isSavingLayout;
-  const saveBarCanSave = canUpdatePendingContent && canEditLayout;
+  // The layout half only gets a say when there IS a layout half. useMulti-
+  // Permission returned true for an empty zuid list, which is what made the
+  // merged form degenerate correctly in content mode; a static role check does
+  // not, and gating on one disabled Save outright for content-only roles.
+  const saveBarCanSave =
+    canUpdatePendingContent && (!hasPendingLayoutChanges || canEditLayout);
   const saveBarCanPublish = canPublishPendingContent && canPublishPendingLayout;
   // Saving AND discarding both reload the preview and rebuild the layers tree, so
   // afterwards neither the canvas nor the tree row is still selected. Leaving the

@@ -114,6 +114,34 @@ describe("Studio mode entitlement", () => {
     cy.getBySelector("StudioModeToggle").should("not.exist");
   });
 
+  // The layout half of the merged save must not gate a role that has no layout
+  // half. This broke once: `useMultiPermission("UPDATE", [])` returns true for
+  // an empty list, so swapping it for a static role check disabled Save for
+  // content-only roles outright. Nothing caught it — the CI account carries
+  // CODE, so only a role stub can reach this.
+  it("leaves Save usable for a content-only role with a pending content edit", () => {
+    asRole(CONTRIBUTOR_ROLE_ZUID);
+    visitStudio();
+    cy.getBySelector("StudioPreviewFrame").should("exist");
+
+    cy.window().should((win) => {
+      expect(
+        win.zestyStore.getState().content[itemZUID]?.meta?.ZUID,
+        "page item hydrated in store"
+      ).to.eq(itemZUID);
+    });
+    cy.window().then((win) => {
+      win.zestyStore.dispatch({ type: "MARK_ITEM_DIRTY", itemZUID });
+    });
+
+    // saveBarCanSave gates the MODAL's Save All, not the bar button — the bar
+    // button has no disabled prop and only opens the modal, so asserting on it
+    // passes either way.
+    cy.getBySelector("StudioContentSaveChangesButton").click();
+    cy.getBySelector("StudioSaveChangesModal").should("exist");
+    cy.getBySelector("StudioSaveAllButton").should("not.be.disabled");
+  });
+
   it("refuses a layout-write message from a role without code access", () => {
     asRole(CONTRIBUTOR_ROLE_ZUID);
     visitStudio();
