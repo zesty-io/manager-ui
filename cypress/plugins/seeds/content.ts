@@ -15,6 +15,10 @@ export type SeedContentTask = {
   model: ContentModel;
   fields?: ContentModelField[];
   items: ContentItem[];
+  // Present only when the fixture declares a `view`. `ZUID` is what the page
+  // renders as `data-code-id`, so a spec can address the seeded code region
+  // instead of hardcoding one.
+  view?: { ZUID: string; fileName: string; version: number } | null;
 };
 
 module.exports = function content(config) {
@@ -100,11 +104,58 @@ module.exports = function content(config) {
         });
       })
     );
-    // Return model, fields, and items for testing
+    // 4) Give the model a real view, when the fixture ships one.
+    //
+    // Creating a pageset model auto-creates a view whose code is
+    // `{{this.autolayout()}}`. On this instance that view answers 504 after
+    // 60s, so a seeded page renders NOTHING, the studio bridge never loads,
+    // and every studio spec ends up driving a bridge it fabricated itself.
+    // Replacing the code with an explicit template renders in well under a
+    // second and produces real markers, a real bridge, and a real canvas.
+    let view = null;
+    if (json.view) {
+      const code = readFileSync(join(__dirname, "../../", json.view), "utf8");
+
+      // The auto-created view can lag the model by a moment under API load.
+      let target = null;
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        const all = (await sdk.instance.getViews())?.data || [];
+        target = all.find((v) => v.contentModelZUID === model.ZUID) || null;
+        if (target) break;
+        await new Promise((r) => setTimeout(r, 1500 * attempt));
+      }
+      if (!target?.ZUID) {
+        throw new Error(
+          `seed:content created no view for model "${modelPayload.label}" (${model.ZUID})`
+        );
+      }
+
+      await sdk.instance.updateView(target.ZUID, {
+        code,
+        fileName: target.fileName,
+        filename: target.fileName,
+        type: target.type,
+        contentModelZUID: target.contentModelZUID,
+      });
+
+      // Publish the version that the update just produced, not the one read
+      // before it — updateView increments, so the pre-read number is stale.
+      const saved = (await sdk.instance.getView(target.ZUID))?.data;
+      await sdk.instance.publishView(target.ZUID, saved?.version);
+
+      view = {
+        ZUID: target.ZUID,
+        fileName: saved?.fileName || target.fileName,
+        version: saved?.version,
+      };
+    }
+
+    // Return model, fields, items, and the seeded view for testing
     return {
       model,
       fields,
       items,
+      view,
     };
   }
 

@@ -1,0 +1,70 @@
+{
+  "model": {
+    "label": "Studio Complex Page",
+    "metaTitle": "Studio Complex Page",
+    "type": "pageset",
+    "listed": true
+  },
+  "view": "fixtures/studio-complex.html",
+  "fields": [
+    {
+      "contentModelZUID": "",
+      "datatype": "text",
+      "name": "title",
+      "label": "title",
+      "sort": 1,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": { "list": true }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "text",
+      "name": "subtitle",
+      "label": "subtitle",
+      "sort": 2,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": { "list": true }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "textarea",
+      "name": "summary",
+      "label": "summary",
+      "sort": 3,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": { "list": true }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "wysiwyg_basic",
+      "name": "body",
+      "label": "body",
+      "sort": 4,
+      "required": false,
+      "relatedModelZUID": null,
+      "relatedFieldZUID": null,
+      "settings": { "list": true }
+    }
+  ],
+  "items": [
+    {
+      "meta": { "sort": 0 },
+      "web": {
+        "metaLinkText": "Studio Complex Page",
+        "metaTitle": "Studio Complex Page"
+      },
+      "data": {
+        "title": "Complex Title",
+        "subtitle": "Complex Subtitle",
+        "summary": "Complex Summary",
+        "body": "<p>Complex Body</p>"
+      }
+    }
+  ]
+}
