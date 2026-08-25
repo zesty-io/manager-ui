@@ -67,6 +67,11 @@ type LayoutReorderState = {
 //    incoming layoutStructure is removed. This is how the SOURCE region of a
 //    cross-region drag loses the moved block. For single-region reorders the
 //    structure always covers every block, so the pass is a no-op.
+// Indentation between elements is a whitespace-only text node. Re-parenting
+// moves elements but not these, so they have to be carried deliberately.
+const isWhitespaceText = (node: Node | null | undefined): node is Node =>
+  !!node && node.nodeType === 3 && (node.textContent || "").trim() === "";
+
 const mapSourceByLayoutStructure = (
   source: string,
   layoutStructure: LayoutStructureItem[],
@@ -158,37 +163,40 @@ const mapSourceByLayoutStructure = (
     let afterNode: Node | null =
       existingHere.length > 0 ? existingHere[0].previousSibling : null;
 
+    // The anchor must not be indentation that is about to travel with the
+    // first child, or the block lands one node too late.
+    if (isWhitespaceText(afterNode)) {
+      afterNode = (afterNode as Node).previousSibling;
+    }
+
     childIds.forEach((layoutId) => {
       const childNode = elementByLayoutId.get(layoutId);
       if (!childNode || childNode === parentNode) return;
       if (childNode.contains(parentNode)) return;
+
+      // Move the element's own leading indentation with it. Without this the
+      // element is re-inserted bare and its whitespace is stranded where it
+      // used to be, so every reordered region collapses onto one line — and
+      // that is true even for children that did not move, because this pass
+      // re-inserts all of them.
+      const leadingWhitespace = isWhitespaceText(childNode.previousSibling)
+        ? childNode.previousSibling
+        : null;
+
       if (childNode.parentNode) childNode.parentNode.removeChild(childNode);
+      if (leadingWhitespace?.parentNode) {
+        leadingWhitespace.parentNode.removeChild(leadingWhitespace);
+      }
 
       const reference =
         afterNode && afterNode.parentNode === parentNode
           ? afterNode.nextSibling
           : parentNode.firstChild;
+      if (leadingWhitespace)
+        parentNode.insertBefore(leadingWhitespace, reference);
       parentNode.insertBefore(childNode, reference);
       afterNode = childNode;
     });
-  });
-
-  var whitespaceNodes = [];
-  var walker = doc.createTreeWalker(root, NodeFilter.SHOW_TEXT);
-  var currentNode = walker.nextNode();
-  while (currentNode) {
-    if (!currentNode.textContent || currentNode.textContent.trim() !== "") {
-      currentNode = walker.nextNode();
-      continue;
-    }
-    whitespaceNodes.push(currentNode);
-    currentNode = walker.nextNode();
-  }
-
-  whitespaceNodes.forEach(function (node) {
-    if (node.parentNode) {
-      node.parentNode.removeChild(node);
-    }
   });
 
   return root.innerHTML;

@@ -319,7 +319,12 @@ describe("Studio Wrapper", () => {
       saveAllViaModal("layout");
 
       cy.wait("@updateWebView").then(({ request }) => {
-        expect(request.body.code).to.contain("<div>Two</div><div>One</div>");
+        // Order and sanitization are what this asserts. The adjacency was
+        // incidental: a reorder used to strip every whitespace-only text node
+        // from the region, so the saved source came back on one line. It now
+        // keeps the author's formatting, hence the tolerant match — reversing
+        // the order still fails it.
+        expect(request.body.code).to.match(/<div>Two<\/div>\s*<div>One<\/div>/);
         expect(request.body.code).not.to.contain("data-layout-id");
       });
     });
@@ -691,7 +696,12 @@ describe("Studio Wrapper", () => {
       savePublishAllViaModal("layout");
 
       cy.wait("@updateWebView").then(({ request }) => {
-        expect(request.body.code).to.contain("<div>Two</div><div>One</div>");
+        // Order and sanitization are what this asserts. The adjacency was
+        // incidental: a reorder used to strip every whitespace-only text node
+        // from the region, so the saved source came back on one line. It now
+        // keeps the author's formatting, hence the tolerant match — reversing
+        // the order still fails it.
+        expect(request.body.code).to.match(/<div>Two<\/div>\s*<div>One<\/div>/);
         expect(request.body.code).not.to.contain("data-layout-id");
       });
 
