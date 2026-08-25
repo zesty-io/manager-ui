@@ -9,21 +9,39 @@ describe("Code Editor Sidebar", { defaultCommandTimeout: 50000 }, () => {
       SIDEBAR = res;
       FILENAME = SIDEBAR?.fileName?.split("/")?.pop()?.trim() || "";
       Cypress.env("fileZUID", res?.ZUID);
+      Cypress.env("fileType", res?.type);
     });
 
     cy.task("seed:code", "fixtures/code/script.json").then((res) => {
       SCRIPT_FILENAME = res?.fileName?.split("/")?.pop()?.trim() || "";
       Cypress.env("scriptZUID", res?.ZUID);
+      Cypress.env("scriptType", res?.type);
     });
 
     cy.task("seed:code", "fixtures/code/stylesheet.json").then((res) => {
       STYLESHEET_FILENAME = res?.fileName?.split("/")?.pop()?.trim() || "";
       Cypress.env("stylesheetZUID", res?.ZUID);
+      Cypress.env("stylesheetType", res?.type);
     });
 
     cy.waitOn("/v1/web/views*", () => {
       cy.visit("/code");
     });
+  });
+
+  after(() => {
+    const files = [
+      { zuid: Cypress.env("fileZUID"), type: Cypress.env("fileType") },
+      { zuid: Cypress.env("scriptZUID"), type: Cypress.env("scriptType") },
+      {
+        zuid: Cypress.env("stylesheetZUID"),
+        type: Cypress.env("stylesheetType"),
+      },
+    ].filter((file) => file.zuid);
+
+    if (files.length) {
+      cy.task("cleanup:code", files);
+    }
   });
 
   it("Displays documents/files correctly", () => {
