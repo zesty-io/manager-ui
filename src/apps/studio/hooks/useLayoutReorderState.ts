@@ -69,8 +69,23 @@ type LayoutReorderState = {
 //    structure always covers every block, so the pass is a no-op.
 // Indentation between elements is a whitespace-only text node. Re-parenting
 // moves elements but not these, so they have to be carried deliberately.
-const isWhitespaceText = (node: Node | null | undefined): node is Node =>
+const isWhitespaceText = (node: Node | null | undefined): boolean =>
   !!node && node.nodeType === 3 && (node.textContent || "").trim() === "";
+
+// The whitespace immediately before `node`, as a node that can travel with it.
+// A pure-whitespace sibling moves as-is; a mixed text node (Parsley plus
+// indentation) is split so only its trailing whitespace run comes along.
+const takeLeadingWhitespace = (node: Node): Node | null => {
+  const prev = node.previousSibling;
+  if (!prev || prev.nodeType !== 3) return null;
+  if (isWhitespaceText(prev)) return prev;
+
+  const text = prev.textContent || "";
+  const trailing = text.length - text.trimEnd().length;
+  if (!trailing) return null;
+  // splitText leaves the head in place and returns the tail as a new node.
+  return (prev as Text).splitText(text.length - trailing);
+};
 
 const mapSourceByLayoutStructure = (
   source: string,
@@ -179,9 +194,11 @@ const mapSourceByLayoutStructure = (
       // used to be, so every reordered region collapses onto one line — and
       // that is true even for children that did not move, because this pass
       // re-inserts all of them.
-      const leadingWhitespace = isWhitespaceText(childNode.previousSibling)
-        ? childNode.previousSibling
-        : null;
+      //
+      // The indentation is not always a node of its own: a Parsley block
+      // leaves text like "\n\t{{end-if}}\n\t" as ONE text node, so the
+      // trailing run has to be split off rather than looked up.
+      const leadingWhitespace = takeLeadingWhitespace(childNode);
 
       if (childNode.parentNode) childNode.parentNode.removeChild(childNode);
       if (leadingWhitespace?.parentNode) {
