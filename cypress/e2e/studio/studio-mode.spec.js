@@ -283,12 +283,13 @@ describe("Studio Full Mode", () => {
   // evidence, and the team has removed two of these before rather than leave
   // them looking like coverage.
   //
-  // It also surfaced something unexplained and worth its own look: with
-  // `failedCount` forced to 0 the modal STAYS OPEN anyway, so
-  // `closeModalUnlessFailed` may not be closing it on the merged path at all.
-  // Until that is understood, a test here cannot distinguish the fix from the
-  // bug. The fix in `runMergedSave` (reading `{ failed }` rather than waiting
-  // for a throw that never comes) rests on reading the code, not on a test.
+  // The "modal stays open even at failedCount 0" note that used to sit here was
+  // WRONG — an artifact of those vacuous attempts, not real behaviour. Driven
+  // through Playwright, which can fail the layout PUT that Cypress cannot, a
+  // merged save with a forced 500 on the view keeps the modal open and drops it
+  // to exactly the failed half (2 rows -> 1), and a fully successful merged save
+  // closes it in ~970ms. `runMergedSave` and `closeModalUnlessFailed` behave as
+  // documented; the gap is coverage here, not correctness there.
 
   it("keeps the modal open with only the failed half when content save fails", () => {
     // The layout half has to actually succeed for this test to say anything,
