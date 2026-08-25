@@ -79,7 +79,9 @@ Host-side, never compare `interactionMode` to a string literal. Two predicates i
 | `usesLayoutGrammar(mode)`  | `layout`, `full`  | canvas grammar: mousedown selects, dblclick drills, drag reorders; layers panel; the link controls |
 | `usesContentEditing(mode)` | `content`, `full` | the two-way binding loop: panel → canvas repaint, canvas → panel `input` echo, `canEditContent`    |
 
-Every full-mode defect found so far has one shape: a guard written before `full` existed. A guard meaning "content editing is live" must say `usesContentEditing(mode)` — **not** `!usesLayoutGrammar(mode)`, which is false in full mode. `grep -rn 'interactionMode [!=]==' src/apps/studio/` should turn up nothing but the predicate definitions themselves.
+Every full-mode defect found so far has one shape: a guard written before `full` existed. A guard meaning "content editing is live" must say `usesContentEditing(mode)` — **not** `!usesLayoutGrammar(mode)`, which is false in full mode.
+
+`grep -rn 'interactionMode [!=]==' src/apps/studio/` is the review trigger. It is not expected to be empty — three-way branches that genuinely differ per mode are fine (the canvas hint text names all three; the right panel is `content || (full && panelMode === "edit")`, which no single predicate expresses). What the grep is looking for is a **two**-way branch, because that is the one written when `full` did not exist yet.
 
 ## Interaction model
 
