@@ -83,10 +83,27 @@ describe("Studio Full Mode", () => {
     });
   };
 
+  let seededViewZUID = "";
+  let seededViewVersion = 1;
+
+  // These specs used to take `/web/views?status=dev`[0] as a scratch code file.
+  // That is the instance's HOMEPAGE — 60 call sites wrote to it, leaving it 650+
+  // versions deep in test markup. seed:content hands back a disposable view; use
+  // that, so a spec only ever edits something it created.
+  const withSeededView = (cb) =>
+    cy.wrap(null, { log: false }).then(() => {
+      expect(seededViewZUID, "seed:content returned a disposable view").to.be.a(
+        "string"
+      ).and.not.be.empty;
+      return cb({ ZUID: seededViewZUID, version: seededViewVersion });
+    });
+
   before(() => {
-    cy.task("seed:content", "fixtures/studio.json").then(({ items }) => {
+    cy.task("seed:content", "fixtures/studio.json").then(({ items, view }) => {
       itemZUID = items[0].meta.ZUID;
       studioPath = `/${items[0].web.pathPart}`;
+      seededViewZUID = view?.ZUID || "";
+      seededViewVersion = view?.version ?? 1;
     });
   });
 
@@ -295,10 +312,7 @@ describe("Studio Full Mode", () => {
     // The layout half has to actually succeed for this test to say anything,
     // which means addressing a real web view — a fabricated code id fails the
     // PUT and leaves BOTH halves pending, which is a different assertion.
-    cy.apiRequest({
-      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
-    }).then(({ data }) => {
-      const webView = data?.[0];
+    withSeededView((webView) => {
       expect(webView?.ZUID, "a web view to stage a layout change against").to
         .exist;
 

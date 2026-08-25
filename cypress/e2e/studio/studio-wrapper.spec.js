@@ -115,11 +115,28 @@ describe("Studio Wrapper", () => {
     });
   };
 
+  let seededViewZUID = "";
+  let seededViewVersion = 1;
+
+  // These specs used to take `/web/views?status=dev`[0] as a scratch code file.
+  // That is the instance's HOMEPAGE — 60 call sites wrote to it, leaving it 650+
+  // versions deep in test markup. seed:content hands back a disposable view; use
+  // that, so a spec only ever edits something it created.
+  const withSeededView = (cb) =>
+    cy.wrap(null, { log: false }).then(() => {
+      expect(seededViewZUID, "seed:content returned a disposable view").to.be.a(
+        "string"
+      ).and.not.be.empty;
+      return cb({ ZUID: seededViewZUID, version: seededViewVersion });
+    });
+
   before(() => {
-    cy.task("seed:content", "fixtures/studio.json").then(({ items }) => {
+    cy.task("seed:content", "fixtures/studio.json").then(({ items, view }) => {
       itemZUID = items[0].meta.ZUID;
       modelZUID = items[0].meta.contentModelZUID;
       studioPath = `/${items[0].web.pathPart}`;
+      seededViewZUID = view?.ZUID || "";
+      seededViewVersion = view?.version ?? 1;
     });
   });
 
@@ -306,10 +323,7 @@ describe("Studio Wrapper", () => {
 
   it("saves sanitized mapped source for a pending layout draft", () => {
     setStudioMode("layout");
-    cy.apiRequest({
-      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
-    }).then(({ data }) => {
-      const webView = data?.[0];
+    withSeededView((webView) => {
       expect(webView?.ZUID).to.exist;
 
       cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as("updateWebView");
@@ -332,10 +346,7 @@ describe("Studio Wrapper", () => {
 
   it("keeps nested code-region layout nodes out of outer mapped source", () => {
     setStudioMode("layout");
-    cy.apiRequest({
-      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
-    }).then(({ data }) => {
-      const webView = data?.[0];
+    withSeededView((webView) => {
       expect(webView?.ZUID).to.exist;
 
       cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as("updateWebView");
@@ -403,10 +414,7 @@ describe("Studio Wrapper", () => {
 
   it("saves static content edit with updated text and no layout-id attributes", () => {
     setStudioMode("layout");
-    cy.apiRequest({
-      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
-    }).then(({ data }) => {
-      const webView = data?.[0];
+    withSeededView((webView) => {
       expect(webView?.ZUID).to.exist;
 
       cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as("updateWebView");
@@ -437,10 +445,7 @@ describe("Studio Wrapper", () => {
 
   it("accumulates multiple static edits and saves the latest", () => {
     setStudioMode("layout");
-    cy.apiRequest({
-      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
-    }).then(({ data }) => {
-      const webView = data?.[0];
+    withSeededView((webView) => {
       expect(webView?.ZUID).to.exist;
 
       cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as("updateWebView");
@@ -477,10 +482,7 @@ describe("Studio Wrapper", () => {
 
   it("applies static edit on top of a pending reorder without repositioning the block", () => {
     setStudioMode("layout");
-    cy.apiRequest({
-      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
-    }).then(({ data }) => {
-      const webView = data?.[0];
+    withSeededView((webView) => {
       expect(webView?.ZUID).to.exist;
 
       cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as("updateWebView");
@@ -574,10 +576,7 @@ describe("Studio Wrapper", () => {
 
   it("saves updated image src after selecting from MediaDam", () => {
     setStudioMode("layout");
-    cy.apiRequest({
-      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
-    }).then(({ data }) => {
-      const webView = data?.[0];
+    withSeededView((webView) => {
       expect(webView?.ZUID).to.exist;
 
       cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as("updateWebView");
@@ -627,10 +626,7 @@ describe("Studio Wrapper", () => {
 
   it("saves updated src for an img nested inside a layout leaf", () => {
     setStudioMode("layout");
-    cy.apiRequest({
-      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
-    }).then(({ data }) => {
-      const webView = data?.[0];
+    withSeededView((webView) => {
       expect(webView?.ZUID).to.exist;
 
       cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as("updateWebView");
@@ -676,20 +672,18 @@ describe("Studio Wrapper", () => {
 
   it("saves and publishes a pending layout draft", () => {
     setStudioMode("layout");
-    cy.apiRequest({
-      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
-    }).then(({ data }) => {
-      const webView = data?.[0];
+    withSeededView((webView) => {
       expect(webView?.ZUID).to.exist;
       expect(webView?.version).to.be.a("number");
 
       cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as("updateWebView");
-      cy.intercept(
-        "POST",
-        `/v1/web/views/${webView.ZUID}/versions/${
-          webView.version + 1
-        }?purge_cache=true`
-      ).as("publishWebView");
+      // Any version, for THIS view. What matters is that a publish was issued
+      // for the view under test; pinning `version + 1` only worked while the
+      // spec read a live view immediately beforehand, and a seeded view's
+      // version is already one behind by the time the save bumps it.
+      cy.intercept("POST", `/v1/web/views/${webView.ZUID}/versions/*`).as(
+        "publishWebView"
+      );
 
       createPendingLayoutSave(webView.ZUID);
 
