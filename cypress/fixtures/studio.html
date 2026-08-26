@@ -1,0 +1,11 @@
+(** Studio e2e — the page the general studio specs run against. Bindings use
+`this.`, matching the code Zesty generates for a new view. Keep the two plain
+sibling divs: several specs address layout regions positionally. **)
+
+<div class="studio-e2e">
+  <h1 class="studio-e2e-title">{{this.title}}</h1>
+  <p class="studio-e2e-static">Static copy that no field owns.</p>
+  <div class="studio-e2e-body">{{this.body}}</div>
+  <div class="studio-e2e-one">One</div>
+  <div class="studio-e2e-two">Two</div>
+</div>
