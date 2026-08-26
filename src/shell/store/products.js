@@ -18,6 +18,20 @@ export function products(
   }
 }
 
+/**
+ * System roles that receive the "code" product below. Exported because
+ * usePermission("CODE") must grant layout/view-source editing to exactly this
+ * set — a role added here and not there silently loses code access in Studio
+ * while the global menu still offers the Code app.
+ */
+export const CODE_ROLE_ZUIDS = [
+  "31-71cfc74-0wn3r", // owner
+  "31-71cfc74-4dm13", // admin
+  "31-71cfc74-4cc4dm13", // account admin
+  "31-71cfc74-d3v3l0p3r", // developer
+  "31-71cfc74-d3vc0n", // dev console
+];
+
 export function fetchProducts() {
   return (dispatch, getState) => {
     let data;
