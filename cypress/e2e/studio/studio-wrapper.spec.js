@@ -115,11 +115,28 @@ describe("Studio Wrapper", () => {
     });
   };
 
+  let seededViewZUID = "";
+  let seededViewVersion = 1;
+
+  // These specs used to take `/web/views?status=dev`[0] as a scratch code file.
+  // That is the instance's HOMEPAGE — 60 call sites wrote to it, leaving it 650+
+  // versions deep in test markup. seed:content hands back a disposable view; use
+  // that, so a spec only ever edits something it created.
+  const withSeededView = (cb) =>
+    cy.wrap(null, { log: false }).then(() => {
+      expect(seededViewZUID, "seed:content returned a disposable view").to.be.a(
+        "string"
+      ).and.not.be.empty;
+      return cb({ ZUID: seededViewZUID, version: seededViewVersion });
+    });
+
   before(() => {
-    cy.task("seed:content", "fixtures/studio.json").then(({ items }) => {
+    cy.task("seed:content", "fixtures/studio.json").then(({ items, view }) => {
       itemZUID = items[0].meta.ZUID;
       modelZUID = items[0].meta.contentModelZUID;
       studioPath = `/${items[0].web.pathPart}`;
+      seededViewZUID = view?.ZUID || "";
+      seededViewVersion = view?.version ?? 1;
     });
   });
 
@@ -168,12 +185,13 @@ describe("Studio Wrapper", () => {
 
   const setStudioMode = (mode) => {
     cy.getBySelector("StudioHeader").should("exist");
-    cy.getBySelector("StudioModeToggle")
-      .find('input[type="checkbox"]')
-      [mode === "layout" ? "check" : "uncheck"]();
+    // The mode control is a ToggleButtonGroup rendering only the modes the
+    // signed-in role is entitled to, so select the option directly.
+    cy.getBySelector(`StudioModeToggleOption-${mode}`).click();
   };
 
   beforeEach(() => {
+    cy.stubStaffUser();
     cy.waitOn("/v1/content/models**", () => {
       cy.visit(`/studio?path=${studioPath}`);
     });
@@ -187,6 +205,11 @@ describe("Studio Wrapper", () => {
       .and("have.attr", "src")
       .and("include", "studio=bridge");
 
+    // Studio is the default for a role with both capabilities, and it shows no
+    // right panel until something is selected — matching layout, not content.
+    cy.getBySelector("StudioSidePanel").should("not.exist");
+
+    setStudioMode("content");
     cy.getBySelector("StudioSidePanel").should("exist");
 
     setStudioMode("layout");
@@ -300,10 +323,7 @@ describe("Studio Wrapper", () => {
 
   it("saves sanitized mapped source for a pending layout draft", () => {
     setStudioMode("layout");
-    cy.apiRequest({
-      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
-    }).then(({ data }) => {
-      const webView = data?.[0];
+    withSeededView((webView) => {
       expect(webView?.ZUID).to.exist;
 
       cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as("updateWebView");
@@ -313,7 +333,12 @@ describe("Studio Wrapper", () => {
       saveAllViaModal("layout");
 
       cy.wait("@updateWebView").then(({ request }) => {
-        expect(request.body.code).to.contain("<div>Two</div><div>One</div>");
+        // Order and sanitization are what this asserts. The adjacency was
+        // incidental: a reorder used to strip every whitespace-only text node
+        // from the region, so the saved source came back on one line. It now
+        // keeps the author's formatting, hence the tolerant match — reversing
+        // the order still fails it.
+        expect(request.body.code).to.match(/<div>Two<\/div>\s*<div>One<\/div>/);
         expect(request.body.code).not.to.contain("data-layout-id");
       });
     });
@@ -321,10 +346,7 @@ describe("Studio Wrapper", () => {
 
   it("keeps nested code-region layout nodes out of outer mapped source", () => {
     setStudioMode("layout");
-    cy.apiRequest({
-      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
-    }).then(({ data }) => {
-      const webView = data?.[0];
+    withSeededView((webView) => {
       expect(webView?.ZUID).to.exist;
 
       cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as("updateWebView");
@@ -392,10 +414,7 @@ describe("Studio Wrapper", () => {
 
   it("saves static content edit with updated text and no layout-id attributes", () => {
     setStudioMode("layout");
-    cy.apiRequest({
-      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
-    }).then(({ data }) => {
-      const webView = data?.[0];
+    withSeededView((webView) => {
       expect(webView?.ZUID).to.exist;
 
       cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as("updateWebView");
@@ -426,10 +445,7 @@ describe("Studio Wrapper", () => {
 
   it("accumulates multiple static edits and saves the latest", () => {
     setStudioMode("layout");
-    cy.apiRequest({
-      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
-    }).then(({ data }) => {
-      const webView = data?.[0];
+    withSeededView((webView) => {
       expect(webView?.ZUID).to.exist;
 
       cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as("updateWebView");
@@ -466,10 +482,7 @@ describe("Studio Wrapper", () => {
 
   it("applies static edit on top of a pending reorder without repositioning the block", () => {
     setStudioMode("layout");
-    cy.apiRequest({
-      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
-    }).then(({ data }) => {
-      const webView = data?.[0];
+    withSeededView((webView) => {
       expect(webView?.ZUID).to.exist;
 
       cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as("updateWebView");
@@ -563,10 +576,7 @@ describe("Studio Wrapper", () => {
 
   it("saves updated image src after selecting from MediaDam", () => {
     setStudioMode("layout");
-    cy.apiRequest({
-      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
-    }).then(({ data }) => {
-      const webView = data?.[0];
+    withSeededView((webView) => {
       expect(webView?.ZUID).to.exist;
 
       cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as("updateWebView");
@@ -616,10 +626,7 @@ describe("Studio Wrapper", () => {
 
   it("saves updated src for an img nested inside a layout leaf", () => {
     setStudioMode("layout");
-    cy.apiRequest({
-      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
-    }).then(({ data }) => {
-      const webView = data?.[0];
+    withSeededView((webView) => {
       expect(webView?.ZUID).to.exist;
 
       cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as("updateWebView");
@@ -665,27 +672,30 @@ describe("Studio Wrapper", () => {
 
   it("saves and publishes a pending layout draft", () => {
     setStudioMode("layout");
-    cy.apiRequest({
-      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
-    }).then(({ data }) => {
-      const webView = data?.[0];
+    withSeededView((webView) => {
       expect(webView?.ZUID).to.exist;
       expect(webView?.version).to.be.a("number");
 
       cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as("updateWebView");
-      cy.intercept(
-        "POST",
-        `/v1/web/views/${webView.ZUID}/versions/${
-          webView.version + 1
-        }?purge_cache=true`
-      ).as("publishWebView");
+      // Any version, for THIS view. What matters is that a publish was issued
+      // for the view under test; pinning `version + 1` only worked while the
+      // spec read a live view immediately beforehand, and a seeded view's
+      // version is already one behind by the time the save bumps it.
+      cy.intercept("POST", `/v1/web/views/${webView.ZUID}/versions/*`).as(
+        "publishWebView"
+      );
 
       createPendingLayoutSave(webView.ZUID);
 
       savePublishAllViaModal("layout");
 
       cy.wait("@updateWebView").then(({ request }) => {
-        expect(request.body.code).to.contain("<div>Two</div><div>One</div>");
+        // Order and sanitization are what this asserts. The adjacency was
+        // incidental: a reorder used to strip every whitespace-only text node
+        // from the region, so the saved source came back on one line. It now
+        // keeps the author's formatting, hence the tolerant match — reversing
+        // the order still fails it.
+        expect(request.body.code).to.match(/<div>Two<\/div>\s*<div>One<\/div>/);
         expect(request.body.code).not.to.contain("data-layout-id");
       });
 
@@ -699,6 +709,9 @@ describe("Studio Wrapper", () => {
   // the item to be hydrated into the store first so MARK_ITEM_DIRTY isn't a
   // no-op (the reducer only flips items already present in state.content).
   const dirtyPageContent = () => {
+    // Content mode explicitly: the panel is this helper's hydration signal,
+    // and studio (the default) renders no panel until something is selected.
+    setStudioMode("content");
     cy.getBySelector("StudioSidePanel").should("exist");
     cy.window().should((win) => {
       expect(
