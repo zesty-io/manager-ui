@@ -1,0 +1,33 @@
+(** Studio e2e — a page shaped to exercise the interactions the specs care
+about. Bindings use `this.`, matching the code Zesty generates for a new view.
+**)
+
+<div class="studio-e2e">
+  (** Bound leaf: the marker is a DIRECT child of the h1, which is what
+  findInlineFieldBinding requires to route a double-click to the field. **)
+  <h1 class="studio-e2e-title">{{this.title}}</h1>
+
+  (** Static leaf: no binding, so this is the inline static-editing path. **)
+  <p class="studio-e2e-static">Static copy that no field owns.</p>
+
+  (** Mixed leaf: static runs either side of a binding in one element. This is
+  the case that is addressable by text run rather than written whole. **)
+  <p class="studio-e2e-mixed">Before {{this.subtitle}} after.</p>
+
+  (** Nesting, for drill-down: section > div > h2. **)
+  <section class="studio-e2e-section">
+    <div class="studio-e2e-inner">
+      <h2 class="studio-e2e-heading">{{this.summary}}</h2>
+    </div>
+  </section>
+
+  (** Rich text, so the html paint path (setHtmlByField) has a target. **)
+  <div class="studio-e2e-body">{{this.body}}</div>
+
+  (** Siblings, for reorder. **)
+  <ul class="studio-e2e-list">
+    <li class="studio-e2e-item">First</li>
+    <li class="studio-e2e-item">Second</li>
+    <li class="studio-e2e-item">Third</li>
+  </ul>
+</div>
