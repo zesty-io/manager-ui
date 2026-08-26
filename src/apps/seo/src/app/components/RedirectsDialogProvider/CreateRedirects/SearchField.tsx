@@ -271,6 +271,7 @@ const SearchField: React.FC<SearchFieldProps> = ({
           renderValue={(data: ContentItemProps | null, getItemProps) => (
             <ListOption
               {...getItemProps()}
+              data-cy={`${dataCy}Value`}
               label={data?.label}
               path={data?.path}
               ZUID={data?.ZUID}

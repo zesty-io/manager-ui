@@ -166,9 +166,7 @@ describe("Redirects", () => {
       cy.getElement('[data-cy="RedirectsSearchFieldInput"] input')
         .should("exist")
         .then(() => {
-          if (uncaughtError) {
-            expect(uncaughtError.message).to.not.contain("focus");
-          }
+          expect(uncaughtError, "no uncaught exception").to.be.null;
         });
 
       cy.getBySelector("RedirectsFormCancelButton").click();
