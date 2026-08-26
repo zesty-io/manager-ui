@@ -34,9 +34,9 @@ describe("Studio Inspector Panel", () => {
 
   const setStudioMode = (mode) => {
     cy.getBySelector("StudioHeader").should("exist");
-    cy.getBySelector("StudioModeToggle")
-      .find('input[type="checkbox"]')
-      [mode === "layout" ? "check" : "uncheck"]();
+    // The mode control is a ToggleButtonGroup rendering only the modes the
+    // signed-in role is entitled to, so select the option directly.
+    cy.getBySelector(`StudioModeToggleOption-${mode}`).click();
   };
 
   const saveAllViaModal = (mode = "layout") => {
@@ -340,7 +340,13 @@ describe("Studio Inspector Panel", () => {
       .as("linkSearch");
 
   before(() => {
-    cy.task("seed:content", "fixtures/studio.json").then(({ model, items }) => {
+    cy.task("seed:content", {
+      // This spec builds every layers tree it asserts against, so a live
+      // preview bridge is not realism here — it is a second writer whose
+      // trees replace these rows mid-click. Opt out of the seeded view.
+      path: "fixtures/studio.json",
+      skipView: true,
+    }).then(({ model, items }) => {
       modelZUID = model.ZUID;
       studioPath = `/${items[0].web.pathPart}`;
     });
@@ -362,12 +368,15 @@ describe("Studio Inspector Panel", () => {
   });
 
   beforeEach(() => {
+    cy.stubStaffUser();
     cy.waitOn("/v1/content/models**", () => {
       cy.visit(`/studio?path=${studioPath}`);
     });
   });
 
   it("opens the inspector panel with read-only src + alt for an img in content mode", () => {
+    // Studio is the default now; this test is about content mode.
+    setStudioMode("content");
     const node = imgNode("code-1");
     feedTree(node);
     openPanelFor(node);
@@ -381,6 +390,8 @@ describe("Studio Inspector Panel", () => {
   });
 
   it("shows a connected attribute as the same field chip in content mode", () => {
+    // Studio is the default now; this test is about content mode.
+    setStudioMode("content");
     // A dynamic (bound) src renders as the connected field chip — the same UI as
     // layout mode — not a raw input. A static attribute stays a plain input.
     const node = elementNode("code-1", "img", [
@@ -1351,6 +1362,28 @@ describe("Studio Inspector Panel", () => {
   // render pipeline and are stripped again before save — so it is addressed as
   // the PARENT of the element the panel already has coordinates for, and the
   // panel reads it back out of the cached template rather than off the tree.
+  // Nearly shipped: the Inspector gates LinkSection on canEditLayout, which is
+  // true in full mode, but `linkPatch` was still `interactionMode !== "layout"`
+  // — so the section rendered with canAddLink false and the control silently
+  // vanished. Asserting Add Link is present is exactly what linkPatch feeds.
+  it("offers the link control in full mode, not only layout", () => {
+    // full is the default; no toggle click needed.
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+
+      seedLayoutElement(
+        webView.ZUID,
+        `<img data-layout-id="1" src="a.jpg" alt="hero">`,
+        imgNode(webView.ZUID)
+      );
+
+      cy.getBySelector("StudioAddLink").should("exist");
+    });
+  });
+
   it("wraps the selected element in a link and saves the <a>", () => {
     setStudioMode("layout");
     cy.apiRequest({
