@@ -63,11 +63,8 @@ Cypress.Commands.add("getBySelector", (selector, ...args) => {
 });
 
 Cypress.Commands.add("blockAnnouncements", () => {
-  // The trailing glob is load-bearing. cy.intercept's string matcher compares
-  // against the full url and against url.parse().path — and `path` includes the
-  // query string, so the bare path stopped matching once #2323 added a
-  // cache-busting `?_=<n>` to the request. Without the glob this intercept
-  // silently misses and the announcement dialog renders over every spec.
+  // Glob is required: cy.intercept matches against a path that includes the
+  // query string, and #2323 added a cache-busting `?_=<n>`.
   cy.intercept("/-/instant/6-90fbdcadfc-4lc0s5.json*", (req) => {
     req.reply({});
   });
