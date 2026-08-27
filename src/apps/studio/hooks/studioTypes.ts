@@ -145,7 +145,28 @@ export type LayoutSelection = {
   breadcrumb: LayoutBreadcrumbItem[];
 };
 
-export type InteractionMode = "content" | "layout";
+// "full" is the union of content and layout, and the default for a user
+// entitled to both. It exists host-side only: the bridge branches on mode at
+// ten sites, every one written as === "layout" or !== "layout", so a third
+// value there would route studio into content behaviour at half of them.
+// syncBridgeInteractionMode maps full -> layout at the boundary instead.
+export type InteractionMode = "content" | "layout" | "full";
+
+// Modes whose canvas grammar is layout's: mousedown selects, dblclick drills.
+export const LAYOUT_GRAMMAR_MODES: InteractionMode[] = ["layout", "full"];
+
+export const usesLayoutGrammar = (mode: InteractionMode): boolean =>
+  LAYOUT_GRAMMAR_MODES.includes(mode);
+
+// The mirror of the above, and NOT its negation: full uses layout's canvas
+// grammar AND content's editing loop, so it belongs to both lists. Two-way
+// binding — the panel repainting the canvas, and an inline edit writing back
+// to the store — was gated on `=== "content"` because only this predicate was
+// missing when full mode landed, which left both halves dead in full mode.
+export const CONTENT_EDITING_MODES: InteractionMode[] = ["content", "full"];
+
+export const usesContentEditing = (mode: InteractionMode): boolean =>
+  CONTENT_EDITING_MODES.includes(mode);
 
 // "element" = an HTML element (collapsible container). "field" = dynamic
 // content (a studio field marker) rendered as a text row with a bolt.

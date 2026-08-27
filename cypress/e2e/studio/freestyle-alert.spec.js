@@ -57,6 +57,7 @@ describe("Studio Freestyle Alert", () => {
   };
 
   const visitStudio = () => {
+    cy.stubStaffUser();
     cy.waitOn("/v1/content/models**", () => {
       cy.visit(`/studio?path=${studioPath}`);
     });
@@ -65,13 +66,14 @@ describe("Studio Freestyle Alert", () => {
 
   const setStudioMode = (mode) => {
     cy.getBySelector("StudioHeader").should("exist");
-    cy.getBySelector("StudioModeToggle")
-      .find('input[type="checkbox"]')
-      [mode === "layout" ? "check" : "uncheck"]();
+    // The mode control is a ToggleButtonGroup rendering only the modes the
+    // signed-in role is entitled to, so select the option directly.
+    cy.getBySelector(`StudioModeToggleOption-${mode}`).click();
   };
 
   it("does not show the alert for a page that was not built in Freestyle", () => {
     visitStudio();
+    setStudioMode("content");
 
     cy.getBySelector("StudioSidePanel").should("exist");
     cy.getBySelector("StudioFreestyleAlert").should("not.exist");
@@ -86,6 +88,7 @@ describe("Studio Freestyle Alert", () => {
   it("shows a dismiss-only alert in content mode for a Freestyle layout", () => {
     stubFreestyleView();
     visitStudio();
+    setStudioMode("content");
 
     cy.getBySelector("StudioFreestyleAlert")
       .should("exist")
@@ -106,6 +109,7 @@ describe("Studio Freestyle Alert", () => {
   it("dismisses the content mode alert", () => {
     stubFreestyleView();
     visitStudio();
+    setStudioMode("content");
 
     cy.getBySelector("StudioFreestyleAlert").should("exist");
     cy.getBySelector("StudioFreestyleAlertCloseButton").click();
@@ -143,6 +147,7 @@ describe("Studio Freestyle Alert", () => {
   it("links to the item in the Freestyle app from the content mode panel", () => {
     stubFreestyleView();
     visitStudio();
+    setStudioMode("content");
 
     cy.getBySelector("StudioEditInFreestyleButton").click();
 
@@ -155,6 +160,7 @@ describe("Studio Freestyle Alert", () => {
   it("keeps the layout mode alert after dismissing it in content mode", () => {
     stubFreestyleView();
     visitStudio();
+    setStudioMode("content");
 
     cy.getBySelector("StudioFreestyleAlertCloseButton").click();
     cy.getBySelector("StudioFreestyleAlert").should("not.exist");

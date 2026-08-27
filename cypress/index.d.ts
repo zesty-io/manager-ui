@@ -13,6 +13,7 @@ declare global {
     interface Chainable {
       waitOn(path: string, cb: () => void): Chainable<void>;
       login(): Chainable<void>;
+      stubStaffUser(): Chainable<void>;
       getBySelector(
         selector: string,
         ...args: any[]

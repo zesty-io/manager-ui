@@ -1,0 +1,10 @@
+(** Studio e2e — the page behind the compact-field specs. One binding per field
+type the fixture defines, so the canvas is real rather than blank. Bindings use
+`this.`, matching the code Zesty generates for a new view. **)
+
+<div class="studio-e2e">
+  <h1 class="studio-e2e-title">{{this.multi_line_text_field}}</h1>
+  <div class="studio-e2e-wysiwyg">{{this.wysiwyg_field}}</div>
+  <div class="studio-e2e-markdown">{{this.markdown_field}}</div>
+  <p class="studio-e2e-static">Static copy that no field owns.</p>
+</div>

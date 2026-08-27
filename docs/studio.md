@@ -68,6 +68,21 @@ Envelopes are asymmetric — always check `source` before trusting a message:
 
 **`syncTemplateSource` is load-bearing.** The bridge reads template source from `<template>` blocks frozen at render time, so every unsaved layout edit must be pushed down or the bridge keeps answering from pre-edit source.
 
+## Modes
+
+`InteractionMode` is `"content" | "layout" | "full"`, and **`full` is host-side only.** The bridge branches on mode at ten sites, every one written `=== "layout"` or `!== "layout"`, so a third value on the wire would route half of them into content behaviour. `syncBridgeInteractionMode` maps `full → layout` at the boundary and the bridge stays binary. Do not "add full mode to the bridge".
+
+Host-side, never compare `interactionMode` to a string literal. Two predicates in `studioTypes.ts` own the branch, and they are **mirrors, not negations** — `full` is in both lists:
+
+| Predicate                  | True for          | Governs                                                                                            |
+| -------------------------- | ----------------- | -------------------------------------------------------------------------------------------------- |
+| `usesLayoutGrammar(mode)`  | `layout`, `full`  | canvas grammar: mousedown selects, dblclick drills, drag reorders; layers panel; the link controls |
+| `usesContentEditing(mode)` | `content`, `full` | the two-way binding loop: panel → canvas repaint, canvas → panel `input` echo, `canEditContent`    |
+
+Every full-mode defect found so far has one shape: a guard written before `full` existed. A guard meaning "content editing is live" must say `usesContentEditing(mode)` — **not** `!usesLayoutGrammar(mode)`, which is false in full mode.
+
+`grep -rn 'interactionMode [!=]==' src/apps/studio/` is the review trigger. It is not expected to be empty — three-way branches that genuinely differ per mode are fine (the canvas hint text names all three; the right panel is `content || (full && panelMode === "edit")`, which no single predicate expresses). What the grep is looking for is a **two**-way branch, because that is the one written when `full` did not exist yet.
+
 ## Interaction model
 
 Things that look like bugs but are not:
@@ -129,6 +144,8 @@ Three rules that are not guessable:
 | Layers row click | field row → field editor         | element → Inspector; text → its Value panel      |
 | Layers drag      | n/a                              | reorder — deliberately never opens the Inspector |
 
+Full mode reads down that table's right-hand column and then keeps going: the same double-click that drills also lands on the leaf's inline editor once there is nowhere further to drill, and the side panel stays mounted throughout. So in full mode a click selects, a double-click descends, and the last double-click starts typing — there is no separate "edit" gesture to find.
+
 `applyLayoutSelection` closes any open Inspector; callers that want it open re-open immediately after. The tree hook is given the raw `applyLayoutSelection`, which is why dragging does not pop the panel mid-drag.
 
 Inspector slot values are mode-dependent. **Layout mode shows `sourceValue`** — the raw template — because resolved output must never be baked into source. **Content mode shows the resolved `value`**, and a bound slot shows the field name as a clickable chip.
@@ -139,6 +156,12 @@ Saving is **gated by mode and never mixed**; switching modes prompts to save or 
 - **Content** (`useStudioContentSave`) batches `saveItem` over dirty items.
 
 Partial failure keeps the Save Changes modal open.
+
+**A reorder re-parents source nodes; it does not regenerate markup.** `mapSourceByLayoutStructure` parses the view with `DOMParser`, moves the nodes, and serializes — so a moved node keeps its own formatting for free. Its _indentation_ does not come for free: the whitespace ahead of a node is a separate text node and has to be carried with it explicitly. That whitespace is not always a node of its own, either — Parsley leaves `"\n\t{{end-if}}\n\t"` as one mixed text node, so `takeLeadingWhitespace` splits the trailing run off with `splitText`. Do not instead strip whitespace-only text nodes to make the move land cleanly: that flattens the indentation of the whole file on every save, and between two inline elements a whitespace-only node is not formatting at all — it is a rendered space.
+
+**Layout save reports failure by return value, not by throwing.** `handleSavePendingLayout` and `handleSaveAndPublishPendingLayout` resolve `{ failed: boolean }` on every path, including the path that catches an error and notifies. A caller that only wraps them in `try`/`catch` reads a failed `PUT` as success and clears the dirty state on top of it.
+
+**Full mode saves both halves through one bar** (`runMergedSave`) — layout first, then content, stopping if the layout half reports `failed`. Permission is per half, so the bar's enablement is a union rather than an `&&`: a role that may edit content but not layout still has to be able to save its content edits in full mode.
 
 ## Parsley references and cross-item bindings
 
@@ -152,6 +175,8 @@ Partial failure keeps the Save Changes modal open.
 ```
 
 The model segment is `ContentModel.name` (the Parsley reference name), **not** `label`.
+
+**`{{thispage.title}}` is a legacy alias for `{{this.title}}`** that the rendering engine still honours and Studio's parser deliberately does not. A `thispage.` binding therefore reads back as unconnected — the Inspector offers "Connect Item" on a field that is already bound, and connecting writes a second, competing reference. Author `this.` everywhere, fixtures included. Widening the parser to accept both was considered and rejected: it doubles the surface every read-back path carries, for a spelling nothing new emits.
 
 **A slot is "connected" by parsing, not by string equality.** Comparing against a regenerated expression only works while we author both sides; read-back of an externally authored reference needs real parsing. `useCrossModelConnectField` resolves model name → ZUID → fields from already-cached queries.
 
@@ -185,7 +210,13 @@ Note also that dynamic rows are only _created_ where the walk meets a marker pai
 
 ## Testing
 
-Specs live in `cypress/e2e/studio/`: `inspector-panel.spec.js`, `studio-wrapper.spec.js`, `responsive-fields.spec.js`, `freestyle-alert.spec.js`. Fixtures are `cypress/fixtures/studio*.json`.
+Specs live in `cypress/e2e/studio/`: `inspector-panel.spec.js`, `studio-wrapper.spec.js`, `studio-mode.spec.js`, `studio-binding.spec.js`, `mode-entitlement.spec.js`, `responsive-fields.spec.js`, `freestyle-alert.spec.js`. Fixtures are `cypress/fixtures/studio*.json`.
+
+**A seeded fixture needs its own view, or the spec is testing nothing.** The view a new model gets automatically is `{{this.autolayout()}}`, and on the dev instance that answers 504 after 60 seconds: the page renders empty, `bridge.js` never loads, and the spec ends up driving only the bridge it fabricated itself. A fixture declaring `"view": "fixtures/<name>.html"` makes `seed:content` `PUT` that file over the auto-created view, which renders in well under a second and produces real markers, a real bridge, and a real canvas. A spec that genuinely must own the tree opts out with `{ path, skipView: true }` — a hand-built `LAYERS_TREE` races the preview's, and the preview re-emits on every DOM mutation, so its rows disappear mid-click.
+
+**Seed a fixture; do not drive the instance homepage.** `data?.[0]` off the sites list is the homepage, so a spec written that way edits a real page and bumps its version on every run.
+
+**Three verification routes exist and each is blind to what the others see.** Cypress drives the host and can assert the `PUT` body, but the preview is cross-origin, so it never sees the canvas. A jsdom harness can exercise the source-patching functions directly, but has no layout, so nothing gesture-shaped is real there. Only a real browser reaches the out-of-process iframe. Know which one you are holding: all seven studio specs passed against a source-patching change that stripped the indentation out of every file it saved, because Cypress asserts _what_ was written and not how it was formatted.
 
 **Specs impersonate the bridge from the parent window** — the real preview is cross-origin and is never touched:
 
@@ -208,9 +239,11 @@ When testing cross-item links:
 
 ### `data-cy` hooks
 
-`StudioHeader` `StudioModeToggle` `StudioPreviewFrame` `StudioLayersPanel` `StudioLayersRow` `StudioLayersRowChevron` `StudioInspectorPanel` `StudioInspectorPanelClose` `StudioTagSelect` `StudioConnectedField` `StudioConnectedFieldCaption` `StudioSidePanel` `StudioBackToInspector` `StudioBreadcrumb*` `StudioSaveChangesModal` `StudioSaveAllButton` `StudioSaveAndPublishAllButton` `StudioSaveChangeRow` `StudioSaveChangesCancelButton` `StudioLogo` `StudioLinkItemDialog` `StudioLinkItemDialogClose` `StudioLinkItemFieldSelect` `StudioLinkItemCancel` `StudioLinkItemConfirm`
+`grep -rn 'data-cy' src/apps/studio/` is authoritative; the list below drifts.
 
-Templated: `StudioSlotInput-{key}` `StudioSlotBrowse-{attr}` `StudioConnectContent-{key}` `StudioDisconnect-{key}` `StudioConnectField-{name}` `StudioConnectOtherItem-{key}` `StudioLinkItemField-{name}` `StudioLinkItemSearchInput` (also `-InputField`, `-Error`) `Studio{Layout|Content}SaveBar` `Studio{Layout|Content}CancelButton` `Studio{Layout|Content}SaveChangesButton`
+`StudioHeader` `StudioModeToggle` `StudioPreviewFrame` `StudioPreviewRefreshOverlay` `StudioLayersPanel` `StudioLayersRow` `StudioLayersRowChevron` `StudioInspectorPanel` `StudioInspectorPanelClose` `StudioTagSelect` `StudioConnectedField` `StudioConnectedFieldCaption` `StudioSidePanel` `StudioBackToInspector` `StudioBreadcrumbs` `StudioBreadcrumbRail` `StudioBreadcrumbRoot` `StudioBreadcrumbChip` `StudioAddLink` `StudioRemoveLink` `StudioLinkDisconnect` `StudioSaveChangesModal` `StudioSaveAllButton` `StudioSaveAndPublishAllButton` `StudioSaveChangeRow` `StudioSaveChangesCancelButton` `StudioLogo` `StudioLinkItemDialog` `StudioLinkItemDialogClose` `StudioLinkItemFieldSelect` `StudioLinkItemCancel` `StudioLinkItemConfirm` `StudioFreestyleAlert` `StudioFreestyleAlertEditButton` `StudioFreestyleAlertCloseButton` `StudioEditInManagerButton` `StudioEditInFreestyleButton`
+
+Templated: `StudioModeToggleOption-{mode}` `StudioSlotInput-{key}` `StudioSlotBrowse-{attr}` `StudioConnectContent-{key}` `StudioDisconnect-{key}` `StudioConnectField-{name}` `StudioConnectOtherItem-{key}` `StudioLinkItemField-{name}` `StudioLinkItemSearchInput` (also `-InputField`, `-Error`) `StudioSaveChangeSection-{label}` `Studio{Layout|Content}SaveBar` `Studio{Layout|Content}CancelButton` `Studio{Layout|Content}SaveChangesButton`
 
 ## Gotchas worth knowing before you debug
 

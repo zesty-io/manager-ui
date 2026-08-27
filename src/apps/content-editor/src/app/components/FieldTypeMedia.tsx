@@ -676,9 +676,9 @@ export const MediaItem = ({
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const effectiveHideDrag = compact || hideDrag;
   const intersection = useIntersection(mediaItemContainerRef, {
-    threshold: 1,
+    threshold: 0,
   });
-  const isInView = intersection && intersection.intersectionRatio >= 1;
+  const isInView = intersection && intersection.intersectionRatio > 0;
   const { data, isFetching } = useGetFileQuery(imageZUID, {
     skip: imageZUID?.substr(0, 4) === "http" || !isInView,
   });

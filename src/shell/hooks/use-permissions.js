@@ -4,6 +4,8 @@ import { useMemo } from "react";
 import { useSelector } from "react-redux";
 import { createSelector } from "reselect";
 import instanceZUID from "../../utility/instanceZUID";
+// Single source of truth: the same roles that receive the "code" product.
+import { CODE_ROLE_ZUIDS } from "../store/products";
 
 const getUser = (state) => state.user;
 const getRole = (state) => state.userRole;
@@ -37,7 +39,7 @@ export function hasPermission(user, role, action, zuid = instanceZUID) {
       return granularRole?.publish ?? role?.systemRole?.publish;
 
     case "CODE":
-      return ["Owner", "Admin", "Developer"].includes(role?.systemRole?.name);
+      return CODE_ROLE_ZUIDS.includes(role?.systemRoleZUID);
 
     default:
       return false;

@@ -4,6 +4,7 @@
     "type": "pageset",
     "listed": true
   },
+  "view": "fixtures/studio-responsive-fields.html",
   "fields": [
     {
       "name": "multi_line_text_field",
