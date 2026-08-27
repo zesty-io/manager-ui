@@ -12,13 +12,19 @@ name: "Claude: Sentry Handler"
 on:
   issues:
     types: [opened]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: "Issue number to run the Sentry RCA handler against (manual re-run/testing — issue must still look Sentry-origin to the Detect step, i.e. bot-authored with the Sentry permalink first line)"
+        required: true
+        type: number
 
 jobs:
   sentry-rca:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     concurrency:
-      group: claude-sentry-handler-${{ github.event.issue.number }}
+      group: claude-sentry-handler-${{ github.event.inputs.issue_number || github.event.issue.number }}
       cancel-in-progress: true
     permissions:
       contents: write
@@ -27,12 +33,14 @@ jobs:
     steps:
       # Always re-fetch the body via `gh issue view` rather than trusting
       # github.event.issue.body, so the detection logic has one source of truth.
+      # ISSUE falls back to github.event.issue.number for the normal `issues`
+      # trigger; workflow_dispatch has no event.issue, only the manual input.
       - name: Detect Sentry-origin issue
         id: detect
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
-          ISSUE: ${{ github.event.issue.number }}
+          ISSUE: ${{ github.event.inputs.issue_number || github.event.issue.number }}
         run: |
           set -euo pipefail
           echo "number=$ISSUE" >> "$GITHUB_OUTPUT"
@@ -125,6 +133,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          allowed_bots: "sentry"
           claude_args: |
             --model claude-sonnet-5
             --max-turns 80
