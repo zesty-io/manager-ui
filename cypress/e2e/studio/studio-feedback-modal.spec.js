@@ -125,7 +125,7 @@ describe("Studio Feedback Modal", () => {
       body: {},
     }).as("sendEmail");
 
-    cy.getBySelector("StudioModeToggle").find('input[type="checkbox"]').check();
+    cy.getBySelector("StudioModeToggleOption-layout").click();
     openFeedbackModal();
     cy.getBySelector("StudioFeedbackMessageInput")
       .find("textarea")
