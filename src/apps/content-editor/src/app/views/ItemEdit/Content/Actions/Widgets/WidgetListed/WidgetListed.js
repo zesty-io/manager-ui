@@ -1,3 +1,4 @@
+import { alpha } from "@mui/material/styles";
 import { memo } from "react";
 
 import Stack from "@mui/material/Stack";
@@ -8,7 +9,7 @@ import Skeleton from "@mui/material/Skeleton";
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
 import CardContent from "@mui/material/CardContent";
-import { FieldTypeSort } from "@zesty-io/material";
+import { FieldTypeSort, theme } from "@zesty-io/material";
 
 import Tooltip from "@mui/material/Tooltip";
 import InfoIcon from "@mui/icons-material/InfoOutlined";
@@ -35,7 +36,7 @@ export const WidgetListed = memo(function WidgetListed(props) {
           p: 0,
           backgroundColor: "transparent",
           fontSize: "16px",
-          color: "#10182866",
+          color: alpha(theme.palette.text.primary, 0.4),
           borderBottom: 1,
           borderColor: "grey.200",
         }}
@@ -44,7 +45,7 @@ export const WidgetListed = memo(function WidgetListed(props) {
             fontWeight: 400,
             fontSize: "12px",
             lineHeight: "32px",
-            color: "#101828",
+            color: "text.primary",
           },
         }}
         title="PARSLEY BEHAVIORS"
@@ -106,7 +107,12 @@ export const WidgetListed = memo(function WidgetListed(props) {
               sx={{ maxWidth: "200px" }}
               name="sort"
               label={
-                <span style={{ color: "#101828", marginBottom: "8px" }}>
+                <span
+                  style={{
+                    color: theme.palette.text.primary,
+                    marginBottom: "8px",
+                  }}
+                >
                   <Tooltip
                     title="Automated Navigation Order controls the output of the automated parsley {{navigation}} and {{sectionlinks}}. It can also be used in an each loop like: {{each items as items sort by z.sort}} calls."
                     arrow
