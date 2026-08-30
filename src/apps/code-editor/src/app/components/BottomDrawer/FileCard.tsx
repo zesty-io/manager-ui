@@ -30,8 +30,7 @@ const FileCard: React.FC<FileCardProps> = ({
     <Card
       sx={{
         boxSizing: "border-box",
-        // Temporary: will be updated once the design is final
-        bgcolor: "#0D1116",
+        bgcolor: "background.editor",
         color: "grey.400",
         width: "100%",
         px: 2,
