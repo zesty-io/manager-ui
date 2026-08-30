@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import cx from "classnames";
 import { v4 as uuidv4 } from "uuid";
 import {
   TextField,
@@ -8,7 +7,6 @@ import {
   IconButton,
   tooltipClasses,
 } from "@mui/material";
-import styles from "./FieldTypeUUID.less";
 import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
 import CheckIcon from "@mui/icons-material/Check";
 import TagRoundedIcon from "@mui/icons-material/TagRounded";
