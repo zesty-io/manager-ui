@@ -1,3 +1,4 @@
+import { theme } from "@zesty-io/material";
 import { useEffect, useMemo } from "react";
 import { addYears, isWithinInterval } from "date-fns";
 import {
@@ -142,7 +143,7 @@ export const InAppAnnouncement = () => {
           width={600}
           height={340}
           sx={{
-            background: "linear-gradient(90deg, #EC4A0A 0%, #FD853A 100%)",
+            background: `linear-gradient(90deg, ${theme.palette.primary.dark} 0%, ${theme.palette.primary.light} 100%)`,
           }}
           alignItems="center"
           justifyContent="center"
