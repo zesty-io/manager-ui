@@ -57,10 +57,9 @@ export default connect((state) => {
             borderColor: "grey.200",
           }}
           titleTypographyProps={{
+            variant: "overline",
             sx: {
               fontWeight: 400,
-              fontSize: "12px",
-              lineHeight: "32px",
               color: "text.primary",
             },
           }}
