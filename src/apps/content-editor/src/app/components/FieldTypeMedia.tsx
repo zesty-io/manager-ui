@@ -48,8 +48,7 @@ import { IconButton, ImageSync } from "@zesty-io/material";
 import { FileModal } from "../../../../media/src/app/components/FileModal";
 import RenameFileModal from "../../../../media/src/app/components/FileModal/RenameFileModal";
 import { fileExtension } from "../../../../media/src/app/utils/fileUtils";
-import styles from "../../../../media/src/app/components/Thumbnail/Loading.less";
-import cx from "classnames";
+import { loadingThumbnailSx } from "../../../../media/src/app/components/Thumbnail/loadingStyles";
 import { FileTypePreview } from "../../../../media/src/app/components/FileModal/FileTypePreview";
 import { useGetInstanceSettingsQuery } from "../../../../../shell/services/instance";
 import { ReplaceFileModal } from "../../../../media/src/app/components/FileModal/ReplaceFileModal";
@@ -861,7 +860,7 @@ export const MediaItem = ({
         )}
         <Box position="relative" width="80px" height="80px" bgcolor="grey.100">
           {isFetching ? (
-            <div className={cx(styles.Load, styles.Loading)}></div>
+            <Box sx={loadingThumbnailSx} data-cy="thumbnail-loading" />
           ) : (
             <FileTypePreview
               src={isURL ? imageZUID : data?.url}
