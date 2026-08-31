@@ -3,7 +3,12 @@ name: Claude Change Verifier
 # Static QA on every non-draft, same-repo PR into dev. Reads the PR diff, the changed source, and
 # the linked issue, judges the change against the issue's acceptance criteria from the code, and
 # posts (or updates) one QA sign-off comment. It never boots the app or drives a browser.
-# The check fails only on a clear FAIL or a missing report; INCONCLUSIVE stays green.
+#
+# The agent grades criteria; it does NOT write the verdict. The verdict is arithmetic on its marks,
+# computed in the post step, so the same marks always produce the same verdict. Criteria that need
+# a running app are partitioned out before grading and listed unscored — they are not a verdict
+# outcome. There is no INCONCLUSIVE: "I could not observe runtime" is this workflow's permanent
+# condition, not a per-PR result. The check fails only on a ❌ criterion or a missing report.
 
 on:
   pull_request:
@@ -56,6 +61,29 @@ jobs:
           echo "issue_number=${NUM:-}" >> "$GITHUB_OUTPUT"
           echo "Linked issue: ${NUM:-<none> (change-only mode)}"
 
+      # Pin the criteria across pushes. Re-deriving the list every run is what made the denominator
+      # move — the same issue yielded 5 criteria one run and 4 the next, and the verdict moved with
+      # it. On a re-run the agent re-judges the list it already published instead of inventing a new
+      # one. Empty file on the first run.
+      - name: Fetch prior QA comment
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+          gh api "repos/$REPO/issues/$PR/comments" --paginate \
+            --jq '[.[] | select(.user.login == "github-actions[bot]") | select(.body | startswith("<!-- cv-verifier -->")) | .body] | first // ""' \
+            > prior-qa-comment.md
+          # jq emits a bare newline when there is no prior comment; normalise that to a truly empty
+          # file so the prompt's "empty = first run" test is a plain -s check.
+          if [ "$(tr -d '[:space:]' < prior-qa-comment.md | wc -c)" -eq 0 ]; then : > prior-qa-comment.md; fi
+          if [ -s prior-qa-comment.md ]; then
+            echo "Prior QA comment found; its criteria will be reused verbatim."
+          else
+            echo "No prior QA comment; criteria will be derived fresh."
+          fi
+
       - uses: anthropics/claude-code-action@1dc994ee7a008f0ecc866d9ac23ef036b7229f84 # v1.0.127
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -83,34 +111,66 @@ jobs:
               PR_NUMBER    = ${{ github.event.pull_request.number }}
               ISSUE_NUMBER = ${{ steps.issue.outputs.issue_number }}   (empty = no linked issue)
               REPORT_FILE  = ${{ github.workspace }}/qa-comment.md
+              PRIOR_REPORT = ${{ github.workspace }}/prior-qa-comment.md   (empty = first run)
 
-            1. If ISSUE_NUMBER is set, read it (gh issue view <ISSUE_NUMBER> --repo <REPO> --json
-               title,body,comments,labels) and derive a short numbered list of acceptance criteria.
-               If empty, run change-only mode: no criteria, just assess whether the change is correct.
-            2. Read the diff (gh pr diff <PR_NUMBER> --repo <REPO>) and open the changed files to
-               understand what the change does. This is for your judgment only — the report does
-               not include a change summary.
-            3. Judge each criterion from the code as one of:
-                 ✅ Satisfied    — the code clearly implements it.
-                 ⚠️ Inconclusive — can't tell from the code alone. Not a failure.
-                 ❌ Not met      — the code clearly fails it (give evidence).
-               When unsure between ⚠️ and ❌, choose ⚠️.
-            4. Overall verdict: FAIL only if a criterion is ❌ or the diff shows a clear bug;
-               INCONCLUSIVE if nothing is clearly failing but you couldn't confirm; otherwise PASS.
-               Never FAIL on uncertainty.
-            5. Suggest Cypress coverage in prose (no code): find the real spec under cypress/e2e/<area>/
+            1. Establish the criteria.
+               If PRIOR_REPORT is non-empty, this PR has been reviewed before. Read it and REUSE its
+               criteria verbatim — same wording, same numbering, same split between the two groups in
+               step 2 — then re-judge them against the current diff. Add a criterion only if the issue
+               itself gained one. Never re-split, re-word, or renumber an existing one. Holding the
+               list fixed is the point: a list that moves between runs makes two runs of the same PR
+               incomparable.
+               Otherwise, if ISSUE_NUMBER is set, read it (gh issue view <ISSUE_NUMBER> --repo <REPO>
+               --json title,body,comments,labels) and derive the criteria. Where the issue states its
+               acceptance criteria explicitly, take its bullets one-to-one rather than merging or
+               paraphrasing them. If ISSUE_NUMBER is empty, run change-only mode: the criteria are the
+               checks you judge worth performing on this change.
+
+            2. Partition the criteria into exactly two groups, BEFORE judging any of them:
+                 A. CHECKABLE — you can settle it from the diff and the source alone.
+                 B. NEEDS A RUNNING APP — settling it means observing the app: rendered output,
+                    timing, network behavior, anything you would have to click.
+               A criterion goes in B whenever checking it honestly would mean running something. B is
+               a normal, expected outcome for UI work — a report where everything landed in A is more
+               suspicious than one where half did.
+
+            3. Read the diff (gh pr diff <PR_NUMBER> --repo <REPO>) and open the changed files to
+               understand what the change does. This is for your judgment only — the report does not
+               include a change summary.
+
+            4. Grade group A, and grade every one of them as exactly one of:
+                 ✅ Satisfied — the code clearly implements it.
+                 ❌ Not met   — the code clearly fails it (give evidence).
+               There is no third mark and no "couldn't confirm" here. If you cannot settle a criterion
+               from the code, it was group B and belongs there instead — do not grade it. Equally, do
+               not soften a failure you can see in the diff: a missing attribute, a doc the change
+               left stale, a criterion the change simply does not address is ❌.
+               Group B is NOT graded. List each one with what would have to be observed to settle it,
+               and never guess at its outcome.
+
+            5. Do NOT write an overall verdict. A later step computes it from your marks. There is no
+               PASS or FAIL line anywhere in the report for you to write.
+
+            6. Suggest Cypress coverage in prose (no code): find the real spec under cypress/e2e/<area>/
                and describe the cases that would lock in the behavior.
 
-            Write the report to REPORT_FILE with the Write tool, in exactly this shape (keep both HTML
-            markers verbatim). Do not post a comment or reply in chat.
+            Write the report to REPORT_FILE with the Write tool, in exactly this shape. Keep the marker
+            line verbatim and leave the "## QA Review" heading exactly as written — a later step
+            completes it. Do not post a comment or reply in chat.
 
               <!-- cv-verifier -->
-              ## QA Review — <✅ PASS | ❌ FAIL | ⚠️ INCONCLUSIVE>
+              ## QA Review
               <If an issue: "Validates #<n>: <title>". Else: "No linked issue found — change-only QA.">
 
               1. ✅ <criterion in one line>
               2. ❌ <criterion in one line> — <why it fails, one clause>
-              3. ⚠️ <criterion in one line> — <what couldn't be confirmed, one clause>
+
+              <details>
+              <summary>Not checkable from the code — needs a running app</summary>
+
+              - <criterion> — <what would have to be observed to settle it>
+
+              </details>
 
               <details>
               <summary>Suggested Cypress coverage</summary>
@@ -118,16 +178,26 @@ jobs:
               <real spec file name + prose cases>
               </details>
 
-              <!-- qa-verdict: <PASS_OR_FAIL_OR_INCONCLUSIVE> -->
+            FORMAT RULES. A later step parses this file to compute the verdict, so these are not
+            stylistic preferences:
+              - The graded criteria are the ONLY numbered list in the report. Each is a single line
+                beginning exactly `N. ✅ ` or `N. ❌ `, with nothing before the number.
+              - Every group-B criterion is a `- ` bullet inside the "Not checkable from the code"
+                details block, and appears nowhere else.
+              - Never use ✅ or ❌ anywhere else in the report.
+              - Omit the "Not checkable" block if group B is empty; omit the numbered list if group A
+                is empty. Never emit both empty.
+              - Keep the blank lines after each <summary> and before each </details> — GitHub will not
+                render the markdown inside without them.
 
-            Rules: the report contains nothing beyond the template — no summary or extra sections.
-            The "— why" clause on a ⚠️/❌ line is the only place for explanation; ✅ lines get none.
-            In change-only mode the numbered list is the checks you performed. Never write `#<n>`
-            except in the "Validates #<n>" line (GitHub auto-links it). Write the
-            `<!-- qa-verdict: ... -->` marker exactly once, as the final line, and never quote
-            either HTML marker elsewhere in the report.
+            Rules: the report contains nothing beyond this template — no summary, no extra sections.
+            The "— why" clause on a ❌ line is the only place for explanation; ✅ lines get none. In
+            change-only mode the numbered list is the checks you performed. Never write `#<n>` except
+            in the "Validates #<n>" line (GitHub auto-links it), and never quote the `<!-- cv-verifier -->`
+            marker anywhere but the first line.
 
-      # Post the report, or update the existing QA comment in place. Reads the verdict for the gate.
+      # Post the report, or update the existing QA comment in place. The verdict is computed here,
+      # from the agent's marks, and the heading completed — the agent writes neither.
       - name: Post or update QA comment
         id: qa
         if: always()
@@ -143,18 +213,52 @@ jobs:
             echo "no_report=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          BODY=$(cat "$FILE")
-          # Take the LAST marker: the real verdict is the final line of the template, so if the
-          # report quotes the marker earlier as an example, the trailing one still wins.
-          VERDICT=$(printf '%s' "$BODY" | grep -oiE '<!-- qa-verdict:[[:space:]]*(PASS|FAIL|INCONCLUSIVE)[[:space:]]*-->' \
-            | grep -oiE '(PASS|FAIL|INCONCLUSIVE)' | tail -n1 | tr '[:lower:]' '[:upper:]' || true)
-          # A report with no usable verdict marker is a broken report — treat it like a missing one
-          # (gate red) rather than letting an empty verdict fall through to a silent green.
-          if [ -z "$VERDICT" ]; then
-            echo "::warning::QA report has no usable qa-verdict marker; the QA gate will fail."
+          # Graded criteria are the report's only numbered list; group B are bullets inside the
+          # details block. That separation is what makes both countable.
+          PASSED=$(grep -cE '^[0-9]+\. ✅' "$FILE" || true)
+          FAILED=$(grep -cE '^[0-9]+\. ❌' "$FILE" || true)
+          RUNTIME=$(sed -n '/<summary>Not checkable from the code/,/<\/details>/p' "$FILE" | grep -cE '^- ' || true)
+          GRADED=$((PASSED + FAILED))
+          # A report with no criteria of either kind is a broken report — treat it like a missing one
+          # (gate red) rather than letting it fall through to a silent green.
+          if [ "$GRADED" -eq 0 ] && [ "$RUNTIME" -eq 0 ]; then
+            echo "::warning::QA report contains no criteria at all; the QA gate will fail."
             echo "no_report=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
+          if [ "$FAILED" -gt 0 ]; then
+            VERDICT=FAIL
+            SUMMARY="❌ FAIL — ${FAILED} of ${GRADED} code-checkable criteria not met"
+          elif [ "$GRADED" -eq 0 ]; then
+            VERDICT=PASS
+            SUMMARY="✅ PASS — nothing in this change was checkable from the code"
+          else
+            VERDICT=PASS
+            SUMMARY="✅ PASS — ${PASSED}/${GRADED} code-checkable criteria confirmed"
+          fi
+          if [ "$RUNTIME" -eq 1 ]; then
+            SUMMARY="${SUMMARY}, 1 needs a running app"
+          elif [ "$RUNTIME" -gt 1 ]; then
+            SUMMARY="${SUMMARY}, ${RUNTIME} need a running app"
+          fi
+          echo "Counts: passed=$PASSED failed=$FAILED runtime=$RUNTIME -> $VERDICT"
+          # Complete the bare heading and stamp the machine-readable marker ourselves. Any verdict
+          # marker the agent wrote despite the prompt is dropped, so ours is the only one.
+          python3 - "$FILE" "$SUMMARY" "$VERDICT" <<'PY'
+          import io, sys
+          path, summary, verdict = sys.argv[1], sys.argv[2], sys.argv[3]
+          lines = io.open(path, encoding="utf-8").read().rstrip("\n").split("\n")
+          out = []
+          for line in lines:
+              if line.startswith("<!-- qa-verdict:"):
+                  continue
+              if line.strip().startswith("## QA Review"):
+                  line = "## QA Review — " + summary
+              out.append(line)
+          out += ["", "<!-- qa-verdict: %s -->" % verdict]
+          io.open(path, "w", encoding="utf-8").write("\n".join(out) + "\n")
+          PY
+          BODY=$(cat "$FILE")
           PAYLOAD=$(BODY="$BODY" python3 -c 'import os,json,sys; sys.stdout.write(json.dumps({"body": os.environ["BODY"]}))')
           CID=$(gh api "repos/$REPO/issues/$PR/comments" --paginate \
             --jq '.[] | select(.user.login == "github-actions[bot]") | select(.body | startswith("<!-- cv-verifier -->")) | .id' | head -n1)
@@ -165,7 +269,7 @@ jobs:
             printf '%s' "$PAYLOAD" | gh api -X POST "repos/$REPO/issues/$PR/comments" --input - --silent
             echo "Created QA comment."
           fi
-          echo "verdict=${VERDICT:-}" >> "$GITHUB_OUTPUT"
+          echo "verdict=$VERDICT" >> "$GITHUB_OUTPUT"
 
       - name: QA gate
         if: always()
@@ -176,7 +280,9 @@ jobs:
             echo "::error::No QA report was produced — check the workflow logs."
             exit 1
           fi
+          # A ❌ fails the check, as it always has. To make ❌ advisory instead, drop the exit 1 here
+          # and keep the annotation — the verdict and counts stay in the comment either way.
           if [ "$V" = "FAIL" ]; then
-            echo "::error::QA found an unmet criterion or a clear bug — see the QA Review comment."
+            echo "::error::QA found an unmet criterion — see the QA Review comment."
             exit 1
           fi
