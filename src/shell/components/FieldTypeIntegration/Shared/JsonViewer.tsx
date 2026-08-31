@@ -155,16 +155,16 @@ const JsonViewer = ({
             },
 
             "& .mtk4": {
-              color: "#FEC84B",
+              color: "yellow.300",
             },
             "& .mtk5": {
-              color: "#32D583",
+              color: "green.400",
               "&.detected-link": {
-                color: "#0BA5EC",
+                color: "info.main",
               },
             },
             "& .mtk6": {
-              color: "#0BA5EC",
+              color: "info.main",
             },
           },
         }}

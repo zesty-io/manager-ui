@@ -9,7 +9,7 @@ import {
   Tooltip,
   Link,
 } from "@mui/material";
-import { Database } from "@zesty-io/material";
+import { Database, theme } from "@zesty-io/material";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
 import CheckIcon from "@mui/icons-material/Check";
@@ -100,10 +100,10 @@ export const FieldTooltipBody = ({ data }: FieldTooltipBodyProps) => {
             variant="body3"
             fontWeight={600}
             sx={{
-              textDecorationColor: "#475467",
+              textDecorationColor: theme.palette.text.secondary,
 
               "&:hover": {
-                textDecorationColor: "#475467",
+                textDecorationColor: theme.palette.text.secondary,
               },
             }}
           >
@@ -137,7 +137,7 @@ const CopyField = ({ value, title, tooltip }: CopyFieldProps) => {
         inputProps={{
           sx: {
             ":read-only": {
-              textFillColor: "#101828",
+              textFillColor: theme.palette.text.primary,
             },
           },
         }}

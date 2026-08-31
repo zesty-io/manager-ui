@@ -1,3 +1,4 @@
+import { theme } from "@zesty-io/material";
 import { Fragment } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBolt } from "@fortawesome/free-solid-svg-icons";
@@ -40,7 +41,7 @@ export function InstantUrl(props) {
           >
             <FontAwesomeIcon
               icon={faBolt}
-              style={{ color: "#0BA5EC", marginRight: "8px" }}
+              style={{ color: theme.palette.info.main, marginRight: "8px" }}
             />
             {`/-/instant/${props.item?.meta?.ZUID}.json`}
           </Link>

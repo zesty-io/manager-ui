@@ -1,3 +1,4 @@
+import { theme } from "@zesty-io/material";
 import { useRef, useEffect, useState, useContext } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -104,7 +105,7 @@ export const CommentItem = ({
       const hyperlinkedContent = body?.replaceAll(URL_REGEX, (text) => {
         // Highlights @ mentions
         if (text.includes("@") && text.startsWith("@")) {
-          return `<span style="color: #FF5D0A">${text}</span>`;
+          return `<span style="color: ${theme.palette.primary.main}">${text}</span>`;
         }
 
         // Converts url strings to anchor tags
@@ -114,7 +115,7 @@ export const CommentItem = ({
               ? text
               : `https://${text}`;
 
-          return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: #FF5D0A; text-decoration: none">${text}</a>`;
+          return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: ${theme.palette.primary.main}; text-decoration: none">${text}</a>`;
         }
 
         return text;

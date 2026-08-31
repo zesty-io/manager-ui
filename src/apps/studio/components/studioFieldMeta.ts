@@ -1,3 +1,4 @@
+import { theme } from "@zesty-io/material";
 import TitleRounded from "@mui/icons-material/TitleRounded";
 import SubjectRounded from "@mui/icons-material/SubjectRounded";
 import NewspaperRounded from "@mui/icons-material/NewspaperRounded";
@@ -196,17 +197,19 @@ export const isMediaSlotDatatype = (datatype?: string | null): boolean => {
 export const isRoutedModelType = (type?: string | null): boolean =>
   type === "templateset" || type === "pageset";
 
-// Chip fill / icon colour per category, from the Figma dropdown. Kept as literal
-// hex because these are the design system's field-type tints, not MUI palette
-// roles.
+// Chip fill / icon colour per category, from the Figma dropdown. Every one of
+// these is an exact @zesty-io/material ramp step, so they are taken from the
+// theme rather than retyped -- see docs/design-system.md section 1. Resolved
+// values, not palette paths: FieldIconChip interpolates `fg` into a `border`
+// shorthand, which sx cannot resolve a path inside.
 export const FIELD_CATEGORY_COLORS: Record<
   FieldCategory,
   { bg: string; fg: string }
 > = {
-  text: { bg: "#ECFDF3", fg: "#039855" },
-  number: { bg: "#FEF3F2", fg: "#D92D20" },
-  options: { bg: "#F4F3FF", fg: "#5925DC" },
-  media: { bg: "#F0F9FF", fg: "#0BA5EC" },
-  link: { bg: "#FDF2FA", fg: "#DD2590" },
-  neutral: { bg: "#F2F4F7", fg: "#475467" },
+  text: { bg: theme.palette.green[50], fg: theme.palette.green[600] },
+  number: { bg: theme.palette.red[50], fg: theme.palette.red[600] },
+  options: { bg: theme.palette.purple[50], fg: theme.palette.purple[700] },
+  media: { bg: theme.palette.blue[50], fg: theme.palette.info.main },
+  link: { bg: theme.palette.pink[50], fg: theme.palette.pink[600] },
+  neutral: { bg: theme.palette.grey[100], fg: theme.palette.text.secondary },
 };

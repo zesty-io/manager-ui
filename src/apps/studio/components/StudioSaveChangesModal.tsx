@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import {
   Box,
   Button,
@@ -20,6 +21,28 @@ import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
 import { useTranslation } from "react-i18next";
 
 export type StudioSaveChangeType = "Content" | "Code" | "Block";
+
+// One save can now span both backends, so the rows are grouped by which one
+// they commit to — a partial failure then reads as "the layout half saved,
+// the content half did not" rather than a flat list.
+// `key` is also the data-cy suffix, so it stays a stable English literal
+// while `labelKey` resolves to the localized heading.
+const SECTIONS: {
+  key: "Content" | "Layout";
+  labelKey: string;
+  includes: StudioSaveChangeType[];
+}[] = [
+  {
+    key: "Content",
+    labelKey: "content.studioSaveChangeSectionContent",
+    includes: ["Content", "Block"],
+  },
+  {
+    key: "Layout",
+    labelKey: "content.studioSaveChangeSectionLayout",
+    includes: ["Code"],
+  },
+];
 
 export type StudioSaveChangeVersion = {
   version: number;
@@ -66,6 +89,11 @@ export const StudioSaveChangesModal = ({
 
   if (!open) return null;
 
+  const showSectionHeaders =
+    SECTIONS.filter((section) =>
+      changes.some((change) => section.includes.includes(change.type))
+    ).length > 1;
+
   return (
     <Dialog
       open
@@ -101,33 +129,59 @@ export const StudioSaveChangesModal = ({
             </TableRow>
           </TableHead>
           <TableBody>
-            {changes.map((change) => (
-              <TableRow key={change.id} data-cy="StudioSaveChangeRow">
-                <TableCell>
-                  <Stack spacing={0.5} alignItems="flex-start">
-                    {change.versions.map((version) => (
-                      <Chip
-                        key={`${version.state}-${version.version}`}
-                        size="small"
-                        label={`v${version.version}`}
-                        color={version.state === "draft" ? "info" : "success"}
-                        variant="outlined"
-                      />
-                    ))}
-                  </Stack>
-                </TableCell>
-                <TableCell>
-                  <Typography variant="body2">{change.title}</Typography>
-                </TableCell>
-                <TableCell>
-                  <Chip
-                    size="small"
-                    label={typeLabels[change.type]}
-                    variant="filled"
-                  />
-                </TableCell>
-              </TableRow>
-            ))}
+            {SECTIONS.map((section) => {
+              const sectionChanges = changes.filter((change) =>
+                section.includes.includes(change.type)
+              );
+              if (!sectionChanges.length) return null;
+
+              return (
+                <Fragment key={section.key}>
+                  {/* A subheader only earns its row when both backends are in
+                      play. With one section the type chip already says which,
+                      and a lone header is noise. */}
+                  {showSectionHeaders ? (
+                    <TableRow
+                      data-cy={`StudioSaveChangeSection-${section.key}`}
+                      sx={{ bgcolor: "grey.50" }}
+                    >
+                      <TableCell colSpan={3} sx={{ fontWeight: 600, py: 0.5 }}>
+                        {t(section.labelKey)}
+                      </TableCell>
+                    </TableRow>
+                  ) : null}
+                  {sectionChanges.map((change) => (
+                    <TableRow key={change.id} data-cy="StudioSaveChangeRow">
+                      <TableCell>
+                        <Stack spacing={0.5} alignItems="flex-start">
+                          {change.versions.map((version) => (
+                            <Chip
+                              key={`${version.state}-${version.version}`}
+                              size="small"
+                              label={`v${version.version}`}
+                              color={
+                                version.state === "draft" ? "info" : "success"
+                              }
+                              variant="outlined"
+                            />
+                          ))}
+                        </Stack>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2">{change.title}</Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Chip
+                          size="small"
+                          label={typeLabels[change.type]}
+                          variant="filled"
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </Fragment>
+              );
+            })}
           </TableBody>
         </Table>
       </DialogContent>

@@ -210,7 +210,7 @@ const DisplayCard = ({
               width: isVideoType ? "142px" : "80px",
               maxHeight: "80px",
               position: "relative",
-              bgcolor: "#F2F4F7",
+              bgcolor: "grey.100",
               display: "flex",
               justifyContent: "center",
               alignItems: "center",

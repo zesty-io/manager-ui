@@ -104,7 +104,11 @@ On boot, `src/shell/index.js` reads several keys from IndexedDB (`<ZUID>:languag
 
 ### TypeScript
 
-Mixed JS/TS. `tsconfig.json` sets `allowJs: true`, `noImplicitAny: true`, `jsx: "react-jsx"`, and a single path alias `shell/* → ./src/shell/*`. Webpack adds matching aliases for `shell`, `utility`, and `apps`. `ts-loader` compiles `.ts(x)`; `babel-loader` handles `.js`. Coverage instrumentation (`babel-plugin-istanbul`) is hard-coded `on` in the webpack config — leave it that way unless intentionally changing CI coverage behavior.
+Mixed JS/TS. `tsconfig.json` sets `allowJs: true`, `noImplicitAny: true`, `skipLibCheck: true`, `jsx: "react-jsx"`, and a single path alias `shell/* → ./src/shell/*`. Webpack adds matching aliases for `shell`, `utility`, and `apps`. `ts-loader` compiles `.ts(x)`; `babel-loader` handles `.js`.
+
+`skipLibCheck: true` skips checking inside every `.d.ts`, including this repo's own. Ambient declarations still fail at their use sites, but a derived type (`typeof import(...)`, `ReturnType<...>`) fails silently and degrades to `any` — keep those in a real `.ts` file, which is what `src/shell/configTypes.ts` is for.
+
+Coverage instrumentation (`babel-plugin-istanbul`) is hard-coded `on` in the webpack config — leave it that way unless intentionally changing CI coverage behavior.
 
 ### Theming
 
@@ -220,7 +224,7 @@ This is the **one exception** to strict key-parity across locales. A non-suffixe
 - **Sub-app reducers register via `injectReducer`** in the sub-app's `src/index.js`. Canonical example: `src/apps/content-editor/src/index.js` (it injects `modal` and `listFilters`).
 - **Components.** Functional + hooks only — there are no class components. Default to flat `Foo.tsx`; promote to `Foo/index.tsx` only when the component grows colocated files (`Foo.less`, child components, types). Type props with `type FooProps = { … }`; reach for `interface` only when extending. `memo()` is used selectively for high-rerender cases (tabs, sidebars, large list rows) — not by default.
 - **Routing is React Router v5.** Use `<Switch>`, `<Route>`, `useHistory`, `useLocation`, `<Redirect>`. Do not use v6 syntax (`useNavigate`, `<Routes>`, `element={}`). Top-level routes live in `src/shell/views/Shell/Shell.tsx`; sub-app internal routes nest inside the sub-app.
-- **Styling.** Prefer the MUI `sx` prop (the dominant pattern). LESS modules (`Component.less` + `import styles from "./Component.less"`) exist for shell-level layout (sidebar, topbar) and are fine to maintain there, but don't reach for them in new feature code. Avoid `styled()` from `@mui/material/styles` unless `sx` genuinely cannot express the rule.
+- **Styling.** Prefer the MUI `sx` prop (the dominant pattern). LESS modules (`Component.less` + `import styles from "./Component.less"`) exist for shell-level layout (sidebar, topbar) and are fine to maintain there, but don't reach for them in new feature code. Avoid `styled()` from `@mui/material/styles` unless `sx` genuinely cannot express the rule. That is _how_ to attach a style; for _which value_, see [`docs/design-system.md`](docs/design-system.md) — a hex literal or a raw `fontSize` in `src/` is a bug unless that doc covers it.
 - **Service URLs come from `window.CONFIG`** (populated in `src/shell/index.js`), never hardcoded and never imported from `src/shell/app.config.js` directly at runtime.
 - **TypeScript first for new files.** `allowJs: true` keeps existing `.js` working; new modules should be `.ts`/`.tsx` with explicit types.
 - **Long lists virtualize.** This codebase ships `react-window`, `react-virtualized-auto-sizer`, and `react-virtualized-sticky-tree` for a reason — re-render perf matters here, and `why-did-you-render` is wired up in `src/shell/wdyr.js`. Virtualize new tables and long content lists.

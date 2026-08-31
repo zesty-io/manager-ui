@@ -15,6 +15,7 @@ import { useTranslation } from "react-i18next";
 import { MemoryRouter, useHistory, useLocation } from "react-router";
 import { cloneDeep } from "lodash";
 import { AppState } from "shell/store/types";
+import { usePermission } from "shell/hooks/use-permissions";
 import {
   fetchAllModelPublishings,
   fetchItem,
@@ -68,6 +69,8 @@ import {
   ElementSlot,
   InteractionMode,
   LayoutBreadcrumbItem,
+  usesContentEditing,
+  usesLayoutGrammar,
 } from "./hooks/studioTypes";
 import { useStudioSelection } from "./hooks/useStudioSelection";
 import { useStudioLayersTree } from "./hooks/useStudioLayersTree";
@@ -105,6 +108,51 @@ export const StudioWrapper = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
 
+  // Which interaction modes this user is entitled to. Layout mode writes view
+  // source, so it requires code access; content mode requires content update.
+  // Studio is the union and needs both. The toggle renders only these, and no
+  // code path may set a mode outside this list.
+  //
+  // Order matters: availableModes[0] is the preferred default, so a user with
+  // both capabilities lands in studio.
+  const canEditLayout = usePermission("CODE");
+  const canEditContent = usePermission("UPDATE");
+  const availableModes = useMemo<InteractionMode[]>(
+    () =>
+      [
+        canEditContent && canEditLayout && "full",
+        canEditContent && "content",
+        canEditLayout && "layout",
+      ].filter(Boolean) as InteractionMode[],
+    [canEditContent, canEditLayout]
+  );
+
+  // `usePermission` reads redux `state.userRole`, which `fetchUserRole`
+  // populates asynchronously. On first render it is `{systemRole: {}}`, so
+  // every capability reads false and availableModes is empty. Initialising
+  // the mode from it directly would lock the user into content before their
+  // role arrives; instead the mode is promoted to the preferred default once
+  // entitlement resolves, and only until the user picks a mode themselves.
+  const userChoseModeRef = useRef(false);
+
+  // Per the PRD, mode is resolved from permissions rather than chosen: a user
+  // is placed in the mode that matches their access and is never offered one
+  // they cannot act in. Staff keep the switch so a single account can exercise
+  // all three surfaces without re-provisioning roles.
+  //
+  // Gated on `user.staff`, the same flag that decides whether Studio appears in
+  // the global menu (`shell/store/products.js`), so the feature has one
+  // definition of "internal" rather than two. An email-domain check was the
+  // first implementation and diverged from it in both directions: staff on a
+  // non-Zesty address lost the switch, and a Zesty address without the staff
+  // flag gained it.
+  //
+  // This is presentation only. `availableModes` still bounds what the switch
+  // can reach, so a staff account cannot select into a mode it lacks the
+  // permissions for.
+  const isStaff = useSelector((state: AppState) => !!state.user?.staff);
+  const canSelectMode = isStaff;
+
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const currentHoverStudioIdRef = useRef<string | null>(null);
   const [showPendingLayoutModal, setShowPendingLayoutModal] = useState(false);
@@ -117,6 +165,9 @@ export const StudioWrapper = () => {
   const fieldErrorRef = useRef<any>(null);
   const pendingLayoutContinuationRef = useRef<null | (() => void)>(null);
   const previewReloadContinuationRef = useRef<null | (() => void)>(null);
+  // Set while a merged save is running so the content and layout save paths,
+  // which each refresh the preview internally, do not reload the iframe twice.
+  const suppressPreviewRefreshRef = useRef(false);
   const bridgeUpdatedFieldZuidRef = useRef<string | null>(null);
   const [isFetchingItem, setIsFetchingItem] = useState(false);
   const [isFetchingModel, setIsFetchingModel] = useState(false);
@@ -653,6 +704,13 @@ export const StudioWrapper = () => {
 
   const refreshPreviewFrame = useCallback(
     (onReloadComplete?: () => void) => {
+      // A merged save refreshes once itself, after both backends have run.
+      if (suppressPreviewRefreshRef.current) {
+        if (onReloadComplete) {
+          previewReloadContinuationRef.current = onReloadComplete;
+        }
+        return;
+      }
       previewReloadContinuationRef.current = onReloadComplete || null;
       // Fade the dark overlay in first, then reload the iframe underneath it
       // so the blank reload is hidden and edits are blocked until it finishes.
@@ -948,30 +1006,33 @@ export const StudioWrapper = () => {
     onSelectedLayoutBreadcrumbChange: setSelectedLayout,
   });
   const hasPendingLayoutChanges = pendingLayoutCodeIds.length > 0;
-  const canUpdatePendingLayout = useMultiPermission(
-    "UPDATE",
-    pendingLayoutCodeIds
-  );
   const canPublishPendingLayout = useMultiPermission(
     "PUBLISH",
     pendingLayoutCodeIds
   );
 
-  // The floating save bar is shared between modes ("gated by mode"): in layout
-  // mode it commits staged layout changes, in content mode it commits the
-  // staged multi-item content edits. Only the active mode's pending changes are
-  // ever surfaced because switching modes prompts to save/discard first.
-  const isLayoutMode = interactionMode === "layout";
-  const showSaveBar = isLayoutMode
-    ? hasPendingLayoutChanges
-    : hasPendingContentChanges;
-  const saveBarIsSaving = isLayoutMode ? isSavingLayout : studioSaving;
-  const saveBarCanSave = isLayoutMode
-    ? canUpdatePendingLayout
-    : canUpdatePendingContent;
-  const saveBarCanPublish = isLayoutMode
-    ? canPublishPendingLayout
-    : canPublishPendingContent;
+  // One save bar across all three modes. There is no mode fork here any more:
+  // the merged form degenerates correctly in the single-capability modes,
+  // because a mode that cannot stage a change never has one pending, and
+  // `useMultiPermission` returns true for an empty ZUID list — so a user with
+  // no layout changes is not gated on layout permission.
+  const showSaveBar = hasPendingContentChanges || hasPendingLayoutChanges;
+  // The save bar is one control now, but its test hooks stay binary because
+  // the existing studio specs address them by name. Layout naming only when
+  // layout is the ONLY thing pending, which is exactly when layout mode used
+  // to render this bar; every other case keeps the content naming.
+  const saveBarHookPrefix =
+    hasPendingLayoutChanges && !hasPendingContentChanges
+      ? "StudioLayout"
+      : "StudioContent";
+  const saveBarIsSaving = studioSaving || isSavingLayout;
+  // The layout half only gets a say when there IS a layout half. useMulti-
+  // Permission returned true for an empty zuid list, which is what made the
+  // merged form degenerate correctly in content mode; a static role check does
+  // not, and gating on one disabled Save outright for content-only roles.
+  const saveBarCanSave =
+    canUpdatePendingContent && (!hasPendingLayoutChanges || canEditLayout);
+  const saveBarCanPublish = canPublishPendingContent && canPublishPendingLayout;
   // Saving AND discarding both reload the preview and rebuild the layers tree, so
   // afterwards neither the canvas nor the tree row is still selected. Leaving the
   // Inspector open would describe a selection nothing else agrees with.
@@ -987,15 +1048,12 @@ export const StudioWrapper = () => {
     clearLayoutSelection();
   }, [clearLayoutSelection, clearSelection, inspectorSelection]);
 
-  const handleSaveBarCancel = isLayoutMode
-    ? () => {
-        handleDiscardPendingLayoutSave();
-        deselectForPreviewReload();
-      }
-    : () => {
-        deselectForPreviewReload();
-        void discardAllContent();
-      };
+  // Discards whatever is actually pending, in either or both backends.
+  const handleSaveBarCancel = () => {
+    deselectForPreviewReload();
+    if (hasPendingLayoutChanges) handleDiscardPendingLayoutSave();
+    if (hasPendingContentChanges) void discardAllContent();
+  };
   // The "Save Changes" bar button opens the modal; the modal's Save All /
   // Save & Publish All buttons run the active mode's batch handlers and close.
   // Close the modal on full success; keep it open on partial failure so the
@@ -1005,6 +1063,61 @@ export const StudioWrapper = () => {
     setShowSaveChangesModal(false);
     deselectForPreviewReload();
   };
+  // Runs whichever backends have pending changes, content first, and reloads
+  // the preview exactly once at the end.
+  //
+  // The two are attempted INDEPENDENTLY rather than short-circuiting on the
+  // first failure. Both row sources derive from what is still dirty
+  // (`dirtyContentItems` from redux, `pendingLayoutCodeIds` from the hook,
+  // which drops successfully-saved regions), so attempting both leaves exactly
+  // the failed half listed in the modal with no extra bookkeeping.
+  const runMergedSave = async (
+    saveContent: () => Promise<{ failedCount?: number } | void>,
+    saveLayout: () => Promise<unknown>
+  ): Promise<{ failedCount: number }> => {
+    // Both save paths call refreshPreviewFrame internally. Suppress it for the
+    // duration so a merged save does not reload the iframe twice.
+    suppressPreviewRefreshRef.current = true;
+    let failedCount = 0;
+
+    try {
+      if (hasPendingContentChanges) {
+        const result = await saveContent();
+        failedCount += (result && result.failedCount) || 0;
+      }
+    } catch {
+      failedCount += 1;
+    }
+
+    try {
+      // Layout writes view source and strips layout ids; running it after the
+      // content writes avoids racing two preview reloads against a layers-tree
+      // rebuild.
+      //
+      // handleSavePendingLayout catches its own errors and toasts them, so a
+      // failed layout save resolves normally and the catch below never runs.
+      // Read its reported outcome rather than inferring one from a throw,
+      // otherwise the modal closes on a half-save it claims to keep open.
+      if (hasPendingLayoutChanges) {
+        const layoutResult = (await saveLayout()) as
+          | { failed?: boolean }
+          | undefined;
+        if (layoutResult?.failed) failedCount += 1;
+      }
+    } catch {
+      failedCount += 1;
+    }
+
+    // A save hook may have registered a post-reload continuation while the
+    // refresh was suppressed. Hand it to the single real refresh instead of
+    // letting the no-arg call clear it.
+    suppressPreviewRefreshRef.current = false;
+    const storedContinuation = previewReloadContinuationRef.current;
+    previewReloadContinuationRef.current = null;
+    refreshPreviewFrame(storedContinuation || undefined);
+    return { failedCount };
+  };
+
   // Opening the modal is where the pending set stops being an implementation
   // detail and starts being a contract: `pendingLayoutCodeIds` feeds both the
   // useMultiPermission gate above and the file list the user is about to
@@ -1014,21 +1127,21 @@ export const StudioWrapper = () => {
   // settle before either is read; the flush inside handleSavePendingLayout
   // stays as belt-and-braces and will normally find nothing left to do.
   const handleOpenSaveChangesModal = () => {
-    if (isLayoutMode) flushPendingPatches();
+    if (usesLayoutGrammar(interactionMode)) flushPendingPatches();
     setShowSaveChangesModal(true);
   };
   const handleModalSaveAll = () => {
     if (!saveBarCanSave) return;
-    Promise.resolve(
-      isLayoutMode ? handleSavePendingLayout() : saveAllContent()
-    ).then(closeModalUnlessFailed, () => {});
+    runMergedSave(saveAllContent, handleSavePendingLayout).then(
+      closeModalUnlessFailed,
+      () => {}
+    );
   };
   const handleModalSaveAndPublishAll = () => {
     if (!saveBarCanPublish) return;
-    Promise.resolve(
-      isLayoutMode
-        ? handleSaveAndPublishPendingLayout()
-        : saveAndPublishAllContent()
+    runMergedSave(
+      saveAndPublishAllContent,
+      handleSaveAndPublishPendingLayout
     ).then(closeModalUnlessFailed, () => {});
   };
 
@@ -1036,8 +1149,8 @@ export const StudioWrapper = () => {
   // mode lists the staged content/block items, layout mode lists changed code
   // files. (Per product: staging is gated by mode, never mixed.)
   const saveChanges = useMemo<StudioSaveChange[]>(() => {
-    if (isLayoutMode) {
-      return pendingLayoutCodeIds.map((codeId) => {
+    const layoutChanges: StudioSaveChange[] = pendingLayoutCodeIds.map(
+      (codeId) => {
         const webView = webViews.find((view) => view.ZUID === codeId);
         return {
           id: codeId,
@@ -1048,10 +1161,10 @@ export const StudioWrapper = () => {
               ? [{ version: webView.version, state: "published" }]
               : [],
         };
-      });
-    }
+      }
+    );
 
-    return dirtyContentItems.map((item) => {
+    const contentChanges: StudioSaveChange[] = dirtyContentItems.map((item) => {
       const storeItem = contentItems[item.itemZUID];
       const model = modelsState[item.modelZUID];
       const draftVersion = storeItem?.meta?.version;
@@ -1073,11 +1186,14 @@ export const StudioWrapper = () => {
         versions,
       };
     });
+
+    // Content first, matching the order the merged save runs them in. The
+    // modal groups by the `type` chip each row already carries.
+    return [...contentChanges, ...layoutChanges];
   }, [
     codeFileNameById,
     contentItems,
     dirtyContentItems,
-    isLayoutMode,
     modelsState,
     pendingLayoutCodeIds,
     webViews,
@@ -1086,7 +1202,7 @@ export const StudioWrapper = () => {
   const requestProceedWithPendingLayoutSave = useCallback(
     (onProceed: () => void) => {
       // The other reader of the pending set, and gated on the same
-      // canUpdatePendingLayout. A debounced write has to land before the
+      // canEditLayout. A debounced write has to land before the
       // decision — including the decision NOT to prompt, which would otherwise
       // navigate away and leave the timer to re-dirty a region nobody is
       // watching. A no-op when nothing is queued.
@@ -1104,12 +1220,18 @@ export const StudioWrapper = () => {
 
   const syncBridgeInteractionMode = useCallback(
     (nextMode: InteractionMode) => {
+      // The bridge stays binary. Studio's canvas grammar IS layout's, so it
+      // goes over the wire as "layout" and the bridge needs no third value.
+      const wireMode: "content" | "layout" = usesLayoutGrammar(nextMode)
+        ? "layout"
+        : "content";
+
       postCommandToBridge({
         action: "setInteractionMode",
-        mode: nextMode,
+        mode: wireMode,
       });
 
-      if (nextMode === "layout") {
+      if (wireMode === "layout") {
         postCommandToBridge({
           action: "enableReorderByUid",
           selector: "[data-layout-id]",
@@ -1126,6 +1248,13 @@ export const StudioWrapper = () => {
   const handleInteractionModeChange = useCallback(
     (nextMode: InteractionMode) => {
       if (interactionMode === nextMode) return;
+      // Refuse a mode the user is not entitled to, before any of the
+      // dirty-state branches below can run and commit the change.
+      if (!availableModes.includes(nextMode)) return;
+
+      // From here the mode is the user's choice, so stop tracking the
+      // preferred default.
+      userChoseModeRef.current = true;
 
       const applyInteractionModeChange = () => {
         if (currentHoverStudioIdRef.current) {
@@ -1143,6 +1272,11 @@ export const StudioWrapper = () => {
         syncBridgeInteractionMode(nextMode);
       };
 
+      // The gate is on what the DESTINATION cannot commit, which is why both
+      // conditions name a specific target rather than testing "leaving X".
+      // Studio commits both, so it matches neither and entering it is never
+      // gated — correct, since nothing becomes uncommittable. Leaving studio
+      // still prompts, because the destination narrows.
       if (nextMode === "layout" && hasPendingContentChanges) {
         const openModal = (window as any).openContentNavigationModal;
         if (typeof openModal === "function") {
@@ -1169,6 +1303,7 @@ export const StudioWrapper = () => {
       applyInteractionModeChange();
     },
     [
+      availableModes,
       clearLayoutSelection,
       clearSelection,
       interactionMode,
@@ -1178,6 +1313,74 @@ export const StudioWrapper = () => {
       syncBridgeInteractionMode,
     ]
   );
+
+  // Two rules, in priority order:
+  //
+  // 1. Clamp — if the active mode is not entitled, correct it. This holds
+  //    whether or not the user chose it, and covers entitlement narrowing
+  //    while Studio is open.
+  // 2. Promote — until the user picks a mode themselves, track the preferred
+  //    default. This is what resolves the hydration race: the mode starts as
+  //    "content" and becomes "full" when the role arrives.
+  //
+  // Selection is not cleared on either path. Unlike a user-driven switch,
+  // nothing has been selected yet when these fire.
+  //
+  // Pending work is a different matter. A user-driven switch routes through
+  // the modals in handleInteractionModeChange, but this path cannot: the
+  // entitlement is already gone, so there is nothing to offer — the write
+  // would be rejected by the server. Leaving the change staged is worse than
+  // dropping it, because the mode that could commit it is now unreachable and
+  // the save bar disappears with it: the edit stays applied in memory with no
+  // affordance to save, discard, or even see it. So discard explicitly and
+  // say so, rather than silently stranding it.
+  useEffect(() => {
+    if (!availableModes.length) return;
+
+    const isEntitled = availableModes.includes(interactionMode);
+    if (isEntitled && userChoseModeRef.current) return;
+
+    const nextMode = availableModes[0];
+    if (nextMode === interactionMode) return;
+
+    const losesLayout = !usesLayoutGrammar(nextMode) && hasPendingLayoutChanges;
+    const losesContent = nextMode === "layout" && hasPendingContentChanges;
+
+    if (losesLayout) handleDiscardPendingLayoutSave();
+    if (losesContent) void discardAllContent();
+
+    if (losesLayout || losesContent) {
+      dispatch(
+        notify({
+          kind: "warn",
+          message:
+            "Your permissions changed while Studio was open, so unsaved " +
+            (losesLayout && losesContent
+              ? "content and layout changes were discarded."
+              : losesLayout
+              ? "layout changes were discarded."
+              : "content changes were discarded."),
+        })
+      );
+    }
+
+    setInteractionMode(nextMode);
+    // This clamp is involuntary, so it must not read back as a deliberate
+    // pick — otherwise the guard above sees an entitled mode plus a "user
+    // chose it" flag and refuses to re-promote when entitlement is restored,
+    // stranding the user in the degraded mode.
+    userChoseModeRef.current = false;
+    syncBridgeInteractionMode(nextMode);
+  }, [
+    availableModes,
+    dispatch,
+    discardAllContent,
+    handleDiscardPendingLayoutSave,
+    hasPendingContentChanges,
+    hasPendingLayoutChanges,
+    interactionMode,
+    syncBridgeInteractionMode,
+  ]);
 
   const handleLanguageChange = useCallback(
     (langCode: string) => {
@@ -1240,7 +1443,7 @@ export const StudioWrapper = () => {
   }, [clearSelection]);
 
   useEffect(() => {
-    if (interactionMode !== "content") return;
+    if (!usesContentEditing(interactionMode)) return;
     if (
       !selectedElement?.studioId ||
       !selectedElement.fieldZuid ||
@@ -1461,6 +1664,40 @@ export const StudioWrapper = () => {
     [applyLayoutSelection, openInspectorForLayoutElement]
   );
 
+  // The bridge resolved a bound leaf on the canvas. Open the Inspector for that
+  // element FIRST, then select the field.
+  //
+  // Order is the whole point. `applySelection` keeps an open Inspector only
+  // when its slots carry the field being edited, and clears it otherwise —
+  // so selecting straight from the canvas closes the Inspector and takes
+  // "Back to Element" with it. `openInspectorForLayoutElement` resolves the
+  // element to its lone bound text child, whose slots DO carry the fieldZuid,
+  // which is exactly why the layers-row route keeps the button and this one
+  // did not.
+  const handleDynamicEditRequest = useCallback(
+    (msg: {
+      codeId?: string;
+      layoutId?: string;
+      studioId?: string;
+      fieldZuid: string;
+      fieldType?: string;
+      itemZuid?: string;
+      modelZuid?: string;
+    }) => {
+      if (msg.codeId && msg.layoutId) {
+        openInspectorForLayoutElement(msg.codeId, msg.layoutId);
+      }
+      applyBridgeSelection({
+        studioId: msg.studioId,
+        fieldZuid: msg.fieldZuid,
+        fieldType: msg.fieldType,
+        itemZuid: msg.itemZuid,
+        modelZuid: msg.modelZuid,
+      });
+    },
+    [applyBridgeSelection, openInspectorForLayoutElement]
+  );
+
   const { handlePreviewLoad } = useStudioBridge({
     dispatch,
     interactionMode,
@@ -1473,6 +1710,8 @@ export const StudioWrapper = () => {
     applyLayoutSelection: handleBridgeLayoutSelection,
     clearLayoutSelection,
     applySelection: applyBridgeSelection,
+    onDynamicEditRequest: handleDynamicEditRequest,
+    canEditLayout,
     fieldNameByZuid,
     currentHoverStudioIdRef,
     clearSelection,
@@ -1754,7 +1993,9 @@ export const StudioWrapper = () => {
   // keeps a text row from wrapping content the panel isn't showing — a run of a
   // multi-run leaf carries the same element patch as the leaf itself.
   const linkPatch = useMemo(() => {
-    if (interactionMode !== "layout") return null;
+    // Full mode renders LinkSection (the Inspector gates it on canEditLayout),
+    // so a layout-only guard here leaves the control visible and inert.
+    if (!usesLayoutGrammar(interactionMode)) return null;
     if (!inspectorSelection?.ownsLinkControls) return null;
     const patch = inspectorSelection.layoutPatch;
     if (!patch?.codeId || !patch.isSelf) return null;
@@ -1960,6 +2201,8 @@ export const StudioWrapper = () => {
         <Alert severity="info" variant="standard">
           {interactionMode === "layout"
             ? t("content.studioLayoutHint")
+            : interactionMode === "full"
+            ? t("content.studioFullHint")
             : t("content.studioContentHint")}
         </Alert>
         <ContentInfo
@@ -2046,6 +2289,8 @@ export const StudioWrapper = () => {
             onLanguageChange={handleLanguageChange}
             interactionMode={interactionMode}
             onInteractionModeChange={handleInteractionModeChange}
+            availableModes={availableModes}
+            canSelectMode={canSelectMode}
             selectedLayoutBreadcrumb={selectedLayout?.breadcrumb || []}
             onLayoutBreadcrumbClick={handleLayoutBreadcrumbSelect}
             pageModelZUID={pageModelZUID}
@@ -2078,7 +2323,7 @@ export const StudioWrapper = () => {
               isBusy={isRefreshing || studioSaving || isSavingLayout}
               onLoad={handlePreviewFrameLoad}
               overlaySlot={
-                isLayoutMode && showFreestyleAlert ? (
+                usesLayoutGrammar(interactionMode) && showFreestyleAlert ? (
                   <StudioFreestyleAlert
                     showEditAction
                     onEditInFreestyle={handleEditInFreestyle}
@@ -2089,12 +2334,13 @@ export const StudioWrapper = () => {
             />
             {panelMode === "inspector" && inspectorSelection ? (
               <StudioInspectorPanel
-                mode={interactionMode}
+                canEditLayout={usesLayoutGrammar(interactionMode)}
+                canEditContent={usesContentEditing(interactionMode)}
                 elementKey={inspectorSelection.nodeId}
                 tagName={inspectorSelection.tagName}
                 slots={inspectorSelection.slots}
                 canChangeTag={
-                  interactionMode === "layout" &&
+                  usesLayoutGrammar(interactionMode) &&
                   !!inspectorSelection.layoutPatch?.isSelf
                 }
                 onChangeTag={handleTagChange}
@@ -2113,7 +2359,13 @@ export const StudioWrapper = () => {
                 drawerWidth={drawerWidth}
                 logoSrc={contentOneLogo}
               />
-            ) : interactionMode === "content" ? (
+            ) : interactionMode === "content" ||
+              (interactionMode === "full" && panelMode === "edit") ? (
+              // Studio renders the content editor when a field is being
+              // edited, but otherwise shows nothing — matching layout, which
+              // has no right panel at all. Falling through to `panelMode`'s
+              // "info" default here would put an info panel where layout mode
+              // deliberately shows empty canvas.
               <StudioSidePanel
                 headerTitle={headerTitle}
                 selectedItemLabel={selectedItemLabel}
@@ -2148,9 +2400,7 @@ export const StudioWrapper = () => {
           </Box>
           {showSaveBar && !showSaveChangesModal ? (
             <Box
-              data-cy={
-                isLayoutMode ? "StudioLayoutSaveBar" : "StudioContentSaveBar"
-              }
+              data-cy={`${saveBarHookPrefix}SaveBar`}
               position="absolute"
               left="50%"
               bottom={24}
@@ -2169,11 +2419,7 @@ export const StudioWrapper = () => {
                 boxShadow={6}
               >
                 <Button
-                  data-cy={
-                    isLayoutMode
-                      ? "StudioLayoutCancelButton"
-                      : "StudioContentCancelButton"
-                  }
+                  data-cy={`${saveBarHookPrefix}CancelButton`}
                   color="inherit"
                   onClick={handleSaveBarCancel}
                   disabled={saveBarIsSaving}
@@ -2181,11 +2427,7 @@ export const StudioWrapper = () => {
                   {t("common.cancel")}
                 </Button>
                 <Button
-                  data-cy={
-                    isLayoutMode
-                      ? "StudioLayoutSaveChangesButton"
-                      : "StudioContentSaveChangesButton"
-                  }
+                  data-cy={`${saveBarHookPrefix}SaveChangesButton`}
                   variant="contained"
                   color="primary"
                   startIcon={<SaveRoundedIcon fontSize="small" />}
@@ -2226,13 +2468,13 @@ export const StudioWrapper = () => {
             content={t("content.studioUnsavedLayoutBody")}
             open={showPendingLayoutModal}
             loading={isSavingLayout}
-            saveDisabled={!canUpdatePendingLayout}
+            saveDisabled={!canEditLayout}
             onCancel={() => {
               setShowPendingLayoutModal(false);
               pendingLayoutContinuationRef.current = null;
             }}
             onSave={async () => {
-              if (!canUpdatePendingLayout) return;
+              if (!canEditLayout) return;
               const onProceed = pendingLayoutContinuationRef.current;
               setShowPendingLayoutModal(false);
               pendingLayoutContinuationRef.current = null;

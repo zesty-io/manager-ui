@@ -1,8 +1,10 @@
 import AutoAwesomeMosaicRoundedIcon from "@mui/icons-material/AutoAwesomeMosaicRounded";
+import AutoAwesomeRoundedIcon from "@mui/icons-material/AutoAwesomeRounded";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
-import { Box, Chip, Switch } from "@mui/material";
-import { alpha, styled } from "@mui/material/styles";
+import { Box, Chip, ToggleButton, ToggleButtonGroup } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { LanguageSelector } from "../../content-editor/src/app/views/ItemEdit/components/ItemEditHeader/LanguageSelector";
+import { InteractionMode, usesLayoutGrammar } from "../hooks/studioTypes";
 
 type LayoutBreadcrumbItem = {
   layoutId?: string;
@@ -11,8 +13,16 @@ type LayoutBreadcrumbItem = {
 
 type StudioHeaderProps = {
   onLanguageChange: (langCode: string) => void;
-  interactionMode: "content" | "layout";
-  onInteractionModeChange: (mode: "content" | "layout") => void;
+  interactionMode: InteractionMode;
+  onInteractionModeChange: (mode: InteractionMode) => void;
+  /** Modes this user is entitled to. The switch can never exceed these. */
+  availableModes: InteractionMode[];
+  /**
+   * Whether the mode switch is offered at all. Mode is normally resolved from
+   * permissions and not selectable; Zesty staff keep the switch so one account
+   * can exercise every surface.
+   */
+  canSelectMode: boolean;
   selectedLayoutBreadcrumb: LayoutBreadcrumbItem[];
   onLayoutBreadcrumbClick: (layoutId: string) => void;
   pageModelZUID: string;
@@ -21,70 +31,34 @@ type StudioHeaderProps = {
   logoSrc: string;
 };
 
-const StudioModeSwitch = styled(Switch)(({ theme }) => ({
-  width: 60,
-  height: 32,
-  padding: 0,
-  "& .MuiSwitch-switchBase": {
-    padding: 0,
-    margin: 2,
-    width: 28,
-    height: 28,
-    borderRadius: "50%",
-    backgroundColor: alpha(theme.palette.grey[900], 0.56),
-    transitionDuration: "300ms",
-    "&:hover": {
-      backgroundColor: alpha(theme.palette.grey[900], 0.56),
-    },
-    "&.Mui-checked": {
-      transform: "translateX(28px)",
-      color: "#fff",
-      backgroundColor: "#354497",
-      "&:hover": {
-        backgroundColor: "#354497",
-      },
-      "& + .MuiSwitch-track": {
-        backgroundColor: theme.palette.grey[100],
-        opacity: 1,
-        border: 0,
-      },
-      "&.Mui-disabled + .MuiSwitch-track": {
-        opacity: 0.5,
-      },
-    },
-    "&.Mui-focusVisible .MuiSwitch-thumb": {
-      color: theme.palette.grey[300],
-      border: "6px solid #fff",
-    },
+const MODE_OPTIONS: {
+  mode: InteractionMode;
+  labelKey: string;
+  icon: JSX.Element;
+}[] = [
+  {
+    mode: "full",
+    labelKey: "content.studioModeFull",
+    icon: <AutoAwesomeRoundedIcon fontSize="small" />,
   },
-  "& .MuiSwitch-thumb": {
-    boxSizing: "border-box",
-    width: 28,
-    height: 28,
-    backgroundColor: "transparent",
-    boxShadow: "none",
-    color: "#fff",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    "& svg": {
-      fontSize: 18,
-    },
+  {
+    mode: "content",
+    labelKey: "content.studioModeContent",
+    icon: <EditRoundedIcon fontSize="small" />,
   },
-  "& .MuiSwitch-track": {
-    borderRadius: 100,
-    backgroundColor: theme.palette.grey[100],
-    opacity: 1,
-    transition: theme.transitions.create(["background-color"], {
-      duration: 500,
-    }),
+  {
+    mode: "layout",
+    labelKey: "content.studioModeLayout",
+    icon: <AutoAwesomeMosaicRoundedIcon fontSize="small" />,
   },
-}));
+];
 
 export const StudioHeader = ({
   onLanguageChange,
   interactionMode,
   onInteractionModeChange,
+  availableModes,
+  canSelectMode,
   selectedLayoutBreadcrumb,
   onLayoutBreadcrumbClick,
   pageModelZUID,
@@ -92,6 +66,7 @@ export const StudioHeader = ({
   unresolvedPath,
   logoSrc,
 }: StudioHeaderProps) => {
+  const { t } = useTranslation();
   const [codeIdSegment, ...pathSegments] = selectedLayoutBreadcrumb;
 
   return (
@@ -115,7 +90,8 @@ export const StudioHeader = ({
         sx={{ height: 32 }}
       />
       <Box flex="1" display="flex" justifyContent="center" minWidth={0} px={2}>
-        {interactionMode === "layout" && selectedLayoutBreadcrumb.length ? (
+        {usesLayoutGrammar(interactionMode) &&
+        selectedLayoutBreadcrumb.length ? (
           <Box
             data-cy="StudioBreadcrumbs"
             display="flex"
@@ -203,15 +179,34 @@ export const StudioHeader = ({
             disabled={unresolvedPath}
           />
         </Box>
-        <StudioModeSwitch
-          data-cy="StudioModeToggle"
-          checked={interactionMode === "layout"}
-          onChange={(evt) =>
-            onInteractionModeChange(evt.target.checked ? "layout" : "content")
-          }
-          icon={<EditRoundedIcon />}
-          checkedIcon={<AutoAwesomeMosaicRoundedIcon />}
-        />
+        {canSelectMode && availableModes.length > 1 ? (
+          <ToggleButtonGroup
+            data-cy="StudioModeToggle"
+            exclusive
+            size="small"
+            value={interactionMode}
+            onChange={(_evt, nextMode: InteractionMode | null) => {
+              // An exclusive group emits null when the active button is
+              // clicked again. There is no "no mode" state, so ignore it
+              // rather than letting it through as a mode change.
+              if (!nextMode) return;
+              onInteractionModeChange(nextMode);
+            }}
+          >
+            {MODE_OPTIONS.filter((option) =>
+              availableModes.includes(option.mode)
+            ).map((option) => (
+              <ToggleButton
+                key={option.mode}
+                value={option.mode}
+                data-cy={`StudioModeToggleOption-${option.mode}`}
+                aria-label={t(option.labelKey)}
+              >
+                {option.icon}
+              </ToggleButton>
+            ))}
+          </ToggleButtonGroup>
+        ) : null}
       </Box>
     </Box>
   );

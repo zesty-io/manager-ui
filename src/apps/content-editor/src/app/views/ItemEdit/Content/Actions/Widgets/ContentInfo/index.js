@@ -1,3 +1,4 @@
+import { alpha } from "@mui/material/styles";
 import { useState } from "react";
 import {
   Card,
@@ -19,7 +20,7 @@ import { Link } from "react-router-dom";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
 import CheckIcon from "@mui/icons-material/Check";
-import { Database } from "@zesty-io/material";
+import { Database, theme } from "@zesty-io/material";
 import CodeRoundedIcon from "@mui/icons-material/CodeRounded";
 import { useTranslation } from "react-i18next";
 
@@ -50,7 +51,7 @@ export const ContentInfo = (props) => {
           p: 0,
           backgroundColor: "transparent",
           fontSize: "16px",
-          color: "#10182866",
+          color: alpha(theme.palette.text.primary, 0.4),
           borderBottom: 1,
           borderColor: "grey.200",
         }}
@@ -59,7 +60,7 @@ export const ContentInfo = (props) => {
             fontWeight: 400,
             fontSize: "12px",
             lineHeight: "32px",
-            color: "#101828",
+            color: "text.primary",
             textTransform: "uppercase",
           },
         }}
@@ -103,7 +104,7 @@ export const ContentInfo = (props) => {
                   title={t("content.itemEditZuidTooltip")}
                   sx={{
                     fontSize: "12px",
-                    color: "#10182866",
+                    color: alpha(theme.palette.text.primary, 0.4),
                   }}
                 >
                   <InfoRoundedIcon size="inherit" color="inherit" />
@@ -117,7 +118,7 @@ export const ContentInfo = (props) => {
                 inputProps={{
                   sx: {
                     ":read-only": {
-                      textFillColor: "#101828",
+                      textFillColor: theme.palette.text.primary,
                     },
                   },
                 }}
@@ -139,12 +140,16 @@ export const ContentInfo = (props) => {
                 }}
               />
             </Box>
-            <Stack width="fit-content" sx={{ color: "#475467" }}>
+            <Stack width="fit-content" sx={{ color: "text.secondary" }}>
               <Button
                 component={Link}
                 to={`/schema/${props.modelZUID}`}
                 color="inherit"
-                startIcon={<Database sx={{ color: "#10182866" }} />}
+                startIcon={
+                  <Database
+                    sx={{ color: alpha(theme.palette.text.primary, 0.4) }}
+                  />
+                }
                 sx={{ width: "fit-content" }}
               >
                 {t("content.itemListEditModel")}
@@ -153,7 +158,11 @@ export const ContentInfo = (props) => {
                 component={Link}
                 to={codePath}
                 color="inherit"
-                startIcon={<CodeRoundedIcon sx={{ fill: "#10182866" }} />}
+                startIcon={
+                  <CodeRoundedIcon
+                    sx={{ fill: alpha(theme.palette.text.primary, 0.4) }}
+                  />
+                }
                 sx={{ width: "fit-content" }}
               >
                 {t("content.itemEditEditCode")}

@@ -1,3 +1,5 @@
+import { alpha } from "@mui/material/styles";
+import { theme } from "@zesty-io/material";
 import { memo, useState, useEffect } from "react";
 import { connect } from "react-redux";
 
@@ -54,7 +56,7 @@ export default connect((state) => {
             p: 0,
             backgroundColor: "transparent",
             fontSize: "16px",
-            color: "#10182866",
+            color: alpha(theme.palette.text.primary, 0.4),
             borderBottom: 1,
             borderColor: "grey.200",
           }}
@@ -63,7 +65,7 @@ export default connect((state) => {
               fontWeight: 400,
               fontSize: "12px",
               lineHeight: "32px",
-              color: "#101828",
+              color: "text.primary",
               textTransform: "uppercase",
             },
           }}
@@ -105,7 +107,7 @@ export default connect((state) => {
                       fontWeight: 500,
                       fontSize: "14px",
                       lineHeight: "20px",
-                      color: "#101828",
+                      color: "text.primary",
                     }}
                   >
                     {t("content.itemListStatusNotPublished")}
@@ -126,7 +128,7 @@ export default connect((state) => {
                             fontWeight: 500,
                             fontSize: "14px",
                             lineHeight: "20px",
-                            color: "#101828",
+                            color: "text.primary",
                           }}
                         >{`${firstName} ${lastName}`}</Typography>
                         <Typography
@@ -134,7 +136,7 @@ export default connect((state) => {
                             fontWeight: 500,
                             fontSize: "14px",
                             lineHeight: "20px",
-                            color: "#1018288f",
+                            color: alpha(theme.palette.text.primary, 0.56),
                           }}
                         >
                           {isValid(new Date(log.happenedAt))

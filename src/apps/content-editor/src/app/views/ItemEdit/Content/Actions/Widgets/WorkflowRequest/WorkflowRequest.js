@@ -1,3 +1,5 @@
+import { alpha } from "@mui/material/styles";
+import { theme } from "@zesty-io/material";
 import { memo, useState } from "react";
 
 import {
@@ -150,7 +152,7 @@ ${
               display: "flex",
               alignItems: "center",
               fontSize: "16px",
-              color: "#10182866",
+              color: alpha(theme.palette.text.primary, 0.4),
               ".MuiSvgIcon-root": {
                 mr: 1,
               },
@@ -161,7 +163,7 @@ ${
                 fontWeight: 400,
                 fontSize: "12px",
                 lineHeight: "32px",
-                color: "#101828",
+                color: "text.primary",
               }}
               textTransform="uppercase"
             >

@@ -634,9 +634,18 @@ export const ItemCreate = () => {
                           x2={1}
                           y2={1}
                         >
-                          <stop offset="0%" stopColor="#0BA5EC" />
-                          <stop offset="50%" stopColor="#EE46BC" />
-                          <stop offset="100%" stopColor="#6938EF" />
+                          <stop
+                            offset="0%"
+                            stopColor={theme.palette.info.main}
+                          />
+                          <stop
+                            offset="50%"
+                            stopColor={theme.palette.pink[500]}
+                          />
+                          <stop
+                            offset="100%"
+                            stopColor={theme.palette.purple[600]}
+                          />
                         </linearGradient>
                       </svg>
                       <Brain sx={{ fill: "url(#gradientFill)" }} />

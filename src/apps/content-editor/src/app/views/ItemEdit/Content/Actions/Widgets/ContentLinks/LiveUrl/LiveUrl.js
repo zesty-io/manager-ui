@@ -1,3 +1,4 @@
+import { theme } from "@zesty-io/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHome, faLink, faUnlink } from "@fortawesome/free-solid-svg-icons";
 
@@ -28,12 +29,12 @@ export function LiveUrl(props) {
       {props.item.web.pathPart === "zesty_home" ? (
         <FontAwesomeIcon
           icon={faHome}
-          style={{ color: "#0BA5EC", marginRight: "8px" }}
+          style={{ color: theme.palette.info.main, marginRight: "8px" }}
         />
       ) : (
         <FontAwesomeIcon
           icon={faLink}
-          style={{ color: "#0BA5EC", marginRight: "8px" }}
+          style={{ color: theme.palette.info.main, marginRight: "8px" }}
         />
       )}
 
