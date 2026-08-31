@@ -914,12 +914,17 @@ describe("Content Specs", () => {
       cy.getBySelector("subfield:single_line_text")
         .find("input")
         .clear()
-        .type("bulk remove row");
+        .type("bulk remove row")
+        .should("have.value", "bulk remove row");
       cy.getBySelector("subfield:url")
         .find("input")
         .clear()
-        .type("https://zesty.io");
-      cy.getBySelector("SaveRepeaterRowItemBtn").scrollIntoView().click();
+        .type("https://zesty.io")
+        .should("have.value", "https://zesty.io");
+      cy.getBySelector("SaveRepeaterRowItemBtn")
+        .scrollIntoView()
+        .should("be.enabled")
+        .click();
 
       cy.getBySelector("field:repeater")
         .find(".MuiDataGrid-row")

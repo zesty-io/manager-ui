@@ -330,7 +330,6 @@ type FileAugmentation = {
 async function getSignedUrl(filename: string, storageName: string) {
   try {
     return request(
-      //@ts-expect-error
       `${CONFIG.SERVICE_MEDIA_STORAGE}/signed-url/${storageName}/${filename}`
     ).then((res) => res.data.url);
   } catch (err) {
@@ -433,7 +432,6 @@ export function replaceFile(newFile: UploadFile, originalFile: FileBase) {
       req.addEventListener("load", () => {
         if (req.status === 200) {
           return request(
-            //@ts-expect-error
             `${CONFIG.SERVICE_MEDIA_MANAGER}/file/${originalFile?.id}/purge?triggerUpdate=true`,
             {
               method: "POST",
@@ -489,7 +487,6 @@ export function replaceFile(newFile: UploadFile, originalFile: FileBase) {
     } else {
       req.open(
         "PUT",
-        //@ts-expect-error
         `${CONFIG.SERVICE_MEDIA_STORAGE}/replace/${originalFile?.storage_driver}/${originalFile?.storage_name}`
       );
 
@@ -593,7 +590,6 @@ export function uploadFile(fileArg: UploadFile, bin: Bin) {
 
       req.addEventListener("load", () => {
         if (req.status === 200) {
-          //@ts-expect-error
           return request(`${CONFIG.SERVICE_MEDIA_MANAGER}/file`, {
             method: "POST",
             json: true,
@@ -665,7 +661,6 @@ export function uploadFile(fileArg: UploadFile, bin: Bin) {
 
       req.open(
         "POST",
-        //@ts-expect-error
         `${CONFIG.SERVICE_MEDIA_STORAGE}/upload/${bin.storage_driver}/${bin.storage_name}`
       );
 
@@ -699,13 +694,9 @@ export function uploadFile(fileArg: UploadFile, bin: Bin) {
 export function deleteUpload(upload: SuccessfulUpload) {
   console.log({ upload });
   return async (dispatch: Dispatch) => {
-    const res = request(
-      //@ts-expect-error
-      `${CONFIG.SERVICE_MEDIA_MANAGER}/file/${upload.id}`,
-      {
-        method: "DELETE",
-      }
-    );
+    const res = request(`${CONFIG.SERVICE_MEDIA_MANAGER}/file/${upload.id}`, {
+      method: "DELETE",
+    });
     dispatch(fileUploadDelete(upload));
     // if (res.status === 200) {
     //   dispatch(fileUploadDelete(upload));
@@ -720,7 +711,7 @@ export function dismissFileUploads() {
     const state: State = getState().mediaRevamp;
     const inProgressUploads = state.uploads.filter(
       (upload) => upload.status === "inProgress"
-    ) as StagedUpload[];
+    ) as InProgressUpload[];
     const failedUploads = state.uploads.filter(
       (upload) => upload.status === "failed"
     ) as FailedUpload[];
@@ -740,19 +731,15 @@ export function dismissFileUploads() {
     const reqs = successfulUploads
       .filter((upload) => upload.status === "success" && upload.filenameDirty)
       .map((upload) => {
-        return request(
-          //@ts-expect-error
-          `${CONFIG.SERVICE_MEDIA_MANAGER}/file/${upload.id}`,
-          {
-            method: "PATCH",
-            body: {
-              id: upload.id,
-              group_id: upload.group_id,
-              filename: upload.filename,
-              ...(upload?.title ? { title: upload.title } : {}),
-            },
-          }
-        );
+        return request(`${CONFIG.SERVICE_MEDIA_MANAGER}/file/${upload.id}`, {
+          method: "PATCH",
+          body: {
+            id: upload.id,
+            group_id: upload.group_id,
+            filename: upload.filename,
+            ...(upload?.title ? { title: upload.title } : {}),
+          },
+        });
       });
     const res = await Promise.all(reqs);
     const failedTitleUpdates = res.filter((r) => r.status !== 200).length;

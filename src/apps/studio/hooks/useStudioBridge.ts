@@ -1,7 +1,18 @@
 import { MutableRefObject, useCallback, useEffect } from "react";
-import { notify } from "../../../../../../../shell/store/notifications";
-import { Sentry } from "../../../../../../../utility/sentry";
-import { InteractionMode } from "./studioTypes";
+import { notify } from "shell/store/notifications";
+import { Sentry } from "utility/sentry";
+import {
+  InteractionMode,
+  usesContentEditing,
+  usesLayoutGrammar,
+} from "./studioTypes";
+
+// Layout mode genuinely has a Content mode to send the user to. Studio's full
+// mode does not — it IS both — so the same rejection needs different words.
+const SWITCH_TO_CONTENT_MESSAGE =
+  "This block contains dynamic content and cannot be edited inline. Switch to Content mode to make edits.";
+const NOT_A_SINGLE_FIELD_MESSAGE =
+  "This block can't be edited inline because its content is not a single connected field.";
 
 const bridgeInjectedCss = `
   .studio-hover {
@@ -65,6 +76,18 @@ const bridgeInjectedCss = `
 type Args = {
   dispatch: (action: any) => any;
   interactionMode: InteractionMode;
+  /** Whether this user may write view source. Gates the layout-write messages. */
+  canEditLayout: boolean;
+  /** Bound leaf resolved on the canvas — opens that field's content editor. */
+  onDynamicEditRequest: (msg: {
+    codeId?: string;
+    layoutId?: string;
+    studioId?: string;
+    fieldZuid: string;
+    fieldType?: string;
+    itemZuid?: string;
+    modelZuid?: string;
+  }) => void;
   syncBridgeInteractionMode: (nextMode: InteractionMode) => void;
   postCommandToBridge: (cmd: any) => void;
   handleTemplateSourceMap: (msg: any) => void;
@@ -102,6 +125,8 @@ type Args = {
 export const useStudioBridge = ({
   dispatch,
   interactionMode,
+  canEditLayout,
+  onDynamicEditRequest,
   syncBridgeInteractionMode,
   postCommandToBridge,
   handleTemplateSourceMap,
@@ -177,13 +202,13 @@ export const useStudioBridge = ({
       switch (eventType) {
         case "mousedown":
         case "dblclick": {
-          if (interactionMode !== "layout") return;
+          if (!usesLayoutGrammar(interactionMode)) return;
           applyLayoutSelection({ codeId, layoutId, breadcrumb });
           return;
         }
 
         case "escape": {
-          if (interactionMode === "layout") {
+          if (usesLayoutGrammar(interactionMode)) {
             clearLayoutSelection();
             return;
           }
@@ -192,7 +217,7 @@ export const useStudioBridge = ({
         }
 
         case "click": {
-          if (interactionMode === "layout") return;
+          if (usesLayoutGrammar(interactionMode)) return;
           if (!fieldZuid) return;
 
           applySelection({
@@ -206,7 +231,8 @@ export const useStudioBridge = ({
         }
 
         case "input": {
-          if (interactionMode !== "content" || !fieldZuid || !itemZuid) return;
+          if (!usesContentEditing(interactionMode) || !fieldZuid || !itemZuid)
+            return;
           const fieldName = fieldNameByZuid.get(fieldZuid);
           if (!fieldName) return;
 
@@ -221,7 +247,7 @@ export const useStudioBridge = ({
         }
 
         case "mouseover": {
-          if (interactionMode === "layout") return;
+          if (usesLayoutGrammar(interactionMode)) return;
           if (!studioId) return;
           currentHoverStudioIdRef.current = studioId;
           postCommandToBridge({
@@ -234,7 +260,7 @@ export const useStudioBridge = ({
         }
 
         case "mouseout": {
-          if (interactionMode === "layout") return;
+          if (usesLayoutGrammar(interactionMode)) return;
           if (!studioId) return;
           if (currentHoverStudioIdRef.current === studioId) {
             currentHoverStudioIdRef.current = null;
@@ -298,13 +324,50 @@ export const useStudioBridge = ({
         return;
       }
 
+      // Both of these stage a write to view source. They arrive as window
+      // messages from the preview, so the mode toggle is not a gate on them:
+      // anything that can postMessage can send them. Refuse without code
+      // capability rather than relying on the UI never offering the mode.
       if (msg.type === "REORDER_OUTPUT") {
+        if (!canEditLayout) return;
         handleReorderOutput(msg);
         return;
       }
 
       if (msg.type === "LAYOUT_CONTENT_UPDATE") {
+        if (!canEditLayout) return;
         handleLayoutContentUpdate(msg);
+        return;
+      }
+
+      // Studio mode only: the bridge resolved a positive field binding at the
+      // leaf, so open that field's content editor. The same selection path a
+      // layers-row click takes — no new selection machinery.
+      if (msg.type === "DYNAMIC_EDIT_REQUEST") {
+        // The bridge is binary and posts this from both the canvas and the
+        // layers panel without knowing the mode. Layout is the only mode that
+        // can reach a bound leaf and not edit it, so it is the only one that
+        // gets redirected — telling a content-mode user to switch to content
+        // mode would be nonsense. The deployed bridge cannot send this in
+        // content wire mode today; this is the same stance the layout-write
+        // handlers above take, that anything able to postMessage can send it.
+        if (!usesContentEditing(interactionMode)) {
+          dispatch(
+            notify({ kind: "warn", message: SWITCH_TO_CONTENT_MESSAGE })
+          );
+          return;
+        }
+        if (!msg.fieldZuid) return;
+
+        onDynamicEditRequest({
+          codeId: msg.codeId,
+          layoutId: msg.layoutId,
+          studioId: msg.studioId,
+          fieldZuid: msg.fieldZuid,
+          fieldType: msg.fieldType,
+          itemZuid: msg.itemZuid,
+          modelZuid: msg.modelZuid,
+        });
         return;
       }
 
@@ -317,8 +380,9 @@ export const useStudioBridge = ({
         dispatch(
           notify({
             kind: "warn",
-            message:
-              "This block contains dynamic content and cannot be edited inline. Switch to Content mode to make edits.",
+            message: usesContentEditing(interactionMode)
+              ? NOT_A_SINGLE_FIELD_MESSAGE
+              : SWITCH_TO_CONTENT_MESSAGE,
           })
         );
         return;
@@ -335,6 +399,9 @@ export const useStudioBridge = ({
       window.removeEventListener("message", handleMessage);
     };
   }, [
+    applySelection,
+    canEditLayout,
+    onDynamicEditRequest,
     clearSelection,
     handleBridgeDomEvent,
     handleBridgeError,
@@ -343,6 +410,7 @@ export const useStudioBridge = ({
     handleLayoutContentUpdate,
     handleReorderOutput,
     handleTemplateSourceMap,
+    interactionMode,
     onStaticEditImage,
   ]);
 

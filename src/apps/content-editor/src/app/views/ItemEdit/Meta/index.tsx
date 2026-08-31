@@ -195,7 +195,10 @@ export const Meta = forwardRef(
     }, [homepageItem, itemZUID]);
 
     const handleOnChange = useCallback(
-      (value, name) => {
+      // Most callers pass a string, but two `.js` ones the compiler cannot see pass a
+      // number: `settings/CanonicalTag.js` (`canonicalTagMode`) and
+      // `settings/SitemapPriority.js` (`sitemapPriority`).
+      (value: string | number, name: string) => {
         if (!name) {
           throw new Error("Input is missing name attribute");
         }
@@ -209,7 +212,9 @@ export const Meta = forwardRef(
           };
         }
 
-        if (MaxLengths[name]) {
+        // Neither numeric caller's `name` is a `MaxLengths` key, so this block was
+        // already skipped for them; the guard only tells the compiler that.
+        if (MaxLengths[name] && typeof value === "string") {
           currentErrors[name] = {
             ...currentErrors?.[name],
             EXCEEDING_MAXLENGTH:
@@ -228,7 +233,9 @@ export const Meta = forwardRef(
           };
         }
 
-        if (name === "metaDescription") {
+        // Same as above: neither numeric caller passes `metaDescription`, and
+        // `validateMetaDescription` calls `String.prototype.indexOf` on its argument.
+        if (name === "metaDescription" && typeof value === "string") {
           const metaDescriptionError = validateMetaDescription(value);
 
           currentErrors.metaDescription = {

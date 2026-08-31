@@ -382,11 +382,11 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
 
             content_style: `
             html { justify-content: center }\
-            body { font-family: 'Mulish', Arial, sans-serif; color: #101828; font-size: 16px; }\
+            body { font-family: 'Mulish', Arial, sans-serif; color: ${theme.palette.text.primary}; font-size: 16px; }\
             img { max-width: 100%; height: auto}\
             h1, h2, h3, h4, h5, h6, strong { font-weight: 700; }\
             h1, h2, h3, h4, h5, h6 { margin-top: 0px; margin-bottom: 16px; }\
-            p, pre, blockquote, ol, ul { color: #475467; margin-top: 0px; margin-bottom: 16px; }\
+            p, pre, blockquote, ol, ul { color: ${theme.palette.text.secondary}; margin-top: 0px; margin-bottom: 16px; }\
             h1 { font-size: 36px; line-height: 44px }\
             h2 { font-size: 32px; line-height: 40px }\
             h3 { font-size: 28px; line-height: 36px }\

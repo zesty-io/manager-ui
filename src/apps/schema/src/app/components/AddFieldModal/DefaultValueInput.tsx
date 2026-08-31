@@ -395,7 +395,7 @@ export const DefaultValueInput = ({
       }
 
       const onInternalLinkSearch = useCallback(
-        (term) => dispatch(searchItems(term)),
+        (term: string) => dispatch(searchItems(term)),
         []
       );
       return (

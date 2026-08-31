@@ -25,7 +25,7 @@ Every Zesty instance is identified by a ZUID, and the app derives the instance Z
 127.0.0.1  <YOUR_INSTANCE_ZUID>.manager.zesty.io
 ```
 
-…and visit `http://<ZUID>.manager.zesty.io:8080`. The default `npm start` connects to the **production** Zesty API, so any writes hit a real instance. Use `npm run start:stage` against staging when testing destructive changes.
+…and visit `http://<ZUID>.manager.zesty.io:8080`. `npm start` selects the `development` block of `src/shell/app.config.js`, which points at `*.api.dev.zesty.io` with cookie `DEV_APP_SID` — the same **dev** instance Cypress uses, not production. Writes still hit a real shared instance that every PR's CI run also uses, so clean up anything you create. Use `npm run start:stage` for staging. (The README still claims `npm start` connects to production; it is out of date.)
 
 The dev server's `historyApiFallback` selects a different HTML entry based on hostname suffix: `*.zesty.io` → `index-zesty.html`, `*.content.one` → `index-content.html`. Both render the same JS bundle but the theme palette branches on `isContentOne()` in `src/shell/index.js`.
 
@@ -56,7 +56,7 @@ Each `src/apps/<name>/src/index.js` exports the app's root component and (option
 - `settings` → `SettingsApp` — instance settings.
 - `home` → `HomeApp` — dashboard / landing.
 - `leads` → `LeadsApp` — lead capture.
-- `studio` → `StudioApp` — visual builder.
+- `studio` → `StudioApp` — visual builder. `index.tsx` is a route shim over `StudioWrapper.tsx`; the in-iframe agent it drives lives in a **separate repo**. Read [`docs/studio.md`](docs/studio.md) before working on it.
 - `marketplace` → `MarketplaceApp` — app/integration directory.
 - `blocks` → `BlocksApp` — reusable content blocks.
 - `active-preview` — **not** routed via `Shell.tsx`; it's the separate webpack entry that renders the preview iframe.
@@ -104,7 +104,11 @@ On boot, `src/shell/index.js` reads several keys from IndexedDB (`<ZUID>:languag
 
 ### TypeScript
 
-Mixed JS/TS. `tsconfig.json` sets `allowJs: true`, `noImplicitAny: true`, `jsx: "react-jsx"`, and a single path alias `shell/* → ./src/shell/*`. Webpack adds matching aliases for `shell`, `utility`, and `apps`. `ts-loader` compiles `.ts(x)`; `babel-loader` handles `.js`. Coverage instrumentation (`babel-plugin-istanbul`) is hard-coded `on` in the webpack config — leave it that way unless intentionally changing CI coverage behavior.
+Mixed JS/TS. `tsconfig.json` sets `allowJs: true`, `noImplicitAny: true`, `skipLibCheck: true`, `jsx: "react-jsx"`, and a single path alias `shell/* → ./src/shell/*`. Webpack adds matching aliases for `shell`, `utility`, and `apps`. `ts-loader` compiles `.ts(x)`; `babel-loader` handles `.js`.
+
+`skipLibCheck: true` skips checking inside every `.d.ts`, including this repo's own. Ambient declarations still fail at their use sites, but a derived type (`typeof import(...)`, `ReturnType<...>`) fails silently and degrades to `any` — keep those in a real `.ts` file, which is what `src/shell/configTypes.ts` is for.
+
+Coverage instrumentation (`babel-plugin-istanbul`) is hard-coded `on` in the webpack config — leave it that way unless intentionally changing CI coverage behavior.
 
 ### Theming
 
@@ -164,7 +168,7 @@ These are the in-use patterns. Match them when adding new code.
 - **Sub-app reducers register via `injectReducer`** in the sub-app's `src/index.js`. Canonical example: `src/apps/content-editor/src/index.js` (it injects `modal` and `listFilters`).
 - **Components.** Functional + hooks only — there are no class components. Default to flat `Foo.tsx`; promote to `Foo/index.tsx` only when the component grows colocated files (`Foo.less`, child components, types). Type props with `type FooProps = { … }`; reach for `interface` only when extending. `memo()` is used selectively for high-rerender cases (tabs, sidebars, large list rows) — not by default.
 - **Routing is React Router v5.** Use `<Switch>`, `<Route>`, `useHistory`, `useLocation`, `<Redirect>`. Do not use v6 syntax (`useNavigate`, `<Routes>`, `element={}`). Top-level routes live in `src/shell/views/Shell/Shell.tsx`; sub-app internal routes nest inside the sub-app.
-- **Styling.** Prefer the MUI `sx` prop (the dominant pattern). LESS modules (`Component.less` + `import styles from "./Component.less"`) exist for shell-level layout (sidebar, topbar) and are fine to maintain there, but don't reach for them in new feature code. Avoid `styled()` from `@mui/material/styles` unless `sx` genuinely cannot express the rule.
+- **Styling.** Prefer the MUI `sx` prop (the dominant pattern). LESS modules (`Component.less` + `import styles from "./Component.less"`) exist for shell-level layout (sidebar, topbar) and are fine to maintain there, but don't reach for them in new feature code. Avoid `styled()` from `@mui/material/styles` unless `sx` genuinely cannot express the rule. That is _how_ to attach a style; for _which value_, see [`docs/design-system.md`](docs/design-system.md) — a hex literal or a raw `fontSize` in `src/` is a bug unless that doc covers it.
 - **Service URLs come from `window.CONFIG`** (populated in `src/shell/index.js`), never hardcoded and never imported from `src/shell/app.config.js` directly at runtime.
 - **TypeScript first for new files.** `allowJs: true` keeps existing `.js` working; new modules should be `.ts`/`.tsx` with explicit types.
 - **Long lists virtualize.** This codebase ships `react-window`, `react-virtualized-auto-sizer`, and `react-virtualized-sticky-tree` for a reason — re-render perf matters here, and `why-did-you-render` is wired up in `src/shell/wdyr.js`. Virtualize new tables and long content lists.
@@ -191,7 +195,9 @@ Things the codebase actively avoids — flag if you see them in a PR:
 ## Branch & PR flow
 
 - PRs target **`dev`**. After merge, automation cascades changes through `dev → stage → beta → stable` via auto-generated PRs (`.github/workflows/cd-*.yaml`). Each promotion still requires a human merge.
-- **CI runs Cypress only.** `.github/workflows/ci.yaml` runs `npm run ci`, which is `start-server-and-test start … test` — there is **no lint step, no typecheck step, no build gate**. If you've touched TypeScript, run `npx tsc --noEmit` locally before opening a PR; the pipeline will not catch type errors for you.
+- **Cypress is the only test gate.** `.github/workflows/ci.yaml` runs `npm run ci`, which is `start-server-and-test start … test` — there is **no lint step, no typecheck step, no build gate**. If you've touched TypeScript, run `npx tsc --noEmit` locally before opening a PR; the pipeline will not catch type errors for you.
+- **Four Claude workflows also run on PRs**, none of them blocking except the change verifier: `claude-auto-reviewer.yml` (code-level review, inline comments), `claude-change-verifier.yml` (acceptance criteria from the code; fails the check on `FAIL`), `claude-issue-critique.yml` (issue triage), and `claude-negative-qa.yml` (below).
+- **`claude-negative-qa.yml` drives the real app in a browser.** It boots the dev server against a **dedicated instance** (`8-acabf6a8d6-bj9tr2`, INTERNAL-NEGATIVE-QA) whose fixtures are authored once in production and reach dev through the nightly prod→dev sync — that sync is also the cleanup, so the agent may mutate anything and nothing is torn down per run. `ci/scripts/qa_session.mjs` resolves the fixture model by name and hands Playwright MCP a pre-authenticated session through a `--storage-state` file (so the token never reaches the agent's prompt), then a senior-QA persona attacks the surfaces the PR diff touches. Findings post as an upserted PR comment keyed on `<!-- negative-qa -->`, with screenshots pushed to `gs://cypress_screenshots/negative-qa/…`. It is **advisory and always exits 0**, and runs **once per PR** — on `opened`/`ready_for_review` only, deliberately not on `synchronize`, because a pass costs ~9 minutes of agent time. Re-run it manually from the Actions tab (`workflow_dispatch` with the PR number, selecting the PR's branch as the ref) or with "Re-run jobs" on the previous run. It uses its own `manager-ui-negative-qa` concurrency group rather than ci.yaml's `manager-ui-e2e-dev-instance`: GitHub allows only one _pending_ run per group, so sharing ci.yaml's group meant this job was routinely cancelled before starting whenever another PR queued a Cypress run. The group now only stops two QA agents fighting over the same instance — isolation from other PRs comes from the instance being dedicated to this workflow in the first place.
 - **CI is parallelized across 5 runners** using `cypress-split`. Runner 4 is dedicated to publish-related specs (`content/actions`, `content/list`, `content/redirects`, `settings/workflows`) to prevent cross-runner interference — `workflows.spec.js` creates a publish-blocking workflow label that causes concurrent publish tests on other runners to fail. Runners 0–3 split the remaining specs using `SPLIT=4` and `SKIP_SPEC`. To add more general runners, increment the matrix array and `SPLIT` together and update the `if: matrix.split_index != 4` condition. A `timings.json` at the repo root enables runtime-based distribution for runners 0–3; if absent, cypress-split falls back to spec count. Refresh `timings.json` by downloading the `merged-timings` artifact after a CI run and committing it. Update it every 1–2 months or when runners become noticeably unbalanced.
 - Coverage from Cypress is posted as a PR comment by `ci.yaml`. Treat dropping coverage on changed files as a review signal, not a hard gate.
 - Pre-commit (`.husky/pre-commit`) runs `pretty-quick --staged` only. There is no pre-push hook.

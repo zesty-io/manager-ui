@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useRef, useState } from "react";
-import { notify } from "../../../../../../../shell/store/notifications";
-import { LayoutBreadcrumbItem } from "./studioTypes";
+import { notify } from "shell/store/notifications";
+import { LayoutBreadcrumbItem, LinkWrapperState } from "./studioTypes";
 
 type LayoutStructureItem = {
   layoutId: string;
@@ -67,6 +67,26 @@ type LayoutReorderState = {
 //    incoming layoutStructure is removed. This is how the SOURCE region of a
 //    cross-region drag loses the moved block. For single-region reorders the
 //    structure always covers every block, so the pass is a no-op.
+// Indentation between elements is a whitespace-only text node. Re-parenting
+// moves elements but not these, so they have to be carried deliberately.
+const isWhitespaceText = (node: Node | null | undefined): boolean =>
+  !!node && node.nodeType === 3 && (node.textContent || "").trim() === "";
+
+// The whitespace immediately before `node`, as a node that can travel with it.
+// A pure-whitespace sibling moves as-is; a mixed text node (Parsley plus
+// indentation) is split so only its trailing whitespace run comes along.
+const takeLeadingWhitespace = (node: Node): Node | null => {
+  const prev = node.previousSibling;
+  if (!prev || prev.nodeType !== 3) return null;
+  if (isWhitespaceText(prev)) return prev;
+
+  const text = prev.textContent || "";
+  const trailing = text.length - text.trimEnd().length;
+  if (!trailing) return null;
+  // splitText leaves the head in place and returns the tail as a new node.
+  return (prev as Text).splitText(text.length - trailing);
+};
+
 const mapSourceByLayoutStructure = (
   source: string,
   layoutStructure: LayoutStructureItem[],
@@ -158,37 +178,42 @@ const mapSourceByLayoutStructure = (
     let afterNode: Node | null =
       existingHere.length > 0 ? existingHere[0].previousSibling : null;
 
+    // The anchor must not be indentation that is about to travel with the
+    // first child, or the block lands one node too late.
+    if (isWhitespaceText(afterNode)) {
+      afterNode = (afterNode as Node).previousSibling;
+    }
+
     childIds.forEach((layoutId) => {
       const childNode = elementByLayoutId.get(layoutId);
       if (!childNode || childNode === parentNode) return;
       if (childNode.contains(parentNode)) return;
+
+      // Move the element's own leading indentation with it. Without this the
+      // element is re-inserted bare and its whitespace is stranded where it
+      // used to be, so every reordered region collapses onto one line — and
+      // that is true even for children that did not move, because this pass
+      // re-inserts all of them.
+      //
+      // The indentation is not always a node of its own: a Parsley block
+      // leaves text like "\n\t{{end-if}}\n\t" as ONE text node, so the
+      // trailing run has to be split off rather than looked up.
+      const leadingWhitespace = takeLeadingWhitespace(childNode);
+
       if (childNode.parentNode) childNode.parentNode.removeChild(childNode);
+      if (leadingWhitespace?.parentNode) {
+        leadingWhitespace.parentNode.removeChild(leadingWhitespace);
+      }
 
       const reference =
         afterNode && afterNode.parentNode === parentNode
           ? afterNode.nextSibling
           : parentNode.firstChild;
+      if (leadingWhitespace)
+        parentNode.insertBefore(leadingWhitespace, reference);
       parentNode.insertBefore(childNode, reference);
       afterNode = childNode;
     });
-  });
-
-  var whitespaceNodes = [];
-  var walker = doc.createTreeWalker(root, NodeFilter.SHOW_TEXT);
-  var currentNode = walker.nextNode();
-  while (currentNode) {
-    if (!currentNode.textContent || currentNode.textContent.trim() !== "") {
-      currentNode = walker.nextNode();
-      continue;
-    }
-    whitespaceNodes.push(currentNode);
-    currentNode = walker.nextNode();
-  }
-
-  whitespaceNodes.forEach(function (node) {
-    if (node.parentNode) {
-      node.parentNode.removeChild(node);
-    }
   });
 
   return root.innerHTML;
@@ -280,6 +305,101 @@ const patchLeafInnerHtml = (
   return root.innerHTML;
 };
 
+type LayoutLeafLookup = {
+  doc: Document;
+  root: HTMLElement;
+  leaf: HTMLElement;
+};
+
+// Parse a cached template region and resolve one [data-layout-id] element
+// inside it. The link operations all address the wrapping <a> RELATIVE to that
+// element — the wrapper has no id of its own — so they share the lookup and
+// re-serialize `root.innerHTML` once they've mutated it.
+const resolveLayoutLeaf = (
+  source: string,
+  layoutId: string
+): LayoutLeafLookup | null => {
+  if (!source || !layoutId) return null;
+
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(
+    `<div id="studio-el-root">${source}</div>`,
+    "text/html"
+  );
+  const root = doc.getElementById("studio-el-root");
+  if (!root) return null;
+
+  const leaf = root.querySelector(
+    `[data-layout-id="${CSS.escape(layoutId)}"]`
+  ) as HTMLElement | null;
+  if (!leaf) return null;
+
+  return { doc, root, leaf };
+};
+
+// Parents that cannot legally hold an <a>, so an element inside one cannot be
+// wrapped. This is not pedantry about validity: `<tbody><a><tr>…</tr></a></tbody>`
+// serializes fine, and DOMParser and the live DOM both accept it, so the canvas
+// shows a working link — but the next SERVER render foster-parents the <a> out
+// of the table and the content comes back unlinked. Preview and production
+// diverge silently, and no save-time check can catch it because the string is
+// well-formed. Refusing up front is the only place this can be caught.
+const CANNOT_HOLD_LINK = new Set([
+  "UL",
+  "OL",
+  "MENU",
+  "TABLE",
+  "THEAD",
+  "TBODY",
+  "TFOOT",
+  "TR",
+  "COLGROUP",
+  "SELECT",
+  "OPTGROUP",
+  "DL",
+  "PICTURE",
+  "HEAD",
+]);
+
+// Whether an <a> may be inserted around this element.
+//
+// Both the panel's Add Link affordance and the write itself go through here, so
+// the write fails closed on its own rather than trusting the UI to have hidden
+// the button.
+//
+// Scope note: this only sees the region resolveLayoutLeaf parsed, which is
+// wrapped in a synthetic `<div id="studio-el-root">`. A root-level element
+// therefore always reports a DIV parent and cannot see the context the code
+// file is included into — a region `{{include}}`d inside a <ul> looks wrappable
+// from here. Catching that needs the including template, which the host does
+// not hold per region.
+const canWrapInLink = (leaf: HTMLElement): boolean => {
+  // `closest` covers the element itself, so this refuses an <a> inside an <a>
+  // and an <a> around an <a> alike.
+  if (leaf.closest("a")) return false;
+
+  // …and a link BELOW it is just as fatal, by the same content-model rule read
+  // in the other direction. Wrapping `<p>Read <a href="/x">this</a> now</p>`
+  // serializes fine, but re-parsing runs the adoption agency algorithm: the
+  // outer <a> is closed, the <p> escapes it, and a spurious `<a>Read </a>` is
+  // minted around the leading text. That mutates author content, and it is the
+  // ordinary shape of a <nav>, a <p> or a <section>, not an exotic one.
+  if (leaf.querySelector("a")) return false;
+
+  const parent = leaf.parentElement;
+  return !parent || !CANNOT_HOLD_LINK.has(parent.tagName);
+};
+
+// Attributes whose empty value means "absent", not "empty string". A link's
+// `target` is the only one today: choosing "No" must leave no attribute behind
+// rather than write `target=""` into saved view code.
+const REMOVED_WHEN_EMPTY = new Set(["target"]);
+
+const writeAttribute = (el: HTMLElement, attr: string, value: string) => {
+  if (!value && REMOVED_WHEN_EMPTY.has(attr)) el.removeAttribute(attr);
+  else el.setAttribute(attr, value);
+};
+
 const stripLayoutIdsFromSource = (source: string): string => {
   if (!source) return "";
 
@@ -305,6 +425,15 @@ type Args = {
   publishWebView: (args: any) => { unwrap: () => Promise<any> };
   dispatch: (action: any) => any;
   clearLayoutSelection: () => void;
+  // Drops every debounced template write without running it. Used by discard,
+  // where a timer firing afterwards would re-dirty the region just thrown away.
+  cancelAllPendingPatches: () => void;
+  // Runs every debounced template write immediately and returns the codeIds it
+  // actually staged. Called before a save reads the template cache, since a write still
+  // in its timer would otherwise miss the PUT and then land on an already-saved
+  // region. The codeIds are needed because staging is a state update that has
+  // not applied yet when the save loop reads pendingLayoutSave.
+  flushPendingPatches: () => string[];
   refreshPreviewFrame: (onReloadComplete?: () => void) => void;
   // Mirrors a patched region down to the bridge. The bridge's own template
   // source is frozen at page render, so it has to be told about edits we
@@ -337,12 +466,20 @@ export const useLayoutReorderState = ({
   publishWebView,
   dispatch,
   clearLayoutSelection,
+  cancelAllPendingPatches,
+  flushPendingPatches,
   refreshPreviewFrame,
   syncTemplateSourceToBridge,
   withCodeIdBreadcrumbRoot,
   onSelectedLayoutBreadcrumbChange,
 }: Args) => {
   const templateSourceByCodeIdRef = useRef<Record<string, string>>({});
+  // Bumped on every change to the template cache. The cache itself is a ref, so
+  // writing it re-renders nothing — which is right for the write paths, but not
+  // for the Inspector's Link section: that is DERIVED from the template, so its
+  // reader has to change identity when the template does or the panel goes on
+  // showing the pre-edit wrapper.
+  const [templateSourceVersion, setTemplateSourceVersion] = useState(0);
 
   // The one way to write the template cache after boot. The bridge keeps its
   // own copy, read straight off the page's <template> blocks and never updated
@@ -360,6 +497,7 @@ export const useLayoutReorderState = ({
       Object.keys(patch).forEach((codeId) => {
         syncTemplateSourceToBridge(codeId, patch[codeId]);
       });
+      setTemplateSourceVersion((prev) => prev + 1);
     },
     [syncTemplateSourceToBridge]
   );
@@ -378,77 +516,99 @@ export const useLayoutReorderState = ({
 
   const handleDiscardPendingLayoutSave = useCallback(
     (onComplete?: () => void) => {
+      // Before clearing state, not after: a debounced write still in flight
+      // would otherwise land 300ms from now, re-dirty the region the user just
+      // discarded, and race the fresh TEMPLATE_SOURCE_MAP the preview reload
+      // is about to merge.
+      cancelAllPendingPatches();
       clearPendingLayoutState();
       clearLayoutSelection();
       refreshPreviewFrame(onComplete);
     },
-    [clearLayoutSelection, clearPendingLayoutState, refreshPreviewFrame]
+    [
+      cancelAllPendingPatches,
+      clearLayoutSelection,
+      clearPendingLayoutState,
+      refreshPreviewFrame,
+    ]
   );
 
   // Saves each pending region sequentially. Returns the list of saved results.
   // On the first failure: throws (caller surfaces the error). Already-saved
   // regions are removed from pendingLayoutSave so the user can retry the rest.
-  const savePendingLayoutSources = useCallback(async () => {
-    if (!pendingLayoutSave) return [];
-    const codeIds = Object.keys(pendingLayoutSave.regions);
-    if (!codeIds.length) return [];
+  // `alsoSaveCodeIds` covers regions a pre-save flush just dirtied. Their
+  // staging is a state update that has not applied yet, so they are absent from
+  // this closure's pendingLayoutSave — without them a URL typed a moment ago
+  // would be written to the cache, skipped by the PUT, and left dirty.
+  const savePendingLayoutSources = useCallback(
+    async (alsoSaveCodeIds: string[] = []) => {
+      const codeIds = Array.from(
+        new Set([
+          ...Object.keys(pendingLayoutSave?.regions || {}),
+          ...alsoSaveCodeIds,
+        ])
+      );
+      if (!codeIds.length) return [];
 
-    const savedResults: Array<{
-      codeId: string;
-      webView: any;
-      updatedWebView: any;
-    }> = [];
+      const savedResults: Array<{
+        codeId: string;
+        webView: any;
+        updatedWebView: any;
+      }> = [];
 
-    for (const codeId of codeIds) {
-      const latestSource = templateSourceByCodeIdRef.current[codeId];
-      if (typeof latestSource !== "string") {
-        throw new Error(
-          `Unable to resolve cached template for code file ${codeId}.`
-        );
+      for (const codeId of codeIds) {
+        const latestSource = templateSourceByCodeIdRef.current[codeId];
+        if (typeof latestSource !== "string") {
+          throw new Error(
+            `Unable to resolve cached template for code file ${codeId}.`
+          );
+        }
+
+        const webView = webViews.find((view) => view.ZUID === codeId);
+        if (!webView) {
+          throw new Error(
+            `Unable to resolve code file ${codeId} for layout save.`
+          );
+        }
+
+        const sanitizedSource = stripLayoutIdsFromSource(latestSource);
+
+        try {
+          const updatedWebView = await updateWebView({
+            ZUID: codeId,
+            body: {
+              ...webView,
+              code: sanitizedSource,
+            },
+          }).unwrap();
+
+          savedResults.push({ codeId, webView, updatedWebView });
+
+          // Remove the now-saved region from pending state so a retry doesn't
+          // re-save it. Functional, so a region the flush staged moments ago is
+          // removed from the state that write produced, not from a stale copy.
+          setPendingLayoutSave((prev) => {
+            if (!prev) return prev;
+            const { [codeId]: _saved, ...rest } = prev.regions;
+            if (!Object.keys(rest).length) return null;
+            return {
+              regions: rest,
+              primaryCodeId:
+                prev.primaryCodeId === codeId
+                  ? Object.keys(rest)[0]
+                  : prev.primaryCodeId,
+            };
+          });
+        } catch (err) {
+          (err as any).failedCodeId = codeId;
+          throw err;
+        }
       }
 
-      const webView = webViews.find((view) => view.ZUID === codeId);
-      if (!webView) {
-        throw new Error(
-          `Unable to resolve code file ${codeId} for layout save.`
-        );
-      }
-
-      const sanitizedSource = stripLayoutIdsFromSource(latestSource);
-
-      try {
-        const updatedWebView = await updateWebView({
-          ZUID: codeId,
-          body: {
-            ...webView,
-            code: sanitizedSource,
-          },
-        }).unwrap();
-
-        savedResults.push({ codeId, webView, updatedWebView });
-
-        // Remove the now-saved region from pending state so a retry doesn't
-        // re-save it.
-        setPendingLayoutSave((prev) => {
-          if (!prev) return prev;
-          const { [codeId]: _saved, ...rest } = prev.regions;
-          if (!Object.keys(rest).length) return null;
-          return {
-            regions: rest,
-            primaryCodeId:
-              prev.primaryCodeId === codeId
-                ? Object.keys(rest)[0]
-                : prev.primaryCodeId,
-          };
-        });
-      } catch (err) {
-        (err as any).failedCodeId = codeId;
-        throw err;
-      }
-    }
-
-    return savedResults;
-  }, [pendingLayoutSave, updateWebView, webViews]);
+      return savedResults;
+    },
+    [pendingLayoutSave, updateWebView, webViews]
+  );
 
   const formatSavedFileNames = useCallback(
     (results: Array<{ codeId: string; webView: any }>) => {
@@ -466,14 +626,22 @@ export const useLayoutReorderState = ({
 
   const handleSavePendingLayout = useCallback(
     async (onComplete?: () => void) => {
-      if (!pendingLayoutSave) return;
-      if (!Object.keys(pendingLayoutSave.regions).length) return;
+      // Land every debounced write before reading the cache. savePendingLayout-
+      // Sources reads templateSourceByCodeIdRef, which the flush updates
+      // synchronously, so a URL typed a moment ago is in the PUT rather than
+      // arriving after it. Its regions are passed on explicitly because the
+      // staging they trigger is a state update this closure cannot see yet.
+      const flushedCodeIds = flushPendingPatches();
+
+      if (!pendingLayoutCodeIds.length && !flushedCodeIds.length) {
+        return { failed: false };
+      }
 
       setIsSavingLayout(true);
 
       try {
-        const results = await savePendingLayoutSources();
-        if (!results.length) return;
+        const results = await savePendingLayoutSources(flushedCodeIds);
+        if (!results.length) return { failed: false };
 
         refreshPreviewFrame(onComplete);
         dispatch(
@@ -482,6 +650,7 @@ export const useLayoutReorderState = ({
             message: `Saved ${formatSavedFileNames(results)}`,
           })
         );
+        return { failed: false };
       } catch (error: any) {
         const failedCodeId = error?.failedCodeId;
         const failedName = failedCodeId
@@ -499,6 +668,7 @@ export const useLayoutReorderState = ({
                 : "Failed to save layout."),
           })
         );
+        return { failed: true };
       } finally {
         setIsSavingLayout(false);
       }
@@ -506,22 +676,26 @@ export const useLayoutReorderState = ({
     [
       codeFileNameById,
       dispatch,
+      flushPendingPatches,
       formatSavedFileNames,
-      pendingLayoutSave,
+      pendingLayoutCodeIds,
       refreshPreviewFrame,
       savePendingLayoutSources,
     ]
   );
 
   const handleSaveAndPublishPendingLayout = useCallback(async () => {
-    if (!pendingLayoutSave) return;
-    if (!Object.keys(pendingLayoutSave.regions).length) return;
+    const flushedCodeIds = flushPendingPatches();
+
+    if (!pendingLayoutCodeIds.length && !flushedCodeIds.length) {
+      return { failed: false };
+    }
 
     setIsSavingLayout(true);
 
     try {
-      const results = await savePendingLayoutSources();
-      if (!results.length) return;
+      const results = await savePendingLayoutSources(flushedCodeIds);
+      if (!results.length) return { failed: false };
 
       for (const { codeId, webView } of results) {
         try {
@@ -542,6 +716,7 @@ export const useLayoutReorderState = ({
           message: `Saved and published ${formatSavedFileNames(results)}`,
         })
       );
+      return { failed: false };
     } catch (error: any) {
       const failedCodeId = error?.failedCodeId;
       const failedName = failedCodeId
@@ -559,14 +734,18 @@ export const useLayoutReorderState = ({
               : "Failed to save and publish layout."),
         })
       );
+      // Same contract as handleSavePendingLayout: this never rethrows, so the
+      // merged save can only learn about a failure from the return value.
+      return { failed: true };
     } finally {
       setIsSavingLayout(false);
     }
   }, [
     codeFileNameById,
     dispatch,
+    flushPendingPatches,
     formatSavedFileNames,
-    pendingLayoutSave,
+    pendingLayoutCodeIds,
     publishWebView,
     refreshPreviewFrame,
     savePendingLayoutSources,
@@ -579,6 +758,7 @@ export const useLayoutReorderState = ({
       ...templateSourceByCodeIdRef.current,
       ...incoming,
     };
+    setTemplateSourceVersion((prev) => prev + 1);
   }, []);
 
   const handleLayoutContentUpdate = useCallback(
@@ -812,13 +992,13 @@ export const useLayoutReorderState = ({
       attr: string,
       value: string,
       booleanAttr?: boolean
-    ) => {
+    ): boolean => {
       // Unlike `src`, an empty `alt` is a legitimate value, so only guard the
       // addressing inputs here (not `value`).
-      if (!codeId || !layoutId || !attr) return;
+      if (!codeId || !layoutId || !attr) return false;
 
       const cached = templateSourceByCodeIdRef.current[codeId];
-      if (!cached) return;
+      if (!cached) return false;
 
       const parser = new DOMParser();
       const doc = parser.parseFromString(
@@ -826,29 +1006,30 @@ export const useLayoutReorderState = ({
         "text/html"
       );
       const root = doc.getElementById("studio-el-root");
-      if (!root) return;
+      if (!root) return false;
 
       const leaf = root.querySelector(
         `[data-layout-id="${CSS.escape(layoutId)}"]`
       );
-      if (!leaf) return;
+      if (!leaf) return false;
 
       const target = isSelf
         ? (leaf as HTMLElement)
         : (Array.from(leaf.querySelectorAll(tagName))[
             elementIndex
           ] as HTMLElement);
-      if (!target) return;
+      if (!target) return false;
 
       if (booleanAttr) {
         // Presence toggle: "true" adds the bare attribute, "false" removes it.
         if (value === "true") target.setAttribute(attr, "");
         else target.removeAttribute(attr);
       } else {
-        target.setAttribute(attr, value);
+        writeAttribute(target, attr, value);
       }
 
       stageLayoutSourceUpdate(codeId, root.innerHTML);
+      return true;
     },
     [stageLayoutSourceUpdate]
   );
@@ -857,11 +1038,11 @@ export const useLayoutReorderState = ({
   // its own data-layout-id (text slots are only layout-editable for such
   // leaves), so setting textContent is safe and escapes automatically.
   const handleLayoutTextUpdate = useCallback(
-    (codeId: string, layoutId: string, value: string) => {
-      if (!codeId || !layoutId) return;
+    (codeId: string, layoutId: string, value: string): boolean => {
+      if (!codeId || !layoutId) return false;
 
       const cached = templateSourceByCodeIdRef.current[codeId];
-      if (!cached) return;
+      if (!cached) return false;
 
       const parser = new DOMParser();
       const doc = parser.parseFromString(
@@ -869,16 +1050,17 @@ export const useLayoutReorderState = ({
         "text/html"
       );
       const root = doc.getElementById("studio-el-root");
-      if (!root) return;
+      if (!root) return false;
 
       const leaf = root.querySelector(
         `[data-layout-id="${CSS.escape(layoutId)}"]`
       ) as HTMLElement | null;
-      if (!leaf) return;
+      if (!leaf) return false;
 
       leaf.textContent = value;
 
       stageLayoutSourceUpdate(codeId, root.innerHTML);
+      return true;
     },
     [stageLayoutSourceUpdate]
   );
@@ -920,6 +1102,148 @@ export const useLayoutReorderState = ({
     [stageLayoutSourceUpdate]
   );
 
+  // ---------------------------------------------------------------------------
+  // Link wrapper
+  //
+  // Wrapping is the first Studio operation that CREATES an element, and the
+  // element it creates has no backend-minted identity. Rather than mint one —
+  // layout ids come from the render pipeline and are stripped again by
+  // stripLayoutIdsFromSource before save, so a client-side id would be a
+  // fabricated identity that vanishes on the next render — every operation here
+  // addresses the wrapper as the PARENT of the already-addressed
+  // [data-layout-id] element. That needs no new identity and stays correct
+  // across re-renders.
+  // ---------------------------------------------------------------------------
+
+  // What the Inspector's Link section shows for an element: the <a> around it,
+  // and whether one may be added. Read off the cached template rather than
+  // reported by the bridge — reading a parent tag is something the host can do
+  // for itself, and every byte of bridge is hand-deployed.
+  const readLinkWrapper = useCallback(
+    (codeId: string, layoutId: string): LinkWrapperState | null => {
+      const cached = templateSourceByCodeIdRef.current[codeId];
+      if (!cached) return null;
+
+      const found = resolveLayoutLeaf(cached, layoutId);
+      if (!found) return null;
+
+      const { leaf } = found;
+      // The element IS a link: its own href slot already edits it, so it
+      // neither reports a wrapper nor offers to add one.
+      if (leaf.tagName === "A") return { wrapper: null, canWrap: false };
+
+      const wrapper = leaf.parentElement;
+      if (wrapper && wrapper.tagName === "A") {
+        return {
+          wrapper: {
+            href: wrapper.getAttribute("href") || "",
+            target: wrapper.getAttribute("target") || "",
+          },
+          canWrap: false,
+        };
+      }
+
+      // A link further up the tree still rules out wrapping — nested <a> is
+      // invalid HTML — but it is not this element's to edit.
+      return { wrapper: null, canWrap: canWrapInLink(leaf) };
+    },
+    // The template cache is a ref, so this version counter is what gives the
+    // reader a new identity when the source changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [templateSourceVersion]
+  );
+
+  // Both wrap and unwrap report whether they actually staged anything, so the
+  // caller can post to the bridge only on success. The bridge applies these
+  // commands with its own, laxer guards — and it is hand-deployed, so it cannot
+  // be assumed to match this file. Posting first and validating afterwards
+  // would let a refusal here still mutate the canvas.
+  const handleLayoutWrapInLink = useCallback(
+    (codeId: string, layoutId: string): boolean => {
+      if (!codeId || !layoutId) return false;
+
+      const cached = templateSourceByCodeIdRef.current[codeId];
+      if (!cached) return false;
+
+      const found = resolveLayoutLeaf(cached, layoutId);
+      if (!found) return false;
+
+      const { doc, root, leaf } = found;
+      if (!leaf.parentNode) return false;
+      // Re-checked here rather than assumed from the hidden button: the panel
+      // and this write are separate paths, and only one of them owns the file
+      // that gets saved.
+      if (!canWrapInLink(leaf)) return false;
+
+      // Deliberately attribute-less: an <a> with no href isn't a link yet, which
+      // is exactly the state the panel shows before a URL is typed.
+      const wrapper = doc.createElement("a");
+      leaf.parentNode.insertBefore(wrapper, leaf);
+      wrapper.appendChild(leaf);
+
+      stageLayoutSourceUpdate(codeId, root.innerHTML);
+      return true;
+    },
+    [stageLayoutSourceUpdate]
+  );
+
+  const handleLayoutUnwrapLink = useCallback(
+    (codeId: string, layoutId: string): boolean => {
+      if (!codeId || !layoutId) return false;
+
+      const cached = templateSourceByCodeIdRef.current[codeId];
+      if (!cached) return false;
+
+      const found = resolveLayoutLeaf(cached, layoutId);
+      if (!found) return false;
+
+      const { root, leaf } = found;
+      const wrapper = leaf.parentElement;
+      if (!wrapper || wrapper.tagName !== "A" || !wrapper.parentNode) {
+        return false;
+      }
+
+      // Move every child out in order. The wrapper may hold siblings of the
+      // addressed element — an author-written <a> around an image AND its
+      // caption — and dropping them would delete page content.
+      while (wrapper.firstChild) {
+        wrapper.parentNode.insertBefore(wrapper.firstChild, wrapper);
+      }
+      wrapper.parentNode.removeChild(wrapper);
+
+      stageLayoutSourceUpdate(codeId, root.innerHTML);
+      return true;
+    },
+    [stageLayoutSourceUpdate]
+  );
+
+  const handleLayoutLinkAttrUpdate = useCallback(
+    (
+      codeId: string,
+      layoutId: string,
+      attr: string,
+      value: string
+    ): boolean => {
+      if (!codeId || !layoutId || !attr) return false;
+
+      const cached = templateSourceByCodeIdRef.current[codeId];
+      if (!cached) return false;
+
+      const found = resolveLayoutLeaf(cached, layoutId);
+      if (!found) return false;
+
+      const { root, leaf } = found;
+      const wrapper = leaf.parentElement;
+      if (!wrapper || wrapper.tagName !== "A") return false;
+
+      writeAttribute(wrapper, attr, value);
+
+      stageLayoutSourceUpdate(codeId, root.innerHTML);
+      return true;
+    },
+    [stageLayoutSourceUpdate]
+  );
+
   // Thin wrapper preserving the existing media-picker call site, which edits an
   // <img> `src` addressed by the img-specific isLeafImg/imgIndex pair.
   const handleLayoutImageSrcUpdate = useCallback(
@@ -929,9 +1253,9 @@ export const useLayoutReorderState = ({
       isLeafImg: boolean,
       imgIndex: number,
       newSrc: string
-    ) => {
-      if (!newSrc) return;
-      handleLayoutElementAttrUpdate(
+    ): boolean => {
+      if (!newSrc) return false;
+      return handleLayoutElementAttrUpdate(
         codeId,
         layoutId,
         isLeafImg,
@@ -958,5 +1282,9 @@ export const useLayoutReorderState = ({
     handleLayoutElementAttrUpdate,
     handleLayoutTextUpdate,
     handleLayoutTagUpdate,
+    readLinkWrapper,
+    handleLayoutWrapInLink,
+    handleLayoutUnwrapLink,
+    handleLayoutLinkAttrUpdate,
   };
 };

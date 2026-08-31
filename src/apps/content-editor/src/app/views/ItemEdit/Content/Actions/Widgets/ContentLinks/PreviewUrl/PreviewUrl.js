@@ -1,3 +1,4 @@
+import { theme } from "@zesty-io/material";
 import { useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye } from "@fortawesome/free-solid-svg-icons";
@@ -30,7 +31,7 @@ export function PreviewUrl(props) {
     >
       <FontAwesomeIcon
         icon={faEye}
-        style={{ color: "#0BA5EC", marginRight: "8px" }}
+        style={{ color: theme.palette.info.main, marginRight: "8px" }}
       />
       Preview {props.item.meta.version}
     </Link>

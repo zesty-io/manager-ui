@@ -5,7 +5,6 @@ import instanceZUID from "../../utility/instanceZUID";
 export const mcpApi = createApi({
   reducerPath: "mcpApi",
   baseQuery: fetchBaseQuery({
-    // @ts-ignore
     baseUrl: `${__CONFIG__.MCP_DOMAIN}`,
     prepareHeaders,
   }),

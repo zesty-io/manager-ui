@@ -1,3 +1,4 @@
+import { theme } from "@zesty-io/material";
 import { useEffect, useState } from "react";
 import {
   Box,
@@ -154,7 +155,7 @@ export const FieldsListRight = ({ model }: Props) => {
         inputProps={{
           sx: {
             ":read-only": {
-              textFillColor: "#101828",
+              textFillColor: theme.palette.text.primary,
             },
           },
         }}
@@ -194,7 +195,7 @@ export const FieldsListRight = ({ model }: Props) => {
         inputProps={{
           sx: {
             ":read-only": {
-              textFillColor: "#101828",
+              textFillColor: theme.palette.text.primary,
             },
           },
         }}

@@ -41,6 +41,7 @@ import { ConfirmPublishModal } from "../../ConfirmPublishModal";
 import { fetchItem, fetchItemPublishing } from "../../../store/content";
 import { SchedulePublish } from "../../SchedulePublish";
 import { useDomain } from "../../../hooks/use-domain";
+import { asRenderableText } from "../../../../utility/asRenderableText";
 
 type ActiveItemProps = {
   itemZUID: string;
@@ -186,10 +187,7 @@ export const ActiveItem = memo(
         const value = String(contentItem.data[imageFieldName]).split(",")?.[0];
 
         if (value.startsWith("3-")) {
-          return `${
-            // @ts-ignore
-            CONFIG.SERVICE_MEDIA_RESOLVER
-          }/resolve/${value}/getimage/?w=64&h=64&type=crop`;
+          return `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${value}/getimage/?w=64&h=64&type=crop`;
         } else {
           return value;
         }
@@ -238,8 +236,16 @@ export const ActiveItem = memo(
         });
     };
 
+    // The display field is picked by a Schema admin and can be an object-shaped
+    // datatype (images, repeater, one_to_one). Drop anything non-primitive so it falls
+    // through to the meta fallbacks below instead of throwing "Objects are not valid as
+    // a React child" when rendered.
+    const relatedFieldTitle = asRenderableText(
+      contentItem?.data[relatedFieldData?.name]
+    );
+
     const itemTitle = !!contentItem
-      ? contentItem?.data[relatedFieldData?.name] ||
+      ? relatedFieldTitle ||
         contentItem?.web?.metaTitle ||
         contentItem?.web?.metaLinkText
       : `${itemZUID} (Deleted)`;
@@ -467,7 +473,6 @@ export const ActiveItem = memo(
             {!!contentItem?.meta?.version && (
               <MenuItem
                 onClick={() => {
-                  // @ts-expect-error Config not typed
                   let devUrl = `${CONFIG.URL_PREVIEW_PROTOCOL}${instance.randomHashID}${CONFIG.URL_PREVIEW}${contentItem?.web?.path}`;
 
                   if (previewLock) {

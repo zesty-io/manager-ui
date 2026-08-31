@@ -18,6 +18,8 @@ import {
 } from "../../../../../../../../../shell/services/instance";
 import { useGetUsersQuery } from "../../../../../../../../../shell/services/accounts";
 import { startCase } from "lodash";
+
+import { BRAND_COLORS } from "utility/brandColors";
 import { useSelector } from "react-redux";
 import { format, parseISO, isValid as isValidDate } from "date-fns";
 
@@ -25,10 +27,18 @@ const SOURCE_DETAIL_MAP = {
   "(direct)": { color: "info.dark", bgcolor: "blue.100", icon: InboxRounded },
   google: { color: "error.dark", bgcolor: "red.100", icon: SearchRounded },
   bing: { color: "error.dark", bgcolor: "red.100", icon: SearchRounded },
-  instagram: { color: "#6727BB", bgcolor: "#EBE9FE", icon: Instagram },
-  facebook: { color: "#1574EA", bgcolor: "#E0F2FE", icon: Facebook },
-  twitter: { color: "#1DA0F0", bgcolor: "#E0F2FE", icon: Twitter },
-  youtube: { color: "#FE0000", bgcolor: "#FEE4E2", icon: YouTube },
+  instagram: {
+    color: BRAND_COLORS.instagram,
+    bgcolor: "purple.100",
+    icon: Instagram,
+  },
+  facebook: {
+    color: BRAND_COLORS.facebook,
+    bgcolor: "blue.100",
+    icon: Facebook,
+  },
+  twitter: { color: BRAND_COLORS.twitter, bgcolor: "blue.100", icon: Twitter },
+  youtube: { color: BRAND_COLORS.youtube, bgcolor: "red.100", icon: YouTube },
 } as const;
 
 const fmtShort = (d?: string) => {
@@ -161,7 +171,6 @@ export const NameCell = ({
               borderRadius: "4px",
             }}
             src={`${
-              // @ts-ignore
               CONFIG.SERVICE_MEDIA_RESOLVER
             }/resolve/${getImage()}/getimage/?w=200&h=200&type=fit`}
             onError={(e) => {
