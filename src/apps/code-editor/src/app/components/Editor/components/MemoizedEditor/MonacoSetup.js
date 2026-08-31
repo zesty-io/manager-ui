@@ -19,15 +19,7 @@ export function MonacoSetup(store) {
     base: "vs-dark", // can also be vs-dark or hc-black
     inherit: true, // can also be false to completely replace the builtin rules
     rules: ParsleyTheme,
-    // `colors` is a required member of IStandaloneThemeData and always has been,
-    // but monaco only started reading it in 0.31: StandaloneTheme's `tokenTheme`
-    // getter does an unguarded `this.themeData.colors["editor.foreground"]` to
-    // synthesise a default token rule. Omitting it throws on the first
-    // setTheme("parsleyDark"), which is editorDidMount, so every file opened in
-    // the Code app lands in the ErrorBoundary. Empty is the behaviour-preserving
-    // value: both lookups stay undefined, no extra rule is pushed, and tokens
-    // render exactly as they did on 0.25.2.
-    colors: {},
+    colors: {}, // required since 0.31 — monaco reads colors["editor.foreground"] unguarded
   });
 
   /**
