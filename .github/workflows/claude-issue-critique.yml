@@ -1,4 +1,4 @@
-name: Claude Issue Triage
+name: "Claude: Issue Triage"
 on:
   issues:
     # `edited` is needed for the duplicate-check job (re-evaluate when title/body
@@ -14,6 +14,7 @@ jobs:
   # when the title or body actually changed (see the `if`) — closes
   # zesty-io/manager-ui#4229.
   duplicate-check:
+    name: Claude Duplicate Issue Check
     if: >-
       github.event.issue.user.type != 'Bot' &&
       (github.event.action == 'opened' ||
@@ -328,6 +329,7 @@ jobs:
           echo "✅ Duplicate-check completed as expected for tier $TIER (has_body=$HAS_BODY)."
 
   triage:
+    name: Claude Issue Triage
     needs: duplicate-check
     # Skip bot-authored issues, non-`opened` events, and HIGH-confidence
     # duplicates (avoids wasting an Opus run on a likely-duplicate ticket).
