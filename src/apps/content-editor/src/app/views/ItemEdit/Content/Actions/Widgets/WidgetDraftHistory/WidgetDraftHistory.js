@@ -48,7 +48,6 @@ export default connect((state, props) => {
         sx={{
           p: 0,
           backgroundColor: "transparent",
-          fontSize: "16px",
           color: alpha(theme.palette.text.primary, 0.4),
           borderBottom: 1,
           borderColor: "grey.200",
@@ -97,18 +96,16 @@ export default connect((state, props) => {
                   justifyContent="space-between"
                 >
                   <Typography
+                    variant="body2"
                     sx={{
                       fontWeight: 500,
-                      fontSize: "14px",
-                      lineHeight: "20px",
                       color: "text.primary",
                     }}
                   >{`${log.firstName} ${log.lastName}`}</Typography>
                   <Typography
+                    variant="body2"
                     sx={{
                       fontWeight: 500,
-                      fontSize: "14px",
-                      lineHeight: "20px",
                       color: alpha(theme.palette.text.primary, 0.56),
                     }}
                   >
@@ -131,10 +128,9 @@ export default connect((state, props) => {
         ) : (
           <Typography
             className="noLogs"
+            variant="body2"
             sx={{
               fontWeight: 500,
-              fontSize: "14px",
-              lineHeight: "20px",
               color: "text.primary",
             }}
           >

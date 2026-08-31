@@ -29,7 +29,6 @@ export const WidgetPurgeItem = memo(function WidgetPurgeItem(props) {
         sx={{
           p: 0,
           backgroundColor: "transparent",
-          fontSize: "16px",
           color: alpha(theme.palette.text.primary, 0.4),
           borderBottom: 1,
           borderColor: "grey.200",
@@ -69,8 +68,6 @@ export const WidgetPurgeItem = memo(function WidgetPurgeItem(props) {
               variant="body2"
               color="text.secondary"
               sx={{
-                fontSize: "14px",
-                lineHeight: "20px",
                 maxWidth: "595px",
               }}
             >

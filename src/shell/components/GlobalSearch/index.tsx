@@ -622,10 +622,10 @@ export const GlobalSearch = () => {
                       pb: 0.5,
                       pt: 0,
                       mt: 1,
-                      fontSize: "12px",
+                      typography: "body3",
+                      // body3 carries display: inline-block; a subheader must stay full width.
+                      display: "list-item",
                       fontWeight: 600,
-                      lineHeight: "18px",
-                      letterSpacing: "0.15px",
                     }}
                     key={option}
                   >
@@ -694,10 +694,10 @@ export const GlobalSearch = () => {
                       pb: 0.5,
                       pt: 0,
                       mt: 1,
-                      fontSize: "12px",
+                      typography: "body3",
+                      // body3 carries display: inline-block; a subheader must stay full width.
+                      display: "list-item",
                       fontWeight: 600,
-                      lineHeight: "18px",
-                      letterSpacing: "0.15px",
                     }}
                     key={option}
                   >

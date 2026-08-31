@@ -29,7 +29,6 @@ export const ContentLinks = memo(function ContentLinks(props) {
           sx={{
             p: 0,
             backgroundColor: "transparent",
-            fontSize: "16px",
             color: alpha(theme.palette.text.primary, 0.4),
             borderBottom: 1,
             borderColor: "grey.200",

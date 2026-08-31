@@ -52,7 +52,6 @@ export default connect((state) => {
           sx={{
             p: 0,
             backgroundColor: "transparent",
-            fontSize: "16px",
             color: alpha(theme.palette.text.primary, 0.4),
             borderBottom: 1,
             borderColor: "grey.200",
@@ -99,10 +98,9 @@ export default connect((state) => {
               <Stack gap={1.5}>
                 {Array.isArray(logs) && !logs.length && (
                   <Typography
+                    variant="body2"
                     sx={{
                       fontWeight: 500,
-                      fontSize: "14px",
-                      lineHeight: "20px",
                       color: "text.primary",
                     }}
                   >
@@ -120,18 +118,16 @@ export default connect((state) => {
                         justifyContent="space-between"
                       >
                         <Typography
+                          variant="body2"
                           sx={{
                             fontWeight: 500,
-                            fontSize: "14px",
-                            lineHeight: "20px",
                             color: "text.primary",
                           }}
                         >{`${firstName} ${lastName}`}</Typography>
                         <Typography
+                          variant="body2"
                           sx={{
                             fontWeight: 500,
-                            fontSize: "14px",
-                            lineHeight: "20px",
                             color: alpha(theme.palette.text.primary, 0.56),
                           }}
                         >
