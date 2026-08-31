@@ -152,7 +152,9 @@ const DisplayCard = ({
           >
             {details?.map((item: Record<string, unknown>, index: number) => {
               const itemKey =
-                showPlaceholders && !item?.key ? "+ Add Detail" : item?.key;
+                showPlaceholders && !item?.key
+                  ? "+ Add Detail"
+                  : renderValue(item?.key);
               const itemValue =
                 showPlaceholders && !item?.key ? "" : renderValue(item?.value);
               return (
@@ -206,7 +208,7 @@ const DisplayCard = ({
               width: isVideoType ? "142px" : "80px",
               maxHeight: "80px",
               position: "relative",
-              bgcolor: "#F2F4F7",
+              bgcolor: "grey.100",
               display: "flex",
               justifyContent: "center",
               alignItems: "center",

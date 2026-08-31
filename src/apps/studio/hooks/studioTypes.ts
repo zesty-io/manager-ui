@@ -66,6 +66,28 @@ export type ElementLayoutPatch = {
   elementIndex: number;
 };
 
+// The <a> that wraps a selected element, as the Inspector's Link section sees
+// it. Both values are read off the TEMPLATE, so `href` may be a raw Parsley
+// expression rather than a URL.
+export type LinkWrapper = {
+  href: string;
+  // "" when the attribute is absent; "_blank" opens a new tab.
+  target: string;
+};
+
+// Everything the Link section needs about an element's surroundings. Derived
+// from the cached template on every read rather than stored: the wrapper has no
+// data-layout-id of its own (layout ids are minted by the render pipeline and
+// stripped before save), so it is only ever addressed as the parent of the
+// element the panel already has coordinates for.
+export type LinkWrapperState = {
+  // The <a> immediately wrapping the element, when there is one.
+  wrapper: LinkWrapper | null;
+  // False when the element is already a link, or sits inside one further up:
+  // nested <a> is invalid HTML, and the enclosing link is the one to edit.
+  canWrap: boolean;
+};
+
 // Where a Parsley reference resolves from when it is NOT `this` — i.e. a field
 // on some other content item, pinned to that exact item by ZUID. Carries both
 // the Parsley identity (modelName + itemZUID are the only two things that reach
@@ -103,6 +125,13 @@ export type InspectorSelection = {
   tagName: string;
   slots: ElementSlot[];
   layoutPatch?: ElementLayoutPatch | null;
+  // Whether the Link controls belong on this row. An element row owns them; a
+  // text/field row owns them only when it is its element's LONE content row,
+  // since every run of a leaf carries the same element-addressing layoutPatch
+  // and wrapping from one of several would swallow content the panel isn't
+  // showing. Derived from the tree, not from the template — see
+  // ownsElementLinkControls.
+  ownsLinkControls?: boolean;
 };
 
 export type LayoutBreadcrumbItem = {
@@ -116,7 +145,28 @@ export type LayoutSelection = {
   breadcrumb: LayoutBreadcrumbItem[];
 };
 
-export type InteractionMode = "content" | "layout";
+// "full" is the union of content and layout, and the default for a user
+// entitled to both. It exists host-side only: the bridge branches on mode at
+// ten sites, every one written as === "layout" or !== "layout", so a third
+// value there would route studio into content behaviour at half of them.
+// syncBridgeInteractionMode maps full -> layout at the boundary instead.
+export type InteractionMode = "content" | "layout" | "full";
+
+// Modes whose canvas grammar is layout's: mousedown selects, dblclick drills.
+export const LAYOUT_GRAMMAR_MODES: InteractionMode[] = ["layout", "full"];
+
+export const usesLayoutGrammar = (mode: InteractionMode): boolean =>
+  LAYOUT_GRAMMAR_MODES.includes(mode);
+
+// The mirror of the above, and NOT its negation: full uses layout's canvas
+// grammar AND content's editing loop, so it belongs to both lists. Two-way
+// binding — the panel repainting the canvas, and an inline edit writing back
+// to the store — was gated on `=== "content"` because only this predicate was
+// missing when full mode landed, which left both halves dead in full mode.
+export const CONTENT_EDITING_MODES: InteractionMode[] = ["content", "full"];
+
+export const usesContentEditing = (mode: InteractionMode): boolean =>
+  CONTENT_EDITING_MODES.includes(mode);
 
 // "element" = an HTML element (collapsible container). "field" = dynamic
 // content (a studio field marker) rendered as a text row with a bolt.
