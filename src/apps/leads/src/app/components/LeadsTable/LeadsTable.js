@@ -2,6 +2,7 @@ import { Component } from "react";
 import { connect } from "react-redux";
 import { createBrowserHistory } from "history";
 
+import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import DeleteIcon from "@mui/icons-material/Delete";
 import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
@@ -17,8 +18,6 @@ function filterLeadsData(leads, filter) {
   filteredLeads = FilterService.filterByFuzzyText(filteredLeads, filter);
   return filteredLeads;
 }
-
-import styles from "./LeadsTable.less";
 
 export default connect((state) => {
   const leads = filterLeadsData(state.leads, state.filter);
@@ -113,36 +112,6 @@ export default connect((state) => {
     };
 
     /**
-     * Renders all of the form data of the lead
-     *
-     * Used in the Modal
-     * @param {FormData} data The Lead's formData object
-     */
-    renderModalFormData(data) {
-      const keysInData = Object.keys(data);
-      const keysToDisplay = this.generateFormDataKeysToDisplay(keysInData);
-      const dataList = keysToDisplay.map((key, index) => {
-        return (
-          <tr key={index}>
-            <td>{keysToDisplay[index]}</td>
-            <td>{data[keysToDisplay[index]]}</td>
-          </tr>
-        );
-      });
-      return (
-        <table className={styles.TableInfo}>
-          <thead className={styles.TableHead}>
-            <tr>
-              <th>Key</th>
-              <th>Value</th>
-            </tr>
-          </thead>
-          <tbody className={styles.TableBody}>{dataList}</tbody>
-        </table>
-      );
-    }
-
-    /**
      * Renders the first X items in the form data of the lead
      *
      * Used in the Leads Table
@@ -157,9 +126,9 @@ export default connect((state) => {
       );
       const dataList = keysToDisplay.map((key, index) => {
         return (
-          <li className={styles.List} key={index}>
+          <Box component="li" sx={{ mb: 0.5 }} key={index}>
             {keysToDisplay[index]}: {data[keysToDisplay[index]]}
-          </li>
+          </Box>
         );
       });
       // Display an ellipsis if there are extra fields
@@ -178,7 +147,37 @@ export default connect((state) => {
     render() {
       return (
         <div>
-          <table className={`table-auto ${styles.leadsTable}`}>
+          <Box
+            component="table"
+            className="table-auto"
+            data-cy="leadsTable"
+            sx={(theme) => ({
+              width: "100%",
+              "& thead tr th": {
+                textAlign: "left",
+                pt: 2,
+                px: 1,
+                pb: 1,
+                "&:first-of-type": { pl: 4 },
+                "&:last-child": { pr: 4 },
+              },
+              "& tbody tr td": {
+                p: 1,
+                border: "none",
+                "&:first-of-type": { pl: 4 },
+                "&:last-child": { pr: 4 },
+                "& ul": {
+                  listStyleType: "none",
+                  m: 0,
+                },
+              },
+              "& tbody tr:hover": {
+                backgroundColor: theme.palette.leads.rowHover,
+                borderRight: `1px solid ${theme.palette.leads.rowHoverBorder}`,
+                cursor: "pointer",
+              },
+            })}
+          >
             <thead>
               <tr>
                 <th>Date (system)</th>
@@ -192,6 +191,7 @@ export default connect((state) => {
                 return (
                   <tr
                     key={`${data.zuid}-${data.dateCreated}`}
+                    data-cy="leadsTableRow"
                     onClick={() => this.openModalAndUpdateRoute(data)}
                   >
                     <td>{data.dateCreated || "N/A"}</td>
@@ -202,15 +202,17 @@ export default connect((state) => {
                 );
               })}
             </tbody>
-          </table>
+          </Box>
           <ConfirmDialog
-            className={styles.LeadModal}
             open={this.state.modalIsOpen}
             sx={{ width: "100%" }}
             title={
-              <div className={styles.ModalContent}>
+              <div>
                 {this.state.currentLead ? (
-                  <ul className={styles.LeadData}>
+                  <Box
+                    component="ul"
+                    sx={{ listStyleType: "none", "& li": { mb: 0.5 } }}
+                  >
                     <li>
                       <strong>Date Created</strong>:{" "}
                       {this.state.currentLead.dateCreated}
@@ -221,15 +223,20 @@ export default connect((state) => {
                         (key) => {
                           return (
                             <li key={key}>
-                              <span className={styles.Key}>{key}:</span>
-                              <span className={styles.Value}>
+                              <Box
+                                component="span"
+                                sx={{ fontWeight: "bold", mr: 1 }}
+                              >
+                                {key}:
+                              </Box>
+                              <span>
                                 {this.state.currentLead.formData[key]}
                               </span>
                             </li>
                           );
                         }
                       )}
-                  </ul>
+                  </Box>
                 ) : (
                   ""
                 )}
@@ -244,6 +251,7 @@ export default connect((state) => {
                   <>
                     <Button
                       variant="outlined"
+                      data-cy="deleteLeadCancel"
                       onClick={() => {
                         this.setState({
                           modalIsOpen: false,
@@ -257,7 +265,7 @@ export default connect((state) => {
                     <Button
                       variant="contained"
                       color="error"
-                      className={styles.btnDanger}
+                      data-cy="deleteLeadConfirm"
                       disabled={this.state.loading}
                       onClick={() =>
                         this.deleteLead(this.state.currentLead.zuid)

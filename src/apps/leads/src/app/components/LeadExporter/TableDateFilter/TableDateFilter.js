@@ -1,6 +1,6 @@
 import { Component } from "react";
 import { connect } from "react-redux";
-import { FormControl, FormLabel, Select, MenuItem } from "@mui/material";
+import { Box, FormControl, FormLabel, Select, MenuItem } from "@mui/material";
 import { format, subDays, parseISO, isValid } from "date-fns";
 
 import { DATE_PRESETS } from "./TableDateFilter.model";
@@ -10,7 +10,6 @@ import {
   setFilterStartDate,
 } from "../../../../store/filter";
 
-import styles from "./TableDateFilter.less";
 import { FieldTypeDate } from "../../../../../../../shell/components/FieldTypeDate";
 
 const datePresets = [
@@ -119,7 +118,9 @@ export default connect((state) => {
       return (
         <div>
           <FormControl fullWidth size="small">
-            <FormLabel sx={{ color: "#c3cddf" }}>Date Range</FormLabel>
+            <FormLabel sx={{ color: "leads.toolbarLabel" }}>
+              Date Range
+            </FormLabel>
             <Select
               name="form-group-filter"
               variant="outlined"
@@ -134,11 +135,16 @@ export default connect((state) => {
             </Select>
           </FormControl>
 
-          <div
-            className={styles.customDateWrapper}
+          <Box
+            data-cy="leadsCustomDateRange"
+            sx={{
+              mt: 1,
+              "& > div + div": { mt: 1 },
+              "& label": { color: "leads.toolbarLabel" },
+            }}
             style={this.state.datePickerIsVisible ? {} : { display: "none" }}
           >
-            <div className={styles.customDate}>
+            <div>
               <FieldTypeDate
                 name="start-date"
                 label="Start Date"
@@ -147,7 +153,7 @@ export default connect((state) => {
               />
             </div>
 
-            <div className={styles.customDate}>
+            <div>
               <FieldTypeDate
                 name="end-date"
                 label="End Date"
@@ -155,7 +161,7 @@ export default connect((state) => {
                 onChange={this.setEndDate}
               />
             </div>
-          </div>
+          </Box>
         </div>
       );
     }
