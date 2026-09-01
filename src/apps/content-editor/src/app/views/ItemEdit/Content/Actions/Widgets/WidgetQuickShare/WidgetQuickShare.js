@@ -1,3 +1,5 @@
+import { alpha } from "@mui/material/styles";
+import { theme } from "@zesty-io/material";
 import { memo } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Card from "@mui/material/Card";
@@ -36,7 +38,7 @@ export const WidgetQuickShare = memo(function WidgetQuickShare(props) {
           p: 0,
           backgroundColor: "transparent",
           fontSize: "16px",
-          color: "#10182866",
+          color: alpha(theme.palette.text.primary, 0.4),
           borderBottom: 1,
           borderColor: "grey.200",
         }}
@@ -45,7 +47,7 @@ export const WidgetQuickShare = memo(function WidgetQuickShare(props) {
             fontWeight: 400,
             fontSize: "12px",
             lineHeight: "32px",
-            color: "#101828",
+            color: "text.primary",
           },
         }}
         title="QUICK SHARE"
@@ -98,7 +100,7 @@ export const WidgetQuickShare = memo(function WidgetQuickShare(props) {
               <FontAwesomeIcon
                 icon={faTwitterSquare}
                 style={{
-                  color: "#0BA5EC",
+                  color: theme.palette.info.main,
                   marginRight: "8px",
                   width: "16px",
                   height: "16px",
@@ -125,7 +127,7 @@ export const WidgetQuickShare = memo(function WidgetQuickShare(props) {
               <FontAwesomeIcon
                 icon={faFacebookSquare}
                 style={{
-                  color: "#0BA5EC",
+                  color: theme.palette.info.main,
                   marginRight: "8px",
                   width: "16px",
                   height: "16px",
@@ -152,7 +154,7 @@ export const WidgetQuickShare = memo(function WidgetQuickShare(props) {
               <FontAwesomeIcon
                 icon={faLinkedinIn}
                 style={{
-                  color: "#0BA5EC",
+                  color: theme.palette.info.main,
                   marginRight: "8px",
                   width: "16px",
                   height: "16px",
@@ -179,7 +181,7 @@ export const WidgetQuickShare = memo(function WidgetQuickShare(props) {
               <FontAwesomeIcon
                 icon={faRedditSquare}
                 style={{
-                  color: "#0BA5EC",
+                  color: theme.palette.info.main,
                   marginRight: "8px",
                   width: "16px",
                   height: "16px",

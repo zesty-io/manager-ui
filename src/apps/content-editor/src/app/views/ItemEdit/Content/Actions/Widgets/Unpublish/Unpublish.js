@@ -1,3 +1,5 @@
+import { alpha } from "@mui/material/styles";
+import { theme } from "@zesty-io/material";
 import { memo, useState } from "react";
 
 import Button from "@mui/material/Button";
@@ -38,7 +40,7 @@ export const Unpublish = memo(function Unpublish(props) {
           p: 0,
           backgroundColor: "transparent",
           fontSize: "16px",
-          color: "#10182866",
+          color: alpha(theme.palette.text.primary, 0.4),
           borderBottom: 1,
           borderColor: "grey.200",
         }}
@@ -47,7 +49,7 @@ export const Unpublish = memo(function Unpublish(props) {
             fontWeight: 400,
             fontSize: "12px",
             lineHeight: "32px",
-            color: "#101828",
+            color: "text.primary",
           },
         }}
         title="UNPUBLISH"
@@ -95,12 +97,12 @@ export const Unpublish = memo(function Unpublish(props) {
               loadingPosition="start"
               startIcon={<ManageAccountsRoundedIcon />}
               sx={{
-                backgroundColor: "#F2F4F7",
+                backgroundColor: "grey.100",
                 color: "text.secondary",
                 mt: 1.5,
 
                 "&:hover": {
-                  backgroundColor: "#E4E7EC",
+                  backgroundColor: "grey.200",
                   color: "text.secondary",
                 },
               }}

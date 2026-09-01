@@ -80,7 +80,7 @@ export const RecentFiles = ({ openCreateFileDialog }: RecentFilesProps) => {
       <Box
         width="100%"
         height="calc(100% - 84px)"
-        bgcolor="#0D1116"
+        bgcolor="background.editor"
         color="grey.300"
         display="flex"
         flexDirection="row"
