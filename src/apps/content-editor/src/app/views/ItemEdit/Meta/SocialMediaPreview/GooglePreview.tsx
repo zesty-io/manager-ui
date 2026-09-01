@@ -8,6 +8,8 @@ import {
 import { useSelector } from "react-redux";
 import { useLocation, useParams } from "react-router";
 
+import { BRAND_COLORS } from "utility/brandColors";
+
 import { useGetInstanceQuery } from "../../../../../../../../shell/services/accounts";
 import { InstanceAvatar } from "../../../../../../../../shell/components/global-sidebar/components/InstanceAvatar";
 import { useDomain } from "../../../../../../../../shell/hooks/use-domain";
@@ -104,7 +106,7 @@ export const GooglePreview = ({ imageURL }: GooglePreviewProps) => {
         </Stack>
         <Typography
           variant="h5"
-          color={!!item?.web?.metaTitle ? "#131CA4" : "grey.500"}
+          color={!!item?.web?.metaTitle ? BRAND_COLORS.google : "grey.500"}
           mt={1}
           mb={1.5}
           fontWeight={600}

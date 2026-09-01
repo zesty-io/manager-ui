@@ -86,7 +86,7 @@ const roleIcons = [
     color="warning"
     sx={{
       ...iconStyles,
-      backgroundColor: "#FFFCF5",
+      backgroundColor: "yellow.50",
     }}
   />,
 ];
