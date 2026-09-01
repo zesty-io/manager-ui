@@ -554,31 +554,26 @@ jobs:
 
           # gh pr create resolves --reviewer logins to IDs before it creates anything —
           # if even one of these three no longer has repo access, the whole PR creation
-          # fails, not just the reviewer request. Check each one first and only request
-          # whichever still have access, so losing one (or all) of them degrades the
-          # review assignment instead of blocking the PR outright.
+          # fails, not just the reviewer request. Create the PR with no reviewers first,
+          # then request each candidate individually so one bad/stale login degrades
+          # gracefully instead of blocking the PR outright.
+          pr_url=$(gh pr create --repo "$REPO" --base dev --title "$title" \
+            --label "sentry-auto-fix" \
+            --body-file pr-description.md)
+          pr_number="${pr_url##*/}"
+          echo "pr_number=$pr_number" >> "$GITHUB_OUTPUT"
+          echo "✅ Opened auto-fix PR on branch $branch for issue #$ISSUE."
+
+          # GET repos/{owner}/{repo}/collaborators/{username} can't see access granted
+          # via org team membership under GITHUB_TOKEN (it 404s even for users who do
+          # have push access), so it can't be used as a pre-check. Request each reviewer
+          # directly instead and let a genuinely stale login warn without blocking the rest.
           candidate_reviewers=(agalin920 geodem127 finnar-bin)
-          valid_reviewers=()
           for r in "${candidate_reviewers[@]}"; do
-            if gh api "repos/$REPO/collaborators/$r" >/dev/null 2>&1; then
-              valid_reviewers+=("$r")
-            else
+            if ! gh pr edit "$pr_number" --repo "$REPO" --add-reviewer "$r" >/dev/null 2>&1; then
               echo "::warning::Reviewer '$r' no longer has access to $REPO — skipping."
             fi
           done
-          reviewer_args=()
-          if [ ${#valid_reviewers[@]} -gt 0 ]; then
-            IFS=,
-            reviewer_args=(--reviewer "${valid_reviewers[*]}")
-            unset IFS
-          fi
-
-          pr_url=$(gh pr create --repo "$REPO" --base dev --title "$title" \
-            --label "sentry-auto-fix" \
-            "${reviewer_args[@]}" \
-            --body-file pr-description.md)
-          echo "pr_number=${pr_url##*/}" >> "$GITHUB_OUTPUT"
-          echo "✅ Opened auto-fix PR on branch $branch for issue #$ISSUE."
 
       # Checkpoint 2: confirm the branch that ran actually produced its outcome on
       # GitHub — the action (and the deterministic steps above) can silently no-op.
