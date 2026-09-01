@@ -548,7 +548,10 @@ jobs:
           slug=$(jq -r '.branch_slug' classification.json)
           title=$(jq -r '.pr_title' classification.json)
           echo "branch=fix/$ISSUE-$slug" >> "$GITHUB_OUTPUT"
-          echo "title=$title" >> "$GITHUB_OUTPUT"
+          delim_title=$(openssl rand -hex 8)
+          echo "title<<$delim_title" >> "$GITHUB_OUTPUT"
+          printf '%s\n' "$title" >> "$GITHUB_OUTPUT"
+          echo "$delim_title" >> "$GITHUB_OUTPUT"
           # The github-script step below builds the fix commit on top of dev's
           # checked-out HEAD (actions/checkout above, ref: dev, fetch-depth: 1) — capture
           # its commit and tree sha now. Nothing in this job commits locally, so HEAD is
