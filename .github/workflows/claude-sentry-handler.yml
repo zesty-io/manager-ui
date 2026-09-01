@@ -579,9 +579,18 @@ jobs:
           for r in "${candidate_reviewers[@]}"; do
             resp=$(gh api --method POST "repos/$REPO/pulls/$pr_number/requested_reviewers" \
               -f "reviewers[]=$r" 2>/dev/null) || true
-            if ! jq -e --arg r "$r" '(.requested_reviewers // []) | any(.login == $r)' <<<"$resp" >/dev/null 2>&1; then
-              echo "::warning::Reviewer '$r' no longer has access to $REPO — skipping."
+            if jq -e --arg r "$r" '(.requested_reviewers // []) | any(.login == $r)' <<<"$resp" >/dev/null 2>&1; then
+              continue
             fi
+            # A real access problem (e.g. not a collaborator) comes back as a JSON error
+            # with a `.message`; an unknown/misspelled login instead gets silently
+            # dropped from a 200 response with no error at all, so fall back to a
+            # explanatory reason in that case rather than leaving the warning bare.
+            reason=$(jq -r '.message // empty' <<<"$resp" 2>/dev/null)
+            if [ -z "$reason" ]; then
+              reason="GitHub accepted the request but did not add '$r' as a reviewer — the login may not exist."
+            fi
+            echo "::warning::Reviewer '$r' was not added to $REPO: $reason"
           done
 
       # Checkpoint 2: confirm the branch that ran actually produced its outcome on
