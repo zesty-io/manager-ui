@@ -568,9 +568,18 @@ jobs:
           # via org team membership under GITHUB_TOKEN (it 404s even for users who do
           # have push access), so it can't be used as a pre-check. Request each reviewer
           # directly instead and let a genuinely stale login warn without blocking the rest.
+          #
+          # This calls the REST endpoint directly rather than `gh pr edit --add-reviewer`:
+          # that command's GraphQL query pulls the deprecated Projects (classic)
+          # `projectCards` field and fails outright on every invocation in this repo,
+          # regardless of the reviewer. The REST endpoint also returns 200 and silently
+          # drops an unknown login instead of erroring, so success is confirmed by
+          # checking the response body for the login rather than trusting the exit code.
           candidate_reviewers=(agalin920 geodem127 finnar-bin)
           for r in "${candidate_reviewers[@]}"; do
-            if ! gh pr edit "$pr_number" --repo "$REPO" --add-reviewer "$r" >/dev/null 2>&1; then
+            resp=$(gh api --method POST "repos/$REPO/pulls/$pr_number/requested_reviewers" \
+              -f "reviewers[]=$r" 2>/dev/null) || true
+            if ! jq -e --arg r "$r" '(.requested_reviewers // []) | any(.login == $r)' <<<"$resp" >/dev/null 2>&1; then
               echo "::warning::Reviewer '$r' no longer has access to $REPO — skipping."
             fi
           done
