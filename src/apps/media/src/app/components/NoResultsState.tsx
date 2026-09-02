@@ -1,5 +1,5 @@
 import { FC } from "react";
-``;
+import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
@@ -17,6 +17,7 @@ type Props = {
 };
 
 export const NoResultsState: FC<Props> = ({ filetype }) => {
+  const { t } = useTranslation();
   const [params, setParams] = useParams();
   return (
     <Box
@@ -40,11 +41,11 @@ export const NoResultsState: FC<Props> = ({ filetype }) => {
           <img src={noResults} height="320px" />
           <Typography sx={{ mt: 8 }} variant="h4" fontWeight={600}>
             {filetype === "Folder"
-              ? "No folders were found"
-              : `No ${filetype} files were found`}
+              ? t("media.noResultsStateTitleFolders")
+              : t("media.noResultsStateTitleFiletype", { filetype })}
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            Try adjusting the filters to find what you were looking for
+            {t("media.noResultsStateDescription")}
           </Typography>
           <Button
             variant="contained"
@@ -59,7 +60,7 @@ export const NoResultsState: FC<Props> = ({ filetype }) => {
             size="small"
             startIcon={<RestartAltRounded />}
           >
-            Clear Filters
+            {t("media.noResultsStateClearFilters")}
           </Button>
         </Box>
       </Box>

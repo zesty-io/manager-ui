@@ -1,4 +1,5 @@
 import { FC } from "react";
+import { useTranslation } from "react-i18next";
 import { Box, Typography, Avatar } from "@mui/material";
 import { useGetUsersRolesQuery } from "../../../../../../../shell/services/accounts";
 import restrictedImage from "../../../../../../../../public/images/restricted-image.svg";
@@ -41,6 +42,7 @@ const ProfileInfo: FC<ProfileInfoProps> = ({
 );
 
 const RestrictedPage = () => {
+  const { t } = useTranslation();
   const { isLoading, isError, data } = useGetUsersRolesQuery();
 
   const profileList = data
@@ -83,7 +85,7 @@ const RestrictedPage = () => {
         alignItems="baseline"
       >
         <Typography variant="h3" fontWeight={700} color="text.primary">
-          Workflows
+          {t("settings.workflowsHeading")}
         </Typography>
       </Box>
 
@@ -117,11 +119,10 @@ const RestrictedPage = () => {
               color="text.primary"
               mb={2}
             >
-              You need permission to view and edit workflows
+              {t("settings.workflowsRestrictedTitle")}
             </Typography>
             <Typography variant="body2" color="text.secondary" mb={4}>
-              Contact the instance owner or administrators listed below to
-              upgrade your role to Admin or Owner.
+              {t("settings.workflowsRestrictedDescription")}
             </Typography>
 
             <Box

@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
@@ -43,6 +44,7 @@ export const getFontDataFromHref = (url: string): FontAndVariants => {
 };
 
 const Browse = () => {
+  const { t } = useTranslation();
   const [loadComplete, setLoadComplete] = useState<boolean>(false);
   const [search, setSearch] = useState<string>("");
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -123,7 +125,7 @@ const Browse = () => {
         </Portal>
       )}
       <TopBar
-        title="Browse Fonts"
+        title={t("settings.browseFontsTitle")}
         isNotSaved={false}
         isLoading={false}
         saveHidden
@@ -137,7 +139,7 @@ const Browse = () => {
         >
           <SearchBox
             data-cy="BrowseFontSearchInput"
-            placeholder="Search Fonts"
+            placeholder={t("settings.searchFontsPlaceholder")}
             type="text"
             variant="outlined"
             size="small"
@@ -217,7 +219,7 @@ const Browse = () => {
           >
             <TextField
               id="previewText"
-              placeholder="Type something to preview"
+              placeholder={t("settings.typeSomethingToPreview")}
               type="text"
               variant="outlined"
               size="small"
@@ -285,7 +287,7 @@ const Browse = () => {
                     width: 64,
                   }}
                 >
-                  Prev
+                  {t("settings.prev")}
                 </Button>
                 <Typography
                   variant="h5"
@@ -314,7 +316,7 @@ const Browse = () => {
                     width: 64,
                   }}
                 >
-                  Next
+                  {t("common.next")}
                 </Button>
               </Box>
             </>

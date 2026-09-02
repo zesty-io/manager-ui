@@ -1,4 +1,5 @@
 import { FC, useEffect, useState, Dispatch } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Box,
   Dialog,
@@ -41,6 +42,7 @@ export const RenameFileModal: FC<Props> = ({
   extension,
   src,
 }) => {
+  const { t } = useTranslation();
   const [renamedFilename, setRenamedFilename] = useState<string>(newFilename);
 
   useEffect(() => {
@@ -71,11 +73,11 @@ export const RenameFileModal: FC<Props> = ({
           mb={1.5}
         />
         <Typography variant="h5" fontWeight="700">
-          Rename File
+          {t("media.renameFileModalTitle")}
         </Typography>
       </DialogTitle>
       <DialogContent>
-        <InputLabel>New File Name</InputLabel>
+        <InputLabel>{t("media.renameFileModalNewNameLabel")}</InputLabel>
         <TextFieldWithCursorPosition
           sx={{
             mt: 1,
@@ -115,13 +117,12 @@ export const RenameFileModal: FC<Props> = ({
             },
           }}
         >
-          This will change the URL path and could break existing links
-          referenced in production after a period of time.
+          {t("media.renameFileModalWarning")}
         </Alert>
       </DialogContent>
       <DialogActions>
         <Button color="inherit" onClick={() => onClose()}>
-          Cancel
+          {t("common.cancel")}
         </Button>
         <Button
           variant="contained"
@@ -131,7 +132,7 @@ export const RenameFileModal: FC<Props> = ({
           {isLoadingUpdate ? (
             <CircularProgress size="24px" color="inherit" />
           ) : (
-            "Update"
+            t("common.update")
           )}
         </Button>
       </DialogActions>

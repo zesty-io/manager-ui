@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Dialog,
   DialogTitle,
@@ -38,6 +39,7 @@ export const RowDialog = ({
   editRowData,
   isUpdate,
 }: RowDialogProps) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState<Record<string, any>>(() =>
     isUpdate && editRowData ? cloneDeep(editRowData) : {}
   );
@@ -174,7 +176,10 @@ export const RowDialog = ({
         ) {
           errors[name] = {
             ...(errors[name] ?? []),
-            INVALID_RANGE: `Value must be between ${field?.settings?.minValue} and ${field?.settings?.maxValue}`,
+            INVALID_RANGE: t("shell.repeaterValueBetween", {
+              min: field?.settings?.minValue,
+              max: field?.settings?.maxValue,
+            }),
           };
         } else {
           errors[name] = {
@@ -213,7 +218,7 @@ export const RowDialog = ({
         [name]: value === "" ? null : value,
       }));
     },
-    [formErrors, fields]
+    [formErrors, fields, t]
   );
 
   const validateRequiredFields = (): Record<string, Error> => {
@@ -288,7 +293,9 @@ export const RowDialog = ({
         }}
       >
         <Typography variant="h5" fontWeight={700}>
-          {isUpdate ? `Edit ${name}` : `Add row to ${name}`}
+          {isUpdate
+            ? t("shell.repeaterEditRow", { name })
+            : t("shell.repeaterAddRowTo", { fieldName: name })}
         </Typography>
         <IconButton size="small" onClick={onClose}>
           <CloseIcon fontSize="small" />
@@ -340,7 +347,7 @@ export const RowDialog = ({
               color="error"
               startIcon={<DeleteRoundedIcon />}
             >
-              Remove Row
+              {t("shell.repeaterRemoveRow")}
             </Button>
             <Stack direction="row" spacing={2}>
               <Button
@@ -349,21 +356,21 @@ export const RowDialog = ({
                 onClick={onClose}
                 color="inherit"
               >
-                Cancel
+                {t("common.cancel")}
               </Button>
               <Button
                 data-cy="SaveRepeaterRowItemBtn"
                 variant="contained"
                 onClick={() => handleSubmit()}
               >
-                Done
+                {t("common.done")}
               </Button>
             </Stack>
           </>
         ) : (
           <>
             <Button variant="outlined" onClick={onClose} color="inherit">
-              Cancel
+              {t("common.cancel")}
             </Button>
             <Stack direction="row" spacing={2}>
               <Button
@@ -372,14 +379,14 @@ export const RowDialog = ({
                 onClick={() => handleSubmit(true)}
                 startIcon={<AddIcon />}
               >
-                Add another field
+                {t("shell.repeaterAddAnotherField")}
               </Button>
               <Button
                 data-cy="SaveRepeaterRowItemBtn"
                 variant="contained"
                 onClick={() => handleSubmit()}
               >
-                Save
+                {t("common.save")}
               </Button>
             </Stack>
           </>

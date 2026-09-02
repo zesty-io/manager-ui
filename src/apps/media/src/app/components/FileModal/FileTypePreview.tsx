@@ -1,4 +1,5 @@
 import { FC, useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { fileExtension } from "../../utils/fileUtils";
 import {
   Box,
@@ -44,6 +45,7 @@ export const FileTypePreview: FC<Props> = ({
   isMediaThumbnail,
   updatedAt,
 }) => {
+  const { t } = useTranslation();
   const theme = useTheme();
   const isLargeScreen = useMediaQuery(theme.breakpoints.up("lg"));
   const isXtraLargeScreen = useMediaQuery(theme.breakpoints.up("xl"));
@@ -592,7 +594,7 @@ export const FileTypePreview: FC<Props> = ({
               variant="body2"
               sx={{ textAlign: "center", color: "grey.500" }}
             >
-              File type not recognized
+              {t("media.fileTypeNotRecognized")}
             </Typography>
           </Box>
         </Box>

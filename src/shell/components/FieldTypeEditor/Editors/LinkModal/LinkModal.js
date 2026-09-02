@@ -1,4 +1,5 @@
 import React from "react";
+import { withTranslation } from "react-i18next";
 import { toggleMark } from "prosemirror-commands";
 
 import {
@@ -17,7 +18,7 @@ import {
 import { schema } from "../react-prosemirror-schema";
 
 import styles from "./LinkModal.less";
-export class LinkModal extends React.PureComponent {
+class LinkModalBase extends React.PureComponent {
   state = {
     target: "_blank",
     href: "",
@@ -53,6 +54,8 @@ export class LinkModal extends React.PureComponent {
   };
 
   render() {
+    const { t } = this.props;
+
     return (
       <Modal
         className={styles.LinkModal}
@@ -63,7 +66,7 @@ export class LinkModal extends React.PureComponent {
       >
         <ModalContent>
           <InputLabel sx={{ mb: 0.5 }}>
-            What url should this link to?
+            {t("shell.editorLinkUrlLabel")}
           </InputLabel>
           <TextField
             required
@@ -74,7 +77,7 @@ export class LinkModal extends React.PureComponent {
             onChange={(evt) => this.setState({ href: evt.target.value })}
           />
           <FormControlLabel
-            label="Open link in a new browser window?"
+            label={t("shell.editorLinkNewWindow")}
             labelPlacement="start"
             slotProps={{
               typography: {
@@ -102,10 +105,12 @@ export class LinkModal extends React.PureComponent {
             variant="contained"
             color="success"
           >
-            Insert Link
+            {t("shell.editorInsertLink")}
           </Button>
         </ModalFooter>
       </Modal>
     );
   }
 }
+
+export const LinkModal = withTranslation()(LinkModalBase);

@@ -1,4 +1,5 @@
 import { KeyboardEvent, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Box,
   Button,
@@ -23,6 +24,7 @@ export const CreateVariantDialog = ({
   onClose: () => void;
   model: ContentModel;
 }) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const history = useHistory();
   const [variantName, setVariantName] = useState("Untitled");
@@ -85,10 +87,10 @@ export const CreateVariantDialog = ({
         >
           <ModeEditRounded color="primary" />
         </Box>
-        Create Variant of {model?.label}
+        {t("blocks.createVariantOf", { label: model?.label })}
       </DialogTitle>
       <DialogContent>
-        <InputLabel sx={{ mb: 0.5 }}>Variant Name</InputLabel>
+        <InputLabel sx={{ mb: 0.5 }}>{t("blocks.variantName")}</InputLabel>
         <TextField
           autoFocus
           value={variantName}
@@ -101,7 +103,7 @@ export const CreateVariantDialog = ({
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="inherit">
-          Cancel
+          {t("common.cancel")}
         </Button>
         <Button
           disabled={isFieldsLoading}
@@ -110,7 +112,7 @@ export const CreateVariantDialog = ({
           variant="contained"
           data-cy="create-variant-confirm-button"
         >
-          Create
+          {t("common.create")}
         </Button>
       </DialogActions>
     </Dialog>

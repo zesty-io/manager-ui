@@ -1,5 +1,6 @@
 import { FC } from "react";
 import { Box, Typography, Stack, Button } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router";
 import notFound from "../../../../../../public/images/notFound.jpg";
 import BackupTableRoundedIcon from "@mui/icons-material/BackupTableRounded";
@@ -11,10 +12,10 @@ interface Props {
   message?: string;
 }
 
-export const NotFoundState: FC<Props> = ({
-  title = "Folder Not Found",
-  message = "We're sorry the folder you requested could not be found. Please go back to the all media page.",
-}) => {
+export const NotFoundState: FC<Props> = ({ title, message }) => {
+  const { t } = useTranslation();
+  const resolvedTitle = title ?? t("media.notFoundStateDefaultTitle");
+  const resolvedMessage = message ?? t("media.notFoundStateDefaultMessage");
   const history = useHistory();
   const isSelectDialog = useSelector(
     (state: { mediaRevamp: State }) => state.mediaRevamp.isSelectDialog
@@ -31,7 +32,7 @@ export const NotFoundState: FC<Props> = ({
       <Box width="400px">
         <img src={notFound} height="320px" />
         <Typography sx={{ mt: 8 }} variant="h4" fontWeight={600}>
-          {title}
+          {resolvedTitle}
         </Typography>
         {!isSelectDialog && (
           <>
@@ -40,14 +41,14 @@ export const NotFoundState: FC<Props> = ({
               variant="body2"
               color="text.secondary"
             >
-              {message}
+              {resolvedMessage}
             </Typography>
             <Button
               variant="contained"
               startIcon={<BackupTableRoundedIcon />}
               onClick={() => history.push("/media")}
             >
-              Go to All Media
+              {t("media.goToAllMedia")}
             </Button>
           </>
         )}

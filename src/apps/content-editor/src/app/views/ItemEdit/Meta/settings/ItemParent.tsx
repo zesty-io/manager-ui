@@ -14,6 +14,7 @@ import { searchItems } from "../../../../../../../../shell/store/content";
 import { useGetContentNavItemsQuery } from "../../../../../../../../shell/services/instance";
 import { sortMostRelevantSearch } from "../../../../../../../../shell/components/GlobalSearch/utils";
 import zuid from "zuid";
+import { useTranslation } from "react-i18next";
 
 type ParentOption = {
   value: string;
@@ -87,6 +88,7 @@ type ItemParentProps = {
   onChange: (value: string, name: string) => void;
 };
 export const ItemParent = ({ onChange }: ItemParentProps) => {
+  const { t } = useTranslation();
   const { modelZUID, itemZUID } = useParams<{
     modelZUID: string;
     itemZUID: string;
@@ -205,8 +207,10 @@ export const ItemParent = ({ onChange }: ItemParentProps) => {
                 dispatch(
                   notify({
                     kind: "warn",
-                    heading: `Cannot Save: ${item?.web?.metaTitle}`,
-                    message: `Page's Parent does not exist or has been deleted`,
+                    heading: t("content.itemEditCannotSaveTitle", {
+                      title: item?.web?.metaTitle,
+                    }),
+                    message: t("content.itemEditMetaParentMissing"),
                   })
                 );
               }
@@ -214,7 +218,7 @@ export const ItemParent = ({ onChange }: ItemParentProps) => {
               dispatch(
                 notify({
                   kind: "warn",
-                  message: `API failed to return data. Try Again.`,
+                  message: t("content.itemEditMetaApiFailedTryAgain"),
                 })
               );
             }
@@ -227,6 +231,7 @@ export const ItemParent = ({ onChange }: ItemParentProps) => {
     item?.meta?.ZUID,
     item?.web?.path,
     item?.meta?.langID,
+    t,
   ]);
 
   useEffect(() => {
@@ -254,10 +259,10 @@ export const ItemParent = ({ onChange }: ItemParentProps) => {
     <Box id="parentZUID" data-cy="parentZUID">
       <FieldShell
         settings={{
-          label: "Page Parent",
+          label: t("content.itemEditMetaPageParent"),
           required: true,
         }}
-        customTooltip="Set what page, this content item's page will be nested under. This impacts automatically generated navigation and the URL structure for this page."
+        customTooltip={t("content.itemEditMetaPageParentTooltip")}
         withInteractiveTooltip={false}
         errors={{}}
       >

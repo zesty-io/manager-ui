@@ -11,6 +11,7 @@ import {
   Tooltip,
 } from "@mui/material";
 import { useEffect, useReducer } from "react";
+import { useTranslation } from "react-i18next";
 import DriveFileRenameOutlineRoundedIcon from "@mui/icons-material/DriveFileRenameOutlineRounded";
 import { useUpdateContentModelMutation } from "../../../../../shell/services/instance";
 import { ContentModel } from "../../../../../shell/services/types";
@@ -24,6 +25,7 @@ interface Props {
 }
 
 export const RenameModelDialogue = ({ onClose, model }: Props) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const [newModel, updateNewModel] = useReducer(
     (prev: Partial<ContentModel>, next: Partial<ContentModel>) => {
@@ -53,7 +55,7 @@ export const RenameModelDialogue = ({ onClose, model }: Props) => {
       dispatch(
         notify({
           // @ts-ignore
-          message: error?.data?.error || "Failed to rename model",
+          message: error?.data?.error || t("schema.renameModelFailedNotify"),
           kind: "warn",
         })
       );
@@ -77,20 +79,19 @@ export const RenameModelDialogue = ({ onClose, model }: Props) => {
         >
           <DriveFileRenameOutlineRoundedIcon color="info" />
         </Box>
-        Rename Model
+        {t("schema.renameModelTitle")}
         <Typography variant="body2" sx={{ mt: 1 }} color="text.secondary">
-          This will update the model's Display Name and Reference ID that is
-          shown to content editors & developers
+          {t("schema.renameModelDescription")}
         </Typography>
       </DialogTitle>
       <DialogContent>
         <Box display="flex" flexDirection="column" gap={2.5}>
           <Box>
             <InputLabel>
-              Display Name
+              {t("schema.renameModelDisplayNameLabel")}
               <Tooltip
                 placement="top"
-                title="Name that is shown to content editors"
+                title={t("schema.renameModelDisplayNameTooltip")}
               >
                 <InfoRoundedIcon
                   sx={{ ml: 1, width: "10px", height: "10px" }}
@@ -111,10 +112,10 @@ export const RenameModelDialogue = ({ onClose, model }: Props) => {
           </Box>
           <Box>
             <InputLabel>
-              Reference ID
+              {t("schema.renameModelReferenceIdLabel")}
               <Tooltip
                 placement="top"
-                title="ID used for accessing this model through our API or Parsley"
+                title={t("schema.renameModelReferenceIdTooltip")}
               >
                 <InfoRoundedIcon
                   sx={{ ml: 1, width: "10px", height: "10px" }}
@@ -131,7 +132,7 @@ export const RenameModelDialogue = ({ onClose, model }: Props) => {
               fullWidth
               helperText={
                 newModel.name !== model.name &&
-                "The Reference Name is used in custom code files and endpoints. Updating this value takes immediate effect in production. Please check with your developer before making changes."
+                t("schema.renameModelReferenceIdHelperText")
               }
               sx={{
                 "& .MuiFormHelperText-root": {
@@ -144,14 +145,14 @@ export const RenameModelDialogue = ({ onClose, model }: Props) => {
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="inherit">
-          Cancel
+          {t("common.cancel")}
         </Button>
         <Button
           onClick={() => updateModel({ ZUID: model.ZUID, body: newModel })}
           loading={isLoading}
           variant="contained"
         >
-          Save
+          {t("common.save")}
         </Button>
       </DialogActions>
     </Dialog>

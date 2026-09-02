@@ -36,6 +36,7 @@ import {
 import { alpha } from "@mui/material/styles";
 import { Bynder, FileReplace } from "@zesty-io/material";
 import { useIntersection } from "react-use";
+import { useTranslation, Trans } from "react-i18next";
 
 import {
   useGetBinsQuery,
@@ -98,6 +99,11 @@ export const FieldTypeMedia = forwardRef(
     const [imageToReplace, setImageToReplace] = useState("");
     const { data: rawInstanceSettings } = useGetInstanceSettingsQuery();
     const [selectionError, setSelectionError] = useState("");
+    // This widget also renders outside content-editor (shell Favicon /
+    // FieldTypeRepeater, schema DefaultValueInput) where the lazy "content"
+    // namespace isn't loaded; request it here (non-suspense so we never throw in
+    // trees without a Suspense boundary — keys resolve once it loads).
+    const { t, i18n } = useTranslation("content", { useSuspense: false });
 
     const bynderPortalUrlSetting = rawInstanceSettings?.find(
       (setting) => setting.key === "bynder_portal_url"
@@ -161,13 +167,15 @@ export const FieldTypeMedia = forwardRef(
 
       if (removedImages.length) {
         const filenames = removedImages.map((image) => image.filename);
-        const formattedFilenames =
-          filenames.length > 1
-            ? filenames.slice(0, -1).join(", ") + " and " + filenames.slice(-1)
-            : filenames[0];
+        const formattedFilenames = new Intl.ListFormat(i18n.language, {
+          type: "conjunction",
+        }).format(filenames);
 
         setSelectionError(
-          `Could not add ${formattedFilenames}. ${settings?.fileExtensionsErrorMessage}`
+          t("content.mediaCouldNotAdd", {
+            filenames: formattedFilenames,
+            errorMessage: settings?.fileExtensionsErrorMessage ?? "",
+          })
         );
       } else {
         setSelectionError("");
@@ -206,13 +214,15 @@ export const FieldTypeMedia = forwardRef(
 
       if (removedAssets.length) {
         const filenames = removedAssets.map((asset) => asset.name);
-        const formattedFilenames =
-          filenames.length > 1
-            ? filenames.slice(0, -1).join(", ") + " and " + filenames.slice(-1)
-            : filenames[0];
+        const formattedFilenames = new Intl.ListFormat(i18n.language, {
+          type: "conjunction",
+        }).format(filenames);
 
         setSelectionError(
-          `Could not add ${formattedFilenames}. ${settings?.fileExtensionsErrorMessage}`
+          t("content.mediaCouldNotAdd", {
+            filenames: formattedFilenames,
+            errorMessage: settings?.fileExtensionsErrorMessage ?? "",
+          })
         );
       } else {
         setSelectionError("");
@@ -251,7 +261,9 @@ export const FieldTypeMedia = forwardRef(
           )
         ) {
           setSelectionError(
-            `Could not replace. ${settings?.fileExtensionsErrorMessage}`
+            t("content.mediaCouldNotReplace", {
+              errorMessage: settings?.fileExtensionsErrorMessage ?? "",
+            })
           );
           return;
         } else {
@@ -279,7 +291,9 @@ export const FieldTypeMedia = forwardRef(
         !settings?.fileExtensions?.includes(assetExtension)
       ) {
         setSelectionError(
-          `Could not replace. ${settings?.fileExtensionsErrorMessage}`
+          t("content.mediaCouldNotReplace", {
+            errorMessage: settings?.fileExtensionsErrorMessage ?? "",
+          })
         );
         return;
       } else {
@@ -410,8 +424,8 @@ export const FieldTypeMedia = forwardRef(
                   fontWeight={600}
                 >
                   {isDragActive
-                    ? "Drop your files here"
-                    : "Drag & Drop your files"}
+                    ? t("content.mediaDropFilesHere")
+                    : t("content.mediaDragDropFilesCompact")}
                 </Typography>
                 {!isDragActive && (
                   <Stack direction="row" gap={2}>
@@ -425,7 +439,7 @@ export const FieldTypeMedia = forwardRef(
                       }
                       sx={{ px: 1.25 }}
                     >
-                      Upload Media
+                      {t("content.mediaUploadMedia")}
                     </Button>
                     <Button
                       data-cy="selectFromMediaButton"
@@ -444,7 +458,7 @@ export const FieldTypeMedia = forwardRef(
                         />
                       }
                     >
-                      Add from Media
+                      {t("content.mediaAddFromMedia")}
                     </Button>
                   </Stack>
                 )}
@@ -463,11 +477,12 @@ export const FieldTypeMedia = forwardRef(
                   fontWeight={600}
                 >
                   {isDragActive ? (
-                    "Drop your files here to Upload"
+                    t("content.mediaDropToUpload")
                   ) : (
-                    <>
-                      Drag and drop your files here <br /> or
-                    </>
+                    <Trans
+                      i18nKey="content.mediaDragAndDropRich"
+                      components={{ break: <br /> }}
+                    />
                   )}
                 </Typography>
                 {!isDragActive && (
@@ -488,7 +503,7 @@ export const FieldTypeMedia = forwardRef(
                         flexShrink: 0,
                       }}
                     >
-                      Upload
+                      {t("common.upload")}
                     </Button>
                     <Button
                       data-cy="selectFromMediaButton"
@@ -507,7 +522,7 @@ export const FieldTypeMedia = forwardRef(
                         flexShrink: 0,
                       }}
                     >
-                      Add from Media
+                      {t("content.mediaAddFromMedia")}
                     </Button>
                     {isBynderSessionValid && (
                       <Button
@@ -522,7 +537,7 @@ export const FieldTypeMedia = forwardRef(
                           flexShrink: 0,
                         }}
                       >
-                        Add from Bynder
+                        {t("content.mediaAddFromBynder")}
                       </Button>
                     )}
                   </Box>
@@ -583,7 +598,7 @@ export const FieldTypeMedia = forwardRef(
                   startIcon={<UploadRounded />}
                   fullWidth
                 >
-                  Upload
+                  {t("common.upload")}
                 </Button>
               )}
               <Button
@@ -599,7 +614,7 @@ export const FieldTypeMedia = forwardRef(
                 fullWidth
                 startIcon={<AddRounded />}
               >
-                Add More from Media
+                {t("content.mediaAddMoreFromMedia")}
               </Button>
               {isBynderSessionValid && (
                 <Button
@@ -610,7 +625,7 @@ export const FieldTypeMedia = forwardRef(
                   startIcon={<Bynder />}
                   fullWidth
                 >
-                  Add from Bynder
+                  {t("content.mediaAddFromBynder")}
                 </Button>
               )}
             </Box>
@@ -670,6 +685,9 @@ export const MediaItem = ({
   hideActionButtons,
   compact,
 }: MediaItemProps) => {
+  // See note in FieldTypeMedia: ensure the "content" namespace is loaded even
+  // when this renders outside content-editor.
+  const { t } = useTranslation("content", { useSuspense: false });
   const lastHoveredIndexRef = useRef(null);
   const mediaItemContainerRef = useRef(null);
   const [isDraggable, setIsDraggable] = useState(false);
@@ -909,7 +927,7 @@ export const MediaItem = ({
               {compact ? (
                 <>
                   <Tooltip
-                    title="More Options"
+                    title={t("content.mediaMoreOptions")}
                     placement="bottom"
                     enterDelay={800}
                   >
@@ -966,7 +984,9 @@ export const MediaItem = ({
                         <ListItemIcon>
                           <EditRounded />
                         </ListItemIcon>
-                        <ListItemText>Edit File</ListItemText>
+                        <ListItemText>
+                          {t("content.mediaEditFile")}
+                        </ListItemText>
                       </MenuItem>
                     )}
                     {(!isBynderAsset ||
@@ -983,7 +1003,9 @@ export const MediaItem = ({
                         <ListItemIcon>
                           <ImageSync />
                         </ListItemIcon>
-                        <ListItemText>Swap File</ListItemText>
+                        <ListItemText>
+                          {t("content.mediaSwapFile")}
+                        </ListItemText>
                       </MenuItem>
                     )}
                     {!isURL && !isBynderAsset && data && (
@@ -999,7 +1021,9 @@ export const MediaItem = ({
                         <ListItemIcon>
                           <DriveFileRenameOutlineRounded />
                         </ListItemIcon>
-                        <ListItemText>Rename File</ListItemText>
+                        <ListItemText>
+                          {t("content.mediaRenameFile")}
+                        </ListItemText>
                       </MenuItem>
                     )}
 
@@ -1015,7 +1039,9 @@ export const MediaItem = ({
                         <ListItemIcon>
                           {isCopiedZuid ? <CheckRounded /> : <WidgetsRounded />}
                         </ListItemIcon>
-                        <ListItemText>Copy ZUID</ListItemText>
+                        <ListItemText>
+                          {t("content.mediaCopyZuid")}
+                        </ListItemText>
                       </MenuItem>
                     )}
                     {data && (
@@ -1030,7 +1056,9 @@ export const MediaItem = ({
                         <ListItemIcon>
                           {isCopied ? <CheckRounded /> : <LinkRounded />}
                         </ListItemIcon>
-                        <ListItemText>Copy File URL</ListItemText>
+                        <ListItemText>
+                          {t("content.mediaCopyFileUrl")}
+                        </ListItemText>
                       </MenuItem>
                     )}
                     <MenuItem
@@ -1045,7 +1073,9 @@ export const MediaItem = ({
                       <ListItemIcon>
                         <CloseRounded />
                       </ListItemIcon>
-                      <ListItemText>Remove File</ListItemText>
+                      <ListItemText>
+                        {t("content.mediaRemoveFile")}
+                      </ListItemText>
                     </MenuItem>
                   </Menu>
                 </>
@@ -1053,7 +1083,7 @@ export const MediaItem = ({
                 <>
                   {!isBynderAsset || (isBynderAsset && isBynderSessionValid) ? (
                     <Tooltip
-                      title="Swap File"
+                      title={t("content.mediaSwapFile")}
                       placement="bottom"
                       enterDelay={800}
                     >
@@ -1072,7 +1102,7 @@ export const MediaItem = ({
                   )}
                   {!isURL && data && (
                     <Tooltip
-                      title="Edit File"
+                      title={t("content.mediaEditFile")}
                       placement="bottom"
                       enterDelay={800}
                     >
@@ -1088,7 +1118,7 @@ export const MediaItem = ({
                     </Tooltip>
                   )}
                   <Tooltip
-                    title="More Options"
+                    title={t("content.mediaMoreOptions")}
                     placement="bottom"
                     enterDelay={800}
                   >
@@ -1133,7 +1163,9 @@ export const MediaItem = ({
                           <ListItemIcon>
                             <DriveFileRenameOutlineRounded />
                           </ListItemIcon>
-                          <ListItemText>Rename</ListItemText>
+                          <ListItemText>
+                            {t("content.mediaRename")}
+                          </ListItemText>
                         </MenuItem>
                         <MenuItem
                           onClick={(event) => {
@@ -1145,7 +1177,9 @@ export const MediaItem = ({
                           <ListItemIcon>
                             <FileReplace />
                           </ListItemIcon>
-                          <ListItemText>Replace File</ListItemText>
+                          <ListItemText>
+                            {t("content.mediaReplaceFile")}
+                          </ListItemText>
                         </MenuItem>
                         <MenuItem
                           onClick={(event) => {
@@ -1160,7 +1194,9 @@ export const MediaItem = ({
                               <WidgetsRounded />
                             )}
                           </ListItemIcon>
-                          <ListItemText>Copy ZUID</ListItemText>
+                          <ListItemText>
+                            {t("content.mediaCopyZuid")}
+                          </ListItemText>
                         </MenuItem>
                       </>
                     )}
@@ -1174,7 +1210,9 @@ export const MediaItem = ({
                         <ListItemIcon>
                           {isCopied ? <CheckRounded /> : <LinkRounded />}
                         </ListItemIcon>
-                        <ListItemText>Copy File URL</ListItemText>
+                        <ListItemText>
+                          {t("content.mediaCopyFileUrl")}
+                        </ListItemText>
                       </MenuItem>
                     )}
                     <MenuItem
@@ -1187,7 +1225,7 @@ export const MediaItem = ({
                       <ListItemIcon>
                         <CloseRounded />
                       </ListItemIcon>
-                      <ListItemText>Remove</ListItemText>
+                      <ListItemText>{t("common.remove")}</ListItemText>
                     </MenuItem>
                   </Menu>
                 </>

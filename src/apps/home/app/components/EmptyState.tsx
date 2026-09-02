@@ -4,9 +4,11 @@ import AddIcon from "@mui/icons-material/Add";
 import growInstance from "../../../../../public/images/growInstance.svg";
 import { useHistory } from "react-router";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { CreateContentItemDialog } from "../../../../shell/components/CreateContentItemDialog";
 
 export const EmptyState = () => {
+  const { t } = useTranslation();
   const history = useHistory();
   const [openCreateContentDialog, setOpenCreateContentDialog] = useState(false);
 
@@ -22,12 +24,10 @@ export const EmptyState = () => {
       >
         <Box width="386px">
           <Typography variant="h4" fontWeight={600}>
-            Start Growing your Instance Today
+            {t("dashboard.emptyStateTitle")}
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mt: 1.5 }}>
-            There are no new items or edits made in the last 30 days. Start
-            creating or editing content or models or code files to see recent
-            files listed here.
+            {t("dashboard.emptyStateDescription")}
           </Typography>
           <Box display="flex" gap={2} mt={3}>
             <Button
@@ -36,7 +36,7 @@ export const EmptyState = () => {
               startIcon={<AddIcon />}
               onClick={() => setOpenCreateContentDialog(true)}
             >
-              Content
+              {t("common.content")}
             </Button>
             <Button
               variant="outlined"
@@ -44,7 +44,7 @@ export const EmptyState = () => {
               startIcon={<AddIcon />}
               onClick={() => history.push("/schema?triggerCreate=true")}
             >
-              Model
+              {t("common.model")}
             </Button>
             <Button
               variant="outlined"
@@ -52,7 +52,7 @@ export const EmptyState = () => {
               startIcon={<AddIcon />}
               onClick={() => history.push("/code?triggerCreate=true")}
             >
-              Code File
+              {t("common.codeFile")}
             </Button>
           </Box>
         </Box>

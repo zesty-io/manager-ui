@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import debounce from "lodash/debounce";
+import { useTranslation } from "react-i18next";
 
 import { Select, Option } from "shell/components/legacy/Select";
 
@@ -7,6 +8,7 @@ import styles from "./FieldTypeInternalLink.less";
 export const FieldTypeInternalLink = React.memo(function FieldTypeInternalLink(
   props
 ) {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
 
   const onSearch = debounce((term) => {
@@ -33,7 +35,7 @@ export const FieldTypeInternalLink = React.memo(function FieldTypeInternalLink(
         }}
         onFilter={onSearch}
         // always render search input
-        searchPlaceholder="Do not see the item you are looking for? Enter a term to search your API."
+        searchPlaceholder={t("shell.internalLinkSearchPlaceholder")}
         searchLength="0"
         loading={loading}
         error={props.error}
@@ -41,7 +43,7 @@ export const FieldTypeInternalLink = React.memo(function FieldTypeInternalLink(
         {/* You should always be able to unlink an internal link */}
         <Option
           value={props.defaultOptValue || null}
-          text={props.defaultOptText || "— None —"}
+          text={props.defaultOptText || `— ${t("shell.internalLinkNone")} —`}
         />
 
         {props.options.map((option, i) => {

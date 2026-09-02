@@ -13,6 +13,7 @@ import AddIcon from "@mui/icons-material/Add";
 import { useRedirectsDialog } from "../../../../../../../seo/src/app/components/RedirectsDialogProvider";
 import { useRedirectsTable } from "../../../../../../../seo/src/views/RedirectsManager/RedirectsTable/RedirectsTableContextProvider";
 import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
+import { useTranslation } from "react-i18next";
 
 type IncomingRedirectsProps = {
   targetZUID: string;
@@ -23,18 +24,19 @@ const IncomingRedirects: FC<IncomingRedirectsProps> = ({
   targetZUID,
   urlPath,
 }) => {
+  const { t } = useTranslation();
   const { openDeleteDialog, openCreateForm } = useRedirectsDialog();
   const { redirects, isLoading } = useRedirectsTable();
 
   const columns: GridColDef[] = [
     {
       field: "path",
-      headerName: "Incoming Path",
+      headerName: t("content.itemEditMetaIncomingPath"),
       flex: 1,
     },
     {
       field: "code",
-      headerName: "HTTP Code",
+      headerName: t("content.itemEditMetaHttpCode"),
       width: 160,
       renderCell: ({ value }: GridRenderCellParams<GridValidRowModel>) => {
         return (
@@ -70,7 +72,7 @@ const IncomingRedirects: FC<IncomingRedirectsProps> = ({
           showInMenu
           icon={<ModeEditIcon fontSize="small" />}
           color="action.secondary"
-          label="Edit Redirect"
+          label={t("content.itemEditMetaEditRedirect")}
           onClick={() => {
             openCreateForm(
               {
@@ -88,7 +90,7 @@ const IncomingRedirects: FC<IncomingRedirectsProps> = ({
           showInMenu
           icon={<DeleteIcon fontSize="small" />}
           color="action.secondary"
-          label="Delete Redirect"
+          label={t("content.itemEditMetaDeleteRedirect")}
           onClick={() => openDeleteDialog([{ ZUID: row.ZUID, path: row.path }])}
         />,
       ],
@@ -129,7 +131,7 @@ const IncomingRedirects: FC<IncomingRedirectsProps> = ({
             fontWeight={700}
             width="100%"
           >
-            Incoming Redirects
+            {t("content.itemEditMetaIncomingRedirects")}
           </Typography>
           <Typography
             variant="body2"
@@ -137,7 +139,7 @@ const IncomingRedirects: FC<IncomingRedirectsProps> = ({
             fontWeight={400}
             width="100%"
           >
-            Manage redirects that point to this content item
+            {t("content.itemEditMetaIncomingRedirectsDescription")}
           </Typography>
           <Box width="100%" py="12px">
             <DataGridPro
@@ -189,7 +191,7 @@ const IncomingRedirects: FC<IncomingRedirectsProps> = ({
               openCreateForm({ target: targetZUID }, true);
             }}
           >
-            Add Incoming Path
+            {t("content.itemEditMetaAddIncomingPath")}
           </Button>
         </Box>
       ) : null}

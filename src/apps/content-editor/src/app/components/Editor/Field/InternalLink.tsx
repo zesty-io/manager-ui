@@ -1,4 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 import zuid from "zuid";
 
 import { FieldTypeInternalLink } from "../../../../../../../shell/components/FieldTypeInternalLink";
@@ -23,6 +24,7 @@ export const InternalLink = ({
   langID,
 }: InternalLinkProps) => {
   const dispatch = useDispatch();
+  const { t } = useTranslation("content");
 
   const allItems = useSelector((state: AppState) => state.content);
   let internalLinkRelatedItem = allItems[value];
@@ -81,12 +83,12 @@ export const InternalLink = ({
       // insert placeholder
       options.unshift({
         value: value as string,
-        html: `Selected item not found: ${value}`,
+        html: t("content.selectedItemNotFound", { value }),
       });
     }
 
     return options;
-  }, [internalLinkRelatedItem, Object.keys(allItems).length]);
+  }, [internalLinkRelatedItem, Object.keys(allItems).length, t]);
 
   const onInternalLinkSearch = useCallback(
     (term: string) => dispatch(searchItems(term)),

@@ -1,4 +1,5 @@
 import { FC } from "react";
+import { useTranslation } from "react-i18next";
 import { Dialog, DialogActions, DialogTitle, Typography } from "@mui/material";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
@@ -19,6 +20,7 @@ const ConfirmSaveDialog: FC<ConfirmSaveDialogProps> = ({
   title,
   isSaving = false,
 }) => {
+  const { t } = useTranslation();
   return (
     <Dialog open={open} fullWidth maxWidth="xs" onClose={onClose}>
       <DialogTitle>
@@ -42,16 +44,15 @@ const ConfirmSaveDialog: FC<ConfirmSaveDialogProps> = ({
           flexGrow={0}
           flexShrink={0}
         >
-          {`Save ${title} Settings?`}
+          {t("settings.confirmSaveDialogTitle", { title })}
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-          Your changes will take effect in production on the next re-render,
-          cache expiration, or manual cache clear.
+          {t("settings.confirmSaveDialogBody")}
         </Typography>
       </DialogTitle>
       <DialogActions>
         <Button variant="text" color="inherit" onClick={onClose}>
-          Cancel
+          {t("common.cancel")}
         </Button>
         <Button
           variant="contained"
@@ -63,7 +64,7 @@ const ConfirmSaveDialog: FC<ConfirmSaveDialogProps> = ({
           autoFocus
           data-cy="ConfirmSaveSettings"
         >
-          Save
+          {t("common.save")}
         </Button>
       </DialogActions>
     </Dialog>

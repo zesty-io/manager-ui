@@ -3,6 +3,7 @@ import { Box, FormControl, Skeleton } from "@mui/material";
 import { uniqBy, isEqual } from "lodash";
 import { useLocation } from "react-router-dom";
 import { parse, format, isValid } from "date-fns";
+import { useTranslation } from "react-i18next";
 
 import { useParams } from "../../../../../../../shell/hooks/useParams";
 import { accountsApi } from "../../../../../../../shell/services/accounts";
@@ -13,34 +14,6 @@ import {
   UserFilter,
   GenericFilter,
 } from "../../../../../../../shell/components/Filters";
-
-const RESOURCE_TYPES = [
-  { text: "Block Variants", value: "block" },
-  { text: "Code Files and Snippets", value: "code" },
-  { text: "Content Items", value: "content" },
-  { text: "Models", value: "schema" },
-  { text: "Settings", value: "settings" },
-];
-
-const HAPPENED_AT = [
-  { text: "Most Recent", value: "" },
-  { text: "Oldest First", value: "happenedAt" },
-];
-
-const USER_ACTIVITY = [
-  { text: "Most Active", value: "" },
-  { text: "Most Recently Active", value: "happenedAt" },
-  { text: "Least Active", value: "leastActive" },
-];
-
-const ACTION = [
-  { text: "Created", value: "1" },
-  { text: "Modified", value: "2" },
-  { text: "Deleted", value: "3" },
-  { text: "Published", value: "4" },
-  { text: "Unpublished", value: "5" },
-  { text: "Scheduled", value: "6" },
-];
 
 type Filter =
   | "happenedAt"
@@ -72,6 +45,7 @@ export const Filters: FC<FiltersProps> = ({
   filters,
   showSkeletons,
 }) => {
+  const { t } = useTranslation();
   const [params, setParams] = useParams();
   const location = useLocation();
   const { data: usersRoles } = accountsApi.useGetUsersRolesQuery();
@@ -81,6 +55,34 @@ export const Filters: FC<FiltersProps> = ({
       from: null,
       to: null,
     });
+
+  const RESOURCE_TYPES = [
+    { text: t("reports.blockVariants"), value: "block" },
+    { text: t("reports.codeFilesAndSnippets"), value: "code" },
+    { text: t("common.contentItems"), value: "content" },
+    { text: t("common.models"), value: "schema" },
+    { text: t("reports.settings"), value: "settings" },
+  ];
+
+  const HAPPENED_AT = [
+    { text: t("reports.mostRecent"), value: "" },
+    { text: t("reports.oldestFirst"), value: "happenedAt" },
+  ];
+
+  const USER_ACTIVITY = [
+    { text: t("reports.mostActive"), value: "" },
+    { text: t("reports.mostRecentlyActive"), value: "happenedAt" },
+    { text: t("reports.leastActive"), value: "leastActive" },
+  ];
+
+  const ACTION = [
+    { text: t("reports.created"), value: "1" },
+    { text: t("reports.modified"), value: "2" },
+    { text: t("reports.deleted"), value: "3" },
+    { text: t("reports.published"), value: "4" },
+    { text: t("reports.unpublished"), value: "5" },
+    { text: t("reports.scheduled"), value: "6" },
+  ];
 
   const uniqueUserActions = useMemo(() => {
     const uniqueUsers = uniqBy(actions, "actionByUserZUID");
@@ -149,14 +151,14 @@ export const Filters: FC<FiltersProps> = ({
             onChange={(happenedAt) =>
               setParams(happenedAt?.toString(), "sortBy")
             }
-            defaultButtonText="Most Recent"
+            defaultButtonText={t("reports.mostRecent")}
             isSort
           />
         );
       case "sortByUsers":
         return (
           <GenericFilter
-            defaultButtonText="Most Active"
+            defaultButtonText={t("reports.mostActive")}
             value={params.get("sortByUsers") || ""}
             onChange={(userActivity) =>
               setParams(userActivity.toString(), "sortByUsers")
@@ -168,7 +170,7 @@ export const Filters: FC<FiltersProps> = ({
       case "resourceType":
         return (
           <GenericFilter
-            defaultButtonText="Resource Type"
+            defaultButtonText={t("shell.resourceType")}
             value={params.get("resourceType") || ""}
             options={RESOURCE_TYPES}
             onChange={(resourceType) =>
@@ -183,13 +185,13 @@ export const Filters: FC<FiltersProps> = ({
             value={params.get("actionByUserZUID") || ""}
             onChange={(userZUID) => setParams(userZUID, "actionByUserZUID")}
             options={uniqueUserActions}
-            defaultButtonText="Users"
+            defaultButtonText={t("common.users")}
           />
         );
       case "action":
         return (
           <GenericFilter
-            defaultButtonText="Action Type"
+            defaultButtonText={t("reports.actionType")}
             value={params.get("action") || ""}
             options={ACTION}
             onChange={(action) => setParams(action.toString(), "action")}
@@ -199,7 +201,7 @@ export const Filters: FC<FiltersProps> = ({
       case "userRole":
         return (
           <GenericFilter
-            defaultButtonText="User Role"
+            defaultButtonText={t("reports.userRole")}
             value={params.get("userRole") || ""}
             onChange={(role) => setParams(role.toString(), "userRole")}
             options={uniqueUsersRoles}
@@ -247,8 +249,8 @@ export const Filters: FC<FiltersProps> = ({
         <DateRangeFilter
           value={dateRange}
           onChange={handleDateRangeFilterChanged}
-          inactiveButtonText="Date"
-          headerTitle="Select Date Range"
+          inactiveButtonText={t("reports.date")}
+          headerTitle={t("reports.selectDateRange")}
         />
       )}
     </Box>

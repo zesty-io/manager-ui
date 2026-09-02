@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Button,
   Dialog,
@@ -24,6 +25,7 @@ interface Props {
 }
 
 export const DeleteFolderDialog = ({ open, onClose, id, groupId }: Props) => {
+  const { t } = useTranslation();
   const [deleteGroup, { isLoading, isSuccess }] = useDeleteGroupMutation();
   const instanceId = useSelector((state: any) => state.instance.ID);
   const ecoId = useSelector((state: any) => state.instance.ecoID);
@@ -55,17 +57,16 @@ export const DeleteFolderDialog = ({ open, onClose, id, groupId }: Props) => {
             height: "40px",
           }}
         />
-        Delete Folder?
+        {t("media.deleteFolderDialogTitle")}
       </DialogTitle>
       <DialogContent>
         <DialogContentText>
-          Deleting your folder will NOT delete the files it. These files can
-          still be found in All Media.
+          {t("media.deleteFolderDialogMessage")}
         </DialogContentText>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="inherit">
-          Cancel
+          {t("common.cancel")}
         </Button>
         <Button
           disabled={isLoading}
@@ -75,7 +76,7 @@ export const DeleteFolderDialog = ({ open, onClose, id, groupId }: Props) => {
             deleteGroup({ id, groupId });
           }}
         >
-          Delete Folder
+          {t("media.deleteFolderDialogConfirmButton")}
         </Button>
       </DialogActions>
     </Dialog>

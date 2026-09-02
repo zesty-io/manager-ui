@@ -1,4 +1,5 @@
 import { FC, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button, Box, MenuItem, Menu } from "@mui/material";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { useSelector, useDispatch } from "react-redux";
@@ -8,12 +9,14 @@ import { useParams } from "../../../../../../shell/hooks/useParams";
 import { FilterButton } from "../../../../../../shell/components/Filters";
 
 type SortOrder = "AtoZ" | "ZtoA" | "dateadded";
-const SORT_ORDER: Record<SortOrder, string> = {
-  dateadded: "Date Added",
-  AtoZ: "Name (A to Z)",
-  ZtoA: "Name (Z to A)",
+// Maps the raw sort key (used as state/comparison value) to its i18n key.
+const SORT_ORDER_LABEL_KEYS: Record<SortOrder, string> = {
+  dateadded: "media.sortDateAdded",
+  AtoZ: "common.sortNameAToZ",
+  ZtoA: "common.sortNameZToA",
 } as const;
 export const Sort: FC = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -35,14 +38,17 @@ export const Sort: FC = () => {
       <FilterButton
         filterId="sortBy"
         isFilterActive={false}
-        buttonText={`Sort: ${
-          SORT_ORDER[params.get("sort") as SortOrder] ?? SORT_ORDER.dateadded
-        }`}
+        buttonText={t("media.sortButtonLabel", {
+          order: t(
+            SORT_ORDER_LABEL_KEYS[params.get("sort") as SortOrder] ??
+              SORT_ORDER_LABEL_KEYS.dateadded
+          ),
+        })}
         onOpenMenu={handleClick}
         onRemoveFilter={() => {}}
       />
       <Menu open={open} onClose={handleClose} anchorEl={anchorEl}>
-        {Object.entries(SORT_ORDER).map(([key, value]) => (
+        {Object.entries(SORT_ORDER_LABEL_KEYS).map(([key, labelKey]) => (
           <MenuItem
             key={key}
             onClick={() => handleChange(key as SortOrder)}
@@ -52,7 +58,7 @@ export const Sort: FC = () => {
                 : params.get("sort") === key
             }
           >
-            {value}
+            {t(labelKey)}
           </MenuItem>
         ))}
       </Menu>

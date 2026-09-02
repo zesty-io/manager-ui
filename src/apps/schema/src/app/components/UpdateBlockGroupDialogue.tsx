@@ -14,6 +14,7 @@ import { notify } from "../../../../../shell/store/notifications";
 import { useDispatch } from "react-redux";
 import { SelectBlockGroupInput, GroupType } from "./SelectBlockGroupInput";
 import { useParams } from "react-router";
+import { useTranslation } from "react-i18next";
 
 type UpdateBlockGroupDialogueProps = {
   onClose: () => void;
@@ -21,6 +22,7 @@ type UpdateBlockGroupDialogueProps = {
 export const UpdateBlockGroupDialogue = ({
   onClose,
 }: UpdateBlockGroupDialogueProps) => {
+  const { t } = useTranslation();
   const params = useParams<{ id: string }>();
   const { id } = params;
   const dispatch = useDispatch();
@@ -59,7 +61,7 @@ export const UpdateBlockGroupDialogue = ({
       dispatch(
         notify({
           // @ts-ignore
-          message: "Failed to update block group",
+          message: t("schema.updateBlockGroupFailedNotify"),
           kind: "error",
         })
       );
@@ -97,11 +99,10 @@ export const UpdateBlockGroupDialogue = ({
           <DriveFileRenameOutlineRounded color="info" />
         </Box>
         <Typography variant="h5" fontWeight={700} mt={1.5}>
-          Update Block Group
+          {t("schema.updateBlockGroupTitle")}
         </Typography>
         <Typography variant="body2" sx={{ mt: 1 }} color="text.secondary">
-          This affects what group the block is presented on in the All Blocks
-          page in the Blocks App.
+          {t("schema.updateBlockGroupDescription")}
         </Typography>
       </DialogTitle>
       <DialogContent>
@@ -123,14 +124,14 @@ export const UpdateBlockGroupDialogue = ({
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="inherit">
-          Cancel
+          {t("common.cancel")}
         </Button>
         <Button
           onClick={handleSave}
           loading={isCreatingGroup}
           variant="contained"
         >
-          Save
+          {t("common.save")}
         </Button>
       </DialogActions>
     </Dialog>

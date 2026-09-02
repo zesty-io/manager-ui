@@ -1,8 +1,9 @@
 import { Editor } from "tinymce";
 import tinymce from "tinymce/tinymce";
+import i18n from "../../../i18n";
 
 interface BlockFormat {
-  text: string;
+  textKey: string;
   icon: string;
   block: string;
 }
@@ -15,25 +16,25 @@ interface MenuItemSpec {
 }
 
 const COMPACT_BLOCK_FORMATS: BlockFormat[] = [
-  { text: "Heading 1", icon: "heading1", block: "h1" },
-  { text: "Heading 2", icon: "heading2", block: "h2" },
-  { text: "Heading 3", icon: "heading3", block: "h3" },
-  { text: "Heading 4", icon: "heading4", block: "h4" },
-  { text: "Heading 5", icon: "heading5", block: "h5" },
-  { text: "Heading 6", icon: "heading6", block: "h6" },
-  { text: "Paragraph", icon: "title", block: "p" },
+  { textKey: "shell.tinymceSlashHeading1", icon: "heading1", block: "h1" },
+  { textKey: "shell.tinymceSlashHeading2", icon: "heading2", block: "h2" },
+  { textKey: "shell.tinymceSlashHeading3", icon: "heading3", block: "h3" },
+  { textKey: "shell.tinymceSlashHeading4", icon: "heading4", block: "h4" },
+  { textKey: "shell.tinymceSlashHeading5", icon: "heading5", block: "h5" },
+  { textKey: "shell.tinymceSlashHeading6", icon: "heading6", block: "h6" },
+  { textKey: "shell.tinymceSlashParagraph", icon: "title", block: "p" },
   {
-    text: "Blockquote",
+    textKey: "shell.tinymceBlockquote",
     icon: "quote",
     block: "blockquote",
   },
-  { text: "Preformatted", icon: "textSnippet", block: "pre" },
+  { textKey: "shell.tinymcePreformatted", icon: "textSnippet", block: "pre" },
 ];
 
 const setup = (editor: Editor): void => {
   editor.ui.registry.addMenuButton("compactBlocks", {
     icon: "format",
-    tooltip: "Block formatting",
+    tooltip: i18n.t("shell.tinymceBlockFormatting"),
     onSetup: (buttonApi) => {
       const updateButtonIcon = () => {
         const node = editor.selection.getNode();
@@ -67,7 +68,7 @@ const setup = (editor: Editor): void => {
     fetch: (callback: (items: MenuItemSpec[]) => void) => {
       const items = COMPACT_BLOCK_FORMATS.map((format) => ({
         type: "menuitem" as const,
-        text: format.text,
+        text: i18n.t(format.textKey),
         icon: format.icon,
         onAction: () => {
           editor.execCommand("FormatBlock", false, format.block);
@@ -81,7 +82,7 @@ const setup = (editor: Editor): void => {
   // Register compact align menu button
   editor.ui.registry.addMenuButton("compactAlign", {
     icon: "align-left",
-    tooltip: "Text alignment",
+    tooltip: i18n.t("shell.tinymceTextAlignment"),
     onSetup: (api) => {
       const updateButton = () => {
         const format = editor.formatter;
@@ -107,7 +108,7 @@ const setup = (editor: Editor): void => {
       callback([
         {
           type: "menuitem" as const,
-          text: "Left Align",
+          text: i18n.t("shell.tinymceLeftAlign"),
           icon: "align-left",
           onAction: () => {
             editor.execCommand("JustifyLeft");
@@ -116,7 +117,7 @@ const setup = (editor: Editor): void => {
         },
         {
           type: "menuitem" as const,
-          text: "Center Align",
+          text: i18n.t("shell.tinymceCenterAlign"),
           icon: "align-center",
           onAction: () => {
             editor.execCommand("JustifyCenter");
@@ -125,7 +126,7 @@ const setup = (editor: Editor): void => {
         },
         {
           type: "menuitem" as const,
-          text: "Right Align",
+          text: i18n.t("shell.tinymceRightAlign"),
           icon: "align-right",
           onAction: () => {
             editor.execCommand("JustifyRight");
@@ -134,7 +135,7 @@ const setup = (editor: Editor): void => {
         },
         {
           type: "menuitem" as const,
-          text: "Justify",
+          text: i18n.t("shell.tinymceJustify"),
           icon: "align-justify",
           onAction: () => {
             editor.execCommand("JustifyFull");
@@ -148,7 +149,7 @@ const setup = (editor: Editor): void => {
   // Register compact lists menu button with dynamic icon
   editor.ui.registry.addMenuButton("compactLists", {
     icon: "unordered-list",
-    tooltip: "Lists",
+    tooltip: i18n.t("shell.tinymceLists"),
     onSetup: (buttonApi) => {
       const updateButtonIcon = () => {
         const node = editor.selection.getNode();
@@ -171,7 +172,7 @@ const setup = (editor: Editor): void => {
       callback([
         {
           type: "menuitem" as const,
-          text: "Numbered List",
+          text: i18n.t("shell.tinymceNumberedList"),
           icon: "ordered-list",
           onAction: () => {
             editor.execCommand("InsertOrderedList");
@@ -180,7 +181,7 @@ const setup = (editor: Editor): void => {
         },
         {
           type: "menuitem" as const,
-          text: "Bulleted List",
+          text: i18n.t("shell.tinymceBulletedList"),
           icon: "unordered-list",
           onAction: () => {
             editor.execCommand("InsertUnorderedList");

@@ -17,6 +17,7 @@ import { ContentModel } from "../../../../../shell/services/types";
 import { notify } from "../../../../../shell/store/notifications";
 import { useDispatch } from "react-redux";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   onClose: () => void;
@@ -24,6 +25,7 @@ interface Props {
 }
 
 export const UpdateDescriptionModelDialogue = ({ onClose, model }: Props) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const [newDescription, setNewDescription] = useState(model.description);
 
@@ -38,10 +40,10 @@ export const UpdateDescriptionModelDialogue = ({ onClose, model }: Props) => {
 
   useEffect(() => {
     if (error) {
+      const message = "data" in error ? (error.data as any)?.error : undefined;
       dispatch(
         notify({
-          // @ts-ignore
-          message: error?.data?.error || "Failed to update description",
+          message: message || t("schema.updateDescriptionFailedNotify"),
           kind: "warn",
         })
       );
@@ -65,20 +67,19 @@ export const UpdateDescriptionModelDialogue = ({ onClose, model }: Props) => {
           <DriveFileRenameOutlineRounded color="info" />
         </Box>
         <Typography variant="h5" fontWeight={700} mt={1.5}>
-          Update Description
+          {t("schema.updateDescriptionDialogTitle")}
         </Typography>
         <Typography variant="body2" sx={{ mt: 1 }} color="text.secondary">
-          This will update the description of th model that is shown to content
-          editors
+          {t("schema.updateDescriptionDialogBody")}
         </Typography>
       </DialogTitle>
       <DialogContent>
         <Box>
           <InputLabel>
-            Description
+            {t("schema.updateDescriptionInputLabel")}
             <Tooltip
               placement="top"
-              title="Displays the purpose of the model to help content writers"
+              title={t("schema.updateDescriptionInputTooltip")}
             >
               <InfoRoundedIcon
                 sx={{ ml: 1, width: "10px", height: "10px" }}
@@ -91,7 +92,7 @@ export const UpdateDescriptionModelDialogue = ({ onClose, model }: Props) => {
               maxLength: 500,
             }}
             value={newDescription}
-            placeholder="What is this model going to be used for"
+            placeholder={t("schema.updateDescriptionInputPlaceholder")}
             onChange={(event) => setNewDescription(event.target.value)}
             fullWidth
             multiline
@@ -101,7 +102,7 @@ export const UpdateDescriptionModelDialogue = ({ onClose, model }: Props) => {
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="inherit">
-          Cancel
+          {t("common.cancel")}
         </Button>
         <Button
           onClick={() =>
@@ -113,7 +114,7 @@ export const UpdateDescriptionModelDialogue = ({ onClose, model }: Props) => {
           loading={isLoading}
           variant="contained"
         >
-          Save
+          {t("common.save")}
         </Button>
       </DialogActions>
     </Dialog>

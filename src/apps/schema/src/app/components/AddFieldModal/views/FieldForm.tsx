@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useParams } from "react-router";
 import { useDispatch } from "react-redux";
 import {
@@ -54,7 +55,7 @@ import {
   IntegrationFieldConfig,
   RepeaterSubField,
 } from "../../../../../../../shell/services/types";
-import { FIELD_COPY_CONFIG, TYPE_TEXT } from "../../configs";
+import { getFieldCopyConfig, getTypeText } from "../../configs";
 import { Learn } from "../Learn";
 import { notify } from "../../../../../../../shell/store/notifications";
 import { Rules } from "./Rules";
@@ -86,6 +87,9 @@ const FieldFormContent = ({
   sortIndex,
   onCreateAnotherField,
 }: FieldFormProps) => {
+  const { t } = useTranslation();
+  const TYPE_TEXT = getTypeText(t);
+  const FIELD_COPY_CONFIG = getFieldCopyConfig(t);
   const isUpdateField = !isEmpty(fieldData);
   const showRepeaterFieldsTab = type === "repeater" && isUpdateField;
   const [activeTab, setActiveTab] = useState<ActiveTab>(
@@ -177,7 +181,7 @@ const FieldFormContent = ({
     if (fieldCreationError) {
       dispatch(
         notify({
-          message: "Failed to create the field",
+          message: t("schema.failedCreateField"),
           kind: "error",
         })
       );
@@ -188,7 +192,7 @@ const FieldFormContent = ({
     if (isFieldDeleted) {
       dispatch(
         notify({
-          message: `\"${fieldData?.label}\" field is deactivated`,
+          message: t("schema.fieldDeactivated", { label: fieldData?.label }),
           kind: "success",
         })
       );
@@ -199,7 +203,7 @@ const FieldFormContent = ({
     if (isFieldUndeleted) {
       dispatch(
         notify({
-          message: `\"${fieldData?.label}\" field is reactivated`,
+          message: t("schema.fieldReactivated", { label: fieldData?.label }),
           kind: "success",
         })
       );
@@ -360,7 +364,7 @@ const FieldFormContent = ({
           console.error("Failed to update the field", error);
           dispatch(
             notify({
-              message: "Failed to update the field",
+              message: t("schema.failedUpdateField"),
               kind: "error",
             })
           );
@@ -415,12 +419,14 @@ const FieldFormContent = ({
             <Box display="flex" flexDirection="column">
               <Typography variant="h5" fontWeight={700}>
                 {isUpdateField
-                  ? `Edit ${fieldData.label}`
-                  : `Add ${name} Field`}
+                  ? t("schema.editFieldTitle", { label: fieldData.label })
+                  : t("schema.addFieldTitle", { name })}
               </Typography>
               <Typography variant="body3" color="text.secondary">
                 {isUpdateField
-                  ? `${TYPE_TEXT[type]} Field`
+                  ? t("schema.subFieldFormTypeFieldLabel", {
+                      type: TYPE_TEXT[type],
+                    })
                   : FIELD_COPY_CONFIG[getCategory(type)]?.find(
                       (item) => item.type === type
                     )?.subHeaderText}
@@ -447,7 +453,7 @@ const FieldFormContent = ({
             <Tab
               data-cy="RepeaterFieldsTabBtn"
               value="repeater"
-              label="Fields"
+              label={t("schema.fieldFormTabRepeaterFields")}
               icon={<VerticalSplitRoundedIcon fontSize="small" />}
               iconPosition="start"
             />
@@ -455,7 +461,7 @@ const FieldFormContent = ({
           <Tab
             data-cy="DetailsTabBtn"
             value="details"
-            label="Details"
+            label={t("schema.fieldFormTabDetails")}
             icon={<InfoRoundedIcon fontSize="small" />}
             iconPosition="start"
           />
@@ -463,7 +469,7 @@ const FieldFormContent = ({
             <Tab
               data-cy="RulesTabBtn"
               value="rules"
-              label="Rules"
+              label={t("schema.fieldFormTabRules")}
               icon={<RuleRoundedIcon fontSize="small" />}
               iconPosition="start"
             />
@@ -471,7 +477,7 @@ const FieldFormContent = ({
           <Tab
             data-cy="LearnTabBtn"
             value="learn"
-            label="Learn"
+            label={t("schema.fieldFormTabLearn")}
             icon={<MenuBookRoundedIcon fontSize="small" />}
             iconPosition="start"
           />
@@ -543,7 +549,7 @@ const FieldFormContent = ({
               mr: 1,
             }}
           >
-            Cancel
+            {t("common.cancel")}
           </Button>
           <Button
             data-cy="FieldFormAddFieldBtn"
@@ -552,7 +558,7 @@ const FieldFormContent = ({
             variant="contained"
             startIcon={<SaveRoundedIcon />}
           >
-            Save
+            {t("common.save")}
           </Button>
         </DialogActions>
       ) : (
@@ -565,7 +571,7 @@ const FieldFormContent = ({
           }}
         >
           <Button variant="outlined" color="inherit" onClick={onBackClick}>
-            Cancel
+            {t("common.cancel")}
           </Button>
           <Box>
             <Button
@@ -578,7 +584,7 @@ const FieldFormContent = ({
               loading={isCreatingField || isBulkUpdating}
               onClick={handleAddAnotherField}
             >
-              Add Another Field
+              {t("schema.addAnotherField")}
             </Button>
             <Button
               data-cy="FieldFormAddFieldBtn"
@@ -586,7 +592,7 @@ const FieldFormContent = ({
               onClick={handleSubmitForm}
               variant="contained"
             >
-              Add Field
+              {t("schema.addField")}
             </Button>
           </Box>
         </DialogActions>

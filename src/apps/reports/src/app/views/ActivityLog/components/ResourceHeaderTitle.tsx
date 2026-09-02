@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { Stack, Typography, SvgIcon, Skeleton } from "@mui/material";
 import {
   SettingsRounded,
@@ -20,7 +21,8 @@ import {
   modelIconMap,
 } from "../../../../../../schema/src/app/utils";
 import { AppState } from "../../../../../../../shell/store/types";
-import { isValid, format } from "date-fns";
+import { formatLocalized } from "shell/i18n/dates";
+import { isValid } from "date-fns";
 
 type ResourceHeaderTitleProps = {
   affectedZUID: string;
@@ -51,6 +53,7 @@ export const ResourceHeaderTitle = ({
     data: workflowStatusLabels,
     isLoading: isLoadingWorkflowStatusLabels,
   } = useGetWorkflowStatusLabelsQuery({ showDeleted: true });
+  const { t } = useTranslation();
   const fileData = useSelector((state: AppState) =>
     Object.values(state.files).find((item) => item.ZUID === affectedZUID)
   );
@@ -68,11 +71,15 @@ export const ResourceHeaderTitle = ({
     const data = {
       title: "",
       subTitle: [
-        `
-        Last Updated: ${
-          d && isValid(d) ? format(d, "do MMMM yyyy 'at' h:mm a") : ""
-        }
-      `,
+        t("reports.lastUpdated", {
+          date:
+            d && isValid(d)
+              ? t("common.dateAtTime", {
+                  date: formatLocalized(d, "do MMMM yyyy"),
+                  time: formatLocalized(d, "h:mm a"),
+                })
+              : "",
+        }),
       ],
       icon: SettingsRounded,
     };
@@ -83,7 +90,9 @@ export const ResourceHeaderTitle = ({
           if (langs?.length === 1) {
             data.title = contentItem?.web?.metaTitle?.length
               ? contentItem?.web?.metaTitle
-              : `${affectedZUID} (Missing Meta Title)`;
+              : t("reports.affectedZUIDMissingMetaTitle", {
+                  affectedZUID,
+                });
           } else {
             const lang = langs?.find(
               (lang) => lang.ID === contentItem?.meta?.langID
@@ -91,7 +100,7 @@ export const ResourceHeaderTitle = ({
             data.title = lang?.code
               ? `(${lang.code}) ${contentItem?.web?.metaTitle}`
               : contentItem?.web?.metaTitle ||
-                `${affectedZUID} (Missing Meta Title)`;
+                t("reports.affectedZUIDMissingMetaTitle", { affectedZUID });
           }
 
           const contentModel = contentModels?.find(
@@ -100,13 +109,17 @@ export const ResourceHeaderTitle = ({
 
           if (contentModel) {
             data.subTitle.unshift(
-              `${modelNameMap[contentModel?.type] ?? ""} Content Item`.trim()
+              `${
+                modelNameMap[contentModel?.type]
+                  ? t(modelNameMap[contentModel?.type])
+                  : ""
+              } ${t("shell.contentItem")}`.trim()
             );
           }
 
           data.icon = modelIconMap[contentModel?.type] as SvgIconComponent;
         } else {
-          data.title = `${affectedZUID} (Deleted)`;
+          data.title = t("reports.affectedZUIDDeleted", { affectedZUID });
           data.icon = null;
         }
         break;
@@ -116,14 +129,20 @@ export const ResourceHeaderTitle = ({
           (model) => model.ZUID === affectedZUID
         );
 
-        data.title = modelData?.label ?? `${affectedZUID} (Deleted)`;
-        data.subTitle.unshift("Content Model");
+        data.title =
+          modelData?.label ??
+          t("reports.affectedZUIDDeleted", { affectedZUID });
+        data.subTitle.unshift(t("reports.contentModel"));
         data.icon = Database as SvgIconComponent;
         break;
 
       case "code":
         data.title = fileData?.fileName;
-        data.subTitle.unshift(modelNameMap[fileData?.type] ?? fileData?.type);
+        data.subTitle.unshift(
+          modelNameMap[fileData?.type]
+            ? t(modelNameMap[fileData?.type])
+            : fileData?.type
+        );
         data.icon = CodeRounded;
         break;
 
@@ -138,7 +157,7 @@ export const ResourceHeaderTitle = ({
             break;
 
           case "21":
-            data.title = "Head Tag";
+            data.title = t("reports.headTag");
             break;
 
           case "36":
@@ -161,7 +180,7 @@ export const ResourceHeaderTitle = ({
             break;
         }
 
-        data.subTitle.unshift("Settings");
+        data.subTitle.unshift(t("shell.navSettings"));
         data.icon = SettingsRounded;
         break;
 
@@ -177,6 +196,7 @@ export const ResourceHeaderTitle = ({
     updatedAt,
     fileData,
     instanceSettings,
+    t,
   ]);
 
   return (

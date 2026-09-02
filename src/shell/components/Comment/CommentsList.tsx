@@ -19,6 +19,7 @@ import { CommentContext } from "../../contexts/CommentProvider";
 import { useParams } from "react-router";
 import { User } from "../../services/types";
 import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 import { AppState } from "../../store/types";
 import { MD5 } from "../../../utility/md5";
 import { ItemLockContext } from "../../../apps/content-editor/src/app/views/ItemEdit/ItemEdit";
@@ -43,6 +44,7 @@ export const CommentsList = ({
   parentCommentZUID,
   isLoadingParentCommentZUID,
 }: CommentsListProps) => {
+  const { t } = useTranslation();
   const { resourceZUID, commentZUID } = useParams<PathParams>();
   const [_, __, commentZUIDtoEdit] = useContext(CommentContext);
   const isLocked = useContext<boolean>(ItemLockContext);
@@ -201,7 +203,7 @@ export const CommentsList = ({
                   fontWeight={600}
                   color="text.secondary"
                 >
-                  right now
+                  {t("shell.rightNow")}
                 </Typography>
               </Stack>
             </Stack>

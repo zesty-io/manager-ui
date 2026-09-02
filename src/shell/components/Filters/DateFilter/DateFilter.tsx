@@ -1,8 +1,10 @@
 import { Dispatch, FC, useState, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { Menu, MenuItem, ListItemText, Divider } from "@mui/material";
 import ChevronRightOutlinedIcon from "@mui/icons-material/ChevronRightOutlined";
 import { format, parse } from "date-fns";
 
+import { formatLocalized } from "../../../i18n/dates";
 import { FilterButton } from "../FilterButton";
 import { DateFilterModal } from "./DateFilterModal";
 import {
@@ -12,22 +14,6 @@ import {
   DateRangeFilterValue,
 } from "./types";
 import { DateRangeFilterModal } from "./DateRangeFilterModal";
-
-const PRESET_DATES: PresetDate[] = [
-  { text: "Today", value: "today" },
-  { text: "Yesterday", value: "yesterday" },
-  { text: "Last 7 days", value: "last_7_days" },
-  { text: "Last 14 days", value: "last_14_days" },
-  { text: "Last 30 days", value: "last_30_days" },
-  { text: "Last 3 months", value: "last_3_months" },
-  { text: "Last 12 months", value: "last_12_months" },
-];
-
-const CUSTOM_DATES: CustomDate[] = [
-  { text: "On...", value: "on" },
-  { text: "Before...", value: "before" },
-  { text: "After...", value: "after" },
-];
 
 const ITEM_HEIGHT = 40;
 
@@ -57,11 +43,12 @@ export const DateFilter: FC<DateFilterProps> = ({
   onChange,
   value,
   withDateRange = false,
-  defaultButtonText = "Date Updated",
+  defaultButtonText,
   clearable = true,
   hideCustomDates = false,
   extraPresets = [],
 }) => {
+  const { t } = useTranslation();
   const [calendarModalType, setCalendarModalType] =
     useState<DateFilterModalType>("");
   const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLButtonElement | null>(
@@ -69,8 +56,26 @@ export const DateFilter: FC<DateFilterProps> = ({
   );
   const isFilterMenuOpen = Boolean(menuAnchorEl);
 
+  const resolvedDefaultText = defaultButtonText ?? t("shell.dateUpdated");
+
+  const PRESET_DATES: PresetDate[] = [
+    { text: t("common.today"), value: "today" },
+    { text: t("common.yesterday"), value: "yesterday" },
+    { text: t("common.last7Days"), value: "last_7_days" },
+    { text: t("shell.dateLast14Days"), value: "last_14_days" },
+    { text: t("common.last30Days"), value: "last_30_days" },
+    { text: t("common.last3Months"), value: "last_3_months" },
+    { text: t("common.last12Months"), value: "last_12_months" },
+  ];
+
+  const CUSTOM_DATES: CustomDate[] = [
+    { text: t("shell.dateOn"), value: "on" },
+    { text: t("shell.dateBefore"), value: "before" },
+    { text: t("shell.dateAfter"), value: "after" },
+  ];
+
   const fmt = (yyyyMmDd: string) =>
-    format(parse(yyyyMmDd, "yyyy-MM-dd", new Date()), "MMM d, yyyy");
+    formatLocalized(parse(yyyyMmDd, "yyyy-MM-dd", new Date()), "MMM d, yyyy");
 
   const activeFilterText = useMemo(() => {
     switch (value?.type) {
@@ -81,19 +86,26 @@ export const DateFilter: FC<DateFilterProps> = ({
         return match?.text;
       }
       case "on":
-        return `On ${fmt(value?.value as string)}`;
+        return t("common.dateOnValue", { date: fmt(value?.value as string) });
       case "before":
-        return `Before ${fmt(value?.value as string)}`;
+        return t("common.dateBeforeValue", {
+          date: fmt(value?.value as string),
+        });
       case "after":
-        return `After ${fmt(value?.value as string)}`;
+        return t("common.dateAfterValue", {
+          date: fmt(value?.value as string),
+        });
       case "daterange": {
         const dateRange = value?.value as DateRangeFilterValue;
-        return `${fmt(dateRange?.from)} to ${fmt(dateRange?.to)}`;
+        return t("shell.dateRangeValue", {
+          from: fmt(dateRange?.from),
+          to: fmt(dateRange?.to),
+        });
       }
       default:
-        return defaultButtonText;
+        return resolvedDefaultText;
     }
-  }, [value, defaultButtonText, extraPresets]);
+  }, [value, resolvedDefaultText, extraPresets, t]);
 
   const handleOpenMenuClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     setMenuAnchorEl(e.currentTarget);
@@ -128,7 +140,7 @@ export const DateFilter: FC<DateFilterProps> = ({
       <FilterButton
         clearable={clearable}
         filterId="date"
-        isFilterActive={Boolean(activeFilterText !== defaultButtonText)}
+        isFilterActive={Boolean(activeFilterText !== resolvedDefaultText)}
         buttonText={activeFilterText}
         onOpenMenu={handleOpenMenuClick}
         onRemoveFilter={() => {
@@ -204,7 +216,7 @@ export const DateFilter: FC<DateFilterProps> = ({
               sx={{ height: ITEM_HEIGHT }}
               onClick={() => handleOpenCalendarModal("daterange")}
             >
-              <ListItemText>Custom date range</ListItemText>
+              <ListItemText>{t("shell.customDateRange")}</ListItemText>
               <ChevronRightOutlinedIcon color="action" />
             </MenuItem>
           )}

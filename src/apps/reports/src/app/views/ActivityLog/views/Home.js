@@ -1,4 +1,5 @@
 import { useMemo, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Typography,
   Box,
@@ -47,28 +48,29 @@ const filtersOnView = {
 
 const TABS = [
   {
-    name: "Resources",
+    name: "reports.tabResources",
     icon: CategoryRounded,
     dataCy: "activityLogTabResources",
   },
   {
-    name: "Users",
+    name: "reports.tabUsers",
     icon: GroupsRounded,
     dataCy: "activityLogTabUsers",
   },
   {
-    name: "Timeline",
+    name: "reports.tabTimeline",
     icon: ViewTimelineRounded,
     dataCy: "activityLogTabTimeline",
   },
   {
-    name: "Insights",
+    name: "reports.tabInsights",
     icon: InsightsRounded,
     dataCy: "activityLogTabInsights",
   },
 ];
 
 export const Home = () => {
+  const { t } = useTranslation();
   const history = useHistory();
   const location = useLocation();
   const activeView = location.pathname.split("/").pop();
@@ -159,7 +161,7 @@ export const Home = () => {
               }}
             >
               <EmptyState
-                title="No Resources Found"
+                title={t("reports.noResourcesFound")}
                 onReset={() => {
                   setParams("", "resourceType");
                   setParams("", "actionByUserZUID");
@@ -202,7 +204,7 @@ export const Home = () => {
               }}
             >
               <EmptyState
-                title="No Users Found"
+                title={t("common.noUsersFound")}
                 onReset={() => {
                   setParams("", "userRole");
                   setDefaultDateParams();
@@ -242,7 +244,7 @@ export const Home = () => {
               }}
             >
               <EmptyState
-                title="No Logs Found"
+                title={t("reports.noLogsFound")}
                 onReset={() => {
                   setParams("", "action");
                   setParams("", "actionByUserZUID");
@@ -283,7 +285,7 @@ export const Home = () => {
               }}
             >
               <EmptyState
-                title="No Insights Found"
+                title={t("reports.noInsightsFound")}
                 onReset={() => {
                   setParams("", "action");
                   setParams("", "actionByUserZUID");
@@ -296,16 +298,16 @@ export const Home = () => {
         const cards = [
           {
             title: filteredActions?.length,
-            content: "Actions",
+            content: t("reports.insightActions"),
           },
           {
             title: uniqBy(filteredActions, "affectedZUID")?.length,
-            content: "Resources Impacted",
+            content: t("reports.resourcesImpacted"),
           },
           {
             title: filteredActions?.filter((action) => action.action === 4)
               ?.length,
-            content: "Publishes",
+            content: t("reports.publishes"),
           },
         ];
         return (
@@ -389,10 +391,10 @@ export const Home = () => {
     <>
       <Box px={4} pt={4} pb={2}>
         <Typography variant="h3" fontWeight={700} sx={{ mb: 0.25 }}>
-          Activity Log
+          {t("reports.activityLogTitle")}
         </Typography>
         <Typography variant="subtitle2" color="text.secondary">
-          Your instance timeline by resources and users
+          {t("reports.activityLogSubtitle")}
         </Typography>
       </Box>
       <Box sx={{ borderBottom: 2, borderColor: "border" }}>
@@ -411,7 +413,7 @@ export const Home = () => {
               data-cy={tab.dataCy}
               icon={<SvgIcon component={tab.icon} fontSize="small" />}
               iconPosition="start"
-              label={tab.name}
+              label={t(tab.name)}
               disableRipple
             />
           ))}

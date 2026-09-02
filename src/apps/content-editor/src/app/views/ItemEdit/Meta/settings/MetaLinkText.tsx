@@ -1,6 +1,7 @@
 import { memo } from "react";
 
 import { TextField, Box } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { FieldShell } from "../../../../components/Editor/Field/FieldShell";
 import { MaxLengths } from "..";
 import { Error } from "../../../../components/Editor/Field/FieldShell";
@@ -15,13 +16,15 @@ export const MetaLinkText = memo(function MetaLinkText({
   onChange,
   error,
 }: MetaLinkTextProps) {
+  const { t } = useTranslation();
+
   return (
     <Box data-cy="metaLinkText">
       <FieldShell
         settings={{
-          label: "Navigation Link Text",
+          label: t("content.itemEditMetaNavigationLinkText"),
         }}
-        customTooltip="The title of this item that appears in the Zesty navigation and programmatically generated navigation within the Parsley navigation() function."
+        customTooltip={t("content.itemEditMetaNavigationLinkTextTooltip")}
         withInteractiveTooltip={false}
         withLengthCounter
         maxLength={MaxLengths.metaLinkText}
@@ -31,7 +34,7 @@ export const MetaLinkText = memo(function MetaLinkText({
         <TextField
           name="metaLinkText"
           value={value || ""}
-          placeholder={"This text is used in application navigation"}
+          placeholder={t("content.itemEditMetaNavigationLinkTextPlaceholder")}
           onChange={(evt) => onChange(evt.target.value, "metaLinkText")}
         />
       </FieldShell>

@@ -1,4 +1,5 @@
 import { MouseEvent, FC, ReactElement, useState, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { useDrag, useDrop } from "react-dnd";
 import {
   IconButton,
@@ -196,6 +197,7 @@ const MoreActionsMenu = ({
   data: StatusLabelTypes;
   isDeactivated?: boolean;
 }) => {
+  const { t } = useTranslation();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
@@ -249,7 +251,7 @@ const MoreActionsMenu = ({
             <DriveFileRenameOutlineIcon />
           </ListItemIcon>
           <Typography variant="body1" color="text.primary">
-            Edit Status
+            {t("settings.editStatus")}
           </Typography>
         </MenuItem>
 
@@ -263,7 +265,7 @@ const MoreActionsMenu = ({
               <PauseCircleOutlineRoundedIcon />
             </ListItemIcon>
             <Typography variant="body1" color="text.primary">
-              Deactivate Status
+              {t("settings.deactivateStatus")}
             </Typography>
           </MenuItem>
         )}

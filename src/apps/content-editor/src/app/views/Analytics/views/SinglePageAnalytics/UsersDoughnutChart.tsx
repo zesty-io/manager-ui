@@ -1,5 +1,6 @@
 import { theme } from "@zesty-io/material";
 import { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Doughnut } from "react-chartjs-2";
 import { ChartEvent } from "chart.js";
 import { Box, Paper, Typography, Skeleton } from "@mui/material";
@@ -15,6 +16,7 @@ export const UsersDoughnutChart = ({
   compareData,
   loading,
 }: any) => {
+  const { t } = useTranslation();
   const chartRef = useRef(null);
   const [tooltipModel, setTooltipModel] = useState(null);
 
@@ -64,24 +66,24 @@ export const UsersDoughnutChart = ({
 
   const datasetIndexMap = {
     "00": {
-      title: `New Users for the ${dateRange0Label}`,
-      description:
-        "New users are users who have never visited your website or app before",
+      title: t("content.analyticsNewUsersForRange", { range: dateRange0Label }),
+      description: t("content.analyticsNewUsersDesc"),
     },
     "01": {
-      title: `Returning Users for the ${dateRange0Label}`,
-      description:
-        "Returning users are users who have never visited your website or app before",
+      title: t("content.analyticsReturningUsersForRange", {
+        range: dateRange0Label,
+      }),
+      description: t("content.analyticsReturningUsersDesc"),
     },
     "10": {
-      title: `New Users for the ${dateRange1Label}`,
-      description:
-        "New users are users who have never visited your website or app before",
+      title: t("content.analyticsNewUsersForRange", { range: dateRange1Label }),
+      description: t("content.analyticsNewUsersDesc"),
     },
     "11": {
-      title: `Returning Users for the ${dateRange1Label}`,
-      description:
-        "Returning users are users who have never visited your website or app before",
+      title: t("content.analyticsReturningUsersForRange", {
+        range: dateRange1Label,
+      }),
+      description: t("content.analyticsReturningUsersDesc"),
     },
   };
 
@@ -120,10 +122,13 @@ export const UsersDoughnutChart = ({
         <Doughnut
           ref={chartRef}
           data={{
-            labels: ["New", "Returning"],
+            labels: [
+              t("content.analyticsLegendNew"),
+              t("content.analyticsLegendReturning"),
+            ],
             datasets: [
               {
-                label: "New vs Returning Users",
+                label: t("content.analyticsNewVsReturning"),
                 data: dataRange0Users,
                 backgroundColor: [
                   theme.palette.info.light,
@@ -132,7 +137,7 @@ export const UsersDoughnutChart = ({
                 borderWidth: 0,
               },
               {
-                label: "Total Users",
+                label: t("content.analyticsTotalUsers"),
                 data: dateRange1Users,
                 backgroundColor: [
                   theme.palette.grey[200],
@@ -179,7 +184,7 @@ export const UsersDoughnutChart = ({
                 ctx.fillStyle = theme.palette.text.secondary;
                 const xCoor = chart.getDatasetMeta(0).data[0].x;
                 const yCoor = chart.getDatasetMeta(0).data[0].y;
-                const title = "Users";
+                const title = t("content.analyticsUsers");
                 ctx.fillText(title, xCoor, yCoor - 14);
                 ctx.font = "600 20px Mulish";
                 ctx.fillStyle = theme.palette.text.primary;

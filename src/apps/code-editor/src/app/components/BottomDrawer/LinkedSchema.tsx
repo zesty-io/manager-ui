@@ -3,6 +3,7 @@ import { List, Typography, Divider } from "@mui/material";
 import { FileCardListItem, FileCard } from "./FileCard";
 import { Database } from "@zesty-io/material";
 import { NavCodeTypes } from "../constants";
+import { useTranslation } from "react-i18next";
 
 interface Field {
   ZUID: string;
@@ -15,22 +16,22 @@ interface LinkedSchemaProps {
 }
 
 export default function LinkedSchema({ file, fields }: LinkedSchemaProps) {
+  const { t } = useTranslation();
   return (
     <FileCard
-      title={`${file?.fileName}'s Related Model Schema`}
+      title={t("code.linkedSchemaTitle", { fileName: file?.fileName })}
       icon={Database}
       link={`/schema/${file.contentModelZUID}`}
-      linkLabel="Edit Linked Schema"
+      linkLabel={t("code.editLinkedSchema")}
     >
       <Typography variant="body2" color="grey.400">
-        Use the below Parsley syntax to reference this model's fields. This will
-        dynamically link to the field's content.&nbsp;
+        {t("code.linkedSchemaBodyText")}&nbsp;
         <Link
           href="https://zesty.org/services/web-engine/introduction-to-parsley"
           target="_blank"
-          title="Learn More Parsley Syntax"
+          title={t("code.learnMoreParsleySyntax")}
         >
-          Learn More Parsley Syntax
+          {t("code.learnMoreParsleySyntax")}
         </Link>
       </Typography>
       <Divider sx={{ my: 1, border: "none" }} />

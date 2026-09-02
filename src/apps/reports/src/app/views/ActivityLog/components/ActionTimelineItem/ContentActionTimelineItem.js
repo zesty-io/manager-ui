@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from "react-redux";
 import { searchItems } from "shell/store/content";
 import { TimelineItem } from "./TimelineItem";
 import { fetchModel } from "shell/store/models";
 
 export const ContentActionTimelineItem = (props) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const [contentError, setContentError] = useState(false);
   const [modelError, setModelError] = useState(false);
@@ -45,10 +47,12 @@ export const ContentActionTimelineItem = (props) => {
       action={props.action}
       itemName={
         contentError
-          ? `${props.action.affectedZUID} (Deleted)`
+          ? t("reports.deletedZuid", { zuid: props.action.affectedZUID })
           : contentData?.web?.metaTitle
           ? contentData?.web?.metaTitle
-          : `${props.action.affectedZUID} (Missing Meta Title)`
+          : t("reports.missingMetaTitleZuid", {
+              zuid: props.action.affectedZUID,
+            })
       }
       itemSubtext={modelData && modelData?.label}
       renderConnector={props.renderConnector}

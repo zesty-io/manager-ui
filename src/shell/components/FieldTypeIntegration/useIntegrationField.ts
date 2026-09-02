@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { get } from "lodash";
+import i18n from "shell/i18n";
 import { useGetExternalApiMutation } from "shell/services/cloudFunctions";
 import {
   isObj,
@@ -16,7 +17,7 @@ export function classifyApiResponse(
   if (apiData === null || apiData === undefined) {
     return {
       ok: false,
-      reason: "API returned no data. Expected a JSON array of objects.",
+      reason: i18n.t("shell.integrationApiResponseNoData"),
     };
   }
 
@@ -24,22 +25,22 @@ export function classifyApiResponse(
     if (!apiData.length) {
       return {
         ok: false,
-        reason:
-          "API returned an empty array. Add at least one item to the response to configure display options.",
+        reason: i18n.t("shell.integrationApiResponseEmptyArray"),
       };
     }
     if (!isObj(apiData[0])) {
       const kind = apiData[0] === null ? "null" : typeof apiData[0];
       return {
         ok: false,
-        reason: `API returned an array of ${kind}s. Expected an array of objects.`,
+        reason: i18n.t("shell.integrationApiResponseArrayOfPrimitives", {
+          kind,
+        }),
       };
     }
     if (!getObjectKeyPaths(apiData[0]).length) {
       return {
         ok: false,
-        reason:
-          "API returned an array of objects with no selectable keys. Make sure each object has at least one scalar property.",
+        reason: i18n.t("shell.integrationApiResponseNoSelectableKeys"),
       };
     }
     return { ok: true };
@@ -50,8 +51,7 @@ export function classifyApiResponse(
     if (!arrayPaths.length) {
       return {
         ok: false,
-        reason:
-          "API returned a single object with no array of objects nested inside. Expected either an array root or an object containing an array of objects.",
+        reason: i18n.t("shell.integrationApiResponseNoNestedArray"),
       };
     }
     const hasUsableArray = arrayPaths.some((path) => {
@@ -61,8 +61,9 @@ export function classifyApiResponse(
     if (!hasUsableArray) {
       return {
         ok: false,
-        reason:
-          "API returned an object whose nested arrays contain no selectable keys. Make sure at least one nested array item has scalar properties.",
+        reason: i18n.t(
+          "shell.integrationApiResponseNestedArrayNoSelectableKeys"
+        ),
       };
     }
     return { ok: true };
@@ -70,7 +71,9 @@ export function classifyApiResponse(
 
   return {
     ok: false,
-    reason: `API returned a ${typeof apiData}. Expected a JSON array of objects.`,
+    reason: i18n.t("shell.integrationApiResponseUnexpectedType", {
+      type: typeof apiData,
+    }),
   };
 }
 

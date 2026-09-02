@@ -1,4 +1,5 @@
 import React, { useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { Box, Typography, Tooltip } from "@mui/material";
 import { ContentModel } from "../../../shell/services/types";
 import { useGetContentModelItemsQuery } from "../../../shell/services/instance";
@@ -10,6 +11,7 @@ type BlockCardProps = {
 };
 
 export const BlockCard = ({ model }: BlockCardProps) => {
+  const { t } = useTranslation();
   const history = useHistory();
   const { data, isLoading } = useGetContentModelItemsQuery({
     modelZUID: model.ZUID,
@@ -39,7 +41,7 @@ export const BlockCard = ({ model }: BlockCardProps) => {
           src={(data?.[0]?.data?.og_image as string) || blockPlaceholder}
           height={144}
           width="100%"
-          alt="Block Image"
+          alt={t("blocks.blockImageAlt")}
           sx={{
             objectFit: "contain",
           }}

@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { Avatar, Box, Button, Dialog, Typography } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 export const OnboardingCall = () => {
+  const { t } = useTranslation();
   const [showMeetModal, setShowMeetModal] = useState(false);
 
   return (
@@ -15,14 +17,14 @@ export const OnboardingCall = () => {
       >
         <Avatar
           src="https://zestyio.media.zestyio.com/gisele-blair-zestyio.jpeg?width=64&height=64"
-          alt="Sales Avatar"
+          alt={t("shell.onboardingCallAvatarAlt")}
           sx={{
             width: "32px",
             height: "32px",
           }}
         />
         <Typography variant="h6" color="common.white" my={1.5}>
-          Schedule an onboarding call with our support team
+          {t("shell.onboardingCallTitle")}
         </Typography>
 
         <Button
@@ -30,7 +32,7 @@ export const OnboardingCall = () => {
           onClick={() => setShowMeetModal(true)}
           size="small"
         >
-          Schedule a call
+          {t("shell.onboardingCallButton")}
         </Button>
       </Box>
       <Dialog open={showMeetModal} onClose={() => setShowMeetModal(false)}>

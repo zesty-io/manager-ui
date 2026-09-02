@@ -7,10 +7,12 @@ export const MainWrapper = ({
   rowGap = 2,
   fullWidth = false,
   children,
+  sx,
 }: {
   rowGap?: number | string;
   fullWidth?: boolean;
   children: React.ReactNode;
+  sx?: React.CSSProperties;
 }) => {
   return (
     <Box
@@ -25,6 +27,7 @@ export const MainWrapper = ({
           paddingTop: "8px",
           paddingBottom: "8px",
         },
+        ...sx,
       }}
     >
       {children}

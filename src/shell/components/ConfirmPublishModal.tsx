@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Box,
   Button,
@@ -32,6 +33,7 @@ export const ConfirmPublishModal = ({
   children,
   relatedItemsToPublishCount,
 }: ConfirmPublishModal) => {
+  const { t } = useTranslation();
   const actionRef = useRef<ButtonBaseActions | null>(null);
   const onEntered = () => actionRef?.current?.focusVisible();
   return (
@@ -54,7 +56,10 @@ export const ConfirmPublishModal = ({
           <CloudUploadRoundedIcon color="success" />
         </Stack>
         <Box>
-          Publish {altText || "Content Item"}:
+          {t("shell.confirmPublishTitle", {
+            item: altText || t("shell.contentItem"),
+          })}
+          {":"}
           <Typography fontWeight={400} variant="h5" display="inline">
             {" "}
             {contentTitle}?
@@ -63,9 +68,10 @@ export const ConfirmPublishModal = ({
       </DialogTitle>
       <DialogContent>
         <Typography variant="body2" color="text.secondary">
-          This will immediately make v{contentVersion} of the{" "}
-          {altText ? altText?.toLowerCase() : "item"} available on all of your
-          platforms. You can always unpublish this item later if needed.
+          {t("shell.confirmPublishBody", {
+            version: contentVersion,
+            item: altText ? altText?.toLowerCase() : t("shell.itemLowercase"),
+          })}
         </Typography>
         {children}
       </DialogContent>
@@ -77,7 +83,7 @@ export const ConfirmPublishModal = ({
           onClick={onCancel}
           disabled={isPublishing}
         >
-          Cancel
+          {t("common.cancel")}
         </Button>
         <Button
           loading={isPublishing}
@@ -88,9 +94,11 @@ export const ConfirmPublishModal = ({
           onClick={onConfirm}
           data-cy="ConfirmPublishButton"
         >
-          Publish {altText || !!relatedItemsToPublishCount ? "Items " : "Item "}
+          {altText || !!relatedItemsToPublishCount
+            ? t("shell.publishItems")
+            : t("shell.publishItem")}
           {!!relatedItemsToPublishCount &&
-            `(${relatedItemsToPublishCount + 1})`}
+            ` (${relatedItemsToPublishCount + 1})`}
         </Button>
       </DialogActions>
     </Dialog>

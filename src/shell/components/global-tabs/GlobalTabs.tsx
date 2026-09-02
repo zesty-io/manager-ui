@@ -7,7 +7,6 @@ import {
   useMemo,
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useWindowSize } from "react-use";
 import { useLocation } from "react-router-dom";
 import debounce from "lodash/debounce";
 import isEqual from "lodash/isEqual";
@@ -40,7 +39,6 @@ const TAB_BORDER = 1;
 const MORE_MENU_WIDTH = 85;
 
 export default memo(function GlobalTabs() {
-  const windowWidth = useWindowSize();
   const location = useLocation();
   const instanceId = useSelector((state: any) => state.instance.ID);
   const ecoId = useSelector((state: any) => state.instance.ecoID);
@@ -100,17 +98,27 @@ export default memo(function GlobalTabs() {
     setTabs(pinnedTabs);
   }, [pinnedTabs]);
 
-  // measure the tab bar width and set state
-  // to trigger a synchronous re-render before paint
-  // recalculate tab bar width if window is resized
+  // Measure the tab bar width and set state to trigger a synchronous re-render
+  // before paint. A ResizeObserver recalculates on any container width change —
+  // not just window resizes, but also collapsing/expanding the global sidebar,
+  // which resizes this bar without firing a window resize event.
   const tabContainerRef = useRef(null);
   useLayoutEffect(() => {
-    if (tabContainerRef.current) {
-      setTabBarWidth(
-        Math.floor(tabContainerRef.current.clientWidth) - MORE_MENU_WIDTH
-      );
+    const node = tabContainerRef.current;
+    if (!node) {
+      return;
     }
-  }, [windowWidth]);
+
+    const updateWidth = () => {
+      setTabBarWidth(Math.floor(node.clientWidth) - MORE_MENU_WIDTH);
+    };
+
+    updateWidth();
+
+    const observer = new ResizeObserver(updateWidth);
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
 
   /**
    * Determines which tabs will be placed on the topbar and dropdown menu.

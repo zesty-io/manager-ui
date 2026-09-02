@@ -6,12 +6,14 @@ import { useSelector } from "react-redux";
 
 import { useDomain } from "../../../../../../../../shell/hooks/use-domain";
 import { AppState } from "../../../../../../../../shell/store/types";
+import { useTranslation } from "react-i18next";
 import { asRenderableText } from "../../../../../../../../utility/asRenderableText";
 
 type TwitterPreviewProps = {
   imageURL: string;
 };
 export const TwitterPreview = ({ imageURL }: TwitterPreviewProps) => {
+  const { t } = useTranslation();
   const { itemZUID, modelZUID } = useParams<{
     itemZUID: string;
     modelZUID: string;
@@ -127,7 +129,7 @@ export const TwitterPreview = ({ imageURL }: TwitterPreviewProps) => {
         >
           {asRenderableText(item?.data?.tc_title) ||
             item?.web?.metaTitle ||
-            "Meta Title"}
+            t("content.itemEditMetaTitle")}
         </Typography>
         <Typography
           data-cy="TwitterCardDescription"
@@ -150,7 +152,7 @@ export const TwitterPreview = ({ imageURL }: TwitterPreviewProps) => {
         >
           {asRenderableText(item?.data?.tc_description) ||
             item?.web?.metaDescription ||
-            "Meta Description"}
+            t("content.itemEditMetaDescription")}
         </Typography>
       </Stack>
     </Stack>

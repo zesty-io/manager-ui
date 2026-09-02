@@ -15,11 +15,13 @@ import { InstanceAvatar } from "../../../../../../../../shell/components/global-
 import { useDomain } from "../../../../../../../../shell/hooks/use-domain";
 import { AppState } from "../../../../../../../../shell/store/types";
 import { useGetContentModelFieldsQuery } from "../../../../../../../../shell/services/instance";
+import { useTranslation } from "react-i18next";
 
 type GooglePreviewProps = {
   imageURL: string;
 };
 export const GooglePreview = ({ imageURL }: GooglePreviewProps) => {
+  const { t } = useTranslation();
   const { modelZUID, itemZUID } = useParams<{
     modelZUID: string;
     itemZUID: string;
@@ -121,7 +123,7 @@ export const GooglePreview = ({ imageURL }: GooglePreviewProps) => {
             textOverflow: "ellipsis",
           }}
         >
-          {item?.web?.metaTitle || "Meta Title"}
+          {item?.web?.metaTitle || t("content.itemEditMetaTitle")}
         </Typography>
         <Typography
           variant="body2"
@@ -139,7 +141,7 @@ export const GooglePreview = ({ imageURL }: GooglePreviewProps) => {
             textOverflow: "ellipsis",
           }}
         >
-          {item?.web?.metaDescription || "Meta Description"}
+          {item?.web?.metaDescription || t("content.itemEditMetaDescription")}
         </Typography>
       </Box>
       {!!imageURL ? (

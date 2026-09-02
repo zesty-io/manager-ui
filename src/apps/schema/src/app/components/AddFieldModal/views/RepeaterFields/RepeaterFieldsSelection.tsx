@@ -8,9 +8,10 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { useTranslation } from "react-i18next";
 import {
-  FIELD_COPY_CONFIG,
-  FIELD_CATEGORY_LABELS,
+  getFieldCopyConfig,
+  getFieldCategoryLabels,
   FieldListData,
   FieldType,
 } from "../../../configs";
@@ -34,27 +35,6 @@ const ALLOWED_REPEATER_FIELD_TYPES = new Set<FieldType>([
   "datetime",
 ]);
 
-const repeaterFields = {
-  text: FIELD_COPY_CONFIG.text.filter((field) =>
-    ALLOWED_REPEATER_FIELD_TYPES.has(field.type)
-  ),
-  media: FIELD_COPY_CONFIG.media.filter((field) =>
-    ALLOWED_REPEATER_FIELD_TYPES.has(field.type)
-  ),
-  relationship: FIELD_COPY_CONFIG.relationship.filter((field) =>
-    ALLOWED_REPEATER_FIELD_TYPES.has(field.type)
-  ),
-  numeric: FIELD_COPY_CONFIG.numeric.filter((field) =>
-    ALLOWED_REPEATER_FIELD_TYPES.has(field.type)
-  ),
-  dateandtime: FIELD_COPY_CONFIG.dateandtime.filter((field) =>
-    ALLOWED_REPEATER_FIELD_TYPES.has(field.type)
-  ),
-  options: FIELD_COPY_CONFIG.options.filter((field) =>
-    ALLOWED_REPEATER_FIELD_TYPES.has(field.type)
-  ),
-};
-
 type RepeaterFieldsSelectionProps = {
   handleClose: () => void;
   name: string;
@@ -71,6 +51,29 @@ export const RepeaterFieldsSelection = ({
   name,
   handleFieldSelection,
 }: RepeaterFieldsSelectionProps) => {
+  const { t } = useTranslation();
+  const FIELD_COPY_CONFIG = getFieldCopyConfig(t);
+  const FIELD_CATEGORY_LABELS = getFieldCategoryLabels(t);
+  const repeaterFields = {
+    text: FIELD_COPY_CONFIG.text.filter((field) =>
+      ALLOWED_REPEATER_FIELD_TYPES.has(field.type)
+    ),
+    media: FIELD_COPY_CONFIG.media.filter((field) =>
+      ALLOWED_REPEATER_FIELD_TYPES.has(field.type)
+    ),
+    relationship: FIELD_COPY_CONFIG.relationship.filter((field) =>
+      ALLOWED_REPEATER_FIELD_TYPES.has(field.type)
+    ),
+    numeric: FIELD_COPY_CONFIG.numeric.filter((field) =>
+      ALLOWED_REPEATER_FIELD_TYPES.has(field.type)
+    ),
+    dateandtime: FIELD_COPY_CONFIG.dateandtime.filter((field) =>
+      ALLOWED_REPEATER_FIELD_TYPES.has(field.type)
+    ),
+    options: FIELD_COPY_CONFIG.options.filter((field) =>
+      ALLOWED_REPEATER_FIELD_TYPES.has(field.type)
+    ),
+  };
   return (
     <>
       <DialogTitle component="div">
@@ -89,7 +92,7 @@ export const RepeaterFieldsSelection = ({
               <ArrowBackIcon />
             </IconButton>
             <Typography variant="h5" fontWeight={700}>
-              Add Field to {name}
+              {t("schema.addFieldToName", { name })}
             </Typography>
           </Stack>
           <IconButton

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ConnectField,
   ElementLayoutPatch,
@@ -231,6 +232,7 @@ export const useStudioLayersTree = ({
   inspectorSelection,
   dndDisabled,
 }: Args) => {
+  const { t } = useTranslation();
   const [tree, setTree] = useState<LayersTreeNode[] | null>(null);
   // Rows the user has flipped AWAY from their default expansion. Root rows
   // default OPEN (a fresh panel shows one level); everything else defaults
@@ -371,14 +373,14 @@ export const useStudioLayersTree = ({
       if (node.kind === "codeFile") {
         return node.codeId
           ? codeFileNameById[node.codeId] || node.codeId
-          : "Page";
+          : t("content.studioLayersNodePage");
       }
       if (node.kind === "element") {
         // The placeholder is a text element that has no tag yet — the tree calls
         // it what it is. "No Tag" is a statement about its tag, and that belongs
         // in the Tag selector, not in the row's name.
-        if (node.tagName === NO_TAG) return "Text";
-        return node.tagName || "element";
+        if (node.tagName === NO_TAG) return t("content.studioLayersNodeText");
+        return node.tagName || t("content.studioLayersNodeElement");
       }
       if (node.kind === "field") {
         // Dynamic content is labeled by its field name, not its value.
@@ -405,14 +407,17 @@ export const useStudioLayersTree = ({
         // An item-level reference (a link's getUrl()) names no field, so there
         // is no name to fall back on — keep going rather than label the row "".
         const ref = parseParsleyRef(node.slots?.[0]?.sourceValue || "");
-        if (ref) return ref.name || node.fieldType || "Field";
+        if (ref)
+          return (
+            ref.name || node.fieldType || t("content.studioLayersNodeField")
+          );
 
-        return node.fieldType || "Field";
+        return node.fieldType || t("content.studioLayersNodeField");
       }
       // Static text shows its actual content.
       return node.label || "";
     },
-    [codeFileNameById, connectedBySlot, fieldsState]
+    [codeFileNameById, connectedBySlot, fieldsState, t]
   );
 
   const isNodeSelectable = useCallback(
@@ -479,14 +484,17 @@ export const useStudioLayersTree = ({
   const selectLayoutElement = useCallback(
     (node: LayersTreeNode) => {
       const breadcrumb: { layoutId?: string; label: string }[] = [
-        { layoutId: node.layoutId!, label: node.tagName || "element" },
+        {
+          layoutId: node.layoutId!,
+          label: node.tagName || t("content.studioLayersNodeElement"),
+        },
       ];
       let parent = parentById.get(node.id) || null;
       while (parent) {
         if (parent.kind === "element" && parent.layoutId) {
           breadcrumb.unshift({
             layoutId: parent.layoutId,
-            label: parent.tagName || "element",
+            label: parent.tagName || t("content.studioLayersNodeElement"),
           });
         }
         parent = parentById.get(parent.id) || null;
@@ -503,7 +511,7 @@ export const useStudioLayersTree = ({
         layoutId: node.layoutId!,
       });
     },
-    [applyLayoutSelection, parentById, postCommandToBridge]
+    [applyLayoutSelection, parentById, postCommandToBridge, t]
   );
 
   // Pick which of a slot's two values the panel shows, by mode:

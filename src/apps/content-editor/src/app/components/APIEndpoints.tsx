@@ -1,5 +1,6 @@
 import { useSelector } from "react-redux";
 import { useParams } from "react-router";
+import { useTranslation } from "react-i18next";
 import {
   MenuList,
   MenuItem,
@@ -18,6 +19,7 @@ type APIEndpointsProps = {
   type: Extract<ApiType, "quick-access" | "site-generators">;
 };
 export const APIEndpoints = ({ type }: APIEndpointsProps) => {
+  const { t } = useTranslation();
   const { modelZUID, itemZUID } = useParams<{
     modelZUID: string;
     itemZUID: string;
@@ -57,7 +59,7 @@ export const APIEndpoints = ({ type }: APIEndpointsProps) => {
         >
           {`${instance.randomHashID}${CONFIG.URL_PREVIEW}${apiTypeEndpointMap[type]}`}
         </Typography>
-        <Chip size="small" label="Dev" />
+        <Chip size="small" label={t("common.dev")} />
       </MenuItem>
       {liveDomain && (
         <MenuItem
@@ -80,7 +82,7 @@ export const APIEndpoints = ({ type }: APIEndpointsProps) => {
           >
             {`${liveDomain.domain}${apiTypeEndpointMap[type]}`}
           </Typography>
-          <Chip size="small" label="Prod" />
+          <Chip size="small" label={t("common.prod")} />
         </MenuItem>
       )}
     </MenuList>

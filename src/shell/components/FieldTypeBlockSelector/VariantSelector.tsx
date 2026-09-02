@@ -11,9 +11,11 @@ import {
   Tooltip,
 } from "@mui/material";
 import { Search } from "@mui/icons-material";
-import { format, isValid } from "date-fns";
+import { isValid } from "date-fns";
+import { useTranslation } from "react-i18next";
 
 import { ContentItem } from "../../services/types";
+import { formatLocalized } from "../../i18n/dates";
 import { useGetUsersQuery } from "../../services/accounts";
 import { NoSearchResults } from "../NoSearchResults";
 import { NoVariant } from "./NoVariant";
@@ -35,6 +37,7 @@ export const VariantSelector = ({
   blockModelName,
   onVariantSelected,
 }: VariantSelectorProps) => {
+  const { t } = useTranslation();
   const { data: users } = useGetUsersQuery();
   const [filterKeyword, setFilterKeyword] = useState("");
   const filterTextField = useRef(null);
@@ -95,7 +98,7 @@ export const VariantSelector = ({
           <TextField
             autoFocus
             fullWidth
-            placeholder="Search variants"
+            placeholder={t("shell.blockSelectorSearchVariants")}
             ref={filterTextField}
             value={filterKeyword}
             onChange={(evt) => {
@@ -133,7 +136,8 @@ export const VariantSelector = ({
             const d = variant.web?.updatedAt
               ? new Date(variant.web.updatedAt)
               : null;
-            const updatedOn = d && isValid(d) ? format(d, "MMMM d") : "";
+            const updatedOn =
+              d && isValid(d) ? formatLocalized(d, "MMMM d") : "";
             return (
               <MenuItem
                 ref={(node) => (variantsRef.current[index] = node)}
@@ -213,8 +217,10 @@ export const VariantSelector = ({
                       textWrap: "wrap",
                     }}
                   >
-                    Updated on {updatedOn} by{" "}
-                    {getUserName(variant?.web?.createdByUserZUID)}
+                    {t("shell.blockSelectorUpdatedOnBy", {
+                      date: updatedOn,
+                      user: getUserName(variant?.web?.createdByUserZUID),
+                    })}
                   </Typography>
                 </Stack>
               </MenuItem>

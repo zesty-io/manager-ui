@@ -8,16 +8,19 @@ import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { DisplayOptionCardProps } from "../types";
 import DisplayCard from "../Shared/DisplayCard";
 import { alpha, Avatar, Grid, Paper, Stack } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 const DisplayOption = ({
-  title,
-  description,
+  titleKey,
+  descriptionKey,
   type,
   card,
   disabled = false,
   isSelected = false,
   onSelect,
 }: Partial<DisplayOptionCardProps>) => {
+  const { t } = useTranslation();
+
   return (
     <Card
       elevation={0}
@@ -73,14 +76,14 @@ const DisplayOption = ({
                   />
                 )}
                 <Typography variant="h6" fontWeight={700} color="text.primary">
-                  {title}
+                  {t(titleKey)}
                 </Typography>
                 <Typography
                   variant="body2"
                   fontWeight={400}
                   color="text.secondary"
                 >
-                  {description}
+                  {t(descriptionKey)}
                 </Typography>
               </Stack>
             </Grid>

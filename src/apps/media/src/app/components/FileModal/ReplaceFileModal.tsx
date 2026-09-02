@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Dialog,
   DialogActions,
@@ -38,6 +39,7 @@ export const ReplaceFileModal = ({
   originalFile,
   onCancel,
 }: ReplaceFileModalProps) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const [newFile, setNewFile] = useState<File>(null);
   const [showUploadingFileModal, setShowUploadingFileModal] = useState(false);
@@ -91,8 +93,8 @@ export const ReplaceFileModal = ({
     return (
       <NoPermission
         onClose={onCancel}
-        headerTitle="You do not have permission to replace files in this instance."
-        headerSubtitle="Contact the instance owner or administrators listed below to upgrade your role to Admin or Owner for the replace file capability."
+        headerTitle={t("media.replaceFileModalNoPermissionTitle")}
+        headerSubtitle={t("media.replaceFileModalNoPermissionSubtitle")}
       />
     );
   }
@@ -120,7 +122,7 @@ export const ReplaceFileModal = ({
         >
           <UploadHeaderText
             uploads={uploads}
-            headerKeyword="Replaced File"
+            headerKeyword="replacedFile"
             showCount={false}
           />
           <IconButton onClick={handleCloseUploadingFileModal} size="small">
@@ -145,7 +147,7 @@ export const ReplaceFileModal = ({
             variant="contained"
             onClick={handleCloseUploadingFileModal}
           >
-            Done
+            {t("common.done")}
           </Button>
         </DialogActions>
       </Dialog>
@@ -177,22 +179,19 @@ export const ReplaceFileModal = ({
           </Box>
           <Typography variant="h5" sx={{ wordBreak: "break-all" }}>
             <Box component="span" fontWeight={700}>
-              Replace File:
+              {t("media.replaceFileModalTitle")}
+              {":"}
             </Box>
             &nbsp;
             {originalFile?.filename}
           </Typography>
         </DialogTitle>
         <DialogContent>
-          <Alert severity="warning">
-            The original file will be deleted and replaced by its new file. This
-            action cannot be undone and the file cannot be recovered. The file
-            will retain its URL and ZUID.
-          </Alert>
+          <Alert severity="warning">{t("media.replaceFileModalWarning")}</Alert>
         </DialogContent>
         <DialogActions>
           <Button color="inherit" onClick={onCancel}>
-            Cancel
+            {t("common.cancel")}
           </Button>
           <Button
             variant="contained"
@@ -202,7 +201,7 @@ export const ReplaceFileModal = ({
               hiddenFileInput.current.click();
             }}
           >
-            Replace
+            {t("common.replace")}
           </Button>
         </DialogActions>
       </Dialog>

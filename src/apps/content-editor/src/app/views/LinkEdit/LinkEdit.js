@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 import { useParams } from "react-router";
 
 import FormGroup from "@mui/material/FormGroup";
@@ -28,6 +29,7 @@ import { request } from "utility/request";
 import { instanceApi } from "../../../../../../shell/services/instance";
 import styles from "./LinkEdit.less";
 export default function LinkEdit() {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const isMounted = useRef(false);
   const { linkZUID } = useParams();
@@ -139,7 +141,7 @@ export default function LinkEdit() {
         console.error(err);
         dispatch(
           notify({
-            message: "Failed loading link",
+            message: t("content.linkEditFailedLoading"),
             kind: "error",
           })
         );
@@ -181,23 +183,24 @@ export default function LinkEdit() {
           setState({ ...state, saving: false });
           let message = "";
           if (/metaTitle/.test(res.error)) {
-            message = "Please add a Link Title";
+            message = t("content.linkEditorErrorAddTitle");
           } else if (
             /internal links must target a content item/.test(res.error)
           ) {
-            message = "Please add a Link Target";
+            message = t("content.linkEditorErrorAddTarget");
           } else if (
             /external links must target an external site/.test(res.error)
           ) {
-            message = "Please add a Link Protocol";
+            message = t("content.linkEditorErrorAddProtocol");
           }
           dispatch(
             notify({
-              heading: `Cannot Save: ${
-                params.metaTitle.trim() === ""
-                  ? "Empty Title"
-                  : params.metaTitle
-              }`,
+              heading: t("content.itemEditCannotSaveTitle", {
+                title:
+                  params.metaTitle.trim() === ""
+                    ? t("content.linkEditCannotSaveEmptyTitle")
+                    : params.metaTitle,
+              }),
               message,
               kind: "error",
             })
@@ -206,7 +209,7 @@ export default function LinkEdit() {
           setState({ ...state, saving: false });
           dispatch(
             notify({
-              message: `Link Saved: ${params.metaTitle}`,
+              message: t("content.linkEditSaved", { title: params.metaTitle }),
               kind: "save",
             })
           );
@@ -216,7 +219,9 @@ export default function LinkEdit() {
       .catch((err) => {
         console.error(err);
         setState({ ...state, saving: false });
-        dispatch(notify({ message: "Error saving link", kind: "error" }));
+        dispatch(
+          notify({ message: t("content.linkEditErrorSaving"), kind: "error" })
+        );
       });
   }
 
@@ -231,7 +236,7 @@ export default function LinkEdit() {
         });
         dispatch(
           notify({
-            message: `Link Deleted: ${state.metaTitle}`,
+            message: t("content.linkEditDeleted", { title: state.metaTitle }),
             kind: "error",
           })
         );
@@ -242,7 +247,9 @@ export default function LinkEdit() {
       })
       .catch((err) => {
         console.error("Failed to delete link:", err);
-        dispatch(notify({ message: "Error deleting link", kind: "error" }));
+        dispatch(
+          notify({ message: t("content.linkEditErrorDeleting"), kind: "error" })
+        );
       });
   }
 
@@ -255,14 +262,21 @@ export default function LinkEdit() {
 
   return (
     <section className={styles.Editor}>
-      <WithLoader condition={!state.loading} message="Loading Link">
+      <WithLoader
+        condition={!state.loading}
+        message={t("content.linkEditLoading")}
+      >
         <Card className={styles.LinkEdit} sx={{ m: 2, width: "800px" }}>
           <CardHeader
             title={
               <>
                 {" "}
-                {state.type === "internal" && <h5>Internal Link</h5>}
-                {state.type === "external" && <h5>External Link</h5>}
+                {state.type === "internal" && (
+                  <h5>{t("content.linkEditorInternalLink")}</h5>
+                )}
+                {state.type === "external" && (
+                  <h5>{t("content.linkEditorExternalLink")}</h5>
+                )}
               </>
             }
             className={styles.EditorHeader}
@@ -274,7 +288,7 @@ export default function LinkEdit() {
             <FieldTypeInternalLink
               className={styles.Row}
               name="parentZUID"
-              label="Select a parent for your link"
+              label={t("content.linkEditorSelectParent")}
               value={state.parentZUID}
               options={internalLinkOptions}
               onChange={onChange}
@@ -285,7 +299,7 @@ export default function LinkEdit() {
               <FieldTypeInternalLink
                 className={styles.Row}
                 name="target"
-                label="Select an item to link to"
+                label={t("content.linkEditorSelectTarget")}
                 value={state.target}
                 options={internalLinkOptions}
                 onChange={onChange}
@@ -293,7 +307,7 @@ export default function LinkEdit() {
               />
             ) : (
               <FieldTypeUrl
-                label="Provide an external URL to link to"
+                label={t("content.linkEditorExternalUrl")}
                 name="target"
                 value={state.target}
                 onChange={(evt) => onChange(evt.target.value, "target")}
@@ -302,7 +316,7 @@ export default function LinkEdit() {
             )}
 
             <FieldTypeText
-              label="Link title"
+              label={t("content.linkEditorLinkTitle")}
               name="metaTitle"
               value={state.metaTitle}
               onChange={(evt) => {
@@ -350,7 +364,7 @@ export default function LinkEdit() {
               onClick={() => setShowConfirmation(true)}
               startIcon={<DeleteIcon />}
             >
-              Delete
+              {t("common.delete")}
             </Button>
             <Button
               variant="contained"
@@ -359,7 +373,7 @@ export default function LinkEdit() {
               onClick={saveLink}
               startIcon={<SaveIcon />}
             >
-              Save Changes
+              {t("content.linkEditSaveChanges")}
             </Button>
           </CardActions>
         </Card>
@@ -368,14 +382,14 @@ export default function LinkEdit() {
       {showConfirmation && (
         <ConfirmDialog
           open={showConfirmation}
-          title="Are you sure you want to delete this link?"
+          title={t("content.linkEditConfirmDelete")}
         >
           <Button
             variant="outlined"
             onClick={() => setShowConfirmation(false)}
             startIcon={<DoDisturbAltIcon />}
           >
-            Cancel
+            {t("common.cancel")}
           </Button>
           <Button
             variant="contained"
@@ -383,7 +397,7 @@ export default function LinkEdit() {
             onClick={() => deleteLink()}
             startIcon={<DeleteIcon />}
           >
-            Delete
+            {t("common.delete")}
           </Button>
         </ConfirmDialog>
       )}

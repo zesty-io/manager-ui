@@ -1,8 +1,10 @@
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { TimelineItem } from "./TimelineItem";
 
 export const SettingsActionTimelineItem = (props) => {
+  const { t } = useTranslation();
   const settingsData = useSelector((state) =>
     state.settings.instance.find(
       (instanceSetting) => instanceSetting.ZUID === props.affectedZUID
@@ -17,17 +19,17 @@ export const SettingsActionTimelineItem = (props) => {
           props.action?.meta?.message.split(" ").slice(1).join(" ")
         );
       case "21":
-        return "Head Tag";
+        return t("reports.headTag");
       default:
         return props.action?.meta?.message.split(" ").slice(1).join(" ");
     }
-  }, [props.action, settingsData]);
+  }, [props.action, settingsData, t]);
 
   return (
     <TimelineItem
       action={props.action}
       itemName={itemName}
-      itemSubtext="Settings"
+      itemSubtext={t("shell.navSettings")}
       renderConnector={props.renderConnector}
     />
   );

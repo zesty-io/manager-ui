@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useContext } from "react";
+import { useTranslation } from "react-i18next";
 import { Box, Typography, Button, Stack } from "@mui/material";
 import { Editor } from "@tinymce/tinymce-react";
 import { theme } from "@zesty-io/material";
@@ -34,6 +35,7 @@ export const InputField = ({
   editModeValue = "",
   commentCount,
 }: InputFieldProps) => {
+  const { t } = useTranslation();
   const [
     createComment,
     {
@@ -112,13 +114,13 @@ export const InputField = ({
 
   const getPrimaryButtonText = () => {
     if (isEditMode) {
-      return "Save";
+      return t("common.save");
     }
 
     if (isFirstComment) {
-      return "Comment";
+      return t("common.comment");
     } else {
-      return "Reply";
+      return t("common.reply");
     }
   };
 
@@ -249,7 +251,7 @@ export const InputField = ({
             init={{
               inline: true,
               auto_focus: true,
-              placeholder: "Reply or add others with @",
+              placeholder: t("shell.commentPlaceholder"),
 
               setup: (editor) => {
                 editor.on("ResizeEditor", () => {
@@ -350,8 +352,7 @@ export const InputField = ({
       )}
       {hasError && (
         <Typography variant="body2" color="error.dark" mt={0.5}>
-          Unable to add comment. Please check your internet connection and try
-          again.
+          {t("shell.commentAddError")}
         </Typography>
       )}
       <Stack
@@ -370,7 +371,7 @@ export const InputField = ({
               onClick={onCancel}
               disabled={isLoading}
             >
-              Cancel
+              {t("common.cancel")}
             </Button>
             <Button
               data-cy="SubmitNewComment"

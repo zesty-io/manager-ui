@@ -18,15 +18,30 @@ import {
 } from "@mui/material";
 import CloudUploadRoundedIcon from "@mui/icons-material/CloudUploadRounded";
 import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
+import { useTranslation } from "react-i18next";
 
 export type StudioSaveChangeType = "Content" | "Code" | "Block";
 
 // One save can now span both backends, so the rows are grouped by which one
 // they commit to — a partial failure then reads as "the layout half saved,
 // the content half did not" rather than a flat list.
-const SECTIONS: { label: string; includes: StudioSaveChangeType[] }[] = [
-  { label: "Content", includes: ["Content", "Block"] },
-  { label: "Layout", includes: ["Code"] },
+// `key` is also the data-cy suffix, so it stays a stable English literal
+// while `labelKey` resolves to the localized heading.
+const SECTIONS: {
+  key: "Content" | "Layout";
+  labelKey: string;
+  includes: StudioSaveChangeType[];
+}[] = [
+  {
+    key: "Content",
+    labelKey: "content.studioSaveChangeSectionContent",
+    includes: ["Content", "Block"],
+  },
+  {
+    key: "Layout",
+    labelKey: "content.studioSaveChangeSectionLayout",
+    includes: ["Code"],
+  },
 ];
 
 export type StudioSaveChangeVersion = {
@@ -64,6 +79,14 @@ export const StudioSaveChangesModal = ({
   onSaveAll,
   onSaveAndPublishAll,
 }: StudioSaveChangesModalProps) => {
+  const { t } = useTranslation();
+
+  const typeLabels: Record<StudioSaveChangeType, string> = {
+    Content: t("content.studioSaveChangeTypeContent"),
+    Code: t("content.studioSaveChangeTypeCode"),
+    Block: t("content.studioSaveChangeTypeBlock"),
+  };
+
   if (!open) return null;
 
   const showSectionHeaders =
@@ -79,10 +102,10 @@ export const StudioSaveChangesModal = ({
     >
       <DialogTitle component="div" sx={{ pb: 1 }}>
         <Typography variant="h5" fontWeight={700}>
-          Save Changes
+          {t("shell.integrationSaveChanges")}
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-          Would you like to save or save and publish your changes?
+          {t("content.studioSaveChangesSubtitle")}
         </Typography>
       </DialogTitle>
       <DialogContent>
@@ -94,30 +117,36 @@ export const StudioSaveChangesModal = ({
         >
           <TableHead>
             <TableRow sx={{ bgcolor: "grey.50" }}>
-              <TableCell sx={{ fontWeight: 600, width: 96 }}>Vers.</TableCell>
-              <TableCell sx={{ fontWeight: 600 }}>Title</TableCell>
-              <TableCell sx={{ fontWeight: 600, width: 140 }}>Type</TableCell>
+              <TableCell sx={{ fontWeight: 600, width: 96 }}>
+                {t("content.studioSaveChangesVersionColumn")}
+              </TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>
+                {t("shell.legacySearchSortTitle")}
+              </TableCell>
+              <TableCell sx={{ fontWeight: 600, width: 140 }}>
+                {t("content.studioSaveChangesTypeColumn")}
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {SECTIONS.map(({ label, includes }) => {
+            {SECTIONS.map((section) => {
               const sectionChanges = changes.filter((change) =>
-                includes.includes(change.type)
+                section.includes.includes(change.type)
               );
               if (!sectionChanges.length) return null;
 
               return (
-                <Fragment key={label}>
+                <Fragment key={section.key}>
                   {/* A subheader only earns its row when both backends are in
                       play. With one section the type chip already says which,
                       and a lone header is noise. */}
                   {showSectionHeaders ? (
                     <TableRow
-                      data-cy={`StudioSaveChangeSection-${label}`}
+                      data-cy={`StudioSaveChangeSection-${section.key}`}
                       sx={{ bgcolor: "grey.50" }}
                     >
                       <TableCell colSpan={3} sx={{ fontWeight: 600, py: 0.5 }}>
-                        {label}
+                        {t(section.labelKey)}
                       </TableCell>
                     </TableRow>
                   ) : null}
@@ -144,7 +173,7 @@ export const StudioSaveChangesModal = ({
                       <TableCell>
                         <Chip
                           size="small"
-                          label={change.type}
+                          label={typeLabels[change.type]}
                           variant="filled"
                         />
                       </TableCell>
@@ -163,7 +192,7 @@ export const StudioSaveChangesModal = ({
           onClick={onCancel}
           disabled={isSaving}
         >
-          Cancel
+          {t("common.cancel")}
         </Button>
         <Box display="flex" gap={1}>
           <Button
@@ -180,7 +209,7 @@ export const StudioSaveChangesModal = ({
             {isSaving ? (
               <CircularProgress size={16} color="inherit" />
             ) : (
-              "Save All"
+              t("content.studioSaveAllButton")
             )}
           </Button>
           <Button
@@ -197,7 +226,7 @@ export const StudioSaveChangesModal = ({
             {isSaving ? (
               <CircularProgress size={16} color="inherit" />
             ) : (
-              "Save & Publish All"
+              t("content.studioSaveAndPublishAllButton")
             )}
           </Button>
         </Box>

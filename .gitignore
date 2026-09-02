@@ -21,6 +21,7 @@ skills-lock.json
 .agents
 .playwright-mcp
 .claude/worktrees
+.zed
 
 # negative-QA workflow runtime output (auth-state.json holds a session token)
 auth-state.json

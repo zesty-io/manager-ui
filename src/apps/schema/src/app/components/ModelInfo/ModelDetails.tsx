@@ -1,4 +1,5 @@
 import { Box, Tooltip, Typography, Button } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
@@ -21,6 +22,7 @@ type Params = {
 };
 
 export const ModelDetails = () => {
+  const { t } = useTranslation();
   const params = useParams<Params>();
   const { id } = params;
   const history = useHistory();
@@ -61,10 +63,10 @@ export const ModelDetails = () => {
     <>
       <Box>
         <Typography variant="h5" fontWeight={600}>
-          Model Details
+          {t("schema.modelDetailsTitle")}
         </Typography>
         <Typography color="text.secondary" sx={{ mt: 0.5, mb: 2 }}>
-          View and update the primary properties of your model
+          {t("schema.modelDetailsSubtitle")}
         </Typography>
         <Box
           borderRadius="8px"
@@ -78,6 +80,7 @@ export const ModelDetails = () => {
             px={2}
             sx={{
               borderBottom: (theme) => `1px solid ${theme.palette.border}`,
+              gap: 1,
             }}
           >
             <Box
@@ -87,11 +90,8 @@ export const ModelDetails = () => {
               alignItems="center"
               py={2}
             >
-              <Typography color="text.primary">Name</Typography>
-              <Tooltip
-                title="Name that is shown to content editors"
-                placement="right"
-              >
+              <Typography color="text.primary">{t("common.name")}</Typography>
+              <Tooltip title={t("schema.modelNameTooltip")} placement="right">
                 <InfoRoundedIcon
                   color="action"
                   sx={{ height: "12px", width: "12px" }}
@@ -103,7 +103,7 @@ export const ModelDetails = () => {
             </Box>
             <Box py={1.5}>
               <Button size="small" onClick={() => setShowDialogue("rename")}>
-                Update
+                {t("common.update")}
               </Button>
             </Box>
           </Box>
@@ -113,6 +113,7 @@ export const ModelDetails = () => {
             px={2}
             sx={{
               borderBottom: (theme) => `1px solid ${theme.palette.border}`,
+              gap: 1,
             }}
           >
             <Box
@@ -122,9 +123,11 @@ export const ModelDetails = () => {
               alignItems="center"
               py={2}
             >
-              <Typography color="text.primary">Description</Typography>
+              <Typography color="text.primary">
+                {t("schema.modelDescriptionLabel")}
+              </Typography>
               <Tooltip
-                title="Displays the purpose of the model to help content writers"
+                title={t("schema.modelDescriptionTooltip")}
                 placement="right"
               >
                 <InfoRoundedIcon
@@ -137,7 +140,9 @@ export const ModelDetails = () => {
               {!!model?.description ? (
                 <Typography>{model.description}</Typography>
               ) : (
-                <Typography color="text.disabled">None</Typography>
+                <Typography color="text.disabled">
+                  {t("schema.noneValue")}
+                </Typography>
               )}
             </Box>
             <Box py={1.5}>
@@ -145,7 +150,7 @@ export const ModelDetails = () => {
                 size="small"
                 onClick={() => setShowDialogue("updateDescription")}
               >
-                Update
+                {t("common.update")}
               </Button>
             </Box>
           </Box>
@@ -155,6 +160,7 @@ export const ModelDetails = () => {
             px={2}
             sx={{
               borderBottom: (theme) => `1px solid ${theme.palette.border}`,
+              gap: 1,
             }}
           >
             <Box
@@ -165,10 +171,10 @@ export const ModelDetails = () => {
               py={2}
             >
               <Typography color="text.primary">
-                API/Parsley Reference ID
+                {t("schema.apiParsleyReferenceId")}
               </Typography>
               <Tooltip
-                title="ID used for accessing this model through our API or Parsley"
+                title={t("schema.apiParsleyReferenceIdTooltip")}
                 placement="right"
               >
                 <InfoRoundedIcon
@@ -182,7 +188,9 @@ export const ModelDetails = () => {
             </Box>
             <Box display="flex" py={1.5}>
               <Button size="small" onClick={() => handleCopy(model?.name)}>
-                {isCopied === model?.name ? "Copied" : "Copy"}
+                {isCopied === model?.name
+                  ? t("common.copied")
+                  : t("common.copy")}
               </Button>
               <Box
                 sx={{
@@ -192,7 +200,7 @@ export const ModelDetails = () => {
                 }}
               />
               <Button size="small" onClick={() => setShowDialogue("rename")}>
-                Update
+                {t("common.update")}
               </Button>
             </Box>
           </Box>
@@ -202,6 +210,7 @@ export const ModelDetails = () => {
             px={2}
             sx={{
               borderBottom: (theme) => `1px solid ${theme.palette.border}`,
+              gap: 1,
             }}
           >
             <Box
@@ -211,11 +220,10 @@ export const ModelDetails = () => {
               alignItems="center"
               py={2}
             >
-              <Typography color="text.primary">Parent Model</Typography>
-              <Tooltip
-                title="Selecting a parent affects default routing and content navigation in the UI"
-                placement="right"
-              >
+              <Typography color="text.primary">
+                {t("schema.parentModel")}
+              </Typography>
+              <Tooltip title={t("schema.parentModelTooltip")} placement="right">
                 <InfoRoundedIcon
                   color="action"
                   sx={{ height: "12px", width: "12px" }}
@@ -226,7 +234,9 @@ export const ModelDetails = () => {
               {!!parentModel?.label ? (
                 <Typography>{parentModel.label}</Typography>
               ) : (
-                <Typography color="text.disabled">None</Typography>
+                <Typography color="text.disabled">
+                  {t("schema.noneValue")}
+                </Typography>
               )}
             </Box>
             <Box display="flex" py={1.5}>
@@ -238,7 +248,7 @@ export const ModelDetails = () => {
                       history.push(`/schema/${parentModel?.contentModelZUID}`)
                     }
                   >
-                    View
+                    {t("common.view")}
                   </Button>
                   <Box
                     sx={{
@@ -254,7 +264,7 @@ export const ModelDetails = () => {
                 size="small"
                 onClick={() => setShowDialogue("updateParent")}
               >
-                Update
+                {t("common.update")}
               </Button>
             </Box>
           </Box>
@@ -325,7 +335,7 @@ export const ModelDetails = () => {
               </Box>
             </Box>
           )} */}
-          <Box display="flex" alignItems="center" px={2}>
+          <Box display="flex" alignItems="center" px={2} gap={1}>
             <Box
               minWidth={280}
               display="flex"
@@ -333,11 +343,10 @@ export const ModelDetails = () => {
               alignItems="center"
               py={2}
             >
-              <Typography color="text.primary">ZUID</Typography>
-              <Tooltip
-                title="The unique id of the model. Content items are always accessed relative to their model, so a model ZUID is required for each call."
-                placement="right"
-              >
+              <Typography color="text.primary">
+                {t("schema.zuidLabel")}
+              </Typography>
+              <Tooltip title={t("schema.zuidTooltip")} placement="right">
                 <InfoRoundedIcon
                   color="action"
                   sx={{ height: "12px", width: "12px" }}
@@ -349,7 +358,9 @@ export const ModelDetails = () => {
             </Box>
             <Box py={1.5}>
               <Button size="small" onClick={() => handleCopy(model?.ZUID)}>
-                {isCopied === model?.ZUID ? "Copied" : "Copy"}
+                {isCopied === model?.ZUID
+                  ? t("common.copied")
+                  : t("common.copy")}
               </Button>
             </Box>
           </Box>
@@ -362,7 +373,7 @@ export const ModelDetails = () => {
             startIcon={<ContentCopyRoundedIcon color="action" />}
             onClick={() => setShowDialogue("duplicate")}
           >
-            Duplicate Model
+            {t("schema.duplicateModel")}
           </Button>
           <Button
             size="large"
@@ -371,7 +382,7 @@ export const ModelDetails = () => {
             startIcon={<DeleteRoundedIcon />}
             onClick={() => setShowDialogue("delete")}
           >
-            Delete Model
+            {t("schema.deleteModel")}
           </Button>
         </Box>
       </Box>

@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { TextField, Typography, Box, Stack } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 import { currencies } from "./currencies";
 import { NumberFormatInput } from "../NumberFormatInput";
@@ -19,6 +20,7 @@ export const FieldTypeCurrency = ({
   onChange,
   ...otherProps
 }: FieldTypeCurrencyProps) => {
+  const { t } = useTranslation();
   const selectedCurrency = useMemo(() => {
     return currencies.find((_currency) => _currency.value === currency);
   }, [currency]);
@@ -51,7 +53,9 @@ export const FieldTypeCurrency = ({
               height={14}
               src={`/images/flags/${selectedCurrency.countryCode?.toLowerCase()}.svg`}
               loading="lazy"
-              alt={`${selectedCurrency.countryCode} flag`}
+              alt={t("shell.currencyFlagAlt", {
+                country: selectedCurrency.countryCode,
+              })}
             />
             <Typography variant="body2" color="text.disabled">
               {selectedCurrency.value}

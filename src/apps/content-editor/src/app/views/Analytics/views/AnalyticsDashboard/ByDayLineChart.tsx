@@ -1,5 +1,6 @@
 import { theme } from "@zesty-io/material";
 import { useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Line } from "react-chartjs-2";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import {
@@ -11,12 +12,8 @@ import {
   Skeleton,
 } from "@mui/material";
 import { ChartEvent } from "chart.js";
-import {
-  addDays,
-  differenceInCalendarDays,
-  format as fmt,
-  getYear,
-} from "date-fns";
+import { addDays, differenceInCalendarDays, getYear } from "date-fns";
+import { formatLocalized } from "shell/i18n/dates";
 
 import "chartjs-adapter-date-fns";
 
@@ -49,6 +46,7 @@ export const ByDayLineChart = ({
   data,
   loading = true,
 }: Props) => {
+  const { t } = useTranslation();
   const chartRef = useRef<any>(null);
   const [tooltipModel, setTooltipModel] = useState<any>(null);
   const [isTooltipEntered, setIsTooltipEntered] = useState(false);
@@ -219,12 +217,15 @@ export const ByDayLineChart = ({
       >
         <Box sx={{ p: 2 }}>
           <Typography variant="body1" fontWeight={600}>
-            Sessions
+            {t("content.analyticsMetricSessions")}
           </Typography>
           <Typography variant="body1" color="text.secondary" sx={{ mt: 0.5 }}>
-            {fmt(addDays(startDate, tooltipModel?.dataIndex ?? 0), "eee d MMM")}{" "}
+            {formatLocalized(
+              addDays(startDate, tooltipModel?.dataIndex ?? 0),
+              "eee d MMM"
+            )}{" "}
             vs{" "}
-            {fmt(
+            {formatLocalized(
               addDays(
                 addDays(startDate, -daysSpan),
                 tooltipModel?.dataIndex ?? 0

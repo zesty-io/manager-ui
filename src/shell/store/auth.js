@@ -1,6 +1,7 @@
 import Cookies from "js-cookie";
 import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
+import i18n from "shell/i18n";
 
 export function auth(
   state = {
@@ -69,7 +70,7 @@ export function endSession() {
       dispatch(
         notify({
           kind: "warn",
-          message: "Your session ended. Redirecting to login.",
+          message: i18n.t("shell.sessionEndedRedirecting"),
         })
       );
 
@@ -146,20 +147,16 @@ export function pollTwoFactor() {
                 resolve(json);
               } else if (json.code === 401) {
                 reject(
-                  new Error(
-                    "Your login request was denied. Redirecting to login."
-                  )
+                  new Error(i18n.t("shell.loginRequestDeniedRedirecting"))
                 );
               } else if (json.code === 410) {
                 reject(
-                  new Error(
-                    "Your login request has expired. Redirecting to login."
-                  )
+                  new Error(i18n.t("shell.loginRequestExpiredRedirecting"))
                 );
               } else {
                 reject(
                   new Error(
-                    "It seems we had an issue validating this login request. Redirecting to login."
+                    i18n.t("shell.loginRequestValidationIssueRedirecting")
                   )
                 );
               }
@@ -168,7 +165,9 @@ export function pollTwoFactor() {
               console.log("recursive request catch", err);
               reject(
                 new Error(
-                  'Login failed. Please <a href="mailto:support@zesty.io">contact support</a>.'
+                  i18n.t("shell.loginFailedContactSupport", {
+                    email: "support@zesty.io",
+                  })
                 )
               );
             });
@@ -190,8 +189,6 @@ export function pollTwoFactor() {
             message: err.message,
           })
         );
-
-        // Kick user out
         dispatch(logout());
       });
   };

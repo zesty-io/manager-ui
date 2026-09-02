@@ -1,4 +1,5 @@
 import { memo, useState, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router";
 import {
   Button,
@@ -25,6 +26,7 @@ export const DeleteDialog = memo(function DeleteDialog(
   props: DeleteDialogProps
 ) {
   const { open, onClose, fileZUID, fileName, status } = props;
+  const { t } = useTranslation();
 
   const [deleting, setDeleting] = useState(false);
   const history = useHistory();
@@ -78,20 +80,20 @@ export const DeleteDialog = memo(function DeleteDialog(
             flexGrow={0}
             flexShrink={0}
           >
-            Delete File:
+            {t("code.deleteFileLabel")}
+            {":"}
           </Typography>
           <Typography variant="inherit" fontWeight={600} noWrap flexGrow={0}>
             {`${fileName}`}
           </Typography>
         </Stack>
         <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-          Deleting a file will remove it and trigger a CDN purge causing A
-          production to update immediately.
+          {t("code.deleteFileCdnWarning")}
         </Typography>
       </DialogTitle>
       <DialogActions>
         <Button variant="text" color="inherit" onClick={onClose}>
-          Cancel
+          {t("common.cancel")}
         </Button>
         <Button
           data-cy="DeleteContentItemConfirmButton"
@@ -100,7 +102,7 @@ export const DeleteDialog = memo(function DeleteDialog(
           onClick={handleDeleteFile}
           loading={deleting}
         >
-          Delete
+          {t("common.delete")}
         </Button>
       </DialogActions>
     </Dialog>

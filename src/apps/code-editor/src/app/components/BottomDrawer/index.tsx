@@ -1,5 +1,6 @@
 import { memo, useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
+import { useTranslation } from "react-i18next";
 import { Stack, Collapse, Paper, Typography, Box } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
@@ -46,6 +47,7 @@ interface BottomDrawerProps {
 
 const BottomDrawer = memo(function BottomDrawer({ file }: BottomDrawerProps) {
   const dispatch = useDispatch();
+  const { t } = useTranslation();
   const [open, setOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [fields, setFields] = useState<Field[]>([]);
@@ -78,7 +80,7 @@ const BottomDrawer = memo(function BottomDrawer({ file }: BottomDrawerProps) {
           dispatch({
             type: "NOTIFY",
             payload: {
-              message: "Unable to load Code file logs",
+              message: t("code.unableToLoadFileLogs"),
               kind: "warn",
             },
           });
@@ -139,16 +141,18 @@ const BottomDrawer = memo(function BottomDrawer({ file }: BottomDrawerProps) {
         alignItems="center"
         sx={{ cursor: "pointer" }}
         onClick={handleSetOpen}
-        title="Open for additional file information"
+        title={t("code.openForAdditionalFileInfo")}
       >
         <Stack direction="row" alignItems="center" spacing={1}>
           {open ? <ExpandMoreIcon /> : <ExpandLessIcon />}
           <Typography variant="body2" noWrap>
-            More file information
+            {t("code.moreFileInformation")}
           </Typography>
         </Stack>
         <Typography variant="body2" color="inherit" pr={1} noWrap>
-          {open ? "Close" : "Open"} Drawer {metaShortcut}
+          {open
+            ? t("code.closeDrawer", { metaShortcut })
+            : t("code.openDrawer", { metaShortcut })}
         </Typography>
       </Box>
       <Collapse in={open}>
@@ -163,7 +167,7 @@ const BottomDrawer = memo(function BottomDrawer({ file }: BottomDrawerProps) {
           <WithLoader
             condition={!loading}
             height="100%"
-            message="Loading file information"
+            message={t("code.loadingFileInformation")}
           >
             <Box
               sx={{

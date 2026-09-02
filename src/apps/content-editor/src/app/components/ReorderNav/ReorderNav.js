@@ -1,5 +1,6 @@
 import { Component } from "react";
 import { connect } from "react-redux";
+import { withTranslation } from "react-i18next";
 
 import {
   Button,
@@ -56,7 +57,7 @@ class ReorderNav extends Component {
         });
         this.props.dispatch(
           notify({
-            message: "Changes have been saved",
+            message: this.props.t("content.reorderNavSaved"),
             kind: "save",
           })
         );
@@ -67,7 +68,10 @@ class ReorderNav extends Component {
       })
       .catch((err) => {
         this.props.dispatch(
-          notify({ message: "Error saving changes", kind: "error" })
+          notify({
+            message: this.props.t("content.reorderNavSaveError"),
+            kind: "error",
+          })
         );
         this.setState({ requesting: false });
       })
@@ -120,6 +124,7 @@ class ReorderNav extends Component {
   };
 
   render() {
+    const { t } = this.props;
     return (
       this.props.isOpen && (
         <Dialog
@@ -135,7 +140,7 @@ class ReorderNav extends Component {
               alignItems="flex-start"
             >
               <Typography variant="h5">
-                Change the order of items in your navigation
+                {t("content.reorderNavTitle")}
               </Typography>
               <IconButton
                 data-cy="close_reorder_nav"
@@ -161,7 +166,7 @@ class ReorderNav extends Component {
               disabled={this.state.current === "root"}
               startIcon={<FastRewindIcon />}
             >
-              Return to Root
+              {t("content.reorderNavReturnToRoot")}
             </Button>
             <Button
               variant="contained"
@@ -170,7 +175,7 @@ class ReorderNav extends Component {
               disabled={!this.state.dirty || this.state.requesting}
               startIcon={<SaveIcon />}
             >
-              Save Changes
+              {t("content.reorderNavSaveChanges")}
             </Button>
           </DialogActions>
         </Dialog>
@@ -181,4 +186,4 @@ class ReorderNav extends Component {
 
 export default connect((state) => {
   return { nav: state.navContent.nav };
-})(ReorderNav);
+})(withTranslation()(ReorderNav));

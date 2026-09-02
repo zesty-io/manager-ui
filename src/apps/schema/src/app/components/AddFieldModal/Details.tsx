@@ -1,4 +1,5 @@
 import React, { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Box,
   Button,
@@ -16,7 +17,7 @@ import {
   IntegrationFieldConfig,
 } from "../../../../../../shell/services/types";
 import { Errors, FormData } from "./views/FieldForm";
-import { FORM_CONFIG } from "../configs";
+import { getFormConfig } from "../configs";
 import {
   AutocompleteConfig,
   DropdownOptions,
@@ -68,6 +69,8 @@ export const Details = ({
   canDeactivate,
   repeaterFieldName,
 }: DetailsProps) => {
+  const { t } = useTranslation();
+  const FORM_CONFIG = getFormConfig(t);
   const { data: allModels, isLoading: isLoadingModels } =
     useGetContentModelsQuery();
   const {
@@ -159,7 +162,9 @@ export const Details = ({
                 height={16}
                 src={`/images/flags/${value.countryCode?.toLowerCase()}.svg`}
                 loading="lazy"
-                alt={`${value.countryCode} flag`}
+                alt={t("schema.currencyFlagAlt", {
+                  countryCode: value.countryCode,
+                })}
               />
               <Typography variant="body1" fontWeight={700} pl={1}>
                 {value.value} {value.symbol_native} &nbsp;
@@ -198,7 +203,9 @@ export const Details = ({
                   height={16}
                   src={`/images/flags/${selectedValue.countryCode?.toLowerCase()}.svg`}
                   loading="lazy"
-                  alt={`${selectedValue.countryCode} flag`}
+                  alt={t("schema.currencyFlagAlt", {
+                    countryCode: selectedValue.countryCode,
+                  })}
                 />
                 <Typography variant="body1" fontWeight={700} pl={1}>
                   {selectedValue.value} {selectedValue.symbol_native}
@@ -265,8 +272,8 @@ export const Details = ({
             loading={isDeletingField || isUndeletingField}
           >
             {fieldStateOnSaveAction === "deactivate"
-              ? "Reactivate Field"
-              : "Deactivate Field"}
+              ? t("schema.reactivateField")
+              : t("schema.deactivateField")}
           </Button>
         </Grid>
       )}

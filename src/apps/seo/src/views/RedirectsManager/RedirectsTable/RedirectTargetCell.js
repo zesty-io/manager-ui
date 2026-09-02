@@ -3,8 +3,10 @@ import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { searchItems } from "shell/store/content";
 import { Box, Link as MuiLink, Typography } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 export const RedirectTargetCell = (props) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const [loaded, setLoaded] = useState(false);
   // Only select content from store if targetType is "page" and select specific object instead of whole store
@@ -43,11 +45,11 @@ export const RedirectTargetCell = (props) => {
             </Link>
           ) : loaded ? (
             <Typography variant="body2" color="info.main">
-              Redirect Target has been
+              {t("seo.redirectTargetHasBeenDeleted")}
             </Typography>
           ) : (
             <Typography variant="body2" color="info.main">
-              Loading...
+              {t("seo.loading")}
             </Typography>
           )}
         </>
@@ -57,7 +59,7 @@ export const RedirectTargetCell = (props) => {
           color="info"
           href={props.target}
           target="_blank"
-          title="Redirect URL"
+          title={t("seo.redirectUrl")}
           sx={{ textOverflow: "ellipsis", overflow: "hidden" }}
         >
           <Typography variant="body2" color="info.main">

@@ -17,6 +17,7 @@ import {
 } from "@mui/icons-material";
 import { useHistory } from "react-router";
 import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 import {
   useGetContentModelsQuery,
@@ -45,6 +46,7 @@ export const FieldTypeBlockSelector = ({
   requiredError,
   missingVariantError,
 }: FieldTypeBlockSelectorProps) => {
+  const { t } = useTranslation();
   const history = useHistory();
   const instance = useSelector((state: AppState) => state.instance);
   const previewLock = useSelector((state: AppState) =>
@@ -157,7 +159,7 @@ export const FieldTypeBlockSelector = ({
             <TextField
               {...params}
               error={requiredError}
-              placeholder="Model"
+              placeholder={t("shell.blockSelectorSelectModel")}
               sx={{ width: 200 }}
             />
           )}
@@ -179,7 +181,7 @@ export const FieldTypeBlockSelector = ({
           followCursor
           title={
             (!blockValue?.model || !blockValue?.model?.value) &&
-            "Please select a model first before selecting a variant"
+            t("shell.blockSelectorSelectModelFirst")
           }
           PopperProps={{
             sx: {
@@ -220,7 +222,7 @@ export const FieldTypeBlockSelector = ({
                 ? variants?.find(
                     (variant) => variant?.meta?.ZUID === blockValue.variant
                   )?.web?.metaTitle
-                : "Variant"}
+                : t("shell.blockSelectorSelectVariant")}
             </Typography>
             <KeyboardArrowDownRounded color="action" />
           </Stack>

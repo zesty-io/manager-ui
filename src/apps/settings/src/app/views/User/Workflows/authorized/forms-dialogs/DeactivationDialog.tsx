@@ -1,4 +1,5 @@
 import { FC } from "react";
+import { useTranslation } from "react-i18next";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
@@ -25,6 +26,7 @@ const DeactivationDialog: FC<DeactivationDialogProps> = ({
   ZUID,
   callBack,
 }) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const [deactivateWorkflowStatusLabel, { isLoading }] =
     useDeactivateWorkflowStatusLabelMutation();
@@ -39,7 +41,7 @@ const DeactivationDialog: FC<DeactivationDialogProps> = ({
       dispatch(
         notify({
           kind: "error",
-          message: `Status De-activated: ${name}`,
+          message: t("settings.statusDeactivated", { name }),
         })
       );
     } catch (error) {
@@ -47,7 +49,7 @@ const DeactivationDialog: FC<DeactivationDialogProps> = ({
       dispatch(
         notify({
           kind: "error",
-          message: `Failed to deactivate status: ${name}. Please try again.`,
+          message: t("settings.statusDeactivateFailed", { name }),
         })
       );
     }
@@ -84,7 +86,8 @@ const DeactivationDialog: FC<DeactivationDialogProps> = ({
             color="text.primary"
             mr={1}
           >
-            Deactivate Status:
+            {t("settings.deactivateStatusLabel")}
+            {":"}
           </Typography>
           <Typography variant="h5" fontWeight="normal" color="text.secondary">
             {name}
@@ -92,9 +95,7 @@ const DeactivationDialog: FC<DeactivationDialogProps> = ({
         </Box>
 
         <Typography variant="body2" color="text.secondary">
-          Deactivating this status will remove it from all content items that
-          currently have it. You can always reactivate this status in the
-          future.
+          {t("settings.deactivateStatusBody")}
         </Typography>
       </DialogContent>
 
@@ -105,7 +106,7 @@ const DeactivationDialog: FC<DeactivationDialogProps> = ({
           variant="text"
           color="inherit"
         >
-          Cancel
+          {t("common.cancel")}
         </Button>
 
         <Button
@@ -117,7 +118,7 @@ const DeactivationDialog: FC<DeactivationDialogProps> = ({
           loadingPosition="center"
           data-cy="deactivation-dialog-confirm-button"
         >
-          Deactivate Status
+          {t("settings.deactivateStatus")}
         </Button>
       </DialogActions>
     </Dialog>

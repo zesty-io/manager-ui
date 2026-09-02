@@ -10,6 +10,7 @@ import {
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import MonacoEditor from "react-monaco-editor/lib/editor";
 import CloseIcon from "@mui/icons-material/Close";
+import { useTranslation } from "react-i18next";
 
 const DRAWER_SLOT_PROPS: DrawerProps = {
   anchor: "left",
@@ -76,6 +77,7 @@ const JsonViewer = ({
   showCloseButton?: boolean;
   container?: React.RefObject<HTMLElement>;
 }) => {
+  const { t } = useTranslation();
   const sanitizedJson = sanitizeJsonData(data);
 
   const Component = isSlider ? Drawer : Dialog;
@@ -121,7 +123,7 @@ const JsonViewer = ({
           </IconButton>
         )}
         <Typography variant="h4" fontWeight={700} sx={{ flexGrow: 1 }}>
-          View JSON
+          {t("shell.integrationViewJson")}
         </Typography>
         {!!showCloseButton && (
           <IconButton

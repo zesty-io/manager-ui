@@ -12,19 +12,38 @@ import {
 } from "@mui/material";
 import { FieldTypeText } from "@zesty-io/material";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
+import { useTranslation } from "react-i18next";
 
 import { TopBar } from "../../components/TopBar";
 import { FieldWrapper, MainWrapper } from "../../components/Containers";
 import { Typography } from "@mui/material";
 import { notify } from "../../../../../../shell/store/notifications";
 import { updateSettings } from "../../../../../../shell/store/settings";
+import { getCategoryLabel } from "../../utils/categoryLabels";
 
 const DOCLINKS_MAP = {
   mode: "https://docs.zesty.io/docs/modes",
   site_protocol: "https://docs.zesty.io/docs/manager-instance-settings",
 };
 
+// Matches the PascalCase conversion used when the settings.json keys were
+// extracted from the field's raw `key` (e.g. "site_protocol" -> "SiteProtocol").
+const toPascalCase = (key) =>
+  key
+    .split(/[_-]+/)
+    .filter(Boolean)
+    .map((part) => part[0].toUpperCase() + part.slice(1).toLowerCase())
+    .join("");
+
+// Translates a field's label from its raw `key`, falling back to the
+// instance-provided `keyFriendly` when no translation exists for that key.
+const getFieldLabel = (field, t, i18n) => {
+  const i18nKey = `settings.${toPascalCase(field.key)}`;
+  return i18n.exists(i18nKey) ? t(i18nKey) : field.keyFriendly;
+};
+
 const DocLink = ({ href }) => {
+  const { t } = useTranslation();
   return (
     <ButtonBase
       LinkComponent={Link}
@@ -58,7 +77,7 @@ const DocLink = ({ href }) => {
         fontWeight={500}
         sx={{ textDecoration: "none!important" }}
       >
-        Read Docs
+        {t("shell.accountReadDocs")}
       </Typography>
     </ButtonBase>
   );
@@ -70,6 +89,7 @@ export default connect((state) => {
     instance: state.settings.instance,
   };
 })(function Instance(props) {
+  const { t, i18n } = useTranslation();
   const [saving, setSaving] = useState(false);
   const [fields, setFields] = useState([]);
   const [fieldValues, setFieldValues] = useState({});
@@ -131,9 +151,9 @@ export default connect((state) => {
         props.dispatch(
           notify({
             kind: "success",
-            message: `${capitalizeFirstLetter(
-              props.match.params.category
-            )} Settings Saved`,
+            message: t("settings.categorySettingsSaved", {
+              category: getCategoryLabel(props.match.params.category, t),
+            }),
           })
         );
       })
@@ -149,15 +169,11 @@ export default connect((state) => {
         );
       });
   }
-  function capitalizeFirstLetter(string) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
-  }
-
   let i = 0;
   return (
     <>
       <TopBar
-        title={`${capitalizeFirstLetter(props.match.params.category)}`}
+        title={getCategoryLabel(props.match.params.category, t)}
         onSave={saveFields}
         isNotSaved={dirtyFields.length > 0}
         isLoading={saving}
@@ -192,6 +208,7 @@ export default connect((state) => {
               );
             }
             i++;
+            const label = getFieldLabel(field, t, i18n);
             switch (field.dataType) {
               case "checkbox":
                 const httpsDocLink = DOCLINKS_MAP?.[field?.key] || null;
@@ -199,7 +216,7 @@ export default connect((state) => {
                   return (
                     <FieldWrapper
                       key={field.ZUID}
-                      label={field.keyFriendly}
+                      label={label}
                       tooltip={field.tips}
                       rowGap={2}
                     >
@@ -212,7 +229,9 @@ export default connect((state) => {
                         size="small"
                         fullWidth
                       >
-                        <MenuItem value="Select">Select</MenuItem>
+                        <MenuItem value="Select">
+                          {t("shell.selectPlaceholder")}
+                        </MenuItem>
                         {field.options.split(",").map((option, index) => (
                           <MenuItem key={index} value={option}>
                             {option}
@@ -226,8 +245,8 @@ export default connect((state) => {
                   return (
                     <FieldWrapper
                       key={field.ZUID}
-                      label={field.keyFriendly}
-                      tooltip={`Activating the WWW setting requires DNS setup of both the apex domain and www sub-domain.`}
+                      label={label}
+                      tooltip={t("settings.instanceWwwDnsTooltip")}
                     >
                       <ToggleButtonGroup
                         color="primary"
@@ -236,8 +255,12 @@ export default connect((state) => {
                         exclusive
                         onChange={(evt, val) => setValue(val, field.key)}
                       >
-                        <ToggleButton value={"0"}>Off </ToggleButton>
-                        <ToggleButton value={"1"}>On </ToggleButton>
+                        <ToggleButton value={"0"}>
+                          {t("settings.off")}{" "}
+                        </ToggleButton>
+                        <ToggleButton value={"1"}>
+                          {t("settings.on")}{" "}
+                        </ToggleButton>
                       </ToggleButtonGroup>
                     </FieldWrapper>
                   );
@@ -245,7 +268,7 @@ export default connect((state) => {
                   return (
                     <FieldWrapper
                       key={field.ZUID}
-                      label={field.keyFriendly}
+                      label={label}
                       tooltip={field.tips}
                     >
                       <ToggleButtonGroup
@@ -255,8 +278,12 @@ export default connect((state) => {
                         exclusive
                         onChange={(evt, val) => setValue(val, field.key)}
                       >
-                        <ToggleButton value={"0"}>Off</ToggleButton>
-                        <ToggleButton value={"1"}>On </ToggleButton>
+                        <ToggleButton value={"0"}>
+                          {t("settings.off")}
+                        </ToggleButton>
+                        <ToggleButton value={"1"}>
+                          {t("settings.on")}{" "}
+                        </ToggleButton>
                       </ToggleButtonGroup>
                     </FieldWrapper>
                   );
@@ -265,7 +292,7 @@ export default connect((state) => {
                 return (
                   <FieldWrapper
                     key={field.ZUID}
-                    label={field.keyFriendly}
+                    label={label}
                     tooltip={field.tips}
                     pb="22px"
                   >
@@ -294,7 +321,7 @@ export default connect((state) => {
                 return (
                   <FieldWrapper
                     key={field.ZUID}
-                    label={field.keyFriendly}
+                    label={label}
                     tooltip={field.tips}
                   >
                     <Select
@@ -321,7 +348,7 @@ export default connect((state) => {
                 );
               default:
                 return (
-                  <FieldWrapper key={field.ZUID} label={field.keyFriendly}>
+                  <FieldWrapper key={field.ZUID} label={label}>
                     <FieldTypeText
                       key={field.ZUID}
                       name={field.key}

@@ -30,6 +30,7 @@ import { useLocalStorage } from "react-use";
 import { useSelector } from "react-redux";
 import { MouseEvent, useEffect, useMemo, useState } from "react";
 import { useHistory, useLocation } from "react-router";
+import { useTranslation } from "react-i18next";
 
 import {
   mediaManagerApi,
@@ -44,17 +45,17 @@ import {
 import { Bin, Group } from "../../../../../../shell/services/types";
 import { FolderMenu } from "../FolderMenu";
 
-const SortMenuItems: { label: string; value: string }[] = [
+const SortMenuItems: { labelKey: string; value: string }[] = [
   {
-    label: "Name (A to Z)",
+    labelKey: "common.sortNameAToZ",
     value: "asc",
   },
   {
-    label: "Name (Z to A)",
+    labelKey: "common.sortNameZToA",
     value: "desc",
   },
   {
-    label: "Last Created",
+    labelKey: "media.sidebarFoldersSortLastCreated",
     value: "",
   },
 ];
@@ -64,6 +65,7 @@ interface Props {
 }
 
 export const Folders = ({ lockedToGroupId }: Props) => {
+  const { t } = useTranslation();
   const [folderMenuAnchorEl, setFolderMenuAnchorEl] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -408,7 +410,7 @@ export const Folders = ({ lockedToGroupId }: Props) => {
           >
             <Stack direction="row" alignItems="center" gap={0.5}>
               <Typography variant="body2" textTransform="uppercase">
-                Folders
+                {t("media.sidebarFoldersHeader")}
               </Typography>
               <IconButton size="xxsmall" onClick={openMenu}>
                 <ArrowDropDownRoundedIcon fontSize="small" />
@@ -474,7 +476,7 @@ export const Folders = ({ lockedToGroupId }: Props) => {
               textTransform="uppercase"
               color="text.secondary"
             >
-              Hidden Items
+              {t("media.sidebarFoldersHiddenItems")}
             </Typography>
           </AccordionSummary>
           <AccordionDetails
@@ -516,7 +518,7 @@ export const Folders = ({ lockedToGroupId }: Props) => {
             }}
             selected={sort === menuItem.value}
           >
-            {menuItem.label}
+            {t(menuItem.labelKey)}
           </MenuItem>
         ))}
       </Menu>
@@ -551,13 +553,11 @@ export const Folders = ({ lockedToGroupId }: Props) => {
                 mb: 2,
               }}
             />
-            Cannot move file to another eco-bin
+            {t("media.sidebarFoldersDndErrorTitle")}
           </DialogTitle>
           <DialogContent>
             <Typography variant="body2" color="text.secondary">
-              Currently Zesty lacks the ability to allow you to move files
-              between eco-bins. If you desire this feature please contact
-              support@zesty.io.
+              {t("media.sidebarFoldersDndErrorMessage")}
             </Typography>
           </DialogContent>
           <DialogActions>
@@ -566,7 +566,7 @@ export const Folders = ({ lockedToGroupId }: Props) => {
               color="primary"
               onClick={() => setOpenDndFailedDialog(false)}
             >
-              Okay
+              {t("media.sidebarFoldersOkButton")}
             </Button>
           </DialogActions>
         </Dialog>

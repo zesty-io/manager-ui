@@ -1,7 +1,9 @@
 import { FC, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { Paper, Box, Grid, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
-import { formatDistanceToNow, isValid } from "date-fns";
+import { formatDistanceToNowLocalized } from "shell/i18n/dates";
+import { isValid } from "date-fns";
 import { NoResults } from "../../../../../schema/src/app/components/NoResults";
 import { FileTypes } from "../constants";
 
@@ -85,7 +87,9 @@ const FileRowItem: FC<FileProps & { isLast: boolean }> = ({
             color="common.white"
           >
             {isValid(new Date(lastSaved))
-              ? formatDistanceToNow(new Date(lastSaved), { addSuffix: true })
+              ? formatDistanceToNowLocalized(new Date(lastSaved), {
+                  addSuffix: true,
+                })
               : "—"}
           </Typography>
         </Grid>
@@ -94,33 +98,36 @@ const FileRowItem: FC<FileProps & { isLast: boolean }> = ({
   );
 };
 
-const FileListHeader = () => (
-  <Box
-    pl={2}
-    pr={3.75}
-    width="100%"
-    height={56}
-    display="flex"
-    alignItems="center"
-    sx={{
-      borderBottom: "1px solid",
-      borderColor: "grey.700",
-    }}
-  >
-    <Grid container width="100%">
-      <Grid size={8}>
-        <Typography variant="h6" fontWeight={700} color="common.white">
-          File Name
-        </Typography>
+const FileListHeader = () => {
+  const { t } = useTranslation();
+  return (
+    <Box
+      pl={2}
+      pr={3.75}
+      width="100%"
+      height={56}
+      display="flex"
+      alignItems="center"
+      sx={{
+        borderBottom: "1px solid",
+        borderColor: "grey.700",
+      }}
+    >
+      <Grid container width="100%">
+        <Grid size={8}>
+          <Typography variant="h6" fontWeight={700} color="common.white">
+            {t("code.fileListHeaderFileName")}
+          </Typography>
+        </Grid>
+        <Grid size={4}>
+          <Typography variant="h6" fontWeight={700} color="common.white">
+            {t("code.fileListHeaderLastSaved")}
+          </Typography>
+        </Grid>
       </Grid>
-      <Grid size={4}>
-        <Typography variant="h6" fontWeight={700} color="common.white">
-          Last Saved
-        </Typography>
-      </Grid>
-    </Grid>
-  </Box>
-);
+    </Box>
+  );
+};
 
 export const FileList: FC<FileListProps> = ({
   files = [],

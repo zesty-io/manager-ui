@@ -1,4 +1,5 @@
 import React from "react";
+import { withTranslation } from "react-i18next";
 
 import {
   Modal,
@@ -10,7 +11,7 @@ import { Button, TextField, InputLabel } from "@mui/material";
 import { schema } from "../react-prosemirror-schema";
 
 import styles from "./EmbedModal.less";
-export class EmbedModal extends React.Component {
+class EmbedModalBase extends React.Component {
   state = {
     id: "",
   };
@@ -55,6 +56,8 @@ export class EmbedModal extends React.Component {
   };
 
   render() {
+    const { t } = this.props;
+
     return (
       <Modal
         className={styles.EmbedModal}
@@ -65,7 +68,9 @@ export class EmbedModal extends React.Component {
       >
         <ModalContent>
           <InputLabel sx={{ my: 0.5 }}>
-            Enter unique {this.props.options.service} ID
+            {t("shell.editorEmbedIdLabel", {
+              service: this.props.options.service,
+            })}
           </InputLabel>
           <TextField
             required
@@ -84,10 +89,12 @@ export class EmbedModal extends React.Component {
             variant="contained"
             color="success"
           >
-            Insert Embed
+            {t("shell.editorInsertEmbed")}
           </Button>
         </ModalFooter>
       </Modal>
     );
   }
 }
+
+export const EmbedModal = withTranslation()(EmbedModalBase);

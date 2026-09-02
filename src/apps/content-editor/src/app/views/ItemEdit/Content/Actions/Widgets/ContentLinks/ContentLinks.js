@@ -16,8 +16,10 @@ import { LiveUrl } from "./LiveUrl";
 import { InstantUrl } from "./InstantUrl";
 
 import styles from "./ContentLinks.less";
+import { useTranslation } from "react-i18next";
 
 export const ContentLinks = memo(function ContentLinks(props) {
+  const { t } = useTranslation();
   return (
     <Fragment>
       <Card
@@ -40,9 +42,10 @@ export const ContentLinks = memo(function ContentLinks(props) {
               fontSize: "12px",
               lineHeight: "32px",
               color: "text.primary",
+              textTransform: "uppercase",
             },
           }}
-          title="LINKS"
+          title={t("content.itemEditLinksTitle")}
         ></CardHeader>
         <CardContent
           className={styles.Content}

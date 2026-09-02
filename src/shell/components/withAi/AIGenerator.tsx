@@ -29,6 +29,7 @@ import RefreshRoundedIcon from "@mui/icons-material/RefreshRounded";
 import LanguageRoundedIcon from "@mui/icons-material/LanguageRounded";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import { Brain } from "@zesty-io/material";
+import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useParams } from "react-router";
 
@@ -50,21 +51,23 @@ const DEFAULT_LIMITS: Record<AIType, number> = {
   description: 160,
   title: 150,
 };
+// `value` is sent to the model (do not translate); `labelKey` is the UI label,
+// resolved with t() at the render site since this array is module level.
 export const TONE_OPTIONS = [
   {
     value: "intriguing",
-    label: "Intriguing - Curious, mysterious, and thought-provoking",
+    labelKey: "shell.toneIntriguing",
   },
   {
     value: "professional",
-    label: "Professional - Serious, formal, and authoritative",
+    labelKey: "shell.toneProfessional",
   },
-  { value: "playful", label: "Playful - Fun, light-hearted, and whimsical" },
+  { value: "playful", labelKey: "shell.tonePlayful" },
   {
     value: "sensational",
-    label: "Sensational -  Bold, dramatic, and attention-grabbing",
+    labelKey: "shell.toneSensational",
   },
-  { value: "succint", label: "Succinct - Clear, factual, with no hyperbole" },
+  { value: "succint", labelKey: "shell.toneSuccinct" },
 ] as const;
 export type ToneOption =
   | "intriguing"
@@ -104,6 +107,7 @@ export const AIGenerator = ({
   fieldZUID,
   isAIAssistedFlow,
 }: Props) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const location = useLocation();
   const isCreateItemPage = location?.pathname?.split("/")?.pop() === "new";
@@ -243,7 +247,7 @@ export const AIGenerator = ({
     if (isError) {
       dispatch(
         notify({
-          message: aiResponse?.message || "Generation has been stopped",
+          message: aiResponse?.message || t("shell.generationStopped"),
           kind: "error",
         })
       );
@@ -327,7 +331,7 @@ export const AIGenerator = ({
             right={20}
             component="img"
             src={openAIBadge}
-            alt="OpenAI Badge"
+            alt={t("shell.openAiBadgeAlt")}
           />
           <Box position="relative">
             <CircularProgress />
@@ -338,20 +342,18 @@ export const AIGenerator = ({
             />
           </Box>
           <Typography variant="h5" fontWeight={700} sx={{ mt: 3, mb: 1 }}>
-            Generating
             {aiType === "title"
-              ? " Meta Title"
+              ? t("shell.generatingMetaTitle")
               : aiType === "description"
-              ? " Meta Description"
-              : " Content"}
+              ? t("shell.generatingMetaDescription")
+              : t("shell.generatingContent")}
           </Typography>
           <Typography variant="body2" color="text.secondary">
             {aiType === "title"
-              ? "Our AI assistant is scanning your content and generating your meta title "
+              ? t("shell.aiScanningMetaTitle")
               : aiType === "description"
-              ? "Our AI assistant is scanning your content and generating your meta description "
-              : "Our AI assistant is generating your content "}
-            based on your parameters
+              ? t("shell.aiScanningMetaDescription")
+              : t("shell.aiGeneratingContentStatus")}
           </Typography>
           <Button
             size="small"
@@ -361,7 +363,7 @@ export const AIGenerator = ({
             sx={{ mt: 4 }}
             onClick={() => request.current?.abort()}
           >
-            Stop
+            {t("shell.stop")}
           </Button>
         </Stack>
       </Stack>
@@ -406,21 +408,30 @@ export const AIGenerator = ({
             >
               <Brain sx={{ color: (theme) => theme.palette.common.white }} />
             </Stack>
-            <Box component="img" src={openAIBadge} alt="OpenAI Badge" />
+            <Box
+              component="img"
+              src={openAIBadge}
+              alt={t("shell.openAiBadgeAlt")}
+            />
           </Stack>
           <Stack gap={1} width="100%">
             <Typography variant="h5" fontWeight={700}>
-              {!!data?.length ? "Select" : "Generate"} Meta{" "}
-              {aiType === "title" ? "Title" : "Description"}
+              {!!data?.length
+                ? aiType === "title"
+                  ? t("shell.selectMetaTitle")
+                  : t("shell.selectMetaDescription")
+                : aiType === "title"
+                ? t("shell.generateMetaTitle")
+                : t("shell.generateMetaDescription")}
             </Typography>
             <Typography variant="body2" color="text.secondary">
               {!!data?.length
-                ? `Select 1 out of the 3 Meta ${
-                    aiType === "title" ? "Titles" : "Descriptions"
-                  } our AI has generated for you.`
-                : `Our AI will scan your content and generate your meta ${
-                    aiType === "title" ? "title" : "description"
-                  }  for you based on your parameters set below`}
+                ? aiType === "title"
+                  ? t("shell.selectMetaTitleHelp")
+                  : t("shell.selectMetaDescriptionHelp")
+                : aiType === "title"
+                ? t("shell.generateMetaTitleHelp")
+                : t("shell.generateMetaDescriptionHelp")}
             </Typography>
           </Stack>
         </Stack>
@@ -466,9 +477,10 @@ export const AIGenerator = ({
                         ? "primary.main"
                         : "text.secondary"
                     }
+                    textTransform="uppercase"
                     sx={{ mb: 0.5 }}
                   >
-                    OPTION {index + 1}
+                    {t("shell.optionNumber", { number: index + 1 })}
                   </Typography>
                   <Typography
                     variant={aiType === "title" ? "h6" : "body1"}
@@ -483,37 +495,32 @@ export const AIGenerator = ({
           ) : (
             <Stack gap={2.5}>
               <Box>
-                <InputLabel>Describe your Audience</InputLabel>
+                <InputLabel>{t("shell.describeAudience")}</InputLabel>
                 <TextField
                   value={fieldData.audienceDescription}
                   onChange={(evt) =>
                     updateFieldData({ audienceDescription: evt.target.value })
                   }
-                  placeholder="e.g. Freelancers, Designers, ....."
+                  placeholder={t("shell.audiencePlaceholder")}
                   fullWidth
                   autoFocus
                 />
               </Box>
               <Box>
-                <InputLabel>
-                  Keywords to Include (separated by commas)
-                </InputLabel>
+                <InputLabel>{t("shell.keywordsToInclude")}</InputLabel>
                 <TextField
                   value={fieldData.keywords}
                   onChange={(evt) =>
                     updateFieldData({ keywords: evt.target.value })
                   }
-                  placeholder="e.g. Hikes, snow"
+                  placeholder={t("shell.keywordsExamplePlaceholder")}
                   fullWidth
                 />
               </Box>
               <Box>
                 <Stack direction="row" gap={1} alignItems="center" mb={0.5}>
-                  <InputLabel sx={{ mb: 0 }}>Tone</InputLabel>
-                  <Tooltip
-                    title="Set the desired style and mood of the generated text"
-                    placement="top"
-                  >
+                  <InputLabel sx={{ mb: 0 }}>{t("shell.tone")}</InputLabel>
+                  <Tooltip title={t("shell.toneTooltip")} placement="top">
                     <InfoRoundedIcon color="action" sx={{ fontSize: 12 }} />
                   </Tooltip>
                 </Stack>
@@ -526,6 +533,9 @@ export const AIGenerator = ({
                   onChange={(_, value) =>
                     updateFieldData({ tone: value.value })
                   }
+                  getOptionLabel={(option: (typeof TONE_OPTIONS)[number]) =>
+                    t(option.labelKey)
+                  }
                   value={TONE_OPTIONS.find(
                     (option) => option.value === fieldData.tone
                   )}
@@ -537,9 +547,9 @@ export const AIGenerator = ({
               </Box>
               <Box>
                 <Stack direction="row" gap={1} alignItems="center" mb={0.5}>
-                  <InputLabel sx={{ mb: 0 }}>Language</InputLabel>
+                  <InputLabel sx={{ mb: 0 }}>{t("shell.language")}</InputLabel>
                   <Tooltip
-                    title="Set the language in which you'd like the text to be generated."
+                    title={t("shell.languageGenerationTooltip")}
                     placement="top"
                   >
                     <InfoRoundedIcon color="action" sx={{ fontSize: 12 }} />
@@ -590,7 +600,7 @@ export const AIGenerator = ({
               handleClose("close");
             }}
           >
-            Cancel
+            {t("common.cancel")}
           </Button>
           {!!data?.length ? (
             <Box>
@@ -600,7 +610,7 @@ export const AIGenerator = ({
                 startIcon={<RefreshRoundedIcon />}
                 onClick={() => setData(null)}
               >
-                Regenerate
+                {t("shell.regenerate")}
               </Button>
               <Button
                 data-cy="AIApprove"
@@ -614,7 +624,7 @@ export const AIGenerator = ({
                 sx={{ ml: 2 }}
                 startIcon={<CheckRoundedIcon />}
               >
-                Insert
+                {t("shell.insert")}
               </Button>
             </Box>
           ) : (
@@ -623,7 +633,7 @@ export const AIGenerator = ({
               variant="contained"
               onClick={handleGenerate}
             >
-              Generate
+              {t("shell.generate")}
             </Button>
           )}
         </Box>
@@ -668,16 +678,22 @@ export const AIGenerator = ({
           >
             <Brain sx={{ color: (theme) => theme.palette.common.white }} />
           </Stack>
-          <Box component="img" src={openAIBadge} alt="OpenAI Badge" />
+          <Box
+            component="img"
+            src={openAIBadge}
+            alt={t("shell.openAiBadgeAlt")}
+          />
         </Stack>
         <Stack gap={1} width="100%">
           <Typography variant="h5" fontWeight={700}>
-            {!!data?.length ? "Your Content is Generated!" : "Generate Content"}
+            {!!data?.length
+              ? t("shell.contentGenerated")
+              : t("shell.generateContent")}
           </Typography>
           <Typography variant="body2" color="text.secondary">
             {!!data?.length
-              ? "Our AI assistant can make mistakes. Please check important info."
-              : "Use our AI assistant to write content for you"}
+              ? t("shell.aiMistakesWarning")
+              : t("shell.aiWriteContentSubtitle")}
           </Typography>
         </Stack>
       </Stack>
@@ -694,7 +710,7 @@ export const AIGenerator = ({
       >
         {!!data?.length ? (
           <Box>
-            <InputLabel>Generated Content</InputLabel>
+            <InputLabel>{t("shell.generatedContent")}</InputLabel>
             <TextField
               value={data[0]}
               onChange={(event) => setData([event.target.value])}
@@ -706,7 +722,7 @@ export const AIGenerator = ({
         ) : (
           <Stack gap={2.5}>
             <Box>
-              <InputLabel>Topic *</InputLabel>
+              <InputLabel>{t("shell.topic")} *</InputLabel>
               <TextField
                 data-cy="AITopicField"
                 value={fieldData.topic}
@@ -717,37 +733,31 @@ export const AIGenerator = ({
 
                   updateFieldData({ topic: event.target.value });
                 }}
-                placeholder={`e.g. Hikes in Washington`}
+                placeholder={t("shell.topicPlaceholder")}
                 multiline
                 rows={3}
                 fullWidth
                 autoFocus
                 error={hasFieldError}
-                helperText={
-                  hasFieldError &&
-                  "This is field is required. Please enter a value."
-                }
+                helperText={hasFieldError && t("shell.fieldRequiredError")}
               />
             </Box>
             <Box>
-              <InputLabel>Describe your Audience</InputLabel>
+              <InputLabel>{t("shell.describeAudience")}</InputLabel>
               <TextField
                 data-cy="AIAudienceField"
                 value={fieldData.audienceDescription}
                 onChange={(evt) =>
                   updateFieldData({ audienceDescription: evt.target.value })
                 }
-                placeholder="e.g. Freelancers, Designers, ....."
+                placeholder={t("shell.audiencePlaceholder")}
                 fullWidth
               />
             </Box>
             <Box>
               <Stack direction="row" gap={1} alignItems="center" mb={0.5}>
-                <InputLabel sx={{ mb: 0 }}>Tone</InputLabel>
-                <Tooltip
-                  title="Set the desired style and mood of the generated text"
-                  placement="top"
-                >
+                <InputLabel sx={{ mb: 0 }}>{t("shell.tone")}</InputLabel>
+                <Tooltip title={t("shell.toneTooltip")} placement="top">
                   <InfoRoundedIcon color="action" sx={{ fontSize: 12 }} />
                 </Tooltip>
               </Stack>
@@ -758,6 +768,9 @@ export const AIGenerator = ({
                   option.value === value.value
                 }
                 onChange={(_, value) => updateFieldData({ tone: value.value })}
+                getOptionLabel={(option: (typeof TONE_OPTIONS)[number]) =>
+                  t(option.labelKey)
+                }
                 value={TONE_OPTIONS.find(
                   (option) => option.value === fieldData.tone
                 )}
@@ -771,13 +784,18 @@ export const AIGenerator = ({
               <Box flex={1}>
                 <Stack direction="row" gap={1} alignItems="center" mb={0.5}>
                   <InputLabel sx={{ mb: 0 }}>
-                    {aiType === "text" && "Character"}
-                    {aiType === "paragraph" && "Word"} Limit
+                    {aiType === "text"
+                      ? t("shell.characterLimit")
+                      : aiType === "paragraph"
+                      ? t("shell.wordLimit")
+                      : t("shell.limit")}
                   </InputLabel>
                   <Tooltip
-                    title={`Set a ${
-                      aiType === "text" ? "character" : "word"
-                    } limit to control the length of the generated text`}
+                    title={
+                      aiType === "text"
+                        ? t("shell.characterLimitTooltip")
+                        : t("shell.wordLimitTooltip")
+                    }
                     placement="top"
                   >
                     <InfoRoundedIcon color="action" sx={{ fontSize: 12 }} />
@@ -793,9 +811,9 @@ export const AIGenerator = ({
               </Box>
               <Box flex={1}>
                 <Stack direction="row" gap={1} alignItems="center" mb={0.5}>
-                  <InputLabel sx={{ mb: 0 }}>Language</InputLabel>
+                  <InputLabel sx={{ mb: 0 }}>{t("shell.language")}</InputLabel>
                   <Tooltip
-                    title="Set the language in which you'd like the text to be generated."
+                    title={t("shell.languageGenerationTooltip")}
                     placement="top"
                   >
                     <InfoRoundedIcon color="action" sx={{ fontSize: 12 }} />
@@ -847,7 +865,7 @@ export const AIGenerator = ({
             handleClose("close");
           }}
         >
-          Cancel
+          {t("common.cancel")}
         </Button>
         {!!data?.length ? (
           <Box>
@@ -857,7 +875,7 @@ export const AIGenerator = ({
               startIcon={<RefreshRoundedIcon />}
               onClick={() => setData(null)}
             >
-              Regenerate
+              {t("shell.regenerate")}
             </Button>
             <Button
               data-cy="AIApprove"
@@ -869,7 +887,7 @@ export const AIGenerator = ({
               sx={{ ml: 2 }}
               startIcon={<CheckRoundedIcon />}
             >
-              Insert
+              {t("shell.insert")}
             </Button>
           </Box>
         ) : (
@@ -878,7 +896,7 @@ export const AIGenerator = ({
             variant="contained"
             onClick={handleGenerate}
           >
-            Generate
+            {t("shell.generate")}
           </Button>
         )}
       </Box>

@@ -1,7 +1,8 @@
 import { FC, useMemo } from "react";
 import { Create } from "@mui/icons-material";
 import { useSelector } from "react-redux";
-import { formatDistanceToNow, isValid } from "date-fns";
+import { isValid } from "date-fns";
+import { useTranslation } from "react-i18next";
 
 import { ContentItem } from "../../../services/types";
 import {
@@ -9,6 +10,7 @@ import {
   useGetContentModelQuery,
   useGetContentItemQuery,
 } from "../../../services/instance";
+import { formatDistanceToNowLocalized } from "../../../i18n/dates";
 import { SearchListItem } from "./SearchListItem";
 
 interface Content {
@@ -21,6 +23,7 @@ export const Content: FC<Content> = ({
   style,
   loading: parentIsLoading = false,
 }) => {
+  const { t } = useTranslation();
   const affectedZUID = data?.meta?.ZUID;
   const { data: auditData, isLoading: auditLoading } = useGetAuditsQuery(
     { affectedZUID, limit: 1, dir: "desc", order: "created" },
@@ -61,21 +64,23 @@ export const Content: FC<Content> = ({
       Object.keys(contentData.siblings).length > 0;
 
     return `${hasSiblings && langDisplay} ${
-      data?.web?.metaTitle || "Item missing meta title"
+      data?.web?.metaTitle || t("shell.itemMissingMetaTitle")
     }`;
-  }, [languages, contentData, data]);
+  }, [languages, contentData, data, t]);
 
   // Chips
   const titleChip =
     modelData?.metaTitle ||
     modelData?.label ||
     contentData?.meta.contentModelZUID;
-  const appChip = "Content";
+  const appChip = t("common.content");
 
   const rel = (dt?: string) => {
     if (!dt) return "";
     const d = new Date(dt);
-    return isValid(d) ? formatDistanceToNow(d, { addSuffix: true }) : "";
+    return isValid(d)
+      ? formatDistanceToNowLocalized(d, { addSuffix: true })
+      : "";
   };
 
   const actionDate = auditData?.[0]?.happenedAt;
@@ -83,9 +88,9 @@ export const Content: FC<Content> = ({
   const firstName = auditData?.[0]?.firstName;
   const lastName = auditData?.[0]?.lastName;
   const userInfo =
-    firstName || lastName ? `${firstName} ${lastName}` : "Unknown User";
+    firstName || lastName ? `${firstName} ${lastName}` : t("shell.unknownUser");
   const userDateChip = auditData?.[0]
-    ? `${dateInfo} by ${userInfo}`
+    ? `${dateInfo}${t("shell.searchPageByUser", { user: userInfo })}`
     : rel(data?.web?.createdAt);
   const chips = [titleChip, appChip, userDateChip].join(" • ");
 

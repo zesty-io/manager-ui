@@ -1,8 +1,12 @@
 import { useState, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import cx from "classnames";
-import { format, formatDistanceToNow } from "date-fns";
+import {
+  formatDistanceToNowLocalized,
+  formatLocalized,
+} from "shell/i18n/dates";
 
 import { updateMember, deleteMember } from "shell/store/releaseMembers";
 
@@ -60,6 +64,8 @@ export function PlanStep(props) {
     (state) => state.models[item?.meta.contentModelZUID]
   );
 
+  const { t } = useTranslation();
+
   const [loading, setLoading] = useState(false);
 
   const options = versions
@@ -67,16 +73,18 @@ export function PlanStep(props) {
         let html = (
           <p>
             {content.meta.version === item?.publishing?.version ? (
-              <strong>Live </strong>
+              <strong>{t("release.live")} </strong>
             ) : (
               ""
             )}
-            <span>Version {content.meta.version} </span>
+            <span>
+              {t("release.versionNumber", { version: content.meta.version })}{" "}
+            </span>
             <small>
               {" "}
               [
               {content.meta.createdAt &&
-                format(
+                formatLocalized(
                   new Date(content.meta.createdAt),
                   "MMM do yyyy, 'at' h:mm a"
                 )}
@@ -92,7 +100,7 @@ export function PlanStep(props) {
       })
     : [
         {
-          text: `Version ${props.member.version}`,
+          text: t("release.versionNumber", { version: props.member.version }),
           value: props.member.version,
         },
       ];
@@ -174,20 +182,21 @@ export function PlanStep(props) {
 
             {item?.web.metaTitle
               ? item?.web.metaTitle
-              : "Missing Item Meta Title"}
+              : t("release.missingItemMetaTitle")}
           </p>
         </AppLink>
       </td>
 
       <td>
         {item?.publishing?.isPublished
-          ? `Version ${
-              item?.publishing.version
-            } was published ${formatDistanceToNow(
-              new Date(item?.publishing.publishAt),
-              { addSuffix: true }
-            )}`
-          : "Never published"}
+          ? t("release.versionPublishedAgo", {
+              version: item?.publishing.version,
+              timeAgo: formatDistanceToNowLocalized(
+                new Date(item?.publishing.publishAt),
+                { addSuffix: true }
+              ),
+            })
+          : t("release.neverPublished")}
       </td>
 
       <td data-cy="release-member-delete">

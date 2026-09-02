@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Button,
   Dialog,
@@ -25,6 +26,7 @@ export const RenameFolderDialog = ({
   id,
   groupId,
 }: Props) => {
+  const { t } = useTranslation();
   const [newName, setNewName] = useState(name);
 
   const [
@@ -57,9 +59,11 @@ export const RenameFolderDialog = ({
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth={"xs"}>
-      <DialogTitle>Rename Folder</DialogTitle>
+      <DialogTitle>{t("media.renameFolderDialogTitle")}</DialogTitle>
       <DialogContent>
-        <InputLabel>New Folder Name</InputLabel>
+        <InputLabel>
+          {t("media.renameFolderDialogNewFolderNameLabel")}
+        </InputLabel>
         <TextField
           autoFocus
           onFocus={(evt) => evt.target.select()}
@@ -73,10 +77,10 @@ export const RenameFolderDialog = ({
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="inherit">
-          Cancel
+          {t("common.cancel")}
         </Button>
         <Button disabled={isLoading} variant="contained" onClick={handleUpdate}>
-          Update
+          {t("common.update")}
         </Button>
       </DialogActions>
     </Dialog>

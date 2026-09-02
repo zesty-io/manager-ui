@@ -2,6 +2,7 @@ import { memo, useState, useEffect, Fragment } from "react";
 import { connect } from "react-redux";
 import { Switch, Route } from "react-router";
 import { Redirect } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 // TODO implement multitab: https://github.com/Microsoft/monaco-editor/issues/604#issuecomment-344214706
 
@@ -88,6 +89,7 @@ const Workspace = connect((state, props) => {
 })(
   memo(function Workspace(props) {
     const { match, location, file, fields, fileIsPinned } = props;
+    const { t } = useTranslation();
     const [loading, setLoading] = useState(false);
 
     let lineNumber = 0;
@@ -121,7 +123,10 @@ const Workspace = connect((state, props) => {
             props?.dispatch(
               notify({
                 kind: "warn",
-                message: `Could not load ${match.params.fileType} ${match.params.fileZUID}`,
+                message: t("code.couldNotLoadFile", {
+                  fileType: match.params.fileType,
+                  fileZUID: match.params.fileZUID,
+                }),
               })
             );
           }
@@ -132,7 +137,7 @@ const Workspace = connect((state, props) => {
     }, [match.params.fileZUID]);
 
     return (
-      <WithLoader condition={!loading} message="Finding File">
+      <WithLoader condition={!loading} message={t("code.findingFile")}>
         {file && file.ZUID ? (
           <Fragment>
             <LockedView ZUID={file.ZUID} name={file.fileName} />
@@ -219,7 +224,7 @@ const Workspace = connect((state, props) => {
             }}
           >
             <Typography variant="h2" color="text.secondary">
-              File Not Found
+              {t("code.fileNotFound")}
             </Typography>
           </Box>
         )}

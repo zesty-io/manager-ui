@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { connect } from "react-redux";
 import { Switch, useRouteMatch } from "react-router-dom";
 import { Grid, Typography, Box } from "@mui/material";
@@ -20,6 +21,7 @@ export default connect((state) => {
     status: "dev",
   };
 })(function CodeEditor(props) {
+  const { t } = useTranslation();
   const match = useRouteMatch("/code/file/:fileType/:fileZUID");
   const [isFetchingNav, setIsFetchingNav] = useState(true);
 
@@ -73,7 +75,7 @@ export default connect((state) => {
     >
       <WithLoader
         condition={!!props?.files?.length}
-        message="Starting Code Editor"
+        message={t("code.startingCodeEditor")}
         width="100%"
         style={{
           backgroundColor: "red",
@@ -141,7 +143,7 @@ export default connect((state) => {
                   height="100%"
                   sx={{ display: "grid", placeContent: "center" }}
                 >
-                  <Typography variant="h1">File Not Found</Typography>
+                  <Typography variant="h1">{t("code.fileNotFound")}</Typography>
                 </Box>
               </Route>
             </Switch>
@@ -155,7 +157,7 @@ export default connect((state) => {
             setIsCreateFileOpen(false);
           }}
           defaultType={fileType}
-          title={`Create ${navType}`}
+          title={t("code.createNavType", { navType })}
         />
       </WithLoader>
     </Box>

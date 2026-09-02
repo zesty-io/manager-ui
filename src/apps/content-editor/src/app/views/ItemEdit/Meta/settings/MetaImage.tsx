@@ -3,6 +3,7 @@ import { Dialog, IconButton, Stack, Button } from "@mui/material";
 import { AddRounded, Close, EditRounded } from "@mui/icons-material";
 import { MemoryRouter, useLocation, useParams } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 import { FieldShell } from "../../../../components/Editor/Field/FieldShell";
 import { AppState } from "../../../../../../../../shell/store/types";
@@ -26,6 +27,7 @@ type MetaImageProps = {
   skipImageFallback?: boolean;
 };
 export const MetaImage = ({ onChange, skipImageFallback }: MetaImageProps) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const location = useLocation();
   const isCreateItemPage = location?.pathname?.split("/")?.pop() === "new";
@@ -149,7 +151,7 @@ export const MetaImage = ({ onChange, skipImageFallback }: MetaImageProps) => {
           contentModelZUID: modelZUID,
           datatype: "images",
           description:
-            "This field allows you to set an open graph image via the SEO tab. An Open Graph (OG) image is an image that appears on a social media post when a web page is shared.",
+            "This field allows you to set an open graph image via the SEO tab. An Open Graph (OG) image is an image that appears on a social media post when a web page is shared.",
           label: "Meta Image",
           name: "og_image",
           required: false,
@@ -205,10 +207,10 @@ export const MetaImage = ({ onChange, skipImageFallback }: MetaImageProps) => {
       <>
         <FieldShell
           settings={{
-            label: "Meta Image",
+            label: t("content.itemEditMetaImage"),
           }}
           withInteractiveTooltip={false}
-          customTooltip="This image appears in search engine and social media previews. It is recommended that these images are at least 1200px by 630px and have a 1.91:1 aspect ratio."
+          customTooltip={t("content.itemEditMetaImageTooltip")}
           errors={{}}
         >
           <FieldTypeMedia
@@ -238,8 +240,9 @@ export const MetaImage = ({ onChange, skipImageFallback }: MetaImageProps) => {
                 ".webp",
                 ".avif",
               ],
-              fileExtensionsErrorMessage:
-                "Only files with the following extensions are allowed: .png, .jpg, .jpeg, .svg, .gif, .tif, .webp, .avif",
+              fileExtensionsErrorMessage: t(
+                "content.itemEditMetaImageFileExtensionsError"
+              ),
             }}
           />
         </FieldShell>
@@ -290,10 +293,10 @@ export const MetaImage = ({ onChange, skipImageFallback }: MetaImageProps) => {
     return (
       <FieldShell
         settings={{
-          label: "Meta Image",
+          label: t("content.itemEditMetaImage"),
         }}
         withInteractiveTooltip={false}
-        customTooltip="This image appears in search engine and social media previews. It is recommended that these images are at least 1200px by 630px and have a 1.91:1 aspect ratio."
+        customTooltip={t("content.itemEditMetaImageTooltip")}
         errors={{}}
       >
         <Stack gap={1.25}>
@@ -318,7 +321,7 @@ export const MetaImage = ({ onChange, skipImageFallback }: MetaImageProps) => {
               setAutoOpenMediaBrowser(true);
             }}
           >
-            Customize Image
+            {t("content.itemEditMetaCustomizeImage")}
           </Button>
         </Stack>
       </FieldShell>
@@ -329,10 +332,10 @@ export const MetaImage = ({ onChange, skipImageFallback }: MetaImageProps) => {
   return (
     <FieldShell
       settings={{
-        label: "Meta Image",
+        label: t("content.itemEditMetaImage"),
       }}
       withInteractiveTooltip={false}
-      customTooltip="This image appears in search engine and social media previews. It is recommended that these images are at least 1200px by 630px and have a 1.91:1 aspect ratio."
+      customTooltip={t("content.itemEditMetaImageTooltip")}
       errors={{}}
     >
       <Button
@@ -343,7 +346,7 @@ export const MetaImage = ({ onChange, skipImageFallback }: MetaImageProps) => {
         sx={{ width: "fit-content", mt: 0.75 }}
         onClick={handleCreateOgImageField}
       >
-        Add Meta Image
+        {t("content.itemEditMetaAddImage")}
       </Button>
     </FieldShell>
   );

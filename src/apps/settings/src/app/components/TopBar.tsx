@@ -1,4 +1,5 @@
 import { FC, ReactNode, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Box, Typography, Button } from "@mui/material";
 import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
 import { useMetaKey } from "../../../../../shell/hooks/useMetaKey";
@@ -28,6 +29,7 @@ export const TopBar: FC<TopBarProps> = ({
   titleHidden = false,
   children,
 }) => {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const saveShortcut = useMetaKey("s", () => isNotSaved && setOpen(true));
 
@@ -78,9 +80,13 @@ export const TopBar: FC<TopBarProps> = ({
           >
             <ActionButton
               id="SaveSettings"
-              label={isNotSaved ? "Save" : "Saved"}
+              label={isNotSaved ? t("common.save") : t("settings.saved")}
               startIcon={<SaveRoundedIcon fontSize="small" />}
-              tooltip={isNotSaved ? `Save Settings ${saveShortcut}` : ""}
+              tooltip={
+                isNotSaved
+                  ? t("settings.saveSettingsTooltip", { saveShortcut })
+                  : ""
+              }
               onClick={() => setOpen(true)}
               isActive={isNotSaved}
             />

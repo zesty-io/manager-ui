@@ -10,6 +10,7 @@ import {
 
 import { FieldIcon } from "../Field/FieldIcon";
 import { stringStartsWithVowel } from "../../utils";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   fieldName: string;
@@ -25,9 +26,11 @@ export const TooltipBody = ({
   commonUses,
   proTip,
 }: Props) => {
+  const { t } = useTranslation();
+
   const headerText = stringStartsWithVowel(fieldName)
-    ? `What is an ${fieldName} Field?`
-    : `What is a ${fieldName} Field?`;
+    ? t("schema.tooltipWhatIsAnField", { fieldName })
+    : t("schema.tooltipWhatIsAField", { fieldName });
 
   return (
     <Paper
@@ -48,7 +51,7 @@ export const TooltipBody = ({
         </ListItemIcon>
         <ListItemText
           primary={fieldName}
-          secondary="FAQ"
+          secondary={t("schema.faqBadge")}
           slotProps={{
             primary: {
               fontWeight: 700,
@@ -80,7 +83,7 @@ export const TooltipBody = ({
         </Box>
         <Box px={2} py={1}>
           <Typography variant="body2" fontWeight="700" pb={0.5}>
-            Common Uses
+            {t("schema.commonUses")}
           </Typography>
           <Box pl={3} component="ul">
             {commonUses.map((string, index) => (
@@ -101,7 +104,7 @@ export const TooltipBody = ({
         {fieldType === "repeater" && (
           <Box px={2} py={1}>
             <Typography variant="body2" fontWeight="700" pb={0.5}>
-              How is the Data Stored?
+              {t("schema.howIsDataStored")}
             </Typography>
             <Typography
               fontWeight={400}
@@ -109,8 +112,7 @@ export const TooltipBody = ({
               color="text.secondary"
               mb={0.5}
             >
-              Data is stored as a JSON array of objects, which can be accessed
-              easily, both directly and through Parsley with each statement.
+              {t("schema.repeaterDataStorageDescription")}
             </Typography>
             <Typography fontWeight={400} variant="body3" color="text.secondary">
               {
@@ -121,7 +123,7 @@ export const TooltipBody = ({
         )}
         <Box px={2} py={1}>
           <Typography variant="body2" fontWeight="700" pb={0.5}>
-            Pro Tip
+            {t("schema.proTip")}
           </Typography>
           <Typography fontWeight={400} variant="body3" color="text.secondary">
             {proTip}

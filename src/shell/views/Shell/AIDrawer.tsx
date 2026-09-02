@@ -19,6 +19,7 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { FC, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useGeminiGenerationMutation } from "../../services/mcp";
 import { enqueueAction } from "../../../engine/queue";
 import {
@@ -45,21 +46,29 @@ const borderMove = keyframes`
   100% { background-position: 0 200%; }
 `;
 
+// `value` is the tone instruction sent to the model (do not translate);
+// `labelKey` is the short UI label, resolved with t() at the render site.
 const TONE_OPTIONS = [
   {
-    label: "Intriguing",
+    labelKey: "shell.toneNameIntriguing",
     value: "Intriguing - Curious, mysterious, and thought-provoking",
   },
   {
-    label: "Professional",
+    labelKey: "shell.toneNameProfessional",
     value: "Professional - Serious, formal, and authoritative",
   },
-  { label: "Playful", value: "Playful - Fun, light-hearted, and whimsical" },
   {
-    label: "Sensational",
+    labelKey: "shell.toneNamePlayful",
+    value: "Playful - Fun, light-hearted, and whimsical",
+  },
+  {
+    labelKey: "shell.toneNameSensational",
     value: "Sensational -  Bold, dramatic, and attention-grabbing",
   },
-  { label: "Succinct", value: "Succinct - Clear, factual, with no hyperbole" },
+  {
+    labelKey: "shell.toneNameSuccinct",
+    value: "Succinct - Clear, factual, with no hyperbole",
+  },
 ] as const;
 
 export type AIDrawerProps = {
@@ -67,6 +76,7 @@ export type AIDrawerProps = {
 };
 
 export const AIDrawer: FC<AIDrawerProps> = ({ onClose }) => {
+  const { t } = useTranslation();
   const { pathname } = useLocation();
   const isInContentApp = /^\/content\/[^/]+\/[^/]+$/.test(pathname);
   const isInContentMeta = /^\/content\/[^/]+\/[^/]+\/meta$/.test(pathname);
@@ -103,7 +113,7 @@ export const AIDrawer: FC<AIDrawerProps> = ({ onClose }) => {
   });
   const [selectedTone, setSelectedTone] = useState({
     value: "Professional - Serious, formal, and authoritative",
-    label: "Professional",
+    labelKey: "shell.toneNameProfessional",
   });
 
   const languageOptions = Object.entries(langMappings || {})?.map(
@@ -170,7 +180,7 @@ export const AIDrawer: FC<AIDrawerProps> = ({ onClose }) => {
         {
           type: "ERROR",
           payload: {
-            value: "Error parsing AI response. Please try again.",
+            value: t("shell.errorParsingAiResponse"),
           },
         },
       ]);
@@ -240,7 +250,7 @@ export const AIDrawer: FC<AIDrawerProps> = ({ onClose }) => {
               <Box
                 component="img"
                 src={geminiIcon}
-                alt="Gemini Icon"
+                alt={t("shell.geminiIconAlt")}
                 width="32px"
                 display="block"
               />
@@ -249,12 +259,12 @@ export const AIDrawer: FC<AIDrawerProps> = ({ onClose }) => {
               <Box
                 component="img"
                 src={geminiLogo}
-                alt="Gemini Logo"
+                alt={t("shell.geminiLogoAlt")}
                 width="40px"
                 display="block"
               />
               <Typography variant="h5" fontWeight={700}>
-                AI Assistant Beta
+                {t("shell.aiAssistantBeta")}
               </Typography>
             </Box>
             <IconButton
@@ -272,7 +282,7 @@ export const AIDrawer: FC<AIDrawerProps> = ({ onClose }) => {
             </IconButton>
           </Box>
           <Typography variant="body1">
-            Only available in content app.
+            {t("shell.aiOnlyInContentApp")}
           </Typography>
         </>
       )}
@@ -296,7 +306,7 @@ export const AIDrawer: FC<AIDrawerProps> = ({ onClose }) => {
                 <Box
                   component="img"
                   src={geminiIcon}
-                  alt="Gemini Icon"
+                  alt={t("shell.geminiIconAlt")}
                   width="32px"
                   display="block"
                 />
@@ -305,12 +315,12 @@ export const AIDrawer: FC<AIDrawerProps> = ({ onClose }) => {
                 <Box
                   component="img"
                   src={geminiLogo}
-                  alt="Gemini Logo"
+                  alt={t("shell.geminiLogoAlt")}
                   width="40px"
                   display="block"
                 />
                 <Typography variant="h5" fontWeight={700}>
-                  AI Assistant Beta
+                  {t("shell.aiAssistantBeta")}
                 </Typography>
               </Box>
               <IconButton
@@ -424,7 +434,7 @@ export const AIDrawer: FC<AIDrawerProps> = ({ onClose }) => {
                           }}
                           endIcon={<ArrowForward fontSize="small" />}
                         >
-                          Navigate
+                          {t("shell.navigate")}
                         </Button>
                       </Box>
                     );
@@ -483,7 +493,7 @@ export const AIDrawer: FC<AIDrawerProps> = ({ onClose }) => {
                             }}
                             startIcon={<AutoFixHighRounded fontSize="small" />}
                           >
-                            Apply
+                            {t("shell.applyAiSuggestion")}
                           </Button>
                         </Box>
                       )}
@@ -546,13 +556,13 @@ export const AIDrawer: FC<AIDrawerProps> = ({ onClose }) => {
                   setPrompt("");
                 }}
               >
-                Generate Suggestions
+                {t("shell.generateSuggestions")}
               </Button>
 
               <TextField
                 inputRef={promptInputRef}
                 disabled={isLoading}
-                placeholder={`Ask for anything, for example "Cater my content to a specific audience"`}
+                placeholder={t("shell.aiDrawerPlaceholder")}
                 variant="outlined"
                 fullWidth
                 multiline
@@ -586,7 +596,7 @@ export const AIDrawer: FC<AIDrawerProps> = ({ onClose }) => {
                     });
                   }}
                 >
-                  Clear Chat
+                  {t("shell.clearChat")}
                 </Button>
               </Box>
               <IconButton
@@ -636,16 +646,18 @@ export const AIDrawer: FC<AIDrawerProps> = ({ onClose }) => {
                     }
                     label={
                       <Typography variant="subtitle2" color="text.secondary">
-                        Auto apply
+                        {t("shell.autoApply")}
                       </Typography>
                     }
                   />
                 </FormGroup>
                 <Box>
                   <Stack direction="row" gap={1} alignItems="center" mt={1}>
-                    <InputLabel sx={{ mb: 0 }}>Language</InputLabel>
+                    <InputLabel sx={{ mb: 0 }}>
+                      {t("shell.language")}
+                    </InputLabel>
                     <Tooltip
-                      title="Set the language in which you'd like the text to be generated."
+                      title={t("shell.languageGenerationTooltip")}
                       placement="top"
                     >
                       <InfoRoundedIcon color="action" sx={{ fontSize: 12 }} />
@@ -678,11 +690,8 @@ export const AIDrawer: FC<AIDrawerProps> = ({ onClose }) => {
                 </Box>
                 <Box>
                   <Stack direction="row" gap={1} alignItems="center" mt={1}>
-                    <InputLabel sx={{ mb: 0 }}>Tone</InputLabel>
-                    <Tooltip
-                      title="Set the desired style and mood of the generated text"
-                      placement="top"
-                    >
+                    <InputLabel sx={{ mb: 0 }}>{t("shell.tone")}</InputLabel>
+                    <Tooltip title={t("shell.toneTooltip")} placement="top">
                       <InfoRoundedIcon color="action" sx={{ fontSize: 12 }} />
                     </Tooltip>
                   </Stack>
@@ -694,6 +703,9 @@ export const AIDrawer: FC<AIDrawerProps> = ({ onClose }) => {
                     }
                     onChange={(_, value) => setSelectedTone(value)}
                     value={selectedTone}
+                    getOptionLabel={(option: (typeof TONE_OPTIONS)[number]) =>
+                      t(option.labelKey)
+                    }
                     options={TONE_OPTIONS}
                     renderInput={(params: any) => (
                       <TextField {...params} fullWidth />

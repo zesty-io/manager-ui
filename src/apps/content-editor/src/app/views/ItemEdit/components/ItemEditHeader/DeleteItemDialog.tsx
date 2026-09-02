@@ -16,12 +16,14 @@ import {
   useDeleteContentItemMutation,
   useGetContentModelItemsQuery,
 } from "../../../../../../../../shell/services/instance";
+import { useTranslation } from "react-i18next";
 
 type DuplicateItemProps = {
   onClose: () => void;
 };
 
 export const DeleteItemDialog = ({ onClose }: DuplicateItemProps) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const { modelZUID, itemZUID } = useParams<{
     modelZUID: string;
@@ -64,19 +66,19 @@ export const DeleteItemDialog = ({ onClose }: DuplicateItemProps) => {
           <DeleteRounded color="error" />
         </Box>
         <Stack>
-          Delete Content Item:
+          {t("content.itemEditDeleteContentItemTitle")}
+          {":"}
           <Typography variant="inherit" fontWeight={600}>
             {item?.web?.metaTitle || item?.web?.metaLinkText}
           </Typography>
         </Stack>
         <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-          Deleting this item will remove it from all locations throughout your
-          site and make it unavailable to API requests. This cannot be undone.
+          {t("content.itemEditDeleteContentItemDescription")}
         </Typography>
       </DialogTitle>
       <DialogActions>
         <Button color="inherit" onClick={onClose}>
-          Cancel
+          {t("common.cancel")}
         </Button>
         <Button
           data-cy="DeleteContentItemConfirmButton"
@@ -104,7 +106,7 @@ export const DeleteItemDialog = ({ onClose }: DuplicateItemProps) => {
           }}
           loading={isLoading}
         >
-          Delete Item
+          {t("content.itemEditDeleteItem")}
         </Button>
       </DialogActions>
     </Dialog>
