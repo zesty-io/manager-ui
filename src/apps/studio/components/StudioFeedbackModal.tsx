@@ -12,6 +12,7 @@ import {
 import { useSendEmailMutation } from "shell/services/cloudFunctions";
 import { useSelector } from "react-redux";
 import { AppState } from "shell/store/types";
+import { InteractionMode } from "../hooks/studioTypes";
 
 // `value` is typed as required `string` on every caller's prop, but several
 // callers pass Redux fields (e.g. `instance?.name`) that are `any` at the
@@ -32,7 +33,7 @@ type StudioFeedbackModalProps = {
   instanceName: string;
   instanceZUID: string;
   activePage: string;
-  mode: "content" | "layout";
+  mode: InteractionMode;
 };
 
 export const StudioFeedbackModal = ({
