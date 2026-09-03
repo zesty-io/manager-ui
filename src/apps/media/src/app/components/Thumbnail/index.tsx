@@ -17,8 +17,7 @@ import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import FontDownloadRoundedIcon from "@mui/icons-material/FontDownloadRounded";
 import { useTheme } from "@mui/material/styles";
-import styles from "./Loading.less";
-import cx from "classnames";
+import { loadingThumbnailSx } from "./loadingStyles";
 import CheckIcon from "@mui/icons-material/Check";
 
 import fileBroken from "../../../../../../../public/images/fileBroken.jpg";
@@ -402,7 +401,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             />
 
             {file && isImage(file) && lazyLoading ? (
-              <div className={cx(styles.Load, styles.Loading)}></div>
+              <Box sx={loadingThumbnailSx} data-cy="thumbnail-loading" />
             ) : null}
             <Chip
               label={fileExtension(filename)}
@@ -497,7 +496,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             />
 
             {file && isImage(file) && lazyLoading ? (
-              <div className={cx(styles.Load, styles.Loading)}></div>
+              <Box sx={loadingThumbnailSx} data-cy="thumbnail-loading" />
             ) : null}
             <Chip
               label={fileExtension(filename)}
