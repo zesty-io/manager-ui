@@ -23,10 +23,9 @@ export const CodeSample = () => {
       <Box>
         <Stack direction="row" alignItems="center" gap={1} pb={0.5}>
           <Typography
+            variant="body2"
             sx={{
               fontWeight: 600,
-              fontSize: "14px",
-              lineHeight: "20px",
             }}
           >
             Block Selector
@@ -41,10 +40,9 @@ export const CodeSample = () => {
       <Box>
         <Stack direction="row" alignItems="center" gap={1} pb={0.5}>
           <Typography
+            variant="body2"
             sx={{
               fontWeight: 600,
-              fontSize: "14px",
-              lineHeight: "20px",
             }}
           >
             Base Template
@@ -65,10 +63,9 @@ export const CodeSample = () => {
       <Box>
         <Stack direction="row" alignItems="center" gap={1} pb={0.5}>
           <Typography
+            variant="body2"
             sx={{
               fontWeight: 600,
-              fontSize: "14px",
-              lineHeight: "20px",
             }}
           >
             Base Template with Version
@@ -89,10 +86,9 @@ export const CodeSample = () => {
       <Box>
         <Stack direction="row" alignItems="center" gap={1} pb={0.5}>
           <Typography
+            variant="body2"
             sx={{
               fontWeight: 600,
-              fontSize: "14px",
-              lineHeight: "20px",
             }}
           >
             Specific Block Variant

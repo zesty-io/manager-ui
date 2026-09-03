@@ -37,16 +37,14 @@ export const WidgetQuickShare = memo(function WidgetQuickShare(props) {
         sx={{
           p: 0,
           backgroundColor: "transparent",
-          fontSize: "16px",
           color: alpha(theme.palette.text.primary, 0.4),
           borderBottom: 1,
           borderColor: "grey.200",
         }}
         titleTypographyProps={{
+          variant: "overline",
           sx: {
             fontWeight: 400,
-            fontSize: "12px",
-            lineHeight: "32px",
             color: "text.primary",
           },
         }}
@@ -75,10 +73,8 @@ export const WidgetQuickShare = memo(function WidgetQuickShare(props) {
           <Stack
             gap={1.5}
             sx={{
-              fontSize: "14px",
+              typography: "body2",
               fontWeight: 500,
-              lineHeight: "20px",
-              letteSpacing: "0px",
             }}
           >
             <Link
