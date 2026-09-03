@@ -111,7 +111,10 @@ describe("Studio Feedback Modal", () => {
         );
         expect(request.body.body).to.match(/<b>Instance:<\/b> .+\(.+\)/);
         expect(request.body.body).to.contain(`<b>Page:</b> ${studioPath}`);
-        expect(request.body.body).to.contain("<b>Mode:</b> content");
+        // The CI account is entitled to both content and layout (see
+        // studio-mode.spec.js: "defaults to full mode"), so full — not
+        // content — is the mode a fresh page load promotes to.
+        expect(request.body.body).to.contain("<b>Mode:</b> full");
         expect(request.body.body.split("<br>")).to.have.length(6);
       });
     });
@@ -125,6 +128,14 @@ describe("Studio Feedback Modal", () => {
       body: {},
     }).as("sendEmail");
 
+    // The mode toggle only renders for staff users (canSelectMode = user.staff
+    // in StudioWrapper); the CI account is not staff, so this test has to stub
+    // the flag and reload before it can drive the toggle.
+    cy.stubStaffUser();
+    cy.waitOn("/v1/content/models**", () => {
+      cy.visit(`/studio?path=${studioPath}`);
+    });
+    cy.getBySelector("StudioHeader").should("exist");
     cy.getBySelector("StudioModeToggleOption-layout").click();
     openFeedbackModal();
     cy.getBySelector("StudioFeedbackMessageInput")
