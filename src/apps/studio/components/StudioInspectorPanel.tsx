@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { MouseEvent, useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -17,12 +17,17 @@ import { CloseRounded } from "@mui/icons-material";
 import PhotoLibraryRounded from "@mui/icons-material/PhotoLibraryRounded";
 import AddLinkRounded from "@mui/icons-material/AddLinkRounded";
 import LinkOffRounded from "@mui/icons-material/LinkOffRounded";
-import { ConnectField, ElementSlot } from "../../hooks/studioTypes";
+import LinkRounded from "@mui/icons-material/LinkRounded";
+import { ConnectField, ElementSlot, LinkWrapper } from "../hooks/studioTypes";
 import { NO_TAG, TEXT_TAGS } from "./studioTags";
 import { getFieldMeta } from "./studioFieldMeta";
 import { FieldIconChip } from "./FieldIconChip";
-import { connectFieldToParsley, parseParsleyRef } from "./studioParsley";
-import { useCrossModelConnectField } from "../../hooks/useCrossModelConnectField";
+import {
+  buildParsley,
+  connectFieldToParsley,
+  parseParsleyRef,
+} from "./studioParsley";
+import { useCrossModelConnectField } from "../hooks/useCrossModelConnectField";
 import { StudioLinkItemDialog } from "./StudioLinkItemDialog";
 
 // Title shown for a supported element tag.
@@ -99,6 +104,7 @@ const SLOT_LABELS: Record<string, string> = {
   src: "Source",
   alt: "Alt text",
   href: "URL",
+  target: "Open in new tab",
   poster: "Video Poster",
   controls: "Video Control Visibility",
   autoplay: "Autoplay",
@@ -128,6 +134,27 @@ const getBooleanOptions = (slot: ElementSlot) => {
     { value: "false", label: off },
   ];
 };
+
+// A link's `target` is not a boolean attribute — it holds "_blank" — but the
+// design offers it as a plain Yes/No, so the panel does the translation.
+const NEW_TAB_VALUE = "_blank";
+const NEW_TAB_OPTIONS = [
+  { value: NEW_TAB_VALUE, label: "Yes" },
+  { value: "", label: "No" },
+];
+
+// …but ONLY for the two values the select can round-trip. `target="_top"` or a
+// named frame is legitimate hand-written markup, and rendering it as "No" would
+// both hide the real value and destroy it on the first click. Anything else
+// falls back to a plain text input, the same way an unparseable Parsley
+// reference degrades to one.
+const isNewTabSelectable = (target: string) =>
+  target === "" || target === NEW_TAB_VALUE;
+
+// A fragment never leaves the page, so "open in new tab" is meaningless for it
+// — the design drops the row entirely. An empty href has nothing to open yet.
+const canOpenInNewTab = (href: string) =>
+  Boolean(href) && !href.startsWith("#");
 
 // A connected slot shows its bound field as a chip instead of a raw value —
 // used in BOTH modes so "connected to a field" looks the same everywhere. In
@@ -211,12 +238,20 @@ const CrossModelConnectedField = ({
   source,
   fieldName,
   isMedia,
+  isItemRef,
 }: {
   source: { modelName: string; itemZUID: string };
   fieldName: string;
   isMedia: boolean;
+  // The reference names the ITEM (a link's page URL), not a field on it.
+  isItemRef?: boolean;
 }) => {
-  const resolution = useCrossModelConnectField(source, fieldName, isMedia);
+  const resolution = useCrossModelConnectField(
+    source,
+    fieldName,
+    isMedia,
+    isItemRef
+  );
   if (!resolution) return null;
 
   const modelLabel = resolution.field.source?.modelLabel || source.modelName;
@@ -230,6 +265,11 @@ const CrossModelConnectedField = ({
       ? resolution.reason === "model"
         ? `Model "${source.modelName}" no longer exists`
         : `Field "${fieldName}" no longer exists`
+      : // An item reference (a link bound to the item's page URL) already puts
+      // the item on the first line, so repeating it here would say the same
+      // thing twice — name the model alone.
+      isItemRef
+      ? modelLabel
       : itemLabel
       ? `${modelLabel} · ${itemLabel}`
       : modelLabel;
@@ -253,6 +293,36 @@ const CrossModelConnectedField = ({
   );
 };
 
+// The Connect Item affordance itself. Shared by the field-picking version below
+// and by the link controls, where the reference is to an ITEM (its page URL)
+// and so there is no field step to put in a dropdown.
+const ConnectItemTrigger = ({
+  dataCy,
+  onClick,
+}: {
+  dataCy: string;
+  onClick: (evt: MouseEvent<HTMLButtonElement>) => void;
+}) => (
+  <Button
+    data-cy={dataCy}
+    variant="text"
+    size="small"
+    disableRipple
+    startIcon={<AddLinkRounded sx={{ fontSize: 16 }} />}
+    onClick={onClick}
+    sx={{
+      minWidth: 0,
+      px: 0.5,
+      py: 0.25,
+      color: "text.secondary",
+      fontWeight: 400,
+      textTransform: "none",
+    }}
+  >
+    Connect Item
+  </Button>
+);
+
 // The "Connect Item" affordance in a text slot's label row (mirrors the field
 // shell's AI/comment secondary actions). Opens a dropdown of the current item's
 // fields; picking one hands its Parsley reference back so the caller can write
@@ -274,24 +344,10 @@ const ConnectItemButton = ({
 
   return (
     <>
-      <Button
-        data-cy={dataCy}
-        variant="text"
-        size="small"
-        disableRipple
-        startIcon={<AddLinkRounded sx={{ fontSize: 16 }} />}
+      <ConnectItemTrigger
+        dataCy={dataCy}
         onClick={(evt) => setAnchorEl(evt.currentTarget)}
-        sx={{
-          minWidth: 0,
-          px: 0.5,
-          py: 0.25,
-          color: "text.secondary",
-          fontWeight: 400,
-          textTransform: "none",
-        }}
-      >
-        Connect Item
-      </Button>
+      />
       <Menu
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
@@ -356,7 +412,11 @@ const ConnectItemButton = ({
 };
 
 type StudioInspectorPanelProps = {
-  mode: "content" | "layout";
+  // Capabilities, not a mode. content -> layout:false/content:true;
+  // layout -> true/false; studio -> true/true. A third mode string would make
+  // every fork here three-way; two booleans keep each fork binary.
+  canEditLayout: boolean;
+  canEditContent: boolean;
   // Stable id of the selected element — reseeds the inputs when a different
   // element is chosen without fighting the user's in-progress typing.
   elementKey: string;
@@ -384,6 +444,15 @@ type StudioInspectorPanelProps = {
   // Media fields, offered on img/video src + poster slots (writes an image
   // expression, e.g. "{{this.hero.getImage()}}").
   mediaFields: ConnectField[];
+  // Layout mode: the <a> wrapping the selected element, and whether one may be
+  // added. Both are derived from the cached template — the wrapper has no
+  // data-layout-id, so it never appears as a slot on the layers tree.
+  linkWrapper: LinkWrapper | null;
+  canAddLink: boolean;
+  onAddLink: () => void;
+  onRemoveLink: () => void;
+  onChangeLinkHref: (value: string) => void;
+  onChangeLinkTarget: (value: string) => void;
   drawerWidth: number;
   logoSrc: string;
 };
@@ -397,6 +466,7 @@ const SlotLabelRow = ({
   connectableFields,
   isConnected,
   canConnect,
+  connectsToItem,
   onPick,
   onOpenCrossModel,
   onDisconnect,
@@ -409,6 +479,10 @@ const SlotLabelRow = ({
   // `connectableFields.length`: the current item may have no bindable fields
   // while another item does, so the cross-item entry point must still show.
   canConnect: boolean;
+  // The binding names an ITEM rather than a field (an href resolves to the
+  // item's page URL), so there is no field dropdown — the button opens the
+  // item picker straight away.
+  connectsToItem?: boolean;
   onPick: (field: ConnectField) => void;
   onOpenCrossModel: () => void;
   onDisconnect: () => void;
@@ -441,7 +515,12 @@ const SlotLabelRow = ({
       >
         Disconnect
       </Button>
-    ) : canConnect ? (
+    ) : !canConnect ? null : connectsToItem ? (
+      <ConnectItemTrigger
+        dataCy={`StudioConnectContent-${slotKey}`}
+        onClick={onOpenCrossModel}
+      />
+    ) : (
       <ConnectItemButton
         fields={connectableFields}
         onPick={onPick}
@@ -449,7 +528,7 @@ const SlotLabelRow = ({
         dataCy={`StudioConnectContent-${slotKey}`}
         crossModelDataCy={`StudioConnectOtherItem-${slotKey}`}
       />
-    ) : null}
+    )}
   </Stack>
 );
 
@@ -457,7 +536,8 @@ const SlotLabelRow = ({
 // with the test hook on the input element itself.
 const SlotField = ({
   slot,
-  mode,
+  canEditLayout,
+  canEditContent,
   value,
   onChangeSlot,
   onDisconnect,
@@ -467,7 +547,8 @@ const SlotField = ({
   mediaFields,
 }: {
   slot: ElementSlot;
-  mode: "content" | "layout";
+  canEditLayout: boolean;
+  canEditContent: boolean;
   value: string;
   onChangeSlot: (
     slot: ElementSlot,
@@ -486,7 +567,6 @@ const SlotField = ({
   // unconditional.
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const dataCy = `StudioSlotInput-${slot.key}`;
-  const isSelect = slot.control === "select";
   const multiline = slot.kind === "text";
   const isMediaAttr =
     slot.kind === "attribute" &&
@@ -495,11 +575,30 @@ const SlotField = ({
   // like a text node.
   const isTextAttr = slot.kind === "attribute" && slot.attr === "alt";
   const isTextSlot = slot.kind === "text";
+  // An <a>'s own destination. Binds to an ITEM (its page URL), never a field.
+  const isLinkAttr = slot.kind === "attribute" && slot.attr === "href";
+  // An <a>'s `target`, presented as the design's Yes/No — but only while it
+  // holds a value that choice can express. A named frame stays a text input,
+  // so the panel never hides a value it is about to overwrite.
+  //
+  // Keyed on the slot's own value, not the edit buffer: the buffer changes per
+  // keystroke, so clearing a hand-written "_top" would swap the text input for
+  // a select under the cursor. The slot's value only moves on a tree re-emit.
+  const isNewTabAttr =
+    slot.kind === "attribute" &&
+    slot.attr === "target" &&
+    isNewTabSelectable(slot.value);
+  const isSelect = slot.control === "select" || isNewTabAttr;
+  const selectOptions = isNewTabAttr
+    ? NEW_TAB_OPTIONS
+    : getBooleanOptions(slot);
 
   // Which fields this slot's Connect Item dropdown offers: text/number/options
   // for text slots + alt; media + external-URL for img/video src/poster. The
   // Parsley each field emits is decided per field by buildParsley (a media
   // asset resolves via getImage(); everything else is referenced verbatim).
+  // An href is deliberately absent here: it binds to an item, not a field, so
+  // it has no dropdown to fill.
   const connectableFields = !slot.layoutEditable
     ? []
     : isTextSlot || isTextAttr
@@ -513,7 +612,8 @@ const SlotField = ({
   // have matching fields, because binding another item's field doesn't depend
   // on that.
   const canConnect =
-    slot.layoutEditable && (isTextSlot || isTextAttr || isMediaAttr);
+    slot.layoutEditable &&
+    (isTextSlot || isTextAttr || isMediaAttr || isLinkAttr);
 
   // Parse rather than regenerate. Regenerating a byte-identical string from the
   // in-memory field list only ever worked because we wrote both sides; the
@@ -524,9 +624,10 @@ const SlotField = ({
   // A `this.` reference is connected only when it names a field this slot may
   // bind — preserving today's behaviour exactly, so an unknown or
   // non-connectable `this.` ref still falls back to a free-form input.
-  const connectedField = parsedRef?.source
-    ? undefined
-    : connectableFields.find((field) => field.name === parsedRef?.name);
+  const connectedField =
+    parsedRef?.source || parsedRef?.kind === "url"
+      ? undefined
+      : connectableFields.find((field) => field.name === parsedRef?.name);
 
   // A cross-item reference is treated as connected on sight. We can't disprove
   // it without a network round-trip, and rendering a text input while that
@@ -536,10 +637,11 @@ const SlotField = ({
   const crossModelRef = parsedRef?.source ? parsedRef : undefined;
   const isConnected = Boolean(connectedField || crossModelRef);
 
-  // Content mode is read-only. A connected (dynamic) slot uses the SAME field
-  // chip as layout mode — clickable, opening its content editor. A static slot
-  // shows its value in a disabled input (or select, for a boolean attribute).
-  if (mode === "content") {
+  // Without layout capability the panel is read-only. A connected (dynamic)
+  // slot uses the SAME field chip as the editable panel — clickable, opening
+  // its content editor. A static slot shows its value in a disabled input (or
+  // select, for a boolean attribute).
+  if (!canEditLayout) {
     return (
       <Stack gap={0.5}>
         <Typography variant="body2" fontWeight={600} color="text.primary">
@@ -558,7 +660,7 @@ const SlotField = ({
             disabled
             inputProps={{ "data-cy": dataCy }}
           >
-            {getBooleanOptions(slot).map((option) => (
+            {selectOptions.map((option) => (
               <MenuItem key={option.value} value={option.value}>
                 {option.label}
               </MenuItem>
@@ -577,7 +679,7 @@ const SlotField = ({
     );
   }
 
-  // Layout mode: edit the underlying template. A connected slot shows the field
+  // Editable: write the underlying template. A connected slot shows the field
   // chip; otherwise a free-form input (or a Yes/No select for a boolean attr).
   const disabledReason = !slot.layoutEditable
     ? "This element can't be edited here."
@@ -591,6 +693,7 @@ const SlotField = ({
         connectableFields={connectableFields}
         isConnected={isConnected}
         canConnect={canConnect}
+        connectsToItem={isLinkAttr}
         onPick={(field) =>
           onChangeSlot(slot, connectFieldToParsley(field), field)
         }
@@ -601,10 +704,17 @@ const SlotField = ({
         <CrossModelConnectedField
           source={crossModelRef.source!}
           fieldName={crossModelRef.name}
-          isMedia={crossModelRef.isMedia}
+          isMedia={crossModelRef.kind === "media"}
+          // An <a>'s href can hold an item reference too — Connect Item on this
+          // very slot writes one. Without this the hook takes the field branch,
+          // looks for a field named "", and renders the binding as an error.
+          isItemRef={crossModelRef.kind === "url"}
         />
       ) : connectedField ? (
-        <ConnectedFieldView field={connectedField} />
+        <ConnectedFieldView
+          field={connectedField}
+          onClick={canEditContent ? () => onEditDynamicSlot(slot) : undefined}
+        />
       ) : isSelect ? (
         <TextField
           select
@@ -614,7 +724,7 @@ const SlotField = ({
           onChange={(evt) => onChangeSlot(slot, evt.target.value)}
           inputProps={{ "data-cy": dataCy }}
         >
-          {getBooleanOptions(slot).map((option) => (
+          {selectOptions.map((option) => (
             <MenuItem key={option.value} value={option.value}>
               {option.label}
             </MenuItem>
@@ -657,11 +767,17 @@ const SlotField = ({
       {linkDialogOpen ? (
         <StudioLinkItemDialog
           open
-          fieldFilter={isMediaAttr ? "media" : "text"}
+          fieldFilter={isLinkAttr ? "url" : isMediaAttr ? "media" : "text"}
           onClose={() => setLinkDialogOpen(false)}
           onConfirm={(field) => {
             setLinkDialogOpen(false);
-            onChangeSlot(slot, connectFieldToParsley(field), field);
+            onChangeSlot(
+              slot,
+              isLinkAttr
+                ? buildParsley({ kind: "url", source: field.source })
+                : connectFieldToParsley(field),
+              field
+            );
           }}
         />
       ) : null}
@@ -669,8 +785,248 @@ const SlotField = ({
   );
 };
 
+// The fields of an existing link wrapper. Mounted only while the element IS
+// wrapped, so the URL input's local state is seeded — and reset — by the wrap
+// and unwrap themselves; there is no stale value to clear on re-linking.
+const LinkFields = ({
+  linkWrapper,
+  onChangeHref,
+  onChangeTarget,
+}: {
+  linkWrapper: LinkWrapper;
+  onChangeHref: (value: string) => void;
+  onChangeTarget: (value: string) => void;
+}) => {
+  // Owned locally, exactly like a slot input: the template write is debounced,
+  // so the derived wrapper lags a keystroke behind what has been typed.
+  const [href, setHref] = useState(linkWrapper.href);
+  const [target, setTarget] = useState(linkWrapper.target);
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  // Which control the target gets is decided ONCE, from the value the template
+  // held when this wrapper appeared. Deriving it from the live value would swap
+  // the text input for the Yes/No select under the cursor the moment a
+  // hand-written "_top" is cleared to "".
+  const [targetIsFreeText] = useState(
+    () => !isNewTabSelectable(linkWrapper.target)
+  );
+
+  // Parse rather than compare — the same reason the slots do. A connected href
+  // holds an item-level reference: "{{<model>.filter(<zuid>).getUrl()}}".
+  const parsedRef = parseParsleyRef(href);
+  const connectedItem =
+    parsedRef?.kind === "url" && parsedRef.source ? parsedRef.source : null;
+
+  const handleHrefChange = (value: string) => {
+    setHref(value);
+    onChangeHref(value);
+  };
+
+  const handleTargetChange = (value: string) => {
+    setTarget(value);
+    onChangeTarget(value);
+  };
+
+  // Shown whenever the destination can open a tab — and ALSO whenever a target
+  // is already set, even for a fragment. Hiding a row that still holds a value
+  // would go on saving a `target` the user can neither see nor clear; keeping
+  // it visible is the non-destructive half of that choice.
+  const showNewTabRow = canOpenInNewTab(href) || Boolean(target);
+
+  return (
+    <>
+      <Stack gap={0.5}>
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+          gap={1}
+        >
+          <Typography variant="body2" fontWeight={600} color="text.primary">
+            Link to
+          </Typography>
+          {connectedItem ? (
+            <Button
+              data-cy="StudioLinkDisconnect"
+              variant="text"
+              size="small"
+              disableRipple
+              startIcon={<LinkOffRounded sx={{ fontSize: 16 }} />}
+              // Committed, unlike a slot's Disconnect. That one stays local
+              // because writing "" would blank the node and drop its row from
+              // the re-emitted tree, stranding the panel. A wrapper has no such
+              // problem: href="" leaves the <a> in place and readLinkWrapper
+              // still finds it. Keeping it local here would instead mean
+              // Disconnect-then-Save silently saved the binding the user had
+              // just removed.
+              onClick={() => handleHrefChange("")}
+              sx={{
+                minWidth: 0,
+                px: 0.5,
+                py: 0.25,
+                color: "text.secondary",
+                fontWeight: 400,
+                textTransform: "none",
+              }}
+            >
+              Disconnect
+            </Button>
+          ) : (
+            <ConnectItemTrigger
+              dataCy="StudioLinkConnectItem"
+              onClick={() => setDialogOpen(true)}
+            />
+          )}
+        </Stack>
+        {connectedItem ? (
+          <CrossModelConnectedField
+            source={connectedItem}
+            // An item reference names no field — the chip resolves the item.
+            fieldName=""
+            isMedia={false}
+            isItemRef
+          />
+        ) : (
+          <TextField
+            value={href}
+            fullWidth
+            placeholder="link url or id"
+            onChange={(evt) => handleHrefChange(evt.target.value)}
+            inputProps={{ "data-cy": "StudioLinkToInput" }}
+          />
+        )}
+      </Stack>
+
+      {showNewTabRow ? (
+        <Stack gap={0.5}>
+          <Typography variant="body2" fontWeight={600} color="text.primary">
+            {targetIsFreeText ? "Target" : SLOT_LABELS.target}
+          </Typography>
+          {targetIsFreeText ? (
+            <TextField
+              value={target}
+              fullWidth
+              onChange={(evt) => handleTargetChange(evt.target.value)}
+              inputProps={{ "data-cy": "StudioLinkTarget" }}
+            />
+          ) : (
+            <TextField
+              select
+              value={target}
+              fullWidth
+              onChange={(evt) => handleTargetChange(evt.target.value)}
+              inputProps={{ "data-cy": "StudioOpenInNewTab" }}
+            >
+              {NEW_TAB_OPTIONS.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </TextField>
+          )}
+        </Stack>
+      ) : null}
+
+      {/* Mounted only while open — see the note on the slot dialog. */}
+      {dialogOpen ? (
+        <StudioLinkItemDialog
+          open
+          fieldFilter="url"
+          onClose={() => setDialogOpen(false)}
+          onConfirm={(field) => {
+            setDialogOpen(false);
+            handleHrefChange(
+              buildParsley({ kind: "url", source: field.source })
+            );
+          }}
+        />
+      ) : null}
+    </>
+  );
+};
+
+// The Link control from the design: a full-width "Add Link" button until the
+// element is wrapped, then the wrapper's own fields under a Link header with an
+// unlink action. Layout mode only — wrapping rewrites the template, and content
+// mode never does.
+//
+// The wrapper is not a bridge-reported slot. It has no data-layout-id of its
+// own (see readLinkWrapper), so it is addressed as the parent of the element
+// the panel already has coordinates for, and read straight off the template.
+const LinkSection = ({
+  linkWrapper,
+  canAddLink,
+  onAddLink,
+  onRemoveLink,
+  onChangeHref,
+  onChangeTarget,
+}: {
+  linkWrapper: LinkWrapper | null;
+  canAddLink: boolean;
+  onAddLink: () => void;
+  onRemoveLink: () => void;
+  onChangeHref: (value: string) => void;
+  onChangeTarget: (value: string) => void;
+}) => {
+  if (!linkWrapper) {
+    if (!canAddLink) return null;
+    // `color="primary"` is the brand orange the design calls for, and it is the
+    // same treatment the panel's other full-width outlined action ("Edit in
+    // Zesty Manager") already uses. NOT `color="inherit"`: the theme's
+    // `outlinedInherit` override repaints text and border as text.secondary /
+    // palette.border, which is the panel's slate — that override was the whole
+    // reason this button rendered grey.
+    return (
+      <Button
+        data-cy="StudioAddLink"
+        variant="outlined"
+        color="primary"
+        fullWidth
+        startIcon={<LinkRounded fontSize="small" />}
+        onClick={onAddLink}
+      >
+        Add Link
+      </Button>
+    );
+  }
+
+  return (
+    <Stack gap={2.5}>
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        gap={1}
+      >
+        {/* A muted section label, deliberately lighter than the `Link to`
+            field label beneath it. Rendering both text.primary/600 flattened
+            the hierarchy into two headings of equal weight; the design has one
+            grey section heading over one dark bold field label. The weight
+            comes from subtitle2's own 500 rather than an override. */}
+        <Typography variant="subtitle2" color="text.secondary">
+          Link
+        </Typography>
+        <IconButton
+          data-cy="StudioRemoveLink"
+          aria-label="Remove link"
+          size="small"
+          onClick={onRemoveLink}
+        >
+          <LinkOffRounded fontSize="small" />
+        </IconButton>
+      </Stack>
+      <LinkFields
+        linkWrapper={linkWrapper}
+        onChangeHref={onChangeHref}
+        onChangeTarget={onChangeTarget}
+      />
+    </Stack>
+  );
+};
+
 export const StudioInspectorPanel = ({
-  mode,
+  canEditLayout,
+  canEditContent,
   elementKey,
   tagName,
   slots,
@@ -682,6 +1038,12 @@ export const StudioInspectorPanel = ({
   onBrowseMedia,
   connectFields,
   mediaFields,
+  linkWrapper,
+  canAddLink,
+  onAddLink,
+  onRemoveLink,
+  onChangeLinkHref,
+  onChangeLinkTarget,
   drawerWidth,
   logoSrc,
 }: StudioInspectorPanelProps) => {
@@ -833,13 +1195,14 @@ export const StudioInspectorPanel = ({
               <SlotField
                 key={slot.key}
                 slot={slot}
-                mode={mode}
+                canEditLayout={canEditLayout}
+                canEditContent={canEditContent}
                 // `values` is an EDITING buffer, so it only applies to layout
                 // mode. Content mode is read-only and renders the slot straight
                 // through — otherwise the buffer (seeded once per element) would
                 // go stale, e.g. never picking up a dynamic slot's field name
                 // once `fieldsState` resolves.
-                value={mode === "content" ? slot.value : values[slot.key] ?? ""}
+                value={canEditLayout ? values[slot.key] ?? "" : slot.value}
                 onChangeSlot={handleSlotValueChange}
                 onDisconnect={handleSlotDisconnect}
                 onEditDynamicSlot={onEditDynamicSlot}
@@ -848,6 +1211,23 @@ export const StudioInspectorPanel = ({
                 mediaFields={mediaFields}
               />
             ))}
+            {/* Wrapping the selection in an <a> rewrites view source, so this
+                is a layout capability rather than a mode. #4256 landed it as
+                `mode === "layout"`; this branch had already replaced `mode`
+                with the two capability flags, and full mode holds both. */}
+            {canEditLayout ? (
+              // Keyed on the element so the URL input reseeds when a different
+              // one is selected, the same way `values` is reset above.
+              <LinkSection
+                key={elementKey}
+                linkWrapper={linkWrapper}
+                canAddLink={canAddLink}
+                onAddLink={onAddLink}
+                onRemoveLink={onRemoveLink}
+                onChangeHref={onChangeLinkHref}
+                onChangeTarget={onChangeLinkTarget}
+              />
+            ) : null}
           </Stack>
         </Box>
 

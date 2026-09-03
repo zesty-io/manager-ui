@@ -1,3 +1,4 @@
+import { theme } from "@zesty-io/material";
 import { TextField, InputAdornment, IconButton } from "@mui/material";
 import { Check, ContentCopyRounded } from "@mui/icons-material";
 import { useState } from "react";
@@ -31,7 +32,7 @@ export const CopyTextField = ({ value }: CopyTextFieldProps) => {
       inputProps={{
         sx: {
           ":read-only": {
-            textFillColor: "#101828",
+            textFillColor: theme.palette.text.primary,
           },
         },
       }}

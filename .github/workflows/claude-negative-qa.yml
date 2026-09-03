@@ -1,0 +1,303 @@
+name: Claude Negative QA
+
+# Drives the real app in a browser and attacks the PR's changed surface, as the dynamic
+# counterpart to Claude Change Verifier. Advisory only — it never fails the build.
+
+# Runs on every push: a once-per-PR report goes stale silently and a stale finding reads
+# exactly like a live one. Costs ~9 min of agent time per push, serialized; advisory, so a
+# queue never blocks a merge. Dispatching by hand needs the PR's branch as the ref, not just
+# the pr_number input — the input only says where to comment.
+on:
+  pull_request:
+    branches: [dev]
+    types: [opened, ready_for_review, synchronize]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "PR number to QA"
+        required: true
+
+# Its own group, not ci.yaml's — sharing that one meant losing the single pending slot to
+# every PR's Cypress run and being cancelled before starting. Only stops two QA agents
+# mutating the same fixtures at once; isolation from Cypress comes from the instance. Stays
+# non-cancelling now pushes trigger runs — cancelling a global group would let one PR's push
+# kill another's run.
+concurrency:
+  group: manager-ui-negative-qa
+  cancel-in-progress: false
+
+jobs:
+  negative-qa:
+    # Fork PRs get neither secret; pull_request (not _target) means no path to leak them.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.pull_request.draft == false &&
+       github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      pull-requests: write
+    env:
+      PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number }}
+      # INTERNAL-NEGATIVE-QA, not the Cypress instance. Fixtures are authored in production and
+      # reach dev via the nightly sync, which doubles as the cleanup.
+      QA_INSTANCE_ZUID: 8-acabf6a8d6-bj9tr2
+      # Pinned: --storage-state is load-bearing, and a silent rename would look like the app
+      # being behind a login screen rather than a bug.
+      PLAYWRIGHT_MCP_VERSION: 0.0.78
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        with:
+          # Needs full history to diff the branch against origin/dev.
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4.1.0
+        with:
+          node-version: "22.19.0"
+          cache: "npm"
+          cache-dependency-path: package-lock.json
+
+      - name: Install Dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Auth with Gcloud
+        uses: google-github-actions/auth@v0
+        with:
+          credentials_json: ${{ secrets.GCP_DEV_SA_KEY }}
+
+      - name: Set up Gcloud SDK
+        uses: google-github-actions/setup-gcloud@v0
+        with:
+          project_id: zesty-dev
+
+      # Pulls ci/.env (KMS-decrypted test credentials).
+      - name: Setup Testing Environment
+        run: npm run ci:test:setup
+
+      # The app derives its ZUID from window.location.host, so localhost cannot work. Kept out
+      # of ci/scripts/update_etc_hosts.sh so the Cypress suite's setup stays untouched.
+      - name: Add QA Instance Hosts Entry
+        run: |
+          echo "127.0.0.1 ${QA_INSTANCE_ZUID}.manager.dev.zesty.io" | sudo tee -a /etc/hosts
+          grep "${QA_INSTANCE_ZUID}" /etc/hosts
+
+      # --no-save keeps it out of package-lock so other CI jobs don't pay for it. Installing
+      # first makes `npx playwright install` match the exact build @playwright/mcp pins.
+      - name: Install Playwright MCP and Chromium
+        run: |
+          npm install --no-save --legacy-peer-deps "@playwright/mcp@${PLAYWRIGHT_MCP_VERSION}"
+          npx playwright install --with-deps chromium
+
+      - name: Start Dev Server
+        run: |
+          npm start > devserver.log 2>&1 &
+          npx wait-on -t 180000 http://localhost:8080
+          echo "Dev server up."
+
+      # Writes auth-state.json (session cookie only, so the token never enters the agent's
+      # prompt) and asserts the session works. A rejected session would otherwise burn the whole
+      # turn budget on a login screen and report "no findings" — same shape as a clean PR.
+      - name: Establish and Verify QA Session
+        run: node ci/scripts/qa_session.mjs
+
+      # Advisory: the action exits non-zero on turn exhaustion, which is "cut short", not
+      # "failed". Swallow it and report whatever was written.
+      - uses: anthropics/claude-code-action@1dc994ee7a008f0ecc866d9ac23ef036b7229f84 # v1.0.127
+        id: agent
+        continue-on-error: true
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            You are a senior QA engineer doing NEGATIVE testing on a pull request. The app is
+            already running and your browser is already signed in — just navigate.
+
+            Inputs:
+              REPO        = ${{ github.repository }}
+              PR_NUMBER   = ${{ env.PR_NUMBER }}
+              BASE_URL    = http://${{ env.QA_INSTANCE_ZUID }}.manager.dev.zesty.io:8080
+              REPORT_FILE = ${{ github.workspace }}/negative-qa-comment.md
+
+            A separate "QA Review" workflow already validates this PR against its issue's
+            acceptance criteria from the code. Do not duplicate it: no change summary, no
+            restating the diff, no judging whether the PR satisfies its issue, no test
+            suggestions. Your job is to find inputs and sequences that break it.
+
+            STEP 1 — Scope.
+            Read the diff (gh pr diff <PR_NUMBER> --repo <REPO>) and the checked-out source.
+            Map the changed files to the routes that render them; src/shell/views/Shell/Shell.tsx
+            is the top-level router and src/apps/<name>/ are the sub-apps. Probe ONLY surfaces
+            the diff actually touches. If the diff is docs/config/CI only, write an empty
+            report and stop — that is a correct outcome, not a failure.
+
+            STEP 2 — The instance is yours.
+            BASE_URL is INTERNAL-NEGATIVE-QA, an instance that exists only for this workflow.
+            Everything on it is disposable fixture data. Find your way around it the way you
+            would any CMS — the left nav lists the models, each model lists its items — rather
+            than expecting a manifest. The models named qa_negative_* are the ones built for
+            you, and they carry the full range of field types plus relationships between them.
+
+            You may mutate ANYTHING on this instance — edit, delete, publish, unpublish, create
+            new items, corrupt data deliberately. Nothing else shares it, and it is restored
+            wholesale from production every night, so there is no cleanup to do and no way for
+            you to break another PR. Do not hold back on destructive paths: delete-while-
+            referenced, publish-then-unpublish, and unsaved-changes-then-navigate are exactly
+            the sequences that break in production and that nobody tests by hand.
+
+            The one thing to avoid is wasting turns on housekeeping. Do not restore values you
+            changed and do not clean up after yourself — the nightly sync does it for you.
+
+            STEP 3 — Attack the changed surface.
+            Snapshot before each interaction. Work through, as applicable to what changed:
+              - empty, whitespace-only, and maximum-length input
+              - markup and script-looking strings in text fields (e.g. <b>x</b>, {{a.b}})
+              - invalid characters in slugs, path parts, and names
+              - rapid double-submit; clicking Save twice before the first request settles
+              - Cancel, or navigating away, mid-save
+              - browser Back after a mutation, and reload with unsaved changes
+              - deleting or unlinking a dependency that something else is pointing at
+              - switching between two selections faster than the network settles
+              - the empty state and the error state of every list, picker, and dropdown
+            Check mcp__playwright__browser_console_messages and browser_network_requests after
+            each sequence — an uncaught exception or a 4xx/5xx nobody surfaces is a finding
+            even when the UI looks fine.
+
+            This repo's test-id attribute is data-cy, and the MCP server is configured to use
+            it. If a control you need to reach has no data-cy attribute, that is itself worth
+            noting in the report — CLAUDE.md requires one on every interactive element.
+
+            STEP 4 — Evidence discipline, and your turn budget.
+            A finding counts only if you REPRODUCED IT TWICE. Reset to a known state and do it
+            again before you write it down. Discard anything you cannot reproduce.
+
+            Capture evidence in this order, while the broken state is still on screen — it is
+            gone once you navigate away:
+              1. Reproduce the failure.
+              2. Call mcp__playwright__browser_take_screenshot with an explicit `filename`
+                 argument — a plain name with no directory, e.g. empty-title-saves-blank.png.
+              3. Write the finding, referencing exactly that filename.
+            Only reference a filename you actually passed to the tool. If a finding has no
+            screenshot, write it WITHOUT a SCREENSHOT: line rather than inventing one — a later
+            step verifies every reference against the files on disk and flags any that are
+            missing, so an invented one makes the whole report look untrustworthy.
+
+            You have a HARD limit of 150 turns and there is no warning before it is reached.
+            Everything you have not written to REPORT_FILE when you hit it is lost, and the run
+            produces nothing at all. So:
+              - Write REPORT_FILE once early, as soon as you know the scope.
+              - Rewrite it immediately after each confirmed finding. Never batch them up.
+              - Once you have spent roughly 120 turns, stop probing, finalise the report, and
+                close the browser — an accurate partial report beats an interrupted perfect one.
+            You do not need to flag that you stopped early: a later step detects it and adds a
+            note to the comment automatically. Just make sure what you did find is written down.
+
+            STEP 5 — Report.
+            Write REPORT_FILE with the Write tool. First line must be exactly:
+
+              <!-- negative-qa -->
+
+            Then "## Negative QA", then STRAIGHT INTO THE FINDINGS. Do NOT write an overview,
+            preamble, or summary paragraph — no recap of what the diff changes, no description
+            of what you attacked, no verdict sentence. A reviewer opens this to see what broke;
+            anything above the first finding pushes that off the screen. One section each:
+
+              ### <emoji> <one-line finding>
+              **Type:** regression from this PR | pre-existing on the touched surface
+              **Steps:** numbered, starting from a URL, short enough to follow verbatim
+              **Expected:** … **Actual:** …
+              **Console/network:** anything relevant, or "clean"
+              ![<caption>](SCREENSHOT:<your-filename>.png)
+
+            Severity emoji: 🔴 breaks the feature · 🟡 degrades it · 🔵 cosmetic.
+            Reference screenshots ONLY as SCREENSHOT:<filename>.png — a later step rewrites
+            those into real URLs. Do not invent paths or URLs for them.
+
+            After the findings, list what you probed that behaved correctly, plus any cleanup
+            you did. This matters — it is how a reviewer tells a thorough pass from a shallow
+            one — but it is reference material, not the headline, so it MUST be collapsed
+            inside a details block, exactly like this:
+
+              <details>
+              <summary>Also checked and working correctly</summary>
+
+              - <thing you tried> — <what correctly happened>
+              - <thing you tried> — <what correctly happened>
+
+              </details>
+
+            Keep the blank lines after <summary> and before </details> — GitHub will not render
+            the markdown inside without them.
+
+            If you found nothing, the report is the marker line, "## Negative QA", the single
+            line "No reproducible edge-case failures found on the surfaces this PR changes.",
+            and the collapsed details block. AN EMPTY REPORT IS A VALID AND COMMON OUTCOME.
+            Never pad it with speculative or unreproduced findings, and never report a finding
+            you did not screenshot.
+
+            Finish by calling mcp__playwright__browser_close. Do not post any comment
+            yourself — a later step does that.
+
+          claude_args: |
+            --mcp-config '{"mcpServers":{"playwright":{"command":"npx","args":["@playwright/mcp","--headless","--isolated","--no-sandbox","--storage-state","${{ github.workspace }}/auth-state.json","--output-dir","${{ github.workspace }}/qa-artifacts","--viewport-size","1920x1080","--test-id-attribute","data-cy"]}}}'
+            --allowedTools "mcp__playwright__browser_navigate,mcp__playwright__browser_navigate_back,mcp__playwright__browser_snapshot,mcp__playwright__browser_find,mcp__playwright__browser_click,mcp__playwright__browser_type,mcp__playwright__browser_fill_form,mcp__playwright__browser_select_option,mcp__playwright__browser_hover,mcp__playwright__browser_drag,mcp__playwright__browser_drop,mcp__playwright__browser_press_key,mcp__playwright__browser_wait_for,mcp__playwright__browser_tabs,mcp__playwright__browser_take_screenshot,mcp__playwright__browser_console_messages,mcp__playwright__browser_network_requests,mcp__playwright__browser_evaluate,mcp__playwright__browser_resize,mcp__playwright__browser_handle_dialog,mcp__playwright__browser_close,Bash(gh pr diff:*),Bash(gh pr view:*),Bash(git diff:*),Bash(git log:*),Read,Write,Grep,Glob"
+            --model claude-sonnet-5
+            --max-turns 150
+
+      # continue-on-error also turns the step green, making a truncated run look complete.
+      # Say so on the run and in the comment.
+      - name: Note Incomplete Run
+        if: always() && steps.agent.outcome == 'failure'
+        run: |
+          echo "::warning::The QA agent did not run to completion (turn limit or error). Findings are real but coverage is partial."
+          FILE="negative-qa-comment.md"
+          if [ -s "$FILE" ]; then
+            printf '\n\n---\n_⚠️ This pass did not run to completion — the agent stopped before finishing. Anything reported above still stands, but coverage is partial and the summary may read as provisional._\n' >> "$FILE"
+          fi
+
+      - name: Publish Screenshots and Rewrite Links
+        if: always()
+        run: python3 ci/scripts/publish_qa_screenshots.py qa-artifacts negative-qa-comment.md
+
+      # Durable copy: the GCS bucket is shared and periodically purged.
+      - name: Upload QA Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: negative-qa-artifacts
+          path: |
+            qa-artifacts/
+            negative-qa-comment.md
+            devserver.log
+          if-no-files-found: ignore
+
+      # Upsert: these findings are long, so a comment per push would bury the conversation.
+      - name: Post QA Findings
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR: ${{ env.PR_NUMBER }}
+        run: |
+          set -euo pipefail
+          FILE="$GITHUB_WORKSPACE/negative-qa-comment.md"
+          if [ ! -s "$FILE" ] || ! grep -q '<!-- negative-qa -->' "$FILE"; then
+            echo "::warning::negative-qa-comment.md missing or malformed; skipping comment."
+            exit 0
+          fi
+          BODY=$(cat "$FILE")
+          PAYLOAD=$(BODY="$BODY" python3 -c 'import os,json,sys; sys.stdout.write(json.dumps({"body": os.environ["BODY"]}))')
+          CID=$(gh api "repos/$REPO/issues/$PR/comments" --paginate \
+            --jq '.[] | select(.user.login == "github-actions[bot]") | select(.body | startswith("<!-- negative-qa -->")) | .id' | head -n1)
+          if [ -n "${CID:-}" ]; then
+            printf '%s' "$PAYLOAD" | gh api -X PATCH "repos/$REPO/issues/comments/$CID" --input - --silent
+            echo "Updated existing negative-QA comment."
+          else
+            printf '%s' "$PAYLOAD" | gh api -X POST "repos/$REPO/issues/$PR/comments" --input - --silent
+            echo "Posted negative-QA comment."
+          fi
+
+      # No cleanup step: the nightly sync resets the instance wholesale.

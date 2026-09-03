@@ -36,6 +36,20 @@ Cypress.Commands.add("waitOn", (path, cb) => {
   });
 });
 
+// The account CI signs in as is NOT staff, and Studio gates its interaction
+// mode toggle on `user.staff` — so the toggle renders for nobody in CI and
+// every spec that drives it fails on a missing element. Call this BEFORE
+// cy.visit in specs that switch modes; the gate itself is covered in
+// studio/mode-entitlement.spec.js, which stubs the flag the other way.
+Cypress.Commands.add("stubStaffUser", () => {
+  cy.intercept("GET", "**/v1/users/*", (req) => {
+    req.continue((res) => {
+      if (!res.body?.data) return;
+      res.body.data = { ...res.body.data, staff: true };
+    });
+  }).as("getUserAsStaff");
+});
+
 Cypress.Commands.add("assertClipboardValue", (value) => {
   cy.window().then((win) => {
     win.navigator?.clipboard?.readText().then((text) => {

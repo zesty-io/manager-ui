@@ -13,7 +13,20 @@ import DescriptionIcon from "@mui/icons-material/Description";
 import { debounce } from "lodash";
 
 export const ListOption: React.FC<
-  ContentItemProps & { isListItem?: boolean }
+  // `data-cy` is declared rather than left to the `...props` spread: it is set
+  // explicitly by the caller, and JSX excess-property checking rejects an
+  // attribute a component's props type does not name. The same reasoning
+  // covers the fields below, which MUI's `renderValue` `getItemProps()`
+  // spreads onto the rendered value node (see SearchField's `renderValue`).
+  Omit<ContentItemProps, "onDelete"> & {
+    isListItem?: boolean;
+    "data-cy"?: string;
+    className?: string;
+    disabled?: boolean;
+    "data-item-index"?: number;
+    tabIndex?: number;
+    onDelete?: (event?: unknown) => void;
+  }
 > = ({
   label,
   path,
@@ -255,8 +268,10 @@ const SearchField: React.FC<SearchFieldProps> = ({
               />
             );
           }}
-          renderValue={(data: ContentItemProps | null) => (
+          renderValue={(data: ContentItemProps | null, getItemProps) => (
             <ListOption
+              {...getItemProps()}
+              data-cy={`${dataCy}Value`}
               label={data?.label}
               path={data?.path}
               ZUID={data?.ZUID}
@@ -273,6 +288,10 @@ const SearchField: React.FC<SearchFieldProps> = ({
             <ListOption
               {...props}
               key={option.ZUID}
+              // Keyed by ZUID so a spec can click one specific result instead
+              // of matching on its label — the label is user copy and the list
+              // is sorted by createdAt, so neither is a stable handle.
+              data-cy={`${dataCy}Option-${option.ZUID}`}
               label={option.label}
               path={option.path}
               ZUID={option.ZUID}

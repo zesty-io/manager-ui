@@ -3,8 +3,8 @@ import { useSelector } from "react-redux";
 import {
   useGetContentModelFieldsQuery,
   useGetContentModelsQuery,
-} from "../../../../../../../shell/services/instance";
-import { AppState } from "../../../../../../../shell/store/types";
+} from "shell/services/instance";
+import { AppState } from "shell/store/types";
 import { ConnectField } from "./studioTypes";
 
 // Read-back for a cross-item Parsley reference.
@@ -28,7 +28,13 @@ export type CrossModelResolution =
 export const useCrossModelConnectField = (
   source: { modelName: string; itemZUID: string } | undefined,
   fieldName: string,
-  isMedia: boolean
+  isMedia: boolean,
+  // An ITEM-level reference — a link's `getUrl()` — names no field at all, so
+  // the field half of the lookup has nothing to resolve and is skipped
+  // entirely; resolving the model and the item is the whole job. Asked for
+  // explicitly rather than inferred from an empty `fieldName`: a caller that
+  // passes "" by accident would otherwise get item rendering and no error.
+  isItemRef = false
 ): CrossModelResolution | null => {
   const { data: models, isFetching: isFetchingModels } =
     useGetContentModelsQuery(undefined, { skip: !source });
@@ -48,7 +54,7 @@ export const useCrossModelConnectField = (
   const { data: fields, isFetching: isFetchingFields } =
     useGetContentModelFieldsQuery(
       { modelZUID: model?.ZUID },
-      { skip: !model?.ZUID }
+      { skip: !model?.ZUID || isItemRef }
     );
 
   const field = useMemo(
@@ -92,6 +98,24 @@ export const useCrossModelConnectField = (
       modelLabel: model?.label,
       itemLabel,
     };
+
+    if (isItemRef) {
+      // The chip's first line names the ITEM — pinning one item is the whole
+      // point of filter(<zuid>) — so the model belongs in the caption instead.
+      const itemField = {
+        name: "",
+        label: itemLabel || source.itemZUID,
+        datatype: "internal_link",
+        source: sourceBase,
+      };
+      if (!models || isFetchingModels) {
+        return { status: "resolving", field: itemField };
+      }
+      if (!model) {
+        return { status: "unresolved", reason: "model", field: itemField };
+      }
+      return { status: "resolved", field: itemField };
+    }
 
     if (
       !models ||
@@ -153,6 +177,7 @@ export const useCrossModelConnectField = (
     fieldName,
     isFetchingFields,
     isFetchingModels,
+    isItemRef,
     isMedia,
     itemLabel,
     model,

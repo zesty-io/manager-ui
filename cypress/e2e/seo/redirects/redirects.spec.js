@@ -128,6 +128,50 @@ describe("Redirects", () => {
         { matchCase: false }
       );
     });
+    it("Selecting a target and pressing ArrowLeft does not crash (regression for #4247)", () => {
+      // The support file's global `uncaught:exception` handler always
+      // returns false, so an in-app crash wouldn't otherwise fail this test.
+      // Capture the error explicitly instead.
+      let uncaughtError = null;
+      cy.on("uncaught:exception", (err) => {
+        uncaughtError = err;
+        return false;
+      });
+
+      cy.getElement('[data-cy="RedirectActionCreateButton"]').click();
+
+      cy.getElement('[data-cy="RedirectsFieldPath"]:eq(0) input').type(
+        "arrow-left-regression/---test"
+      );
+
+      cy.getElement('[data-cy="RedirectsSearchFieldInput"] input').click();
+      cy.getElement('[data-cy="RedirectsSearchFieldInput"] input').type(
+        TEST_REDIRECTS_DATA[0]?.target
+      );
+
+      cy.getElement('[data-cy="RedirectsTargetOptionsContainer"] ul li')
+        .contains("/page/otherpage/all-field-types/", {
+          ...options,
+          matchCase: false,
+        })
+        .click();
+
+      // Regression for #4247: MUI's Autocomplete intercepts ArrowLeft to
+      // focus the rendered selected value (`renderValue`); if that node
+      // isn't wired up with MUI's item props, this throws.
+      cy.getElement('[data-cy="RedirectsSearchFieldInput"] input')
+        .focus()
+        .type("{leftarrow}");
+
+      cy.getElement('[data-cy="RedirectsSearchFieldInput"] input')
+        .should("exist")
+        .then(() => {
+          expect(uncaughtError, "no uncaught exception").to.be.null;
+        });
+
+      cy.getBySelector("RedirectsFormCancelButton").click();
+    });
+
     it("External", () => {
       cy.getElement('[data-cy="RedirectActionCreateButton"]').click();
 
@@ -301,6 +345,34 @@ describe("Redirects", () => {
         TARGET_PATH_ERRORS.invalidUrl,
         { matchCase: false }
       );
+
+      cy.getBySelector("RedirectsFormCancelButton").click();
+    });
+  });
+
+  describe("Path Field Character Validation", () => {
+    it("Allowed Characters", () => {
+      cy.getElement('[data-cy="RedirectActionCreateButton"]').click();
+
+      const allowedInput = "abc-123_test.value~foo&bar=baz?qux$1:2#3*4%5";
+
+      cy.getElement('[data-cy="RedirectsFieldPath"]:eq(0) input')
+        .type(allowedInput, { parseSpecialCharSequences: false })
+        .should("have.value", `/${allowedInput}`);
+
+      cy.getBySelector("RedirectsFormCancelButton").click();
+    });
+
+    it("Invalid Characters", () => {
+      cy.getElement('[data-cy="RedirectActionCreateButton"]').click();
+
+      // Characters outside the PathField allowlist (@ ! ^ ( ) + , ;) are
+      // dropped as they're typed, leaving only the allowed letters behind.
+      cy.getElement('[data-cy="RedirectsFieldPath"]:eq(0) input')
+        .type("ab@cd!ef^gh(ij)kl+mn,op;qr", {
+          parseSpecialCharSequences: false,
+        })
+        .should("have.value", "/abcdefghijklmnopqr");
 
       cy.getBySelector("RedirectsFormCancelButton").click();
     });
