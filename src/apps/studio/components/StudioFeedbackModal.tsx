@@ -50,14 +50,7 @@ export const StudioFeedbackModal = ({
   const user = useSelector((state: AppState) => state.user);
   const [sendEmail, { isLoading: isSubmitting }] = useSendEmailMutation();
 
-  const handleClose = (
-    _event?: unknown,
-    reason?: "backdropClick" | "escapeKeyDown"
-  ) => {
-    // A double-click on the header's Feedback button opens the dialog on the
-    // first click, then the second click lands on the backdrop (which now
-    // covers the button) and would otherwise close it in the same gesture.
-    if (reason === "backdropClick") return;
+  const handleClose = () => {
     if (isSubmitting) return;
     setMessage("");
     setError("");
