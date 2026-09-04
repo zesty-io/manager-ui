@@ -1,4 +1,4 @@
-name: "Claude: Sentry Handler"
+name: "Claude: Sentry Triage & Auto-Fix"
 
 # For a real Sentry-origin issue (detected by a cheap regex step, everything else is a
 # no-op), Claude investigates via the Sentry MCP server and attempts a trial fix, then
@@ -21,6 +21,7 @@ on:
 
 jobs:
   sentry-rca:
+    name: Claude Sentry Triage & Auto-Fix
     runs-on: ubuntu-latest
     timeout-minutes: 20
     concurrency:
