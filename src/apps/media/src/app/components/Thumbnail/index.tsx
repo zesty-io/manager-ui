@@ -516,6 +516,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           </Box>
           <ThumbnailContent
             filename={filename}
+            title={title}
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isSelected={selectedFiles.some((file) => file.id === id)}
@@ -591,6 +592,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           </Box>
           <ThumbnailContent
             filename={filename}
+            title={title}
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isSelected={selectedFiles.some((file) => file.id === id)}
@@ -664,6 +666,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           </Box>
           <ThumbnailContent
             filename={filename}
+            title={title}
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isSelected={selectedFiles.some((file) => file.id === id)}
@@ -741,6 +744,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
 
           <ThumbnailContent
             filename={filename}
+            title={title}
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isSelected={selectedFiles.some((file) => file.id === id)}
@@ -815,6 +819,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           </Box>
           <ThumbnailContent
             filename={filename}
+            title={title}
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isSelected={selectedFiles.some((file) => file.id === id)}
@@ -891,6 +896,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           </Box>
           <ThumbnailContent
             filename={filename}
+            title={title}
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isSelected={selectedFiles.some((file) => file.id === id)}
@@ -969,6 +975,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           </Box>
           <ThumbnailContent
             filename={filename}
+            title={title}
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isSelected={selectedFiles.some((file) => file.id === id)}
@@ -1074,6 +1081,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           </Box>
           <ThumbnailContent
             filename={filename}
+            title={title}
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isSelected={selectedFiles.some((file) => file.id === id)}
@@ -1151,6 +1159,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           </Box>
           <ThumbnailContent
             filename={filename}
+            title={title}
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isSelected={selectedFiles.some((file) => file.id === id)}
@@ -1230,6 +1239,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           </Box>
           <ThumbnailContent
             filename={filename}
+            title={title}
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isSelected={selectedFiles.some((file) => file.id === id)}
@@ -1304,6 +1314,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           </Box>
           <ThumbnailContent
             filename={filename}
+            title={title}
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isSelected={selectedFiles.some((file) => file.id === id)}
@@ -1378,6 +1389,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           </Box>
           <ThumbnailContent
             filename={filename}
+            title={title}
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isSelected={selectedFiles.some((file) => file.id === id)}
@@ -1452,6 +1464,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           </Box>
           <ThumbnailContent
             filename={filename}
+            title={title}
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isSelected={selectedFiles.some((file) => file.id === id)}
@@ -1526,6 +1539,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           </Box>
           <ThumbnailContent
             filename={filename}
+            title={title}
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isSelected={selectedFiles.some((file) => file.id === id)}
@@ -1610,6 +1624,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           </Box>
           <ThumbnailContent
             filename={filename}
+            title={title}
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isSelected={selectedFiles.some((file) => file.id === id)}
@@ -1691,6 +1706,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           </Box>
           <ThumbnailContent
             filename={filename}
+            title={title}
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isSelected={selectedFiles.some((file) => file.id === id)}
@@ -1779,6 +1795,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           </Box>
           <ThumbnailContent
             filename={filename}
+            title={title}
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isSelected={selectedFiles.some((file) => file.id === id)}
