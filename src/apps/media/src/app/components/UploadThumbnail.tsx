@@ -74,7 +74,7 @@ export const UploadThumbnail: FC<Props> = ({
       <Thumbnail
         src={file.url}
         filename={action === "replace" ? originalFile.filename : file.filename}
-        title={action === "replace" ? originalFile?.title : null}
+        title={file.status === "success" ? file.title : null}
         imageHeight="300px"
         isDraggable={file.status === "success"}
         isTitleEditable={file.status === "success"}
