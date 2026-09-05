@@ -14,6 +14,7 @@ export type ActionButtonProps = Omit<
   isActive?: boolean;
   inActiveColor?: string;
   onClick?: () => void;
+  "data-cy"?: string;
 };
 
 export const ActionButton: FC<ActionButtonProps> = ({
@@ -24,6 +25,7 @@ export const ActionButton: FC<ActionButtonProps> = ({
   isActive,
   inActiveColor = "grey.400",
   onClick,
+  "data-cy": dataCy,
   ...props
 }) => {
   return (
@@ -47,6 +49,7 @@ export const ActionButton: FC<ActionButtonProps> = ({
         <span>
           <Button
             {...props}
+            data-cy={dataCy}
             onClick={onClick}
             loading={isLoading}
             sx={{ whiteSpace: "nowrap" }}
@@ -55,7 +58,13 @@ export const ActionButton: FC<ActionButtonProps> = ({
           </Button>
         </span>
       ) : (
-        <Box display="flex" alignItems="center" columnGap={1} px={1}>
+        <Box
+          data-cy={dataCy}
+          display="flex"
+          alignItems="center"
+          columnGap={1}
+          px={1}
+        >
           <CheckCircleRounded fontSize="small" sx={{ color: inActiveColor }} />
           <Typography
             variant="body2"

@@ -2,6 +2,9 @@ import {
   ContentItem,
   ContentModel,
   ContentModelField,
+  WebView,
+  Stylesheet,
+  Script,
   CreateStatusLabel,
   RedirectRequest,
   WorkflowStatusLabel,
@@ -69,6 +72,14 @@ declare global {
         fields: Partial<ContentModelField>;
         items: Partial<ContentItem>;
       }>;
+      task(
+        event: "seed:code",
+        path: string
+      ): Chainable<Partial<WebView> | Partial<Script> | Partial<Stylesheet>>;
+      task(
+        event: "cleanup:code",
+        files: Array<{ zuid: string; type: string }>
+      ): Chainable<null>;
       task(event: "cleanup:labels"): Chainable<string[]>;
       task(
         event: "api:createLabel",
