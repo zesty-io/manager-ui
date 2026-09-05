@@ -43,6 +43,7 @@ import {
   useUpdateWebViewMutation,
 } from "shell/services/instance";
 import { StudioHeader } from "./components/StudioHeader";
+import { StudioFeedbackModal } from "./components/StudioFeedbackModal";
 import { StudioPreview } from "./components/StudioPreview";
 import { StudioSidePanel } from "./components/StudioSidePanel";
 import { StudioInspectorPanel } from "./components/StudioInspectorPanel";
@@ -155,6 +156,7 @@ export const StudioWrapper = () => {
   const currentHoverStudioIdRef = useRef<string | null>(null);
   const [showPendingLayoutModal, setShowPendingLayoutModal] = useState(false);
   const [showSaveChangesModal, setShowSaveChangesModal] = useState(false);
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [interactionMode, setInteractionMode] =
     useState<InteractionMode>("content");
   const [studioSaving, setStudioSaving] = useState(false);
@@ -217,6 +219,7 @@ export const StudioWrapper = () => {
   const contentItems = useSelector((state: AppState) => state.content);
   const modelsState = useSelector((state: AppState) => state.models);
   const fieldsState = useSelector((state: AppState) => state.fields);
+  const userEmail = useSelector((state: AppState) => state.user.email);
   // Read content straight off the store rather than through the `contentItems`
   // render value. Three reasons: it keeps resolvePreviewValue — and therefore
   // handleSlotChange, handed straight to the panel — at a stable identity even
@@ -2285,6 +2288,7 @@ export const StudioWrapper = () => {
             pageItemZUID={pageItemZUID}
             unresolvedPath={unresolvedPath}
             logoSrc={contentOneLogoOnly}
+            onFeedbackClick={() => setShowFeedbackModal(true)}
           />
           <Box display="flex" flex="1" minHeight={0} width="100%">
             <ResizableContainer
@@ -2477,6 +2481,15 @@ export const StudioWrapper = () => {
           />
         </Paper>
       </Modal>
+      <StudioFeedbackModal
+        open={showFeedbackModal}
+        onClose={() => setShowFeedbackModal(false)}
+        email={userEmail}
+        instanceName={instance?.name}
+        instanceZUID={instance?.ZUID}
+        activePage={previewPath}
+        mode={interactionMode}
+      />
       {imageEditState && (
         <MemoryRouter>
           <Dialog
