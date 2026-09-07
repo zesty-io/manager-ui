@@ -446,9 +446,10 @@ jobs:
             while IFS= read -r f; do
               [ -z "$f" ] && continue
               # These are the workflow's own scratch files, never part of the fix commit
-              # (git add -A excludes them below) — scanning their prose for the token
-              # would false-positive if Claude's own PR description happens to mention
-              # LOADED_LOCAL_ while explaining why a fix is unrelated to it.
+              # (excluded from the tree entries the auto-fix step builds below) —
+              # scanning their prose for the token would false-positive if Claude's own
+              # PR description happens to mention LOADED_LOCAL_ while explaining why a
+              # fix is unrelated to it.
               case "$f" in classification.json|pr-description.md|rca-comment.md) continue ;; esac
               if [ -f "$f" ] && grep -qF "LOADED_LOCAL_" "$f"; then
                 content_hit="$content_hit$f"$'\n'
@@ -460,6 +461,17 @@ jobs:
               printf '%s\n%s\n' "$veto_hit" "$content_hit"
               exit 1
             fi
+
+            # Surface the already-computed list for the auto-fix step below instead of
+            # having it recompute the same `git diff` / `git ls-files` there — by that
+            # point the working tree may have moved on, and this is the one place that's
+            # already re-verified it against the blast-radius veto above. Plain
+            # `name=value` can't carry embedded newlines through $GITHUB_OUTPUT, so use
+            # the heredoc form with a random delimiter.
+            delim=$(openssl rand -hex 8)
+            echo "touched_files<<$delim" >> "$GITHUB_OUTPUT"
+            printf '%s\n' "$touched_files" >> "$GITHUB_OUTPUT"
+            echo "$delim" >> "$GITHUB_OUTPUT"
           fi
 
           echo "verdict=$verdict" >> "$GITHUB_OUTPUT"
@@ -522,12 +534,10 @@ jobs:
           gh issue comment "$ISSUE" --repo "$REPO" --body-file rca-comment.md
           echo "✅ Posted RCA-only comment on issue #$ISSUE."
 
-      - name: Open auto-fix PR
-        id: openpr
+      - name: Prepare auto-fix branch
+        id: preppr
         if: steps.classify.outputs.verdict == 'simple'
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          REPO: ${{ github.repository }}
           ISSUE: ${{ steps.detect.outputs.number }}
         run: |
           set -euo pipefail
@@ -537,21 +547,132 @@ jobs:
           fi
           slug=$(jq -r '.branch_slug' classification.json)
           title=$(jq -r '.pr_title' classification.json)
-          branch="fix/$ISSUE-$slug"
+          echo "branch=fix/$ISSUE-$slug" >> "$GITHUB_OUTPUT"
+          delim_title=$(openssl rand -hex 8)
+          echo "title<<$delim_title" >> "$GITHUB_OUTPUT"
+          printf '%s\n' "$title" >> "$GITHUB_OUTPUT"
+          echo "$delim_title" >> "$GITHUB_OUTPUT"
+          # The github-script step below builds the fix commit on top of dev's
+          # checked-out HEAD (actions/checkout above, ref: dev, fetch-depth: 1) — capture
+          # its commit and tree sha now. Nothing in this job commits locally, so HEAD is
+          # still exactly what checkout left it at, trial-fix edits and all (those are
+          # working-tree changes, not commits).
+          echo "dev_head_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "dev_tree_sha=$(git rev-parse HEAD^{tree})" >> "$GITHUB_OUTPUT"
 
-          # actions/checkout wires up a credential helper for pushing, but never sets a
-          # commit identity — git commit fails outright on a bare runner without this.
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git config user.name "github-actions[bot]"
-          git checkout -b "$branch"
-          # -A stages the whole tree, which would otherwise sweep up the workflow's own
-          # untracked scratch files (classification.json, pr-description.md) into the fix
-          # commit. Exclude them by name; pr-description.md still needs to exist on disk
-          # afterward for the --body-file read into gh pr create below.
-          git add -A -- . ':(exclude)classification.json' ':(exclude)pr-description.md' ':(exclude)rca-comment.md'
-          git commit -m "$title"
-          git push -u origin "$branch"
+      # GitHub only shows a commit as "Verified" when the commit object itself was
+      # created through the Git Data API (or GPG/SSH-signed) — a commit made locally with
+      # `git commit` and merely pushed with a token never qualifies, even authenticated
+      # as github-actions[bot]. This builds the same fix commit through
+      # createBlob/createTree/createCommit/createRef instead, with no author/committer
+      # override and no key provisioning: the API defaults both to the token's own
+      # identity, which is exactly what GitHub verifies.
+      - name: Create verified auto-fix commit
+        id: createcommit
+        if: steps.classify.outputs.verdict == 'simple'
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7
+        env:
+          TOUCHED_FILES: ${{ steps.classify.outputs.touched_files }}
+          BRANCH: ${{ steps.preppr.outputs.branch }}
+          TITLE: ${{ steps.preppr.outputs.title }}
+          BASE_TREE_SHA: ${{ steps.preppr.outputs.dev_tree_sha }}
+          PARENT_SHA: ${{ steps.preppr.outputs.dev_head_sha }}
+        with:
+          script: |
+            const fs = require("fs");
 
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            // Workflow scratch files, never part of the fix commit — same exclusion the
+            // old `git add -A ':(exclude)...'` pathspec applied.
+            const excluded = new Set([
+              "classification.json",
+              "pr-description.md",
+              "rca-comment.md",
+            ]);
+
+            const touchedFiles = (process.env.TOUCHED_FILES || "")
+              .split("\n")
+              .map((f) => f.trim())
+              .filter((f) => f.length > 0 && !excluded.has(f));
+
+            if (touchedFiles.length === 0) {
+              core.setFailed(
+                "No touched files to commit — refusing to open an empty auto-fix PR."
+              );
+              return;
+            }
+
+            const treeEntries = [];
+            for (const file of touchedFiles) {
+              if (!fs.existsSync(file)) {
+                // Deleted file: represent it in the tree with sha: null, no blob to
+                // create — this is how the Git Data API expresses a removal.
+                treeEntries.push({ path: file, mode: "100644", type: "blob", sha: null });
+                continue;
+              }
+
+              // Never trust a path blindly: a symlink (or any other non-regular file)
+              // read as bytes and committed as 100644/100755 would silently mis-commit
+              // its target's content instead of the link itself. Fail the job instead.
+              const lstat = fs.lstatSync(file);
+              if (lstat.isSymbolicLink() || !lstat.isFile()) {
+                core.setFailed(
+                  `Refusing to commit ${file}: not a regular file (symlink or other non-regular type).`
+                );
+                return;
+              }
+
+              const stat = fs.statSync(file);
+              const mode = (stat.mode & 0o100) !== 0 ? "100755" : "100644";
+              const content = fs.readFileSync(file);
+              const blob = await github.rest.git.createBlob({
+                owner,
+                repo,
+                content: content.toString("base64"),
+                encoding: "base64",
+              });
+
+              treeEntries.push({ path: file, mode, type: "blob", sha: blob.data.sha });
+            }
+
+            // base_tree carries forward every file dev already has that this run didn't
+            // touch — createTree only needs entries for what changed or was deleted.
+            const tree = await github.rest.git.createTree({
+              owner,
+              repo,
+              base_tree: process.env.BASE_TREE_SHA,
+              tree: treeEntries,
+            });
+
+            const commit = await github.rest.git.createCommit({
+              owner,
+              repo,
+              message: process.env.TITLE,
+              tree: tree.data.sha,
+              parents: [process.env.PARENT_SHA],
+            });
+
+            await github.rest.git.createRef({
+              owner,
+              repo,
+              ref: `refs/heads/${process.env.BRANCH}`,
+              sha: commit.data.sha,
+            });
+
+            core.info(`✅ Created verified commit ${commit.data.sha} on ${process.env.BRANCH}`);
+
+      - name: Open auto-fix PR
+        id: openpr
+        if: steps.classify.outputs.verdict == 'simple'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          ISSUE: ${{ steps.detect.outputs.number }}
+          BRANCH: ${{ steps.preppr.outputs.branch }}
+          TITLE: ${{ steps.preppr.outputs.title }}
+        run: |
+          set -euo pipefail
           # gh pr create resolves --reviewer logins to IDs before it creates anything —
           # if even one of these three no longer has repo access, the whole PR creation
           # fails, not just the reviewer request. Check each one first and only request
@@ -573,12 +694,15 @@ jobs:
             unset IFS
           fi
 
-          pr_url=$(gh pr create --repo "$REPO" --base dev --title "$title" \
+          # The branch only exists as a ref created via the API in the previous step —
+          # there's no local checkout of it for gh to infer --head from, so pass it
+          # explicitly.
+          pr_url=$(gh pr create --repo "$REPO" --base dev --head "$BRANCH" --title "$TITLE" \
             --label "sentry-auto-fix" \
             "${reviewer_args[@]}" \
             --body-file pr-description.md)
           echo "pr_number=${pr_url##*/}" >> "$GITHUB_OUTPUT"
-          echo "✅ Opened auto-fix PR on branch $branch for issue #$ISSUE."
+          echo "✅ Opened auto-fix PR on branch $BRANCH for issue #$ISSUE."
 
       # Checkpoint 2: confirm the branch that ran actually produced its outcome on
       # GitHub — the action (and the deterministic steps above) can silently no-op.

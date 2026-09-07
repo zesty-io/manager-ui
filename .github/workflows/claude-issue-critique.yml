@@ -330,7 +330,7 @@ jobs:
   triage:
     needs: duplicate-check
     # Skip bot-authored issues, non-`opened` events, and HIGH-confidence
-    # duplicates (avoids wasting an Opus run on a likely-duplicate ticket).
+    # duplicates (avoids spending a full triage run on a likely-duplicate ticket).
     # `always()` is required: without it, a duplicate-check failure would
     # skip triage too. The explicit `result != 'success'` check matters
     # because `outputs.tier` isn't reliably empty on failure: if the model
@@ -463,14 +463,13 @@ jobs:
               Never remove a label already on the issue, even one you disagree
               with, and never edit the issue's own title or body.
 
-          # claude-opus-4-8 is the current Opus model and is intentional — do not downgrade to claude-opus-4-7.
           # Write is unscoped (not `Write(triage-comment.md)`): the Write tool
           # always checks the absolutized file_path, so a path-scoped rule
           # never reliably matches (anthropics/claude-code#67849) — this was
           # silently dropping some runs' comments/labels entirely.
           claude_args: |
             --allowedTools "Bash(gh issue comment:*),Bash(gh issue view:*),Bash(gh issue edit:*),Write,Read,Grep,Glob"
-            --model claude-opus-4-8
+            --model claude-sonnet-5
             --max-turns 100
 
       # The Claude action reports success even when the model fails to post its
