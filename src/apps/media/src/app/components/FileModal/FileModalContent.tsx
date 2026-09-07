@@ -44,6 +44,8 @@ import { notify } from "../../../../../../shell/store/notifications";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query";
 import { format } from "date-fns";
 
+export const MEDIA_TITLE_MAXLENGTH = 255;
+
 interface Props {
   id?: string;
   src?: string;
@@ -395,11 +397,25 @@ export const FileModalContent: FC<Props> = ({
             placeholder="Enter title"
             aria-label="Title TextField"
             value={newTitle}
-            onChange={(event) => setNewTitle(event.target.value)}
+            onChange={(event) => {
+              if (event.target.value.length > MEDIA_TITLE_MAXLENGTH) {
+                return;
+              }
+
+              setNewTitle(event.target.value);
+            }}
             multiline
             rows={3}
             fullWidth
           />
+          <Typography
+            variant="body2"
+            color="text.disabled"
+            textAlign="right"
+            mt={0.5}
+          >
+            {newTitle?.length ?? 0} / {MEDIA_TITLE_MAXLENGTH}
+          </Typography>
           {newTitle !== title && (
             <Button
               disabled={isLoadingUpdateAltText}

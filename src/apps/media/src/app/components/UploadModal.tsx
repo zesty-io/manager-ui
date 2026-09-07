@@ -130,7 +130,7 @@ export const UploadModal: FC = () => {
             >
               {filesToUpload.map((file) => {
                 return (
-                  <Box position="relative" key={file.uploadID} maxHeight={438}>
+                  <Box position="relative" key={file.uploadID}>
                     <UploadThumbnail file={file} />
                   </Box>
                 );
