@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useParams } from "react-router";
 
 import { EmptyState } from "../components/EmptyState";
@@ -56,6 +57,7 @@ export const BinMedia = ({
   addImagesCallback,
   setCurrentFilesCallback,
 }: Props) => {
+  const { t } = useTranslation();
   const [params, setParams] = useSearchParams();
   const sortOrder = params.get("sort");
   const filetypeFilter = params.get("filetype") as Filetype;
@@ -204,7 +206,7 @@ export const BinMedia = ({
                   variant="h6"
                   sx={{ pl: 3, pt: 2, pb: 1.5 }}
                 >
-                  {binFiles?.length} matches found
+                  {t("media.matchesFound", { count: binFiles?.length })}
                 </Typography>
               )}
               <DnDProvider

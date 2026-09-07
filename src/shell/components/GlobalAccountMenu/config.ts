@@ -17,39 +17,50 @@ export type ClickAction = [
 ];
 interface MenuItem {
   icon: SvgIconComponent;
-  text: string;
+  // Translation key resolved at render time via t(). t() can't run at module
+  // level, so the label lives as a key here and is translated in the component.
+  textKey: string;
+  // Stable, locale-independent test selector. Kept separate from the label so
+  // data-cy never changes when the UI language changes.
+  dataCy: string;
   action: ClickAction;
 }
 
 export const MENU_ITEMS: MenuItem[] = [
   {
     icon: InfoRounded,
-    text: "Your Profile",
+    textKey: "shell.accountYourProfile",
+    dataCy: "YourProfile",
     action: ["openUrl", "https://www.zesty.io/profile/"],
   },
   {
     icon: LockRounded,
-    text: "Change Password",
+    textKey: "shell.accountChangePassword",
+    dataCy: "ChangePassword",
     action: ["openUrl", "https://www.zesty.io/profile/security/"],
   },
   {
     icon: DataObjectRounded,
-    text: "Preferences",
+    textKey: "shell.accountPreferences",
+    dataCy: "Preferences",
     action: ["openUrl", "https://www.zesty.io/profile/preferences/"],
   },
   {
     icon: GridViewRounded,
-    text: "View All Instances",
+    textKey: "shell.accountViewAllInstances",
+    dataCy: "ViewAll Instances",
     action: ["openUrl", "https://www.zesty.io/instances/"],
   },
   {
     icon: MenuBookRounded,
-    text: "Read Docs",
+    textKey: "shell.accountReadDocs",
+    dataCy: "ReadDocs",
     action: ["openView", "docs"],
   },
   {
     icon: SupportAgentRounded,
-    text: "Get Help",
+    textKey: "shell.accountGetHelp",
+    dataCy: "GetHelp",
     action: [
       "openUrl",
       `https://www.zesty.io/instances/${instanceZUID}/support`,
@@ -57,7 +68,8 @@ export const MENU_ITEMS: MenuItem[] = [
   },
   {
     icon: LogoutRounded,
-    text: "Log Out",
+    textKey: "shell.accountLogOut",
+    dataCy: "LogOut",
     action: ["logOut", ""],
   },
 ];

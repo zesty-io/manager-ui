@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router";
 import cx from "classnames";
+import { useTranslation } from "react-i18next";
 
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -11,6 +12,7 @@ import { activate } from "shell/store/releases";
 
 import styles from "./Activate.less";
 export function Activate({ isContentSubpage }) {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -31,10 +33,8 @@ export function Activate({ isContentSubpage }) {
   return (
     <div className={cx(styles.Activate, styles.bodyText)}>
       <div>
-        <h1 className={styles.headline}>Releases</h1>
-        <p className={styles.title}>
-          Publish groups of content at the same time.
-        </p>
+        <h1 className={styles.headline}>{t("release.releasesHeading")}</h1>
+        <p className={styles.title}>{t("release.activateSubtitle")}</p>
 
         <Button
           variant="contained"
@@ -45,7 +45,7 @@ export function Activate({ isContentSubpage }) {
           onClick={handleActivate}
           startIcon={loading ? <CircularProgress size="20px" /> : <AddIcon />}
         >
-          Activate Release App
+          {t("release.activateButton")}
         </Button>
       </div>
     </div>

@@ -1,16 +1,17 @@
 import { Tooltip, Chip } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 const CHIP_CONFIG = {
   scheduled: {
-    text: "scheduled to publish",
+    actionKey: "shell.relationalVersionActionScheduled",
     color: "warning",
   },
   published: {
-    text: "published",
+    actionKey: "shell.relationalVersionActionPublished",
     color: "success",
   },
   draft: {
-    text: "saved",
+    actionKey: "shell.relationalVersionActionSaved",
     color: "info",
   },
 } as const;
@@ -27,6 +28,7 @@ export const VersionChip = ({
   dateTime,
   publisher,
 }: VersionChipProps) => {
+  const { t, i18n } = useTranslation();
   return (
     <Tooltip
       placement="bottom-start"
@@ -44,16 +46,19 @@ export const VersionChip = ({
       }}
       title={
         <div>
-          v{version} {CHIP_CONFIG[type]?.text} on <br />
-          {new Date(dateTime).toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-            hour: "numeric",
-            minute: "numeric",
-            timeZoneName: "short",
-          })}{" "}
-          <br /> by {publisher}
+          {t("shell.relationalVersionTooltip", {
+            version,
+            action: t(CHIP_CONFIG[type]?.actionKey),
+            date: new Date(dateTime).toLocaleDateString(i18n.language, {
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+              hour: "numeric",
+              minute: "numeric",
+              timeZoneName: "short",
+            }),
+            publisher,
+          })}
         </div>
       }
       slotProps={{

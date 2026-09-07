@@ -1,5 +1,6 @@
 import { Box, Button, SvgIcon } from "@mui/material";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   LocalFireDepartmentRounded,
   CloudUploadRounded,
@@ -29,36 +30,16 @@ import { GainersLosersWrapper } from "./GainersLosersWrapper";
 import { LatestPublishesWrapper } from "./LatestPublishesWrapper";
 import { RecentEditsWrapper } from "./RecentEditsWrapper";
 
+// nameKey holds the i18n key; the label is resolved with t() in the component.
 const tableTabs = [
-  { name: "Most Popular", icon: LocalFireDepartmentRounded },
-  { name: "Gainers", icon: TrendingUpRounded },
-  { name: "Losers", icon: TrendingDownRounded },
-  { name: "Latest Publishes", icon: CloudUploadRounded },
-  { name: "Recent Edits", icon: EditRounded },
-];
-
-const columns = [
   {
-    field: "path",
-    headerName: "Name",
-    flex: 1,
-    sortable: false,
-    renderCell: ({ row }: GridRenderCellParams) => <NameCell {...row} />,
+    nameKey: "content.analyticsTabMostPopular",
+    icon: LocalFireDepartmentRounded,
   },
-  {
-    field: "stats",
-    headerName: "Stats",
-    sortable: false,
-    renderCell: ({ row }: GridRenderCellParams) => <StatsCell {...row} />,
-  },
-  {
-    field: "views",
-    headerName: "Views",
-    sortable: false,
-    renderCell: ({ row }: GridRenderCellParams) => <ViewsCell {...row} />,
-    width: 168,
-    headerAlign: "right",
-  },
+  { nameKey: "content.analyticsTabGainers", icon: TrendingUpRounded },
+  { nameKey: "content.analyticsTabLosers", icon: TrendingDownRounded },
+  { nameKey: "content.analyticsTabLatestPublishes", icon: CloudUploadRounded },
+  { nameKey: "content.analyticsTabRecentEdits", icon: EditRounded },
 ];
 
 type Props = {
@@ -68,6 +49,7 @@ type Props = {
 };
 
 export const ItemsTable = ({ propertyId, startDate, endDate }: Props) => {
+  const { t } = useTranslation();
   const [selectedTab, setSelectedTab] = useState(0);
 
   return (
@@ -88,7 +70,7 @@ export const ItemsTable = ({ propertyId, startDate, endDate }: Props) => {
             }
             onClick={() => setSelectedTab(index)}
           >
-            {tab.name}
+            {t(tab.nameKey)}
           </Button>
         ))}
       </Box>
@@ -148,6 +130,33 @@ export const ItemsTableContent = ({
   showSkeleton,
   isRecentEdits,
 }: ItemsTableContentProps) => {
+  const { t } = useTranslation();
+  const columns = useMemo(
+    () => [
+      {
+        field: "path",
+        headerName: t("common.name"),
+        flex: 1,
+        sortable: false,
+        renderCell: ({ row }: GridRenderCellParams) => <NameCell {...row} />,
+      },
+      {
+        field: "stats",
+        headerName: t("content.analyticsColStats"),
+        sortable: false,
+        renderCell: ({ row }: GridRenderCellParams) => <StatsCell {...row} />,
+      },
+      {
+        field: "views",
+        headerName: t("content.analyticsMetricViews"),
+        sortable: false,
+        renderCell: ({ row }: GridRenderCellParams) => <ViewsCell {...row} />,
+        width: 168,
+        headerAlign: "right",
+      },
+    ],
+    [t]
+  );
   const { data: propertiesData } = useGetAnalyticsPropertiesQuery();
   const propertyData = propertiesData?.properties?.find(
     (property: any) => property.name === propertyId

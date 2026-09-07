@@ -1,4 +1,5 @@
 import { ScheduleRounded, PieChartRounded } from "@mui/icons-material";
+import { useTranslation } from "react-i18next";
 
 import {
   AppSideBar,
@@ -6,15 +7,17 @@ import {
 } from "../../../../../shell/components/AppSidebar";
 
 export const ReportingNav = () => {
+  const { t } = useTranslation();
+
   const tree: SubMenu[] = [
     {
-      name: "Activity Log",
+      name: t("reports.activityLog"),
       path: "/reports/activity-log",
       icon: ScheduleRounded,
       substringPathMatch: true,
     },
     {
-      name: "Metrics",
+      name: t("reports.metrics"),
       path: "/reports/metrics",
       icon: PieChartRounded,
     },
@@ -25,7 +28,7 @@ export const ReportingNav = () => {
       data-cy="reports-nav"
       mode="dark"
       subMenus={tree}
-      headerTitle="Reports"
+      headerTitle={t("shell.navReports")}
       withSearch={false}
       withTitleButton={false}
     />

@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Dialog,
   DialogTitle,
@@ -25,7 +26,8 @@ import {
 } from "../../../../../../../shell/services/instance";
 import { NoSearchResults } from "../../../../../../../shell/components/NoSearchResults";
 import CompareArrowsRoundedIcon from "@mui/icons-material/CompareArrowsRounded";
-import { formatDistanceToNow, isValid } from "date-fns";
+import { formatDistanceToNowLocalized } from "shell/i18n/dates";
+import { isValid } from "date-fns";
 import { useSelector } from "react-redux";
 import { User } from "../../../../../../../shell/services/types";
 import { useGetUsersQuery } from "../../../../../../../shell/services/accounts";
@@ -40,6 +42,7 @@ type Props = {
 };
 
 export const CompareDialog = ({ onClose }: Props) => {
+  const { t } = useTranslation();
   const [params, setParams] = useParams();
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -120,11 +123,10 @@ export const CompareDialog = ({ onClose }: Props) => {
               <CompareArrowsRoundedIcon color="info" />
             </Box>
             <Typography variant="h5" fontWeight={700} sx={{ mt: 1.5 }}>
-              Compare Page
+              {t("content.analyticsComparePage")}
             </Typography>
             <Typography variant="body2" sx={{ mt: 1 }} color="text.secondary">
-              Please select a page you&apos;d like to compare your current page
-              against
+              {t("content.analyticsComparePageBody")}
             </Typography>
             <SearchBox
               value={search}
@@ -145,7 +147,7 @@ export const CompareDialog = ({ onClose }: Props) => {
                 ),
               }}
               inputRef={inputRef}
-              placeholder="Search"
+              placeholder={t("common.search")}
               fullWidth
             />
           </Box>
@@ -157,8 +159,8 @@ export const CompareDialog = ({ onClose }: Props) => {
           {debouncedSearch &&
           !isFetching &&
           searchedContentItemPublishings?.length
-            ? "Search Results"
-            : "Recent Publishes"}
+            ? t("content.analyticsSearchResults")
+            : t("content.analyticsRecentPublishes")}
         </Typography>
       </DialogTitle>
       <DialogContent>
@@ -232,6 +234,7 @@ export const CompareDialog = ({ onClose }: Props) => {
 };
 
 const PublishingItem = ({ publishing, divider, onClick }: any) => {
+  const { t } = useTranslation();
   const { data: itemData, isFetching: isFetchingItemData } =
     useGetContentItemQuery(publishing.itemZUID);
   const { data: modelData, isFetching: isFetchingModelData } =
@@ -265,7 +268,7 @@ const PublishingItem = ({ publishing, divider, onClick }: any) => {
     isFetchingItemData || isFetchingModelData || isFetchingUsersData;
 
   const userInfo =
-    firstName || lastName ? `${firstName} ${lastName}` : "Unknown User";
+    firstName || lastName ? `${firstName} ${lastName}` : t("shell.unknownUser");
 
   if (!showSkeleton && !itemData?.web?.path) return null;
 
@@ -274,7 +277,7 @@ const PublishingItem = ({ publishing, divider, onClick }: any) => {
     : null;
   const relativeTime =
     publishDate && isValid(publishDate)
-      ? formatDistanceToNow(publishDate, { addSuffix: true })
+      ? formatDistanceToNowLocalized(publishDate, { addSuffix: true })
       : "";
 
   return (
@@ -330,7 +333,11 @@ const PublishingItem = ({ publishing, divider, onClick }: any) => {
           showSkeleton ? (
             <Skeleton variant="rectangular" height={10} width={425} />
           ) : (
-            `${modelData?.label} • ${relativeTime} • by ${userInfo}`
+            t("content.analyticsItemMetaLine", {
+              label: modelData?.label,
+              time: relativeTime,
+              user: userInfo,
+            })
           )
         }
         secondaryTypographyProps={{

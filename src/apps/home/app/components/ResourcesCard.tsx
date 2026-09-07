@@ -23,6 +23,7 @@ import GroupAddRoundedIcon from "@mui/icons-material/GroupAddRounded";
 import CodeRoundedIcon from "@mui/icons-material/CodeRounded";
 import CollectionsBookmarkRoundedIcon from "@mui/icons-material/CollectionsBookmarkRounded";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import InviteMembersModal from "../../../../shell/components/InviteMembersModal";
 
 interface Props {
@@ -31,6 +32,7 @@ interface Props {
 }
 
 export const ResourcesCard = ({ hideHeader, hideFooter }: Props) => {
+  const { t } = useTranslation();
   const [showMeetModal, setShowMeetModal] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
 
@@ -54,7 +56,7 @@ export const ResourcesCard = ({ hideHeader, hideFooter }: Props) => {
             <RocketLaunchRoundedIcon color="primary" />
           </ListItemIcon>
           <ListItemText
-            primary="Get Started"
+            primary={t("common.getStarted")}
             primaryTypographyProps={{
               variant: "body2",
             }}
@@ -72,7 +74,7 @@ export const ResourcesCard = ({ hideHeader, hideFooter }: Props) => {
             )}
           </ListItemIcon>
           <ListItemText
-            primary="Platform Docs"
+            primary={t("common.platformDocs")}
             primaryTypographyProps={{
               variant: "body2",
             }}
@@ -86,7 +88,7 @@ export const ResourcesCard = ({ hideHeader, hideFooter }: Props) => {
             <img src={postmanIcon} />
           </ListItemIcon>
           <ListItemText
-            primary="Instance API Docs"
+            primary={t("common.instanceApiDocs")}
             primaryTypographyProps={{
               variant: "body2",
             }}
@@ -102,7 +104,7 @@ export const ResourcesCard = ({ hideHeader, hideFooter }: Props) => {
             <img src={graphQLIcon} />
           </ListItemIcon>
           <ListItemText
-            primary="GraphQL Docs"
+            primary={t("common.graphqlDocs")}
             primaryTypographyProps={{
               variant: "body2",
             }}
@@ -116,7 +118,7 @@ export const ResourcesCard = ({ hideHeader, hideFooter }: Props) => {
             <img width="24px" height="24px" src={parsleyIcon} />
           </ListItemIcon>
           <ListItemText
-            primary="Parsley Docs"
+            primary={t("common.parsleyDocs")}
             primaryTypographyProps={{
               variant: "body2",
             }}
@@ -135,7 +137,7 @@ export const ResourcesCard = ({ hideHeader, hideFooter }: Props) => {
               <img src={starCheckIcon} />
             </ListItemIcon>
             <ListItemText
-              primary="Release Notes"
+              primary={t("dashboard.releaseNotes")}
               primaryTypographyProps={{
                 variant: "body2",
               }}
@@ -151,7 +153,7 @@ export const ResourcesCard = ({ hideHeader, hideFooter }: Props) => {
       {!hideHeader && (
         <Box sx={{ p: 2 }}>
           <Typography variant="h6" fontWeight={600}>
-            Resources
+            {t("dashboard.resources")}
           </Typography>
           <Typography
             variant="body3"
@@ -159,22 +161,30 @@ export const ResourcesCard = ({ hideHeader, hideFooter }: Props) => {
             fontWeight={600}
             sx={{ mt: 1 }}
           >
-            Everything you need to get the best out of Zesty.
+            {t("dashboard.resourcesSubtitle")}
           </Typography>
         </Box>
       )}
       {matureItems(false, false)}
       {!hideFooter && (
         <Box display="flex" justifyContent="space-between" padding={2}>
-          <Typography variant="body3" color="text.secondary">
-            JOIN OUR COMMUNITY
+          <Typography
+            variant="body3"
+            color="text.secondary"
+            sx={{ textTransform: "uppercase" }}
+          >
+            {t("dashboard.joinCommunity")}
           </Typography>
           <Box
             display="flex"
             gap={2}
+            ml={1}
+            alignItems="center"
             sx={{
               img: {
                 cursor: "pointer",
+                width: 20,
+                height: 20,
               },
             }}
           >

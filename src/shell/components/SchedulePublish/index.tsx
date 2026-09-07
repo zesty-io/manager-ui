@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Dialog,
   DialogActions,
@@ -21,8 +22,12 @@ import { useGetUsersQuery } from "../../services/accounts";
 import { FieldTypeDateTime } from "../FieldTypeDateTime";
 import { TIMEZONES } from "../FieldTypeDateTime/util";
 import { publish, unpublish } from "../../store/content";
+import {
+  formatDistanceToNowLocalized,
+  getDateFnsLocale,
+} from "../../i18n/dates";
 
-import { format as fmt, isBefore, formatDistanceToNow } from "date-fns";
+import { format as fmt, isBefore } from "date-fns";
 import { zonedTimeToUtc, formatInTimeZone } from "date-fns-tz";
 
 type SchedulePublishProps = {
@@ -40,6 +45,7 @@ export const SchedulePublish = ({
   onScheduleSuccess,
   onUnscheduleSuccess,
 }: SchedulePublishProps) => {
+  const { t, i18n } = useTranslation();
   const dispatch = useDispatch();
   const { data: users } = useGetUsersQuery();
 
@@ -85,7 +91,8 @@ export const SchedulePublish = ({
     const localPretty = formatInTimeZone(
       selectedUtc,
       publishTimezone,
-      "MMMM do yyyy, 'at' h:mm a"
+      "MMMM do yyyy, 'at' h:mm a",
+      { locale: getDateFnsLocale(i18n.language) }
     );
 
     dispatch(
@@ -132,7 +139,8 @@ export const SchedulePublish = ({
     ? formatInTimeZone(
         item.scheduling.publishAt,
         guessedTz,
-        "MMM d, yyyy 'at' h:mm a"
+        "MMM d, yyyy 'at' h:mm a",
+        { locale: getDateFnsLocale(i18n.language) }
       )
     : "";
 
@@ -169,8 +177,9 @@ export const SchedulePublish = ({
             <Box mb={1}>
               <Typography variant="h5" display="inline" fontWeight={700}>
                 {item?.scheduling?.isScheduled
-                  ? "Unschedule Publish:"
-                  : "Schedule Publish:"}
+                  ? t("shell.schedulePublishTitleUnschedule")
+                  : t("shell.schedulePublishTitleSchedule")}
+                {":"}
                 &nbsp;
               </Typography>
               <Typography variant="h5" display="inline">
@@ -180,16 +189,25 @@ export const SchedulePublish = ({
 
             <Typography variant="body2" color="text.secondary">
               {item?.scheduling?.isScheduled
-                ? `v${item?.web?.version} is scheduled to publish on ${scheduledLocalText} in ${tzLabel}.`
-                : `v${item?.web?.version} saved ${
-                    item?.web?.createdAt
-                      ? formatDistanceToNow(new Date(item.web.createdAt), {
-                          addSuffix: true,
-                        })
-                      : ""
-                  } by ${latestChangeCreator?.firstName ?? ""} ${
-                    latestChangeCreator?.lastName ?? ""
-                  }`}
+                ? t("shell.schedulePublishScheduledInfo", {
+                    version: item?.web?.version,
+                    date: scheduledLocalText,
+                    timezone: tzLabel,
+                  })
+                : t("shell.schedulePublishSavedInfo", {
+                    version: item?.web?.version,
+                    distance: item?.web?.createdAt
+                      ? formatDistanceToNowLocalized(
+                          new Date(item.web.createdAt),
+                          {
+                            addSuffix: true,
+                          }
+                        )
+                      : "",
+                    name: `${latestChangeCreator?.firstName ?? ""} ${
+                      latestChangeCreator?.lastName ?? ""
+                    }`.trim(),
+                  })}
             </Typography>
           </Box>
         </Stack>
@@ -198,13 +216,12 @@ export const SchedulePublish = ({
       <DialogContent data-cy="PublishScheduleModal">
         {item?.scheduling?.isScheduled ? (
           <Alert severity="info" icon={<InfoRoundedIcon />}>
-            This will enable the ability to schedule or publish other versions
-            of this content item
+            {t("shell.schedulePublishUnscheduleInfo")}
           </Alert>
         ) : (
           <>
             <Typography variant="subtitle2" fontWeight={600} mb={0.5}>
-              Publish on
+              {t("shell.schedulePublishOnLabel")}
             </Typography>
             <FieldTypeDateTime
               disablePast
@@ -225,8 +242,7 @@ export const SchedulePublish = ({
                 icon={<WarningRoundedIcon fontSize="inherit" />}
                 sx={{ mt: 2.5 }}
               >
-                Since the selected time is a current or past date, this will be
-                immediately published.
+                {t("shell.schedulePublishPastWarning")}
               </Alert>
             )}
           </>
@@ -241,7 +257,7 @@ export const SchedulePublish = ({
           onClick={onClose}
           disabled={isLoading}
         >
-          Cancel
+          {t("common.cancel")}
         </Button>
 
         {item?.scheduling?.isScheduled ? (
@@ -253,7 +269,7 @@ export const SchedulePublish = ({
             onClick={handleUnschedulePublish}
             loading={isLoading}
           >
-            Unschedule Publish
+            {t("shell.schedulePublishUnscheduleButton")}
           </Button>
         ) : (
           <Button
@@ -269,7 +285,7 @@ export const SchedulePublish = ({
             }}
             loading={isLoading}
           >
-            Schedule Publish
+            {t("shell.schedulePublishButton")}
           </Button>
         )}
       </DialogActions>

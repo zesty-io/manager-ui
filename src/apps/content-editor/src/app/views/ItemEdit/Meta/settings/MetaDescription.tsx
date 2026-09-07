@@ -1,8 +1,8 @@
-import { useState, useEffect, ChangeEvent } from "react";
-import { connect, useDispatch } from "react-redux";
+import { ChangeEvent } from "react";
+import { connect } from "react-redux";
 import { TextField, Box } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
-import { notify } from "../../../../../../../../shell/store/notifications";
 import { FieldShell } from "../../../../components/Editor/Field/FieldShell";
 import { MaxLengths } from "..";
 import { hasErrors } from "./util";
@@ -30,16 +30,18 @@ export default connect()(function MetaDescription({
   isAIAssistedFlow,
   required,
 }: MetaDescriptionProps) {
+  const { t } = useTranslation();
+
   return (
     <Box data-cy="metaDescription" id="metaDescription">
       <AIFieldShell
         ZUID="metaDescription"
         ref={aiButtonRef}
         settings={{
-          label: "Meta Description",
+          label: t("content.itemEditMetaDescription"),
           required,
         }}
-        customTooltip="This description appears as text snippet below the title in search engine and social media previews. The ideal length for a meta description is 50 to 160 characters."
+        customTooltip={t("content.itemEditMetaDescriptionTooltip")}
         withInteractiveTooltip={false}
         withLengthCounter
         maxLength={MaxLengths.metaDescription}
@@ -60,7 +62,7 @@ export default connect()(function MetaDescription({
         <TextField
           name="metaDescription"
           value={value}
-          placeholder="This is the description search engines should use in their results"
+          placeholder={t("content.itemEditMetaDescriptionPlaceholder")}
           onChange={(evt) => onChange(evt.target.value, "metaDescription")}
           multiline
           rows={3}

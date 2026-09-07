@@ -1,5 +1,6 @@
 import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
+import i18n from "shell/i18n";
 
 export function instances(state = [], action) {
   switch (action.type) {
@@ -31,7 +32,7 @@ export function fetchInstances() {
           dispatch(
             notify({
               kind: "warn",
-              message: "There was an issue loading your instances list",
+              message: i18n.t("shell.failedLoadInstancesList"),
             })
           );
         }
@@ -40,7 +41,7 @@ export function fetchInstances() {
           dispatch(
             notify({
               kind: "warn",
-              message: "You are forbidden from loading an instances list",
+              message: i18n.t("shell.forbiddenLoadInstancesList"),
             })
           );
         }

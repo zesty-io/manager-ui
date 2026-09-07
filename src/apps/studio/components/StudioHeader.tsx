@@ -2,6 +2,7 @@ import AutoAwesomeMosaicRoundedIcon from "@mui/icons-material/AutoAwesomeMosaicR
 import AutoAwesomeRoundedIcon from "@mui/icons-material/AutoAwesomeRounded";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import { Box, Chip, ToggleButton, ToggleButtonGroup } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { LanguageSelector } from "../../content-editor/src/app/views/ItemEdit/components/ItemEditHeader/LanguageSelector";
 import { InteractionMode, usesLayoutGrammar } from "../hooks/studioTypes";
 
@@ -32,22 +33,22 @@ type StudioHeaderProps = {
 
 const MODE_OPTIONS: {
   mode: InteractionMode;
-  label: string;
+  labelKey: string;
   icon: JSX.Element;
 }[] = [
   {
     mode: "full",
-    label: "Full",
+    labelKey: "content.studioModeFull",
     icon: <AutoAwesomeRoundedIcon fontSize="small" />,
   },
   {
     mode: "content",
-    label: "Content",
+    labelKey: "content.studioModeContent",
     icon: <EditRoundedIcon fontSize="small" />,
   },
   {
     mode: "layout",
-    label: "Layout",
+    labelKey: "content.studioModeLayout",
     icon: <AutoAwesomeMosaicRoundedIcon fontSize="small" />,
   },
 ];
@@ -65,6 +66,7 @@ export const StudioHeader = ({
   unresolvedPath,
   logoSrc,
 }: StudioHeaderProps) => {
+  const { t } = useTranslation();
   const [codeIdSegment, ...pathSegments] = selectedLayoutBreadcrumb;
 
   return (
@@ -198,7 +200,7 @@ export const StudioHeader = ({
                 key={option.mode}
                 value={option.mode}
                 data-cy={`StudioModeToggleOption-${option.mode}`}
-                aria-label={option.label}
+                aria-label={t(option.labelKey)}
               >
                 {option.icon}
               </ToggleButton>

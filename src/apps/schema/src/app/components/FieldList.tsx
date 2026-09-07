@@ -1,4 +1,5 @@
 import { useState, useMemo, useRef, useEffect } from "react";
+import { useTranslation, Trans } from "react-i18next";
 import {
   Box,
   Button,
@@ -28,7 +29,7 @@ import { FieldsListRight } from "./FieldsListRight";
 import { NoResults } from "./NoResults";
 import { ContentModelField } from "../../../../../shell/services/types";
 import { FieldEmptyState } from "./FieldEmptyState";
-import { SEO_FIELDS, SYSTEM_FIELDS, SystemField } from "./configs";
+import { getSeoFields, getSystemFields, SystemField } from "./configs";
 import { useParams as useSearchParams } from "../../../../../shell/hooks/useParams";
 import SearchBox from "../../../../../shell/components/SearchBox";
 
@@ -40,6 +41,9 @@ interface Props {
   onNewFieldModalClick: (sortIndex: number | null) => void;
 }
 export const FieldList = ({ onNewFieldModalClick }: Props) => {
+  const { t } = useTranslation();
+  const SEO_FIELDS = getSeoFields(t);
+  const SYSTEM_FIELDS = getSystemFields(t);
   const params = useParams<Params>();
   const { id } = params;
   const [searchParams] = useSearchParams();
@@ -189,7 +193,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
           <SearchBox
             data-cy="FieldListFilter"
             size="small"
-            placeholder="Search Fields"
+            placeholder={t("schema.fieldListSearchPlaceholder")}
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             sx={{ width: "360px" }}
@@ -205,7 +209,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
           <FormControlLabel
             label={
               <Typography variant="body2" color="text.secondary">
-                Show system fields
+                {t("schema.showSystemFields")}
               </Typography>
             }
             control={
@@ -292,7 +296,9 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
                   fullWidth
                   onClick={() => onNewFieldModalClick(null)}
                 >
-                  Add Another Field to {model?.label}
+                  {t("schema.addAnotherFieldToModel", {
+                    modelLabel: model?.label,
+                  })}
                 </Button>
               </Box>
             </>
@@ -304,7 +310,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
             !search && (
               <Box pb={2.5} pl={4}>
                 <Typography variant="body2" color="text.secondary">
-                  There are no active fields in this model.
+                  {t("schema.noActiveFieldsInModel")}
                 </Typography>
               </Box>
             )}
@@ -320,11 +326,10 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
             >
               <Box>
                 <Typography variant="h6" mb={1} fontWeight={700}>
-                  Deactivated Fields
+                  {t("schema.deactivatedFields")}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  These fields can be re-activated at any time if you'd like to
-                  bring them back to the content model.
+                  {t("schema.deactivatedFieldsDescription")}
                 </Typography>
               </Box>
               {deactivatedFields?.map((field, index) => {
@@ -360,23 +365,22 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
                 borderColor="grey.200"
               >
                 <Typography variant="h6" mb={1} fontWeight={700}>
-                  SEO Meta Fields
+                  {t("schema.seoMetaFields")}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  Content models for single-page, multi-page and dataset models
-                  come with SEO meta fields that are accessible via API or
-                  Parsley. These fields are available to help with discovery on
-                  search and are used for mass search in the Zesty API. The
-                  value of these fields can be found under the{" "}
-                  <strong>meta key</strong> in the{" "}
-                  <Link
-                    href="https://instances-api.zesty.org/#a630bb24-0760-a273-d125-88dce3bcb5b2"
-                    target="_blank"
-                    rel="noopener"
-                  >
-                    Instances API end point
-                  </Link>
-                  .
+                  <Trans
+                    i18nKey="schema.seoMetaFieldsDescription"
+                    components={{
+                      strong: <strong />,
+                      instancesApiLink: (
+                        <Link
+                          href="https://instances-api.zesty.org/#a630bb24-0760-a273-d125-88dce3bcb5b2"
+                          target="_blank"
+                          rel="noopener"
+                        />
+                      ),
+                    }}
+                  />
                 </Typography>
                 <Box display="flex" flexDirection="column" gap={1} mt={1.5}>
                   {SEO_FIELDS.map((field, index) => (
@@ -405,22 +409,22 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
               borderColor="grey.200"
             >
               <Typography variant="h6" mb={1} fontWeight={700}>
-                System Fields
+                {t("schema.systemFields")}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Each content item (child) of a model in Zesty comes included
-                with non-editable system fields that represent the state of the
-                content such as when it was created, updated, and the version.
-                The value of these fields can be found under the{" "}
-                <strong>meta key</strong> in the{" "}
-                <Link
-                  href="https://instances-api.zesty.org/#a630bb24-0760-a273-d125-88dce3bcb5b2"
-                  target="_blank"
-                  rel="noopener"
-                >
-                  Instances API end point
-                </Link>
-                .
+                <Trans
+                  i18nKey="schema.systemFieldsDescription"
+                  components={{
+                    strong: <strong />,
+                    instancesApiLink: (
+                      <Link
+                        href="https://instances-api.zesty.org/#a630bb24-0760-a273-d125-88dce3bcb5b2"
+                        target="_blank"
+                        rel="noopener"
+                      />
+                    ),
+                  }}
+                />
               </Typography>
               <Box display="flex" flexDirection="column" gap={1} mt={1.5}>
                 {SYSTEM_FIELDS.map((field, index) => (

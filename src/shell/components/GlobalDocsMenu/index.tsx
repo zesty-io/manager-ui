@@ -1,4 +1,5 @@
 import { FC } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Stack,
   MenuItem,
@@ -35,6 +36,7 @@ export const GlobalDocsMenu: FC<GlobalDocsMenuProps> = ({
   onClose,
   anchorEl,
 }) => {
+  const { t } = useTranslation();
   const mainApp = location.pathname.split("/")[1];
   const subApp = location.pathname.split("/")[2];
   const section = mainApp === "reports" ? `reports/${subApp}` : mainApp;
@@ -50,9 +52,11 @@ export const GlobalDocsMenu: FC<GlobalDocsMenuProps> = ({
       open={open}
       anchorEl={anchorEl}
       onClose={onClose}
-      PaperProps={{
-        sx: {
-          width: 352,
+      slotProps={{
+        paper: {
+          sx: {
+            width: 520,
+          },
         },
       }}
       MenuListProps={{
@@ -84,7 +88,7 @@ export const GlobalDocsMenu: FC<GlobalDocsMenuProps> = ({
           <MenuBookRoundedIcon color="action" />
         </Avatar>
         <Typography variant="h5" fontWeight={600}>
-          Docs
+          {t("shell.docs")}
         </Typography>
       </Stack>
       <Grid container px={2}>
@@ -117,7 +121,7 @@ export const GlobalDocsMenu: FC<GlobalDocsMenuProps> = ({
                 {docItem.iconType === "image" && (
                   <img
                     src={docItem.icon as string}
-                    alt={docItem.text}
+                    alt={t(docItem.textKey)}
                     width={32}
                     height={32}
                   />
@@ -134,7 +138,7 @@ export const GlobalDocsMenu: FC<GlobalDocsMenuProps> = ({
                   align: "center",
                 }}
               >
-                {docItem.text}
+                {t(docItem.textKey)}
               </ListItemText>
             </ListItemButton>
           </Grid>
@@ -148,7 +152,7 @@ export const GlobalDocsMenu: FC<GlobalDocsMenuProps> = ({
               fontWeight: 600,
             }}
           >
-            Learn more about {capitalize(mainApp)}
+            {t("shell.learnMoreAbout", { app: capitalize(mainApp) })}
           </ListItemText>
         </ListItem>
         {subDocs?.map((subDocItem, index) => (
@@ -156,7 +160,7 @@ export const GlobalDocsMenu: FC<GlobalDocsMenuProps> = ({
             <ListItemIcon>
               <BookRoundedIcon />
             </ListItemIcon>
-            <ListItemText>{subDocItem.text}</ListItemText>
+            <ListItemText>{t(subDocItem.textKey)}</ListItemText>
           </MenuItem>
         ))}
       </MenuList>
@@ -167,7 +171,7 @@ export const GlobalDocsMenu: FC<GlobalDocsMenuProps> = ({
             fontWeight: 600,
           }}
         >
-          Need Help? Contact Support
+          {t("shell.needHelpContactSupport")}
         </ListItemText>
       </ListItem>
       <ListItem
@@ -203,7 +207,7 @@ export const GlobalDocsMenu: FC<GlobalDocsMenuProps> = ({
             )
           }
         >
-          Contact Support
+          {t("shell.contactSupport")}
         </Button>
       </ListItem>
     </Menu>

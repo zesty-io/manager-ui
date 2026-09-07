@@ -21,6 +21,7 @@ import { Database, Block, ShuffleVariant } from "@zesty-io/material";
 import { capitalize, isEqual } from "lodash";
 import { store } from "../store/index";
 import { isContentOne } from "../../utility/isContentOne";
+import i18n from "shell/i18n";
 
 export type Tab = {
   pathname: string;
@@ -153,6 +154,24 @@ const ICON_CONFIG: { [index: string]: SvgIconComponent } = Object.freeze({
   search: SearchRounded,
   apps: ExtensionRounded,
 });
+
+// Translated display labels for each app key. Kept separate from `appNameMap`
+// below, whose English values also back `tab.app` — an internal identifier
+// compared against in GlobalTabs/Tab (`tab.app === "Code"`) and the icon
+// restore switch in `loadTabs`. Only `tab.name` is ever rendered to the user.
+const APP_DISPLAY_KEY: { [index: string]: string } = {
+  launchpad: "shell.navLaunchpad",
+  redirects: "shell.navRedirects",
+  content: "common.content",
+  blocks: "shell.navBlocks",
+  media: "common.media",
+  schema: "shell.navSchema",
+  code: "common.code",
+  leads: "shell.navLeads",
+  settings: "shell.navSettings",
+  search: "common.search",
+  apps: "shell.navApps",
+};
 
 // Thunk helper functions
 export function tabLocationEquality(tab1: TabLocation, tab2: TabLocation) {
@@ -293,7 +312,9 @@ export function createTab(parsedPath: ParsedPath, queryData?: any) {
         );
         if (bin) {
           tab.name =
-            parts[0] === "reports" ? `${bin.name} - Activity Log` : bin.name;
+            parts[0] === "reports"
+              ? i18n.t("shell.tabActivityLogSuffix", { name: bin.name })
+              : bin.name;
         }
         break;
 
@@ -305,7 +326,7 @@ export function createTab(parsedPath: ParsedPath, queryData?: any) {
         if (group) {
           tab.name =
             parts[0] === "reports"
-              ? `${group.name} - Activity Log`
+              ? i18n.t("shell.tabActivityLogSuffix", { name: group.name })
               : group.name;
         }
         break;
@@ -319,7 +340,9 @@ export function createTab(parsedPath: ParsedPath, queryData?: any) {
           const { firstName, lastName } = user;
           tab.name =
             parts[0] === "reports"
-              ? `${firstName} ${lastName} - Activity Log`
+              ? i18n.t("shell.tabActivityLogSuffix", {
+                  name: `${firstName} ${lastName}`,
+                })
               : `${firstName} ${lastName}`;
         }
         break;
@@ -331,7 +354,7 @@ export function createTab(parsedPath: ParsedPath, queryData?: any) {
 
           tab.name =
             parts[0] === "reports"
-              ? `${model?.label} - Activity Log`
+              ? i18n.t("shell.tabActivityLogSuffix", { name: model?.label })
               : model?.label;
         }
         break;
@@ -346,7 +369,7 @@ export function createTab(parsedPath: ParsedPath, queryData?: any) {
               item.web.metaLinkText || item.web.metaTitle || item.web.pathPart;
             tab.name =
               parts[0] === "reports"
-                ? `${contentTitle} - Activity Log`
+                ? i18n.t("shell.tabActivityLogSuffix", { name: contentTitle })
                 : contentTitle;
           }
         }
@@ -365,7 +388,10 @@ export function createTab(parsedPath: ParsedPath, queryData?: any) {
             if (name.charAt(0) === "/") name = name.slice(1);
             // prepend asterix to unsaved file
             if (selectedFile.dirty) name = `*${name}`;
-            tab.name = parts[0] === "reports" ? `${name} - Activity Log` : name;
+            tab.name =
+              parts[0] === "reports"
+                ? i18n.t("shell.tabActivityLogSuffix", { name })
+                : name;
           }
         }
         break;
@@ -381,8 +407,10 @@ export function createTab(parsedPath: ParsedPath, queryData?: any) {
         if (matchedSetting) {
           tab.name =
             parts[0] === "reports"
-              ? // @ts-expect-error untyped
-                `${matchedSetting.keyFriendly} - Activity Log`
+              ? i18n.t("shell.tabActivityLogSuffix", {
+                  // @ts-expect-error untyped
+                  name: matchedSetting.keyFriendly,
+                })
               : // @ts-expect-error untyped
                 matchedSetting.keyFriendly;
         }
@@ -393,25 +421,29 @@ export function createTab(parsedPath: ParsedPath, queryData?: any) {
         const app = state.apps.installed.find(
           (app: { ZUID: string }) => app.ZUID === zuid
         );
-        const appName = app?.label || app?.name || "Custom App";
+        const appName = app?.label || app?.name || i18n.t("shell.tabCustomApp");
         tab.name =
-          parts[0] === "reports" ? `${appName} - Activity Log` : appName;
+          parts[0] === "reports"
+            ? i18n.t("shell.tabActivityLogSuffix", { name: appName })
+            : appName;
 
         break;
     }
   } else {
     if (parts[0] === "apps") {
-      tab.name = "Apps";
+      tab.name = i18n.t("shell.navApps");
     } else if (parts[0] === "reports") {
       // Reports page specific tab naming rules
 
       switch (parts[1]) {
         case "activity-log":
-          tab.name = "Activity Log";
+          tab.name = i18n.t("shell.tabActivityLog");
           tab.app = "Activity Log";
 
           if (parts[2]) {
-            tab.name = `${capitalize(parts[2])} - Activity Log`;
+            tab.name = i18n.t("shell.tabActivityLogSuffix", {
+              name: capitalize(parts[2]),
+            });
           }
 
           // Hacky way to get the user ZUID out of the search string
@@ -423,13 +455,15 @@ export function createTab(parsedPath: ParsedPath, queryData?: any) {
             );
             if (user) {
               const { firstName, lastName } = user;
-              tab.name = `${firstName} ${lastName} - Activity Log`;
+              tab.name = i18n.t("shell.tabActivityLogSuffix", {
+                name: `${firstName} ${lastName}`,
+              });
             }
           }
           break;
 
         case "metrics":
-          tab.name = "Metrics";
+          tab.name = i18n.t("shell.tabMetrics");
           tab.app = "Metrics";
           break;
 
@@ -440,19 +474,27 @@ export function createTab(parsedPath: ParsedPath, queryData?: any) {
       // Settings specific tab naming rules
       if (parts[2]) {
         if (parts[1] === "instance") {
-          tab.name = `${parts[2]
-            .replace("-", " ")
-            .replace("_", " ")
-            .split(" ")
-            .map(toCapitalCase)
-            .join(" ")} Settings`;
+          tab.name = i18n.t("shell.tabSettingsSuffix", {
+            name: parts[2]
+              .replace("-", " ")
+              .replace("_", " ")
+              .split(" ")
+              .map(toCapitalCase)
+              .join(" "),
+          });
         } else if (parts[1] === "fonts") {
-          tab.name = `${toCapitalCase(parts[2])} Fonts`;
+          tab.name = i18n.t("shell.tabFontsSuffix", {
+            name: toCapitalCase(parts[2]),
+          });
         } else {
-          tab.name = `${toCapitalCase(parts[1])} Settings`;
+          tab.name = i18n.t("shell.tabSettingsSuffix", {
+            name: toCapitalCase(parts[1]),
+          });
         }
       } else {
-        tab.name = `${toCapitalCase(parts[1])} Settings`;
+        tab.name = i18n.t("shell.tabSettingsSuffix", {
+          name: toCapitalCase(parts[1]),
+        });
       }
     } else if (parts[0] in appNameMap) {
       if (
@@ -461,7 +503,9 @@ export function createTab(parsedPath: ParsedPath, queryData?: any) {
         zuidIsValid(parts[1])
       ) {
         // Creating a new content item
-        tab.name = `New ${state?.models?.[parts[1]]?.label} Item`;
+        tab.name = i18n.t("shell.tabNewItem", {
+          modelLabel: state?.models?.[parts[1]]?.label,
+        });
       } else if (parts[0] === "search") {
         // Global search
         // Replaces the tab name to whatever the search keyword is on the /search page
@@ -474,9 +518,11 @@ export function createTab(parsedPath: ParsedPath, queryData?: any) {
       } else if (parts[1] === "search" && parts[0] in appNameMap) {
         // In-app searching example: schema search
         const name = parts[0] as keyof typeof appNameMap;
-        tab.name = `${appNameMap[name]} Search Results`;
+        tab.name = i18n.t("shell.tabSearchResults", {
+          appName: i18n.t(APP_DISPLAY_KEY[name]),
+        });
       } else {
-        tab.name = appNameMap[name];
+        tab.name = i18n.t(APP_DISPLAY_KEY[name]);
       }
     }
   }

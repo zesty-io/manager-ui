@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import {
   DataGridPro,
   GRID_REORDER_COL_DEF,
@@ -145,6 +146,7 @@ export const FieldTypeRepeater = ({
   value,
   onChange,
 }: FieldTypeRepeaterProps) => {
+  const { t } = useTranslation();
   const [rows, setRows] = useState<Record<string, any>[]>([]);
   const apiRef = useGridApiRef();
   const [rowSelectionModel, setRowSelectionModel] =
@@ -213,7 +215,7 @@ export const FieldTypeRepeater = ({
                 return field.settings.options[value];
               }
 
-              return value === 0 ? "No" : "Yes";
+              return value === 0 ? t("common.no") : t("common.yes");
             }
 
             default:
@@ -221,7 +223,7 @@ export const FieldTypeRepeater = ({
           }
         },
       }));
-  }, [field]);
+  }, [field, t]);
 
   const columns: GridColDef[] = useMemo(() => {
     const hasSelectedRows = rowSelectionModel.length > 0 && rows.length > 0;

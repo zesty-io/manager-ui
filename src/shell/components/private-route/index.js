@@ -1,5 +1,6 @@
 import { memo, useEffect } from "react";
 import { connect } from "react-redux";
+import { useTranslation } from "react-i18next";
 import { Backdrop } from "@mui/material";
 
 import Login from "shell/components/login";
@@ -12,13 +13,15 @@ export default connect((state) => {
   };
 })(
   memo(function PrivateRoute(props) {
+    const { t } = useTranslation();
+
     useEffect(() => {
       const checkSession = () => {
         props.dispatch(verify()).catch(() => {
           props.dispatch(
             notify({
               kind: "warn",
-              message: "Failed to authenticate your account",
+              message: t("shell.failedAuthenticateAccount"),
             })
           );
         });
@@ -31,14 +34,14 @@ export default connect((state) => {
       checkSession();
 
       return () => clearInterval(token);
-    }, [props.dispatch]);
+    }, [props.dispatch, t]);
 
     useEffect(() => {
       const handleOffline = () => {
         props.dispatch(
           notify({
             kind: "warn",
-            message: "Internet connection is off",
+            message: t("shell.internetConnectionOff"),
           })
         );
       };
@@ -48,14 +51,14 @@ export default connect((state) => {
       return () => {
         window.removeEventListener("offline", handleOffline);
       };
-    });
+    }, [props.dispatch, t]);
 
     useEffect(() => {
       const handleOnline = () => {
         props.dispatch(
           notify({
             kind: "success",
-            message: "Internet connection is restored",
+            message: t("shell.internetConnectionRestored"),
           })
         );
       };
@@ -65,7 +68,7 @@ export default connect((state) => {
       return () => {
         window.removeEventListener("online", handleOnline);
       };
-    });
+    }, [props.dispatch, t]);
 
     return (
       <>

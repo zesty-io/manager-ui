@@ -1,34 +1,44 @@
-import { memo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 
 import { TextField, Select, MenuItem, Autocomplete } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 import { FieldShell } from "../../../../components/Editor/Field/FieldShell";
 
 const CANONICAL_OPTS = [
   {
     value: 0,
-    label: "Off",
+    labelKey: "content.itemEditMetaCanonicalOff",
   },
   {
     value: 1,
-    label: "On (Ignores query parameters)",
+    labelKey: "content.itemEditMetaCanonicalOnIgnoreQuery",
   },
   {
     value: 2,
-    label: "On - Allow certain parameters",
+    labelKey: "content.itemEditMetaCanonicalOnAllowParameters",
   },
   {
     value: 3,
-    label: "On - Custom Path or Custom URL",
+    labelKey: "content.itemEditMetaCanonicalOnCustomPath",
   },
 ];
 
 import styles from "./CanonicalTag.less";
 export const CanonicalTag = memo(function CanonicalTag(props) {
+  const { t } = useTranslation();
   const [whitelist, setWhitelist] = useState(props.whitelist);
   const [custom, setCustom] = useState(props.custom);
   const [mode, setMode] = useState(
     props.mode || props.mode == 0 ? props.mode : 1
+  );
+  const canonicalOptions = useMemo(
+    () =>
+      CANONICAL_OPTS.map((option) => ({
+        ...option,
+        label: t(option.labelKey),
+      })),
+    [t]
   );
 
   const handleMode = (value, name) => {
@@ -50,28 +60,28 @@ export const CanonicalTag = memo(function CanonicalTag(props) {
     <article className={styles.CanonicalTag} data-cy="canonicalTag">
       <FieldShell
         settings={{
-          label: "Canonical Tag",
+          label: t("content.itemEditMetaCanonicalTag"),
         }}
-        customTooltip="Canonical tags help search engines understand authoritative links and can help prevent duplicate content issues. Zesty.io auto-creates tags on demand based on your settings."
+        customTooltip={t("content.itemEditMetaCanonicalTagTooltip")}
         withInteractiveTooltip={false}
       >
         {zestyStore.getState().instance.settings.seo[
           "canonical-tags-enabled"
         ] === "1" ? (
           <small className={`desc notEnabled`}>
-            Canonical tags are not enabled. For more information, read
+            {t("content.itemEditMetaCanonicalNotEnabled")}{" "}
             <a
               href="https://developer.zesty.io/docs/seo-tools/canonical-tags/"
               target="_blank"
             >
-              Enabling Canonical Tags
+              {t("content.itemEditMetaCanonicalEnableDocsLink")}
             </a>
           </small>
         ) : (
           <div className={styles.settings}>
             <Autocomplete
-              options={CANONICAL_OPTS}
-              value={CANONICAL_OPTS.find((option) => option.value === mode)}
+              options={canonicalOptions}
+              value={canonicalOptions.find((option) => option.value === mode)}
               fullWidth
               renderInput={(params) => <TextField {...params} />}
               onChange={(_, value) => {
@@ -81,17 +91,22 @@ export const CanonicalTag = memo(function CanonicalTag(props) {
 
             {mode == "2" ? (
               <div className="setting-field custom">
-                <label>Allowed query parameters (comma-separated)</label>
+                <label>
+                  {t("content.itemEditMetaCanonicalAllowedParameters")}
+                </label>
                 <small className="desc">
-                  Only list comma-separated parameter names. Do not include
-                  values, ampersands, equals, or spaces.
+                  {t(
+                    "content.itemEditMetaCanonicalAllowedParametersDescription"
+                  )}
                 </small>
                 <TextField
                   type="text"
                   name="canonicalQueryParamWhitelist"
                   value={whitelist}
                   onChange={handleWhitelist}
-                  placeholder="page,category"
+                  placeholder={t(
+                    "content.itemEditMetaCanonicalAllowedParametersPlaceholder"
+                  )}
                   size="small"
                   variant="outlined"
                   color="primary"
@@ -103,17 +118,18 @@ export const CanonicalTag = memo(function CanonicalTag(props) {
 
             {mode == "3" ? (
               <div className="setting-field custom">
-                <label>Custom Path Value or URL</label>
+                <label>{t("content.itemEditMetaCanonicalCustomPath")}</label>
                 <small className="desc">
-                  For Custom Paths: begin with a forward slash. For Custom URL:
-                  begin with http:// or https://
+                  {t("content.itemEditMetaCanonicalCustomPathDescription")}
                 </small>
                 <TextField
                   type="text"
                   name="canonicalTagCustomValue"
                   value={custom}
                   onChange={handleCustom}
-                  placeholder="/page/example/ or https://example.com/"
+                  placeholder={t(
+                    "content.itemEditMetaCanonicalCustomPathPlaceholder"
+                  )}
                   size="small"
                   variant="outlined"
                   color="primary"

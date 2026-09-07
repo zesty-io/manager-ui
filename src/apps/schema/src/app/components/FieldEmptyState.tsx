@@ -12,12 +12,15 @@ import {
 } from "@mui/material";
 import AddFieldsImage from "../../../../../../public/images/addFieldsImage.png";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   onAddField: () => void;
 }
 
 export const FieldEmptyState = ({ onAddField }: Props) => {
+  const { t } = useTranslation();
+
   return (
     <Container
       disableGutters
@@ -37,11 +40,10 @@ export const FieldEmptyState = ({ onAddField }: Props) => {
       >
         <Box>
           <Typography variant="h4" fontWeight={600}>
-            Add Fields
+            {t("schema.addFieldsHeading")}
           </Typography>
           <Typography variant="body2" color="text.secondary" mt={1}>
-            Define the different fields that need to be a <br />
-            part of this model.
+            {t("schema.addFieldsDescription")}
           </Typography>
           <Button
             variant="contained"
@@ -52,11 +54,11 @@ export const FieldEmptyState = ({ onAddField }: Props) => {
             }}
             size="small"
           >
-            Add Field
+            {t("schema.addField")}
           </Button>
           <Box mt={3}>
             {/* @ts-ignore */}
-            <Typography variant="body3">Need help?</Typography>
+            <Typography variant="body3">{t("schema.needHelp")}</Typography>
             <List sx={{ listStyleType: "disc", ml: 2, pt: 0 }}>
               <ListItem
                 sx={{ display: "list-item", p: 0, cursor: "pointer" }}
@@ -73,7 +75,7 @@ export const FieldEmptyState = ({ onAddField }: Props) => {
                     color: "info.dark",
                   }}
                 >
-                  Read our guide on Field Types in Schema
+                  {t("schema.readFieldTypesGuide")}
                 </ListItemText>
               </ListItem>
               <ListItem sx={{ display: "list-item", p: 0, cursor: "pointer" }}>
@@ -89,7 +91,7 @@ export const FieldEmptyState = ({ onAddField }: Props) => {
                     )
                   }
                 >
-                  Learn Best Practices for creating models
+                  {t("schema.learnBestPracticesModels")}
                 </ListItemText>
               </ListItem>
             </List>

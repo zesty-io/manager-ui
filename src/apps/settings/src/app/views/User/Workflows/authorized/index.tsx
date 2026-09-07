@@ -1,4 +1,5 @@
 import { useRef, useState, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Box,
   Typography,
@@ -54,6 +55,7 @@ const LabelHeader = ({
 );
 
 export const AuthorizedUserPage = () => {
+  const { t } = useTranslation();
   const searchInputRef = useRef<HTMLInputElement | null>(null);
   const [showDeactivated, setShowDeactivated] = useState<boolean>(false);
   const [searchValue, setSearchValue] = useState<string>("");
@@ -144,7 +146,7 @@ export const AuthorizedUserPage = () => {
         data-cy="workflows-authorized-page"
       >
         <Typography variant="h3" fontWeight={700} color="text.primary">
-          Workflows
+          {t("settings.workflowsHeading")}
         </Typography>
         <Button
           data-amp-track-id="workflows-status-label-create-button"
@@ -155,7 +157,7 @@ export const AuthorizedUserPage = () => {
           size="small"
           startIcon={<AddIcon />}
         >
-          Create Status
+          {t("settings.createStatus")}
         </Button>
       </Box>
 
@@ -170,7 +172,7 @@ export const AuthorizedUserPage = () => {
       >
         <SearchBox
           data-cy="status-label-search-box"
-          placeholder="Search Statuses"
+          placeholder={t("settings.searchStatuses")}
           variant="outlined"
           size="small"
           value={searchValue}
@@ -204,7 +206,7 @@ export const AuthorizedUserPage = () => {
             }
             label={
               <Typography variant="subtitle2" color="text.secondary">
-                Show Deactivated
+                {t("settings.showDeactivated")}
               </Typography>
             }
           />
@@ -239,8 +241,8 @@ export const AuthorizedUserPage = () => {
             <Box>
               <Collapse in={showDeactivated}>
                 <LabelHeader
-                  title="Active Statuses"
-                  subtitle="Active statuses are available to be added and removed from content items."
+                  title={t("settings.activeStatuses")}
+                  subtitle={t("settings.activeStatusesSubtitle")}
                 />
               </Collapse>
               <ActiveStatus labels={activeLabels} isLoading={isLoading} />
@@ -249,8 +251,8 @@ export const AuthorizedUserPage = () => {
             <Box pt={2}>
               <Collapse in={showDeactivated}>
                 <LabelHeader
-                  title="Deactivated Statuses"
-                  subtitle="These statuses can be re-activated at any time if you would like to add or remove them from content items."
+                  title={t("settings.deactivatedStatuses")}
+                  subtitle={t("settings.deactivatedStatusesSubtitle")}
                 />
                 {showDeactivated && (
                   <DeactivatedStatus

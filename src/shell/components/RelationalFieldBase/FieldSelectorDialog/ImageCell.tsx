@@ -1,5 +1,6 @@
 import { Box, Stack } from "@mui/material";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ImageRounded } from "@mui/icons-material";
 
 import { useGetContentItemQuery } from "../../../services/instance";
@@ -9,6 +10,7 @@ type ImageCellProps = {
   itemZUID: string;
 };
 export const ImageCell = ({ imageFieldName, itemZUID }: ImageCellProps) => {
+  const { t } = useTranslation();
   const [imageError, setImageError] = useState(false);
   const { data: contentItem, isLoading: isLoadingContentItem } =
     useGetContentItemQuery(itemZUID, {
@@ -52,7 +54,7 @@ export const ImageCell = ({ imageFieldName, itemZUID }: ImageCellProps) => {
     <Box
       component="img"
       src={imageURL}
-      alt={`${imageFieldName} image`}
+      alt={t("shell.relationalImageAlt", { name: imageFieldName })}
       loading="lazy"
       width={40}
       height={40}

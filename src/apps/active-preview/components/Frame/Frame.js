@@ -1,4 +1,5 @@
 import { Fragment, useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import cx from "classnames";
 import { Box, CircularProgress, Typography } from "@mui/material";
 import iphone14 from "../../../../../public/images/iphone-14.png";
@@ -11,122 +12,42 @@ import pixel7cam from "../../../../../public/images/pixel-7-camera.png";
 
 import styles from "./Frame.less";
 
-const LoadingComponent = ({ noDomain }) => (
-  <Box
-    sx={{
-      zIndex: 2,
-      boxSizing: "border-box",
-      position: "absolute",
-      top: 0,
-      left: 0,
-      width: "100%",
-      height: "100%",
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "center",
-      alignItems: "center",
-    }}
-  >
-    <CircularProgress />
-    {!noDomain && (
-      <Typography variant="h5" fontWeight={600} mt={1.5}>
-        Finding Domain
-      </Typography>
-    )}
-  </Box>
-);
-export function Frame(props) {
-  const [frameLoading, setFrameLoading] = useState(true);
-  const [routePath, setRoutePath] = useState("");
-  const loading = props?.isLoading || frameLoading;
-
-  useEffect(() => {
-    setFrameLoading(true);
-    setRoutePath(`${props?.domain}${props?.route}`);
-  }, [props?.domain, props?.route, props?.device]);
-
+const LoadingComponent = ({ noDomain }) => {
+  const { t } = useTranslation();
   return (
-    <Fragment>
-      {props.device === "fullscreen" ? (
-        <>
-          <iframe
-            className={cx(
-              styles.Frame,
-              props.blur ? styles.Blur : null
-              // frameLoading ? styles.FrameLoading : null
-            )}
-            src={routePath}
-            scrolling="yes"
-            frameBorder="0"
-            onLoad={() => setFrameLoading(false)}
-            style={{
-              transform: `scale(${props.zoom})`,
-              width: `${100 / props.zoom}%`,
-              height: `${100 / props.zoom}%`,
-              left: `${(100 - 100 / props.zoom) / 2}%`,
-              top: `${(100 - 100 / props.zoom) / 2}%`,
-              opacity: loading ? 0 : 1,
-            }}
-          />
-          {loading && <LoadingComponent noDomain={props?.domain !== "error"} />}
-        </>
-      ) : (
-        <>
-          {templates[props.device].template({
-            isLandscape: props.rotate,
-            partial: () => {
-              return (
-                <div
-                  className={cx(
-                    styles.iframeContainer,
-                    props.rotate ? styles.landscape : styles.portrait,
-                    styles[props.device]
-                  )}
-                  style={{
-                    overflow: "hidden",
-                    position: "relative",
-                  }}
-                >
-                  <iframe
-                    key={props.device}
-                    className={cx(
-                      styles.Frame,
-                      props.blur ? styles.Blur : null,
-                      // frameLoading ? styles.FrameLoading : null,
-                      styles.Device
-                    )}
-                    style={{
-                      transform: `scale(${props.zoom})`,
-                      width: `${100 / props.zoom}%`,
-                      height: `${100 / props.zoom}%`,
-                      left: `${(100 - 100 / props.zoom) / 2}%`,
-                      top: `${(100 - 100 / props.zoom) / 2}%`,
-                      opacity: loading ? 0 : 1,
-                    }}
-                    src={routePath}
-                    scrolling="yes"
-                    frameBorder="0"
-                    onLoad={() => setFrameLoading(false)}
-                  />
-                  {loading && (
-                    <LoadingComponent noDomain={props?.domain !== "error"} />
-                  )}
-                </div>
-              );
-            },
-          })}
-        </>
+    <Box
+      sx={{
+        zIndex: 2,
+        boxSizing: "border-box",
+        position: "absolute",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <CircularProgress />
+      {!noDomain && (
+        <Typography variant="h5" fontWeight={600} mt={1.5}>
+          {t("activePreview.findingDomain")}
+        </Typography>
       )}
-    </Fragment>
+    </Box>
   );
-}
+};
 
-export const templates = {
+const getTemplates = (t) => ({
   NoTemplate: {
-    option: "No Template",
+    option: t("activePreview.noTemplate"),
     template: () => (
       <div className={styles.NoDomain}>
-        <h1 className={styles.headline}>No template selected</h1>
+        <h1 className={styles.headline}>
+          {t("activePreview.noTemplateSelected")}
+        </h1>
       </div>
     ),
   },
@@ -342,4 +263,94 @@ export const templates = {
       );
     },
   },
-};
+});
+
+export function Frame(props) {
+  const { t } = useTranslation();
+  const [frameLoading, setFrameLoading] = useState(true);
+  const [routePath, setRoutePath] = useState("");
+  const loading = props?.isLoading || frameLoading;
+  const templates = getTemplates(t);
+
+  useEffect(() => {
+    setFrameLoading(true);
+    setRoutePath(`${props?.domain}${props?.route}`);
+  }, [props?.domain, props?.route, props?.device]);
+
+  return (
+    <Fragment>
+      {props.device === "fullscreen" ? (
+        <>
+          <iframe
+            className={cx(
+              styles.Frame,
+              props.blur ? styles.Blur : null
+              // frameLoading ? styles.FrameLoading : null
+            )}
+            src={routePath}
+            scrolling="yes"
+            frameBorder="0"
+            onLoad={() => setFrameLoading(false)}
+            style={{
+              transform: `scale(${props.zoom})`,
+              width: `${100 / props.zoom}%`,
+              height: `${100 / props.zoom}%`,
+              left: `${(100 - 100 / props.zoom) / 2}%`,
+              top: `${(100 - 100 / props.zoom) / 2}%`,
+              opacity: loading ? 0 : 1,
+            }}
+          />
+          {loading && <LoadingComponent noDomain={props?.domain !== "error"} />}
+        </>
+      ) : (
+        <>
+          {templates[props.device].template({
+            isLandscape: props.rotate,
+            partial: () => {
+              return (
+                <div
+                  className={cx(
+                    styles.iframeContainer,
+                    props.rotate ? styles.landscape : styles.portrait,
+                    styles[props.device]
+                  )}
+                  style={{
+                    overflow: "hidden",
+                    position: "relative",
+                  }}
+                >
+                  <iframe
+                    key={props.device}
+                    className={cx(
+                      styles.Frame,
+                      props.blur ? styles.Blur : null,
+                      // frameLoading ? styles.FrameLoading : null,
+                      styles.Device
+                    )}
+                    style={{
+                      transform: `scale(${props.zoom})`,
+                      width: `${100 / props.zoom}%`,
+                      height: `${100 / props.zoom}%`,
+                      left: `${(100 - 100 / props.zoom) / 2}%`,
+                      top: `${(100 - 100 / props.zoom) / 2}%`,
+                      opacity: loading ? 0 : 1,
+                    }}
+                    src={routePath}
+                    scrolling="yes"
+                    frameBorder="0"
+                    onLoad={() => setFrameLoading(false)}
+                  />
+                  {loading && (
+                    <LoadingComponent noDomain={props?.domain !== "error"} />
+                  )}
+                </div>
+              );
+            },
+          })}
+        </>
+      )}
+    </Fragment>
+  );
+}
+
+export { getTemplates };

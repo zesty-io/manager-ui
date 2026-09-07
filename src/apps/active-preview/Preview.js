@@ -1,4 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
+import i18n from "./i18n";
+import { toSupportedLocale } from "shell/i18n";
+import { useTranslation } from "react-i18next";
 import {
   Button,
   Link,
@@ -28,7 +31,7 @@ import { useLocalStorage } from "react-use";
 
 // import { Meta } from "./components/Meta";
 import { JSONPreview } from "./components/JSONPreview";
-import { Frame, templates } from "./components/Frame";
+import { Frame, getTemplates } from "./components/Frame";
 
 import api from "./api";
 
@@ -66,6 +69,18 @@ function isInIframe() {
 }
 
 export function Preview(props) {
+  return (
+    <Suspense
+      fallback={<Box sx={{ height: "100%", backgroundColor: "grey.50" }} />}
+    >
+      <PreviewInner {...props} />
+    </Suspense>
+  );
+}
+
+function PreviewInner(props) {
+  const { t } = useTranslation("activePreview");
+  const templates = getTemplates(t);
   const ZUID = window.location.host.split(".")[0];
   if (!ZUID) {
     throw new Error("Invalid host for active preview");
@@ -127,6 +142,14 @@ export function Preview(props) {
       }
 
       if (msg.data.source === "zesty") {
+        if (msg.data.locale) {
+          // Preload before switching so changeLanguage is always a cache-hit
+          // and never triggers a re-suspend that would reset component state.
+          const safeLocale = toSupportedLocale(msg.data.locale);
+          i18n
+            .loadLanguages(safeLocale)
+            .then(() => i18n.changeLanguage(safeLocale));
+        }
         if (msg.data.previewUrl) {
           setPreviewUrl(msg.data.previewUrl);
         }
@@ -155,6 +178,10 @@ export function Preview(props) {
     }
 
     window.addEventListener("message", receiveMessage);
+    window.parent.postMessage(
+      { source: "zesty", action: "ready" },
+      window.location.origin
+    );
     return () => window.removeEventListener("message", receiveMessage);
   }, []);
 
@@ -229,7 +256,7 @@ export function Preview(props) {
       >
         <CircularProgress />
         <Typography variant="h5" fontWeight={600} mt={1.5}>
-          Saving
+          {t("activePreview.saving")}
         </Typography>
       </Box>
     );
@@ -240,8 +267,8 @@ export function Preview(props) {
       <div className={styles.NoDomain}>
         <h1 className={styles.headline}>
           {!authenticated
-            ? "Your session is not active. Please login to Zesty.io"
-            : "Disconnected from preview domain"}
+            ? t("activePreview.sessionNotActive")
+            : t("activePreview.disconnectedFromPreviewDomain")}
         </h1>
       </div>
     );
@@ -275,8 +302,12 @@ export function Preview(props) {
           </>
         ) : (
           <Box flex={1}>
-            <Typography variant="body2" fontWeight={600}>
-              Preview
+            <Typography
+              variant="body2"
+              fontWeight={600}
+              sx={{ textTransform: "capitalize" }}
+            >
+              {t("common.preview")}
             </Typography>
           </Box>
         )}
@@ -354,7 +385,7 @@ export function Preview(props) {
             selected={device === "fullscreen"}
             onClick={() => selectTemplate("fullscreen")}
           >
-            No Device
+            {t("activePreview.noDevice")}
           </MenuItem>
           {Object.keys(templates)
             .slice(1)
@@ -376,7 +407,7 @@ export function Preview(props) {
                 onChange={(event) => setRotate(event.target.checked)}
               />
             }
-            label="Landscape Mode"
+            label={t("activePreview.landscapeMode")}
             labelPlacement="start"
             sx={{
               mt: 2,
@@ -449,8 +480,8 @@ export function Preview(props) {
             </Box>
             <Typography variant="h6" fontWeight={700} align="center">
               {hasErrors
-                ? "Resolve invalid field values to save and update preview"
-                : "Save to Update Preview"}
+                ? t("activePreview.resolveInvalidFields")
+                : t("activePreview.saveToUpdatePreview")}
             </Typography>
             {!hasErrors && (
               <Button
@@ -460,11 +491,8 @@ export function Preview(props) {
                   setSaving(true);
                   sendMessage("save");
                 }}
-                sx={{
-                  maxWidth: "54px",
-                }}
               >
-                Save
+                {t("common.save")}
               </Button>
             )}
           </Dialog>

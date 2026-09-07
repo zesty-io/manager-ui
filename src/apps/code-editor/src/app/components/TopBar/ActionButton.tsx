@@ -49,7 +49,7 @@ export const ActionButton: FC<ActionButtonProps> = ({
             {...props}
             onClick={onClick}
             loading={isLoading}
-            sx={{ whiteSpace: "nowrap" }}
+            sx={{ whiteSpace: "nowrap", textTransform: "capitalize" }}
           >
             {label}
           </Button>
@@ -60,7 +60,7 @@ export const ActionButton: FC<ActionButtonProps> = ({
           <Typography
             variant="body2"
             component="span"
-            sx={{ color: inActiveColor }}
+            sx={{ color: inActiveColor, textTransform: "capitalize" }}
           >
             {label}
           </Typography>

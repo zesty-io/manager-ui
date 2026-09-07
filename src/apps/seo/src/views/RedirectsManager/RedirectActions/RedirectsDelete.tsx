@@ -1,4 +1,5 @@
 import { FC, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Box, Typography, Button } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ClearIcon from "@mui/icons-material/Clear";
@@ -12,6 +13,7 @@ type RedirectsDeleteProps = {
 };
 
 const RedirectsDelete: FC<RedirectsDeleteProps> = ({ selectedRedirects }) => {
+  const { t } = useTranslation();
   const { openDeleteDialog } = useRedirectsDialog();
   const { apiRef, redirects } = useRedirectsTable();
 
@@ -36,7 +38,7 @@ const RedirectsDelete: FC<RedirectsDeleteProps> = ({ selectedRedirects }) => {
       }}
     >
       <Typography variant="h3" fontWeight="700">
-        {selectedRedirects.length} Selected
+        {t("seo.selectedCount", { count: selectedRedirects.length })}
       </Typography>
       <Box
         display="flex"
@@ -53,7 +55,7 @@ const RedirectsDelete: FC<RedirectsDeleteProps> = ({ selectedRedirects }) => {
           onClick={() => apiRef.current?.setRowSelectionModel([])}
           startIcon={<ClearIcon />}
         >
-          Deselect All
+          {t("shell.relationalDeselectAll")}
         </Button>
         <Button
           data-cy="RedirectActionSelectAll"
@@ -68,7 +70,7 @@ const RedirectsDelete: FC<RedirectsDeleteProps> = ({ selectedRedirects }) => {
           }
           startIcon={<DoneAllIcon />}
         >
-          Select All
+          {t("seo.selectAll")}
         </Button>
         <Button
           data-cy="RedirectActionDeleteButton"
@@ -78,7 +80,7 @@ const RedirectsDelete: FC<RedirectsDeleteProps> = ({ selectedRedirects }) => {
           onClick={() => handleDelete()}
           startIcon={<DeleteIcon />}
         >
-          Delete
+          {t("common.delete")}
         </Button>
       </Box>
     </Box>

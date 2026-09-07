@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Button,
   Dialog,
@@ -27,7 +28,8 @@ interface Props {
 }
 
 export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
-  const [name, setName] = useState("Untitled");
+  const { t } = useTranslation();
+  const [name, setName] = useState(t("media.newFolderDialogDefaultFolderName"));
   const [selectedGroup, setSelectedGroup] = useState<Group | null>();
   const [params, setParams] = useParams();
 
@@ -94,7 +96,7 @@ export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
       if (binId) {
         return [
           {
-            name: currentBin?.name ?? "None",
+            name: currentBin?.name ?? t("media.newFolderDialogNone"),
             bin_id: binId,
             group_id: binId,
             id: binId,
@@ -117,15 +119,15 @@ export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
     }
 
     return [];
-  }, [allBinGroups, binId, bins]);
+  }, [allBinGroups, binId, bins, t]);
 
   const loading = isLoadingBins || isLoadingAllBinGroups;
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth={"xs"}>
-      <DialogTitle>New Folder</DialogTitle>
+      <DialogTitle>{t("media.newFolderDialogTitle")}</DialogTitle>
       <DialogContent>
-        <InputLabel>Parent Folder</InputLabel>
+        <InputLabel>{t("media.newFolderDialogParentFolderLabel")}</InputLabel>
         <Autocomplete
           data-cy="newFolderParentSelector"
           size="small"
@@ -148,7 +150,7 @@ export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
           onChange={(event, newValue) => setSelectedGroup(newValue as Group)}
           sx={{ mb: 3 }}
         />
-        <InputLabel>Folder Name</InputLabel>
+        <InputLabel>{t("media.newFolderDialogFolderNameLabel")}</InputLabel>
         <TextField
           autoFocus
           value={name}
@@ -162,7 +164,7 @@ export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="inherit">
-          Cancel
+          {t("common.cancel")}
         </Button>
         <Button
           loading={isCreatingGroup}
@@ -170,7 +172,7 @@ export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
           variant="contained"
           onClick={handleCreate}
         >
-          Create
+          {t("common.create")}
         </Button>
       </DialogActions>
     </Dialog>

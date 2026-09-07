@@ -9,6 +9,7 @@ import {
 } from "react";
 import { Box } from "@mui/material";
 import { useDispatch } from "react-redux";
+import { useTranslation } from "react-i18next";
 import { unescape } from "lodash";
 import { Field } from "./Field";
 import { cloneDeep, isEqual } from "lodash";
@@ -48,6 +49,7 @@ export default memo(function Editor({
   // Initialise to false; useLayoutEffect below corrects it before first paint.
   const [compact, setCompact] = useState(false);
   const dispatch = useDispatch();
+  const { t } = useTranslation("content");
   const isNewItem = itemZUID.slice(0, 3) === "new";
   const { data: fields, isFetching: isFetchingFields } =
     useGetContentModelFieldsQuery({ modelZUID });
@@ -228,7 +230,10 @@ export default memo(function Editor({
         ) {
           errors[name] = {
             ...(errors[name] ?? []),
-            INVALID_RANGE: `Value must be between ${field?.settings?.minValue} and ${field?.settings?.maxValue}`,
+            INVALID_RANGE: t("content.valueMustBeBetween", {
+              min: field?.settings?.minValue,
+              max: field?.settings?.maxValue,
+            }),
           };
         } else {
           errors[name] = {
@@ -389,6 +394,7 @@ export default memo(function Editor({
       item?.web?.["metaDescription"],
       prevFirstContentFieldValue,
       setPrevFirstContentFieldValue,
+      t,
     ]
   );
 

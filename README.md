@@ -90,7 +90,7 @@ Open a second terminal `npm run start:test`
 Pull Cypress Screenshots
 `npm run ci:pull:screenshots`
 
-### CI Parallelization
+## CI Parallelization
 
 CI runs 5 parallel jobs using [cypress-split](https://github.com/bahmutov/cypress-split). Runners 0–3 split the general spec pool automatically using `SPLIT=4`. Runner 4 is dedicated to publish-related specs to prevent cross-runner interference — see `.github/workflows/ci.yaml` for details. To add more general runners, increment the matrix array and `SPLIT` together.
 
@@ -107,6 +107,42 @@ To regenerate it:
 If `timings.json` does not exist, cypress-split falls back to distributing by spec count with no errors.
 
 **When to update `timings.json`:** Refresh it whenever you notice runners finishing at significantly different times — typically after adding several new specs or after a large refactor of existing ones. A periodic refresh every 1–2 months is a reasonable cadence to keep distribution accurate.
+
+---
+
+## Localizing new copy
+
+**Requires [Claude Code](https://claude.com/claude-code).** This isn't an npm script or CLI binary — it's a `Workflow` script that only runs inside a Claude Code session, where it drives multiple AI subagents to do the extraction/wiring/verification. There's no equivalent for localizing new copy without it.
+
+**Mind your token usage.** Even a single small file fans out to several subagents (Discovery, one Extract & Wire agent per batch, Composer, Verifier) — a one-string component still used ~5 agents and ~350k tokens end to end in testing. Scope `target` to what you're actually adding (a component or a small folder) rather than a whole sub-app root unless you mean to re-run a full namespace pass, and prefer running it once per PR rather than repeatedly against overlapping targets.
+
+**You still have to translate manually.** The workflow only ever writes **English placeholder values** into the 5 non-English locale files — it does not translate. This is by design, not a gap: having every subagent in the pipeline also translate into 5 languages would meaningfully increase the token cost covered above for a step a human/QA pass needs to review anyway. After running it, open the diffed `public/locales/<locale>/<ns>.json` files (everywhere but `en-US`) and replace the English placeholders with real translations (machine-assisted is fine, but flag for native/QA review per the Localization section of `CLAUDE.md`) before merging.
+
+New user-facing strings should go through the `localize` workflow rather than being wired up to i18next by hand — it extracts hardcoded strings, replaces them with `t()`/`<Trans>` calls, writes/updates the locale JSON across all 6 languages, and verifies the result. The script lives at `.claude/workflows/localize.js`.
+
+To run it: open this repo in Claude Code and ask it to localize whatever you're adding (e.g. "localize src/apps/schema/src/app/components/NewThing.tsx"), or invoke the `Workflow` tool directly in the chat:
+
+```js
+Workflow({
+  name: "localize",
+  args: { target: "src/apps/schema/src/app/components/NewThing.tsx" },
+});
+```
+
+**Args** (`target` is the only required one):
+
+- `target` — a file path, folder path, or array of paths to localize. The workflow follows the transitive import graph from here, so pointing it at a new component is enough; you don't need to enumerate its children.
+- `namespace` _(optional)_ — the i18next namespace to target. If omitted, it's inferred from `target`'s location, grounded in what's already there (existing `t()` calls nearby, existing `public/locales/en-US/<ns>.json` files) rather than a naive folder-name guess — e.g. `src/apps/content-editor/**` correctly resolves to `content`, not `contentEditor`.
+- `lazyLoadRoot` _(optional)_ — the sub-app entry point that owns the namespace's `<Suspense>` boundary, if the workflow can't auto-discover it.
+
+**What it does:** enumerates the target + its transitive imports, extracts every hardcoded string (JSX text, string props, `notify()` calls, module-level maps, class components), reuses existing `common`/`shell` keys where the English text already matches one, wires the `t()`/`i18n.t()` calls in place, writes `en-US/<ns>.json` and seeds the other 5 locales with English placeholders, then runs `tsc --noEmit`, JSON validity, key-parity, and broken-key-reference checks.
+
+**What it returns:** `{ namespace, filesWired, newKeys, reusedKeys, verifyPassed, verify, crossNamespaceGaps, inaccessibleThirdParty }`.
+
+- `crossNamespaceGaps` — files pulled in transitively that live in a _different_ namespace than the target: their strings are extracted into that namespace's JSON but left unwired, since wiring them under the wrong namespace would misattribute them. Each entry includes a ready-to-run follow-up, e.g. `Workflow({ name: "localize", args: { namespace: "shell", target: "src/shell/store/ui.ts" } })`.
+- `inaccessibleThirdParty` — third-party components with hardcoded strings and no locale API; needs a manual call (wrap it, or accept it stays English).
+
+See the "Localization (i18next)" section of `CLAUDE.md` for the conventions this workflow enforces (key naming, pluralization/CLDR rules, what to skip, value-formatting rules).
 
 ---
 

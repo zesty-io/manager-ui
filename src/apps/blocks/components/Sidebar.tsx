@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useHistory } from "react-router";
 import { Box, Stack, Typography } from "@mui/material";
 import GridViewRoundedIcon from "@mui/icons-material/GridViewRounded";
+import { useTranslation } from "react-i18next";
 
 import { AppSideBar, SubMenu } from "../../../shell/components/AppSidebar";
 import { useParams } from "../../../shell/hooks/useParams";
@@ -11,6 +12,7 @@ import { CreateModelDialogue } from "../../schema/src/app/components/CreateModel
 import noSearchResults from "../../../../public/images/noSearchResults.svg";
 
 export const Sidebar = () => {
+  const { t } = useTranslation();
   const { data: models, isLoading } = useGetContentModelsQuery(null, {
     refetchOnMountOrArgChange: true,
   });
@@ -21,7 +23,7 @@ export const Sidebar = () => {
 
   const subMenu: SubMenu[] = [
     {
-      name: "All Blocks",
+      name: t("blocks.allBlocks"),
       path: "/blocks",
       icon: GridViewRoundedIcon,
     },
@@ -37,11 +39,11 @@ export const Sidebar = () => {
     <>
       <AppSideBar
         data-cy="blocks-nav"
-        headerTitle="Blocks"
+        headerTitle={t("shell.navBlocks")}
         mode="dark"
         subMenus={subMenu}
-        searchPlaceholder="Filter Blocks"
-        titleButtonTooltip="Create Block"
+        searchPlaceholder={t("blocks.filterBlocks")}
+        titleButtonTooltip={t("blocks.createBlock")}
         hideSubMenuOnSearch={false}
         filterKeyword={filter}
         onAddClick={() => setIsCreateModelDialogueOpen(true)}
@@ -63,12 +65,12 @@ export const Sidebar = () => {
           <Stack gap={1.5} alignItems="center" justifyContent="center" p={1.5}>
             <img
               src={noSearchResults}
-              alt="No search results"
+              alt={t("blocks.noSearchResultsAlt")}
               width="70px"
               height="64px"
             />
             <Typography color="text.secondary" variant="body2" align="center">
-              No results available for "{filter}"
+              {t("blocks.noResultsAvailable", { filter })}
             </Typography>
           </Stack>
         )}

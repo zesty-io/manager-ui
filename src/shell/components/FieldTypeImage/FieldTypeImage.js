@@ -1,5 +1,6 @@
 import React, { Fragment } from "react";
 import cx from "classnames";
+import { withTranslation } from "react-i18next";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes, faPlus } from "@fortawesome/free-solid-svg-icons";
@@ -7,7 +8,7 @@ import { faTimes, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "shell/components/legacy/Button";
 
 import styles from "./FieldTypeImage.less";
-export class FieldTypeImage extends React.PureComponent {
+class FieldTypeImageBase extends React.PureComponent {
   static defaultProps = {
     images: [], // Array of image ZUIDs
     limit: 1,
@@ -41,6 +42,7 @@ export class FieldTypeImage extends React.PureComponent {
   };
 
   render() {
+    const { t } = this.props;
     const maxImages = this.props.limit || 1;
     const imageCount = this.props.images.length;
 
@@ -48,8 +50,7 @@ export class FieldTypeImage extends React.PureComponent {
       <Fragment>
         {imageCount > maxImages && (
           <p className={styles.WarningMsg}>
-            This field is limited to {maxImages}{" "}
-            {maxImages > 1 ? "images" : "image"}
+            {t("shell.imageFieldLimit", { count: maxImages })}
           </p>
         )}
 
@@ -91,6 +92,8 @@ export class FieldTypeImage extends React.PureComponent {
     );
   }
 }
+
+export const FieldTypeImage = withTranslation()(FieldTypeImageBase);
 
 function Image(props) {
   return (

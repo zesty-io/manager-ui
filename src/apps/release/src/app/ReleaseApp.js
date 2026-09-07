@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Route, Switch, useHistory, useLocation } from "react-router";
 import cx from "classnames";
+import { useTranslation } from "react-i18next";
 
 import { WithLoader } from "shell/components/legacy/WithLoader";
 
@@ -15,6 +16,7 @@ import { ViewRelease } from "./views/ViewRelease";
 
 import styles from "./ReleaseApp.less";
 export default function ReleaseApp() {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const history = useHistory();
   const location = useLocation();
@@ -49,7 +51,7 @@ export default function ReleaseApp() {
       <main>
         <WithLoader
           condition={!loading}
-          message="Starting Release"
+          message={t("release.startingRelease")}
           width="100vw"
           height="100vh"
         >

@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import i18n from "shell/i18n";
 import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
 
@@ -59,7 +60,9 @@ export function fetchInstalledApps() {
                 dispatch(
                   notify({
                     kind: "warn",
-                    message: `App loading failure: ${res.message}`,
+                    message: i18n.t("shell.appLoadingFailure", {
+                      message: res.message,
+                    }),
                   })
                 )
               );
@@ -75,7 +78,7 @@ export function fetchInstalledApps() {
               dispatch(
                 notify({
                   kind: "warn",
-                  message: `App loading failure: ${err}`,
+                  message: i18n.t("shell.appLoadingFailure", { message: err }),
                 })
               );
             });
@@ -84,7 +87,9 @@ export function fetchInstalledApps() {
           dispatch(
             notify({
               kind: "warn",
-              message: `App loading failure: ${res.error}`,
+              message: i18n.t("shell.appLoadingFailure", {
+                message: res.error,
+              }),
             })
           );
         }
@@ -94,7 +99,7 @@ export function fetchInstalledApps() {
         dispatch(
           notify({
             kind: "warn",
-            message: `App loading failure: ${err}`,
+            message: i18n.t("shell.appLoadingFailure", { message: err }),
           })
         );
       });

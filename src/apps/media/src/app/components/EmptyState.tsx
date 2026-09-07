@@ -1,4 +1,5 @@
 import { Box, Stack, Typography } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import uploadFiles from "../../../../../../public/images/uploadFiles.svg";
 import { UploadButton } from "./UploadButton";
 
@@ -7,6 +8,7 @@ type Props = {
   currentGroupId: string;
 };
 export const EmptyState = (ids: Props) => {
+  const { t } = useTranslation();
   return (
     <Box
       display="flex"
@@ -19,10 +21,10 @@ export const EmptyState = (ids: Props) => {
       <Stack direction="row" spacing={8} alignItems="center">
         <Box>
           <Typography variant="h4" fontWeight={600} sx={{ mb: 1 }}>
-            Start Uploading Now
+            {t("media.emptyStateTitle")}
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            You can drag and drop files here or use the "Upload" button.
+            {t("media.emptyStateDescription")}
           </Typography>
           <UploadButton {...ids} />
         </Box>

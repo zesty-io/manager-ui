@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { accountsApi } from "shell/services/accounts";
 import { MD5 } from "utility/md5";
 import {
@@ -8,9 +9,11 @@ import {
   Skeleton,
 } from "@mui/material";
 import { useHistory } from "react-router";
-import { format, isValid } from "date-fns";
+import { formatLocalized } from "shell/i18n/dates";
+import { isValid } from "date-fns";
 
 export const UserListItem = (props) => {
+  const { t } = useTranslation();
   const history = useHistory();
   const { data: usersRoles } = accountsApi.useGetUsersRolesQuery();
 
@@ -87,18 +90,20 @@ export const UserListItem = (props) => {
           props.showSkeletons ? (
             <Skeleton variant="rectangular" height={12} width={360} />
           ) : (
-            `
-        ${user?.role?.name} • ${
-              props.actions?.filter(
+            t("reports.userListItemSecondary", {
+              roleName: user?.role?.name,
+              actionCount: props.actions?.filter(
                 (action) => action.actionByUserZUID === user?.ZUID
-              ).length
-            } actions • Last action @ ${
-              props.action?.updatedAt &&
-              isValid(new Date(props.action?.updatedAt))
-                ? format(new Date(props.action?.updatedAt), "hh:mm a")
-                : "—"
-            }
-          `
+              ).length,
+              lastAction:
+                props.action?.updatedAt &&
+                isValid(new Date(props.action?.updatedAt))
+                  ? formatLocalized(
+                      new Date(props.action?.updatedAt),
+                      "hh:mm a"
+                    )
+                  : "—",
+            })
           )
         }
       />

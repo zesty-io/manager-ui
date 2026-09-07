@@ -1,6 +1,7 @@
 import Cookies from "js-cookie";
 import cx from "classnames";
 import { forwardRef, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { Route, Switch } from "react-router";
 import { Box } from "@mui/material";
@@ -21,7 +22,7 @@ export default function CustomApp() {
   return (
     <main className={cx(styles.CustomApp)}>
       <Switch>
-        <Route exact path="/apps" render={InstallApp} />
+        <Route exact path="/apps" component={InstallApp} />
         <Route exact path="/apps/:zuid" component={LoadApp} />
       </Switch>
     </main>
@@ -29,6 +30,7 @@ export default function CustomApp() {
 }
 
 function LoadApp(props) {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const frame = useRef();
   const app = useSelector((state) =>
@@ -88,7 +90,9 @@ function LoadApp(props) {
     </Box>
   ) : (
     <NotFound
-      message={`The app "${props.match.params.zuid}" is not installed.`}
+      message={t("marketplace.appNotInstalled", {
+        zuid: props.match.params.zuid,
+      })}
     />
   );
 }

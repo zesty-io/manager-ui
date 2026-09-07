@@ -3,6 +3,7 @@ import { useHistory } from "react-router";
 import { SvgIconComponent } from "@mui/icons-material";
 import { Box } from "@mui/material";
 import { DatabaseSearch } from "@zesty-io/material";
+import { useTranslation } from "react-i18next";
 
 import { useGetContentModelsQuery } from "../../../../../../shell/services/instance";
 import {
@@ -16,6 +17,7 @@ import { useSelector } from "react-redux";
 import { AppState } from "../../../../../../shell/store/types";
 
 export const Sidebar = () => {
+  const { t } = useTranslation();
   const { data: models, isLoading } = useGetContentModelsQuery();
   const history = useHistory();
   const [params, setParams] = useParams();
@@ -30,7 +32,7 @@ export const Sidebar = () => {
 
   const subMenu: SubMenu[] = [
     {
-      name: "All Models",
+      name: t("schema.allModels"),
       path: "/schema",
       icon: DatabaseSearch as SvgIconComponent,
     },
@@ -40,11 +42,11 @@ export const Sidebar = () => {
     <>
       <AppSideBar
         data-cy="schema-nav"
-        headerTitle="Schema"
+        headerTitle={t("schema.headerTitle")}
         mode="dark"
         subMenus={subMenu}
-        searchPlaceholder="Search Models"
-        titleButtonTooltip="Create Model"
+        searchPlaceholder={t("schema.searchModelsPlaceholder")}
+        titleButtonTooltip={t("schema.createModel")}
         hideSubMenuOnSearch={false}
         filterKeyword={search}
         onAddClick={() => setIsCreateModelDialogueOpen(true)}
@@ -57,7 +59,7 @@ export const Sidebar = () => {
         {!isLoading && (
           <>
             <ModelList
-              title="single page"
+              title={t("schema.modelTypeSinglePage")}
               type="templateset"
               models={
                 models?.filter((model) => model.type === "templateset") || []
@@ -65,7 +67,7 @@ export const Sidebar = () => {
             />
             <Box pt={1.5}>
               <ModelList
-                title="multi page"
+                title={t("schema.modelTypeMultiPage")}
                 type="pageset"
                 models={
                   models?.filter((model) => model.type === "pageset") || []
@@ -74,7 +76,7 @@ export const Sidebar = () => {
             </Box>
             <Box pt={1.5}>
               <ModelList
-                title="dataset"
+                title={t("schema.modelTypeDataset")}
                 type="dataset"
                 models={
                   models?.filter((model) => model.type === "dataset") || []
@@ -83,7 +85,7 @@ export const Sidebar = () => {
             </Box>
             <Box pt={1.5}>
               <ModelList
-                title="blocks"
+                title={t("shell.navBlocks")}
                 type="block"
                 models={models?.filter((model) => model.type === "block") || []}
               />

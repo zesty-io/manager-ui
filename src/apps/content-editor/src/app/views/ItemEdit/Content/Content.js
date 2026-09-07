@@ -31,8 +31,10 @@ import { useDispatch, useSelector, useStore } from "react-redux";
 import { NoFields } from "../../../components/NoFields";
 import { UsedBlocks } from "../../../components/UsedBlocks";
 import { extractBlockReferences } from "../../../components/UsedBlocks/extractBlockReferences";
+import { useTranslation } from "react-i18next";
 
 export default function Content(props) {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const store = useStore();
   const { data: views } = useGetWebViewsQuery({ status: "dev" });
@@ -373,7 +375,11 @@ export default function Content(props) {
               <Skeleton variant="circular" width={16} height={16} />
             ) : (
               <Tooltip
-                title={showSidebar ? "Close Info Bar" : "Open Info Bar"}
+                title={
+                  showSidebar
+                    ? t("content.itemEditCloseInfoBar")
+                    : t("content.itemEditOpenInfoBar")
+                }
                 placement="left"
               >
                 <IconButton
@@ -398,7 +404,10 @@ export default function Content(props) {
             ) : isDisabled ? (
               <></>
             ) : (
-              <Tooltip title="Open DUO Mode" placement="left">
+              <Tooltip
+                title={t("content.itemEditOpenDuoMode")}
+                placement="left"
+              >
                 <IconButton
                   size="small"
                   onClick={() => {

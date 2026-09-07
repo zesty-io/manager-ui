@@ -1,24 +1,26 @@
 import { Box, Typography, Button, SxProps, SvgIcon } from "@mui/material";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import RestartAltRounded from "@mui/icons-material/RestartAltRounded";
+import { useTranslation } from "react-i18next";
+import { TFunction } from "i18next";
 
 import noSearchResults from "../../../../../../public/images/noSearchResults.svg";
 
-const TEXT_CONFIG = {
+const getTextConfig = (t: TFunction) => ({
   search: {
-    header: "Your search “{searchTerm}” could not find any results",
-    subHeader:
-      "Try adjusting your search. We suggest check all words are spelled correctly or try using different keywords.",
-    buttonText: "Search Again",
+    header: (searchTerm: string) =>
+      t("schema.noSearchResultsHeader", { searchTerm }),
+    subHeader: t("schema.noSearchResultsSubHeader"),
+    buttonText: t("common.searchAgain"),
     buttonIcon: SearchRoundedIcon,
   },
   filter: {
-    header: "No models were found",
-    subHeader: "Try adjusting the filters to find what you were looking for.",
-    buttonText: "Clear Filters",
+    header: () => t("schema.noFilterResultsHeader"),
+    subHeader: t("schema.noFilterResultsSubHeader"),
+    buttonText: t("schema.clearFilters"),
     buttonIcon: RestartAltRounded,
   },
-};
+});
 
 interface Props {
   type: "search" | "filter";
@@ -27,6 +29,9 @@ interface Props {
   sx?: SxProps;
 }
 export const NoResults = ({ type, searchTerm, onButtonClick, sx }: Props) => {
+  const { t } = useTranslation("schema", { useSuspense: false });
+  const TEXT_CONFIG = getTextConfig(t);
+
   return (
     <Box
       data-cy="NoResults"
@@ -37,7 +42,7 @@ export const NoResults = ({ type, searchTerm, onButtonClick, sx }: Props) => {
         mx: "auto",
       }}
     >
-      <img src={noSearchResults} alt="No search results" />
+      <img src={noSearchResults} alt={t("schema.noSearchResultsAlt")} />
       <Typography
         pt={1.5}
         pb={1}
@@ -45,7 +50,7 @@ export const NoResults = ({ type, searchTerm, onButtonClick, sx }: Props) => {
         fontWeight={600}
         color="text.primary"
       >
-        {TEXT_CONFIG[type].header.replace("{searchTerm}", searchTerm)}
+        {TEXT_CONFIG[type].header(searchTerm ?? "")}
       </Typography>
       <Typography variant="body2" pb={3} color="text.secondary">
         {TEXT_CONFIG[type].subHeader}

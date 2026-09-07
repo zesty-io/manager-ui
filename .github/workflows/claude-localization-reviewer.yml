@@ -1,0 +1,242 @@
+name: Claude Localization Reviewer
+
+# Dedicated localization gap check for PRs into dev that touch source or locale files.
+#   1. ci/scripts/check_localization_objective.js: deterministic checks — TypeScript
+#      errors, locale JSON validity, cross-locale key parity, broken t()/i18n.t() refs.
+#   2. Claude reviews the diff for what only language/intent can catch: missed t()
+#      wiring, value-formatting violations, and translation quality.
+# Posts inline PR comments plus a summary comment; fails on any finding. Each run posts a
+# fresh summary comment (deliberately NOT updated in place) so the PR timeline shows the
+# review history: "FAIL" → fix commits → "PASS" — mirrors claude-auto-reviewer.yml.
+
+on:
+  pull_request:
+    branches: [dev]
+    types: [opened, synchronize, reopened, ready_for_review]
+
+jobs:
+  verify:
+    # Fork PRs don't get ANTHROPIC_API_KEY; this uses pull_request (not pull_request_target).
+    if: >-
+      github.event.pull_request.draft == false &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    concurrency:
+      group: claude-localization-reviewer-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          fetch-depth: 1
+
+      # Skip everything below on PRs that don't touch translatable source or locale files.
+      - name: Detect relevant changes
+        id: changed
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+          # `gh pr diff` hits GitHub's 300-file diff cap on large PRs; the paginated Files
+          # API doesn't. Cache the result — "Extract relevant diff" reuses this file.
+          gh api "repos/$REPO/pulls/$PR/files" --paginate > pr_files.json
+          jq -r '.[].filename' pr_files.json > changed_files.txt
+          if grep -qE '^src/.*\.(js|jsx|ts|tsx)$|^public/locales/' changed_files.txt; then
+            echo "relevant=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "relevant=false" >> "$GITHUB_OUTPUT"
+            echo "No i18n-relevant files changed — skipping."
+          fi
+
+      - name: Set up Node
+        if: steps.changed.outputs.relevant == 'true'
+        uses: actions/setup-node@v4.1.0
+        with:
+          node-version: "22.19.0"
+          cache: "npm"
+          cache-dependency-path: package-lock.json
+
+      - name: Install Dependencies
+        if: steps.changed.outputs.relevant == 'true'
+        run: npm install --legacy-peer-deps
+
+      - name: Run TypeScript check
+        if: steps.changed.outputs.relevant == 'true'
+        run: npx tsc --noEmit --pretty false > tsc-output.txt 2>&1 || true
+
+      - name: Run objective i18n checks
+        if: steps.changed.outputs.relevant == 'true'
+        run: node ci/scripts/check_localization_objective.js --changed-files changed_files.txt --tsc-output tsc-output.txt
+
+      # Plain-text, pre-filtered diff capped so a huge PR can't blow context/cost. Source
+      # files claim the budget first (missed-string check), then locale files get what's
+      # left, round-robined across sub-apps/locales — see ci/scripts/build_localization_diff.js.
+      - name: Extract relevant diff
+        id: diff
+        if: steps.changed.outputs.relevant == 'true'
+        run: |
+          set -euo pipefail
+          node ci/scripts/build_localization_diff.js pr_files.json 200000 > i18n-relevant.diff 2> diff-stderr.txt
+          cat diff-stderr.txt
+          if grep -q "TRUNCATED" diff-stderr.txt; then
+            echo "::warning::i18n-relevant.diff was truncated to fit the review budget."
+            printf '\n\n[... diff truncated: this PR is too large to review in full — findings above are non-exhaustive ...]\n' >> i18n-relevant.diff
+            echo "truncated=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "truncated=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: anthropics/claude-code-action@1dc994ee7a008f0ecc866d9ac23ef036b7229f84 # v1.0.127
+        if: steps.changed.outputs.relevant == 'true'
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: |
+            --max-turns 50
+            --allowedTools "Bash(gh pr view:*),Read,Write,Grep,Glob"
+            --model claude-sonnet-5
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ github.event.pull_request.number }}
+            REPORT_FILE: ${{ github.workspace }}/i18n-comment.md
+            DIFF_TRUNCATED: ${{ steps.diff.outputs.truncated }}
+
+            The PR branch is already checked out. i18n-objective-results.json (in the workspace
+            root) holds deterministic findings already computed by a script — read it first;
+            never re-judge or second-guess those, just report them.
+
+            Read CLAUDE.md's "Localization (i18next)" section for the full rules, then read
+            i18n-relevant.diff with the Read tool — it's the PR's diff, already pre-filtered to
+            only files under src/**/*.{js,jsx,ts,tsx} and public/locales/**, formatted as plain
+            `=== <filename> ===` sections. Never run `gh pr diff` or `gh api` to fetch the diff
+            yourself; this file is the full and only diff context you get. Some entries may say
+            "(no patch available — file too large for GitHub to diff)" — treat those as
+            un-reviewable, don't guess at their contents. If DIFF_TRUNCATED is "true", the PR was
+            too large to include in full — note this once in the report rather than silently
+            reviewing a partial diff as if it were complete.
+
+            Review the diff for two things a script can't check:
+
+            1. Missed strings: new hardcoded user-facing copy (JSX text, string props, notify()/
+               dispatch() messages, module-level string maps, class components) that should be
+               wired through t()/i18n.t() instead, per the "Where strings hide" and "What to SKIP"
+               rules. Also check value-formatting-rule violations in any changed
+               public/locales/*.json value (no decorative characters, no ALL CAPS, no HTML, no
+               hardcoded URLs).
+            2. Translation quality: for every changed value in a non-English locale file
+               (public/locales/{es-ES,hi-IN,zh-CN,ru-RU,nl-NL}/*.json), confirm it reads as
+               grammatically correct in that language, and that it's an actual translation — not
+               the English string copied verbatim (ignoring {{var}} interpolations) or a stale
+               English placeholder.
+
+            If something is genuinely ambiguous (can't tell if a string is UI copy vs. a
+            skippable data value, or a translation choice that's debatable rather than clearly
+            wrong), put it under Advisory, not Blocking — a later deterministic step turns every
+            Blocking bullet into an inline PR comment automatically, so Blocking is reserved for
+            confident, file/line-anchored findings only.
+
+            Keep every bullet to one short sentence: what's wrong and the fix, nothing else. Avoid
+            long explanations — no rationale, no background, no multi-clause justification. This is
+            a PR comment, not an essay.
+
+            Write the report to REPORT_FILE with the Write tool, in exactly this shape (keep both
+            HTML markers verbatim):
+
+              <!-- localization-reviewer -->
+              ## Localization Reviewer — <verdict line>
+              <If DIFF_TRUNCATED is "true": "⚠️ This PR's diff was too large to review in full — findings below are non-exhaustive." Otherwise omit this line.>
+
+              ### 🔴 Blocking
+              <one bullet per objective finding (verbatim from i18n-objective-results.json) plus
+              every confident missed-string / formatting / translation-quality finding — or "None".
+              Every bullet MUST be shaped exactly `- \`path:line\` — message` (backtick-quoted
+              path:line, then an em dash, then the message) — a later step parses this exact shape
+              to post inline PR comments automatically, so a bullet that doesn't match it will
+              silently never get one.>
+
+              ### 🟡 Advisory
+              <ambiguous observations that aren't blocking — or "None">
+
+              <!-- localization-verdict: <PASS_OR_FAIL> -->
+
+            <verdict line> mirrors the Claude Auto Review workflow's terse verdict phrasing —
+            counts, not prose, and never a zero count segment:
+              ✅ No blockers
+              ✅ No blockers · 🟡 M advisory note(s)
+              🔴 N blocker(s) · 🟡 M advisory note(s) — see inline comments
+            N is the number of Blocking bullets (0 if "None"), M the number of Advisory bullets.
+            Say "see inline comments" only when N > 0, since only Blocking bullets get posted as
+            inline comments — Advisory ones live only in this comment's body.
+
+            FAIL if i18n-objective-results.json has "passed": false, OR you added anything under
+            Blocking. Otherwise PASS. This PASS/FAIL is the `<!-- localization-verdict: ... -->`
+            marker used by the merge gate — independent of the human-readable verdict line above,
+            which reports counts rather than pass/fail. Write the marker exactly once, as the final
+            line — never quote it or the `<!-- localization-reviewer -->` marker anywhere else in
+            the report. Do not post the summary comment yourself, and do not create any inline PR
+            comments yourself — later steps handle both from REPORT_FILE.
+
+      # Always post a NEW summary comment (never update in place): each push's verdict lands
+      # in the PR timeline between the commits it reviewed, preserving the review history.
+      - name: Post Localization Reviewer comment
+        id: i18n
+        if: always() && steps.changed.outputs.relevant == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+          FILE="$GITHUB_WORKSPACE/i18n-comment.md"
+          if [ ! -s "$FILE" ] || ! grep -q '<!-- localization-reviewer -->' "$FILE"; then
+            echo "::warning::report file missing or malformed; the Localization Reviewer gate will fail."
+            echo "no_report=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          BODY=$(cat "$FILE")
+          VERDICT=$(printf '%s' "$BODY" | grep -oiE '<!-- localization-verdict:[[:space:]]*(PASS|FAIL)[[:space:]]*-->' \
+            | grep -oiE '(PASS|FAIL)' | tail -n1 | tr '[:lower:]' '[:upper:]' || true)
+          if [ -z "$VERDICT" ]; then
+            echo "::warning::report has no usable localization-verdict marker; the gate will fail."
+            echo "no_report=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          PAYLOAD=$(BODY="$BODY" python3 -c 'import os,json,sys; sys.stdout.write(json.dumps({"body": os.environ["BODY"]}))')
+          printf '%s' "$PAYLOAD" | gh api -X POST "repos/$REPO/issues/$PR/comments" --input - --silent
+          echo "Posted Localization Reviewer comment."
+          echo "verdict=${VERDICT:-}" >> "$GITHUB_OUTPUT"
+
+      # Deterministic instead of relying on Claude to reliably call an inline-comment tool
+      # itself. Reusable: see ci/scripts/post_inline_comments.js.
+      - name: Post inline comments for Blocking findings
+        if: always() && steps.changed.outputs.relevant == 'true' && steps.i18n.outputs.no_report != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          node ci/scripts/post_inline_comments.js \
+            --report i18n-comment.md \
+            --section "### 🔴 Blocking" \
+            --pr-files pr_files.json \
+            --repo "${{ github.repository }}" \
+            --pr "${{ github.event.pull_request.number }}" \
+            --commit "${{ github.event.pull_request.head.sha }}" \
+            --label "Localization Reviewer"
+
+      - name: Localization Reviewer gate
+        if: always() && steps.changed.outputs.relevant == 'true'
+        run: |
+          V="${{ steps.i18n.outputs.verdict }}"
+          echo "Localization Reviewer verdict: ${V:-<none>} (no_report=${{ steps.i18n.outputs.no_report || 'false' }})"
+          if [ "${{ steps.i18n.outputs.no_report }}" = "true" ]; then
+            echo "::error::No Localization Reviewer report was produced — check the workflow logs."
+            exit 1
+          fi
+          if [ "$V" = "FAIL" ]; then
+            echo "::error::Localization Reviewer found a blocking issue — see its comment."
+            exit 1
+          fi

@@ -1,11 +1,14 @@
 import { Stack, Button } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
+import { useTranslation } from "react-i18next";
 
 type AddRowFooterProps = {
   fieldName: string;
   onAddRow: () => void;
 };
 export const AddRowFooter = ({ fieldName, onAddRow }: AddRowFooterProps) => {
+  const { t } = useTranslation();
+
   return (
     <Stack py={0.5} alignItems="center">
       <Button
@@ -14,7 +17,7 @@ export const AddRowFooter = ({ fieldName, onAddRow }: AddRowFooterProps) => {
         startIcon={<AddIcon />}
         onClick={onAddRow}
       >
-        Add row to {fieldName}
+        {t("shell.repeaterAddRowTo", { fieldName })}
       </Button>
     </Stack>
   );

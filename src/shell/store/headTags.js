@@ -1,5 +1,6 @@
 import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
+import i18n from "shell/i18n";
 
 export function headTags(state = [], action) {
   switch (action.type) {
@@ -113,14 +114,17 @@ export const fetchHeadTags = () => {
           dispatch(
             notify({
               kind: "warn",
-              message: `Failed to fetch head tags`,
+              message: i18n.t("shell.failedFetchHeadTags"),
             })
           );
           if (res.error) {
             dispatch(
               notify({
                 kind: "warn",
-                message: `Failed to load file. ${res.status} | ${res.error}`,
+                message: i18n.t("shell.failedLoadHeadTagFile", {
+                  status: res.status,
+                  error: res.error,
+                }),
               })
             );
           }
@@ -130,7 +134,9 @@ export const fetchHeadTags = () => {
         dispatch(
           notify({
             kind: "warn",
-            message: `Failed to fetch head tags: ${err?.message || err || ""}`,
+            message: i18n.t("shell.failedFetchHeadTagsError", {
+              error: err?.message || err || "",
+            }),
           })
         );
       },

@@ -21,6 +21,7 @@ import { cloneDeep } from "lodash";
 import { FilterButton } from "./FilterButton";
 import { MD5 } from "../../../utility/md5";
 import { User } from "../../../shell/services/types";
+import { useTranslation } from "react-i18next";
 
 interface UserFilterProps {
   value: string;
@@ -31,9 +32,10 @@ interface UserFilterProps {
 export const UserFilter: FC<UserFilterProps> = ({
   value,
   onChange,
-  defaultButtonText = "Created By",
+  defaultButtonText,
   options,
 }) => {
+  const { t } = useTranslation();
   const userListRef = useRef<HTMLUListElement>(null);
   const [filter, setFilter] = useState("");
   const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLButtonElement | null>(
@@ -75,7 +77,7 @@ export const UserFilter: FC<UserFilterProps> = ({
   const activeUserFilter = options?.find((user) => user?.ZUID === value);
   const buttonText = activeUserFilter
     ? `${activeUserFilter.firstName} ${activeUserFilter.lastName}`
-    : defaultButtonText;
+    : defaultButtonText ?? t("common.createdBy");
 
   const handleOpenMenuClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     setMenuAnchorEl(e.currentTarget);
@@ -151,7 +153,7 @@ export const UserFilter: FC<UserFilterProps> = ({
           <TextField
             autoFocus
             fullWidth
-            placeholder="Search Users"
+            placeholder={t("shell.searchUsers")}
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
             InputProps={{
@@ -171,7 +173,7 @@ export const UserFilter: FC<UserFilterProps> = ({
 
         {!filteredUsers?.length && Boolean(filter) && (
           <ListItem sx={{ pb: 2 }}>
-            <ListItemText>No users found</ListItemText>
+            <ListItemText>{t("common.noUsersFound")}</ListItemText>
           </ListItem>
         )}
 

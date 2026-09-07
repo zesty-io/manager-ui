@@ -2,7 +2,9 @@ import { useMemo, FC, CSSProperties } from "react";
 import { List, type RowComponentProps } from "react-window";
 import { Typography, Skeleton, Box } from "@mui/material";
 import AutoSizer, { Size } from "react-virtualized-auto-sizer";
+import { formatLocalized } from "shell/i18n/dates";
 import { format, subDays } from "date-fns";
+import { useTranslation } from "react-i18next";
 
 import { ActionTimelineItem } from "./ActionTimelineItem";
 import { TimelineItem } from "./ActionTimelineItem/TimelineItem";
@@ -24,17 +26,19 @@ export const ActionsTimeline: FC<ActionsTimelineProps> = ({
   showSkeletons,
   actions,
 }) => {
+  const { t } = useTranslation();
+
   const actionsWithHeaders = useMemo(() => {
     const arr: ActionsWithHeaders = [];
     const seen = new Set<string>();
 
     actions?.forEach((action) => {
       const d = new Date(action.happenedAt);
-      const formattedDate = format(d, "MMMM d, yyyy");
+      const dateKey = format(d, "yyyy-MM-dd");
 
-      if (!seen.has(formattedDate)) {
-        arr.push(formattedDate);
-        seen.add(formattedDate);
+      if (!seen.has(dateKey)) {
+        arr.push(dateKey);
+        seen.add(dateKey);
       }
 
       arr.push(action);
@@ -43,8 +47,8 @@ export const ActionsTimeline: FC<ActionsTimelineProps> = ({
     return arr;
   }, [actions]);
 
-  const todayLabel = format(new Date(), "MMMM d, yyyy");
-  const yesterdayLabel = format(subDays(new Date(), 1), "MMMM d, yyyy");
+  const todayKey = format(new Date(), "yyyy-MM-dd");
+  const yesterdayKey = format(subDays(new Date(), 1), "yyyy-MM-dd");
 
   const Row = ({ index, data, style }: any) => {
     const action = data[index];
@@ -52,11 +56,11 @@ export const ActionsTimeline: FC<ActionsTimelineProps> = ({
     if (typeof action === "string") {
       const headerText = showSkeletons
         ? null
-        : action === todayLabel
-        ? "Today"
-        : action === yesterdayLabel
-        ? "Yesterday"
-        : action;
+        : action === todayKey
+        ? t("common.today")
+        : action === yesterdayKey
+        ? t("common.yesterday")
+        : formatLocalized(new Date(action), "MMMM d, yyyy");
 
       return (
         <Box sx={style}>

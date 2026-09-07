@@ -11,6 +11,7 @@ import {
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector, useStore } from "react-redux";
+import { useTranslation } from "react-i18next";
 import { MemoryRouter, useHistory, useLocation } from "react-router";
 import { cloneDeep } from "lodash";
 import { AppState } from "shell/store/types";
@@ -104,6 +105,7 @@ const withCodeIdBreadcrumbRoot = (
 };
 
 export const StudioWrapper = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
 
   // Which interaction modes this user is entitled to. Layout mode writes view
@@ -392,7 +394,9 @@ export const StudioWrapper = () => {
     pageItem?.web?.metaTitle || pageItem?.web?.metaLinkText || "Studio";
   const pageItemVersion =
     typeof pageItem?.meta?.version === "number" ? pageItem.meta.version : null;
-  const headerTitle = unresolvedPath ? "Preview only" : panelTitle;
+  const headerTitle = unresolvedPath
+    ? t("content.studioPreviewOnly")
+    : panelTitle;
 
   const updateItemByPath = useCallback(
     async (path: string, options?: { onApplied?: () => void }) => {
@@ -770,7 +774,10 @@ export const StudioWrapper = () => {
             res?.invalidRange?.forEach((field: any) => {
               errors[field.name] = {
                 ...(errors[field.name] ?? {}),
-                INVALID_RANGE: `Value must be between ${field.settings?.minValue} and ${field.settings?.maxValue}`,
+                INVALID_RANGE: t("content.valueMustBeBetween", {
+                  min: field.settings?.minValue,
+                  max: field.settings?.maxValue,
+                }),
               };
             });
 
@@ -788,7 +795,7 @@ export const StudioWrapper = () => {
         dispatch(
           notify({
             kind: "error",
-            message: `Cannot Save: ${itemLabel} - missing or invalid data`,
+            message: t("content.studioCannotSaveInvalid", { label: itemLabel }),
           })
         );
         return;
@@ -819,8 +826,8 @@ export const StudioWrapper = () => {
               errors[fieldName] = {
                 ...(errors[fieldName] ?? {}),
                 CUSTOM_ERROR: oneToManyFieldNames?.includes(fieldName)
-                  ? "Cannot save field. Please reduce the total number of items selected."
-                  : "Cannot save field. Value is too long.",
+                  ? t("content.itemEditCannotSaveTooManySelected")
+                  : t("content.itemEditCannotSaveValueTooLong"),
               };
               return errors;
             });
@@ -830,9 +837,12 @@ export const StudioWrapper = () => {
         dispatch(
           notify({
             kind: "error",
-            message: `Cannot Save: ${itemLabel}${
-              res.error ? ` - ${res.error}` : ""
-            }`,
+            message: res.error
+              ? t("content.studioCannotSaveError", {
+                  label: itemLabel,
+                  error: res.error,
+                })
+              : t("content.studioCannotSave", { label: itemLabel }),
           })
         );
         return;
@@ -841,11 +851,11 @@ export const StudioWrapper = () => {
       dispatch(
         notify({
           kind: "error",
-          message: `Cannot Save: ${itemLabel}`,
+          message: t("content.studioCannotSave", { label: itemLabel }),
         })
       );
     },
-    [activeFields, dispatch]
+    [activeFields, dispatch, t]
   );
 
   const { saveAllContent, saveAndPublishAllContent, discardAllContent } =
@@ -1393,7 +1403,7 @@ export const StudioWrapper = () => {
         dispatch(
           notify({
             kind: "warn",
-            message: "Invalid URL. Please check and try again.",
+            message: t("content.studioInvalidUrl"),
           })
         );
         return;
@@ -1413,6 +1423,7 @@ export const StudioWrapper = () => {
       previewPath,
       updateItemByPath,
       updateStudioUrl,
+      t,
     ]
   );
 
@@ -1527,7 +1538,7 @@ export const StudioWrapper = () => {
         dispatch(
           notify({
             kind: "success",
-            message: `Item Saved: ${selectedItemLabel}`,
+            message: t("content.studioItemSaved", { label: selectedItemLabel }),
           })
         );
 
@@ -1545,7 +1556,7 @@ export const StudioWrapper = () => {
       dispatch(
         notify({
           kind: "error",
-          message: `Cannot Save: ${selectedItemLabel}`,
+          message: t("content.studioCannotSave", { label: selectedItemLabel }),
         })
       );
       throw err;
@@ -1559,6 +1570,7 @@ export const StudioWrapper = () => {
     selectedItemZUID,
     selectedModelZUID,
     refreshPreviewFrame,
+    t,
   ]);
 
   // Same warm-cache caveat as the page item above: revalidate the newly
@@ -2188,10 +2200,10 @@ export const StudioWrapper = () => {
       <Box display="flex" flexDirection="column" gap={2}>
         <Alert severity="info" variant="standard">
           {interactionMode === "layout"
-            ? "Drag blocks on the canvas to reorder the layout"
+            ? t("content.studioLayoutHint")
             : interactionMode === "full"
-            ? "Select items on the canvas to edit them, or drag blocks to reorder the layout"
-            : "Select items on the canvas to make edits"}
+            ? t("content.studioFullHint")
+            : t("content.studioContentHint")}
         </Alert>
         <ContentInfo
           itemZUID={pageItemZUID}
@@ -2232,7 +2244,7 @@ export const StudioWrapper = () => {
           fullWidth
           onClick={returnToInspector}
         >
-          Back to Element
+          {t("content.studioBackToElement")}
         </Button>
       ) : filteredFieldName ? (
         <Button
@@ -2241,7 +2253,7 @@ export const StudioWrapper = () => {
           fullWidth
           onClick={clearHighlightOnly}
         >
-          View All Related Fields
+          {t("content.studioViewAllRelatedFields")}
         </Button>
       ) : null}
     </Box>
@@ -2261,7 +2273,7 @@ export const StudioWrapper = () => {
         <Paper
           role="dialog"
           aria-modal="true"
-          aria-label="Studio editor"
+          aria-label={t("content.studioEditorAriaLabel")}
           variant="outlined"
           square
           sx={{
@@ -2412,7 +2424,7 @@ export const StudioWrapper = () => {
                   onClick={handleSaveBarCancel}
                   disabled={saveBarIsSaving}
                 >
-                  Cancel
+                  {t("common.cancel")}
                 </Button>
                 <Button
                   data-cy={`${saveBarHookPrefix}SaveChangesButton`}
@@ -2422,7 +2434,7 @@ export const StudioWrapper = () => {
                   sx={{ whiteSpace: "nowrap" }}
                   onClick={handleOpenSaveChangesModal}
                 >
-                  Save Changes
+                  {t("content.studioSaveChanges")}
                 </Button>
               </Box>
             </Box>
@@ -2452,8 +2464,8 @@ export const StudioWrapper = () => {
             onDiscard={discardAllContent}
           />
           <DirtyCodeModal
-            title="Unsaved layout changes"
-            content="You have unsaved layout changes. Save them before continuing?"
+            title={t("content.studioUnsavedLayoutTitle")}
+            content={t("content.studioUnsavedLayoutBody")}
             open={showPendingLayoutModal}
             loading={isSavingLayout}
             saveDisabled={!canEditLayout}

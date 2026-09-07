@@ -16,11 +16,14 @@ import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 import { useCookie } from "react-use";
 import Cookies from "js-cookie";
 
+import { useTranslation } from "react-i18next";
+
 import { useGetAnnouncementsQuery } from "../../services/marketing";
 
 const READ_ANNOUNCEMENTS_COOKIE = "READ_ANNOUNCEMENTS_ZUID";
 
 export const InAppAnnouncement = () => {
+  const { t } = useTranslation();
   const { data: announcements } = useGetAnnouncementsQuery();
   const [readAnnouncementsCookie, updateReadAnnouncementsCookie] = useCookie(
     READ_ANNOUNCEMENTS_COOKIE
@@ -179,7 +182,7 @@ export const InAppAnnouncement = () => {
           onClick={() => onIgnoreAnnouncement(latestAnnouncement?.zuid)}
           data-cy="IgnoreAnnouncementButton"
         >
-          Ignore
+          {t("shell.announcementIgnore")}
         </Button>
         <Stack direction="row" gap={1}>
           <Button
@@ -189,7 +192,7 @@ export const InAppAnnouncement = () => {
             href={latestAnnouncement?.announcement_link}
             target="_blank"
           >
-            Read Announcement
+            {t("shell.announcementRead")}
           </Button>
           {latestAnnouncement?.cta_type === "play_video" &&
             latestAnnouncement?.video_link && (
@@ -199,7 +202,7 @@ export const InAppAnnouncement = () => {
                 href={latestAnnouncement?.video_link}
                 target="_blank"
               >
-                Show Video
+                {t("shell.announcementShowVideo")}
               </Button>
             )}
           {latestAnnouncement?.cta_type === "schedule_training" &&
@@ -210,7 +213,7 @@ export const InAppAnnouncement = () => {
                 href={latestAnnouncement?.training_link}
                 target="_blank"
               >
-                Schedule Training
+                {t("shell.announcementScheduleTraining")}
               </Button>
             )}
         </Stack>

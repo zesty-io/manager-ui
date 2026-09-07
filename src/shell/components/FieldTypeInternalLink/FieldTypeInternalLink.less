@@ -4,4 +4,26 @@
       width: 100px;
     }
   }
+
+  // The dropdown is absolutely positioned and shrink-to-fits to its content.
+  // The search input's intrinsic (~20ch) width forces it wider than the field,
+  // overflowing the page. Lock the popup to the field width and let the input
+  // shrink into it; wrap long option labels instead of stretching the popup.
+  :global(.selections) {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
+
+    input {
+      box-sizing: border-box;
+      min-width: 0;
+      width: 100%;
+    }
+
+    li {
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+  }
 }

@@ -10,6 +10,7 @@ import {
   CloseRounded,
   AutorenewRounded,
 } from "@mui/icons-material";
+import { useTranslation } from "react-i18next";
 
 type DialogHeaderProps = {
   selectedCount: number;
@@ -31,6 +32,7 @@ export const DialogHeader = ({
   loading,
   replace = null,
 }: DialogHeaderProps) => {
+  const { t } = useTranslation();
   if ((!selectedCount || loading) && !replace) {
     return (
       <DialogTitle
@@ -45,7 +47,7 @@ export const DialogHeader = ({
         }}
       >
         <Typography variant="h3" fontWeight={700}>
-          Select {fieldLabel}
+          {t("shell.relationalSelectField", { label: fieldLabel })}
         </Typography>
         <IconButton size="small" onClick={onClose}>
           <CloseRounded fontSize="small" />
@@ -68,10 +70,12 @@ export const DialogHeader = ({
     >
       <Typography variant="h3" fontWeight={700} data-cy="selected-count">
         {!replace
-          ? `${multiselect ? selectedCount : "1 / 1"} selected`
+          ? t("shell.relationalSelected", {
+              value: multiselect ? selectedCount : "1 / 1",
+            })
           : !selectedCount || loading
-          ? "Select Replacement Item"
-          : "Replacement Item Selected"}
+          ? t("shell.relationalSelectReplacement")
+          : t("shell.relationalReplacementSelected")}
       </Typography>
       <Stack direction="row" gap={1}>
         {!replace && (
@@ -82,7 +86,7 @@ export const DialogHeader = ({
             onClick={onDeselectAll}
             startIcon={<CloseRounded />}
           >
-            Deselect All
+            {t("shell.relationalDeselectAll")}
           </Button>
         )}
         <Button
@@ -93,7 +97,7 @@ export const DialogHeader = ({
           startIcon={!!replace ? <AutorenewRounded /> : <CheckRounded />}
           disabled={(!selectedCount || loading) && !!replace}
         >
-          {!!replace ? "Replace" : "Done"}
+          {!!replace ? t("shell.relationalReplace") : t("common.done")}
         </Button>
         <IconButton size="small" onClick={onClose}>
           <CloseRounded fontSize="small" />

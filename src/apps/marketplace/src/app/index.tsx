@@ -3,7 +3,7 @@ import { Sidebar } from "./components/Sidebar";
 import CustomApp from "./view/CustomApp";
 import { ResizableContainer } from "../../../../shell/components/ResizeableContainer";
 
-export const MarketplaceApp = () => {
+export const MarketplaceWrapper = () => {
   return (
     <Box
       sx={{

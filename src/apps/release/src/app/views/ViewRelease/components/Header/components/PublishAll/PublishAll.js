@@ -1,6 +1,7 @@
 import { memo, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useParams } from "react-router";
+import { useTranslation } from "react-i18next";
 
 import Button from "@mui/material/Button";
 import BackupIcon from "@mui/icons-material/Backup";
@@ -22,6 +23,7 @@ import styles from "./PublishAll.less";
 export const PublishAll = memo(function PublishAll() {
   const dispatch = useDispatch();
   const params = useParams();
+  const { t } = useTranslation();
 
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -40,12 +42,12 @@ export const PublishAll = memo(function PublishAll() {
       <Button
         variant="contained"
         color="success"
-        title="Publish All"
+        title={t("release.publishAll")}
         onClick={() => setOpen(true)}
         disabled={!canPublish || loading}
         startIcon={<BackupIcon />}
       >
-        Publish All
+        {t("release.publishAll")}
       </Button>
 
       <Modal
@@ -55,10 +57,7 @@ export const PublishAll = memo(function PublishAll() {
         onClose={() => setOpen(false)}
       >
         <ModalContent>
-          <Notice>
-            This will publish all members in this release. Purging all member
-            URLs and related content.
-          </Notice>
+          <Notice>{t("release.publishAllNoticeBody")}</Notice>
         </ModalContent>
         <ModalFooter className={styles.ModalFooter}>
           <Button
@@ -66,7 +65,7 @@ export const PublishAll = memo(function PublishAll() {
             onClick={() => setOpen(false)}
             startIcon={<DoDisturbAltIcon />}
           >
-            Cancel (ESC)
+            {t("shell.cancelEsc")}
           </Button>
           <Button
             variant="contained"
@@ -77,7 +76,7 @@ export const PublishAll = memo(function PublishAll() {
               loading ? <CircularProgress size="20px" /> : <CheckCircleIcon />
             }
           >
-            {loading ? "Publishing" : "Publish All"}
+            {loading ? t("release.publishing") : t("release.publishAll")}
           </Button>
         </ModalFooter>
       </Modal>

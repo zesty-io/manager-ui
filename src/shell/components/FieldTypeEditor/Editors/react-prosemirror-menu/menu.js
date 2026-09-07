@@ -43,46 +43,48 @@ const canInsert = (type) => (state) => {
 };
 
 export function menu(options) {
+  const { t } = options;
+
   return {
     marks: {
       em: {
-        title: "Toggle emphasis",
+        title: t("shell.editorToggleEmphasis"),
         content: icons.em,
         active: markActive(schema.marks.em),
         run: toggleMark(schema.marks.em),
       },
       strong: {
-        title: "Toggle strong",
+        title: t("shell.editorToggleStrong"),
         content: icons.strong,
         active: markActive(schema.marks.strong),
         run: toggleMark(schema.marks.strong),
       },
       subscript: {
-        title: "Toggle subscript",
+        title: t("shell.editorToggleSubscript"),
         content: icons.subscript,
         active: markActive(schema.marks.subscript),
         run: toggleMark(schema.marks.subscript),
       },
       superscript: {
-        title: "Toggle superscript",
+        title: t("shell.editorToggleSuperscript"),
         content: icons.superscript,
         active: markActive(schema.marks.superscript),
         run: toggleMark(schema.marks.superscript),
       },
       underline: {
-        title: "Toggle underline",
+        title: t("shell.editorToggleUnderline"),
         content: icons.underline,
         active: markActive(schema.marks.underline),
         run: toggleMark(schema.marks.underline),
       },
       strikethrough: {
-        title: "Toggle strikethrough",
+        title: t("shell.editorToggleStrikethrough"),
         content: icons.strikethrough,
         active: markActive(schema.marks.strikethrough),
         run: toggleMark(schema.marks.strikethrough),
       },
       link: {
-        title: "Add or remove link",
+        title: t("shell.editorAddRemoveLink"),
         content: icons.link,
         active: markActive(schema.marks.link),
         // enable: (state) => !state.selection.empty,
@@ -99,25 +101,25 @@ export function menu(options) {
     },
     alignment: {
       left: {
-        title: "Left align text",
+        title: t("shell.editorAlignLeft"),
         content: icons.align_left,
         active: markActive(schema.marks.alignLeft),
         run: toggleMark(schema.marks.alignLeft),
       },
       center: {
-        title: "Center align text",
+        title: t("shell.editorAlignCenter"),
         content: icons.align_center,
         active: markActive(schema.marks.alignCenter),
         run: toggleMark(schema.marks.alignCenter),
       },
       justify: {
-        title: "Justify align text",
+        title: t("shell.editorAlignJustify"),
         content: icons.align_justify,
         active: markActive(schema.marks.alignJustify),
         run: toggleMark(schema.marks.alignJustify),
       },
       right: {
-        title: "Right align text",
+        title: t("shell.editorAlignRight"),
         content: icons.align_right,
         active: markActive(schema.marks.alignRight),
         run: toggleMark(schema.marks.alignRight),
@@ -125,13 +127,13 @@ export function menu(options) {
     },
 
     headings_dropdown: {
-      title: "Change Heading",
-      content: "Heading",
+      title: t("shell.editorChangeHeading"),
+      content: t("shell.editorHeading"),
       // classname: "dropdown-menu-list",
       children: ["1", "2", "3", "4", "5", "6"].reduce((acc, level) => {
         acc[level] = {
-          title: `Heading ${level}`,
-          content: `Level ${level}`,
+          title: t("shell.editorHeadingLevel", { level }),
+          content: t("shell.editorLevel", { level }),
           active: blockActive(schema.nodes.heading, { level: level }),
           enable: setBlockType(schema.nodes.heading, { level: level }),
           run: setBlockType(schema.nodes.heading, { level: level }),
@@ -142,8 +144,8 @@ export function menu(options) {
     },
 
     embed_dropdown: {
-      title: "Embed Content",
-      content: "Embed",
+      title: t("shell.editorEmbedContent"),
+      content: t("shell.editorEmbed"),
       classname: "dropdown-menu-list",
       children: ["Instagram", "YouTube", "Twitter"].reduce((acc, service) => {
         acc[service] = {
@@ -164,42 +166,42 @@ export function menu(options) {
 
     blocks: {
       plain: {
-        title: "Change to paragraph",
+        title: t("shell.editorChangeToParagraph"),
         content: icons.paragraph,
         active: blockActive(schema.nodes.paragraph),
         enable: setBlockType(schema.nodes.paragraph),
         run: setBlockType(schema.nodes.paragraph),
       },
       code_block: {
-        title: "Change to code block",
+        title: t("shell.editorChangeToCodeBlock"),
         content: icons.code_block,
         active: blockActive(schema.nodes.code_block),
         enable: setBlockType(schema.nodes.code_block),
         run: setBlockType(schema.nodes.code_block),
       },
       blockquote: {
-        title: "Change to block quote",
+        title: t("shell.editorChangeToBlockQuote"),
         content: icons.blockquote,
         active: blockActive(schema.nodes.blockquote),
         enable: setBlockType(schema.nodes.blockquote),
         run: setBlockType(schema.nodes.blockquote),
       },
       bullet_list: {
-        title: "Wrap in bullet list",
+        title: t("shell.editorWrapInBulletList"),
         content: icons.bullet_list,
         active: blockActive(schema.nodes.bullet_list),
         enable: wrapInList(schema.nodes.bullet_list),
         run: wrapInList(schema.nodes.bullet_list),
       },
       ordered_list: {
-        title: "Wrap in ordered list",
+        title: t("shell.editorWrapInOrderedList"),
         content: icons.ordered_list,
         active: blockActive(schema.nodes.ordered_list),
         enable: wrapInList(schema.nodes.ordered_list),
         run: wrapInList(schema.nodes.ordered_list),
       },
       indent: {
-        title: "Indent",
+        title: t("shell.editorIndent"),
         content: icons.indent,
         active: markActive(schema.marks.indent),
         run: toggleMark(schema.marks.indent),
@@ -223,7 +225,7 @@ export function menu(options) {
       //   }
       // },
       hr: {
-        title: "Insert horizontal rule",
+        title: t("shell.editorInsertHorizontalRule"),
         content: "HR",
         enable: canInsert(schema.nodes.hr),
         run: (state, dispatch) => {
@@ -232,13 +234,15 @@ export function menu(options) {
         },
       },
       table: {
-        title: "Insert table",
+        title: t("shell.editorInsertTable"),
         content: icons.table,
         enable: canInsert(schema.nodes.table),
         run: (state, dispatch) => {
           // const { from } = state.selection
-          let rowCount = window && window.prompt("How many rows?", 2);
-          let colCount = window && window.prompt("How many columns?", 2);
+          let rowCount =
+            window && window.prompt(t("shell.editorPromptRows"), 2);
+          let colCount =
+            window && window.prompt(t("shell.editorPromptColumns"), 2);
 
           const cells = [];
           while (colCount--) {
@@ -277,12 +281,12 @@ export function menu(options) {
       // }
     },
     special_character_dropdown: {
-      title: "Insert special character",
-      content: "Special Character",
+      title: t("shell.editorInsertSpecialCharacter"),
+      content: t("shell.editorSpecialCharacter"),
       classname: "dropdown-menu-row",
       children: characters.reduce((acc, char) => {
         acc[char] = {
-          title: `Insert Character: ${char}`,
+          title: t("shell.editorInsertCharacter", { char }),
           content: char,
           enable: canInsert(schema.nodes.text),
           run: (state, dispatch) => {
@@ -295,7 +299,7 @@ export function menu(options) {
     },
     media: {
       image: {
-        title: "Insert image from media library",
+        title: t("shell.editorInsertImage"),
         content: icons.image,
         enable: canInsert(schema.nodes.image),
         run: (state, dispatch) => {
@@ -320,13 +324,13 @@ export function menu(options) {
         },
       },
       left: {
-        title: "Float left",
+        title: t("shell.editorFloatLeft"),
         content: icons.float_left,
         active: markActive(schema.marks.floatLeft),
         run: toggleMark(schema.marks.floatLeft),
       },
       right: {
-        title: "Float right",
+        title: t("shell.editorFloatRight"),
         content: icons.float_right,
         active: markActive(schema.marks.floatRight),
         run: toggleMark(schema.marks.floatRight),
@@ -334,13 +338,13 @@ export function menu(options) {
     },
     history: {
       undo: {
-        title: "Undo last change",
+        title: t("shell.editorUndo"),
         content: icons.undo,
         enable: undo,
         run: undo,
       },
       redo: {
-        title: "Redo last undone change",
+        title: t("shell.editorRedo"),
         content: icons.redo,
         enable: redo,
         run: redo,

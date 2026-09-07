@@ -1,5 +1,7 @@
 import { useMemo } from "react";
-import { format, isValid, parse } from "date-fns";
+import { useTranslation } from "react-i18next";
+import { formatLocalized } from "shell/i18n/dates";
+import { isValid, parse } from "date-fns";
 import { default as MuiTimelineItem } from "@mui/lab/TimelineItem";
 import TimelineSeparator from "@mui/lab/TimelineSeparator";
 import TimelineConnector from "@mui/lab/TimelineConnector";
@@ -47,6 +49,7 @@ const actionIconColorMap = {
 };
 
 export const TimelineItem = (props) => {
+  const { t } = useTranslation();
   const location = useLocation();
   const history = useHistory();
   const {
@@ -71,10 +74,12 @@ export const TimelineItem = (props) => {
 
       switch (props.action?.action) {
         case 1:
-          return `Added status: ${labels.join(", ")}`;
+          return t("reports.actionAddedStatus", { labels: labels.join(", ") });
 
         case 3:
-          return `Removed status: ${labels.join(", ")}`;
+          return t("reports.actionRemovedStatus", {
+            labels: labels.join(", "),
+          });
 
         default:
           return props.action?.meta?.message;
@@ -82,26 +87,31 @@ export const TimelineItem = (props) => {
     } else {
       switch (props.action?.action) {
         case 1:
-          return "Created";
+          return t("reports.actionCreated");
         case 2:
-          return "Modified";
+          return t("reports.actionModified");
         case 3:
-          return "Deleted";
+          return t("reports.actionDeleted");
         case 4:
-          return "Published";
+          return t("reports.actionPublished");
         case 5:
-          return "Unpublished";
+          return t("reports.actionUnpublished");
         case 6:
           const [publishAt] = props.action?.meta?.message.split(" ").slice(-1);
           const d = new Date(publishAt || props.action?.happenedAt);
           return isValid(d)
-            ? `Scheduled to Publish on ${format(d, "MMMM dd 'at' hh:mm a")}`
-            : "Scheduled to Publish";
+            ? t("reports.actionScheduledPublishOn", {
+                date: t("common.dateAtTime", {
+                  date: formatLocalized(d, "MMMM dd"),
+                  time: formatLocalized(d, "hh:mm a"),
+                }),
+              })
+            : t("reports.actionScheduledPublish");
         default:
           return props.action?.meta?.message;
       }
     }
-  }, [props.action]);
+  }, [props.action, t]);
 
   return (
     <MuiTimelineItem
@@ -150,7 +160,7 @@ export const TimelineItem = (props) => {
           ) : (
             <>
               {isValid(new Date(props.action?.happenedAt))
-                ? format(new Date(props.action?.happenedAt), "hh:mm a")
+                ? formatLocalized(new Date(props.action?.happenedAt), "hh:mm a")
                 : "—"}
             </>
           )}
@@ -194,8 +204,10 @@ export const TimelineItem = (props) => {
             <>
               {/*Hide item subtext on resource detail page*/}
               {location.pathname.includes("resources")
-                ? "by "
-                : `In ${props.itemSubtext} by `}
+                ? t("reports.actionBy")
+                : t("reports.actionInBy", {
+                    itemSubtext: props.itemSubtext,
+                  })}{" "}
               <Link
                 underline="hover"
                 href="#"

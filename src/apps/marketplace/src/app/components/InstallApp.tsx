@@ -1,5 +1,6 @@
 import { Stack, Box, Typography, Button } from "@mui/material";
 import StorefrontRoundedIcon from "@mui/icons-material/StorefrontRounded";
+import { useTranslation } from "react-i18next";
 
 import zestyRocket from "../../../../../../public/images/zestyRocket.svg";
 import microsoftIcon from "../../../../../../public/images/microsoftLogo.png";
@@ -8,47 +9,53 @@ import npmIcon from "../../../../../../public/images/npmLogo.png";
 import nodejsIcon from "../../../../../../public/images/nodejsLogo.png";
 import googleChromeIcon from "../../../../../../public/images/googleChromeLogo.png";
 
-const ICONS: { altText: string; image: any }[] = [
+const ICONS: { altKey: string; image: any }[] = [
   {
-    altText: "Microsoft Logo",
+    altKey: "marketplace.microsoftLogoAlt",
     image: microsoftIcon,
   },
   {
-    altText: "Google Analytics Logo",
+    altKey: "marketplace.googleAnalyticsLogoAlt",
     image: googleAnalyticsIcon,
   },
   {
-    altText: "NPM Logo",
+    altKey: "marketplace.npmLogoAlt",
     image: npmIcon,
   },
   {
-    altText: "NodeJS Logo",
+    altKey: "marketplace.nodejsLogoAlt",
     image: nodejsIcon,
   },
   {
-    altText: "Google Chrome Logo",
+    altKey: "marketplace.googleChromeLogoAlt",
     image: googleChromeIcon,
   },
 ];
 
 export const InstallApp = () => {
+  const { t } = useTranslation();
   return (
     <Stack height="100%" justifyContent="center" alignItems="center">
-      <Box component="img" src={zestyRocket} alt="Zesty Rocket logo" mb={3} />
+      <Box
+        component="img"
+        src={zestyRocket}
+        alt={t("marketplace.zestyRocketLogoAlt")}
+        mb={3}
+      />
       <Stack direction="row" gap={1} mb={8}>
         {ICONS.map((icon) => (
           <Box
-            key={icon.altText.replaceAll(" ", "")}
+            key={icon.altKey.replaceAll(" ", "")}
             component="img"
             src={icon.image}
-            alt={icon.altText}
+            alt={t(icon.altKey)}
             width={96}
             height={96}
           />
         ))}
       </Stack>
       <Typography variant="h3" mb={1} fontWeight={600}>
-        Explore Marketplace
+        {t("marketplace.exploreMarketplace")}
       </Typography>
       <Typography
         variant="body1"
@@ -57,8 +64,7 @@ export const InstallApp = () => {
         width={387}
         textAlign="center"
       >
-        Install extensions, applications, and quick start modules to accelerate
-        your Zesty project
+        {t("marketplace.installAppBody")}
       </Typography>
       <Button
         variant="contained"
@@ -67,7 +73,7 @@ export const InstallApp = () => {
           window.open("https://www.zesty.io/marketplace/apps/", "_blank")
         }
       >
-        Go to Marketplace
+        {t("marketplace.goToMarketplace")}
       </Button>
     </Stack>
   );

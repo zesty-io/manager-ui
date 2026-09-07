@@ -1,8 +1,9 @@
-import { StrictMode } from "react";
+import "./i18n";
+import { StrictMode, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { Router } from "react-router-dom";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { createTheme } from "@mui/material/styles";
 import { theme } from "@zesty-io/material";
 import CssBaseline from "@mui/material/CssBaseline";
 
@@ -22,6 +23,7 @@ import { store, injectReducer } from "shell/store";
 import { navContent } from "../apps/content-editor/src/store/navContent";
 
 import AppError from "shell/components/AppError";
+import { LocalizedThemeProvider } from "./components/LocalizedThemeProvider";
 
 import PrivateRoute from "./components/private-route";
 import LoadInstance from "./components/load-instance";
@@ -57,7 +59,11 @@ window.zestyStore = store;
 const instanceZUID = store.getState().instance.ZUID;
 window.CONFIG.API_INSTANCE = `${window.CONFIG.API_INSTANCE_PROTOCOL}${instanceZUID}${window.CONFIG.API_INSTANCE}`;
 
-const appTheme = createTheme(theme, {
+// App-specific overrides layered onto the @zesty-io/material base theme.
+// Hoisted to a module constant so it's merged exactly once; locale-specific
+// merging happens per language change in LocalizedThemeProvider, which takes
+// this base theme and layers the MUI core/grid/picker locale bundles on top.
+const themeOverrides = {
   palette: {
     ...(isContentOne() && {
       primary: {
@@ -117,7 +123,9 @@ const appTheme = createTheme(theme, {
       }),
     },
   },
-});
+};
+
+const appTheme = createTheme(theme, themeOverrides);
 
 MonacoSetup(store);
 
@@ -127,42 +135,61 @@ const preLoginIdentify = new amplitude.Identify();
 preLoginIdentify.set("env", window.CONFIG.ENV);
 amplitude.identify(preLoginIdentify);
 
+// Reuse the server/static boot skeleton while React Suspense waits on i18n.
+// This keeps the visual handoff continuous instead of replacing the loader
+// with a blank screen after React mounts but before translations are ready.
+const InitialLoadingFallback = ({ markup }) =>
+  markup ? (
+    <div
+      style={{ display: "contents" }}
+      dangerouslySetInnerHTML={{ __html: markup }}
+    />
+  ) : null;
+
 // TODO: Add a context here that will store all draft comments
-const App = Sentry.withProfiler(() => (
+const App = Sentry.withProfiler(({ initialLoadingMarkup }) => (
   <StrictMode>
-    <Sentry.ErrorBoundary
-      fallback={() => <AppError />}
-      beforeCapture={(scope) => {
-        scope.setLevel("fatal");
-        scope.setTag("error_boundary", true);
-      }}
+    <Suspense
+      fallback={<InitialLoadingFallback markup={initialLoadingMarkup} />}
     >
-      <ThemeProvider theme={appTheme}>
-        <CssBaseline>
-          <Provider store={store}>
-            <Router history={history}>
-              <CommentProvider>
-                <CreateContentItemDialogProvider>
-                  <PrivateRoute>
-                    <LoadInstance>
-                      <Shell />
-                    </LoadInstance>
-                  </PrivateRoute>
-                </CreateContentItemDialogProvider>
-              </CommentProvider>
-            </Router>
-          </Provider>
-        </CssBaseline>
-      </ThemeProvider>
-    </Sentry.ErrorBoundary>
+      <Sentry.ErrorBoundary
+        fallback={() => <AppError />}
+        beforeCapture={(scope) => {
+          scope.setLevel("fatal");
+          scope.setTag("error_boundary", true);
+        }}
+      >
+        <LocalizedThemeProvider baseTheme={appTheme}>
+          <CssBaseline>
+            <Provider store={store}>
+              <Router history={history}>
+                <CommentProvider>
+                  <CreateContentItemDialogProvider>
+                    <PrivateRoute>
+                      <LoadInstance>
+                        <Shell />
+                      </LoadInstance>
+                    </PrivateRoute>
+                  </CreateContentItemDialogProvider>
+                </CommentProvider>
+              </Router>
+            </Provider>
+          </CssBaseline>
+        </LocalizedThemeProvider>
+      </Sentry.ErrorBoundary>
+    </Suspense>
   </StrictMode>
 ));
 
 function render() {
   const container = document.getElementById("root");
+  // Capture only the static loader that shipped in index-*.html before
+  // createRoot() clears/reconciles #root. The captured markup is used only as
+  // the temporary Suspense fallback during app initialization.
+  const initialLoadingMarkup = container.innerHTML;
   const root = createRoot(container);
 
-  root.render(<App />);
+  root.render(<App initialLoadingMarkup={initialLoadingMarkup} />);
 }
 
 // Load IndexedDB cache

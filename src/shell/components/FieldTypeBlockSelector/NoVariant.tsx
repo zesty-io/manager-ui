@@ -4,6 +4,7 @@ import { Block } from "@zesty-io/material";
 import { AddRounded } from "@mui/icons-material";
 
 import { useHistory } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 type NoVariantProps = {
   blockModelZUID: string;
@@ -13,6 +14,7 @@ export const NoVariant = ({
   blockModelZUID,
   blockModelName,
 }: NoVariantProps) => {
+  const { t } = useTranslation();
   const history = useHistory();
 
   return (
@@ -26,11 +28,12 @@ export const NoVariant = ({
     >
       <Box>
         <Typography variant="h4" fontWeight="600" mb={1}>
-          No variants have been created for the {blockModelName} Model
+          {t("shell.blockSelectorNoVariantsTitle", {
+            modelName: blockModelName,
+          })}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          To create a variant, please go to the Blocks App and select this model
-          and click on the create variant button
+          {t("shell.blockSelectorNoVariantsDescription")}
         </Typography>
       </Box>
       <Box>
@@ -40,7 +43,7 @@ export const NoVariant = ({
           sx={{ mr: 1 }}
           onClick={() => history.push(`/blocks/${blockModelZUID}`)}
         >
-          View Block
+          {t("shell.blockSelectorViewBlock")}
         </Button>
         <Button
           variant="outlined"
@@ -49,7 +52,7 @@ export const NoVariant = ({
             history.push(`/blocks/${blockModelZUID}?createVariant=true`)
           }
         >
-          Create Variant
+          {t("shell.blockSelectorCreateVariant")}
         </Button>
       </Box>
     </Stack>

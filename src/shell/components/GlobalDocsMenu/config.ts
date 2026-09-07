@@ -9,51 +9,54 @@ import graphQLIcon from "../../../../public/images/graphQLIcon.svg";
 import parsleyIcon from "../../../../public/images/parsleyIcon.svg";
 
 interface MainDocItem {
-  text: string;
+  // Translation key resolved at render time via t(). These arrays are module
+  // level, where t() can't run, so labels live as keys and are translated in
+  // the component.
+  textKey: string;
   url: string;
   icon: SvgIconComponent | string;
   iconType: "icon" | "image";
   iconColor?: "primary" | "info";
 }
 interface SubDocItems {
-  [key: string]: Pick<MainDocItem, "text" | "url">[];
+  [key: string]: Pick<MainDocItem, "textKey" | "url">[];
 }
 
 export const MAIN_DOC_ITEMS: MainDocItem[] = [
   {
-    text: "Get Started",
+    textKey: "common.getStarted",
     url: "https://zesty.org/quick-start-guide",
     icon: RocketLaunchRounded,
     iconType: "icon",
     iconColor: "primary",
   },
   {
-    text: "Platform Docs",
+    textKey: "common.platformDocs",
     url: "https://zesty.org",
     icon: MenuBookRounded,
     iconType: "icon",
     iconColor: "info",
   },
   {
-    text: "Auth API Docs",
+    textKey: "shell.docsAuthApi",
     url: "https://auth-api.zesty.org",
     icon: postmanIcon,
     iconType: "image",
   },
   {
-    text: "Instance API Docs",
+    textKey: "common.instanceApiDocs",
     url: "https://instances-api.zesty.org",
     icon: postmanIcon,
     iconType: "image",
   },
   {
-    text: "GraphQL Docs",
+    textKey: "common.graphqlDocs",
     url: "https://zesty.org/apis/graphql",
     icon: graphQLIcon,
     iconType: "image",
   },
   {
-    text: "Parsley Docs",
+    textKey: "common.parsleyDocs",
     url: "https://parsley.zesty.io",
     icon: parsleyIcon,
     iconType: "image",
@@ -63,115 +66,115 @@ export const MAIN_DOC_ITEMS: MainDocItem[] = [
 export const SUB_DOC_ITEMS: SubDocItems = {
   default: [
     {
-      text: "Introduction",
+      textKey: "shell.docsIntroduction",
       url: "https://zesty.org/",
     },
     {
-      text: "Getting Started",
+      textKey: "shell.docsGettingStarted",
       url: "https://zesty.org/getting-started",
     },
     {
-      text: "Guides",
+      textKey: "shell.docsGuides",
       url: "https://zesty.org/guides",
     },
   ],
   content: [
     {
-      text: "Content Overview",
+      textKey: "shell.docsContentOverview",
       url: "https://zesty.org/services/manager-ui/content",
     },
     {
-      text: "Content Entry, Drafts, and Publishing",
+      textKey: "shell.docsContentEntry",
       url: "https://zesty.org/guides/content-entry-drafts-and-publishing",
     },
     {
-      text: "Adding and Managing Content",
+      textKey: "shell.docsAddingManagingContent",
       url: "https://zesty.org/services/manager-ui/content/adding-and-managing-content",
     },
   ],
   media: [
     {
-      text: "Media Overview",
+      textKey: "shell.docsMediaOverview",
       url: "https://zesty.org/services/manager-ui/media",
     },
     {
-      text: "Adding Image Alt Text",
+      textKey: "shell.docsAddingImageAltText",
       url: "https://zesty.org/guides/adding-image-alt-text",
     },
     {
-      text: "How to upload multiple images",
+      textKey: "shell.docsUploadMultipleImages",
       url: "https://zesty.org/services/manager-ui/media/how-to-upload-multiple-images",
     },
   ],
   schema: [
     {
-      text: "Schema Overview",
+      textKey: "shell.docsSchemaOverview",
       url: "https://zesty.org/services/manager-ui/schema",
     },
     {
-      text: "Building The Schema",
+      textKey: "shell.docsBuildingSchema",
       url: "https://zesty.org/guides/building-the-schema-and-selecting-fields",
     },
     {
-      text: "Schema, Content, and Code",
+      textKey: "shell.docsSchemaContentCode",
       url: "https://zesty.org/guides/the-connection-between-schema-content-and-code",
     },
   ],
   code: [
     {
-      text: "Code Overview",
+      textKey: "shell.docsCodeOverview",
       url: "https://zesty.org/services/manager-ui/editor",
     },
     {
-      text: "Editor and Coding Basics",
+      textKey: "shell.docsEditorCodingBasics",
       url: "https://zesty.org/guides/editor-and-coding-basics",
     },
     {
-      text: "Schema, Content, and Code",
+      textKey: "shell.docsSchemaContentCode",
       url: "https://zesty.org/guides/the-connection-between-schema-content-and-code",
     },
   ],
   leads: [
     {
-      text: "Leads Overview",
+      textKey: "shell.docsLeadsOverview",
       url: "https://zesty.org/services/manager-ui/leads",
     },
     {
-      text: "Creating a Lead Form",
+      textKey: "shell.docsCreatingLeadForm",
       url: "https://zesty.org/guides/how-to-create-a-lead-form",
     },
     {
-      text: "Capturing form data to Leads",
+      textKey: "shell.docsCapturingFormData",
       url: "https://zesty.org/services/web-engine/forms-and-form-webhooks#capturing-form-data-to-an-instances-leads-feature",
     },
   ],
   redirects: [
     {
-      text: "Redirects Overview",
+      textKey: "shell.docsRedirectsOverview",
       url: "https://zesty.org/services/manager-ui/health",
     },
     {
-      text: "Manage Redirects",
+      textKey: "shell.docsManageRedirects",
       url: "https://zesty.org/services/manager-ui/health#manage-redirects",
     },
     {
-      text: "SEO Redirects",
+      textKey: "shell.docsSeoRedirects",
       url: "https://zesty.org/services/manager-ui/health/redirects",
     },
   ],
   "reports/audit-trail": [
     {
-      text: "Audit Trail Overview",
+      textKey: "shell.docsAuditTrailOverview",
       url: "https://zesty.org/services/manager-ui/audit-trail",
     },
   ],
   settings: [
     {
-      text: "Settings Overview",
+      textKey: "shell.docsSettingsOverview",
       url: "https://zesty.org/services/manager-ui/settings",
     },
     {
-      text: "Instance Settings",
+      textKey: "shell.docsInstanceSettings",
       url: "https://zesty.org/services/manager-ui/settings/instance-settings",
     },
   ],

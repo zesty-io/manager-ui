@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { DateFilterValue } from "../../../../../../../shell/components/Filters/DateFilter";
 import { useParams as useQueryParams } from "../../../../../../../shell/hooks/useParams";
 import {
@@ -12,6 +13,7 @@ type Props = {
 };
 
 export const AnalyticsDateFilter = ({ showSkeleton }: Props) => {
+  const { t } = useTranslation();
   const [params, setParams] = useQueryParams();
   const activeDateFilter: DateFilterValue = useMemo(() => {
     const isPreset = Boolean(params.get("datePreset"));
@@ -90,15 +92,15 @@ export const AnalyticsDateFilter = ({ showSkeleton }: Props) => {
       withDateRange
       extraPresets={[
         {
-          text: "This Week (Sun - Today)",
+          text: t("content.analyticsPresetThisWeek"),
           value: "this_week",
         },
         {
-          text: "This Year (Jan - Today)",
+          text: t("content.analyticsPresetThisYear"),
           value: "this_year",
         },
         {
-          text: "Quarter to Date",
+          text: t("content.analyticsPresetQuarterToDate"),
           value: "quarter_to_date",
         },
       ]}

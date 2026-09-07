@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Box,
   Typography,
@@ -17,7 +18,8 @@ import {
   useGetWebViewsQuery,
 } from "../../../../../shell/services/instance";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
-import { format, isValid } from "date-fns";
+import { formatLocalized } from "shell/i18n/dates";
+import { isValid } from "date-fns";
 import {
   InfoRounded,
   ApiRounded,
@@ -31,24 +33,24 @@ import { modelIconMap, modelNameMap } from "../utils";
 import { ModelMenu } from "./ModelMenu";
 import { ModelBreadcrumbs } from "./ModelBreadcrumbs";
 
-const TABS = [
+const getTabs = (t: (key: string) => string) => [
   {
-    name: "Fields",
+    name: t("schema.tabFields"),
     value: "fields",
     icon: SplitscreenRounded,
   },
   {
-    name: "APIs",
+    name: t("common.apis"),
     value: "api",
     icon: ApiRounded,
   },
   {
-    name: "Activity Log",
+    name: t("schema.tabActivityLog"),
     value: "activity-log",
     icon: HistoryRounded,
   },
   {
-    name: "Info",
+    name: t("schema.tabInfo"),
     value: "info",
     icon: InfoRounded,
   },
@@ -62,6 +64,8 @@ interface Props {
   onNewFieldModalClick: (sortIndex: number | null) => void;
 }
 export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
+  const { t } = useTranslation();
+  const TABS = getTabs(t);
   const params = useParams<Params>();
   const { id } = params;
   const { data: models } = useGetContentModelsQuery();
@@ -80,7 +84,10 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
   const updatedAt = model?.updatedAt ? new Date(model.updatedAt) : null;
   const lastUpdated =
     updatedAt && isValid(updatedAt)
-      ? format(updatedAt, "do MMMM yyyy 'at' h:mm a")
+      ? t("common.dateAtTime", {
+          date: formatLocalized(updatedAt, "do MMMM yyyy"),
+          time: formatLocalized(updatedAt, "h:mm a"),
+        })
       : "";
 
   return (
@@ -120,13 +127,15 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
                 variant="body3"
                 color="text.secondary"
                 whiteSpace="pre"
-              >{`${modelNameMap[model?.type]} Model  •  `}</Typography>
+              >{`${t("schema.modelTypeLabel", {
+                modelType: t(modelNameMap[model?.type]),
+              })}  •  `}</Typography>
               <Typography variant="body3" color="text.secondary">
-                Last Updated: {lastUpdated}
+                {t("schema.lastUpdated", { date: lastUpdated })}
               </Typography>
             </Stack>
           </Stack>
-          <Stack direction="row" gap={1}>
+          <Stack direction="row" gap={1} alignItems="center">
             <IconButton
               size="small"
               onClick={(event) => setAnchorEl(event.currentTarget)}
@@ -148,7 +157,7 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
                 startIcon={<CodeRoundedIcon color="action" />}
                 onClick={() => history.push(`/code/file/views/${view?.ZUID}`)}
               >
-                Edit in Code
+                {t("schema.editInCode")}
               </Button>
             )}
             {/* {canCreateModel && (
@@ -184,7 +193,9 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
                 }
               }}
             >
-              View {model?.type === "block" ? "Variants" : "Content"}
+              {model?.type === "block"
+                ? t("schema.viewVariants")
+                : t("schema.viewContent")}
             </Button>
             <Button
               size="small"
@@ -194,7 +205,7 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
               disabled={!isFieldsLoaded}
               data-cy="AddFieldBtn"
             >
-              Add Field
+              {t("schema.addField")}
             </Button>
           </Stack>
         </Stack>

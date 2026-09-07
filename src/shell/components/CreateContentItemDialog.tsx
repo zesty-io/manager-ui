@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Box,
   Button,
@@ -29,6 +30,7 @@ export const CreateContentItemDialog = ({
   onClose,
   limitTo,
 }: Props) => {
+  const { t } = useTranslation();
   const { data: models } = useGetContentModelsQuery();
   const history = useHistory();
   const [selectedModel, setSelectedModel] = useState(null);
@@ -90,14 +92,14 @@ export const CreateContentItemDialog = ({
           }}
         />
         <Typography variant="h5" fontWeight={700} mb={1}>
-          Create Content Item
+          {t("shell.createContentItem")}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          You can only create a content item for a pre-existing model
+          {t("shell.createContentItemSubtitle")}
         </Typography>
       </DialogTitle>
       <DialogContent>
-        <InputLabel sx={{ mb: 0.5 }}>Select Model</InputLabel>
+        <InputLabel sx={{ mb: 0.5 }}>{t("shell.selectModel")}</InputLabel>
         <Autocomplete
           data-cy="create_new_content_item_input"
           openOnFocus
@@ -109,7 +111,7 @@ export const CreateContentItemDialog = ({
             sortedModels
               ? [
                   {
-                    label: "Internal/External Link",
+                    label: t("shell.internalExternalLink"),
                     ZUID: "link",
                   },
                   ...sortedModels,
@@ -119,11 +121,11 @@ export const CreateContentItemDialog = ({
           renderInput={(params) => (
             <TextField
               {...params}
-              placeholder="Select"
+              placeholder={t("shell.selectPlaceholder")}
               hiddenLabel
               autoFocus
               error={hasError}
-              helperText={hasError && "Please select a Model to proceed."}
+              helperText={hasError && t("shell.selectModelError")}
             />
           )}
           getOptionLabel={(option: any) => option.label}
@@ -154,7 +156,7 @@ export const CreateContentItemDialog = ({
           onClick={onClose}
           color="inherit"
         >
-          Discard
+          {t("common.discard")}
         </Button>
         <Button
           data-cy="create_new_content_item_btn"
@@ -162,7 +164,7 @@ export const CreateContentItemDialog = ({
           color="primary"
           onClick={onCreateClick}
         >
-          Create
+          {t("common.create")}
         </Button>
       </DialogActions>
     </Dialog>

@@ -1,4 +1,5 @@
 import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 import { Box, CircularProgress, Typography } from "@mui/material";
 import {
   useGetAllBinFilesQuery,
@@ -35,6 +36,7 @@ export const AllMedia = ({
   addImagesCallback,
   setCurrentFilesCallback,
 }: Props) => {
+  const { t } = useTranslation();
   const [params, setParams] = useSearchParams();
   const sortOrder = params.get("sort");
   const filetypeFilter = params.get("filetype") as Filetype;
@@ -120,7 +122,7 @@ export const AllMedia = ({
       }}
     >
       <Header
-        title="Recents"
+        title={t("media.allMediaTitle")}
         addImagesCallback={addImagesCallback}
         binId={defaultBin?.id}
         hideFolderCreate
@@ -144,7 +146,7 @@ export const AllMedia = ({
               variant="h6"
               sx={{ pl: 3, pt: 2, pb: 1.5 }}
             >
-              {files?.length} matches found
+              {t("media.matchesFound", { count: files?.length })}
             </Typography>
           )}
           <DnDProvider

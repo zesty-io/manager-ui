@@ -2,11 +2,13 @@ import { Typography, Stack, Button, Box } from "@mui/material";
 import { AddRounded } from "@mui/icons-material";
 import { useParams, useHistory } from "react-router";
 import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 import fieldsLoading from "../../../../../../public/images/fields-loading.png";
 import { AppState } from "../../../../../shell/store/types";
 
 export const NoFields = () => {
+  const { t } = useTranslation("content");
   const history = useHistory();
   const { modelZUID } = useParams<{
     modelZUID: string;
@@ -25,14 +27,16 @@ export const NoFields = () => {
       <Stack gap={3}>
         <Box maxWidth={540}>
           <Typography variant="h3" fontWeight={700} color="text.primary">
-            Add Fields to Your Model
+            {t("content.addFieldsTitle")}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            This model ({model?.label}) doesn't have any fields yet. To define
-            the structure of your content items,{" "}
             {products?.includes("schema")
-              ? "go to your model and add fields."
-              : "please contact your Administrator to add fields to this model."}
+              ? t("content.noFieldsDescriptionWithSchema", {
+                  label: model?.label,
+                })
+              : t("content.noFieldsDescriptionNoSchema", {
+                  label: model?.label,
+                })}
           </Typography>
         </Box>
         {products?.includes("schema") && (
@@ -45,14 +49,14 @@ export const NoFields = () => {
               history.push(`/schema/${modelZUID}/fields?addNewField=true`);
             }}
           >
-            Add Fields in Schema
+            {t("content.addFieldsInSchemaButton")}
           </Button>
         )}
       </Stack>
       <Box
         component="img"
         src={fieldsLoading}
-        alt="No fields available"
+        alt={t("content.noFieldsImageAlt")}
         loading="lazy"
       />
     </Stack>

@@ -1,5 +1,6 @@
 import { memo, useState } from "react";
 import { MonacoDiffEditor } from "react-monaco-editor";
+import { useTranslation } from "react-i18next";
 
 import { resolveMonacoLang } from "../../../store/files";
 
@@ -15,6 +16,7 @@ import { TopBar } from "../TopBar";
 
 export const Differ = memo(
   function Differ(props) {
+    const { t } = useTranslation();
     const [loading, setLoading] = useState(false);
     const [versionCodeLeft, setVersionCodeLeft] = useState(
       props.currentCode || ""
@@ -53,7 +55,10 @@ export const Differ = memo(
             zIndex: 0,
           }}
         >
-          <WithLoader condition={!loading} message="Finding File Versions">
+          <WithLoader
+            condition={!loading}
+            message={t("code.findingFileVersions")}
+          >
             <MonacoDiffEditor
               theme="vs-dark"
               width="100%"

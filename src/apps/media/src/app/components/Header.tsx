@@ -1,4 +1,5 @@
 import { MouseEvent, useEffect, useRef, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Box, Button, Typography, IconButton, Stack } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
@@ -56,6 +57,7 @@ export const Header = ({
   showBackButton,
   showBreadcrumbs,
 }: Props) => {
+  const { t } = useTranslation();
   const doneButtonRef = useRef<HTMLButtonElement>(null);
   const [openDialog, setOpenDialog] = useState<Dialogs>(null);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -229,11 +231,16 @@ export const Header = ({
                 </IconButton>
               )}
               <Typography variant="h3" fontWeight={700}>
-                {!isReplace && selectedFiles?.length}{" "}
-                {!isReplace && isSelectDialog && limitSelected
-                  ? ` / ${limitSelected} `
-                  : null}
-                {isReplace && "Replacement File"} Selected
+                {isReplace
+                  ? t("media.headerReplacementFileSelected")
+                  : isSelectDialog && limitSelected
+                  ? t("media.headerFilesSelectedLimit", {
+                      count: selectedFiles?.length,
+                      limit: limitSelected,
+                    })
+                  : t("media.headerFilesSelected", {
+                      count: selectedFiles?.length,
+                    })}
               </Typography>
             </Stack>
             <Box>
@@ -247,7 +254,7 @@ export const Header = ({
                     onClick={() => dispatch(clearSelectedFiles())}
                     startIcon={<CloseIcon color="action" fontSize="small" />}
                   >
-                    Deselect All
+                    {t("media.headerDeselectAll")}
                   </Button>
                   <Button
                     variant="outlined"
@@ -260,7 +267,7 @@ export const Header = ({
                       <DoneAllRoundedIcon color="action" fontSize="small" />
                     }
                   >
-                    Select All
+                    {t("media.headerSelectAll")}
                   </Button>
                 </>
               )}
@@ -274,7 +281,7 @@ export const Header = ({
                     onClick={() => setShowDeleteFileDialog(true)}
                     startIcon={<DeleteIcon color="action" fontSize="small" />}
                   >
-                    Delete
+                    {t("common.delete")}
                   </Button>
                   <Button
                     variant="contained"
@@ -285,7 +292,7 @@ export const Header = ({
                       <DriveFolderUploadRoundedIcon fontSize="small" />
                     }
                   >
-                    Move
+                    {t("media.headerMove")}
                   </Button>
                 </>
               )}
@@ -304,14 +311,14 @@ export const Header = ({
                   }
                   ref={doneButtonRef}
                 >
-                  {isReplace ? "Replace" : "Done"}
+                  {isReplace ? t("common.replace") : t("common.done")}
                 </Button>
               )}
             </Box>
           </Stack>
         ) : isReplace ? (
           <Typography variant="h3" fontWeight={700}>
-            Select Replacement File
+            {t("media.headerSelectReplacementFile")}
           </Typography>
         ) : (
           <Stack
@@ -360,7 +367,7 @@ export const Header = ({
                   size="small"
                   onClick={openMenu}
                   sx={{ height: "fit-content", mr: 1 }}
-                  aria-label="Open folder menu"
+                  aria-label={t("media.headerOpenFolderMenuAria")}
                 >
                   <MoreHorizRoundedIcon fontSize="small" />
                 </IconButton>
@@ -382,7 +389,7 @@ export const Header = ({
                   onClick={() => setOpenDialog("new")}
                   size="small"
                 >
-                  Add Sub Folder
+                  {t("media.headerAddSubFolder")}
                 </Button>
               )}
               {hideUpload ? null : (

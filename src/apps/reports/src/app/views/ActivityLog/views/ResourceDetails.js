@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { Box, Button, Stack, SvgIcon, Typography } from "@mui/material";
 import { useParams } from "shell/hooks/useParams";
 import { format, subMonths, isValid } from "date-fns";
@@ -22,20 +23,21 @@ import { ResourceHeaderTitle } from "../components/ResourceHeaderTitle";
 import { useGetInstanceSettingsQuery } from "../../../../../../../shell/services/instance";
 import { toUTC } from "../utils";
 
-const Crumbs = [
+const getCrumbs = (t) => [
   {
-    name: "Activity Log",
+    name: t("reports.activityLog"),
     path: "/reports/activity-log/resources",
     icon: ScheduleRounded,
   },
   {
-    name: "Resources",
+    name: t("reports.resources"),
     path: "/reports/activity-log/resources",
     icon: CategoryRounded,
   },
 ];
 
 export const ResourceDetails = () => {
+  const { t } = useTranslation();
   const history = useHistory();
   const [params, setParams] = useParams();
   const [initialized, setInitialized] = useState(false);
@@ -131,7 +133,7 @@ export const ResourceDetails = () => {
       >
         <Stack gap={0.25}>
           <CustomBreadcrumbs
-            items={Crumbs.map((crumb) => ({
+            items={getCrumbs(t).map((crumb) => ({
               node: (
                 <Stack direction="row" gap={0.5}>
                   <SvgIcon
@@ -180,7 +182,7 @@ export const ResourceDetails = () => {
               history.push(resolveUrlFromAudit(actionsByZuid[0], category));
             }}
           >
-            Open
+            {t("common.open")}
           </Button>
           <Button
             sx={{ height: "max-content" }}
@@ -194,7 +196,7 @@ export const ResourceDetails = () => {
               );
             }}
           >
-            View Audit Trail Report
+            {t("reports.viewAuditTrailReport")}
           </Button>
         </Stack>
       </Stack>
@@ -217,7 +219,7 @@ export const ResourceDetails = () => {
             }}
           >
             <EmptyState
-              title="No Logs Found"
+              title={t("reports.noLogsFound")}
               onReset={() => {
                 setParams("", "action");
                 setParams("", "actionByUserZUID");

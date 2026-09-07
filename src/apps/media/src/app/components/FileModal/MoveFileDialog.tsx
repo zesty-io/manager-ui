@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Dialog,
   DialogContent,
@@ -30,6 +31,7 @@ export const MoveFileDialog = ({
   fileCount,
   showSpinner,
 }: Props) => {
+  const { t } = useTranslation();
   const { data: binGroups } = useGetBinGroupsQuery(binId);
   const [selectedGroup, setSelectedGroup] = useState<Group | null>({
     name: "None",
@@ -47,11 +49,13 @@ export const MoveFileDialog = ({
     <Dialog open={true} fullWidth maxWidth={"xs"} onClose={onClose}>
       <DialogTitle component="div">
         <Typography fontWeight={600} variant="h5">
-          Move {fileCount > 1 ? `${fileCount} Files` : "files"}
+          {fileCount > 1
+            ? t("media.moveFileDialogTitleMultiple", { count: fileCount })
+            : t("media.moveFileDialogTitleSingle")}
         </Typography>
       </DialogTitle>
       <DialogContent>
-        <InputLabel>Destination Folder</InputLabel>
+        <InputLabel>{t("media.moveFileDialogDestinationLabel")}</InputLabel>
         <Autocomplete
           size="small"
           fullWidth
@@ -90,7 +94,7 @@ export const MoveFileDialog = ({
           onClick={() => onClose()}
           disabled={showSpinner}
         >
-          Cancel
+          {t("common.cancel")}
         </Button>
         <Button
           variant="contained"
@@ -101,7 +105,7 @@ export const MoveFileDialog = ({
           {showSpinner ? (
             <CircularProgress size="24px" color="inherit" />
           ) : (
-            "Move"
+            t("media.moveFileDialogMoveButton")
           )}
         </Button>
       </DialogActions>

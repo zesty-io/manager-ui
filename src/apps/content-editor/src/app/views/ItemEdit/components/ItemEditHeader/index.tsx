@@ -33,6 +33,7 @@ import { ContentBreadcrumbs } from "../../../../components/ContentBreadcrumbs";
 import { MoreMenu } from "./MoreMenu";
 import { DuplicateItemDialog } from "./DuplicateItemDialog";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { PreviewMenu } from "./PreviewMenu";
 import { useGetInstalledAppsQuery } from "../../../../../../../../shell/services/accounts";
 import { DuoModeSwitch } from "./DuoModeToggle";
@@ -43,42 +44,42 @@ import RedirectsDialogContextProvider from "../../../../../../../seo/src/app/com
 
 const tabs = [
   {
-    label: "Content",
+    labelKey: "common.content",
     icon: VerticalSplitRounded,
     value: "",
   },
   {
-    label: "SEO",
+    labelKey: "content.itemEditTabSeo",
     icon: QueryStatsRounded,
     value: "meta",
   },
   {
-    label: "Redirects",
+    labelKey: "content.itemEditTabRedirects",
     icon: ShuffleVariant,
     value: "redirects",
   },
   {
-    label: "Analytics",
+    labelKey: "content.itemEditTabAnalytics",
     icon: BarChartRounded,
     value: "analytics",
   },
   {
-    label: "Head Tags",
+    labelKey: "content.itemEditTabHeadTags",
     icon: CodeRounded,
     value: "head",
   },
   {
-    label: "APIs",
+    labelKey: "common.apis",
     icon: ApiRounded,
     value: "api",
   },
   {
-    label: "Publish Status",
+    labelKey: "content.itemEditTabPublishStatus",
     icon: ManageAccountsRounded,
     value: "publishings",
   },
   {
-    label: "Freestyle",
+    labelKey: "content.itemEditTabFreestyle",
     icon: WebRounded,
     value: "freestyle",
   },
@@ -101,6 +102,7 @@ export const ItemEditHeader = ({
   hasError,
   isLoadingItem,
 }: HeaderProps) => {
+  const { t } = useTranslation();
   const { modelZUID, itemZUID } = useParams<{
     modelZUID: string;
     itemZUID: string;
@@ -222,7 +224,7 @@ export const ItemEditHeader = ({
                 <>
                   <MoreMenu />
                   <Tooltip
-                    title="Duplicate Item"
+                    title={t("content.itemEditDuplicateItem")}
                     enterDelay={1000}
                     enterNextDelay={1000}
                     placement="bottom-start"
@@ -268,8 +270,7 @@ export const ItemEditHeader = ({
               value={
                 tabs.find(
                   (tab) =>
-                    tab.label !== "Content" &&
-                    location.pathname.includes(tab.value)
+                    tab.value !== "" && location.pathname.includes(tab.value)
                 )?.value || ""
               }
               onChange={(event, value) => {
@@ -290,14 +291,14 @@ export const ItemEditHeader = ({
               }}
             >
               {tabs.map((tab) => {
-                if (tab.label === "Freestyle" && !layoutsAppInstalled) {
+                if (tab.value === "freestyle" && !layoutsAppInstalled) {
                   return;
                 } else
                   return (
                     <Tab
                       key={tab.value}
                       disableRipple
-                      label={tab.label}
+                      label={t(tab.labelKey)}
                       value={tab.value}
                       icon={<tab.icon fontSize="small" />}
                       iconPosition="start"

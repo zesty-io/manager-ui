@@ -1,6 +1,8 @@
 import { Box, FormControlLabel, Checkbox, Typography } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 export const ComingSoon = () => {
+  const { t } = useTranslation();
   return (
     <Box
       data-cy="RulesTab"
@@ -20,10 +22,9 @@ export const ComingSoon = () => {
           control={<Checkbox disabled />}
           label={
             <>
-              <Typography variant="body2">Unique Field</Typography>
+              <Typography variant="body2">{t("schema.uniqueField")}</Typography>
               <Typography variant="body3" color="text.secondary">
-                Ensures that multiple items can't have the same value for this
-                field
+                {t("schema.uniqueFieldDescription")}
               </Typography>
             </>
           }
@@ -32,9 +33,11 @@ export const ComingSoon = () => {
           control={<Checkbox disabled />}
           label={
             <>
-              <Typography variant="body2">Default Value</Typography>
+              <Typography variant="body2">
+                {t("schema.defaultValue")}
+              </Typography>
               <Typography variant="body3" color="text.secondary">
-                Set a predefined value for this field
+                {t("schema.defaultValueDescription")}
               </Typography>
             </>
           }
@@ -43,19 +46,21 @@ export const ComingSoon = () => {
           control={<Checkbox disabled />}
           label={
             <>
-              <Typography variant="body2">Limit character count</Typography>
+              <Typography variant="body2">
+                {t("schema.limitCharacterCount")}
+              </Typography>
               <Typography variant="body3" color="text.secondary">
-                Specifies a minimum and/or maximum allowed number of characters
+                {t("schema.limitCharacterCountDescription")}
               </Typography>
             </>
           }
         />
       </Box>
       <Typography variant="h5" mt={4} mb={1.5} fontWeight={600}>
-        Field Validation, Defaults, & More
+        {t("schema.fieldValidationTitle")}
       </Typography>
       <Typography variant="body2" color="text.secondary">
-        Coming Soon
+        {t("schema.comingSoon")}
       </Typography>
     </Box>
   );

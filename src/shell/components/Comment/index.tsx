@@ -8,6 +8,7 @@ import { useIntersection } from "react-use";
 import { CommentsList } from "./CommentsList";
 import { useGetCommentByResourceQuery } from "../../services/accounts";
 import { CommentContext } from "../../contexts/CommentProvider";
+import { useTranslation } from "react-i18next";
 
 type PathParams = {
   modelZUID: string;
@@ -18,6 +19,7 @@ type CommentProps = {
   resourceZUID: string;
 };
 export const Comment = ({ resourceZUID }: CommentProps) => {
+  const { t } = useTranslation();
   const history = useHistory();
   const location = useLocation();
   const [_, __, ___, setCommentZUIDtoEdit] = useContext(CommentContext);
@@ -70,7 +72,7 @@ export const Comment = ({ resourceZUID }: CommentProps) => {
       <Box ref={buttonContainerRef}>
         {parentComment ? (
           <Tooltip
-            title="View Open Comment"
+            title={t("shell.viewOpenComment")}
             disableInteractive
             placement="top-start"
           >
@@ -125,7 +127,7 @@ export const Comment = ({ resourceZUID }: CommentProps) => {
           </Tooltip>
         ) : (
           <Tooltip
-            title="Add New Comment"
+            title={t("shell.addNewComment")}
             disableInteractive
             placement="top-start"
           >

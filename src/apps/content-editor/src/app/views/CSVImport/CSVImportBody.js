@@ -1,4 +1,5 @@
 import { Component, PureComponent } from "react";
+import { withTranslation } from "react-i18next";
 import { connect } from "react-redux";
 import parse from "csv-parse/lib/es5/sync";
 import chunk from "lodash/chunk";
@@ -79,7 +80,7 @@ class CSVImportBody extends Component {
     // make sure we have a csv and throw an error if we dont
     if (csvToParse.name.slice(-3).toLowerCase() !== "csv") {
       return this.setState({
-        warn: "You selected a file that is not a CSV",
+        warn: this.props.t("content.csvImportNotCsvFile"),
       });
     }
 
@@ -111,7 +112,7 @@ class CSVImportBody extends Component {
       // Handle empty csv imports
       if (!records.length) {
         return this.setState({
-          warn: "You have imported an empty CSV file",
+          warn: this.props.t("content.csvImportEmptyFile"),
           cols: [],
           records: [],
         });
@@ -134,7 +135,7 @@ class CSVImportBody extends Component {
     } catch (error) {
       this.setState({
         warn: error.message.includes("Invalid Record Length")
-          ? "There's a column number mismatch on the CSV file"
+          ? this.props.t("content.csvImportColumnMismatch")
           : error.message,
         cols: [],
         records: [],
@@ -190,9 +191,9 @@ class CSVImportBody extends Component {
     // warn the user of duplicate column use
     let warn = "";
     if (warnFields.size) {
-      warn = `You have duplicated the use of these columns: ${Array.from(
-        warnFields
-      ).join(" & ")}`;
+      warn = this.props.t("content.csvImportDuplicateColumns", {
+        columns: Array.from(warnFields).join(" & "),
+      });
     }
     this.setState({ mappedItems, warn });
   };
@@ -217,7 +218,7 @@ class CSVImportBody extends Component {
     if (!this.props.model?.type === "dataset" && !this.state.webMaps.pathPart) {
       return this.props.dispatch(
         notify({
-          message: "You must select a column for Path Part",
+          message: this.props.t("content.csvImportSelectPathPart"),
           kind: "warn",
         })
       );
@@ -225,7 +226,7 @@ class CSVImportBody extends Component {
     if (this.state.warn) {
       return this.props.dispatch(
         notify({
-          message: "You must resolve duplicate column conflicts",
+          message: this.props.t("content.csvImportResolveDuplicates"),
           kind: "warn",
         })
       );
@@ -301,7 +302,9 @@ class CSVImportBody extends Component {
             if (res.status === 400) {
               this.props.dispatch(
                 notify({
-                  message: `Failure creating item: ${res.error}`,
+                  message: this.props.t("content.csvImportFailureCreating", {
+                    error: res.error,
+                  }),
                   kind: "error",
                 })
               );
@@ -335,6 +338,7 @@ class CSVImportBody extends Component {
   }
 
   render() {
+    const { t } = this.props;
     // if import is complete, records shown are errors only
     const records = this.state.complete
       ? this.state.records.filter((record, index) =>
@@ -365,7 +369,7 @@ class CSVImportBody extends Component {
             />
             <label htmlFor="csv">
               <FileUploadIcon fontSize="small" />
-              Open CSV File
+              {t("content.csvImportOpenFile")}
             </label>
           </form>
           <Button
@@ -380,7 +384,7 @@ class CSVImportBody extends Component {
             onClick={this.handleCreateItems}
             startIcon={<AddIcon />}
           >
-            Create Items
+            {t("content.csvImportCreateItems")}
           </Button>
 
           {this.state.warn && (
@@ -389,12 +393,17 @@ class CSVImportBody extends Component {
 
           <div className={cx(styles.ImportResults, styles.subheadline)}>
             {this.state.mappedMetaItems &&
-              `Imported ${this.state.successes || 0} of ${
-                this.state.mappedMetaItems.length
-              }`}
+              t("content.csvImportImportedCount", {
+                count: this.state.successes || 0,
+                total: this.state.mappedMetaItems.length,
+              })}
 
             {this.state.failure.length ? (
-              <div>Errors {this.state.failure.length}</div>
+              <div>
+                {t("content.csvImportErrorsCount", {
+                  count: this.state.failure.length,
+                })}
+              </div>
             ) : null}
           </div>
         </div>
@@ -479,4 +488,4 @@ export default connect((state, props) => {
     fields,
     userZUID: state.user.user_zuid,
   };
-})(CSVImportBody);
+})(withTranslation()(CSVImportBody));

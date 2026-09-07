@@ -1,11 +1,13 @@
 import { memo, useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 import { useHistory } from "react-router";
 import { Select, Button, MenuItem, Box, Typography } from "@mui/material";
 import HistoryIcon from "@mui/icons-material/History";
 import SaveIcon from "@mui/icons-material/Save";
 import EastIcon from "@mui/icons-material/East";
-import { format, isValid } from "date-fns";
+import { formatLocalized } from "shell/i18n/dates";
+import { isValid } from "date-fns";
 
 import {
   fetchFileVersions,
@@ -38,6 +40,7 @@ interface FileVersion {
 export const DifferActions = memo(function DifferActions(
   props: DifferActionsProps
 ) {
+  const { t } = useTranslation();
   const [saving, setSaving] = useState(false);
   const [versions, setVersions] = useState<FileVersion[]>([]);
   const [selectedVersion, setSelectedVersion] = useState<string | "local">(
@@ -141,19 +144,24 @@ export const DifferActions = memo(function DifferActions(
   const options = versions.map((version) => {
     const d = new Date(version.createdAt);
     const pretty = isValid(d)
-      ? format(d, "MMM do yyyy, 'at' h:mm a")
+      ? t("common.dateAtTime", {
+          date: formatLocalized(d, "MMM do yyyy"),
+          time: formatLocalized(d, "h:mm a"),
+        })
       : version.createdAt;
     let html = (
       <Box display="flex" alignItems="center" columnGap={0.5}>
         {version.version === props.publishedVersion ? (
           <Typography variant="body2" component="span" fontWeight={700}>
-            (Live)
+            {"("}
+            {t("code.live")}
+            {")"}
           </Typography>
         ) : (
           ""
         )}
         <Typography variant="body2" component="span">
-          {`Version ${version.version}`}
+          {t("code.versionLabel", { n: version.version })}
         </Typography>
         <Typography variant="caption" component="span">
           [{pretty}]
@@ -258,7 +266,7 @@ export const DifferActions = memo(function DifferActions(
                 startIcon={<HistoryIcon />}
                 sx={{ ml: 1, minWidth: "fit-content" }}
               >
-                Load Version
+                {t("code.loadVersion")}
               </Button>
               <Button
                 variant="text"
@@ -269,7 +277,7 @@ export const DifferActions = memo(function DifferActions(
                   history.push(`/code/file/${props.fileType}/${props.fileZUID}`)
                 }
               >
-                Cancel
+                {t("common.cancel")}
               </Button>
             </>
           ) : (
@@ -282,7 +290,7 @@ export const DifferActions = memo(function DifferActions(
               sx={{ ml: 1 }}
               startIcon={<SaveIcon />}
             >
-              Save Version
+              {t("code.saveVersion")}
             </Button>
           )}
         </Box>

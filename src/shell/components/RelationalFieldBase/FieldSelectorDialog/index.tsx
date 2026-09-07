@@ -20,6 +20,7 @@ import {
   GridRenderCellParams,
 } from "@mui/x-data-grid-pro";
 import { debounce } from "lodash";
+import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import AutoSizer, { Size } from "react-virtualized-auto-sizer";
 
@@ -91,6 +92,7 @@ export const FieldSelectorDialog = ({
   multiselect,
   replace = null,
 }: FieldSelectorDialogProps) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const { data: langs } = useGetLangsQuery({});
   const userSelectedLangCode = useSelector(
@@ -579,7 +581,7 @@ export const FieldSelectorDialog = ({
           fullWidth
           onChange={(evt) => debouncedSetFilterKeyword(evt.currentTarget.value)}
           size="small"
-          placeholder="Filter Items"
+          placeholder={t("shell.relationalFilterItems")}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">

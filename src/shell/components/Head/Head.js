@@ -1,5 +1,6 @@
 import { useEffect, useMemo } from "react";
 import { connect } from "react-redux";
+import { useTranslation } from "react-i18next";
 import cx from "classnames";
 
 import { Button, Box } from "@mui/material";
@@ -40,6 +41,7 @@ export default connect((state, props) => {
       .sort((a, b) => a.sort > b.sort),
   };
 })(function Head(props) {
+  const { t } = useTranslation();
   const domain = useDomain();
   const { data: rawLegacyHeadTags } = useGetLegacyHeadTagsQuery();
 
@@ -78,7 +80,7 @@ export default connect((state, props) => {
       <main className={styles.Tags}>
         <div className={styles.Notice}>
           <Button
-            title="Create Head Tag"
+            title={t("shell.headCreateTag")}
             variant="contained"
             color="primary"
             onClick={handleAdd}
@@ -86,23 +88,16 @@ export default connect((state, props) => {
             startIcon={<AddIcon />}
             sx={{ mr: 1, minWidth: "185px" }}
           >
-            Create Head Tag
+            {t("shell.headCreateTag")}
           </Button>
           <h3>
-            <Notice>
-              Head tags are not versioned. Once saved they will take effect when
-              the page(s) are next cached. Caching occurs on publish or every 24
-              hours.
-            </Notice>
+            <Notice>{t("shell.headNotVersionedNotice")}</Notice>
           </h3>
         </div>
         <div className={styles.Notice}>
           {legacyHeadTags?.length && (
-            <Box sx={{ mx: 2 }} component="h3">
-              <Notice>
-                This instance has legacy head tags. If you want to edit or
-                delete these, please contact support.
-              </Notice>
+            <Box component="h3">
+              <Notice>{t("shell.headLegacyNotice")}</Notice>
             </Box>
           )}
         </div>
@@ -116,7 +111,7 @@ export default connect((state, props) => {
             })
         ) : (
           <h3 className={cx(styles.headline, styles.NoTags)}>
-            No head tags have been created for this item.
+            {t("shell.headNoTags")}
           </h3>
         )}
       </main>

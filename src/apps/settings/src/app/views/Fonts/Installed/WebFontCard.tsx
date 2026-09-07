@@ -1,12 +1,11 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Box from "@mui/material/Box";
 import { Typography, Button } from "@mui/material";
 import DeleteFontDialog from "./DeleteFontDialog";
 import { capitalize } from "lodash";
 import { getFontDataFromHref } from "../Browse";
-
-const FONT_PREVIEW_TEXT = "All their equipment and instruments are alive.";
 
 export type WebFontCardProps = {
   ZUID: string;
@@ -31,6 +30,7 @@ const getWeightAndStyle = (fontText: string) => {
 };
 
 const WebFontCard = ({ ZUID, href }: WebFontCardProps) => {
+  const { t } = useTranslation();
   const { family, variants } = getFontDataFromHref(href);
   const [deleteDialogIsOpen, setDeleteDialogIsOpen] = useState(false);
   const [fontForDelete, setFontForDelete] = useState(null);
@@ -119,7 +119,7 @@ const WebFontCard = ({ ZUID, href }: WebFontCardProps) => {
                     fontFamily={family}
                     noWrap
                   >
-                    {FONT_PREVIEW_TEXT}
+                    {t("settings.fontPreviewText")}
                   </Typography>
                   <Button
                     data-cy="UninstallFontButton"
@@ -133,7 +133,9 @@ const WebFontCard = ({ ZUID, href }: WebFontCardProps) => {
                       minWidth: "fit-content",
                     }}
                   >
-                    {`Remove ${capitalize(variant)}`}
+                    {t("settings.removeFontVariant", {
+                      variant: capitalize(variant),
+                    })}
                   </Button>
                 </Box>
               );

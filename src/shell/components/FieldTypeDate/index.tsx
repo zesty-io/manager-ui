@@ -4,6 +4,8 @@ import {
   DatePickerProps,
 } from "@mui/x-date-pickers-pro";
 import { AdapterDateFns } from "@mui/x-date-pickers-pro/AdapterDateFns";
+import { useTranslation } from "react-i18next";
+import { formatLocalized, getDateFnsLocale } from "../../i18n/dates";
 import {
   memo,
   useEffect,
@@ -96,11 +98,6 @@ const parseDateInput = (input: string): Date | null => {
   return new Date(year, isValidMonth ? month : currentMonth, day);
 };
 
-const getStoredDateText = (value: unknown): string => {
-  if (!value || !isValid(value)) return "";
-  return `Stored as ${format(value as Date, "yyyy-MM-dd")}`;
-};
-
 export const FieldTypeDate = memo(
   forwardRef(
     (
@@ -116,6 +113,7 @@ export const FieldTypeDate = memo(
       }: FieldTypeDateProps,
       ref
     ) => {
+      const { t, i18n } = useTranslation();
       const textFieldRef = useRef<HTMLInputElement>(null);
       const [isOpen, setIsOpen] = useState(false);
 
@@ -143,7 +141,10 @@ export const FieldTypeDate = memo(
            */
           if (props.value === null) {
             props.onChange(new Date(), null);
-            textFieldRef.current.value = format(new Date(), "MMM dd, yyyy");
+            textFieldRef.current.value = formatLocalized(
+              new Date(),
+              "MMM dd, yyyy"
+            );
             textFieldRef.current.setSelectionRange(0, 3);
           }
 
@@ -161,7 +162,10 @@ export const FieldTypeDate = memo(
          * directly and not use the input field to manually enter the date
          */
         if (!isOpen && props.value) {
-          textFieldRef.current.value = format(props.value, "MMM dd, yyyy");
+          textFieldRef.current.value = formatLocalized(
+            props.value,
+            "MMM dd, yyyy"
+          );
         }
         textFieldRef.current.blur();
       }, [isOpen]);
@@ -171,7 +175,10 @@ export const FieldTypeDate = memo(
        */
       useEffect(() => {
         if (props.value) {
-          textFieldRef.current.value = format(props.value, "MMM dd, yyyy");
+          textFieldRef.current.value = formatLocalized(
+            props.value,
+            "MMM dd, yyyy"
+          );
         }
       }, []);
 
@@ -180,7 +187,10 @@ export const FieldTypeDate = memo(
         () => {
           return {
             setDefaultDate() {
-              textFieldRef.current.value = format(new Date(), "MMM dd, yyyy");
+              textFieldRef.current.value = formatLocalized(
+                new Date(),
+                "MMM dd, yyyy"
+              );
             },
           };
         },
@@ -188,7 +198,10 @@ export const FieldTypeDate = memo(
       );
 
       return (
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <LocalizationProvider
+          dateAdapter={AdapterDateFns}
+          adapterLocale={getDateFnsLocale(i18n.language)}
+        >
           <Stack direction="row" gap={0.5} alignItems="center">
             <Box
               {...(compact
@@ -266,12 +279,12 @@ export const FieldTypeDate = memo(
 
             {showClearButton &&
               (compact ? (
-                <Tooltip title="Clear">
+                <Tooltip title={t("common.clear")}>
                   <IconButton
                     data-cy="dateFieldClearButton"
                     size="small"
                     onClick={handleClear}
-                    aria-label="Clear"
+                    aria-label={t("common.clear")}
                   >
                     <CloseRounded fontSize="small" />
                   </IconButton>
@@ -285,14 +298,19 @@ export const FieldTypeDate = memo(
                   sx={{ minWidth: 45 }}
                   onClick={handleClear}
                 >
-                  Clear
+                  {t("common.clear")}
                 </Button>
               ))}
           </Stack>
 
           {(valueFormatPreview || props?.value) && (
             <Typography variant="body3" color="text.secondary" sx={{ mt: 0.5 }}>
-              {valueFormatPreview || getStoredDateText(props?.value)}
+              {valueFormatPreview ??
+                (props.value && isValid(props.value)
+                  ? t("shell.storedAs", {
+                      value: format(props.value, "yyyy-MM-dd"),
+                    })
+                  : "")}
             </Typography>
           )}
         </LocalizationProvider>

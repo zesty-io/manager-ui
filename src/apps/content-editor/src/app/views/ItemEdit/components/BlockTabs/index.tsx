@@ -9,6 +9,7 @@ import {
   InputAdornment,
 } from "@mui/material";
 import { useRef, useState, useMemo } from "react";
+import { useTranslation, Trans } from "react-i18next";
 
 import {
   VerticalSplitRounded,
@@ -26,6 +27,7 @@ import { CodeSample } from "./CodeSample";
 import SearchBox from "../../../../../../../../shell/components/SearchBox";
 
 export const BlockTabs = (props: any) => {
+  const { t } = useTranslation();
   const [value, setValue] = useState(0);
   const { modelZUID } = useParams<{ modelZUID: string }>();
   const { data, isFetching } = useGetContentModelItemsQuery({
@@ -74,17 +76,17 @@ export const BlockTabs = (props: any) => {
           }}
         >
           <Tab
-            label="Variants"
+            label={t("content.blockTabVariants")}
             icon={<VerticalSplitRounded fontSize="small" />}
             iconPosition="start"
           />
           <Tab
-            label="Info"
+            label={t("content.blockTabInfo")}
             icon={<InfoRounded fontSize="small" />}
             iconPosition="start"
           />
           <Tab
-            label="Code"
+            label={t("content.blockTabCode")}
             icon={<CodeRounded fontSize="small" />}
             iconPosition="start"
           />
@@ -112,13 +114,13 @@ export const BlockTabs = (props: any) => {
             />
           }
         >
-          Create Variant
+          {t("content.blockCreateVariant")}
         </Button>
       </Box>
       {value === 0 && (
         <>
           <SearchBox
-            placeholder="Search variants"
+            placeholder={t("content.blockSearchVariants")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             variant="outlined"
@@ -163,15 +165,13 @@ export const BlockTabs = (props: any) => {
               ></Box>
               <Box>
                 <Typography variant="h4" maxWidth={458}>
-                  Your search{" "}
-                  <strong
-                    style={{
-                      wordBreak: "break-all",
+                  <Trans
+                    i18nKey="content.blockSearchNoResults"
+                    values={{ search }}
+                    components={{
+                      term: <strong style={{ wordBreak: "break-all" }} />,
                     }}
-                  >
-                    "{search}"
-                  </strong>{" "}
-                  could not find any results
+                  />
                 </Typography>
                 <Typography
                   variant="body2"
@@ -180,15 +180,14 @@ export const BlockTabs = (props: any) => {
                   mb={3}
                   maxWidth={458}
                 >
-                  Try adjusting your search. We suggest check all words are
-                  spelled correctly or try using different keywords.
+                  {t("content.blockSearchNoResultsHint")}
                 </Typography>
                 <Button
                   variant="contained"
                   startIcon={<SearchRounded />}
                   onClick={() => searchRef?.current?.focus()}
                 >
-                  Search Again
+                  {t("content.blockSearchAgain")}
                 </Button>
               </Box>
             </Box>

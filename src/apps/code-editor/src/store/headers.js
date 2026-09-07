@@ -1,6 +1,7 @@
 import { notify } from "shell/store/notifications";
 import { resolvePathPart } from "./files";
 import { request } from "utility/request";
+import i18n from "shell/i18n";
 
 export function headers(state = [], action) {
   switch (action.type) {
@@ -27,7 +28,9 @@ export function fetchHeaders() {
           dispatch(
             notify({
               kind: "warn",
-              message: `Failed to load headers. ${res.status}`,
+              message: i18n.t("code.failedToLoadHeaders", {
+                status: res.status,
+              }),
             })
           );
         }
@@ -64,7 +67,7 @@ export function saveSort(type, headers) {
           dispatch(
             notify({
               kind: "save",
-              message: "File sort order has been saved",
+              message: i18n.t("code.fileSortOrderSaved"),
             })
           );
         } else {
@@ -82,8 +85,7 @@ export function saveSort(type, headers) {
         dispatch(
           notify({
             kind: "error",
-            message:
-              "We ran into an error saving the file sort order. This is most likely an issue on our end.",
+            message: i18n.t("code.errorSavingFileSortOrder"),
           })
         );
 

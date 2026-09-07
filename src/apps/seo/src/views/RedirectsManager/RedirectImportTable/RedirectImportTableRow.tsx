@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Button,
   ToggleButton,
@@ -41,6 +42,7 @@ const RedirectImportTableRow = ({
   isLoading,
   dispatch,
 }: RedirectImportTableRowProps) => {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
 
   const handleCode = (val: string) => {
@@ -126,9 +128,11 @@ const RedirectImportTableRow = ({
           fullWidth
           value={targetType}
         >
-          <MenuItem value={"path"}>Wildcard</MenuItem>
-          <MenuItem value={"page"}>Internal</MenuItem>
-          <MenuItem value={"external"}>External</MenuItem>
+          <MenuItem value={"path"}>{t("seo.redirectTypeWildcard")}</MenuItem>
+          <MenuItem value={"page"}>{t("seo.redirectTypeInternal")}</MenuItem>
+          <MenuItem value={"external"}>
+            {t("seo.redirectTypeExternal")}
+          </MenuItem>
         </Select>
       </Grid>
 
@@ -144,7 +148,7 @@ const RedirectImportTableRow = ({
         {targetType === "path" && (
           <TextField
             onChange={handleQuery}
-            placeholder="Redirect query string"
+            placeholder={t("seo.redirectQueryStringPlaceholder")}
             defaultValue={query_string}
             size="small"
             variant="outlined"
@@ -162,7 +166,7 @@ const RedirectImportTableRow = ({
           size="small"
           loading={isLoading || loading}
         >
-          Redirect
+          {t("seo.redirectButton")}
         </Button>
       </Grid>
     </Grid>

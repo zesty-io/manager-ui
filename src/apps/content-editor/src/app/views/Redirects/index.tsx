@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Typography, Stack, Link, Box, Button, Skeleton } from "@mui/material";
 import {
   MoreHoriz,
@@ -42,6 +43,7 @@ export type RedirectRowType = {
   id: string;
 };
 export const Redirects = () => {
+  const { t } = useTranslation();
   const [redirectToDelete, setRedirectToDelete] = useState<Row | null>(null);
   const domain = useDomain();
   const { openCreateForm } = useRedirectsDialog();
@@ -101,7 +103,11 @@ export const Redirects = () => {
     {
       field: "incomingPath",
       renderHeader: () =>
-        isLoading ? <Skeleton width="200px" height={24} /> : "Incoming Path",
+        isLoading ? (
+          <Skeleton width="200px" height={24} />
+        ) : (
+          t("content.itemEditMetaIncomingPath")
+        ),
       flex: 1,
       renderCell: (params) => (
         <Typography variant="body2">{params.row.incomingPath}</Typography>
@@ -110,7 +116,11 @@ export const Redirects = () => {
     {
       field: "httpCode",
       renderHeader: () =>
-        isLoading ? <Skeleton width="150px" height={24} /> : "HTTP Code",
+        isLoading ? (
+          <Skeleton width="150px" height={24} />
+        ) : (
+          t("content.itemEditMetaHttpCode")
+        ),
       width: 150,
       renderCell: (params) => (
         <Stack direction="row" alignItems="center" gap={1.5} height="100%">
@@ -122,7 +132,11 @@ export const Redirects = () => {
     {
       field: "targetPath",
       renderHeader: () =>
-        isLoading ? <Skeleton width="186px" height={24} /> : "Target Path",
+        isLoading ? (
+          <Skeleton width="186px" height={24} />
+        ) : (
+          t("content.redirectTargetPath")
+        ),
       flex: 1,
       renderCell: () => (
         <Link
@@ -143,7 +157,7 @@ export const Redirects = () => {
         <GridActionsCellItem
           data-cy="EditRedirect"
           icon={<EditRounded />}
-          label="Edit Redirect"
+          label={t("content.itemEditMetaEditRedirect")}
           onClick={() => {
             openCreateForm(
               {
@@ -164,7 +178,7 @@ export const Redirects = () => {
         <GridActionsCellItem
           data-cy="DeleteRedirect"
           icon={<DeleteRounded />}
-          label="Delete Redirect"
+          label={t("content.itemEditMetaDeleteRedirect")}
           onClick={() => setRedirectToDelete(params.row)}
           showInMenu
           sx={{
@@ -210,10 +224,10 @@ export const Redirects = () => {
       >
         <Box width="100%" flexGrow={0}>
           <Typography variant="h5" fontWeight={700} color="text.primary">
-            Incoming Redirects
+            {t("content.itemEditMetaIncomingRedirects")}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Manage redirects that point to this content item
+            {t("content.itemEditMetaIncomingRedirectsDescription")}
           </Typography>
         </Box>
         <Box
@@ -311,7 +325,7 @@ export const Redirects = () => {
                       openCreateForm({ target: itemZUID }, true);
                     }}
                   >
-                    Add Incoming Redirect
+                    {t("content.redirectAddIncoming")}
                   </Button>
                 </Box>
 

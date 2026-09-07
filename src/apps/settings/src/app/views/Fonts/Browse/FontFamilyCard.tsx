@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import Box from "@mui/material/Box";
 import { Typography, FormGroup } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
@@ -30,6 +31,7 @@ const FontFamilyCard = ({
   previewText,
   activePage,
 }: FontFamilyCardProps) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const instance = useSelector((state: AppState) => state.instance);
 
@@ -95,9 +97,10 @@ const FontFamilyCard = ({
         dispatch(
           notify({
             kind: "success",
-            message: `Font "${family} (${selectedVariants.join(
-              ", "
-            )})" has been installed`,
+            message: t("settings.fontInstallSuccess", {
+              family,
+              variants: selectedVariants.join(", "),
+            }),
           })
         );
       } else {
@@ -107,15 +110,17 @@ const FontFamilyCard = ({
       dispatch(
         notify({
           kind: "error",
-          message: `Failed to add ${family} (${selectedVariants.join(
-            ", "
-          )}): ${error}`,
+          message: t("settings.fontInstallError", {
+            family,
+            variants: selectedVariants.join(", "),
+            error,
+          }),
         })
       );
     } finally {
       dispatch(fetchFontsInstalled());
     }
-  }, [ZUID, selectedVariants, installedVariants]);
+  }, [ZUID, selectedVariants, installedVariants, t]);
 
   useEffect(() => {
     setSelectedVariants([]);
@@ -219,7 +224,7 @@ const FontFamilyCard = ({
               minWidth: "fit-content",
             }}
           >
-            Add
+            {t("common.add")}
           </LoadingButton>
         </Box>
         <Typography
@@ -228,9 +233,7 @@ const FontFamilyCard = ({
           color="text.primary"
           sx={{ fontFamily: `"${family}"`, mt: 1 }}
         >
-          {previewText
-            ? previewText
-            : "All their equipment and instruments are alive."}
+          {previewText ? previewText : t("settings.fontPreviewText")}
         </Typography>
       </Box>
     </>

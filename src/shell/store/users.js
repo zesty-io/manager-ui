@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { request } from "utility/request";
 import { notify } from "./notifications";
+import i18n from "shell/i18n";
 
 export const users = createSlice({
   name: "users",
@@ -36,7 +37,7 @@ export function fetchUsers() {
       .catch((error) => {
         dispatch(
           notify({
-            message: error.message,
+            message: i18n.t("shell.failedFetchUsers"),
             kind: "error",
           })
         );

@@ -1,4 +1,5 @@
 import { FC, useEffect, useState, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { ScheduleRounded, InsightsRounded } from "@mui/icons-material";
 import FileUploadRoundedIcon from "@mui/icons-material/FileUploadRounded";
 import { useHistory, useLocation } from "react-router";
@@ -21,6 +22,7 @@ interface Props {
   isSelectDialog?: boolean;
 }
 export const Sidebar: FC<Props> = ({ lockedToGroupId, isSelectDialog }) => {
+  const { t } = useTranslation();
   const history = useHistory();
   const [params] = useParams();
   const appSideBarRef = useRef(null);
@@ -48,12 +50,12 @@ export const Sidebar: FC<Props> = ({ lockedToGroupId, isSelectDialog }) => {
   const defaultBin = bins?.find((bin) => bin.default) || bins?.[0];
   const subMenu: SubMenu[] = [
     {
-      name: "Recents",
+      name: t("media.sidebarRecents"),
       path: "/media",
       icon: ScheduleRounded,
     },
     {
-      name: "Insights",
+      name: t("media.sidebarInsights"),
       path: "/media/insights",
       icon: InsightsRounded,
     },
@@ -64,10 +66,12 @@ export const Sidebar: FC<Props> = ({ lockedToGroupId, isSelectDialog }) => {
       <AppSideBar
         data-cy="media-nav"
         mode="dark"
-        headerTitle={isSelectDialog ? "Insert from Media" : "Media"}
+        headerTitle={
+          isSelectDialog ? t("media.sidebarInsertFromMedia") : t("common.media")
+        }
         subMenus={lockedToGroupId ? null : subMenu}
         ref={appSideBarRef}
-        searchPlaceholder="Search Media"
+        searchPlaceholder={t("media.sidebarSearchPlaceholder")}
         hideSubMenuOnSearch={false}
         filterKeyword={searchTerm}
         onFilterEnter={(keyword) =>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { connect } from "react-redux";
+import { useTranslation } from "react-i18next";
 import { useDomain } from "shell/hooks/use-domain";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import ToggleButton from "@mui/material/ToggleButton";
@@ -18,6 +19,7 @@ export default connect((state) => {
     platform: state.platform,
   };
 })(function Robots(props) {
+  const { t } = useTranslation();
   const domain = useDomain();
   const [isDirty, setIsDirty] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -72,7 +74,7 @@ export default connect((state) => {
         props.dispatch(
           notify({
             kind: "warn",
-            message: `Failed to fetch settings`,
+            message: t("settings.robotsFailedFetchSettings"),
           })
         );
         console.error("Failed to fetch settings:", err);
@@ -110,7 +112,7 @@ export default connect((state) => {
         props.dispatch(
           notify({
             kind: "success",
-            message: "robots.txt file settings have been updated",
+            message: t("settings.robotsSettingsUpdated"),
           })
         );
       })
@@ -118,7 +120,7 @@ export default connect((state) => {
         props.dispatch(
           notify({
             kind: "warn",
-            message: `Failed saving robots.txt settings. ${err}`,
+            message: t("settings.robotsFailedSaveSettings", { err }),
           })
         );
       })
@@ -145,9 +147,12 @@ export default connect((state) => {
   };
 
   return (
-    <WithLoader condition={robotOn.ZUID} message="Finding robots.txt settings">
+    <WithLoader
+      condition={robotOn.ZUID}
+      message={t("settings.robotsFindingSettings")}
+    >
       <TopBar
-        title="Robot.txt"
+        title={t("settings.robotsTopBarTitle")}
         onSave={handleSave}
         isNotSaved={isDirty}
         isLoading={loading}
@@ -177,8 +182,8 @@ export default connect((state) => {
               exclusive
               onChange={(evt, val) => handleRobotsOn(val)}
             >
-              <ToggleButton value={"0"}>No </ToggleButton>
-              <ToggleButton value={"1"}>Yes </ToggleButton>
+              <ToggleButton value={"0"}>{t("common.no")} </ToggleButton>
+              <ToggleButton value={"1"}>{t("common.yes")} </ToggleButton>
             </ToggleButtonGroup>
           </FieldWrapper>
           <FieldWrapper>
@@ -224,15 +229,12 @@ export default connect((state) => {
           <FieldWrapper>
             <Alert severity="warning">
               <Typography variant="body2" component="p">
-                Changes will not be reflected until a publish event occurs.
+                {t("settings.robotsPublishEventWarning")}
               </Typography>
             </Alert>
             <Alert severity="warning" sx={{ mt: 2 }}>
               <Typography variant="body2" component="p">
-                Non-Live domains ALWAYS have robots.txt off to avoid being
-                crawled by search engines. This include
-                [hash]-dev.webengine.zesty.io, [hash]-dev.preview.zesty.io, and
-                any registered domain set to the "dev" branch
+                {t("settings.robotsNonLiveDomainWarning")}
               </Typography>
             </Alert>
           </FieldWrapper>
