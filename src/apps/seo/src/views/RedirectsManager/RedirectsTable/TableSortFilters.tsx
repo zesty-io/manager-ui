@@ -19,7 +19,7 @@ const HTTP_CODE_FILTERS = {
 const TYPE_FILTERS = {
   external: "External - link to an external webpage",
   path: "Wildcard - rule based redirects",
-  internal: "Internal - linked to an item in this instance",
+  page: "Internal - linked to an item in this instance",
 } as const;
 
 export const TableSortFilters = () => {
@@ -173,6 +173,7 @@ export const TableSortFilters = () => {
         {Object.entries(TYPE_FILTERS).map(([key, value]) => (
           <MenuItem
             key={key}
+            data-cy={`typeFilterOption_${key}`}
             onClick={() => {
               setTypeFilter(key);
               handleCloseMenu();
