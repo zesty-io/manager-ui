@@ -182,7 +182,11 @@ export const Meta = forwardRef(
     }, [fields]);
 
     const REQUIRED_FIELDS = useMemo(() => {
-      const fields = ["metaTitle", "parentZUID", "pathPart"];
+      const fields = ["parentZUID", "pathPart"];
+
+      if (model?.type !== "dataset") {
+        fields.push("metaTitle");
+      }
 
       return fields;
     }, [model]);
@@ -597,6 +601,7 @@ export const Meta = forwardRef(
                   metaDescriptionButtonRef.current?.triggerAIButton?.();
                 }
               }}
+              required={REQUIRED_FIELDS.includes("metaTitle")}
             />
             <MetaDescription
               aiButtonRef={metaDescriptionButtonRef}
