@@ -1,3 +1,5 @@
+import { v4 as uuidv4 } from "uuid";
+
 const today = Date.now();
 
 describe("Content Meta", () => {
@@ -173,5 +175,64 @@ describe("Content Meta", () => {
     // on the item's social-image data populating and an external bynder image load,
     // which is unreliable in CI (the element intermittently never renders). Title and
     // description cover the dedicated-Twitter-fields behavior.
+  });
+});
+
+describe("Content Meta - Dataset model does not require Meta Title", () => {
+  const DATASET_MODEL_LABEL = `Cypress Dataset Meta | ${uuidv4()}`;
+  let datasetModelZUID;
+
+  before(() => {
+    cy.createModel({
+      label: DATASET_MODEL_LABEL,
+      name: DATASET_MODEL_LABEL.toLowerCase().replace(/\W/g, "_"),
+      description: "Cypress: dataset model for meta title requirement spec",
+      type: "dataset",
+      parentZUID: null,
+      listed: true,
+    }).then(({ data }) => {
+      datasetModelZUID = data?.ZUID;
+
+      cy.createField(datasetModelZUID, {
+        label: "Text",
+        name: "text",
+        datatype: "text",
+        sort: 0,
+        settings: { list: true },
+      });
+    });
+  });
+
+  after(() => {
+    if (datasetModelZUID) {
+      cy.deleteModel(datasetModelZUID);
+    }
+  });
+
+  it("Creates a dataset item with Meta Title and Meta Description left blank", () => {
+    cy.waitOn("/v1/content/models**", () => {
+      cy.waitOn("/v1/env/nav", () => {
+        cy.visit(`/content/${datasetModelZUID}/new`);
+      });
+    });
+
+    cy.getBySelector("field:text").find("input").type(`dataset item ${today}`);
+
+    cy.intercept("POST", "**/content/models/*/items").as("createItem");
+
+    // Dataset items never render a URL/path part field, and Meta Title/Description
+    // should not be required for them either (see issue #4276) — leave both blank
+    // (the create page defaults to the "Have AI write your Meta Data?" chooser,
+    // which is skippable — Meta Title/Description remain unset in the store either
+    // way) and save immediately.
+    cy.getBySelector("CreateItemSaveButton").click();
+
+    cy.wait("@createItem").its("response.statusCode").should("eq", 201);
+
+    // A successful create redirects away from the "/new" route to the newly created
+    // item's edit page. Pre-fix, the thunk would return a VALIDATION_ERROR for a
+    // missing Meta Title on dataset items, and the app would stay on "/new" instead.
+    cy.url().should("include", `/content/${datasetModelZUID}/`);
+    cy.url().should("not.include", "/new");
   });
 });

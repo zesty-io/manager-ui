@@ -20,6 +20,7 @@ type MetaTitleProps = {
   onAIMetaTitleInserted?: () => void;
   aiButtonRef?: MutableRefObject<any>;
   label?: string;
+  required?: boolean;
 };
 export const MetaTitle = memo(function MetaTitle({
   value,
@@ -30,6 +31,7 @@ export const MetaTitle = memo(function MetaTitle({
   onAIMetaTitleInserted,
   aiButtonRef,
   label,
+  required = true,
 }: MetaTitleProps) {
   const { t } = useTranslation();
   const resolvedLabel = label ?? t("content.itemEditMetaTitle");
@@ -41,7 +43,7 @@ export const MetaTitle = memo(function MetaTitle({
         ref={aiButtonRef}
         settings={{
           label: resolvedLabel,
-          required: true,
+          required,
         }}
         customTooltip={t("content.itemEditMetaTitleTooltip")}
         withInteractiveTooltip={false}
