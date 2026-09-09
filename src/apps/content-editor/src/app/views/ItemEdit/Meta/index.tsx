@@ -110,6 +110,12 @@ export const DYNAMIC_META_FIELD_NAMES = [
   "tc_image",
 ];
 
+// A required field's value of "" or whitespace-only is not meaningful
+// content, so treat it the same as missing rather than letting `!value`
+// pass whitespace through as satisfying the requirement.
+const isBlank = (value: unknown) =>
+  typeof value === "string" ? !value.trim() : !value;
+
 type Errors = Record<string, Error>;
 type MetaProps = {
   isSaving: boolean;
@@ -182,7 +188,11 @@ export const Meta = forwardRef(
     }, [fields]);
 
     const REQUIRED_FIELDS = useMemo(() => {
-      const fields = ["metaTitle", "parentZUID", "pathPart"];
+      const fields = ["parentZUID", "pathPart"];
+
+      if (model?.type !== "dataset") {
+        fields.push("metaTitle");
+      }
 
       return fields;
     }, [model]);
@@ -208,7 +218,7 @@ export const Meta = forwardRef(
         if (REQUIRED_FIELDS.includes(name)) {
           currentErrors[name] = {
             ...currentErrors?.[name],
-            MISSING_REQUIRED: !value,
+            MISSING_REQUIRED: isBlank(value),
           };
         }
 
@@ -229,7 +239,7 @@ export const Meta = forwardRef(
 
           currentErrors[name] = {
             ...currentErrors[name],
-            MISSING_REQUIRED: isRequired ? !value : false,
+            MISSING_REQUIRED: isRequired ? isBlank(value) : false,
           };
         }
 
@@ -256,7 +266,7 @@ export const Meta = forwardRef(
           value: value,
         });
       },
-      [meta?.ZUID, errors]
+      [meta?.ZUID, errors, REQUIRED_FIELDS, metaFields]
     );
 
     useImperativeHandle(
@@ -272,7 +282,7 @@ export const Meta = forwardRef(
 
               currentErrors[fieldName] = {
                 ...currentErrors?.[fieldName],
-                MISSING_REQUIRED: !value,
+                MISSING_REQUIRED: isBlank(value),
               };
             });
 
@@ -297,7 +307,7 @@ export const Meta = forwardRef(
 
               currentErrors[name] = {
                 ...currentErrors?.[name],
-                MISSING_REQUIRED: isRequired ? !value : false,
+                MISSING_REQUIRED: isRequired ? isBlank(value) : false,
               };
             });
 
@@ -597,6 +607,7 @@ export const Meta = forwardRef(
                   metaDescriptionButtonRef.current?.triggerAIButton?.();
                 }
               }}
+              required={REQUIRED_FIELDS.includes("metaTitle")}
             />
             <MetaDescription
               aiButtonRef={metaDescriptionButtonRef}

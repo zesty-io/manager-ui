@@ -686,15 +686,15 @@ export function createItem({ modelZUID, itemZUID, skipPathPartValidation }) {
             return false;
           });
 
-    // Block items do not require SEO fields
+    // Block and dataset items do not require SEO fields
     let hasMissingRequiredSEOFields = false;
 
-    if (model?.type !== "block") {
+    if (model?.type !== "block" && model?.type !== "dataset") {
       if (skipPathPartValidation) {
-        hasMissingRequiredSEOFields = !item?.web?.metaTitle;
+        hasMissingRequiredSEOFields = !item?.web?.metaTitle?.trim();
       } else {
         hasMissingRequiredSEOFields =
-          !item?.web?.metaTitle || !item?.web?.pathPart;
+          !item?.web?.metaTitle?.trim() || !item?.web?.pathPart;
       }
     }
 
