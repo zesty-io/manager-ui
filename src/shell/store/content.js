@@ -690,9 +690,7 @@ export function createItem({ modelZUID, itemZUID, skipPathPartValidation }) {
     let hasMissingRequiredSEOFields = false;
 
     if (model?.type !== "block") {
-      if (model?.type === "dataset") {
-        hasMissingRequiredSEOFields = false;
-      } else if (skipPathPartValidation) {
+      if (skipPathPartValidation) {
         hasMissingRequiredSEOFields = !item?.web?.metaTitle;
       } else {
         hasMissingRequiredSEOFields =

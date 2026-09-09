@@ -38,5 +38,12 @@ export function useDebouncedInput(
     debouncedRef.current!(v);
   }, []);
 
-  return { local, onLocalChange };
+  // Immediately commits a pending debounced change, if any. Callers that need
+  // the committed value before the debounce delay elapses (e.g. validating on
+  // save) must call this first.
+  const flush = useCallback(() => {
+    debouncedRef.current!.flush();
+  }, []);
+
+  return { local, onLocalChange, flush };
 }

@@ -115,12 +115,17 @@ export const Field = memo(
     const fieldData = fields?.find((field) => field.ZUID === ZUID);
     const [rerenderKey, setRerenderKey] = useState(0);
 
-    const { local, onLocalChange } = useDebouncedInput(value, (v) => {
+    const { local, onLocalChange, flush } = useDebouncedInput(value, (v) => {
       onChange(v, name);
     });
 
     const handle = useMemo<any>(
       () => ({
+        // Commits this field's pending debounced onChange immediately.
+        // Callers (e.g. save handlers) must call this before validating, or
+        // a save right after typing can read a value that hasn't reached the
+        // store yet.
+        flush,
         setValue: (val: string) => {
           const el = document.getElementById(ZUID);
           if (el) {

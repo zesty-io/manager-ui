@@ -19,7 +19,6 @@ type MetaTitleProps = {
   onAIMetaTitleInserted?: () => void;
   aiButtonRef?: MutableRefObject<any>;
   label?: string;
-  required?: boolean;
 };
 export const MetaTitle = memo(function MetaTitle({
   value,
@@ -30,7 +29,6 @@ export const MetaTitle = memo(function MetaTitle({
   onAIMetaTitleInserted,
   aiButtonRef,
   label = "Meta Title",
-  required = true,
 }: MetaTitleProps) {
   return (
     <Box data-cy="metaTitle" id="metaTitle">
@@ -39,7 +37,7 @@ export const MetaTitle = memo(function MetaTitle({
         ref={aiButtonRef}
         settings={{
           label,
-          required,
+          required: true,
         }}
         customTooltip="This title appears in search engine results and social media previews. The maximum amount of characters search engines show is 65, but your title can be longer."
         withInteractiveTooltip={false}
