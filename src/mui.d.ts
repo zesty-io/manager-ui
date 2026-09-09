@@ -23,6 +23,11 @@ declare module "@mui/material/styles" {
     purple: Color;
     yellow: Color;
   }
+
+  export interface TypeBackground {
+    shimmer: string;
+    shimmerSweep: string;
+  }
 }
 
 declare module "@mui/material/IconButton" {

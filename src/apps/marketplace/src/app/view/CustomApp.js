@@ -1,5 +1,4 @@
 import Cookies from "js-cookie";
-import cx from "classnames";
 import { forwardRef, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Route, Switch } from "react-router";
@@ -7,8 +6,6 @@ import { Box } from "@mui/material";
 
 import { NotFound } from "shell/components/NotFound";
 import { InstallApp } from "../components/InstallApp";
-
-import styles from "./CustomApp.less";
 import { withDAM } from "../../../../../shell/components/withDAM";
 
 const IframeComponent = forwardRef((props, ref) => {
@@ -19,12 +16,24 @@ const IframeWithDAM = withDAM(IframeComponent);
 
 export default function CustomApp() {
   return (
-    <main className={cx(styles.CustomApp)}>
+    <Box
+      component="main"
+      sx={{
+        height: "calc(100vh - 40px)",
+        width: "100%",
+        // The <iframe> is rendered by LoadApp several components down, so this
+        // has to stay a descendant selector rather than move onto the container.
+        "& iframe": {
+          height: "calc(100vh - 40px)",
+          width: "100%",
+        },
+      }}
+    >
       <Switch>
         <Route exact path="/apps" render={InstallApp} />
         <Route exact path="/apps/:zuid" component={LoadApp} />
       </Switch>
-    </main>
+    </Box>
   );
 }
 
@@ -65,7 +74,7 @@ function LoadApp(props) {
   }, [frame.current, app]);
 
   return app ? (
-    <Box className={styles.IframeContainer}>
+    <Box>
       {app.ZUID === freestyleAppZUID ? (
         <IframeWithDAM
           src={app.url}
