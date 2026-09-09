@@ -39,16 +39,14 @@ export const Unpublish = memo(function Unpublish(props) {
         sx={{
           p: 0,
           backgroundColor: "transparent",
-          fontSize: "16px",
           color: alpha(theme.palette.text.primary, 0.4),
           borderBottom: 1,
           borderColor: "grey.200",
         }}
         titleTypographyProps={{
+          variant: "overline",
           sx: {
             fontWeight: 400,
-            fontSize: "12px",
-            lineHeight: "32px",
             color: "text.primary",
           },
         }}
@@ -79,8 +77,6 @@ export const Unpublish = memo(function Unpublish(props) {
               variant="body2"
               color="text.secondary"
               sx={{
-                fontSize: "14px",
-                lineHeight: "20px",
                 maxWidth: "595px",
               }}
             >
