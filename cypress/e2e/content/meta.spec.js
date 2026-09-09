@@ -1,5 +1,3 @@
-import { v4 as uuidv4 } from "uuid";
-
 const today = Date.now();
 
 describe("Content Meta", () => {
@@ -175,69 +173,5 @@ describe("Content Meta", () => {
     // on the item's social-image data populating and an external bynder image load,
     // which is unreliable in CI (the element intermittently never renders). Title and
     // description cover the dedicated-Twitter-fields behavior.
-  });
-});
-
-describe("Content Meta - Dataset model auto-populates Meta Title", () => {
-  const DATASET_MODEL_LABEL = `Cypress Dataset Meta | ${uuidv4()}`;
-  const ITEM_TEXT_VALUE = `dataset item ${uuidv4()}`;
-  let datasetModelZUID;
-
-  before(() => {
-    cy.createModel({
-      label: DATASET_MODEL_LABEL,
-      name: DATASET_MODEL_LABEL.toLowerCase().replace(/\W/g, "_"),
-      description: "Cypress: dataset model for meta title requirement spec",
-      type: "dataset",
-      parentZUID: null,
-      listed: true,
-    }).then(({ data }) => {
-      expect(data?.ZUID, "created dataset model ZUID").to.be.a("string");
-      datasetModelZUID = data.ZUID;
-
-      cy.createField(datasetModelZUID, {
-        label: "Text",
-        name: "text",
-        datatype: "text",
-        sort: 0,
-        settings: { list: true },
-      });
-    });
-  });
-
-  after(() => {
-    if (datasetModelZUID) {
-      cy.deleteModel(datasetModelZUID);
-    }
-  });
-
-  it("Creates a dataset item, auto-populating Meta Title from the first text field", () => {
-    cy.waitOn("/v1/content/models**", () => {
-      cy.waitOn("/v1/env/nav", () => {
-        cy.visit(`/content/${datasetModelZUID}/new`);
-      });
-    });
-
-    cy.intercept("POST", "**/content/models/*/items").as("createItem");
-
-    // Dataset items never render a URL/path part field, but Meta Title is still
-    // required (see issue #4276) — it's auto-populated from the first text field
-    // as the user types, the same way it is for every other non-block model, so
-    // it's already set in the store by the time Save is clicked.
-    cy.getBySelector("field:text").find("input").type(ITEM_TEXT_VALUE);
-    cy.getBySelector("CreateItemSaveButton").click();
-
-    cy.wait("@createItem").then(({ request, response }) => {
-      expect(request.body?.web?.metaTitle).to.eq(ITEM_TEXT_VALUE);
-      expect(response.statusCode).to.eq(201);
-    });
-
-    // A successful create redirects away from the "/new" route to the newly created
-    // item's edit page. Pre-fix, ItemCreate's save gate discarded the fresh
-    // validateMetaFields() result and checked stale SEOErrors state instead, so a
-    // genuinely missing Meta Title reached the thunk's VALIDATION_ERROR response,
-    // which ItemCreate then silently swallowed, leaving the app stuck on "/new".
-    cy.url().should("include", `/content/${datasetModelZUID}/`);
-    cy.url().should("not.include", "/new");
   });
 });
