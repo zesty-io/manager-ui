@@ -217,8 +217,18 @@ export const ItemCreate = () => {
       // Meta to re-render with the newly-committed value before we read its
       // validateMetaFields() result — without it, React 18 batches the store
       // update and Meta's closure stays stale for the rest of this call.
+      //
+      // refRegistry is a single app-wide registry (fields register by name,
+      // not by item), and "Create & Add New Related Item" mounts a nested
+      // ItemCreate on top of a still-mounted parent page — so this must only
+      // flush fields belonging to *this* model, or saving the nested dialog
+      // would force-commit the parent's in-progress edits too.
       flushSync(() => {
-        Object.values(refRegistry).forEach((entry) => entry.handle?.flush?.());
+        Object.values(refRegistry).forEach((entry) => {
+          if (entry.context?.()?.contentModelZUID === modelZUID) {
+            entry.handle?.flush?.();
+          }
+        });
       });
 
       const validationErrors = metaRef.current?.validateMetaFields?.();
