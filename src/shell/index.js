@@ -86,6 +86,16 @@ const appTheme = createTheme(theme, {
     background: {
       editor: "#0F0F0F",
     },
+
+    // Off-system colours carried by the leads app. None of them matches a step
+    // on the @zesty-io/material ramps, so they are minted here rather than
+    // snapped onto a nearby token - see docs/design-system.md section 4, step 5.
+    leads: {
+      toolbar: "#697A91",
+      toolbarLabel: "#C3CDDF",
+      rowHover: "#DAE2F1",
+      rowHoverBorder: "#F7F7F7",
+    },
   },
 
   components: {
