@@ -39,7 +39,7 @@ import { Products } from "../../services/types";
 import styles from "./Shell.less";
 import { LoadingShell } from "./LoadingShell";
 import { registerNavigate } from "../../../engine/navigator";
-import { AIDrawer } from "./AIDrawer";
+import { AIDrawer } from "../../components/AIDrawer";
 import { useLocalStorage } from "react-use";
 import * as amplitude from "@amplitude/analytics-browser";
 import { sessionReplayPlugin } from "@amplitude/plugin-session-replay-browser";
@@ -114,7 +114,9 @@ export default memo(function Shell() {
       height="100vh"
       overflow="clip"
       display="grid"
-      gridTemplateColumns={openNav ? "200px 1fr" : "48px 1fr"}
+      gridTemplateColumns={
+        openNav ? "200px minmax(0, 1fr)" : "48px minmax(0, 1fr)"
+      }
       sx={{
         flex: 1,
         backgroundColor: "background.paper",
@@ -159,7 +161,7 @@ export default memo(function Shell() {
                   height: "100%",
                 }}
               >
-                <Box flex={1}>
+                <Box flex={1} minWidth={0}>
                   <Switch>
                     <Route path="/release" component={ReleaseApp} />
                     <Route path="/studio" component={StudioApp} />
@@ -264,6 +266,7 @@ export default memo(function Shell() {
                 </Box>
                 {showAiDrawer && (
                   <AIDrawer
+                    open={showAiDrawer}
                     onClose={() => setShowAiDrawer(false)}
                     key={pathname}
                   />

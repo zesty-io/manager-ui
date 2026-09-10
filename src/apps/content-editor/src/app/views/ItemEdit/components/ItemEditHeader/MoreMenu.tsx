@@ -167,6 +167,7 @@ export const MoreMenu = () => {
           Edit Model
         </MenuItem>
         <MenuItem
+          data-cy="EditTemplate"
           onClick={() => {
             history.push(codePath);
           }}
