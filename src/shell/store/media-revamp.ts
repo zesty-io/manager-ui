@@ -229,6 +229,7 @@ const mediaSlice = createSlice({
             ...rest,
             loading: false,
             filename: action.payload.filename,
+            title: action.payload.title,
             filenameDirty: false,
             url: action.payload.url,
             status: "success" as const,
