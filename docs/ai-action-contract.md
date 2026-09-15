@@ -2,9 +2,11 @@
 
 What the manager app sends the MCP client, and what the MCP client may send back.
 
-This is one contract with three surfaces. Two exist today — **AI content** (a content item's fields) and **AI code** (the code editor) — and **Studio** is the third. They differ only in which refKeys are addressable and what a value means for each. If you have implemented the content or code surface, Studio is the same exchange with a wider refKey namespace and two extra rules.
+This is one contract with three surfaces. Two exist today — **AI content** (a content item's fields) and **AI code** (the code editor) — and **Studio** is the third. They differ only in which refKeys are addressable and what a value means for each. If you have implemented the content or code surface, Studio is the same exchange with a wider refKey namespace and one decision to make on each turn: field or file.
 
 **Studio's half of this document is a specification, not a live payload.** Everything in §2 marked _(Studio)_ is what the app will send once the surface ships; nothing sends it today. The request fields marked _(live)_ and all of §3 are in production now.
+
+**In Studio the AI sits above the mode toggle.** Studio has a content mode, a layout mode, and a `full` mode that is the union of the two and the default for a user entitled to both. The drawer is not scoped by that toggle: one chat can change copy and code, and a single response may contain both a content-field write and a code-file write. The only thing that narrows what you may write is the user's permissions, delivered as `writable`.
 
 Audience: whoever implements the model side. Nothing here describes manager-ui internals you have to care about.
 
@@ -48,7 +50,7 @@ There are two entry points and they do not send the same body. **Generate Sugges
 | `filename`, `code`, `fields` | string, string, object[]          | live       | present only when the code editor is open                                                                                       |
 | `temperature`                | number                            | live       | 0.5                                                                                                                             |
 | `surface`                    | `"studio"`                        | _(Studio)_ | absent on the content and code surfaces                                                                                         |
-| `mode`                       | `"content" \| "layout" \| "full"` | _(Studio)_ | what the user is doing; determines which refKeys are legal — §6                                                                 |
+| `mode`                       | `"content" \| "layout" \| "full"` | _(Studio)_ | what the user is looking at. **Context for routing, not a restriction** — see §6. `full` is the default                         |
 | `path`                       | string                            | _(Studio)_ | the page under edit, e.g. `/pricing/`. Studio is a single route, so this is the only thing distinguishing one page from another |
 | `selection`                  | object \| null                    | _(Studio)_ | what the user has selected on the canvas                                                                                        |
 | `writable`                   | string[]                          | _(Studio)_ | the subset of `registryKeys` this user is permitted to write                                                                    |
@@ -158,6 +160,8 @@ Two action types. The contract has no third.
 
 The three Studio file refKeys behave exactly like `code-editor`, which is also a whole-file replacement.
 
+**Both families are addressable at once.** In Studio a request can carry content-field refKeys and file refKeys together, and a single response may write to both.
+
 **Never infer a refKey.** Use what arrived in `registryKeys`, and write only what arrived in `writable`. Not every field of an item is addressable: eleven datatypes are deliberately excluded — `uuid`, `files`, `internal_link`, `one_to_one`, `one_to_many`, `block_selector`, `yes_no`, `dropdown`, `date`, `datetime`, `integration`.
 
 Content-field refKeys are **bare field names**, so if two items on a page both have `title`, only one `title` refKey exists and it is whichever registered last. The `ZUID` and `contentModelZUID` inside that refKey's `refRegistry` entry tell you which item you actually got; if that is not the one the user meant, say so in a `SYSTEM_OUTPUT` rather than writing to it.
@@ -194,7 +198,14 @@ The image row is the one case where `value` is an identifier rather than content
 
 **`writable` is the permission boundary** _(Studio)_. It is the user's content-vs-code permissions resolved for this request. Prefer a `SYSTEM_OUTPUT` explaining what the user cannot change over a `SET_VALUE` the app will drop.
 
-**`mode` narrows what is sensible** _(Studio)_. In `content` mode only field refKeys are writable; in `layout` mode the file refKeys are; `full` is both.
+**Choosing between a field and a file is the judgment call** _(Studio)_. Both are usually available, so route by what the user asked to change, not by which mode they are in:
+
+- the **words** a visitor reads, where the slot is bound (`isDynamic: true`) → the **content field** refKey
+- the **words**, where the slot is static (`isDynamic: false`) → the **view file**
+- **markup, structure, order, or which elements exist** → the **view file**
+- **appearance** → the **stylesheet**
+
+**A turn may mix both.** The app saves layout first, then content, and stops if the layout half fails — so a mixed turn can land its file write and not its field write. Do not split one logical change across both halves unless the change genuinely spans them.
 
 **A bad refKey fails silently.** An action naming a refKey that is not registered does not raise an error the user can see — it surfaces as a button that does nothing. This is the failure mode most worth avoiding, and the reason to take `registryKeys` literally.
 
