@@ -1,4 +1,5 @@
 import { FC } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Button,
   Dialog,
@@ -39,6 +40,7 @@ export const ChangeDialog: FC<ChangeDialogProps> = ({
   redirect,
   newPath,
 }) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const {
     openErrorDialog,
@@ -71,7 +73,7 @@ export const ChangeDialog: FC<ChangeDialogProps> = ({
       dispatch(
         notify({
           kind: "success",
-          message: `1 Redirect Created`,
+          message: t("seo.changeDialogRedirectCreated"),
         })
       );
     } else {
@@ -109,12 +111,10 @@ export const ChangeDialog: FC<ChangeDialogProps> = ({
           flexGrow={0}
           flexShrink={0}
         >
-          URL Path Change Detected. Create Redirect from the old path to the new
-          path?
+          {t("seo.changeDialogTitle")}
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mt: "8px" }}>
-          This will be a 301 permanent redirect and will ensure visitors using
-          the old path are seamlessly directed to the new path.
+          {t("seo.changeDialogBody")}
         </Typography>
       </DialogTitle>
       <DialogContent sx={{ p: 0 }} data-cy="RedirectsDeleteDialog">
@@ -138,8 +138,9 @@ export const ChangeDialog: FC<ChangeDialogProps> = ({
               color="text.primary"
               fontWeight={600}
               noWrap
+              sx={{ textTransform: "uppercase" }}
             >
-              OLD PATH
+              {t("seo.changeDialogOldPath")}
             </Typography>
             <Typography variant="body2" color="info.dark">
               {redirect?.path}
@@ -152,8 +153,9 @@ export const ChangeDialog: FC<ChangeDialogProps> = ({
               color="text.primary"
               fontWeight={600}
               noWrap
+              sx={{ textTransform: "uppercase" }}
             >
-              NEW PATH
+              {t("seo.changeDialogNewPath")}
             </Typography>
             <Typography variant="body2" color="info.dark">
               {newPath}
@@ -163,7 +165,7 @@ export const ChangeDialog: FC<ChangeDialogProps> = ({
       </DialogContent>
       <DialogActions sx={{ p: "20px" }}>
         <Button variant="text" color="inherit" onClick={onClose}>
-          Don't Create
+          {t("seo.changeDialogDontCreate")}
         </Button>
         <Button
           data-cy="DeleteContentItemConfirmButton"
@@ -172,7 +174,7 @@ export const ChangeDialog: FC<ChangeDialogProps> = ({
           onClick={handleCreateRedirect}
           loading={isRedirectsLoading}
         >
-          Create Redirect
+          {t("seo.changeDialogCreateRedirect")}
         </Button>
       </DialogActions>
     </Dialog>

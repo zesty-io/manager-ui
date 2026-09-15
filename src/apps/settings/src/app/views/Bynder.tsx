@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Box,
   Stack,
@@ -19,8 +20,25 @@ import {
 } from "../../../../../shell/services/instance";
 import openBynder from "../../../../../utility/openBynder";
 
+const closeBynderModal = () => {
+  const shadowRoot = document.querySelector(
+    "[data-test-id='CompactViewContainer'] div"
+  )?.shadowRoot;
+
+  if (!shadowRoot) {
+    return;
+  }
+
+  const closeButton = shadowRoot.querySelector(
+    "[data-testid='modal'] nav > button:last-of-type"
+  ) as HTMLButtonElement | null;
+
+  closeButton?.click();
+};
+
 // NOTE: cvrt is the bynder refresh token, determines if user is logged in or not
 export const Bynder = () => {
+  const { t } = useTranslation();
   const [isBynderSessionValid, setIsBynderSessionValid] = useState(false);
   const [bynderSessionUrl, setBynderSessionUrl] = useState("");
   const [createInstanceSetting] = useCreateInstanceSettingsMutation();
@@ -118,12 +136,7 @@ export const Bynder = () => {
 
       if (!!bynderToken) {
         // This makes sure the bynder modal is closed after the user logs in
-        const bynderCloseButton = document
-          ?.querySelector("[data-test-id='CompactViewContainer'] div")
-          ?.shadowRoot.querySelector(
-            "button[title='Close']"
-          ) as HTMLButtonElement;
-        bynderCloseButton?.click();
+        closeBynderModal();
       }
 
       setIsBynderSessionValid(!!bynderToken);
@@ -159,7 +172,7 @@ export const Bynder = () => {
         borderColor="border"
       >
         <Typography variant="h3" fontWeight={700} color="text.primary">
-          Bynder Integration
+          {t("settings.bynderIntegration")}
         </Typography>
       </Box>
       {isBynderSessionValid ? (
@@ -167,7 +180,7 @@ export const Bynder = () => {
           <Box component="img" src={bynderLogo} width={150} height={33} />
           <Box my={2}>
             <Typography fontWeight={700} variant="h5" color="text.primary">
-              Your instance is connected to the following Bynder Portal
+              {t("settings.bynderConnectedPortal")}
             </Typography>
             <Typography fontWeight={600} variant="h5" color="primary.main">
               {bynderSessionUrl}
@@ -184,7 +197,7 @@ export const Bynder = () => {
                 handleOpenBynder();
               }}
             >
-              Change Bynder Portal
+              {t("settings.bynderChangePortal")}
             </Button>
             <Button
               startIcon={<PersonRemoveRoundedIcon />}
@@ -195,7 +208,7 @@ export const Bynder = () => {
                 updateBynderToken("");
               }}
             >
-              Disconnect
+              {t("settings.bynderDisconnect")}
             </Button>
           </Stack>
         </Box>
@@ -205,7 +218,7 @@ export const Bynder = () => {
             <Box
               component="img"
               src={bynderLogo}
-              alt="Bynder logo"
+              alt={t("settings.bynderLogoAlt")}
               width={150}
               height={33}
               mb={3}
@@ -216,20 +229,19 @@ export const Bynder = () => {
               color="text.primary"
               mb={1}
             >
-              Use your Bynder Assets within Zesty
+              {t("settings.bynderAssetsHeading")}
             </Typography>
             <Typography variant="body2" color="text.secondary" mb={2}>
-              Streamline your workflow by giving your team easy access to your
-              Bynder assets within Zesty
+              {t("settings.bynderAssetsDescription")}
             </Typography>
             <Button variant="contained" size="small" onClick={handleOpenBynder}>
-              Connect to Bynder
+              {t("settings.bynderConnect")}
             </Button>
           </Box>
           <Box
             component="img"
             src={bynderPreview}
-            alt="Bynder preview"
+            alt={t("settings.bynderPreviewAlt")}
             sx={{
               height: 480,
               width: 768,

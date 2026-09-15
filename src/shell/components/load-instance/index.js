@@ -3,7 +3,10 @@ import { connect } from "react-redux";
 import { Box, Link, Typography } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
+import { useTranslation } from "react-i18next";
 
+import i18n, { toSupportedLocale } from "shell/i18n";
+import { store } from "shell/store";
 import { fetchInstance, fetchDomains } from "shell/store/instance";
 import { fetchUser } from "shell/store/user";
 import { fetchUserRole } from "shell/store/userRole";
@@ -34,13 +37,38 @@ export default connect((state) => {
     const [error, setError] = useState("");
     const [noPermission, setNoPermission] = useState(false);
     const { refetch: refetchCurrentUserRoles } = useGetCurrentUserRolesQuery();
+    const { t } = useTranslation("shell");
 
     useEffect(() => {
       if (!props.auth.valid) {
         return;
       }
 
-      props.dispatch(fetchUser(props.user.ZUID));
+      props.dispatch(fetchUser(props.user.ZUID)).then(() => {
+        const { prefs } = store.getState().user;
+        let userLocale = null;
+        try {
+          userLocale = prefs ? JSON.parse(prefs)?.locale : null;
+        } catch {
+          // malformed prefs — fall through to navigator.language
+        }
+
+        // Resolve the UI locale authoritatively from the logged-in user, falling
+        // back to the browser language, then en-US. Reading navigator directly
+        // (not i18n.language) matters when switching users: localStorage and
+        // i18n still hold the previous user's locale after logout, so a user
+        // with no saved locale must not inherit the prior session's language.
+        // toSupportedLocale wraps both sides since userLocale may be unsupported.
+        const targetLocale = toSupportedLocale(
+          userLocale || navigator.language
+        );
+
+        if (targetLocale !== i18n.language) {
+          i18n.changeLanguage(targetLocale);
+        }
+        document.documentElement.lang = targetLocale;
+        localStorage.setItem("app_locale", targetLocale);
+      });
       props
         .dispatch(fetchInstance())
         .then((res) => {
@@ -74,7 +102,7 @@ export default connect((state) => {
           }
         })
         .catch(() => {
-          setError("Failed to load instance");
+          setError(i18n.t("shell.failedToLoadInstance"));
         });
     }, [props.auth.valid]);
 
@@ -97,12 +125,12 @@ export default connect((state) => {
           <Link
             underline="none"
             color="secondary"
-            title="Zesty Account"
+            title={t("shell.zestyAccountTitle")}
             href={`${CONFIG.URL_ACCOUNTS}/instances`}
             sx={{ p: 2 }}
           >
             <FontAwesomeIcon icon={faUser} />
-            &nbsp; Go to Accounts
+            &nbsp; {t("shell.goToAccounts")}
           </Link>
         </Box>
       );
