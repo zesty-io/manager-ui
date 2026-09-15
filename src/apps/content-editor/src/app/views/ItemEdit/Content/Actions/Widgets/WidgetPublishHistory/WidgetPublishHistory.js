@@ -16,8 +16,10 @@ import { fetchAuditTrailPublish } from "shell/store/logs";
 import cx from "classnames";
 import SharedWidgetStyles from "../SharedWidget.less";
 import { AppLink } from "shell/components/AppLink";
+import { formatDistanceToNowLocalized } from "shell/i18n/dates";
 import styles from "./WidgetPublishHistory.less";
-import { formatDistanceToNow, isValid } from "date-fns";
+import { isValid } from "date-fns";
+import { useTranslation } from "react-i18next";
 
 export default connect((state) => {
   return {
@@ -26,6 +28,7 @@ export default connect((state) => {
   };
 })(
   memo(function WidgetPublishHistory(props) {
+    const { t } = useTranslation();
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
@@ -61,9 +64,10 @@ export default connect((state) => {
             sx: {
               fontWeight: 400,
               color: "text.primary",
+              textTransform: "uppercase",
             },
           }}
-          title="PUBLISH HISTORY"
+          title={t("content.itemEditPublishHistoryTitle")}
         ></CardHeader>
         <CardContent
           className={cx(
@@ -103,7 +107,7 @@ export default connect((state) => {
                       color: "text.primary",
                     }}
                   >
-                    Not published
+                    {t("content.itemListStatusNotPublished")}
                   </Typography>
                 )}
 
@@ -131,9 +135,12 @@ export default connect((state) => {
                           }}
                         >
                           {isValid(new Date(log.happenedAt))
-                            ? formatDistanceToNow(new Date(log.happenedAt), {
-                                addSuffix: true,
-                              })
+                            ? formatDistanceToNowLocalized(
+                                new Date(log.happenedAt),
+                                {
+                                  addSuffix: true,
+                                }
+                              )
                             : ""}
                         </Typography>
                       </Stack>
@@ -143,7 +150,7 @@ export default connect((state) => {
                   className={styles.AppLink}
                   to={`/reports/activity-log/resources/${props.itemZUID}`}
                 >
-                  View Activity Log
+                  {t("content.itemEditViewActivityLog")}
                 </AppLink>
               </Stack>
             </>

@@ -1,5 +1,6 @@
 import { theme } from "@zesty-io/material";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Box,
   InputLabel,
@@ -29,6 +30,7 @@ interface Props {
 }
 
 export const FieldsListRight = ({ model }: Props) => {
+  const { t } = useTranslation();
   const history = useHistory();
   const [description, setDescription] = useState("");
   const [isCopied, setIsCopied] = useState(null);
@@ -117,10 +119,10 @@ export const FieldsListRight = ({ model }: Props) => {
         >
           <Box>
             <Typography fontWeight={700} color="warning.dark">
-              Template File is empty
+              {t("schema.templateFileEmpty")}
             </Typography>
             <Typography variant="body2">
-              Please add in the code for the block via the Code App.
+              {t("schema.templateFileEmptyBody")}
             </Typography>
           </Box>
           <Button
@@ -132,16 +134,13 @@ export const FieldsListRight = ({ model }: Props) => {
             }}
             onClick={() => history.push(`/code/file/views/${view?.ZUID}`)}
           >
-            Edit Template File
+            {t("schema.editTemplateFile")}
           </Button>
         </Alert>
       )}
       <InputLabel>
-        Reference ID
-        <Tooltip
-          placement="top"
-          title="Use this ID to retrieve anything related to this model via the API"
-        >
+        {t("schema.referenceId")}
+        <Tooltip placement="top" title={t("schema.referenceIdTooltip")}>
           <InfoRoundedIcon
             sx={{ ml: 1, width: "12px", height: "12px" }}
             color="action"
@@ -177,11 +176,8 @@ export const FieldsListRight = ({ model }: Props) => {
         }}
       />
       <InputLabel sx={{ mt: 3 }}>
-        ZUID
-        <Tooltip
-          placement="top"
-          title="Content items are always accessed relative to their model, so a model ZUID is required for each call."
-        >
+        {t("schema.zuidLabel")}
+        <Tooltip placement="top" title={t("schema.zuidTooltip")}>
           <InfoRoundedIcon
             sx={{ ml: 1, width: "12px", height: "12px" }}
             color="action"
@@ -224,7 +220,7 @@ export const FieldsListRight = ({ model }: Props) => {
             setshowSaveParentModelButton(value !== model?.parentZUID);
             setNewParentZUID(value);
           }}
-          label="Model Parent"
+          label={t("schema.modelParent")}
         />
         {showSaveParentModelButton && (
           <Button
@@ -234,7 +230,7 @@ export const FieldsListRight = ({ model }: Props) => {
             onClick={() => handleSave("parentZUID")}
             sx={{ mt: 1.5 }}
           >
-            Save
+            {t("common.save")}
           </Button>
         )}
       </Box>
@@ -273,11 +269,8 @@ export const FieldsListRight = ({ model }: Props) => {
       )} */}
 
       <InputLabel sx={{ mt: 3 }}>
-        Description
-        <Tooltip
-          placement="top"
-          title="Displays the purpose of the model to help content-writers"
-        >
+        {t("schema.descriptionLabel")}
+        <Tooltip placement="top" title={t("schema.descriptionTooltip")}>
           <InfoRoundedIcon
             sx={{ ml: 1, width: "12px", height: "12px" }}
             color="action"
@@ -301,7 +294,7 @@ export const FieldsListRight = ({ model }: Props) => {
           onClick={() => handleSave("description")}
           sx={{ mt: 1.5 }}
         >
-          Save
+          {t("common.save")}
         </Button>
       )}
       {/* <Box

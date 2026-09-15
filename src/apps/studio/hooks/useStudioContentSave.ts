@@ -1,6 +1,8 @@
 import { useCallback } from "react";
 import { useStore } from "react-redux";
+import { useTranslation } from "react-i18next";
 import { chunk } from "lodash";
+import i18n from "shell/i18n";
 import { AppState } from "shell/store/types";
 import { ContentItemWithDirtyAndPublishing } from "shell/services/types";
 import {
@@ -59,7 +61,7 @@ const buildLabel = (item: ContentItemWithDirtyAndPublishing): string =>
   item?.web?.metaTitle ||
   item?.web?.metaLinkText ||
   item?.meta?.ZUID ||
-  "Untitled";
+  i18n.t("content.studioUntitledItem");
 
 export const collectDirtyContentItems = (
   content: AppState["content"]
@@ -101,6 +103,7 @@ export const useStudioContentSave = ({
 }: UseStudioContentSaveArgs) => {
   const store = useStore<AppState>();
   const [createItemPublishing] = useCreateItemPublishingMutation();
+  const { t } = useTranslation();
 
   // Read the live set of dirty items from the store at call time so we always
   // act on the freshest edits/versions, not a stale render closure.
@@ -157,8 +160,10 @@ export const useStudioContentSave = ({
             kind: "success",
             message:
               result.saved.length === 1
-                ? `Item Saved: ${result.saved[0].label}`
-                : `Saved ${result.saved.length} items`,
+                ? t("content.studioItemSaved", { label: result.saved[0].label })
+                : t("content.studioItemsSavedCount", {
+                    count: result.saved.length,
+                  }),
           })
         );
         refreshPreviewFrame();
@@ -168,7 +173,7 @@ export const useStudioContentSave = ({
     } finally {
       setStudioSaving(false);
     }
-  }, [dispatch, refreshPreviewFrame, runSaveAll, setStudioSaving]);
+  }, [dispatch, refreshPreviewFrame, runSaveAll, setStudioSaving, t]);
 
   const saveAndPublishAllContent =
     useCallback(async (): Promise<SaveAllResult> => {
@@ -207,9 +212,11 @@ export const useStudioContentSave = ({
           dispatch(
             notify({
               kind: "error",
-              message: `Published ${result.saved.length - publishFailures} of ${
-                result.saved.length
-              } items — ${publishFailures} failed`,
+              message: t("content.studioPublishPartialFailure", {
+                published: result.saved.length - publishFailures,
+                count: result.saved.length,
+                failed: publishFailures,
+              }),
             })
           );
         } else {
@@ -218,8 +225,12 @@ export const useStudioContentSave = ({
               kind: "success",
               message:
                 result.saved.length === 1
-                  ? `Published: ${result.saved[0].label}`
-                  : `Saved & published ${result.saved.length} items`,
+                  ? t("content.studioItemPublished", {
+                      label: result.saved[0].label,
+                    })
+                  : t("content.studioItemsPublishedCount", {
+                      count: result.saved.length,
+                    }),
             })
           );
         }
@@ -236,6 +247,7 @@ export const useStudioContentSave = ({
       runSaveAll,
       setStudioSaving,
       store,
+      t,
     ]);
 
   // Reverts every staged item to its last-saved state by clearing the dirty

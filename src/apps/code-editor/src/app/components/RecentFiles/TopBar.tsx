@@ -1,4 +1,5 @@
 import React, { FC } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Box,
   Typography,
@@ -23,6 +24,7 @@ export const TopBar: FC<TopBarProps> = ({
   searchInputRef,
   openCreateFileDialog,
 }) => {
+  const { t } = useTranslation();
   return (
     <Box
       width="100%"
@@ -39,7 +41,7 @@ export const TopBar: FC<TopBarProps> = ({
         color="common.white"
         noWrap
       >
-        All Files
+        {t("code.allFiles")}
       </Typography>
 
       <Box
@@ -52,7 +54,7 @@ export const TopBar: FC<TopBarProps> = ({
         <SearchBox
           data-cy="AllFilesSearchInput"
           inputRef={searchInputRef}
-          placeholder="Search Files"
+          placeholder={t("code.searchFiles")}
           size="small"
           color="primary"
           sx={{
@@ -87,7 +89,7 @@ export const TopBar: FC<TopBarProps> = ({
           sx={{ whiteSpace: "nowrap" }}
           onClick={openCreateFileDialog}
         >
-          Create File
+          {t("code.createFile")}
         </Button>
       </Box>
     </Box>

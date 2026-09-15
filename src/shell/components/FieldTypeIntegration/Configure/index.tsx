@@ -8,6 +8,7 @@ import {
   Dialog,
 } from "@mui/material";
 import { LinkRounded, Autorenew } from "@mui/icons-material";
+import { useTranslation } from "react-i18next";
 import useIntegrationField from "../useIntegrationField";
 import {
   IntegrationFieldConfig,
@@ -34,6 +35,7 @@ const IntegrationFieldConfigure = ({
   error = null,
   isUpdate = false,
 }: IntegrationFieldConfigProps) => {
+  const { t } = useTranslation();
   const { data, status, fetchApiData } = useIntegrationField();
   const hasFetchedInitialData = useRef(false);
 
@@ -173,7 +175,7 @@ const IntegrationFieldConfigure = ({
       {isUpdate || isConnected ? (
         <>
           <Typography variant="h6" mb={1}>
-            API Configuration Settings
+            {t("shell.integrationApiConfigurationSettings")}
           </Typography>
           <Paper
             elevation={0}
@@ -188,7 +190,7 @@ const IntegrationFieldConfigure = ({
               borderColor="border"
             >
               <Typography width={170} variant="body2" fontWeight={600}>
-                API URL
+                {t("shell.integrationApiUrl")}
               </Typography>
               <InputBase
                 data-cy="integrationApiUrl"
@@ -206,7 +208,7 @@ const IntegrationFieldConfigure = ({
             </Box>
             <Box display="flex" alignItems="center" p={2}>
               <Typography width={170} variant="body2" fontWeight={600}>
-                Display Items as
+                {t("shell.integrationDisplayItemsAs")}
               </Typography>
               <InputBase
                 data-cy="integrationDisplayType"
@@ -238,7 +240,7 @@ const IntegrationFieldConfigure = ({
             loading={isFetchingApiData}
             loadingPosition="start"
           >
-            Edit API URL
+            {t("shell.integrationEditApiUrl")}
           </Button>
           <Button
             data-cy="integrationConfigureButton"
@@ -248,7 +250,7 @@ const IntegrationFieldConfigure = ({
             loading={isFetchingApiData}
             loadingPosition="start"
           >
-            Edit Display Options
+            {t("shell.integrationEditDisplayOptions")}
           </Button>
         </Box>
       ) : (
@@ -262,7 +264,9 @@ const IntegrationFieldConfigure = ({
           loading={isFetchingApiData}
           loadingPosition="start"
         >
-          {isConnected ? "Reconfigure" : "Connect to API"}
+          {isConnected
+            ? t("shell.integrationReconfigure")
+            : t("shell.integrationConnectToApi")}
         </Button>
       )}
       {!!error && (

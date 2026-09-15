@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import {
   Stack,
   Box,
@@ -19,7 +20,7 @@ import HighlightOffRoundedIcon from "@mui/icons-material/HighlightOffRounded";
 import { useDrag, useDrop } from "react-dnd";
 
 import { FieldIcon } from "../../../Field/FieldIcon";
-import { TYPE_TEXT, FieldType } from "../../../configs";
+import { getTypeText, FieldType } from "../../../configs";
 // import { FieldBody } from "../FieldForm";
 import { useState } from "react";
 import { ContentModelField, RepeaterSubField } from "shell/services/types";
@@ -42,6 +43,8 @@ export const SubField = ({
   index,
   onEditField,
 }: SubFieldProps) => {
+  const { t } = useTranslation();
+  const TYPE_TEXT = getTypeText(t);
   const [isFieldLabelCopied, setIsFieldLabelCopied] = useState(false);
   const [isZuidCopied, setIsZuidCopied] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -169,7 +172,9 @@ export const SubField = ({
             noWrap
             fontFamily="Roboto Mono"
           >
-            {isFieldLabelCopied ? "Copied" : `${parentName}.${field.name}`}
+            {isFieldLabelCopied
+              ? t("common.copied")
+              : `${parentName}.${field.name}`}
           </Typography>
         </Button>
         <IconButton
@@ -204,7 +209,7 @@ export const SubField = ({
             <ListItemIcon>
               <DriveFileRenameOutlineRoundedIcon />
             </ListItemIcon>
-            <ListItemText>Edit Field</ListItemText>
+            <ListItemText>{t("schema.editField")}</ListItemText>
           </MenuItem>
           <MenuItem
             onClick={(e) =>
@@ -215,7 +220,7 @@ export const SubField = ({
               {isZuidCopied ? <CheckIcon /> : <WidgetsRoundedIcon />}
             </ListItemIcon>
             <ListItemText>
-              {isZuidCopied ? "Copied" : "Copy Field ZUID"}
+              {isZuidCopied ? t("common.copied") : t("schema.copyFieldZUID")}
             </ListItemText>
           </MenuItem>
 
@@ -229,7 +234,7 @@ export const SubField = ({
             <ListItemIcon>
               <HighlightOffRoundedIcon />
             </ListItemIcon>
-            <ListItemText>Remove Field</ListItemText>
+            <ListItemText>{t("schema.removeField")}</ListItemText>
           </MenuItem>
         </Menu>
       </Stack>

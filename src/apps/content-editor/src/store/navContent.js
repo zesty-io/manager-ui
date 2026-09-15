@@ -1,5 +1,6 @@
 import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
+import i18n from "shell/i18n";
 
 import DescriptionRoundedIcon from "@mui/icons-material/DescriptionRounded";
 import FormatListBulletedRoundedIcon from "@mui/icons-material/FormatListBulletedRounded";
@@ -133,7 +134,7 @@ export function fetchNav() {
             } else {
               dispatch(
                 notify({
-                  message: `Failed to fetch nav`,
+                  message: i18n.t("content.itemEditFailedFetchNav"),
                   kind: "warn",
                 })
               );

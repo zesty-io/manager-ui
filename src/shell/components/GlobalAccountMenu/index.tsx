@@ -1,5 +1,6 @@
 import { FC, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 import {
   Stack,
@@ -35,6 +36,7 @@ export const GlobalAccountMenu: FC<GlobalAccountMenuProps> = ({
   onClose,
   onShowDocsMenu,
 }) => {
+  const { t } = useTranslation();
   const user: User = useSelector((state: AppState) => state.user);
   const auth = useSelector((state: AppState) => state.auth);
   const { data: roles, isLoading: isLoadingRoles } = useGetUsersRolesQuery();
@@ -127,12 +129,12 @@ export const GlobalAccountMenu: FC<GlobalAccountMenuProps> = ({
         <MenuItem
           key={index}
           onClick={() => handleClickAction(menuItem.action)}
-          data-cy={menuItem.text.replace(" ", "")}
+          data-cy={menuItem.dataCy}
         >
           <ListItemIcon>
             <SvgIcon component={menuItem.icon} />
           </ListItemIcon>
-          <ListItemText>{menuItem.text}</ListItemText>
+          <ListItemText>{t(menuItem.textKey)}</ListItemText>
         </MenuItem>
       ))}
       <Divider />
