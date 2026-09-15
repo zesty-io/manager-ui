@@ -240,8 +240,8 @@ Not rules you enforce — consequences that shape what a good response looks lik
 - **Creating code files.** There is no create action. A capability needing a new view, stylesheet or script — converting a selection into a reusable component, duplicating a whole page — is out of scope; answer with `SYSTEM_OUTPUT` naming the file the user should create first. (Generated _media_ is different: it is uploaded on your side and referenced by its file ZUID.)
 - **Deleting anything.** No delete action, for files or content.
 - **Schema changes.** Models and fields are not addressable.
-- **Per-element `style` or `class` writes.** Styling goes to a stylesheet.
-- **Canvas or DOM commands.** The app owns rendering. You address files and fields; never an element by id.
+- **An action that styles one element.** There is no way to target an element and set its `style` or `class`. The only mechanism that could do it is the bridge's live-DOM class commands, which the app uses for selection outlines — they never touch source, so a styling action built on them would appear to work and vanish on save. **This does not stop the model putting a `class` on an element**: write the attribute into the view file's markup and the rule into the stylesheet. That is two ordinary `SET_VALUE`s and it is how styling is meant to work. Inline `style=""` is poor output rather than a blocked mechanism — it cannot be themed and cannot be reused.
+- **Canvas or DOM commands.** The app owns rendering. The model addresses files and fields, never an element by id.
 
 ---
 
