@@ -10,7 +10,9 @@ This is one contract with three surfaces. Two exist today — **AI content** (a 
 
 **In Studio the AI sits above the mode toggle.** Studio has a content mode, a layout mode, and a `full` mode that is the union of the two and the default for a user entitled to both. The drawer is not scoped by that toggle: one chat can change copy and code, and a single response may contain both a content-field write and a code-file write. The only thing that narrows what you may write is the user's permissions, delivered as `capabilities`. The request deliberately does **not** tell you which mode the UI is currently in — that would invite you to refuse a change the user is entitled to make.
 
-Audience: whoever implements the model side. Nothing here describes manager-ui internals you have to care about.
+**Three actors, and this document keeps them apart.** The **app** is manager-ui, which composes the request, applies what comes back, and owns the UI. The **client** is the MCP service you implement: it receives the request, prompts the model, and returns actions. The **model** is what your system instruction steers — you own that instruction, so the rules in §6 are yours to encode, not ours to enforce.
+
+Audience: whoever implements the client. Nothing here describes manager-ui internals you have to care about.
 
 Related: [`studio.md`](studio.md) for what Studio itself is.
 
@@ -36,7 +38,7 @@ A bare array as the response body reads as `undefined` and breaks the drawer —
 
 ---
 
-## 2. What you receive
+## 2. The request — what the app sends the client
 
 There are two entry points and they do not send the same body. **Generate Suggestions** sends only `{ prompt, systemInstruction, temperature }` and expects `SYSTEM_SUGGESTION` back. Everything else in this document is the main prompt path:
 
@@ -133,7 +135,7 @@ The current text of every code file the selection can reach, plus the Parsley vo
 
 ---
 
-## 3. What you may return
+## 3. The response — what the client returns
 
 Two action types. The contract has no third.
 
@@ -178,7 +180,7 @@ Content-field refKeys are **bare field names**, so if two items on a page both h
 
 ---
 
-## 5. What a Studio user can ask for, and what you emit
+## 5. What a Studio user can ask for, and what the model should emit
 
 | The user wants                                       | Emit            | Against                                                                 |
 | ---------------------------------------------------- | --------------- | ----------------------------------------------------------------------- |
@@ -190,7 +192,7 @@ Content-field refKeys are **bare field names**, so if two items on a page both h
 | Reorder, add, remove or restructure sections         | `SET_VALUE`     | `view:<zuid>`                                                           |
 | Duplicate a section or a region                      | `SET_VALUE`     | `view:<zuid>`                                                           |
 | Add an animation, hover state or scroll behaviour    | `SET_VALUE`     | `stylesheet:<zuid>`, or `script:<zuid>` if it needs JS                  |
-| Anything needing a code file that does not exist yet | `SYSTEM_OUTPUT` | name the file the user must create — §7                                 |
+| Anything needing a code file that does not exist yet | `SYSTEM_OUTPUT` | name the file the user must create — §8                                 |
 
 Styling goes to a stylesheet, not to inline attributes on the element. Structure goes to the view file. Those two rules cover most of what Studio's layout mode is for.
 
@@ -198,37 +200,42 @@ The image row is the one case where `value` is an identifier rather than content
 
 ---
 
-## 6. Rules that will bite you
+## 6. Rules the model must follow
 
-**Whole files, not patches.** `value` for a file refKey is the complete new file contents. You are given the current `code` in `sources`; return all of it with your change applied. A diff, a fragment, or an elided `…` is written to the file verbatim.
+These belong in the system instruction you own. The app does not enforce them — it applies what arrives, so a model that breaks one of these produces a wrong page rather than an error.
+
+**Whole files, not patches.** `value` for a file refKey is the complete new file contents. The current `code` arrives in `sources`; return all of it with the change applied. A diff, a fragment, or an elided `…` is written to the file verbatim.
 
 **When editing a view file, write `sourceValue`, never `value`.** A slot's `value` is the rendered output; its `sourceValue` is the template, which may be a Parsley expression like `{{this.title}}`. Writing the rendered text into the template replaces a live binding with a frozen string, and the page silently stops updating when the content changes. If a slot's `sourceValue` is a Parsley expression and the user asked to change the words, the target is the **content field**, not the view file.
 
 **`layoutEditable: false` means the template for that slot could not be located.** Do not attempt a view edit against it.
 
-**`capabilities` is the permission boundary** _(Studio)_. Two values, either or both:
-
-- `"content"` → content-field refKeys are writable
-- `"layout"` → `view:` / `stylesheet:` / `script:` refKeys are writable
-
-`["content", "layout"]` is a user who may change both, and is the common case. Prefer a `SYSTEM_OUTPUT` explaining what the user cannot change over a `SET_VALUE` the app will drop.
-
-**Choosing between a field and a file is the judgment call** _(Studio)_. Both are usually available, so route by what the user asked to change and by the slot's own shape:
+**Route by what changed, not by what is selected.** Both a field and a file are usually writable, so:
 
 - the **words** a visitor reads, where the slot is bound (`isDynamic: true`) → the **content field** refKey
 - the **words**, where the slot is static (`isDynamic: false`) → the **view file**
 - **markup, structure, order, or which elements exist** → the **view file**
 - **appearance** → the **stylesheet**
 
-**A turn may mix both.** The app saves layout first, then content, and stops if the layout half fails — so a mixed turn can land its file write and not its field write. Do not split one logical change across both halves unless the change genuinely spans them.
+**Respect `capabilities`.** `"content"` makes content-field refKeys writable; `"layout"` makes `view:` / `stylesheet:` / `script:` writable; both is the common case. Prefer a `SYSTEM_OUTPUT` explaining what the user cannot change over a `SET_VALUE` the app will drop.
 
-**A bad refKey fails silently.** An action naming a refKey that is not registered does not raise an error the user can see — it surfaces as a button that does nothing. This is the failure mode most worth avoiding, and the reason to take `registryKeys` literally.
+**Never emit a refKey that did not arrive in `registryKeys`.** An unregistered refKey does not raise an error the user can see — it surfaces as a button that does nothing.
 
-**Keep a turn small** _(Studio)_. In Studio the user previews and confirms a response as a unit, so return the smallest set of actions that satisfies the prompt. Two `SET_VALUE`s against the same file do not merge — the second wins.
+**Keep a turn small.** The user previews and confirms a response as a unit. Two `SET_VALUE`s against the same file do not merge; the second wins.
 
 ---
 
-## 7. Not in the contract
+## 7. How the app behaves
+
+Not rules you enforce — consequences that shape what a good response looks like.
+
+**A turn may mix content and code.** The app saves layout first, then content, and stops if the layout half fails, so a mixed turn can land its file write and not its field write. Avoid splitting one logical change across both halves unless it genuinely spans them.
+
+**Nothing is applied on arrival.** Actions are staged, rendered for the user to review, and written only on approval — so a wrong action costs a rejected preview, not a broken page.
+
+---
+
+## 8. Not in the contract
 
 - **Creating code files.** There is no create action. A capability needing a new view, stylesheet or script — converting a selection into a reusable component, duplicating a whole page — is out of scope; answer with `SYSTEM_OUTPUT` naming the file the user should create first. (Generated _media_ is different: it is uploaded on your side and referenced by its file ZUID.)
 - **Deleting anything.** No delete action, for files or content.
@@ -238,7 +245,7 @@ The image row is the one case where `value` is an identifier rather than content
 
 ---
 
-## 8. Open
+## 9. Open
 
 1. **Whole file vs. patch.** Whole file is specified because it is what the code surface already does and it keeps a turn atomic. The cost is that a large view round-trips in full on every turn.
 2. **Field refKey qualification.** Whether Studio's content refKeys stay bare field names or become `field:<itemZuid>:<name>` — §4.
