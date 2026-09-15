@@ -174,6 +174,8 @@ The three Studio file refKeys behave exactly like `code-editor`, which is also a
 
 **Both families are addressable at once.** In Studio a request can carry content-field refKeys and file refKeys together, and a single response may write to both.
 
+**Only write to a file refKey that arrived in `sources`.** Studio fetches views today and nothing else, so in the first release `sources` carries views only and `stylesheet:` / `script:` will be absent until the app wires those file types in. Treat `sources` as the list of what exists, exactly as `registryKeys` is for fields.
+
 **Never infer a refKey.** Use what arrived in `registryKeys`, and respect `capabilities`. Not every field of an item is addressable: eleven datatypes are deliberately excluded — `uuid`, `files`, `internal_link`, `one_to_one`, `one_to_many`, `block_selector`, `yes_no`, `dropdown`, `date`, `datetime`, `integration`.
 
 Content-field refKeys are **bare field names**, so if two items on a page both have `title`, only one `title` refKey exists and it is whichever registered last. The `ZUID` and `contentModelZUID` inside that refKey's `refRegistry` entry tell you which item you actually got; if that is not the one the user meant, say so in a `SYSTEM_OUTPUT` rather than writing to it.
@@ -182,19 +184,20 @@ Content-field refKeys are **bare field names**, so if two items on a page both h
 
 ## 5. What a Studio user can ask for, and what the model should emit
 
-| The user wants                                       | Emit            | Against                                                                 |
-| ---------------------------------------------------- | --------------- | ----------------------------------------------------------------------- |
-| Rewrite this heading / paragraph / copy              | `SET_VALUE`     | the field refKey, or the view file when the text is static              |
-| Change SEO title or description                      | `SET_VALUE`     | `meta-title` / `meta-description`                                       |
-| Generate or replace an image                         | `SET_VALUE`     | the media field refKey; `value` is the DAM file ZUID, which begins `3-` |
-| Restyle this element; change the theme; light/dark   | `SET_VALUE`     | `stylesheet:<zuid>`                                                     |
-| Make this responsive / fix it at a breakpoint        | `SET_VALUE`     | `stylesheet:<zuid>`                                                     |
-| Reorder, add, remove or restructure sections         | `SET_VALUE`     | `view:<zuid>`                                                           |
-| Duplicate a section or a region                      | `SET_VALUE`     | `view:<zuid>`                                                           |
-| Add an animation, hover state or scroll behaviour    | `SET_VALUE`     | `stylesheet:<zuid>`, or `script:<zuid>` if it needs JS                  |
-| Anything needing a code file that does not exist yet | `SYSTEM_OUTPUT` | name the file the user must create — §8                                 |
+| The user wants                                       | Emit            | Against                                                                  |
+| ---------------------------------------------------- | --------------- | ------------------------------------------------------------------------ |
+| Rewrite this heading / paragraph / copy              | `SET_VALUE`     | the field refKey, or the view file when the text is static               |
+| Change SEO title or description                      | `SET_VALUE`     | `meta-title` / `meta-description`                                        |
+| Generate or replace an image                         | `SET_VALUE`     | the media field refKey; `value` is the DAM file ZUID, which begins `3-`  |
+| Restyle this element                                 | `SET_VALUE`     | the **view file** — a page-scoped `<style>` block                        |
+| Change the theme; light/dark; shared tokens          | `SET_VALUE`     | `stylesheet:<zuid>` when `sources` offers one; otherwise `SYSTEM_OUTPUT` |
+| Make this responsive / fix it at a breakpoint        | `SET_VALUE`     | whichever of the view or stylesheet `sources` offers                     |
+| Reorder, add, remove or restructure sections         | `SET_VALUE`     | `view:<zuid>`                                                            |
+| Duplicate a section or a region                      | `SET_VALUE`     | `view:<zuid>`                                                            |
+| Add an animation, hover state or scroll behaviour    | `SET_VALUE`     | the **view file**, unless `sources` offers a stylesheet or script        |
+| Anything needing a code file that does not exist yet | `SYSTEM_OUTPUT` | name the file the user must create — §8                                  |
 
-Styling goes to a stylesheet, not to inline attributes on the element. Structure goes to the view file. Those two rules cover most of what Studio's layout mode is for.
+Structure goes to the view file. Styling goes to a stylesheet when the change should reach every page and one is offered, and to the view otherwise — never to an inline attribute on the element.
 
 The image row is the one case where `value` is an identifier rather than content: the app renders a preview when the value begins `3-`, and shows it as plain text otherwise.
 
@@ -215,7 +218,8 @@ These belong in the system instruction you own. The app does not enforce them �
 - the **words** a visitor reads, where the slot is bound (`isDynamic: true`) → the **content field** refKey
 - the **words**, where the slot is static (`isDynamic: false`) → the **view file**
 - **markup, structure, order, or which elements exist** → the **view file**
-- **appearance** → the **stylesheet**
+- **appearance, scoped to this page** → a `<style>` block in the **view file**
+- **appearance, across the whole instance** (theming, light/dark, shared tokens) → the **stylesheet**, if one is in `sources`. If none is, say so in a `SYSTEM_OUTPUT` rather than writing an instance-wide change into one page's view
 
 **Respect `capabilities`.** `"content"` makes content-field refKeys writable; `"layout"` makes `view:` / `stylesheet:` / `script:` writable; both is the common case. Prefer a `SYSTEM_OUTPUT` explaining what the user cannot change over a `SET_VALUE` the app will drop.
 
@@ -240,7 +244,7 @@ Not rules you enforce — consequences that shape what a good response looks lik
 - **Creating code files.** There is no create action. A capability needing a new view, stylesheet or script — converting a selection into a reusable component, duplicating a whole page — is out of scope; answer with `SYSTEM_OUTPUT` naming the file the user should create first. (Generated _media_ is different: it is uploaded on your side and referenced by its file ZUID.)
 - **Deleting anything.** No delete action, for files or content.
 - **Schema changes.** Models and fields are not addressable.
-- **An action that styles one element.** There is no way to target an element and set its `style` or `class`. The only mechanism that could do it is the bridge's live-DOM class commands, which the app uses for selection outlines — they never touch source, so a styling action built on them would appear to work and vanish on save. **This does not stop the model putting a `class` on an element**: write the attribute into the view file's markup and the rule into the stylesheet. That is two ordinary `SET_VALUE`s and it is how styling is meant to work. Inline `style=""` is poor output rather than a blocked mechanism — it cannot be themed and cannot be reused.
+- **An action that styles one element.** There is no way to target an element and set its `style` or `class`. The only mechanism that could do it is the bridge's live-DOM class commands, which the app uses for selection outlines — they never touch source, so a styling action built on them would appear to work and vanish on save. **This does not stop the model putting a `class` on an element**: write the attribute into the view file's markup and the rule into whichever stylesheet or `<style>` block `sources` makes available. That is two ordinary `SET_VALUE`s and it is how styling is meant to work. Inline `style=""` is poor output rather than a blocked mechanism — it cannot be themed and cannot be reused.
 - **Canvas or DOM commands.** The app owns rendering. The model addresses files and fields, never an element by id.
 
 ---
