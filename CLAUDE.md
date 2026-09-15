@@ -158,9 +158,65 @@ Fixtures (`cypress/fixtures/`) seed instance/content/model JSON. Don't hand-roll
 
 **Use `uuidv4` for unique test data names, not timestamps.** Import `{ v4 as uuidv4 } from "uuid"` and append the result to test record names (e.g. `` `My Model | ${uuidv4()}` ``). UUIDs are collision-resistant across parallel runners; timestamps are not. Derive any dependent values (e.g. reference IDs) programmatically from the same constant rather than hardcoding expected strings.
 
-## Code conventions
+## Localization (i18next)
 
-These are the in-use patterns. Match them when adding new code.
+`manager-ui` is localized with **i18next + react-i18next** across 6 locales: `en-US` (fallback), `es-ES`, `hi-IN`, `zh-CN`, `ru-RU`, `nl-NL`. Hindi has almost no upstream support in third-party libs, so its bundles are hand-authored everywhere.
+
+### Architecture
+
+- **Config:** `src/shell/i18n/index.ts`, imported in `src/shell/index.js` before the React root renders; root is wrapped in `<Suspense>`.
+- **Locale data:** `public/locales/<locale>/<namespace>.json`, served at `/locales/{{lng}}/{{ns}}.json`.
+- **Key syntax:** config sets `nsSeparator: "."` + `keySeparator: false`. Keys are **qualified, flat camelCase strings** — `t("content.publishItem")`, `t("common.save")`. The namespace is the first dot-segment; the rest is one flat key. **Never nest JSON objects and never use a second dot** — a multi-dot key like `t("media.dateFilter.today")` resolves to a broken lookup and throws in dev.
+- **Components** call `useTranslation()` with **no namespace argument** — the namespace lives in the key. (Exception: the per-sub-app root trigger below, and shared widgets that must self-load a namespace.)
+- **Namespaces are all loaded eagerly at init**, not lazy-loaded per sub-app. `src/shell/i18n/index.ts`'s `ns:` array lists all 15 namespaces, so every namespace's locale JSON is fetched at boot regardless of which sub-app the user visits first. Each sub-app root still wraps a local `<Suspense>` and calls `useTranslation("<ns>")` once (canonical examples: `HomeApp` → `dashboard`, `ContentApp` → `content`, `MediaApp` → `media`), but that trigger is now effectively a no-op — kept intentionally rather than ripped out. **This is deliberate, not a bug:** true per-sub-app lazy-loading was tried and reverted because it caused crashes — a race condition where Redux-driven code (thunks/middleware calling `i18n.t()` outside of React, e.g. boot-time error notifications) could fire before the relevant sub-app's namespace had loaded, hitting the "namespace not loaded" throw path in `handleMissingKey`. The lazy-load perf gain was also minimal. Don't "fix" this back to lazy-loading without addressing that race first.
+- **Missing keys:** **dev throws** (names the key + the `public/locales/<lng>/<ns>.json` path; dev also disables the en-US fallback so gaps in _non-English_ locales surface). **Stage/prod** fall back to en-US and `Sentry.captureMessage` once per key.
+- **Caching:** git hash is the cache-bust `defaultVersion`. Dev uses `HttpBackend` only (edit a JSON, refresh, see it — no stale localStorage).
+- **MUI component labels are separate from i18next.** DataGrid/DatePicker/Autocomplete built-in labels localize through the theme, not `t()`: `src/shell/i18n/mui-locale.ts` exports `localizeTheme(theme, muiLocaleString)`; `LocalizedThemeProvider` (`src/shell/components/LocalizedThemeProvider.tsx`) re-runs it on language change via the `MUI_LOCALE` map (BCP 47 → MUI locale string). Adding a locale: add a `MUI_LOCALE` entry, verify the MUI string is a valid named export of `@mui/material/locale`, and if MUI X doesn't ship it, hand-author a bundle in `@zesty-io/material` (see that repo's `LOCALIZATION.md`).
+- **Dates are separate from i18next.** Display strings go through `formatLocalized`/`formatDistanceToNowLocalized` (`src/shell/i18n/dates.ts`); MUI pickers take `adapterLocale={getDateFnsLocale(i18n.language)}`. **Keep machine formats locale-independent** — `yyyy-MM-dd`, API/CSV payloads, URL params, IndexedDB/search keys. Localizing these silently breaks storage/search.
+
+### Rules for translating new copy
+
+**Where strings hide (audit _all_ of these, not just JSX):**
+
+- JSX text + string props (`label`, `placeholder`, `title`, `aria-label`, `alt`).
+- Functions that return strings (`getLabel`, `getErrorMessage`, …).
+- Module-level object maps/arrays — `t()` can't run at module scope. Store i18n _keys_ in the map and resolve with `t()` inside the component (or move the lookup in). Verify the const isn't imported elsewhere before changing it.
+- Strings passed as props — translate at the **call site**, not in the receiving component.
+- `notify()` / `dispatch()` messages, including in **redux thunks and hooks** — a render-only scan misses these. In non-component modules/thunks use the **i18n singleton**: `import i18n from "shell/i18n"; i18n.t("ns.key")`.
+- Class components → wrap with `withTranslation()`, use `this.props.t`.
+
+**What to SKIP (data / not UI copy):**
+
+- DB-sourced values: model/field labels, field-type identifiers (`one_to_one`), user content, backend-generated role names, passed-through backend error text.
+- Brand/product names: Zesty, Bynder, Google Analytics, Content One, "Zesty Manager". Technical tokens: ZUID, HTML element names (Script/Meta/Link), code snippets, raw HTML attributes (`target=_blank`).
+- Developer-facing: `throw new Error(...)` invariants, `console.*` logs.
+
+**Value formatting rules:**
+
+- **No decorative special characters** prefixing/suffixing the value — strip trailing colons, surrounding em-dashes, wrapping parentheses, `-- --` select-prompt decorations from JSON values; add them back in the component at every render site (`{"("}`, `` `— ${t(...)} —` ``). Violations: `"— None —"`, `"(optional)"`, `"({{count}} fields)"`. Not violations: `"Archives (zip)"` — the parenthetical is semantic content. Updating the JSON across 6 locales produces many more diff lines than the number of component edits — that ratio is expected.
+- **No ALL CAPS values.** Apply `textTransform: "uppercase"` in the component instead (or rely on `variant="overline"` / MUI `Button`, which already uppercase). Two keys (`"Fields"` vs `"FIELDS"`) for the same concept is a dedup problem across locales.
+- **No HTML in translation values.** Use `<Trans components={{...}}>` in React; `{{var}}` interpolation only in thunks/`notify()`/`i18n.t()` (no `<Trans>` outside render context). Since `escapeValue: false` is set, calling `t()` on a value containing raw tags (`<strong>`, `<em>`, custom placeholders) renders the tags as literal text instead of throwing — the mistake is silent. Keys whose value contains angle-bracket component placeholders **must** carry a `Rich` suffix (e.g. `shell.filterNoResultsRich`, `content.itemEditStatusSearchNoResultsTitleRich`) so it's obvious at the call site that only `<Trans i18nKey="...">` is safe, never `t()`.
+- **No hardcoded URLs or asset paths** — use `{{var}}` and pass the value at the call site.
+
+**Which namespace a string belongs to:** the app dir the file physically lives in, _even when_ another app imports it — e.g. `src/shell/components/FieldType*` → `shell` (shared); a component under `src/apps/content-editor/src` → `content` even though schema/blocks import it. Namespace names must be **flat camelCase** (`activePreview`, not `active-preview`) — a hyphen is inconsistent with the key convention and easy to confuse with the `.` separator. A shared component that can mount in an app that doesn't load its home namespace should still self-load it: `useTranslation("<homeNs>", { useSuspense: false })` (non-suspense so it never crashes a tree without a Suspense boundary). Since all namespaces load eagerly at boot (see above), this is now belt-and-suspenders rather than strictly required, but keep the pattern for new shared components in case eager-loading is ever scoped back. Precedent: `FieldTypeMedia` (a `content` key) mounts in shell + schema.
+
+**Pluralization is mandatory: every CLDR form, every locale.** A plural key (`_one`, `_other`, …) used with `{ count }` **throws in dev for any missing category**. Forms differ per locale — define all of them:
+
+| Locale                    | Required forms                    |
+| ------------------------- | --------------------------------- |
+| `en-US`, `hi-IN`, `nl-NL` | `_one`, `_other`                  |
+| `es-ES`                   | `_one`, `_many`, `_other`         |
+| `ru-RU`                   | `_one`, `_few`, `_many`, `_other` |
+| `zh-CN`                   | `_other`                          |
+
+This is the **one exception** to strict key-parity across locales. A non-suffixed key used with `{count}` is fine (no inflection); Spanish `_many` usually equals `_other`; get exact suffixes via `i18n.services.pluralResolver.getSuffixes(tag)`.
+
+**Verification** (CI runs **no** typecheck/lint for this — do it yourself): `npx tsc --noEmit`; JSON valid; key parity across all 6 locales (non-plural keys identical; plural keys carry each locale's full CLDR set).
+
+### Tools
+
+- **`Workflow({ name: "localize", args: { target: "<path>" } })`** — the paved path for localizing a new component or sub-app. Requires Claude Code (see README's "Localizing new copy" section for full usage, args, and cost caveats). Extracts strings, wires `t()`/`i18n.t()` calls, writes locale JSON, verifies. `namespace` is optional and inferred if omitted. Leaves English placeholders in the 5 non-English locales — translation is still a manual/QA step.
+- **`npm run i18n:extract`** — runs `i18next-parser` (config: `i18next-parser.config.js`) as a lightweight, non-AI safety net. Statically finds `t()` calls and adds any keys missing from the locale JSON (seeded from an existing bare-key translation when one exists, per-locale — never an English leak into another locale). `keepRemoved: true` and `sort: true` are load-bearing: this codebase uses computed key lookups the parser can't statically resolve, and the locale files are kept alphabetically sorted. Safe to run repeatedly — a clean run is a no-op.
 
 - **New endpoints → RTK Query.** Extend an existing `src/shell/services/<service>.ts` with a new `endpoints` builder and reuse `prepareHeaders` / `getResponseData` from `src/shell/services/util.js`. Don't write a new thunk for HTTP. The legacy `FETCH_RESOURCE` middleware in `src/shell/store/middleware/api.js` is still wired for existing call sites — don't add new ones.
 - **New slices → `createSlice`** from `@reduxjs/toolkit`. All current shell slices follow this pattern (`src/shell/store/{ui,users,releases,releaseMembers,media,...}`). Don't introduce hand-rolled switch reducers.

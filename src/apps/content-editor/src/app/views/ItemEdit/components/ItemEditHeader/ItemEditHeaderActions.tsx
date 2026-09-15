@@ -24,6 +24,7 @@ import {
 } from "../../../../../../../../shell/services/instance";
 import { useHistory, useParams } from "react-router";
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import {
   SaveRounded,
@@ -43,7 +44,10 @@ import {
   fetchItemPublishing,
 } from "../../../../../../../../shell/store/content";
 import { useGetUsersQuery } from "../../../../../../../../shell/services/accounts";
-import { formatDate } from "../../../../../../../../utility/formatDate";
+import {
+  formatDate,
+  isTodayOrYesterday,
+} from "../../../../../../../../utility/formatDate";
 import { UnpublishDialog } from "./UnpublishDialog";
 import { usePermission } from "../../../../../../../../shell/hooks/use-permissions";
 import {
@@ -89,6 +93,7 @@ export const ItemEditHeaderActions = ({
   modelZUIDOverride,
   itemZUIDOverride,
 }: ItemEditHeaderActionsProps) => {
+  const { t } = useTranslation();
   const { modelZUID, itemZUID } = useParams<{
     modelZUID: string;
     itemZUID: string;
@@ -397,7 +402,7 @@ export const ItemEditHeaderActions = ({
             const message =
               promise.value.error.data?.error ||
               promise.value.error.data?.message ||
-              "An error occurred while publishing. Please try again.";
+              t("content.itemEditPublishingErrorFallback");
             dispatch(notify({ message, kind: "error" }));
           }
         });
@@ -417,7 +422,9 @@ export const ItemEditHeaderActions = ({
     } else {
       dispatch(
         notify({
-          message: `Cannot Publish: "${item.web.metaTitle}". Does not have a status that allows publishing`,
+          message: t("content.itemEditCannotPublishStatus", {
+            title: item.web.metaTitle,
+          }),
           kind: "error",
         })
       );
@@ -492,22 +499,31 @@ export const ItemEditHeaderActions = ({
         title={
           itemState === ITEM_STATES.dirty ? (
             <div>
-              Save Item <br />
+              {t("content.itemEditSaveItem")} <br />
               {saveShortcut}
             </div>
           ) : (
             <div>
-              v{item?.meta?.version} saved on <br />
+              {t("content.itemEditVersionSavedOn", {
+                version: item?.meta?.version,
+              })}{" "}
+              <br />
               {formatDate(item?.meta?.updatedAt)} <br />
-              by{" "}
-              {lastItemUpdateAudit?.firstName ||
-                users?.find(
-                  (user) => user.ZUID === item?.meta?.createdByUserZUID
-                )?.firstName}{" "}
-              {lastItemUpdateAudit?.lastName ||
-                users?.find(
-                  (user) => user.ZUID === item?.meta?.createdByUserZUID
-                )?.lastName}
+              {t("content.itemEditByUser", {
+                name: `${
+                  lastItemUpdateAudit?.firstName ||
+                  users?.find(
+                    (user) => user.ZUID === item?.meta?.createdByUserZUID
+                  )?.firstName ||
+                  ""
+                } ${
+                  lastItemUpdateAudit?.lastName ||
+                  users?.find(
+                    (user) => user.ZUID === item?.meta?.createdByUserZUID
+                  )?.lastName ||
+                  ""
+                }`.trim(),
+              })}
             </div>
           )
         }
@@ -526,13 +542,13 @@ export const ItemEditHeaderActions = ({
             id="SaveItemButton"
             data-cy="SaveItemButton"
           >
-            Save
+            {t("common.save")}
           </Button>
         ) : (
           <Box display="flex" gap={1} alignItems="center" px="10px">
             <CheckCircleRounded fontSize="small" color="action" />
             <Typography variant="body2" color="text.disabled" fontWeight={500}>
-              Saved
+              {t("content.itemEditSaved")}
             </Typography>
           </Box>
         )}
@@ -546,33 +562,34 @@ export const ItemEditHeaderActions = ({
             itemState === ITEM_STATES.dirty ? (
               <div>
                 {itemState === ITEM_STATES.dirty
-                  ? "Save & Publish Item"
-                  : "Publish Item"}{" "}
+                  ? t("content.itemEditSavePublishItem")
+                  : t("content.itemEditPublishItem")}{" "}
                 <br />
                 {publishShortcut}
               </div>
             ) : (
               <div>
-                v{activePublishing?.version} published{" "}
-                {formatDate(activePublishing?.publishAt).includes("Today") ||
-                formatDate(activePublishing?.publishAt).includes("Yesterday")
-                  ? ""
-                  : "on"}
+                {t("content.itemEditVersionPublished", {
+                  version: activePublishing?.version,
+                  on: isTodayOrYesterday(activePublishing?.publishAt)
+                    ? ""
+                    : t("content.itemEditOn"),
+                })}
                 <br />
                 {formatDate(activePublishing?.publishAt)} <br />
-                by{" "}
-                {
-                  users?.find(
-                    (user: any) =>
-                      user.ZUID === activePublishing?.publishedByUserZUID
-                  )?.firstName
-                }{" "}
-                {
-                  users?.find(
-                    (user: any) =>
-                      user.ZUID === activePublishing?.publishedByUserZUID
-                  )?.lastName
-                }
+                {t("content.itemEditByUser", {
+                  name: `${
+                    users?.find(
+                      (user: any) =>
+                        user.ZUID === activePublishing?.publishedByUserZUID
+                    )?.firstName || ""
+                  } ${
+                    users?.find(
+                      (user: any) =>
+                        user.ZUID === activePublishing?.publishedByUserZUID
+                    )?.lastName || ""
+                  }`.trim(),
+                })}
               </div>
             )
           }
@@ -613,7 +630,9 @@ export const ItemEditHeaderActions = ({
                 id="PublishButton"
                 data-cy="PublishButton"
               >
-                {itemState === ITEM_STATES.dirty ? "Save & Publish" : "Publish"}
+                {itemState === ITEM_STATES.dirty
+                  ? t("content.itemListSavePublish")
+                  : t("content.itemListPublish")}
               </Button>
               <Button
                 sx={{
@@ -647,7 +666,7 @@ export const ItemEditHeaderActions = ({
                   fontWeight={500}
                   letterSpacing="0.46px"
                 >
-                  Published
+                  {t("content.itemListStatusPublished")}
                 </Typography>
               </Box>
               <IconButton
@@ -670,21 +689,24 @@ export const ItemEditHeaderActions = ({
           enterNextDelay={1000}
           title={
             <div>
-              v{item?.scheduling?.version} published on <br />
+              {t("content.itemEditVersionPublishedOn", {
+                version: item?.scheduling?.version,
+              })}{" "}
+              <br />
               {formatDate(item?.scheduling?.publishAt)} <br />
-              by{" "}
-              {
-                users?.find(
-                  (user: any) =>
-                    user.ZUID === item?.scheduling?.publishedByUserZUID
-                )?.firstName
-              }{" "}
-              {
-                users?.find(
-                  (user: any) =>
-                    user.ZUID === item?.scheduling?.publishedByUserZUID
-                )?.lastName
-              }
+              {t("content.itemEditByUser", {
+                name: `${
+                  users?.find(
+                    (user: any) =>
+                      user.ZUID === item?.scheduling?.publishedByUserZUID
+                  )?.firstName || ""
+                } ${
+                  users?.find(
+                    (user: any) =>
+                      user.ZUID === item?.scheduling?.publishedByUserZUID
+                  )?.lastName || ""
+                }`.trim(),
+              })}
             </div>
           }
           placement="bottom-start"
@@ -715,7 +737,7 @@ export const ItemEditHeaderActions = ({
                 id="PublishButton"
                 data-cy="PublishButton"
               >
-                Publish
+                {t("content.itemListPublish")}
               </Button>
               <Button
                 sx={{
@@ -747,7 +769,7 @@ export const ItemEditHeaderActions = ({
                   color="warning.main"
                   fontWeight={500}
                 >
-                  Scheduled
+                  {t("content.itemListStatusScheduled")}
                 </Typography>
               </Box>
               <IconButton
@@ -776,7 +798,9 @@ export const ItemEditHeaderActions = ({
           if (!allowPublish) {
             dispatch(
               notify({
-                message: `Cannot Publish: "${item.web.metaTitle}". Does not have a status that allows publishing`,
+                message: t("content.itemEditCannotPublishStatus", {
+                  title: item.web.metaTitle,
+                }),
                 kind: "error",
               })
             );
@@ -833,17 +857,17 @@ export const ItemEditHeaderActions = ({
             setPublishAfterUnschedule(false);
             handlePublish();
           }}
-          altText={model?.type === "block" && "Variant"}
+          altText={model?.type === "block" && t("content.itemEditVariant")}
           relatedItemsToPublishCount={relatedItemsToPublish.length}
           isPublishing={isPublishing}
         >
           {unpublishedRelatedItems?.length > 0 && (
             <Stack mt={2}>
               <Typography variant="body2" fontWeight={600}>
-                Also publish related items
+                {t("content.itemEditAlsoPublishRelatedItems")}
               </Typography>
               <Typography variant="body3" color="text.secondary">
-                This will publish all items selected in the list below
+                {t("content.itemEditPublishRelatedItemsDescription")}
               </Typography>
               <List disablePadding sx={{ mt: 1 }}>
                 {unpublishedRelatedItems.map((item, index) => (
@@ -908,6 +932,7 @@ const PublishingMenu = ({
   modelZUID,
   itemZUID,
 }: PublishingMenuProps) => {
+  const { t } = useTranslation();
   const history = useHistory();
   return (
     <Menu
@@ -960,12 +985,12 @@ const PublishingMenu = ({
           )}
         </ListItemIcon>
         {itemState === ITEM_STATES.dirty
-          ? "Save & Publish"
+          ? t("content.itemListSavePublish")
           : itemState === ITEM_STATES.scheduled
-          ? "Publish Now"
+          ? t("content.itemListPublishNow")
           : itemState === ITEM_STATES.published
-          ? "Unpublish Now"
-          : "Publish Now"}
+          ? t("content.itemEditUnpublishNow")
+          : t("content.itemListPublishNow")}
       </MenuItem>
       {itemState !== ITEM_STATES.published && (
         <MenuItem
@@ -993,12 +1018,12 @@ const PublishingMenu = ({
             <CalendarTodayRounded fontSize="small" />
           </ListItemIcon>
           {itemState === ITEM_STATES.dirty
-            ? "Save & Schedule Publish"
+            ? t("content.itemListSaveSchedulePublish")
             : itemState === ITEM_STATES.scheduled
-            ? "Unschedule Publish"
+            ? t("content.itemEditUnschedulePublish")
             : itemState === ITEM_STATES.published
-            ? "Schedule Unpublish"
-            : "Schedule Publish"}
+            ? t("content.itemEditScheduleUnpublish")
+            : t("content.itemListSchedulePublish")}
         </MenuItem>
       )}
 
@@ -1011,7 +1036,7 @@ const PublishingMenu = ({
         <ListItemIcon>
           <ManageAccountsRounded fontSize="small" />
         </ListItemIcon>
-        Manage Publish Status
+        {t("content.itemEditManagePublishStatus")}
       </MenuItem>
     </Menu>
   );

@@ -1,4 +1,5 @@
 import { FC, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Button,
   Dialog,
@@ -26,6 +27,7 @@ export const HideContentItemDialog: FC<Readonly<Props>> = ({
   onClose,
   onToggleItemHideStatus,
 }) => {
+  const { t } = useTranslation();
   return (
     <Dialog open onClose={onClose} fullWidth maxWidth={"xs"}>
       <DialogContent sx={{ mt: 2.5 }}>
@@ -45,33 +47,30 @@ export const HideContentItemDialog: FC<Readonly<Props>> = ({
           />
 
           <Typography variant="h5" fontWeight={600} mb={1}>
-            {isHide ? `Hide ${item.label}?` : `Unhide ${item.label}?`}
+            {isHide
+              ? t("content.hideDialogHideTitle", { label: item.label })
+              : t("content.hideDialogUnhideTitle", { label: item.label })}
           </Typography>
           {isHide ? (
             <>
               <Typography variant="body2" color="text.secondary" mb={1.5}>
-                This will shift the {item.label} content item from the pages
-                section to the hidden items section below. We recommend only
-                using this feature to declutter up your content navigation tree
-                from items you do not access very often.
+                {t("content.hideDialogHideBody1", { label: item.label })}
               </Typography>
 
               <Typography variant="body2" color="text.secondary">
-                This will not hide any of your articles from your live website
-                or app.
+                {t("content.hideDialogHideBody2")}
               </Typography>
             </>
           ) : (
             <Typography variant="body2" color="text.secondary">
-              This will shift the {item.label} content item from the Hidden
-              Items section to the Pages section above.
+              {t("content.hideDialogUnhideBody", { label: item.label })}
             </Typography>
           )}
         </Stack>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="inherit">
-          Cancel
+          {t("common.cancel")}
         </Button>
         <Button
           variant="contained"
@@ -81,7 +80,9 @@ export const HideContentItemDialog: FC<Readonly<Props>> = ({
             onToggleItemHideStatus(item);
           }}
         >
-          {isHide ? `Hide ${item.label}` : `Unhide ${item.label}`}
+          {isHide
+            ? t("content.hideDialogHideButton", { label: item.label })
+            : t("content.hideDialogUnhideButton", { label: item.label })}
         </Button>
       </DialogActions>
     </Dialog>

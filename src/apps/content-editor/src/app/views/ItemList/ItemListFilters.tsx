@@ -13,6 +13,7 @@ import {
   UserFilter,
 } from "../../../../../../shell/components/Filters";
 import { useMemo, useState, useContext } from "react";
+import { useTranslation } from "react-i18next";
 import { useParams } from "../../../../../../shell/hooks/useParams";
 import {
   ChevronRightOutlined,
@@ -31,17 +32,18 @@ import { selectLang } from "../../../../../../shell/store/user";
 import { useDispatch } from "react-redux";
 import { Flag, getCountryCode } from "shell/components/Flag";
 
+// Values are i18next keys (content namespace); translated at render time.
 const SORT_ORDER = {
-  lastSaved: "Last Saved",
-  lastPublished: "Last Published",
-  createdOn: "Date Created",
-  version: "Status",
+  lastSaved: "content.itemListLastSaved",
+  lastPublished: "content.itemListLastPublished",
+  createdOn: "content.itemListDateCreated",
+  version: "content.itemListStatus",
 } as const;
 
 const STATUS_FILTER = {
-  published: "Published",
-  scheduled: "Scheduled",
-  notPublished: "Not Published",
+  published: "content.itemListStatusPublished",
+  scheduled: "content.itemListStatusScheduled",
+  notPublished: "content.itemListStatusNotPublished",
 } as const;
 
 const FILTERABLE_DATA_TYPES = [
@@ -68,6 +70,7 @@ const FILTERABLE_DATA_TYPES = [
 ] as const;
 
 export const ItemListFilters = () => {
+  const { t } = useTranslation();
   const { modelZUID } = useRouterParams<{ modelZUID: string }>();
   const [anchorEl, setAnchorEl] = useState({
     currentTarget: null,
@@ -110,11 +113,11 @@ export const ItemListFilters = () => {
 
   const getButtonText = (activeSortOrder: string) => {
     if (!activeSortOrder) {
-      return SORT_ORDER.lastSaved;
+      return t(SORT_ORDER.lastSaved);
     }
 
     if (activeSortOrder === "createdBy") {
-      return "Created By";
+      return t("common.createdBy");
     }
 
     if (activeSortOrder === "zuid") {
@@ -122,7 +125,7 @@ export const ItemListFilters = () => {
     }
 
     if (SORT_ORDER.hasOwnProperty(activeSortOrder)) {
-      return SORT_ORDER[activeSortOrder as keyof typeof SORT_ORDER];
+      return t(SORT_ORDER[activeSortOrder as keyof typeof SORT_ORDER]);
     }
 
     const fieldLabel = fields?.find(
@@ -136,7 +139,9 @@ export const ItemListFilters = () => {
       <FilterButton
         filterId="sortByFilter"
         isFilterActive={false}
-        buttonText={`Sort: ${getButtonText(activeSortOrder)}`}
+        buttonText={t("content.itemListSortPrefix", {
+          value: getButtonText(activeSortOrder),
+        })}
         onOpenMenu={(event: React.MouseEvent<HTMLButtonElement>) => {
           setAnchorEl({
             currentTarget: event.currentTarget,
@@ -172,13 +177,13 @@ export const ItemListFilters = () => {
                 : activeSortOrder === key
             }
           >
-            {value}
+            {t(value)}
           </MenuItem>
         ))}
         <CascadingMenuItem
           MenuItemComponent={
             <>
-              <ListItemText>More</ListItemText>
+              <ListItemText>{t("common.more")}</ListItemText>
               <ChevronRightOutlined color="action" />
             </>
           }
@@ -193,7 +198,7 @@ export const ItemListFilters = () => {
               selected={activeSortOrder === "createdBy"}
               onClick={() => handleUpdateSortOrder("createdBy")}
             >
-              Created By
+              {t("common.createdBy")}
             </MenuItem>
             <MenuItem
               selected={activeSortOrder === "zuid"}
@@ -212,9 +217,10 @@ export const ItemListFilters = () => {
             pt: 1,
             pl: 2,
             borderTop: (theme) => `1px solid ${theme.palette.border}`,
+            textTransform: "uppercase",
           }}
         >
-          FIELDS
+          {t("content.itemListFieldsLabel")}
         </Typography>
         {fields
           ?.filter((field) =>
@@ -238,10 +244,12 @@ export const ItemListFilters = () => {
         isFilterActive={!!params.get("statusFilter")}
         buttonText={
           params.get("statusFilter")
-            ? STATUS_FILTER[
-                params.get("statusFilter") as keyof typeof STATUS_FILTER
-              ]
-            : "Status"
+            ? t(
+                STATUS_FILTER[
+                  params.get("statusFilter") as keyof typeof STATUS_FILTER
+                ]
+              )
+            : t("content.itemListStatus")
         }
         onOpenMenu={(event: React.MouseEvent<HTMLButtonElement>) => {
           setAnchorEl({
@@ -275,19 +283,19 @@ export const ItemListFilters = () => {
             }}
             selected={params.get("statusFilter") === key}
           >
-            {value}
+            {t(value)}
           </MenuItem>
         ))}
       </Menu>
       <UserFilter
         value={params.get("user") || ""}
         onChange={(value) => setParams(value, "user")}
-        defaultButtonText="Created By"
+        defaultButtonText={t("common.createdBy")}
         options={userOptions}
       />
       <DateFilter
         withDateRange
-        defaultButtonText="Date Saved"
+        defaultButtonText={t("content.itemListDateSaved")}
         onChange={(value) => setActiveDateFilter(value)}
         value={activeDateFilter}
       />

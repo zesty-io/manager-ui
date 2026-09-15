@@ -33,6 +33,7 @@ import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 import { useLocation, useHistory } from "react-router-dom";
 import { useLocalStorage, useDebounce } from "react-use";
 import { useDispatch } from "react-redux";
+import { useTranslation } from "react-i18next";
 import { cloneDeep } from "lodash";
 
 import {
@@ -63,15 +64,16 @@ interface NavData {
   hidden: TreeItem[];
   parents: Record<string, TreeItem>;
 }
-const SUB_MENUS: SubMenu[] = [
+// nameKey holds the i18n key; the label is resolved with t() in the component.
+const SUB_MENU_DEFS = [
   {
-    name: "Dashboard",
+    nameKey: "content.navDashboard",
     icon: BackupTableRounded,
     path: "/content",
   },
   // To be re-added on a different release
   // {
-  //   name: "Releases",
+  //   nameKey: "content.navReleases",
   //   icon: ScheduleRounded,
   //   path: "/content/releases",
   // },
@@ -87,9 +89,19 @@ const ICONS: Record<string, SvgIconComponent> = {
 } as const;
 
 export const ContentNav = () => {
+  const { t } = useTranslation();
   const location = useLocation();
   const history = useHistory();
   const dispatch = useDispatch();
+
+  const SUB_MENUS: SubMenu[] = useMemo(
+    () =>
+      SUB_MENU_DEFS.map(({ nameKey, ...rest }) => ({
+        ...rest,
+        name: t(nameKey),
+      })),
+    [t]
+  );
 
   const sideBarChildrenContainerRef = useRef(null);
   const [createContentDialogLimit, setCreateContentDialogLimit] = useState<
@@ -264,7 +276,7 @@ export const ContentNav = () => {
           let actions = [
             <Tooltip
               placement="right-start"
-              title="Hide Content"
+              title={t("content.navHideContent")}
               enterDelay={1000}
               enterNextDelay={1000}
             >
@@ -298,7 +310,7 @@ export const ContentNav = () => {
             actions.push(
               <Tooltip
                 placement="right-start"
-                title="Add Content Item"
+                title={t("content.navAddContentItem")}
                 enterDelay={1000}
                 enterNextDelay={1000}
               >
@@ -376,7 +388,7 @@ export const ContentNav = () => {
       hidden: [],
       parents: {},
     };
-  }, [filteredMapTree, hiddenZUIDs]);
+  }, [filteredMapTree, hiddenZUIDs, t]);
 
   const pathExists = (tree: TreeItem[], path: string) => {
     return !!tree?.find((item) => item.path === path);
@@ -434,7 +446,7 @@ export const ContentNav = () => {
     if (currentUserRolesError) {
       dispatch(
         notify({
-          message: "Failed to load your user role.",
+          message: t("content.navLoadRoleFailed"),
           kind: "error",
         })
       );
@@ -443,7 +455,7 @@ export const ContentNav = () => {
     if (navItemsError) {
       dispatch(
         notify({
-          message: "Failed to load content nav items.",
+          message: t("content.navLoadItemsFailed"),
           kind: "error",
         })
       );
@@ -493,12 +505,12 @@ export const ContentNav = () => {
         <Stack gap={1.5} alignItems="center" justifyContent="center" p={1.5}>
           <img
             src={noSearchResults}
-            alt="No search results"
+            alt={t("content.navNoSearchResultsAlt")}
             width="70px"
             height="64px"
           />
           <Typography color="text.secondary" variant="body2" align="center">
-            No results available for "{debouncedKeyword}"
+            {t("content.navNoResultsFor", { keyword: debouncedKeyword })}
           </Typography>
         </Stack>
       );
@@ -529,11 +541,11 @@ export const ContentNav = () => {
             >
               <Stack direction="row" alignItems="center" gap={0.5}>
                 <Typography variant="body2" textTransform="uppercase">
-                  Pages
+                  {t("content.navSectionPages")}
                 </Typography>
                 <Tooltip
                   placement="right-start"
-                  title="Pages include single page and multi page models with URLs. Datasets that have been parented also show in this navigation."
+                  title={t("content.navPagesInfo")}
                   enterDelay={1000}
                   enterNextDelay={1000}
                 >
@@ -545,7 +557,7 @@ export const ContentNav = () => {
               <Stack direction="row" gap={1}>
                 <Tooltip
                   placement="right-start"
-                  title="Reorder Pages"
+                  title={t("content.navReorderPages")}
                   enterDelay={1000}
                   enterNextDelay={1000}
                 >
@@ -559,7 +571,7 @@ export const ContentNav = () => {
                 </Tooltip>
                 <Tooltip
                   placement="right-start"
-                  title="Create Page"
+                  title={t("content.navCreatePage")}
                   enterDelay={1000}
                   enterNextDelay={1000}
                 >
@@ -576,7 +588,7 @@ export const ContentNav = () => {
               </Stack>
             </Stack>
           }
-          ErrorComponent={<NavError navName="models" />}
+          ErrorComponent={<NavError navName={t("content.navResourceModels")} />}
           isLoading={isLoadingNavData}
         />
         <NavTree
@@ -602,11 +614,11 @@ export const ContentNav = () => {
             >
               <Stack direction="row" alignItems="center" gap={0.5}>
                 <Typography variant="body2" textTransform="uppercase">
-                  Datasets
+                  {t("content.navSectionDatasets")}
                 </Typography>
                 <Tooltip
                   placement="right-start"
-                  title="Datasets listed here do not have a parent content item and do not have URLs for the content items."
+                  title={t("content.navDatasetsInfo")}
                   enterDelay={1000}
                   enterNextDelay={1000}
                 >
@@ -617,7 +629,7 @@ export const ContentNav = () => {
               </Stack>
               <Tooltip
                 placement="right-start"
-                title="Create Dataset"
+                title={t("content.navCreateDataset")}
                 enterDelay={1000}
                 enterNextDelay={1000}
               >
@@ -633,7 +645,9 @@ export const ContentNav = () => {
               </Tooltip>
             </Stack>
           }
-          ErrorComponent={<NavError navName="datasets" />}
+          ErrorComponent={
+            <NavError navName={t("content.navResourceDatasets")} />
+          }
           isLoading={isLoadingNavData}
         />
         <Accordion
@@ -687,7 +701,7 @@ export const ContentNav = () => {
               textTransform="uppercase"
               color="text.secondary"
             >
-              Hidden Items
+              {t("content.navSectionHiddenItems")}
             </Typography>
           </AccordionSummary>
           <AccordionDetails
@@ -726,6 +740,7 @@ export const ContentNav = () => {
     setIsCreateContentDialogOpen,
     setClosedNavItems,
     sideBarChildrenContainerRef,
+    t,
   ]);
 
   return (
@@ -733,13 +748,13 @@ export const ContentNav = () => {
       <AppSideBar
         data-cy="contentNav"
         mode="dark"
-        headerTitle="Content"
-        searchPlaceholder="Filter Items"
+        headerTitle={t("content.navContentTitle")}
+        searchPlaceholder={t("content.navFilterItems")}
         ref={sideBarChildrenContainerRef}
         subMenus={SUB_MENUS}
         onAddClick={handleAddClick}
         onFilterChange={handleFilterChange}
-        titleButtonTooltip="Create Content"
+        titleButtonTooltip={t("content.navCreateContent")}
         isLoading={isLoadingNavData}
       >
         {memoizedSidebarChildren}

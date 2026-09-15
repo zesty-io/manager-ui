@@ -1,6 +1,7 @@
 import { Stack, Typography, Tooltip, Box, Skeleton } from "@mui/material";
 import { InfoRounded } from "@mui/icons-material";
 import { useParams } from "react-router";
+import { useTranslation } from "react-i18next";
 
 import { CopyTextField } from "../../../../../../../../shell/components/CopyTextField";
 import {
@@ -9,6 +10,7 @@ import {
 } from "../../../../../../../../shell/services/instance";
 
 export const CodeSample = () => {
+  const { t } = useTranslation();
   const { modelZUID, itemZUID } = useParams<{
     itemZUID: string;
     modelZUID: string;
@@ -29,9 +31,9 @@ export const CodeSample = () => {
               lineHeight: "20px",
             }}
           >
-            Block Selector
+            {t("content.codeSampleBlockSelector")}
           </Typography>
-          <Tooltip title='Uses the value of a block selector field. Replace "block_selector_field" with the actual name of the block selector field during model creation.'>
+          <Tooltip title={t("content.codeSampleBlockSelectorTip")}>
             <InfoRounded color="action" sx={{ width: 12, height: 12 }} />
           </Tooltip>
         </Stack>
@@ -47,9 +49,9 @@ export const CodeSample = () => {
               lineHeight: "20px",
             }}
           >
-            Base Template
+            {t("content.codeSampleBaseTemplate")}
           </Typography>
-          <Tooltip title="Uses the base template for rendering the block. This is the default template applied when no specific template is selected.">
+          <Tooltip title={t("content.codeSampleBaseTemplateTip")}>
             <InfoRounded color="action" sx={{ width: 12, height: 12 }} />
           </Tooltip>
         </Stack>
@@ -71,9 +73,9 @@ export const CodeSample = () => {
               lineHeight: "20px",
             }}
           >
-            Base Template with Version
+            {t("content.codeSampleBaseTemplateVersion")}
           </Typography>
-          <Tooltip title="Uses the base template for rendering the block with a specific version number. Adding the version parameter allows you to target a particular version of the template.">
+          <Tooltip title={t("content.codeSampleBaseTemplateVersionTip")}>
             <InfoRounded color="action" sx={{ width: 12, height: 12 }} />
           </Tooltip>
         </Stack>
@@ -95,9 +97,9 @@ export const CodeSample = () => {
               lineHeight: "20px",
             }}
           >
-            Specific Block Variant
+            {t("content.codeSampleSpecificVariant")}
           </Typography>
-          <Tooltip title="Uses a specific variant of the block. The variant parameter targets a particular variation of the block by its ZUID.">
+          <Tooltip title={t("content.codeSampleSpecificVariantTip")}>
             <InfoRounded color="action" sx={{ width: 12, height: 12 }} />
           </Tooltip>
         </Stack>

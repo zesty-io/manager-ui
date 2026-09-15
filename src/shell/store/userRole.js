@@ -1,5 +1,6 @@
 import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
+import i18n from "shell/i18n";
 
 export function userRole(
   state = {
@@ -42,7 +43,7 @@ export function fetchUserRole() {
         dispatch(
           notify({
             kind: "warn",
-            message: "Failed to load your user role for this instance.",
+            message: i18n.t("shell.failedLoadUserRole"),
           })
         );
       });

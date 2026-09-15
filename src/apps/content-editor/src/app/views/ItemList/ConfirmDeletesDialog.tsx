@@ -12,9 +12,9 @@ import {
 } from "@mui/material";
 import { DeleteRounded } from "@mui/icons-material";
 import { useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { ContentItem } from "../../../../../../shell/services/types";
 import { DialogContentItem } from "./DialogContentItem";
-import pluralizeWord from "../../../../../../utility/pluralizeWord";
 
 type ConfirmDeletesModalProps = {
   items: ContentItem[];
@@ -26,6 +26,7 @@ export const ConfirmDeletesDialog = ({
   onConfirm,
   onCancel,
 }: ConfirmDeletesModalProps) => {
+  const { t } = useTranslation();
   const actionRef = useRef<ButtonBaseActions | null>(null);
   const onEntered = () => actionRef?.current?.focusVisible();
 
@@ -48,12 +49,12 @@ export const ConfirmDeletesDialog = ({
         >
           <DeleteRounded color="error" />
         </Stack>
-        <Box>Delete {items.length} Items:</Box>
+        <Box>
+          {t("content.itemListDeleteTitle", { count: items.length })}
+          {":"}
+        </Box>
         <Typography variant="body2" color="text.secondary" mt={1}>
-          Deleting {items.length > 1 ? "these" : "this"} {items.length}{" "}
-          {pluralizeWord("item", items.length)} will remove it from all
-          locations throughout your site and make it unavailable to API
-          requests. This cannot be undone.
+          {t("content.itemListDeleteDescription", { count: items.length })}
         </Typography>
       </DialogTitle>
       <DialogContent>
@@ -65,7 +66,7 @@ export const ConfirmDeletesDialog = ({
       </DialogContent>
       <DialogActions>
         <Button variant="text" color="inherit" onClick={() => onCancel()}>
-          Cancel
+          {t("common.cancel")}
         </Button>
         <Button
           data-cy="ConfirmMultiPageTableDelete"
@@ -76,7 +77,7 @@ export const ConfirmDeletesDialog = ({
             onConfirm(items);
           }}
         >
-          Delete Items ({items.length})
+          {t("content.itemListDeleteButton", { count: items.length })}
         </Button>
       </DialogActions>
     </Dialog>

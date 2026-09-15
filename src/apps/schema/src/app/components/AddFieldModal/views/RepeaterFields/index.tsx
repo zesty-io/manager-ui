@@ -1,6 +1,7 @@
 import { Typography, Button, Dialog, Stack } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { useCallback, useEffect, useState, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { RepeaterFieldsSelection } from "./RepeaterFieldsSelection";
 import { SubFieldForm } from "./SubFieldForm";
 import { useGetContentModelFieldsQuery } from "shell/services/instance";
@@ -29,6 +30,7 @@ export const RepeaterFields = ({
   fields,
   label,
 }: RepeaterFieldProps) => {
+  const { t } = useTranslation();
   const params = useParams<Params>();
   const { id } = params;
   const { data: contentModelFields } = useGetContentModelFieldsQuery({
@@ -130,7 +132,7 @@ export const RepeaterFields = ({
           startIcon={<AddIcon />}
           fullWidth
         >
-          Add field to {label}
+          {t("schema.addFieldToLabel", { label })}
         </Button>
       </Stack>
 

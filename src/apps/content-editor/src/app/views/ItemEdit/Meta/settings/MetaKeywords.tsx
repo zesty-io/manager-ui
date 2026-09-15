@@ -1,6 +1,7 @@
 import { memo } from "react";
 
 import { TextField, Box } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 import { FieldShell } from "../../../../components/Editor/Field/FieldShell";
 import { MaxLengths } from "..";
@@ -16,13 +17,15 @@ export const MetaKeywords = memo(function MetaKeywords({
   onChange,
   error,
 }: MetaKeywordsProps) {
+  const { t } = useTranslation();
+
   return (
     <Box data-cy="metaKeywords" id="metaKeywords">
       <FieldShell
         settings={{
-          label: "Meta Keywords",
+          label: t("content.itemEditMetaKeywords"),
         }}
-        customTooltip="Keywords are comma separated words or phrase that describe your page. In 2011 Google denounced keywords; keywords are only used against your page ranking. Use them with caution."
+        customTooltip={t("content.itemEditMetaKeywordsTooltip")}
         withInteractiveTooltip={false}
         withLengthCounter
         maxLength={MaxLengths.metaKeywords}
@@ -32,7 +35,7 @@ export const MetaKeywords = memo(function MetaKeywords({
         <TextField
           name="metaKeywords"
           value={value ?? ""}
-          placeholder="comma, separated, keywords"
+          placeholder={t("content.itemEditMetaKeywordsPlaceholder")}
           rows={3}
           multiline
           onChange={(evt) => onChange(evt.target.value, "metaKeywords")}

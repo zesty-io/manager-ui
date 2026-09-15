@@ -43,6 +43,7 @@ import {
 import { AppState } from "../../../../../../../../../shell/store/types";
 import { useGetUsersRolesQuery } from "../../../../../../../../../shell/services/accounts";
 import { NoResults } from "./NoResults";
+import { useTranslation } from "react-i18next";
 
 export const BG_COLOR_MAPPING: Record<string, string> = {
   "#0ba5ec": "blue.100",
@@ -77,6 +78,7 @@ export const VersionItem = memo(
       { data, isActive }: VersionItemProps,
       ref: ForwardedRef<HTMLDivElement>
     ) => {
+      const { t } = useTranslation();
       const history = useHistory();
       const { modelZUID, itemZUID } = useParams<{
         modelZUID: string;
@@ -177,7 +179,7 @@ export const VersionItem = memo(
                     color="success.dark"
                     fontWeight={600}
                   >
-                    Published
+                    {t("content.itemListStatusPublished")}
                   </Typography>
                 </Stack>
               )}
@@ -193,7 +195,7 @@ export const VersionItem = memo(
                     color="warning.main"
                     fontWeight={600}
                   >
-                    Scheduled
+                    {t("content.itemListStatusScheduled")}
                   </Typography>
                 </Stack>
               )}
@@ -244,7 +246,7 @@ export const VersionItem = memo(
                 data-amp-track-id="content-status-label-add-button"
                 data-cy="AddWorkflowStatusLabel"
                 clickable
-                label="Add Status"
+                label={t("content.itemEditAddStatus")}
                 color="default"
                 size="small"
                 onClick={handleOpenAddNewLabel}
@@ -275,7 +277,7 @@ export const VersionItem = memo(
                     </InputAdornment>
                   ),
                 }}
-                placeholder="Search status"
+                placeholder={t("content.itemEditSearchStatus")}
                 size="small"
                 fullWidth
                 sx={{
@@ -304,11 +306,11 @@ export const VersionItem = memo(
                   label.addPermissionRoles?.includes(currentUserRoleZUID);
 
                 if (!canAdd && !activeLabels.includes(label.ZUID)) {
-                  title = "Do not have permission to add this status";
+                  title = t("content.itemEditNoPermissionAddStatus");
                 }
 
                 if (!canRemove && activeLabels.includes(label.ZUID)) {
-                  title = "Do not have permission to remove this status";
+                  title = t("content.itemEditNoPermissionRemoveStatus");
                 }
 
                 return (
@@ -398,7 +400,7 @@ export const VersionItem = memo(
                 <ListItemIcon>
                   <EditRounded />
                 </ListItemIcon>
-                <ListItemText>Edit Statuses</ListItemText>
+                <ListItemText>{t("content.itemEditEditStatuses")}</ListItemText>
               </MenuItem>
             </Box>
           )}

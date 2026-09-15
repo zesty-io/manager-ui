@@ -46,6 +46,10 @@ jobs:
               PR_NUMBER   = ${{ github.event.pull_request.number }}
               REPORT_FILE = ${{ github.workspace }}/review-comment.md
 
+            Note: The PR branch is already checked out in the current working directory.
+            Localization compliance is reviewed separately by the "Claude Localization Reviewer"
+            workflow — don't duplicate that review here.
+
             Read the diff (gh pr diff <PR_NUMBER> --repo <REPO>) and the checked-out source, and
             look only for, in priority order:
               1. Bugs — logic errors, crashes, broken edge cases, regressions.

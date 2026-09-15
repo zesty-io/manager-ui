@@ -1,5 +1,6 @@
 import { theme } from "@zesty-io/material";
 import React, { useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Line } from "react-chartjs-2";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import { useHistory, useParams } from "react-router";
@@ -21,6 +22,7 @@ import {
   getYear,
   isValid,
 } from "date-fns";
+import { formatLocalized } from "shell/i18n/dates";
 
 import lineChartSkeleton from "../../../../../../../../../public/images/lineChartSkeleton.svg";
 import {
@@ -47,7 +49,13 @@ type Props = {
   loading?: boolean;
 };
 
-const typeLabelMap = ["Views", "Avg. Engagement Time", "Bounce Rate", "Users"];
+// i18n keys; resolved with t() inside the component.
+const typeLabelMap = [
+  "content.analyticsMetricViews",
+  "content.analyticsChartAvgEngagement",
+  "content.analyticsMetricBounceRate",
+  "content.analyticsUsers",
+];
 
 function getDatesArray(start: Date, end: Date) {
   const days = differenceInCalendarDays(end, start);
@@ -67,6 +75,7 @@ export const ByDayLineChart = ({
   shouldCompare,
   loading = false,
 }: Props) => {
+  const { t } = useTranslation();
   const history = useHistory();
   const { modelZUID, itemZUID } = useParams<Params>();
   const chartRef = useRef<any>(null);
@@ -211,7 +220,7 @@ export const ByDayLineChart = ({
           <Skeleton variant="rectangular" width="147px" height="28px" />
         ) : (
           <Typography variant="h5" fontWeight={700}>
-            {typeLabelMap[type]} By Day
+            {t("content.analyticsByDay", { type: t(typeLabelMap[type]) })}
           </Typography>
         )}
         {loading ? (
@@ -240,28 +249,28 @@ export const ByDayLineChart = ({
               color="inherit"
               onClick={() => setType(0)}
             >
-              Views
+              {t(typeLabelMap[0])}
             </Button>
             <Button
               variant={type === 1 ? "contained" : "outlined"}
               color="inherit"
               onClick={() => setType(1)}
             >
-              Avg. Engagement Time
+              {t(typeLabelMap[1])}
             </Button>
             <Button
               variant={type === 2 ? "contained" : "outlined"}
               color="inherit"
               onClick={() => setType(2)}
             >
-              Bounce Rate
+              {t(typeLabelMap[2])}
             </Button>
             <Button
               variant={type === 3 ? "contained" : "outlined"}
               color="inherit"
               onClick={() => setType(3)}
             >
-              Users
+              {t(typeLabelMap[3])}
             </Button>
           </ButtonGroup>
         )}
@@ -344,7 +353,7 @@ export const ByDayLineChart = ({
               labels: dateChartLabels,
               datasets: [
                 {
-                  label: "Item Published",
+                  label: t("content.analyticsItemPublished"),
                   data: itemPublishesByDayArray.map((x: any) => x?.value || 0),
                   fill: false,
                   backgroundColor: theme.palette.success.main,
@@ -446,7 +455,7 @@ export const ByDayLineChart = ({
                 y: {
                   title: {
                     display: true,
-                    text: typeLabelMap[type],
+                    text: t(typeLabelMap[type]),
                     align: "end",
                     font: { size: 12, family: "Mulish", weight: "600" },
                     color: theme.palette.text.disabled,
@@ -519,7 +528,7 @@ export const ByDayLineChart = ({
           >
             <Box sx={{ p: 2 }}>
               <Typography variant="body1" fontWeight={600}>
-                {typeLabelMap[type]}
+                {t(typeLabelMap[type])}
               </Typography>
               <Typography
                 variant="body1"
@@ -528,14 +537,14 @@ export const ByDayLineChart = ({
               >
                 {shouldCompare
                   ? dateRange0Label
-                  : fmt(
+                  : formatLocalized(
                       addDays(startDate, tooltipModel?.dataIndex ?? 0),
                       "eee d LLL"
                     )}{" "}
                 vs{" "}
                 {shouldCompare
                   ? dateRange1Label
-                  : fmt(
+                  : formatLocalized(
                       addDays(prevWindowStart, tooltipModel?.dataIndex ?? 0),
                       "eee d LLL"
                     )}
@@ -586,8 +595,10 @@ export const ByDayLineChart = ({
                     )
                   }
                 >
-                  View Version{" "}
-                  {itemPublishesByDayArray[tooltipModel?.dataIndex]?.version}
+                  {t("content.analyticsViewVersion", {
+                    version:
+                      itemPublishesByDayArray[tooltipModel?.dataIndex]?.version,
+                  })}
                 </Button>
               ) : null}
             </Box>

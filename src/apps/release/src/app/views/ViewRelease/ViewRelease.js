@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import cx from "classnames";
+import { useTranslation } from "react-i18next";
 
 import { searchItems } from "shell/store/content";
 import { fetchVersions } from "shell/store/contentVersions";
@@ -13,6 +14,7 @@ import { WithLoader } from "shell/components/legacy/WithLoader";
 
 import styles from "./ViewRelease.less";
 export function ViewRelease({ isContentSubpage }) {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const params = useParams();
 
@@ -66,7 +68,7 @@ export function ViewRelease({ isContentSubpage }) {
   return (
     <WithLoader
       condition={!loading && release && members}
-      message={`Loading Release: ${release?.name}`}
+      message={t("release.loadingRelease", { name: release?.name })}
       height="100vh"
     >
       <Header plan={release} isContentSubpage={isContentSubpage} />
@@ -74,14 +76,9 @@ export function ViewRelease({ isContentSubpage }) {
         <PlanTable members={members} />
       ) : (
         <ol className={cx(styles.Instructions, styles.display)}>
-          <li>
-            Begin by searching for content you want to include in this release
-          </li>
-          <li>Select an item from the search list to add it to this release</li>
-          <li>
-            Press the "Publish All" button to publish all the items listed in
-            the release
-          </li>
+          <li>{t("release.instructionBeginSearch")}</li>
+          <li>{t("release.instructionSelectItem")}</li>
+          <li>{t("release.instructionPublishAll")}</li>
         </ol>
       )}
     </WithLoader>

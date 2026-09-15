@@ -2,6 +2,7 @@ import HistoryIcon from "@mui/icons-material/History";
 import { Alert, List } from "@mui/material";
 import { FileCard, FileCardListItem } from "./FileCard";
 import { format, isValid } from "date-fns";
+import { useTranslation } from "react-i18next";
 
 export type LogEntry = {
   ZUID: string;
@@ -20,18 +21,18 @@ export type AuditTrailProps = {
 };
 
 export default function AuditTrail({ logs }: AuditTrailProps) {
+  const { t } = useTranslation();
   return (
     <FileCard
-      title="Activity Log"
+      title={t("shell.roleAccessActivityLog")}
       icon={HistoryIcon}
       link={`/reports/activity-log/resources/${logs?.[0]?.affectedZUID}`}
-      linkLabel="View all logs"
+      linkLabel={t("shell.viewAllLogs")}
     >
-      {logs === null && <Alert>Unable to load activity log</Alert>}
+      {logs === null && <Alert>{t("code.auditTrailLoadError")}</Alert>}
       {logs && logs.length === 0 && (
         <Alert variant="standard" severity="warning">
-          When this file is saved or published you will be able to see logs of
-          when and by whom.
+          {t("code.auditTrailEmptyHint")}
         </Alert>
       )}
       <List dense>

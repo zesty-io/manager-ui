@@ -14,12 +14,14 @@ import {
   faRedditSquare,
   faTwitterSquare,
 } from "@fortawesome/free-brands-svg-icons";
+import { useTranslation } from "react-i18next";
 
 export const WidgetQuickShare = memo(function WidgetQuickShare(props) {
+  const { t } = useTranslation();
   const handleOpen = (evt, url) => {
     window.open(
       url,
-      "Quick Share",
+      "QuickShare",
       "width=700,height=450,left=" +
         (evt.target.offsetLeft + 400) +
         ",top=" +
@@ -48,9 +50,10 @@ export const WidgetQuickShare = memo(function WidgetQuickShare(props) {
             fontSize: "12px",
             lineHeight: "32px",
             color: "text.primary",
+            textTransform: "uppercase",
           },
         }}
-        title="QUICK SHARE"
+        title={t("content.itemEditQuickShareTitle")}
       ></CardHeader>
       <CardContent
         className="setting-field"

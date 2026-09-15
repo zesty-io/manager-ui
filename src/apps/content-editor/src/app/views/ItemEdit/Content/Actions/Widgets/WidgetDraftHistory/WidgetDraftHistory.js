@@ -14,8 +14,10 @@ import { fetchAuditTrailDrafting } from "shell/store/logs";
 import cx from "classnames";
 import SharedWidgetStyles from "../SharedWidget.less";
 import { AppLink } from "shell/components/AppLink";
+import { formatDistanceToNowLocalized } from "shell/i18n/dates";
 import styles from "./WidgetDraftHistory.less";
-import { formatDistanceToNow, isValid } from "date-fns";
+import { isValid } from "date-fns";
+import { useTranslation } from "react-i18next";
 
 export default connect((state, props) => {
   return {
@@ -26,6 +28,7 @@ export default connect((state, props) => {
         : [],
   };
 })(function WidgetDraftHistory(props) {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -59,9 +62,10 @@ export default connect((state, props) => {
             fontSize: "12px",
             lineHeight: "32px",
             color: "text.primary",
+            textTransform: "uppercase",
           },
         }}
-        title="DRAFT HISTORY"
+        title={t("content.itemEditDraftHistoryTitle")}
       ></CardHeader>
       <CardContent
         className={cx(
@@ -113,7 +117,7 @@ export default connect((state, props) => {
                     }}
                   >
                     {isValid(new Date(log.happenedAt))
-                      ? formatDistanceToNow(new Date(log.happenedAt), {
+                      ? formatDistanceToNowLocalized(new Date(log.happenedAt), {
                           addSuffix: true,
                         })
                       : ""}
@@ -124,7 +128,7 @@ export default connect((state, props) => {
                 className={styles.AppLink}
                 to={`/reports/activity-log/resources/${props.itemZUID}`}
               >
-                View Activity Log
+                {t("content.itemEditViewActivityLog")}
               </AppLink>
             </Stack>
           </>
@@ -138,7 +142,7 @@ export default connect((state, props) => {
               color: "text.primary",
             }}
           >
-            No Activity Log edit logs for this content.
+            {t("content.itemEditNoDraftActivityLogs")}
           </Typography>
         )}
       </CardContent>

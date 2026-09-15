@@ -1,5 +1,6 @@
 import { memo, useEffect, useState } from "react";
 import { connect, useDispatch } from "react-redux";
+import { useTranslation } from "react-i18next";
 import { alpha } from "@mui/material/styles";
 import Link from "@mui/material/Link";
 import {
@@ -35,6 +36,7 @@ export default connect((state) => {
   };
 })(
   memo(function Login(props) {
+    const { t } = useTranslation();
     const dispatch = useDispatch();
     const [loading, setLoading] = useState(false);
     const [twoFactor, setTwoFactor] = useState(false);
@@ -60,7 +62,7 @@ export default connect((state) => {
           }
         })
         .catch((err) => {
-          setError("There was a problem signing you in");
+          setError(t("shell.loginProblem"));
         })
         .finally(() => setLoading(false));
     };
@@ -107,14 +109,14 @@ export default connect((state) => {
             <Box display="flex" flexDirection="column" gap={2.5}>
               <Box>
                 <Typography variant="h4" fontWeight={600} sx={{ mb: "2px" }}>
-                  Enter Your 2FA OTP
+                  {t("shell.enterTwoFactorOtp")}
                 </Typography>
                 <Typography
                   variant="body3"
                   color="text.secondary"
                   component="div"
                 >
-                  You will receive this code on your phone.
+                  {t("shell.twoFactorCodeHelp")}
                 </Typography>
               </Box>
               {!!error && (
@@ -135,7 +137,7 @@ export default connect((state) => {
                 </Alert>
               )}
               <Box component="form" onSubmit={handleTwoFactor}>
-                <InputLabel>Code</InputLabel>
+                <InputLabel>{t("shell.code")}</InputLabel>
                 <TextField
                   name="token"
                   type="text"
@@ -153,7 +155,7 @@ export default connect((state) => {
                   sx={{ mt: 2.5 }}
                   loading={loading}
                 >
-                  Continue
+                  {t("common.next")}
                 </Button>
               </Box>
             </Box>
@@ -161,14 +163,14 @@ export default connect((state) => {
             <Box display="flex" flexDirection="column" gap={2}>
               <Box>
                 <Typography variant="h4" fontWeight={700} sx={{ mb: "2px" }}>
-                  Hi, Welcome Back!
+                  {t("shell.welcomeBack")}
                 </Typography>
                 <Typography
                   variant="body3"
                   color="text.secondary"
                   component="div"
                 >
-                  Start empowering the world with content again
+                  {t("shell.loginSubtitle")}
                 </Typography>
               </Box>
               <SSOButtonGroup
@@ -189,9 +191,18 @@ export default connect((state) => {
                   setError(err);
                 }}
               >
-                <SSOButton service="google" />
-                <SSOButton service="azure" />
-                <SSOButton service="github" />
+                <SSOButton
+                  service="google"
+                  label={t("shell.continueWith", { service: "Google" })}
+                />
+                <SSOButton
+                  service="azure"
+                  label={t("shell.continueWith", { service: "Microsoft" })}
+                />
+                <SSOButton
+                  service="github"
+                  label={t("shell.continueWith", { service: "Github" })}
+                />
               </SSOButtonGroup>
               <Box
                 display="flex"
@@ -200,8 +211,12 @@ export default connect((state) => {
                 gap={4}
               >
                 <Divider sx={{ flex: "1", borderColor: "border" }} />
-                <Typography variant="body2" color="text.secondary">
-                  OR
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ textTransform: "uppercase" }}
+                >
+                  {t("shell.or")}
                 </Typography>
                 <Divider sx={{ flex: "1", borderColor: "border" }} />
               </Box>
@@ -230,7 +245,7 @@ export default connect((state) => {
                 gap={2}
               >
                 <Box>
-                  <InputLabel>Email Address</InputLabel>
+                  <InputLabel>{t("shell.emailAddress")}</InputLabel>
                   <TextField
                     name="email"
                     type="email"
@@ -250,7 +265,7 @@ export default connect((state) => {
                   />
                 </Box>
                 <Box>
-                  <InputLabel>Password</InputLabel>
+                  <InputLabel>{t("shell.password")}</InputLabel>
                   <TextField
                     type={showPassword ? "text" : "password"}
                     name="password"
@@ -291,7 +306,7 @@ export default connect((state) => {
                     href="https://www.zesty.io/login/forgot-password/"
                     target="_blank"
                   >
-                    Forgot Password?
+                    {t("shell.forgotPassword")}
                   </Link>
                 </Box>
                 <Button
@@ -301,7 +316,7 @@ export default connect((state) => {
                   variant="contained"
                   loading={loading}
                 >
-                  Resume Session
+                  {t("shell.resumeSession")}
                 </Button>
               </Box>
             </Box>

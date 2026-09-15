@@ -5,11 +5,13 @@ import { useParams } from "react-router";
 import { useGetItemPublishingsQuery } from "../../../../../../../../shell/services/instance";
 import { formatDate } from "../../../../../../../../utility/formatDate";
 import { useGetUsersQuery } from "../../../../../../../../shell/services/accounts";
+import { useTranslation } from "react-i18next";
 
 type PublishStatusProps = {
   currentVersion: number;
 };
 export const PublishStatus = ({ currentVersion }: PublishStatusProps) => {
+  const { t } = useTranslation();
   const { modelZUID, itemZUID } = useParams<{
     modelZUID: string;
     itemZUID: string;
@@ -51,9 +53,14 @@ export const PublishStatus = ({ currentVersion }: PublishStatusProps) => {
           enterNextDelay={1000}
           title={
             <>
-              v{activePublishing.version} published on <br />
+              {t("content.itemEditVersionPublishedOn", {
+                version: activePublishing.version,
+              })}{" "}
+              <br />
               {formatDate(activePublishing.publishAt)} <br />
-              by {getUsername(activePublishing.publishedByUserZUID)}
+              {t("content.itemEditByUser", {
+                name: getUsername(activePublishing.publishedByUserZUID),
+              })}
             </>
           }
           placement="bottom-start"
@@ -67,7 +74,9 @@ export const PublishStatus = ({ currentVersion }: PublishStatusProps) => {
               lineHeight="24px"
               letterSpacing="0.46px"
             >
-              v{activePublishing.version} Published
+              {t("content.itemEditVersionPublishedLabel", {
+                version: activePublishing.version,
+              })}
             </Typography>
           </Stack>
         </Tooltip>
@@ -79,9 +88,14 @@ export const PublishStatus = ({ currentVersion }: PublishStatusProps) => {
             enterNextDelay={1000}
             title={
               <>
-                v{scheduledPublishing.version} scheduled to publish on <br />
+                {t("content.itemEditVersionScheduledToPublishOn", {
+                  version: scheduledPublishing.version,
+                })}{" "}
+                <br />
                 {formatDate(scheduledPublishing.publishAt)} <br />
-                by {getUsername(scheduledPublishing.publishedByUserZUID)}
+                {t("content.itemEditByUser", {
+                  name: getUsername(scheduledPublishing.publishedByUserZUID),
+                })}
               </>
             }
             placement="bottom-start"
@@ -95,7 +109,9 @@ export const PublishStatus = ({ currentVersion }: PublishStatusProps) => {
                 lineHeight="24px"
                 letterSpacing="0.46px"
               >
-                v{scheduledPublishing.version} Scheduled
+                {t("content.itemEditVersionScheduledLabel", {
+                  version: scheduledPublishing.version,
+                })}
               </Typography>
             </Stack>
           </Tooltip>

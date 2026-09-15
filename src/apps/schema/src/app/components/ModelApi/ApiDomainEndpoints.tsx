@@ -1,4 +1,5 @@
 import { Box, Link, Typography } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { ApiType } from ".";
 import { useSelector } from "react-redux";
 import { AppState } from "../../../../../../shell/store/types";
@@ -14,6 +15,7 @@ type Props = {
 };
 
 export const ApiDomainEndpoints = ({ type }: Props) => {
+  const { t } = useTranslation();
   const instance = useSelector((state: AppState) => state.instance);
   const { data: domains } = useGetDomainsQuery();
 
@@ -46,12 +48,12 @@ export const ApiDomainEndpoints = ({ type }: Props) => {
   return (
     <Box>
       <Typography variant="h5" fontWeight={600} sx={{ mb: 2 }}>
-        View Endpoints
+        {t("schema.viewEndpoints")}
       </Typography>
       {type === "backend-coding" ? (
         <Box>
           <Typography variant="h6" fontWeight={600} sx={{ mb: 1 }}>
-            Rest Endpoint (needs authentication bearer)
+            {t("schema.restEndpointLabel")}
           </Typography>
           <Link variant="body2" href={apiTypeEndpointMap[type]} target="_blank">
             {apiTypeEndpointMap[type]}
@@ -70,7 +72,7 @@ export const ApiDomainEndpoints = ({ type }: Props) => {
       ) : (
         <Box>
           <Typography variant="h6" fontWeight={600} sx={{ mb: 1 }}>
-            Dev (latest version)
+            {t("schema.endpointDevLabel")}
           </Typography>
           <Box
             component="ul"
@@ -89,7 +91,7 @@ export const ApiDomainEndpoints = ({ type }: Props) => {
             </Link>
           </Box>
           <Typography variant="h6" fontWeight={600} sx={{ mt: 2, mb: 1 }}>
-            Stage
+            {t("common.stage")}
           </Typography>
           <Box
             component="ul"
@@ -114,7 +116,7 @@ export const ApiDomainEndpoints = ({ type }: Props) => {
               ))}
           </Box>
           <Typography variant="h6" fontWeight={600} sx={{ mt: 2, mb: 1 }}>
-            Production
+            {t("schema.endpointProduction")}
           </Typography>
           <Box
             component="ul"

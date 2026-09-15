@@ -24,6 +24,7 @@ import {
   CheckRounded,
 } from "@mui/icons-material";
 import { useHistory } from "react-router";
+import { useTranslation } from "react-i18next";
 import { useDrag, useDrop } from "react-dnd";
 import { useDispatch, useSelector } from "react-redux";
 import { ReplaceContentItem } from "@zesty-io/material";
@@ -66,6 +67,7 @@ export const ActiveItem = memo(
     draggable,
     openFieldSelectorDialog,
   }: ActiveItemProps) => {
+    const { t } = useTranslation();
     const [imageError, setImageError] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
     const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
@@ -248,7 +250,7 @@ export const ActiveItem = memo(
       ? relatedFieldTitle ||
         contentItem?.web?.metaTitle ||
         contentItem?.web?.metaLinkText
-      : `${itemZUID} (Deleted)`;
+      : t("shell.relationalDeletedItem", { zuid: itemZUID });
     const isPublishable =
       contentItem?.meta?.version > (contentItem?.publishing?.version || 0);
 
@@ -280,7 +282,7 @@ export const ActiveItem = memo(
               <Tooltip
                 enterDelay={1000}
                 disableInteractive
-                title="Drag and Drop to Reorder"
+                title={t("shell.relationalDragToReorder")}
                 open={showTooltip}
                 onOpen={() => setShowTooltip(true)}
                 onClose={() => setShowTooltip(false)}
@@ -385,7 +387,7 @@ export const ActiveItem = memo(
               <Tooltip
                 enterDelay={1000}
                 disableInteractive
-                title="Replace Item"
+                title={t("shell.relationalReplaceItem")}
               >
                 <IconButton
                   size="xsmall"
@@ -398,7 +400,7 @@ export const ActiveItem = memo(
               <Tooltip
                 enterDelay={1000}
                 disableInteractive
-                title="Edit Content Item"
+                title={t("shell.relationalEditContentItem")}
               >
                 <IconButton
                   size="xsmall"
@@ -415,7 +417,7 @@ export const ActiveItem = memo(
               <Tooltip
                 enterDelay={1000}
                 disableInteractive
-                title="More Options"
+                title={t("shell.relationalMoreOptions")}
               >
                 <IconButton
                   data-cy="active-relational-item-more-button"
@@ -453,7 +455,7 @@ export const ActiveItem = memo(
                 <ListItemIcon>
                   <CloudUploadRounded />
                 </ListItemIcon>
-                <ListItemText primary="Publish Now" />
+                <ListItemText primary={t("shell.relationalPublishNow")} />
               </MenuItem>
             )}
             {isPublishable && (
@@ -467,7 +469,7 @@ export const ActiveItem = memo(
                 <ListItemIcon>
                   <ScheduleRounded />
                 </ListItemIcon>
-                <ListItemText primary="Schedule Publish" />
+                <ListItemText primary={t("shell.relationalSchedulePublish")} />
               </MenuItem>
             )}
             {!!contentItem?.meta?.version && (
@@ -487,7 +489,9 @@ export const ActiveItem = memo(
                   <DesignServicesRounded />
                 </ListItemIcon>
                 <ListItemText
-                  primary={`Draft Preview - v${contentItem?.meta?.version}`}
+                  primary={t("shell.relationalDraftPreview", {
+                    version: contentItem?.meta?.version,
+                  })}
                 />
               </MenuItem>
             )}
@@ -507,7 +511,9 @@ export const ActiveItem = memo(
                   <LanguageRounded />
                 </ListItemIcon>
                 <ListItemText
-                  primary={`Production Preview - v${contentItem?.publishing?.version}`}
+                  primary={t("shell.relationalProductionPreview", {
+                    version: contentItem?.publishing?.version,
+                  })}
                 />
               </MenuItem>
             )}
@@ -517,7 +523,7 @@ export const ActiveItem = memo(
                 <ListItemIcon>
                   {isCopied ? <CheckRounded /> : <WidgetsRounded />}
                 </ListItemIcon>
-                <ListItemText primary="Copy ZUID" />
+                <ListItemText primary={t("shell.relationalCopyZuid")} />
               </MenuItem>
             )}
             <MenuItem
@@ -527,7 +533,7 @@ export const ActiveItem = memo(
               <ListItemIcon>
                 <CloseRounded />
               </ListItemIcon>
-              <ListItemText primary="Remove" />
+              <ListItemText primary={t("common.remove")} />
             </MenuItem>
           </Menu>
         )}
