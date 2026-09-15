@@ -1,4 +1,5 @@
 import { useState, FC, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from "react-redux";
 import { differenceInCalendarDays } from "date-fns";
 
@@ -33,6 +34,7 @@ interface GlobalSidebarProps {
   onClick: () => void;
 }
 const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
+  const { t } = useTranslation();
   const [showInviteModal, setShowInviteModal] = useState(false);
   const user: User = useSelector((state: AppState) => state.user);
   const { data: instance } = useGetInstanceQuery();
@@ -149,7 +151,7 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
                 rel="noopener"
                 width={openNav ? "inherit" : 32}
                 textAlign="center"
-                title="View source code commit"
+                title={t("shell.viewSourceCommit")}
                 sx={{
                   wordWrap: "break-word",
                 }}

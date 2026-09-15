@@ -10,6 +10,7 @@ import {
   TextField,
 } from "@mui/material";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
 import { useDeleteContentModelMutation } from "../../../../../shell/services/instance";
 import { ContentModel, WebView } from "../../../../../shell/services/types";
@@ -23,6 +24,7 @@ interface Props {
 }
 
 export const DeleteModelDialogue = ({ onClose, model }: Props) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const history = useHistory();
   const [deleteConfirmation, setDeleteConfirmation] = useState("");
@@ -44,10 +46,12 @@ export const DeleteModelDialogue = ({ onClose, model }: Props) => {
 
   useEffect(() => {
     // @ts-ignore
-    let message = error?.data?.error || "Failed to delete model";
+    let message = error?.data?.error || t("schema.deleteModelFailedNotify");
     // @ts-ignore
     if (error?.data?.error.includes("Failed to Delete Model")) {
-      message = `Cannot Delete Model: ${model.label}`;
+      message = t("schema.deleteModelCannotDeleteNotify", {
+        modelLabel: model.label,
+      });
     }
 
     if (error) {
@@ -92,19 +96,14 @@ export const DeleteModelDialogue = ({ onClose, model }: Props) => {
         >
           <DeleteRoundedIcon color="error" />
         </Box>
-        Delete Model?
+        {t("schema.deleteModelTitle")}
         <Typography variant="body2" sx={{ mt: 1 }} color="text.secondary">
-          Deleting the “{model.label}” model will also delete all of it&apos;s
-          content items. This cannot be undone.
+          {t("schema.deleteModelWarning", { modelLabel: model.label })}
         </Typography>
       </DialogTitle>
       <DialogContent>
         <InputLabel sx={{ mb: 2.5 }}>
-          Confirm by typing{" "}
-          <Typography component="span" variant="inherit" color="error.main">
-            "{model.label}"
-          </Typography>{" "}
-          below.
+          {t("schema.deleteModelConfirmLabel", { modelLabel: model.label })}
         </InputLabel>
         <TextField
           autoFocus
@@ -116,7 +115,7 @@ export const DeleteModelDialogue = ({ onClose, model }: Props) => {
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="inherit">
-          Cancel
+          {t("common.cancel")}
         </Button>
         <Button
           disabled={deleteConfirmation !== model.label}
@@ -126,7 +125,7 @@ export const DeleteModelDialogue = ({ onClose, model }: Props) => {
           color="error"
           data-cy="delete-model-confirmation-button"
         >
-          Delete Forever
+          {t("shell.deleteForever")}
         </Button>
       </DialogActions>
     </Dialog>
