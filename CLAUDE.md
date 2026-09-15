@@ -133,7 +133,7 @@ useRegisterRef(key, handle, context?, options?)
 
 Action types and routing live in `src/engine/{actionTypes.ts, handlers.ts, navigator.ts, queue.ts}`. Add new actions there rather than special-casing inside `AIDrawer.tsx`.
 
-That engine is the _local dispatch_ layer. The **wire contract** — what the model is allowed to return, what a refKey addresses, and what a surface must register to be drivable by the AI at all — is a separate, narrower thing: see [`docs/ai-action-contract.md`](docs/ai-action-contract.md). Read it before adding a refKey or a new AI surface.
+That engine is the _local dispatch_ layer. The **wire contract** — what the app sends the MCP client and what it may send back — is a separate, narrower thing: see [`docs/ai-action-contract.md`](docs/ai-action-contract.md). Read it before changing what the model may return, or before adding a refKey the model should be able to address.
 
 ## Testing with Cypress
 
