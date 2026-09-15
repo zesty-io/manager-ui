@@ -13,8 +13,10 @@ import { CreateModelDialogue } from "../components/CreateModelDialogue";
 import { useState, useRef } from "react";
 import { useLocation } from "react-router";
 import SearchBox from "../../../../../shell/components/SearchBox";
+import { useTranslation } from "react-i18next";
 
 export const AllModels = () => {
+  const { t } = useTranslation();
   const [search, setSearch] = useState("");
   const location = useLocation();
   const triggerCreate = new URLSearchParams(location.search).get(
@@ -44,7 +46,7 @@ export const AllModels = () => {
           }}
         >
           <Typography variant="h3" fontWeight="700">
-            All Models
+            {t("schema.allModelsHeading")}
           </Typography>
           <Stack direction="row" alignItems="center" gap={1}>
             <SearchBox
@@ -68,7 +70,7 @@ export const AllModels = () => {
                   </InputAdornment>
                 ),
               }}
-              placeholder="Search Models"
+              placeholder={t("schema.searchModelsPlaceholder")}
             />
             <Button
               variant="contained"
@@ -77,7 +79,7 @@ export const AllModels = () => {
               onClick={() => setShowCreateModelDialogue("true")}
               data-cy="create-model-button-all-models"
             >
-              Create Model
+              {t("schema.createModel")}
             </Button>
           </Stack>
         </Box>

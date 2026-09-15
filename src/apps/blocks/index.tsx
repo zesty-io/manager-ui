@@ -1,4 +1,7 @@
+import { Suspense } from "react";
 import { Box } from "@mui/material";
+import { SubAppSkeleton } from "shell/components/SubAppSkeleton";
+import { useTranslation } from "react-i18next";
 import { ResizableContainer } from "../../shell/components/ResizeableContainer";
 import { Sidebar } from "./components/Sidebar";
 import { Route, Switch } from "react-router";
@@ -7,6 +10,19 @@ import { BlockModel } from "./views/BlockModel";
 import { BlockItem } from "./views/BlockItem";
 
 export const BlocksApp = () => {
+  return (
+    <Suspense fallback={<SubAppSkeleton />}>
+      <BlocksAppInner />
+    </Suspense>
+  );
+};
+
+const BlocksAppInner = () => {
+  // "schema" is hoisted here because Sidebar and AllBlocks import ModelList,
+  // CreateModelDialogue, and NoResults from the schema app — all of which
+  // resolve keys under the schema namespace and need it pre-loaded.
+  useTranslation(["blocks", "schema"]);
+
   return (
     <Box
       sx={{

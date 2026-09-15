@@ -50,15 +50,15 @@ export type NavCodeProps = {
 };
 
 export const fileTypeOptions = [
-  { value: "", label: "-- choose a file type --" },
-  { value: "snippet", label: "Snippet (html)" },
-  { value: "text/css", label: "CSS File (css)" },
-  { value: "text/less", label: "LESS File (less)" },
-  { value: "text/scss", label: "SCSS File (scss/sass)" },
-  { value: "text/javascript", label: "JavaScript File (js)" },
+  { value: "", label: "code.fileTypeChoose" },
+  { value: "snippet", label: "code.fileTypeSnippet" },
+  { value: "text/css", label: "code.fileTypeCss" },
+  { value: "text/less", label: "code.fileTypeLess" },
+  { value: "text/scss", label: "code.fileTypeScss" },
+  { value: "text/javascript", label: "code.fileTypeJavaScript" },
   {
     value: "ajax-json",
-    label: "Custom File Type/Endpoint (Mixed Extensions)",
+    label: "code.fileTypeCustomEndpoint",
   },
 ];
 
