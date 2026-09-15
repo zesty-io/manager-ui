@@ -124,6 +124,12 @@ export const ChatThread = ({
   const composerRef = useRef<PromptComposerHandle>(null);
   const { data: langMappings } = useGetLangsMappingQuery();
   const toneOptions = getToneOptions(t);
+  const generateSuggestionsPromptPrefix = t("shell.generateSuggestionsPrompt", {
+    prompt: "",
+  });
+  const generateSuggestionsDefaultPrompt = t(
+    "shell.generateSuggestionsDefaultPrompt"
+  );
 
   const languageOptions = Object.entries(langMappings || {})?.map(
     ([value, label]: any) => ({
@@ -203,9 +209,12 @@ export const ChatThread = ({
                             borderRadius: 1,
                             wordBreak: "break-word",
                             fontStyle:
-                              response.payload.value.startsWith(
-                                "Generate suggestions"
-                              ) && "italic",
+                              (response.payload.value.startsWith(
+                                generateSuggestionsPromptPrefix
+                              ) ||
+                                response.payload.value ===
+                                  generateSuggestionsDefaultPrompt) &&
+                              "italic",
                           }}
                         >
                           {response.payload.value}
