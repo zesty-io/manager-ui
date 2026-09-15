@@ -6,7 +6,7 @@ This is one contract with three surfaces. Two exist today — **AI content** (a 
 
 **Studio's half of this document is a specification, not a live payload.** Everything in §2 marked _(Studio)_ is what the app will send once the surface ships; nothing sends it today. The request fields marked _(live)_ and all of §3 are in production now.
 
-**In Studio the AI sits above the mode toggle.** Studio has a content mode, a layout mode, and a `full` mode that is the union of the two and the default for a user entitled to both. The drawer is not scoped by that toggle: one chat can change copy and code, and a single response may contain both a content-field write and a code-file write. The only thing that narrows what you may write is the user's permissions, delivered as `availableModes`. The request deliberately does **not** tell you which mode the UI is currently in — that would invite you to refuse a change the user is entitled to make.
+**In Studio the AI sits above the mode toggle.** Studio has a content mode, a layout mode, and a `full` mode that is the union of the two and the default for a user entitled to both. The drawer is not scoped by that toggle: one chat can change copy and code, and a single response may contain both a content-field write and a code-file write. The only thing that narrows what you may write is the user's permissions, delivered as `capabilities`. The request deliberately does **not** tell you which mode the UI is currently in — that would invite you to refuse a change the user is entitled to make.
 
 Audience: whoever implements the model side. Nothing here describes manager-ui internals you have to care about.
 
@@ -52,7 +52,7 @@ There are two entry points and they do not send the same body. **Generate Sugges
 | `surface`                    | `"studio"`               | _(Studio)_ | absent on the content and code surfaces                                                                                         |
 | `path`                       | string                   | _(Studio)_ | the page under edit, e.g. `/pricing/`. Studio is a single route, so this is the only thing distinguishing one page from another |
 | `selection`                  | object \| null           | _(Studio)_ | what the user has selected on the canvas                                                                                        |
-| `availableModes`             | string[]                 | _(Studio)_ | the modes this user is entitled to, derived from their permissions. The only capability gate                                    |
+| `capabilities`               | string[]                 | _(Studio)_ | what this user may change: `["content"]`, `["layout"]`, or both. The only gate                                                  |
 | `sources`                    | object[]                 | _(Studio)_ | `{ refKey, filename, code }` per code file in scope                                                                             |
 
 ### `refRegistry` is not parseable JSON
@@ -161,7 +161,7 @@ The three Studio file refKeys behave exactly like `code-editor`, which is also a
 
 **Both families are addressable at once.** In Studio a request can carry content-field refKeys and file refKeys together, and a single response may write to both.
 
-**Never infer a refKey.** Use what arrived in `registryKeys`, and respect `availableModes`. Not every field of an item is addressable: eleven datatypes are deliberately excluded — `uuid`, `files`, `internal_link`, `one_to_one`, `one_to_many`, `block_selector`, `yes_no`, `dropdown`, `date`, `datetime`, `integration`.
+**Never infer a refKey.** Use what arrived in `registryKeys`, and respect `capabilities`. Not every field of an item is addressable: eleven datatypes are deliberately excluded — `uuid`, `files`, `internal_link`, `one_to_one`, `one_to_many`, `block_selector`, `yes_no`, `dropdown`, `date`, `datetime`, `integration`.
 
 Content-field refKeys are **bare field names**, so if two items on a page both have `title`, only one `title` refKey exists and it is whichever registered last. The `ZUID` and `contentModelZUID` inside that refKey's `refRegistry` entry tell you which item you actually got; if that is not the one the user meant, say so in a `SYSTEM_OUTPUT` rather than writing to it.
 
@@ -195,12 +195,12 @@ The image row is the one case where `value` is an identifier rather than content
 
 **`layoutEditable: false` means the template for that slot could not be located.** Do not attempt a view edit against it.
 
-**`availableModes` is the permission boundary** _(Studio)_. It is what the user's role entitles them to, and it is the only gate. Read it as:
+**`capabilities` is the permission boundary** _(Studio)_. Two values, either or both:
 
-- contains `content` or `full` → content-field refKeys are writable
-- contains `layout` or `full` → `view:` / `stylesheet:` / `script:` refKeys are writable
+- `"content"` → content-field refKeys are writable
+- `"layout"` → `view:` / `stylesheet:` / `script:` refKeys are writable
 
-Prefer a `SYSTEM_OUTPUT` explaining what the user cannot change over a `SET_VALUE` the app will drop.
+`["content", "layout"]` is a user who may change both, and is the common case. Prefer a `SYSTEM_OUTPUT` explaining what the user cannot change over a `SET_VALUE` the app will drop.
 
 **Choosing between a field and a file is the judgment call** _(Studio)_. Both are usually available, so route by what the user asked to change and by the slot's own shape:
 
