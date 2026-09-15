@@ -72,12 +72,13 @@ jobs:
           PR: ${{ github.event.pull_request.number }}
         run: |
           set -euo pipefail
-          gh api "repos/$REPO/issues/$PR/comments" --paginate \
-            --jq '[.[] | select(.user.login == "github-actions[bot]") | select(.body | startswith("<!-- cv-verifier -->")) | .body] | first // ""' \
-            > prior-qa-comment.md
-          # jq emits a bare newline when there is no prior comment; normalise that to a truly empty
-          # file so the prompt's "empty = first run" test is a plain -s check.
-          if [ "$(tr -d '[:space:]' < prior-qa-comment.md | wc -c)" -eq 0 ]; then : > prior-qa-comment.md; fi
+          # `--jq` runs once per page under `--paginate`, so a whole-set operation like `first`
+          # is applied per page. Match per element instead; base64 keeps a multi-line body on one
+          # line. Captured, then sliced with parameter expansion rather than `head`, so no pipe is
+          # ever closed early and `set -o pipefail` has no SIGPIPE (141) to trip over.
+          MATCHES=$(gh api "repos/$REPO/issues/$PR/comments" --paginate \
+            --jq '.[] | select(.user.login == "github-actions[bot]") | select(.body | startswith("<!-- cv-verifier -->")) | .body | @base64')
+          printf '%s' "${MATCHES%%$'\n'*}" | base64 --decode > prior-qa-comment.md
           if [ -s prior-qa-comment.md ]; then
             echo "Prior QA comment found; its criteria will be reused verbatim."
           else
@@ -260,8 +261,12 @@ jobs:
           PY
           BODY=$(cat "$FILE")
           PAYLOAD=$(BODY="$BODY" python3 -c 'import os,json,sys; sys.stdout.write(json.dumps({"body": os.environ["BODY"]}))')
-          CID=$(gh api "repos/$REPO/issues/$PR/comments" --paginate \
-            --jq '.[] | select(.user.login == "github-actions[bot]") | select(.body | startswith("<!-- cv-verifier -->")) | .id' | head -n1)
+          # Same capture-then-slice as `Fetch prior QA comment`: gh piped into `head` exits 141
+          # under `set -o pipefail` as soon as a second match lands on a later page, which would
+          # kill this step after the verdict is computed but before the comment is posted.
+          CIDS=$(gh api "repos/$REPO/issues/$PR/comments" --paginate \
+            --jq '.[] | select(.user.login == "github-actions[bot]") | select(.body | startswith("<!-- cv-verifier -->")) | .id')
+          CID=${CIDS%%$'\n'*}
           if [ -n "${CID:-}" ]; then
             printf '%s' "$PAYLOAD" | gh api -X PATCH "repos/$REPO/issues/comments/$CID" --input - --silent
             echo "Updated QA comment $CID."
