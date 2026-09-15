@@ -8,6 +8,7 @@ import {
   FolderRounded,
 } from "@mui/icons-material";
 import { ContentItem, ResourceType } from "../../services/types";
+import i18n from "../../i18n";
 
 export const getContentTitle = (
   content: ContentItem,
@@ -17,7 +18,7 @@ export const getContentTitle = (
     return "";
   }
 
-  const title = content?.web?.metaTitle || "Missing Meta Title";
+  const title = content?.web?.metaTitle || i18n.t("shell.missingMetaTitle");
   const langCode = languages?.find(
     (lang: any) => lang.ID === content?.meta?.langID
   )?.code;

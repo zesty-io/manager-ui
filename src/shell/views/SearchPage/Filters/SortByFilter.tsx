@@ -1,14 +1,15 @@
 import { FC, useState } from "react";
 import { Menu, MenuItem } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 import { FilterButton } from "../../../components/Filters";
 
 export type FilterValues = "modified" | "created" | "AtoZ" | "ZtoA";
 const OPTIONS: { [key in FilterValues]: string } = Object.freeze({
-  modified: "Most Recently Modified",
-  created: "Most Recently Created",
-  AtoZ: "Name (A to Z)",
-  ZtoA: "Name (Z to A)",
+  modified: "shell.sortMostRecentlyModified",
+  created: "shell.sortMostRecentlyCreated",
+  AtoZ: "common.sortNameAToZ",
+  ZtoA: "common.sortNameZToA",
 });
 
 interface SortByFilter {
@@ -19,6 +20,7 @@ export const SortByFilter: FC<SortByFilter> = ({
   onChange,
   value = "modified",
 }) => {
+  const { t } = useTranslation();
   const [anchorRef, setAnchorRef] = useState<HTMLElement | null>(null);
 
   return (
@@ -26,7 +28,7 @@ export const SortByFilter: FC<SortByFilter> = ({
       <FilterButton
         filterId="sortBy"
         isFilterActive={false}
-        buttonText={`Sort: ${OPTIONS[value]}`}
+        buttonText={t("shell.sortValue", { value: t(OPTIONS[value]) })}
         onOpenMenu={(e: React.MouseEvent<HTMLButtonElement>) =>
           setAnchorRef(e.currentTarget)
         }
@@ -43,7 +45,7 @@ export const SortByFilter: FC<SortByFilter> = ({
           },
         }}
       >
-        {Object.entries(OPTIONS).map(([filter, text]) => (
+        {Object.entries(OPTIONS).map(([filter, textKey]) => (
           <MenuItem
             key={filter}
             selected={value === filter}
@@ -55,7 +57,7 @@ export const SortByFilter: FC<SortByFilter> = ({
               setAnchorRef(null);
             }}
           >
-            {text}
+            {t(textKey)}
           </MenuItem>
         ))}
       </Menu>

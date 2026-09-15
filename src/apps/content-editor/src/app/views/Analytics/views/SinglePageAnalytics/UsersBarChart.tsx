@@ -1,5 +1,6 @@
 import { theme } from "@zesty-io/material";
 import { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Bar } from "react-chartjs-2";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import {
@@ -39,6 +40,7 @@ export const UsersBarChart = ({
   shouldCompare,
   loading = false,
 }: Props) => {
+  const { t } = useTranslation();
   const chartRef = useRef(null);
   const [tooltipModel, setTooltipModel] = useState(null);
   const [type, setType] = useState("Source");
@@ -111,7 +113,13 @@ export const UsersBarChart = ({
           <Skeleton variant="rectangular" width="147px" height="28px" />
         ) : (
           <Typography variant="h5" fontWeight={700}>
-            Users By {type}
+            {t("content.analyticsUsersBy", {
+              type: t(
+                type === "Source"
+                  ? "content.analyticsBarSource"
+                  : "content.analyticsBarCountry"
+              ),
+            })}
           </Typography>
         )}
         {loading ? (
@@ -132,14 +140,14 @@ export const UsersBarChart = ({
               color="inherit"
               onClick={() => setType("Source")}
             >
-              Source
+              {t("content.analyticsBarSource")}
             </Button>
             <Button
               variant={type === "Country" ? "contained" : "outlined"}
               color="inherit"
               onClick={() => setType("Country")}
             >
-              Country
+              {t("content.analyticsBarCountry")}
             </Button>
           </ButtonGroup>
         )}

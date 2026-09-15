@@ -1,5 +1,6 @@
 import { FC, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 import Button from "@mui/material/Button";
 import ButtonGroup from "@mui/material/ButtonGroup";
@@ -20,7 +21,21 @@ import { DateFilterModal } from "../DateFilterModal";
 import { useParams } from "../../../../../../shell/hooks/useParams";
 
 type Modal = "on" | "before" | "after" | null;
+
+// Maps the stored preset value (English, from getDateFilter) to its localized
+// label key, so the active filter chip shows the translated label rather than
+// the raw stored value.
+const PRESET_LABEL_KEYS: Record<string, string> = {
+  today: "common.today",
+  yesterday: "common.yesterday",
+  "last 7 days": "common.last7Days",
+  "last 30 days": "common.last30Days",
+  "last 3 months": "common.last3Months",
+  "last 12 months": "common.last12Months",
+};
+
 export const DateRangeFilter: FC = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -73,7 +88,7 @@ export const DateRangeFilter: FC = () => {
     if (!filter) return "";
     const { type, value } = filter;
     if (type === "range") {
-      return "Custom Range";
+      return t("media.dateFilterCustomRange");
     }
     const dateDisplay = new Date(value).toLocaleDateString(undefined, {
       month: "short",
@@ -83,13 +98,13 @@ export const DateRangeFilter: FC = () => {
     });
     switch (type) {
       case "preset":
-        return value;
+        return PRESET_LABEL_KEYS[value] ? t(PRESET_LABEL_KEYS[value]) : value;
       case "on":
-        return `On ${dateDisplay}`;
+        return t("common.dateOnValue", { date: dateDisplay });
       case "before":
-        return `Before ${dateDisplay}`;
+        return t("common.dateBeforeValue", { date: dateDisplay });
       case "after":
-        return `After ${dateDisplay}`;
+        return t("common.dateAfterValue", { date: dateDisplay });
     }
   };
 
@@ -105,7 +120,7 @@ export const DateRangeFilter: FC = () => {
         backgroundColor: "common.white",
       }}
     >
-      Date
+      {t("media.dateFilterButtonLabel")}
     </Button>
   );
 
@@ -155,48 +170,48 @@ export const DateRangeFilter: FC = () => {
         <MenuItem
           onClick={() => handleChange({ type: "preset", value: "today" })}
         >
-          <Typography variant="body1">Today</Typography>
+          <Typography variant="body1">{t("common.today")}</Typography>
         </MenuItem>
         <MenuItem
           onClick={() => handleChange({ type: "preset", value: "yesterday" })}
         >
-          <Typography variant="body1">Yesterday</Typography>
+          <Typography variant="body1">{t("common.yesterday")}</Typography>
         </MenuItem>
         <MenuItem
           onClick={() => handleChange({ type: "preset", value: "last 7 days" })}
         >
-          <Typography variant="body1">Last 7 days</Typography>
+          <Typography variant="body1">{t("common.last7Days")}</Typography>
         </MenuItem>
         <MenuItem
           onClick={() =>
             handleChange({ type: "preset", value: "last 30 days" })
           }
         >
-          <Typography variant="body1">Last 30 days</Typography>
+          <Typography variant="body1">{t("common.last30Days")}</Typography>
         </MenuItem>
         <MenuItem
           onClick={() =>
             handleChange({ type: "preset", value: "last 3 months" })
           }
         >
-          <Typography variant="body1">Last 3 months</Typography>
+          <Typography variant="body1">{t("common.last3Months")}</Typography>
         </MenuItem>
         <MenuItem
           onClick={() =>
             handleChange({ type: "preset", value: "last 12 months" })
           }
         >
-          <Typography variant="body1">Last 12 months</Typography>
+          <Typography variant="body1">{t("common.last12Months")}</Typography>
         </MenuItem>
         <Divider />
         <MenuItem onClick={() => setModal("on")}>
-          <Typography variant="body1">On</Typography>
+          <Typography variant="body1">{t("media.dateFilterOn")}</Typography>
         </MenuItem>
         <MenuItem onClick={() => setModal("before")}>
-          <Typography variant="body1">Before</Typography>
+          <Typography variant="body1">{t("media.dateFilterBefore")}</Typography>
         </MenuItem>
         <MenuItem onClick={() => setModal("after")}>
-          <Typography variant="body1">After</Typography>
+          <Typography variant="body1">{t("media.dateFilterAfter")}</Typography>
         </MenuItem>
       </Menu>
     </>

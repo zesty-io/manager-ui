@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   DialogContent,
   DialogTitle,
@@ -16,8 +17,8 @@ import { useSelector } from "react-redux";
 import { FieldItem } from "../FieldItem";
 import {
   FieldListData,
-  FIELD_COPY_CONFIG,
-  FIELD_CATEGORY_LABELS,
+  getFieldCopyConfig,
+  getFieldCategoryLabels,
 } from "../../configs";
 import { AppState } from "../../../../../../../shell/store/types";
 import { User } from "../../../../../../../shell/services/types";
@@ -28,6 +29,9 @@ interface Props {
 }
 
 export const FieldSelection = ({ onFieldClick, onModalClose }: Props) => {
+  const { t } = useTranslation();
+  const FIELD_COPY_CONFIG = getFieldCopyConfig(t);
+  const FIELD_CATEGORY_LABELS = getFieldCategoryLabels(t);
   const user: User = useSelector((state: AppState) => state.user);
   const [fieldTypes, setFieldTypes] = useState(FIELD_COPY_CONFIG);
 
@@ -85,7 +89,7 @@ export const FieldSelection = ({ onFieldClick, onModalClose }: Props) => {
         >
           <Stack gap={2}>
             <Typography variant="h5" fontWeight={700}>
-              Select a Field Type
+              {t("schema.selectFieldTypeTitle")}
             </Typography>
             <Box width="349px">
               <TextField
@@ -99,7 +103,7 @@ export const FieldSelection = ({ onFieldClick, onModalClose }: Props) => {
                   ),
                 }}
                 onChange={handleFilterFields}
-                placeholder="Search field types"
+                placeholder={t("schema.searchFieldTypesPlaceholder")}
                 autoFocus
                 size="small"
               />
@@ -130,7 +134,7 @@ export const FieldSelection = ({ onFieldClick, onModalClose }: Props) => {
       >
         {!Object.keys(fieldTypes).length && (
           <Typography data-cy="FieldSelectionEmpty">
-            No matches found.
+            {t("schema.noMatchesFound")}
           </Typography>
         )}
         {Object.keys(fieldTypes).map((fieldKey) => (

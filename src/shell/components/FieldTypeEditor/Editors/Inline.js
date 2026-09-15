@@ -1,4 +1,5 @@
 import React, { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 
 import { Box } from "@mui/material";
 
@@ -17,6 +18,8 @@ import { VideoResizeView } from "./prosemirror-views/VideoResizeView";
 
 import styles from "./Inline.less";
 export function InlineEditor(props) {
+  const { t } = useTranslation();
+
   // NOTE: only recreate options, which cause prosemirror update,
   // when the version changes. Otherwise prosemirror manages
   // it's own internal document model
@@ -41,7 +44,7 @@ export function InlineEditor(props) {
           <section className={styles.InlineEditor}>
             <Floater view={view}>
               <MenuBar
-                menu={inline({ mediaBrowser: props.mediaBrowser })}
+                menu={inline({ mediaBrowser: props.mediaBrowser, t })}
                 view={view}
               />
             </Floater>
