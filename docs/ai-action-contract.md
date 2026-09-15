@@ -53,7 +53,7 @@ There are two entry points and they do not send the same body. **Generate Sugges
 | `path`                       | string                   | _(Studio)_ | the page under edit, e.g. `/pricing/`. Studio is a single route, so this is the only thing distinguishing one page from another |
 | `selection`                  | object \| null           | _(Studio)_ | what the user has selected on the canvas                                                                                        |
 | `capabilities`               | string[]                 | _(Studio)_ | what this user may change: `["content"]`, `["layout"]`, or both. The only gate                                                  |
-| `sources`                    | object[]                 | _(Studio)_ | `{ refKey, filename, code }` per code file in scope                                                                             |
+| `sources`                    | object[]                 | _(Studio)_ | `{ refKey, filename, code, fields }` per code file in scope — see below                                                         |
 
 ### `refRegistry` is not parseable JSON
 
@@ -110,15 +110,25 @@ A slot is one editable thing on the element:
 
 ### `sources` _(Studio)_
 
+The current text of every code file the selection can reach, plus the Parsley vocabulary for it:
+
 ```json
 [
   {
     "refKey": "view:11-000000-000000",
-    "filename": "simple_page.html",
-    "code": "<!doctype html>…"
+    "filename": "pricing.html",
+    "code": "<!doctype html>…",
+    "fields": [
+      { "name": "title", "label": "Title", "type": "text" },
+      { "name": "plan_name", "label": "Plan name", "type": "text" }
+    ]
   }
 ]
 ```
+
+`fields` is the same array the code surface already sends, and it is **the only list of field names you may reference in Parsley**. `{{this.<name>}}` is valid only for a `name` that appears there; anything else renders empty on the live site. Do not introduce a cross-model reference (`{{MODEL.FIELD}}`) that is not already present in `code` or explicitly requested — you are not given the other models.
+
+`fields` is meaningful for views only. Stylesheets and scripts carry no Parsley, so ignore it there and never emit a field reference into a `.css` or `.js` file.
 
 ---
 
