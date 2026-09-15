@@ -6,7 +6,7 @@ This is one contract with three surfaces. Two exist today — **AI content** (a 
 
 **Studio's half of this document is a specification, not a live payload.** Everything in §2 marked _(Studio)_ is what the app will send once the surface ships; nothing sends it today. The request fields marked _(live)_ and all of §3 are in production now.
 
-**In Studio the AI sits above the mode toggle.** Studio has a content mode, a layout mode, and a `full` mode that is the union of the two and the default for a user entitled to both. The drawer is not scoped by that toggle: one chat can change copy and code, and a single response may contain both a content-field write and a code-file write. The only thing that narrows what you may write is the user's permissions, delivered as `availableModes`.
+**In Studio the AI sits above the mode toggle.** Studio has a content mode, a layout mode, and a `full` mode that is the union of the two and the default for a user entitled to both. The drawer is not scoped by that toggle: one chat can change copy and code, and a single response may contain both a content-field write and a code-file write. The only thing that narrows what you may write is the user's permissions, delivered as `availableModes`. The request deliberately does **not** tell you which mode the UI is currently in — that would invite you to refuse a change the user is entitled to make.
 
 Audience: whoever implements the model side. Nothing here describes manager-ui internals you have to care about.
 
@@ -38,23 +38,22 @@ A bare array as the response body reads as `undefined` and breaks the drawer —
 
 There are two entry points and they do not send the same body. **Generate Suggestions** sends only `{ prompt, systemInstruction, temperature }` and expects `SYSTEM_SUGGESTION` back. Everything else in this document is the main prompt path:
 
-| Field                        | Type                              |            | Notes                                                                                                                           |
-| ---------------------------- | --------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `prompt`                     | string                            | live       | the user's text                                                                                                                 |
-| `tone`                       | string                            | live       | a full descriptive phrase, e.g. `"Professional - Serious, formal, and authoritative"`                                           |
-| `language`                   | string                            | live       | BCP-47, e.g. `"en-US"`                                                                                                          |
-| `modelZuid`                  | string                            | live       | content model of the item being edited                                                                                          |
-| `itemZuid`                   | string                            | live       | content item being edited                                                                                                       |
-| `registryKeys`               | string[]                          | live       | every refKey currently addressable — **the authoritative list, recomputed per request**                                         |
-| `refRegistry`                | string[]                          | live       | per-refKey context, as display strings — see below                                                                              |
-| `filename`, `code`, `fields` | string, string, object[]          | live       | present only when the code editor is open                                                                                       |
-| `temperature`                | number                            | live       | 0.5                                                                                                                             |
-| `surface`                    | `"studio"`                        | _(Studio)_ | absent on the content and code surfaces                                                                                         |
-| `mode`                       | `"content" \| "layout" \| "full"` | _(Studio)_ | what the user is looking at. **Context for routing, not a restriction** — see §6. `full` is the default                         |
-| `path`                       | string                            | _(Studio)_ | the page under edit, e.g. `/pricing/`. Studio is a single route, so this is the only thing distinguishing one page from another |
-| `selection`                  | object \| null                    | _(Studio)_ | what the user has selected on the canvas                                                                                        |
-| `availableModes`             | string[]                          | _(Studio)_ | the modes this user is entitled to, derived from their permissions — **this is the permission signal, not `mode`**              |
-| `sources`                    | object[]                          | _(Studio)_ | `{ refKey, filename, code }` per code file in scope                                                                             |
+| Field                        | Type                     |            | Notes                                                                                                                           |
+| ---------------------------- | ------------------------ | ---------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `prompt`                     | string                   | live       | the user's text                                                                                                                 |
+| `tone`                       | string                   | live       | a full descriptive phrase, e.g. `"Professional - Serious, formal, and authoritative"`                                           |
+| `language`                   | string                   | live       | BCP-47, e.g. `"en-US"`                                                                                                          |
+| `modelZuid`                  | string                   | live       | content model of the item being edited                                                                                          |
+| `itemZuid`                   | string                   | live       | content item being edited                                                                                                       |
+| `registryKeys`               | string[]                 | live       | every refKey currently addressable — **the authoritative list, recomputed per request**                                         |
+| `refRegistry`                | string[]                 | live       | per-refKey context, as display strings — see below                                                                              |
+| `filename`, `code`, `fields` | string, string, object[] | live       | present only when the code editor is open                                                                                       |
+| `temperature`                | number                   | live       | 0.5                                                                                                                             |
+| `surface`                    | `"studio"`               | _(Studio)_ | absent on the content and code surfaces                                                                                         |
+| `path`                       | string                   | _(Studio)_ | the page under edit, e.g. `/pricing/`. Studio is a single route, so this is the only thing distinguishing one page from another |
+| `selection`                  | object \| null           | _(Studio)_ | what the user has selected on the canvas                                                                                        |
+| `availableModes`             | string[]                 | _(Studio)_ | the modes this user is entitled to, derived from their permissions. The only capability gate                                    |
+| `sources`                    | object[]                 | _(Studio)_ | `{ refKey, filename, code }` per code file in scope                                                                             |
 
 ### `refRegistry` is not parseable JSON
 
@@ -72,7 +71,7 @@ Each entry is built by string interpolation and the inner quotes are not escaped
 
 ### `selection` _(Studio)_
 
-Content mode — the selected element resolves to a content field:
+When the selected element resolves to a content field:
 
 | Field                   | Type   |                        |
 | ----------------------- | ------ | ---------------------- |
@@ -81,7 +80,7 @@ Content mode — the selected element resolves to a content field:
 | `fieldType`             | string | optional; the datatype |
 | `itemZuid`, `modelZuid` | string | optional               |
 
-Layout mode — the selection resolves to a region of a code file plus that element's editable slots. The app composes this from two internal objects, so expect exactly these keys:
+When it resolves to a region of a code file, the selection carries that region plus the element's editable slots. The app composes this from two internal objects, so expect exactly these keys. **Which of the two shapes arrives is how you tell what the user is pointing at** — there is no mode flag:
 
 | Field        | Type        |                                                           |
 | ------------ | ----------- | --------------------------------------------------------- |
@@ -192,18 +191,18 @@ The image row is the one case where `value` is an identifier rather than content
 
 **Whole files, not patches.** `value` for a file refKey is the complete new file contents. You are given the current `code` in `sources`; return all of it with your change applied. A diff, a fragment, or an elided `…` is written to the file verbatim.
 
-**In layout mode, edit `sourceValue`, never `value`.** A slot's `value` is the rendered output; its `sourceValue` is the template, which may be a Parsley expression like `{{this.title}}`. Writing the rendered text into the template replaces a live binding with a frozen string, and the page silently stops updating when the content changes. If a slot's `sourceValue` is a Parsley expression and the user asked to change the words, the target is the **content field**, not the view file.
+**When editing a view file, write `sourceValue`, never `value`.** A slot's `value` is the rendered output; its `sourceValue` is the template, which may be a Parsley expression like `{{this.title}}`. Writing the rendered text into the template replaces a live binding with a frozen string, and the page silently stops updating when the content changes. If a slot's `sourceValue` is a Parsley expression and the user asked to change the words, the target is the **content field**, not the view file.
 
 **`layoutEditable: false` means the template for that slot could not be located.** Do not attempt a view edit against it.
 
-**`availableModes` is the permission boundary, not `mode`** _(Studio)_. `mode` is whichever view the user currently has selected; `availableModes` is what their role entitles them to, and a user entitled to both can toggle `mode` freely without losing either capability. Read it as:
+**`availableModes` is the permission boundary** _(Studio)_. It is what the user's role entitles them to, and it is the only gate. Read it as:
 
 - contains `content` or `full` → content-field refKeys are writable
 - contains `layout` or `full` → `view:` / `stylesheet:` / `script:` refKeys are writable
 
 Prefer a `SYSTEM_OUTPUT` explaining what the user cannot change over a `SET_VALUE` the app will drop.
 
-**Choosing between a field and a file is the judgment call** _(Studio)_. Both are usually available, so route by what the user asked to change, not by which mode they are in:
+**Choosing between a field and a file is the judgment call** _(Studio)_. Both are usually available, so route by what the user asked to change and by the slot's own shape:
 
 - the **words** a visitor reads, where the slot is bound (`isDynamic: true`) → the **content field** refKey
 - the **words**, where the slot is static (`isDynamic: false`) → the **view file**
