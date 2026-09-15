@@ -17,6 +17,7 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { debounce } from "lodash";
+import { useTranslation } from "react-i18next";
 import {
   differenceInSeconds,
   differenceInMinutes,
@@ -63,6 +64,7 @@ export const ChatHistory = ({
   onSelectSession,
   onNewChat,
 }: ChatHistoryProps) => {
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState("");
 
   const filteredChatSessions = useMemo(() => {
@@ -100,7 +102,7 @@ export const ChatHistory = ({
         <TextField
           fullWidth
           data-cy="AIDrawerHistorySearch"
-          placeholder="Search Chats"
+          placeholder={t("shell.searchChatsPlaceholder")}
           InputProps={{
             startAdornment: <SearchIcon color="action" />,
           }}
@@ -134,7 +136,7 @@ export const ChatHistory = ({
                   }}
                 >
                   <Typography variant="body2" fontWeight={600}>
-                    Chat History
+                    {t("shell.chatHistory")}
                   </Typography>
                 </TableCell>
               </TableRow>
@@ -158,7 +160,7 @@ export const ChatHistory = ({
         sx={{ mt: 2, flexShrink: 0 }}
         onClick={onNewChat}
       >
-        New Chat
+        {t("shell.newChat")}
       </Button>
     </Stack>
   );
@@ -179,6 +181,8 @@ const ChatHistoryRows = ({
   searchTerm,
   onSelectSession,
 }: ChatHistoryRowsProps) => {
+  const { t } = useTranslation();
+
   if (isLoading) {
     return (
       <>
@@ -211,8 +215,8 @@ const ChatHistoryRows = ({
         <TableCell>
           <Typography variant="body2">
             {searchTerm
-              ? `No chat history available for "${searchTerm}".`
-              : "No chat history available."}
+              ? t("shell.noChatHistoryAvailableForTerm", { term: searchTerm })
+              : t("shell.noChatHistoryAvailable")}
           </Typography>
         </TableCell>
       </TableRow>
@@ -222,7 +226,7 @@ const ChatHistoryRows = ({
   return (
     <>
       {sessions.map((session, index) => {
-        const title = session.title || "Untitled Chat";
+        const title = session.title || t("shell.untitledChat");
         const updatedDate = session.updatedAt
           ? new Date(session.updatedAt)
           : null;
