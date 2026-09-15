@@ -1,6 +1,15 @@
 import { Box, IconButton, Paper, Skeleton, Typography } from "@mui/material";
 import { useSelector } from "react-redux";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { useTranslation } from "react-i18next";
+import i18n from "shell/i18n";
 import {
   useGeminiGenerationMutation,
   useGetChatSessionLogQuery,
@@ -68,7 +77,7 @@ const normalizeChatSessionLog = (prompts: ChatPrompt[] = []) => {
         {
           type: "ERROR",
           payload: {
-            value: "Error parsing saved AI response. Please try again.",
+            value: i18n.t("shell.errorParsingAiResponse"),
           },
         },
       ];
@@ -108,6 +117,22 @@ export type AIDrawerProps = {
   open: boolean;
 };
 export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
+  // Local Suspense boundary so lazy-loading the "shell" namespace shows a
+  // fallback in the drawer area only, instead of blanking the whole shell.
+  return (
+    <Suspense
+      fallback={<Box sx={{ height: "100%", backgroundColor: "grey.50" }} />}
+    >
+      <AIDrawerInner open={open} onClose={onClose} />
+    </Suspense>
+  );
+};
+
+const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
+  // Requesting the namespace here triggers its lazy load and suspends this
+  // subtree until ready; child components use bare useTranslation() with
+  // qualified keys (t("shell.key")) once it's in the store.
+  const { t } = useTranslation("shell");
   const { pathname, search } = useLocation();
   const isInContentApp = isContentAppPath(pathname);
   const isInContentMeta = isContentMetaPath(pathname);
@@ -145,7 +170,7 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
   });
   const [selectedTone, setSelectedTone] = useState({
     value: "Professional - Serious, formal, and authoritative",
-    label: "Professional",
+    label: t("shell.toneNameProfessional"),
   });
 
   const [geminiGenerate, { isLoading, data: aiResponse }] =
@@ -214,22 +239,27 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
 
         return (
           (model?.type === "block"
-            ? `${model?.label}: ${headerTitle}`
+            ? t("shell.blockItemTitleFormat", {
+                model: model?.label,
+                title: headerTitle,
+              })
             : headerTitle) || ""
         );
       }
 
-      return "AI Assistant Beta";
+      return t("shell.aiAssistantBeta");
     }
 
     if (urlChatZUID) {
       const activeSession = relevantChatSessions.find(
         (session) => session.chatZuid === urlChatZUID
       );
-      return activeSession?.title || "Untitled Chat";
+      return activeSession?.title || t("shell.untitledChat");
     }
 
-    return hasOtherChatSessions ? "New Chat" : "AI Assistant Beta";
+    return hasOtherChatSessions
+      ? t("shell.newChat")
+      : t("shell.aiAssistantBeta");
   }, [
     showChatThread,
     isInCodeApp,
@@ -243,6 +273,7 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
     urlChatZUID,
     relevantChatSessions,
     hasOtherChatSessions,
+    t,
   ]);
 
   const userRole = useMemo(
@@ -445,8 +476,8 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
       const temperature = 0.5;
       const normalizedPrompt = sourcePrompt ? sourcePrompt.trim() : "";
       const promptValue = normalizedPrompt
-        ? `Generate suggestions: ${normalizedPrompt}`
-        : "Generate suggestions for my content fields";
+        ? t("shell.generateSuggestionsPrompt", { prompt: normalizedPrompt })
+        : t("shell.generateSuggestionsDefaultPrompt");
 
       isAwaitingLiveResponseRef.current = true;
       geminiGenerate({
@@ -471,7 +502,7 @@ export const AIDrawer = ({ open, onClose }: AIDrawerProps) => {
       }));
       setComposerSeed("");
     },
-    [geminiGenerate, urlChatZUID, userRole]
+    [geminiGenerate, urlChatZUID, userRole, t]
   );
 
   const handleSelectChatSession = useCallback(

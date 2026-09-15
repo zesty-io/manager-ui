@@ -22,6 +22,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ArrowForward,
   ArrowUpwardRounded,
@@ -38,22 +39,33 @@ import { GeneratedImage } from "./GeneratedImage";
 import { PromptComposer, PromptComposerHandle } from "./PromptComposer";
 import { useUpdatePromptApprovalStatusMutation } from "../../services/mcp";
 
-const TONE_OPTIONS = [
-  {
-    label: "Intriguing",
-    value: "Intriguing - Curious, mysterious, and thought-provoking",
-  },
-  {
-    label: "Professional",
-    value: "Professional - Serious, formal, and authoritative",
-  },
-  { label: "Playful", value: "Playful - Fun, light-hearted, and whimsical" },
-  {
-    label: "Sensational",
-    value: "Sensational -  Bold, dramatic, and attention-grabbing",
-  },
-  { label: "Succinct", value: "Succinct - Clear, factual, with no hyperbole" },
-] as const;
+// `value` is the tone instruction sent to the model (do not translate);
+// `label` is the short UI name, resolved with t() at the render site.
+const TONE_VALUES = {
+  intriguing: "Intriguing - Curious, mysterious, and thought-provoking",
+  professional: "Professional - Serious, formal, and authoritative",
+  playful: "Playful - Fun, light-hearted, and whimsical",
+  sensational: "Sensational -  Bold, dramatic, and attention-grabbing",
+  succinct: "Succinct - Clear, factual, with no hyperbole",
+} as const;
+
+const getToneOptions = (t: (key: string) => string) =>
+  [
+    {
+      label: t("shell.toneNameIntriguing"),
+      value: TONE_VALUES.intriguing,
+    },
+    {
+      label: t("shell.toneNameProfessional"),
+      value: TONE_VALUES.professional,
+    },
+    { label: t("shell.toneNamePlayful"), value: TONE_VALUES.playful },
+    {
+      label: t("shell.toneNameSensational"),
+      value: TONE_VALUES.sensational,
+    },
+    { label: t("shell.toneNameSuccinct"), value: TONE_VALUES.succinct },
+  ] as const;
 
 type LanguageOption = { label: string; value: string };
 type ToneOption = { label: string; value: string };
@@ -105,11 +117,13 @@ export const ChatThread = ({
   handleGenerateSuggestions,
   responsesEndRef,
 }: ChatThreadProps) => {
+  const { t } = useTranslation();
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [hasComposerValue, setHasComposerValue] = useState(false);
   const composerRef = useRef<PromptComposerHandle>(null);
   const { data: langMappings } = useGetLangsMappingQuery();
+  const toneOptions = getToneOptions(t);
 
   const languageOptions = Object.entries(langMappings || {})?.map(
     ([value, label]: any) => ({
@@ -248,7 +262,7 @@ export const ChatThread = ({
                         }}
                         endIcon={<ArrowForward fontSize="small" />}
                       >
-                        Navigate
+                        {t("shell.navigate")}
                       </Button>
                     );
                   }
@@ -334,7 +348,7 @@ export const ChatThread = ({
                           }}
                           startIcon={<AutoFixHighRounded fontSize="small" />}
                         >
-                          Apply
+                          {t("shell.applyAiSuggestion")}
                         </Button>
                       )}
                     </Box>
@@ -381,7 +395,7 @@ export const ChatThread = ({
             fullWidth
             onClick={() => handleGenerateSuggestions(composerSeed)}
           >
-            Generate Suggestions
+            {t("shell.generateSuggestions")}
           </Button>
         )}
         <PromptComposer
@@ -409,7 +423,7 @@ export const ChatThread = ({
             setResponses({});
           }}
         >
-          Clear Chat
+          {t("shell.clearChat")}
         </Button>
         <Box display="flex" gap={1}>
           <IconButton
@@ -471,18 +485,15 @@ export const ChatThread = ({
             }
             label={
               <Typography variant="subtitle2" color="text.secondary">
-                Auto apply
+                {t("shell.autoApply")}
               </Typography>
             }
           />
         </FormGroup>
 
         <Stack direction="row" gap={1} alignItems="center" mt={1}>
-          <InputLabel sx={{ mb: 0 }}>Language</InputLabel>
-          <Tooltip
-            title="Set the language in which you'd like the text to be generated."
-            placement="top"
-          >
+          <InputLabel sx={{ mb: 0 }}>{t("shell.language")}</InputLabel>
+          <Tooltip title={t("shell.languageGenerationTooltip")} placement="top">
             <InfoRoundedIcon color="action" sx={{ fontSize: 12 }} />
           </Tooltip>
         </Stack>
@@ -513,11 +524,8 @@ export const ChatThread = ({
         />
 
         <Stack direction="row" gap={1} alignItems="center" mt={1}>
-          <InputLabel sx={{ mb: 0 }}>Tone</InputLabel>
-          <Tooltip
-            title="Set the desired style and mood of the generated text"
-            placement="top"
-          >
+          <InputLabel sx={{ mb: 0 }}>{t("shell.tone")}</InputLabel>
+          <Tooltip title={t("shell.toneTooltip")} placement="top">
             <InfoRoundedIcon color="action" sx={{ fontSize: 12 }} />
           </Tooltip>
         </Stack>
@@ -529,7 +537,7 @@ export const ChatThread = ({
           }
           onChange={(_, value) => setSelectedTone(value)}
           value={selectedTone}
-          options={TONE_OPTIONS}
+          options={toneOptions}
           renderInput={(params: any) => (
             <TextField {...params} data-cy="AIDrawerToneSelect" fullWidth />
           )}

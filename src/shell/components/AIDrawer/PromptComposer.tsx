@@ -9,6 +9,7 @@ import {
   useState,
 } from "react";
 import { isEmpty } from "lodash";
+import { useTranslation } from "react-i18next";
 
 type PromptComposerProps = {
   seed: string;
@@ -24,6 +25,7 @@ export type PromptComposerHandle = {
 export const PromptComposer = memo(
   forwardRef<PromptComposerHandle, PromptComposerProps>(
     ({ seed, disabled, onSubmit, onHasValueChange }, ref) => {
+      const { t } = useTranslation();
       const [draft, setDraft] = useState(seed);
       const inputRef = useRef<HTMLInputElement>(null);
       const hasValueRef = useRef(false);
@@ -60,7 +62,7 @@ export const PromptComposer = memo(
           data-cy="AIDrawerComposer"
           inputRef={inputRef}
           disabled={disabled}
-          placeholder={`Ask for anything, for example "Cater my content to a specific audience"`}
+          placeholder={t("shell.aiDrawerPlaceholder")}
           variant="outlined"
           fullWidth
           multiline
