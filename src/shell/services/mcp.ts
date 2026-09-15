@@ -1,27 +1,78 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { prepareHeaders } from "./util";
+import { getResponseData, prepareHeaders as prepareAuthHeaders } from "./util";
 import instanceZUID from "../../utility/instanceZUID";
+import {
+  ChatSession,
+  GeminiResponse,
+  ChatPromptMetadata,
+  ChatSessionLog,
+} from "./types";
 
 export const mcpApi = createApi({
   reducerPath: "mcpApi",
   baseQuery: fetchBaseQuery({
     baseUrl: `${__CONFIG__.MCP_DOMAIN}`,
-    prepareHeaders,
+    prepareHeaders: (headers) => {
+      const preparedHeaders = prepareAuthHeaders(headers);
+      preparedHeaders.set("X-Instance-Zuid", instanceZUID);
+
+      return preparedHeaders;
+    },
   }),
+  tagTypes: ["ChatSessions", "ChatSessionLog"],
   endpoints: (builder) => ({
-    geminiGeneration: builder.mutation<any, any>({
+    geminiGeneration: builder.mutation<GeminiResponse, any>({
       query: (body) => {
         return {
           url: `client`,
           method: "POST",
           body,
-          headers: {
-            "X-Instance-Zuid": instanceZUID,
-          },
+        };
+      },
+      invalidatesTags: (result, error, { chatZuid }) => [
+        { type: "ChatSessionLog", id: chatZuid },
+      ],
+    }),
+    getChatSessions: builder.query<ChatSession[], void>({
+      query: () => {
+        return {
+          url: `chats`,
+          method: "GET",
+        };
+      },
+      transformResponse: getResponseData,
+      providesTags: ["ChatSessions"],
+    }),
+    getChatSessionLog: builder.query<ChatSessionLog, { chatZUID: string }>({
+      query: ({ chatZUID }) => {
+        return {
+          url: `chats/${chatZUID}?instanceZuid=${instanceZUID}`,
+          method: "GET",
+        };
+      },
+      transformResponse: getResponseData,
+      providesTags: (results, error, { chatZUID }) => [
+        { type: "ChatSessionLog", id: chatZUID },
+      ],
+    }),
+    updatePromptApprovalStatus: builder.mutation<
+      void,
+      { chatZUID: string; promptZUID: string; approval: "0" | "1" }
+    >({
+      query: ({ chatZUID, promptZUID, approval }) => {
+        return {
+          url: `chats/${chatZUID}/prompt/${promptZUID}`,
+          method: "PATCH",
+          body: { approval, instanceZuid: instanceZUID },
         };
       },
     }),
   }),
 });
 
-export const { useGeminiGenerationMutation } = mcpApi;
+export const {
+  useGeminiGenerationMutation,
+  useGetChatSessionLogQuery,
+  useUpdatePromptApprovalStatusMutation,
+  useGetChatSessionsQuery,
+} = mcpApi;
