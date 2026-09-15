@@ -6,6 +6,8 @@ This is one contract with three surfaces. Two exist today — **AI content** (a 
 
 **Studio's half of this document is a specification, not a live payload.** Everything in §2 marked _(Studio)_ is what the app will send once the surface ships; nothing sends it today. The request fields marked _(live)_ and all of §3 are in production now.
 
+**Every field in this request has to change a decision you make.** Studio knows a great deal about what the user is looking at — which toggle they are in, which page they opened, which element is highlighted — and almost none of it belongs on the wire. What arrives is what the model cannot derive: what it may write, what it is pointed at, and the text of the files it may rewrite.
+
 **In Studio the AI sits above the mode toggle.** Studio has a content mode, a layout mode, and a `full` mode that is the union of the two and the default for a user entitled to both. The drawer is not scoped by that toggle: one chat can change copy and code, and a single response may contain both a content-field write and a code-file write. The only thing that narrows what you may write is the user's permissions, delivered as `capabilities`. The request deliberately does **not** tell you which mode the UI is currently in — that would invite you to refuse a change the user is entitled to make.
 
 Audience: whoever implements the model side. Nothing here describes manager-ui internals you have to care about.
@@ -38,22 +40,21 @@ A bare array as the response body reads as `undefined` and breaks the drawer —
 
 There are two entry points and they do not send the same body. **Generate Suggestions** sends only `{ prompt, systemInstruction, temperature }` and expects `SYSTEM_SUGGESTION` back. Everything else in this document is the main prompt path:
 
-| Field                        | Type                     |            | Notes                                                                                                                           |
-| ---------------------------- | ------------------------ | ---------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `prompt`                     | string                   | live       | the user's text                                                                                                                 |
-| `tone`                       | string                   | live       | a full descriptive phrase, e.g. `"Professional - Serious, formal, and authoritative"`                                           |
-| `language`                   | string                   | live       | BCP-47, e.g. `"en-US"`                                                                                                          |
-| `modelZuid`                  | string                   | live       | content model of the item being edited                                                                                          |
-| `itemZuid`                   | string                   | live       | content item being edited                                                                                                       |
-| `registryKeys`               | string[]                 | live       | every refKey currently addressable — **the authoritative list, recomputed per request**                                         |
-| `refRegistry`                | string[]                 | live       | per-refKey context, as display strings — see below                                                                              |
-| `filename`, `code`, `fields` | string, string, object[] | live       | present only when the code editor is open                                                                                       |
-| `temperature`                | number                   | live       | 0.5                                                                                                                             |
-| `surface`                    | `"studio"`               | _(Studio)_ | absent on the content and code surfaces                                                                                         |
-| `path`                       | string                   | _(Studio)_ | the page under edit, e.g. `/pricing/`. Studio is a single route, so this is the only thing distinguishing one page from another |
-| `selection`                  | object \| null           | _(Studio)_ | what the user has selected on the canvas                                                                                        |
-| `capabilities`               | string[]                 | _(Studio)_ | what this user may change: `["content"]`, `["layout"]`, or both. The only gate                                                  |
-| `sources`                    | object[]                 | _(Studio)_ | `{ refKey, filename, code, fields }` per code file in scope — see below                                                         |
+| Field                        | Type                     |            | Notes                                                                                   |
+| ---------------------------- | ------------------------ | ---------- | --------------------------------------------------------------------------------------- |
+| `prompt`                     | string                   | live       | the user's text                                                                         |
+| `tone`                       | string                   | live       | a full descriptive phrase, e.g. `"Professional - Serious, formal, and authoritative"`   |
+| `language`                   | string                   | live       | BCP-47, e.g. `"en-US"`                                                                  |
+| `modelZuid`                  | string                   | live       | content model of the item being edited                                                  |
+| `itemZuid`                   | string                   | live       | content item being edited                                                               |
+| `registryKeys`               | string[]                 | live       | every refKey currently addressable — **the authoritative list, recomputed per request** |
+| `refRegistry`                | string[]                 | live       | per-refKey context, as display strings — see below                                      |
+| `filename`, `code`, `fields` | string, string, object[] | live       | present only when the code editor is open                                               |
+| `temperature`                | number                   | live       | 0.5                                                                                     |
+| `surface`                    | `"studio"`               | _(Studio)_ | absent on the content and code surfaces                                                 |
+| `selection`                  | object \| null           | _(Studio)_ | what the user has selected on the canvas                                                |
+| `capabilities`               | string[]                 | _(Studio)_ | what this user may change: `["content"]`, `["layout"]`, or both. The only gate          |
+| `sources`                    | object[]                 | _(Studio)_ | `{ refKey, filename, code, fields }` per code file in scope — see below                 |
 
 ### `refRegistry` is not parseable JSON
 
