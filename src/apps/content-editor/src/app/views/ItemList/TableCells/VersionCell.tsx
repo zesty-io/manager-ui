@@ -1,7 +1,9 @@
 import { Chip, Stack, Tooltip } from "@mui/material";
 import { GridRenderCellParams } from "@mui/x-data-grid-pro";
+import { useTranslation } from "react-i18next";
 
 export const VersionCell = ({ params }: { params: GridRenderCellParams }) => {
+  const { t } = useTranslation();
   const createdByUserName = params.row?.web?.createdByUserName;
   const isScheduledPublish = !!params.row?.scheduling?.publishAt;
   const publishedByUserName = isScheduledPublish
@@ -27,7 +29,10 @@ export const VersionCell = ({ params }: { params: GridRenderCellParams }) => {
           }}
           title={
             <div>
-              v{params.row?.meta?.version} saved on <br />
+              {t("content.itemListVersionSavedOn", {
+                version: params.row?.meta?.version,
+              })}{" "}
+              <br />
               {new Date(params.row?.meta?.updatedAt).toLocaleDateString(
                 "en-US",
                 {
@@ -39,7 +44,8 @@ export const VersionCell = ({ params }: { params: GridRenderCellParams }) => {
                   timeZoneName: "short",
                 }
               )}{" "}
-              <br /> by {createdByUserName}
+              <br />{" "}
+              {t("content.itemListVersionByUser", { name: createdByUserName })}
             </div>
           }
           slotProps={{
@@ -77,10 +83,17 @@ export const VersionCell = ({ params }: { params: GridRenderCellParams }) => {
           }}
           title={
             <div>
-              v
-              {params.row?.scheduling?.version ||
-                params.row?.publishing?.version}{" "}
-              {isScheduledPublish ? "scheduled to publish" : "published"} on{" "}
+              {isScheduledPublish
+                ? t("content.itemListVersionScheduledOn", {
+                    version:
+                      params.row?.scheduling?.version ||
+                      params.row?.publishing?.version,
+                  })
+                : t("content.itemListVersionPublishedOn", {
+                    version:
+                      params.row?.scheduling?.version ||
+                      params.row?.publishing?.version,
+                  })}{" "}
               <br />
               {new Date(
                 isScheduledPublish
@@ -94,7 +107,10 @@ export const VersionCell = ({ params }: { params: GridRenderCellParams }) => {
                 minute: "numeric",
                 timeZoneName: "short",
               })}{" "}
-              <br /> by {publishedByUserName}
+              <br />{" "}
+              {t("content.itemListVersionByUser", {
+                name: publishedByUserName,
+              })}
             </div>
           }
           slotProps={{
@@ -122,7 +138,7 @@ export const VersionCell = ({ params }: { params: GridRenderCellParams }) => {
         <Tooltip
           enterDelay={1000}
           enterNextDelay={1000}
-          title={"Item not yet created"}
+          title={t("content.itemListItemNotYetCreated")}
           placement="bottom-start"
           PopperProps={{
             modifiers: [

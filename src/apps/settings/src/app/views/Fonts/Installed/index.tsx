@@ -1,4 +1,5 @@
 import { useState, useRef, useMemo, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
 import { TopBar } from "../../../components/TopBar";
@@ -90,6 +91,7 @@ export const useInstalledFonts = () => {
 };
 
 const Installed = () => {
+  const { t } = useTranslation();
   const searchInputRef = useRef(null);
   const [search, setSearch] = useState("");
   const { fonts: installedFonts } = useInstalledFonts();
@@ -116,11 +118,11 @@ const Installed = () => {
           ))}
         </Portal>
       )}
-      <TopBar title="Installed Fonts">
+      <TopBar title={t("settings.installedFontsTitle")}>
         <Box display="flex" alignItems="center" justifyContent="flex-end">
           <SearchBox
             data-cy="InstalledFontSearchInput"
-            placeholder="Search Fonts"
+            placeholder={t("settings.searchFonts")}
             type="text"
             variant="outlined"
             size="small"
@@ -195,7 +197,7 @@ const Installed = () => {
               >
                 {!search ? (
                   <Typography variant="h5" color="text.secondary">
-                    No Installed Fonts
+                    {t("settings.noInstalledFonts")}
                   </Typography>
                 ) : (
                   <NoResults

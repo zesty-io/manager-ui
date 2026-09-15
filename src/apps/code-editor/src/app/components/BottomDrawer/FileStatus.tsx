@@ -1,5 +1,6 @@
 import { useSelector } from "react-redux";
-import { formatDistanceToNow, isValid } from "date-fns";
+import { formatDistanceToNowLocalized } from "shell/i18n/dates";
+import { isValid } from "date-fns";
 import InfoIcon from "@mui/icons-material/Info";
 import { CopyButton } from "@zesty-io/material";
 import FlashOnIcon from "@mui/icons-material/FlashOn";
@@ -9,6 +10,7 @@ import { Link as RouterLink } from "react-router-dom";
 import Typography from "@mui/material/Typography";
 import Link from "@mui/material/Link";
 import { NavCodeTypes } from "../constants";
+import { useTranslation } from "react-i18next";
 interface ItemWeb {
   path: string;
 }
@@ -22,35 +24,39 @@ interface FileStatusProps {
   items: Item[];
 }
 
-const FileType = ({
-  fileType,
-  fileName,
-}: {
-  fileType: string;
-  fileName: string;
-}) => {
+const FileType = (
+  {
+    fileType,
+    fileName,
+  }: {
+    fileType: string;
+    fileName: string;
+  },
+  t: (key: string, opts?: Record<string, unknown>) => string
+) => {
   if (["templateset", "pageset", "dataset"].includes(fileType)) {
-    return `Model View`;
+    return t("code.fileTypeModelView");
   }
   if (["ajax-json", "ajax-html"].includes(fileType)) {
     if (fileName.includes("/")) {
       let extension = fileName.split(".").slice(-1);
-      return `Custom File Type (${extension})`;
+      return t("code.fileTypeCustom", { extension });
     } else {
-      return `Legacy File`;
+      return t("code.fileTypeLegacy");
     }
   }
   return fileType === "404" ? "404" : fileType;
 };
 
 export default function FileStatus({ file, items }: FileStatusProps) {
+  const { t } = useTranslation();
   const instance = useSelector((state: any) => state.instance);
   const urlPreview = CONFIG.URL_PREVIEW_FULL;
   const urlFileName = file?.fileName?.trim()?.replace(/^\/+/, "");
 
   const edited = new Date(file.updatedAt);
   const editedText = isValid(edited)
-    ? formatDistanceToNow(edited, { addSuffix: true })
+    ? formatDistanceToNowLocalized(edited, { addSuffix: true })
     : "";
 
   const getWebLinkData = () => {
@@ -67,7 +73,7 @@ export default function FileStatus({ file, items }: FileStatusProps) {
       return {
         path: `${urlPreview}/-/ajax/${urlFileName}/`,
         label: ` /-/ajax/${urlFileName}/`,
-        tooltip: `Preview ${fileName} Webpage`,
+        tooltip: t("code.previewFileWebpage", { fileName }),
       };
     }
 
@@ -75,23 +81,23 @@ export default function FileStatus({ file, items }: FileStatusProps) {
       return {
         path: `${urlPreview}/-/custom/${urlFileName}/`,
         label: `/-/custom/${urlFileName}/`,
-        tooltip: `Preview ${fileName} Webpage`,
+        tooltip: t("code.previewFileWebpage", { fileName }),
       };
     }
 
     if (isSiteJs) {
       return {
         path: `${urlPreview}/site.js`,
-        label: "Compiles to /site.js",
-        tooltip: "Preview Javascript Webpage",
+        label: t("code.compilesToSiteJs", { file: "/site.js" }),
+        tooltip: t("code.previewJavascriptWebpage"),
       };
     }
 
     if (isSiteCss) {
       return {
         path: `${urlPreview}/site.css`,
-        label: "Compiles to /site.css",
-        tooltip: "Preview CSS Webpage",
+        label: t("code.compilesToSiteCss", { file: "/site.css" }),
+        tooltip: t("code.previewCssWebpage"),
       };
     }
 
@@ -101,7 +107,7 @@ export default function FileStatus({ file, items }: FileStatusProps) {
           ?.trim()
           ?.replace(/^\/+/, "")}`,
         label: items[0]?.web?.path,
-        tooltip: `Preview ${items[0]?.web?.path} Webpage`,
+        tooltip: t("code.previewPathWebpage", { path: items[0]?.web?.path }),
       };
     }
 
@@ -109,7 +115,7 @@ export default function FileStatus({ file, items }: FileStatusProps) {
       return {
         path: `${urlPreview}/${urlFileName}`,
         label: fileName,
-        tooltip: `WebEngine ${fileName} Link`,
+        tooltip: t("code.webEngineFileLink", { fileName }),
       };
     }
 
@@ -119,14 +125,15 @@ export default function FileStatus({ file, items }: FileStatusProps) {
   const webLinkData = getWebLinkData();
 
   return (
-    <FileCard title="File Information" icon={InfoIcon}>
+    <FileCard title={t("code.fileInformation")} icon={InfoIcon}>
       <List dense>
         {file?.contentModelZUID && (
           <FileCardListItem>
-            {`Model ZUID: `}
+            {t("code.modelZuid")}
+            {": "}
             <RouterLink
               to={`/schema/${file?.contentModelZUID}`}
-              title="Edit Related Model"
+              title={t("code.editRelatedModel")}
             >
               {file.contentModelZUID}
             </RouterLink>
@@ -135,7 +142,8 @@ export default function FileStatus({ file, items }: FileStatusProps) {
 
         {!!webLinkData && (
           <FileCardListItem>
-            {`WebEngine Link: `}
+            {t("code.webEngineLink")}
+            {": "}
             <Link
               href={webLinkData?.path}
               target="_blank"
@@ -147,7 +155,8 @@ export default function FileStatus({ file, items }: FileStatusProps) {
         )}
 
         <FileCardListItem>
-          {`File ZUID: `}
+          {t("code.fileZuid")}
+          {": "}
           <CopyButton
             variant="text"
             size="small"
@@ -174,21 +183,31 @@ export default function FileStatus({ file, items }: FileStatusProps) {
           />
         </FileCardListItem>
         <FileCardListItem>
-          {`File Type: `}
-          {FileType({ fileType: file.type, fileName: file.fileName })}
+          {t("code.fileType")}
+          {": "}
+          {FileType({ fileType: file.type, fileName: file.fileName }, t)}
         </FileCardListItem>
-        <FileCardListItem>Branch: {file.status}</FileCardListItem>
+        <FileCardListItem>
+          {t("code.branch")}
+          {": "}
+          {file.status}
+        </FileCardListItem>
         {file.publishedVersion ? (
           <FileCardListItem>
-            Published:&nbsp;Version {file.publishedVersion}
+            {t("code.publishedVersion", { n: file.publishedVersion })}
           </FileCardListItem>
         ) : (
-          <FileCardListItem>Not Published</FileCardListItem>
+          <FileCardListItem>
+            {t("shell.relationalStatusNotPublished")}
+          </FileCardListItem>
         )}
         <FileCardListItem>
-          Viewing:&nbsp;Version {file.version}
+          {t("code.viewingVersion", { n: file.version })}
         </FileCardListItem>
-        <FileCardListItem>Last edited:&nbsp;{editedText}</FileCardListItem>
+        <FileCardListItem>
+          {t("code.lastEdited")}
+          {":"}&nbsp;{editedText}
+        </FileCardListItem>
 
         <Divider sx={{ my: 1, border: "none" }} />
       </List>
@@ -196,14 +215,16 @@ export default function FileStatus({ file, items }: FileStatusProps) {
         <Link
           href={`${urlPreview}/-/instant/${file.contentModelZUID}.json`}
           target="_blank"
-          title={`Preview ${file.contentModelZUID} JSON`}
+          title={t("code.previewInstantJson", {
+            path: `${file.contentModelZUID} JSON`,
+          })}
           style={{
             display: "flex",
             alignItems: "center",
           }}
         >
           <FlashOnIcon sx={{ fontSize: "18px" }} />
-          <Typography variant="body2">Instant JSON API</Typography>
+          <Typography variant="body2">{t("code.instantJsonApi")}</Typography>
         </Link>
       )}
     </FileCard>

@@ -1,5 +1,6 @@
 import cloneDeep from "lodash/cloneDeep";
 
+import i18n from "shell/i18n";
 import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
 import { fetchNav, navContent } from "apps/content-editor/src/store/navContent";
@@ -334,7 +335,9 @@ export function searchItems(
           dispatch(
             notify({
               kind: "warn",
-              message: `Failed to fetch resource. ${res.status}`,
+              message: i18n.t("content.contentFetchResourceFailed", {
+                status: res.status,
+              }),
             })
           );
         }
@@ -344,7 +347,9 @@ export function searchItems(
         dispatch(
           notify({
             kind: "warn",
-            message: `Failed to search item: ${err?.message || err || ""}`,
+            message: i18n.t("content.contentSearchItemFailed", {
+              error: err?.message || err || "",
+            }),
           })
         );
       },
@@ -819,7 +824,9 @@ export function deleteItem(modelZUID, itemZUID) {
         if (res.status >= 400) {
           dispatch(
             notify({
-              message: `Failure deleting item: ${res.statusText}`,
+              message: i18n.t("content.deleteItemFailure", {
+                statusText: res.statusText,
+              }),
               kind: "error",
             })
           );
@@ -831,7 +838,7 @@ export function deleteItem(modelZUID, itemZUID) {
           });
           dispatch(
             notify({
-              message: `Successfully deleted item`,
+              message: i18n.t("content.deleteItemSuccess"),
               kind: "save",
             })
           );
@@ -877,8 +884,12 @@ export function publish(modelZUID, itemZUID, data, meta = {}) {
       })
       .then(() => {
         const message = data.publishAt
-          ? `Scheduled ${title} to publish on ${meta.localTime} in the ${meta.localTimezone} timezone`
-          : `Published ${title} now`;
+          ? i18n.t("content.scheduledPublish", {
+              title,
+              time: meta.localTime,
+              timezone: meta.localTimezone,
+            })
+          : i18n.t("content.publishedNow", { title });
 
         return dispatch(
           notify({
@@ -897,8 +908,8 @@ export function publish(modelZUID, itemZUID, data, meta = {}) {
       })
       .catch((err) => {
         const message = data.publishAt
-          ? `Error scheduling ${title}`
-          : `Error publishing ${title}`;
+          ? i18n.t("content.errorScheduling", { title })
+          : i18n.t("content.errorPublishing", { title });
         dispatch(
           notify({
             message,
@@ -934,8 +945,8 @@ export function unpublish(modelZUID, itemZUID, publishZUID, options = {}) {
         }
 
         const message = options.version
-          ? `Unscheduled version ${options.version}`
-          : `Unpublished ${title}`;
+          ? i18n.t("content.unscheduledVersion", { version: options.version })
+          : i18n.t("content.unpublished", { title });
 
         return dispatch(
           notify({
@@ -954,8 +965,10 @@ export function unpublish(modelZUID, itemZUID, publishZUID, options = {}) {
       })
       .catch((err) => {
         const message = options.version
-          ? `Error Unscheduling version ${options.version}`
-          : `Error Unpublishing ${title}`;
+          ? i18n.t("content.errorUnschedulingVersion", {
+              version: options.version,
+            })
+          : i18n.t("content.errorUnpublishing", { title });
         return dispatch(
           notify({
             message,
@@ -991,9 +1004,9 @@ export function fetchItemPublishing(modelZUID, itemZUID) {
         dispatch(
           notify({
             kind: "warn",
-            message: `Failed to fetch item publishing: ${
-              err?.message || err || ""
-            }`,
+            message: i18n.t("content.failedFetchItemPublishing", {
+              error: err?.message || err || "",
+            }),
           })
         );
       },
@@ -1017,9 +1030,10 @@ export function fetchItemPublishings() {
           dispatch(
             notify({
               kind: "warn",
-              message: `${res.status}:Failed to fetch item publishings${
-                res.error ? ": " + res.error : ""
-              }`,
+              message: i18n.t("content.failedFetchItemPublishings", {
+                status: res.status,
+                error: res.error || "",
+              }),
             })
           );
         }
@@ -1028,9 +1042,9 @@ export function fetchItemPublishings() {
         dispatch(
           notify({
             kind: "warn",
-            message: `Failed to fetch item publishings: ${
-              err?.message || err || ""
-            }`,
+            message: i18n.t("content.failedFetchItemPublishingsError", {
+              error: err?.message || err || "",
+            }),
           })
         );
       },
@@ -1090,7 +1104,9 @@ export function fetchAllModelPublishings({
       dispatch(
         notify({
           kind: "warn",
-          message: `Failed to fetch model items publishings: ${error.message}`,
+          message: i18n.t("content.failedFetchModelPublishings", {
+            error: error.message,
+          }),
         })
       );
     }
