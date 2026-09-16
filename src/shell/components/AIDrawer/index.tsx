@@ -138,9 +138,15 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
   const isInContentMeta = isContentMetaPath(pathname);
   const isInBlocks = isBlocksPath(pathname);
   const isInCodeApp = isCodeAppPath(pathname);
+  const isEnabled =
+    isInContentApp || isInContentMeta || isInBlocks || isInCodeApp;
   const user = useSelector((state: AppState) => state.user);
-  const { data: roles } = useGetUsersRolesQuery();
-  const { data: contentModels } = useGetContentModelsQuery();
+  const { data: roles } = useGetUsersRolesQuery(undefined, {
+    skip: !isEnabled,
+  });
+  const { data: contentModels } = useGetContentModelsQuery(undefined, {
+    skip: !isEnabled,
+  });
   const [latestPromptZUIDs, setLatestPromptZUIDs] = useState<Set<string>>(
     new Set()
   );
@@ -173,7 +179,7 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
     label: t("shell.toneNameProfessional"),
   });
 
-  const [geminiGenerate, { isLoading, data: aiResponse }] =
+  const [geminiGenerate, { isLoading, data: aiResponse, error: aiError }] =
     useGeminiGenerationMutation();
   const {
     data: chatSessionLog,
@@ -196,7 +202,7 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
     data: chatSessions,
     isLoading: isLoadingChatSessions,
     refetch: refetchChatSessions,
-  } = useGetChatSessionsQuery();
+  } = useGetChatSessionsQuery(undefined, { skip: !isEnabled });
   const [isStartingNewChat, setIsStartingNewChat] = useState(false);
 
   const relevantChatSessions = useMemo(() => {
@@ -216,8 +222,6 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
   // chat) is still catching up in the background.
   const isLoadingChatSessionLog =
     isChatSessionLogUnresolved && !isAwaitingLiveResponseRef.current;
-  const isEnabled =
-    isInContentApp || isInContentMeta || isInBlocks || isInCodeApp;
 
   const showChatThread =
     Boolean(urlChatZUID) ||
@@ -300,6 +304,14 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
       refetchChatSessions();
     }
   }, [aiResponse, setUrlChatZUID, chatSessions, refetchChatSessions]);
+
+  // If the mutation fails, the chat-session-log sync effect never gets a
+  // chance to clear this ref (it only runs on a successful response), so a
+  // failed request would otherwise leak "awaiting live response" state into
+  // whatever session the user switches to next.
+  useEffect(() => {
+    if (aiError) isAwaitingLiveResponseRef.current = false;
+  }, [aiError]);
 
   // Once a real chat is active, the "force new chat" override is no longer relevant
   useEffect(() => {
