@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
+import i18n from "shell/i18n";
 
 export const releaseMembers = createSlice({
   name: "releaseMembers",
@@ -169,7 +170,11 @@ export function updateMember(releaseZUID, memberZUID, payload) {
         dispatch(
           notify({
             kind: "success",
-            message: `Updated release(${release.name}) member(${item?.web.metaTitle}) to version ${payload.version}`,
+            message: i18n.t("release.updatedReleaseMember", {
+              releaseName: release.name,
+              itemTitle: item?.web.metaTitle,
+              version: payload.version,
+            }),
           })
         );
         dispatch(fetchMembers(releaseZUID));

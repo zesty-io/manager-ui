@@ -1,4 +1,5 @@
 import { Box, SxProps, Typography } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import FileCopyRoundedIcon from "@mui/icons-material/FileCopyRounded";
 import { GroupData, Bin } from "../../../../../shell/services/types";
 
@@ -15,6 +16,12 @@ export const DropArea = ({
   isDefaultBin,
   sx = {},
 }: Props) => {
+  const { t } = useTranslation();
+  const location = isDefaultBin
+    ? t("media.dropAreaAllMedia")
+    : currentGroup
+    ? currentGroup.name
+    : currentBin?.name;
   return (
     <Box
       sx={{
@@ -54,12 +61,7 @@ export const DropArea = ({
           />
         </Box>
         <Typography variant="h1" fontWeight="600" color="common.white">
-          Upload files to{" "}
-          {isDefaultBin
-            ? "All Media"
-            : currentGroup
-            ? currentGroup.name
-            : currentBin?.name}
+          {t("media.dropAreaUploadPrompt", { location })}
         </Typography>
       </Box>
     </Box>

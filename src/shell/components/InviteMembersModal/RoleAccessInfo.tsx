@@ -1,4 +1,5 @@
 import { Box, Typography } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import { Database } from "@zesty-io/material";
 import CodeRoundedIcon from "@mui/icons-material/CodeRounded";
@@ -70,6 +71,23 @@ interface Props {
 }
 
 export const RoleAccessInfo = ({ role }: Props) => {
+  const { t } = useTranslation();
+
+  // Translated display labels for each access area, keyed by the raw access
+  // string (which is also the accessIcon lookup key — left untranslated so the
+  // icon mapping keeps working). Reuses the shell nav labels for product areas.
+  const accessLabels: Record<string, string> = {
+    content: t("common.content"),
+    schema: t("shell.navSchema"),
+    code: t("shell.roleAccessCode"),
+    media: t("common.media"),
+    leads: t("shell.navLeads"),
+    "activity log": t("shell.roleAccessActivityLog"),
+    redirects: t("shell.navRedirects"),
+    settings: t("shell.navSettings"),
+    apps: t("shell.navApps"),
+  };
+
   return (
     <Box
       component="ul"
@@ -81,17 +99,15 @@ export const RoleAccessInfo = ({ role }: Props) => {
       }}
     >
       <Typography component="li" variant="body2" sx={{ marginBottom: 2 }}>
-        Has access to:
+        {t("shell.hasAccessTo")}
+        {":"}
       </Typography>
       <Box display="flex" flexWrap="wrap" gap={2}>
         {roleAccess[role].map((access) => (
           <Box key={access} display="flex" width={120} alignItems="center">
             {accessIcon[access as keyof typeof accessIcon]}
-            <Typography
-              sx={{ ml: 1, textTransform: "capitalize" }}
-              variant="body3"
-            >
-              {access === "code" ? "Code (Zesty IDE)" : access}
+            <Typography sx={{ ml: 1, wordBreak: "break-word" }} variant="body3">
+              {accessLabels[access] ?? access}
             </Typography>
           </Box>
         ))}
@@ -99,20 +115,19 @@ export const RoleAccessInfo = ({ role }: Props) => {
       {role === 5 ? (
         <>
           <Typography component="li" variant="body2">
-            Can only create and edit content
+            {t("shell.roleCanOnlyCreateEdit")}
           </Typography>
           <Typography component="li" variant="body2">
-            Cannot publish content. To publish new content, contributors must
-            submit a workflow request to a user with publishing access.
+            {t("shell.roleCannotPublish")}
           </Typography>
           <Typography component="li" variant="body2">
-            Can access media and add files, but they cannot delete files.
+            {t("shell.roleCanAccessMedia")}
           </Typography>
         </>
       ) : null}
       {role !== 0 ? (
         <Typography component="li" variant="body2">
-          Cannot delete other users
+          {t("shell.roleCannotDeleteUsers")}
         </Typography>
       ) : null}
     </Box>
