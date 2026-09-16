@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback, useContext } from "react";
+import { useTranslation } from "react-i18next";
 import { Box, Button, Stack } from "@mui/material";
 import {
   LinkRounded,
@@ -39,6 +40,7 @@ export const RelationalFieldBase = ({
   onChange,
   multiselect,
 }: RelationalFieldBaseProps) => {
+  const { t } = useTranslation();
   const [params] = useParams();
   const [itemZUIDs, setItemZUIDs] = useState<string[]>(value?.split(",") || []);
   const [showAll, setShowAll] = useState(false);
@@ -154,8 +156,15 @@ export const RelationalFieldBase = ({
             showAll ? <KeyboardArrowUpRounded /> : <KeyboardArrowDownRounded />
           }
         >
-          Viewing {showAll ? itemZUIDs?.length : "5"} of {itemZUIDs?.length}{" "}
-          items. See {showAll ? "Less" : "All"}.
+          {showAll
+            ? t("shell.relationalViewingSeeLess", {
+                shown: itemZUIDs?.length,
+                total: itemZUIDs?.length,
+              })
+            : t("shell.relationalViewingSeeAll", {
+                shown: "5",
+                total: itemZUIDs?.length,
+              })}
         </Button>
       )}
       {(multiselect || (!multiselect && !value)) && (
@@ -173,7 +182,7 @@ export const RelationalFieldBase = ({
             onClick={(evt) => setAnchorEl(evt.currentTarget)}
             disabled={isLoading || !modelData}
           >
-            Add Existing {fieldLabel}
+            {t("shell.relationalAddExisting", { label: fieldLabel })}
           </Button>
           {!isRenderedAsDialog && (
             <Button
@@ -185,7 +194,7 @@ export const RelationalFieldBase = ({
               onClick={() => setInitiatorZUID(fieldZUID)}
               disabled={isLoading || !modelData}
             >
-              Create & Add New {fieldLabel}
+              {t("shell.relationalCreateAddNew", { label: fieldLabel })}
             </Button>
           )}
         </Stack>

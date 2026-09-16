@@ -5,12 +5,7 @@ import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import ReorderRoundedIcon from "@mui/icons-material/ReorderRounded";
 import { NavTree, TreeItem } from "../../../../../../shell/components/NavTree";
-
-const CreateFileToolTip = {
-  views: "Create View",
-  stylesheets: "Create Stylesheet",
-  scripts: "Create Script",
-};
+import { useTranslation } from "react-i18next";
 
 type FileNavProps = {
   id: string;
@@ -76,9 +71,16 @@ const FileNav: FC<FileNavProps> = ({
   dirList = [],
   searchTerm = "",
 }) => {
+  const { t } = useTranslation();
   const { pathname } = useLocation();
   const [expanded, setExpanded] = useState<string[] | null>(dirList);
   const [searchExpanded, setSearchExpanded] = useState<string[] | null>(null);
+
+  const createFileToolTip: Record<string, string> = {
+    views: t("code.createView"),
+    stylesheets: t("code.createStylesheet"),
+    scripts: t("code.createScript"),
+  };
 
   const treeData = useMemo(() => {
     const { tree: treeRaw } = filterTreeData(tree, searchTerm);
@@ -154,7 +156,7 @@ const FileNav: FC<FileNavProps> = ({
                   {group !== "views" && (
                     <Tooltip
                       placement="top"
-                      title="Change combine and pre-process order"
+                      title={t("code.changeCombineOrder")}
                       enterDelay={1000}
                       enterNextDelay={1000}
                       componentsProps={{
@@ -174,7 +176,7 @@ const FileNav: FC<FileNavProps> = ({
                   )}
                   <Tooltip
                     placement="top-end"
-                    title={CreateFileToolTip[group]}
+                    title={createFileToolTip[group]}
                     enterDelay={1000}
                     enterNextDelay={1000}
                     componentsProps={{
