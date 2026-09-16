@@ -18,38 +18,10 @@ import SearchIcon from "@mui/icons-material/Search";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { debounce } from "lodash";
 import { useTranslation } from "react-i18next";
-import {
-  differenceInSeconds,
-  differenceInMinutes,
-  differenceInHours,
-  differenceInDays,
-  differenceInMonths,
-  differenceInYears,
-  isValid,
-} from "date-fns";
+import { isValid } from "date-fns";
 
 import { ChatSession } from "shell/services/types";
-
-const formatShortRelativeTime = (date: Date) => {
-  const now = new Date();
-
-  const years = differenceInYears(now, date);
-  if (years > 0) return `${years}y ago`;
-
-  const months = differenceInMonths(now, date);
-  if (months > 0) return `${months}mo ago`;
-
-  const days = differenceInDays(now, date);
-  if (days > 0) return `${days}d ago`;
-
-  const hours = differenceInHours(now, date);
-  if (hours > 0) return `${hours}h ago`;
-
-  const minutes = differenceInMinutes(now, date);
-  if (minutes > 0) return `${minutes}m ago`;
-
-  return `${Math.max(differenceInSeconds(now, date), 0)}s ago`;
-};
+import { formatDistanceToNowLocalized } from "shell/i18n/dates";
 
 type ChatHistoryProps = {
   sessions: ChatSession[];
@@ -232,7 +204,7 @@ const ChatHistoryRows = ({
           : null;
         const updatedAgo =
           updatedDate && isValid(updatedDate)
-            ? formatShortRelativeTime(updatedDate)
+            ? formatDistanceToNowLocalized(updatedDate, { addSuffix: true })
             : "";
 
         return (

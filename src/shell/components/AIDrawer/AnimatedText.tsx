@@ -18,6 +18,7 @@ export const AnimatedText = ({ text, animate, onGrow }: AnimatedTextProps) => {
 
   useEffect(() => {
     if (!animate) {
+      setDisplayedText(text);
       return;
     }
     setDisplayedText("");
