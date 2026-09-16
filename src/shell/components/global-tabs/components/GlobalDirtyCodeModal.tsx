@@ -1,6 +1,7 @@
 import { FC, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "../../../store/types";
+import { useTranslation } from "react-i18next";
 
 import { DirtyCodeModal } from "../../DirtyCodeModal";
 
@@ -12,6 +13,7 @@ import { unpinTab } from "../../../../shell/store/ui";
 import { actions } from "../../../../shell/store/ui";
 
 export const GlobalDirtyCodeModal: FC = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const dirtyCodeZuid = useSelector(
@@ -26,8 +28,8 @@ export const GlobalDirtyCodeModal: FC = () => {
 
   return (
     <DirtyCodeModal
-      title="Unsaved Changes"
-      content="Please save or discard your changes before unpinning this tab"
+      title={t("common.unsavedChanges")}
+      content={t("shell.unsavedChangesBody")}
       loading={loading}
       open={Boolean(dirtyCodeZuid)}
       onDiscard={async () => {

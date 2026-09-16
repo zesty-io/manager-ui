@@ -108,7 +108,7 @@ describe("All Files Page", () => {
       cy.getBySelector("NoResultsContainer").should("be.visible");
       cy.getBySelector("NoResultsContainer").should(
         "contain.text",
-        `Your search “xxx---xxx---xxx” could not find any results`,
+        `Your search "xxx---xxx---xxx" could not find any results`,
         matchcase
       );
     });

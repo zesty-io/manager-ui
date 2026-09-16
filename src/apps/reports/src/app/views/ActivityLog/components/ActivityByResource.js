@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Box, Typography, useTheme, Skeleton } from "@mui/material";
 import { Pie } from "react-chartjs-2";
-import { startCase } from "lodash";
+import { useTranslation } from "react-i18next";
 
 const resourceTypes = ["content", "schema", "code", "settings", "block"];
 
@@ -13,8 +13,17 @@ const resourceTypeColors = {
   block: "deepOrange",
 };
 
+const resourceTypeLabels = (t) => ({
+  content: t("common.content"),
+  schema: t("shell.navSchema"),
+  code: t("common.code"),
+  settings: t("shell.navSettings"),
+  block: t("shell.block"),
+});
+
 export const ActivityByResource = (props) => {
   const theme = useTheme();
+  const { t } = useTranslation();
 
   const resourceTypePercentages = useMemo(
     () =>
@@ -43,7 +52,7 @@ export const ActivityByResource = (props) => {
             sx={{ mb: 2.75 }}
           />
         ) : (
-          "ACTIVITY BY RESOURCE"
+          t("reports.activityByResource")
         )}
       </Typography>
       <Typography variant="h4" fontWeight={600} sx={{ mb: 0.25 }}>
@@ -62,7 +71,7 @@ export const ActivityByResource = (props) => {
         {props.showSkeletons ? (
           <Skeleton variant="reactangular" width={52} height={12} />
         ) : (
-          "Actions"
+          t("reports.actionsLabel")
         )}
       </Typography>
       {props.showSkeletons ? (
@@ -81,8 +90,8 @@ export const ActivityByResource = (props) => {
               plugins: { legend: { display: false } },
             }}
             data={{
-              labels: resourceTypePercentages.map((resource) =>
-                startCase(resource.type)
+              labels: resourceTypePercentages.map(
+                (resource) => resourceTypeLabels(t)[resource.type]
               ),
               datasets: [
                 {
@@ -133,7 +142,7 @@ export const ActivityByResource = (props) => {
                 color="text.secondary"
                 sx={{ width: 45 }}
               >
-                {startCase(resource.type)}
+                {resourceTypeLabels(t)[resource.type]}
               </Typography>
               <Typography
                 variant="caption"

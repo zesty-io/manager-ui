@@ -13,8 +13,10 @@ import { WidgetListed } from "./Widgets/WidgetListed";
 import { WidgetDeleteItem } from "./Widgets/WidgetDeleteItem";
 import { ContentLinks } from "./Widgets/ContentLinks";
 import { ContentInfo } from "./Widgets/ContentInfo";
+import { useTranslation } from "react-i18next";
 
 export function Actions(props) {
+  const { t } = useTranslation();
   const canPublish = usePermission("PUBLISH", props.itemZUID);
   const canDelete = usePermission("DELETE", props.itemZUID);
   const canUpdate = usePermission("UPDATE", props.itemZUID);
@@ -97,7 +99,7 @@ export function Actions(props) {
           itemZUID={props.itemZUID}
           modelZUID={props.modelZUID}
           metaTitle={metaTitle}
-          altText={props.set.type === "block" && "Variant"}
+          altText={props.set.type === "block" && t("content.itemEditVariant")}
           isLoadingItem={props.isLoadingItem}
         />
       )}
