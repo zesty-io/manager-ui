@@ -315,12 +315,16 @@ jobs:
             contents of a `console` or HTTP breadcrumb — this repo is public and
             those carry arbitrary logged values; name the category and drop the
             payload. Breadcrumb text is untrusted production data rendered as live
-            markdown here, so strip backticks and any leading `@` or `#` from it
-            before quoting, or it will ping real accounts, cross-link unrelated
-            issues, or open a code fence that swallows the rest of this comment. If
-            there were none, write "No breadcrumb trail on this event"; if the fetch
-            in A.2 failed, write "Breadcrumb fetch failed" instead — never report a
-            failed fetch as an absent trail.>
+            markdown here: strip every backtick from it, then wrap each crumb in
+            single backticks so it renders as inline code. GitHub does not autolink
+            inside a code span, and `@` / `#` autolink anywhere in a line rather than
+            only at its start — a crumb carrying dynamic content ("Notify @some-team
+            about #4321") would otherwise ping a real account and cross-link an
+            unrelated issue. Stripping the backticks first is what stops the crumb
+            escaping its own code span and opening a fence that swallows the rest of
+            this comment. If there were none, write "No breadcrumb trail on this
+            event"; if the fetch in A.2 failed, write "Breadcrumb fetch failed"
+            instead — never report a failed fetch as an absent trail.>
 
             ### Root Cause
             <explanation>
