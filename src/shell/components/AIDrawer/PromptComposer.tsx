@@ -14,7 +14,10 @@ import { useTranslation } from "react-i18next";
 type PromptComposerProps = {
   seed: string;
   disabled: boolean;
-  onSubmit: (value: string) => void;
+  // Returns whether the prompt was actually sent, so the draft is only
+  // cleared on a real send (e.g. not when the caller silently bails out
+  // because required data, like the user's role, hasn't loaded yet).
+  onSubmit: (value: string) => boolean;
   onHasValueChange: (hasValue: boolean) => void;
 };
 
@@ -51,8 +54,9 @@ export const PromptComposer = memo(
         if (!draft.trim()) {
           return;
         }
-        onSubmit(draft);
-        setDraft("");
+        if (onSubmit(draft)) {
+          setDraft("");
+        }
       }, [draft, onSubmit]);
 
       useImperativeHandle(ref, () => ({ submit: submitDraft }), [submitDraft]);

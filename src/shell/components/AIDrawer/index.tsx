@@ -424,7 +424,7 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
   const handlePrompt = useCallback(
     (newPrompt: string) => {
       if (!newPrompt?.trim() || !userRole?.ZUID) {
-        return;
+        return false;
       }
 
       const registryKeys = Object.keys(getRefRegistry() || {});
@@ -467,6 +467,7 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
         ],
       }));
       setComposerSeed("");
+      return true;
     },
     [
       geminiGenerate,

@@ -90,7 +90,7 @@ export type ChatThreadProps = {
   setSelectedLanguage: (language: LanguageOption) => void;
   selectedTone: ToneOption;
   setSelectedTone: (tone: ToneOption) => void;
-  handlePrompt: (value: string) => void;
+  handlePrompt: (value: string) => boolean;
   handleGenerateSuggestions: (sourcePrompt: string) => void;
   responsesEndRef: MutableRefObject<any>;
 };
