@@ -1,5 +1,9 @@
 import { TooltipProps, PaperProps, Tooltip, Box, Paper } from "@mui/material";
 
+// Stable reference — prevents MUI Tooltip from treating components as changed
+// on every parent re-render, which would trigger internal state updates.
+const TOOLTIP_COMPONENTS = { Tooltip: Box };
+
 type Slots = {
   title: JSX.Element;
   body: JSX.Element;
@@ -32,7 +36,7 @@ export const InteractiveTooltip = ({
           {slots.body}
         </Paper>
       }
-      components={{ Tooltip: Box }}
+      components={TOOLTIP_COMPONENTS}
       {...TooltipProps}
     >
       {slots.title}

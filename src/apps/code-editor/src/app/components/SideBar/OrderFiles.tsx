@@ -23,6 +23,7 @@ import ZoomOutMapIcon from "@mui/icons-material/ZoomOutMap";
 import { resolvePathPart } from "../../../store/files";
 import { fetchHeaders, saveSort } from "../../../store/headers";
 import CloseIcon from "@mui/icons-material/Close";
+import { useTranslation, Trans } from "react-i18next";
 
 interface FileHeader {
   ZUID: string;
@@ -174,6 +175,7 @@ const mapStateToProps = (state: any, props: { type: string }) => {
 const connector = connect(mapStateToProps);
 
 const OrderFiles = (props: OrderFilesProps) => {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [files, setFiles] = useState<FileHeader[]>(props.fileHeaders);
 
@@ -242,7 +244,7 @@ const OrderFiles = (props: OrderFilesProps) => {
           borderColor: "border",
         }}
       >
-        Order {props.typePathPart}
+        {t("code.orderFilesTitle", { typePathPart: props.typePathPart })}
         <IconButton
           onClick={handleClose}
           sx={{
@@ -264,21 +266,23 @@ const OrderFiles = (props: OrderFilesProps) => {
         }}
       >
         <Typography variant="body2" mt={2} mb={3}>
-          The displayed order is the order in which&nbsp;
-          <Link
-            href="https://zesty.org/services/web-engine/css-processing-flow"
-            target="_blank"
-            title="Learn More About Processing Flows"
-          >
-            &nbsp;files are processed and concatentated together
-          </Link>
-          &nbsp;into the dynamically created&nbsp;
-          {props.typePathPart === "stylesheets" ? (
-            <code>site.css</code>
-          ) : (
-            <code>site.js</code>
-          )}
-          &nbsp; file.
+          <Trans
+            i18nKey="code.orderFilesBody"
+            values={{
+              siteFile:
+                props.typePathPart === "stylesheets" ? "site.css" : "site.js",
+            }}
+            components={{
+              processingLink: (
+                <Link
+                  href="https://zesty.org/services/web-engine/css-processing-flow"
+                  target="_blank"
+                  title={t("code.learnMoreProcessingFlows")}
+                />
+              ),
+              code: <code />,
+            }}
+          />
         </Typography>
         <Dropzone onDrop={handleReorder}>
           {files.map((file, index) => {
@@ -314,15 +318,14 @@ const OrderFiles = (props: OrderFilesProps) => {
           })}
         </Dropzone>
         <Alert severity="warning" sx={{ mt: 2 }}>
-          After ordering a publish has to occur to process the new order and
-          make the change live.
+          {t("code.orderFilesPublishWarning")}
         </Alert>
       </DialogContent>
       <DialogActions
         sx={{ p: "20px", borderTop: "1px solid", borderColor: "border" }}
       >
         <Button variant="outlined" color="inherit" onClick={handleClose}>
-          Cancel
+          {t("common.cancel")}
         </Button>
         <Button
           variant="contained"
@@ -331,7 +334,7 @@ const OrderFiles = (props: OrderFilesProps) => {
           onClick={handleSaveSort}
           loading={loading}
         >
-          Save Order
+          {t("code.orderFilesSaveOrder")}
         </Button>
       </DialogActions>
     </Dialog>

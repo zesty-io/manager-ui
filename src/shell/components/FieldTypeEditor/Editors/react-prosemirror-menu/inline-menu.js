@@ -46,34 +46,37 @@ const canInsert = (type) => (state) => {
   return false;
 };
 
-const promptForURL = () => {
-  let url = window && window.prompt("Enter the URL", "https://");
+const promptForURL = (t) => {
+  let url =
+    window && window.prompt(t("shell.editorPromptEnterUrl"), "https://");
   return url;
 };
 
 export function inline(options) {
+  const { t } = options;
+
   return {
     marks: {
       em: {
-        title: "Italic",
+        title: t("shell.editorItalic"),
         content: icons.em,
         active: markActive(schema.marks.em),
         run: toggleMark(schema.marks.em),
       },
       strong: {
-        title: "Bold",
+        title: t("shell.editorBold"),
         content: icons.strong,
         active: markActive(schema.marks.strong),
         run: toggleMark(schema.marks.strong),
       },
       underline: {
-        title: "Underline",
+        title: t("shell.editorUnderline"),
         content: icons.underline,
         active: markActive(schema.marks.underline),
         run: toggleMark(schema.marks.underline),
       },
       link: {
-        title: "Add or remove link",
+        title: t("shell.editorAddRemoveLink"),
         content: icons.link,
         active: markActive(schema.marks.link),
         enable: (state) => !state.selection.empty,
@@ -83,7 +86,7 @@ export function inline(options) {
             return true;
           }
 
-          const href = promptForURL();
+          const href = promptForURL(t);
           if (!href) return false;
 
           toggleMark(schema.marks.link, { href })(state, dispatch);
@@ -120,84 +123,84 @@ export function inline(options) {
       //   run: setBlockType(schema.nodes.code_block)
       // },
       h1: {
-        title: "Change to heading level 1",
+        title: t("shell.editorChangeToHeadingLevel", { level: 1 }),
         content: "H1",
         active: blockActive(schema.nodes.heading, { level: 1 }),
         enable: setBlockType(schema.nodes.heading, { level: 1 }),
         run: setBlockType(schema.nodes.heading, { level: 1 }),
       },
       h2: {
-        title: "Change to heading level 2",
+        title: t("shell.editorChangeToHeadingLevel", { level: 2 }),
         content: "H2",
         active: blockActive(schema.nodes.heading, { level: 2 }),
         enable: setBlockType(schema.nodes.heading, { level: 2 }),
         run: setBlockType(schema.nodes.heading, { level: 2 }),
       },
       h3: {
-        title: "Change to heading level 3",
+        title: t("shell.editorChangeToHeadingLevel", { level: 3 }),
         content: "H3",
         active: blockActive(schema.nodes.heading, { level: 3 }),
         enable: setBlockType(schema.nodes.heading, { level: 3 }),
         run: setBlockType(schema.nodes.heading, { level: 3 }),
       },
       h4: {
-        title: "Change to heading level 4",
+        title: t("shell.editorChangeToHeadingLevel", { level: 4 }),
         content: "H4",
         active: blockActive(schema.nodes.heading, { level: 4 }),
         enable: setBlockType(schema.nodes.heading, { level: 4 }),
         run: setBlockType(schema.nodes.heading, { level: 4 }),
       },
       h5: {
-        title: "Change to heading level 5",
+        title: t("shell.editorChangeToHeadingLevel", { level: 5 }),
         content: "H5",
         active: blockActive(schema.nodes.heading, { level: 5 }),
         enable: setBlockType(schema.nodes.heading, { level: 5 }),
         run: setBlockType(schema.nodes.heading, { level: 5 }),
       },
       h6: {
-        title: "Change to heading level 6",
+        title: t("shell.editorChangeToHeadingLevel", { level: 6 }),
         content: "H6",
         active: blockActive(schema.nodes.heading, { level: 6 }),
         enable: setBlockType(schema.nodes.heading, { level: 6 }),
         run: setBlockType(schema.nodes.heading, { level: 6 }),
       },
       plain: {
-        title: "Change to paragraph",
+        title: t("shell.editorChangeToParagraph"),
         content: icons.paragraph,
         active: blockActive(schema.nodes.paragraph),
         enable: setBlockType(schema.nodes.paragraph),
         run: setBlockType(schema.nodes.paragraph),
       },
       code_block: {
-        title: "Change to code block",
+        title: t("shell.editorChangeToCodeBlock"),
         content: icons.code_block,
         active: blockActive(schema.nodes.code_block),
         enable: setBlockType(schema.nodes.code_block),
         run: setBlockType(schema.nodes.code_block),
       },
       blockquote: {
-        title: "Wrap in block quote",
+        title: t("shell.editorWrapInBlockQuote"),
         content: icons.blockquote,
         active: blockActive(schema.nodes.blockquote),
         enable: wrapIn(schema.nodes.blockquote),
         run: wrapIn(schema.nodes.blockquote),
       },
       bullet_list: {
-        title: "Wrap in bullet list",
+        title: t("shell.editorWrapInBulletList"),
         content: icons.bullet_list,
         active: blockActive(schema.nodes.bullet_list),
         enable: wrapInList(schema.nodes.bullet_list),
         run: wrapInList(schema.nodes.bullet_list),
       },
       ordered_list: {
-        title: "Wrap in ordered list",
+        title: t("shell.editorWrapInOrderedList"),
         content: icons.ordered_list,
         active: blockActive(schema.nodes.ordered_list),
         enable: wrapInList(schema.nodes.ordered_list),
         run: wrapInList(schema.nodes.ordered_list),
       },
       indent: {
-        title: "Indent",
+        title: t("shell.editorIndent"),
         content: icons.indent,
         active: markActive(schema.marks.indent),
         run: toggleMark(schema.marks.indent),
@@ -205,7 +208,7 @@ export function inline(options) {
     },
     insert: {
       image: {
-        title: "Insert image from media library",
+        title: t("shell.editorInsertImage"),
         content: icons.image,
         enable: canInsert(schema.nodes.image),
         run: (state, dispatch) => {

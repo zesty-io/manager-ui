@@ -36,6 +36,8 @@ export type FieldDatatypeMeta = {
   Icon: FieldIcon;
   category: FieldCategory;
   // One-line "what is this field" shown under the name in the dropdown.
+  // NOTE: this is an i18n key, not display text — t() cannot run at module
+  // scope, so callers must resolve it with t(meta.description) themselves.
   description: string;
 };
 
@@ -46,114 +48,114 @@ const FIELD_DATATYPE_META: Record<string, FieldDatatypeMeta> = {
   text: {
     Icon: TitleRounded,
     category: "text",
-    description: "Titles, names, and headings",
+    description: "content.fieldMetaTextDescription",
   },
   textarea: {
     Icon: SubjectRounded,
     category: "text",
-    description: "Plain multi-line text",
+    description: "content.fieldMetaTextareaDescription",
   },
   wysiwyg_basic: {
     Icon: NewspaperRounded,
     category: "text",
-    description: "Rich text with formatting",
+    description: "content.fieldMetaWysiwygDescription",
   },
   wysiwyg_advanced: {
     Icon: NewspaperRounded,
     category: "text",
-    description: "Rich text with formatting",
+    description: "content.fieldMetaWysiwygDescription",
   },
   article_writer: {
     Icon: NewspaperRounded,
     category: "text",
-    description: "Long-form article content",
+    description: "content.fieldMetaArticleWriterDescription",
   },
   markdown: {
     Icon: NotesRounded,
     category: "text",
-    description: "Markdown-formatted text",
+    description: "content.fieldMetaMarkdownDescription",
   },
   number: {
     Icon: PinRounded,
     category: "number",
-    description: "Whole or decimal numbers",
+    description: "content.fieldMetaNumberDescription",
   },
   currency: {
     Icon: PaymentsRounded,
     category: "number",
-    description: "Monetary values",
+    description: "content.fieldMetaCurrencyDescription",
   },
   yes_no: {
     Icon: ToggleOnRounded,
     category: "neutral",
-    description: "A true / false toggle",
+    description: "content.fieldMetaYesNoDescription",
   },
   dropdown: {
     Icon: KeyboardArrowDownRounded,
     category: "options",
-    description: "A single choice from a list",
+    description: "content.fieldMetaDropdownDescription",
   },
   color: {
     Icon: ColorLensRounded,
     category: "options",
-    description: "A colour value",
+    description: "content.fieldMetaColorDescription",
   },
   sort: {
     Icon: FormatListNumberedRounded,
     category: "options",
-    description: "A manual sort order",
+    description: "content.fieldMetaSortDescription",
   },
   uuid: {
     Icon: NumbersRounded,
     category: "options",
-    description: "A unique identifier",
+    description: "content.fieldMetaUuidDescription",
   },
   images: {
     // A media field feeds both <img> and <video> sources, so the generic
     // attachment icon reads better here than an image-specific one.
     Icon: AttachmentRounded,
     category: "media",
-    description: "Media from the asset library",
+    description: "content.fieldMetaImagesDescription",
   },
   one_to_one: {
     Icon: AccountTreeRounded,
     category: "neutral",
-    description: "A link to one related item",
+    description: "content.fieldMetaOneToOneDescription",
   },
   one_to_many: {
     Icon: AccountTreeRounded,
     category: "neutral",
-    description: "Links to related items",
+    description: "content.fieldMetaOneToManyDescription",
   },
   internal_link: {
     Icon: DocumentScannerRounded,
     category: "neutral",
-    description: "A link to another page",
+    description: "content.fieldMetaInternalLinkDescription",
   },
   link: {
     Icon: LinkRounded,
     category: "link",
-    description: "An external URL",
+    description: "content.fieldMetaLinkDescription",
   },
   date: {
     Icon: CalendarTodayRounded,
     category: "neutral",
-    description: "A calendar date",
+    description: "content.fieldMetaDateDescription",
   },
   datetime: {
     Icon: ScheduleRounded,
     category: "neutral",
-    description: "A date and time",
+    description: "content.fieldMetaDatetimeDescription",
   },
   block_selector: {
     Icon: WidgetsRounded,
     category: "neutral",
-    description: "A reusable content block",
+    description: "content.fieldMetaBlockSelectorDescription",
   },
   repeater: {
     Icon: AutoAwesomeMotionRounded,
     category: "neutral",
-    description: "A repeating group of fields",
+    description: "content.fieldMetaRepeaterDescription",
   },
 };
 

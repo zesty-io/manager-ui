@@ -1,6 +1,7 @@
 import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
 import { instanceApi } from "../../../../shell/services/instance";
+import i18n from "shell/i18n";
 
 export function redirects(state = {}, action) {
   switch (action.type) {
@@ -79,7 +80,7 @@ export function createRedirect(redirect) {
           dispatch(
             notify({
               kind: "success",
-              message: `Created redirect`,
+              message: i18n.t("seo.redirectCreateSuccess"),
             })
           );
 
@@ -96,7 +97,10 @@ export function createRedirect(redirect) {
           dispatch(
             notify({
               kind: "error",
-              message: `Failed creating redirect from ${redirect.path}. ${json.error}`,
+              message: i18n.t("seo.redirectCreateFailedFromPath", {
+                path: redirect.path,
+                error: json.error,
+              }),
             })
           );
         }
@@ -105,7 +109,7 @@ export function createRedirect(redirect) {
         dispatch(
           notify({
             kind: "error",
-            message: "Failed creating redirect",
+            message: i18n.t("seo.redirectCreateFailed"),
           })
         );
       });
@@ -130,7 +134,7 @@ export function removeRedirect(zuid) {
           dispatch(
             notify({
               kind: "error",
-              message: "Failed to remove SEO redirect",
+              message: i18n.t("seo.redirectRemoveFailed"),
             })
           );
         }
@@ -140,7 +144,7 @@ export function removeRedirect(zuid) {
         dispatch(
           notify({
             kind: "error",
-            message: "Failed to remove SEO redirect",
+            message: i18n.t("seo.redirectRemoveFailed"),
           })
         );
       });

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useMemo, useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Grid } from "react-window";
 import { Box, Typography } from "@mui/material";
 import { Folder } from "./Folder";
@@ -17,6 +18,7 @@ interface Props {
 }
 
 export const MediaGrid = ({ groups, files, hideHeaders = false }: Props) => {
+  const { t } = useTranslation();
   const location = useLocation();
   const history = useHistory();
   const [columns, setColumns] = useState(4);
@@ -87,7 +89,7 @@ export const MediaGrid = ({ groups, files, hideHeaders = false }: Props) => {
                 pr: 2,
               }}
             >
-              Folders
+              {t("media.mediaGridFoldersHeader")}
             </Typography>
           )}
           {gridItemType === "group" && (
@@ -113,7 +115,7 @@ export const MediaGrid = ({ groups, files, hideHeaders = false }: Props) => {
                 pr: 2,
               }}
             >
-              Files
+              {t("media.mediaGridFilesHeader")}
             </Typography>
           )}
           {gridItemType === "file" && (
@@ -146,7 +148,7 @@ export const MediaGrid = ({ groups, files, hideHeaders = false }: Props) => {
         </div>
       );
     },
-    [grid]
+    [grid, t]
   );
 
   return (
