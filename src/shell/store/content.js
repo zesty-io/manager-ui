@@ -3,6 +3,7 @@ import cloneDeep from "lodash/cloneDeep";
 import i18n from "shell/i18n";
 import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
+import instanceZUID from "utility/instanceZUID";
 import { fetchNav, navContent } from "apps/content-editor/src/store/navContent";
 import { instanceApi } from "../../shell/services/instance";
 import { cloudFunctionsApi } from "../services/cloudFunctions";
@@ -1116,7 +1117,7 @@ export function fetchAllModelPublishings({
 export function checkLock(itemZUID) {
   return () => {
     return request(
-      `${CONFIG.SERVICE_REDIS_GATEWAY}/door/knock?path=${itemZUID}`,
+      `${CONFIG.SERVICE_REDIS_GATEWAY}/door/knock?path=${itemZUID}&instanceZUID=${instanceZUID}`,
       {
         credentials: "omit",
       }
@@ -1129,7 +1130,7 @@ export function checkLock(itemZUID) {
 export function unlock(itemZUID) {
   return () => {
     return request(
-      `${CONFIG.SERVICE_REDIS_GATEWAY}/door/unlock?path=${itemZUID}`,
+      `${CONFIG.SERVICE_REDIS_GATEWAY}/door/unlock?path=${itemZUID}&instanceZUID=${instanceZUID}`,
       {
         credentials: "omit",
       }
@@ -1153,6 +1154,7 @@ export function lock(itemZUID) {
           email: user.email,
           userZUID: user.ZUID,
           path: itemZUID,
+          instanceZUID,
         },
       }).catch((err) => {
         console.error("unlock failed:", err);
