@@ -1,4 +1,5 @@
 import { FC } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ListItem,
   ListSubheader,
@@ -21,6 +22,7 @@ export const SearchAccelerator: FC<SearchAcceleratorProps> = ({
   onAcceleratorClick,
   ...props
 }) => {
+  const { t } = useTranslation();
   const { mainApp } = useGetActiveApp();
   const isValidApp = Boolean(SEARCH_ACCELERATORS[mainApp as ResourceType]);
 
@@ -45,9 +47,9 @@ export const SearchAccelerator: FC<SearchAcceleratorProps> = ({
             <ManageSearchRoundedIcon fontSize="small" />
           </ListItemIcon>
           <ListItemText
-            primary={`Find in ${
-              SEARCH_ACCELERATORS[mainApp as ResourceType].text
-            }`}
+            primary={t("shell.findIn", {
+              app: t(SEARCH_ACCELERATORS[mainApp as ResourceType].textKey),
+            })}
             primaryTypographyProps={{
               variant: "body2",
               color: "text.secondary",
@@ -60,7 +62,7 @@ export const SearchAccelerator: FC<SearchAcceleratorProps> = ({
         color="text.secondary"
         sx={{ pt: 1, px: 1.5, fontWeight: 600 }}
       >
-        Search in...
+        {t("shell.searchIn")}
       </Typography>
       <ListItem
         data-cy="global-search-accelerators"
@@ -85,7 +87,7 @@ export const SearchAccelerator: FC<SearchAcceleratorProps> = ({
             startIcon={<SvgIcon component={value.icon} />}
             onClick={() => onAcceleratorClick(key as ResourceType)}
           >
-            {value.text}
+            {t(value.textKey)}
           </Button>
         ))}
       </ListItem>

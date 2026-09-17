@@ -1,4 +1,5 @@
 import { FC, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Typography,
   Box,
@@ -42,7 +43,7 @@ import { MoveFileDialog } from "./MoveFileDialog";
 import { useDispatch } from "react-redux";
 import { notify } from "../../../../../../shell/store/notifications";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query";
-import { format } from "date-fns";
+import { formatLocalized } from "shell/i18n/dates";
 
 export const MEDIA_TITLE_MAXLENGTH = 255;
 
@@ -78,6 +79,7 @@ export const FileModalContent: FC<Props> = ({
   setShowEdit,
   onOpenReplaceFileModal,
 }) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const [newTitle, setNewTitle] = useState(title);
   const [isCopied, setIsCopied] = useState<boolean>(false);
@@ -200,7 +202,8 @@ export const FileModalContent: FC<Props> = ({
         notify({
           kind: "error",
           message:
-            deleteResponse?.error?.data?.message || "Failed to delete file",
+            deleteResponse?.error?.data?.message ||
+            t("media.fileModalContentDeleteFailed"),
         })
       );
     });
@@ -290,19 +293,22 @@ export const FileModalContent: FC<Props> = ({
           />
         </Stack>
         <Box sx={{ display: "flex", flexDirection: "row" }}>
-          <Tooltip placement="bottom-start" title="More">
+          <Tooltip placement="bottom-start" title={t("common.more")}>
             <IconButton
               onClick={(evt) => setShowSettingsDropdown(evt.currentTarget)}
               aria-controls={openSettings ? "settingsMenu" : undefined}
               aria-haspopup="true"
-              aria-label="Open settings menu"
+              aria-label={t("media.fileModalContentOpenSettingsAria")}
               aria-expanded={openSettings ? "true" : undefined}
               size="small"
             >
               <MoreHorizRoundedIcon fontSize="small" />
             </IconButton>
           </Tooltip>
-          <Tooltip placement="bottom-start" title="Rename File">
+          <Tooltip
+            placement="bottom-start"
+            title={t("media.fileModalContentRenameTooltip")}
+          >
             <IconButton
               size="small"
               onClick={() => setShowRenameFileModal(true)}
@@ -310,29 +316,38 @@ export const FileModalContent: FC<Props> = ({
               <EditIcon fontSize="small" />
             </IconButton>
           </Tooltip>
-          <Tooltip placement="bottom-start" title="Replace File">
+          <Tooltip
+            placement="bottom-start"
+            title={t("media.fileModalContentReplaceTooltip")}
+          >
             <IconButton
               size="small"
-              aria-label="Replace File Button"
+              aria-label={t("media.fileModalContentReplaceAria")}
               onClick={onOpenReplaceFileModal}
             >
               <FileReplace fontSize="small" />
             </IconButton>
           </Tooltip>
-          <Tooltip placement="bottom-start" title="Delete File">
+          <Tooltip
+            placement="bottom-start"
+            title={t("media.fileModalContentDeleteTooltip")}
+          >
             <IconButton
               size="small"
-              aria-label="Trash Button"
+              aria-label={t("media.fileModalContentDeleteAria")}
               onClick={() => setShowDeleteFileModal(true)}
             >
               <DeleteIcon fontSize="small" />
             </IconButton>
           </Tooltip>
-          <Tooltip placement="bottom-start" title="Close Preview">
+          <Tooltip
+            placement="bottom-start"
+            title={t("media.fileModalContentCloseTooltip")}
+          >
             <IconButton
               size="small"
               onClick={() => handleCloseModal()}
-              aria-label="Close Icon"
+              aria-label={t("media.fileModalContentCloseAria")}
             >
               <CloseIcon fontSize="small" />
             </IconButton>
@@ -362,25 +377,27 @@ export const FileModalContent: FC<Props> = ({
               <ListItemIcon>
                 <DriveFileRenameOutlineRoundedIcon />
               </ListItemIcon>
-              <ListItemText>Rename</ListItemText>
+              <ListItemText>
+                {t("media.fileModalContentRenameMenuItem")}
+              </ListItemText>
             </MenuItem>
             <MenuItem onClick={() => handleCopyClick(id, true)}>
               <ListItemIcon>
                 {isCopied ? <CheckIcon /> : <WidgetsRoundedIcon />}
               </ListItemIcon>
-              <ListItemText>Copy ZUID</ListItemText>
+              <ListItemText>{t("media.fileModalContentCopyZuid")}</ListItemText>
             </MenuItem>
             <MenuItem onClick={() => setShowMoveFileDialog(true)}>
               <ListItemIcon>
                 <DriveFolderUploadRoundedIcon />
               </ListItemIcon>
-              <ListItemText>Move to</ListItemText>
+              <ListItemText>{t("media.fileModalContentMoveTo")}</ListItemText>
             </MenuItem>
             <MenuItem onClick={() => setShowDeleteFileModal(true)}>
               <ListItemIcon>
                 <DeleteRoundedIcon />
               </ListItemIcon>
-              <ListItemText>Delete</ListItemText>
+              <ListItemText>{t("common.delete")}</ListItemText>
             </MenuItem>
           </Menu>
         </Box>
@@ -389,13 +406,13 @@ export const FileModalContent: FC<Props> = ({
       {/* Content Form */}
       <Box sx={{ px: 2.5 }}>
         <Box sx={{ mt: 2 }}>
-          <InputLabel>Title</InputLabel>
+          <InputLabel>{t("media.fileModalContentTitleLabel")}</InputLabel>
           <InputLabel sx={{ color: "text.secondary" }}>
-            Can be used for alt-text and captions
+            {t("media.fileModalContentTitleHelper")}
           </InputLabel>
           <TextField
-            placeholder="Enter title"
-            aria-label="Title TextField"
+            placeholder={t("media.fileModalContentTitlePlaceholder")}
+            aria-label={t("media.fileModalContentTitleAria")}
             value={newTitle}
             onChange={(event) => {
               if (event.target.value.length > MEDIA_TITLE_MAXLENGTH) {
@@ -422,19 +439,19 @@ export const FileModalContent: FC<Props> = ({
               size="small"
               sx={{ mt: 1 }}
               variant="contained"
-              aria-label="Save Title Button"
+              aria-label={t("media.fileModalContentSaveTitleAria")}
               onClick={() => handleUpdateMutation(newFilename, true)}
             >
               {isLoadingUpdateAltText ? (
                 <CircularProgress size="24px" color="inherit" />
               ) : (
-                "Save"
+                t("common.save")
               )}
             </Button>
           )}
         </Box>
         <Box sx={{ mt: 3 }}>
-          <InputLabel>File URL</InputLabel>
+          <InputLabel>{t("media.fileModalContentFileUrlLabel")}</InputLabel>
           <TextField
             fullWidth
             value={src}
@@ -467,7 +484,7 @@ export const FileModalContent: FC<Props> = ({
             color="inherit"
             variant="contained"
           >
-            Launch On the Fly Editor
+            {t("media.fileModalContentLaunchOtfEditor")}
           </Button>
         )}
         {/* {user?.email && (
@@ -493,7 +510,7 @@ export const FileModalContent: FC<Props> = ({
           </Box>
         )} */}
         <Box sx={{ mt: 3 }}>
-          <InputLabel>ZUID</InputLabel>
+          <InputLabel>{t("media.fileModalContentZuidLabel")}</InputLabel>
           <TextField
             fullWidth
             value={id}
@@ -518,7 +535,9 @@ export const FileModalContent: FC<Props> = ({
           />
         </Box>
         <Box sx={{ mt: 3 }}>
-          <Typography variant="body2">Uploaded On</Typography>
+          <Typography variant="body2">
+            {t("media.fileModalContentUploadedOn")}
+          </Typography>
           <Box sx={{ display: "flex", mt: 1 }}>
             <Box
               sx={{
@@ -531,12 +550,12 @@ export const FileModalContent: FC<Props> = ({
             </Box>
             <Box sx={{ pl: 2 }}>
               <Typography variant="body2">
-                {createdAt && format(new Date(createdAt), "PPP")}
+                {createdAt && formatLocalized(new Date(createdAt), "PPP")}
               </Typography>
               <Typography variant="body2" sx={{ color: "text.secondary" }}>
                 {createdAt && (
                   <>
-                    {format(new Date(createdAt), "EEE, h:mm a")}{" "}
+                    {formatLocalized(new Date(createdAt), "EEE, h:mm a")}{" "}
                     {new Date(createdAt)
                       .toLocaleTimeString("en-US", {
                         timeZoneName: "short",
@@ -551,7 +570,9 @@ export const FileModalContent: FC<Props> = ({
         </Box>
         {!!updatedAt && (
           <Box sx={{ mt: 3 }}>
-            <Typography variant="body2">Updated On</Typography>
+            <Typography variant="body2">
+              {t("media.fileModalContentUpdatedOn")}
+            </Typography>
             <Box sx={{ display: "flex", mt: 1 }}>
               <Box
                 sx={{
@@ -564,12 +585,12 @@ export const FileModalContent: FC<Props> = ({
               </Box>
               <Box sx={{ pl: 2 }}>
                 <Typography variant="body2">
-                  {updatedAt && format(new Date(updatedAt), "PPP")}
+                  {updatedAt && formatLocalized(new Date(updatedAt), "PPP")}
                 </Typography>
                 <Typography variant="body2" sx={{ color: "text.secondary" }}>
                   {updatedAt && (
                     <>
-                      {format(new Date(updatedAt), "EEE, h:mm a")}{" "}
+                      {formatLocalized(new Date(updatedAt), "EEE, h:mm a")}{" "}
                       {new Date(updatedAt)
                         .toLocaleTimeString("en-US", {
                           timeZoneName: "short",

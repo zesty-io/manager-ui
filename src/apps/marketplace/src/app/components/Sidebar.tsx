@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchInstalledApps } from "../../../../../shell/store/apps";
 import { StorefrontRounded, PowerRounded } from "@mui/icons-material";
@@ -13,6 +14,7 @@ import { IconButton as IconButtonCustom } from "@zesty-io/material";
 import { AddRounded } from "@mui/icons-material";
 
 export const Sidebar = () => {
+  const { t } = useTranslation();
   const installedApps = useSelector((state: AppState) => state.apps.installed);
   const isLoadingApps = useSelector(
     (state: AppState) => state.apps.isLoadingApps
@@ -45,13 +47,13 @@ export const Sidebar = () => {
     <AppSideBar
       data-cy="apps-nav"
       mode="dark"
-      headerTitle="Apps"
+      headerTitle={t("marketplace.headerTitleApps")}
       onAddClick={() =>
         window.open("https://www.zesty.io/marketplace/apps/", "_blank")
       }
       subMenus={[
         {
-          name: "Marketplace",
+          name: t("marketplace.sidebarMarketplace"),
           path: "",
           icon: StorefrontRounded,
           disableActive: true,
@@ -61,7 +63,7 @@ export const Sidebar = () => {
         ...apps,
       ]}
       withSearch={false}
-      titleButtonTooltip="Visit Marketplace"
+      titleButtonTooltip={t("marketplace.visitMarketplace")}
       isLoading={isLoadingApps}
     />
   );

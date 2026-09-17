@@ -1,4 +1,5 @@
 import { FC, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import {
   Box,
@@ -648,23 +649,24 @@ const FilenameColumn = ({ params }: any) => {
 };
 
 export const InsightsTable: FC<Props> = ({ files, loading }) => {
+  const { t } = useTranslation();
   const history = useHistory();
 
   const columns = [
     {
       field: "filename",
-      headerName: "Name",
+      headerName: t("common.name"),
       flex: 1,
       renderCell: (params: any) => <FilenameColumn params={params} />,
     },
     {
       field: "Requests",
-      headerName: "Requests",
+      headerName: t("media.insightsTableColRequests"),
       width: 140,
     },
     {
       field: "ThroughtputGB",
-      headerName: "Bandwidth",
+      headerName: t("media.insightsTableColBandwidth"),
       width: 140,
       renderCell: (params: any) => {
         return (
@@ -678,7 +680,7 @@ export const InsightsTable: FC<Props> = ({ files, loading }) => {
     },
     {
       field: "type",
-      headerName: "Type",
+      headerName: t("media.insightsTableColType"),
       width: 88,
       sortable: false,
       renderCell: (params: any) => {

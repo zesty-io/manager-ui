@@ -5,12 +5,14 @@ import { useSelector } from "react-redux";
 
 import { useDomain } from "../../../../../../../../shell/hooks/use-domain";
 import { AppState } from "../../../../../../../../shell/store/types";
+import { useTranslation } from "react-i18next";
 import { asRenderableText } from "../../../../../../../../utility/asRenderableText";
 
 type LinkedInPreviewProps = {
   imageURL: string;
 };
 export const LinkedInPreview = ({ imageURL }: LinkedInPreviewProps) => {
+  const { t } = useTranslation();
   const { itemZUID, modelZUID } = useParams<{
     itemZUID: string;
     modelZUID: string;
@@ -84,7 +86,7 @@ export const LinkedInPreview = ({ imageURL }: LinkedInPreviewProps) => {
         >
           {asRenderableText(item?.data?.og_title) ||
             item?.web?.metaTitle ||
-            "Meta Title"}
+            t("content.itemEditMetaTitle")}
         </Typography>
         <Typography variant="body2" color="text.secondary">
           {domain.replace(/http:\/\/|https:\/\//gm, "")}

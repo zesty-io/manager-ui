@@ -22,6 +22,8 @@ import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import PlayCircleOutlineRoundedIcon from "@mui/icons-material/PlayCircleOutlineRounded";
 import SearchIcon from "@mui/icons-material/Search";
 
+import { useTranslation } from "react-i18next";
+
 import { NoResults } from "../NoResults";
 import { StarterBlockProps, STARTER_BLOCKS } from "./configs";
 import SearchBox from "../../../../../../shell/components/SearchBox";
@@ -125,6 +127,7 @@ export const StarterBlocksSelection: React.FC<StarterBlocksSelectionProps> = ({
   selectBlank,
   blockType,
 }) => {
+  const { t } = useTranslation();
   const searchRef = useRef<HTMLDivElement>();
   const [filteredBlockTypes, setFilteredBlockTypes] =
     useState<StarterBlockProps[]>(STARTER_BLOCKS);
@@ -180,16 +183,15 @@ export const StarterBlocksSelection: React.FC<StarterBlocksSelectionProps> = ({
         >
           <Box width={520}>
             <Typography variant="h5" fontWeight={700} sx={{ mb: 1 }}>
-              Select a Block Type
+              {t("schema.selectBlockType")}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Start with a blank block or select from our selection of pre
-              designed blocks
+              {t("schema.starterBlocksSubtitle")}
             </Typography>
             <Box display="flex" alignItems="center" gap={1} mt={1}>
               <PlayCircleOutlineRoundedIcon color="info" />{" "}
               <Link variant="body2" href="#" underline="always">
-                Learn Blocks basics with a tutorial
+                {t("schema.learnBlocksTutorial")}
               </Link>
             </Box>
           </Box>
@@ -224,7 +226,7 @@ export const StarterBlocksSelection: React.FC<StarterBlocksSelectionProps> = ({
           <SearchBox
             data-cy="starter-blocks-search"
             size="small"
-            placeholder="Search variants"
+            placeholder={t("schema.searchVariants")}
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             sx={{ width: { xs: "100%", sm: "100%", md: "60%", lg: "60%" } }}
@@ -292,7 +294,7 @@ export const StarterBlocksSelection: React.FC<StarterBlocksSelectionProps> = ({
         }}
       >
         <Button variant="outlined" color="inherit" onClick={onClose}>
-          Cancel
+          {t("common.cancel")}
         </Button>
         <Button
           variant="contained"
@@ -306,7 +308,7 @@ export const StarterBlocksSelection: React.FC<StarterBlocksSelectionProps> = ({
           }
           data-cy="select-block-type-next-button"
         >
-          Next
+          {t("common.next")}
         </Button>
       </DialogActions>
     </Box>

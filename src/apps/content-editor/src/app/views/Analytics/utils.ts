@@ -9,6 +9,8 @@ import {
   startOfYear,
   subDays,
 } from "date-fns";
+import { formatLocalized } from "shell/i18n/dates";
+import i18n from "shell/i18n";
 
 /* ---------- Numbers / formatting ---------- */
 
@@ -196,7 +198,12 @@ export const getDateRangeAndLabelsFromParams = (
   if (from && to) {
     const start = parseISO(from);
     const end = parseISO(to);
-    return [start, end, fmt(start, "eee d LLL"), fmt(end, "eee d LLL")];
+    return [
+      start,
+      end,
+      formatLocalized(start, "eee d LLL"),
+      formatLocalized(end, "eee d LLL"),
+    ];
   }
 
   const today = new Date();
@@ -205,57 +212,107 @@ export const getDateRangeAndLabelsFromParams = (
     case "today": {
       const start = today;
       const end = today;
-      return [start, end, "Today", "Yesterday"];
+      return [start, end, i18n.t("common.today"), i18n.t("common.yesterday")];
     }
     case "yesterday": {
       const d = subDays(today, 1);
-      return [d, d, "Yesterday", "Day Before Yesterday"];
+      return [
+        d,
+        d,
+        i18n.t("common.yesterday"),
+        i18n.t("content.analyticsRangeDayBeforeYesterday"),
+      ];
     }
     case "last_7_days": {
       const start = subDays(today, 7);
       const end = subDays(today, 1);
-      return [start, end, "Last 7 Days", "Prior 7 Days"];
+      return [
+        start,
+        end,
+        i18n.t("content.analyticsRangeLast7Days"),
+        i18n.t("content.analyticsRangePrior7Days"),
+      ];
     }
     case "last_14_days": {
       const start = subDays(today, 14);
       const end = subDays(today, 1);
-      return [start, end, "Last 14 Days", "Prior 14 Days"];
+      return [
+        start,
+        end,
+        i18n.t("content.analyticsRangeLast14Days"),
+        i18n.t("content.analyticsRangePrior14Days"),
+      ];
     }
     case "last_30_days": {
       const start = subDays(today, 30);
       const end = subDays(today, 1);
-      return [start, end, "Last 30 Days", "Prior 30 Days"];
+      return [
+        start,
+        end,
+        i18n.t("content.analyticsRangeLast30Days"),
+        i18n.t("content.analyticsRangePrior30Days"),
+      ];
     }
     case "last_3_months": {
       const start = subDays(today, 90);
       const end = subDays(today, 1);
-      return [start, end, "Last 3 Months", "Prior 3 Months"];
+      return [
+        start,
+        end,
+        i18n.t("content.analyticsRangeLast3Months"),
+        i18n.t("content.analyticsRangePrior3Months"),
+      ];
     }
     case "last_12_months": {
       const start = subDays(today, 365);
       const end = subDays(today, 1);
-      return [start, end, "Last 12 Months", "Prior 12 Months"];
+      return [
+        start,
+        end,
+        i18n.t("content.analyticsRangeLast12Months"),
+        i18n.t("content.analyticsRangePrior12Months"),
+      ];
     }
     case "this_week": {
       // By default date-fns week starts Sunday; adjust with options if needed
       const start = startOfWeek(today /* , { weekStartsOn: 0 } */);
       const end = subDays(today, 1);
-      return [start, end, "This Week", "Last Week"];
+      return [
+        start,
+        end,
+        i18n.t("content.analyticsRangeThisWeek"),
+        i18n.t("content.analyticsRangeLastWeek"),
+      ];
     }
     case "this_year": {
       const start = startOfYear(today);
       const end = subDays(today, 1);
-      return [start, end, "This Year", "Last Year"];
+      return [
+        start,
+        end,
+        i18n.t("content.analyticsRangeThisYear"),
+        i18n.t("content.analyticsRangeLastYear"),
+      ];
     }
     case "quarter_to_date": {
       const start = startOfQuarter(today);
       const end = subDays(today, 1);
-      return [start, end, "This Quarter", "Last Quarter"];
+      return [
+        start,
+        end,
+        i18n.t("content.analyticsRangeThisQuarter"),
+        i18n.t("content.analyticsRangeLastQuarter"),
+      ];
     }
     default: {
       const start = subDays(today, 14);
       const end = subDays(today, 1);
-      return [start, end, "Last 14 Days", "Prior 14 Days"];
+      return [
+        start,
+        end,
+        i18n.t("content.analyticsRangeLast14Days"),
+        i18n.t("content.analyticsRangePrior14Days"),
+      ];
     }
   }
 };
