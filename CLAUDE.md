@@ -133,6 +133,8 @@ useRegisterRef(key, handle, context?, options?)
 
 Action types and routing live in `src/engine/{actionTypes.ts, handlers.ts, navigator.ts, queue.ts}`. Add new actions there rather than special-casing inside `AIDrawer.tsx`.
 
+That engine is the _local dispatch_ layer. The **wire contract** — what the app sends the MCP client and what it may send back — is a separate, narrower thing: see [`docs/ai-action-contract.md`](docs/ai-action-contract.md). Read it before changing what the model may return, or before adding a refKey the model should be able to address.
+
 ## Testing with Cypress
 
 Specs live in `cypress/e2e/<area>/<file>.spec.js`. Required setup: a `cypress.env.json` at the repo root with `{ "email", "password" }` plus the env vars consumed by the custom commands (`API_AUTH`, `COOKIE_NAME`, etc. — see `cypress.config.js`).
