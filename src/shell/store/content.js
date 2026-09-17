@@ -1113,8 +1113,16 @@ export function fetchAllModelPublishings({
   };
 }
 
+// Kill switch: the lock is keyed on a `path` query param carrying the bare item
+// ZUID, against a per-environment redis gateway, so cloned instances share locks
+// and leak who is editing where. Flip back once the key is scoped by instance.
+const ITEM_LOCK_ENABLED = false;
+
 export function checkLock(itemZUID) {
   return () => {
+    if (!ITEM_LOCK_ENABLED) {
+      return Promise.resolve({});
+    }
     return request(
       `${CONFIG.SERVICE_REDIS_GATEWAY}/door/knock?path=${itemZUID}`,
       {
@@ -1128,6 +1136,9 @@ export function checkLock(itemZUID) {
 
 export function unlock(itemZUID) {
   return () => {
+    if (!ITEM_LOCK_ENABLED) {
+      return Promise.resolve({});
+    }
     return request(
       `${CONFIG.SERVICE_REDIS_GATEWAY}/door/unlock?path=${itemZUID}`,
       {
@@ -1141,6 +1152,9 @@ export function unlock(itemZUID) {
 
 export function lock(itemZUID) {
   return (dispatch, getState) => {
+    if (!ITEM_LOCK_ENABLED) {
+      return Promise.resolve({});
+    }
     const user = getState().user;
     if (user) {
       return request(`${CONFIG.SERVICE_REDIS_GATEWAY}/door/lock`, {
