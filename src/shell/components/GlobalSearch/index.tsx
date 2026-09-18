@@ -450,7 +450,10 @@ export const GlobalSearch = () => {
                     borderStyle: "solid",
                     borderWidth: options?.length ? "0px 1px 1px 1px" : "0px",
                     borderColor: "border",
-                    borderRadius: "0px 0px 4px 4px",
+
+                    "&.MuiAutocomplete-paper.MuiPaper-rounded": {
+                      borderRadius: "0px 0px 4px 4px",
+                    },
 
                     "& .MuiAutocomplete-listbox": {
                       maxHeight: "60vh",
