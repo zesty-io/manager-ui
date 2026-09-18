@@ -110,13 +110,15 @@ export const SchedulePublish = ({
       )
       // @ts-expect-error untyped action
     )
-      .finally(() => {
+      .then(() => {
         onScheduleSuccess?.();
-        setIsLoading(false);
         onClose();
       })
       .catch(() => {
         // publish() already dispatches a failure notification; avoid an unhandled rejection here.
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   };
 
