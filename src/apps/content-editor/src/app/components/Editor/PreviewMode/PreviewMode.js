@@ -177,7 +177,7 @@ export default function PreviewMode(props) {
   // Push locale changes to the iframe while it is open
   useEffect(() => {
     function onLanguageChanged(lang) {
-      preview.current?.contentWindow.postMessage(
+      preview.current?.contentWindow?.postMessage(
         { source: "zesty", locale: lang },
         origin
       );
