@@ -245,6 +245,16 @@ When testing cross-item links:
 
 Templated: `StudioModeToggleOption-{mode}` `StudioSlotInput-{key}` `StudioSlotBrowse-{attr}` `StudioConnectContent-{key}` `StudioDisconnect-{key}` `StudioConnectField-{name}` `StudioConnectOtherItem-{key}` `StudioLinkItemField-{name}` `StudioLinkItemSearchInput` (also `-InputField`, `-Error`) `StudioSaveChangeSection-{label}` `Studio{Layout|Content}SaveBar` `Studio{Layout|Content}CancelButton` `Studio{Layout|Content}SaveChangesButton`
 
+## Feedback modal
+
+`StudioFeedbackModal` (opened from the "Feedback" button in `StudioHeader`) sends free-text feedback via the `sendEmail` cloud function (`cloudFunctionsApi.sendEmail`, `src/shell/services/cloudFunctions.ts`) to `CONFIG.SLACK_FEEDBACK_EMAIL`.
+
+**`SLACK_FEEDBACK_EMAIL` intentionally carries two recipients in every environment** (`src/shell/app.config.js`): the Slack channel's email-to-post address, and `bobby@content.one` as a secondary recipient — a deliberate shared alias for the Studio feedback owner, not a leftover debugging address. This has been flagged repeatedly by automated review as a hardcoded personal address; it is a known, accepted tradeoff, not an oversight.
+
+Every field interpolated into the email body/subject (`message`, `email`, instance name/ZUID, page, mode, sender name) is HTML-escaped before being sent with `template: "raw"`, since the cloud function renders that template as HTML.
+
+**A fast double-click on the submit button used to send two emails.** `isSubmitting` (from the RTK Query mutation's `isLoading`) only updates on the next render, which isn't fast enough to block a second click fired in the same tick — `handleSubmit` also sets a `useRef` lock synchronously so the very next call sees it immediately, without waiting on React. Covered by the "sends only one email when the submit button is double-clicked" case in `cypress/e2e/studio/studio-feedback-modal.spec.js`.
+
 ## Gotchas worth knowing before you debug
 
 - **A circular import passes typecheck, passes the build, and fails at random.** Exporting a component from `StudioInspectorPanel` to reuse in a dialog that the panel itself renders makes module-init order nondeterministic and produces wandering test failures. `FieldIconChip.tsx` is its own module for exactly this reason.
