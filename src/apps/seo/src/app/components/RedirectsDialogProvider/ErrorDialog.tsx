@@ -1,4 +1,5 @@
 import { FC, useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Button,
   Dialog,
@@ -24,6 +25,7 @@ type ErrorDialogProps = {
 
 export const ErrorDialog: FC<ErrorDialogProps> = ({ open, onClose, data }) => {
   const dispatch = useDispatch();
+  const { t } = useTranslation();
 
   const [errorPaths, setErrorPaths] = useState<ErrorPathProps[]>([]);
 
@@ -61,8 +63,8 @@ export const ErrorDialog: FC<ErrorDialogProps> = ({ open, onClose, data }) => {
         notify({
           kind: "success",
           message: !isEdit
-            ? `${paths?.length} Redirect${paths?.length > 1 ? "s" : ""} Created`
-            : `Redirect Saved: ${paths[0]}`,
+            ? t("seo.errorDialogNotifyCreated", { count: paths?.length })
+            : t("seo.errorDialogNotifySaved", { path: paths[0] }),
         })
       );
       closeErrorDialog();
@@ -74,7 +76,7 @@ export const ErrorDialog: FC<ErrorDialogProps> = ({ open, onClose, data }) => {
     );
 
     setErrorPaths(updatedErrorPaths);
-  }, [data, errorPaths]);
+  }, [data, errorPaths, t]);
 
   useEffect(() => {
     const pathErrors = data?.errors?.map((error) => {
@@ -125,13 +127,11 @@ export const ErrorDialog: FC<ErrorDialogProps> = ({ open, onClose, data }) => {
             flexShrink={0}
             data-cy="RedirectsErrorDialogHeader"
           >
-            {`${errorPaths?.length} Redirect${
-              errorPaths?.length > 1 ? "s" : ""
-            } couldn't be created`}
+            {t("seo.errorDialogTitle", { count: errorPaths?.length })}
           </Typography>
 
           <Typography variant="body2" color="text.secondary" sx={{ mt: "8px" }}>
-            The following paths couldn't be saved as redirects.
+            {t("seo.errorDialogBody")}
           </Typography>
         </DialogTitle>
         <DialogContent>
@@ -178,7 +178,7 @@ export const ErrorDialog: FC<ErrorDialogProps> = ({ open, onClose, data }) => {
             loading={isLoading}
             onClick={handleResubmit}
           >
-            Try Again
+            {t("shell.integrationTryAgain")}
           </Button>
           <Button
             data-cy="RedirectsErrorDialogDoneButton"
@@ -187,7 +187,7 @@ export const ErrorDialog: FC<ErrorDialogProps> = ({ open, onClose, data }) => {
             size="medium"
             onClick={onClose}
           >
-            Done
+            {t("common.done")}
           </Button>
         </DialogActions>
       </Dialog>

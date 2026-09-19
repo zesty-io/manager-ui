@@ -1,4 +1,5 @@
-import { useCallback, useRef, useState, ChangeEvent, ReactNode } from "react";
+import { useTranslation } from "react-i18next";
+import { useCallback, useRef, useState, ChangeEvent } from "react";
 import {
   Button,
   Box,
@@ -38,29 +39,29 @@ import { doKeyPathsResolve } from "./keyPathResolution";
 
 const CONNECTION_STATUSES: {
   [key: string]: {
-    icon: ReactNode;
-    title: string;
-    subTitle: string;
-    buttonLabel: string;
-    buttonIcon: ReactNode;
+    icon: React.ReactNode;
+    titleKey: string;
+    subTitleKey: string;
+    buttonLabelKey: string;
+    buttonIcon: React.ReactNode;
     variant: "contained" | "outlined";
     color: "primary" | "inherit";
   };
 } = {
   connecting: {
     icon: <CircularProgress size={32} />,
-    title: "Connecting to API Endpoint",
-    subTitle: "Please wait while we establish a secure connection",
-    buttonLabel: "Stop",
+    titleKey: "shell.integrationConnectingToApiEndpoint",
+    subTitleKey: "shell.integrationConnectingSecureConnection",
+    buttonLabelKey: "shell.integrationStop",
     buttonIcon: <StopRoundedIcon fontSize="small" color="inherit" />,
     variant: "outlined",
     color: "inherit",
   },
   success: {
     icon: <CheckCircleRoundedIcon color="success" sx={{ fontSize: 40 }} />,
-    title: "Connection Successful",
-    subTitle: "Your API is now securely linked and ready to be used.",
-    buttonLabel: "Next",
+    titleKey: "shell.integrationConnectionSuccessful",
+    subTitleKey: "shell.integrationConnectionSuccessfulDescription",
+    buttonLabelKey: "common.next",
     buttonIcon: <ArrowForwardRoundedIcon fontSize="small" />,
     variant: "contained",
     color: "primary",
@@ -69,11 +70,10 @@ const CONNECTION_STATUSES: {
     icon: (
       <InfoRoundedIcon fontSize="large" color="error" sx={{ fontSize: 40 }} />
     ),
-    title: "Connection Failed",
-    subTitle:
-      "We couldn't connect to the API endpoint you entered. This may be due to an unexpected structure, a missing or invalid URL, or incorrect custom integrationHeaders.",
-    buttonLabel: "Try Again",
-    buttonIcon: <AutorenewRoundedIcon sx={{ fontSize: 40 }} />,
+    titleKey: "shell.integrationConnectionFailed",
+    subTitleKey: "shell.integrationConnectionFailedDescription",
+    buttonLabelKey: "shell.integrationTryAgain",
+    buttonIcon: <AutorenewRoundedIcon fontSize="small" sx={{ fontSize: 40 }} />,
     variant: "contained",
     color: "primary",
   },
@@ -81,10 +81,9 @@ const CONNECTION_STATUSES: {
     icon: (
       <InfoRoundedIcon fontSize="large" color="error" sx={{ fontSize: 40 }} />
     ),
-    title: "Unsupported Response Format",
-    subTitle:
-      "The API connected, but its response can't be used to configure this field.",
-    buttonLabel: "Try Again",
+    titleKey: "shell.integrationInvalidResponseFormat",
+    subTitleKey: "shell.integrationInvalidResponseFormatDescription",
+    buttonLabelKey: "shell.integrationTryAgain",
     buttonIcon: <AutorenewRoundedIcon sx={{ fontSize: 40 }} />,
     variant: "contained",
     color: "primary",
@@ -114,6 +113,7 @@ const ConnectToApi = ({
   isUpdate?: boolean;
   keyPaths?: IntegrationKeyPaths | null;
 }) => {
+  const { t } = useTranslation();
   const focusRef = useRef<string>("url");
   const { data, status, invalidReason, fetchApiData } = useIntegrationField();
 
@@ -199,10 +199,10 @@ const ConnectToApi = ({
           }}
         />
         <Typography variant="h5" color="text.primary" sx={{ fontWeight: 700 }}>
-          Connect to API
+          {t("shell.integrationConnectToApi")}
         </Typography>
         <Typography sx={{ my: 0.5 }} variant="body2" color="text.secondary">
-          Establish a connection to an endpoint for users to select items from
+          {t("shell.integrationConnectToApiDescription")}
         </Typography>
         <Box
           display="flex"
@@ -216,15 +216,15 @@ const ConnectToApi = ({
         >
           <MenuBookRoundedIcon color="info" />
           <Typography variant="body2" color="info.dark">
-            Learn about endpoint structures we accept
+            {t("shell.integrationLearnEndpointStructures")}
           </Typography>
         </Box>
       </DialogTitle>
       <DialogContent>
         <FieldWrapper
-          label="API URL"
+          label={t("shell.integrationApiUrl")}
           isRequired={true}
-          toolTip="URL defining the external data source. Must return a JSON array of flat objects with a consistent shape."
+          toolTip={t("shell.integrationApiUrlTooltip")}
           name="integrationUrl"
         >
           <TextField
@@ -255,16 +255,14 @@ const ConnectToApi = ({
             }}
             error={!isValidUrl}
             helperText={
-              !isValidUrl
-                ? "Please enter a valid URL. e.g. https://api.example.org/items.json"
-                : ""
+              !isValidUrl ? t("shell.integrationInvalidUrlHelper") : ""
             }
           />
         </FieldWrapper>
         <Divider orientation="horizontal" sx={{ my: 1, border: "none" }} />
         <FieldWrapper
-          label="HTTP Headers (optional)"
-          toolTip="Authentication Headers"
+          label={t("shell.integrationHttpHeadersOptional")}
+          toolTip={t("shell.integrationAuthenticationHeaders")}
         >
           <Grid
             container
@@ -289,7 +287,7 @@ const ConnectToApi = ({
                     className="keyInput"
                     fullWidth
                     size="small"
-                    placeholder="Key"
+                    placeholder={t("shell.integrationKey")}
                     value={header.key}
                     onChange={(e: ChangeEvent<HTMLInputElement>) => {
                       setHeadersLocal((prev) => ({
@@ -309,7 +307,7 @@ const ConnectToApi = ({
                   <TextField
                     className="valueInput"
                     size="small"
-                    placeholder="Value"
+                    placeholder={t("shell.integrationValue")}
                     value={header.value}
                     onChange={(e: ChangeEvent<HTMLInputElement>) => {
                       setHeadersLocal((prev) => ({
@@ -361,13 +359,13 @@ const ConnectToApi = ({
               }));
             }}
           >
-            Add HTTP Header
+            {t("shell.integrationAddHttpHeader")}
           </Button>
         </FieldWrapper>
       </DialogContent>
       <DialogActions>
         <Button color="inherit" onClick={closeForm}>
-          Cancel
+          {t("common.cancel")}
         </Button>
         <Button
           data-cy="integrationConnectButton"
@@ -376,7 +374,7 @@ const ConnectToApi = ({
           startIcon={<LinkRoundedIcon />}
           disabled={!endpointLocal || !isValidUrl}
         >
-          Connect
+          {t("shell.integrationConnect")}
         </Button>
       </DialogActions>
       {!!status && !reqAborted && (
@@ -418,7 +416,7 @@ const ConnectToApi = ({
               fontWeight={600}
               noWrap
             >
-              {CONNECTION_STATUSES[status].title}
+              {t(CONNECTION_STATUSES[status].titleKey)}
             </Typography>
             <Typography
               data-cy="integrationConnectionStatusSubtitle"
@@ -429,7 +427,7 @@ const ConnectToApi = ({
             >
               {status === "invalid"
                 ? invalidReason
-                : CONNECTION_STATUSES[status].subTitle}
+                : t(CONNECTION_STATUSES[status].subTitleKey)}
             </Typography>
             {keyPathsMismatch && (
               <Typography
@@ -440,8 +438,7 @@ const ConnectToApi = ({
                 textAlign="center"
                 sx={{ mt: 1 }}
               >
-                This endpoint returns a different structure. Existing saved
-                items will display incorrectly and will need to be re-selected.
+                {t("shell.integrationKeyPathsMismatchWarning")}
               </Typography>
             )}
           </Box>
@@ -453,7 +450,7 @@ const ConnectToApi = ({
             color={CONNECTION_STATUSES[status].color}
             size="small"
           >
-            {CONNECTION_STATUSES[status].buttonLabel}
+            {t(CONNECTION_STATUSES[status].buttonLabelKey)}
           </Button>
         </Paper>
       )}

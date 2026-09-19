@@ -5,6 +5,7 @@ import { NavLink } from "react-router-dom";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import LaunchIcon from "@mui/icons-material/Launch";
 import { NavCodeTypes } from "../constants";
+import { useTranslation } from "react-i18next";
 
 interface Meta {
   ZUID: string;
@@ -27,16 +28,16 @@ interface LinkedContentProps {
 }
 
 export default function LinkedContent({ file, items }: LinkedContentProps) {
+  const { t } = useTranslation();
   return (
     <FileCard
-      title="Linked Content"
+      title={t("code.linkedContent")}
       icon={EditIcon}
       link={`/content/${file.contentModelZUID}`}
-      linkLabel="Edit Linked Content"
+      linkLabel={t("code.editLinkedContent")}
     >
       <Typography variant="body2" color="grey.400">
-        Shown are the three latest content entries from this view's linked
-        model.
+        {t("code.linkedContentDescription")}
       </Typography>
 
       {!!items?.length && (
@@ -50,7 +51,7 @@ export default function LinkedContent({ file, items }: LinkedContentProps) {
                   !!item.web.metaTitle && (
                     <NavLink
                       to={`/content/${item.meta.contentModelZUID}/${item.meta.ZUID}`}
-                      title="Edit item content"
+                      title={t("code.editItemContent")}
                       style={{
                         display: "flex",
                         alignItems: "baseline",
@@ -85,7 +86,7 @@ export default function LinkedContent({ file, items }: LinkedContentProps) {
                     }}
                     href={`${CONFIG?.URL_PREVIEW_FULL}${item?.web?.path}`}
                     target="_blank"
-                    title="Preview Item Webpage"
+                    title={t("code.previewItemWebpage")}
                   >
                     <VisibilityIcon
                       sx={{

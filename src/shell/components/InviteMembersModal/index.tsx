@@ -1,4 +1,5 @@
 import { useReducer, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Autocomplete,
   Button,
@@ -52,6 +53,7 @@ const roles = [
 const emailAddressRegexp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
 const InviteMembersModal = ({ onClose }: Props) => {
+  const { t } = useTranslation();
   const [emails, setEmails] = useState<string[]>([]);
   const [emailError, setEmailError] = useState(false);
   const [inputValue, setInputValue] = useState("");
@@ -129,12 +131,12 @@ const InviteMembersModal = ({ onClose }: Props) => {
           let errorMsg = "";
 
           if (error?.data?.error?.includes("already invited")) {
-            errorMsg = "Invite previously sent";
+            errorMsg = t("shell.invitePreviouslySent");
           } else if (
             error?.data?.error?.includes("already has a role associated") ||
             error?.data?.error?.includes("cannot invite self")
           ) {
-            errorMsg = "Already part of instance";
+            errorMsg = t("shell.alreadyPartOfInstance");
           }
 
           updateFailedInvites({
@@ -218,13 +220,13 @@ const InviteMembersModal = ({ onClose }: Props) => {
               mb: 1.5,
             }}
           />
-          <Box sx={{ fontWeight: 700 }}>Invite Users</Box>
+          <Box sx={{ fontWeight: 700 }}>{t("shell.inviteUsers")}</Box>
           <Typography sx={{ mt: 1 }} variant="body2" color="text.secondary">
-            These invites will be sent as emails
+            {t("shell.invitesSentAsEmails")}
           </Typography>
         </DialogTitle>
         <DialogContent>
-          <InputLabel>Invite</InputLabel>
+          <InputLabel>{t("shell.invite")}</InputLabel>
           <Autocomplete
             multiple
             value={emails}
@@ -244,11 +246,9 @@ const InviteMembersModal = ({ onClose }: Props) => {
                 ref={autocompleteRef}
                 error={emailError}
                 placeholder={
-                  emails.length ? "" : "Email, comma or space separated"
+                  emails.length ? "" : t("shell.emailCommaSeparated")
                 }
-                helperText={
-                  emailError ? "Please enter a valid email address." : " "
-                }
+                helperText={emailError ? t("shell.enterValidEmail") : " "}
                 onKeyDown={(event) => {
                   setEmailError(false);
                   if (
@@ -350,7 +350,7 @@ const InviteMembersModal = ({ onClose }: Props) => {
               ))
             }
           />
-          <InputLabel>Invite as</InputLabel>
+          <InputLabel>{t("shell.inviteAs")}</InputLabel>
           <Select
             fullWidth
             value={roleIndex}
@@ -364,14 +364,14 @@ const InviteMembersModal = ({ onClose }: Props) => {
         </DialogContent>
         <DialogActions>
           <Button color="inherit" onClick={() => onClose()}>
-            Cancel
+            {t("common.cancel")}
           </Button>
           <Button
             variant="contained"
             onClick={handleInvites}
             loading={sendingEmails}
           >
-            Invite
+            {t("shell.invite")}
           </Button>
         </DialogActions>
       </Dialog>
