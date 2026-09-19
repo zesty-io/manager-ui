@@ -5,6 +5,7 @@ import {
   useGetContentModelQuery,
 } from "../../../../shell/services/instance";
 import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 import { Typography, Skeleton, Tooltip, Box } from "@mui/material";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import CodeIcon from "@mui/icons-material/Code";
@@ -31,6 +32,7 @@ const iconMap = {
 };
 
 const NameCell = ({ affectedZUID, resourceType }: any) => {
+  const { t } = useTranslation();
   const languages = useSelector((state: any) => state.languages);
   const { data: contentItem, isLoading: isItemLoading } =
     useGetContentItemQuery(affectedZUID, {
@@ -83,8 +85,8 @@ const NameCell = ({ affectedZUID, resourceType }: any) => {
         ) : (
           `${affectedZUID} (${
             resourceType === "content" && contentItem
-              ? "Missing Meta Title"
-              : "Deleted"
+              ? t("dashboard.missingMetaTitle")
+              : t("dashboard.deleted")
           })`
         )}
       </Typography>
@@ -126,6 +128,7 @@ const VersionCell = ({ affectedZUID, resourceType }: any) => {
 };
 
 export const ResourceTable = ({ dateRange }: Props) => {
+  const { t } = useTranslation();
   const { data: audit, isFetching: isAuditFetching } = useGetAuditsQuery({
     start_date: format(subDays(new Date(), dateRange), "MM/dd/yyyy"),
     end_date: format(new Date(), "MM/dd/yyyy"),
@@ -140,14 +143,14 @@ export const ResourceTable = ({ dateRange }: Props) => {
   const columns = [
     {
       field: "name",
-      headerName: "Name",
+      headerName: t("common.name"),
       flex: 1,
       sortable: false,
       renderCell: ({ row }: GridRenderCellParams) => <NameCell {...row} />,
     },
     {
       field: "version",
-      headerName: "Vers.",
+      headerName: t("dashboard.columnVersion"),
       headerAlign: "right",
       align: "right",
       sortable: false,

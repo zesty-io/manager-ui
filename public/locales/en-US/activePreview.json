@@ -1,0 +1,16 @@
+{
+  "disconnectedFromPreviewDomain": "Disconnected from preview domain",
+  "findingDomain": "Finding Domain",
+  "landscapeMode": "Landscape Mode",
+  "loadingRelatedItem": "Loading related item",
+  "meta": "Meta",
+  "noDevice": "No Device",
+  "noTemplate": "No Template",
+  "noTemplateSelected": "No template selected",
+  "resolveInvalidFields": "Resolve invalid field values to save and update preview",
+  "saveToUpdatePreview": "Save to Update Preview",
+  "saving": "Saving",
+  "sessionNotActive": "Your session is not active. Please login to Zesty.io",
+  "viewingMetaData": "Viewing meta data for the item at this route",
+  "web": "Web"
+}

@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import Divider from "@mui/material/Divider";
@@ -50,6 +51,7 @@ const RedirectImportTableComponent = ({
   isOpen: boolean;
 }) => {
   const dispatch = useDispatch();
+  const { t } = useTranslation();
 
   const [inProgressRedirects, setInProgressRedirects] = React.useState([]);
 
@@ -147,7 +149,7 @@ const RedirectImportTableComponent = ({
             onClick={handleCancelImport}
             startIcon={<CloseIcon />}
           >
-            Close Import
+            {t("seo.closeImport")}
           </Button>
           <Button
             variant="contained"
@@ -155,7 +157,7 @@ const RedirectImportTableComponent = ({
             size="small"
             startIcon={<AddIcon />}
           >
-            Add All Redirects
+            {t("seo.addAllRedirects")}
           </Button>
         </Box>
       </DialogTitle>
@@ -214,25 +216,25 @@ const RedirectImportTableComponent = ({
               >
                 <Grid size="grow" minWidth="200px">
                   <Typography variant="body1" fontWeight={600}>
-                    From
+                    {t("seo.importTableFrom")}
                   </Typography>
                 </Grid>
 
                 <Grid minWidth="115px">
                   <Typography variant="body1" fontWeight={600}>
-                    Code
+                    {t("shell.code")}
                   </Typography>
                 </Grid>
 
                 <Grid minWidth="130px">
                   <Typography variant="body1" fontWeight={600}>
-                    Type
+                    {t("seo.importTableType")}
                   </Typography>
                 </Grid>
 
                 <Grid size="grow" minWidth="200px">
                   <Typography variant="body1" fontWeight={600}>
-                    To
+                    {t("seo.importTableTo")}
                   </Typography>
                 </Grid>
                 <Grid width="115px"></Grid>

@@ -17,6 +17,7 @@ import { accountsApi } from "../../../../../../../shell/services/accounts";
 import { notify } from "../../../../../../../shell/store/notifications";
 import { MD5 } from "../../../../../../../utility/md5";
 import { Audit } from "../../../../../../../shell/services/types";
+import { useTranslation } from "react-i18next";
 
 import { useHistory } from "react-router";
 
@@ -30,6 +31,7 @@ export const ActionsByUsers: FC<ActionsByUsersProps> = ({
 }) => {
   const dispatch = useDispatch();
   const history = useHistory();
+  const { t } = useTranslation();
   const { data: usersRoles } = accountsApi.useGetUsersRolesQuery();
 
   const uniqueUserActions = useMemo(
@@ -43,7 +45,7 @@ export const ActionsByUsers: FC<ActionsByUsersProps> = ({
         {showSkeletons ? (
           <Skeleton variant="rectangular" width={159} />
         ) : (
-          "ACTIONS BY"
+          t("reports.actionsByTitle")
         )}
       </Typography>
       <List sx={{ overflowY: "scroll", height: 340 }}>
@@ -64,7 +66,7 @@ export const ActionsByUsers: FC<ActionsByUsersProps> = ({
                       dispatch(
                         notify({
                           kind: "success",
-                          message: `User email copied to the clipboard`,
+                          message: t("reports.userEmailCopied"),
                         })
                       )
                     )
@@ -85,7 +87,10 @@ export const ActionsByUsers: FC<ActionsByUsersProps> = ({
                     <Skeleton variant="circular" width={40} height={40} />
                   ) : (
                     <Avatar
-                      alt={`${user?.firstName} ${user?.lastName} Avatar`}
+                      alt={t("reports.userAvatarAlt", {
+                        firstName: user?.firstName,
+                        lastName: user?.lastName,
+                      })}
                       src={`https://www.gravatar.com/avatar/${MD5(
                         user?.email
                       )}.jpg?s=40`}

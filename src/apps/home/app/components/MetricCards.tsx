@@ -9,6 +9,7 @@ import { useGetAuditsQuery } from "../../../../shell/services/instance";
 import { uniqBy } from "lodash";
 import { MetricCard } from "../../../../shell/components/MetricsCard";
 import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 const iconStyles = {
   height: "32px",
@@ -23,6 +24,7 @@ interface Props {
 }
 
 export const MetricCards = ({ dateRange }: Props) => {
+  const { t } = useTranslation();
   const instanceCreatedAtDate = useSelector(
     (state: any) => state.instance.createdAt
   );
@@ -80,7 +82,7 @@ export const MetricCards = ({ dateRange }: Props) => {
   return (
     <Box display="flex" gap={2}>
       <MetricCard
-        title="Web Requests"
+        title={t("dashboard.webRequests")}
         value={requests?.TotalRequests}
         icon={
           <Box
@@ -100,11 +102,11 @@ export const MetricCards = ({ dateRange }: Props) => {
             ? getDelta(priorRequests?.TotalRequests, requests?.TotalRequests)
             : null
         }
-        deltaLabel={`VS Prior ${dateRange} Days`}
+        deltaLabel={t("dashboard.deltaLabel", { count: dateRange })}
         loading={requestsFetching}
       />
       <MetricCard
-        title="Media Requests"
+        title={t("common.mediaRequests")}
         value={usage?.MediaConsumption?.TotalRequests}
         icon={
           <Box
@@ -127,7 +129,7 @@ export const MetricCards = ({ dateRange }: Props) => {
               )
             : null
         }
-        deltaLabel={`VS Prior ${dateRange} Days`}
+        deltaLabel={t("dashboard.deltaLabel", { count: dateRange })}
         loading={usageFetching}
       />
       {/* <MetricCard
@@ -154,7 +156,7 @@ export const MetricCards = ({ dateRange }: Props) => {
         loading={auditFetching}
       /> */}
       <MetricCard
-        title="Items Published"
+        title={t("dashboard.itemsPublished")}
         value={publishes}
         icon={
           <Box
@@ -170,7 +172,7 @@ export const MetricCards = ({ dateRange }: Props) => {
           </Box>
         }
         delta={hasPriorData ? getDelta(priorPublishes, publishes) : null}
-        deltaLabel={`VS Prior ${dateRange} Days`}
+        deltaLabel={t("dashboard.deltaLabel", { count: dateRange })}
         loading={auditFetching}
       />
     </Box>

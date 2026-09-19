@@ -3,10 +3,12 @@ import { Box, Typography, useTheme, Skeleton } from "@mui/material";
 import { Bar } from "react-chartjs-2";
 import { uniqBy } from "lodash";
 import ChartDataLabels from "chartjs-plugin-datalabels";
+import { useTranslation } from "react-i18next";
 import { useParams } from "shell/hooks/useParams";
 import { accountsApi } from "shell/services/accounts";
 
 export const TopUsers = (props) => {
+  const { t } = useTranslation();
   const theme = useTheme();
   const [params] = useParams();
   const { data: usersRoles } = accountsApi.useGetUsersRolesQuery();
@@ -57,7 +59,7 @@ export const TopUsers = (props) => {
             sx={{ mb: 2.75 }}
           />
         ) : (
-          "TOP 10 ACTIVE USERS"
+          t("reports.top10ActiveUsers")
         )}
       </Typography>
       <Typography variant="h4" fontWeight={600}>
@@ -76,7 +78,7 @@ export const TopUsers = (props) => {
         {props.showSkeletons ? (
           <Skeleton variant="reactangular" width={52} height={12} />
         ) : (
-          "Actions"
+          t("reports.actions")
         )}
       </Typography>
       <Box sx={{ height: chartContainerHeight, my: 2 }}>

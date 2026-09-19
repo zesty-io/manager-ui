@@ -1,4 +1,5 @@
 import { FC } from "react";
+import { useTranslation } from "react-i18next";
 import { ConfirmDialog } from "@zesty-io/material";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
@@ -24,6 +25,7 @@ export const DirtyCodeModal: FC<DirtyCodeModal> = ({
   onSave,
   onDiscard,
 }) => {
+  const { t } = useTranslation();
   return (
     <ConfirmDialog
       title={<Typography variant="h5">{title}</Typography>}
@@ -56,7 +58,7 @@ export const DirtyCodeModal: FC<DirtyCodeModal> = ({
             textDecoration: "none",
           }}
         >
-          Cancel
+          {t("common.cancel")}
         </Button>
         <Stack direction="row" sx={{ gap: "8px" }}>
           <Button
@@ -66,7 +68,7 @@ export const DirtyCodeModal: FC<DirtyCodeModal> = ({
             disabled={loading}
             onClick={onDiscard}
           >
-            Discard
+            {t("common.discard")}
           </Button>
           <Button
             data-cy="DirtyCodeModalSave"
@@ -75,7 +77,7 @@ export const DirtyCodeModal: FC<DirtyCodeModal> = ({
             disabled={loading || saveDisabled}
             onClick={onSave}
           >
-            Save
+            {t("common.save")}
           </Button>
         </Stack>
       </Stack>

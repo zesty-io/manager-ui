@@ -7,6 +7,7 @@ import {
   Skeleton,
 } from "@mui/material";
 import { theme } from "@zesty-io/material";
+import { useTranslation } from "react-i18next";
 import { AddRounded } from "@mui/icons-material";
 import {
   useGetAuditsQuery,
@@ -44,6 +45,7 @@ type Props = {
 };
 
 const AnalyticsDashboard = ({ loading }: Props) => {
+  const { t } = useTranslation();
   const [params] = useQueryParams();
   const instance = useSelector((state: AppState) => state.instance);
   const { data: instanceSettings, isFetching: instanceSettingsFetching } =
@@ -112,8 +114,8 @@ const AnalyticsDashboard = ({ loading }: Props) => {
   if (isError) {
     return (
       <NotFound
-        title="Unable to Load Analytics Data"
-        message="This may be due to a bad internet connection so please try again. If you are still unable to resolve this issue, please contact support."
+        title={t("content.analyticsUnableToLoadTitle")}
+        message={t("content.analyticsUnableToLoadMessage")}
         button={
           <>
             <Button
@@ -127,14 +129,14 @@ const AnalyticsDashboard = ({ loading }: Props) => {
                 )
               }
             >
-              Contact Support
+              {t("content.analyticsContactSupport")}
             </Button>
             <Button
               startIcon={<RefreshRoundedIcon />}
               variant="contained"
               onClick={() => refetch()}
             >
-              Try Again
+              {t("content.analyticsTryAgain")}
             </Button>
           </>
         }
@@ -182,7 +184,7 @@ const AnalyticsDashboard = ({ loading }: Props) => {
               ) : (
                 <>
                   <Typography variant="body2" fontWeight="600">
-                    Total Sessions
+                    {t("content.analyticsTotalSessions")}
                   </Typography>
                   <Typography
                     variant="body3"
@@ -262,7 +264,7 @@ const AnalyticsDashboard = ({ loading }: Props) => {
         >
           <Metric
             loading={isLoading}
-            title="Sessions"
+            title={t("content.analyticsMetricSessions")}
             value={
               +(
                 findValuesForDimensions(
@@ -281,12 +283,12 @@ const AnalyticsDashboard = ({ loading }: Props) => {
                 ) || 0
               )
             }
-            description="A session in Google Analytics is a period of time in which a user interacts with your website."
+            description={t("content.analyticsMetricSessionsDesc")}
           />
           <Divider orientation="vertical" flexItem />
           <Metric
             loading={isLoading}
-            title="Avg. Duration"
+            title={t("content.analyticsMetricAvgDuration")}
             formatter={convertSecondsToMinutesAndSeconds}
             value={
               +(
@@ -306,13 +308,13 @@ const AnalyticsDashboard = ({ loading }: Props) => {
                 ) || 0
               )
             }
-            description="Session duration is the time frame during which there are users interactions occurring on the website."
+            description={t("content.analyticsMetricAvgDurationDesc")}
           />
           <Divider orientation="vertical" flexItem />
           <Metric
             loading={isLoading}
             inverse
-            title="Bounce Rate"
+            title={t("content.analyticsMetricBounceRate")}
             formatter={(value: number) => `${Math.floor(value * 100)}%`}
             value={
               +(
@@ -332,12 +334,12 @@ const AnalyticsDashboard = ({ loading }: Props) => {
                 ) || 0
               )
             }
-            description="Bounce rate is the percentage of people who land on a page and leave without performing a specific action."
+            description={t("content.analyticsMetricBounceRateDesc")}
           />
           <Divider orientation="vertical" flexItem />
           <Metric
             loading={isLoading}
-            title="Events"
+            title={t("content.analyticsMetricEvents")}
             value={
               +(
                 findValuesForDimensions(
@@ -356,12 +358,12 @@ const AnalyticsDashboard = ({ loading }: Props) => {
                 ) || 0
               )
             }
-            description="A conversion is a user action that you count because you consider it important, such as a purchase, game level completion, or website or app scroll activity."
+            description={t("content.analyticsMetricConversionsDesc")}
           />
           <Divider orientation="vertical" flexItem />
           <Metric
             loading={isLoading}
-            title="Conversions"
+            title={t("content.analyticsMetricConversions")}
             value={
               +(
                 findValuesForDimensions(
@@ -380,7 +382,7 @@ const AnalyticsDashboard = ({ loading }: Props) => {
                 ) || 0
               )
             }
-            description="A conversion is a user action that you count because you consider it important, such as a purchase, game level completion, or website or app scroll activity."
+            description={t("content.analyticsMetricConversionsDesc")}
           />
         </Box>
 
@@ -399,6 +401,7 @@ const AnalyticsDashboard = ({ loading }: Props) => {
 export default AnalyticsDashboard;
 
 const AnalyticsDashboardHeader = () => {
+  const { t } = useTranslation();
   const now = new Date();
   const endDateUtc = now.toISOString().slice(0, 10);
   const startDateUtc = subMonths(now, 1).toISOString().slice(0, 10);
@@ -436,7 +439,7 @@ const AnalyticsDashboardHeader = () => {
         bgcolor={theme.palette.background.paper}
       >
         <Typography variant="h3" fontWeight="700">
-          Dashboard
+          {t("content.analyticsDashboard")}
         </Typography>
         <Box display="flex" gap={1.5} height="fit-content">
           {topUsedModels?.reverse()?.map((model: any) => (
@@ -448,7 +451,7 @@ const AnalyticsDashboardHeader = () => {
             startIcon={<AddRounded />}
             onClick={() => setShowCreateContentItemDialog(true)}
           >
-            Create
+            {t("common.create")}
           </Button>
         </Box>
       </Box>

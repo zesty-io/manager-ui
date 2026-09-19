@@ -1,5 +1,6 @@
 import { Box, Paper, Typography, Avatar } from "@mui/material";
 import Link from "@mui/material/Link";
+import { useTranslation, Trans } from "react-i18next";
 
 type ExternalLinkProps = {
   href: string;
@@ -22,10 +23,11 @@ const ExternalLink = ({ href, text, target = "_blank" }: ExternalLinkProps) => {
 };
 
 export const DevResources = () => {
+  const { t } = useTranslation();
   return (
     <Box data-cy="AllFilesDevResources">
       <Typography variant="h5" mb="20px" color="common.white">
-        Developer Resources
+        {t("code.developerResources")}
       </Typography>
       <Paper
         variant="outlined"
@@ -42,43 +44,53 @@ export const DevResources = () => {
         }}
       >
         <Typography variant="h6" color="common.white">
-          Build Faster, Build Smarter with Parsley! 🚀
+          {t("code.buildFasterHeading")} 🚀
         </Typography>
 
         <Typography variant="body3" color="grey.400">
-          Get started building dynamic websites and applications with&nbsp;
-          <ExternalLink
-            href="https://docs.zesty.io/docs/parsley"
-            text="Parsley"
+          <Trans
+            i18nKey="code.buildFasterBody"
+            components={{
+              parsleyLink: (
+                <ExternalLink
+                  href="https://docs.zesty.io/docs/parsley"
+                  text="Parsley"
+                />
+              ),
+              replLink: (
+                <ExternalLink href="https://parsley.zesty.io/" text="REPL" />
+              ),
+              docsLink: (
+                <ExternalLink
+                  href="https://docs.zesty.io/docs/parsley-index"
+                  text="documentation"
+                />
+              ),
+            }}
           />
-          , Zesty.io's templating language. Explore our interactive&nbsp;
-          <ExternalLink href="https://parsley.zesty.io/" text="REPL" />
-          &nbsp;for a quick hands-on introduction, or learn more through our
-          in-depth&nbsp;
-          <ExternalLink
-            href="https://docs.zesty.io/docs/parsley-index"
-            text="documentation"
-          />
-          .
         </Typography>
 
         <Typography variant="h6" color="common.white">
-          Simplify Your Workflow: Preprocessing Inside! 💻
+          {t("code.simplifyWorkflowHeading")}
         </Typography>
 
         <Typography variant="body3" color="grey.400">
-          Discover our streamlined workflows and boost your development
-          efficiency. See how this works with our&nbsp;
-          <ExternalLink
-            href="https://docs.zesty.io/docs/css-js-processing-flow"
-            text="CSS & JavaScript preprocessing"
+          <Trans
+            i18nKey="code.simplifyWorkflowBody"
+            components={{
+              preprocessingLink: (
+                <ExternalLink
+                  href="https://docs.zesty.io/docs/css-js-processing-flow"
+                  text="CSS & JavaScript preprocessing"
+                />
+              ),
+            }}
           />
-          .
         </Typography>
 
         <Box display="flex" flexDirection="column">
           <Typography variant="h6" color="common.white" mb="8px">
-            API Docs
+            {t("code.apiDocs")}
           </Typography>
           <Box
             component={Link}
@@ -101,7 +113,7 @@ export const DevResources = () => {
               sx={{ width: 24, height: 24 }}
             />
             <Typography variant="body2" color="common.white">
-              Instance API Docs
+              {t("common.instanceApiDocs")}
             </Typography>
           </Box>
           <Box
@@ -125,7 +137,7 @@ export const DevResources = () => {
               sx={{ width: 24, height: 24 }}
             />
             <Typography variant="body2" color="common.white">
-              GraphQL Docs
+              {t("common.graphqlDocs")}
             </Typography>
           </Box>
           <Box
@@ -149,7 +161,7 @@ export const DevResources = () => {
               sx={{ width: 24, height: 24 }}
             />
             <Typography variant="body2" color="common.white">
-              Parsley Docs
+              {t("common.parsleyDocs")}
             </Typography>
           </Box>
         </Box>

@@ -1,6 +1,7 @@
 import { ChangeEvent, memo, MutableRefObject } from "react";
 
 import { TextField, Box } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 import { FieldShell } from "../../../../components/Editor/Field/FieldShell";
 import { MaxLengths } from "..";
@@ -28,18 +29,21 @@ export const MetaTitle = memo(function MetaTitle({
   onResetFlowType,
   onAIMetaTitleInserted,
   aiButtonRef,
-  label = "Meta Title",
+  label,
 }: MetaTitleProps) {
+  const { t } = useTranslation();
+  const resolvedLabel = label ?? t("content.itemEditMetaTitle");
+
   return (
     <Box data-cy="metaTitle" id="metaTitle">
       <AIFieldShell
         ZUID="metaTitle"
         ref={aiButtonRef}
         settings={{
-          label,
+          label: resolvedLabel,
           required: true,
         }}
-        customTooltip="This title appears in search engine results and social media previews. The maximum amount of characters search engines show is 65, but your title can be longer."
+        customTooltip={t("content.itemEditMetaTitleTooltip")}
         withInteractiveTooltip={false}
         withLengthCounter
         maxLength={MaxLengths.metaTitle}
@@ -60,11 +64,7 @@ export const MetaTitle = memo(function MetaTitle({
           data-cy="metaTitle-input"
           name="metaTitle"
           value={value}
-          placeholder={
-            label
-              ? ""
-              : "This is the title search engines should use in their results"
-          }
+          placeholder={label ? "" : t("content.itemEditMetaTitlePlaceholder")}
           onChange={(evt) => onChange(evt.target.value, "metaTitle")}
           error={hasErrors(error)}
         />
