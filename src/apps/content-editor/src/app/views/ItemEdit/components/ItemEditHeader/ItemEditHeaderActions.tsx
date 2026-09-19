@@ -840,7 +840,7 @@ export const ItemEditHeaderActions = ({
             setUnpublishDialogOpen(true);
           }}
           onUnscheduleSuccess={() => {
-            if (publishAfterUnschedule) {
+            if (publishAfterUnschedule && scheduledAction === "publish") {
               setIsConfirmPublishModalOpen(true);
             }
           }}
