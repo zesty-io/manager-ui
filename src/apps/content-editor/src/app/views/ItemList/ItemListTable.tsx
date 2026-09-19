@@ -16,6 +16,7 @@ import {
   forwardRef,
 } from "react";
 import AutoSizer, { Size } from "react-virtualized-auto-sizer";
+import { useTranslation } from "react-i18next";
 import {
   ContentItem,
   ContentModelField,
@@ -67,17 +68,21 @@ export const getHtmlText = (html: string) => {
   return strippedData?.replace(/<[^>]*>/g, "").slice(0, 120) || "";
 };
 
+// `headerName` here is an i18next key (translated at render); `translate: true`
+// distinguishes these static headers from data-driven field labels.
 const METADATA_COLUMNS = [
   {
     field: "createdBy",
-    headerName: "Created By",
+    headerName: "common.createdBy",
+    translate: true,
     width: 240,
     filterable: true,
     renderCell: (params: GridRenderCellParams) => <UserCell params={params} />,
   },
   {
     field: "createdOn",
-    headerName: "Date Created",
+    headerName: "content.itemListDateCreated",
+    translate: true,
     width: 200,
     filterable: true,
     valueGetter: (params: any, row: any) => row?.meta?.createdAt,
@@ -85,21 +90,24 @@ const METADATA_COLUMNS = [
 
   {
     field: "lastSaved",
-    headerName: "Last Saved",
+    headerName: "content.itemListLastSaved",
+    translate: true,
     width: 200,
     filterable: true,
     valueGetter: (params: any, row: any) => row?.web?.updatedAt,
   },
   {
     field: "lastPublished",
-    headerName: "Last Published",
+    headerName: "content.itemListLastPublished",
+    translate: true,
     width: 200,
     filterable: true,
     valueGetter: (params: any, row: any) => row?.publishing?.publishAt,
   },
   {
     field: "zuid",
-    headerName: "ZUID",
+    headerName: "content.itemListZuidColumn",
+    translate: true,
     width: 200,
     filterable: true,
     valueGetter: (params: any, row: any) => row?.meta?.ZUID,
@@ -285,6 +293,7 @@ const fieldTypeColumnConfigMap: Partial<
 
 export const ItemListTable = memo(
   ({ loading, rows, fields, noRowsOverlay }: ItemListTableProps) => {
+    const { t, i18n } = useTranslation();
     const { modelZUID } = useRouterParams<{ modelZUID: string }>();
     const apiRef = useGridApiRef();
     const [initialState, setInitialState] = useState<GridInitialState>();
@@ -344,7 +353,8 @@ export const ItemListTable = memo(
       let result: any[] = [
         {
           field: "version",
-          headerName: "Vers.",
+          headerName: "content.itemListVersionColumnShort",
+          translate: true,
           width: 64,
           sortable: true,
           filterable: false,
@@ -398,15 +408,19 @@ export const ItemListTable = memo(
         })),
       ];
       return result.map((column) => {
-        const { headerName, ...other } = column;
+        const { headerName, translate, ...other } = column;
         return {
           ...other,
           width: colDimensions?.[column.field]?.width || column.width,
           renderHeader: () =>
-            loading ? FIELD_SKELETON_MAP.header : headerName,
+            loading
+              ? FIELD_SKELETON_MAP.header
+              : translate
+              ? t(headerName)
+              : headerName,
         };
       });
-    }, [fields, loading]);
+    }, [fields, loading, t, i18n.language]);
 
     return (
       <AutoSizer>

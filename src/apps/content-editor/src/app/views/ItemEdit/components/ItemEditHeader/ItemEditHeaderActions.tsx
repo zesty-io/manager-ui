@@ -24,6 +24,7 @@ import {
 } from "../../../../../../../../shell/services/instance";
 import { useHistory, useParams } from "react-router";
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import {
   SaveRounded,
@@ -89,6 +90,7 @@ export const ItemEditHeaderActions = ({
   modelZUIDOverride,
   itemZUIDOverride,
 }: ItemEditHeaderActionsProps) => {
+  const { t } = useTranslation();
   const { modelZUID, itemZUID } = useParams<{
     modelZUID: string;
     itemZUID: string;
@@ -346,7 +348,9 @@ export const ItemEditHeaderActions = ({
   })();
 
   const publishButtonTooltipLabel =
-    itemState === ITEM_STATES.dirty ? "Save & Publish Item" : "Publish Item";
+    itemState === ITEM_STATES.dirty
+      ? t("content.itemEditSavePublishItem")
+      : t("content.itemEditPublishItem");
 
   const allowPublish = useMemo(() => {
     const allowPublishLabelZUIDs = statusLabels?.reduce((acc, next) => {
@@ -425,7 +429,7 @@ export const ItemEditHeaderActions = ({
             const message =
               promise.value.error.data?.error ||
               promise.value.error.data?.message ||
-              "An error occurred while publishing. Please try again.";
+              t("content.itemEditPublishingErrorFallback");
             dispatch(notify({ message, kind: "error" }));
           }
         });
@@ -445,7 +449,9 @@ export const ItemEditHeaderActions = ({
     } else {
       dispatch(
         notify({
-          message: `Cannot Publish: "${item.web.metaTitle}". Does not have a status that allows publishing`,
+          message: t("content.itemEditCannotPublishStatus", {
+            title: item.web.metaTitle,
+          }),
           kind: "error",
         })
       );
@@ -520,12 +526,14 @@ export const ItemEditHeaderActions = ({
         title={
           itemState === ITEM_STATES.dirty ? (
             <div>
-              Save Item <br />
+              {t("content.itemEditSaveItem")} <br />
               {saveShortcut}
             </div>
           ) : (
             <TooltipTitle
-              text={`v${item?.meta?.version} saved`}
+              text={t("content.itemEditTooltipSaved", {
+                version: item?.meta?.version,
+              })}
               dateTime={item?.meta?.updatedAt || ""}
               userName={getUserNameByZUID(
                 lastItemUpdateAudit?.actionByUserZUID ||
@@ -549,13 +557,13 @@ export const ItemEditHeaderActions = ({
             id="SaveItemButton"
             data-cy="SaveItemButton"
           >
-            Save
+            {t("common.save")}
           </Button>
         ) : (
           <Box display="flex" gap={1} alignItems="center" px="10px">
             <CheckCircleRounded fontSize="small" color="action" />
             <Typography variant="body2" color="text.disabled" fontWeight={500}>
-              Saved
+              {t("content.itemEditSaved")}
             </Typography>
           </Box>
         )}
@@ -573,7 +581,9 @@ export const ItemEditHeaderActions = ({
               </div>
             ) : (
               <TooltipTitle
-                text={`v${activePublishing?.version} published`}
+                text={t("content.itemEditTooltipPublished", {
+                  version: activePublishing?.version,
+                })}
                 dateTime={activePublishing?.publishAt || ""}
                 userName={getUserNameByZUID(
                   activePublishing?.publishedByUserZUID ||
@@ -619,7 +629,9 @@ export const ItemEditHeaderActions = ({
                 id="PublishButton"
                 data-cy="PublishButton"
               >
-                {itemState === ITEM_STATES.dirty ? "Save & Publish" : "Publish"}
+                {itemState === ITEM_STATES.dirty
+                  ? t("content.itemListSavePublish")
+                  : t("content.itemListPublish")}
               </Button>
               <Button
                 sx={{
@@ -658,7 +670,7 @@ export const ItemEditHeaderActions = ({
                   fontWeight={500}
                   letterSpacing="0.46px"
                 >
-                  Published
+                  {t("content.itemListStatusPublished")}
                 </Typography>
               </Box>
               <IconButton
@@ -680,7 +692,9 @@ export const ItemEditHeaderActions = ({
           enterNextDelay={1000}
           title={
             <TooltipTitle
-              text={`v${item?.scheduling?.version} scheduled to publish`}
+              text={t("content.itemEditTooltipScheduledToPublish", {
+                version: item?.scheduling?.version,
+              })}
               dateTime={item?.scheduling?.publishAt || ""}
               userName={getUserNameByZUID(
                 item?.scheduling?.publishedByUserZUID ||
@@ -716,7 +730,7 @@ export const ItemEditHeaderActions = ({
                 id="PublishButton"
                 data-cy="PublishButton"
               >
-                Publish
+                {t("content.itemListPublish")}
               </Button>
               <Button
                 sx={{
@@ -748,7 +762,7 @@ export const ItemEditHeaderActions = ({
                   color="warning.main"
                   fontWeight={500}
                 >
-                  Scheduled
+                  {t("content.itemListStatusScheduled")}
                 </Typography>
               </Box>
               <IconButton
@@ -778,7 +792,9 @@ export const ItemEditHeaderActions = ({
           if (!allowPublish) {
             dispatch(
               notify({
-                message: `Cannot Publish: "${item.web.metaTitle}". Does not have a status that allows publishing`,
+                message: t("content.itemEditCannotPublishStatus", {
+                  title: item.web.metaTitle,
+                }),
                 kind: "error",
               })
             );
@@ -844,17 +860,17 @@ export const ItemEditHeaderActions = ({
             setPublishAfterUnschedule(false);
             handlePublish();
           }}
-          altText={model?.type === "block" && "Variant"}
+          altText={model?.type === "block" && t("content.itemEditVariant")}
           relatedItemsToPublishCount={relatedItemsToPublish.length}
           isPublishing={isPublishing}
         >
           {unpublishedRelatedItems?.length > 0 && (
             <Stack mt={2}>
               <Typography variant="body2" fontWeight={600}>
-                Also publish related items
+                {t("content.itemEditAlsoPublishRelatedItems")}
               </Typography>
               <Typography variant="body3" color="text.secondary">
-                This will publish all items selected in the list below
+                {t("content.itemEditPublishRelatedItemsDescription")}
               </Typography>
               <List disablePadding sx={{ mt: 1 }}>
                 {unpublishedRelatedItems.map((item, index) => (
@@ -909,17 +925,17 @@ type PublishingMenuProps = {
   itemZUID: string;
 };
 
-const MENU_ACTION_LABELS: Record<string, string> = {
-  [ITEM_STATES.dirty]: "Save & Publish",
-  [ITEM_STATES.scheduled]: "Publish Now",
-  [ITEM_STATES.published]: "Unpublish Now",
-  [ITEM_STATES.draft]: "Publish Now",
+const MENU_ACTION_LABEL_KEYS: Record<string, string> = {
+  [ITEM_STATES.dirty]: "content.itemListSavePublish",
+  [ITEM_STATES.scheduled]: "content.itemListPublishNow",
+  [ITEM_STATES.published]: "content.itemEditUnpublishNow",
+  [ITEM_STATES.draft]: "content.itemListPublishNow",
 };
 
-const SCHEDULE_ACTION_LABELS: Record<string, string> = {
-  [ITEM_STATES.dirty]: "Save & Schedule Publish",
-  [ITEM_STATES.scheduled]: "Unschedule Publish",
-  [ITEM_STATES.draft]: "Schedule Publish",
+const SCHEDULE_ACTION_LABEL_KEYS: Record<string, string> = {
+  [ITEM_STATES.dirty]: "content.itemListSaveSchedulePublish",
+  [ITEM_STATES.scheduled]: "content.itemEditUnschedulePublish",
+  [ITEM_STATES.draft]: "content.itemListSchedulePublish",
 };
 
 const PublishingMenu = ({
@@ -937,6 +953,7 @@ const PublishingMenu = ({
   modelZUID,
   itemZUID,
 }: PublishingMenuProps) => {
+  const { t } = useTranslation();
   const history = useHistory();
   const menuActionIcon =
     itemState === ITEM_STATES.published ? (
@@ -984,7 +1001,7 @@ const PublishingMenu = ({
         }
       >
         <ListItemIcon>{menuActionIcon}</ListItemIcon>
-        {MENU_ACTION_LABELS[itemState]}
+        {t(MENU_ACTION_LABEL_KEYS[itemState])}
       </MenuItem>
       {itemState !== ITEM_STATES.published && (
         <MenuItem
@@ -1008,7 +1025,7 @@ const PublishingMenu = ({
           <ListItemIcon>
             <CalendarTodayRounded fontSize="small" />
           </ListItemIcon>
-          {SCHEDULE_ACTION_LABELS[itemState]}
+          {t(SCHEDULE_ACTION_LABEL_KEYS[itemState])}
         </MenuItem>
       )}
       {itemState === ITEM_STATES.published && (
@@ -1023,8 +1040,8 @@ const PublishingMenu = ({
             <CalendarTodayRounded fontSize="small" />
           </ListItemIcon>
           {hasScheduledUnpublish
-            ? "Unschedule Unpublish"
-            : "Schedule Unpublish"}
+            ? t("content.itemEditUnscheduleUnpublish")
+            : t("content.itemEditScheduleUnpublish")}
         </MenuItem>
       )}
 
@@ -1037,7 +1054,7 @@ const PublishingMenu = ({
         <ListItemIcon>
           <ManageAccountsRounded fontSize="small" />
         </ListItemIcon>
-        Manage Publish Status
+        {t("content.itemEditManagePublishStatus")}
       </MenuItem>
     </Menu>
   );

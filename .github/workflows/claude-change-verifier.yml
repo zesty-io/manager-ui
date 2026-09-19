@@ -1,4 +1,4 @@
-name: Claude Change Verifier
+name: "Claude: Acceptance Criteria QA"
 
 # Static QA on every non-draft, same-repo PR into dev. Reads the PR diff, the changed source, and
 # the linked issue, judges the change against the issue's acceptance criteria from the code, and
@@ -18,6 +18,7 @@ on:
 
 jobs:
   verify:
+    name: Claude Acceptance Criteria QA
     # Fork PRs don't get ANTHROPIC_API_KEY; this uses pull_request (not pull_request_target).
     if: >-
       github.event.pull_request.draft == false &&
@@ -73,7 +74,7 @@ jobs:
             the checked-out source. There is no running app or browser, so never claim to have observed
             runtime behavior.
 
-            A separate "Claude Auto Review" workflow already reviews this PR for bugs, security,
+            A separate "Claude: Code Review" workflow already reviews this PR for bugs, security,
             performance, and code conventions. Do not duplicate it: your only job is to judge the
             change against the linked issue's acceptance criteria. Mention a code-level problem
             only when it directly causes a criterion to fail.
@@ -105,7 +106,7 @@ jobs:
             markers verbatim). Do not post a comment or reply in chat.
 
               <!-- cv-verifier -->
-              ## QA Review — <✅ PASS | ❌ FAIL | ⚠️ INCONCLUSIVE>
+              ## Acceptance Criteria QA — <✅ PASS | ❌ FAIL | ⚠️ INCONCLUSIVE>
               <If an issue: "Validates #<n>: <title>". Else: "No linked issue found — change-only QA.">
 
               1. ✅ <criterion in one line>
@@ -177,6 +178,6 @@ jobs:
             exit 1
           fi
           if [ "$V" = "FAIL" ]; then
-            echo "::error::QA found an unmet criterion or a clear bug — see the QA Review comment."
+            echo "::error::QA found an unmet criterion or a clear bug — see the Acceptance Criteria QA comment."
             exit 1
           fi

@@ -2,14 +2,15 @@ import { Stack, Typography, Tooltip } from "@mui/material";
 import { CheckCircleRounded, ScheduleRounded } from "@mui/icons-material";
 import { useParams } from "react-router";
 import { useGetItemPublishingsQuery } from "../../../../../../../../shell/services/instance";
-import { formatDate } from "../../../../../../../../utility/formatDate";
 import { useGetUsersQuery } from "../../../../../../../../shell/services/accounts";
+import { useTranslation } from "react-i18next";
 import { TooltipTitle } from "./TooltipTitle";
 
 type PublishStatusProps = {
   currentVersion: number;
 };
 export const PublishStatus = ({ currentVersion }: PublishStatusProps) => {
+  const { t } = useTranslation();
   const { modelZUID, itemZUID } = useParams<{
     modelZUID: string;
     itemZUID: string;
@@ -64,7 +65,9 @@ export const PublishStatus = ({ currentVersion }: PublishStatusProps) => {
           enterNextDelay={1000}
           title={
             <TooltipTitle
-              text={`v${activePublishing.version} published`}
+              text={t("content.itemEditTooltipPublished", {
+                version: activePublishing.version,
+              })}
               dateTime={activePublishing.publishAt || ""}
               userName={getUserNameByZUID(
                 activePublishing?.publishedByUserZUID
@@ -82,7 +85,9 @@ export const PublishStatus = ({ currentVersion }: PublishStatusProps) => {
               lineHeight="24px"
               letterSpacing="0.46px"
             >
-              v{activePublishing.version} Published
+              {t("content.itemEditVersionPublishedLabel", {
+                version: activePublishing.version,
+              })}
             </Typography>
           </Stack>
         </Tooltip>
@@ -94,7 +99,9 @@ export const PublishStatus = ({ currentVersion }: PublishStatusProps) => {
             enterNextDelay={1000}
             title={
               <TooltipTitle
-                text={`v${scheduledPublishing.version} scheduled to publish`}
+                text={t("content.itemEditTooltipScheduledToPublish", {
+                  version: scheduledPublishing.version,
+                })}
                 dateTime={scheduledPublishing.publishAt || ""}
                 userName={getUserNameByZUID(
                   scheduledPublishing?.publishedByUserZUID
@@ -112,7 +119,9 @@ export const PublishStatus = ({ currentVersion }: PublishStatusProps) => {
                 lineHeight="24px"
                 letterSpacing="0.46px"
               >
-                v{scheduledPublishing.version} Scheduled
+                {t("content.itemEditVersionScheduledLabel", {
+                  version: scheduledPublishing.version,
+                })}
               </Typography>
             </Stack>
           </Tooltip>
@@ -124,7 +133,9 @@ export const PublishStatus = ({ currentVersion }: PublishStatusProps) => {
           enterNextDelay={1000}
           title={
             <TooltipTitle
-              text={`v${scheduledUnpublishing.version} scheduled to unpublish`}
+              text={t("content.itemEditTooltipScheduledToUnpublish", {
+                version: scheduledUnpublishing.version,
+              })}
               dateTime={scheduledUnpublishing.unpublishAt || ""}
               userName={getUserNameByZUID(
                 scheduledUnpublishing?.publishedByUserZUID
@@ -147,7 +158,9 @@ export const PublishStatus = ({ currentVersion }: PublishStatusProps) => {
               lineHeight="24px"
               letterSpacing="0.46px"
             >
-              {`v${scheduledUnpublishing.version} Scheduled Unpublish`}
+              {t("content.itemEditVersionScheduledUnpublishLabel", {
+                version: scheduledUnpublishing.version,
+              })}
             </Typography>
           </Stack>
         </Tooltip>

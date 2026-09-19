@@ -1,5 +1,9 @@
 import { FC } from "react";
-import { formatDate } from "../../../../../../../../utility/formatDate";
+import { useTranslation } from "react-i18next";
+import {
+  formatDate,
+  isTodayOrYesterday,
+} from "../../../../../../../../utility/formatDate";
 
 type TooltipTitleProps = {
   text: string;
@@ -12,18 +16,17 @@ export const TooltipTitle: FC<TooltipTitleProps> = ({
   dateTime,
   userName,
 }) => {
+  const { t } = useTranslation();
   const formatted = dateTime ? formatDate(dateTime) : "";
-  const showOn =
-    formatted &&
-    !formatted.includes("Today") &&
-    !formatted.includes("Yesterday");
+  const showOn = !!formatted && !isTodayOrYesterday(dateTime);
 
   return (
     <div>
-      {text} {showOn ? "on" : ""}
+      {text} {showOn ? t("content.itemEditOn") : ""}
       <br />
       {formatted}
-      <br /> {userName && <>by {userName}</>}
+      <br />{" "}
+      {userName && <>{t("content.itemEditByUser", { name: userName })}</>}
     </div>
   );
 };

@@ -10,11 +10,13 @@ import { Search, AddRounded, RemoveRounded } from "@mui/icons-material";
 import { useMemo, useState } from "react";
 import { COMMON_WORDS } from ".";
 import SearchBox from "../../../../../../../../shell/components/SearchBox";
+import { useTranslation } from "react-i18next";
 
 type MostMentionedWordsProps = {
   wordsArray: string[];
 };
 export const MostMentionedWords = ({ wordsArray }: MostMentionedWordsProps) => {
+  const { t } = useTranslation();
   const [filterKeyword, setFilterKeyword] = useState("");
   const [showAll, setShowAll] = useState(false);
 
@@ -62,17 +64,17 @@ export const MostMentionedWords = ({ wordsArray }: MostMentionedWordsProps) => {
           fontWeight={700}
           mb={0.25}
         >
-          Most Mentioned Words in Content Item
+          {t("content.itemEditMetaMostMentionedWords")}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          Check that your focus keywords are occurring a minimum 2 times.
+          {t("content.itemEditMetaMostMentionedWordsDescription")}
         </Typography>
       </Box>
       <SearchBox
         value={filterKeyword}
         onChange={(evt) => setFilterKeyword(evt.target.value)}
         size="small"
-        placeholder="Filter words"
+        placeholder={t("content.itemEditMetaFilterWords")}
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
@@ -84,7 +86,7 @@ export const MostMentionedWords = ({ wordsArray }: MostMentionedWordsProps) => {
       <Stack direction="row" gap={1} flexWrap="wrap">
         {!filteredWords?.length && !filterKeyword && (
           <Typography variant="body2" color="text.secondary">
-            No words in your content item occur 2 or more times
+            {t("content.itemEditMetaNoRepeatedWords")}
           </Typography>
         )}
         {filteredWords
@@ -106,7 +108,11 @@ export const MostMentionedWords = ({ wordsArray }: MostMentionedWordsProps) => {
           ))}
         {filteredWords?.length > 10 && (
           <Chip
-            label={`See ${showAll ? "Less" : "More"}`}
+            label={
+              showAll
+                ? t("content.itemEditMetaSeeLess")
+                : t("content.itemEditMetaSeeMore")
+            }
             size="small"
             variant="outlined"
             icon={

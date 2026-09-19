@@ -1,13 +1,18 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 
-import { format as fmt, isBefore, formatDistanceToNow } from "date-fns";
+import { format as fmt, isBefore } from "date-fns";
 import { zonedTimeToUtc, formatInTimeZone } from "date-fns-tz";
 
 import { ContentItemWithDirtyAndPublishing } from "../../services/types";
 import { useGetUsersQuery } from "../../services/accounts";
 import { TIMEZONES } from "../FieldTypeDateTime/util";
 import { publish, unpublish } from "../../store/content";
+import {
+  formatDistanceToNowLocalized,
+  getDateFnsLocale,
+} from "../../i18n/dates";
 
 import { SchedulePublishDialog } from "./SchedulePublishDialog";
 import { ScheduleUnpublishDialog } from "./ScheduleUnpublishDialog";
@@ -31,6 +36,7 @@ export const SchedulePublish = ({
   onUnscheduleSuccess,
   scheduledAction,
 }: SchedulePublishProps) => {
+  const { i18n } = useTranslation();
   const dispatch = useDispatch();
   const { data: users } = useGetUsersQuery();
 
@@ -63,7 +69,9 @@ export const SchedulePublish = ({
     latestChangeCreator?.lastName ?? ""
   }`.trim();
   const savedAgo = item?.web?.createdAt
-    ? formatDistanceToNow(new Date(item.web.createdAt), { addSuffix: true })
+    ? formatDistanceToNowLocalized(new Date(item.web.createdAt), {
+        addSuffix: true,
+      })
     : "";
   const tzLabel = TIMEZONES.find((tz) => tz.id === tzGuess)?.label || tzGuess;
 
@@ -74,13 +82,16 @@ export const SchedulePublish = ({
     ? formatInTimeZone(
         item.scheduling.publishAt,
         tzGuess,
-        "MMM d, yyyy 'at' h:mm a"
+        "MMM d, yyyy 'at' h:mm a",
+        { locale: getDateFnsLocale(i18n.language) }
       )
     : "";
 
   const formatPayloadTimes = (utc: Date, timezone: string) => ({
     publishAtUtcStr: formatInTimeZone(utc, "UTC", "yyyy-MM-dd HH:mm:ss"),
-    localPretty: formatInTimeZone(utc, timezone, "MMMM do yyyy, 'at' h:mm a"),
+    localPretty: formatInTimeZone(utc, timezone, "MMMM do yyyy, 'at' h:mm a", {
+      locale: getDateFnsLocale(i18n.language),
+    }),
   });
 
   const handleSchedulePublish = () => {
@@ -147,7 +158,8 @@ export const SchedulePublish = ({
     ? formatInTimeZone(
         item.publishing.unpublishAt,
         tzGuess,
-        "MMM d, yyyy 'at' h:mm a"
+        "MMM d, yyyy 'at' h:mm a",
+        { locale: getDateFnsLocale(i18n.language) }
       )
     : "";
 

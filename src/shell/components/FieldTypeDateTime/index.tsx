@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef, useMemo } from "react";
 import { TextField, Autocomplete, Tooltip, ListItem } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { parse, format, isValid, formatISO } from "date-fns";
 import { zonedTimeToUtc } from "date-fns-tz";
 
@@ -90,6 +91,7 @@ export const FieldTypeDateTime = ({
   disablePast = false,
   compact,
 }: FieldTypeDateTimeProps) => {
+  const { t } = useTranslation();
   const timeFieldRef = useRef<HTMLDivElement>(null);
   const optionsRef = useRef<HTMLDivElement>(null);
   const dateFieldRef = useRef<any>(null);
@@ -165,10 +167,12 @@ export const FieldTypeDateTime = ({
   const generateValuePreview = () => {
     if (showTimezonePicker && value) {
       const iso = toUtcIsoPreview(value, timezone);
-      return iso ? `Stored in UTC as ${iso}` : null;
+      return iso ? t("shell.dateTimeStoredInUtc", { value: iso }) : null;
     }
     if (dateString && timeString) {
-      return `Stored as ${dateString} ${timeString}`;
+      return t("shell.storedAs", {
+        value: `${dateString} ${timeString}`,
+      });
     }
     return null;
   };
@@ -202,7 +206,7 @@ export const FieldTypeDateTime = ({
           timePicker: (
             <Tooltip
               open={invalidInput}
-              title="Invalid Time"
+              title={t("shell.dateTimeInvalidTime")}
               placement="top-start"
             >
               <Autocomplete

@@ -1,4 +1,5 @@
 import { FC, useState, useRef, useEffect, DragEvent } from "react";
+import { useTranslation } from "react-i18next";
 import {
   CardMedia,
   Typography,
@@ -92,6 +93,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
   isTitleEditable,
   title,
 }) => {
+  const { t } = useTranslation();
   const theme = useTheme();
   const imageEl = useRef<HTMLImageElement>();
   const [isCopied, setIsCopied] = useState<boolean>(false);
@@ -209,7 +211,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
       <Chip
         label={
           <Typography variant="body3" color="text.secondary">
-            {isCopied ? "Copied" : "Copy URL"}
+            {isCopied ? t("common.copied") : t("media.thumbnailCopyUrl")}
           </Typography>
         }
         color="default"
@@ -243,7 +245,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
       <Chip
         label={
           <Typography variant="body3" color="text.secondary">
-            Preview
+            {t("common.preview")}
           </Typography>
         }
         color="default"
@@ -1775,7 +1777,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 variant="body2"
                 sx={{ textAlign: "center", color: "grey.500" }}
               >
-                File type not recognized
+                {t("media.fileTypeNotRecognized")}
               </Typography>
             </Box>
             <Chip

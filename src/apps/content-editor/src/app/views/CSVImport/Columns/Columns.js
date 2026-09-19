@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import cx from "classnames";
 
@@ -9,6 +10,7 @@ import { formatName } from "utility/formatName";
 import styles from "./Columns.less";
 
 export default function Columns(props) {
+  const { t } = useTranslation();
   const filterDeactivated = props.fields.filter((field) => !field.deletedAt);
 
   return (
@@ -28,7 +30,7 @@ export default function Columns(props) {
                 }}
                 size="small"
               >
-                <MenuItem value="none">none</MenuItem>
+                <MenuItem value="none">{t("content.csvImportNone")}</MenuItem>
                 {filterDeactivated.map((field) => (
                   <MenuItem key={field.name} value={field.name}>
                     {field.label}

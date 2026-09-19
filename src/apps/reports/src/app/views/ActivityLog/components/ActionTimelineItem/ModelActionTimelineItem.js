@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchModel } from "shell/store/models";
 import { TimelineItem } from "./TimelineItem";
 
 export const ModelActionTimelineItem = (props) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const [modelError, setModelError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -26,9 +28,13 @@ export const ModelActionTimelineItem = (props) => {
   return (
     <TimelineItem
       action={props.action}
-      itemName={`Field ${props.action.meta?.message?.split(" ")?.[2]}`}
+      itemName={t("reports.fieldPrefix", {
+        message: props.action.meta?.message?.split(" ")?.[2],
+      })}
       itemSubtext={
-        modelError ? `${props.action.affectedZUID} (Deleted)` : modelData?.label
+        modelError
+          ? t("reports.deletedZuid", { zuid: props.action.affectedZUID })
+          : modelData?.label
       }
       renderConnector={props.renderConnector}
       showSkeleton={isLoading}

@@ -13,12 +13,14 @@ import headlessLogos from "../../../../../../../public/images/headlessLogos.jpg"
 import hybridLogos from "../../../../../../../public/images/hybridLogos.jpg";
 import { InstanceSetting } from "../../../../../../shell/services/types";
 import { useUpdateInstanceSettingMutation } from "../../../../../../shell/services/instance";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   instanceSetting: InstanceSetting;
 };
 
 export const HeadlessSwitcher = ({ instanceSetting }: Props) => {
+  const { t } = useTranslation();
   const [selected, setSelected] = useState<"hybrid" | "headless" | null>(null);
   const [updateInstanceSetting, { isLoading }] =
     useUpdateInstanceSettingMutation();
@@ -34,13 +36,10 @@ export const HeadlessSwitcher = ({ instanceSetting }: Props) => {
   return (
     <>
       <Typography variant="h4" fontWeight={600} sx={{ mb: 0.5 }}>
-        Want to Access our Headless APIs?
+        {t("schema.headlessSwitcherTitle")}
       </Typography>
       <Typography color="text.secondary">
-        You are currently in traditional web engine mode. Opt-in to change to
-        Hybrid
-        <br /> or Headless now. You can always change this from General
-        Settings. Learn more
+        {t("schema.headlessSwitcherSubtitle")}
       </Typography>
       <Box mt={3} display="flex" gap={2} maxWidth="1200px">
         <Box
@@ -60,11 +59,10 @@ export const HeadlessSwitcher = ({ instanceSetting }: Props) => {
           />
           <Box p={2}>
             <Typography variant="h5" fontWeight={600} sx={{ mb: 0.5 }}>
-              Switch to Headless
+              {t("schema.switchToHeadless")}
             </Typography>
             <Typography color="text.secondary">
-              Use Zesty as a headless back end with technologies such as NextJS,
-              NuxtJS, React, Swift, Gatsby, Flutter, Angular, etc.
+              {t("schema.headlessDescription")}
             </Typography>
           </Box>
         </Box>
@@ -85,11 +83,10 @@ export const HeadlessSwitcher = ({ instanceSetting }: Props) => {
           />
           <Box p={2}>
             <Typography variant="h5" fontWeight={600} sx={{ mb: 0.5 }}>
-              Switch to Hybrid
+              {t("schema.switchToHybrid")}
             </Typography>
             <Typography color="text.secondary">
-              Hybrid is best of both worlds. Pages still render HTML at their
-              routes, but they can also render JSON with a simple get parameter.
+              {t("schema.hybridDescription")}
             </Typography>
           </Box>
         </Box>
@@ -115,40 +112,30 @@ export const HeadlessSwitcher = ({ instanceSetting }: Props) => {
             <ApiRoundedIcon color="error" />
           </Box>
           <Typography variant="h5" sx={{ mt: 1.5 }}>
-            Switch Web Engine Mode to {startCase(selected)}
+            {t("schema.switchWebEngineModeTitle", {
+              mode: startCase(selected),
+            })}
           </Typography>
           {selected === "headless" ? (
             <Typography variant="body2" sx={{ mt: 1 }} color="text.secondary">
-              This is ideal for engineers who work fully outside of Zesty.io in
-              technologies such as NextJS, NuxtJS, or Angular. When headless
-              mode is on, all routes render as JavaScript object notation
-              (JSON).
-              <br />
-              <br />
-              Note: This change can be reverted later from General Settings
+              {t("schema.headlessModeDescription")}
             </Typography>
           ) : (
             <Typography variant="body2" sx={{ mt: 1 }} color="text.secondary">
-              Hybrid is best of both worlds. Pages still render HTML at their
-              routes, but they can also render JSON with a simple get parameter.
-              For example /about/ would return HTML, but /about/?toJSON would
-              return a fully hydrated JSON object of the about page.
-              <br />
-              <br />
-              Note: This change can be reverted later from General Settings
+              {t("schema.hybridModeDescription")}
             </Typography>
           )}
         </DialogTitle>
         <DialogActions>
           <Button onClick={() => setSelected(null)} color="primary">
-            Cancel
+            {t("common.cancel")}
           </Button>
           <Button
             loading={isLoading}
             variant="contained"
             onClick={handleSwitch}
           >
-            Switch to {startCase(selected)}
+            {t("schema.switchToMode", { mode: startCase(selected) })}
           </Button>
         </DialogActions>
       </Dialog>
