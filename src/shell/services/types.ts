@@ -754,3 +754,61 @@ export type WebFont = {
   kind?: string;
   menu?: string;
 };
+
+export type GeminiResponse = {
+  chatZuid?: string;
+  data: string | { data: any };
+  message: string;
+  tools: any[];
+};
+
+export type ChatSession = {
+  userZuid: string;
+  instanceZuid: string;
+  roleZuid: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  chatZuid: string;
+  referer: string;
+  title: string;
+};
+export type ChatPromptMetadata =
+  | {
+      tone: string;
+      language: string;
+      modelZuid: string;
+      itemZuid: string;
+      registryKeys: string[];
+      refRegistry: string[];
+      temperature: number;
+    }
+  | {
+      temperature: number;
+      systemInstruction: string;
+    };
+
+export type ChatPrompt = {
+  prompt: string;
+  response: string;
+  metadata: ChatPromptMetadata;
+  url: string;
+  approval: "0" | "1";
+  instanceZuid: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  promptZuid: string;
+  chatZuid: string;
+};
+
+export type ChatSessionLog = {
+  userZuid: string;
+  roleZuid: string;
+  instanceZuid: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  chatZuid: string;
+  prompts: ChatPrompt[];
+};

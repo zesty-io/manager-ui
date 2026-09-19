@@ -1,0 +1,53 @@
+{
+  "model": {
+    "label": "AI Drawer Test Content",
+    "metaTitle": "AI Drawer Test Content",
+    "type": "templateset",
+    "listed": true
+  },
+  "fields": [
+    {
+      "contentModelZUID": "",
+      "name": "page_title",
+      "label": "Page Title",
+      "description": "",
+      "datatype": "text",
+      "required": false,
+      "settings": { "list": true, "defaultValue": null },
+      "sort": 1
+    },
+    {
+      "contentModelZUID": "",
+      "name": "page_image",
+      "label": "Page Image",
+      "description": "",
+      "datatype": "images",
+      "required": false,
+      "settings": {
+        "list": true,
+        "limit": "",
+        "group_id": "",
+        "defaultValue": null
+      },
+      "sort": 2
+    }
+  ],
+  "items": [
+    {
+      "web": {
+        "pathPart": "ai-drawer-test-content",
+        "canonicalTagMode": 1,
+        "metaLinkText": "AI Drawer Test Content",
+        "metaTitle": "AI Drawer Test Content",
+        "parentZUID": "0"
+      },
+      "meta": {
+        "sort": 0
+      },
+      "data": {
+        "page_title": "",
+        "page_image": ""
+      }
+    }
+  ]
+}
