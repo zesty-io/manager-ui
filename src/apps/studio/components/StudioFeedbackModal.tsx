@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import { useSendEmailMutation } from "shell/services/cloudFunctions";
 import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 import { AppState } from "shell/store/types";
 import { InteractionMode } from "../hooks/studioTypes";
 
@@ -45,6 +46,7 @@ export const StudioFeedbackModal = ({
   activePage,
   mode,
 }: StudioFeedbackModalProps) => {
+  const { t } = useTranslation();
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const user = useSelector((state: AppState) => state.user);
@@ -99,7 +101,7 @@ export const StudioFeedbackModal = ({
       })
       .catch(() => {
         isSubmittingRef.current = false;
-        setError("Couldn't send feedback. Try again.");
+        setError(t("content.feedbackSendError"));
       });
   };
 
@@ -112,21 +114,21 @@ export const StudioFeedbackModal = ({
       maxWidth="xs"
     >
       <DialogTitle>
-        <Box sx={{ fontWeight: 700 }}>Share Feedback</Box>
+        <Box sx={{ fontWeight: 700 }}>{t("content.shareFeedback")}</Box>
         <Typography sx={{ mt: 0.5 }} variant="body2" color="text.secondary">
-          Please tell us about your experience so we can improve.
+          {t("content.feedbackModalSubtitle")}
         </Typography>
       </DialogTitle>
       <DialogContent>
         <Typography variant="subtitle2" color="text.primary" fontWeight={600}>
-          How was your experience with studio-mode
+          {t("content.feedbackExperiencePrompt")}
         </Typography>
         <TextField
           data-cy="StudioFeedbackMessageInput"
           fullWidth
           multiline
           minRows={4}
-          placeholder="Please provide detailed feedback about your experience"
+          placeholder={t("content.feedbackPlaceholder")}
           value={message}
           onChange={(evt) => setMessage(evt.target.value)}
           disabled={isSubmitting}
@@ -150,7 +152,7 @@ export const StudioFeedbackModal = ({
           onClick={handleClose}
           disabled={isSubmitting}
         >
-          Cancel
+          {t("common.cancel")}
         </Button>
         <Button
           data-cy="StudioFeedbackSubmitButton"
@@ -159,7 +161,7 @@ export const StudioFeedbackModal = ({
           disabled={!message.trim() || isSubmitting}
           loading={isSubmitting}
         >
-          Share Feedback
+          {t("content.shareFeedback")}
         </Button>
       </DialogActions>
     </Dialog>

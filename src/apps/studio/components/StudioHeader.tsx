@@ -183,7 +183,7 @@ export const StudioHeader = ({
           onClick={onFeedbackClick}
           sx={{ fontWeight: 500 }}
         >
-          Feedback
+          {t("content.feedbackButtonLabel")}
         </Button>
         <Box minWidth={96}>
           <LanguageSelector
