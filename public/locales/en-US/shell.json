@@ -491,6 +491,7 @@
   "scheduleUnpublishTitleSchedule": "Schedule Unpublish",
   "scheduleUnpublishTitleUnschedule": "Unschedule Unpublish",
   "scheduleUnpublishUnscheduleButton": "Cancel Scheduled Unpublish",
+  "scheduleUnpublishUnscheduleInfo": "This will cancel the scheduled unpublish and keep this content item published.",
   "searchIn": "Search in...",
   "searchInstancePlaceholder": "Search Instance {{shortcut}}",
   "searchInstances": "Search Instances",

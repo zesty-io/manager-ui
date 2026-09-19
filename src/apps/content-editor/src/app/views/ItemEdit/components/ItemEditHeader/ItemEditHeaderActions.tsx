@@ -808,6 +808,7 @@ export const ItemEditHeaderActions = ({
         }}
         setPublishAfterUnschedule={() => {
           setScheduledPublishDialogOpen(true);
+          setScheduledAction("publish");
           setPublishAfterUnschedule(true);
         }}
         handlePublish={() => setIsConfirmPublishModalOpen(true)}

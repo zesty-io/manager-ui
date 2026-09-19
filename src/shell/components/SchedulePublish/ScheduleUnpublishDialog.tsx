@@ -122,7 +122,7 @@ export const ScheduleUnpublishDialog = ({
         {isAlreadyScheduled ? (
           <>
             <Alert severity="info" icon={<InfoRoundedIcon />}>
-              {t("shell.schedulePublishUnscheduleInfo")}
+              {t("shell.scheduleUnpublishUnscheduleInfo")}
             </Alert>
           </>
         ) : (

@@ -145,7 +145,7 @@ export const PublishStatus = ({ currentVersion }: PublishStatusProps) => {
           placement="bottom-start"
         >
           <Stack
-            data-cy="ScheduledUnpublishIndicator"
+            data-cy="PublishStatusScheduledUnpublishIndicator"
             direction="row"
             gap={1}
             alignItems="center"
