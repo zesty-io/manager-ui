@@ -1,4 +1,5 @@
 import { Box, Skeleton, Typography } from "@mui/material";
+import { TFunction } from "i18next";
 
 import {
   RedirectsCodes,
@@ -6,22 +7,22 @@ import {
 } from "../../../../../../shell/services/types";
 
 export const HTTP_CODE_OPTIONS = [
-  { value: 301, label: "301 - Permanent Redirect" },
-  { value: 302, label: "302 - Temporary Redirect" },
+  { value: 301, label: "seo.httpCode301Label" },
+  { value: 302, label: "seo.httpCode302Label" },
 ] as const;
 export const TARGET_OPTIONS = [
   {
     value: "page",
-    label: "Internal - link to a published item within your instance",
+    label: "seo.targetOptionInternalLabel",
   },
-  { value: "external", label: "External - link to an external webpage" },
+  { value: "external", label: "seo.targetOptionExternalLabel" },
   {
     value: "path",
-    label: "Wildcard - can handle multiple redirects with a single rule",
+    label: "seo.targetOptionWildcardLabel",
   },
 ] as const;
 
-export const TOOL_TIPS = {
+export const getToolTips = (t: TFunction) => ({
   code: (
     <Box
       display="flex"
@@ -29,17 +30,8 @@ export const TOOL_TIPS = {
       alignItems="flex-start"
       rowGap={1}
     >
-      <Typography variant="caption">
-        <span style={{ fontWeight: 600 }}>[301]</span> - Permanent Redirect: Use
-        this when content has moved permanently to a new location. Search
-        engines will update their index.
-      </Typography>
-      <Typography variant="caption">
-        <span style={{ fontWeight: 600 }}>[302]</span> - Temporary Redirect: Use
-        this when content is temporarily located elsewhere, and you intend to
-        move it back. Search engines typically don't update their index for the
-        new location.
-      </Typography>
+      <Typography variant="caption">{t("seo.tooltipCode301")}</Typography>
+      <Typography variant="caption">{t("seo.tooltipCode302")}</Typography>
     </Box>
   ),
   targetType: (
@@ -50,38 +42,34 @@ export const TOOL_TIPS = {
       rowGap={0.25}
     >
       <Typography variant="caption" noWrap>
-        Internal E.g. /about
+        {t("seo.tooltipTargetTypeInternal")}
       </Typography>
       <Typography variant="caption" noWrap>
-        External E.g. https://zesty.org/
+        {t("seo.tooltipTargetTypeExternal")}
       </Typography>
       <Typography variant="caption" noWrap>
-        Wildcard E.g. /blog/*/*/
+        {t("seo.tooltipTargetTypeWildcard")}
       </Typography>
     </Box>
   ),
-};
+});
 
 export const FORM_LABELS = {
   create: {
-    header: "Create Redirect",
-    subHeader:
-      "Your new redirects will go live immediately after they're created.",
-    incomingPath:
-      "Incoming paths are case-insensitive and trailing slashes are automatically handled",
+    header: "seo.createRedirectHeader",
+    subHeader: "seo.createRedirectSubHeader",
+    incomingPath: "seo.createRedirectIncomingPath",
   },
   edit: {
-    header: "Edit Redirect",
-    subHeader: "Changes you make will be immediately go live on saving",
-    incomingPath:
-      "Trailing slashes and casing variations in paths are automatically handled in WebEngine.",
+    header: "seo.editRedirectHeader",
+    subHeader: "seo.editRedirectSubHeader",
+    incomingPath: "seo.editRedirectIncomingPath",
   },
 };
 
 export const TARGET_ERRORS = {
-  unpublished:
-    "This item isn't published yet. Any incoming paths will lead to your 404 page until it goes live.",
-  invalidUrl: "Invalid URL. Please enter a valid URL.",
+  unpublished: "seo.targetErrorUnpublished",
+  invalidUrl: "seo.targetErrorInvalidUrl",
 };
 
 export type PathProps = {

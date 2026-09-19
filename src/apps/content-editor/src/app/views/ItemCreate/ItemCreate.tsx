@@ -7,6 +7,7 @@ import {
   useCallback,
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 import useIsMounted from "ismounted";
 import { useHistory, useParams } from "react-router-dom";
 import isEmpty from "lodash/isEmpty";
@@ -77,6 +78,7 @@ type FieldErrors = {
 };
 
 export const ItemCreate = () => {
+  const { t } = useTranslation();
   const history = useHistory();
   const isMounted = useIsMounted();
   const dispatch = useDispatch();
@@ -252,7 +254,7 @@ export const ItemCreate = () => {
 
               dispatch(
                 notify({
-                  message: "Missing Data in Required Fields",
+                  message: t("content.itemEditMissingRequiredData"),
                   kind: "error",
                 })
               );
@@ -294,7 +296,10 @@ export const ItemCreate = () => {
               res.invalidRange?.forEach((field: ContentModelField) => {
                 errors[field.name] = {
                   ...(errors[field.name] ?? {}),
-                  INVALID_RANGE: `Value must be between ${field.settings?.minValue} and ${field.settings?.maxValue}`,
+                  INVALID_RANGE: t("content.valueMustBeBetween", {
+                    min: field.settings?.minValue,
+                    max: field.settings?.maxValue,
+                  }),
                 };
               });
             }
@@ -338,8 +343,8 @@ export const ItemCreate = () => {
                 errors[fieldName] = {
                   ...(errors[fieldName] ?? {}),
                   CUSTOM_ERROR: oneToManyFieldNames?.includes(fieldName)
-                    ? "Cannot save field. Please reduce the total number of items selected."
-                    : "Cannot save field. Value is too long.",
+                    ? t("content.itemEditCannotSaveTooManySelected")
+                    : t("content.itemEditCannotSaveValueTooLong"),
                 };
 
                 setFieldErrors(errors);
@@ -348,7 +353,9 @@ export const ItemCreate = () => {
 
             dispatch(
               notify({
-                message: `Cannot Save: ${res.error}`,
+                message: t("content.itemCreateCannotSaveError", {
+                  error: res.error,
+                }),
                 kind: "error",
               })
             );
@@ -372,7 +379,9 @@ export const ItemCreate = () => {
                 // from the create new content item page
                 dispatch(
                   notify({
-                    message: `Cannot Publish: "${item.web.metaTitle}". Does not have a status that allows publishing`,
+                    message: t("content.itemEditCannotPublishStatus", {
+                      title: item.web.metaTitle,
+                    }),
                     kind: "error",
                   })
                 );
@@ -396,7 +405,9 @@ export const ItemCreate = () => {
                 // from the create new content item page
                 dispatch(
                   notify({
-                    message: `Cannot Publish: "${item.web.metaTitle}". Does not have a status that allows publishing`,
+                    message: t("content.itemEditCannotPublishStatus", {
+                      title: item.web.metaTitle,
+                    }),
                     kind: "error",
                   })
                 );
@@ -422,7 +433,9 @@ export const ItemCreate = () => {
                 // from the create new content item page
                 dispatch(
                   notify({
-                    message: `Cannot Publish: "${item.web.metaTitle}". Does not have a status that allows publishing`,
+                    message: t("content.itemEditCannotPublishStatus", {
+                      title: item.web.metaTitle,
+                    }),
                     kind: "error",
                   })
                 );
@@ -441,7 +454,9 @@ export const ItemCreate = () => {
                 // from the create new content item page
                 dispatch(
                   notify({
-                    message: `Cannot Publish: "${item.web.metaTitle}". Does not have a status that allows publishing`,
+                    message: t("content.itemEditCannotPublishStatus", {
+                      title: item.web.metaTitle,
+                    }),
                     kind: "error",
                   })
                 );
@@ -463,16 +478,16 @@ export const ItemCreate = () => {
 
           dispatch(
             notify({
-              message: `Created Item: ${
-                item.web.metaLinkText || item.web.metaTitle
-              }`,
+              message: t("content.itemCreateCreatedItem", {
+                name: item.web.metaLinkText || item.web.metaTitle,
+              }),
               kind: "success",
             })
           );
         } else {
           dispatch(
             notify({
-              message: "Unknown issue creating new item",
+              message: t("content.itemCreateUnknownIssue"),
               kind: "warn",
             })
           );
@@ -485,7 +500,7 @@ export const ItemCreate = () => {
         }
       }
     },
-    [itemZUID, fieldErrors, hasErrors, hasSEOErrors, location.pathname]
+    [itemZUID, fieldErrors, hasErrors, hasSEOErrors, location.pathname, t]
   );
 
   const handlePublish = async (newItemZUID: string) => {
@@ -516,7 +531,9 @@ export const ItemCreate = () => {
   };
 
   if (!loading && !model) {
-    return <NotFound message={`Model "${modelZUID}" not found`} />;
+    return (
+      <NotFound message={t("content.itemListModelNotFound", { modelZUID })} />
+    );
   }
 
   return (
@@ -524,7 +541,7 @@ export const ItemCreate = () => {
       condition={
         !loading && item && isSuccessNewModelFields && !isFetchingNewModelFields
       }
-      message="Creating New Item"
+      message={t("content.itemCreateLoading")}
     >
       <Stack component="section" height="100%">
         <Header
@@ -638,7 +655,7 @@ export const ItemCreate = () => {
                     mt: 1.5,
                   }}
                 >
-                  Improve with AI
+                  {t("content.itemCreateImproveWithAI")}
                 </Button>
               </>
             )}

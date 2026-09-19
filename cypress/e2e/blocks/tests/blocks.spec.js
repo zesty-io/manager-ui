@@ -67,7 +67,7 @@ describe("All Blocks Tests", () => {
     AllBlocksPage.searchBlocksInput.find("input").clear();
     AllBlocksPage.searchBlocksInput.type("Non Existent Block");
     cy.contains(
-      "Your search “Non Existent Block” could not find any results"
+      'Your search "Non Existent Block" could not find any results'
     ).should("exist");
   });
 

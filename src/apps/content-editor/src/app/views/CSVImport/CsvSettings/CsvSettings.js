@@ -1,13 +1,15 @@
 import { Component } from "react";
+import { useTranslation } from "react-i18next";
 
 import { Select, MenuItem, TextField } from "@mui/material";
 
 import styles from "./CsvSettings.less";
 export const CsvSettings = (props) => {
+  const { t } = useTranslation();
   return (
     <section className={styles.CsvSettings}>
       <article className={styles.Setting}>
-        <label>Meta Description</label>
+        <label>{t("content.itemEditMetaDescription")}</label>
         <Select
           name={"metaDescription"}
           onChange={(evt) =>
@@ -17,7 +19,7 @@ export const CsvSettings = (props) => {
           size="small"
           fullWidth
         >
-          <MenuItem value="none">none</MenuItem>
+          <MenuItem value="none">{t("content.csvImportNone")}</MenuItem>
           {props.cols.map((col, index) => (
             <MenuItem key={index} value={col}>
               {col}
@@ -26,7 +28,7 @@ export const CsvSettings = (props) => {
         </Select>
       </article>
       <article className={styles.Setting}>
-        <label>Meta Keywords</label>
+        <label>{t("content.itemEditMetaKeywords")}</label>
         <Select
           name="metaKeywords"
           onChange={(evt) => props.handleMap(evt.target.value, "metaKeywords")}
@@ -34,7 +36,7 @@ export const CsvSettings = (props) => {
           size="small"
           fullWidth
         >
-          <MenuItem value="none">none</MenuItem>
+          <MenuItem value="none">{t("content.csvImportNone")}</MenuItem>
           {props.cols.map((col, index) => (
             <MenuItem key={index} value={col}>
               {col}
@@ -43,7 +45,7 @@ export const CsvSettings = (props) => {
         </Select>
       </article>
       <article className={styles.Setting}>
-        <label>Meta Link Text</label>
+        <label>{t("content.csvSettingsMetaLinkText")}</label>
         <Select
           name="metaLinkText"
           onChange={(evt) => props.handleMap(evt.target.value, "metaLinkText")}
@@ -51,7 +53,7 @@ export const CsvSettings = (props) => {
           size="small"
           fullWidth
         >
-          <MenuItem value="none">none</MenuItem>
+          <MenuItem value="none">{t("content.csvImportNone")}</MenuItem>
           {props.cols.map((col, index) => (
             <MenuItem key={index} value={col}>
               {col}
@@ -60,7 +62,7 @@ export const CsvSettings = (props) => {
         </Select>
       </article>
       <article className={styles.Setting}>
-        <label>Meta Title</label>
+        <label>{t("content.itemEditMetaTitle")}</label>
         <Select
           name="metaTitle"
           onChange={(evt) => props.handleMap(evt.target.value, "metaTitle")}
@@ -68,7 +70,7 @@ export const CsvSettings = (props) => {
           size="small"
           fullWidth
         >
-          <MenuItem value="none">none</MenuItem>
+          <MenuItem value="none">{t("content.csvImportNone")}</MenuItem>
           {props.cols.map((col, index) => (
             <MenuItem key={index} value={col}>
               {col}
@@ -77,7 +79,7 @@ export const CsvSettings = (props) => {
         </Select>
       </article>
       <article className={styles.Setting}>
-        <label>Parent ZUID</label>
+        <label>{t("content.csvSettingsParentZuid")}</label>
         <Select
           name="parentZUID"
           onChange={(evt) => props.handleMap(evt.target.value, "parentZUID")}
@@ -85,7 +87,7 @@ export const CsvSettings = (props) => {
           size="small"
           fullWidth
         >
-          <MenuItem value="none">none</MenuItem>
+          <MenuItem value="none">{t("content.csvImportNone")}</MenuItem>
           {props.cols.map((col, index) => (
             <MenuItem key={index} value={col}>
               {col}
@@ -94,7 +96,7 @@ export const CsvSettings = (props) => {
         </Select>
       </article>
       <article className={styles.Setting}>
-        <label>Path Part</label>
+        <label>{t("content.csvSettingsPathPart")}</label>
         <Select
           name="pathPart"
           onChange={(evt) => props.handleMap(evt.target.value, "pathPart")}
@@ -102,7 +104,7 @@ export const CsvSettings = (props) => {
           size="small"
           fullWidth
         >
-          <MenuItem value="none">none</MenuItem>
+          <MenuItem value="none">{t("content.csvImportNone")}</MenuItem>
           {props.cols.map((col, index) => (
             <MenuItem key={index} value={col}>
               {col}
@@ -111,10 +113,14 @@ export const CsvSettings = (props) => {
         </Select>
       </article>
       <article className={styles.Setting}>
-        <CanonicalTag name="canonicalTagMode" onChange={props.handleMap} />
+        <CanonicalTag
+          name="canonicalTagMode"
+          onChange={props.handleMap}
+          t={t}
+        />
       </article>
       <article className={styles.Setting}>
-        <label>Sitemap Priority</label>
+        <label>{t("content.itemEditMetaSitemapPriority")}</label>
         <Select
           name="sitemapPriority"
           onChange={(evt) =>
@@ -124,7 +130,9 @@ export const CsvSettings = (props) => {
           size="small"
           fullWidth
         >
-          <MenuItem value={-1.0}>Automatically Set Priority</MenuItem>
+          <MenuItem value={-1.0}>
+            {t("content.csvSettingsAutoPriority")}
+          </MenuItem>
           <MenuItem value={1.0}>1.0</MenuItem>
           <MenuItem value={0.9}>0.9</MenuItem>
           <MenuItem value={0.8}>0.8</MenuItem>
@@ -135,7 +143,7 @@ export const CsvSettings = (props) => {
           <MenuItem value={0.3}>0.3</MenuItem>
           <MenuItem value={0.2}>0.2</MenuItem>
           <MenuItem value={0.1}>0.1</MenuItem>
-          <MenuItem value={-2.0}>Do Not Display in Sitemap</MenuItem>
+          <MenuItem value={-2.0}>{t("content.csvSettingsNoSitemap")}</MenuItem>
         </Select>
       </article>
     </section>
@@ -149,22 +157,22 @@ class CanonicalTag extends Component {
       {
         key: 0,
         value: 0,
-        text: "Off",
+        textKey: "content.csvSettingsCanonicalOff",
       },
       {
         key: 1,
         value: 1,
-        text: "On (Ignores query parameters)",
+        textKey: "content.csvSettingsCanonicalOnIgnore",
       },
       {
         key: 2,
         value: 2,
-        text: "On - Allow certain parameters",
+        textKey: "content.csvSettingsCanonicalOnAllow",
       },
       {
         key: 3,
         value: 3,
-        text: "On - Custom Path or Custom URL",
+        textKey: "content.csvSettingsCanonicalOnCustom",
       },
     ],
     whitelist: "",
@@ -187,19 +195,20 @@ class CanonicalTag extends Component {
   };
 
   render() {
+    const { t } = this.props;
     return (
       <article className={{ display: "flex" }}>
-        <label>Canonical Tag</label>
+        <label>{t("content.itemEditMetaCanonicalTag")}</label>
         {zestyStore.getState().instance.settings.seo[
           "canonical-tags-enabled"
         ] === "1" ? (
           <small className={`desc notEnabled`}>
-            Canonical tags are not enabled. For more information, read
+            {t("content.csvSettingsCanonicalNotEnabled")}
             <a
               href="https://developer.zesty.io/docs/seo-tools/canonical-tags/"
               target="_blank"
             >
-              Enabling Canonical Tags
+              {t("content.itemEditMetaCanonicalEnableDocsLink")}
             </a>
           </small>
         ) : (
@@ -220,7 +229,7 @@ class CanonicalTag extends Component {
               {this.state.canonicalOptions.map((opt) => {
                 return (
                   <MenuItem key={opt.key} value={opt.value}>
-                    {opt.text}
+                    {t(opt.textKey)}
                   </MenuItem>
                 );
               })}
@@ -228,10 +237,9 @@ class CanonicalTag extends Component {
 
             {this.state.canonicalTagMode == "2" ? (
               <div className="setting-field custom">
-                <label>Allowed query parameters (comma-separated)</label>
+                <label>{t("content.csvSettingsAllowedParams")}</label>
                 <small className="desc">
-                  Only list comma-separated parameter names. Do not include
-                  values, ampersands, equals, or spaces.
+                  {t("content.csvSettingsAllowedParamsDesc")}
                 </small>
                 <TextField
                   type="text"
@@ -249,10 +257,9 @@ class CanonicalTag extends Component {
 
             {this.state.canonicalTagMode == "3" ? (
               <div className="setting-field custom">
-                <label>Custom Path Value or URL</label>
+                <label>{t("content.csvSettingsCustomPathLabel")}</label>
                 <small className="desc">
-                  For Custom Paths: begin with a forward slash. For Custom URL:
-                  begin with http:// or https://
+                  {t("content.csvSettingsCustomPathDesc")}
                 </small>
                 <TextField
                   type="text"

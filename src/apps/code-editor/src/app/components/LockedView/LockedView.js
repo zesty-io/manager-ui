@@ -1,6 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useCallback, useEffect, useState } from "react";
 import { useHistory } from "react-router";
+import { useTranslation, Trans } from "react-i18next";
 
 import { checkLock, lock, unlock } from "shell/store/content";
 
@@ -15,7 +16,8 @@ import {
   DialogTitle,
   Typography,
 } from "@mui/material";
-import { format, fromUnixTime, isValid } from "date-fns";
+import { formatLocalized } from "shell/i18n/dates";
+import { fromUnixTime, isValid } from "date-fns";
 
 /**
  * This component is designed to be a generic view lock
@@ -23,6 +25,7 @@ import { format, fromUnixTime, isValid } from "date-fns";
  * TODO: extract this into the design-system
  */
 export function LockedView(props) {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -37,7 +40,9 @@ export function LockedView(props) {
   const [name, setName] = useState(props.name);
 
   const d = fromUnixTime(lockData?.timestamp);
-  const formattedDate = isValid(d) ? format(d, "MMMM do, yyyy h:mm a") : "";
+  const formattedDate = isValid(d)
+    ? formatLocalized(d, "MMMM do, yyyy h:mm a")
+    : "";
 
   const onClose = useCallback(() => {
     history.goBack();
@@ -116,17 +121,29 @@ export function LockedView(props) {
           </Box>
 
           <Typography variant="inherit" fontWeight={700}>
-            File Locked
+            {t("code.fileLocked")}
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-            {lockData.firstName} {lockData.lastName} is viewing <em>{name}</em>{" "}
-            since {formattedDate} Unlock this item to ignore this warning and
-            possibly overwrite {lockData.firstName}'s changes.
+            <Trans
+              i18nKey="code.fileLockedDescriptionRich"
+              values={{
+                firstName: lockData.firstName,
+                lastName: lockData.lastName,
+                name,
+                formattedDate,
+              }}
+              components={{ em: <em /> }}
+            >
+              {lockData.firstName} {lockData.lastName} is viewing{" "}
+              <em>{name}</em> since {formattedDate} Unlock this item to ignore
+              this warning and possibly overwrite {lockData.firstName}&apos;s
+              changes.
+            </Trans>
           </Typography>
         </DialogTitle>
         <DialogActions>
           <Button variant="text" color="inherit" onClick={onClose}>
-            Go Back
+            {t("common.goBack")}
           </Button>
           <Button
             data-cy="DeleteContentItemConfirmButton"
@@ -137,7 +154,7 @@ export function LockedView(props) {
               loading ? <CircularProgress size="20px" /> : <LockOpenIcon />
             }
           >
-            Unlock
+            {t("code.unlock")}
           </Button>
         </DialogActions>
       </Dialog>

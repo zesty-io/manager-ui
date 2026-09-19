@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { Stack } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 import { useParams } from "../../../hooks/useParams";
 import { SortByFilter, FilterValues } from "./SortByFilter";
@@ -11,6 +12,7 @@ import { LanguageFilter } from "./LanguageFilter";
 import { useDateFilterParams } from "../../../hooks/useDateFilterParams";
 
 export const Filters = () => {
+  const { t } = useTranslation();
   const [params, setParams] = useParams();
   const [activeDateFilter, setActiveDateFilter] = useDateFilterParams();
   const { data: users } = useGetUsersQuery();
@@ -36,12 +38,12 @@ export const Filters = () => {
       <UserFilter
         value={params.get("user") || ""}
         onChange={(value) => setParams(value, "user")}
-        defaultButtonText="Created By"
+        defaultButtonText={t("common.createdBy")}
         options={userOptions}
       />
       <DateFilter
         withDateRange
-        defaultButtonText="Date Modified"
+        defaultButtonText={t("shell.dateModified")}
         onChange={(value) => setActiveDateFilter(value)}
         value={activeDateFilter}
       />

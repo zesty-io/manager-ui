@@ -17,6 +17,8 @@ import { CloseRounded } from "@mui/icons-material";
 import PhotoLibraryRounded from "@mui/icons-material/PhotoLibraryRounded";
 import AddLinkRounded from "@mui/icons-material/AddLinkRounded";
 import LinkOffRounded from "@mui/icons-material/LinkOffRounded";
+import { TFunction } from "i18next";
+import { useTranslation } from "react-i18next";
 import LinkRounded from "@mui/icons-material/LinkRounded";
 import { ConnectField, ElementSlot, LinkWrapper } from "../hooks/studioTypes";
 import { NO_TAG, TEXT_TAGS } from "./studioTags";
@@ -31,46 +33,48 @@ import { useCrossModelConnectField } from "../hooks/useCrossModelConnectField";
 import { StudioLinkItemDialog } from "./StudioLinkItemDialog";
 
 // Title shown for a supported element tag.
-const TAG_TITLES: Record<string, string> = {
-  img: "Image",
-  video: "Video",
+const getTagTitles = (t: TFunction): Record<string, string> => ({
+  img: t("shell.tinymceSlashImage"),
+  video: t("shell.tinymceSlashVideo"),
   // Intentionally absent from TAG_FAMILIES: swapping a link to a div/span would
   // destroy its semantics, so a link gets no Tag selector — just its URL.
-  a: "Link",
-  h1: "Heading 1",
-  h2: "Heading 2",
-  h3: "Heading 3",
-  h4: "Heading 4",
-  h5: "Heading 5",
-  h6: "Heading 6",
-  p: "Paragraph",
-  span: "Text",
-  div: "Div",
-  section: "Section",
-  article: "Article",
-  aside: "Aside",
-  header: "Header",
-  footer: "Footer",
-  main: "Main",
-  nav: "Navigation",
+  a: t("shell.tinymceSlashLink"),
+  h1: t("shell.tinymceSlashHeading1"),
+  h2: t("shell.tinymceSlashHeading2"),
+  h3: t("shell.tinymceSlashHeading3"),
+  h4: t("shell.tinymceSlashHeading4"),
+  h5: t("shell.tinymceSlashHeading5"),
+  h6: t("shell.tinymceSlashHeading6"),
+  p: t("shell.tinymceSlashParagraph"),
+  span: t("content.tagText"),
+  div: t("content.tagDiv"),
+  section: t("content.tagSection"),
+  article: t("content.tagArticle"),
+  aside: t("content.tagAside"),
+  header: t("content.tagHeader"),
+  footer: t("content.tagFooter"),
+  main: t("content.tagMain"),
+  nav: t("content.tagNavigation"),
   // Text that no text element wraps — see NO_TAG.
-  [NO_TAG]: "No Tag",
-};
+  [NO_TAG]: t("content.tagNone"),
+});
 
 // Interchangeable tag families — an element can be switched to any sibling in
 // its family (layout mode only, since it rewrites the underlying code). Each
 // family names the selector shown for it (e.g. "Media Type" for img/video).
-const TAG_FAMILIES: { label: string; tags: readonly string[] }[] = [
-  { label: "Tag", tags: TEXT_TAGS },
+const getTagFamilies = (
+  t: TFunction
+): { label: string; tags: readonly string[] }[] => [
+  { label: t("shell.headTagLabel"), tags: TEXT_TAGS },
   // Text with no tag around it. Its own family, listed AFTER the real one so a
   // genuine <h1> still matches that first and is never offered "No Tag" as a
   // destination — un-wrapping is an operation we don't have yet. This family
   // exists so the placeholder shows the same Tag row an <h1> does; it renders
   // read-only, because the placeholder carries no layoutPatch.
-  { label: "Tag", tags: [NO_TAG, ...TEXT_TAGS] },
-  { label: "Media Type", tags: ["img", "video"] },
+  { label: t("shell.headTagLabel"), tags: [NO_TAG, ...TEXT_TAGS] },
+  { label: t("content.mediaTypeLabel"), tags: ["img", "video"] },
   {
-    label: "Tag",
+    label: t("shell.headTagLabel"),
     tags: [
       "div",
       "section",
@@ -85,10 +89,11 @@ const TAG_FAMILIES: { label: string; tags: readonly string[] }[] = [
 ];
 
 const getTagFamily = (
-  tag: string
+  tag: string,
+  t: TFunction
 ): { label: string; tags: readonly string[] } =>
-  TAG_FAMILIES.find((family) => family.tags.includes(tag)) || {
-    label: "Tag",
+  getTagFamilies(t).find((family) => family.tags.includes(tag)) || {
+    label: t("shell.headTagLabel"),
     tags: [tag],
   };
 
@@ -100,34 +105,36 @@ const getTagFamily = (
 // ---------------------------------------------------------------------------
 
 // Keyed by slot key (an attribute name, or "text" for inner content).
-const SLOT_LABELS: Record<string, string> = {
-  src: "Source",
-  alt: "Alt text",
-  href: "URL",
-  target: "Open in new tab",
-  poster: "Video Poster",
-  controls: "Video Control Visibility",
-  autoplay: "Autoplay",
-  muted: "Mute Video",
-  loop: "Loop Video",
+const getSlotLabels = (t: TFunction): Record<string, string> => ({
+  src: t("content.slotLabelSource"),
+  alt: t("content.slotLabelAltText"),
+  href: t("content.slotLabelUrl"),
+  target: t("content.slotLabelOpenInNewTab"),
+  poster: t("content.slotLabelVideoPoster"),
+  controls: t("content.slotLabelVideoControlVisibility"),
+  autoplay: t("content.slotLabelAutoplay"),
+  muted: t("content.slotLabelMuteVideo"),
+  loop: t("content.slotLabelLoopVideo"),
   // The panel header already names the node ("Text"), so the input is labelled
   // by what it holds rather than repeating the type.
-  text: "Value",
-};
+  text: t("shell.headTagValueLabel"),
+});
 
 // On/off wording for boolean attributes. Yes/No unless the attribute reads
 // better another way.
-const BOOLEAN_OPTION_LABELS: Record<string, { on: string; off: string }> = {
-  controls: { on: "Show", off: "Hide" },
-};
+const getBooleanOptionLabels = (
+  t: TFunction
+): Record<string, { on: string; off: string }> => ({
+  controls: { on: t("content.booleanShow"), off: t("content.booleanHide") },
+});
 
-const getSlotLabel = (slot: ElementSlot) =>
-  SLOT_LABELS[slot.key] || slot.attr || slot.key;
+const getSlotLabel = (slot: ElementSlot, t: TFunction) =>
+  getSlotLabels(t)[slot.key] || slot.attr || slot.key;
 
-const getBooleanOptions = (slot: ElementSlot) => {
-  const { on, off } = BOOLEAN_OPTION_LABELS[slot.key] || {
-    on: "Yes",
-    off: "No",
+const getBooleanOptions = (slot: ElementSlot, t: TFunction) => {
+  const { on, off } = getBooleanOptionLabels(t)[slot.key] || {
+    on: t("common.yes"),
+    off: t("common.no"),
   };
   return [
     { value: "true", label: on },
@@ -138,9 +145,9 @@ const getBooleanOptions = (slot: ElementSlot) => {
 // A link's `target` is not a boolean attribute — it holds "_blank" — but the
 // design offers it as a plain Yes/No, so the panel does the translation.
 const NEW_TAB_VALUE = "_blank";
-const NEW_TAB_OPTIONS = [
-  { value: NEW_TAB_VALUE, label: "Yes" },
-  { value: "", label: "No" },
+const getNewTabOptions = (t: TFunction) => [
+  { value: NEW_TAB_VALUE, label: t("common.yes") },
+  { value: "", label: t("common.no") },
 ];
 
 // …but ONLY for the two values the select can round-trip. `target="_top"` or a
@@ -246,6 +253,7 @@ const CrossModelConnectedField = ({
   // The reference names the ITEM (a link's page URL), not a field on it.
   isItemRef?: boolean;
 }) => {
+  const { t } = useTranslation();
   const resolution = useCrossModelConnectField(
     source,
     fieldName,
@@ -263,8 +271,8 @@ const CrossModelConnectedField = ({
   const caption =
     resolution.status === "unresolved"
       ? resolution.reason === "model"
-        ? `Model "${source.modelName}" no longer exists`
-        : `Field "${fieldName}" no longer exists`
+        ? t("content.studioLinkModelNotFound", { modelName: source.modelName })
+        : t("content.studioLinkFieldNotFound", { fieldName })
       : // An item reference (a link bound to the item's page URL) already puts
       // the item on the first line, so repeating it here would say the same
       // thing twice — name the model alone.
@@ -276,9 +284,11 @@ const CrossModelConnectedField = ({
 
   return (
     <Tooltip
-      title={`Linked from ${modelLabel} · ${itemLabel ?? source.itemZUID} (${
-        source.itemZUID
-      })`}
+      title={t("content.studioLinkedFromTooltip", {
+        modelLabel,
+        itemLabel: itemLabel ?? source.itemZUID,
+        itemZUID: source.itemZUID,
+      })}
       placement="top-start"
     >
       <Box>
@@ -302,26 +312,29 @@ const ConnectItemTrigger = ({
 }: {
   dataCy: string;
   onClick: (evt: MouseEvent<HTMLButtonElement>) => void;
-}) => (
-  <Button
-    data-cy={dataCy}
-    variant="text"
-    size="small"
-    disableRipple
-    startIcon={<AddLinkRounded sx={{ fontSize: 16 }} />}
-    onClick={onClick}
-    sx={{
-      minWidth: 0,
-      px: 0.5,
-      py: 0.25,
-      color: "text.secondary",
-      fontWeight: 400,
-      textTransform: "none",
-    }}
-  >
-    Connect Item
-  </Button>
-);
+}) => {
+  const { t } = useTranslation();
+  return (
+    <Button
+      data-cy={dataCy}
+      variant="text"
+      size="small"
+      disableRipple
+      startIcon={<AddLinkRounded sx={{ fontSize: 16 }} />}
+      onClick={onClick}
+      sx={{
+        minWidth: 0,
+        px: 0.5,
+        py: 0.25,
+        color: "text.secondary",
+        fontWeight: 400,
+        textTransform: "none",
+      }}
+    >
+      {t("content.connectItem")}
+    </Button>
+  );
+};
 
 // The "Connect Item" affordance in a text slot's label row (mirrors the field
 // shell's AI/comment secondary actions). Opens a dropdown of the current item's
@@ -341,6 +354,7 @@ const ConnectItemButton = ({
   crossModelDataCy: string;
 }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const { t } = useTranslation();
 
   return (
     <>
@@ -357,37 +371,41 @@ const ConnectItemButton = ({
         slotProps={{ paper: { sx: { borderRadius: 2, mt: 0.5 } } }}
         MenuListProps={{ sx: { py: 1, minWidth: 280, maxWidth: 320 } }}
       >
-        {fields.map((field) => {
-          const meta = getFieldMeta(field.datatype);
-          return (
-            <MenuItem
-              key={field.name}
-              data-cy={`StudioConnectField-${field.name}`}
-              onClick={() => {
-                onPick(field);
-                setAnchorEl(null);
-              }}
-              sx={{ px: 2, py: 1, gap: 1.5, alignItems: "center" }}
-            >
-              <FieldIconChip datatype={field.datatype} />
-              <Stack minWidth={0}>
-                <Typography
-                  variant="body2"
-                  fontWeight={600}
-                  color="text.primary"
-                  noWrap
-                >
-                  {field.label}
-                </Typography>
-                {meta.description ? (
-                  <Typography variant="caption" color="text.secondary" noWrap>
-                    {meta.description}
+        {fields.length === 0 ? (
+          <MenuItem disabled>{t("content.noFieldsAvailable")}</MenuItem>
+        ) : (
+          fields.map((field) => {
+            const meta = getFieldMeta(field.datatype);
+            return (
+              <MenuItem
+                key={field.name}
+                data-cy={`StudioConnectField-${field.name}`}
+                onClick={() => {
+                  onPick(field);
+                  setAnchorEl(null);
+                }}
+                sx={{ px: 2, py: 1, gap: 1.5, alignItems: "center" }}
+              >
+                <FieldIconChip datatype={field.datatype} />
+                <Stack minWidth={0}>
+                  <Typography
+                    variant="body2"
+                    fontWeight={600}
+                    color="text.primary"
+                    noWrap
+                  >
+                    {field.label}
                   </Typography>
-                ) : null}
-              </Stack>
-            </MenuItem>
-          );
-        })}
+                  {meta.description ? (
+                    <Typography variant="caption" color="text.secondary" noWrap>
+                      {t(meta.description)}
+                    </Typography>
+                  ) : null}
+                </Stack>
+              </MenuItem>
+            );
+          })
+        )}
         {fields.length > 0 ? <Divider sx={{ my: 1 }} /> : null}
         {/* Always offered, even when the current item has no bindable fields —
             that's exactly when binding another item's field is most useful. */}
@@ -403,7 +421,7 @@ const ConnectItemButton = ({
           sx={{ px: 2, py: 1 }}
         >
           <Typography variant="body2" fontWeight={500} color="text.secondary">
-            Link from other content item
+            {t("content.studioLinkFromOtherItem")}
           </Typography>
         </MenuItem>
       </Menu>
@@ -486,51 +504,54 @@ const SlotLabelRow = ({
   onPick: (field: ConnectField) => void;
   onOpenCrossModel: () => void;
   onDisconnect: () => void;
-}) => (
-  <Stack
-    direction="row"
-    justifyContent="space-between"
-    alignItems="center"
-    gap={1}
-  >
-    <Typography variant="body2" fontWeight={600} color="text.primary">
-      {label}
-    </Typography>
-    {isConnected ? (
-      <Button
-        data-cy={`StudioDisconnect-${slotKey}`}
-        variant="text"
-        size="small"
-        disableRipple
-        startIcon={<LinkOffRounded sx={{ fontSize: 16 }} />}
-        onClick={onDisconnect}
-        sx={{
-          minWidth: 0,
-          px: 0.5,
-          py: 0.25,
-          color: "text.secondary",
-          fontWeight: 400,
-          textTransform: "none",
-        }}
-      >
-        Disconnect
-      </Button>
-    ) : !canConnect ? null : connectsToItem ? (
-      <ConnectItemTrigger
-        dataCy={`StudioConnectContent-${slotKey}`}
-        onClick={onOpenCrossModel}
-      />
-    ) : (
-      <ConnectItemButton
-        fields={connectableFields}
-        onPick={onPick}
-        onOpenCrossModel={onOpenCrossModel}
-        dataCy={`StudioConnectContent-${slotKey}`}
-        crossModelDataCy={`StudioConnectOtherItem-${slotKey}`}
-      />
-    )}
-  </Stack>
-);
+}) => {
+  const { t } = useTranslation();
+  return (
+    <Stack
+      direction="row"
+      justifyContent="space-between"
+      alignItems="center"
+      gap={1}
+    >
+      <Typography variant="body2" fontWeight={600} color="text.primary">
+        {label}
+      </Typography>
+      {isConnected ? (
+        <Button
+          data-cy={`StudioDisconnect-${slotKey}`}
+          variant="text"
+          size="small"
+          disableRipple
+          startIcon={<LinkOffRounded sx={{ fontSize: 16 }} />}
+          onClick={onDisconnect}
+          sx={{
+            minWidth: 0,
+            px: 0.5,
+            py: 0.25,
+            color: "text.secondary",
+            fontWeight: 400,
+            textTransform: "none",
+          }}
+        >
+          {t("content.disconnect")}
+        </Button>
+      ) : !canConnect ? null : connectsToItem ? (
+        <ConnectItemTrigger
+          dataCy={`StudioConnectContent-${slotKey}`}
+          onClick={onOpenCrossModel}
+        />
+      ) : (
+        <ConnectItemButton
+          fields={connectableFields}
+          onPick={onPick}
+          onOpenCrossModel={onOpenCrossModel}
+          dataCy={`StudioConnectContent-${slotKey}`}
+          crossModelDataCy={`StudioConnectOtherItem-${slotKey}`}
+        />
+      )}
+    </Stack>
+  );
+};
 
 // Repo field pattern: a bold label above a bare input (no MUI floating label),
 // with the test hook on the input element itself.
@@ -563,6 +584,7 @@ const SlotField = ({
   connectFields: ConnectField[];
   mediaFields: ConnectField[];
 }) => {
+  const { t } = useTranslation();
   // Declared before the content-mode early return below, so the hook order is
   // unconditional.
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
@@ -590,8 +612,8 @@ const SlotField = ({
     isNewTabSelectable(slot.value);
   const isSelect = slot.control === "select" || isNewTabAttr;
   const selectOptions = isNewTabAttr
-    ? NEW_TAB_OPTIONS
-    : getBooleanOptions(slot);
+    ? getNewTabOptions(t)
+    : getBooleanOptions(slot, t);
 
   // Which fields this slot's Connect Item dropdown offers: text/number/options
   // for text slots + alt; media + external-URL for img/video src/poster. The
@@ -645,7 +667,7 @@ const SlotField = ({
     return (
       <Stack gap={0.5}>
         <Typography variant="body2" fontWeight={600} color="text.primary">
-          {getSlotLabel(slot)}
+          {getSlotLabel(slot, t)}
         </Typography>
         {slot.isDynamic ? (
           <ConnectedFieldView
@@ -682,14 +704,14 @@ const SlotField = ({
   // Editable: write the underlying template. A connected slot shows the field
   // chip; otherwise a free-form input (or a Yes/No select for a boolean attr).
   const disabledReason = !slot.layoutEditable
-    ? "This element can't be edited here."
+    ? t("content.elementNotEditableHere")
     : null;
 
   return (
     <Stack gap={0.5}>
       <SlotLabelRow
         slotKey={slot.key}
-        label={getSlotLabel(slot)}
+        label={getSlotLabel(slot, t)}
         connectableFields={connectableFields}
         isConnected={isConnected}
         canConnect={canConnect}
@@ -749,7 +771,7 @@ const SlotField = ({
               sx={{ mt: 0.5, whiteSpace: "nowrap", flexShrink: 0 }}
               onClick={() => onBrowseMedia(slot)}
             >
-              Browse
+              {t("content.browse")}
             </Button>
           ) : null}
         </Stack>
@@ -797,6 +819,7 @@ const LinkFields = ({
   onChangeHref: (value: string) => void;
   onChangeTarget: (value: string) => void;
 }) => {
+  const { t } = useTranslation();
   // Owned locally, exactly like a slot input: the template write is debounced,
   // so the derived wrapper lags a keystroke behind what has been typed.
   const [href, setHref] = useState(linkWrapper.href);
@@ -843,7 +866,7 @@ const LinkFields = ({
           gap={1}
         >
           <Typography variant="body2" fontWeight={600} color="text.primary">
-            Link to
+            {t("content.studioLinkTo")}
           </Typography>
           {connectedItem ? (
             <Button
@@ -869,7 +892,7 @@ const LinkFields = ({
                 textTransform: "none",
               }}
             >
-              Disconnect
+              {t("content.disconnect")}
             </Button>
           ) : (
             <ConnectItemTrigger
@@ -890,7 +913,7 @@ const LinkFields = ({
           <TextField
             value={href}
             fullWidth
-            placeholder="link url or id"
+            placeholder={t("content.studioLinkUrlPlaceholder")}
             onChange={(evt) => handleHrefChange(evt.target.value)}
             inputProps={{ "data-cy": "StudioLinkToInput" }}
           />
@@ -900,7 +923,9 @@ const LinkFields = ({
       {showNewTabRow ? (
         <Stack gap={0.5}>
           <Typography variant="body2" fontWeight={600} color="text.primary">
-            {targetIsFreeText ? "Target" : SLOT_LABELS.target}
+            {targetIsFreeText
+              ? t("content.studioLinkTargetLabel")
+              : getSlotLabels(t).target}
           </Typography>
           {targetIsFreeText ? (
             <TextField
@@ -917,7 +942,7 @@ const LinkFields = ({
               onChange={(evt) => handleTargetChange(evt.target.value)}
               inputProps={{ "data-cy": "StudioOpenInNewTab" }}
             >
-              {NEW_TAB_OPTIONS.map((option) => (
+              {getNewTabOptions(t).map((option) => (
                 <MenuItem key={option.value} value={option.value}>
                   {option.label}
                 </MenuItem>
@@ -968,6 +993,7 @@ const LinkSection = ({
   onChangeHref: (value: string) => void;
   onChangeTarget: (value: string) => void;
 }) => {
+  const { t } = useTranslation();
   if (!linkWrapper) {
     if (!canAddLink) return null;
     // `color="primary"` is the brand orange the design calls for, and it is the
@@ -985,7 +1011,7 @@ const LinkSection = ({
         startIcon={<LinkRounded fontSize="small" />}
         onClick={onAddLink}
       >
-        Add Link
+        {t("content.studioAddLink")}
       </Button>
     );
   }
@@ -1004,11 +1030,11 @@ const LinkSection = ({
             grey section heading over one dark bold field label. The weight
             comes from subtitle2's own 500 rather than an override. */}
         <Typography variant="subtitle2" color="text.secondary">
-          Link
+          {t("content.studioLinkSectionLabel")}
         </Typography>
         <IconButton
           data-cy="StudioRemoveLink"
-          aria-label="Remove link"
+          aria-label={t("content.studioRemoveLinkAriaLabel")}
           size="small"
           onClick={onRemoveLink}
         >
@@ -1047,6 +1073,7 @@ export const StudioInspectorPanel = ({
   drawerWidth,
   logoSrc,
 }: StudioInspectorPanelProps) => {
+  const { t } = useTranslation();
   // Local input state — layout edits don't re-emit the layers tree, so we own
   // the displayed value.
   const [values, setValues] = useState<Record<string, string>>(() =>
@@ -1117,13 +1144,15 @@ export const StudioInspectorPanel = ({
     setValues((prev) => ({ ...prev, [slot.key]: "" }));
   };
 
-  const tagFamily = getTagFamily(tag);
+  const tagFamily = getTagFamily(tag, t);
   const tagOptions = tagFamily.tags;
+  const tagTitles = getTagTitles(t);
   // An empty tag marks a text-node selection: title it "Text" (the Tag selector
   // is already hidden since a text node has no multi-option tag family). The
   // placeholder is titled "Text" too — it IS text; that it has no tag yet is
   // what the Tag selector below is for, and saying it twice reads as an error.
-  const title = !tag || tag === NO_TAG ? "Text" : TAG_TITLES[tag] || tag;
+  const title =
+    !tag || tag === NO_TAG ? t("content.tagText") : tagTitles[tag] || tag;
 
   return (
     <Drawer
@@ -1153,7 +1182,7 @@ export const StudioInspectorPanel = ({
           </Typography>
           <IconButton
             data-cy="StudioInspectorPanelClose"
-            aria-label="Close inspector panel"
+            aria-label={t("content.closeInspectorPanelAriaLabel")}
             onClick={onClose}
             size="small"
           >
@@ -1185,7 +1214,7 @@ export const StudioInspectorPanel = ({
                 >
                   {tagOptions.map((option) => (
                     <MenuItem key={option} value={option}>
-                      {TAG_TITLES[option] || option}
+                      {tagTitles[option] || option}
                     </MenuItem>
                   ))}
                 </TextField>
@@ -1245,7 +1274,7 @@ export const StudioInspectorPanel = ({
             sx={{ height: 24 }}
           />
           <Typography variant="body3" color="text.secondary" textAlign="center">
-            Agentic Studio by Content.One
+            {t("content.footerTagline")}
           </Typography>
         </Box>
       </Box>
