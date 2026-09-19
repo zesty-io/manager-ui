@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   Box,
   Button,
@@ -49,6 +49,11 @@ export const StudioFeedbackModal = ({
   const [error, setError] = useState("");
   const user = useSelector((state: AppState) => state.user);
   const [sendEmail, { isLoading: isSubmitting }] = useSendEmailMutation();
+  // `isSubmitting` only updates on the next render, which isn't fast enough
+  // to block a second click fired in the same tick as the first (e.g. a fast
+  // double-click) — this ref is set synchronously so the very next call to
+  // handleSubmit sees the lock immediately, before React re-renders.
+  const isSubmittingRef = useRef(false);
 
   const handleClose = () => {
     if (isSubmitting) return;
@@ -58,7 +63,8 @@ export const StudioFeedbackModal = ({
   };
 
   const handleSubmit = () => {
-    if (!message.trim() || isSubmitting) return;
+    if (!message.trim() || isSubmitting || isSubmittingRef.current) return;
+    isSubmittingRef.current = true;
 
     setError("");
 
@@ -87,10 +93,12 @@ export const StudioFeedbackModal = ({
     })
       .unwrap()
       .then(() => {
+        isSubmittingRef.current = false;
         setMessage("");
         onClose();
       })
       .catch(() => {
+        isSubmittingRef.current = false;
         setError("Couldn't send feedback. Try again.");
       });
   };

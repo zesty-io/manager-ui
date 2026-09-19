@@ -122,6 +122,29 @@ describe("Studio Feedback Modal", () => {
     cy.getBySelector("StudioFeedbackModal").should("not.exist");
   });
 
+  it("sends only one email when the submit button is double-clicked", () => {
+    cy.intercept("POST", "**/sendEmail", {
+      statusCode: 200,
+      body: {},
+    }).as("sendEmail");
+
+    openFeedbackModal();
+    cy.getBySelector("StudioFeedbackMessageInput")
+      .find("textarea")
+      .first()
+      .type("This is a feedback message");
+
+    // Fire two native click events back-to-back in the same tick, before
+    // React re-renders the disabled state — reproduces a fast double-click.
+    cy.getBySelector("StudioFeedbackSubmitButton").then(($button) => {
+      $button[0].click();
+      $button[0].click();
+    });
+
+    cy.wait("@sendEmail");
+    cy.get("@sendEmail.all").should("have.length", 1);
+  });
+
   it("captures the active interaction mode at time of submission", () => {
     cy.intercept("POST", "**/sendEmail", {
       statusCode: 200,
