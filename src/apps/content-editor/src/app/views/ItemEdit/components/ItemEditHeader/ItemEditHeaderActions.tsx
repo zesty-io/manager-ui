@@ -44,13 +44,10 @@ import {
   fetchItemPublishing,
 } from "../../../../../../../../shell/store/content";
 import { useGetUsersQuery } from "../../../../../../../../shell/services/accounts";
-import {
-  formatDate,
-  isTodayOrYesterday,
-} from "../../../../../../../../utility/formatDate";
 import { UnpublishDialog } from "./UnpublishDialog";
 import { usePermission } from "../../../../../../../../shell/hooks/use-permissions";
 import {
+  Audit,
   ContentItemWithDirtyAndPublishing,
   ContentModel,
   RedirectsCodes,
@@ -68,7 +65,7 @@ import {
   PUBLISH_ATTEMPT_WITHOUT_ALLOW_PUBLISH_STATUS,
   SCHEDULE_PUBLISH_ATTEMPT_WITHOUT_ALLOW_PUBLISH_STATUS,
 } from "../../../../../../../../amplitude-events";
-
+import { TooltipTitle } from "./TooltipTitle";
 const ITEM_STATES = {
   dirty: "dirty",
   published: "published",
@@ -122,6 +119,11 @@ export const ItemEditHeaderActions = ({
     (state: AppState) =>
       state.content[resolvedItemZUID] as ContentItemWithDirtyAndPublishing
   );
+
+  const [scheduledAction, setScheduledAction] = useState<
+    "publish" | "unpublish" | null
+  >(null);
+
   const items = useSelector((state: AppState) => state.content);
   const model = useSelector(
     (state: AppState) => state.models[resolvedModelZUID]
@@ -140,9 +142,6 @@ export const ItemEditHeaderActions = ({
   const [createPublishing] = useCreateItemPublishingMutation();
   const [deleteItemPublishing, { isLoading: unpublishing }] =
     useDeleteItemPublishingMutation();
-  const lastItemUpdateAudit = itemAudit?.find(
-    (audit) => audit.action === 2 || audit.action === 1
-  );
   const { data: itemPublishings, isFetching } = useGetItemPublishingsQuery({
     modelZUID: resolvedModelZUID,
     itemZUID: resolvedItemZUID,
@@ -161,6 +160,29 @@ export const ItemEditHeaderActions = ({
   const activePublishing = itemPublishings?.find(
     (itemPublishing) => itemPublishing._active
   );
+
+  const lastItemUpdateAudit = itemAudit?.find(
+    (audit: Audit) => audit.action === 2 || audit.action === 1
+  );
+
+  const hasScheduledPublish =
+    !!item?.scheduling?.isScheduled &&
+    new Date(item?.scheduling?.publishAt).getTime() > Date.now();
+
+  const hasScheduledUnpublish = !!(
+    item?.publishing?.isPublished &&
+    item?.publishing?.unpublishAt &&
+    new Date(item?.publishing?.unpublishAt).getTime() > Date.now()
+  );
+
+  const getUserNameByZUID = (userZUID?: string) => {
+    const user = users?.find((u) => u.ZUID === userZUID);
+    const completeUserName = !user
+      ? ""
+      : `${user.firstName || ""} ${user.lastName || ""}`.trim();
+    return completeUserName;
+  };
+
   const { data: statusLabels } = useGetWorkflowStatusLabelsQuery();
   const { data: itemWorkflowStatus, isLoading: isLoadingItemWorkflowStatus } =
     useGetItemWorkflowStatusQuery(
@@ -325,6 +347,11 @@ export const ItemEditHeaderActions = ({
     }
   })();
 
+  const publishButtonTooltipLabel =
+    itemState === ITEM_STATES.dirty
+      ? t("content.itemEditSavePublishItem")
+      : t("content.itemEditPublishItem");
+
   const allowPublish = useMemo(() => {
     const allowPublishLabelZUIDs = statusLabels?.reduce((acc, next) => {
       if (next.allowPublish) {
@@ -352,7 +379,7 @@ export const ItemEditHeaderActions = ({
         // Delete scheduled publishings first
         const deleteScheduledPromises = [
           // Delete main item's scheduled publishing if it exists
-          itemState === ITEM_STATES.scheduled &&
+          hasScheduledPublish &&
             deleteItemPublishing({
               modelZUID: resolvedModelZUID,
               itemZUID: resolvedItemZUID,
@@ -432,7 +459,7 @@ export const ItemEditHeaderActions = ({
     }
   };
 
-  const handleUnpublish = async () => {
+  const handleUnpublish = () => {
     deleteItemPublishing({
       modelZUID: resolvedModelZUID,
       itemZUID: resolvedItemZUID,
@@ -503,28 +530,16 @@ export const ItemEditHeaderActions = ({
               {saveShortcut}
             </div>
           ) : (
-            <div>
-              {t("content.itemEditVersionSavedOn", {
+            <TooltipTitle
+              text={t("content.itemEditTooltipSaved", {
                 version: item?.meta?.version,
-              })}{" "}
-              <br />
-              {formatDate(item?.meta?.updatedAt)} <br />
-              {t("content.itemEditByUser", {
-                name: `${
-                  lastItemUpdateAudit?.firstName ||
-                  users?.find(
-                    (user) => user.ZUID === item?.meta?.createdByUserZUID
-                  )?.firstName ||
-                  ""
-                } ${
-                  lastItemUpdateAudit?.lastName ||
-                  users?.find(
-                    (user) => user.ZUID === item?.meta?.createdByUserZUID
-                  )?.lastName ||
-                  ""
-                }`.trim(),
               })}
-            </div>
+              dateTime={item?.meta?.updatedAt || ""}
+              userName={getUserNameByZUID(
+                lastItemUpdateAudit?.actionByUserZUID ||
+                  item?.web?.createdByUserZUID
+              )}
+            />
           )
         }
         placement="bottom-start"
@@ -561,36 +576,20 @@ export const ItemEditHeaderActions = ({
             itemState === ITEM_STATES.draft ||
             itemState === ITEM_STATES.dirty ? (
               <div>
-                {itemState === ITEM_STATES.dirty
-                  ? t("content.itemEditSavePublishItem")
-                  : t("content.itemEditPublishItem")}{" "}
-                <br />
+                {publishButtonTooltipLabel} <br />
                 {publishShortcut}
               </div>
             ) : (
-              <div>
-                {t("content.itemEditVersionPublished", {
+              <TooltipTitle
+                text={t("content.itemEditTooltipPublished", {
                   version: activePublishing?.version,
-                  on: isTodayOrYesterday(activePublishing?.publishAt)
-                    ? ""
-                    : t("content.itemEditOn"),
                 })}
-                <br />
-                {formatDate(activePublishing?.publishAt)} <br />
-                {t("content.itemEditByUser", {
-                  name: `${
-                    users?.find(
-                      (user: any) =>
-                        user.ZUID === activePublishing?.publishedByUserZUID
-                    )?.firstName || ""
-                  } ${
-                    users?.find(
-                      (user: any) =>
-                        user.ZUID === activePublishing?.publishedByUserZUID
-                    )?.lastName || ""
-                  }`.trim(),
-                })}
-              </div>
+                dateTime={activePublishing?.publishAt || ""}
+                userName={getUserNameByZUID(
+                  activePublishing?.publishedByUserZUID ||
+                    item?.web?.createdByUserZUID
+                )}
+              />
             )
           }
           placement="bottom-start"
@@ -661,6 +660,11 @@ export const ItemEditHeaderActions = ({
               <Box display="flex" gap={1} alignItems="center">
                 <CheckCircleRounded fontSize="small" color="success" />
                 <Typography
+                  data-cy={
+                    hasScheduledUnpublish
+                      ? "ScheduledUnpublishIndicator"
+                      : undefined
+                  }
                   variant="body2"
                   color="success.main"
                   fontWeight={500}
@@ -682,32 +686,21 @@ export const ItemEditHeaderActions = ({
           )}
         </Tooltip>
       )}
-
       {itemState === ITEM_STATES.scheduled && canPublish && (
         <Tooltip
           enterDelay={1000}
           enterNextDelay={1000}
           title={
-            <div>
-              {t("content.itemEditVersionPublishedOn", {
+            <TooltipTitle
+              text={t("content.itemEditTooltipScheduledToPublish", {
                 version: item?.scheduling?.version,
-              })}{" "}
-              <br />
-              {formatDate(item?.scheduling?.publishAt)} <br />
-              {t("content.itemEditByUser", {
-                name: `${
-                  users?.find(
-                    (user: any) =>
-                      user.ZUID === item?.scheduling?.publishedByUserZUID
-                  )?.firstName || ""
-                } ${
-                  users?.find(
-                    (user: any) =>
-                      user.ZUID === item?.scheduling?.publishedByUserZUID
-                  )?.lastName || ""
-                }`.trim(),
               })}
-            </div>
+              dateTime={item?.scheduling?.publishAt || ""}
+              userName={getUserNameByZUID(
+                item?.scheduling?.publishedByUserZUID ||
+                  item?.meta?.createdByUserZUID
+              )}
+            />
           }
           placement="bottom-start"
         >
@@ -794,7 +787,8 @@ export const ItemEditHeaderActions = ({
         setPublishAfterSave={setPublishAfterSave}
         setScheduleAfterSave={setScheduleAfterSave}
         setUnpublishDialogOpen={setUnpublishDialogOpen}
-        setScheduledPublishDialogOpen={(open) => {
+        hasScheduledUnpublish={hasScheduledUnpublish}
+        setScheduledPublishDialogOpen={(open, action = "publish") => {
           if (!allowPublish) {
             dispatch(
               notify({
@@ -809,10 +803,12 @@ export const ItemEditHeaderActions = ({
             );
           } else {
             setScheduledPublishDialogOpen(open);
+            setScheduledAction(action);
           }
         }}
         setPublishAfterUnschedule={() => {
           setScheduledPublishDialogOpen(true);
+          setScheduledAction("publish");
           setPublishAfterUnschedule(true);
         }}
         handlePublish={() => setIsConfirmPublishModalOpen(true)}
@@ -832,16 +828,24 @@ export const ItemEditHeaderActions = ({
           item={item}
           onClose={() => {
             setScheduledPublishDialogOpen(false);
+            setScheduledAction(null);
           }}
           onPublishNow={() => {
             handlePublish();
             setScheduledPublishDialogOpen(false);
+            setScheduledAction(null);
+          }}
+          onUnpublishNow={() => {
+            setScheduledPublishDialogOpen(false);
+            setScheduledAction(null);
+            setUnpublishDialogOpen(true);
           }}
           onUnscheduleSuccess={() => {
-            if (publishAfterUnschedule) {
+            if (publishAfterUnschedule && scheduledAction === "publish") {
               setIsConfirmPublishModalOpen(true);
             }
           }}
+          scheduledAction={scheduledAction}
         />
       )}
       {isConfirmPublishModalOpen && (
@@ -911,11 +915,28 @@ type PublishingMenuProps = {
   setPublishAfterSave: (value: boolean) => void;
   setScheduleAfterSave: (value: boolean) => void;
   setUnpublishDialogOpen: (value: boolean) => void;
-  setScheduledPublishDialogOpen: (value: boolean) => void;
+  setScheduledPublishDialogOpen: (
+    value: boolean,
+    action?: "publish" | "unpublish" | null
+  ) => void;
   setPublishAfterUnschedule: () => void;
   handlePublish: () => void;
+  hasScheduledUnpublish?: boolean;
   modelZUID: string;
   itemZUID: string;
+};
+
+const MENU_ACTION_LABEL_KEYS: Record<string, string> = {
+  [ITEM_STATES.dirty]: "content.itemListSavePublish",
+  [ITEM_STATES.scheduled]: "content.itemListPublishNow",
+  [ITEM_STATES.published]: "content.itemEditUnpublishNow",
+  [ITEM_STATES.draft]: "content.itemListPublishNow",
+};
+
+const SCHEDULE_ACTION_LABEL_KEYS: Record<string, string> = {
+  [ITEM_STATES.dirty]: "content.itemListSaveSchedulePublish",
+  [ITEM_STATES.scheduled]: "content.itemEditUnschedulePublish",
+  [ITEM_STATES.draft]: "content.itemListSchedulePublish",
 };
 
 const PublishingMenu = ({
@@ -929,11 +950,18 @@ const PublishingMenu = ({
   setScheduledPublishDialogOpen,
   setPublishAfterUnschedule,
   handlePublish,
+  hasScheduledUnpublish,
   modelZUID,
   itemZUID,
 }: PublishingMenuProps) => {
   const { t } = useTranslation();
   const history = useHistory();
+  const menuActionIcon =
+    itemState === ITEM_STATES.published ? (
+      <UnpublishedRounded fontSize="small" />
+    ) : (
+      <CloudUploadRounded fontSize="small" />
+    );
   return (
     <Menu
       data-cy="publishingMenu"
@@ -973,24 +1001,8 @@ const PublishingMenu = ({
           itemState === ITEM_STATES.published ? "UnpublishContentButton" : ""
         }
       >
-        <ListItemIcon>
-          {itemState === ITEM_STATES.dirty ? (
-            <CloudUploadRounded fontSize="small" />
-          ) : itemState === ITEM_STATES.scheduled ? (
-            <CloudUploadRounded fontSize="small" />
-          ) : itemState === ITEM_STATES.published ? (
-            <UnpublishedRounded fontSize="small" />
-          ) : (
-            <CloudUploadRounded fontSize="small" />
-          )}
-        </ListItemIcon>
-        {itemState === ITEM_STATES.dirty
-          ? t("content.itemListSavePublish")
-          : itemState === ITEM_STATES.scheduled
-          ? t("content.itemListPublishNow")
-          : itemState === ITEM_STATES.published
-          ? t("content.itemEditUnpublishNow")
-          : t("content.itemListPublishNow")}
+        <ListItemIcon>{menuActionIcon}</ListItemIcon>
+        {t(MENU_ACTION_LABEL_KEYS[itemState])}
       </MenuItem>
       {itemState !== ITEM_STATES.published && (
         <MenuItem
@@ -1001,13 +1013,10 @@ const PublishingMenu = ({
                 onSave();
                 break;
               case ITEM_STATES.scheduled:
-                setScheduledPublishDialogOpen(true);
-                break;
-              case ITEM_STATES.published:
-                console.log("schedule unpublish");
+                setScheduledPublishDialogOpen(true, "publish");
                 break;
               case ITEM_STATES.draft:
-                setScheduledPublishDialogOpen(true);
+                setScheduledPublishDialogOpen(true, "publish");
                 break;
             }
             onClose();
@@ -1017,13 +1026,23 @@ const PublishingMenu = ({
           <ListItemIcon>
             <CalendarTodayRounded fontSize="small" />
           </ListItemIcon>
-          {itemState === ITEM_STATES.dirty
-            ? t("content.itemListSaveSchedulePublish")
-            : itemState === ITEM_STATES.scheduled
-            ? t("content.itemEditUnschedulePublish")
-            : itemState === ITEM_STATES.published
-            ? t("content.itemEditScheduleUnpublish")
-            : t("content.itemListSchedulePublish")}
+          {t(SCHEDULE_ACTION_LABEL_KEYS[itemState])}
+        </MenuItem>
+      )}
+      {itemState === ITEM_STATES.published && (
+        <MenuItem
+          onClick={() => {
+            setScheduledPublishDialogOpen(true, "unpublish");
+            onClose();
+          }}
+          data-cy="UnpublishScheduleButton"
+        >
+          <ListItemIcon>
+            <CalendarTodayRounded fontSize="small" />
+          </ListItemIcon>
+          {hasScheduledUnpublish
+            ? t("content.itemEditUnscheduleUnpublish")
+            : t("content.itemEditScheduleUnpublish")}
         </MenuItem>
       )}
 
