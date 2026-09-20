@@ -16,6 +16,7 @@
   "scripts": {
     "cleanup": "cross-env echo 'FINISHED'",
     "i18n:extract": "i18next",
+    "lint": "eslint src",
     "build:local": "npm run task:clean && npm run task:webpack -- --node-env local",
     "build:dev": "npm run task:clean && npm run task:webpack -- --node-env development",
     "build:stage": "npm run task:clean && npm run task:webpack -- --node-env stage",
@@ -133,6 +134,7 @@
     "@types/react-virtualized-auto-sizer": "^1.0.1",
     "@types/tinymce": "^4.6.8",
     "@types/uuid": "^8.3.4",
+    "@typescript-eslint/parser": "^8.70.0",
     "@zesty-io/sdk": "^1.1.2",
     "babel-loader": "^8.2.2",
     "babel-plugin-istanbul": "^7.0.0",
@@ -143,6 +145,7 @@
     "cypress-iframe": "^1.0.1",
     "cypress-split": "^1.24.31",
     "dotenv": "^10.0.0",
+    "eslint": "^9.39.5",
     "file-loader": "^6.2.0",
     "html-webpack-plugin": "^5.3.1",
     "husky": "^7.0.0",
