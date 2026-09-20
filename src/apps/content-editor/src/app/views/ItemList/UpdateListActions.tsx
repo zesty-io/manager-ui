@@ -39,6 +39,7 @@ import {
   fetchAllModelPublishings,
   fetchItem,
 } from "../../../../../../shell/store/content";
+import { useCheckPublishAllowed } from "../../../../../../shell/hooks/useCheckPublishAllowed";
 
 type UpdateListActionsProps = {
   items: ContentItem[];
@@ -70,6 +71,80 @@ export const UpdateListActions = ({ items }: UpdateListActionsProps) => {
 
   const [isPublishing, setIsPublishing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const checkPublishAllowed = useCheckPublishAllowed();
+
+  // Shared by the immediate-publish and schedule-publish confirm flows:
+  // proactively excludes items whose current workflow status doesn't allow
+  // publishing instead of letting the batch endpoint fail on them, and
+  // reports which items (if any) were excluded and why.
+  const publishAllowedItems = async (
+    itemsToConfirm: ContentItem[],
+    publishAt: string,
+    onPublished: () => void
+  ) => {
+    setIsPublishing(true);
+
+    const { allowed, blocked } = await checkPublishAllowed(
+      itemsToConfirm.map((item) => ({
+        modelZUID,
+        itemZUID: item.meta.ZUID,
+        itemVersion: item.meta.version,
+        title: item.web?.metaTitle || item.web?.metaLinkText || item.meta.ZUID,
+      }))
+    );
+
+    if (blocked.length) {
+      dispatch(
+        notify({
+          kind: "error",
+          message: t("content.itemListCannotPublishStatus", {
+            count: blocked.length,
+            titles: blocked.map((item) => item.title).join(", "),
+          }),
+        })
+      );
+    }
+
+    if (!allowed.length) {
+      setIsPublishing(false);
+      return;
+    }
+
+    const allowedZUIDs = new Set(allowed.map((item) => item.itemZUID));
+    const allowedItems = itemsToConfirm.filter((item) =>
+      allowedZUIDs.has(item.meta.ZUID)
+    );
+
+    createItemsPublishing({
+      modelZUID,
+      body: allowedItems.map((item) => ({
+        ZUID: item.meta.ZUID,
+        version: item.meta.version,
+        publishAt,
+        unpublishAt: "never",
+      })),
+    })
+      .unwrap()
+      .then(async () => {
+        await dispatch(
+          fetchAllModelPublishings({
+            modelZUID,
+          })
+        );
+        onPublished();
+      })
+      .catch((res) => {
+        setIsPublishing(false);
+        dispatch(
+          notify({
+            kind: "error",
+            message: t("content.itemListErrorPublishing", {
+              error: res?.data?.error,
+            }),
+          })
+        );
+      });
+  };
 
   const saveShortcut = useMetaKey("s", () => {
     handleSave();
@@ -368,41 +443,12 @@ export const UpdateListActions = ({ items }: UpdateListActionsProps) => {
           }}
           loading={isPublishing}
           onConfirm={(items) => {
-            setIsPublishing(true);
-            createItemsPublishing({
-              modelZUID,
-              body: items?.map((item) => {
-                return {
-                  ZUID: item.meta.ZUID,
-                  version: item.meta.version,
-                  publishAt: "now",
-                  unpublishAt: "never",
-                };
-              }),
-            })
-              .unwrap()
-              .then(async () => {
-                await dispatch(
-                  fetchAllModelPublishings({
-                    modelZUID,
-                  })
-                );
-                setItemsToPublish([]);
-                clearStagedChanges({});
-                setSelectedItems([]);
-                setShowPublishesModal(false);
-              })
-              .catch((res) => {
-                setIsPublishing(false);
-                dispatch(
-                  notify({
-                    kind: "error",
-                    message: t("content.itemListErrorPublishing", {
-                      error: res?.data?.error,
-                    }),
-                  })
-                );
-              });
+            publishAllowedItems(items, "now", () => {
+              setItemsToPublish([]);
+              clearStagedChanges({});
+              setSelectedItems([]);
+              setShowPublishesModal(false);
+            });
           }}
         />
       )}
@@ -418,41 +464,16 @@ export const UpdateListActions = ({ items }: UpdateListActionsProps) => {
           }}
           loading={isPublishing}
           onConfirm={(items, publishDateTime) => {
-            setIsPublishing(true);
-            createItemsPublishing({
-              modelZUID,
-              body: items?.map((item) => {
-                return {
-                  ZUID: item.meta.ZUID,
-                  version: item.meta.version,
-                  publishAt: publishDateTime ? publishDateTime : "now",
-                  unpublishAt: "never",
-                };
-              }),
-            })
-              .unwrap()
-              .then(async (response) => {
-                await dispatch(
-                  fetchAllModelPublishings({
-                    modelZUID,
-                  })
-                );
+            publishAllowedItems(
+              items,
+              publishDateTime ? publishDateTime : "now",
+              () => {
                 setItemsToSchedule([]);
                 clearStagedChanges({});
                 setSelectedItems([]);
                 setShowScheduleModal(false);
-              })
-              .catch((res) => {
-                setIsPublishing(false);
-                dispatch(
-                  notify({
-                    kind: "error",
-                    message: t("content.itemListErrorPublishing", {
-                      error: res?.data?.error,
-                    }),
-                  })
-                );
-              });
+              }
+            );
           }}
         />
       )}
