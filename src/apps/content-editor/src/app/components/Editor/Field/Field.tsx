@@ -13,6 +13,7 @@ import {
   Dialog,
   IconButton,
   Autocomplete,
+  useTheme,
 } from "@mui/material";
 
 import CloseIcon from "@mui/icons-material/Close";
@@ -106,6 +107,7 @@ export const Field = memo(
     compact = false,
   }: FieldProps) => {
     const dispatch = useDispatch();
+    const theme = useTheme();
     const { t } = useTranslation("content");
     const { data: fields } = useGetContentModelFieldsQuery({
       modelZUID: contentModelZUID,
@@ -597,7 +599,7 @@ export const Field = memo(
           );
         } else {
           return (
-            <h1 style={{ color: "#e53c05" }}>
+            <h1 style={{ color: theme.palette.error.main }}>
               <FontAwesomeIcon icon={faExclamationTriangle} />
               &nbsp;
               <AppLink to={`/schema/${contentModelZUID}/field/${ZUID}`}>
@@ -703,6 +705,7 @@ export const Field = memo(
             <FieldShell settings={fieldData} errors={errors}>
               <FieldTypeColor
                 name={name}
+                // eslint-disable-next-line no-restricted-syntax -- colour-field default value (design-system.md §3: values the user picks or we store)
                 value={value || "#FFFFFF"}
                 onChange={(evt) => onChange(evt.target.value, name)}
                 error={

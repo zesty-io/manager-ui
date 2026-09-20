@@ -7,7 +7,7 @@ import {
 } from "@mui/x-tree-view";
 
 import { NavTreeLabel } from "./NavTreeLabel";
-import { Theme, alpha } from "@mui/material";
+import { Theme, alpha, useTheme } from "@mui/material";
 
 type CustomTreeItem2Props = TreeItem2Props & {
   onItemDrop?: (draggedItem: any, targetItem: any) => void;
@@ -17,6 +17,7 @@ export const RichTreeItem = memo(
   forwardRef((props: CustomTreeItem2Props, ref: React.Ref<HTMLLIElement>) => {
     const { onItemDrop, dragAndDrop, ...otherProps } = props;
     const { id, itemId, label, disabled, children } = otherProps;
+    const theme = useTheme();
     const { publicAPI } = useTreeItem2({
       id,
       itemId,
@@ -87,7 +88,8 @@ export const RichTreeItem = memo(
               onDragOver: (event: any) => {
                 if (dragAndDrop) {
                   event.preventDefault();
-                  event.currentTarget.style.backgroundColor = "#f6f6f7";
+                  event.currentTarget.style.backgroundColor =
+                    theme.custom.navTreeDragOverBackground;
                 }
               },
               onDragLeave: (event: any) => {

@@ -849,6 +849,7 @@ export const MediaItem = ({
             px={0.25}
             boxSizing="border-box"
             sx={{
+              // eslint-disable-next-line no-restricted-syntax -- third-party brand color for the Bynder integration badge (design-system.md §3)
               backgroundColor: "#0af",
             }}
           >

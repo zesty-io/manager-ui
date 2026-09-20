@@ -112,6 +112,7 @@ export const TopUsers = (props) => {
               plugins: {
                 legend: { display: false },
                 datalabels: {
+                  // eslint-disable-next-line no-restricted-syntax -- chart.js datalabel color; chart.js options require a raw CSS color string, not a theme path (design-system.md §3: chart series palette)
                   color: "#fff",
                   anchor: "end",
                   align: "start",

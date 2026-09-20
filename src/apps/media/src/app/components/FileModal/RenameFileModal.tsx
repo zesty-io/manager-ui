@@ -111,9 +111,9 @@ export const RenameFileModal: FC<Props> = ({
           sx={{
             mt: 2.5,
             bgcolor: (theme) => alpha(theme.palette.warning.main, 0.1),
-            color: "#643a03",
+            color: "warning.alertText",
             ".MuiAlert-icon": {
-              color: "#643a03",
+              color: "warning.alertText",
             },
           }}
         >
