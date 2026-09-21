@@ -11,7 +11,6 @@ import {
   TextField,
   ToggleButton,
   ToggleButtonGroup,
-  useTheme,
 } from "@mui/material";
 import { createPortal } from "react-dom";
 import CloseIcon from "@mui/icons-material/Close";
@@ -58,7 +57,6 @@ export const SubField = memo(
     version,
   }: SubFieldProps) => {
     const { t } = useTranslation();
-    const theme = useTheme();
     const { modelZUID } = useParams<{ modelZUID: string }>();
     const { local, onLocalChange } = useDebouncedInput(value, (v) => {
       onChange(v, field.name);
@@ -413,7 +411,8 @@ export const SubField = memo(
           );
         } else {
           content = (
-            <h1 style={{ color: theme.palette.error.main }}>
+            // eslint-disable-next-line no-restricted-syntax -- pending design-system value (PR #4343 review); no ramp/palette step matches this warning color, restored to its original literal after theme.palette.error.main was found to render a different color
+            <h1 style={{ color: "#e53c05" }}>
               <FontAwesomeIcon icon={faExclamationTriangle} />
               &nbsp;
               <Link

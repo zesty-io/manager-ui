@@ -111,9 +111,11 @@ export const RenameFileModal: FC<Props> = ({
           sx={{
             mt: 2.5,
             bgcolor: (theme) => alpha(theme.palette.warning.main, 0.1),
-            color: "warning.alertText",
+            // eslint-disable-next-line no-restricted-syntax -- pending design-system value (PR #4343 review); no ramp step matches this text color, reverted from a minted theme.warning.alertText token
+            color: "#643a03",
             ".MuiAlert-icon": {
-              color: "warning.alertText",
+              // eslint-disable-next-line no-restricted-syntax -- pending design-system value (PR #4343 review); no ramp step matches this icon color, reverted from a minted theme.warning.alertText token
+              color: "#643a03",
             },
           }}
         >

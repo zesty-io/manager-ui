@@ -77,11 +77,6 @@ const themeOverrides = {
     },
     warning: {
       contrastText: "#fff",
-      // No ramp step matches this dark, accessible-on-tinted-background
-      // warning text color (see docs/design-system.md §4) — named here so
-      // it's greppable in one place; consumed via color: "warning.alertText"
-      // in src/apps/media/src/app/components/FileModal/RenameFileModal.tsx.
-      alertText: "#643a03",
       // No ramp step matches this pale notice background (see
       // docs/design-system.md §4) — named here so it's greppable in one
       // place; consumed via sx={{ bgcolor: "warning.noticeBackground" }} in
@@ -117,15 +112,6 @@ const themeOverrides = {
       // resolved value rather than a "text.x"-style path string).
       breadcrumbSeparator: "#afbcd4",
     },
-  },
-  custom: {
-    // No ramp/semantic token matches this nav-tree drag-over highlight (see
-    // docs/design-system.md §4) — named here so it's greppable in one place;
-    // consumed via theme.custom.navTreeDragOverBackground in
-    // src/shell/components/NavTree/components/RichTreeItem.tsx (an
-    // imperative DOM style assignment, not sx, so it needs a resolved
-    // value rather than a "background.x"-style path string).
-    navTreeDragOverBackground: "#f6f6f7",
   },
 
   components: {

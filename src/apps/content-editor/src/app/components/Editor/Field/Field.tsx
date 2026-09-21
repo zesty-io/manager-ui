@@ -13,7 +13,6 @@ import {
   Dialog,
   IconButton,
   Autocomplete,
-  useTheme,
 } from "@mui/material";
 
 import CloseIcon from "@mui/icons-material/Close";
@@ -107,7 +106,6 @@ export const Field = memo(
     compact = false,
   }: FieldProps) => {
     const dispatch = useDispatch();
-    const theme = useTheme();
     const { t } = useTranslation("content");
     const { data: fields } = useGetContentModelFieldsQuery({
       modelZUID: contentModelZUID,
@@ -599,7 +597,8 @@ export const Field = memo(
           );
         } else {
           return (
-            <h1 style={{ color: theme.palette.error.main }}>
+            // eslint-disable-next-line no-restricted-syntax -- pending design-system value (PR #4343 review); no ramp/palette step matches this warning color, restored to its original literal after theme.palette.error.main was found to render a different color
+            <h1 style={{ color: "#e53c05" }}>
               <FontAwesomeIcon icon={faExclamationTriangle} />
               &nbsp;
               <AppLink to={`/schema/${contentModelZUID}/field/${ZUID}`}>
