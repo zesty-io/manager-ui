@@ -64,6 +64,10 @@ export const RichTreeItem = memo(
                     color: "common.white",
                   },
 
+                ".MuiTreeItem-iconContainer svg": {
+                  color: "action.active",
+                },
+
                 borderRadius: 0,
                 "&.Mui-selected": {
                   borderLeft: "2px solid",
