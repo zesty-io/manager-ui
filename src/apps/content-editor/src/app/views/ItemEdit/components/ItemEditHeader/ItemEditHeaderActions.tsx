@@ -317,6 +317,19 @@ export const ItemEditHeaderActions = ({
     return uniqueItems;
   }, [fields, item, items]);
 
+  // A stable key over ZUID+version so the effect below only re-runs (and
+  // re-fires a workflow-status check per related item) when the related
+  // items actually change, not on every `unpublishedRelatedItems` identity
+  // change caused by unrelated content fetches elsewhere in the app.
+  const unpublishedRelatedItemsKey = useMemo(
+    () =>
+      unpublishedRelatedItems
+        .map((item) => `${item.meta.ZUID}:${item.meta.version}`)
+        .sort()
+        .join(","),
+    [unpublishedRelatedItems]
+  );
+
   useEffect(() => {
     // Check each unpublished related item's own workflow status and only
     // default-select (and allow co-publishing) the ones that are allowed to
@@ -352,7 +365,7 @@ export const ItemEditHeaderActions = ({
     return () => {
       cancelled = true;
     };
-  }, [unpublishedRelatedItems, checkPublishAllowed]);
+  }, [unpublishedRelatedItemsKey, checkPublishAllowed]);
 
   const itemState = (() => {
     if (item?.dirty) {
@@ -491,6 +504,7 @@ export const ItemEditHeaderActions = ({
         })
       );
       amplitude.track(PUBLISH_ATTEMPT_WITHOUT_ALLOW_PUBLISH_STATUS);
+      setIsConfirmPublishModalOpen(false);
     }
   };
 

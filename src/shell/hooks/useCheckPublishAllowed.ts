@@ -1,12 +1,18 @@
 import { useCallback } from "react";
 import { useDispatch } from "react-redux";
 import type { ThunkDispatch, AnyAction } from "@reduxjs/toolkit";
+import { chunk } from "lodash";
 import {
   instanceApi,
   useGetWorkflowStatusLabelsQuery,
 } from "../services/instance";
 import { ItemWorkflowStatus, WorkflowStatusLabel } from "../services/types";
 import { isPublishAllowedByWorkflowStatus } from "../../utility/workflowStatus";
+
+// Cap on simultaneous getItemWorkflowStatus requests -- bulk-publish from the
+// multipage list can pass dozens/hundreds of items, and firing them all at
+// once in one Promise.all can overwhelm the browser's connection pool.
+const CONCURRENCY = 15;
 
 export type PublishCandidate = {
   modelZUID: string;
@@ -64,21 +70,25 @@ export function useCheckPublishAllowed() {
         .catch(() => [] as WorkflowStatusLabel[]);
       labelsResult.unsubscribe();
 
-      const workflowStatuses = await Promise.all(
-        items.map(async (item) => {
-          const result = dispatch(
-            instanceApi.endpoints.getItemWorkflowStatus.initiate({
-              modelZUID: item.modelZUID,
-              itemZUID: item.itemZUID,
-            })
-          );
-          const data = await result
-            .unwrap()
-            .catch(() => [] as ItemWorkflowStatus[]);
-          result.unsubscribe();
-          return data;
-        })
-      );
+      const workflowStatuses: ItemWorkflowStatus[][] = [];
+      for (const batch of chunk(items, CONCURRENCY)) {
+        const batchResults = await Promise.all(
+          batch.map(async (item) => {
+            const result = dispatch(
+              instanceApi.endpoints.getItemWorkflowStatus.initiate({
+                modelZUID: item.modelZUID,
+                itemZUID: item.itemZUID,
+              })
+            );
+            const data = await result
+              .unwrap()
+              .catch(() => [] as ItemWorkflowStatus[]);
+            result.unsubscribe();
+            return data;
+          })
+        );
+        workflowStatuses.push(...batchResults);
+      }
 
       const allowed: T[] = [];
       const blocked: T[] = [];
