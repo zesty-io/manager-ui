@@ -175,10 +175,10 @@ export const ItemEditHeaderActions = ({
     new Date(item?.publishing?.unpublishAt).getTime() > Date.now()
   );
 
-  const getUserNameByZUID = (userZUID?: string) => {
+  const getUserNameByZUID = (userZUID?: string, fallbackName?: string) => {
     const user = users?.find((u) => u.ZUID === userZUID);
     const completeUserName = !user
-      ? ""
+      ? fallbackName || ""
       : `${user.firstName || ""} ${user.lastName || ""}`.trim();
     return completeUserName;
   };
@@ -537,7 +537,10 @@ export const ItemEditHeaderActions = ({
               dateTime={item?.meta?.updatedAt || ""}
               userName={getUserNameByZUID(
                 lastItemUpdateAudit?.actionByUserZUID ||
-                  item?.web?.createdByUserZUID
+                  item?.web?.createdByUserZUID,
+                `${lastItemUpdateAudit?.firstName || ""} ${
+                  lastItemUpdateAudit?.lastName || ""
+                }`.trim()
               )}
             />
           )
