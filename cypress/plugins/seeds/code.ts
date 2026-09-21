@@ -1,5 +1,6 @@
 import { readFileSync } from "fs";
 import { join } from "path";
+import { v4 as uuidv4 } from "uuid";
 
 import { WebView, Stylesheet, Script } from "../../../src/shell/services/types";
 
@@ -17,7 +18,7 @@ module.exports = function code(config) {
     const json = JSON.parse(jsonString);
 
     const sdk = await getSDK(config);
-    const timeStamp = Date.now();
+    const timeStamp = uuidv4();
     const filename = `/__e2e__/${config.env.COMMIT_ID}/${timeStamp} | ${json.filename}`;
     const payload = { ...json, filename };
 

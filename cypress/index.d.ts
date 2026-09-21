@@ -75,7 +75,7 @@ declare global {
       task(
         event: "seed:code",
         path: string
-      ): Chainable<Partial<WebView> | Partial<Script> | Partial<Stylesheet>>;
+      ): Chainable<WebView | Script | Stylesheet>;
       task(
         event: "cleanup:code",
         files: Array<{ zuid: string; type: string }>
