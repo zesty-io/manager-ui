@@ -33,17 +33,22 @@ export function useDebouncedInput(
     return () => d.cancel();
   }, []);
 
-  const onLocalChange = useCallback((v: string) => {
-    setLocal(v);
-    debouncedRef.current!(v);
-  }, []);
+  // A "debounced" commit still defers to a timer even with delay=0 (lodash
+  // schedules it via setTimeout), so it can still lose a race against a
+  // click handled in the same tick. A delay of 0 (or less) means "don't
+  // debounce at all" — commit synchronously, so there's never a pending
+  // commit to race against.
+  const onLocalChange = useCallback(
+    (v: string) => {
+      setLocal(v);
+      if (delay <= 0) {
+        commitRef.current(v);
+      } else {
+        debouncedRef.current!(v);
+      }
+    },
+    [delay]
+  );
 
-  // Immediately commits a pending debounced change, if any. Callers that need
-  // the committed value before the debounce delay elapses (e.g. validating on
-  // save) must call this first.
-  const flush = useCallback(() => {
-    debouncedRef.current!.flush();
-  }, []);
-
-  return { local, onLocalChange, flush };
+  return { local, onLocalChange };
 }

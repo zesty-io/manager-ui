@@ -6,7 +6,6 @@ import {
   useContext,
   useCallback,
 } from "react";
-import { flushSync } from "react-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import useIsMounted from "ismounted";
@@ -44,7 +43,6 @@ import {
   ContentModelField,
 } from "../../../../../../shell/services/types";
 import { SchedulePublish } from "../../../../../../shell/components/SchedulePublish";
-import { refRegistry } from "../../../../../../engine/refRegistry";
 import { Meta } from "../ItemEdit/Meta";
 import { SocialMediaPreview } from "../ItemEdit/Meta/SocialMediaPreview";
 import { FieldError } from "../../components/Editor/FieldError";
@@ -211,27 +209,6 @@ export const ItemCreate = () => {
   const save = useCallback(
     async (action: ActionAfterSave) => {
       setSaveClicked(true);
-
-      // Fields debounce their onChange commit to the store; flush any pending
-      // ones (e.g. the first text field driving Meta Title auto-population)
-      // before validating, or a fast save right after typing can validate
-      // against a value that hasn't reached the store yet. flushSync forces
-      // Meta to re-render with the newly-committed value before we read its
-      // validateMetaFields() result — without it, React 18 batches the store
-      // update and Meta's closure stays stale for the rest of this call.
-      //
-      // refRegistry is a single app-wide registry (fields register by name,
-      // not by item), and "Create & Add New Related Item" mounts a nested
-      // ItemCreate on top of a still-mounted parent page — so this must only
-      // flush fields belonging to *this* model, or saving the nested dialog
-      // would force-commit the parent's in-progress edits too.
-      flushSync(() => {
-        Object.values(refRegistry).forEach((entry) => {
-          if (entry.context?.()?.contentModelZUID === modelZUID) {
-            entry.handle?.flush?.();
-          }
-        });
-      });
 
       const validationErrors = metaRef.current?.validateMetaFields?.();
 

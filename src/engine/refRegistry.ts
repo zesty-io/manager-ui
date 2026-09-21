@@ -3,7 +3,6 @@ export interface RefHandle {
   click?(): void;
   focus?(): void;
   blur?(): void;
-  flush?(): void;
   [event: string]: any;
 }
 
