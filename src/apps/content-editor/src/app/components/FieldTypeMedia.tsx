@@ -35,6 +35,7 @@ import {
 } from "@mui/icons-material";
 import { alpha } from "@mui/material/styles";
 import { Bynder, FileReplace } from "@zesty-io/material";
+import { BRAND_COLORS } from "utility/brandColors";
 import { useIntersection } from "react-use";
 import { useTranslation, Trans } from "react-i18next";
 
@@ -849,8 +850,7 @@ export const MediaItem = ({
             px={0.25}
             boxSizing="border-box"
             sx={{
-              // eslint-disable-next-line no-restricted-syntax -- third-party brand color for the Bynder integration badge (design-system.md §3)
-              backgroundColor: "#0af",
+              backgroundColor: BRAND_COLORS.bynder,
             }}
           >
             <Bynder
