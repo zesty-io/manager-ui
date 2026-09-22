@@ -365,7 +365,7 @@ export const PropertiesDialog = ({ onClose }: Props) => {
                         }
                         secondaryTypographyProps={{
                           variant: "body3",
-                          // body3 carries display: inline-block; the secondary line must stay full width.
+                          // MUI's own .MuiListItemText-secondary display:block is same-specificity; pin so insertion order doesn't decide.
                           sx: { display: "block" },
                         }}
                       />
