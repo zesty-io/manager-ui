@@ -58,7 +58,7 @@ export const StudioFeedbackModal = ({
   const isSubmittingRef = useRef(false);
 
   const handleClose = () => {
-    if (isSubmitting) return;
+    if (isSubmitting || isSubmittingRef.current) return;
     setMessage("");
     setError("");
     onClose();

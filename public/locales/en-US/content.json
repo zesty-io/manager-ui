@@ -175,7 +175,7 @@
   "failedFetchModelPublishings": "Failed to fetch model items publishings: {{error}}",
   "failedLoadingField": "Failed loading {{label}} field. Click here to view field schema.",
   "feedbackButtonLabel": "Feedback",
-  "feedbackExperiencePrompt": "How was your experience with studio-mode",
+  "feedbackExperiencePrompt": "How was your experience with studio-mode?",
   "feedbackModalSubtitle": "Please tell us about your experience so we can improve.",
   "feedbackPlaceholder": "Please provide detailed feedback about your experience",
   "feedbackSendError": "Couldn't send feedback. Try again.",
