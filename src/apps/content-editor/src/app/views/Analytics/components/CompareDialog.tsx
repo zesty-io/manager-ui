@@ -341,8 +341,9 @@ const PublishingItem = ({ publishing, divider, onClick }: any) => {
           )
         }
         secondaryTypographyProps={{
-          fontSize: "12px",
-          lineHeight: "18px",
+          variant: "body3",
+          // body3 carries display: inline-block; the secondary line must stay full width.
+          sx: { display: "block" },
         }}
       />
     </ListItemButton>
