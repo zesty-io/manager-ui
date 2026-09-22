@@ -468,14 +468,14 @@ export const ItemEditHeaderActions = ({
             notify({
               message: t("content.itemListCannotPublishStatus", {
                 count: blockedRelatedItems.length,
-                titles: blockedRelatedItems
+                titles: `"${blockedRelatedItems
                   .map(
                     (item) =>
                       item.web?.metaTitle ||
                       item.web?.metaLinkText ||
                       item.meta.ZUID
                   )
-                  .join(", "),
+                  .join('", "')}"`,
               }),
               kind: "error",
             })

@@ -423,7 +423,7 @@
   "itemEditWorkflowRequestSent": "已将 {{title}} 的工作流请求发送给 {{members}}",
   "itemEditWorkflowRequestTitle": "工作流请求",
   "itemEditZuidTooltip": "内容项目始终相对于其模型访问，因此每次调用都需要模型 ZUID。",
-  "itemListCannotPublishStatus_other": "Cannot Publish {{count}} Items: \"{{titles}}\". None have a status that allows publishing",
+  "itemListCannotPublishStatus_other": "Cannot Publish {{count}} Items: {{titles}}. None have a status that allows publishing",
   "itemListCopyZuid": "复制 ZUID",
   "itemListDateCreated": "创建日期",
   "itemListDateSaved": "保存日期",

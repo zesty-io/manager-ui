@@ -99,7 +99,7 @@ export const UpdateListActions = ({ items }: UpdateListActionsProps) => {
           kind: "error",
           message: t("content.itemListCannotPublishStatus", {
             count: blocked.length,
-            titles: blocked.map((item) => item.title).join(", "),
+            titles: `"${blocked.map((item) => item.title).join('", "')}"`,
           }),
         })
       );
