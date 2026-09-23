@@ -482,6 +482,7 @@ export const UpdateListActions = ({ items }: UpdateListActionsProps) => {
           onCancel={() => {
             setShowDeletesModal(false);
           }}
+          loading={isDeleting}
           onConfirm={(items) => {
             if (!items.length) {
               setShowDeletesModal(false);
