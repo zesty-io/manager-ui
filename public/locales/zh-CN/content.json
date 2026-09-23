@@ -432,6 +432,7 @@
   "itemListEditTemplate": "编辑模板",
   "itemListEmptyDescription": "在此添加您的内容。先创建您的第一个项目。",
   "itemListEmptyTitle": "立即开始创建内容",
+  "itemListErrorDeleting": "删除项目时出错：{{error}}",
   "itemListErrorPublishing": "发布项目时出错：{{error}}",
   "itemListErrorSaving": "保存项目时出错：{{error}}",
   "itemListExportCsv": "导出 CSV",

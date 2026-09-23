@@ -440,6 +440,7 @@
   "itemListEditTemplate": "Edit Template",
   "itemListEmptyDescription": "Add your content here. Start by creating your first item.",
   "itemListEmptyTitle": "Start Creating Content Now",
+  "itemListErrorDeleting": "Error deleting items: {{error}}",
   "itemListErrorPublishing": "Error publishing items: {{error}}",
   "itemListErrorSaving": "Error saving items: {{error}}",
   "itemListExportCsv": "Export CSV",

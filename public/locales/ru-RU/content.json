@@ -456,6 +456,7 @@
   "itemListEditTemplate": "Редактировать шаблон",
   "itemListEmptyDescription": "Добавьте свой контент здесь. Начните с создания первого элемента.",
   "itemListEmptyTitle": "Начните создавать контент прямо сейчас",
+  "itemListErrorDeleting": "Ошибка при удалении элементов: {{error}}",
   "itemListErrorPublishing": "Ошибка при публикации элементов: {{error}}",
   "itemListErrorSaving": "Ошибка при сохранении элементов: {{error}}",
   "itemListExportCsv": "Экспорт CSV",
