@@ -1,7 +1,13 @@
 import AutoAwesomeMosaicRoundedIcon from "@mui/icons-material/AutoAwesomeMosaicRounded";
 import AutoAwesomeRoundedIcon from "@mui/icons-material/AutoAwesomeRounded";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
-import { Box, Chip, ToggleButton, ToggleButtonGroup } from "@mui/material";
+import {
+  Box,
+  Button,
+  Chip,
+  ToggleButton,
+  ToggleButtonGroup,
+} from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { LanguageSelector } from "../../content-editor/src/app/views/ItemEdit/components/ItemEditHeader/LanguageSelector";
 import { InteractionMode, usesLayoutGrammar } from "../hooks/studioTypes";
@@ -29,6 +35,7 @@ type StudioHeaderProps = {
   pageItemZUID: string;
   unresolvedPath: boolean;
   logoSrc: string;
+  onFeedbackClick: () => void;
 };
 
 const MODE_OPTIONS: {
@@ -65,6 +72,7 @@ export const StudioHeader = ({
   pageItemZUID,
   unresolvedPath,
   logoSrc,
+  onFeedbackClick,
 }: StudioHeaderProps) => {
   const { t } = useTranslation();
   const [codeIdSegment, ...pathSegments] = selectedLayoutBreadcrumb;
@@ -168,6 +176,15 @@ export const StudioHeader = ({
         ) : null}
       </Box>
       <Box display="flex" alignItems="center" gap={1.5}>
+        <Button
+          data-cy="StudioFeedbackButton"
+          color="inherit"
+          size="small"
+          onClick={onFeedbackClick}
+          sx={{ fontWeight: 500 }}
+        >
+          {t("content.feedbackButtonLabel")}
+        </Button>
         <Box minWidth={96}>
           <LanguageSelector
             modelZUIDOverride={pageModelZUID}
