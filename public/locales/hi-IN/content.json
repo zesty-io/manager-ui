@@ -440,6 +440,7 @@
   "itemListEditTemplate": "टेम्पलेट संपादित करें",
   "itemListEmptyDescription": "अपना कॉन्टेंट यहाँ जोड़ें। अपना पहला आइटम बनाकर शुरुआत करें।",
   "itemListEmptyTitle": "अभी कॉन्टेंट बनाना शुरू करें",
+  "itemListErrorDeleting": "आइटम हटाने में त्रुटि: {{error}}",
   "itemListErrorPublishing": "आइटम प्रकाशित करने में त्रुटि: {{error}}",
   "itemListErrorSaving": "आइटम सहेजने में त्रुटि: {{error}}",
   "itemListExportCsv": "CSV निर्यात करें",

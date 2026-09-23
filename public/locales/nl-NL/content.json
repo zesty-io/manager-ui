@@ -440,6 +440,7 @@
   "itemListEditTemplate": "Sjabloon bewerken",
   "itemListEmptyDescription": "Voeg hier je content toe. Begin met het maken van je eerste item.",
   "itemListEmptyTitle": "Begin nu met het maken van content",
+  "itemListErrorDeleting": "Fout bij het verwijderen van items: {{error}}",
   "itemListErrorPublishing": "Fout bij het publiceren van items: {{error}}",
   "itemListErrorSaving": "Fout bij het opslaan van items: {{error}}",
   "itemListExportCsv": "CSV exporteren",

@@ -20,11 +20,13 @@ type ConfirmDeletesModalProps = {
   items: ContentItem[];
   onConfirm: (items: ContentItem[]) => void;
   onCancel: () => void;
+  loading: boolean;
 };
 export const ConfirmDeletesDialog = ({
   items,
   onConfirm,
   onCancel,
+  loading,
 }: ConfirmDeletesModalProps) => {
   const { t } = useTranslation();
   const actionRef = useRef<ButtonBaseActions | null>(null);
@@ -69,6 +71,7 @@ export const ConfirmDeletesDialog = ({
           {t("common.cancel")}
         </Button>
         <Button
+          loading={loading}
           data-cy="ConfirmMultiPageTableDelete"
           action={(actions) => (actionRef.current = actions)}
           variant="contained"

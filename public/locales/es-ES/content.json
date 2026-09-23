@@ -448,6 +448,7 @@
   "itemListEditTemplate": "Editar plantilla",
   "itemListEmptyDescription": "Añade tu contenido aquí. Empieza creando tu primer elemento.",
   "itemListEmptyTitle": "Empieza a crear contenido ahora",
+  "itemListErrorDeleting": "Error al eliminar los elementos: {{error}}",
   "itemListErrorPublishing": "Error al publicar los elementos: {{error}}",
   "itemListErrorSaving": "Error al guardar los elementos: {{error}}",
   "itemListExportCsv": "Exportar CSV",
