@@ -25,10 +25,9 @@ export const CodeSample = () => {
       <Box>
         <Stack direction="row" alignItems="center" gap={1} pb={0.5}>
           <Typography
+            variant="body2"
             sx={{
               fontWeight: 600,
-              fontSize: "14px",
-              lineHeight: "20px",
             }}
           >
             {t("content.codeSampleBlockSelector")}
@@ -43,10 +42,9 @@ export const CodeSample = () => {
       <Box>
         <Stack direction="row" alignItems="center" gap={1} pb={0.5}>
           <Typography
+            variant="body2"
             sx={{
               fontWeight: 600,
-              fontSize: "14px",
-              lineHeight: "20px",
             }}
           >
             {t("content.codeSampleBaseTemplate")}
@@ -67,10 +65,9 @@ export const CodeSample = () => {
       <Box>
         <Stack direction="row" alignItems="center" gap={1} pb={0.5}>
           <Typography
+            variant="body2"
             sx={{
               fontWeight: 600,
-              fontSize: "14px",
-              lineHeight: "20px",
             }}
           >
             {t("content.codeSampleBaseTemplateVersion")}
@@ -91,10 +88,9 @@ export const CodeSample = () => {
       <Box>
         <Stack direction="row" alignItems="center" gap={1} pb={0.5}>
           <Typography
+            variant="body2"
             sx={{
               fontWeight: 600,
-              fontSize: "14px",
-              lineHeight: "20px",
             }}
           >
             {t("content.codeSampleSpecificVariant")}
