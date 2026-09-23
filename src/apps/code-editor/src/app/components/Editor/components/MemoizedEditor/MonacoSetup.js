@@ -19,6 +19,7 @@ export function MonacoSetup(store) {
     base: "vs-dark", // can also be vs-dark or hc-black
     inherit: true, // can also be false to completely replace the builtin rules
     rules: ParsleyTheme,
+    colors: {}, // required since 0.31 — monaco reads colors["editor.foreground"] unguarded
   });
 
   /**
