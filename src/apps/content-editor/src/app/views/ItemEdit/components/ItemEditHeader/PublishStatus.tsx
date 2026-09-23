@@ -1,11 +1,10 @@
 import { Stack, Typography, Tooltip } from "@mui/material";
 import { CheckCircleRounded, ScheduleRounded } from "@mui/icons-material";
 import { useParams } from "react-router";
-
 import { useGetItemPublishingsQuery } from "../../../../../../../../shell/services/instance";
-import { formatDate } from "../../../../../../../../utility/formatDate";
 import { useGetUsersQuery } from "../../../../../../../../shell/services/accounts";
 import { useTranslation } from "react-i18next";
+import { TooltipTitle } from "./TooltipTitle";
 
 type PublishStatusProps = {
   currentVersion: number;
@@ -33,12 +32,25 @@ export const PublishStatus = ({ currentVersion }: PublishStatusProps) => {
       !item.unpublishAt
   );
 
-  const getUsername = (userZUID: string) => {
-    const user = users?.find((user) => user.ZUID === userZUID);
+  const scheduledUnpublishing = itemPublishings?.find(
+    (item) =>
+      item?._active &&
+      item?.unpublishAt &&
+      new Date(item?.unpublishAt).getTime() > Date.now() &&
+      // Check if the unpublishAt date is different from the publishAt date of the scheduled publishing
+      // This ensures that we only consider it a scheduled unpublishing if the unpublishAt date is different from the publishAt date of the scheduled publishing
+      item.publishAt &&
+      new Date(item?.publishAt).getTime() <= Date.now() &&
+      new Date(item?.unpublishAt).getTime() !==
+        new Date(scheduledPublishing?.publishAt).getTime()
+  );
 
-    if (user) {
-      return `${user.firstName} ${user.lastName}`;
-    }
+  const getUserNameByZUID = (userZUID?: string) => {
+    const user = users?.find((u) => u.ZUID === userZUID);
+    const completeUserName = !user
+      ? ""
+      : `${user.firstName || ""} ${user.lastName || ""}`.trim();
+    return completeUserName;
   };
 
   if (isFetchingPublishStatus) {
@@ -52,16 +64,15 @@ export const PublishStatus = ({ currentVersion }: PublishStatusProps) => {
           enterDelay={1000}
           enterNextDelay={1000}
           title={
-            <>
-              {t("content.itemEditVersionPublishedOn", {
+            <TooltipTitle
+              text={t("content.itemEditTooltipPublished", {
                 version: activePublishing.version,
-              })}{" "}
-              <br />
-              {formatDate(activePublishing.publishAt)} <br />
-              {t("content.itemEditByUser", {
-                name: getUsername(activePublishing.publishedByUserZUID),
               })}
-            </>
+              dateTime={activePublishing.publishAt || ""}
+              userName={getUserNameByZUID(
+                activePublishing?.publishedByUserZUID
+              )}
+            />
           }
           placement="bottom-start"
         >
@@ -87,16 +98,15 @@ export const PublishStatus = ({ currentVersion }: PublishStatusProps) => {
             enterDelay={1000}
             enterNextDelay={1000}
             title={
-              <>
-                {t("content.itemEditVersionScheduledToPublishOn", {
+              <TooltipTitle
+                text={t("content.itemEditTooltipScheduledToPublish", {
                   version: scheduledPublishing.version,
-                })}{" "}
-                <br />
-                {formatDate(scheduledPublishing.publishAt)} <br />
-                {t("content.itemEditByUser", {
-                  name: getUsername(scheduledPublishing.publishedByUserZUID),
                 })}
-              </>
+                dateTime={scheduledPublishing.publishAt || ""}
+                userName={getUserNameByZUID(
+                  scheduledPublishing?.publishedByUserZUID
+                )}
+              />
             }
             placement="bottom-start"
           >
@@ -116,6 +126,45 @@ export const PublishStatus = ({ currentVersion }: PublishStatusProps) => {
             </Stack>
           </Tooltip>
         )}
+
+      {!!scheduledUnpublishing && scheduledUnpublishing?._active && (
+        <Tooltip
+          enterDelay={1000}
+          enterNextDelay={1000}
+          title={
+            <TooltipTitle
+              text={t("content.itemEditTooltipScheduledToUnpublish", {
+                version: scheduledUnpublishing.version,
+              })}
+              dateTime={scheduledUnpublishing.unpublishAt || ""}
+              userName={getUserNameByZUID(
+                scheduledUnpublishing?.publishedByUserZUID
+              )}
+            />
+          }
+          placement="bottom-start"
+        >
+          <Stack
+            data-cy="PublishStatusScheduledUnpublishIndicator"
+            direction="row"
+            gap={1}
+            alignItems="center"
+          >
+            <ScheduleRounded fontSize="small" color="warning" />
+            <Typography
+              variant="body2"
+              color="warning.main"
+              fontWeight={500}
+              lineHeight="24px"
+              letterSpacing="0.46px"
+            >
+              {t("content.itemEditVersionScheduledUnpublishLabel", {
+                version: scheduledUnpublishing.version,
+              })}
+            </Typography>
+          </Stack>
+        </Tooltip>
+      )}
     </Stack>
   );
 };

@@ -245,6 +245,171 @@ describe("Actions in content editor", () => {
     cy.getBySelector("ContentPublishedIndicator").should("exist");
   });
 
+  it("Schedules an item for unpublishing", () => {
+    const { items, publishItem, publishings } = awaitRequests();
+    cy.visit(
+      `/content/${Cypress.env("modelZUID")}/${CONTENT_ITEMS?.[4]?.meta?.ZUID}`
+    );
+    cy.wait([items, publishings], { requestTimeout });
+
+    // Cancel any stale scheduled unpublish from a prior run so the scheduling
+    // step below reliably opens the ScheduleUnpublishButton (not Unschedule) view.
+    cy.getBySelector("PublishMenuButton").should("exist").should("be.enabled");
+    cy.getBySelector("PublishMenuButton").trigger("click");
+    cy.getBySelector("publishingMenu").within(() => {
+      cy.getBySelector("UnpublishScheduleButton").trigger("click");
+    });
+    cy.getBySelector("ScheduleUnpublishModal")
+      .should("exist")
+      .then(($modal) => {
+        if ($modal.find("[data-cy='UnscheduleUnpublishButton']").length) {
+          cy.wrap($modal)
+            .find("[data-cy='UnscheduleUnpublishButton']")
+            .trigger("click");
+          cy.wait(publishItem);
+          cy.wait(publishings);
+        } else if (
+          $modal.find("[data-cy='CancelScheduleUnpublishButton']").length
+        ) {
+          cy.wrap($modal)
+            .find("[data-cy='CancelScheduleUnpublishButton']")
+            .trigger("click");
+        }
+      });
+
+    cy.getBySelector("PublishMenuButton").should("exist").should("be.enabled");
+    cy.getBySelector("PublishMenuButton").trigger("click");
+
+    cy.getBySelector("publishingMenu")
+      .should("exist")
+      .within(() => {
+        cy.getBySelector("UnpublishScheduleButton").should("exist");
+        cy.getBySelector("UnpublishScheduleButton").trigger("click");
+      });
+
+    cy.getBySelector("ScheduleUnpublishModal")
+      .should("exist")
+      .within(() => {
+        // Assert labeling is correct for the unpublish flow
+        cy.contains("Schedule Unpublish:").should("exist");
+        cy.contains("Unpublish on").should("exist");
+        cy.getBySelector("ScheduleUnpublishButton")
+          .should("exist")
+          .should("contain.text", "Schedule Unpublish");
+        cy.getBySelector("ScheduleUnpublishButton").trigger("click");
+      });
+
+    // Assert the API payload branches correctly for scheduled unpublish
+    cy.wait(publishItem).then((interception) => {
+      const body = interception.request.body;
+      expect(body.publishAt).to.equal("now");
+      expect(body.unpublishAt).to.match(
+        /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/
+      );
+      expect(body.version).to.be.a("number");
+    });
+    cy.wait(publishings);
+
+    cy.getBySelector("ScheduledUnpublishIndicator").should("exist");
+
+    // Assert the menu toggle label flips to "Unschedule Unpublish",
+    // then cancel the schedule so the item is clean for subsequent tests.
+    awaitRequests();
+    cy.getBySelector("PublishMenuButton").trigger("click");
+    cy.getBySelector("publishingMenu").within(() => {
+      cy.getBySelector("UnpublishScheduleButton")
+        .should("contain.text", "Unschedule Unpublish")
+        .trigger("click");
+    });
+    cy.getBySelector("ScheduleUnpublishModal")
+      .should("exist")
+      .within(() => {
+        cy.getBySelector("UnscheduleUnpublishButton").trigger("click");
+      });
+    cy.wait("@publishItem");
+    cy.wait("@publishings");
+  });
+
+  it("Cancels a scheduled unpublish", () => {
+    const { items, publishItem, publishings } = awaitRequests();
+    cy.visit(
+      `/content/${Cypress.env("modelZUID")}/${CONTENT_ITEMS?.[4]?.meta?.ZUID}`
+    );
+    cy.wait([items, publishings], { requestTimeout });
+
+    // If a prior test left a scheduled unpublish on this item, cancel it first
+    // so the scheduling step below reliably opens the SchedulePublishButton view.
+    cy.getBySelector("PublishMenuButton").should("exist").should("be.enabled");
+    cy.getBySelector("PublishMenuButton").trigger("click");
+    cy.getBySelector("publishingMenu")
+      .should("exist")
+      .within(() => {
+        cy.getBySelector("UnpublishScheduleButton").trigger("click");
+      });
+    cy.getBySelector("ScheduleUnpublishModal")
+      .should("exist")
+      .then(($modal) => {
+        if ($modal.find("[data-cy='UnscheduleUnpublishButton']").length) {
+          // Already scheduled — cancel it to restore clean state
+          cy.wrap($modal)
+            .find("[data-cy='UnscheduleUnpublishButton']")
+            .trigger("click");
+          cy.wait(publishItem);
+          cy.wait(publishings);
+        } else {
+          cy.getBySelector("CancelScheduleUnpublishButton").trigger("click");
+        }
+      });
+
+    // Schedule an unpublish so this test is fully self-contained
+    cy.getBySelector("PublishMenuButton").should("exist").should("be.enabled");
+    cy.getBySelector("PublishMenuButton").trigger("click");
+
+    cy.getBySelector("publishingMenu")
+      .should("exist")
+      .within(() => {
+        cy.getBySelector("UnpublishScheduleButton").should("exist");
+        cy.getBySelector("UnpublishScheduleButton").trigger("click");
+      });
+
+    cy.getBySelector("ScheduleUnpublishModal")
+      .should("exist")
+      .within(() => {
+        cy.getBySelector("ScheduleUnpublishButton").should("exist");
+        cy.getBySelector("ScheduleUnpublishButton").trigger("click");
+      });
+
+    cy.wait(publishItem);
+    cy.wait(publishings);
+
+    cy.getBySelector("ScheduledUnpublishIndicator").should("exist");
+
+    // Now cancel the scheduled unpublish
+    cy.getBySelector("PublishMenuButton").trigger("click");
+
+    cy.getBySelector("publishingMenu")
+      .should("exist")
+      .within(() => {
+        cy.getBySelector("UnpublishScheduleButton").should("exist");
+        cy.getBySelector("UnpublishScheduleButton").trigger("click");
+      });
+
+    cy.getBySelector("ScheduleUnpublishModal")
+      .should("exist")
+      .within(() => {
+        // Assert the scheduled date is rendered in the dialog (not blank)
+        cy.contains("scheduled to unpublish on").should("exist");
+        cy.contains(/\w{3} \d{1,2}, \d{4} at \d{1,2}:\d{2}/).should("exist");
+        cy.getBySelector("UnscheduleUnpublishButton").should("exist");
+        cy.getBySelector("UnscheduleUnpublishButton").trigger("click");
+      });
+
+    cy.wait(publishItem);
+    cy.wait(publishings);
+
+    cy.getBySelector("ScheduledUnpublishIndicator").should("not.exist");
+  });
+
   it("Unpublishes an item", () => {
     const { items, deletePublishedItem, publishings } = awaitRequests();
     cy.visit(
