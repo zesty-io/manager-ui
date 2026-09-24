@@ -21,10 +21,12 @@ src/apps/studio/
     useLayoutReorderState.ts                 template source patching + save/publish
     useStudioContentSave.ts                  batch content-item save/publish/discard
     useCrossModelConnectField.ts             read-back for a cross-item binding
+    useStudioAiEdit.ts                       AI edits to the page's view: staging + PVL preview
   components/
     StudioHeader · StudioPreview · StudioSidePanel · StudioInspectorPanel
     StudioLayersPanel · StudioLayersTreeItem · StudioSaveChangesModal
     StudioLinkItemDialog · StudioFreestyleAlert · FieldIconChip
+    StudioAIPanel · StudioAIPreview
     studioTags.ts · studioFieldMeta.ts · studioParsley.ts
 ```
 
@@ -161,6 +163,8 @@ Partial failure keeps the Save Changes modal open.
 
 **Layout save reports failure by return value, not by throwing.** `handleSavePendingLayout` and `handleSaveAndPublishPendingLayout` resolve `{ failed: boolean }` on every path, including the path that catches an error and notifies. A caller that only wraps them in `try`/`catch` reads a failed `PUT` as success and clears the dirty state on top of it.
 
+**AI edits ride the layout save.** The AI panel (`shell/components/AIChat`, shared with the Shell drawer) registers the page's own view — the web view whose `contentModelZUID` is the page model — under refKey `code-editor`, so the MCP request matches the Code app's. A returned whole file is staged with `stageLayoutSourceUpdate(…, { replacesSource: true })` and rendered by POSTing it to WebEngine's `/-/pvl/`; that HTML covers the live canvas, with layout editing disabled, until Save or Cancel. The bridge is not involved.
+
 **Full mode saves both halves through one bar** (`runMergedSave`) — layout first, then content, stopping if the layout half reports `failed`. Permission is per half, so the bar's enablement is a union rather than an `&&`: a role that may edit content but not layout still has to be able to save its content edits in full mode.
 
 ## Parsley references and cross-item bindings
@@ -241,7 +245,7 @@ When testing cross-item links:
 
 `grep -rn 'data-cy' src/apps/studio/` is authoritative; the list below drifts.
 
-`StudioHeader` `StudioModeToggle` `StudioPreviewFrame` `StudioPreviewRefreshOverlay` `StudioLayersPanel` `StudioLayersRow` `StudioLayersRowChevron` `StudioInspectorPanel` `StudioInspectorPanelClose` `StudioTagSelect` `StudioConnectedField` `StudioConnectedFieldCaption` `StudioSidePanel` `StudioBackToInspector` `StudioBreadcrumbs` `StudioBreadcrumbRail` `StudioBreadcrumbRoot` `StudioBreadcrumbChip` `StudioAddLink` `StudioRemoveLink` `StudioLinkDisconnect` `StudioSaveChangesModal` `StudioSaveAllButton` `StudioSaveAndPublishAllButton` `StudioSaveChangeRow` `StudioSaveChangesCancelButton` `StudioLogo` `StudioLinkItemDialog` `StudioLinkItemDialogClose` `StudioLinkItemFieldSelect` `StudioLinkItemCancel` `StudioLinkItemConfirm` `StudioFreestyleAlert` `StudioFreestyleAlertEditButton` `StudioFreestyleAlertCloseButton` `StudioEditInManagerButton` `StudioEditInFreestyleButton`
+`StudioHeader` `StudioModeToggle` `StudioPreviewFrame` `StudioPreviewRefreshOverlay` `StudioLayersPanel` `StudioLayersRow` `StudioLayersRowChevron` `StudioInspectorPanel` `StudioInspectorPanelClose` `StudioTagSelect` `StudioConnectedField` `StudioConnectedFieldCaption` `StudioSidePanel` `StudioBackToInspector` `StudioBreadcrumbs` `StudioBreadcrumbRail` `StudioBreadcrumbRoot` `StudioBreadcrumbChip` `StudioAddLink` `StudioRemoveLink` `StudioLinkDisconnect` `StudioSaveChangesModal` `StudioSaveAllButton` `StudioSaveAndPublishAllButton` `StudioSaveChangeRow` `StudioSaveChangesCancelButton` `StudioLogo` `StudioLinkItemDialog` `StudioLinkItemDialogClose` `StudioLinkItemFieldSelect` `StudioLinkItemCancel` `StudioLinkItemConfirm` `StudioFreestyleAlert` `StudioFreestyleAlertEditButton` `StudioFreestyleAlertCloseButton` `StudioEditInManagerButton` `StudioEditInFreestyleButton` `StudioAIButton` `StudioSaveStatus` `StudioAIPanel` `StudioAIPreview` `StudioAIPreviewFrame` `StudioAIPreviewError`
 
 Templated: `StudioModeToggleOption-{mode}` `StudioSlotInput-{key}` `StudioSlotBrowse-{attr}` `StudioConnectContent-{key}` `StudioDisconnect-{key}` `StudioConnectField-{name}` `StudioConnectOtherItem-{key}` `StudioLinkItemField-{name}` `StudioLinkItemSearchInput` (also `-InputField`, `-Error`) `StudioSaveChangeSection-{label}` `Studio{Layout|Content}SaveBar` `Studio{Layout|Content}CancelButton` `Studio{Layout|Content}SaveChangesButton`
 

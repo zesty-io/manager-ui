@@ -13,6 +13,7 @@
   "advancedSearch": "高级搜索",
   "advancedSearchDescription": "随着您和您的团队在 Zesty 中协作，您将创建一个可搜索的内容、模型和代码文件存档。使用下方的表单查找您需要的内容。",
   "aiAssistantBeta": "AI 助手 Beta",
+  "aiCodeEditSummary": "{{fileName}} — 行：+{{added}} / −{{removed}}",
   "aiDrawerPlaceholder": "随便问，例如“让我的内容面向特定受众”",
   "aiGeneratingContentStatus": "我们的 AI 助手正在根据您的参数生成内容",
   "aiMistakesWarning": "我们的 AI 助手可能会出错。请核对重要信息。",

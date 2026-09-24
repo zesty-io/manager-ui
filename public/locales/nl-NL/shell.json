@@ -13,6 +13,7 @@
   "advancedSearch": "Geavanceerd zoeken",
   "advancedSearchDescription": "Terwijl jij en je team samenwerken in Zesty, bouw je een doorzoekbaar archief van inhoud, modellen en codebestanden op. Gebruik het onderstaande formulier om te vinden wat je zoekt.",
   "aiAssistantBeta": "AI-assistent bèta",
+  "aiCodeEditSummary": "{{fileName}} — regels: +{{added}} / −{{removed}}",
   "aiDrawerPlaceholder": "Vraag wat je wilt, bijvoorbeeld \"Stem mijn inhoud af op een specifiek publiek\"",
   "aiGeneratingContentStatus": "Onze AI-assistent genereert je inhoud op basis van je parameters",
   "aiMistakesWarning": "Onze AI-assistent kan fouten maken. Controleer belangrijke informatie.",

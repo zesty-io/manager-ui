@@ -54,6 +54,8 @@ import {
 import { parseParsleyRef } from "./components/studioParsley";
 import { StudioLayersPanel } from "./components/StudioLayersPanel";
 import { StudioFreestyleAlert } from "./components/StudioFreestyleAlert";
+import { StudioAIPanel } from "./components/StudioAIPanel";
+import { StudioAIPreview } from "./components/StudioAIPreview";
 import {
   StudioSaveChange,
   StudioSaveChangesModal,
@@ -74,6 +76,7 @@ import {
 } from "./hooks/studioTypes";
 import { useStudioSelection } from "./hooks/useStudioSelection";
 import { useStudioLayersTree } from "./hooks/useStudioLayersTree";
+import { useStudioAiEdit } from "./hooks/useStudioAiEdit";
 import { getRefRegistry } from "../../engine/refRegistry";
 import { useMultiPermission } from "shell/hooks/use-permissions";
 import { MediaApp } from "../media/src/app";
@@ -157,6 +160,7 @@ export const StudioWrapper = () => {
   const currentHoverStudioIdRef = useRef<string | null>(null);
   const [showPendingLayoutModal, setShowPendingLayoutModal] = useState(false);
   const [showSaveChangesModal, setShowSaveChangesModal] = useState(false);
+  const [isAiPanelOpen, setIsAiPanelOpen] = useState(false);
   const [interactionMode, setInteractionMode] =
     useState<InteractionMode>("content");
   const [studioSaving, setStudioSaving] = useState(false);
@@ -974,6 +978,13 @@ export const StudioWrapper = () => {
     []
   );
 
+  // The layout hook is built before the AI hook that needs to hear its saves.
+  const aiRegionSavedRef = useRef<(codeId: string) => void>(() => {});
+  const handleLayoutRegionSaved = useCallback(
+    (codeId: string) => aiRegionSavedRef.current(codeId),
+    []
+  );
+
   const {
     pendingLayoutCodeIds,
     isSavingLayout,
@@ -991,6 +1002,8 @@ export const StudioWrapper = () => {
     handleLayoutWrapInLink,
     handleLayoutUnwrapLink,
     handleLayoutLinkAttrUpdate,
+    stageLayoutSourceUpdate,
+    readStagedLayoutSource,
   } = useLayoutReorderState({
     webViews,
     codeFileNameById,
@@ -1004,6 +1017,7 @@ export const StudioWrapper = () => {
     syncTemplateSourceToBridge,
     withCodeIdBreadcrumbRoot,
     onSelectedLayoutBreadcrumbChange: setSelectedLayout,
+    onLayoutRegionSaved: handleLayoutRegionSaved,
   });
   const hasPendingLayoutChanges = pendingLayoutCodeIds.length > 0;
   const canPublishPendingLayout = useMultiPermission(
@@ -2136,6 +2150,44 @@ export const StudioWrapper = () => {
       .sort((a: any, b: any) => (a?.sort ?? 0) - (b?.sort ?? 0));
   }, [fieldsState, pageModelZUID]);
 
+  // The AI writes view source, so it follows layout editing: layout grammar
+  // and CODE. A Freestyle page does not render through its model's view.
+  const aiAllowed =
+    usesLayoutGrammar(interactionMode) && canEditLayout && !isFreestyleLayout;
+  const {
+    pageView: aiPageView,
+    previewOrigin: aiPreviewOrigin,
+    isPreviewing: isAiPreviewing,
+    preview: aiPreview,
+    saveStatus: aiSaveStatus,
+    handleLayoutRegionSaved: handleAiRegionSaved,
+  } = useStudioAiEdit({
+    active: isAiPanelOpen && aiAllowed,
+    webViews,
+    pageModelZUID,
+    pageItemZUID,
+    pageFields,
+    randomHashID: instance?.randomHashID,
+    previewPassword: previewLock?.value,
+    pendingLayoutCodeIds,
+    stageLayoutSourceUpdate,
+    readStagedLayoutSource,
+    onBeforeStage: deselectForPreviewReload,
+  });
+  aiRegionSavedRef.current = handleAiRegionSaved;
+  const canUseAi = aiAllowed && !!aiPageView;
+  const showAiPanel = isAiPanelOpen && canUseAi;
+
+  useEffect(() => {
+    if (!canUseAi) setIsAiPanelOpen(false);
+  }, [canUseAi]);
+
+  const handleToggleAiPanel = useCallback(() => {
+    // Land any debounced Inspector write before the AI reads the source.
+    if (!isAiPanelOpen) flushPendingPatches();
+    setIsAiPanelOpen((open) => !open);
+  }, [flushPendingPatches, isAiPanelOpen]);
+
   const toConnectField = (field: any): ConnectField => ({
     name: field.name,
     label: field.label || field.name,
@@ -2297,6 +2349,10 @@ export const StudioWrapper = () => {
             pageItemZUID={pageItemZUID}
             unresolvedPath={unresolvedPath}
             logoSrc={contentOneLogoOnly}
+            showAiButton={canUseAi}
+            isAiPanelOpen={showAiPanel}
+            onToggleAiPanel={handleToggleAiPanel}
+            saveStatus={aiSaveStatus}
           />
           <Box display="flex" flex="1" minHeight={0} width="100%">
             <ResizableContainer
@@ -2314,6 +2370,7 @@ export const StudioWrapper = () => {
                 onSelect={handleLayersNodeSelect}
                 canDrop={canDropLayersNode}
                 onDrop={handleLayersNodeDrop}
+                disabled={isAiPreviewing}
               />
             </ResizableContainer>
             <StudioPreview
@@ -2322,6 +2379,15 @@ export const StudioWrapper = () => {
               isNavigating={isNavigating}
               isBusy={isRefreshing || studioSaving || isSavingLayout}
               onLoad={handlePreviewFrameLoad}
+              previewSlot={
+                isAiPreviewing ? (
+                  <StudioAIPreview
+                    preview={aiPreview ?? { status: "loading" }}
+                    previewOrigin={aiPreviewOrigin}
+                    previewPassword={previewLock?.value}
+                  />
+                ) : null
+              }
               overlaySlot={
                 usesLayoutGrammar(interactionMode) && showFreestyleAlert ? (
                   <StudioFreestyleAlert
@@ -2332,7 +2398,14 @@ export const StudioWrapper = () => {
                 ) : null
               }
             />
-            {panelMode === "inspector" && inspectorSelection ? (
+            {showAiPanel ? (
+              <StudioAIPanel
+                onClose={() => setIsAiPanelOpen(false)}
+                pageModelZUID={pageModelZUID}
+                pageItemZUID={pageItemZUID}
+                drawerWidth={drawerWidth}
+              />
+            ) : panelMode === "inspector" && inspectorSelection ? (
               <StudioInspectorPanel
                 canEditLayout={usesLayoutGrammar(interactionMode)}
                 canEditContent={usesContentEditing(interactionMode)}
@@ -2449,19 +2522,27 @@ export const StudioWrapper = () => {
             onSaveAll={handleModalSaveAll}
             onSaveAndPublishAll={handleModalSaveAndPublishAll}
           />
+          {/* Also the leave-Studio guard for a staged AI change: its Prompt
+              blocks navigation, and Save / Don't Save then cover the layout
+              half too. */}
           <PendingEditsModal
-            show={hasPendingContentChanges}
+            show={hasPendingContentChanges || isAiPreviewing}
             loading={studioSaving}
             onSave={async () => {
               // Throw on partial failure so PendingEditsModal runs answer(false)
               // and keeps the user in content mode to fix the failed items
               // instead of navigating away and abandoning the dirty edits.
-              const result = await saveAllContent();
+              const result = isAiPreviewing
+                ? await runMergedSave(saveAllContent, handleSavePendingLayout)
+                : await saveAllContent();
               if (result.failedCount > 0) {
                 throw new Error(`${result.failedCount} item(s) failed to save`);
               }
             }}
-            onDiscard={discardAllContent}
+            onDiscard={async () => {
+              if (isAiPreviewing) handleDiscardPendingLayoutSave();
+              await discardAllContent();
+            }}
           />
           <DirtyCodeModal
             title={t("content.studioUnsavedLayoutTitle")}

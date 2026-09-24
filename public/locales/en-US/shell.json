@@ -13,6 +13,7 @@
   "advancedSearch": "Advanced Search",
   "advancedSearchDescription": "As you and your team work together in Zesty, you'll create a searchable archive of content, models, and code files. Use the form below to find what you are looking for.",
   "aiAssistantBeta": "AI Assistant Beta",
+  "aiCodeEditSummary": "{{fileName}} — lines: +{{added}} / −{{removed}}",
   "aiDrawerPlaceholder": "Ask for anything, for example \"Cater my content to a specific audience\"",
   "aiGeneratingContentStatus": "Our AI assistant is generating your content based on your parameters",
   "aiMistakesWarning": "Our AI assistant can make mistakes. Please check important info.",

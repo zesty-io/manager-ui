@@ -25,6 +25,8 @@ type StudioLayersPanelProps = {
     targetId: string,
     position: LayersDropPosition
   ) => void;
+  // Blocks selection and drag while the canvas is not the live page.
+  disabled?: boolean;
 };
 
 export const StudioLayersPanel = ({
@@ -35,6 +37,7 @@ export const StudioLayersPanel = ({
   onSelect,
   canDrop,
   onDrop,
+  disabled = false,
 }: StudioLayersPanelProps) => {
   const listRef = useRef<HTMLDivElement | null>(null);
   const dragSourceIdRef = useRef<string | null>(null);
@@ -141,6 +144,7 @@ export const StudioLayersPanel = ({
   return (
     <Box
       data-cy="StudioLayersPanel"
+      aria-disabled={disabled || undefined}
       width="100%"
       height="100%"
       display="flex"
@@ -150,6 +154,8 @@ export const StudioLayersPanel = ({
       zIndex={1}
       sx={{
         bgcolor: "grey.50",
+        opacity: disabled ? 0.5 : 1,
+        pointerEvents: disabled ? "none" : "auto",
         pt: 1.5,
         pb: 1.5,
         pl: 1.5,

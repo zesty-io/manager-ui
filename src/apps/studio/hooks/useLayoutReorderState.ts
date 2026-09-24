@@ -403,6 +403,10 @@ const writeAttribute = (el: HTMLElement, attr: string, value: string) => {
 
 const stripLayoutIdsFromSource = (source: string): string => {
   if (!source) return "";
+  // Nothing to strip, so no DOMParser round trip: re-serializing reformats
+  // markup and foster-parents Parsley text out of tables. Whole-file AI
+  // replacements arrive without layout ids and must be saved verbatim.
+  if (!source.includes("data-layout-id")) return source;
 
   const parser = new DOMParser();
   const doc = parser.parseFromString(
@@ -458,6 +462,8 @@ type Args = {
       breadcrumb: LayoutBreadcrumbItem[];
     } | null
   ) => void;
+  // Called after each region's PUT succeeds.
+  onLayoutRegionSaved?: (codeId: string) => void;
 };
 
 export const useLayoutReorderState = ({
@@ -473,6 +479,7 @@ export const useLayoutReorderState = ({
   syncTemplateSourceToBridge,
   withCodeIdBreadcrumbRoot,
   onSelectedLayoutBreadcrumbChange,
+  onLayoutRegionSaved,
 }: Args) => {
   const { t, i18n } = useTranslation();
   const templateSourceByCodeIdRef = useRef<Record<string, string>>({});
@@ -585,6 +592,7 @@ export const useLayoutReorderState = ({
           }).unwrap();
 
           savedResults.push({ codeId, webView, updatedWebView });
+          onLayoutRegionSaved?.(codeId);
 
           // Remove the now-saved region from pending state so a retry doesn't
           // re-save it. Functional, so a region the flush staged moments ago is
@@ -609,7 +617,7 @@ export const useLayoutReorderState = ({
 
       return savedResults;
     },
-    [pendingLayoutSave, updateWebView, webViews]
+    [onLayoutRegionSaved, pendingLayoutSave, updateWebView, webViews]
   );
 
   const formatSavedFileNames = useCallback(
@@ -951,16 +959,20 @@ export const useLayoutReorderState = ({
 
   // Write a region's patched source into the cache and stage it for save,
   // preserving any pending reorder on that region. Shared by the attribute and
-  // text slot updaters.
+  // text slot updaters. `replacesSource` marks a whole-file replacement written
+  // from the staged source, which already carries any pending reorder — so the
+  // reorder's structure is dropped rather than mapped onto the new file.
   const stageLayoutSourceUpdate = useCallback(
-    (codeId: string, next: string) => {
+    (codeId: string, next: string, options?: { replacesSource?: boolean }) => {
       writeTemplateSources({ [codeId]: next });
 
       setPendingLayoutSave((prev) => {
         const prevRegion = prev?.regions?.[codeId];
-        const hasPendingReorder = Boolean(
-          prevRegion?.layoutStructure && prevRegion.layoutStructure.length
-        );
+        const hasPendingReorder =
+          !options?.replacesSource &&
+          Boolean(
+            prevRegion?.layoutStructure && prevRegion.layoutStructure.length
+          );
         const layoutStructure = hasPendingReorder
           ? prevRegion!.layoutStructure
           : [];
@@ -990,6 +1002,19 @@ export const useLayoutReorderState = ({
       });
     },
     [writeTemplateSources]
+  );
+
+  // What a save would write for `codeId` right now, or null when nothing is
+  // staged for it.
+  const readStagedLayoutSource = useCallback(
+    (codeId: string): string | null => {
+      if (!pendingLayoutSave?.regions?.[codeId]) return null;
+      const cached = templateSourceByCodeIdRef.current[codeId];
+      return typeof cached === "string"
+        ? stripLayoutIdsFromSource(cached)
+        : null;
+    },
+    [pendingLayoutSave]
   );
 
   const handleLayoutElementAttrUpdate = useCallback(
@@ -1296,5 +1321,7 @@ export const useLayoutReorderState = ({
     handleLayoutWrapInLink,
     handleLayoutUnwrapLink,
     handleLayoutLinkAttrUpdate,
+    stageLayoutSourceUpdate,
+    readStagedLayoutSource,
   };
 };
