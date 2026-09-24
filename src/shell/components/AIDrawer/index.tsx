@@ -251,6 +251,8 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
   // Tracks whether the next chatSessionLog sync is the result of a prompt we
   // just sent live, vs. restoring history from opening/switching chats.
   const isAwaitingLiveResponseRef = useRef(false);
+  // The chatZUID a prompt was fired against, for guarding the sync effect above.
+  const requestedChatZUIDRef = useRef<string | undefined>(undefined);
   // A live prompt's response is already rendered optimistically, so don't show
   // the loading skeleton while its chatSessionLog fetch (e.g. for a brand new
   // chat) is still catching up in the background.
@@ -323,6 +325,8 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
   // response changes. This prevents restoring a cleared chat from stale mutation data.
   useEffect(() => {
     if (!aiResponse?.chatZuid) return;
+    // Don't snap back if the user has since navigated away from the session this response was for.
+    if (urlChatZUID !== requestedChatZUIDRef.current) return;
 
     setUrlChatZUID((prev) =>
       prev === aiResponse.chatZuid ? prev : aiResponse.chatZuid
@@ -337,7 +341,13 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
     if (!isKnownSession) {
       refetchChatSessions();
     }
-  }, [aiResponse, setUrlChatZUID, chatSessions, refetchChatSessions]);
+  }, [
+    aiResponse,
+    urlChatZUID,
+    setUrlChatZUID,
+    chatSessions,
+    refetchChatSessions,
+  ]);
 
   // If the mutation fails, the chat-session-log sync effect never gets a
   // chance to clear this ref (it only runs on a successful response), so a
@@ -470,6 +480,7 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
       const trimmedPrompt = newPrompt.trim();
 
       isAwaitingLiveResponseRef.current = true;
+      requestedChatZUIDRef.current = urlChatZUID;
       geminiGenerate({
         prompt: trimmedPrompt,
         tone: selectedTone.value,
@@ -527,6 +538,7 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
         : t("shell.generateSuggestionsDefaultPrompt");
 
       isAwaitingLiveResponseRef.current = true;
+      requestedChatZUIDRef.current = urlChatZUID;
       geminiGenerate({
         prompt: promptValue,
         systemInstruction,
@@ -553,7 +565,11 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
   );
 
   const handleSelectChatSession = useCallback(
-    (chatZUID: string) => setUrlChatZUID(chatZUID),
+    (chatZUID: string) => {
+      isAwaitingLiveResponseRef.current = false;
+      setResponses({});
+      setUrlChatZUID(chatZUID);
+    },
     [setUrlChatZUID]
   );
 
