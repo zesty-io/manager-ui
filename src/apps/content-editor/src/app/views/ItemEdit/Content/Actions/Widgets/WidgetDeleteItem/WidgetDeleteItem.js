@@ -16,8 +16,10 @@ import { ConfirmDialog, theme } from "@zesty-io/material";
 
 import { deleteItem } from "shell/store/content";
 import { unpinTab } from "shell/store/ui";
+import { useTranslation } from "react-i18next";
 
 export const WidgetDeleteItem = memo(function WidgetDeleteItem(props) {
+  const { t } = useTranslation();
   const history = useHistory();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -29,21 +31,21 @@ export const WidgetDeleteItem = memo(function WidgetDeleteItem(props) {
           sx={{
             p: 0,
             backgroundColor: "transparent",
-            fontSize: "16px",
             color: alpha(theme.palette.text.primary, 0.4),
             borderBottom: 1,
             borderColor: "grey.200",
           }}
           titleTypographyProps={{
+            variant: "overline",
             sx: {
               fontWeight: 400,
-              fontSize: "12px",
-              lineHeight: "32px",
               color: "text.primary",
               textTransform: "uppercase",
             },
           }}
-          title={`Delete ${props?.altText || "Item"}`}
+          title={t("content.itemEditDeleteThing", {
+            thing: props?.altText || t("content.itemEditItem"),
+          })}
         ></CardHeader>
         <CardContent
           sx={{
@@ -69,13 +71,10 @@ export const WidgetDeleteItem = memo(function WidgetDeleteItem(props) {
                 variant="body2"
                 color="text.secondary"
                 sx={{
-                  fontSize: "14px",
-                  lineHeight: "20px",
                   maxWidth: "595px",
                 }}
               >
-                Delete this content? Removing it from all locations throughout
-                your site and making it unavailable to API requests.
+                {t("content.itemEditDeleteWidgetDescription")}
               </Typography>
               <Button
                 variant="contained"
@@ -92,7 +91,9 @@ export const WidgetDeleteItem = memo(function WidgetDeleteItem(props) {
                   mt: 1.5,
                 }}
               >
-                Delete {props?.altText || "Item"}
+                {t("content.itemEditDeleteThing", {
+                  thing: props?.altText || t("content.itemEditItem"),
+                })}
               </Button>
             </>
           )}
@@ -100,8 +101,9 @@ export const WidgetDeleteItem = memo(function WidgetDeleteItem(props) {
       </Card>
       <ConfirmDialog
         open={confirmOpen}
-        title={`Are you sure you want to delete the item:
-    ${props.metaTitle}`}
+        title={t("content.itemEditDeleteConfirmTitle", {
+          title: props.metaTitle,
+        })}
       >
         <Button
           variant="outlined"
@@ -109,7 +111,7 @@ export const WidgetDeleteItem = memo(function WidgetDeleteItem(props) {
           onClick={() => setConfirmOpen(false)}
           startIcon={<DoDisturbAltIcon />}
         >
-          Cancel
+          {t("common.cancel")}
         </Button>
 
         <Button
@@ -134,7 +136,7 @@ export const WidgetDeleteItem = memo(function WidgetDeleteItem(props) {
           }}
           startIcon={<DeleteIcon />}
         >
-          Delete Item
+          {t("content.itemEditDeleteItem")}
         </Button>
       </ConfirmDialog>
     </>

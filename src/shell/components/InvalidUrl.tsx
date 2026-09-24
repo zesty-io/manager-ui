@@ -1,8 +1,10 @@
 import { Box, Button, Card, CardMedia, Link, Typography } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useHistory } from "react-router";
+import { useTranslation } from "react-i18next";
 
 const InvalidUrl = () => {
+  const { t } = useTranslation();
   const history = useHistory();
   return (
     <Box
@@ -46,13 +48,12 @@ const InvalidUrl = () => {
             }}
           >
             <Typography variant="h3" color="text.primary" fontWeight={700}>
-              Invalid URL. Please check your URL and try again.
+              {t("shell.invalidUrlHeading")}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              The URL you entered is invalid or does not exist. If you believe
-              this is an error, contact us at
+              {t("shell.invalidUrlBody")}
               <Link
-                title="Support"
+                title={t("common.support")}
                 href="mailto:support@zesty.io"
                 color="secondary"
                 underline="none"
@@ -72,7 +73,7 @@ const InvalidUrl = () => {
               color="primary"
               onClick={() => history.goBack()}
             >
-              Go Back
+              {t("common.goBack")}
             </Button>
           </Box>
         </Box>
@@ -93,7 +94,7 @@ const InvalidUrl = () => {
             height="100%"
             width="100%"
             image="/images/notFoundTransparent.png"
-            alt="Page Not Found"
+            alt={t("shell.accessDeniedImageAlt")}
           />
         </Card>
       </Box>

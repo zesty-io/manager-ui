@@ -1,4 +1,5 @@
 import tinymce from "tinymce/tinymce";
+import i18n from "../../../i18n";
 
 tinymce.PluginManager.add("imageresizer", (editor) => {
   let currentNode: HTMLImageElement = null;
@@ -20,21 +21,21 @@ tinymce.PluginManager.add("imageresizer", (editor) => {
             currentNode?.naturalHeight?.toString(),
         },
       },
-      title: "Resize image",
+      title: i18n.t("shell.tinymceResizeImage"),
       body: {
         type: "panel",
         items: [
           {
             type: "sizeinput",
             name: "dimensions",
-            label: "Constrain proportions",
+            label: i18n.t("shell.tinymceConstrainProportions"),
           },
         ],
       },
       buttons: [
         {
           type: "submit",
-          text: "Save",
+          text: i18n.t("common.save"),
           primary: true,
         },
       ],
@@ -79,8 +80,11 @@ tinymce.PluginManager.add("imageresizer", (editor) => {
     // HACK: Enable save on enter
     dialogEl?.addEventListener("keydown", (evt: KeyboardEvent) => {
       if (evt.key.toLowerCase() === "enter") {
-        document
-          .querySelector<HTMLButtonElement>('button.tox-button[title="Save"')
+        evt.preventDefault();
+        dialogEl
+          .querySelector<HTMLButtonElement>(
+            ".tox-dialog__footer button.tox-button:not(.tox-button--secondary)"
+          )
           ?.click();
       }
     });
@@ -112,7 +116,7 @@ tinymce.PluginManager.add("imageresizer", (editor) => {
   // imageresizer button
   editor.ui.registry.addButton("imageresizer", {
     icon: "resize",
-    tooltip: "Resize image dimensions",
+    tooltip: i18n.t("shell.tinymceResizeImageDimensions"),
     onAction: imageResizerDialog,
   });
 

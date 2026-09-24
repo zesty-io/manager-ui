@@ -1,8 +1,9 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Stack } from "@mui/material";
 import { FieldSettingsOptions } from "../../../../../../../shell/services/types";
 
-import { FieldType, FORM_CONFIG } from "../../configs";
+import { FieldType, getFormConfig } from "../../configs";
 import { CustomGroup } from "../../hooks/useMediaRules";
 import { CharacterLimit } from "../CharacterLimit";
 import { ComingSoon } from "../ComingSoon";
@@ -38,6 +39,8 @@ export const Rules = ({
   isDefaultValueEnabled,
   setIsDefaultValueEnabled,
 }: RulesProps) => {
+  const { t } = useTranslation();
+  const FORM_CONFIG = getFormConfig(t);
   const [isCharacterLimitEnabled, setIsCharacterLimitEnabled] = useState(
     formData?.minCharLimit !== null && formData?.maxCharLimit !== null
   );
@@ -122,10 +125,14 @@ export const Rules = ({
           minValue={formData["minValue"] as number}
           maxValue={formData["maxValue"] as number}
           errors={errors}
-          primaryText={type === "integration" ? "Limit Item Range" : null}
+          primaryText={
+            type === "integration"
+              ? t("schema.integrationLimitItemRange")
+              : null
+          }
           secondaryText={
             type === "integration"
-              ? "Set a minimum and/or maximum number of items"
+              ? t("schema.integrationLimitItemRangeDescription")
               : null
           }
         />
