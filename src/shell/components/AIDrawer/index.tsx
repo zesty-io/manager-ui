@@ -467,7 +467,7 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
 
   const handlePrompt = useCallback(
     (newPrompt: string) => {
-      if (!newPrompt?.trim() || !userRole?.ZUID) {
+      if (!newPrompt?.trim() || !userRole?.role?.ZUID) {
         return false;
       }
 
@@ -496,7 +496,7 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
           getRefRegistry()?.["code-editor"]?.context()?.fields || undefined,
         temperature,
         url: window.location.href,
-        roleZuid: userRole.ZUID,
+        roleZuid: userRole.role.ZUID,
         // This tells the /client endpoint whether to generate a new chat session or use an existing one
         ...(urlChatZUID && { chatZuid: urlChatZUID }),
       });
@@ -546,7 +546,8 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
         chatZuid: urlChatZUID,
         url: window.location.href,
         // roleZUID is needed to create a new chat session when Generate Suggestions button is clicked and there is no existing chatZUID yet
-        ...(!urlChatZUID && userRole?.ZUID && { roleZuid: userRole.ZUID }),
+        ...(!urlChatZUID &&
+          userRole?.role?.ZUID && { roleZuid: userRole.role.ZUID }),
       });
       setResponses((prev) => ({
         ...prev,
