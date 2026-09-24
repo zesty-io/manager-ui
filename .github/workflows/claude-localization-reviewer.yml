@@ -1,10 +1,13 @@
 name: Claude Localization Reviewer
 
 # Dedicated localization gap check for PRs into dev that touch source or locale files.
-#   1. ci/scripts/check_localization_objective.js: deterministic checks — TypeScript
-#      errors, locale JSON validity, cross-locale key parity, broken t()/i18n.t() refs.
+#   1. ci/scripts/check_localization_objective.js: deterministic checks — locale JSON
+#      validity, cross-locale key parity, broken t()/i18n.t() refs.
 #   2. Claude reviews the diff for what only language/intent can catch: missed t()
 #      wiring, value-formatting violations, and translation quality.
+# TypeScript checking is a separate, repo-wide concern handled by its own job in
+# ci.yaml — this workflow deliberately never reports generic TS errors, only
+# localization-specific findings.
 # Posts inline PR comments plus a summary comment; fails on any finding. Each run posts a
 # fresh summary comment (deliberately NOT updated in place) so the PR timeline shows the
 # review history: "FAIL" → fix commits → "PASS" — mirrors claude-auto-reviewer.yml.
@@ -65,13 +68,9 @@ jobs:
         if: steps.changed.outputs.relevant == 'true'
         run: npm install --legacy-peer-deps
 
-      - name: Run TypeScript check
-        if: steps.changed.outputs.relevant == 'true'
-        run: npx tsc --noEmit --pretty false > tsc-output.txt 2>&1 || true
-
       - name: Run objective i18n checks
         if: steps.changed.outputs.relevant == 'true'
-        run: node ci/scripts/check_localization_objective.js --changed-files changed_files.txt --tsc-output tsc-output.txt
+        run: node ci/scripts/check_localization_objective.js --changed-files changed_files.txt
 
       # Plain-text, pre-filtered diff capped so a huge PR can't blow context/cost. Source
       # files claim the budget first (missed-string check), then locale files get what's
