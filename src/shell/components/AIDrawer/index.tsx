@@ -213,6 +213,40 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
     );
   }, [chatSessions, pathname, search]);
 
+  // Guards against re-firing the auto-select effect below (e.g. on "back to history").
+  const hasAutoSelectedLatestSessionRef = useRef(false);
+  useEffect(() => {
+    hasAutoSelectedLatestSessionRef.current = false;
+  }, [pathname]);
+
+  // Auto-open the latest session when there's no cached chatZUID for this page.
+  useEffect(() => {
+    if (
+      hasAutoSelectedLatestSessionRef.current ||
+      urlChatZUID ||
+      isStartingNewChat ||
+      isLoadingChatSessions ||
+      !relevantChatSessions.length
+    ) {
+      return;
+    }
+
+    hasAutoSelectedLatestSessionRef.current = true;
+
+    const mostRecentSession = [...relevantChatSessions].sort(
+      (a, b) =>
+        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+    )[0];
+
+    setUrlChatZUID(mostRecentSession.chatZuid);
+  }, [
+    urlChatZUID,
+    isStartingNewChat,
+    isLoadingChatSessions,
+    relevantChatSessions,
+    setUrlChatZUID,
+  ]);
+
   const responsesEndRef = useRef(null);
   // Tracks whether the next chatSessionLog sync is the result of a prompt we
   // just sent live, vs. restoring history from opening/switching chats.
@@ -529,6 +563,8 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
   }, []);
 
   const handleBackToHistory = useCallback(() => {
+    // Prevent the auto-select effect from immediately reopening this session.
+    hasAutoSelectedLatestSessionRef.current = true;
     removeUrlChatZUID();
     setResponses({});
     setIsStartingNewChat(false);
