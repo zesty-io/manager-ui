@@ -9,6 +9,7 @@ import {
   Stack,
 } from "@mui/material";
 import { ImageRounded } from "@mui/icons-material";
+import { useTranslation } from "react-i18next";
 import {
   ContentItem,
   ContentItemWithDirtyAndPublishing,
@@ -28,13 +29,17 @@ type UnpublishedRelatedItemProps = {
   }) => void;
   selected: boolean;
   divider?: boolean;
+  /** True when this related item's own workflow status doesn't allow publishing */
+  blocked?: boolean;
 };
 export const UnpublishedRelatedItem = ({
   contentItem,
   onChange,
   selected,
   divider,
+  blocked,
 }: UnpublishedRelatedItemProps) => {
+  const { t } = useTranslation();
   const [imageError, setImageError] = useState(false);
   const { data: modelFields } = useGetContentModelFieldsQuery(
     { modelZUID: contentItem?.relatedModelZUID },
@@ -81,15 +86,23 @@ export const UnpublishedRelatedItem = ({
   );
 
   return (
-    <ListItem disableGutters dense divider={divider}>
+    <ListItem
+      disableGutters
+      dense
+      divider={divider}
+      data-cy="UnpublishedRelatedItem"
+      sx={blocked ? { opacity: 0.6 } : undefined}
+    >
       <ListItemIcon
         sx={{
           minWidth: 0,
         }}
       >
         <Checkbox
-          checked={selected}
+          checked={!blocked && selected}
+          disabled={blocked}
           disableRipple
+          data-cy="UnpublishedRelatedItemCheckbox"
           onChange={(evt) =>
             onChange({
               contentItem,
@@ -146,7 +159,15 @@ export const UnpublishedRelatedItem = ({
           contentItem?.web?.metaLinkText ||
           contentItem?.meta?.ZUID
         }
-        secondary={contentItem?.web?.metaDescription}
+        secondary={
+          blocked ? (
+            <span data-cy="UnpublishedRelatedItemBlockedReason">
+              {t("content.itemEditRelatedItemCannotPublishStatus")}
+            </span>
+          ) : (
+            contentItem?.web?.metaDescription
+          )
+        }
         primaryTypographyProps={{
           variant: "body2",
           fontWeight: 600,
@@ -164,7 +185,7 @@ export const UnpublishedRelatedItem = ({
         }}
         secondaryTypographyProps={{
           variant: "body2",
-          color: "text.secondary",
+          color: blocked ? "error.main" : "text.secondary",
           sx: {
             display: "-webkit-box",
             WebkitLineClamp: "1",

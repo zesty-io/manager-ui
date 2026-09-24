@@ -68,6 +68,8 @@ import {
   PUBLISH_ATTEMPT_WITHOUT_ALLOW_PUBLISH_STATUS,
   SCHEDULE_PUBLISH_ATTEMPT_WITHOUT_ALLOW_PUBLISH_STATUS,
 } from "../../../../../../../../amplitude-events";
+import { isPublishAllowedByWorkflowStatus } from "../../../../../../../../utility/workflowStatus";
+import { useCheckPublishAllowed } from "../../../../../../../../shell/hooks/useCheckPublishAllowed";
 
 const ITEM_STATES = {
   dirty: "dirty",
@@ -116,6 +118,9 @@ export const ItemEditHeaderActions = ({
   const [relatedItemsToPublish, setRelatedItemsToPublish] = useState<
     ContentItemWithDirtyAndPublishing[]
   >([]);
+  const [blockedRelatedItemZUIDs, setBlockedRelatedItemZUIDs] = useState<
+    Set<string>
+  >(new Set());
   const [isPublishing, setIsPublishing] = useState(false);
   const [isCheckingPathUpdate, setIsCheckingPathUpdate] = useState(false);
   const item = useSelector(
@@ -161,12 +166,14 @@ export const ItemEditHeaderActions = ({
   const activePublishing = itemPublishings?.find(
     (itemPublishing) => itemPublishing._active
   );
-  const { data: statusLabels } = useGetWorkflowStatusLabelsQuery();
+  const { data: statusLabels, isLoading: isLoadingStatusLabels } =
+    useGetWorkflowStatusLabelsQuery();
   const { data: itemWorkflowStatus, isLoading: isLoadingItemWorkflowStatus } =
     useGetItemWorkflowStatusQuery(
       { itemZUID: resolvedItemZUID, modelZUID: resolvedModelZUID },
       { skip: !resolvedItemZUID || !resolvedModelZUID }
     );
+  const checkPublishAllowed = useCheckPublishAllowed();
 
   useEffect(() => {
     // Automatically opens the create redirect modal
@@ -307,11 +314,58 @@ export const ItemEditHeaderActions = ({
 
     const uniqueItems = uniqBy(unpublishedRelatedItems, "meta.ZUID");
 
-    // Make sure that unpublished related items are checked by default
-    setRelatedItemsToPublish(uniqueItems);
-
     return uniqueItems;
   }, [fields, item, items]);
+
+  // A stable key over ZUID+version so the effect below only re-runs (and
+  // re-fires a workflow-status check per related item) when the related
+  // items actually change, not on every `unpublishedRelatedItems` identity
+  // change caused by unrelated content fetches elsewhere in the app.
+  const unpublishedRelatedItemsKey = useMemo(
+    () =>
+      unpublishedRelatedItems
+        .map((item) => `${item.meta.ZUID}:${item.meta.version}`)
+        .sort()
+        .join(","),
+    [unpublishedRelatedItems]
+  );
+
+  useEffect(() => {
+    // Check each unpublished related item's own workflow status and only
+    // default-select (and allow co-publishing) the ones that are allowed to
+    // publish. Items blocked by their own workflow status are surfaced as
+    // disabled rows in the checklist instead (see UnpublishedRelatedItem).
+    let cancelled = false;
+
+    if (!unpublishedRelatedItems.length) {
+      setBlockedRelatedItemZUIDs(new Set());
+      setRelatedItemsToPublish([]);
+      return;
+    }
+
+    checkPublishAllowed(
+      unpublishedRelatedItems.map((relatedItem) => ({
+        modelZUID: relatedItem.meta.contentModelZUID,
+        itemZUID: relatedItem.meta.ZUID,
+        itemVersion: relatedItem.meta.version,
+      }))
+    ).then(({ blocked }) => {
+      if (cancelled) return;
+
+      const blockedZUIDs = new Set(blocked.map((item) => item.itemZUID));
+      setBlockedRelatedItemZUIDs(blockedZUIDs);
+      // Make sure that unpublished, allowed related items are checked by default
+      setRelatedItemsToPublish(
+        unpublishedRelatedItems.filter(
+          (item) => !blockedZUIDs.has(item.meta.ZUID)
+        )
+      );
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [unpublishedRelatedItemsKey, checkPublishAllowed]);
 
   const itemState = (() => {
     if (item?.dirty) {
@@ -325,30 +379,27 @@ export const ItemEditHeaderActions = ({
     }
   })();
 
-  const allowPublish = useMemo(() => {
-    const allowPublishLabelZUIDs = statusLabels?.reduce((acc, next) => {
-      if (next.allowPublish) {
-        return (acc = [...acc, next.ZUID]);
-      }
-
-      return acc;
-    }, []);
-
-    if (!allowPublishLabelZUIDs?.length) return true;
-
-    const itemWorkflowLabelZUIDs = itemWorkflowStatus?.find(
-      (i) => i.itemVersion === item?.meta?.version
-    )?.labelZUIDs;
-
-    return itemWorkflowLabelZUIDs?.some((labelZUID) =>
-      allowPublishLabelZUIDs?.includes(labelZUID)
-    );
-  }, [statusLabels, itemWorkflowStatus, item?.meta?.version]);
+  const allowPublish = useMemo(
+    () =>
+      isPublishAllowedByWorkflowStatus(
+        statusLabels,
+        itemWorkflowStatus,
+        item?.meta?.version
+      ),
+    [statusLabels, itemWorkflowStatus, item?.meta?.version]
+  );
 
   const handlePublish = async () => {
     if (allowPublish) {
       setIsPublishing(true);
       try {
+        // Defensive re-filter: related items blocked by their own workflow
+        // status should never reach the publish calls below, even if they
+        // were somehow still present in relatedItemsToPublish.
+        const safeRelatedItemsToPublish = relatedItemsToPublish.filter(
+          (item) => !blockedRelatedItemZUIDs.has(item.meta.ZUID)
+        );
+
         // Delete scheduled publishings first
         const deleteScheduledPromises = [
           // Delete main item's scheduled publishing if it exists
@@ -359,7 +410,7 @@ export const ItemEditHeaderActions = ({
               publishingZUID: item?.scheduling?.ZUID,
             }),
           // Delete related items' scheduled publishings if they exist
-          ...relatedItemsToPublish
+          ...safeRelatedItemsToPublish
             .filter((item) => !!item.scheduling?.ZUID)
             .map((item) =>
               deleteItemPublishing({
@@ -383,7 +434,7 @@ export const ItemEditHeaderActions = ({
               unpublishAt: "never",
             },
           }),
-          ...relatedItemsToPublish.map((item) =>
+          ...safeRelatedItemsToPublish.map((item) =>
             createPublishing({
               modelZUID: item.meta.contentModelZUID,
               itemZUID: item.meta.ZUID,
@@ -407,6 +458,30 @@ export const ItemEditHeaderActions = ({
           }
         });
 
+        // Let the user know which related items were excluded from the
+        // co-publish because their own workflow status doesn't allow it
+        const blockedRelatedItems = unpublishedRelatedItems.filter((item) =>
+          blockedRelatedItemZUIDs.has(item.meta.ZUID)
+        );
+        if (blockedRelatedItems.length) {
+          dispatch(
+            notify({
+              message: t("content.itemListCannotPublishStatus", {
+                count: blockedRelatedItems.length,
+                titles: `"${blockedRelatedItems
+                  .map(
+                    (item) =>
+                      item.web?.metaTitle ||
+                      item.web?.metaLinkText ||
+                      item.meta.ZUID
+                  )
+                  .join('", "')}"`,
+              }),
+              kind: "error",
+            })
+          );
+        }
+
         // Retain non rtk-query fetch of item publishing for legacy code
         await dispatch(
           fetchAllModelPublishings({
@@ -429,6 +504,7 @@ export const ItemEditHeaderActions = ({
         })
       );
       amplitude.track(PUBLISH_ATTEMPT_WITHOUT_ALLOW_PUBLISH_STATUS);
+      setIsConfirmPublishModalOpen(false);
     }
   };
 
@@ -481,7 +557,14 @@ export const ItemEditHeaderActions = ({
         !Object.keys(item.meta).length)) ||
     isLoadingFields ||
     isLoadingUsers ||
-    isLoadingAudit
+    isLoadingAudit ||
+    // Without this, a Publish click that lands before these two queries'
+    // first fetch resolves would compute `allowPublish` off of `undefined`
+    // data, which is indistinguishable from "no allowPublish labels
+    // configured" (the legitimate default-open case) and would incorrectly
+    // let the publish attempt through.
+    isLoadingStatusLabels ||
+    isLoadingItemWorkflowStatus
   ) {
     return (
       <Stack direction="row" gap={1} height="100%">
@@ -875,6 +958,7 @@ export const ItemEditHeaderActions = ({
                     key={item.meta.ZUID}
                     contentItem={item}
                     divider
+                    blocked={blockedRelatedItemZUIDs.has(item.meta.ZUID)}
                     selected={relatedItemsToPublish.some(
                       (i) => i.meta.ZUID === item.meta.ZUID
                     )}
