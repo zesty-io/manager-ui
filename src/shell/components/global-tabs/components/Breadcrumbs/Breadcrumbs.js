@@ -1,5 +1,6 @@
 import { memo, useMemo } from "react";
 import { connect } from "react-redux";
+import { useTheme } from "@mui/material";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHome, faAngleRight } from "@fortawesome/free-solid-svg-icons";
@@ -45,6 +46,7 @@ export default connect((state) => {
   };
 })(
   memo(function Breadcrumbs(props) {
+    const theme = useTheme();
     const trail = useMemo(() => {
       const normalizedNav = props.navContent.raw.reduce((acc, item) => {
         acc[item.ZUID] = item;
@@ -94,7 +96,7 @@ export default connect((state) => {
                 <li key={item.ZUID} className={styles.crumb}>
                   <FontAwesomeIcon
                     icon={faAngleRight}
-                    style={{ color: "#afbcd4" }}
+                    style={{ color: theme.palette.text.breadcrumbSeparator }}
                   />
                   <AppLink
                     to={

@@ -597,6 +597,7 @@ export const Field = memo(
           );
         } else {
           return (
+            // eslint-disable-next-line no-restricted-syntax -- pending design-system value (PR #4343 review); no ramp/palette step matches this warning color, restored to its original literal after theme.palette.error.main was found to render a different color
             <h1 style={{ color: "#e53c05" }}>
               <FontAwesomeIcon icon={faExclamationTriangle} />
               &nbsp;
@@ -703,6 +704,7 @@ export const Field = memo(
             <FieldShell settings={fieldData} errors={errors}>
               <FieldTypeColor
                 name={name}
+                // eslint-disable-next-line no-restricted-syntax -- colour-field default value (design-system.md §3: values the user picks or we store)
                 value={value || "#FFFFFF"}
                 onChange={(evt) => onChange(evt.target.value, name)}
                 error={

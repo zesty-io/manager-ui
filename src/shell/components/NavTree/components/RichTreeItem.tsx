@@ -91,6 +91,7 @@ export const RichTreeItem = memo(
               onDragOver: (event: any) => {
                 if (dragAndDrop) {
                   event.preventDefault();
+                  // eslint-disable-next-line no-restricted-syntax -- pending design-system value (PR #4343 review); no ramp step matches this drag-over highlight, reverted from a minted theme.custom.navTreeDragOverBackground token
                   event.currentTarget.style.backgroundColor = "#f6f6f7";
                 }
               },

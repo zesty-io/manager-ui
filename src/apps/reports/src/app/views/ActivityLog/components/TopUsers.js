@@ -112,7 +112,7 @@ export const TopUsers = (props) => {
               plugins: {
                 legend: { display: false },
                 datalabels: {
-                  color: "#fff",
+                  color: theme.palette.common.white,
                   anchor: "end",
                   align: "start",
                   offset: 8,

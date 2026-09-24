@@ -77,6 +77,11 @@ const themeOverrides = {
     },
     warning: {
       contrastText: "#fff",
+      // No ramp step matches this pale notice background (see
+      // docs/design-system.md §4) — named here so it's greppable in one
+      // place; consumed via sx={{ bgcolor: "warning.noticeBackground" }} in
+      // src/shell/components/legacy/Notice.tsx.
+      noticeBackground: "#fffde2",
     },
     info: {
       contrastText: "#fff",
@@ -91,6 +96,21 @@ const themeOverrides = {
     },
     background: {
       editor: "#0F0F0F",
+    },
+    text: {
+      // No existing ramp/semantic token matches this muted label color (see
+      // docs/design-system.md §4) — named here so the literal is greppable in
+      // one place; consumed via sx={{ color: "text.mutedFormLabel" }} in
+      // src/apps/leads/src/app/components/LeadExporter/TableDateFilter/TableDateFilter.js.
+      mutedFormLabel: "#c3cddf",
+      // No existing ramp/semantic token matches this breadcrumb separator
+      // icon color (see docs/design-system.md §4) — named here so it's
+      // greppable in one place; consumed via
+      // theme.palette.text.breadcrumbSeparator in
+      // src/shell/components/global-tabs/components/Breadcrumbs/Breadcrumbs.js
+      // (a raw style prop on a FontAwesomeIcon, not sx, so it needs a
+      // resolved value rather than a "text.x"-style path string).
+      breadcrumbSeparator: "#afbcd4",
     },
   },
 
