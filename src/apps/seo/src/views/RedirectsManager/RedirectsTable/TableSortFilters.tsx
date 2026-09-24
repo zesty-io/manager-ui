@@ -20,7 +20,7 @@ const getHttpCodeFilters = (t: (key: string) => string) => ({
 const getTypeFilters = (t: (key: string) => string) => ({
   external: t("seo.typeFilterExternal"),
   path: t("seo.typeFilterWildcard"),
-  internal: t("seo.typeFilterInternal"),
+  page: t("seo.typeFilterInternal"),
 });
 
 export const TableSortFilters = () => {
@@ -181,6 +181,7 @@ export const TableSortFilters = () => {
         {Object.entries(TYPE_FILTERS).map(([key, value]) => (
           <MenuItem
             key={key}
+            data-cy={`typeFilterOption_${key}`}
             onClick={() => {
               setTypeFilter(key);
               handleCloseMenu();
