@@ -496,8 +496,7 @@ export default memo(function Editor({
                 isAutoPopulateSource={
                   isNewItem &&
                   model?.type !== "block" &&
-                  (field.ZUID === firstTextField?.ZUID ||
-                    field.ZUID === firstContentField?.ZUID)
+                  field.ZUID === firstTextField?.ZUID
                 }
                 compact={compact}
               />

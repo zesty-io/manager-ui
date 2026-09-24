@@ -119,7 +119,7 @@ export const Field = memo(
     const fieldData = fields?.find((field) => field.ZUID === ZUID);
     const [rerenderKey, setRerenderKey] = useState(0);
 
-    // Editor.js's first-text-field/first-content-field auto-population of
+    // Editor.js's first-text-field auto-population of
     // Meta Title/Meta Link Text/pathPart runs inside this field's onChange
     // commit. Skipping the debounce for that one field means the commit (and
     // the auto-population it triggers) lands on the next tick instead of up
