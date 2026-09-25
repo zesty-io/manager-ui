@@ -108,7 +108,7 @@
   "blockTabCode": "Код",
   "blockTabInfo": "Информация",
   "blockTabVariants": "Варианты",
-  "blockUpdatedOnBy": "Обновлено {{date}} пользователем {{updatedBy}}",
+  "blockUpdatedOnBy": "Обновлено {{date}} пользователем {{updatedBy}}",
   "booleanHide": "Скрыть",
   "booleanShow": "Показать",
   "browse": "Обзор",
