@@ -264,15 +264,21 @@ export const AIChat = ({
   const [appliedResponsesLS, setAppliedResponsesLS] = useChatHistory<
     Record<string, number[]>
   >(`ai-drawer-applied-responses`, { [historyKey]: [] }, persistHistory);
-  // Memory only: which notice this transcript already shows.
-  const [noticeShown, setNoticeShown] = useChatHistory<number>(
-    `ai-drawer-notice-${historyKey}`,
-    notice?.id ?? 0,
-    false
-  );
+  // Which notice this transcript already shows, kept in memory. Read through
+  // a ref so the effect stays idempotent when StrictMode runs it twice, and
+  // seeded once so a notice raised while the chat was closed still shows.
+  const noticeKey = `ai-drawer-notice-${historyKey}`;
+  const noticeShownRef = useRef<number | null>(null);
+  if (noticeShownRef.current === null) {
+    if (!memoryHistory.has(noticeKey)) {
+      memoryHistory.set(noticeKey, notice?.id ?? 0);
+    }
+    noticeShownRef.current = memoryHistory.get(noticeKey) as number;
+  }
   useEffect(() => {
-    if (!notice || notice.id === noticeShown) return;
-    setNoticeShown(notice.id);
+    if (!notice || notice.id === noticeShownRef.current) return;
+    noticeShownRef.current = notice.id;
+    memoryHistory.set(noticeKey, notice.id);
     setResponses((prev) => [
       ...prev,
       { type: "NOTICE", payload: { value: notice.text } },

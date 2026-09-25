@@ -17,13 +17,17 @@ const escapeAttribute = (value: string) =>
     .replace(/>/g, "&gt;");
 
 // Head tags are data: only allowed tag types and well-formed, non-handler
-// attribute names reach the markup, and every value is escaped.
+// attribute names reach the markup, and every value is escaped. No
+// http-equiv: a refresh would navigate the preview frame.
 const renderHeadTag = ({ type, attributes }: HeadTag) => {
   const tag = (type || "").toLowerCase();
   if (!HEAD_TAG_TYPES.has(tag)) return "";
   const attrs = Object.entries(attributes || {})
     .filter(
-      ([name]) => /^[a-z_:][-a-z0-9_:.]*$/i.test(name) && !/^on/i.test(name)
+      ([name]) =>
+        /^[a-z_:][-a-z0-9_:.]*$/i.test(name) &&
+        !/^on/i.test(name) &&
+        name.toLowerCase() !== "http-equiv"
     )
     .map(([name, value]) => ` ${name}="${escapeAttribute(value)}"`)
     .join("");
@@ -31,7 +35,7 @@ const renderHeadTag = ({ type, attributes }: HeadTag) => {
 };
 
 // PVL returns the page's body; its <head> is rebuilt here from the instance's
-// head tags, the loader's external stylesheets, and site.css and site.js.
+// head tags, the loader's stylesheets, and site.css and site.js.
 // None of it is sent to PVL.
 const buildPreviewDocument = (
   html: string,

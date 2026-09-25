@@ -22,9 +22,21 @@ const loadsExternalStylesheet = (source: string) =>
 
 const CURRENT_VIEW = /\{\{\s*current_view\s*\}\}/;
 
+// A loader <link>'s href, when its rel is exactly "stylesheet". Read by the
+// browser, so entities, quoting and data-* attributes are handled; an href
+// holding Parsley cannot resolve here and is skipped.
+const readStylesheetHref = (tag: string) => {
+  const link = new DOMParser()
+    .parseFromString(tag, "text/html")
+    .querySelector("link");
+  const rel = (link?.getAttribute("rel") || "").trim().toLowerCase();
+  const href = link?.getAttribute("href");
+  return rel === "stylesheet" && href && !href.includes("{{") ? href : null;
+};
+
 // The loader around the staged view, minus what the preview only needs as
-// markup: scripts, Parsley comments, and external stylesheets (returned for
-// the preview's <head>). Null when the loader has no {{current_view}} left.
+// markup: scripts, Parsley comments and links. Stylesheet hrefs are returned
+// for the preview's <head>. Null when the loader has no {{current_view}} left.
 const wrapInLoader = (loader: string | null, view: string) => {
   if (!loader) return null;
   const stylesheets: string[] = [];
@@ -33,10 +45,8 @@ const wrapInLoader = (loader: string | null, view: string) => {
     .replace(/<script\b[^>]*\/>/gi, "")
     .replace(/\(\*\*[\s\S]*?\*\*\)/g, "")
     .replace(/<link\b[^>]*>/gi, (tag) => {
-      if (!isExternalStylesheet(tag)) return tag;
-      const href = tag.match(/\bhref\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/i);
-      const url = href?.[1] ?? href?.[2] ?? href?.[3];
-      if (url && !url.includes("{{")) stylesheets.push(url);
+      const href = readStylesheetHref(tag);
+      if (href) stylesheets.push(href);
       return "";
     });
   if (!CURRENT_VIEW.test(stripped)) return null;
@@ -106,9 +116,14 @@ export const useStudioAiEdit = ({
   const [preview, setPreview] = useState<StudioAiPreview | null>(null);
   const [saveStatus, setSaveStatus] = useState<StudioSaveStatus>(null);
   const previewRequestRef = useRef(0);
-  // Staged AI changes dropped without a save, so the transcript can say so.
-  const [discardCount, setDiscardCount] = useState(0);
+  // The last staged AI change dropped without a save, and whose page it was,
+  // so that page's transcript can say so.
+  const [lastDiscard, setLastDiscard] = useState<{
+    id: number;
+    pageItemZUID: string;
+  } | null>(null);
   const savedRef = useRef(false);
+  const stagedPageRef = useRef("");
 
   // Freestyle layouts live in a per-item `/z/pvl/` view the model does not
   // render through, so they are never the target.
@@ -166,16 +181,20 @@ export const useStudioAiEdit = ({
       const loader = loaderView
         ? readStagedLayoutSource(loaderView.ZUID) ?? loaderView.code
         : null;
-      const wrapped = wrapInLoader(loader, view);
-      const source = wrapped?.payload ?? view;
-      const stylesheets = wrapped?.stylesheets ?? [];
-      if (new TextEncoder().encode(source).length > PVL_MAX_PARSLEY_BYTES) {
+      const fits = (parsley: string) =>
+        new TextEncoder().encode(parsley).length <= PVL_MAX_PARSLEY_BYTES;
+      if (!fits(view)) {
         setPreview({
           status: "error",
           message: t("content.studioAiPreviewTooLarge"),
         });
         return;
       }
+      const wrapped = wrapInLoader(loader, view);
+      const stylesheets = wrapped?.stylesheets ?? [];
+      // The loader is extra: past the size limit the page goes alone.
+      const wrappedPayload =
+        wrapped && fits(wrapped.payload) ? wrapped.payload : null;
       setPreview({ status: "loading" });
       const query = previewPassword
         ? `?zpw=${encodeURIComponent(previewPassword)}`
@@ -198,22 +217,27 @@ export const useStudioAiEdit = ({
           message: describePreviewError(error, view),
         });
       };
+      const renderAlone = async () => {
+        try {
+          show(await render(view), !!wrapped);
+        } catch (error) {
+          fail(error);
+        }
+      };
+      if (!wrappedPayload) {
+        await renderAlone();
+        return;
+      }
       try {
-        show(await render(source), false);
+        show(await render(wrappedPayload), false);
       } catch (error) {
-        // The loader is extra; if the wrapped page is refused, try the view.
-        if (
-          !wrapped ||
-          (error as FetchBaseQueryError)?.status !== "FETCH_ERROR"
-        ) {
+        // Refused inside the loader: try the page alone.
+        if ((error as FetchBaseQueryError)?.status !== "FETCH_ERROR") {
           fail(error);
           return;
         }
-        try {
-          show(await render(view), true);
-        } catch (viewError) {
-          fail(viewError);
-        }
+        if (request !== previewRequestRef.current) return;
+        await renderAlone();
       }
     },
     [
@@ -239,6 +263,7 @@ export const useStudioAiEdit = ({
     onBeforeStage();
     stageLayoutSourceUpdate(pageView.ZUID, next, { replacesSource: true });
     stagedCodeIdRef.current = pageView.ZUID;
+    stagedPageRef.current = pageItemZUID;
     setStagedCodeId(pageView.ZUID);
     setSaveStatus("unsaved");
     void renderPreview(next);
@@ -277,7 +302,12 @@ export const useStudioAiEdit = ({
     setStagedCodeId(null);
     setPreview(null);
     setSaveStatus((prev) => (prev === "saved" ? prev : null));
-    if (!savedRef.current) setDiscardCount((count) => count + 1);
+    if (!savedRef.current) {
+      setLastDiscard((prev) => ({
+        id: (prev?.id ?? 0) + 1,
+        pageItemZUID: stagedPageRef.current,
+      }));
+    }
     savedRef.current = false;
   }, [pendingLayoutCodeIds, stagedCodeId]);
 
@@ -322,7 +352,7 @@ export const useStudioAiEdit = ({
     isPreviewing: !!stagedCodeId,
     preview,
     saveStatus,
-    discardCount,
+    lastDiscard,
     handleLayoutRegionSaved,
   };
 };

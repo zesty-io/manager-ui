@@ -2165,7 +2165,7 @@ export const StudioWrapper = () => {
     isPreviewing: isAiPreviewing,
     preview: aiPreview,
     saveStatus: aiSaveStatus,
-    discardCount: aiDiscardCount,
+    lastDiscard: aiLastDiscard,
     handleLayoutRegionSaved: handleAiRegionSaved,
   } = useStudioAiEdit({
     active: isAiPanelOpen && aiAllowed,
@@ -2411,7 +2411,7 @@ export const StudioWrapper = () => {
                 pageModelZUID={pageModelZUID}
                 pageItemZUID={pageItemZUID}
                 drawerWidth={drawerWidth}
-                discardCount={aiDiscardCount}
+                lastDiscard={aiLastDiscard}
               />
             ) : panelMode === "inspector" && inspectorSelection ? (
               <StudioInspectorPanel

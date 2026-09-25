@@ -9,6 +9,7 @@ describe("Studio AI Assistant", () => {
   let modelZUID = "";
   let viewZUID = "";
   let viewFileName = "";
+  let otherPath = "/";
 
   before(() => {
     cy.task("seed:content", "fixtures/studio.json").then(
@@ -21,6 +22,9 @@ describe("Studio AI Assistant", () => {
         expect(viewZUID, "seeded view").to.match(/^11-/);
       }
     );
+    cy.task("seed:content", "fixtures/studio.json").then(({ items }) => {
+      otherPath = `/${items[0].web.pathPart}`;
+    });
   });
 
   // The transcript persists per page in localStorage, and this suite does not
@@ -194,7 +198,8 @@ describe("Studio AI Assistant", () => {
     const loader = [
       "(** loader comment **)",
       '<script src="https://example.test/a.js"></script>',
-      '<link rel="stylesheet" href="https://fonts.loader.test/a.css">',
+      '<link rel="preconnect" href="https://fonts.preconnect.test">',
+      '<link href="https://fonts.loader.test/a.css?x=1&amp;y=2" rel="stylesheet">',
       '<nav class="e2e-loader">loader</nav>',
       "{{current_view}}",
       "<script>window.e2eLoader = 1;</script>",
@@ -245,6 +250,13 @@ describe("Studio AI Assistant", () => {
           sort: 4,
           attributes: { rel: "icon", href: "/i.png", onload: "alert(1)" },
         },
+        {
+          ZUID: "21-e2e-5",
+          type: "meta",
+          resourceZUID: instanceZUID,
+          sort: 5,
+          attributes: { "http-equiv": "refresh", content: "0;url=/away" },
+        },
       ],
     });
     stubMcp((body) => mcpReply([setValue(editSource(body.code))]));
@@ -260,6 +272,7 @@ describe("Studio AI Assistant", () => {
       expect(request.body).not.to.contain("<script");
       expect(request.body).not.to.contain("loader comment");
       expect(request.body).not.to.contain("fonts.loader.test");
+      expect(request.body).not.to.contain("fonts.preconnect.test");
     });
     cy.getBySelector("StudioAIPreviewFrame")
       .should("have.attr", "srcdoc")
@@ -269,8 +282,11 @@ describe("Studio AI Assistant", () => {
       )
       .and(
         "contain",
-        '<link rel="stylesheet" href="https://fonts.loader.test/a.css">'
+        '<link rel="stylesheet" href="https://fonts.loader.test/a.css?x=1&amp;y=2">'
       )
+      .and("not.contain", "&amp;amp;")
+      .and("not.contain", "fonts.preconnect.test")
+      .and("not.contain", "http-equiv")
       .and("contain", '<link rel="icon" href="/i.png">')
       .and("not.contain", "e2e-other-item")
       .and("not.contain", "gtm.test")
@@ -491,6 +507,89 @@ describe("Studio AI Assistant", () => {
     cy.window().its("__templateMaps", { timeout: 30000 }).should("be.gte", 1);
     sendPrompt("Anything else?");
     cy.then(() => expect(nextTurnInput).to.eq(staged));
+  });
+
+  it("previews the page alone when the loader pushes it past the size limit", () => {
+    cy.intercept("GET", "**/v1/web/views?status=dev", (req) =>
+      req.continue((res) => {
+        const views = res.body.data.filter((v) => v.fileName !== "loader");
+        views.push({
+          ...views[0],
+          ZUID: "11-e2e-loader",
+          fileName: "loader",
+          code: `<div class="e2e-loader">${"x".repeat(
+            1100 * 1024
+          )}</div>\n{{current_view}}`,
+          contentModelZUID: null,
+        });
+        res.body.data = views;
+      })
+    );
+    stubMcp((body) => mcpReply([setValue(editSource(body.code))]));
+    stubPvl({ statusCode: 200, body: "<p>Rendered alone</p>" });
+    visitStudio();
+    openAiPanel();
+    sendPrompt("Add a line under the heading");
+
+    cy.wait("@pvl").then(({ request }) => {
+      expect(request.body).not.to.contain("e2e-loader");
+      expect(request.body).to.contain(ADDED_LINE);
+    });
+    cy.getBySelector("StudioAIPreviewWithoutLayout").should("exist");
+    cy.getBySelector("StudioAIPreviewError").should("not.exist");
+  });
+
+  it("notes a discard only in the transcript of the page it happened on", () => {
+    const navigate = (path) =>
+      mcpReply([
+        { type: "NAVIGATE", payload: { path: `/studio?path=${path}` } },
+      ]);
+    const edit = (body) => mcpReply([setValue(editSource(body.code))]);
+    stubMcp(
+      edit,
+      () => navigate(otherPath),
+      edit,
+      () => navigate(studioPath)
+    );
+    stubPvl({ statusCode: 200, body: "<p>preview</p>" });
+    openAiPanel();
+
+    // Page A: stage, then cancel.
+    sendPrompt("Add a line under the heading");
+    cy.getBySelector("StudioAIPreview").should("exist");
+    cy.getBySelector("StudioLayoutCancelButton").click();
+    cy.getBySelector("AIChatNotice").should("have.length", 1);
+
+    // Page B, in-app: stage, then cancel.
+    sendPrompt("Go to the other page");
+    cy.getBySelector("AIChatNavigate").last().click();
+    cy.location("search").should("eq", `?path=${otherPath}`);
+    cy.getBySelector("AIChatNotice").should("not.exist");
+    sendPrompt("Add a line under the heading");
+    cy.getBySelector("StudioAIPreview").should("exist");
+    cy.getBySelector("StudioLayoutCancelButton").click();
+    cy.getBySelector("AIChatNotice").should("have.length", 1);
+
+    // Back on A, its transcript still records only its own discard.
+    sendPrompt("Go back");
+    cy.getBySelector("AIChatNavigate").last().click();
+    cy.location("search").should("eq", `?path=${studioPath}`);
+    cy.getBySelector("AIChatCodeEdit").should("have.length", 1);
+    cy.getBySelector("AIChatNotice").should("have.length", 1);
+  });
+
+  it("notes a discard made while the panel is closed, once", () => {
+    stubMcp((body) => mcpReply([setValue(editSource(body.code))]));
+    stubPvl({ statusCode: 200, body: "<p>preview</p>" });
+    openAiPanel();
+    sendPrompt("Add a line under the heading");
+    cy.getBySelector("StudioAIPreview").should("exist");
+
+    cy.getBySelector("AIChatClose").click();
+    cy.getBySelector("StudioLayoutCancelButton").click();
+    cy.getBySelector("StudioAIPreview").should("not.exist");
+    openAiPanel();
+    cy.getBySelector("AIChatNotice").should("have.length", 1);
   });
 
   it("cancel drops every staged turn and returns to the live canvas", () => {
