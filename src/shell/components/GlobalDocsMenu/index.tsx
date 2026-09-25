@@ -193,7 +193,8 @@ export const GlobalDocsMenu: FC<GlobalDocsMenuProps> = ({
             )
           }
         >
-          support@zesty.io
+          {/* eslint-disable-next-line i18next/no-literal-string -- email address */}
+          <>support@zesty.io</>
         </Button>
         <Button
           data-cy="GetHelp"

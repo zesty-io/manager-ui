@@ -369,7 +369,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   <Trans
-                    i18nKey="schema.seoMetaFieldsDescription"
+                    i18nKey="schema.seoMetaFieldsDescriptionRich"
                     components={{
                       strong: <strong />,
                       instancesApiLink: (
@@ -413,7 +413,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 <Trans
-                  i18nKey="schema.systemFieldsDescription"
+                  i18nKey="schema.systemFieldsDescriptionRich"
                   components={{
                     strong: <strong />,
                     instancesApiLink: (

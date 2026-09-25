@@ -131,7 +131,7 @@
   "robotsFailedFetchSettings": "Failed to fetch settings",
   "robotsFailedSaveSettings": "Failed saving robots.txt settings. {{err}}",
   "robotsFindingSettings": "Finding robots.txt settings",
-  "robotsNonLiveDomainWarning": "Non-Live domains ALWAYS have robots.txt off to avoid being crawled by search engines. This include [hash]-dev.webengine.zesty.io, [hash]-dev.preview.zesty.io, and any registered domain set to the \"dev\" branch",
+  "robotsNonLiveDomainWarning": "Non-Live domains always have robots.txt off to avoid being crawled by search engines. This include [hash]-dev.webengine.zesty.io, [hash]-dev.preview.zesty.io, and any registered domain set to the \"dev\" branch",
   "RobotsOn": "Search Engine Crawlable?",
   "robotsPublishEventWarning": "Changes will not be reflected until a publish event occurs.",
   "robotsSettingsUpdated": "robots.txt file settings have been updated",

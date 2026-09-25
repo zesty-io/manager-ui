@@ -166,7 +166,7 @@ export const BlockTabs = (props: any) => {
               <Box>
                 <Typography variant="h4" maxWidth={458}>
                   <Trans
-                    i18nKey="content.blockSearchNoResults"
+                    i18nKey="content.blockSearchNoResultsRich"
                     values={{ search }}
                     components={{
                       term: <strong style={{ wordBreak: "break-all" }} />,

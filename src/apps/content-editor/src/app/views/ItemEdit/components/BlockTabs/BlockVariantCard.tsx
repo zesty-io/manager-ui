@@ -8,6 +8,7 @@ import {
 } from "@mui/material";
 import { useHistory, useParams } from "react-router";
 import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 import { AppState } from "../../../../../../../../shell/store/types";
 import { useGetUsersQuery } from "../../../../../../../../shell/services/accounts";
@@ -17,6 +18,7 @@ import { formatLocalized } from "shell/i18n/dates";
 import { isValid } from "date-fns";
 
 export const BlockVariantCard = ({ block }: { block: ContentItem }) => {
+  const { t } = useTranslation();
   const history = useHistory();
   const { modelZUID, itemZUID } = useParams<{
     modelZUID: string;
@@ -110,12 +112,14 @@ export const BlockVariantCard = ({ block }: { block: ContentItem }) => {
             mt={0.5}
             fontWeight={600}
           >
-            Updated on{" "}
-            {isValid(new Date(block.web?.updatedAt))
-              ? formatLocalized(new Date(block.web?.updatedAt), "MMM d, yyyy")
-              : ""}{" "}
-            by&nbsp;
-            {updatedByUser?.firstName} {updatedByUser?.lastName}
+            {t("content.blockUpdatedOnBy", {
+              date: isValid(new Date(block.web?.updatedAt))
+                ? formatLocalized(new Date(block.web?.updatedAt), "MMM d, yyyy")
+                : "",
+              updatedBy: [updatedByUser?.firstName, updatedByUser?.lastName]
+                .filter(Boolean)
+                .join(" "),
+            })}
           </Typography>
         </Box>
       </ListItemButton>
