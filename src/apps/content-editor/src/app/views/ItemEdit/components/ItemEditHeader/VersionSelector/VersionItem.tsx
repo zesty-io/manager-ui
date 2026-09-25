@@ -169,6 +169,7 @@ export const VersionItem = memo(
           >
             <Stack direction="row" gap={1}>
               <Typography variant="body1" color="text.primary" fontWeight={700}>
+                {/* eslint-disable-line i18next/no-literal-string -- version number format, not prose */}
                 v{data?.itemVersion}
               </Typography>
               {data?.isPublished && (

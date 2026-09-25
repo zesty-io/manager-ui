@@ -193,6 +193,7 @@ export const GlobalDocsMenu: FC<GlobalDocsMenuProps> = ({
             )
           }
         >
+          {/* eslint-disable-line i18next/no-literal-string -- email address */}
           support@zesty.io
         </Button>
         <Button

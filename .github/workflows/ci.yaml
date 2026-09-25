@@ -10,6 +10,29 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    # Job-level concurrency overrides the workflow-level group above for
+    # this job only — lint doesn't touch the shared dev instance, so it
+    # shouldn't queue behind another PR's e2e run. Same reasoning
+    # claude-negative-qa.yml documents for giving itself its own group.
+    concurrency:
+      group: manager-ui-lint-${{ github.ref }}
+      cancel-in-progress: true
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4.1.0
+        with:
+          node-version: "22.19.0"
+          cache: "npm"
+          cache-dependency-path: package-lock.json
+      - name: Install Dependencies
+        run: npm install --legacy-peer-deps
+      - name: Run Lint
+        run: npm run lint
+
   setup:
     runs-on: ubuntu-latest
     steps:
@@ -185,13 +208,13 @@ jobs:
   # Branch protection should require this job, not run_tests, because matrix jobs
   # produce individual checks (run_tests (0), run_tests (1), …) — never a single run_tests check.
   all_tests_passed:
-    needs: [run_tests, run_global_tests]
+    needs: [lint, run_tests, run_global_tests]
     runs-on: ubuntu-latest
     if: always()
     steps:
       - name: Check results
         run: |
-          if [ "${{ needs.run_tests.result }}" != "success" ] || [ "${{ needs.run_global_tests.result }}" != "success" ]; then
+          if [ "${{ needs.lint.result }}" != "success" ] || [ "${{ needs.run_tests.result }}" != "success" ] || [ "${{ needs.run_global_tests.result }}" != "success" ]; then
             echo "One or more test runners failed or were cancelled"
             exit 1
           fi

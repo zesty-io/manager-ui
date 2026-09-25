@@ -74,7 +74,7 @@ export const ApiInfo = ({ type, large }: Props) => {
             href="https://zesty.org/apis/instant-content-api"
             target="_blank"
           >
-            Zesty's Instant API
+            {t("schema.instantApiLinkText")}
           </Link>{" "}
           {t("schema.apiQuickAccessDescription")}
         </span>

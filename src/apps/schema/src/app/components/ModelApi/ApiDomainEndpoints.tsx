@@ -59,13 +59,14 @@ export const ApiDomainEndpoints = ({ type }: Props) => {
             {apiTypeEndpointMap[type]}
           </Link>
           <Typography variant="h6" fontWeight={600} sx={{ mt: 2, mb: 1 }}>
-            Rest Endpoint (needs authentication bearer)
+            {t("schema.restEndpointLabel")}
           </Typography>
           <Link
             href="https://www.npmjs.com/package/@zesty-io/sdk"
             target="_blank"
             variant="body2"
           >
+            {/* eslint-disable-line i18next/no-literal-string -- npm package URL, not UI copy */}
             www.npmjs.com/package/@zesty-io/sdk
           </Link>
         </Box>

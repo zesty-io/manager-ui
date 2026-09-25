@@ -603,7 +603,7 @@ export const Field = memo(
               <AppLink to={`/schema/${contentModelZUID}/field/${ZUID}`}>
                 <Trans
                   t={t}
-                  i18nKey="content.yesNoMissingOptions"
+                  i18nKey="content.yesNoMissingOptionsRich"
                   values={{ label }}
                   components={{ em: <em /> }}
                 />
