@@ -107,7 +107,7 @@
   "blockTabCode": "Código",
   "blockTabInfo": "Información",
   "blockTabVariants": "Variantes",
-  "blockUpdatedOnBy": "Updated on {{date}} by {{updatedBy}}",
+  "blockUpdatedOnBy": "Actualizado el {{date}} por {{updatedBy}}",
   "booleanHide": "Ocultar",
   "booleanShow": "Mostrar",
   "browse": "Explorar",

@@ -106,7 +106,7 @@
   "blockTabCode": "कोड",
   "blockTabInfo": "जानकारी",
   "blockTabVariants": "वेरिएंट",
-  "blockUpdatedOnBy": "Updated on {{date}} by {{updatedBy}}",
+  "blockUpdatedOnBy": "{{updatedBy}} द्वारा {{date}} को अपडेट किया गया",
   "booleanHide": "छिपाएं",
   "booleanShow": "दिखाएं",
   "browse": "ब्राउज़ करें",

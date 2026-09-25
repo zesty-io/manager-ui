@@ -106,7 +106,7 @@
   "blockTabCode": "Code",
   "blockTabInfo": "Info",
   "blockTabVariants": "Varianten",
-  "blockUpdatedOnBy": "Updated on {{date}} by {{updatedBy}}",
+  "blockUpdatedOnBy": "Bijgewerkt op {{date}} door {{updatedBy}}",
   "booleanHide": "Verbergen",
   "booleanShow": "Weergeven",
   "browse": "Bladeren",

@@ -105,7 +105,7 @@
   "blockTabCode": "代码",
   "blockTabInfo": "信息",
   "blockTabVariants": "变体",
-  "blockUpdatedOnBy": "Updated on {{date}} by {{updatedBy}}",
+  "blockUpdatedOnBy": "由 {{updatedBy}} 于 {{date}} 更新",
   "booleanHide": "隐藏",
   "booleanShow": "显示",
   "browse": "浏览",
