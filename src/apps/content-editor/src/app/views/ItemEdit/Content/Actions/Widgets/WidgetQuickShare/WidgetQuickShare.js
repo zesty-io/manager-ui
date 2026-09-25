@@ -105,7 +105,8 @@ export const WidgetQuickShare = memo(function WidgetQuickShare(props) {
                   height: "16px",
                 }}
               />
-              Twitter
+              {/* eslint-disable-next-line i18next/no-literal-string -- brand name */}
+              <>Twitter</>
             </Link>
             <Link
               onClick={(evt) =>
@@ -132,7 +133,8 @@ export const WidgetQuickShare = memo(function WidgetQuickShare(props) {
                   height: "16px",
                 }}
               />
-              Facebook
+              {/* eslint-disable-next-line i18next/no-literal-string -- brand name */}
+              <>Facebook</>
             </Link>
             <Link
               onClick={(evt) =>
@@ -159,7 +161,8 @@ export const WidgetQuickShare = memo(function WidgetQuickShare(props) {
                   height: "16px",
                 }}
               />
-              Linkedin
+              {/* eslint-disable-next-line i18next/no-literal-string -- brand name */}
+              <>Linkedin</>
             </Link>
             <Link
               onClick={(evt) =>
@@ -186,7 +189,8 @@ export const WidgetQuickShare = memo(function WidgetQuickShare(props) {
                   height: "16px",
                 }}
               />
-              Reddit
+              {/* eslint-disable-next-line i18next/no-literal-string -- brand name */}
+              <>Reddit</>
             </Link>
           </Stack>
         )}

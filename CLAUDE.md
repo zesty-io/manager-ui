@@ -213,6 +213,18 @@ This is the **one exception** to strict key-parity across locales. A non-suffixe
 
 **Verification**: `npm run lint` (`eslint src` — includes `eslint-plugin-i18next`'s `no-literal-string` in its default `jsx-text-only` mode, plus this repo's own `zesty-i18n/key-format` rule for call-site key format/existence — then `node scripts/lint-i18n-locales.js` for locale-JSON-level checks: flat structure, key format, no decorative/ALL-CAPS values, `Rich`-suffix requirement, and key/plural parity across all 6 locales) runs in CI (`.github/workflows/ci.yaml`'s `lint` job, required by `all_tests_passed`) and is required before merge. `npx tsc --noEmit` is still **not** run in CI — do that yourself if you've touched TypeScript.
 
+**Suppressing `i18next/no-literal-string` for a genuinely non-translatable literal** (a brand name, an email, a URL, a version-number prefix like `v{version}`, a file-format token like `MP4`, etc.): wrap _only_ that literal in a React fragment (`<>...</>`, not a `<span>` — no extra DOM node) and put `{/* eslint-disable-next-line i18next/no-literal-string -- <reason> */}` on the line directly above the fragment's own opening `<>`, e.g.:
+
+```jsx
+<Link>
+  <FontAwesomeIcon icon={faTwitterSquare} />
+  {/* eslint-disable-next-line i18next/no-literal-string -- brand name */}
+  <>Twitter</>
+</Link>
+```
+
+Do **not** put the comment directly above a bare JSXText child with no wrapping element (`{/* eslint-disable-next-line */}\nTwitter`) — it silently does nothing. The reason: a bare JSXText node's reported position starts immediately after the _previous_ sibling ends (here, the disable comment's own `{/* ... */}` expression container), which is the comment's own line, not the line the text visually renders on — so `eslint-disable-next-line` (which targets `comment.line + 1`) never matches, and ESLint stays silent about it (no "unused directive" warning either, since nothing in that exact spot was suppressed to begin with — the check simply never ran against that reported node). Wrapping in a fragment gives the literal its own self-contained element whose opening tag genuinely starts on the following line, which is what `eslint-disable-next-line` actually binds to. Don't reach for `eslint-disable-line` on the line _above_ the text as a workaround either — it happens to suppress the violation for the exact reason above (the bare JSXText's reported line coincides with the comment's own line), but it reads as backwards to every reviewer who doesn't know that, and multiple PRs have already gotten flagged/re-litigated over exactly this. Always use the fragment-wrap + `eslint-disable-next-line` pattern, never `eslint-disable-line` for this rule. And prefer this per-site pattern over adding a category to a shared `words.exclude` config list — this repo intentionally does not maintain a growing global allowlist for i18n literal exceptions; keep the exception local to where it applies.
+
 ### Tools
 
 - **`Workflow({ name: "localize", args: { target: "<path>" } })`** — the paved path for localizing a new component or sub-app. Requires Claude Code (see README's "Localizing new copy" section for full usage, args, and cost caveats). Extracts strings, wires `t()`/`i18n.t()` calls, writes locale JSON, verifies. `namespace` is optional and inferred if omitted. Leaves English placeholders in the 5 non-English locales — translation is still a manual/QA step.

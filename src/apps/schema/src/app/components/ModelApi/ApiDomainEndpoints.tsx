@@ -66,7 +66,8 @@ export const ApiDomainEndpoints = ({ type }: Props) => {
             target="_blank"
             variant="body2"
           >
-            www.npmjs.com/package/@zesty-io/sdk
+            {/* eslint-disable-next-line i18next/no-literal-string -- npm package URL, not UI copy */}
+            <>www.npmjs.com/package/@zesty-io/sdk</>
           </Link>
         </Box>
       ) : (
