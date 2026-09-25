@@ -1292,7 +1292,7 @@ export const StudioWrapper = () => {
       // gated — correct, since nothing becomes uncommittable. Leaving studio
       // still prompts, because the destination narrows.
       if (nextMode === "layout" && hasPendingContentChanges) {
-        const openModal = (window as any).openContentNavigationModal;
+        const openModal = window.openContentNavigationModal;
         if (typeof openModal === "function") {
           // Layout mode can still commit a staged layout change, so this
           // prompt's Save / Don't Save cover content only.

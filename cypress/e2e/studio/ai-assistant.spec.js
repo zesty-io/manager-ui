@@ -389,6 +389,8 @@ describe("Studio AI Assistant", () => {
     cy.getBySelector("PendingEditsModalSave").click();
 
     cy.wait("@updateWebView");
+    // pushState already set the URL; Studio unmounting is the navigation.
+    cy.getBySelector("StudioHeader").should("not.exist");
     cy.location("pathname").should("eq", "/launchpad");
   });
 

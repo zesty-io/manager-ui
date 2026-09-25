@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import { WarningAmberRounded } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
-import { NavModalScope } from "../../../../../../utility/history";
+import type { NavModalScope } from "utility/history";
 
 type PendingEditsModalProps = {
   show: boolean;
@@ -65,21 +65,12 @@ export default memo(function PendingEditsModal(props: PendingEditsModalProps) {
         break;
       case "delete":
         setLoading(true);
-        props
-          .onDiscard(scope)
-          .then(() => {
-            // @ts-ignore
-            answer(true);
-          })
-          .catch((err) => {
-            console.error(err);
-            // @ts-ignore
-            answer(false);
-          })
-          .finally(() => {
-            setLoading(false);
-            setOpen(false);
-          });
+        props.onDiscard(scope).then(() => {
+          setLoading(false);
+          setOpen(false);
+          // @ts-ignore
+          answer(true);
+        });
         break;
       case "cancel":
         setOpen(false);
