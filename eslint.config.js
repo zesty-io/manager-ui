@@ -1,6 +1,7 @@
 const tsParser = require("@typescript-eslint/parser");
 const i18next = require("eslint-plugin-i18next");
 const zestyI18n = require("./eslint-rules");
+const { LATIN_ACRONYMS } = require("./eslint-rules/zestyI18n/latin-acronyms");
 
 // The rule's own option-merging is a SHALLOW spread of these defaults with
 // whatever we pass below (`{ ...defaults, ...ourOptions }` — see
@@ -73,6 +74,12 @@ module.exports = [
               // number (e.g. v{itemVersion}) — the number is already
               // dynamic, "v" alone isn't prose.
               /^v$/,
+              // This repo's own technical-acronym allowlist (shared with
+              // scripts/lint-i18n-locales.js's ALL-CAPS-value check) — e.g.
+              // "MP4" needs this explicitly because it contains a digit, so
+              // it isn't already covered by the plugin's default "all
+              // uppercase letters" exclude above.
+              new RegExp(`^(?:${LATIN_ACRONYMS.join("|")})$`),
             ],
           },
         },

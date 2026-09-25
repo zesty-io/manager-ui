@@ -75,18 +75,37 @@ function keyExistsInNamespace(keys, key) {
   return PLURAL_SUFFIXES.some((suffix) => keys.has(key + suffix));
 }
 
-function isTranslationCallee(node) {
-  if (node.type === "Identifier" && node.name === "t") {
-    return true;
-  }
-  // i18n.t(...) — the singleton form used outside React components.
-  if (
+function isTMemberExpression(node, objectName) {
+  return (
     node.type === "MemberExpression" &&
     !node.computed &&
     node.property.type === "Identifier" &&
     node.property.name === "t" &&
     node.object.type === "Identifier" &&
-    node.object.name === "i18n"
+    node.object.name === objectName
+  );
+}
+
+function isTranslationCallee(node) {
+  if (node.type === "Identifier" && node.name === "t") {
+    return true;
+  }
+  // i18n.t(...) — the singleton form used outside React components.
+  if (isTMemberExpression(node, "i18n")) {
+    return true;
+  }
+  // this.props.t(...) — class components wrapped with withTranslation()
+  // (see CLAUDE.md > "Rules for translating new copy" > class components).
+  if (
+    node.type === "MemberExpression" &&
+    !node.computed &&
+    node.property.type === "Identifier" &&
+    node.property.name === "t" &&
+    node.object.type === "MemberExpression" &&
+    !node.object.computed &&
+    node.object.object.type === "ThisExpression" &&
+    node.object.property.type === "Identifier" &&
+    node.object.property.name === "props"
   ) {
     return true;
   }

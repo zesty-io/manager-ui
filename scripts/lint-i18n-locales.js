@@ -39,65 +39,11 @@ const LOCALES = ["en-US", "es-ES", "hi-IN", "zh-CN", "ru-RU", "nl-NL"];
 const PLURAL_SUFFIXES = ["zero", "one", "two", "few", "many", "other"];
 const PLURAL_SUFFIX_RE = new RegExp(`_(${PLURAL_SUFFIXES.join("|")})$`);
 
-// Genuine technical/industry acronyms this codebase's UI copy legitimately
-// uses in all caps (CLAUDE.md's "technical tokens" skip category). Extend
-// this list — don't disable the check — when a new one shows up for real.
+// Shared with eslint-rules/zestyI18n/latin-acronyms.js so the "is this a
+// genuine technical acronym, not decorative ALL-CAPS" list and the ESLint
+// no-literal-string word-exclude list can't drift apart.
 const LATIN_ACRONYMS = new Set(
-  [
-    "URL",
-    "API",
-    "ID",
-    "ZUID",
-    "JSON",
-    "AI",
-    "SEO",
-    "CTA",
-    "CSV",
-    "HTML",
-    "CDN",
-    "UUID",
-    "HTTP",
-    "HTTPS",
-    "UI",
-    "XML",
-    "WYSIWYG",
-    "CSS",
-    "VS",
-    "GQL",
-    "WWW",
-    "MUX",
-    "REST",
-    "SDK",
-    "FAQ",
-    "OG",
-    "MDN",
-    "CORS",
-    "UPS",
-    "DNT",
-    "DNS",
-    "MIME",
-    "LESS",
-    "SCSS",
-    "UTC",
-    "OTP",
-    "IDE",
-    "NPM",
-    "GA",
-    "OE",
-    "ESC",
-    "CMS",
-    "PDF",
-    "SERP",
-    "FA",
-    "GET",
-    "EX",
-    "MP4",
-    "MPEG",
-    "MOV",
-    "WMV",
-    "AVI",
-    "FLV",
-  ].flatMap((w) => [w, `${w}S`])
+  require("../eslint-rules/zestyI18n/latin-acronyms").LATIN_ACRONYMS
 );
 
 // Same idea, for the one other supported locale whose script has case

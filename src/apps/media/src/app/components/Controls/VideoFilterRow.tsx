@@ -61,7 +61,6 @@ export const VideoFilterRow: FC<VideoFilterRow> = ({ onClose }) => {
           <Typography variant="body1">MPEG</Typography>
         </MenuItem>
         <MenuItem onClick={() => handleChange("MP4")}>
-          {/* eslint-disable-next-line i18next/no-literal-string -- file format token */}
           <Typography variant="body1">MP4</Typography>
         </MenuItem>
         <MenuItem onClick={() => handleChange("MOV")}>
