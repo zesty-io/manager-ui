@@ -518,6 +518,9 @@ export const useLayoutReorderState = ({
     () => Object.keys(pendingLayoutSave?.regions || {}),
     [pendingLayoutSave]
   );
+  // For handleTemplateSourceMap, which keeps a stable identity.
+  const pendingLayoutCodeIdsRef = useRef(pendingLayoutCodeIds);
+  pendingLayoutCodeIdsRef.current = pendingLayoutCodeIds;
 
   const clearPendingLayoutState = useCallback(() => {
     setPendingLayoutSave(null);
@@ -769,15 +772,28 @@ export const useLayoutReorderState = ({
     t,
   ]);
 
-  const handleTemplateSourceMap = useCallback((msg: any) => {
-    const incoming =
-      (msg.templateSourceByCodeId as Record<string, string>) || {};
-    templateSourceByCodeIdRef.current = {
-      ...templateSourceByCodeIdRef.current,
-      ...incoming,
-    };
-    setTemplateSourceVersion((prev) => prev + 1);
-  }, []);
+  // A preview reload re-sends the page's as-rendered templates. A region with
+  // an unsaved change keeps the host's copy, and the fresh bridge is given it
+  // again — otherwise the next save would write the pre-edit source.
+  const handleTemplateSourceMap = useCallback(
+    (msg: any) => {
+      const incoming: Record<string, string> = {
+        ...(msg.templateSourceByCodeId || {}),
+      };
+      pendingLayoutCodeIdsRef.current.forEach((codeId) => {
+        const kept = templateSourceByCodeIdRef.current[codeId];
+        if (!(codeId in incoming) || typeof kept !== "string") return;
+        delete incoming[codeId];
+        syncTemplateSourceToBridge(codeId, kept);
+      });
+      templateSourceByCodeIdRef.current = {
+        ...templateSourceByCodeIdRef.current,
+        ...incoming,
+      };
+      setTemplateSourceVersion((prev) => prev + 1);
+    },
+    [syncTemplateSourceToBridge]
+  );
 
   const handleLayoutContentUpdate = useCallback(
     (msg: any) => {

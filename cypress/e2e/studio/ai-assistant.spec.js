@@ -174,11 +174,9 @@ describe("Studio AI Assistant", () => {
     cy.getBySelector("StudioAIPanel").should("not.contain", "studio-e2e");
 
     cy.getBySelector("StudioSaveStatus").should("contain.text", "Not Saved");
-    cy.getBySelector("StudioLayersPanel").should(
-      "have.attr",
-      "aria-disabled",
-      "true"
-    );
+    cy.getBySelector("StudioLayersPanel")
+      .should("have.attr", "aria-disabled", "true")
+      .and("have.attr", "inert");
     cy.getBySelector("StudioLayoutSaveBar").should("exist");
   });
 
@@ -212,6 +210,32 @@ describe("Studio AI Assistant", () => {
     cy.getBySelector("StudioAIPreview").should("not.exist");
   });
 
+  it("survives replies it cannot render", () => {
+    stubMcp(
+      () => ({ data: null, message: "", tools: [] }),
+      // Unvalidated, the scalar reaches the transcript and the render reads
+      // `payload` off it.
+      () => mcpReply([42, { type: "NAVIGATE" }]),
+      () => mcpReply([{ type: "SET_VALUE" }])
+    );
+    openAiPanel();
+
+    sendPrompt("First");
+    cy.getBySelector("StudioAIPanel").should(
+      "contain",
+      "Error parsing AI response"
+    );
+
+    sendPrompt("Second");
+    cy.getBySelector("AIChatMessage").should("have.text", "42");
+    cy.getBySelector("AIChatNavigate").should("not.exist");
+
+    sendPrompt("Third");
+    cy.getBySelector("AIChatUserInput").should("have.length", 3);
+    cy.getBySelector("StudioHeader").should("exist");
+    cy.getBySelector("StudioAIPreview").should("not.exist");
+  });
+
   it("refuses to preview a file over the PVL size limit", () => {
     stubMcp((body) =>
       mcpReply([setValue(`${body.code}\n<!--${"x".repeat(1100 * 1024)}-->`)])
@@ -237,10 +261,56 @@ describe("Studio AI Assistant", () => {
     openAiPanel();
     sendPrompt("Use the Inter font");
 
-    cy.getBySelector("StudioAIPreviewError").should(
-      "contain.text",
-      "external stylesheet"
+    cy.getBySelector("StudioAIPreviewError")
+      .should("contain.text", "rejected the file or could not be reached")
+      .and("contain.text", "external stylesheet")
+      .and("contain.text", "Review the change before saving");
+  });
+
+  it("leaves a staged AI change alone when a mode switch discards content", () => {
+    let staged = "";
+    let nextTurnInput = "";
+    stubMcp(
+      (body) => {
+        staged = editSource(body.code);
+        return mcpReply([setValue(staged)]);
+      },
+      (body) => {
+        nextTurnInput = body.code;
+        return mcpReply([]);
+      }
     );
+    stubPvl({ statusCode: 200, body: "<p>preview</p>" });
+    openAiPanel();
+    sendPrompt("Add a line under the heading");
+    cy.wait("@pvl");
+
+    cy.window().then((win) => {
+      win.zestyStore.dispatch({ type: "MARK_ITEM_DIRTY", itemZUID });
+      // Discarding content reloads the preview; its bridge re-sends the
+      // template map, which must not replace the staged file.
+      win.__templateMaps = 0;
+      win.addEventListener("message", (evt) => {
+        if (evt.data?.message?.type === "TEMPLATE_SOURCE_MAP") {
+          win.__templateMaps++;
+        }
+      });
+    });
+    cy.getBySelector("StudioModeToggleOption-layout").click();
+    cy.getBySelector("PendingEditsModalDiscard").click();
+    cy.getBySelector("PendingEditsModal").should("not.exist");
+
+    cy.getBySelector("StudioModeToggleOption-layout").should(
+      "have.attr",
+      "aria-pressed",
+      "true"
+    );
+    cy.getBySelector("StudioAIPreview").should("exist");
+    cy.getBySelector("StudioLayoutSaveBar").should("exist");
+
+    cy.window().its("__templateMaps", { timeout: 30000 }).should("be.gte", 1);
+    sendPrompt("Anything else?");
+    cy.then(() => expect(nextTurnInput).to.eq(staged));
   });
 
   it("cancel drops every staged turn and returns to the live canvas", () => {
@@ -329,5 +399,31 @@ describe("Studio AI Assistant", () => {
     cy.getBySelector("StudioSaveStatus").should("have.text", "Saved");
     cy.getBySelector("StudioAIPreview").should("not.exist");
     cy.get("@updateWebView.all").should("have.length", 1);
+
+    // A later, non-AI layout edit is not "Saved".
+    cy.window().then((win) => {
+      const post = (message) =>
+        win.postMessage({ source: "studio-bridge", message }, "*");
+      post({
+        type: "TEMPLATE_SOURCE_MAP",
+        templateSourceByCodeId: {
+          "11-ai-other-view": '<div data-layout-id="1">One</div>',
+        },
+      });
+      post({
+        type: "REORDER_OUTPUT",
+        regions: [
+          {
+            codeId: "11-ai-other-view",
+            orderedLayoutIds: ["1"],
+            layoutStructure: [{ layoutId: "1", parentLayoutId: null }],
+          },
+        ],
+        primaryCodeId: "11-ai-other-view",
+      });
+    });
+    cy.getBySelector("StudioLayoutSaveBar").should("exist");
+    cy.getBySelector("StudioSaveStatus").should("not.exist");
+    cy.getBySelector("StudioLayoutCancelButton").click();
   });
 });

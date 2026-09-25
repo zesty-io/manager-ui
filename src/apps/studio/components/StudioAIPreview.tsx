@@ -66,7 +66,7 @@ export const StudioAIPreview = ({
           sx={{ maxWidth: 560, mx: 3 }}
         >
           <AlertTitle>{t("content.studioAiPreviewUnavailable")}</AlertTitle>
-          {preview.message} {t("content.studioAiPreviewStagedHint")}
+          {preview.message} {t("content.studioAiPreviewReviewHint")}
         </Alert>
       ) : null}
     </Box>

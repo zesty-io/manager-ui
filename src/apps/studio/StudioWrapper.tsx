@@ -168,6 +168,10 @@ export const StudioWrapper = () => {
   const [saveClicked, setSaveClicked] = useState(false);
   const fieldErrorRef = useRef<any>(null);
   const pendingLayoutContinuationRef = useRef<null | (() => void)>(null);
+  // Set while PendingEditsModal is open for a mode switch rather than for
+  // leaving Studio: the destination can still commit a staged layout change,
+  // so that prompt's Save / Don't Save must leave it alone.
+  const modeSwitchPromptRef = useRef(false);
   const previewReloadContinuationRef = useRef<null | (() => void)>(null);
   // Set while a merged save is running so the content and layout save paths,
   // which each refresh the preview internally, do not reload the iframe twice.
@@ -1294,7 +1298,9 @@ export const StudioWrapper = () => {
       if (nextMode === "layout" && hasPendingContentChanges) {
         const openModal = (window as any).openContentNavigationModal;
         if (typeof openModal === "function") {
+          modeSwitchPromptRef.current = true;
           openModal((shouldProceed: boolean) => {
+            modeSwitchPromptRef.current = false;
             if (shouldProceed) {
               applyInteractionModeChange();
             }
@@ -2524,7 +2530,7 @@ export const StudioWrapper = () => {
           />
           {/* Also the leave-Studio guard for a staged AI change: its Prompt
               blocks navigation, and Save / Don't Save then cover the layout
-              half too. */}
+              half too — except on a mode switch (modeSwitchPromptRef). */}
           <PendingEditsModal
             show={hasPendingContentChanges || isAiPreviewing}
             loading={studioSaving}
@@ -2532,15 +2538,18 @@ export const StudioWrapper = () => {
               // Throw on partial failure so PendingEditsModal runs answer(false)
               // and keeps the user in content mode to fix the failed items
               // instead of navigating away and abandoning the dirty edits.
-              const result = isAiPreviewing
-                ? await runMergedSave(saveAllContent, handleSavePendingLayout)
-                : await saveAllContent();
+              const result =
+                isAiPreviewing && !modeSwitchPromptRef.current
+                  ? await runMergedSave(saveAllContent, handleSavePendingLayout)
+                  : await saveAllContent();
               if (result.failedCount > 0) {
                 throw new Error(`${result.failedCount} item(s) failed to save`);
               }
             }}
             onDiscard={async () => {
-              if (isAiPreviewing) handleDiscardPendingLayoutSave();
+              if (isAiPreviewing && !modeSwitchPromptRef.current) {
+                handleDiscardPendingLayoutSave();
+              }
               await discardAllContent();
             }}
           />

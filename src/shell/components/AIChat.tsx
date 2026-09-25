@@ -79,27 +79,46 @@ type ChatEntry = {
   };
 };
 
+const toMessage = (value: string): ChatEntry => ({
+  type: "MESSAGE",
+  payload: { value },
+});
+
+// Only shapes the transcript can render get through: every server entry is
+// drawn from `payload.value`, except NAVIGATE, which needs `payload.path`.
+// Anything else is null, which the caller shows as an ERROR entry.
+const toChatEntry = (entry: unknown): ChatEntry | null => {
+  if (typeof entry === "string") return entry.trim() ? toMessage(entry) : null;
+  if (typeof entry === "number" || typeof entry === "boolean") {
+    return toMessage(String(entry));
+  }
+  if (!entry || typeof entry !== "object") return null;
+  const { type, payload } = entry as { type?: unknown; payload?: unknown };
+  if (typeof type !== "string" || !payload || typeof payload !== "object") {
+    return null;
+  }
+  const field = type === "NAVIGATE" ? "path" : "value";
+  if (typeof (payload as Record<string, unknown>)[field] !== "string") {
+    return null;
+  }
+  return entry as ChatEntry;
+};
+
 // The model answers with a ```json-fenced action array, or with prose. Prose
 // is a reply, not a parse failure.
-const parseAiResponse = (data: unknown): ChatEntry[] => {
+const parseAiResponse = (data: unknown): (ChatEntry | null)[] => {
   if (typeof data !== "string") {
-    return (Array.isArray(data) ? data : [data]) as ChatEntry[];
+    return (Array.isArray(data) ? data : [data]).map(toChatEntry);
   }
   const cleaned = data.replace(/```json|```/g, "").trim();
-  if (!cleaned) throw new Error("Empty AI response");
-  const toMessage = (value: string): ChatEntry => ({
-    type: "MESSAGE",
-    payload: { value },
-  });
+  if (!cleaned) return [null];
   let parsed: unknown;
   try {
     parsed = JSON.parse(cleaned);
   } catch {
     return [toMessage(cleaned)];
   }
-  return (Array.isArray(parsed) ? parsed : [parsed]).map((entry) =>
-    typeof entry === "string" ? toMessage(entry) : (entry as ChatEntry)
-  );
+  return (Array.isArray(parsed) ? parsed : [parsed]).map(toChatEntry);
 };
 
 export type AIChatProps = {
@@ -242,10 +261,18 @@ export const AIChat = ({
   useEffect(() => {
     if (!aiResponse) return;
 
+    const parseError: ChatEntry = {
+      type: "ERROR",
+      payload: {
+        value: t("shell.errorParsingAiResponse"),
+      },
+    };
+
     try {
       const responsesArray = parseAiResponse(aiResponse.data);
 
       const transcript = responsesArray.map((response, index) => {
+        if (!response) return parseError;
         if (!autoApply || response.type !== "SET_VALUE") return response;
 
         // Read before the action applies: the handle replaces the file.
@@ -286,15 +313,7 @@ export const AIChat = ({
       setResponses((prev) => [...prev, ...transcript]);
     } catch (error) {
       console.error("Error parsing AI response", error);
-      setResponses((prev) => [
-        ...prev,
-        {
-          type: "ERROR",
-          payload: {
-            value: t("shell.errorParsingAiResponse"),
-          },
-        },
-      ]);
+      setResponses((prev) => [...prev, parseError]);
     }
   }, [aiResponse]);
 

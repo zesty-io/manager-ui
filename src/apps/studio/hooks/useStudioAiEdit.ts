@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useDispatch } from "react-redux";
+import { notify } from "shell/store/notifications";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { useRenderParsleyPreviewMutation } from "shell/services/mcp";
 import { WebView } from "shell/services/types";
@@ -64,6 +66,7 @@ export const useStudioAiEdit = ({
   onBeforeStage,
 }: Args) => {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
   const [renderParsleyPreview] = useRenderParsleyPreviewMutation();
   const [stagedCodeId, setStagedCodeId] = useState<string | null>(null);
   const stagedCodeIdRef = useRef<string | null>(null);
@@ -105,12 +108,10 @@ export const useStudioAiEdit = ({
             })
           : t("content.studioAiPreviewTimeout", { seconds });
       }
-      if (status === 413) return t("content.studioAiPreviewTooLarge");
-      if (status === 403) return t("content.studioAiPreviewStylesheet");
-      const failed =
-        typeof status === "number"
-          ? t("content.studioAiPreviewFailedStatus", { status })
-          : t("content.studioAiPreviewUnreachable");
+      // Only a 200 carries CORS headers, so every error PVL answers (a Parsley
+      // 400, the edge's 403, the load balancer's 413) reaches the browser as
+      // a failed fetch with no status to read.
+      const failed = t("content.studioAiPreviewRejected");
       return loadsExternalStylesheet(source)
         ? `${failed} ${t("content.studioAiPreviewStylesheet")}`
         : failed;
@@ -161,6 +162,12 @@ export const useStudioAiEdit = ({
 
   const stage = (next: string) => {
     if (!pageView || typeof next !== "string") return;
+    if (!next.trim()) {
+      dispatch(
+        notify({ kind: "warn", message: t("content.studioAiEmptyFile") })
+      );
+      return;
+    }
     onBeforeStage();
     stageLayoutSourceUpdate(pageView.ZUID, next, { replacesSource: true });
     stagedCodeIdRef.current = pageView.ZUID;
@@ -202,6 +209,18 @@ export const useStudioAiEdit = ({
   useEffect(() => {
     if (!stagedCodeIdRef.current) setSaveStatus(null);
   }, [pageItemZUID]);
+
+  // "Saved" describes the last AI save only until anything is staged again.
+  // Keyed on the empty → non-empty transition: a save only ever shrinks the
+  // set, so a multi-file save cannot clear the chip it just set.
+  const hadPendingLayoutRef = useRef(false);
+  useEffect(() => {
+    const hasPending = pendingLayoutCodeIds.length > 0;
+    if (hasPending && !hadPendingLayoutRef.current) {
+      setSaveStatus((prev) => (prev === "saved" ? null : prev));
+    }
+    hadPendingLayoutRef.current = hasPending;
+  }, [pendingLayoutCodeIds]);
 
   const handleLayoutRegionSaved = useCallback((codeId: string) => {
     if (codeId === stagedCodeIdRef.current) setSaveStatus("saved");

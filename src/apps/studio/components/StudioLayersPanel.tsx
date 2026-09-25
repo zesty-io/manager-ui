@@ -145,6 +145,9 @@ export const StudioLayersPanel = ({
     <Box
       data-cy="StudioLayersPanel"
       aria-disabled={disabled || undefined}
+      // React 18 drops a boolean on an attribute it does not know, and the
+      // types predate `inert`.
+      {...(disabled ? { inert: "" } : {})}
       width="100%"
       height="100%"
       display="flex"
