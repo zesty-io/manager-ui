@@ -472,7 +472,6 @@
   "inputRangeLabel": "限制输入范围",
   "inputRangeMaximum": "最大值",
   "inputRangeMinimum": "最小值",
-  "instantApiLinkText": "Zesty's Instant API",
   "integrationLimitItemRange": "限制项目范围",
   "integrationLimitItemRangeDescription": "设置项目的最小和/或最大数量",
   "lastUpdated": "最后更新：{{date}}",

@@ -472,7 +472,6 @@
   "inputRangeLabel": "Invoerbereik beperken",
   "inputRangeMaximum": "Maximum",
   "inputRangeMinimum": "Minimum",
-  "instantApiLinkText": "Zesty's Instant API",
   "integrationLimitItemRange": "Itembereik beperken",
   "integrationLimitItemRangeDescription": "Stel een minimum en/of maximum aantal items in",
   "lastUpdated": "Laatst bijgewerkt: {{date}}",

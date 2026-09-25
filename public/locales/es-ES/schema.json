@@ -472,7 +472,6 @@
   "inputRangeLabel": "Limitar rango de entrada",
   "inputRangeMaximum": "Máximo",
   "inputRangeMinimum": "Mínimo",
-  "instantApiLinkText": "Zesty's Instant API",
   "integrationLimitItemRange": "Limitar rango de elementos",
   "integrationLimitItemRangeDescription": "Establezca un número mínimo y/o máximo de elementos",
   "lastUpdated": "Última actualización: {{date}}",

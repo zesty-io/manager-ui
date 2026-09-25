@@ -472,7 +472,6 @@
   "inputRangeLabel": "इनपुट रेंज सीमित करें",
   "inputRangeMaximum": "अधिकतम",
   "inputRangeMinimum": "न्यूनतम",
-  "instantApiLinkText": "Zesty's Instant API",
   "integrationLimitItemRange": "आइटम रेंज सीमित करें",
   "integrationLimitItemRangeDescription": "आइटम की न्यूनतम और/या अधिकतम संख्या सेट करें",
   "lastUpdated": "अंतिम अपडेट: {{date}}",

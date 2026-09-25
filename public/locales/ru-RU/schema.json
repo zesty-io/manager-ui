@@ -472,7 +472,6 @@
   "inputRangeLabel": "Ограничение диапазона ввода",
   "inputRangeMaximum": "Максимум",
   "inputRangeMinimum": "Минимум",
-  "instantApiLinkText": "Zesty's Instant API",
   "integrationLimitItemRange": "Ограничить диапазон элементов",
   "integrationLimitItemRangeDescription": "Установите минимальное и/или максимальное количество элементов",
   "lastUpdated": "Последнее обновление: {{date}}",

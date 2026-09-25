@@ -472,7 +472,6 @@
   "inputRangeLabel": "Limit Input Range",
   "inputRangeMaximum": "Maximum",
   "inputRangeMinimum": "Minimum",
-  "instantApiLinkText": "Zesty's Instant API",
   "integrationLimitItemRange": "Limit Item Range",
   "integrationLimitItemRangeDescription": "Set a minimum and/or maximum number of items",
   "lastUpdated": "Last Updated: {{date}}",
