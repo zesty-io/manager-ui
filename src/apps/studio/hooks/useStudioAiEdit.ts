@@ -13,6 +13,9 @@ const PVL_MAX_PARSLEY_BYTES = 1024 * 1024 - 1024;
 // A healthy render takes well under a second; {{this.autolayout()}} never
 // answers at all.
 const PVL_TIMEOUT_MS = 20000;
+// Session-wide, so ids stay unique across Studio remounts: AIChat remembers
+// which discard it last showed for the rest of the session.
+let discardSeq = 0;
 
 const isExternalStylesheet = (tag: string) =>
   /stylesheet/i.test(tag) && /\bhref\s*=\s*["']?(?:https?:)?\/\//i.test(tag);
@@ -181,8 +184,10 @@ export const useStudioAiEdit = ({
       const loader = loaderView
         ? readStagedLayoutSource(loaderView.ZUID) ?? loaderView.code
         : null;
+      // Multipart encoding sends every line ending as CRLF.
       const fits = (parsley: string) =>
-        new TextEncoder().encode(parsley).length <= PVL_MAX_PARSLEY_BYTES;
+        new TextEncoder().encode(parsley.replace(/\r\n|\r|\n/g, "\r\n"))
+          .length <= PVL_MAX_PARSLEY_BYTES;
       if (!fits(view)) {
         setPreview({
           status: "error",
@@ -303,10 +308,10 @@ export const useStudioAiEdit = ({
     setPreview(null);
     setSaveStatus((prev) => (prev === "saved" ? prev : null));
     if (!savedRef.current) {
-      setLastDiscard((prev) => ({
-        id: (prev?.id ?? 0) + 1,
+      setLastDiscard({
+        id: ++discardSeq,
         pageItemZUID: stagedPageRef.current,
-      }));
+      });
     }
     savedRef.current = false;
   }, [pendingLayoutCodeIds, stagedCodeId]);
