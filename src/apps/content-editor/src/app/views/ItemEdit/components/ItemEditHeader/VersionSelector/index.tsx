@@ -175,7 +175,6 @@ export const VersionSelector = memo(
               isLoadingItemWorkflowStatus
             }
           >
-            {/* eslint-disable-line i18next/no-literal-string -- version number format, not prose */}
             v{activeVersion}
             {!!activeVersionLabels?.length && (
               <>

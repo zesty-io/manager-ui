@@ -113,7 +113,6 @@ export default function Metrics() {
         </ButtonGroup>
 
         <h1 className={styles.subheadline}>
-          {/* eslint-disable-line i18next/no-literal-string -- brand name */}
           Zesty.io {t("reports.usageReport")}
         </h1>
       </section>
