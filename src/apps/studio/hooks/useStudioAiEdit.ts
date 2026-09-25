@@ -14,31 +14,48 @@ const PVL_MAX_PARSLEY_BYTES = 1024 * 1024 - 1024;
 // answers at all.
 const PVL_TIMEOUT_MS = 20000;
 
+const isExternalStylesheet = (tag: string) =>
+  /stylesheet/i.test(tag) && /\bhref\s*=\s*["']?(?:https?:)?\/\//i.test(tag);
+
 const loadsExternalStylesheet = (source: string) =>
-  (source.match(/<link\b[^>]*>/gi) || []).some(
-    (tag) =>
-      /stylesheet/i.test(tag) && /\bhref\s*=\s*["']?(?:https?:)?\/\//i.test(tag)
-  );
+  (source.match(/<link\b[^>]*>/gi) || []).some(isExternalStylesheet);
 
 const CURRENT_VIEW = /\{\{\s*current_view\s*\}\}/;
 
-// The preview renders the page inside the instance's loader, so includes such
-// as the header come along. Its scripts are left out: analytics and site code
-// have no place in a preview. So are its Parsley comments, which render
-// nothing: with some views the edge refuses them with a bare 403 (measured on
-// the dev loader). Without a usable loader, the view alone.
+// The loader around the staged view, minus what the preview only needs as
+// markup: scripts, Parsley comments, and external stylesheets (returned for
+// the preview's <head>). Null when the loader has no {{current_view}} left.
 const wrapInLoader = (loader: string | null, view: string) => {
-  if (!loader || !CURRENT_VIEW.test(loader)) return view;
-  return loader
+  if (!loader) return null;
+  const stylesheets: string[] = [];
+  const stripped = loader
     .replace(/<script\b[^>]*>[\s\S]*?<\/script\s*>/gi, "")
     .replace(/<script\b[^>]*\/>/gi, "")
     .replace(/\(\*\*[\s\S]*?\*\*\)/g, "")
-    .replace(new RegExp(CURRENT_VIEW.source, "g"), () => view);
+    .replace(/<link\b[^>]*>/gi, (tag) => {
+      if (!isExternalStylesheet(tag)) return tag;
+      const href = tag.match(/\bhref\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/i);
+      const url = href?.[1] ?? href?.[2] ?? href?.[3];
+      if (url && !url.includes("{{")) stylesheets.push(url);
+      return "";
+    });
+  if (!CURRENT_VIEW.test(stripped)) return null;
+  return {
+    payload: stripped.replace(new RegExp(CURRENT_VIEW.source, "g"), () => view),
+    stylesheets,
+  };
 };
 
 export type StudioAiPreview =
   | { status: "loading" }
-  | { status: "ready"; html: string }
+  | {
+      status: "ready";
+      html: string;
+      // External stylesheets taken out of the loader.
+      stylesheets: string[];
+      // The loader-wrapped request failed; this is the view alone.
+      withoutLayout: boolean;
+    }
   | { status: "error"; message: string };
 
 export type StudioSaveStatus = "unsaved" | "saved" | null;
@@ -89,6 +106,9 @@ export const useStudioAiEdit = ({
   const [preview, setPreview] = useState<StudioAiPreview | null>(null);
   const [saveStatus, setSaveStatus] = useState<StudioSaveStatus>(null);
   const previewRequestRef = useRef(0);
+  // Staged AI changes dropped without a save, so the transcript can say so.
+  const [discardCount, setDiscardCount] = useState(0);
+  const savedRef = useRef(false);
 
   // Freestyle layouts live in a per-item `/z/pvl/` view the model does not
   // render through, so they are never the target.
@@ -146,7 +166,9 @@ export const useStudioAiEdit = ({
       const loader = loaderView
         ? readStagedLayoutSource(loaderView.ZUID) ?? loaderView.code
         : null;
-      const source = wrapInLoader(loader, view);
+      const wrapped = wrapInLoader(loader, view);
+      const source = wrapped?.payload ?? view;
+      const stylesheets = wrapped?.stylesheets ?? [];
       if (new TextEncoder().encode(source).length > PVL_MAX_PARSLEY_BYTES) {
         setPreview({
           status: "error",
@@ -158,21 +180,40 @@ export const useStudioAiEdit = ({
       const query = previewPassword
         ? `?zpw=${encodeURIComponent(previewPassword)}`
         : "";
-      try {
-        const html = await renderParsleyPreview({
+      const render = (parsley: string) =>
+        renderParsleyPreview({
           url: `${previewOrigin}/-/pvl/${query}`,
-          parsley: source,
+          parsley,
           itemZUID: pageItemZUID,
           timeout: PVL_TIMEOUT_MS,
         }).unwrap();
+      const show = (html: string, withoutLayout: boolean) => {
         if (request !== previewRequestRef.current) return;
-        setPreview({ status: "ready", html });
-      } catch (error) {
+        setPreview({ status: "ready", html, stylesheets, withoutLayout });
+      };
+      const fail = (error: unknown) => {
         if (request !== previewRequestRef.current) return;
         setPreview({
           status: "error",
-          message: describePreviewError(error, source),
+          message: describePreviewError(error, view),
         });
+      };
+      try {
+        show(await render(source), false);
+      } catch (error) {
+        // The loader is extra; if the wrapped page is refused, try the view.
+        if (
+          !wrapped ||
+          (error as FetchBaseQueryError)?.status !== "FETCH_ERROR"
+        ) {
+          fail(error);
+          return;
+        }
+        try {
+          show(await render(view), true);
+        } catch (viewError) {
+          fail(viewError);
+        }
       }
     },
     [
@@ -217,8 +258,13 @@ export const useStudioAiEdit = ({
     }),
     [pageFields, pageView?.fileName, readSource]
   );
+  // Registered with a stable context: re-registering deletes the key in a
+  // passive cleanup, and a reply handled in that same commit found no ref.
+  const contextRef = useRef(context);
+  contextRef.current = context;
+  const stableContext = useCallback(() => contextRef.current(), []);
   const isRegistered = active && !!pageView;
-  useRegisterRef("code-editor", isRegistered ? handle : null, context, {
+  useRegisterRef("code-editor", isRegistered ? handle : null, stableContext, {
     skip: !isRegistered,
   });
 
@@ -231,6 +277,8 @@ export const useStudioAiEdit = ({
     setStagedCodeId(null);
     setPreview(null);
     setSaveStatus((prev) => (prev === "saved" ? prev : null));
+    if (!savedRef.current) setDiscardCount((count) => count + 1);
+    savedRef.current = false;
   }, [pendingLayoutCodeIds, stagedCodeId]);
 
   useEffect(() => {
@@ -263,7 +311,9 @@ export const useStudioAiEdit = ({
   }, [pendingLayoutCodeIds]);
 
   const handleLayoutRegionSaved = useCallback((codeId: string) => {
-    if (codeId === stagedCodeIdRef.current) setSaveStatus("saved");
+    if (codeId !== stagedCodeIdRef.current) return;
+    savedRef.current = true;
+    setSaveStatus("saved");
   }, []);
 
   return {
@@ -272,6 +322,7 @@ export const useStudioAiEdit = ({
     isPreviewing: !!stagedCodeId,
     preview,
     saveStatus,
+    discardCount,
     handleLayoutRegionSaved,
   };
 };

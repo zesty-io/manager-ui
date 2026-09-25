@@ -65,7 +65,7 @@ const TONE_OPTIONS = [
 
 // Server entries (SET_VALUE, NAVIGATE, SYSTEM_SUGGESTION) plus the ones built
 // here: USER_INPUT, MESSAGE (a prose reply), CODE_EDIT (an applied code
-// edit's line counts) and ERROR.
+// edit's line counts), NOTICE (a line from the host) and ERROR.
 type ChatEntry = {
   type: string;
   payload: {
@@ -175,6 +175,8 @@ export type AIChatProps = {
   // Keep the transcript in localStorage across reloads. Off, it lasts until
   // the page unloads.
   persistHistory?: boolean;
+  // A line from the host, appended to the transcript once per `id`.
+  notice?: { id: number; text: string };
 };
 
 export const AIChatHeader = ({ onClose }: { onClose: () => void }) => {
@@ -244,6 +246,7 @@ export const AIChat = ({
   forceAutoApply = false,
   summarizeCodeEdits = false,
   persistHistory = true,
+  notice,
 }: AIChatProps) => {
   const { t } = useTranslation();
   const { data: langMappings } = useGetLangsMappingQuery();
@@ -261,6 +264,20 @@ export const AIChat = ({
   const [appliedResponsesLS, setAppliedResponsesLS] = useChatHistory<
     Record<string, number[]>
   >(`ai-drawer-applied-responses`, { [historyKey]: [] }, persistHistory);
+  // Memory only: which notice this transcript already shows.
+  const [noticeShown, setNoticeShown] = useChatHistory<number>(
+    `ai-drawer-notice-${historyKey}`,
+    notice?.id ?? 0,
+    false
+  );
+  useEffect(() => {
+    if (!notice || notice.id === noticeShown) return;
+    setNoticeShown(notice.id);
+    setResponses((prev) => [
+      ...prev,
+      { type: "NOTICE", payload: { value: notice.text } },
+    ]);
+  }, [notice?.id]);
   const promptIsEmpty = isEmpty(prompt.trim());
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [autoApplySetting, setAutoApply] = useState(false);
@@ -510,6 +527,17 @@ export const AIChat = ({
                       onGrow={scrollToEnd}
                     />
                   </Box>
+                );
+              } else if (response.type === "NOTICE") {
+                return (
+                  <Typography
+                    data-cy="AIChatNotice"
+                    key={index}
+                    variant="caption"
+                    color="text.secondary"
+                  >
+                    {response.payload.value}
+                  </Typography>
                 );
               } else if (response.type === "CODE_EDIT") {
                 return (

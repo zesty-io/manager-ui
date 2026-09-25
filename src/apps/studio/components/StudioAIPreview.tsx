@@ -6,7 +6,8 @@ import { HeadTag } from "shell/services/types";
 import instanceZUID from "utility/instanceZUID";
 import { StudioAiPreview } from "../hooks/useStudioAiEdit";
 
-const VOID_TAGS = new Set(["base", "link", "meta"]);
+// Only tags that style or describe the page: a preview runs no head scripts.
+const HEAD_TAG_TYPES = new Set(["link", "meta"]);
 
 const escapeAttribute = (value: string) =>
   String(value)
@@ -15,24 +16,27 @@ const escapeAttribute = (value: string) =>
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;");
 
-// Head tags are data, so only well-formed names reach the markup, and every
-// value is escaped.
+// Head tags are data: only allowed tag types and well-formed, non-handler
+// attribute names reach the markup, and every value is escaped.
 const renderHeadTag = ({ type, attributes }: HeadTag) => {
-  if (!/^[a-z][a-z0-9-]*$/i.test(type || "")) return "";
+  const tag = (type || "").toLowerCase();
+  if (!HEAD_TAG_TYPES.has(tag)) return "";
   const attrs = Object.entries(attributes || {})
-    .filter(([name]) => /^[a-z_:][-a-z0-9_:.]*$/i.test(name))
+    .filter(
+      ([name]) => /^[a-z_:][-a-z0-9_:.]*$/i.test(name) && !/^on/i.test(name)
+    )
     .map(([name, value]) => ` ${name}="${escapeAttribute(value)}"`)
     .join("");
-  return VOID_TAGS.has(type.toLowerCase())
-    ? `<${type}${attrs}>`
-    : `<${type}${attrs}></${type}>`;
+  return `<${tag}${attrs}>`;
 };
 
 // PVL returns the page's body; its <head> is rebuilt here from the instance's
-// head tags plus site.css and site.js. None of it is sent to PVL.
+// head tags, the loader's external stylesheets, and site.css and site.js.
+// None of it is sent to PVL.
 const buildPreviewDocument = (
   html: string,
   headTags: HeadTag[],
+  stylesheets: string[],
   previewOrigin: string,
   previewPassword?: string
 ) => {
@@ -40,7 +44,10 @@ const buildPreviewDocument = (
     ? `?zpw=${encodeURIComponent(previewPassword)}`
     : "";
   const tags = headTags.map(renderHeadTag).join("");
-  return `<!DOCTYPE html><html><head><meta charset="utf-8"><base href="${previewOrigin}/">${tags}<link rel="stylesheet" href="${previewOrigin}/site.css${query}"><script src="${previewOrigin}/site.js${query}" defer></script></head><body>${html}</body></html>`;
+  const links = stylesheets
+    .map((href) => `<link rel="stylesheet" href="${escapeAttribute(href)}">`)
+    .join("");
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"><base href="${previewOrigin}/">${tags}${links}<link rel="stylesheet" href="${previewOrigin}/site.css${query}"><script src="${previewOrigin}/site.js${query}" defer></script></head><body>${html}</body></html>`;
 };
 
 type StudioAIPreviewProps = {
@@ -78,6 +85,7 @@ export const StudioAIPreview = ({
         ? buildPreviewDocument(
             preview.html,
             headTags,
+            preview.stylesheets,
             previewOrigin,
             previewPassword
           )
@@ -96,15 +104,26 @@ export const StudioAIPreview = ({
     >
       {preview.status === "loading" ? <CircularProgress size={28} /> : null}
       {preview.status === "ready" ? (
-        // No allow-same-origin: srcdoc would otherwise inherit the manager's
-        // origin, and the site's scripts with it.
-        <Box
-          data-cy="StudioAIPreviewFrame"
-          component="iframe"
-          sandbox="allow-scripts"
-          srcDoc={srcDoc}
-          sx={{ border: "none", height: "100%", width: "100%" }}
-        />
+        <Box display="flex" flexDirection="column" height="100%" width="100%">
+          {preview.withoutLayout ? (
+            <Alert
+              data-cy="StudioAIPreviewWithoutLayout"
+              severity="info"
+              sx={{ borderRadius: 0 }}
+            >
+              {t("content.studioAiPreviewWithoutLayout")}
+            </Alert>
+          ) : null}
+          {/* No allow-same-origin: srcdoc would otherwise inherit the
+              manager's origin, and the site's scripts with it. */}
+          <Box
+            data-cy="StudioAIPreviewFrame"
+            component="iframe"
+            sandbox="allow-scripts"
+            srcDoc={srcDoc}
+            sx={{ border: "none", flex: 1, width: "100%" }}
+          />
+        </Box>
       ) : null}
       {preview.status === "error" ? (
         <Alert

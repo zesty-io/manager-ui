@@ -1,7 +1,8 @@
 describe("Studio AI Assistant", () => {
   const MCP_CLIENT = /\/client$/;
   const PVL = /\/-\/pvl\//;
-  const ADDED_LINE = '  <p class="studio-e2e-ai">Added by AI</p>';
+  // The literal $& catches a string replacer anywhere between reply and PVL.
+  const ADDED_LINE = '  <p class="studio-e2e-ai">Added by AI $&</p>';
 
   let studioPath = "/";
   let itemZUID = "";
@@ -29,12 +30,17 @@ describe("Studio AI Assistant", () => {
       .filter((key) => key.startsWith("ai-drawer-"))
       .forEach((key) => win.localStorage.removeItem(key));
 
-  const visitStudio = () =>
+  // Waits for the page's view list too, so a test that visits again never
+  // aborts a request an intercept of its own has caught.
+  const visitStudio = () => {
+    cy.intercept("GET", "**/v1/web/views?status=dev").as("webViews");
     cy.waitOn("/v1/content/models**", () => {
       cy.visit(`/studio?path=${studioPath}`, {
         onBeforeLoad: clearChatHistory,
       });
     });
+    cy.wait("@webViews");
+  };
 
   beforeEach(() => {
     cy.stubStaffUser();
@@ -55,7 +61,7 @@ describe("Studio AI Assistant", () => {
   // One line added after the <h1>, one removed: the last plain div.
   const editSource = (code) =>
     code
-      .replace("</h1>\n", `</h1>\n${ADDED_LINE}\n`)
+      .replace("</h1>\n", () => `</h1>\n${ADDED_LINE}\n`)
       .replace(/\n[^\n]*studio-e2e-two[^\n]*/, "");
 
   // Replies to each MCP call in turn with `replies[n](requestBody)`.
@@ -188,6 +194,7 @@ describe("Studio AI Assistant", () => {
     const loader = [
       "(** loader comment **)",
       '<script src="https://example.test/a.js"></script>',
+      '<link rel="stylesheet" href="https://fonts.loader.test/a.css">',
       '<nav class="e2e-loader">loader</nav>',
       "{{current_view}}",
       "<script>window.e2eLoader = 1;</script>",
@@ -226,10 +233,17 @@ describe("Studio AI Assistant", () => {
         },
         {
           ZUID: "21-e2e-3",
-          type: "img src=x onerror",
+          type: "script",
           resourceZUID: instanceZUID,
           sort: 3,
-          attributes: {},
+          attributes: { src: "https://gtm.test/gtm.js" },
+        },
+        {
+          ZUID: "21-e2e-4",
+          type: "link",
+          resourceZUID: instanceZUID,
+          sort: 4,
+          attributes: { rel: "icon", href: "/i.png", onload: "alert(1)" },
         },
       ],
     });
@@ -245,6 +259,7 @@ describe("Studio AI Assistant", () => {
       expect(request.body).not.to.contain("current_view");
       expect(request.body).not.to.contain("<script");
       expect(request.body).not.to.contain("loader comment");
+      expect(request.body).not.to.contain("fonts.loader.test");
     });
     cy.getBySelector("StudioAIPreviewFrame")
       .should("have.attr", "srcdoc")
@@ -252,9 +267,90 @@ describe("Studio AI Assistant", () => {
         "contain",
         '<link rel="stylesheet" href="https://fonts.test/css?a=1&amp;b=&quot;2&quot;">'
       )
+      .and(
+        "contain",
+        '<link rel="stylesheet" href="https://fonts.loader.test/a.css">'
+      )
+      .and("contain", '<link rel="icon" href="/i.png">')
       .and("not.contain", "e2e-other-item")
-      .and("not.contain", "onerror")
+      .and("not.contain", "gtm.test")
+      .and("not.contain", "onload")
       .and("contain", "/site.css");
+  });
+
+  it("falls back to the page alone when the loader-wrapped preview is refused", () => {
+    cy.intercept("GET", "**/v1/web/views?status=dev", (req) =>
+      req.continue((res) => {
+        const views = res.body.data.filter((v) => v.fileName !== "loader");
+        views.push({
+          ...views[0],
+          ZUID: "11-e2e-loader",
+          fileName: "loader",
+          code: '<nav class="e2e-loader">loader</nav>\n{{current_view}}',
+          contentModelZUID: null,
+        });
+        res.body.data = views;
+      })
+    );
+    stubMcp((body) => mcpReply([setValue(editSource(body.code))]));
+    stubPvl({ statusCode: 200, body: "<p>Rendered alone</p>" });
+    // A refused wrapped request reaches the app as a failed fetch: the
+    // edge's 403 carries no CORS headers. Chromium may retry it, so the
+    // requests are collected rather than counted.
+    const bodies = [];
+    cy.intercept({ method: "POST", url: PVL }, (req) => {
+      bodies.push(String(req.body));
+      if (String(req.body).includes("e2e-loader")) {
+        req.reply({ forceNetworkError: true });
+        return;
+      }
+      req.reply({
+        headers: { "access-control-allow-origin": "*" },
+        body: "<p>Rendered alone</p>",
+      });
+    });
+    visitStudio();
+    openAiPanel();
+    sendPrompt("Add a line under the heading");
+
+    cy.wrap(bodies).should((sent) => {
+      expect(sent[0]).to.contain("e2e-loader");
+      const alone = sent.filter((body) => !body.includes("e2e-loader"));
+      expect(alone).to.have.length(1);
+      expect(alone[0]).to.contain(ADDED_LINE);
+    });
+    cy.getBySelector("StudioAIPreviewWithoutLayout").should("exist");
+    cy.getBySelector("StudioAIPreviewFrame")
+      .should("have.attr", "srcdoc")
+      .and("contain", "Rendered alone");
+  });
+
+  it("stages a reply that lands in the same render as a fields update", () => {
+    stubMcp((body) => mcpReply([setValue(editSource(body.code))]));
+    stubPvl({ statusCode: 200, body: "<p>preview</p>" });
+    openAiPanel();
+    // Rebuild the fields store in the same dispatch that resolves the MCP
+    // call, so React commits both together, as a field fetch landing with
+    // the reply does.
+    cy.window().then((win) => {
+      let fired = false;
+      win.zestyStore.subscribe(() => {
+        if (fired) return;
+        const mutations = win.zestyStore.getState().mcpApi?.mutations || {};
+        const resolved = Object.values(mutations).some(
+          (m) =>
+            m?.endpointName === "geminiGeneration" && m.status === "fulfilled"
+        );
+        if (!resolved) return;
+        fired = true;
+        win.zestyStore.dispatch({ type: "FETCH_FIELDS_SUCCESS", payload: {} });
+      });
+    });
+    sendPrompt("Add a line under the heading");
+
+    cy.getBySelector("AIChatCodeEdit").should("exist");
+    cy.getBySelector("StudioAIPreview").should("exist");
+    cy.getBySelector("StudioLayoutSaveBar").should("exist");
   });
 
   it("renders a prose reply as a message, and a NAVIGATE beside it", () => {
@@ -400,22 +496,24 @@ describe("Studio AI Assistant", () => {
   it("cancel drops every staged turn and returns to the live canvas", () => {
     stubMcp((body) => mcpReply([setValue(editSource(body.code))]));
     stubPvl({ statusCode: 200, body: "<p>preview</p>" });
-    // Whether a reload or tab close would be held for confirmation.
-    const holdsUnload = () =>
-      cy.window().then((win) => {
+    // Whether a reload or tab close would be held for confirmation. Retried,
+    // since the listener is attached in a passive effect.
+    const holdsUnload = (expected) =>
+      cy.window().should((win) => {
         const evt = new win.Event("beforeunload", { cancelable: true });
         win.dispatchEvent(evt);
-        return evt.defaultPrevented;
+        expect(evt.defaultPrevented).to.eq(expected);
       });
-    holdsUnload().should("eq", false);
+    holdsUnload(false);
     openAiPanel();
     sendPrompt("Add a line under the heading");
     cy.getBySelector("StudioAIPreview").should("exist");
-    holdsUnload().should("eq", true);
+    holdsUnload(true);
 
     cy.getBySelector("StudioLayoutCancelButton").click();
     cy.getBySelector("StudioAIPreview").should("not.exist");
-    holdsUnload().should("eq", false);
+    holdsUnload(false);
+    cy.getBySelector("AIChatNotice").should("have.text", "Changes discarded");
     cy.getBySelector("StudioLayoutSaveBar").should("not.exist");
     cy.getBySelector("StudioSaveStatus").should("not.exist");
     cy.getBySelector("StudioLayersPanel").should(

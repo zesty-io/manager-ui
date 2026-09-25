@@ -7,6 +7,8 @@ type StudioAIPanelProps = {
   pageModelZUID: string;
   pageItemZUID: string;
   drawerWidth: number;
+  // Staged AI changes dropped without a save so far.
+  discardCount: number;
 };
 
 // Takes the inspector's column. Every page shares the /studio pathname, so
@@ -17,6 +19,7 @@ export const StudioAIPanel = ({
   pageModelZUID,
   pageItemZUID,
   drawerWidth,
+  discardCount,
 }: StudioAIPanelProps) => {
   const { t } = useTranslation();
 
@@ -47,6 +50,14 @@ export const StudioAIPanel = ({
           forceAutoApply
           summarizeCodeEdits
           persistHistory={false}
+          notice={
+            discardCount
+              ? {
+                  id: discardCount,
+                  text: t("content.studioAiChangesDiscarded"),
+                }
+              : undefined
+          }
         />
       </Box>
     </Drawer>
