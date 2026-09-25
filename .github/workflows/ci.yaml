@@ -12,10 +12,7 @@ concurrency:
 jobs:
   lint:
     runs-on: ubuntu-latest
-    # Job-level concurrency overrides the workflow-level group above for
-    # this job only — lint doesn't touch the shared dev instance, so it
-    # shouldn't queue behind another PR's e2e run. Same reasoning
-    # claude-negative-qa.yml documents for giving itself its own group.
+    # Own concurrency group — lint shouldn't queue behind another PR's e2e run.
     concurrency:
       group: manager-ui-lint-${{ github.ref }}
       cancel-in-progress: true

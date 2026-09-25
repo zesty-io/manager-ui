@@ -1,34 +1,7 @@
 #!/usr/bin/env node
 "use strict";
 
-/**
- * Custom i18n lint checks for public/locales/**\/*.json that ESLint can't
- * express (it operates on JS/TS ASTs, not translation JSON). Run as part of
- * `npm run lint`. See CLAUDE.md > Localization for the conventions enforced
- * here.
- *
- * Checks:
- *   1. Flat structure — no nested objects (keySeparator: false in i18next
- *      config means a nested object is a silent dead lookup, not an error).
- *   2. Keys are flat camelCase, optionally with one recognized CLDR plural
- *      suffix (_zero/_one/_two/_few/_many/_other).
- *   3. No decorative wrapping in values — trailing colons, surrounding
- *      em/en-dashes, whole-value-wrapping parens, "-- --" decorations.
- *   4. No decorative ALL-CAPS words in values (Latin or Cyrillic — the only
- *      supported scripts with letter casing). A maintained allowlist covers
- *      genuine technical acronyms (URL, API, ZUID, ЧЗВ, ...).
- *   5. A value containing an HTML/component placeholder (e.g. <strong>,
- *      <fooLink />) must have a key ending in "Rich", so call sites know
- *      only <Trans i18nKey="..."> is safe for it, never t().
- *   6. Plural parity — any key with at least one CLDR plural suffix must
- *      carry EVERY suffix that locale's grammar requires (via i18next's own
- *      pluralResolver, not a hand-maintained table, so this never drifts
- *      from the library's actual CLDR data).
- *   7. Non-plural key parity — a key that carries no CLDR plural suffix must
- *      exist, verbatim, in every locale's file for that namespace. Plural
- *      keys are exempt from this (that's check 6's job, and locale grammars
- *      legitimately need different suffix sets per CLAUDE.md).
- */
+// Locale-JSON checks ESLint can't express — see CLAUDE.md > Localization.
 
 const fs = require("fs");
 const path = require("path");
@@ -39,9 +12,7 @@ const LOCALES = ["en-US", "es-ES", "hi-IN", "zh-CN", "ru-RU", "nl-NL"];
 const PLURAL_SUFFIXES = ["zero", "one", "two", "few", "many", "other"];
 const PLURAL_SUFFIX_RE = new RegExp(`_(${PLURAL_SUFFIXES.join("|")})$`);
 
-// Genuine technical/industry acronyms this codebase's UI copy legitimately
-// uses in all caps (CLAUDE.md's "technical tokens" skip category). Extend
-// this list — don't disable the check — when a new one shows up for real.
+// Genuine technical acronyms allowed in all caps — extend, don't disable the check.
 const LATIN_ACRONYMS = new Set(
   [
     "URL",
@@ -100,13 +71,10 @@ const LATIN_ACRONYMS = new Set(
   ].flatMap((w) => [w, `${w}S`])
 );
 
-// Same idea, for the one other supported locale whose script has case
-// (ru-RU / Cyrillic). CJK (zh-CN) and Devanagari (hi-IN) have no case
-// distinction, so no equivalent list is needed for them.
+// Same idea for ru-RU/Cyrillic — zh-CN and hi-IN have no letter casing.
 const CYRILLIC_ACRONYMS = new Set(["ЧЗВ"]);
 
-// Shared with eslint-rules/zestyI18n/key-format.js so the call-site check
-// and this locale-JSON check can't drift apart on which keys are exempt.
+// Shared with eslint-rules/zestyI18n/key-format.js.
 const KNOWN_ORPHANED_KEYS = require("../eslint-rules/zestyI18n/known-orphaned-keys");
 
 const DECORATIVE_VALUE_PATTERNS = [
@@ -220,9 +188,7 @@ function checkNamespace(ns) {
 }
 
 function checkPluralParity(ns, perLocaleData, requiredSuffixesByLocale) {
-  // Union, across all locales, of every base key that has at least one
-  // recognized plural suffix anywhere — that's "this key is pluralized"
-  // and every locale must carry its own full CLDR suffix set for it.
+  // Every base key pluralized in any locale.
   const bases = new Set();
   for (const locale of LOCALES) {
     const entry = perLocaleData[locale];
@@ -257,10 +223,7 @@ function checkPluralParity(ns, perLocaleData, requiredSuffixesByLocale) {
 }
 
 function checkKeyParity(perLocaleData) {
-  // Only compare locales whose file for this namespace exists at all —
-  // a namespace can legitimately be absent for a locale (see git status:
-  // not every namespace has been through the localize pipeline for every
-  // locale yet).
+  // A namespace can legitimately be absent for a locale.
   const locales = LOCALES.filter((l) => perLocaleData[l]);
   if (locales.length < 2) return;
 
