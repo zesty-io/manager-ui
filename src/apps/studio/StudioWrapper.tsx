@@ -2390,6 +2390,7 @@ export const StudioWrapper = () => {
                     preview={aiPreview ?? { status: "loading" }}
                     previewOrigin={aiPreviewOrigin}
                     previewPassword={previewLock?.value}
+                    pageItemZUID={pageItemZUID}
                   />
                 ) : null
               }

@@ -20,6 +20,22 @@ const loadsExternalStylesheet = (source: string) =>
       /stylesheet/i.test(tag) && /\bhref\s*=\s*["']?(?:https?:)?\/\//i.test(tag)
   );
 
+const CURRENT_VIEW = /\{\{\s*current_view\s*\}\}/;
+
+// The preview renders the page inside the instance's loader, so includes such
+// as the header come along. Its scripts are left out: analytics and site code
+// have no place in a preview. So are its Parsley comments, which render
+// nothing: with some views the edge refuses them with a bare 403 (measured on
+// the dev loader). Without a usable loader, the view alone.
+const wrapInLoader = (loader: string | null, view: string) => {
+  if (!loader || !CURRENT_VIEW.test(loader)) return view;
+  return loader
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script\s*>/gi, "")
+    .replace(/<script\b[^>]*\/>/gi, "")
+    .replace(/\(\*\*[\s\S]*?\*\*\)/g, "")
+    .replace(new RegExp(CURRENT_VIEW.source, "g"), () => view);
+};
+
 export type StudioAiPreview =
   | { status: "loading" }
   | { status: "ready"; html: string }
@@ -91,6 +107,11 @@ export const useStudioAiEdit = ({
   // preflighted request cannot follow a redirect.
   const previewOrigin = `https://${randomHashID ?? ""}${CONFIG.URL_PREVIEW}`;
 
+  const loaderView = useMemo(
+    () => webViews.find((view) => view?.fileName === "loader") || null,
+    [webViews]
+  );
+
   const readSource = useCallback(() => {
     if (!pageView) return "";
     return readStagedLayoutSource(pageView.ZUID) ?? pageView.code ?? "";
@@ -120,8 +141,12 @@ export const useStudioAiEdit = ({
   );
 
   const renderPreview = useCallback(
-    async (source: string) => {
+    async (view: string) => {
       const request = ++previewRequestRef.current;
+      const loader = loaderView
+        ? readStagedLayoutSource(loaderView.ZUID) ?? loaderView.code
+        : null;
+      const source = wrapInLoader(loader, view);
       if (new TextEncoder().encode(source).length > PVL_MAX_PARSLEY_BYTES) {
         setPreview({
           status: "error",
@@ -152,9 +177,11 @@ export const useStudioAiEdit = ({
     },
     [
       describePreviewError,
+      loaderView,
       pageItemZUID,
       previewOrigin,
       previewPassword,
+      readStagedLayoutSource,
       renderParsleyPreview,
       t,
     ]
@@ -209,6 +236,19 @@ export const useStudioAiEdit = ({
   useEffect(() => {
     if (!stagedCodeIdRef.current) setSaveStatus(null);
   }, [pageItemZUID]);
+
+  // A reload or a closed tab would drop the staged change without a word; the
+  // in-app prompt only sees navigation the router handles.
+  useEffect(() => {
+    if (!stagedCodeId) return;
+    const handleBeforeUnload = (evt: BeforeUnloadEvent) => {
+      evt.preventDefault();
+      // Chrome only prompts when returnValue is set.
+      evt.returnValue = "";
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [stagedCodeId]);
 
   // "Saved" describes the last AI save only until anything is staged again.
   // Keyed on the empty → non-empty transition: a save only ever shrinks the

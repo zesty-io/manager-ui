@@ -40,6 +40,15 @@ describe("AI drawer", () => {
       "Here is a friendlier headline."
     );
     cy.contains("Error parsing AI response").should("not.exist");
+
+    // The Shell drawer keeps its transcript across reloads.
+    cy.window()
+      .its("localStorage")
+      .invoke(
+        "getItem",
+        `ai-drawer-responses-/content/${MODEL_ZUID}/${ITEM_ZUID}`
+      )
+      .should("contain", "Here is a friendlier headline.");
   });
 
   it("stays unavailable outside the content, blocks and code apps", () => {

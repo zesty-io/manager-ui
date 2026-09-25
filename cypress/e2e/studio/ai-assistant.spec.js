@@ -29,13 +29,16 @@ describe("Studio AI Assistant", () => {
       .filter((key) => key.startsWith("ai-drawer-"))
       .forEach((key) => win.localStorage.removeItem(key));
 
-  beforeEach(() => {
-    cy.stubStaffUser();
+  const visitStudio = () =>
     cy.waitOn("/v1/content/models**", () => {
       cy.visit(`/studio?path=${studioPath}`, {
         onBeforeLoad: clearChatHistory,
       });
     });
+
+  beforeEach(() => {
+    cy.stubStaffUser();
+    visitStudio();
   });
 
   const mcpReply = (actions) => ({
@@ -178,6 +181,80 @@ describe("Studio AI Assistant", () => {
       .should("have.attr", "aria-disabled", "true")
       .and("have.attr", "inert");
     cy.getBySelector("StudioLayoutSaveBar").should("exist");
+  });
+
+  it("previews the page inside the loader, with the instance's head tags", () => {
+    const instanceZUID = new URL(Cypress.config("baseUrl")).host.split(".")[0];
+    const loader = [
+      "(** loader comment **)",
+      '<script src="https://example.test/a.js"></script>',
+      '<nav class="e2e-loader">loader</nav>',
+      "{{current_view}}",
+      "<script>window.e2eLoader = 1;</script>",
+    ].join("\n");
+    cy.intercept("GET", "**/v1/web/views?status=dev", (req) =>
+      req.continue((res) => {
+        const views = res.body.data.filter((v) => v.fileName !== "loader");
+        views.push({
+          ...views[0],
+          ZUID: "11-e2e-loader",
+          fileName: "loader",
+          code: loader,
+          contentModelZUID: null,
+        });
+        res.body.data = views;
+      })
+    );
+    cy.intercept("GET", "**/v1/web/headtags", {
+      data: [
+        {
+          ZUID: "21-e2e-1",
+          type: "link",
+          resourceZUID: instanceZUID,
+          sort: 1,
+          attributes: {
+            rel: "stylesheet",
+            href: 'https://fonts.test/css?a=1&b="2"',
+          },
+        },
+        {
+          ZUID: "21-e2e-2",
+          type: "meta",
+          resourceZUID: "7-not-this-page",
+          sort: 2,
+          attributes: { name: "e2e-other-item" },
+        },
+        {
+          ZUID: "21-e2e-3",
+          type: "img src=x onerror",
+          resourceZUID: instanceZUID,
+          sort: 3,
+          attributes: {},
+        },
+      ],
+    });
+    stubMcp((body) => mcpReply([setValue(editSource(body.code))]));
+    stubPvl({ statusCode: 200, body: "<p>Rendered by PVL</p>" });
+    visitStudio();
+    openAiPanel();
+    sendPrompt("Add a line under the heading");
+
+    cy.wait("@pvl").then(({ request }) => {
+      expect(request.body).to.contain('<nav class="e2e-loader">loader</nav>');
+      expect(request.body).to.contain(ADDED_LINE);
+      expect(request.body).not.to.contain("current_view");
+      expect(request.body).not.to.contain("<script");
+      expect(request.body).not.to.contain("loader comment");
+    });
+    cy.getBySelector("StudioAIPreviewFrame")
+      .should("have.attr", "srcdoc")
+      .and(
+        "contain",
+        '<link rel="stylesheet" href="https://fonts.test/css?a=1&amp;b=&quot;2&quot;">'
+      )
+      .and("not.contain", "e2e-other-item")
+      .and("not.contain", "onerror")
+      .and("contain", "/site.css");
   });
 
   it("renders a prose reply as a message, and a NAVIGATE beside it", () => {
@@ -323,18 +400,50 @@ describe("Studio AI Assistant", () => {
   it("cancel drops every staged turn and returns to the live canvas", () => {
     stubMcp((body) => mcpReply([setValue(editSource(body.code))]));
     stubPvl({ statusCode: 200, body: "<p>preview</p>" });
+    // Whether a reload or tab close would be held for confirmation.
+    const holdsUnload = () =>
+      cy.window().then((win) => {
+        const evt = new win.Event("beforeunload", { cancelable: true });
+        win.dispatchEvent(evt);
+        return evt.defaultPrevented;
+      });
+    holdsUnload().should("eq", false);
     openAiPanel();
     sendPrompt("Add a line under the heading");
     cy.getBySelector("StudioAIPreview").should("exist");
+    holdsUnload().should("eq", true);
 
     cy.getBySelector("StudioLayoutCancelButton").click();
     cy.getBySelector("StudioAIPreview").should("not.exist");
+    holdsUnload().should("eq", false);
     cy.getBySelector("StudioLayoutSaveBar").should("not.exist");
     cy.getBySelector("StudioSaveStatus").should("not.exist");
     cy.getBySelector("StudioLayersPanel").should(
       "not.have.attr",
       "aria-disabled"
     );
+  });
+
+  it("keeps the transcript for the page's lifetime only", () => {
+    stubMcp(() => ({ data: "Nothing to change.", message: "", tools: [] }));
+    openAiPanel();
+    sendPrompt("Anything to change?");
+    cy.getBySelector("AIChatMessage").should("have.length", 1);
+
+    cy.getBySelector("AIChatClose").click();
+    openAiPanel();
+    cy.getBySelector("AIChatMessage").should("have.length", 1);
+    cy.window().then((win) => {
+      const stored = Object.keys(win.localStorage).filter((key) =>
+        key.startsWith("ai-drawer-")
+      );
+      expect(stored, "nothing persisted").to.be.empty;
+    });
+
+    cy.reload();
+    openAiPanel();
+    cy.getBySelector("AIChatUserInput").should("not.exist");
+    cy.getBySelector("AIChatMessage").should("not.exist");
   });
 
   it("prompts before leaving Studio with a staged change", () => {

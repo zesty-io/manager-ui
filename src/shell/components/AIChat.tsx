@@ -17,7 +17,7 @@ import {
   Typography,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useGeminiGenerationMutation } from "../services/mcp";
 import { enqueueAction } from "../../engine/queue";
@@ -32,7 +32,6 @@ import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import LanguageRoundedIcon from "@mui/icons-material/LanguageRounded";
 import { useGetLangsMappingQuery } from "../services/instance";
 import { suggestionSystemInstruction } from "../views/Shell/systemInstructions";
-import { useLocalStorage } from "react-use";
 import { getRefRegistry } from "../../engine/refRegistry";
 import geminiLogo from "../../../public/images/geminiLogo.svg";
 import geminiIcon from "../../../public/images/geminiIcon.svg";
@@ -121,6 +120,44 @@ const parseAiResponse = (data: unknown): (ChatEntry | null)[] => {
   return (Array.isArray(parsed) ? parsed : [parsed]).map(toChatEntry);
 };
 
+// Transcripts that must not outlive the page, keyed like the persisted ones.
+const memoryHistory = new Map<string, unknown>();
+
+// localStorage when `persist`, as react-use's useLocalStorage stores it;
+// otherwise memory, which a reload clears. The key is fixed per mount: both
+// hosts remount the chat when it changes.
+function useChatHistory<T>(key: string, initialValue: T, persist: boolean) {
+  const [value, setValue] = useState<T>(() => {
+    if (!persist) return (memoryHistory.get(key) as T) ?? initialValue;
+    try {
+      const stored = localStorage.getItem(key);
+      if (stored === null) {
+        localStorage.setItem(key, JSON.stringify(initialValue));
+        return initialValue;
+      }
+      return JSON.parse(stored);
+    } catch {
+      return initialValue;
+    }
+  });
+  const store = useCallback(
+    (next: T) => {
+      setValue(next);
+      if (!persist) {
+        memoryHistory.set(key, next);
+        return;
+      }
+      try {
+        localStorage.setItem(key, JSON.stringify(next));
+      } catch {
+        // Storage full or blocked: the transcript still works for this mount.
+      }
+    },
+    [key, persist]
+  );
+  return [value, store] as const;
+}
+
 export type AIChatProps = {
   onClose: () => void;
   // Scopes the persisted transcript and the record of applied suggestions.
@@ -135,6 +172,9 @@ export type AIChatProps = {
   // Show an applied `code-editor` SET_VALUE as its line counts rather than
   // the whole file.
   summarizeCodeEdits?: boolean;
+  // Keep the transcript in localStorage across reloads. Off, it lasts until
+  // the page unloads.
+  persistHistory?: boolean;
 };
 
 export const AIChatHeader = ({ onClose }: { onClose: () => void }) => {
@@ -203,6 +243,7 @@ export const AIChat = ({
   animateValues = true,
   forceAutoApply = false,
   summarizeCodeEdits = false,
+  persistHistory = true,
 }: AIChatProps) => {
   const { t } = useTranslation();
   const { data: langMappings } = useGetLangsMappingQuery();
@@ -210,15 +251,16 @@ export const AIChat = ({
   const [isInitialMount, setIsInitialMount] = useState(true);
   const promptInputRef = useRef<HTMLInputElement>(null);
 
-  const [responsesLS, setResponsesLS] = useLocalStorage<ChatEntry[]>(
+  const [responsesLS, setResponsesLS] = useChatHistory<ChatEntry[]>(
     `ai-drawer-responses-${historyKey}`,
-    []
+    [],
+    persistHistory
   );
   const [responses, setResponses] = useState(responsesLS || []);
   const [prompt, setPrompt] = useState("");
-  const [appliedResponsesLS, setAppliedResponsesLS] = useLocalStorage<
+  const [appliedResponsesLS, setAppliedResponsesLS] = useChatHistory<
     Record<string, number[]>
-  >(`ai-drawer-applied-responses`, { [historyKey]: [] });
+  >(`ai-drawer-applied-responses`, { [historyKey]: [] }, persistHistory);
   const promptIsEmpty = isEmpty(prompt.trim());
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [autoApplySetting, setAutoApply] = useState(false);

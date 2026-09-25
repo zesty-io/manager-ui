@@ -1,25 +1,53 @@
 import { Alert, AlertTitle, Box, CircularProgress } from "@mui/material";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { useGetHeadTagsQuery } from "shell/services/instance";
+import { HeadTag } from "shell/services/types";
+import instanceZUID from "utility/instanceZUID";
 import { StudioAiPreview } from "../hooks/useStudioAiEdit";
 
-// PVL returns the view's markup alone; the page's styling comes from the
-// instance's site.css and site.js, as the Freestyle canvas loads them.
+const VOID_TAGS = new Set(["base", "link", "meta"]);
+
+const escapeAttribute = (value: string) =>
+  String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+
+// Head tags are data, so only well-formed names reach the markup, and every
+// value is escaped.
+const renderHeadTag = ({ type, attributes }: HeadTag) => {
+  if (!/^[a-z][a-z0-9-]*$/i.test(type || "")) return "";
+  const attrs = Object.entries(attributes || {})
+    .filter(([name]) => /^[a-z_:][-a-z0-9_:.]*$/i.test(name))
+    .map(([name, value]) => ` ${name}="${escapeAttribute(value)}"`)
+    .join("");
+  return VOID_TAGS.has(type.toLowerCase())
+    ? `<${type}${attrs}>`
+    : `<${type}${attrs}></${type}>`;
+};
+
+// PVL returns the page's body; its <head> is rebuilt here from the instance's
+// head tags plus site.css and site.js. None of it is sent to PVL.
 const buildPreviewDocument = (
   html: string,
+  headTags: HeadTag[],
   previewOrigin: string,
   previewPassword?: string
 ) => {
   const query = previewPassword
     ? `?zpw=${encodeURIComponent(previewPassword)}`
     : "";
-  return `<!DOCTYPE html><html><head><meta charset="utf-8"><base href="${previewOrigin}/"><link rel="stylesheet" href="${previewOrigin}/site.css${query}"><script src="${previewOrigin}/site.js${query}" defer></script></head><body>${html}</body></html>`;
+  const tags = headTags.map(renderHeadTag).join("");
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"><base href="${previewOrigin}/">${tags}<link rel="stylesheet" href="${previewOrigin}/site.css${query}"><script src="${previewOrigin}/site.js${query}" defer></script></head><body>${html}</body></html>`;
 };
 
 type StudioAIPreviewProps = {
   preview: StudioAiPreview;
   previewOrigin: string;
   previewPassword?: string;
+  pageItemZUID: string;
 };
 
 // Covers the live canvas while an AI change is staged, which is also what
@@ -28,14 +56,33 @@ export const StudioAIPreview = ({
   preview,
   previewOrigin,
   previewPassword,
+  pageItemZUID,
 }: StudioAIPreviewProps) => {
   const { t } = useTranslation();
+  const { data: allHeadTags } = useGetHeadTagsQuery();
+  // The instance's own tags plus the page item's, in their saved order.
+  const headTags = useMemo(
+    () =>
+      (allHeadTags || [])
+        .filter(
+          (tag) =>
+            tag.resourceZUID === instanceZUID ||
+            tag.resourceZUID === pageItemZUID
+        )
+        .sort((a, b) => (a.sort ?? 0) - (b.sort ?? 0)),
+    [allHeadTags, pageItemZUID]
+  );
   const srcDoc = useMemo(
     () =>
       preview.status === "ready"
-        ? buildPreviewDocument(preview.html, previewOrigin, previewPassword)
+        ? buildPreviewDocument(
+            preview.html,
+            headTags,
+            previewOrigin,
+            previewPassword
+          )
         : "",
-    [preview, previewOrigin, previewPassword]
+    [headTags, preview, previewOrigin, previewPassword]
   );
 
   return (

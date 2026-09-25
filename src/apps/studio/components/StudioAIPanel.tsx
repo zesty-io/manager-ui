@@ -10,7 +10,8 @@ type StudioAIPanelProps = {
 };
 
 // Takes the inspector's column. Every page shares the /studio pathname, so
-// the transcript is keyed by the page item instead.
+// the transcript is keyed by the page item instead, and kept in memory only:
+// a staged change does not survive a reload, so its summaries must not.
 export const StudioAIPanel = ({
   onClose,
   pageModelZUID,
@@ -45,6 +46,7 @@ export const StudioAIPanel = ({
           placeholder={t("content.studioAiPlaceholder")}
           forceAutoApply
           summarizeCodeEdits
+          persistHistory={false}
         />
       </Box>
     </Drawer>
