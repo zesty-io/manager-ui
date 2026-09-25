@@ -10,12 +10,13 @@ import {
 } from "@mui/material";
 import { WarningAmberRounded } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
+import { NavModalScope } from "../../../../../../utility/history";
 
 type PendingEditsModalProps = {
   show: boolean;
   loading?: boolean;
-  onSave: () => Promise<void>;
-  onDiscard: () => Promise<void>;
+  onSave: (scope: NavModalScope) => Promise<void>;
+  onDiscard: (scope: NavModalScope) => Promise<void>;
 };
 
 export default memo(function PendingEditsModal(props: PendingEditsModalProps) {
@@ -25,13 +26,16 @@ export default memo(function PendingEditsModal(props: PendingEditsModalProps) {
   const [loading, setLoading] = useState(props.loading || false);
   const [open, setOpen] = useState(false);
   const [answer, setAnswer] = useState(() => () => {});
+  // Stored with `answer`, so a prompt that replaces this one resets it.
+  const [scope, setScope] = useState<NavModalScope>({});
 
   // Expose globals so external components can invoke
   // NOTE: Should this be a portal?
   useEffect(() => {
-    window.openContentNavigationModal = (callback) => {
+    window.openContentNavigationModal = (callback, nextScope = {}) => {
       setOpen(true);
       setAnswer(() => callback);
+      setScope(nextScope);
     };
 
     return () => {
@@ -44,7 +48,7 @@ export default memo(function PendingEditsModal(props: PendingEditsModalProps) {
       case "save":
         setLoading(true);
         props
-          .onSave()
+          .onSave(scope)
           .then((i) => {
             // @ts-ignore
             answer(true);
@@ -61,12 +65,21 @@ export default memo(function PendingEditsModal(props: PendingEditsModalProps) {
         break;
       case "delete":
         setLoading(true);
-        props.onDiscard().then(() => {
-          setLoading(false);
-          setOpen(false);
-          // @ts-ignore
-          answer(true);
-        });
+        props
+          .onDiscard(scope)
+          .then(() => {
+            // @ts-ignore
+            answer(true);
+          })
+          .catch((err) => {
+            console.error(err);
+            // @ts-ignore
+            answer(false);
+          })
+          .finally(() => {
+            setLoading(false);
+            setOpen(false);
+          });
         break;
       case "cancel":
         setOpen(false);

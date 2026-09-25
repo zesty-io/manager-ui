@@ -298,6 +298,8 @@ export const AIChat = ({
         });
 
         if (!codeEditor) return response;
+        // Refused by the handle: nothing changed, so nothing to count.
+        if (!response.payload.value.trim()) return null;
         return {
           type: "CODE_EDIT",
           payload: {
@@ -310,7 +312,7 @@ export const AIChat = ({
         };
       });
 
-      setResponses((prev) => [...prev, ...transcript]);
+      setResponses((prev) => [...prev, ...transcript.filter(Boolean)]);
     } catch (error) {
       console.error("Error parsing AI response", error);
       setResponses((prev) => [...prev, parseError]);

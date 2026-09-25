@@ -216,7 +216,8 @@ describe("Studio AI Assistant", () => {
       // Unvalidated, the scalar reaches the transcript and the render reads
       // `payload` off it.
       () => mcpReply([42, { type: "NAVIGATE" }]),
-      () => mcpReply([{ type: "SET_VALUE" }])
+      () => mcpReply([{ type: "SET_VALUE" }]),
+      () => mcpReply([setValue("  \n ")])
     );
     openAiPanel();
 
@@ -234,6 +235,12 @@ describe("Studio AI Assistant", () => {
     cy.getBySelector("AIChatUserInput").should("have.length", 3);
     cy.getBySelector("StudioHeader").should("exist");
     cy.getBySelector("StudioAIPreview").should("not.exist");
+
+    // A blank file is refused, and no line counts are shown for it.
+    sendPrompt("Fourth");
+    cy.contains("The assistant returned an empty file").should("exist");
+    cy.getBySelector("AIChatCodeEdit").should("not.exist");
+    cy.getBySelector("StudioLayoutSaveBar").should("not.exist");
   });
 
   it("refuses to preview a file over the PVL size limit", () => {
@@ -356,6 +363,33 @@ describe("Studio AI Assistant", () => {
     cy.getBySelector("AIChatNavigate").click();
     cy.getBySelector("PendingEditsModalDiscard").click();
     cy.location("pathname").should("eq", `/content/${modelZUID}/${itemZUID}`);
+  });
+
+  // Writes the seeded view.
+  it("saves the staged AI change when leaving replaces a mode-switch prompt", () => {
+    stubMcp((body) => mcpReply([setValue(editSource(body.code))]));
+    stubPvl({ statusCode: 200, body: "<p>preview</p>" });
+    cy.intercept("PUT", `/v1/web/views/${viewZUID}`).as("updateWebView");
+    openAiPanel();
+    sendPrompt("Add a line under the heading");
+    cy.wait("@pvl");
+
+    cy.window().then((win) =>
+      win.zestyStore.dispatch({ type: "MARK_ITEM_DIRTY", itemZUID })
+    );
+    cy.getBySelector("StudioModeToggleOption-layout").click();
+    cy.getBySelector("PendingEditsModal").should("exist");
+
+    // Browser Back while the mode-switch prompt is open: the route-leave
+    // prompt takes it over.
+    cy.window().then((win) => {
+      win.history.pushState(null, "", "/launchpad");
+      win.dispatchEvent(new win.PopStateEvent("popstate", { state: null }));
+    });
+    cy.getBySelector("PendingEditsModalSave").click();
+
+    cy.wait("@updateWebView");
+    cy.location("pathname").should("eq", "/launchpad");
   });
 
   // Last: it writes the seeded view.
