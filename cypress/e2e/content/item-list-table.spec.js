@@ -53,6 +53,10 @@ describe("Content item list table", () => {
     cy.getBySelector("MultiPageTableDelete").click();
     cy.getBySelector("ConfirmMultiPageTableDelete").click();
 
+    // Selection is cleared after a successful delete, so the bulk action
+    // bar (and its Delete button) should no longer be present.
+    cy.getBySelector("MultiPageTableDelete").should("not.exist");
+
     cy.reload();
     cy.wait("@contentModels");
 
