@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useHistory, useParams } from "react-router";
 import {
   Box,
@@ -25,6 +26,7 @@ import SearchBox from "shell/components/SearchBox";
 import blockPlaceholder from "../../../../public/images/blockPlaceholder.png";
 
 export const BlockModel = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const history = useHistory();
   const { modelZUID } = useParams<{
@@ -123,7 +125,7 @@ export const BlockModel = () => {
                   </InputAdornment>
                 ),
               }}
-              placeholder="Search Variants"
+              placeholder={t("shell.blockSelectorSearchVariants")}
             />
             <Button
               variant="contained"
@@ -132,7 +134,7 @@ export const BlockModel = () => {
               onClick={() => setShowCreateVariantDialog(true)}
               data-cy="create-variant-button-header"
             >
-              Create Variant
+              {t("shell.blockSelectorCreateVariant")}
             </Button>
           </Box>
         </Box>
@@ -168,10 +170,10 @@ export const BlockModel = () => {
           >
             <Box>
               <Typography variant="h4" fontWeight={700}>
-                Start Creating Variants Now
+                {t("blocks.startCreatingVariantsNow")}
               </Typography>
               <Typography variant="body1" color="text.secondary" mt={1} mb={2}>
-                Add your variants here. Start by creating your first variant.
+                {t("blocks.addVariantsEmptyStateBody")}
               </Typography>
               <Button
                 variant="contained"
@@ -180,7 +182,7 @@ export const BlockModel = () => {
                 onClick={() => setShowCreateVariantDialog(true)}
                 data-cy="create-variant-button"
               >
-                Create Variant
+                {t("shell.blockSelectorCreateVariant")}
               </Button>
             </Box>
             <Box>
@@ -188,7 +190,7 @@ export const BlockModel = () => {
                 height={420}
                 width={582}
                 src={emptyItemsList}
-                alt="Empty Items List"
+                alt={t("blocks.emptyItemsListAlt")}
               />
             </Box>
           </Box>

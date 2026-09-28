@@ -3,6 +3,7 @@ import { Box } from "@mui/material";
 import { MemoizedEditor } from "./components/MemoizedEditor/MemoizedEditor";
 import { TopBar } from "../TopBar";
 import { LocalDirtyCodeModal } from "../LocalDirtyCodeModal";
+import { useTranslation } from "react-i18next";
 /**
  * We memoize this component because we need to short circuit the redux->react->component update cycle
  * This is done for performance reasons. Constantly re-rendering slows down the editor typing experience.
@@ -10,13 +11,14 @@ import { LocalDirtyCodeModal } from "../LocalDirtyCodeModal";
  */
 
 export const Editor = function Editor(props) {
+  const { t } = useTranslation();
   const [code, setCode] = useState(props.code);
   return (
     <>
       <LocalDirtyCodeModal
         show={props.isDirty || code !== props?.code}
-        title="Unsaved Changes"
-        content="You have unsaved changes that will be lost if you leave this page."
+        title={t("common.unsavedChanges")}
+        content={t("code.unsavedChangesDetail")}
         dirtyCodeFileType={props.fileType}
         dirtyCodeZuid={props.fileZUID}
         dirtyCodeStatus={props?.status}

@@ -251,7 +251,7 @@ describe("Reports > Activity Log > Home", () => {
     });
     it("Displays Users Tab empty state", () => {
       cy.visit("/reports/activity-log/users?from=2099-01-01&to=2099-01-02");
-      cy.contains("No Users Found");
+      cy.contains("No users found");
     });
     it("Displays Timeline Tab empty state", () => {
       cy.visit("/reports/activity-log/timeline?from=2099-01-01&to=2099-01-02");
@@ -264,7 +264,7 @@ describe("Reports > Activity Log > Home", () => {
 
     it("Resets filters", () => {
       cy.visit("/reports/activity-log/resources?from=2099-01-01&to=2099-01-02");
-      cy.contains("RESET FILTERS").click();
+      cy.contains("Reset Filters").click();
 
       const today = new Date();
       const threeMonthsAgo = addMonths(today, -3);
@@ -296,7 +296,7 @@ describe("Reports > Activity Log > Home", () => {
       cy.visit("/reports/activity-log/resources?from=2099-01-01&to=2099-01-02");
 
       cy.wait("@request");
-      cy.contains("RETRY").click();
+      cy.contains("Retry").click();
       cy.wait("@request");
     });
   });

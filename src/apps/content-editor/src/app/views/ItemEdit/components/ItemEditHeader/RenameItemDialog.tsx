@@ -20,12 +20,14 @@ import {
   useUpdateContentItemMutation,
 } from "../../../../../../../../shell/services/instance";
 import { fetchItem } from "../../../../../../../../shell/store/content";
+import { useTranslation } from "react-i18next";
 
 type DuplicateItemProps = {
   onClose: () => void;
 };
 
 export const RenameItemDialog = ({ onClose }: DuplicateItemProps) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const { modelZUID, itemZUID } = useParams<{
     modelZUID: string;
@@ -57,14 +59,14 @@ export const RenameItemDialog = ({ onClose }: DuplicateItemProps) => {
           <DriveFileRenameOutlineRounded color="info" />
         </Box>
         <Typography variant="h5" fontWeight={700} mt={1.5}>
-          Rename Variant
+          {t("content.itemEditRenameVariant")}
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-          This will update the variant title that is shown to content editors
+          {t("content.itemEditRenameVariantDescription")}
         </Typography>
       </DialogTitle>
       <DialogContent>
-        <InputLabel>Variant Title</InputLabel>
+        <InputLabel>{t("content.itemEditVariantTitle")}</InputLabel>
         <TextField
           fullWidth
           value={newTitle}
@@ -73,7 +75,7 @@ export const RenameItemDialog = ({ onClose }: DuplicateItemProps) => {
       </DialogContent>
       <DialogActions>
         <Button color="inherit" onClick={onClose}>
-          Cancel
+          {t("common.cancel")}
         </Button>
         <Button
           variant="contained"
@@ -96,7 +98,7 @@ export const RenameItemDialog = ({ onClose }: DuplicateItemProps) => {
           }}
           loading={isLoading}
         >
-          Save
+          {t("common.save")}
         </Button>
       </DialogActions>
     </Dialog>

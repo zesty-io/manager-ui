@@ -1,4 +1,5 @@
 import { memo, useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import {
@@ -30,8 +31,10 @@ const CreateFile = memo(function CreateFile({
   open,
   onClose,
   defaultType,
-  title = "Create File",
+  title,
 }: CreateFileProps) {
+  const { t } = useTranslation();
+  const resolvedTitle = title ?? t("code.createFile");
   const history = useHistory();
 
   const dispatch = useDispatch();
@@ -49,7 +52,7 @@ const CreateFile = memo(function CreateFile({
       dispatch(
         notify({
           kind: "warn",
-          message: "You must select a file type to create a new file",
+          message: t("code.mustSelectFileType"),
         })
       );
       return;
@@ -58,7 +61,7 @@ const CreateFile = memo(function CreateFile({
       dispatch(
         notify({
           kind: "warn",
-          message: "You must provide a name for the new file",
+          message: t("code.mustProvideFileName"),
         })
       );
       return;
@@ -68,7 +71,7 @@ const CreateFile = memo(function CreateFile({
       dispatch(
         notify({
           kind: "warn",
-          message: `Please add leading slash in file path EX: /${name}`,
+          message: t("code.pleaseAddLeadingSlash", { name }),
         })
       );
       return;
@@ -117,7 +120,7 @@ const CreateFile = memo(function CreateFile({
         borderColor="border"
         sx={{ textTransform: "capitalize" }}
       >
-        {title}
+        {resolvedTitle}
         <IconButton
           onClick={onClose}
           sx={{
@@ -139,7 +142,7 @@ const CreateFile = memo(function CreateFile({
               fontWeight={600}
               mb="4px"
             >
-              File Type
+              {t("code.fileType")}
             </Typography>
             <Autocomplete
               data-cy="CreateFileFileTypeInput"
@@ -153,12 +156,12 @@ const CreateFile = memo(function CreateFile({
               }}
               clearOnEscape
               options={fileTypeOptions}
-              getOptionLabel={(option) => option.label}
+              getOptionLabel={(option) => t(option.label)}
               isOptionEqualToValue={(option, value) =>
                 option.value === value.value
               }
               renderInput={(params) => (
-                <TextField {...params} placeholder="-- choose a file type --" />
+                <TextField {...params} placeholder={t("code.chooseFileType")} />
               )}
             />
           </Box>
@@ -166,51 +169,32 @@ const CreateFile = memo(function CreateFile({
             <Box mt={2}>
               {type === "snippet" && (
                 <Typography variant="body2" color="text.secondary">
-                  Parsley accessible file meant to abstract common use of code,
-                  or for organizing file build. Examples: slider, footer,
-                  header. These can be used inside of each loops as well.
+                  {t("code.snippetDescription")}
                 </Typography>
               )}
               {type === "text/css" && (
                 <Typography variant="body2" color="text.secondary">
-                  A cascading stylesheet that is automatically concatenated into
-                  a single css file /main.css which is auto included in the head
-                  of webengine web pages. Sort Order of the concatenation can be
-                  controlled. No transpiling occurs.
+                  {t("code.cssDescription")}
                 </Typography>
               )}
               {type === "text/less" && (
                 <Typography variant="body2" color="text.secondary">
-                  Has access to settings &gt; variables. A cascading stylesheet
-                  that is automatically concatenated into a the single
-                  /main.css. Sort Order of the concatenation and transpiling can
-                  be controlled.
+                  {t("code.lessDescription")}
                 </Typography>
               )}
               {type === "text/scss" && (
                 <Typography variant="body2" color="text.secondary">
-                  Has access to settings &gt; variables. A cascading stylesheet
-                  that is automatically concatenated into a the single
-                  /main.css. Sort Order of the concatenation and transpiling can
-                  be controlled.
+                  {t("code.scssDescription")}
                 </Typography>
               )}
               {type === "text/javascript" && (
                 <Typography variant="body2" color="text.secondary">
-                  A javascript file that is automatically concatenated into a
-                  the single /main.js file that is automatically loaded by
-                  webengine. No transpiling occurs.
+                  {t("code.javascriptDescription")}
                 </Typography>
               )}
               {type === "ajax-json" && (
                 <Typography variant="body2" color="text.secondary">
-                  Parsley accessible file for creating endpoints or custom
-                  experiences. These files need to be named with a full path
-                  with an extension like <strong> /my/file/path.json.</strong>{" "}
-                  The file is accessible at
-                  hash-dev.preview.zesty.io/my/file/path.json. File types that
-                  can be used: css, html, json, js, xml, csv, tsv, xml, yaml,
-                  md, svg, rss, ics, vcf, xhtml.
+                  {t("code.ajaxJsonDescription")}
                 </Typography>
               )}
             </Box>
@@ -223,7 +207,7 @@ const CreateFile = memo(function CreateFile({
               fontWeight={600}
               mb="4px"
             >
-              File Name
+              {t("code.fileName")}
             </Typography>
             <TextField
               data-cy="CreateFileFileNameInput"
@@ -256,7 +240,7 @@ const CreateFile = memo(function CreateFile({
           color="inherit"
           onClick={onClose}
         >
-          Cancel
+          {t("common.cancel")}
         </Button>
         <Button
           data-cy="CreateFileCreateButton"
@@ -266,7 +250,7 @@ const CreateFile = memo(function CreateFile({
           disabled={type === "" || type === "0" || !name}
           loading={loading}
         >
-          Create File
+          {t("code.createFile")}
         </Button>
       </DialogActions>
     </Dialog>

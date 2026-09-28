@@ -31,6 +31,7 @@ declare const BynderCompactView: Readonly<{
       portal?: Readonly<{ url?: string; editable?: boolean }>;
       mode?: BynderMode;
       assetTypes?: ReadonlyArray<"image" | "video" | "document" | "audio">;
+      language?: string;
     }>
   ) => void;
 }>;

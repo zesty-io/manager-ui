@@ -1,3 +1,4 @@
+import "./i18n";
 import { createRoot } from "react-dom/client";
 import { Preview } from "./Preview";
 import { ThemeProvider } from "@mui/material/styles";

@@ -1,1 +1,1 @@
-export { Frame, templates } from "./Frame";
+export { Frame, getTemplates } from "./Frame";

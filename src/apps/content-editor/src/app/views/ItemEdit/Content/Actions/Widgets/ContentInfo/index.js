@@ -22,8 +22,10 @@ import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
 import CheckIcon from "@mui/icons-material/Check";
 import { Database, theme } from "@zesty-io/material";
 import CodeRoundedIcon from "@mui/icons-material/CodeRounded";
+import { useTranslation } from "react-i18next";
 
 export const ContentInfo = (props) => {
+  const { t } = useTranslation();
   const [isCopied, setIsCopied] = useState(null);
 
   const codePath = useFilePath(props.modelZUID);
@@ -48,20 +50,19 @@ export const ContentInfo = (props) => {
         sx={{
           p: 0,
           backgroundColor: "transparent",
-          fontSize: "16px",
           color: alpha(theme.palette.text.primary, 0.4),
           borderBottom: 1,
           borderColor: "grey.200",
         }}
         titleTypographyProps={{
+          variant: "overline",
           sx: {
             fontWeight: 400,
-            fontSize: "12px",
-            lineHeight: "32px",
             color: "text.primary",
+            textTransform: "uppercase",
           },
         }}
-        title="INFO"
+        title={t("content.itemEditInfoTitle")}
       ></CardHeader>
       <CardContent
         sx={{
@@ -89,16 +90,15 @@ export const ContentInfo = (props) => {
             <Box>
               <Stack direction="row" alignItems="center" gap={1} pb={0.5}>
                 <Typography
+                  variant="body2"
                   sx={{
                     fontWeight: 600,
-                    fontSize: "14px",
-                    lineHeight: "20px",
                   }}
                 >
                   ZUID
                 </Typography>
                 <Tooltip
-                  title="Content items are always accessed relative to their model, so a model ZUID is required for each call."
+                  title={t("content.itemEditZuidTooltip")}
                   sx={{
                     fontSize: "12px",
                     color: alpha(theme.palette.text.primary, 0.4),
@@ -147,8 +147,9 @@ export const ContentInfo = (props) => {
                     sx={{ color: alpha(theme.palette.text.primary, 0.4) }}
                   />
                 }
+                sx={{ width: "fit-content" }}
               >
-                Edit Model
+                {t("content.itemListEditModel")}
               </Button>
               <Button
                 component={Link}
@@ -159,8 +160,9 @@ export const ContentInfo = (props) => {
                     sx={{ fill: alpha(theme.palette.text.primary, 0.4) }}
                   />
                 }
+                sx={{ width: "fit-content" }}
               >
-                Edit Code
+                {t("content.itemEditEditCode")}
               </Button>
             </Stack>
           </Stack>

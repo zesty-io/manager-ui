@@ -1,4 +1,5 @@
 import { FC, useCallback, useEffect, useRef, useState } from "react";
+import { Trans, useTranslation } from "react-i18next";
 import FileUploadRoundedIcon from "@mui/icons-material/FileUploadRounded";
 import Button from "@mui/material/Button";
 import { importCSVFile, IMPORT_REDIRECTS } from "../../../store/imports";
@@ -16,6 +17,7 @@ import {
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 
 const RedirectsImport: FC = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [files, setFiles] = useState<FileList | null>(null);
@@ -74,7 +76,7 @@ const RedirectsImport: FC = () => {
         size="small"
         startIcon={<FileUploadRoundedIcon color="action" />}
       >
-        Import CSV/XML
+        {t("seo.importCsvXml")}
         <input
           ref={fileInputRef}
           hidden
@@ -100,6 +102,8 @@ const ImportErrorDialog: FC<ImportErrorDialogProps> = ({
   onRetry,
   clearFiles,
 }) => {
+  const { t } = useTranslation();
+
   const handleCancel = () => {
     clearFiles();
     onClose();
@@ -136,30 +140,32 @@ const ImportErrorDialog: FC<ImportErrorDialogProps> = ({
             variant="inherit"
             fontWeight={700}
           >
-            File Import Failed
+            {t("seo.importErrorDialogHeader")}
           </Typography>
         </Stack>
         <Typography variant="body2" color="text.secondary" mt="8px">
-          The file format or structure doesn't match what we expected. Please
-          check your CSV or XML file and refer to our&nbsp;
-          <Link
-            href="https://docs.zesty.io/docs/redirects#mass-redirect"
-            target="_blank"
-            rel="noopener noreferrer"
-            sx={{
-              color: "info.main",
-              textDecoration: "underline",
-              textDecorationColor: "info.main",
+          <Trans
+            i18nKey="seo.importErrorDialogBodyRich"
+            components={{
+              1: (
+                <Link
+                  href="https://docs.zesty.io/docs/redirects#mass-redirect"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  sx={{
+                    color: "info.main",
+                    textDecoration: "underline",
+                    textDecorationColor: "info.main",
+                  }}
+                />
+              ),
             }}
-          >
-            import guide
-          </Link>
-          &nbsp;in our docs for the correct format.
+          />
         </Typography>
       </DialogTitle>
       <DialogActions sx={{ p: "20px" }}>
         <Button variant="text" color="inherit" onClick={handleCancel}>
-          Cancel
+          {t("common.cancel")}
         </Button>
         <Button
           data-cy="RedirectsImportRetryButton"
@@ -167,7 +173,7 @@ const ImportErrorDialog: FC<ImportErrorDialogProps> = ({
           color="primary"
           onClick={onRetry}
         >
-          Try Again
+          {t("seo.tryAgain")}
         </Button>
       </DialogActions>
     </Dialog>

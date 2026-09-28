@@ -1,4 +1,5 @@
 import { MutableRefObject, useCallback, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { notify } from "shell/store/notifications";
 import { Sentry } from "utility/sentry";
 import {
@@ -6,13 +7,6 @@ import {
   usesContentEditing,
   usesLayoutGrammar,
 } from "./studioTypes";
-
-// Layout mode genuinely has a Content mode to send the user to. Studio's full
-// mode does not — it IS both — so the same rejection needs different words.
-const SWITCH_TO_CONTENT_MESSAGE =
-  "This block contains dynamic content and cannot be edited inline. Switch to Content mode to make edits.";
-const NOT_A_SINGLE_FIELD_MESSAGE =
-  "This block can't be edited inline because its content is not a single connected field.";
 
 const bridgeInjectedCss = `
   .studio-hover {
@@ -144,6 +138,7 @@ export const useStudioBridge = ({
   onBridgeFieldInput,
   onStaticEditImage,
 }: Args) => {
+  const { t } = useTranslation();
   const handleBridgeReady = useCallback(() => {
     postCommandToBridge({
       action: "injectCss",
@@ -164,7 +159,9 @@ export const useStudioBridge = ({
       dispatch(
         notify({
           kind: "error",
-          message: `Preview error: ${bridgeError.message || "Bridge error"}`,
+          message: t("content.studioPreviewError", {
+            error: bridgeError.message || t("content.studioBridgeError"),
+          }),
         })
       );
 
@@ -181,7 +178,7 @@ export const useStudioBridge = ({
         Sentry.captureException(error);
       });
     },
-    [dispatch]
+    [dispatch, t]
   );
 
   const handleBridgeDomEvent = useCallback(
@@ -353,7 +350,10 @@ export const useStudioBridge = ({
         // handlers above take, that anything able to postMessage can send it.
         if (!usesContentEditing(interactionMode)) {
           dispatch(
-            notify({ kind: "warn", message: SWITCH_TO_CONTENT_MESSAGE })
+            notify({
+              kind: "warn",
+              message: t("content.studioStaticEditRejected"),
+            })
           );
           return;
         }
@@ -377,12 +377,15 @@ export const useStudioBridge = ({
       }
 
       if (msg.type === "STATIC_EDIT_REJECTED") {
+        // Layout mode genuinely has a Content mode to send the user to.
+        // Studio's full mode does not — it IS both — so the same rejection
+        // needs different words.
         dispatch(
           notify({
             kind: "warn",
             message: usesContentEditing(interactionMode)
-              ? NOT_A_SINGLE_FIELD_MESSAGE
-              : SWITCH_TO_CONTENT_MESSAGE,
+              ? t("content.studioStaticEditNotSingleField")
+              : t("content.studioStaticEditRejected"),
           })
         );
         return;
@@ -412,6 +415,7 @@ export const useStudioBridge = ({
     handleTemplateSourceMap,
     interactionMode,
     onStaticEditImage,
+    t,
   ]);
 
   return {

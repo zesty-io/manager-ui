@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { v4 as uuidv4 } from "uuid";
 import {
   TextField,
@@ -12,6 +13,7 @@ import CheckIcon from "@mui/icons-material/Check";
 import TagRoundedIcon from "@mui/icons-material/TagRounded";
 
 export const FieldTypeUUID = React.memo(function FieldTypeUUID(props) {
+  const { t } = useTranslation();
   const [isCopied, setIsCopied] = React.useState(false);
   useEffect(() => {
     // NOTE may want to add a check to ensure the itemZUID is 'new'
@@ -36,7 +38,7 @@ export const FieldTypeUUID = React.memo(function FieldTypeUUID(props) {
       });
   };
   return (
-    <Tooltip followCursor title="This field cannot be edited">
+    <Tooltip followCursor title={t("shell.uuidFieldReadOnly")}>
       <TextField
         required={props.required}
         value={props.value || ""}

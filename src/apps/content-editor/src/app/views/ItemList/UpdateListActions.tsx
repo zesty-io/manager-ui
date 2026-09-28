@@ -18,6 +18,7 @@ import {
   DeleteRounded,
 } from "@mui/icons-material";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useParams as useRouterParams } from "react-router";
 import { useStagedChanges } from "./StagedChangesContext";
 import {
@@ -44,6 +45,7 @@ type UpdateListActionsProps = {
 };
 
 export const UpdateListActions = ({ items }: UpdateListActionsProps) => {
+  const { t } = useTranslation();
   const { modelZUID } = useRouterParams<{ modelZUID: string }>();
   const canPublish = usePermission("PUBLISH", modelZUID);
   const canDelete = usePermission("DELETE", modelZUID);
@@ -68,6 +70,14 @@ export const UpdateListActions = ({ items }: UpdateListActionsProps) => {
 
   const [isPublishing, setIsPublishing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+
+  // Selected/staged ZUIDs can go stale (e.g. after a bulk delete) before the
+  // selection is cleared. Resolve to ContentItems and drop anything that no
+  // longer exists instead of letting callers crash on `item.meta`.
+  const resolveItems = (ids: string[]): ContentItem[] =>
+    (ids ?? [])
+      .map((id) => items?.find((item) => item.meta.ZUID === id))
+      .filter((item): item is ContentItem => Boolean(item));
 
   const saveShortcut = useMetaKey("s", () => {
     handleSave();
@@ -112,7 +122,9 @@ export const UpdateListActions = ({ items }: UpdateListActionsProps) => {
       dispatch(
         notify({
           kind: "error",
-          message: `Error saving items: ${err?.data?.error}`,
+          message: t("content.itemListErrorSaving", {
+            error: err?.data?.error,
+          }),
         })
       );
     }
@@ -153,7 +165,9 @@ export const UpdateListActions = ({ items }: UpdateListActionsProps) => {
       dispatch(
         notify({
           kind: "error",
-          message: `Error saving items: ${err?.data?.error}`,
+          message: t("content.itemListErrorSaving", {
+            error: err?.data?.error,
+          }),
         })
       );
     }
@@ -191,8 +205,12 @@ export const UpdateListActions = ({ items }: UpdateListActionsProps) => {
           </IconButton>
           <Typography variant="h3" fontWeight={700}>
             {hasStagedChanges
-              ? ` Update ${Object.keys(stagedChanges)?.length} Content Items`
-              : `${selectedItems?.length} selected`}
+              ? t("content.itemListUpdateCount", {
+                  count: Object.keys(stagedChanges)?.length,
+                })
+              : t("content.itemListSelectedCount", {
+                  count: selectedItems?.length,
+                })}
           </Typography>
         </Box>
         <Box display="flex" gap={1} alignItems="center">
@@ -202,7 +220,7 @@ export const UpdateListActions = ({ items }: UpdateListActionsProps) => {
               enterNextDelay={1000}
               title={
                 <div>
-                  Save Items <br />
+                  {t("content.itemListSaveItemsTooltip")} <br />
                   {saveShortcut}
                 </div>
               }
@@ -215,7 +233,7 @@ export const UpdateListActions = ({ items }: UpdateListActionsProps) => {
                 onClick={handleSave}
                 loading={isSaving}
               >
-                Save
+                {t("common.save")}
               </Button>
             </Tooltip>
           ) : canDelete ? (
@@ -230,7 +248,7 @@ export const UpdateListActions = ({ items }: UpdateListActionsProps) => {
               variant="outlined"
               color="inherit"
             >
-              Delete
+              {t("common.delete")}
             </Button>
           ) : null}
           {canPublish && canUpdate && (
@@ -250,8 +268,8 @@ export const UpdateListActions = ({ items }: UpdateListActionsProps) => {
                 title={
                   <div>
                     {hasStagedChanges
-                      ? "Save & Publish Items"
-                      : "Publish Items"}{" "}
+                      ? t("content.itemListSavePublishItemsTooltip")
+                      : t("content.itemListPublishItemsTooltip")}{" "}
                     <br />
                     {publishShortcut}
                   </div>
@@ -275,7 +293,9 @@ export const UpdateListActions = ({ items }: UpdateListActionsProps) => {
                   variant="contained"
                   data-cy="MultiPageTablePublish"
                 >
-                  {hasStagedChanges ? "Save & Publish" : "Publish"}
+                  {hasStagedChanges
+                    ? t("content.itemListSavePublish")
+                    : t("content.itemListPublish")}
                 </Button>
               </Tooltip>
               <Button
@@ -320,7 +340,9 @@ export const UpdateListActions = ({ items }: UpdateListActionsProps) => {
               <ListItemIcon>
                 <CloudUploadRounded fontSize="small" />
               </ListItemIcon>
-              {hasStagedChanges ? "Save & Publish Now" : "Publish Now"}
+              {hasStagedChanges
+                ? t("content.itemListSavePublishNow")
+                : t("content.itemListPublishNow")}
             </MenuItem>
             <MenuItem
               onClick={() => {
@@ -336,17 +358,15 @@ export const UpdateListActions = ({ items }: UpdateListActionsProps) => {
                 <CalendarTodayRounded fontSize="small" />
               </ListItemIcon>
               {hasStagedChanges
-                ? "Save & Schedule Publish"
-                : "Schedule Publish"}
+                ? t("content.itemListSaveSchedulePublish")
+                : t("content.itemListSchedulePublish")}
             </MenuItem>
           </Menu>
         </Box>
       </Box>
       {showPublishesModal && (
         <ConfirmPublishesModal
-          items={itemsToPublish?.map((itemZUID) =>
-            items?.find((item) => item.meta.ZUID === itemZUID)
-          )}
+          items={resolveItems(itemsToPublish)}
           onCancel={() => {
             setItemsToPublish([]);
             clearStagedChanges({});
@@ -354,6 +374,14 @@ export const UpdateListActions = ({ items }: UpdateListActionsProps) => {
           }}
           loading={isPublishing}
           onConfirm={(items) => {
+            if (!items.length) {
+              setIsPublishing(false);
+              setItemsToPublish([]);
+              clearStagedChanges({});
+              setShowPublishesModal(false);
+              setSelectedItems([]);
+              return;
+            }
             setIsPublishing(true);
             createItemsPublishing({
               modelZUID,
@@ -383,7 +411,9 @@ export const UpdateListActions = ({ items }: UpdateListActionsProps) => {
                 dispatch(
                   notify({
                     kind: "error",
-                    message: `Error publishing items: ${res?.data?.error}`,
+                    message: t("content.itemListErrorPublishing", {
+                      error: res?.data?.error,
+                    }),
                   })
                 );
               });
@@ -392,9 +422,7 @@ export const UpdateListActions = ({ items }: UpdateListActionsProps) => {
       )}
       {showScheduleModal && (
         <SchedulePublishesModal
-          items={itemsToSchedule?.map((itemZUID) =>
-            items?.find((item) => item.meta.ZUID === itemZUID)
-          )}
+          items={resolveItems(itemsToSchedule)}
           onCancel={() => {
             setItemsToSchedule([]);
             clearStagedChanges({});
@@ -402,6 +430,14 @@ export const UpdateListActions = ({ items }: UpdateListActionsProps) => {
           }}
           loading={isPublishing}
           onConfirm={(items, publishDateTime) => {
+            if (!items.length) {
+              setIsPublishing(false);
+              setItemsToSchedule([]);
+              clearStagedChanges({});
+              setShowScheduleModal(false);
+              setSelectedItems([]);
+              return;
+            }
             setIsPublishing(true);
             createItemsPublishing({
               modelZUID,
@@ -431,7 +467,9 @@ export const UpdateListActions = ({ items }: UpdateListActionsProps) => {
                 dispatch(
                   notify({
                     kind: "error",
-                    message: `Error publishing items: ${res?.data?.error}`,
+                    message: t("content.itemListErrorPublishing", {
+                      error: res?.data?.error,
+                    }),
                   })
                 );
               });
@@ -440,25 +478,42 @@ export const UpdateListActions = ({ items }: UpdateListActionsProps) => {
       )}
       {showDeletesModal && (
         <ConfirmDeletesDialog
-          items={selectedItems?.map((itemZUID: string) =>
-            items?.find((item) => item.meta.ZUID === itemZUID)
-          )}
+          items={resolveItems(selectedItems)}
           onCancel={() => {
             setShowDeletesModal(false);
           }}
+          loading={isDeleting}
           onConfirm={(items) => {
+            if (!items.length) {
+              setShowDeletesModal(false);
+              setSelectedItems([]);
+              return;
+            }
             deleteContentItems({
               modelZUID,
-              body: items?.map((item) => item.meta.ZUID),
-            }).then(() => {
-              items.forEach((item) => {
-                dispatch({
-                  type: "REMOVE_ITEM",
-                  itemZUID: item.meta.ZUID,
+              body: items.map((item) => item.meta.ZUID),
+            })
+              .unwrap()
+              .then(() => {
+                items.forEach((item) => {
+                  dispatch({
+                    type: "REMOVE_ITEM",
+                    itemZUID: item.meta.ZUID,
+                  });
                 });
+                setSelectedItems([]);
+                setShowDeletesModal(false);
+              })
+              .catch((res) => {
+                dispatch(
+                  notify({
+                    kind: "error",
+                    message: t("content.itemListErrorDeleting", {
+                      error: res?.data?.error,
+                    }),
+                  })
+                );
               });
-              setShowDeletesModal(false);
-            });
           }}
         />
       )}

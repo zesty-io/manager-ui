@@ -1,4 +1,5 @@
 import { FC, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Box, Typography, Menu, MenuItem, ListItemIcon } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
 import { useSelector } from "react-redux";
@@ -29,6 +30,7 @@ const now = new Date();
 const dateRanges = [7, 14, 30, 90];
 
 export const InsightsMedia: FC = () => {
+  const { t } = useTranslation();
   const instanceId = useSelector((state: AppState) => state.instance.ID);
   const ecoId = useSelector((state: AppState) => state.instance.ecoID);
   const instanceCreatedAtDate = useSelector(
@@ -98,13 +100,15 @@ export const InsightsMedia: FC = () => {
         }}
       >
         <Typography variant="h3" fontWeight={700}>
-          Insights
+          {t("media.insightsMediaTitle")}
         </Typography>
       </Box>
       <Box sx={{ px: 4, py: 2 }}>
         <FilterButton
           isFilterActive={false}
-          buttonText={`Last ${dateRange} Days`}
+          buttonText={t("media.insightsMediaDateRangeButton", {
+            days: dateRange,
+          })}
           onRemoveFilter={() => {}}
           onOpenMenu={(event) => setAnchorEl(event.currentTarget)}
         />
@@ -131,14 +135,16 @@ export const InsightsMedia: FC = () => {
               >
                 <CheckIcon color="primary" />
               </ListItemIcon>
-              Last {dateRangeItem} days
+              {t("media.insightsMediaDateRangeMenuItem", {
+                days: dateRangeItem,
+              })}
             </MenuItem>
           ))}
         </Menu>
       </Box>
       <Box sx={{ display: "flex", gap: 2, pb: 2, px: 4 }}>
         <MetricCard
-          title="Media Requests"
+          title={t("common.mediaRequests")}
           value={totalMediaRequests || 0}
           icon={
             <Box
@@ -164,11 +170,11 @@ export const InsightsMedia: FC = () => {
                 )
               : null
           }
-          deltaLabel={`from last ${dateRange} days`}
+          deltaLabel={t("media.insightsMediaDeltaLabel", { days: dateRange })}
           loading={usageFetching}
         />
         <MetricCard
-          title="Media Bandwidth"
+          title={t("media.insightsMediaMediaBandwidth")}
           value={totalMediaThroughput || 0}
           symbol="GB"
           icon={
@@ -192,7 +198,7 @@ export const InsightsMedia: FC = () => {
                 )
               : null
           }
-          deltaLabel={`from last ${dateRange} days`}
+          deltaLabel={t("media.insightsMediaDeltaLabel", { days: dateRange })}
           loading={usageFetching}
         />
       </Box>

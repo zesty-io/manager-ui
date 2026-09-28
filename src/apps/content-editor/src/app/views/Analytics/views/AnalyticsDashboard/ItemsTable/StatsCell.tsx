@@ -1,4 +1,5 @@
 import { Box, Skeleton, Typography } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { useSearchContentQuery } from "../../../../../../../../../shell/services/instance";
 import { numberFormatter } from "../../../../../../../../../utility/numberFormatter";
 import { useHistory } from "react-router";
@@ -18,6 +19,7 @@ export const StatsCell = ({
   users: number;
   avgSessionDuration: number;
 }) => {
+  const { t } = useTranslation();
   const history = useHistory();
   const { data: item, isFetching } = useSearchContentQuery({
     query: path,
@@ -51,10 +53,10 @@ export const StatsCell = ({
       sx={{ cursor: foundItem ? "pointer" : "default" }}
     >
       <Typography variant="body1" fontSize="12px">
-        {numberFormatter.format(users)} users
+        {numberFormatter.format(users)} {t("content.analyticsUsersLabel")}
       </Typography>
       <Typography variant="body1" fontSize="12px">
-        {formatMMSS(avgSessionDuration)} avg. time
+        {formatMMSS(avgSessionDuration)} {t("content.analyticsAvgTimeLabel")}
       </Typography>
     </Box>
   );

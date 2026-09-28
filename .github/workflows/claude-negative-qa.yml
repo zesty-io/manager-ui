@@ -1,7 +1,7 @@
-name: Claude Negative QA
+name: "Claude: Adversarial Browser QA"
 
 # Drives the real app in a browser and attacks the PR's changed surface, as the dynamic
-# counterpart to Claude Change Verifier. Advisory only — it never fails the build.
+# counterpart to "Claude: Acceptance Criteria QA". Advisory only — it never fails the build.
 
 # Runs on every push: a once-per-PR report goes stale silently and a stale finding reads
 # exactly like a live one. Costs ~9 min of agent time per push, serialized; advisory, so a
@@ -28,6 +28,7 @@ concurrency:
 
 jobs:
   negative-qa:
+    name: Claude Adversarial Browser QA (advisory)
     # Fork PRs get neither secret; pull_request (not _target) means no path to leak them.
     if: >-
       github.event_name == 'workflow_dispatch' ||
@@ -122,10 +123,10 @@ jobs:
               BASE_URL    = http://${{ env.QA_INSTANCE_ZUID }}.manager.dev.zesty.io:8080
               REPORT_FILE = ${{ github.workspace }}/negative-qa-comment.md
 
-            A separate "QA Review" workflow already validates this PR against its issue's
-            acceptance criteria from the code. Do not duplicate it: no change summary, no
-            restating the diff, no judging whether the PR satisfies its issue, no test
-            suggestions. Your job is to find inputs and sequences that break it.
+            A separate "Claude: Acceptance Criteria QA" workflow already validates this PR
+            against its issue's acceptance criteria from the code. Do not duplicate it: no
+            change summary, no restating the diff, no judging whether the PR satisfies its
+            issue, no test suggestions. Your job is to find inputs and sequences that break it.
 
             STEP 1 — Scope.
             Read the diff (gh pr diff <PR_NUMBER> --repo <REPO>) and the checked-out source.
@@ -200,8 +201,8 @@ jobs:
 
               <!-- negative-qa -->
 
-            Then "## Negative QA", then STRAIGHT INTO THE FINDINGS. Do NOT write an overview,
-            preamble, or summary paragraph — no recap of what the diff changes, no description
+            Then "## Adversarial Browser QA", then STRAIGHT INTO THE FINDINGS. Do NOT write
+            an overview, preamble, or summary paragraph — no recap of what the diff changes, no description
             of what you attacked, no verdict sentence. A reviewer opens this to see what broke;
             anything above the first finding pushes that off the screen. One section each:
 
@@ -232,8 +233,9 @@ jobs:
             Keep the blank lines after <summary> and before </details> — GitHub will not render
             the markdown inside without them.
 
-            If you found nothing, the report is the marker line, "## Negative QA", the single
-            line "No reproducible edge-case failures found on the surfaces this PR changes.",
+            If you found nothing, the report is the marker line, "## Adversarial Browser QA",
+            the single line "No reproducible edge-case failures found on the surfaces this PR
+            changes.",
             and the collapsed details block. AN EMPTY REPORT IS A VALID AND COMMON OUTCOME.
             Never pad it with speculative or unreproduced findings, and never report a finding
             you did not screenshot.

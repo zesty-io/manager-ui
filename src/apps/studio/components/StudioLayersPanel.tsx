@@ -1,5 +1,6 @@
 import { DragEvent, useCallback, useEffect, useRef, useState } from "react";
 import { Box, Typography } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { StudioLayersTreeItem } from "./StudioLayersTreeItem";
 import { LayersFlatRow } from "../hooks/useStudioLayersTree";
 import { LayersDropPosition, LayersTreeNode } from "../hooks/studioTypes";
@@ -135,6 +136,8 @@ export const StudioLayersPanel = ({
     setDropIntent(null);
   }, []);
 
+  const { t } = useTranslation();
+
   return (
     <Box
       data-cy="StudioLayersPanel"
@@ -154,7 +157,7 @@ export const StudioLayersPanel = ({
       }}
     >
       <Typography fontWeight={600} fontSize={16} lineHeight="22px">
-        Layers
+        {t("content.studioLayersPanelTitle")}
       </Typography>
       <Box
         ref={listRef}
@@ -169,7 +172,7 @@ export const StudioLayersPanel = ({
             swap a loading placeholder for the list (avoids layout shift). */}
         {hasTree && !flatRows.length ? (
           <Typography fontSize={13} color="text.secondary">
-            No layers found
+            {t("content.studioLayersEmptyState")}
           </Typography>
         ) : (
           flatRows.map((row) => (
