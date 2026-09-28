@@ -30,7 +30,7 @@ import {
   ChatPrompt,
   ContentItemWithDirtyAndPublishing,
 } from "shell/services/types";
-import { ChatThread } from "./ChatThread";
+import { ChatThread, ChatResponse } from "./ChatThread";
 import { ChatHistory } from "./ChatHistory";
 import {
   isContentAppPath,
@@ -160,7 +160,9 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
   const [urlChatZUID, setUrlChatZUID, removeUrlChatZUID] = useLocalStorage<
     string | undefined
   >(chatStorageKey, undefined);
-  const [responses, setResponses] = useState<Record<string, any[]>>({});
+  const [responses, setResponses] = useState<Record<string, ChatResponse[]>>(
+    {}
+  );
   // Mirrors `responses` for effects that need to read the latest value
   // without depending on it directly — `responses` changes on every
   // approval update, which would otherwise re-trigger those effects.
@@ -247,7 +249,7 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
     setUrlChatZUID,
   ]);
 
-  const responsesEndRef = useRef(null);
+  const responsesEndRef = useRef<HTMLDivElement | null>(null);
   // Tracks whether the next chatSessionLog sync is the result of a prompt we
   // just sent live, vs. restoring history from opening/switching chats.
   const isAwaitingLiveResponseRef = useRef(false);
@@ -381,7 +383,8 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
       if (!promptResponses) return;
 
       const unappliedSetValueResponses = promptResponses.filter(
-        (response) => response.type === "SET_VALUE" && response.approval !== "1"
+        (response): response is Extract<ChatResponse, { type: "SET_VALUE" }> =>
+          response.type === "SET_VALUE" && response.approval !== "1"
       );
       if (!unappliedSetValueResponses.length) return;
 

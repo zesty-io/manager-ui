@@ -70,9 +70,19 @@ const getToneOptions = (t: (key: string) => string) =>
 type LanguageOption = { label: string; value: string };
 type ToneOption = { label: string; value: string };
 
+export type ChatResponse = { approval?: string } & (
+  | { type: "USER_INPUT"; payload: { value: string } }
+  | { type: "NAVIGATE"; payload: { path: string } }
+  | { type: "SET_VALUE"; payload: { refKey: string; value: string } }
+  | {
+      type: "SYSTEM_SUGGESTION" | "ERROR";
+      payload: { refKey?: string; value: string };
+    }
+);
+
 export type ChatThreadProps = {
-  responses: Record<string, any[]>;
-  setResponses: Dispatch<SetStateAction<Record<string, any[]>>>;
+  responses: Record<string, ChatResponse[]>;
+  setResponses: Dispatch<SetStateAction<Record<string, ChatResponse[]>>>;
   latestPromptZUIDs: Set<string>;
   autoApply: boolean;
   setAutoApply: (autoApply: boolean) => void;
@@ -92,7 +102,7 @@ export type ChatThreadProps = {
   setSelectedTone: (tone: ToneOption) => void;
   handlePrompt: (value: string) => boolean;
   handleGenerateSuggestions: (sourcePrompt: string) => void;
-  responsesEndRef: MutableRefObject<any>;
+  responsesEndRef: MutableRefObject<HTMLDivElement | null>;
 };
 
 export const ChatThread = ({
