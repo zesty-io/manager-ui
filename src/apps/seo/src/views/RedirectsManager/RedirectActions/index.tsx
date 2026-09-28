@@ -1,4 +1,5 @@
 import { Box, Typography, Button } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import AddIcon from "@mui/icons-material/Add";
 import { useRedirectsDialog } from "../../../app/components/RedirectsDialogProvider";
 import { useRedirectsTable } from "../RedirectsTable/RedirectsTableContextProvider";
@@ -11,6 +12,7 @@ import { useEffect, useState } from "react";
 import { GridRowId } from "@mui/x-data-grid-pro";
 
 export default function RedirectActions() {
+  const { t } = useTranslation();
   const { openCreateForm } = useRedirectsDialog();
   const { redirects, searchFilter, setSearchFilter, apiRef, isTableLoaded } =
     useRedirectsTable();
@@ -55,7 +57,7 @@ export default function RedirectActions() {
           }}
         >
           <Typography variant="h3" fontWeight="700">
-            {redirects?.length} Total Redirects
+            {t("seo.totalRedirects", { count: redirects?.length })}
           </Typography>
           <Box
             display="flex"
@@ -64,7 +66,7 @@ export default function RedirectActions() {
             columnGap={1}
           >
             <SearchBox
-              placeholder="Filter Redirects"
+              placeholder={t("seo.filterRedirects")}
               variant="outlined"
               size="small"
               value={searchFilter}
@@ -98,7 +100,7 @@ export default function RedirectActions() {
               onClick={() => openCreateForm()}
               startIcon={<AddIcon />}
             >
-              Create
+              {t("common.create")}
             </Button>
           </Box>
         </Box>

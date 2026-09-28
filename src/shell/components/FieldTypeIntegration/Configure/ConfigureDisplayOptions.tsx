@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Button,
   DialogActions,
@@ -49,6 +50,7 @@ const ConfigureDisplayOptions = ({
   setActiveStep?: (step: number) => void;
   onSave: () => void;
 }) => {
+  const { t } = useTranslation();
   const lastDetailRef = useRef(null);
   const [apiPathOptions, setApiPathOptions] = useState<string[]>([]);
   const [rootPathOptions, setRootPathOptions] = useState<string[]>([]);
@@ -147,8 +149,11 @@ const ConfigureDisplayOptions = ({
     );
     if (!hasDuplicates) return null;
 
-    return `"${itemIdPath}" is not unique across the ${data.length} sampled items — this can cause selections to be recognized incorrectly.`;
-  }, [apiData, rootPath, rootPathData.itemId]);
+    return t("shell.integrationItemIdNotUniqueWarning", {
+      itemIdPath,
+      count: data.length,
+    });
+  }, [apiData, rootPath, rootPathData.itemId, t]);
 
   return (
     <FormWrapper height="calc(100vh - 40px)" width="1200px">
@@ -172,11 +177,10 @@ const ConfigureDisplayOptions = ({
         >
           <Box width={520}>
             <Typography variant="h5" fontWeight={700} mb={1}>
-              Configure Display Options
+              {t("shell.integrationConfigureDisplayOptions")}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Select which fields to display to content editors when they are
-              editing items
+              {t("shell.integrationConfigureDisplayOptionsDescription")}
             </Typography>
           </Box>
         </Stack>
@@ -204,21 +208,21 @@ const ConfigureDisplayOptions = ({
           >
             <Box>
               <Typography variant="body1" fontWeight={700}>
-                Select Keys to Display in Item
+                {t("shell.integrationSelectKeysToDisplay")}
               </Typography>
               <Typography variant="body2">
-                These can be re-configured later
+                {t("shell.integrationCanReconfigureLater")}
               </Typography>
             </Box>
 
             {apiPathOptions?.length > 0 && (
               <>
-                <FieldWrapper label="Data Path" isRequired>
+                <FieldWrapper label={t("shell.integrationDataPath")} isRequired>
                   <KeyPathSelector
                     name="rootPath"
                     value={rootPath}
                     options={apiPathOptions}
-                    placeholder="Select Data Path"
+                    placeholder={t("shell.integrationSelectDataPath")}
                     onChange={(value) => {
                       const rootDataRaw = get(apiData, value)?.[0];
                       const rootPathOptionsRaw = getObjectKeyPaths(rootDataRaw);
@@ -244,9 +248,12 @@ const ConfigureDisplayOptions = ({
                 displayConfig.map((config: ConfigProps) => (
                   <FieldWrapper
                     key={config.name}
-                    label={config.label}
+                    label={t(config.labelKey)}
+                    description={
+                      config.descriptionKey && t(config.descriptionKey)
+                    }
                     isRequired={true}
-                    toolTip={config.toolTip}
+                    toolTip={config.toolTipKey && t(config.toolTipKey)}
                     warning={
                       config.name === "itemId" ? itemIdDuplicateWarning : null
                     }
@@ -281,8 +288,10 @@ const ConfigureDisplayOptions = ({
                                 value={item}
                                 data={rootData}
                                 options={rootPathOptions}
-                                placeholder={config.placeholder}
-                                optionsDescription="Values previewed for the keys below are from the first item in the API response."
+                                placeholder={t(config.placeholderKey)}
+                                optionsDescription={t(
+                                  "shell.integrationKeyPreviewDescription"
+                                )}
                                 onChange={(value) => {
                                   setDetailsPathData((prev) => [
                                     ...prev.slice(0, index),
@@ -316,7 +325,7 @@ const ConfigureDisplayOptions = ({
                           }
                           sx={{ width: "fit-content" }}
                         >
-                          Add Detail
+                          {t("shell.integrationAddDetail")}
                         </Button>
                       </Box>
                     ) : (
@@ -328,8 +337,10 @@ const ConfigureDisplayOptions = ({
                           ] as string
                         }
                         options={rootPathOptions}
-                        placeholder={config.placeholder}
-                        optionsDescription="Values previewed for the keys below are from the first item in the API response."
+                        placeholder={t(config.placeholderKey)}
+                        optionsDescription={t(
+                          "shell.integrationKeyPreviewDescription"
+                        )}
                         onChange={(value) =>
                           setRootPathData((prev) => ({
                             ...prev,
@@ -353,10 +364,10 @@ const ConfigureDisplayOptions = ({
           >
             <Box>
               <Typography variant="body1" fontWeight={700}>
-                Item Preview
+                {t("shell.integrationItemPreview")}
               </Typography>
               <Typography variant="body2">
-                How the items will appear to content editors
+                {t("shell.integrationItemPreviewDescription")}
               </Typography>
             </Box>
             <Paper
@@ -381,21 +392,23 @@ const ConfigureDisplayOptions = ({
                 type={type}
                 heading={
                   !rootPathData.heading
-                    ? "Add Heading"
+                    ? t("shell.integrationAddHeading")
                     : get(rootData, rootPathData.heading)
                 }
                 subHeading={
                   !rootPathData.subHeading
-                    ? "Add Subheading"
+                    ? t("shell.integrationAddSubheading")
                     : get(rootData, rootPathData.subHeading)
                 }
                 detail={
                   !rootPathData.detail
-                    ? "Add Detail"
+                    ? t("shell.integrationAddDetail")
                     : get(rootData, rootPathData.detail)
                 }
                 details={detailsPathData?.map((keyPath) => ({
-                  key: !keyPath ? "+ Add Detail" : keyPath,
+                  key: !keyPath
+                    ? t("shell.integrationAddDetailWithPlus")
+                    : keyPath,
                   value: !keyPath ? "" : get(rootData, keyPath),
                 }))}
                 thumbnail={
@@ -422,7 +435,7 @@ const ConfigureDisplayOptions = ({
           color="inherit"
           onClick={() => setActiveStep?.(1)}
         >
-          Back
+          {t("common.back")}
         </Button>
         <Button
           data-cy="integrationConfigureDisplayOptionsDoneButton"
@@ -431,7 +444,7 @@ const ConfigureDisplayOptions = ({
           disabled={!isCompleted || !!itemIdDuplicateWarning}
           onClick={onSave}
         >
-          Done
+          {t("common.done")}
         </Button>
       </DialogActions>
     </FormWrapper>

@@ -1,4 +1,5 @@
 import { FC, HTMLAttributes } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ListItem,
   ListItemIcon,
@@ -29,6 +30,7 @@ export const GlobalSearchItem: FC<GlobalSearchItemProps> = ({
   searchAccelerator,
   ...props
 }) => {
+  const { t } = useTranslation();
   const onRequestRemove = () => {
     if (!onRemove) {
       return;
@@ -74,7 +76,11 @@ export const GlobalSearchItem: FC<GlobalSearchItemProps> = ({
           variant="filled"
           color="primary"
           size="small"
-          label={`in: ${SEARCH_ACCELERATORS[searchAccelerator]?.text}`}
+          label={`in: ${
+            searchAccelerator
+              ? t(SEARCH_ACCELERATORS[searchAccelerator].textKey)
+              : ""
+          }`}
           sx={{
             mr: 1,
           }}

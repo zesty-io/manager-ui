@@ -1,4 +1,5 @@
 import { memo, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { usePermission } from "../../../../../../shell/hooks/use-permissions";
 import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
 import { Box } from "@mui/material";
@@ -7,7 +8,10 @@ import { fetchFiles, publishFile, saveFile } from "../../../store/files";
 import CloudUploadRoundedIcon from "@mui/icons-material/CloudUploadRounded";
 import { useDispatch } from "react-redux";
 import { ActionButton } from "./ActionButton";
-import { formatDate } from "../../../../../../utility/formatDate";
+import {
+  formatDate,
+  isTodayOrYesterday,
+} from "../../../../../../utility/formatDate";
 import { fetchAuditTrail } from "../../../store/auditTrail";
 
 interface EditorActionsProps {
@@ -30,6 +34,7 @@ interface EditorActionsProps {
 export const EditorActions = memo(function EditorActions(
   props: EditorActionsProps
 ) {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const canPublish = usePermission("PUBLISH");
   const canUpdate = usePermission("UPDATE", props?.fileZUID);
@@ -43,9 +48,7 @@ export const EditorActions = memo(function EditorActions(
   const saveShortcut = useMetaKey("s", () => onSave());
   const publishShortcut = useMetaKey("p", () => onPublish());
 
-  const fileLastUpdate =
-    formatDate(props?.updatedAt).includes("Today") ||
-    formatDate(props?.updatedAt).includes("Yesterday");
+  const fileLastUpdate = isTodayOrYesterday(props?.updatedAt);
 
   const getUpdatedFiles = () => {
     dispatch(fetchFiles(props?.fileType));
@@ -100,18 +103,27 @@ export const EditorActions = memo(function EditorActions(
       pl={isNotSaved ? 1 : 0}
     >
       <ActionButton
-        label={isNotSaved ? "Save" : "Saved"}
+        label={
+          isNotSaved
+            ? t("common.save")
+            : t("shell.relationalVersionActionSaved")
+        }
         color="primary"
         variant="contained"
         size="small"
         startIcon={<SaveRoundedIcon fontSize="small" />}
         tooltip={
           isNotSaved
-            ? `Save File ${saveShortcut}`
-            : `v${props?.version} saved ${!fileLastUpdate ? "" : "on"}
-              ${formatDate(props?.updatedAt)}
-              by ${props?.updatedBy || "Unknown"}
-           `
+            ? t("code.saveFileShortcut", { shortcut: saveShortcut })
+            : t("code.versionSavedByUser", {
+                n: props?.version,
+                date: fileLastUpdate
+                  ? t("common.dateOnValue", {
+                      date: formatDate(props?.updatedAt),
+                    })
+                  : formatDate(props?.updatedAt),
+                user: props?.updatedBy || t("code.unknown"),
+              })
         }
         isActive={isNotSaved}
         isLoading={isNotSaved && (isSaving || isPublishing)}
@@ -121,7 +133,11 @@ export const EditorActions = memo(function EditorActions(
 
       <ActionButton
         label={
-          isUnpublished ? `${isNotSaved ? "Save & " : ""}Publish` : "Published"
+          isUnpublished
+            ? isNotSaved
+              ? t("code.saveAndPublish")
+              : t("code.publish")
+            : t("shell.relationalVersionActionPublished")
         }
         color="success"
         inActiveColor="success.main"
@@ -130,11 +146,16 @@ export const EditorActions = memo(function EditorActions(
         startIcon={<CloudUploadRoundedIcon fontSize="small" />}
         tooltip={
           isUnpublished
-            ? `Publish File ${publishShortcut}`
-            : `v${props?.version} published ${!props?.publishedAt ? "" : "on"}
-              ${formatDate(props?.publishedAt)}
-              by ${props?.publishedBy || "Unknown"}
-           `
+            ? t("code.publishFileShortcut", { shortcut: publishShortcut })
+            : t("code.versionPublishedByUser", {
+                n: props?.version,
+                date: props?.publishedAt
+                  ? t("common.dateOnValue", {
+                      date: formatDate(props?.publishedAt),
+                    })
+                  : formatDate(props?.publishedAt),
+                user: props?.publishedBy || t("code.unknown"),
+              })
         }
         isActive={isUnpublished}
         isLoading={isUnpublished && isPublishing}

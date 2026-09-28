@@ -7,6 +7,7 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useLocalStorage } from "react-use";
+import { useTranslation } from "react-i18next";
 
 import { RenameFolderDialog } from "./RenameFolderDialog";
 import { NewFolderDialog } from "./NewFolderDialog";
@@ -29,6 +30,7 @@ export const FolderMenu: FC<Props> = ({
   title,
   binId,
 }) => {
+  const { t } = useTranslation();
   const [openDialog, setOpenDialog] = useState<Dialogs>(null);
   const hiddenGroups =
     JSON.parse(localStorage.getItem("zesty:navMedia:hidden")) || [];
@@ -52,7 +54,7 @@ export const FolderMenu: FC<Props> = ({
           <ListItemIcon>
             <CreateNewFolderIcon fontSize="small" />
           </ListItemIcon>
-          <ListItemText>Add Sub Folder</ListItemText>
+          <ListItemText>{t("media.folderMenuAddSubFolder")}</ListItemText>
         </MenuItem>
         <MenuItem
           onClick={() => {
@@ -63,7 +65,7 @@ export const FolderMenu: FC<Props> = ({
           <ListItemIcon>
             <DriveFileRenameOutlineIcon fontSize="small" />
           </ListItemIcon>
-          <ListItemText>Rename</ListItemText>
+          <ListItemText>{t("media.folderMenuRename")}</ListItemText>
         </MenuItem>
         {!!groupId && (
           <MenuItem
@@ -75,7 +77,7 @@ export const FolderMenu: FC<Props> = ({
             <ListItemIcon>
               <DeleteIcon fontSize="small" />
             </ListItemIcon>
-            <ListItemText>Delete</ListItemText>
+            <ListItemText>{t("common.delete")}</ListItemText>
           </MenuItem>
         )}
         {!!id && (
@@ -101,7 +103,9 @@ export const FolderMenu: FC<Props> = ({
               )}
             </ListItemIcon>
             <ListItemText>
-              {hiddenGroups?.includes(id) ? "Show" : "Hide"}
+              {hiddenGroups?.includes(id)
+                ? t("media.folderMenuShow")
+                : t("media.folderMenuHide")}
             </ListItemText>
           </MenuItem>
         )}

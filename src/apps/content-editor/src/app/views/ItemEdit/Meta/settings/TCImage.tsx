@@ -3,6 +3,7 @@ import { MemoryRouter } from "react-router";
 import { Box, Dialog } from "@mui/material";
 import { IconButton } from "@zesty-io/material";
 import { Close } from "@mui/icons-material";
+import { useTranslation } from "react-i18next";
 
 import { FieldShell } from "../../../../components/Editor/Field/FieldShell";
 import { FieldTypeMedia } from "../../../../components/FieldTypeMedia";
@@ -18,6 +19,7 @@ type TCImageProps = {
   value: string;
 };
 export const TCImage = ({ field, error, onChange, value }: TCImageProps) => {
+  const { t } = useTranslation();
   const [imageModal, setImageModal] = useState(null);
 
   const imagesArray = useMemo(() => {
@@ -61,8 +63,9 @@ export const TCImage = ({ field, error, onChange, value }: TCImageProps) => {
               ".webp",
               ".avif",
             ],
-            fileExtensionsErrorMessage:
-              "Only files with the following extensions are allowed: .png, .jpg, .jpeg, .svg, .gif, .tif, .webp, .avif",
+            fileExtensionsErrorMessage: t(
+              "content.itemEditMetaImageFileExtensionsError"
+            ),
           }}
           name={field?.name}
           onChange={onChange}

@@ -13,6 +13,7 @@ import {
   Tooltip,
 } from "@mui/material";
 import { InfoRounded } from "@mui/icons-material";
+import { useTranslation } from "react-i18next";
 import { Errors } from "./views/FieldForm";
 
 type RegexProps = {
@@ -38,19 +39,19 @@ const regexTypePatternMap = {
     "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?",
 } as const;
 
-const regexTypeErrorMessageMap = {
-  custom: "Not matching expected pattern",
-  url: "Must be a URL (e.g. https://www.google.com/)",
-  slug: "Must be a slug (e.g. everything-about-content-marketing)",
-  email: "Must be an email (e.g. hello@zesty.io)",
-} as const;
+const getRegexTypeErrorMessageMap = (t: (key: string) => string) => ({
+  custom: t("schema.regexNotMatchingPattern"),
+  url: t("schema.regexMatchErrorUrl"),
+  slug: t("schema.regexMatchErrorSlug"),
+  email: t("schema.regexMatchErrorEmail"),
+});
 
-const regexTypeRestrictErrorMessageMap = {
-  custom: "Not matching expected pattern",
-  url: "Cannot be a URL (e.g. https://www.google.com/)",
-  slug: "Cannot be a slug (e.g. everything-about-content-marketing)",
-  email: "Cannot be an email (e.g. hello@zesty.io)",
-} as const;
+const getRegexTypeRestrictErrorMessageMap = (t: (key: string) => string) => ({
+  custom: t("schema.regexNotMatchingPattern"),
+  url: t("schema.regexRestrictErrorUrl"),
+  slug: t("schema.regexRestrictErrorSlug"),
+  email: t("schema.regexRestrictErrorEmail"),
+});
 
 export const Regex = ({
   onChange,
@@ -60,12 +61,17 @@ export const Regex = ({
   regexRestrictErrorMessage,
   errors,
 }: RegexProps) => {
+  const { t } = useTranslation();
+  const regexTypeErrorMessageMap = getRegexTypeErrorMessageMap(t);
+  const regexTypeRestrictErrorMessageMap =
+    getRegexTypeRestrictErrorMessageMap(t);
   return (
     <Box>
-      <Typography fontWeight={700}>Regex Pattern Matching Rules</Typography>
+      <Typography fontWeight={700}>
+        {t("schema.regexPatternMatchingRules")}
+      </Typography>
       <Typography variant="body3" color="text.secondary" fontWeight={600}>
-        Knowledge of Regular Expressions (Regex) is required. Entering incorrect
-        regex patterns may prevent content fields from accepting user inputs.
+        {t("schema.regexKnowledgeRequired")}
       </Typography>
       <FormControlLabel
         sx={{
@@ -94,7 +100,7 @@ export const Regex = ({
         label={
           <Box>
             <Typography variant="body2" fontWeight="600">
-              Match a specific pattern
+              {t("schema.regexMatchSpecificPattern")}
             </Typography>
             <Typography
               variant="body3"
@@ -102,8 +108,7 @@ export const Regex = ({
               fontWeight="600"
               display="block"
             >
-              Set the regular expression (e.g. email, URL, etc) the input should
-              match
+              {t("schema.regexSetMatchExpression")}
             </Typography>
           </Box>
         }
@@ -113,8 +118,8 @@ export const Regex = ({
           <Box display="flex" gap={2} mt={1} pl={3.5}>
             <Box>
               <Box display="flex" alignItems="center" gap={0.5}>
-                <InputLabel>Type</InputLabel>
-                <Tooltip title="Select from a list of preset Regex pattern types or write your own custom Regex pattern">
+                <InputLabel>{t("schema.regexType")}</InputLabel>
+                <Tooltip title={t("schema.regexTypeTooltip")}>
                   <InfoRounded
                     color="action"
                     sx={{
@@ -167,18 +172,20 @@ export const Regex = ({
                 }}
                 displayEmpty
               >
-                <MenuItem value="custom">Custom</MenuItem>
-                <MenuItem value="url">URL</MenuItem>
-                <MenuItem value="slug">Slug</MenuItem>
-                <MenuItem value="email">Email</MenuItem>
+                <MenuItem value="custom">
+                  {t("schema.regexTypeCustom")}
+                </MenuItem>
+                <MenuItem value="url">{t("schema.regexTypeUrl")}</MenuItem>
+                <MenuItem value="slug">{t("schema.regexTypeSlug")}</MenuItem>
+                <MenuItem value="email">{t("schema.regexTypeEmail")}</MenuItem>
               </Select>
             </Box>
             <FormControl fullWidth error={!!errors?.regexMatchPattern}>
               <Box display="flex" alignItems="center" gap={0.5}>
                 <Typography variant="body2" mb={0.5} fontWeight={600}>
-                  Pattern
+                  {t("schema.regexPattern")}
                 </Typography>
-                <Tooltip title="Enter a regular expression (regex) pattern - a sequence of characters used for pattern matching in strings">
+                <Tooltip title={t("schema.regexPatternTooltip")}>
                   <InfoRounded
                     color="action"
                     sx={{
@@ -214,10 +221,7 @@ export const Regex = ({
               />
               {errors?.regexMatchPattern && (
                 <FormHelperText>
-                  Regex provided is not valid. <br /> Please{" "}
-                  <Link href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions">
-                    review regex documentation on MDN.
-                  </Link>
+                  {t("schema.regexInvalidHelper")}
                 </FormHelperText>
               )}
             </FormControl>
@@ -233,9 +237,9 @@ export const Regex = ({
             >
               <Box display="flex" alignItems="center" gap={0.5}>
                 <Typography variant="body2" mb={0.5} fontWeight={600}>
-                  Custom Error Message *
+                  {t("schema.regexCustomErrorMessage")}
                 </Typography>
-                <Tooltip title="Displays if the user enters an input that does not meet the requirements">
+                <Tooltip title={t("schema.regexCustomErrorMessageTooltip")}>
                   <InfoRounded
                     color="action"
                     sx={{
@@ -291,7 +295,7 @@ export const Regex = ({
         label={
           <Box>
             <Typography variant="body2" fontWeight="600">
-              Restrict a specific pattern
+              {t("schema.regexRestrictSpecificPattern")}
             </Typography>
             <Typography
               variant="body3"
@@ -299,8 +303,7 @@ export const Regex = ({
               fontWeight="600"
               display="block"
             >
-              Set the regular expression (e.g. email, URL, etc) the input should
-              not match
+              {t("schema.regexSetRestrictExpression")}
             </Typography>
           </Box>
         }
@@ -310,8 +313,8 @@ export const Regex = ({
           <Box display="flex" gap={2} mt={1} pl={3.5}>
             <Box>
               <Box display="flex" alignItems="center" gap={0.5}>
-                <InputLabel>Type</InputLabel>
-                <Tooltip title="Select from a list of preset Regex pattern types or write your own custom Regex pattern">
+                <InputLabel>{t("schema.regexType")}</InputLabel>
+                <Tooltip title={t("schema.regexTypeTooltip")}>
                   <InfoRounded
                     color="action"
                     sx={{
@@ -364,18 +367,20 @@ export const Regex = ({
                 }}
                 displayEmpty
               >
-                <MenuItem value="custom">Custom</MenuItem>
-                <MenuItem value="url">URL</MenuItem>
-                <MenuItem value="slug">Slug</MenuItem>
-                <MenuItem value="email">Email</MenuItem>
+                <MenuItem value="custom">
+                  {t("schema.regexTypeCustom")}
+                </MenuItem>
+                <MenuItem value="url">{t("schema.regexTypeUrl")}</MenuItem>
+                <MenuItem value="slug">{t("schema.regexTypeSlug")}</MenuItem>
+                <MenuItem value="email">{t("schema.regexTypeEmail")}</MenuItem>
               </Select>
             </Box>
             <FormControl fullWidth error={!!errors?.regexRestrictPattern}>
               <Box display="flex" alignItems="center" gap={0.5}>
                 <Typography variant="body2" mb={0.5} fontWeight={600}>
-                  Pattern
+                  {t("schema.regexPattern")}
                 </Typography>
-                <Tooltip title="Enter a regular expression (regex) pattern - a sequence of characters used for pattern matching in strings">
+                <Tooltip title={t("schema.regexPatternTooltip")}>
                   <InfoRounded
                     color="action"
                     sx={{
@@ -411,10 +416,7 @@ export const Regex = ({
               />
               {errors?.regexRestrictPattern && (
                 <FormHelperText>
-                  Regex provided is not valid. <br /> Please{" "}
-                  <Link href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions">
-                    review regex documentation on MDN.
-                  </Link>
+                  {t("schema.regexInvalidHelper")}
                 </FormHelperText>
               )}
             </FormControl>
@@ -430,9 +432,9 @@ export const Regex = ({
             >
               <Box display="flex" alignItems="center" gap={0.5}>
                 <Typography variant="body2" mb={0.5} fontWeight={600}>
-                  Custom Error Message *
+                  {t("schema.regexCustomErrorMessage")}
                 </Typography>
-                <Tooltip title="Displays if the user enters an input that does not meet the requirements">
+                <Tooltip title={t("schema.regexCustomErrorMessageTooltip")}>
                   <InfoRounded
                     color="action"
                     sx={{

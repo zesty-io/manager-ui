@@ -14,34 +14,35 @@ import {
   ImageRounded,
 } from "@mui/icons-material";
 import { Database, Block } from "@zesty-io/material";
+import { useTranslation } from "react-i18next";
 import { ResourceType } from "../../../services/types";
 
 import { FilterButton } from "../../../components/Filters";
 
 interface ResourceTypeValue {
-  text: string;
+  textKey: string;
   icon: SvgIconComponent;
 }
 type ResourceTypeOptions = Record<Exclude<ResourceType, "">, ResourceTypeValue>;
 const RESOURCE_TYPE_OPTIONS: ResourceTypeOptions = {
   content: {
-    text: "Content Items",
+    textKey: "common.contentItems",
     icon: EditRounded,
   },
   schema: {
-    text: "Models",
+    textKey: "common.models",
     icon: Database as SvgIconComponent,
   },
   code: {
-    text: "Code Files",
+    textKey: "common.codeFiles",
     icon: CodeRounded,
   },
   media: {
-    text: "Media",
+    textKey: "common.media",
     icon: ImageRounded,
   },
   block: {
-    text: "Blocks",
+    textKey: "shell.navBlocks",
     icon: Block as SvgIconComponent,
   },
 };
@@ -55,14 +56,15 @@ export const ResourceTypeFilter: FC<ResourceTypeFilter> = ({
   onChange,
   value,
 }) => {
+  const { t } = useTranslation();
   const [anchorRef, setAnchorRef] = useState<HTMLElement | null>(null);
 
   const getButtonText = (): string => {
     if (Boolean(value) && value in RESOURCE_TYPE_OPTIONS) {
-      return RESOURCE_TYPE_OPTIONS[value as ResourceType].text;
+      return t(RESOURCE_TYPE_OPTIONS[value as ResourceType].textKey);
     }
 
-    return "Resource Type";
+    return t("shell.resourceType");
   };
 
   return (
@@ -104,7 +106,7 @@ export const ResourceTypeFilter: FC<ResourceTypeFilter> = ({
               <ListItemIcon>
                 <SvgIcon component={data.icon} />
               </ListItemIcon>
-              <ListItemText>{data.text}</ListItemText>
+              <ListItemText>{t(data.textKey)}</ListItemText>
             </MenuItem>
           )
         )}

@@ -31,7 +31,7 @@ export const FieldItem = ({
   return (
     <Box
       data-cy={`FieldItem_${fieldType}`}
-      height={54}
+      // height={54}
       border="1px solid"
       borderColor="border"
       borderRadius={1}
@@ -67,7 +67,7 @@ export const FieldItem = ({
           sx={{
             py: 1,
             px: 2,
-            height: 54,
+            // height: 54,
           }}
         >
           <ListItemIcon sx={{ minWidth: "36px" }}>
@@ -89,6 +89,7 @@ export const FieldItem = ({
             sx={{
               display: "flex",
               flexDirection: "column",
+              my: 0,
             }}
           />
         </ListItem>

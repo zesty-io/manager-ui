@@ -1,5 +1,6 @@
 import { useDispatch } from "react-redux";
 import cx from "classnames";
+import { useTranslation } from "react-i18next";
 
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
@@ -14,6 +15,7 @@ import { setFilterText } from "../../../store/filter";
 import styles from "./LeadExporter.less";
 export function LeadExporter() {
   const dispatch = useDispatch();
+  const { t } = useTranslation();
 
   return (
     <header className={styles.LeadExporter}>
@@ -29,7 +31,7 @@ export function LeadExporter() {
       <div className={cx(styles.filter, styles.SearchEnd)}>
         <TextField
           name="text-filter"
-          placeholder="Search across all of your leads"
+          placeholder={t("leads.searchAcrossAllOfYourLeads")}
           type="search"
           variant="outlined"
           fullWidth

@@ -2,6 +2,7 @@ import idb from "utility/idb";
 import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
 import { instanceApi } from "shell/services/instance";
+import i18n from "shell/i18n";
 
 export function files(state = [], action) {
   let files;
@@ -281,14 +282,22 @@ export function fetchFiles(type) {
           dispatch(
             notify({
               kind: "warn",
-              message: `Failed to load instance ${type} dev files. ${resDev.status} | ${resDev.error}`,
+              message: i18n.t("code.fetchDevFilesError", {
+                type,
+                status: resDev.status,
+                error: resDev.error,
+              }),
             })
           );
         } else if (resLive.status !== 200) {
           dispatch(
             notify({
               kind: "warn",
-              message: `Failed to load instance ${type} live files. ${resLive.status} | ${resLive.error}`,
+              message: i18n.t("code.fetchLiveFilesError", {
+                type,
+                status: resLive.status,
+                error: resLive.error,
+              }),
             })
           );
         }
@@ -342,7 +351,7 @@ export function fetchFile(fileZUID, fileType, options = { forceSync: false }) {
           dispatch(
             notify({
               kind: "warn",
-              message: `File could not be found. ${fileZUID}`,
+              message: i18n.t("code.fileNotFound", { fileZUID }),
             })
           );
         }
@@ -351,7 +360,10 @@ export function fetchFile(fileZUID, fileType, options = { forceSync: false }) {
           dispatch(
             notify({
               kind: "warn",
-              message: `Failed to load file. ${res.status} | ${res.error}`,
+              message: i18n.t("code.fetchFileError", {
+                status: res.status,
+                error: res.error,
+              }),
             })
           );
         }
@@ -387,7 +399,9 @@ export function fetchFileVersions(fileZUID, fileType) {
           dispatch(
             notify({
               kind: "warn",
-              message: `Unable to load file versions. ${res.status}`,
+              message: i18n.t("code.fetchFileVersionsError", {
+                status: res.status,
+              }),
             })
           );
         }
@@ -397,7 +411,7 @@ export function fetchFileVersions(fileZUID, fileType) {
         console.error(err);
         notify({
           kind: "warn",
-          message: "API error loading file versions",
+          message: i18n.t("code.apiErrorLoadingFileVersions"),
         });
       });
   };
@@ -423,7 +437,7 @@ export function createFile(name, type, code = "") {
           dispatch(
             notify({
               kind: "success",
-              message: `Created new file ${name}`,
+              message: i18n.t("code.createFileSuccess", { name }),
             })
           );
 
@@ -435,7 +449,10 @@ export function createFile(name, type, code = "") {
           dispatch(
             notify({
               kind: "warn",
-              message: `Failed to create file ${name}. ${res.error}`,
+              message: i18n.t("code.createFileError", {
+                name,
+                error: res.error,
+              }),
             })
           );
         }
@@ -447,7 +464,7 @@ export function createFile(name, type, code = "") {
         dispatch(
           notify({
             kind: "warn",
-            message: `Failed to create file ${name}. ${err}`,
+            message: i18n.t("code.createFileError", { name, error: err }),
           })
         );
       });
@@ -473,7 +490,9 @@ export function saveFile(ZUID, status, code = null) {
           dispatch(
             notify({
               kind: "success",
-              message: `Saved ${file.fileName}`,
+              message: i18n.t("code.saveFileSuccess", {
+                fileName: file.fileName,
+              }),
             })
           );
 
@@ -493,7 +512,10 @@ export function saveFile(ZUID, status, code = null) {
           dispatch(
             notify({
               kind: "warn",
-              message: `Failed to save file. ${res.status} | ${res.error}`,
+              message: i18n.t("code.saveFileError", {
+                status: res.status,
+                error: res.error,
+              }),
             })
           );
         }
@@ -547,7 +569,10 @@ export function publishFile(fileZUID, fileStatus) {
           dispatch(
             notify({
               kind: "success",
-              message: `Published ${file.fileName} version ${latestVersion}`,
+              message: i18n.t("code.publishFileSuccess", {
+                fileName: file.fileName,
+                latestVersion,
+              }),
             })
           );
 
@@ -563,7 +588,10 @@ export function publishFile(fileZUID, fileStatus) {
           dispatch(
             notify({
               kind: "warn",
-              message: `Failed to publish file. ${res.status} | ${res.error}`,
+              message: i18n.t("code.publishFileError", {
+                status: res.status,
+                error: res.error,
+              }),
             })
           );
         }
@@ -604,7 +632,10 @@ export function deleteFile(fileZUID, fileStatus) {
           dispatch(
             notify({
               kind: "warn",
-              message: `Failed to delete file ${file.fileName}. ${res.error}`,
+              message: i18n.t("code.deleteFileError", {
+                fileName: file.fileName,
+                error: res.error,
+              }),
             })
           );
         }
@@ -616,7 +647,9 @@ export function deleteFile(fileZUID, fileStatus) {
         dispatch(
           notify({
             kind: "warn",
-            message: `API error occured trying to delete file. ${file.fileName}`,
+            message: i18n.t("code.apiErrorDeletingFile", {
+              fileName: file.fileName,
+            }),
           })
         );
       });
@@ -707,7 +740,7 @@ function resolveFile(dispatch, files, fileZUID, fileStatus) {
     dispatch(
       notify({
         kind: "warn",
-        message: "We were not able to find the file you are trying to save.",
+        message: i18n.t("code.fileNotFoundToSave"),
       })
     );
   }

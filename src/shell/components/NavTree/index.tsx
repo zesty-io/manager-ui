@@ -4,8 +4,8 @@ import { useHistory } from "react-router-dom";
 
 import { RichTreeItem } from "./components/RichTreeItem";
 import { ContentNavItem } from "../../services/types";
-import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
-import ArrowRightRoundedIcon from "@mui/icons-material/ArrowRightRounded";
+import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownRounded";
+import KeyboardArrowRightRoundedIcon from "@mui/icons-material/KeyboardArrowRightRounded";
 import { Stack, Box, Skeleton } from "@mui/material";
 import { isValid as zuidIsValid } from "zuid";
 
@@ -138,8 +138,8 @@ export const NavTree: FC<Readonly<Props>> = ({
           selectedItems={[selected]}
           expansionTrigger={isDirectoryNavigation ? "content" : "iconContainer"}
           slots={{
-            collapseIcon: ArrowDropDownRoundedIcon,
-            expandIcon: ArrowRightRoundedIcon,
+            collapseIcon: KeyboardArrowDownRoundedIcon,
+            expandIcon: KeyboardArrowRightRoundedIcon,
             item: RichTreeItem,
           }}
           slotProps={{

@@ -1,4 +1,5 @@
 import { FC } from "react";
+import { useTranslation } from "react-i18next";
 import {
   TextField,
   Typography,
@@ -10,6 +11,7 @@ import {
 import { alpha } from "@mui/material/styles";
 
 import { withCursorPosition } from "../../../../../../shell/components/withCursorPosition";
+import { MEDIA_TITLE_MAXLENGTH } from "../FileModal/FileModalContent";
 
 const TextFieldWithCursorPosition = withCursorPosition(TextField);
 
@@ -32,6 +34,7 @@ export const ThumbnailContent: FC<Props> = ({
   isTitleEditable,
   title,
 }) => {
+  const { t } = useTranslation();
   const styledCardContent = {
     px: onFilenameChange ? 0 : 1,
     py: onFilenameChange ? 0 : 1.5,
@@ -53,7 +56,11 @@ export const ThumbnailContent: FC<Props> = ({
         {onFilenameChange ? (
           <Box>
             <Tooltip
-              title={isFilenameEditable ? "" : "You cannot edit the file name"}
+              title={
+                isFilenameEditable
+                  ? ""
+                  : t("media.thumbnailContentCannotEditTooltip")
+              }
               followCursor
             >
               <TextFieldWithCursorPosition
@@ -91,17 +98,23 @@ export const ThumbnailContent: FC<Props> = ({
               <TextField
                 placeholder={
                   isTitleEditable
-                    ? "Add File Title (for alt-text)"
-                    : "Please wait to add File Title"
+                    ? t("media.thumbnailContentTitlePlaceholderEditable")
+                    : t("media.thumbnailContentTitlePlaceholderDisabled")
                 }
                 disabled={!isTitleEditable}
-                defaultValue={title}
+                value={title ?? ""}
                 size="small"
                 variant="outlined"
                 fullWidth
                 multiline
                 rows={3}
-                onChange={(e) => onTitleChange(e.target.value)}
+                onChange={(e) => {
+                  if (e.target.value.length > MEDIA_TITLE_MAXLENGTH) {
+                    return;
+                  }
+
+                  onTitleChange(e.target.value);
+                }}
                 InputProps={{
                   sx: {
                     color: "text.secondary",
@@ -112,6 +125,15 @@ export const ThumbnailContent: FC<Props> = ({
                   },
                 }}
               />
+              <Typography
+                variant="body2"
+                color="text.disabled"
+                textAlign="right"
+                mt={0.5}
+                px={1}
+              >
+                {title?.length ?? 0} / {MEDIA_TITLE_MAXLENGTH}
+              </Typography>
             </Box>
           </Box>
         ) : (

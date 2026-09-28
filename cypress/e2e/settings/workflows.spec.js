@@ -212,8 +212,7 @@ describe("Create New Status Label", { retries: 1 }, () => {
         expect(createdStatusLabel).to.include({
           name: TEST_DATA.new.name,
           description: TEST_DATA.new.description,
-          color: colorMenu.find((color) => color?.label === TEST_DATA.new.color)
-            ?.value,
+          color: resolveColorValue(TEST_DATA.new.color),
           allowPublish: TEST_DATA.new.allowPublish,
         });
         expect(createdStatusLabel.addPermissionRoles).to.have.lengthOf(1);
@@ -285,9 +284,7 @@ describe("Edit Status Label", { retries: 1 }, () => {
         expect(updatedLabel).to.deep.include({
           name: TEST_DATA.edited.name,
           description: TEST_DATA.edited.description,
-          color: colorMenu.find(
-            (color) => color?.label === TEST_DATA.edited.color
-          )?.value,
+          color: resolveColorValue(TEST_DATA.edited.color),
         });
       }
     );
@@ -492,7 +489,7 @@ Cypress.Commands.add("createTestData", () => {
       method: "POST",
       body: {
         ...label,
-        color: colorMenu.find((color) => color?.label === label.color)?.value,
+        color: resolveColorValue(label.color),
       },
     });
   });
@@ -507,6 +504,15 @@ Cypress.Commands.add("getStatusLabels", () => {
       return parseStatusLabels(response?.data);
     });
 });
+
+// colorMenu's `label` is an i18n key (e.g. "settings.colorGrey"), not display
+// text -- resolve TEST_DATA's plain color name ("Grey") to the matching entry
+// the same way the app's key naming convention does.
+function resolveColorValue(colorName) {
+  return colorMenu.find(
+    (color) => color?.label === `settings.color${colorName}`
+  )?.value;
+}
 
 function parseStatusLabels(statusLabels = []) {
   const { active, deactivated } = statusLabels.reduce(

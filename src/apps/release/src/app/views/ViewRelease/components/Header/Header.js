@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory, useParams } from "react-router";
+import { useTranslation } from "react-i18next";
 import { Link as RouterLink } from "react-router-dom";
 import { createMember } from "shell/store/releaseMembers";
 import { fetchVersions } from "shell/store/contentVersions";
@@ -15,6 +16,7 @@ import { DeleteRelease } from "./components/DeleteRelease";
 
 import styles from "./Header.less";
 export function Header({ plan, isContentSubpage }) {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const params = useParams();
   const history = useHistory();
@@ -67,7 +69,7 @@ export function Header({ plan, isContentSubpage }) {
         })}
       </Select>
       <ContentSearch
-        placeholder="Search by ZUID or Meta Title to include in your release "
+        placeholder={t("release.searchPlaceholder")}
         onSelect={onSelect}
         keepResultsOnSelect={true}
       />

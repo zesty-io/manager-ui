@@ -11,6 +11,7 @@ import {
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useHistory } from "react-router";
 import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 import { useGetUsersRolesQuery } from "../services/accounts";
 import { AppState } from "../store/types";
 
@@ -51,6 +52,7 @@ const ProfileInfo: FC<ProfileInfoProps> = ({
 );
 
 const AccessDenied = () => {
+  const { t } = useTranslation();
   const history = useHistory();
   const userRole = useSelector((state: AppState) => state.userRole);
   const { valid } = useSelector((state: AppState) => state.auth);
@@ -135,17 +137,15 @@ const AccessDenied = () => {
               }}
             >
               <Typography variant="h3" color="text.primary" fontWeight={700}>
-                Access Denied
+                {t("shell.accessDenied")}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Your current role of {userRole?.name} does not include access to
-                the
-                {` ${appRoute.charAt(0).toUpperCase()}${appRoute
-                  .slice(1)
-                  .toLowerCase()} `}
-                App. To gain access, please contact the instance owner or one of
-                the administrators listed below and request a role upgrade to
-                gain access.
+                {t("shell.accessDeniedRoleBody", {
+                  role: userRole?.name,
+                  app: `${appRoute.charAt(0).toUpperCase()}${appRoute
+                    .slice(1)
+                    .toLowerCase()}`,
+                })}
               </Typography>
             </Box>
 
@@ -185,7 +185,7 @@ const AccessDenied = () => {
                 color="primary"
                 onClick={() => history.goBack()}
               >
-                Go Back
+                {t("common.goBack")}
               </Button>
             </Box>
           </Box>
@@ -205,7 +205,7 @@ const AccessDenied = () => {
               height="100%"
               width="100%"
               image="/images/restricted.png"
-              alt="Page Not Found"
+              alt={t("shell.accessDeniedImageAlt")}
             />
           </Card>
         </Box>

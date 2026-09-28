@@ -1,6 +1,7 @@
 import { useState, FC } from "react";
 import { Link as Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 import { ConfirmDialog } from "@zesty-io/material";
 import PinIcon from "@mui/icons-material/PushPin";
@@ -36,6 +37,7 @@ export const Dropdown: FC<Dropdown> = ({
   removeMany,
   tabWidth,
 }) => {
+  const { t } = useTranslation();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const [filter, setFilter] = useState("");
@@ -63,12 +65,12 @@ export const Dropdown: FC<Dropdown> = ({
   const getDropdownHeader = () => {
     if (Boolean(filterTerm)) {
       if (filteredTabs.length) {
-        return `${filteredTabs.length} Results`;
+        return t("shell.tabsResults", { count: filteredTabs.length });
       } else {
-        return "No results found";
+        return t("shell.noResultsFound");
       }
     } else {
-      return "Pinned Tabs";
+      return t("shell.pinnedTabs");
     }
   };
 
@@ -107,7 +109,7 @@ export const Dropdown: FC<Dropdown> = ({
           aria-expanded={open ? "true" : undefined}
         >
           <Typography variant="body3" fontWeight={600} pl={1.5}>
-            More
+            {t("common.more")}
           </Typography>
           <IconButton disableTouchRipple disableRipple size="small">
             <ArrowDropDownIcon />
@@ -126,7 +128,7 @@ export const Dropdown: FC<Dropdown> = ({
             sx: {
               backgroundColor: "common.white",
               padding: "0px",
-              width: "274px",
+              // width: "274px",
             },
           }}
           sx={{
@@ -161,7 +163,7 @@ export const Dropdown: FC<Dropdown> = ({
             >
               <InputBase
                 fullWidth
-                placeholder="Search Tabs"
+                placeholder={t("shell.searchTabs")}
                 value={filter}
                 onChange={(evt) => setFilter(evt.target.value)}
                 startAdornment={
@@ -209,6 +211,7 @@ export const Dropdown: FC<Dropdown> = ({
               justifyContent="space-between"
               alignItems="center"
               flex="1"
+              gap={1}
             >
               <Box component="span">
                 <Typography
@@ -229,7 +232,9 @@ export const Dropdown: FC<Dropdown> = ({
                     borderColor: "border",
                   }}
                 >
-                  <Typography variant="overline">Unpin All</Typography>
+                  <Typography variant="overline">
+                    {t("shell.unpinAll")}
+                  </Typography>
                 </Button>
               )}
             </Stack>
@@ -245,8 +250,8 @@ export const Dropdown: FC<Dropdown> = ({
       </Box>
       <ConfirmDialog
         open={confirmOpen}
-        title="Unpin All Tabs in See More Menu?"
-        content="This  cannot be undone"
+        title={t("shell.unpinAllTabsTitle")}
+        content={t("shell.cannotBeUndone")}
         callback={() => {} /* TODO why is this required?? */}
         maxWidth="xs"
         fullWidth
@@ -259,7 +264,7 @@ export const Dropdown: FC<Dropdown> = ({
           }}
           onClick={() => setConfirmOpen(false)}
         >
-          Cancel
+          {t("common.cancel")}
         </Button>
         <Button
           onClick={() => {
@@ -270,7 +275,7 @@ export const Dropdown: FC<Dropdown> = ({
           }}
           sx={{ textTransform: "none" }}
         >
-          Unpin All
+          {t("shell.unpinAll")}
         </Button>
       </ConfirmDialog>
     </>
