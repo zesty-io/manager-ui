@@ -49,18 +49,14 @@ describe("Code Editor Sidebar", { defaultCommandTimeout: 50000 }, () => {
       "e2eFolder"
     );
 
-    cy.get("@e2eFolder").within(() => {
-      cy.get(".MuiTreeItem-content").click({ force: true });
-    });
+    expandFolder("@e2eFolder");
 
     cy.get("@e2eFolder")
       .contains(Cypress.env("COMMIT_ID"))
       .closest('[role="treeitem"]')
       .as("commitFolder");
 
-    cy.get("@commitFolder").within(() => {
-      cy.get(".MuiTreeItem-content").click({ force: true });
-    });
+    expandFolder("@commitFolder");
 
     expect(FILENAME).to.not.be.empty;
 
@@ -133,22 +129,33 @@ function findSeededFileNode(navId, group, zuid) {
     "e2eFolder"
   );
 
-  cy.get("@e2eFolder")
-    .find(".MuiTreeItem-content")
-    .first()
-    .click({ force: true });
+  expandFolder("@e2eFolder");
 
   cy.get("@e2eFolder")
     .contains(Cypress.env("COMMIT_ID"))
     .closest('[role="treeitem"]')
     .as("commitFolder");
 
-  cy.get("@commitFolder")
-    .find(".MuiTreeItem-content")
-    .first()
-    .click({ force: true });
+  expandFolder("@commitFolder");
 
   return cy
     .get("@commitFolder")
     .find(`[id="${navId}-/code/file/${group}/${zuid}"]`);
+}
+
+// FileNav seeds its expanded state from the directory list, so a folder may
+// already be open on load — only toggle it when it's collapsed, otherwise the
+// click would close it. `.first()` targets the folder's own row, not a
+// mounted descendant's.
+function expandFolder(alias) {
+  cy.get(alias).then(($folder) => {
+    if ($folder.attr("aria-expanded") !== "true") {
+      cy.wrap($folder)
+        .find(".MuiTreeItem-content")
+        .first()
+        .click({ force: true });
+    }
+  });
+
+  cy.get(alias).should("have.attr", "aria-expanded", "true");
 }
